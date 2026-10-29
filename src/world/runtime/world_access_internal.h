@@ -65,6 +65,9 @@ mc_world_storage_status mc_world_access_call_entity_added(mc_world_access *, mc_
 mc_world_storage_status mc_world_access_call_entity_removed(mc_world_access *, mc_world_runtime *,
                                                             mc_entity *, mc_world_storage_error *,
                                                             mc_world_access_failure *);
+mc_world_storage_status mc_world_access_call_sky_changed(mc_world_access *, mc_world_runtime *,
+                                                         mc_world_storage_error *,
+                                                         mc_world_access_failure *);
 mc_world_storage_status mc_world_access_call_tile_entity_dirty(mc_world_access *,
                                                                mc_world_runtime *, int32_t, int32_t,
                                                                int32_t, mc_tile_entity *,

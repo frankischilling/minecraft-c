@@ -192,9 +192,17 @@ static mc_client_display_screen_status run(mc_client_display_screen_call *call,
     /* Actual h(): a false N returns7 before any Player/MouseHelper operation. */
     if (app->N) {
         if (app->h != NULL) {
-            call->child = (mc_client_screen_site){MC_CLASS, "h", "()V", 19};
-            return fail(call, MC_CLIENT_DISPLAY_SCREEN_UNIMPLEMENTED,
-                        "actual LocalPlayer key release", 114);
+            if (mc_local_player_input_reset(app->h, &call->player_input) != MC_PLAYER_OK) {
+                call->child = (mc_client_screen_site){
+                    call->player_input.site.class_name, call->player_input.site.method,
+                    call->player_input.site.descriptor, call->player_input.site.pc};
+                return fail(call,
+                            call->player_input.status == MC_PLAYER_NULL_REFERENCE
+                                ? MC_CLIENT_DISPLAY_SCREEN_NULL_REFERENCE
+                                : MC_CLIENT_DISPLAY_SCREEN_CHILD_FAILED,
+                            call->player_input.operation, 114);
+            }
+            call->player_keys_released = true;
         }
         app->N = false; /* Actual h24 survives the later reached child stop. */
         if (app->C == NULL) {

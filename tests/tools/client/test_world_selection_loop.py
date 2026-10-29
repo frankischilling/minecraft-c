@@ -3,6 +3,7 @@
 import argparse
 import gzip
 import hashlib
+import json
 import os
 from pathlib import Path
 import struct
@@ -142,11 +143,20 @@ def main():
             result = subprocess.run([str(executable), str(assets), mode, str(capture)],
                                     env=environment,
                                     timeout=args.timeout if args.timeout is not None else
-                                    (600 if mode == "generate" else 110), check=False)
+                                    (600 if mode == "generate" else 110), check=False,
+                                    capture_output=True, text=True)
+            print(result.stdout, end="")
+            print(result.stderr, end="", file=sys.stderr)
             if result.returncode:
                 print(f"World-selection native {mode} exited {result.returncode} "
                       f"(0x{result.returncode & 0xffffffff:08x})", file=sys.stderr)
                 return result.returncode
+            if mode in ("load", "generate"):
+                fixture = Path(__file__).resolve().parents[2] / "reference/client/renderer_focus/finite.json"
+                expected = json.loads(fixture.read_text(encoding="utf-8"))["rows"]
+                observed = [line for line in result.stdout.splitlines() if line.startswith("FOCUS ")]
+                if observed != expected:
+                    raise RuntimeError("Actual SDK focus segment differs from 72 original PX histories")
             after = snapshot(saves)
             if mode in ("load", "generate"):
                 if any(after.get(name) != digest for name, digest in before.items()):

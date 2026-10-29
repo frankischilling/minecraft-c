@@ -1,4 +1,5 @@
 #include "mc/world/info/info.h"
+#include "tick_source_internal.h"
 #include "weather_source_internal.h"
 
 #include "mc/storage/nbt/tree.h"
@@ -684,6 +685,23 @@ mc_world_info_status mc_world_info_time_get(const mc_world_info *info, int64_t *
     if (info == NULL || out == NULL)
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     *out = info->fields.value.time;
+    return MC_WORLD_INFO_OK;
+}
+
+mc_world_info_status mc_world_info_source_spawn_get(const mc_world_info *info, unsigned int axis,
+                                                    int32_t *out) {
+    if (info == NULL || out == NULL || axis > 2)
+        return MC_WORLD_INFO_INVALID_ARGUMENT;
+    *out = axis == 0   ? info->fields.value.spawn_x
+           : axis == 1 ? info->fields.value.spawn_y
+                       : info->fields.value.spawn_z;
+    return MC_WORLD_INFO_OK;
+}
+
+mc_world_info_status mc_world_info_source_time_set(mc_world_info *info, int64_t time) {
+    if (info == NULL)
+        return MC_WORLD_INFO_INVALID_ARGUMENT;
+    info->fields.value.time = time;
     return MC_WORLD_INFO_OK;
 }
 

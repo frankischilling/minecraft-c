@@ -149,8 +149,8 @@
       "sha256": "20cd1c54661ff2083e60326f4b4c0df23a12c25bb2f6c934d22ca5296dba0103"
     },
     "src/world/info/info.c": {
-      "bytes": 45078,
-      "sha256": "f5629c9368073e43dfcefdb309bfd6ce54bee2931a76c525a0d75c9a875c5a01"
+      "bytes": 45788,
+      "sha256": "d214fa1b563d7b39668ac812814605e7f316925926ad092043c0997e8ec88444"
     },
     "src/world/storage/gzip_input.c": {
       "bytes": 36657,

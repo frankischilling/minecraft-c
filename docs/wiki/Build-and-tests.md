@@ -1,26 +1,30 @@
 # Build and tests
 
-The current renderer/World-tick extension passes the Windows Debug ALL build
-and all 494 selected CTests in 213.50 seconds, with zero failures or skips.
-Five exact replays compare 267 original observations: brightness 12, equip 120,
-rain 20, renderer 43 and interpolation 72. Both GCC13 and Clang18 pass six new
-tests plus Timer with ASan/UBSan and leak detection. These are selected client-
-library builds with audio disabled, not complete Linux graphical qualification.
-The loaded Windows graph checks the genuine paused frame and direct unpaused
-renderer/entity sequence through the scheduler dependency at1260. The
-[current scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#renderer-and-world-tick-qualification)
-records remaining frames, scheduling and gameplay.
+The source frame/pause/scheduler extension passes Windows Debug ALL and all
+498 selected CTests in 205.32 seconds, with zero failures or skips. All preceding
+494 cases are retained. New original fixtures cover CU96, composed focus72,
+OZ68 and scheduler10 observations. The loaded Windows SDK graph matches all
+72 focus histories, checks pause failure order and reaches sky color at `px.h:56`.
+Direct unpaused work reaches the Biome spawn list after 289 candidate Chunks.
+All four new tests pass on GCC13/Clang18 with ASan/UBSan and leak detection,
+including actual GL under Xvfb. These are selected client-library builds with
+audio disabled; composed SDK focus is qualified on Windows. Eight JDK helper
+fog vectors retain their separate expression scope. The
+[qualification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#source-frame-pause-and-world-scheduler-qualification)
+records incomplete ordinary ticks, terrain frames and gameplay.
 
 Windows CI uses Ninja Debug with the x64 MSVC environment, explicit selected
 JDK17 and the same four build/test workers and full suite. A local VS18 Ninja
 ALL graph and all 461 asset-independent tests pass, with zero failures or
-skips. This qualifies that local generator profile; hosted VS17 results and
-any timing improvement require the current hosted run. No compiler/build tree
+skips. Hosted VS17/Ninja also passes at the renderer-tick checkpoint below.
+Its configure/build steps took 68/231 seconds versus 132/388 seconds at the
+preceding input checkpoint. Source and runner differences prevent a controlled
+causal speedup claim. No compiler/build tree
 cache or omitted test replaces the existing source and dependency checks.
 
-Published input checkpoint [`94dcfca`](https://github.com/frankischilling/minecraft-c/actions/runs/40869607435)
-passes all four jobs and 1,409 tests: Windows 455, GCC 477 and Clang 477, with
-zero failures or skips. That hosted result precedes the renderer extension.
+Published renderer-tick checkpoint [`07e41f6`](https://github.com/frankischilling/minecraft-c/actions/runs/40879213780)
+passes all four jobs and 1,427 tests: Windows 461, GCC 483 and Clang 483, with
+zero failures or skips. It precedes the focused-frame/pause/scheduler extension.
 
 The preceding input/controller extension passes the complete Windows Debug ALL
 build and all 488 selected CTests in 212.09 seconds, with zero failures or skips.

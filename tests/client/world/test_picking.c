@@ -3,6 +3,9 @@ int mc_picking_constructor_fixture_main(int argc, char **argv);
 #define main mc_picking_constructor_fixture_main
 #include "../../entity/player/test_construction.c"
 #undef main
+#ifdef MC_PICKING_BODY_MAIN_NAME
+#define main MC_PICKING_BODY_MAIN_NAME
+#endif
 
 #include "client/application_state.h"
 #include "client/world/entity_renderer/internal.h"

@@ -51,17 +51,18 @@ The actual READY renderer also completes picking through `px.a(F):452`.
 Existing-World ticks invoke that body at `k:33`. The admitted provider branch,
 controller music tick, movement-key dispatch, hotbar and Settings input also
 run. Direct same-graph checks also execute renderer/equip and real entity
-updates before unfinished scheduling at1260. Frame sound, lighting,
-suffocation and controller interpolation are connected; the inactive hidden
-profile reaches the pause-screen dependency. Whole World ticks, terrain frames
-and gameplay actions remain unfinished.
+updates, weather and 289 spawn candidates before the missing Biome spawn list.
+Frame sound, lighting, suffocation and controller interpolation are connected.
+Focused mouse look uses the actual SDK/CU/Player fields. Inactive pause entry
+constructs OZ; actual World drawing then reaches missing sky color at `px.h:56`.
+Whole ordinary World ticks, terrain frames and gameplay actions remain unfinished.
 Version-zero conversion stops at 52.
 Create/Rename stop at `NEW162`/`NEW189`; Delete stops at preparation 21 without
 skipping its prefix. Complete World entry and gameplay remain unfinished. See the
 [World-selection contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-selection.md).
 
-The current extension passes all 494 selected Windows CTests and 14 selected
-Linux sanitizer executions. It compares 267 new original body observations.
+The current extension passes all 498 selected Windows CTests and eight new
+Linux sanitizer executions. New fixtures compare 246 original observations.
 Existing-save entry checks paused and direct unpaused segments, source failure
 frontiers, save/resource preservation and cleanup. The preceding generated-
 terrain entry result retains its separate scope.
@@ -81,8 +82,8 @@ Empty, populated and bottom-scroll captures were
 inspected. Retaining an old RQ blocks teardown while preserving the App, then
 cleanup succeeds after its release. DateFormat matches 2,926 JDK17 vectors on
 Windows and Linux for English/en_US, UTC/Eastern and UTC years 1967..2099;
-other profiles fail explicitly. The current full suite and formatting check
-pass: all 475 selected Windows CTests without failures or skips and formatting
+other profiles fail explicitly. That earlier full suite and formatting check
+passed: all 475 selected Windows CTests without failures or skips and formatting
 for 1,379 files. Hosted CI and original-game correspondence retain their source scopes.
 Full source run/PX rendering and `Minecraft.d()` shutdown parity are unproven;
 native cleanup is a separate implementation.

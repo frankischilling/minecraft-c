@@ -37,6 +37,14 @@ mc_client_screen_status mc_client_screen_transitions_button(mc_client_screen_tra
 mc_client_screen_status mc_client_screen_transitions_select(mc_client_screen_transitions *,
                                                             mc_client_source_rq *, int32_t index,
                                                             mc_client_screen_error *);
+/* Actual Minecraft.i(): a nonnull current r returns7 before NEW9. Otherwise
+ * construct genuine OZ at13 and display it at16, retaining every prefix.
+ * close executes inherited da.a(CI) Escape display(NULL)10 then focus17. */
+mc_client_screen_status mc_client_screen_transitions_pause(mc_client_screen_transitions *,
+                                                           mc_client_screen_error *);
+mc_client_screen_status mc_client_screen_transitions_close(mc_client_screen_transitions *,
+                                                           mc_client_source_da *,
+                                                           mc_client_screen_error *);
 bool mc_client_screen_transitions_inspect(const mc_client_screen_transitions *,
                                           mc_client_screen_transition_state *);
 /* Passive native borrow of this owner's SAME retained screen namespace.

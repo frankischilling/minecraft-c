@@ -11,9 +11,11 @@ renderer/particle attachment, real Player insertion and view publication.
 World loading and healthy null-screen/focus handling return; the same tick
 then executes [gameplay input](client/gameplay-input.md) through `Minecraft.k:1073`.
 The [World segment](client/renderer-ticking.md) handles paused ticks and connects
-renderer/entity updates before unfinished scheduling at1260. The hidden-window
-profile then reaches the inactive pause-screen dependency; direct unpaused
-checks on that same graph reach the scheduler dependency.
+renderer/entity updates and the ordered scheduler's weather/spawn prefix.
+Focused mouse look and source pause entry now run. The hidden-window profile
+opens OZ and enters actual World drawing, reaching missing sky color at
+`px.h:56`. Direct unpaused checks on that graph reach Biome spawn-list selection
+at `cq.a:290` after gathering 289 candidate Chunks.
 The same READY renderer completes [picking](client/picking.md) through
 `px.a(F):452`. Existing-World ticks invoke it at `k:33`; the admitted provider
 branch, controller music tick and healthy screen checks also execute. Input
@@ -24,6 +26,30 @@ Dynamic terrain rendering and gameplay remain unfinished. Explicit flags retain 
 diagnostic title and fixed-camera World inspection.
 
 ## Current integration
+
+The [source frame extension](client/renderer-frames.md) connects real SDK motion,
+CU smoothing, Player turning, OZ transitions and the initial World-render/fog
+pipeline. The [ordered World scheduler](world/ticking.md) connects weather,
+spawning prefixes, provider maintenance, sky callbacks, time/autosave and scheduled
+drain in reached source order. Its no-Player branches can return; ordinary
+spawning and random Chunk work retain concrete missing descendants.
+
+Windows Debug ALL and all 498 selected tests pass in 205.32 seconds, with zero
+failures or skips. The four new tests pass on GCC13 and Clang18 with ASan/UBSan,
+leak detection and real GL. New original fixtures cover 246 observations; eight
+separate JDK fog-expression vectors retain their narrower scope. See
+[qualification](testing.md#source-frame-pause-and-world-scheduler-qualification).
+
+Published renderer-tick checkpoint
+[`07e41f6`](https://github.com/frankischilling/minecraft-c/actions/runs/40879213780)
+passes all four hosted jobs and 1,427 tests: Windows 461, GCC 483 and Clang 483,
+without failures or skips. Windows uses the new x64 MSVC/Ninja setup. Its hosted
+configure/build steps took 68/231 seconds, versus 132/388 seconds at the preceding
+input checkpoint. These are observations across different source revisions and
+runner instances, not a controlled causal speedup measurement. This result
+precedes the focused-frame/pause/scheduler extension above.
+
+### Renderer-tick checkpoint
 
 Renderer/World-tick composition passes the complete Windows MSVC Debug ALL
 build and all 494 selected CTests in 213.50 seconds, with zero failures or skips.

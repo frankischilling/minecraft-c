@@ -53,7 +53,8 @@ typedef enum mc_client_screen_phase {
 typedef enum mc_client_screen_kind {
     MC_CLIENT_SCREEN_BASE,
     MC_CLIENT_SCREEN_MAIN_MENU,
-    MC_CLIENT_SCREEN_WORLD_SELECTION
+    MC_CLIENT_SCREEN_WORLD_SELECTION,
+    MC_CLIENT_SCREEN_PAUSE
 } mc_client_screen_kind;
 
 typedef enum mc_client_screen_class_phase {

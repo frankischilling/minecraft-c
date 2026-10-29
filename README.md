@@ -12,8 +12,9 @@ The [parity matrix](docs/parity.md) records verified scenarios and outstanding w
 The default client runs the constructed source App and its
 [menus](docs/client/menu-runtime.md), including real save-list selection and
 Cancel. Existing-save loading reaches World and Player/input publication;
-renderer attachment, picking and initial gameplay input run; World ticks and
-dynamic terrain drawing remain unfinished. A separate
+renderer attachment, picking, gameplay input and
+[focused mouse look](docs/client/renderer-frames.md) run. Pause entry and ordered
+World-tick prefixes are connected; dynamic terrain drawing remains unfinished. A separate
 [generated-world inspection](docs/client/world-renderer.md) remains available.
 
 ## Build

@@ -1,7 +1,15 @@
 # World simulation
 
+The [ordered client scheduler](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/ticking.md)
+now connects weather, spawning prefixes, provider maintenance, sky callbacks,
+time/autosave and scheduled drain in reached source order. Ten original
+observations match native MSVC/GCC/Clang replays. Empty Player/candidate branches
+can return. The loaded Player path gathers 289 spawn candidates before missing
+Biome spawn-list selection at `cq.a:290`. Mob construction, nonempty random
+Chunk work and complete ordinary World ticks remain unfinished.
+
 The [WorldAccess interface](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/world-access.md)
-dispatches six typed callback slots with live-list iteration and retained receiver
+dispatches six shared callback slots plus client sky change with live-list iteration and retained receiver
 ownership. Native controls pass 295 checks on MSVC and sanitized GCC/Clang,
 including redstone reentry across Worlds sharing the defining Registry. The redstone
 probe's declared constructor-input route passes 52 native controls per compiler.

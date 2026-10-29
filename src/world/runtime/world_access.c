@@ -518,6 +518,23 @@ mc_world_storage_status mc_world_access_call_entity_removed(mc_world_access *acc
                   "World removed Entity WorldAccess invocation");
 }
 
+mc_world_storage_status mc_world_access_call_sky_changed(mc_world_access *access,
+                                                         mc_world_runtime *world,
+                                                         mc_world_storage_error *error,
+                                                         mc_world_access_failure *failure) {
+    *failure = (mc_world_access_failure){0};
+    if (access != NULL && access->source_callbacks.sky_changed != NULL) {
+        const mc_world_storage_status status =
+            access->source_callbacks.sky_changed(access->context, world, error, failure);
+        if (failure->render_global != NULL)
+            failure->receiver = access;
+        return status;
+    }
+    if (access != NULL && access->callbacks.sky_changed != NULL)
+        return access->callbacks.sky_changed(access->context, world, error);
+    return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World sky WorldAccess invocation");
+}
+
 mc_world_storage_status mc_world_access_call_tile_entity_dirty(
     mc_world_access *access, mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
     mc_tile_entity *tile, mc_world_storage_error *error, mc_world_access_failure *failure) {

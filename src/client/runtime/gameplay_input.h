@@ -33,7 +33,7 @@ typedef struct mc_client_gameplay_input {
  * effects survive failure and unread SDK records remain in the same queues.
  * App, transitions and their whole graph stay live/exclusive on the video
  * thread through retirement. Report storage must be disjoint from that graph.
- * Mining, click/use, pause/inventory/chat screens, fullscreen and sound reload
+ * Mining, click/use, inventory/chat screens, fullscreen and sound reload
  * retain their reached dependencies. The non-mining controller reset executes.
  * This segment alone does not establish a complete tick or playable frame. */
 bool mc_client_gameplay_input_run(client_application *, mc_client_screen_transitions *,

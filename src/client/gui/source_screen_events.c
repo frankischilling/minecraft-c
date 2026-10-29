@@ -4,6 +4,7 @@
 #include "../display/staged.h"
 #include "../startup/application_startup.h"
 #include "mc/core/java/java.h"
+#include "source_pause_screen_internal.h"
 #include "source_screen_internal.h"
 #include "source_screen_transitions.h"
 
@@ -98,7 +99,7 @@ mc_client_screen_status mc_client_screen_button_hit(mc_client_source_ke *button,
 
 static bool action(mc_client_source_da *o, mc_client_source_ke *button,
                    mc_client_screen_event_report *r, mc_client_screen_event_error *e) {
-    if (o->kind == MC_CLIENT_SCREEN_WORLD_SELECTION) {
+    if (o->kind == MC_CLIENT_SCREEN_WORLD_SELECTION || o->kind == MC_CLIENT_SCREEN_PAUSE) {
         r->button = button;
         r->button_id = button->fields.f;
         ++r->actions;
@@ -108,10 +109,18 @@ static bool action(mc_client_source_da *o, mc_client_source_ke *button,
                     : button->fields.f == 3 ? MC_CLIENT_SCREEN_ACTION_CREATE_WORLD
                     : button->fields.f == 6 ? MC_CLIENT_SCREEN_ACTION_RENAME_WORLD
                                             : MC_CLIENT_SCREEN_ACTION_NONE;
+        if (o->kind == MC_CLIENT_SCREEN_PAUSE)
+            r->action = button->fields.f == 0   ? MC_CLIENT_SCREEN_ACTION_OPTIONS
+                        : button->fields.f == 1 ? MC_CLIENT_SCREEN_ACTION_SAVE_AND_QUIT
+                        : button->fields.f == 4 ? MC_CLIENT_SCREEN_ACTION_BACK_TO_GAME
+                        : button->fields.f == 5 ? MC_CLIENT_SCREEN_ACTION_ACHIEVEMENTS
+                        : button->fields.f == 6 ? MC_CLIENT_SCREEN_ACTION_STATISTICS
+                                                : MC_CLIENT_SCREEN_ACTION_NONE;
         if (o->transitions != NULL)
             return transition(o, button, r, e);
         fail(e, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY,
-             "RQ requires actual screen transition ownership", "rq", "a", "(Lke;)V", 0, true);
+             "screen requires actual transition ownership",
+             o->kind == MC_CLIENT_SCREEN_PAUSE ? "oz" : "rq", "a", "(Lke;)V", 0, true);
         return false;
     }
     if (!(o->kind == MC_CLIENT_SCREEN_MAIN_MENU))
@@ -273,6 +282,22 @@ static bool key(mc_client_source_da *o, const mc_client_sdk_key_event *event,
     if (!(o->kind == MC_CLIENT_SCREEN_MAIN_MENU) && event->key == 1) {
         r->action = MC_CLIENT_SCREEN_ACTION_CLOSE;
         r->pending = (mc_client_screen_site){"da", "a", "(CI)V", 10};
+        if (o->transitions != NULL) {
+            mc_client_screen_classes *classes = o->classes;
+            mc_client_screen_transitions *router = o->transitions;
+            (void)mtx_unlock(&classes->mutex);
+            const mc_client_screen_status status =
+                mc_client_screen_transitions_close(router, o, &e->screen);
+            if (mtx_lock(&classes->mutex) != thrd_success) {
+                e->monitor_lost = true;
+                fail(e, MC_CLIENT_SCREEN_THREAD_FAILED, "screen close monitor reacquisition", NULL,
+                     NULL, NULL, 0, true);
+                return false;
+            }
+            if (status == MC_CLIENT_SCREEN_OK)
+                r->pending = (mc_client_screen_site){0};
+            return status == MC_CLIENT_SCREEN_OK;
+        }
         fail(e, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY,
              "actual base-screen close and focus transition", "da", "a", "(CI)V", 10, true);
         return false;
@@ -427,7 +452,9 @@ mc_client_screen_status mc_client_screen_tick(mc_client_source_da *o,
             menu->fields.i = next; /* Actual fu.a putfield7. */
             e->screen.source_returned = true;
         }
-    } else
+    } else if (o->kind == MC_CLIENT_SCREEN_PAUSE)
+        mc_screen_pause_tick_locked((mc_client_source_oz *)o, &e->screen);
+    else
         e->screen.source_returned = true;
     --o->active_calls;
     e->pending_receiver = NULL;

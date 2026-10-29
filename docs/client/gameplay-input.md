@@ -4,7 +4,8 @@ The default source loop executes `Minecraft.k` through picking, the admitted
 chunk-provider branch, the single-player controller tick and healthy Player
 screen checks. With no screen, it executes gameplay input through bytecode
 1073. The [World segment](renderer-ticking.md) now handles paused ticks and
-composes renderer/entity work before unfinished scheduling at1260. Dynamic
+composes renderer/entity work and ordered weather/spawn scheduling before the
+missing Biome spawn-list selection at `cq.a:290`. Dynamic
 terrain drawing and a playable frame remain unfinished.
 
 ## Source order
@@ -29,7 +30,8 @@ invokes the existing render-distance option action and its save behavior.
 Named bindings are read from their current owners rather than copied codes.
 Key dispatch does not itself update movement axes or move the Player.
 
-Fullscreen, pause, inventory/chat screens, sound reload, item dropping,
+Escape invokes the shared [source pause route](renderer-frames.md). Fullscreen,
+inventory/chat screens, sound reload, item dropping,
 click/use, pick-block and progressive mining retain their reached dependencies.
 Held-button checks retain the original short-circuit order and Timer rate.
 The non-mining path executes the real controller reset; it does not replace

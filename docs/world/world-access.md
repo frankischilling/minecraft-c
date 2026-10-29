@@ -1,7 +1,7 @@
 # WorldAccess callbacks
 
-The GAME World runtime dispatches six of the ten original WorldAccess interface
-slots through opaque native WorldAccess receivers. The public
+The GAME World runtime dispatches six shared original WorldAccess interface
+slots and the client sky-change slot through opaque native receivers. The public
 [`runtime/world_access.h`](../../include/mc/world/runtime/world_access.h) interface copies a
 typed callback table and borrows its context. Cell and range dispatch live in
 [`mutation/notifications.c`](../../src/world/runtime/mutation/notifications.c), sound and
@@ -31,14 +31,16 @@ transport a reached failure and its cause through C callers.
 | Particle / `particle` | `pm.a(Ljava/lang/String;DDDDDD)V` | `jp.a(Ljava/lang/String;DDDDDD)V` |
 | Entity added / `entity_added` | `pm.a(Lsn;)V` | `jp.a(Llq;)V` |
 | TileEntity dirty / `tile_entity_dirty` | `pm.a(IIILow;)V` | `jp.a(IIILjh;)V` |
+| Sky changed / `sky_changed` | `pm.e()V`, in client `fd.l` | Original `jp.a()V`; server dispatch unfinished |
 
-The four remaining slots are Entity removed (`pm.b(Lsn;)V` /
-`jp.b(Llq;)V`), global refresh (`pm.e()V` / `jp.a()V`), record playback
+The three other slots are Entity removed (`pm.b(Lsn;)V` /
+`jp.b(Llq;)V`), record playback
 (`a(Ljava/lang/String;III)V` on both), and player/event dispatch
 (`pm.a(Lgs;IIIII)V` / `jp.a(Lem;IIIII)V`). They have no native callback slots
-in this increment. The refresh call occurs conditionally inside the larger
-World tick after a changed skylight value is stored; it is not an unconditional
-standalone refresh operation.
+in this increment. Client sky change occurs in the ordered
+[World tick](ticking.md), after a changed skylight value is stored. It uses live
+list iteration and the existing retained failure receipts. A missing concrete
+callback remains explicit; server sky dispatch is still unfinished.
 
 ## Source loops and payload order
 

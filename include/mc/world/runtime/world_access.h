@@ -35,6 +35,8 @@ typedef struct mc_world_access_callbacks {
                                                  mc_world_storage_error *error);
     mc_world_storage_status (*entity_removed)(void *context, mc_world_runtime *world,
                                               mc_entity *entity, mc_world_storage_error *error);
+    mc_world_storage_status (*sky_changed)(void *context, mc_world_runtime *world,
+                                           mc_world_storage_error *error);
 } mc_world_access_callbacks;
 
 /* Concrete source receivers return the full, stable failure receipt as part of
@@ -59,6 +61,8 @@ typedef struct mc_world_access_source_callbacks {
                                                  mc_world_access_failure *);
     mc_world_storage_status (*entity_removed)(void *, mc_world_runtime *, mc_entity *,
                                               mc_world_storage_error *, mc_world_access_failure *);
+    mc_world_storage_status (*sky_changed)(void *, mc_world_runtime *, mc_world_storage_error *,
+                                           mc_world_access_failure *);
 } mc_world_access_source_callbacks;
 
 mc_world_storage_status mc_world_access_source_create(const mc_world_access_source_callbacks *,

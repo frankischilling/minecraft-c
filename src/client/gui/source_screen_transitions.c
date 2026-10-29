@@ -5,7 +5,11 @@
 #include "../world/load_world.h"
 #include "display_screen.h"
 #include "mc/client/controller/singleplayer.h"
+#include "mc/client/statistics/writer.h"
 #include "mc/core/java/java.h"
+#include "mc/statistics/registry/registry.h"
+#include "mc/world/runtime/construction.h"
+#include "source_pause_screen_internal.h"
 #include "source_world_list.h"
 #include "source_world_selection_internal.h"
 
@@ -16,6 +20,7 @@
 typedef struct screen_node {
     struct screen_node *next;
     mc_client_source_rq *rq;
+    mc_client_source_oz *pause;
     mc_client_display_screen_call *display;
     mc_client_world_load_call *load;
 } screen_node;
@@ -34,6 +39,8 @@ struct mc_client_screen_transitions {
     mc_client_save_error save;
     mc_singleplayer_controller_error controller_error;
     mc_client_screen_error failure;
+    mc_client_stats_error statistics;
+    mc_registry_error registry;
 };
 
 static mc_client_screen_status fail(mc_client_screen_transitions *r, mc_client_screen_status status,
@@ -154,6 +161,7 @@ static bool display(mc_client_screen_transitions *r, mc_client_source_da *target
              n->display == NULL ? "actual displayGuiScreen native allocation"
                                 : n->display->operation,
              type, method, descriptor, pc);
+        r->failure.native_policy = status != MC_CLIENT_DISPLAY_SCREEN_NULL_REFERENCE;
         if (n->display != NULL)
             r->failure.parent_site =
                 n->display->child.class_name != NULL ? n->display->child : n->display->site;
@@ -225,6 +233,142 @@ static bool open_world_selection(mc_client_screen_transitions *r, mc_client_sour
         MC_CLIENT_SCREEN_OK)
         return false;
     return display(r, mc_client_screen_world_selection_base(n->rq), "fu", "a", "(Lke;)V", 49);
+}
+
+static bool focus(mc_client_screen_transitions *r, const char *type, const char *method,
+                  const char *descriptor, unsigned int pc) {
+    screen_node *n = node(r);
+    if (n == NULL)
+        return false;
+    ++r->calls;
+    const mc_client_display_screen_status status =
+        mc_client_display_focus_run(r->app, r->classes, &n->display);
+    if (status != MC_CLIENT_DISPLAY_SCREEN_OK) {
+        fail(r,
+             status == MC_CLIENT_DISPLAY_SCREEN_NULL_REFERENCE
+                 ? MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE
+                 : MC_CLIENT_SCREEN_APP_FAILED,
+             n->display == NULL ? "actual focus native admission" : n->display->operation, type,
+             method, descriptor, pc);
+        if (n->display != NULL) {
+            r->failure.native_policy = status != MC_CLIENT_DISPLAY_SCREEN_NULL_REFERENCE;
+            r->failure.parent_site =
+                n->display->child.class_name == NULL ? n->display->site : n->display->child;
+        }
+        return false;
+    }
+    if (mc_client_display_screen_retire(&n->display) != MC_CLIENT_DISPLAY_SCREEN_OK) {
+        fail(r, MC_CLIENT_SCREEN_BUSY, "actual focus native retirement", type, method, descriptor,
+             pc);
+        return false;
+    }
+    return true;
+}
+
+mc_client_screen_status mc_client_screen_transitions_pause(mc_client_screen_transitions *r,
+                                                           mc_client_screen_error *e) {
+    if (!enter(r, e))
+        return r == NULL || e == NULL ? MC_CLIENT_SCREEN_INVALID_ARGUMENT : e->status;
+    if (r->app->r == NULL) {
+        screen_node *n = node(r);
+        if (n != NULL) {
+            if (mc_client_screen_pause_allocate(r->classes, NULL, &n->pause, &r->failure) ==
+                MC_CLIENT_SCREEN_OK) {
+                ++r->screens;
+                if (mc_client_screen_pause_construct(n->pause, &r->failure) == MC_CLIENT_SCREEN_OK)
+                    (void)display(r, mc_client_screen_pause_base(n->pause),
+                                  "net/minecraft/client/Minecraft", "i", "()V", 16);
+                else
+                    r->failure.parent_site =
+                        (mc_client_screen_site){"net/minecraft/client/Minecraft", "i", "()V", 13};
+            } else
+                r->failure.parent_site =
+                    (mc_client_screen_site){"net/minecraft/client/Minecraft", "i", "()V", 9};
+        }
+    }
+    return leave(r, e);
+}
+
+mc_client_screen_status mc_client_screen_transitions_close(mc_client_screen_transitions *r,
+                                                           mc_client_source_da *screen,
+                                                           mc_client_screen_error *e) {
+    if (!enter(r, e))
+        return r == NULL || e == NULL ? MC_CLIENT_SCREEN_INVALID_ARGUMENT : e->status;
+    if (screen == NULL || screen->classes != r->classes || screen->fields.b != r->app)
+        fail(r, MC_CLIENT_SCREEN_INVALID_ARGUMENT, "actual close source identities", NULL, NULL,
+             NULL, 0);
+    else if (display(r, NULL, "da", "a", "(CI)V", 10))
+        (void)focus(r, "da", "a", "(CI)V", 17);
+    return leave(r, e);
+}
+
+static void pause_action(mc_client_screen_transitions *r, mc_client_source_ke *button) {
+    const int32_t id = button->fields.f;
+    if (id == 0 || id == 5 || id == 6) {
+        fail(r, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY,
+             id == 0   ? "actual Options co construction"
+             : id == 5 ? "actual Achievements xm construction"
+                       : "actual Statistics dv construction",
+             "oz", "a", "(Lke;)V",
+             id == 0   ? 11u
+             : id == 5 ? 128u
+                       : 158u);
+        return;
+    }
+    if (id == 4) {
+        if (display(r, NULL, "oz", "a", "(Lke;)V", 106))
+            (void)focus(r, "oz", "a", "(Lke;)V", 113);
+        return;
+    }
+    if (id != 1)
+        return; /* All five independent source ID tests fail. */
+    /* Actual App.I41 receiver is captured before jl.j active use44. */
+    mc_client_stats_writer *writer = r->app->stats_writer;
+    if (mc_registry_classes_initialize_statistics(r->app->registry, &r->registry) !=
+        MC_REGISTRY_OK) {
+        fail(r, MC_CLIENT_SCREEN_REGISTRY_FAILED, "oz actual jl active use", "oz", "a", "(Lke;)V",
+             44);
+        r->failure.registry = r->registry;
+        return;
+    }
+    mc_registry_statistic_view statistics;
+    if (mc_registry_classes_inspect_statistics(r->app->registry, &statistics, &r->registry) !=
+            MC_REGISTRY_OK ||
+        statistics.named == NULL) {
+        fail(r, MC_CLIENT_SCREEN_REGISTRY_FAILED, "oz actual jl.j field", "oz", "a", "(Lke;)V", 44);
+        r->failure.registry = r->registry;
+        return;
+    }
+    if (writer == NULL) {
+        fail(r, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE, "oz actual xi.a null receiver", "oz", "a",
+             "(Lke;)V", 48);
+        r->failure.native_policy = false;
+        return;
+    }
+    if (mc_client_stats_writer_increment(writer, statistics.named[4], 1, &r->statistics) !=
+        MC_CLIENT_STATS_OK) {
+        fail(r, MC_CLIENT_SCREEN_APP_FAILED, "oz actual leave-game statistic increment", "oz", "a",
+             "(Lke;)V", 48);
+        r->failure.parent_site =
+            (mc_client_screen_site){r->statistics.class_name, r->statistics.method,
+                                    r->statistics.descriptor, r->statistics.bytecode};
+        return;
+    }
+    if (r->app->active_world != NULL) {
+        mc_world_runtime_fields fields;
+        if (mc_world_runtime_fields_get(r->app->active_world, &fields) != MC_WORLD_STORAGE_OK) {
+            fail(r, MC_CLIENT_SCREEN_APP_FAILED, "oz actual Minecraft.l World.B read", "oz", "a",
+                 "(Lke;)V", 55);
+            return;
+        }
+        if (fields.B) {
+            fail(r, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY,
+                 "actual remote World disconnect dispatch", "oz", "a", "(Lke;)V", 68);
+            return;
+        }
+    }
+    fail(r, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY, "actual Minecraft.a(World) detach call",
+         "oz", "a", "(Lke;)V", 76);
 }
 
 static bool indexed_text(mc_client_screen_transitions *r, mc_nbt_string prefix, bool space,
@@ -366,6 +510,8 @@ mc_client_screen_status mc_client_screen_transitions_button(mc_client_screen_tra
                            : 87u);
         else if (id == 4 && mc_client_application_source_stop(r->app, NULL) != MC_CLIENT_STARTUP_OK)
             fail(r, MC_CLIENT_SCREEN_APP_FAILED, "actual source stop", "fu", "a", "(Lke;)V", 110);
+    } else if (screen->kind == MC_CLIENT_SCREEN_PAUSE) {
+        pause_action(r, button);
     } else if (screen->kind == MC_CLIENT_SCREEN_WORLD_SELECTION) {
         mc_client_source_rq *rq = (mc_client_source_rq *)screen;
         const int32_t id = button->fields.f;
@@ -434,6 +580,12 @@ mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_tra
             return status;
         if (base != NULL && r->app->r == base)
             r->app->r = NULL; /* Native source view ended after consuming its owner. */
+        base = mc_client_screen_pause_base(n->pause);
+        const mc_client_screen_status pause = mc_client_screen_pause_retire(&n->pause, e);
+        if (pause != MC_CLIENT_SCREEN_OK)
+            return pause;
+        if (base != NULL && r->app->r == base)
+            r->app->r = NULL;
         r->nodes = n->next;
         free(n);
     }

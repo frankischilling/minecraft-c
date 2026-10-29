@@ -2,8 +2,11 @@
 
 #include "../application_state.h"
 #include "../world/render_global_internal.h"
+#include "mc/client/particles/effect_renderer.h"
+#include "mc/core/math/math.h"
 
 #include <string.h>
+#include <xmmintrin.h>
 
 static bool stop(mc_client_world_tick *call, const char *operation, unsigned int pc) {
     call->failed = true;
@@ -103,10 +106,50 @@ static bool body(client_application *app, mc_math_classes *math, mc_client_world
                                                 &call->fields) != MC_WORLD_STORAGE_OK)
             return stop(call, call->fields.operation, 1253);
         call->spawn_flags_stored = true;
-        return stop(call, "actual whole World scheduler is not connected", 1260);
+        const mc_world_storage_status status = mc_world_runtime_tick_begin(
+            app->active_world, &call->scheduler, &call->scheduler_error);
+        if (call->scheduler != NULL) {
+            (void)mc_world_runtime_tick_inspect(call->scheduler, &call->scheduler_state);
+            call->scheduler_error = *call->scheduler_state.error;
+        }
+        if (status != MC_WORLD_STORAGE_OK) {
+            stop(call, call->scheduler_error.operation, 1260);
+            if (call->scheduler != NULL)
+                call->site = (mc_client_graphics_site){"fd", "l", "()V",
+                                                       (int32_t)call->scheduler_error.bytecode};
+            return false;
+        }
     }
-    /* Both later unpaused branches are false on this completed paused path.
-     * No fd.q/dn.a work or successful replacement of either body is supplied. */
+    if (!atomic_load(&app->o) && app->active_world != NULL) {
+        mc_world_runtime *ambience_world = app->active_world; /* Captured receiver1278. */
+        static const unsigned int read_pcs[] = {1285, 1295, 1305};
+        static const unsigned int floor_pcs[] = {1288, 1298, 1308};
+        for (size_t axis = 0; axis < 3; ++axis) {
+            if (app->h == NULL)
+                return stop(call, "actual ambience null Player coordinate receiver",
+                            read_pcs[axis]);
+            mc_entity_snapshot entity;
+            if (mc_entity_get_snapshot(app->h, &entity) != MC_ENTITY_OK)
+                return stop(call, "actual ambience Player coordinate fields", read_pcs[axis]);
+            if (mc_math_classes_ensure(math, &call->ambience_math) != MC_MATH_CLASS_OK)
+                return stop(call, "actual ambience MathHelper active use", floor_pcs[axis]);
+            if ((_mm_getcsr() & 0xffc0u) != 0x1f80u)
+                return stop(call, "ambience native floating environment", floor_pcs[axis]);
+            const double value = axis == 0   ? entity.base.x
+                                 : axis == 1 ? entity.base.y
+                                             : entity.base.z;
+            call->ambience_coordinates[axis] = mc_math_floor_double(value);
+            ++call->ambience_arguments;
+        }
+        if (ambience_world == NULL)
+            return stop(call, "actual ambience null World receiver", 1311);
+        return stop(call, "actual World ambience fd.q body is not connected", 1311);
+    }
+    if (!atomic_load(&app->o)) {
+        if (mc_client_effect_renderer_tick(app->effect_renderer, &call->effects) !=
+            MC_EFFECT_RENDERER_OK)
+            return stop(call, call->effects.operation, 1325);
+    }
     call->returned = true;
     call->site = (mc_client_graphics_site){"net/minecraft/client/Minecraft", "k", "()V", 1328};
     return true;
@@ -115,7 +158,7 @@ static bool body(client_application *app, mc_math_classes *math, mc_client_world
 bool mc_client_world_tick_run(client_application *app, mc_math_classes *math,
                               mc_client_world_tick *call) {
     if (app == NULL || call == NULL || call->active || call->failed || call->refresh != NULL ||
-        call->renderer != NULL)
+        call->renderer != NULL || call->scheduler != NULL)
         return false;
     memset(call, 0, sizeof(*call));
     call->active = true;
@@ -127,6 +170,16 @@ bool mc_client_world_tick_run(client_application *app, mc_math_classes *math,
 bool mc_client_world_tick_cleanup(mc_client_world_tick *call) {
     if (call == NULL || call->active)
         return false;
+    mc_world_tick_error scheduler;
+    if (mc_world_runtime_tick_retire(&call->scheduler, &scheduler) != MC_WORLD_STORAGE_OK)
+        return false;
+    call->scheduler_state.error = &call->scheduler_error;
+    call->scheduler_state.world = NULL;
+    call->scheduler_error.weather = NULL;
+    call->scheduler_error.lifecycle = NULL;
+    call->scheduler_error.scheduled = NULL;
+    call->scheduler_error.biome = NULL;
+    call->scheduler_error.world_access = (mc_world_access_failure){0};
     mc_client_renderer_tick_error renderer;
     if (mc_client_entity_renderer_tick_retire(&call->renderer, &renderer) !=
         MC_CLIENT_RENDERER_TICK_OK)
@@ -143,6 +196,8 @@ bool mc_client_world_tick_cleanup(mc_client_world_tick *call) {
     if (mc_world_runtime_refresh_entity_retire(&call->refresh, &refresh) != MC_WORLD_STORAGE_OK)
         return false;
     call->refresh_state.error = &call->refresh_error;
+    call->refresh_state.world = NULL;
+    call->refresh_state.entity = NULL;
     call->refresh_error.acquisition = NULL;
     call->refresh_error.publication = NULL;
     return true;

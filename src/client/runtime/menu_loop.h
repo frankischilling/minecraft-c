@@ -19,6 +19,8 @@ typedef struct mc_client_menu_loop_state {
     const struct mc_player_error *player;
     const struct mc_client_gameplay_input *gameplay_input;
     const struct mc_client_world_tick *world_tick;
+    const struct mc_client_renderer_focus_state *renderer_focus;
+    const struct mc_client_world_frame_state *world_frame;
 } mc_client_menu_loop_state;
 
 /* Native frame composition for the genuine constructed, initialized no-World

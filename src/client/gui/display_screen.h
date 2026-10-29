@@ -7,6 +7,7 @@
 #include "mc/client/gui/gui_ingame.h"
 #include "mc/client/gui/scaled_resolution.h"
 #include "mc/client/statistics/writer.h"
+#include "mc/entity/player/input.h"
 #include "source_screen_initialize.h"
 
 typedef enum mc_client_display_screen_status {
@@ -23,6 +24,7 @@ typedef struct mc_client_display_screen_call {
     bool active, source_returned, old_closed, stats_b_returned, stats_c_returned;
     bool messages_cleared, r_stored, focus_released, resolution_returned, initialized, w_stored;
     bool health_read, display_active, focus_stored, mouse_grabbed, focus_returned;
+    bool player_keys_released;
     int32_t player_health;
     unsigned int focus_pc;
     client_application *app; /* Stable caller borrow through retirement. */
@@ -39,6 +41,7 @@ typedef struct mc_client_display_screen_call {
     mc_client_screen_init_error initialization;
     mc_client_gui_ingame_error gui;
     mc_client_mouse_helper_error mouse;
+    mc_player_input_error player_input;
     mc_client_sdk_update_error update;
     mc_client_loading_error resolution_error;
     mc_scaled_resolution resolution;
@@ -50,8 +53,8 @@ typedef struct mc_client_display_screen_call {
  * retirement performs no source close, save, initialization or field rollback.
  * Screen owners, including source initialization records, retire before App.
  * Healthy null-screen focus uses the actual Player/SDK and retained recursive
- * display call. Death-screen construction and Player key release still report
- * their actual reached dependencies. */
+ * display call. Focus release resets the actual LocalPlayer input before N24
+ * and MouseHelper31; death-screen construction remains a reached dependency. */
 mc_client_display_screen_status mc_client_display_screen_run(client_application *,
                                                              mc_client_screen_classes *,
                                                              mc_client_source_da *,

@@ -1,10 +1,12 @@
 /* Genuine native bootstrap/menu composition with authored SDL transport events. */
 #include "../world/test_load_world_foreign_loading.h"
 #include "../world/test_refresh_entity.h"
+#include "../world/test_renderer_focus.h"
 #include "client/application_state.h"
 #include "client/display/sdk_input.h"
 #include "client/display/staged.h"
 #include "client/gui/display_screen.h"
+#include "client/gui/source_pause_screen.h"
 #include "client/gui/source_screen_initialize_internal.h"
 #include "client/gui/source_screen_transitions.h"
 #include "client/gui/source_world_list.h"
@@ -21,6 +23,7 @@
 #include "mc/client/input/movement_input.h"
 #include "mc/client/particles/effect_renderer.h"
 #include "mc/client/world/picking.h"
+#include "mc/client/world/world_frame.h"
 #include "mc/core/java/java.h"
 #include "mc/entity/player/player.h"
 #include "mc/world/runtime/blocks.h"
@@ -404,15 +407,15 @@ static int gameplay_controls(fixture *f) {
     CHECK(mc_client_gameplay_input_run(f->app, f->app->screen_transitions, call) &&
           call->stale_mouse_events >= 1 &&
           mc_inventory_player_read_state(player.player.c, &slots) && slots.selected == 7);
-    CHECK(gameplay_key(f, SDL_SCANCODE_ESCAPE, true) == 0 &&
+    CHECK(gameplay_key(f, SDL_SCANCODE_E, true) == 0 &&
           gameplay_key(f, SDL_SCANCODE_3, true) == 0 &&
           gameplay_key(f, SDL_SCANCODE_3, false) == 0 &&
-          gameplay_key(f, SDL_SCANCODE_ESCAPE, false) == 0 && gameplay_poll(f) == 0);
+          gameplay_key(f, SDL_SCANCODE_E, false) == 0 && gameplay_poll(f) == 0);
     CHECK(!mc_client_gameplay_input_run(f->app, f->app->screen_transitions, call) && call->failed &&
-          call->keyboard_events == 1 && call->site.pc == 618 &&
+          call->keyboard_events == 1 && call->site.pc == 778 &&
           mc_inventory_player_read_state(player.player.c, &slots) && slots.selected == 7);
     const char *operation = call->operation;
-    CHECK(mc_client_gameplay_input_retire(call) && call->failed && call->site.pc == 618 &&
+    CHECK(mc_client_gameplay_input_retire(call) && call->failed && call->site.pc == 778 &&
           call->operation == operation); /* Preserve diagnostics through cleanup. */
     memset(call, 0, sizeof(*call));
     CHECK(mc_client_gameplay_input_run(f->app, f->app->screen_transitions, call) &&
@@ -422,6 +425,82 @@ static int gameplay_controls(fixture *f) {
     free(call);
     printf("GAMEPLAY_INPUT sdk=1 movement-press-release=1 hotbar=1 toggles=4 wheel=1 "
            "stale-wheel=1 failure-preserves-tail=1 reset=1 returned=1073\n");
+    return 0;
+}
+
+static int pause_controls(fixture *f) {
+    mc_client_screen_error error;
+    mc_client_screen_transition_state before, after;
+    mc_client_source_da *shown = f->app->r;
+    if (shown != NULL) {
+        CHECK(shown->kind == MC_CLIENT_SCREEN_PAUSE);
+        CHECK(mc_client_screen_transitions_inspect(f->app->screen_transitions, &before) &&
+              mc_client_screen_transitions_pause(f->app->screen_transitions, &error) ==
+                  MC_CLIENT_SCREEN_OK &&
+              mc_client_screen_transitions_inspect(f->app->screen_transitions, &after) &&
+              before.screens == after.screens && before.calls == after.calls && f->app->r == shown);
+        CHECK(mc_client_screen_transitions_close(f->app->screen_transitions, shown, &error) ==
+                  MC_CLIENT_SCREEN_OK &&
+              f->app->r == NULL);
+    }
+    const bool focused = f->app->N;
+    f->app->N = false; /* Prepared input segment; the enclosing frame is terminal. */
+    mc_client_gameplay_input *input = calloc(1, sizeof(*input));
+    CHECK(input != NULL && gameplay_key(f, SDL_SCANCODE_ESCAPE, true) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_ESCAPE, false) == 0 && gameplay_poll(f) == 0 &&
+          mc_client_gameplay_input_run(f->app, f->app->screen_transitions, input) &&
+          input->returned && input->keyboard_events == 2);
+    mc_client_source_da *pause = f->app->r;
+    CHECK(pause != NULL && pause->kind == MC_CLIENT_SCREEN_PAUSE);
+    size_t count;
+    CHECK(mc_client_screen_list_size(pause->fields.e, &count) && count == 5);
+    mc_client_pause_screen_state state;
+    CHECK(mc_client_screen_pause_inspect((mc_client_source_oz *)pause, &state, &error) ==
+              MC_CLIENT_SCREEN_OK &&
+          state.last_initialization_returned && state.save_pass == 0 && state.ticks == 0);
+    CHECK(mc_client_screen_transitions_inspect(f->app->screen_transitions, &before) &&
+          mc_client_screen_transitions_pause(f->app->screen_transitions, &error) ==
+              MC_CLIENT_SCREEN_OK &&
+          mc_client_screen_transitions_inspect(f->app->screen_transitions, &after) &&
+          before.screens == after.screens && before.calls == after.calls && f->app->r == pause);
+    mc_client_screen_event_error tick;
+    CHECK(mc_client_screen_tick(pause, &tick) == MC_CLIENT_SCREEN_OK &&
+          mc_client_screen_pause_inspect((mc_client_source_oz *)pause, &state, &error) ==
+              MC_CLIENT_SCREEN_OK &&
+          state.ticks == 1);
+    CHECK(mc_client_screen_transitions_button(f->app->screen_transitions, pause, button(pause, 4),
+                                              &error) == MC_CLIENT_SCREEN_OK &&
+          f->app->r == NULL);
+    mc_client_display_screen_call *release = NULL;
+    mc_local_player_snapshot player;
+    CHECK(mc_local_player_get_snapshot(f->app->h, &player) == MC_ENTITY_OK &&
+          mc_movement_input_retain(player.input, NULL) == MC_MOVEMENT_INPUT_OK);
+    CHECK(mc_local_player_set_movement_input(f->app->h, NULL, NULL) == MC_PLAYER_OK);
+    f->app->N = true;
+    CHECK(mc_client_display_screen_run(f->app, pause->classes, pause, &release) ==
+              MC_CLIENT_DISPLAY_SCREEN_NULL_REFERENCE &&
+          release != NULL && release->r_stored && !release->player_keys_released &&
+          release->child.pc == 4 && strcmp(release->child.class_name, "dc") == 0 && f->app->N);
+    CHECK(mc_client_display_screen_retire(&release) == MC_CLIENT_DISPLAY_SCREEN_OK &&
+          mc_local_player_set_movement_input(f->app->h, player.input, NULL) == MC_PLAYER_OK);
+    mc_movement_input *held_input = (mc_movement_input *)player.input;
+    CHECK(mc_movement_input_retire(&held_input, NULL) == MC_MOVEMENT_INPUT_OK);
+    CHECK(mc_local_player_input_key(f->app->h, 17, true, NULL) == MC_PLAYER_OK);
+    CHECK(mc_client_display_screen_run(f->app, pause->classes, pause, &release) ==
+              MC_CLIENT_DISPLAY_SCREEN_NULL_REFERENCE &&
+          release != NULL && release->r_stored && release->player_keys_released && !f->app->N &&
+          release->mouse.site.pc == 4 && !release->mouse.native_policy);
+    mc_movement_input_state movement;
+    CHECK(mc_movement_input_read_state(player.input, &movement) && !movement.keys[0]);
+    CHECK(mc_client_display_screen_retire(&release) == MC_CLIENT_DISPLAY_SCREEN_OK &&
+          mc_client_screen_transitions_close(f->app->screen_transitions, pause, &error) ==
+              MC_CLIENT_SCREEN_OK &&
+          f->app->r == NULL);
+    CHECK(mc_client_gameplay_input_retire(input));
+    free(input);
+    f->app->N = focused;
+    puts("PAUSE_SCREEN escape=1 init-buttons=5 nonempty-entry=1 tick=1 back-to-game=1 "
+         "null-input-prefix=1 key-reset-before-null-Canvas=1");
     return 0;
 }
 
@@ -442,7 +521,7 @@ static int world_tick_controls(fixture *f) {
     memset(call, 0, sizeof(*call));
     const bool returned =
         mc_client_world_tick_run(f->app, mc_client_bootstrap_math(f->bootstrap), call);
-    if (!returned && call->site.pc != 1260) {
+    if (!returned && call->site.pc != 80) {
         fprintf(stderr, "World segment reached %s.%s:%d: %s; renderer=%d entities=%d\n",
                 call->site.class_name, call->site.method, call->site.pc, call->operation,
                 call->renderer_returned, call->entities_returned);
@@ -451,19 +530,24 @@ static int world_tick_controls(fixture *f) {
                     call->entities.source_method, call->entities.bytecode,
                     (int)call->entities.child, call->entities.operation);
     }
-    CHECK(!returned && call->failed && call->site.pc == 1260 && call->counter_stored &&
-          !call->counter_reset && call->difficulty_stored && call->renderer_returned &&
-          call->render_global_returned && call->entities_returned && call->spawn_flags_stored &&
+    CHECK(!returned && call->failed && strcmp(call->site.class_name, "fd") == 0 &&
+          call->site.pc == 80 && call->counter_stored && !call->counter_reset &&
+          call->difficulty_stored && call->renderer_returned && call->render_global_returned &&
+          call->entities_returned && call->spawn_flags_stored &&
           call->renderer_state.source_returned && call->renderer_state.source_pc == 186 &&
           call->renderer_state.interpolation_stores == 6 &&
           call->renderer_state.brightness_returned && call->renderer_state.held_item_returned &&
           call->renderer_state.rain_returned && call->renderer_state.rain->returned);
-    CHECK(mc_client_world_tick_cleanup(call) && call->failed && call->site.pc == 1260);
+    CHECK(call->scheduler_state.weather_returned &&
+          call->scheduler_state.spawn_chunk_count == 289 &&
+          call->scheduler_error.child == MC_WORLD_TICK_CHILD_SPAWNING &&
+          call->scheduler_error.child_bytecode == 290);
+    CHECK(mc_client_world_tick_cleanup(call) && call->failed && call->site.pc == 80);
     atomic_store(&f->app->o, paused);
     f->app->ah = counter;
     free(call);
     printf("WORLD_TICK paused-refresh25=1 unpaused-renderer186=1 render-global=1 "
-           "entities=1 spawn-flags=1 next=k1260\n");
+           "entities=1 spawn-flags=1 weather=1 spawn-candidates=289 next=cq.a290\n");
     return 0;
 }
 
@@ -734,7 +818,7 @@ int main(int argc, char **argv) {
                       MC_WORLD_STORAGE_OK &&
                   marker == 57);
             mc_client_sdk_input_state input;
-            CHECK(f.app->r == NULL &&
+            CHECK((f.app->r == NULL || f.app->r->kind == MC_CLIENT_SCREEN_PAUSE) &&
                   mc_client_sdk_input_inspect(mc_client_display_inputs(f.app->display), &input) &&
                   input.grabbed == f.app->N && player.living.Y > 0);
             bool display_active;
@@ -742,22 +826,18 @@ int main(int argc, char **argv) {
             CHECK(mc_client_sdk_display_active(mc_client_display_update_owner(f.app->display),
                                                &display_active,
                                                &update) == MC_CLIENT_SDK_UPDATE_OK);
-            if (!display_active) {
-                mc_client_entity_renderer_state renderer;
-                int64_t now;
-                CHECK(mc_client_entity_renderer_inspect(f.app->t, &renderer) &&
-                      mc_platform_current_time_millis(&now) == MC_PLATFORM_MILLIS_OK &&
-                      mc_java_i64_sub(now, renderer.fields.H) > 500 &&
-                      strcmp(f.state.source_class, "net/minecraft/client/Minecraft") == 0 &&
-                      strcmp(f.state.source_method, "i") == 0 && f.state.source_pc == 9);
-            } else
-                CHECK(strcmp(f.state.source_class, "px") == 0 &&
-                      strcmp(f.state.source_method, "b") == 0 &&
-                      f.state.source_pc == (f.app->N ? 55 : 339));
+            CHECK(strcmp(f.state.source_class, "px") == 0 &&
+                  strcmp(f.state.source_method, "h") == 0 && f.state.source_pc == 56 &&
+                  f.state.world_frame != NULL && f.state.world_frame->picking_returned &&
+                  f.state.world_frame->viewport_set && f.state.world_frame->fog_blend_computed);
+            if (!display_active)
+                CHECK(f.app->r != NULL && f.app->r->kind == MC_CLIENT_SCREEN_PAUSE);
             CHECK(f.state.gameplay_input != NULL && f.state.gameplay_input->returned &&
                   f.state.gameplay_input->source_pc == 1073 && f.state.world_tick != NULL &&
                   f.state.world_tick->returned && !f.state.world_tick->failed);
+            CHECK(pause_controls(&f) == 0);
             CHECK(world_display_controls(&f, initial->classes) == 0);
+            CHECK(mc_test_renderer_focus(f.app) == 0);
             CHECK(gameplay_controls(&f) == 0);
             CHECK(mc_test_world_refresh_entity(f.app) == 0);
             CHECK(world_tick_controls(&f) == 0);

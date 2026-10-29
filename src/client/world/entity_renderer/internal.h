@@ -50,6 +50,8 @@ struct mc_client_source_px {
     mc_client_entity_renderer_error failure, retirement;
     mc_client_entity_renderer_pick_call *pick_call;
     struct mc_client_entity_renderer_tick_call *tick_call;
+    struct mc_client_entity_renderer_focus_call *focus_call;
+    struct mc_client_world_frame_call *world_frame_call;
     mc_entity *pick_m_occurrence;
     bool pick_m_published;
     struct mc_entity_hit_result *pick_y_occurrence;

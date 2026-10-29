@@ -1,0 +1,17 @@
+{
+  "authority": "unchanged client b1.7.3.jar on Temurin17.0.17, -Xint -Xverify:all",
+  "jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "scope": "Empty-Player fd.l branches and source drain; one-Player cq.a candidate prefix stopped by authored xv.a(yy) exception. No full mob or nonempty random Chunk claim.",
+  "rows": [
+    "TICK basic 1 0 0 6 19 29",
+    "TICK negative-sleep 1 0 0 6 0 0",
+    "TICK zero-period 1 1",
+    "DRAIN future 1 1 1",
+    "DRAIN force 0 0 0",
+    "DRAIN cap 1 1 1 1000",
+    "DRAIN rest 0 0 0",
+    "DRAIN mismatch 1 0",
+    "DRAIN absent-provider 0 0",
+    "SPAWN prefix 289 -3 -3"
+  ]
+}

@@ -1,3 +1,4 @@
+#include "source_pause_screen_internal.h"
 #include "source_screen_internal.h"
 #include "source_world_selection_internal.h"
 
@@ -153,6 +154,8 @@ static bool prepare_final(mc_client_source_da *o, mc_client_screen_error *e) {
         ready = mc_screen_menu_cleanup_locked((mc_client_source_fu *)o, e);
     else if (o->kind == MC_CLIENT_SCREEN_WORLD_SELECTION)
         ready = mc_screen_world_selection_cleanup_locked((mc_client_source_rq *)o, e);
+    else if (o->kind == MC_CLIENT_SCREEN_PAUSE)
+        ready = mc_screen_pause_cleanup_locked((mc_client_source_oz *)o, e);
     if (ready)
         ready = mc_screen_button_release_locked(&o->selected_cleanup, e);
     if (ready)

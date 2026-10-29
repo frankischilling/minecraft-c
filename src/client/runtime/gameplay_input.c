@@ -151,8 +151,9 @@ static bool key_event(client_application *app, mc_client_screen_transitions *tra
                                app->r, event, transitions, &call->screen_report, &call->screen)))
             return false;
     } else {
-        if (event->key == 1)
-            return pending(call, "actual pause-screen entry is not connected", 618);
+        if (event->key == 1 && !screen_result(call, mc_client_screen_transitions_pause(
+                                                        transitions, &call->screen.screen)))
+            return false;
         if (event->key == 31) {
             bool down;
             if (!sdk(call, mc_client_sdk_keyboard_key_down(input, 61, &down, &call->input), 631))

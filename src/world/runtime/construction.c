@@ -105,6 +105,8 @@ mc_world_storage_status mc_world_runtime_classes_free(mc_world_runtime_classes *
         (void)mc_registry_classes_release(classes->registry, NULL);
         classes->registry = NULL;
     }
+    mc_java_int_set_free(classes->spawning_chunks.order);
+    free(classes->spawning_chunks.entries);
     free(classes);
     return result(error, MC_WORLD_STORAGE_OK, NULL);
 }
@@ -418,6 +420,7 @@ static bool world_prefix(mc_world_runtime *runtime) {
     f->P = world_allocate(runtime, sizeof(*f->P), 226, "World active chunk set");
     if (f->P == NULL)
         return false;
+    runtime->active_chunks = f->P;
     state->last_store_pc = 229;
     (void)mc_java_random_next_bounded(f->r, 12000, &f->Q);
     state->last_store_pc = 243;
@@ -908,9 +911,10 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
     mc_scheduled_ordered_destroy(f->E);
     mc_scheduled_membership_destroy(f->F);
     free(f->r);
-    if (f->P != NULL) {
-        free(f->P->entries);
-        free(f->P);
+    if (runtime->active_chunks != NULL) {
+        mc_java_int_set_free(runtime->active_chunks->order);
+        free(runtime->active_chunks->entries);
+        free(runtime->active_chunks);
     }
     mc_chunk_provider_free(f->v);
     mc_world_info_release(f->x);

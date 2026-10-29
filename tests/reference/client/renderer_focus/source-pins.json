@@ -1,0 +1,72 @@
+{
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "classes": {
+    "px": {
+      "class_bytes": 17104,
+      "class_sha256": "18055a199b913c956e5f816be5195fd86814927a93299b3ca1b913d6070c90fa",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "b",
+          "descriptor": "(F)V",
+          "access": 1,
+          "code_bytes": 710,
+          "code_sha256": "ac282572361f6a712e3120cd49092e96b14f55696f8abf276f502f4fa4980a94"
+        }
+      ]
+    },
+    "cu": {
+      "class_bytes": 400,
+      "class_sha256": "33d5f6db2a4a0e0caecc3a2ddf35592ca141ce28eba417e09f4b84798541b2ad",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 5,
+          "code_sha256": "453e557c6548b35730a6cc77039ad677c34240c042947f27d4cde64a2c487b62"
+        },
+        {
+          "name": "a",
+          "descriptor": "(FF)F",
+          "access": 1,
+          "code_bytes": 87,
+          "code_sha256": "b0a669faa1169e9142475121f0702291e8e9282f2fa69328948c6782ae1e2bb4"
+        }
+      ]
+    },
+    "sn": {
+      "class_bytes": 17172,
+      "class_sha256": "b53107a5bdd5ff92637582aaed4fd49366443a11cba96cef0a6ad719e197b7be",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "d",
+          "descriptor": "(FF)V",
+          "access": 1,
+          "code_bytes": 109,
+          "code_sha256": "d8aefac68a65818cea92e7b95ae7c98762fefba0c70c7c642fcc6bd62078fe1f"
+        }
+      ]
+    },
+    "vy": {
+      "class_bytes": 1148,
+      "class_sha256": "93f71946626764b743df52e93ad447c93acc102f1be210f27556364397c2ae23",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "c",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 15,
+          "code_sha256": "b54e1517e92daed4eaeddac627d939cac7ddbd509568b11cdefb47e7b1ee1311"
+        }
+      ]
+    }
+  }
+}

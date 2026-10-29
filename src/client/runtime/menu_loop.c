@@ -7,6 +7,7 @@
 #include "../display/sdk_update.h"
 #include "../display/source_surface.h"
 #include "../display/staged.h"
+#include "../gui/source_pause_drawing.h"
 #include "../gui/source_screen_drawing.h"
 #include "../gui/source_screen_events.h"
 #include "../gui/source_screen_transitions.h"
@@ -23,6 +24,8 @@
 #include "mc/client/sound/sound_manager.h"
 #include "mc/client/statistics/writer.h"
 #include "mc/client/world/picking.h"
+#include "mc/client/world/renderer_focus.h"
+#include "mc/client/world/world_frame.h"
 #include "mc/core/java/java.h"
 #include "mc/entity/bounds/bounds.h"
 #include "mc/entity/player/player.h"
@@ -48,6 +51,12 @@ struct mc_client_menu_loop {
     mc_client_entity_renderer_pick_call *pick;
     mc_client_entity_renderer_pick_state pick_state;
     mc_client_entity_renderer_pick_error pick_cleanup;
+    mc_client_entity_renderer_focus_call *focus;
+    mc_client_renderer_focus_state focus_state;
+    mc_client_renderer_focus_error focus_error, focus_cleanup;
+    mc_client_world_frame_call *world_frame;
+    mc_client_world_frame_state world_frame_state;
+    mc_client_world_frame_error world_frame_error, world_frame_cleanup;
     mc_singleplayer_tick_call *controller_tick;
     mc_singleplayer_tick_state controller_state;
     mc_singleplayer_tick_error controller_failure, controller_cleanup;
@@ -70,6 +79,7 @@ struct mc_client_menu_loop {
     int64_t last_second;
     int32_t second_frames;
     mc_client_source_screen_draw_error draw;
+    mc_client_pause_draw_error pause_draw;
     mc_client_world_selection_draw_error world_draw;
     mc_client_screen_event_error events;
     mc_client_screen_event_report event_report;
@@ -359,16 +369,31 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
     if (!active) {
         if (!millis(NULL, &now))
             return stop(loop, "actual inactive-render clock", "px", "b", 6);
-        if (mc_java_i64_sub(now, px->fields.H) > 500 && app->r == NULL)
-            return stop(loop, "actual pause-screen allocation is not connected",
-                        "net/minecraft/client/Minecraft", "i", 9);
+        if (mc_java_i64_sub(now, px->fields.H) > 500 &&
+            mc_client_screen_transitions_pause(loop->transitions, &loop->screen) !=
+                MC_CLIENT_SCREEN_OK)
+            return stop(loop, loop->screen.operation, loop->screen.site.class_name,
+                        loop->screen.site.method, loop->screen.site.pc);
     } else {
         if (!millis(NULL, &now))
             return stop(loop, "actual active-render clock", "px", "b", 32);
         px->fields.H = now;
     }
-    if (app->N)
-        return stop(loop, "actual focused Player rotation is not connected", "px", "b", 55);
+    if (app->N) {
+        const mc_client_renderer_focus_status status = mc_client_entity_renderer_focus_begin(
+            px, mc_client_display_inputs(app->display), &loop->focus, &loop->focus_error);
+        if (loop->focus != NULL) {
+            (void)mc_client_entity_renderer_focus_inspect(loop->focus, &loop->focus_state);
+            loop->state.renderer_focus = &loop->focus_state;
+        }
+        if (status != MC_CLIENT_RENDERER_FOCUS_OK)
+            return stop(loop, loop->focus_error.operation, loop->focus_error.site.class_name,
+                        loop->focus_error.site.method, loop->focus_error.site.pc);
+        if (mc_client_entity_renderer_focus_retire(&loop->focus, &loop->focus_cleanup) !=
+            MC_CLIENT_RENDERER_FOCUS_OK)
+            return stop(loop, loop->focus_cleanup.operation, "px", "b", 194);
+        loop->state.renderer_focus = NULL;
+    }
     if (app->w)
         return true;
     mc_game_settings_state settings;
@@ -387,9 +412,29 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
     mc_gui_mouse_position mouse;
     if (!mc_scaled_resolution_map_mouse(&projection, app->d, app->e, x, y, &mouse))
         return stop(loop, "actual frame mouse arithmetic", "px", "b", 270);
-    if (app->active_world != NULL)
-        return stop(loop, "native menu profile does not admit the reached World render branch",
-                    "px", "b", 339);
+    if (app->active_world != NULL) {
+        const int32_t target = settings.values.performance_mode == 1   ? 120
+                               : settings.values.performance_mode == 2 ? 40
+                                                                       : 200;
+        const int64_t deadline = settings.values.performance_mode == 0
+                                     ? 0
+                                     : mc_java_i64_add(px->fields.I, 1000000000 / target);
+        const mc_client_world_frame_status status = mc_client_entity_renderer_world_frame_begin(
+            px, loop->math, partial, deadline, &loop->world_frame, &loop->world_frame_error);
+        if (loop->world_frame != NULL) {
+            (void)mc_client_entity_renderer_world_frame_inspect(loop->world_frame,
+                                                                &loop->world_frame_state);
+            loop->state.world_frame = &loop->world_frame_state;
+        }
+        if (status != MC_CLIENT_WORLD_FRAME_OK)
+            return stop(loop, loop->world_frame_error.operation,
+                        loop->world_frame_error.site.class_name,
+                        loop->world_frame_error.site.method, loop->world_frame_error.site.pc);
+        /* The source World draw still has an explicit missing descendant.
+         * Later frame delay/HUD work is never replaced by the menu bridge. */
+        return stop(loop, "actual post-World frame delay/HUD composition dependency", "px", "b",
+                    383);
+    }
     /* Place the no-World overlay bridge before the source delay/I clock. The
      * screen bridge begins again at its later depth clear before FU geometry.
      * Both qq values have the same immutable Settings and physical dimensions;
@@ -422,6 +467,14 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
                             e->site.class_name, e->site.method, e->site.pc);
             }
             loop->state.font_measurements += loop->world_draw.list.font_measurements;
+        } else if (drawn.kind == MC_CLIENT_SCREEN_PAUSE) {
+            if (!mc_client_source_pause_draw((mc_client_source_oz *)app->r, loop->renderer,
+                                             &projection, mouse, partial, loop->math,
+                                             &loop->pause_draw))
+                return stop(loop, loop->pause_draw.screen.operation,
+                            loop->pause_draw.screen.site.class_name,
+                            loop->pause_draw.screen.site.method, loop->pause_draw.screen.site.pc);
+            loop->state.font_measurements += loop->pause_draw.font_measurements;
         } else {
             if (!mc_client_source_screen_draw(app->r, loop->renderer, &projection, mouse, partial,
                                               millis, NULL, &loop->draw))
@@ -670,7 +723,8 @@ static bool frame_body(mc_client_menu_loop *loop) {
         if (!screen_state(loop, &screen))
             return false;
         if (screen.kind != MC_CLIENT_SCREEN_MAIN_MENU &&
-            screen.kind != MC_CLIENT_SCREEN_WORLD_SELECTION)
+            screen.kind != MC_CLIENT_SCREEN_WORLD_SELECTION &&
+            screen.kind != MC_CLIENT_SCREEN_PAUSE)
             return run_stop(loop, "actual screen pause virtual route is not connected", 546);
         pauses = true;
     }
@@ -748,11 +802,20 @@ bool mc_client_menu_loop_retire(mc_client_menu_loop **slot) {
             return false;
         loop->state.display_call = &loop->screen_display_copy;
     }
+    if (mc_client_entity_renderer_focus_retire(&loop->focus, &loop->focus_cleanup) !=
+        MC_CLIENT_RENDERER_FOCUS_OK)
+        return false;
+    loop->state.renderer_focus = NULL; /* The child-owned error view has ended. */
+    if (mc_client_entity_renderer_world_frame_retire(
+            &loop->world_frame, &loop->world_frame_cleanup) != MC_CLIENT_WORLD_FRAME_OK)
+        return false;
+    loop->state.world_frame = NULL;
     if (mc_client_entity_renderer_pick_retire(&loop->pick) != MC_CLIENT_PICK_OK ||
         mc_client_entity_renderer_pick_detach(loop->app->t, &loop->pick_cleanup) !=
             MC_CLIENT_PICK_OK)
         return false;
     if (mc_client_screen_event_retire(&loop->events) != MC_CLIENT_SCREEN_OK ||
+        mc_client_source_pause_draw_retire(&loop->pause_draw) != MC_CLIENT_SCREEN_OK ||
         mc_client_source_world_selection_draw_retire(&loop->world_draw) != MC_CLIENT_SCREEN_OK ||
         mc_client_screen_transitions_retire(&loop->transitions, &loop->screen) !=
             MC_CLIENT_SCREEN_OK)

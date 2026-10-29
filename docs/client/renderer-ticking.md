@@ -1,8 +1,10 @@
 # Renderer and World ticking
 
 The source runtime composes the renderer tick, every-30-tick Player refresh,
-World entity tick and the frame's existing sound/lighting services. Whole World
-scheduling and terrain-frame drawing remain unfinished. These paths operate on
+World entity tick and the frame's existing sound/lighting services. The ordered
+[World scheduler](../world/ticking.md) now runs weather and mob-spawn candidate
+selection before its next missing descendant. Terrain-frame drawing remains
+unfinished. These paths operate on
 the constructed App's canonical World, Player, Inventory, renderer and Settings.
 
 ## Renderer tick
@@ -62,11 +64,12 @@ including the literal-zero branch and partial effects of later failure. Paused
 Timer update preserves/restores source partial c while allowing the tick
 remainder and clock state to advance.
 
-The native loaded-World profile can reach the unfinished pause-screen allocation
-when its hidden window is inactive for more than 500 ms. An active window reaches
-focused-camera or World-frame drawing dependencies. Neither outcome establishes
-a rendered gameplay frame. Direct segment checks on the same loaded graph
-separately exercise the paused refresh and unpaused renderer/entity sequence.
+The native loaded-World profile now opens the source pause screen when inactive
+for more than 500 ms. Focused mouse look is connected. Both paths enter the
+[World frame](renderer-frames.md), reaching the missing sky-color query at
+`px.h:56`. Direct segment checks on the same graph separately exercise the paused
+refresh and unpaused renderer/entity/weather/spawn-candidate sequence. None of
+these component controls establish a rendered gameplay frame.
 
 ## Evidence
 

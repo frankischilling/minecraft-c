@@ -10,8 +10,8 @@
       "sha256": "b3f5135585c5f38e255cd37878b31807b04826b3f65510e1daf2e10321b50289"
     },
     "src/client/display/display.c": {
-      "bytes": 61094,
-      "sha256": "3a1dda87bfddeafcbd0620523b7340816c8272b67ba379c3ad68b3d4045af644"
+      "bytes": 61129,
+      "sha256": "48c946bbe80f566eb9a7a3db7efc3bc5d23dcf0e3f93e0633900ea2bbfd01b67"
     },
     "src/client/display/display.h": {
       "bytes": 13727,

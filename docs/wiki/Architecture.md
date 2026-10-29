@@ -36,7 +36,9 @@ samples, attaches its renderer and particles, inserts the real Player and
 publishes the view entity. Healthy null-screen/focus handling returns; the
 native selection tick executes gameplay input through1073 and the admitted
 World/frame segment. Direct same-graph checks execute renderer/entity updates
-before unfinished whole scheduling at1260; frame presentation remains unfinished.
+through weather/spawn scheduling before missing Biome spawn-list selection.
+Source focused mouse look and pause entry are connected. World-frame rendering
+reaches the missing sky-color query at `px.h:56`; complete presentation remains unfinished.
 The canonical HitResult and pooled geometry now connect Living eye/look,
 source World block traversal and Entity queries to the real PX picking body.
 Owned target occurrences detach before their World; foreign holds retain the

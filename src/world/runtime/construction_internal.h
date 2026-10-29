@@ -1,11 +1,13 @@
 #ifndef MC_WORLD_RUNTIME_CONSTRUCTION_INTERNAL_H
 #define MC_WORLD_RUNTIME_CONSTRUCTION_INTERNAL_H
 
+#include "mc/core/java/int_set.h"
 #include "mc/world/runtime/lighting.h"
 
 struct mc_world_active_chunks {
     void *entries;
     size_t count, capacity;
+    mc_java_int_set *order;
 };
 
 struct mc_world_reference_list {
@@ -36,6 +38,9 @@ struct mc_world_runtime_classes {
     /* Separate qy/ki active-use lifetime, shared above World instances. */
     bool scheduled_initialized;
     mc_scheduled_tick_sequence scheduled_sequence;
+    /* Actual client cq.b class lifetime, separate from each World.P. */
+    bool spawning_initialized;
+    mc_world_active_chunks spawning_chunks;
 };
 
 #endif

@@ -80,6 +80,7 @@ struct mc_world_runtime {
     /* Constructor-created u192 and its separately owned typed occurrences.
      * Current source u is replaceable; unknown void* values own no WorldAccess. */
     mc_world_access_list_ledger world_accesses;
+    mc_world_active_chunks *active_chunks; /* Actual constructor P229 owner. */
     bool entity_containers_retired;
     mc_tile_entity_list_ledger tile_entity_membership[2];
     bool tile_entity_containers_retired;

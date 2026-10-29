@@ -1,5 +1,39 @@
 # Test scope and reproduction
 
+## Source frame, pause and World scheduler qualification
+
+The Windows MSVC Debug ALL build passes. All 498 selected CTests pass in
+205.32 seconds, with zero failures or skips. All preceding 494 tests are retained;
+the four additions are `client.mouse_filter`, `client.pause_screen`,
+`client.source_world_frame` and `world.tick`. The selection excludes 46
+reference-label profiles from 544 configured cases.
+
+New pinned-original fixtures contain 246 observations: CU smoothing 96, focused
+PX mouse look 72, OZ construction/init/tick 68 and World scheduling/drain 10.
+The genuine loaded Windows App/World/Player/SDK graph matches all 72 focus rows,
+checks pause key-release failure order and reaches sky color at `px.h:56`.
+Direct unpaused calls on that graph run weather and gather 289 spawn candidates
+before missing Biome spawn-list selection at `cq.a:290`. These calls remain
+separate from the terminal enclosing frame.
+
+All four new tests also pass with GCC13 and Clang18 under ASan/UBSan and leak
+detection: eight executions, including real GL under Xvfb/software rendering.
+Those graphs build the selected client libraries with audio disabled; they do
+not qualify complete Linux client ALL builds or Linux composed SDK mouse look.
+Both compilers also pass strict syntax checks for the three runtime composition
+files: menu loop, gameplay input and World tick segment, six checks total.
+Their numeric replays compare the 174 CU/OZ/scheduler rows per compiler. Eight
+additional fog-blend vectors come from a JDK17 expression helper and pinned PX
+bodies; they are not executions of the original World-render method. The
+source-frame contracts retain that distinction and the missing sky-color child.
+
+Preliminary validation caught a CU NaN-payload mismatch, missing explicit test
+link dependencies in the audio-disabled graph, an uninitialized test diagnostic,
+and a fixture's incorrect assumption that a constructed World's binding count
+starts at zero. Fixes preserve all original rows and require exact binding-count
+restoration. Complete World rendering, spawning, ordinary World ticks and
+extended gameplay remain unfinished or unqualified.
+
 ## Renderer and World tick qualification
 
 The Windows MSVC Debug ALL build passes. All 494 selected CTests pass in
