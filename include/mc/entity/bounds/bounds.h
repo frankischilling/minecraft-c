@@ -2,6 +2,7 @@
 #define MC_ENTITY_BOUNDS_BOUNDS_H
 
 #include "mc/entity/classes/classes.h"
+#include "mc/entity/vector/vector.h"
 
 #include <stdbool.h>
 
@@ -106,5 +107,12 @@ bool mc_entity_bounds_intersects(const mc_entity_bounds *fixed, const mc_entity_
 mc_entity_bounds *mc_entity_bounds_translate(mc_entity_bounds *target, double x, double y,
                                              double z);
 mc_entity_bounds *mc_entity_bounds_assign(mc_entity_bounds *target, const mc_entity_bounds *source);
+
+/* Actual EQ/CZ point test; finite faces excluded, source NaN comparisons
+ * preserved. Borrow live values/classes; source-null differs from admission. */
+mc_entity_geometry_status mc_entity_bounds_contains_point(mc_entity_classes *classes,
+                                                          const mc_entity_bounds *receiver,
+                                                          const mc_entity_vector *point, bool *out,
+                                                          mc_entity_geometry_error *error);
 
 #endif

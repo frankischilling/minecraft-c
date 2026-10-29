@@ -4,6 +4,8 @@
 #include "../../render_engine/font_lease.h"
 #include "../../render_engine/ge.h"
 #include "mc/client/world/entity_renderer.h"
+#include "mc/client/world/picking.h"
+#include "mc/entity/hit_result.h"
 #include <stdatomic.h>
 
 struct mc_client_source_iy {
@@ -45,6 +47,13 @@ struct mc_client_source_px {
     mc_java_random *pending_random;
     mc_client_held_item *pending_ra;
     mc_client_entity_renderer_error failure, retirement;
+    mc_client_entity_renderer_pick_call *pick_call;
+    mc_entity *pick_m_occurrence;
+    bool pick_m_published;
+    struct mc_entity_hit_result *pick_y_occurrence;
+    client_application *pick_y_app;
+    mc_client_entity_renderer_pick_error pick_retirement;
+    mc_entity_hit_error pick_hit_cleanup;
 };
 
 mc_client_graphics_site entity_renderer_site(const char *, int32_t);

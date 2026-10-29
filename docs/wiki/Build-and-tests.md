@@ -1,5 +1,32 @@
 # Build and tests
 
+The current picking cohort passes the complete Windows Debug ALL build and
+486 selected CTests in 263.68 seconds, with zero failures or skips. There are
+532 configured cases, with 46 reference-label profiles excluded and all three
+optional constructor cases included. Headless Release and both actual Linux
+client ALL builds pass. Formatting checks 1,423 files; strict GCC/Clang checks
+pass for all 21 affected C files. Linux sanitizers pass the four new body tests
+per compiler. These checks preserve the separate finite and rendering scopes
+described below.
+
+Published [`3e05fcf`](https://github.com/frankischilling/minecraft-c/actions/runs/40853180366)
+passes all four jobs and all 1,391 tests: Windows 449, GCC 471 and Clang 471,
+with zero failures or skips. All checkout trees match the published source;
+formatting checks 1,405 files and each native preflight checks 5,684 bindings
+across 2,565 files. This includes renderer attachment, image workers and the
+corrected bounding-box/Tessellator archive ownership. It precedes picking.
+
+The later picking extension matches 26 prepared original singleplayer cases
+on Windows, GCC and Clang and passes eight ownership/failure controls. Its golden
+compares target order, result fields and every used pooled vector. One original
+PJ-controller case is retained but excluded because that concrete controller
+is unimplemented. Windows also invokes the real READY PX after World loading
+and checks return452, source publication, pooled-vector use and retirement.
+Separate geometry, World-ray and Living-view comparisons cover 942 rows per
+source side, 365 rows and 192 rows respectively. These body checks do not
+qualify a full frame or playable session. See the
+[exact scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#picking-body-and-geometry-qualification).
+
 The genuine World-selection loop passes empty, populated, sixteen-save scrollbar
 and real double-click Windows profiles:
 real SaveFormat metadata and stable sorting, row selection during drawing,

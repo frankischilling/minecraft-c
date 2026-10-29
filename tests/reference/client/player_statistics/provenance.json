@@ -96,8 +96,8 @@
       "sha256": "9620ada89023045b73fa69ff63d1faca83d7ac9bec1d98e2143d82cef856e0c4"
     },
     "src/entity/classes/classes_internal.h": {
-      "bytes": 2535,
-      "sha256": "1b9d2b90eaaca62865a3106ca63fe90500c0dad32073c1f3e94c7d40b0a73dd8"
+      "bytes": 2784,
+      "sha256": "773aa62824b5fd116b426294d96cdd5a8a992fed47c621bafd99eb7d62542f01"
     },
     "src/entity/entity_internal.h": {
       "bytes": 3435,
@@ -168,8 +168,8 @@
       "sha256": "c0459e59987816af23e7cfc6313c336faa2b6588174dbe50e166575d9512c377"
     },
     "src/client/application_state.h": {
-      "bytes": 8084,
-      "sha256": "ba1738f2139f26c6642a2d947d28563c77d401129d9aebcb30773dd650f560c9"
+      "bytes": 8085,
+      "sha256": "b4a01cca03eb6b3fbb8e00a153c81aed9c189cbad6cede332500301668362e2c"
     },
     "src/client/application_access.h": {
       "bytes": 3807,

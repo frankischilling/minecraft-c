@@ -16,6 +16,7 @@
 #include "../world/entity_renderer/internal.h"
 #include "mc/client/gui/gui_ingame.h"
 #include "mc/client/statistics/writer.h"
+#include "mc/client/world/picking.h"
 #include "mc/core/java/java.h"
 #include "mc/entity/bounds/bounds.h"
 #include "mc/entity/vector/vector.h"
@@ -33,6 +34,10 @@ struct mc_client_menu_loop {
     mc_client_assets *assets;
     mc_client_render_engine_classes *graphics;
     mc_client_screen_transitions *transitions;
+    mc_math_classes *math; /* Same bootstrap namespace, borrowed through loop retirement. */
+    mc_client_entity_renderer_pick_call *pick;
+    mc_client_entity_renderer_pick_state pick_state;
+    mc_client_entity_renderer_pick_error pick_cleanup;
     bool active, retiring;
     mc_client_menu_loop_state state;
     int64_t last_second;
@@ -136,15 +141,19 @@ static bool tick(mc_client_menu_loop *loop) {
                     loop->statistics.method, loop->statistics.bytecode);
     if (mc_client_gui_ingame_tick(app->v, &loop->ingame) != MC_CLIENT_GUI_INGAME_OK)
         return stop(loop, loop->ingame.operation, "uq", "a", loop->ingame.site.pc);
-    /* Actual px.a(F)V reads j.i4 then j.f15 and returns at10/21. No
-     * mouseover/World/controller operation is reached in this menu profile. */
     if (app->t == NULL)
         return stop(loop, "actual null EntityRenderer receiver", "net/minecraft/client/Minecraft",
                     "k", 33);
-    if (app->t->fields.j == NULL)
-        return stop(loop, "actual null px.j", "px", "a", 4);
-    if (app->t->fields.j->i != NULL && app->t->fields.j->active_world != NULL)
-        return stop(loop, "actual World mouseover is not connected", "px", "a", 29);
+    if (mc_client_entity_renderer_pick_begin(app->t, loop->math, 1.0f, &loop->pick) !=
+        MC_CLIENT_PICK_OK) {
+        if (loop->pick == NULL)
+            return stop(loop, "actual PX picking native admission", "px", "a", 0);
+        (void)mc_client_entity_renderer_pick_inspect(loop->pick, &loop->pick_state);
+        const mc_client_entity_renderer_pick_error *e = loop->pick_state.failure;
+        return stop(loop, e->operation, e->site.class_name, e->site.method, e->site.pc);
+    }
+    if (mc_client_entity_renderer_pick_retire(&loop->pick) != MC_CLIENT_PICK_OK)
+        return stop(loop, "actual PX picking native call retirement", "px", "a", 452);
     if (app->h != NULL)
         return stop(loop, "actual Player chunk-provider tick is not connected",
                     "net/minecraft/client/Minecraft", "k", 47);
@@ -346,6 +355,7 @@ bool mc_client_menu_loop_create(mc_client_bootstrap *bootstrap, mc_client_menu_l
     if (loop == NULL)
         return false;
     loop->app = app;
+    loop->math = mc_client_bootstrap_math(bootstrap);
     loop->graphics = mc_client_bootstrap_graphics(bootstrap);
     mc_game_settings_state settings;
     mc_gui_main_menu_error error = {0};
@@ -524,6 +534,10 @@ bool mc_client_menu_loop_retire(mc_client_menu_loop **slot) {
     if (loop->active)
         return false;
     loop->retiring = true;
+    if (mc_client_entity_renderer_pick_retire(&loop->pick) != MC_CLIENT_PICK_OK ||
+        mc_client_entity_renderer_pick_detach(loop->app->t, &loop->pick_cleanup) !=
+            MC_CLIENT_PICK_OK)
+        return false;
     if (mc_client_screen_event_retire(&loop->events) != MC_CLIENT_SCREEN_OK ||
         mc_client_source_world_selection_draw_retire(&loop->world_draw) != MC_CLIENT_SCREEN_OK ||
         mc_client_screen_transitions_retire(&loop->transitions, &loop->screen) !=

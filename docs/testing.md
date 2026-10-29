@@ -1,5 +1,72 @@
 # Test scope and reproduction
 
+## Picking body and geometry qualification
+
+The complete Windows MSVC Debug ALL build and all 486 selected CTests pass,
+with zero failures or skips in 263.68 seconds. All three optional application
+constructor cases are included; `-LE reference` excludes 46 of 532 configured
+tests. Independent headless Release and actual GCC13/Clang18 client ALL builds
+also pass. Formatting checks 1,423 files, and all 21 affected C translation
+units pass strict GCC/Clang syntax checks, 42 checks total. Both Linux sanitizer
+profiles pass all four new public CTests together, eight executions without
+failure or skip.
+
+The [picking contract](client/picking.md) connects the canonical HitResult,
+Living view methods and real World block/Entity queries to `px.a(F)`. Windows
+Debug and GCC/Clang ASan/UBSan each match all 26 prepared original singleplayer
+cases and pass 1,964 native checks, including eight failure/ownership controls.
+One separately retained original multiplayer-controller case is excluded:
+its concrete native controller does not yet exist. The compared fields include
+target and hit identities, source query order, raw vector bits, pool size and
+cursor. Prepared PX/App receivers do not qualify their constructors or a
+rendered frame. The original probe and native replay have separate provenance.
+
+Windows also passes `entity.hit_result`, `world.raytrace` and
+`entity.living_view`, plus the five-mode World-selection loop. The latter
+invokes picking directly on the real READY renderer after loading and verifies
+return452, source publication, pooled-vector use and checked retirement.
+Geometry compares 942 original rows from each source namespace; block traversal
+compares 365 original rows and Living position/look compares 192. The latter
+two pass GCC13 and Clang18 ASan/UBSan as well. These finite comparisons leave
+general NaN-payload behavior outside their measured coverage.
+
+Reproduce the asset-independent picking replay with `ctest -R '^client.picking$'`.
+Its driver creates authored temporary resources and four saved Chunks per
+case; it requires neither Java nor original assets. The original-observation
+commands and prepared-receiver limits are recorded beside each public fixture.
+
+The optional Living-view observer now atomically requires a fresh work
+directory, preventing an existing class from shadowing the pinned original
+JAR. A seeded `bt.class` directory is refused unchanged before compiler/JVM
+launch; a fresh original run reproduces all 192 rows byte-for-byte. The initial
+complete native selection passed 480 cases while six source-fingerprint gates
+correctly refused that changed observer. Refreshing the current pins, without
+changing runtime code or assertions, produces the complete 486-case pass above.
+
+A rebuilt Windows Release generated-terrain profile completes all 289 samples,
+Player/input/renderer/effects/view publication, load return130, picking452,
+focus, save/resource preservation and checked cleanup. Its explicit 300-second
+process bound is not an elapsed-time benchmark.
+
+## Hosted renderer checkpoint 3e05fcf
+
+The [exact checkpoint run](https://github.com/frankischilling/minecraft-c/actions/runs/40853180366)
+passes all four jobs. Windows passes 449 tests in 329.73 seconds; GCC passes
+471 in 340.78 seconds; Clang passes 471 in 356.79 seconds. All 1,391 unique
+starts have matching successful results, with zero failures or skips. All
+four tested checkout trees match source tree
+`d65010ca4ddb6cc44544f6e62e767d6f5ab9c20a`. Formatting checks 1,405 files;
+each native input preflight verifies 5,684 bindings across 2,565 files.
+
+The preceding `e77f675` run passed Windows but failed both Linux links before
+CTest: bounding-box drawing was assigned to the CPU Engine archive while its
+Tessellator provider belonged to the Textures archive. Moving that source into
+the same archive fixes the actual link without introducing a CPU-to-GPU cycle.
+The later run above includes that correction. Timing caches and four-worker
+Linux Xvfb/software-GL selections remain enabled; the elapsed times establish
+no causal speedup. Picking was added after this checkpoint and has its own
+local scope above.
+
 ## Renderer attachment and image-worker qualification
 
 The Windows MSVC Debug ALL build and all 482 selected CTests pass with zero

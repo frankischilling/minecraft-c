@@ -17,6 +17,7 @@
 #include "mc/client/controller/singleplayer.h"
 #include "mc/client/input/movement_input.h"
 #include "mc/client/particles/effect_renderer.h"
+#include "mc/client/world/picking.h"
 #include "mc/core/java/java.h"
 #include "mc/entity/player/player.h"
 #include "mc/world/runtime/blocks.h"
@@ -591,8 +592,25 @@ int main(int argc, char **argv) {
             CHECK(strcmp(f.state.source_class, "net/minecraft/client/Minecraft") == 0 &&
                   strcmp(f.state.source_method, "k") == 0 && f.state.source_pc == 337);
             CHECK(world_display_controls(&f, initial->classes) == 0);
+            mc_entity_vector_snapshot before_pick, after_pick;
+            CHECK(mc_entity_vector_get_snapshot(f.app->entities, &before_pick) == MC_ENTITY_OK);
+            mc_client_entity_renderer_pick_call *pick = NULL;
+            CHECK(mc_client_entity_renderer_pick_begin(f.app->t,
+                                                       mc_client_bootstrap_math(f.bootstrap), 1.0f,
+                                                       &pick) == MC_CLIENT_PICK_OK &&
+                  pick != NULL);
+            mc_client_entity_renderer_pick_state picked;
+            CHECK(mc_client_entity_renderer_pick_inspect(pick, &picked) && picked.source_returned &&
+                  picked.source_pc == 452 && picked.block_published && picked.target_cleared &&
+                  picked.query_returned && picked.block_reach == 4.0 &&
+                  picked.entity_reach <= 3.0 && picked.owner == f.app->t && picked.app == f.app &&
+                  picked.origin != NULL && picked.look != NULL && picked.endpoint != NULL);
+            CHECK(mc_entity_vector_get_snapshot(f.app->entities, &after_pick) == MC_ENTITY_OK &&
+                  after_pick.cursor > before_pick.cursor);
+            CHECK(mc_client_entity_renderer_pick_retire(&pick) == MC_CLIENT_PICK_OK &&
+                  pick == NULL);
             printf("WORLD_LOAD ready=1 terrain=289 stored-marker=57 player=1 input=1 "
-                   "renderer=1 effects=1 publication=1 view=1 returned=130 next=k337\n");
+                   "renderer=1 effects=1 publication=1 view=1 returned=130 picker=452 next=k337\n");
         } else {
             CHECK(load.needs_conversion && !load.handler_opened && load.world == NULL &&
                   load.player == NULL && !load.world_published);

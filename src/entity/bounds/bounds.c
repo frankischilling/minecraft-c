@@ -1,11 +1,42 @@
+#include "../vector/vector_internal.h"
 #include "bounds_internal.h"
 
 #include "mc/core/java/java.h"
 
+#include <emmintrin.h>
 #include <float.h>
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+
+mc_entity_geometry_status mc_entity_bounds_contains_point(mc_entity_classes *classes,
+                                                          const mc_entity_bounds *receiver,
+                                                          const mc_entity_vector *point, bool *out,
+                                                          mc_entity_geometry_error *error) {
+    mc_entity_geometry_error_clear(error);
+    const char *descriptor =
+        classes == NULL || classes->source == MC_ENTITY_CLIENT ? "(Lbt;)Z" : "(Lba;)Z";
+    if (classes == NULL || out == NULL || error == NULL)
+        return mc_entity_geometry_fail(error, MC_ENTITY_GEOMETRY_INVALID_ARGUMENT, classes, "eq",
+                                       "cz", "a", descriptor, false, 0,
+                                       "Bounds point native arguments", true);
+    if (receiver == NULL || point == NULL)
+        return mc_entity_geometry_fail(
+            error, MC_ENTITY_GEOMETRY_SOURCE_NULL_REFERENCE, classes, "eq", "cz", "a", descriptor,
+            receiver != NULL, receiver == NULL ? 0 : 1, "Bounds point null source receiver", false);
+    if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
+        error->native_status = MC_ENTITY_UNSUPPORTED_FP;
+        return mc_entity_geometry_fail(error, MC_ENTITY_GEOMETRY_UNSUPPORTED_FP, classes, "eq",
+                                       "cz", "a", descriptor, true, 8,
+                                       "Bounds point native FP environment", true);
+    }
+    if (point->x <= receiver->min_x || point->x >= receiver->max_x || point->y <= receiver->min_y ||
+        point->y >= receiver->max_y || point->z <= receiver->min_z || point->z >= receiver->max_z)
+        *out = false;
+    else
+        *out = true;
+    return MC_ENTITY_GEOMETRY_OK;
+}
 
 #if defined(__FAST_MATH__) || (defined(__FINITE_MATH_ONLY__) && __FINITE_MATH_ONLY__ > 0) ||       \
     (defined(_M_FP_FAST) && _M_FP_FAST)

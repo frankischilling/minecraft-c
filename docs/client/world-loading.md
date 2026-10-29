@@ -64,8 +64,10 @@ The recursive call returns through the now-true `N` guard. Null Player and
 death-screen paths preserve their reached source boundaries.
 
 The native selection profile next stops at gameplay input `Minecraft.k:337`
-in the same tick. Later ticks also require the unfinished mouseover and World
-tick paths; a frame requires sound, controller and terrain-render integration.
+in the same tick. The real READY renderer also completes the
+[picking body](picking.md) through `px.a(F):452`. Later ticks invoke that body
+at `Minecraft.k:33`, then reach the next unresolved World-maintenance branch.
+World ticking and a frame still require sound, controller and terrain-render integration.
 Loading a World is therefore still not a playable session.
 
 ## Native lifetime and errors
@@ -80,7 +82,9 @@ Checked native retirement drains only calls owned by this invocation. A
 pre-existing retained Loading or SaveFormat failure belongs to its original
 caller, even when the new load acquires a native borrow and returns BUSY.
 Cleanup releases captured callback receipts before renderer detachment. It
-ends only owned WorldAccess registrations and the renderer/particle World
+also ends this renderer's owned picking occurrences before World containers;
+foreign renderer holds or replaced target fields preserve their owners and
+return BUSY. Cleanup ends only owned WorldAccess registrations and the renderer/particle World
 occurrences before retiring World containers. Actual containers, cache
 registrations and Store-owned Chunks retire before their World and SaveHandler;
 the input owner remains alive through Player membership cleanup. External

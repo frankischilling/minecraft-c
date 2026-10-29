@@ -13,6 +13,7 @@ typedef struct mc_client_source_px mc_client_source_px;
 typedef struct mc_client_source_ra mc_client_source_ra;
 typedef struct mc_client_held_item mc_client_held_item;
 typedef struct mc_client_source_iy mc_client_source_iy;
+typedef struct mc_client_entity_renderer_pick_error mc_client_entity_renderer_pick_error;
 
 typedef enum mc_client_entity_renderer_status {
     MC_CLIENT_ENTITY_RENDERER_OK,
@@ -54,6 +55,7 @@ typedef struct mc_client_entity_renderer_error {
     mc_client_bitmap_font_error font_cleanup; /* Complete typed native release cause. */
     mc_client_graphics_error graphics;
     mc_client_render_texture_error texture;
+    const mc_client_entity_renderer_pick_error *picking;
 } mc_client_entity_renderer_error;
 
 typedef struct mc_client_entity_renderer_services {

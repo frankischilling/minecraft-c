@@ -23,7 +23,7 @@ typedef struct mc_client_source_da mc_client_source_da;
 typedef struct mc_client_source_px mc_client_source_px;
 typedef struct mc_client_source_cz mc_client_source_cz;
 typedef struct mc_client_source_uq mc_client_source_uq;
-typedef struct mc_client_source_vf mc_client_source_vf;
+typedef struct mc_entity_hit_result mc_client_source_vf;
 typedef struct mc_client_source_vy mc_client_source_vy;
 typedef struct mc_client_texture_pack_list mc_client_texture_pack_list;
 typedef struct mc_client_source_nl mc_client_source_nl;

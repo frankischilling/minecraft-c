@@ -35,6 +35,11 @@ loading constructs the canonical source World, completes all 289 terrain
 samples, attaches its renderer and particles, inserts the real Player and
 publishes the view entity. Healthy null-screen/focus handling returns; the
 native selection tick next stops at gameplay input `Minecraft.k:337`.
+The canonical HitResult and pooled geometry now connect Living eye/look,
+source World block traversal and Entity queries to the real PX picking body.
+Owned target occurrences detach before their World; foreign holds retain the
+actual graph for cleanup retry. See the
+[picking contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/picking.md).
 Version-zero conversion stops at 52. Empty, populated, scrolling and double-click native Windows profiles
 pass. All 482 selected Windows CTests and formatting for 1,405 files pass.
 Thirty selected Linux sanitizer cases and 86 strict compiler checks also pass;

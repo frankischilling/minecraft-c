@@ -10,18 +10,37 @@ controller. The existing-save profile reaches `READY`, all 289 terrain samples
 renderer/particle attachment, real Player insertion and view publication.
 World loading and healthy null-screen/focus handling return; the same tick
 then reaches gameplay input `Minecraft.k:337`.
+The same READY renderer completes [picking](client/picking.md) through
+`px.a(F):452`. Existing-World ticks invoke it at `k:33`; World maintenance,
+controller ticking and connected input still require further implementation.
 Dynamic terrain rendering and gameplay remain unfinished. Explicit flags retain the
 diagnostic title and fixed-camera World inspection.
 
 ## Current integration
 
-All 482 selected Windows CTests pass without failures or skips in 209.59
-seconds after the complete Debug ALL build. The headless Release ALL build,
-formatting for 1,405 files, 86 strict compiler checks and 30 selected Linux
-sanitizer cases also pass. The latter includes four private Engine/RR CPU
-wrapper cases; it does not qualify a complete Linux graphical session. Existing
-save and generated-terrain entry both reach World-load return and cleanup.
-See the [current qualification](testing.md#renderer-attachment-and-image-worker-qualification).
+Picking now compares 26 prepared original singleplayer cases exactly on
+Windows, GCC and Clang, including target order, hit-result fields and every used
+pooled vector. Eight ownership and failure controls also pass. One original
+multiplayer-controller case remains excluded because that concrete controller
+is unimplemented. These are finite body comparisons with genuine Worlds,
+Players and Entities; they do not establish a complete frame or playable client.
+
+Published checkpoint [`3e05fcf`](https://github.com/frankischilling/minecraft-c/actions/runs/40853180366)
+passes all four hosted jobs: Windows 449, GCC 471 and Clang 471 tests, 1,391
+total with zero failures or skips. All tested checkout trees match the
+published source tree, and formatting checks 1,405 files. This checkpoint
+contains renderer attachment, image workers and their corrected static-library
+ownership. The picking extension has separate local qualification below.
+
+All 486 selected Windows CTests pass without failures or skips in 263.68
+seconds after the complete Debug ALL build. Headless Release and actual
+GCC13/Clang18 client ALL builds, formatting for 1,423 files and 42 strict
+compiler checks also pass. Both Linux sanitizer profiles pass all four new
+body tests, eight executions total. Existing-save and generated-terrain entry
+both reach World-load return, picking return452 and cleanup. The preceding
+renderer cohort's 482 Windows cases and 30 selected Linux cases retain their
+separate scopes, including its four private Engine/RR CPU-wrapper cases.
+See the [current qualification](testing.md#picking-body-and-geometry-qualification).
 
 The current World-entry extension passes its focused native Windows loop.
 Its DateFormat module matches 2,926 JDK17 vectors on Windows and Linux for

@@ -118,6 +118,7 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk_stat
     lower->query.acquisition = mc_world_runtime_get_detailed(world, mc_java_i32_shr(x, 4),
                                                              mc_java_i32_shr(z, 4), out, &child);
     if (lower->query.acquisition != MC_CHUNK_ACQUIRE_OK) {
+        lower->query.source_chunk = child.source_chunk;
         lower->query.registry = child.registry;
         lower->query.population = child.population;
         lower->tile_entity = child.tile_entity;

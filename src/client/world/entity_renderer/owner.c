@@ -285,6 +285,14 @@ release_owner(mc_client_source_px **slot, mc_client_entity_renderer_error *out, 
             *out = local;
         return local.status;
     }
+    if (mc_client_entity_renderer_pick_detach(o, &o->pick_retirement) != MC_CLIENT_PICK_OK) {
+        entity_renderer_fail(&local, MC_CLIENT_ENTITY_RENDERER_BUSY,
+                             "EntityRenderer picking occurrence retirement", NULL, -1, true);
+        local.picking = &o->pick_retirement;
+        if (out != NULL)
+            *out = local;
+        return local.status;
+    }
     o->active = true;
     o->phase = MC_CLIENT_ENTITY_RENDERER_RETIRING;
     mc_client_entity_renderer_error_init(&o->retirement);

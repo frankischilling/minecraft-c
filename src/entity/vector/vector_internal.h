@@ -23,4 +23,11 @@ void mc_entity_vector_dispose(mc_entity_classes *classes);
 size_t mc_entity_vector_native_holds(const mc_entity_classes *classes,
                                      const mc_entity_vector *vector);
 
+void mc_entity_geometry_error_clear(mc_entity_geometry_error *error);
+mc_entity_geometry_status
+mc_entity_geometry_fail(mc_entity_geometry_error *error, mc_entity_geometry_status status,
+                        const mc_entity_classes *classes, const char *client_class,
+                        const char *server_class, const char *method, const char *descriptor,
+                        bool entered, uint16_t pc, const char *operation, bool native_policy);
+
 #endif

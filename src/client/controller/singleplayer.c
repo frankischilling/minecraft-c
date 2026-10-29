@@ -87,6 +87,26 @@ static mc_singleplayer_controller_status simple_result(mc_singleplayer_controlle
     return status;
 }
 
+mc_singleplayer_controller_status
+mc_client_singleplayer_controller_reach(const mc_client_singleplayer_controller *controller,
+                                        float *out, mc_singleplayer_controller_error *error) {
+    if (out == NULL)
+        return simple_result(error, MC_SINGLEPLAYER_CONTROLLER_INVALID_ARGUMENT,
+                             "OS reach disjoint output");
+    if (controller == NULL) {
+        (void)simple_result(error, MC_SINGLEPLAYER_CONTROLLER_NULL_REFERENCE,
+                            "actual OS reach null receiver");
+        if (error != NULL)
+            error->site = (mc_player_site){"os", "b", "()F", 0};
+        return MC_SINGLEPLAYER_CONTROLLER_NULL_REFERENCE;
+    }
+    *out = 4.0f;
+    (void)simple_result(error, MC_SINGLEPLAYER_CONTROLLER_OK, NULL);
+    if (error != NULL)
+        error->site = (mc_player_site){"os", "b", "()F", 2};
+    return MC_SINGLEPLAYER_CONTROLLER_OK;
+}
+
 static bool enter(mc_client_singleplayer_controller *c, mc_singleplayer_controller_error *e) {
     const mc_singleplayer_controller_status status = enter_owner(c);
     if (status == MC_SINGLEPLAYER_CONTROLLER_OK)

@@ -60,6 +60,10 @@ The admitted existing-save profile completes all 289 terrain samples, attaches
 the actual renderer and particles, inserts its real Player and publishes the
 view entity. World loading returns, followed by healthy null-screen/focus
 handling. The same selection tick then reaches gameplay input at `k:337`.
+The [picking body](picking.md) now runs from `k:33` when a World is already
+present. A loaded-World component check also completes the real READY
+renderer call through return452. Later World maintenance, controller ticking
+and gameplay input remain unfinished.
 Create, Rename, Delete, Multiplayer, Mods and Texture Packs, and Options retain
 explicit unfinished routes. Fullscreen, source F2 screenshots, debug timing and
 focused gameplay input also retain explicit dependencies. [Option actions](game-options.md),

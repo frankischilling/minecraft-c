@@ -13,6 +13,7 @@
 #include "mc/client/saves/save_format.h"
 #include "mc/client/sound/sound_manager.h"
 #include "mc/client/statistics/writer.h"
+#include "mc/client/world/picking.h"
 #include "mc/entity/player/input.h"
 #include "mc/entity/player/spawn.h"
 #include "mc/statistics/registry/registry.h"
@@ -94,6 +95,7 @@ struct mc_client_world_load_call {
     mc_effect_renderer_error effects, effects_cleanup;
     mc_world_player_load_error player_load;
     mc_world_access_failure captured_player_failure;
+    mc_client_entity_renderer_pick_error pick_cleanup;
 };
 
 static mc_client_world_load_site site(const char *method, const char *descriptor, int pc) {
@@ -1083,6 +1085,12 @@ mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_cal
                                 "actual renderer World native detachment");
         }
         call->render_world_owned = false;
+    }
+    if (call->world_slot_owned && app->t != NULL &&
+        mc_client_entity_renderer_pick_detach(app->t, &call->pick_cleanup) != MC_CLIENT_PICK_OK) {
+        call->cleanup.picking = &call->pick_cleanup;
+        return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
+                            "actual EntityRenderer picking native detachment");
     }
     if (call->effects_held) {
         if (mc_client_effect_renderer_release(call->effects_owner) != MC_EFFECT_RENDERER_OK)

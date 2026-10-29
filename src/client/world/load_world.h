@@ -31,6 +31,7 @@ typedef struct mc_movement_input_error mc_movement_input_error;
 typedef struct mc_registry_error mc_registry_error;
 typedef struct mc_client_render_global_world_state mc_client_render_global_world_state;
 typedef struct mc_client_render_global_error mc_client_render_global_error;
+typedef struct mc_client_entity_renderer_pick_error mc_client_entity_renderer_pick_error;
 typedef struct mc_effect_renderer_error mc_effect_renderer_error;
 typedef struct mc_world_player_load_error mc_world_player_load_error;
 
@@ -77,6 +78,7 @@ typedef struct mc_client_world_load_error {
     const mc_client_world_prepare_state *terrain;
     const mc_client_render_global_world_state *renderer;
     const mc_client_render_global_error *render_global;
+    const mc_client_entity_renderer_pick_error *picking;
     const mc_effect_renderer_error *effects;
     const mc_world_player_load_error *player_load;
 } mc_client_world_load_error;

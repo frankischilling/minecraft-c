@@ -1,4 +1,5 @@
 #include "../bounds/bounds_internal.h"
+#include "../hit_result/internal.h"
 #include "../minecart/classes_internal.h"
 #include "../vector/vector_internal.h"
 #include "classes_internal.h"
@@ -157,7 +158,8 @@ mc_entity_status mc_entity_classes_free(mc_entity_classes *classes) {
     if (classes == NULL)
         return MC_ENTITY_OK;
     if (classes->live_entities != 0 || classes->borrowers != 0 || classes->bounds_holds != 0 ||
-        classes->vector_holds != 0)
+        classes->vector_holds != 0 || classes->live_hit_results != 0 ||
+        classes->live_hit_calls != 0)
         return MC_ENTITY_BUSY;
     mc_minecart_class_dispose(classes);
     mc_entity_registry_dispose(classes);
@@ -172,6 +174,7 @@ mc_entity_status mc_entity_classes_free(mc_entity_classes *classes) {
     }
     mc_entity_bounds_dispose(classes);
     mc_entity_vector_dispose(classes);
+    mc_entity_hit_kind_dispose(classes);
     free(classes);
     return MC_ENTITY_OK;
 }

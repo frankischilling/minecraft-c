@@ -3,12 +3,14 @@
 
 #include "../registry/registry_internal.h"
 #include "mc/entity/classes/classes.h"
+#include "mc/entity/hit_result.h"
 
 struct mc_minecart_shape_array;
 struct mc_entity_vector;
 struct mc_entity_vector_object;
 struct mc_entity_bounds;
 struct mc_entity_bounds_object;
+struct mc_entity_hit_kind_state;
 
 /* Actual class-owned production layouts, shared with the concrete constructors
  * and native invariant tests. No World/simulation operation belongs here. */
@@ -54,6 +56,10 @@ struct mc_entity_classes {
     mc_entity_vector_pool *vector_pool;
     struct mc_entity_vector_object *vector_objects;
     size_t vector_holds;
+    size_t live_hit_results, live_hit_calls;
+    mc_entity_class_phase hit_kind_phase;
+    struct mc_entity_hit_kind_state *hit_kinds;
+    mc_entity_hit_kind_error hit_kind_failure;
     mc_entity_type_map *types;
     mc_entity_class_literal literals[MC_ENTITY_CLASS_KIND_COUNT];
     mc_entity_class_phase registry_phase;

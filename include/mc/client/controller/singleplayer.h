@@ -65,6 +65,14 @@ mc_singleplayer_controller_status mc_client_singleplayer_controller_construct(
 bool mc_client_singleplayer_controller_read(const mc_client_singleplayer_controller *,
                                             mc_singleplayer_controller_snapshot *);
 
+/* Exact concrete os.b()F: literal4.0f at0/return2, with no source field read,
+ * phase gate, App/World access or draw. Native output must be disjoint. NULL
+ * controller is a source null receiver at the containing caller's invocation;
+ * outputs are preserved on failure. This is not inherited ob.b's5.0f. */
+mc_singleplayer_controller_status
+mc_client_singleplayer_controller_reach(const mc_client_singleplayer_controller *, float *out,
+                                        mc_singleplayer_controller_error *);
+
 /* Actual os.a(fd), including its invokespecial of literal-empty ob.a(fd).
  * The World argument is not dereferenced. Actual inherited ob.b(gs) is also
  * literal-empty; NULL Player succeeds. These are completed selected bodies,

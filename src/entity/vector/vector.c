@@ -40,6 +40,12 @@ static double java_add(double left, double right) {
     return left + right;
 }
 
+static double float_root(double square) {
+    const __m128d root64 = _mm_sqrt_sd(_mm_setzero_pd(), _mm_set_sd(square));
+    volatile float root = _mm_cvtss_f32(_mm_cvtsd_ss(_mm_setzero_ps(), root64));
+    return (double)root;
+}
+
 static mc_entity_status child_result(mc_entity_error *error, mc_entity_status status,
                                      const char *operation, uint16_t bytecode) {
     *error = (mc_entity_error){.status = status, .operation = operation, .bytecode = bytecode};
@@ -365,9 +371,7 @@ mc_entity_status mc_entity_vector_length(const mc_entity_vector *value, double *
     volatile double zz = value->z * value->z;
     volatile double square = java_add(xy, zz);
     /* in/fq.a(D)F narrows Math.sqrt to binary32 BEFORE widening to double. */
-    const __m128d root64 = _mm_sqrt_sd(_mm_setzero_pd(), _mm_set_sd(square));
-    volatile float root = _mm_cvtss_f32(_mm_cvtsd_ss(_mm_setzero_ps(), root64));
-    *out = (double)root;
+    *out = float_root(square);
     return MC_ENTITY_OK;
 }
 
@@ -413,4 +417,188 @@ mc_entity_status mc_entity_vector_normalize(mc_entity_classes *classes,
         result(error, status, "vector normalize", zero ? 45 : 67);
     }
     return status;
+}
+
+void mc_entity_geometry_error_clear(mc_entity_geometry_error *error) {
+    if (error != NULL)
+        memset(error, 0, sizeof(*error));
+}
+
+mc_entity_geometry_status
+mc_entity_geometry_fail(mc_entity_geometry_error *error, mc_entity_geometry_status status,
+                        const mc_entity_classes *classes, const char *client_class,
+                        const char *server_class, const char *method, const char *descriptor,
+                        bool entered, uint16_t pc, const char *operation, bool native_policy) {
+    if (error != NULL) {
+        error->status = status;
+        error->operation = operation;
+        error->native_policy = native_policy;
+        error->site = (mc_entity_geometry_site){
+            method != NULL,
+            entered,
+            classes == NULL || classes->source == MC_ENTITY_CLIENT ? client_class : server_class,
+            method,
+            descriptor,
+            pc};
+    }
+    return status;
+}
+
+static mc_entity_geometry_status ray_admit(mc_entity_classes *classes,
+                                           const mc_entity_vector *receiver, bool output,
+                                           mc_entity_geometry_error *error, const char *method,
+                                           const char *descriptor) {
+    mc_entity_geometry_error_clear(error);
+    if (classes == NULL || !output || error == NULL)
+        return mc_entity_geometry_fail(error, MC_ENTITY_GEOMETRY_INVALID_ARGUMENT, classes, "bt",
+                                       "ba", method, descriptor, false, 0,
+                                       "Vector geometry native arguments", true);
+    if (receiver == NULL)
+        return mc_entity_geometry_fail(error, MC_ENTITY_GEOMETRY_SOURCE_NULL_REFERENCE, classes,
+                                       "bt", "ba", method, descriptor, false, 0,
+                                       "Vector geometry null receiver", false);
+    return MC_ENTITY_GEOMETRY_OK;
+}
+
+static mc_entity_geometry_status ray_fp(mc_entity_classes *classes, mc_entity_geometry_error *error,
+                                        const char *method, const char *descriptor, uint16_t pc) {
+    if ((_mm_getcsr() & 0xffc0u) == 0x1f80u)
+        return MC_ENTITY_GEOMETRY_OK;
+    error->native_status = MC_ENTITY_UNSUPPORTED_FP;
+    return mc_entity_geometry_fail(error, MC_ENTITY_GEOMETRY_UNSUPPORTED_FP, classes, "bt", "ba",
+                                   method, descriptor, true, pc,
+                                   "Vector geometry native FP environment", true);
+}
+
+static mc_entity_geometry_status distance(mc_entity_classes *classes,
+                                          const mc_entity_vector *receiver,
+                                          const mc_entity_vector *other, double *out,
+                                          mc_entity_geometry_error *error, bool squared) {
+    const bool client = classes == NULL || classes->source == MC_ENTITY_CLIENT;
+    const char *method = squared ? (client ? "d" : "b") : (client ? "c" : "a");
+    const char *descriptor = client ? "(Lbt;)D" : "(Lba;)D";
+    mc_entity_geometry_status status =
+        ray_admit(classes, receiver, out != NULL, error, method, descriptor);
+    if (status != MC_ENTITY_GEOMETRY_OK)
+        return status;
+    if (other == NULL)
+        return mc_entity_geometry_fail(error, MC_ENTITY_GEOMETRY_SOURCE_NULL_REFERENCE, classes,
+                                       "bt", "ba", method, descriptor, true, 1,
+                                       "Vector distance null source getfield", false);
+    status = ray_fp(classes, error, method, descriptor, 8);
+    if (status != MC_ENTITY_GEOMETRY_OK)
+        return status;
+    volatile double dx = other->x - receiver->x;
+    volatile double dy = other->y - receiver->y;
+    volatile double dz = other->z - receiver->z;
+    volatile double xx = dx * dx, yy = dy * dy;
+    volatile double xy = java_add(xx, yy);
+    volatile double zz = dz * dz;
+    const double square = java_add(xy, zz);
+    *out = squared ? square : float_root(square);
+    return MC_ENTITY_GEOMETRY_OK;
+}
+
+mc_entity_geometry_status mc_entity_vector_distance(mc_entity_classes *classes,
+                                                    const mc_entity_vector *receiver,
+                                                    const mc_entity_vector *other, double *out,
+                                                    mc_entity_geometry_error *error) {
+    return distance(classes, receiver, other, out, error, false);
+}
+
+mc_entity_geometry_status mc_entity_vector_distance_squared(mc_entity_classes *classes,
+                                                            const mc_entity_vector *receiver,
+                                                            const mc_entity_vector *other,
+                                                            double *out,
+                                                            mc_entity_geometry_error *error) {
+    return distance(classes, receiver, other, out, error, true);
+}
+
+mc_entity_geometry_status mc_entity_vector_distance_squared_to(mc_entity_classes *classes,
+                                                               const mc_entity_vector *receiver,
+                                                               double x, double y, double z,
+                                                               double *out,
+                                                               mc_entity_geometry_error *error) {
+    mc_entity_geometry_status status =
+        ray_admit(classes, receiver, out != NULL, error, "d", "(DDD)D");
+    if (status != MC_ENTITY_GEOMETRY_OK)
+        return status;
+    status = ray_fp(classes, error, "d", "(DDD)D", 5);
+    if (status != MC_ENTITY_GEOMETRY_OK)
+        return status;
+    volatile double dx = x - receiver->x, dy = y - receiver->y, dz = z - receiver->z;
+    volatile double xx = dx * dx, yy = dy * dy;
+    volatile double xy = java_add(xx, yy);
+    volatile double zz = dz * dz;
+    *out = java_add(xy, zz);
+    return MC_ENTITY_GEOMETRY_OK;
+}
+
+static mc_entity_geometry_status plane(mc_entity_classes *classes, const mc_entity_vector *receiver,
+                                       const mc_entity_vector *end, double coordinate,
+                                       unsigned int axis, mc_entity_vector **out,
+                                       mc_entity_geometry_error *error) {
+    const char *method = axis == 0 ? "a" : axis == 1 ? "b" : "c";
+    const char *descriptor =
+        classes == NULL || classes->source == MC_ENTITY_CLIENT ? "(Lbt;D)Lbt;" : "(Lba;D)Lba;";
+    mc_entity_geometry_status status =
+        ray_admit(classes, receiver, out != NULL, error, method, descriptor);
+    if (status != MC_ENTITY_GEOMETRY_OK)
+        return status;
+    if (end == NULL)
+        return mc_entity_geometry_fail(error, MC_ENTITY_GEOMETRY_SOURCE_NULL_REFERENCE, classes,
+                                       "bt", "ba", method, descriptor, true, 1,
+                                       "Vector plane null source getfield", false);
+    status = ray_fp(classes, error, method, descriptor, 8);
+    if (status != MC_ENTITY_GEOMETRY_OK)
+        return status;
+    volatile double dx = end->x - receiver->x;
+    volatile double dy = end->y - receiver->y;
+    volatile double dz = end->z - receiver->z;
+    const double delta = axis == 0 ? dx : axis == 1 ? dy : dz;
+    volatile double square = delta * delta;
+    if (square < 1.0000000116860974e-7) {
+        *out = NULL;
+        return MC_ENTITY_GEOMETRY_OK;
+    }
+    const double start = axis == 0 ? receiver->x : axis == 1 ? receiver->y : receiver->z;
+    volatile double numerator = coordinate - start;
+    volatile double t = numerator / delta;
+    if (t < 0.0 || t > 1.0) {
+        *out = NULL;
+        return MC_ENTITY_GEOMETRY_OK;
+    }
+    volatile double mx = dx * t, my = dy * t, mz = dz * t;
+    const double x = java_add(receiver->x, mx);
+    const double y = java_add(receiver->y, my);
+    const double z = java_add(receiver->z, mz);
+    if (mc_entity_vector_pool_get(classes, x, y, z, out, &error->vector) != MC_ENTITY_OK)
+        return mc_entity_geometry_fail(error, MC_ENTITY_GEOMETRY_VECTOR_FAILED, classes, "bt", "ba",
+                                       method, descriptor, true, 104, "Vector plane pooled result",
+                                       true);
+    return MC_ENTITY_GEOMETRY_OK;
+}
+
+mc_entity_geometry_status mc_entity_vector_intersect_x(mc_entity_classes *classes,
+                                                       const mc_entity_vector *receiver,
+                                                       const mc_entity_vector *end, double value,
+                                                       mc_entity_vector **out,
+                                                       mc_entity_geometry_error *error) {
+    return plane(classes, receiver, end, value, 0, out, error);
+}
+
+mc_entity_geometry_status mc_entity_vector_intersect_y(mc_entity_classes *classes,
+                                                       const mc_entity_vector *receiver,
+                                                       const mc_entity_vector *end, double value,
+                                                       mc_entity_vector **out,
+                                                       mc_entity_geometry_error *error) {
+    return plane(classes, receiver, end, value, 1, out, error);
+}
+
+mc_entity_geometry_status mc_entity_vector_intersect_z(mc_entity_classes *classes,
+                                                       const mc_entity_vector *receiver,
+                                                       const mc_entity_vector *end, double value,
+                                                       mc_entity_vector **out,
+                                                       mc_entity_geometry_error *error) {
+    return plane(classes, receiver, end, value, 2, out, error);
 }

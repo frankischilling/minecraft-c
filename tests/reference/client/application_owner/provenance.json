@@ -78,8 +78,8 @@
       "sha256": "63bb56dc1425a8115b36e878d8c0cab33b9cc36ae397ccab9d5d02f12a16ec56"
     },
     "include/mc/entity/bounds/bounds.h": {
-      "bytes": 7264,
-      "sha256": "ce56580b13a73edea960719d9bc79811ccd10de2adffc8a39ef3e239959e6f04"
+      "bytes": 7827,
+      "sha256": "4cd33f11935846d9e978f46732b36ce88452d377e67bcbd3e0320c9284d59339"
     },
     "include/mc/entity/classes/classes.h": {
       "bytes": 6811,
@@ -106,8 +106,8 @@
       "sha256": "db51043f16cc3fdb1ec115a0d7b554ec310c9af975bd34661437108bb0dbf160"
     },
     "include/mc/entity/vector/vector.h": {
-      "bytes": 2799,
-      "sha256": "f51b84f8049db8603db2ddece1b9243fbee28285628cac471a3d11f4d3055006"
+      "bytes": 6734,
+      "sha256": "697d339fe002bc378d6009e306dead4da591b822ffcb40cffd26152c499c162c"
     },
     "include/mc/inventory/container.h": {
       "bytes": 3705,
@@ -330,8 +330,8 @@
       "sha256": "3e98b97d04a0195f05f22aac84a1805d3ae9a84ca385a283ab2f039693f8eff1"
     },
     "src/client/application_state.h": {
-      "bytes": 8084,
-      "sha256": "ba1738f2139f26c6642a2d947d28563c77d401129d9aebcb30773dd650f560c9"
+      "bytes": 8085,
+      "sha256": "b4a01cca03eb6b3fbb8e00a153c81aed9c189cbad6cede332500301668362e2c"
     },
     "src/client/display/display.h": {
       "bytes": 13727,
@@ -394,8 +394,8 @@
       "sha256": "2dd90dc597040fa7cc4834943fdf788db29b063add11cdaf14cd77b56d8d64f8"
     },
     "src/entity/classes/classes_internal.h": {
-      "bytes": 2535,
-      "sha256": "1b9d2b90eaaca62865a3106ca63fe90500c0dad32073c1f3e94c7d40b0a73dd8"
+      "bytes": 2784,
+      "sha256": "773aa62824b5fd116b426294d96cdd5a8a992fed47c621bafd99eb7d62542f01"
     },
     "src/entity/entity_internal.h": {
       "bytes": 3435,
@@ -456,6 +456,10 @@
     "include/mc/world/runtime/world_access_error.h": {
       "bytes": 1925,
       "sha256": "02892855a6184002eb7c7d9974d1366fecd10981f571c78dc58050a96865054c"
+    },
+    "include/mc/entity/hit_result.h": {
+      "bytes": 7793,
+      "sha256": "cdfef690358705668d1fba704744a255d0593d709e2c36747808680b74e9a9fa"
     }
   },
   "reference_files": {

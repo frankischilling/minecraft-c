@@ -11,7 +11,9 @@ completes all 289 terrain samples, attaches the renderer and particle manager,
 inserts the real Player and publishes that Player as the view entity. Healthy
 null-screen handling and mouse focus also run. The native selection profile
 then stops at gameplay input `Minecraft.k:337`; terrain drawing, movement and
-the connected World tick remain unfinished.
+the connected World tick remain unfinished. The real READY renderer also
+completes [picking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/picking.md)
+through return452; existing-World ticks call it at `k:33`.
 
 Renderer attachment creates the source ChunkRenderer grid and bounding-box
 lists. It does not compile terrain meshes. Skin and cloak requests use actual
@@ -24,16 +26,15 @@ Canvas integration, gameplay, multiplayer interoperability and the standalone
 server remain unfinished or unqualified. Diagnostic title and fixed-camera
 terrain inspection remain explicit options.
 
-All 482 selected Windows CTests pass locally, with zero failures or skips,
-alongside the client/headless builds, 86 strict compiler checks and 30 selected
-Linux sanitizer cases. Complete World rendering and play remain unfinished.
+All 486 selected Windows CTests pass locally, with zero failures or skips,
+alongside the client/headless builds, 42 strict GCC/Clang checks and eight new
+Linux sanitizer executions. Complete World rendering and play remain unfinished.
 
-The preceding published
-[`add19c6` hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40829676327)
-passes all 1,374 selected tests: Windows 444, GCC 465 and Clang 465, with zero
-failures or skips and matching checkout trees. That checkpoint precedes the
-renderer-attachment and image-worker extension described above. Local, hosted
-and finite original-game checks have separate scopes in [Build and tests](Build-and-tests).
+Published [`3e05fcf`](https://github.com/frankischilling/minecraft-c/actions/runs/40853180366)
+passes all four hosted jobs and 1,391 tests: Windows 449, GCC 471 and Clang 471,
+with zero failures or skips and matching source trees. It includes renderer
+attachment and image workers. Picking has later finite local comparisons;
+[Build and tests](Build-and-tests) separates those scopes.
 
 - [Client startup](Startup) covers the default runtime and remaining session work.
 - [World simulation](World-simulation) links simulation contracts and reference evidence.
