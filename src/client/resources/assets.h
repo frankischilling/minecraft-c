@@ -59,6 +59,9 @@ mc_client_assets_status mc_client_assets_create(const mc_registry_resources *res
                                                 mc_registry_classes *classes,
                                                 mc_client_assets **out);
 void mc_client_assets_free(mc_client_assets *assets); /* NULL is harmless. */
+/* Passive identity check for native rendering bridges. No resource/class use. */
+bool mc_client_assets_same_source(const mc_client_assets *, const mc_registry_resources *,
+                                  const mc_registry_classes *);
 
 /* Lazy case-sensitive cache of ordinary absolute resource names. Reads/close use
  * the real source callbacks; PNG decoding uses mc_image defaults. Only valid

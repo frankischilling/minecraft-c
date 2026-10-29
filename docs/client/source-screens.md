@@ -2,8 +2,9 @@
 
 The source GUI owners implement GuiScreen, GuiMainMenu, GuiParticle and GuiButton
 construction. GuiMainMenu uses the same GuiScreen base type as the application's
-current-screen field. These owners are separate from the executable's existing
-title-screen renderer.
+current-screen field. The default executable draws that actual initialized
+screen through the existing native GUI kernels; the diagnostic title frontend
+remains separately selectable.
 
 GuiMainMenu constructs its shared Random once, reads `title/splashes.txt` through
 the existing class-resource stream and UTF-8 Reader, trims each line and chooses
@@ -52,8 +53,13 @@ their own execution results; source presence alone does not establish a pass.
 Normal startup now invokes the actual display-screen path, including the
 statistics save, message clearing, App.r publication, GUI scaling, initialization
 and App.w store. External descendants preserve App dependencies through cleanup
-retries. Remaining transitions, menu drawing and physical input dispatch, button
-actions, world selection/creation and the gameplay loop remain unfinished. Original menu, Calendar and visual correspondence remain unverified.
+retries. The [default menu runtime](menu-runtime.md) now adopts source drawing,
+input draining, screen ticks and Quit. Other button routes, World selection and
+creation, and gameplay remain unfinished. Focused Windows source-event and
+native-menu tests pass, including 100 frames and 32 ticks with cleanup and an
+inspected 854 by 480 capture. All 463 selected Windows CTests pass. Hosted CI and Linux retain their
+separate source scopes; original menu/Calendar correspondence and matched
+visual comparison remain pending.
 
 Seven selected Windows MSVC Debug CTests pass for GuiIngame, source-screen
 construction/initialization, authored resource files, Calendar and App services.

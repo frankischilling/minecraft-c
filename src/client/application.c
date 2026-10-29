@@ -12,6 +12,9 @@
 #include "startup/game_directory.h"
 #include "world/session.h"
 #include "world/view.h"
+#ifdef MC_CLIENT_SOURCE_MENU_RUNTIME
+#include "runtime/menu_loop.h"
+#endif
 
 #include "mc/block/material/material.h"
 #include "mc/block/registry/registry.h"
@@ -643,6 +646,14 @@ static bool initialize(client_application *app) {
 }
 
 int mc_client_application_run(const mc_client_application_options *options) {
+    if (options->inspect_world == NULL && !options->inspect_menu && !options->fixed_time) {
+#ifdef MC_CLIENT_SOURCE_MENU_RUNTIME
+        return mc_client_menu_run(options);
+#else
+        fputs("Normal client startup requires client audio support in this build.\n", stderr);
+        return 1;
+#endif
+    }
     client_application *app = calloc(1, sizeof(*app));
     if (app == NULL)
         return 1;

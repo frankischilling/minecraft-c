@@ -103,6 +103,14 @@ local inputs and makes no network requests:
 python scripts/resources/import_assets.py --jar b1.7.3.jar --resources "$env:APPDATA/.minecraft/resources" --output .local/assets-b1.7.3
 ```
 
+The default source startup also needs the verified SDK window icons. For a
+fresh import, add `--lwjgl-jar /path/to/lwjgl-2.9.0.jar`. The importer verifies
+the selected SDK and emits private `sdk/lwjgl-icon-16.rgba` and
+`sdk/lwjgl-icon-32.rgba` files. Runtime startup reads those RGBA files and
+requires no SDK JAR or Java execution. An older import without `sdk/` remains
+usable by the explicit diagnostic frontend; create a fresh import for normal
+startup. See the [SDK icon contract](../client/display-sdk.md).
+
 The observed import succeeded with 409 files and 44,522,681 resource bytes, plus
 `manifest.json`. JAR resources are under `jar/`; external resources are under
 `resources/`. The manifest records each imported file's relative path, byte count,

@@ -1,5 +1,6 @@
 #include "mc/client/gui/achievement_notice.h"
 #include "../achievements/description_registry.h"
+#include "../startup/application_owner_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
 #include "millis.h"
@@ -201,5 +202,28 @@ mc_client_notice_status mc_client_achievement_notice_draw(mc_client_achievement_
                                                           mc_client_notice_error *error) {
     if (p == NULL)
         return result(error, MC_CLIENT_NOTICE_INVALID_ARGUMENT, -1);
-    return result(error, MC_CLIENT_NOTICE_UNIMPLEMENTED_DEPENDENCY, 0);
+    if (p->phase != MC_CLIENT_MODEL_READY)
+        return result(error, MC_CLIENT_NOTICE_INVALID_PHASE, -1);
+    client_application *app = p->fields.a;
+    /* getstatic Minecraft.H0 requires the real bound class namespace. A RAW
+     * fixture or a null App cannot supply that static owner by inference. */
+    if (app == NULL || app->native_lifetime_phase != MC_CLIENT_APPLICATION_LIFETIME_REGISTERED ||
+        !app->source_namespace_borrowed || app->source_namespace == NULL)
+        return result(error, MC_CLIENT_NOTICE_UNIMPLEMENTED_DEPENDENCY, 0);
+    mc_client_application_classes *classes = app->source_namespace;
+    if (mtx_trylock(&classes->mutex) != thrd_success)
+        return result(error, MC_CLIENT_NOTICE_BUSY, 0);
+    if (classes->phase != MC_CLIENT_APPLICATION_CLASS_READY || classes->native_retiring) {
+        (void)mtx_unlock(&classes->mutex);
+        return result(error, MC_CLIENT_NOTICE_UNIMPLEMENTED_DEPENDENCY, 0);
+    }
+    const int64_t watermark = classes->H; /* Actual getstatic0, no copied default/global. */
+    (void)mtx_unlock(&classes->mutex);
+    if (watermark > 0)
+        return result(error, MC_CLIENT_NOTICE_UNIMPLEMENTED_DEPENDENCY,
+                      11); /* Actual watermark glDisable, before its remaining GL/font body. */
+    if (p->fields.f == NULL || p->fields.g == 0)
+        return result(error, MC_CLIENT_NOTICE_OK, 107); /* Actual return, no clock or GL. */
+    return result(error, MC_CLIENT_NOTICE_UNIMPLEMENTED_DEPENDENCY,
+                  108); /* Active notification's first clock invocation. */
 }

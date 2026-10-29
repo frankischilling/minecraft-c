@@ -26,6 +26,8 @@ static void usage(void) {
          "  --game-directory DIRECTORY --width N --height N --gui-scale N\n"
          "  --frames N --capture OUTPUT.png --hidden --time-millis N\n"
          "  --inspect-world FRESH_OR_COPIED_DIRECTORY --world-seed N\n"
+         "  --inspect-menu selects the separate fixed-time menu diagnostic.\n"
+         "Normal startup currently supports the source main menu and Quit.\n"
          "World inspection is a fixed diagnostic scene with no gameplay or implicit save.");
 }
 
@@ -39,6 +41,10 @@ int main(int argc, char **argv) {
         }
         if (strcmp(option, "--hidden") == 0) {
             options.hidden = true;
+            continue;
+        }
+        if (strcmp(option, "--inspect-menu") == 0) {
+            options.inspect_menu = true;
             continue;
         }
         if (i + 1 >= argc) {

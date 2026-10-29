@@ -21,7 +21,8 @@ typedef enum mc_client_gui_ingame_status {
     MC_CLIENT_GUI_INGAME_RANDOM_FAILED,
     MC_CLIENT_GUI_INGAME_CLASS_ERRONEOUS,
     MC_CLIENT_GUI_INGAME_THREAD_FAILED,
-    MC_CLIENT_GUI_INGAME_SOURCE_NULL_REFERENCE
+    MC_CLIENT_GUI_INGAME_SOURCE_NULL_REFERENCE,
+    MC_CLIENT_GUI_INGAME_UNIMPLEMENTED
 } mc_client_gui_ingame_status;
 
 typedef enum mc_client_gui_ingame_class_phase {
@@ -148,7 +149,8 @@ mc_client_gui_ingame_status mc_client_gui_ingame_classes_inspect(mc_client_gui_i
  * Operations require exclusive serialized use of the shared model/profile graph;
  * this namespace's native monitor also rejects contention/reentry as BUSY.
  * Inspection is passive. Views expire on owner mutation/retirement, and no source
- * method beyond construction and b()V clear_messages is implemented here. */
+ * method beyond construction, b()V clear_messages and the reached a()V tick
+ * is implemented here. */
 mc_client_gui_ingame_status mc_client_gui_ingame_allocate(mc_client_gui_ingame_classes *,
                                                           const mc_client_gui_ingame_options *,
                                                           mc_client_source_uq **,
@@ -179,6 +181,15 @@ mc_client_gui_ingame_status mc_client_gui_ingame_inspect(mc_client_source_uq *,
  * and exclusive; native terminal retirement, separately, frees its storage. */
 mc_client_gui_ingame_status mc_client_gui_ingame_clear_messages(mc_client_source_uq *,
                                                                 mc_client_gui_ingame_error *);
+/* Actual uq.a()V: decrement positive j at14, increment h with Java wrap at24,
+ * then inspect the current e List at34. The ordinary empty list returns70.
+ * A null List faults at34 after those prior stores; a null entry faults at56.
+ * Nonnull message entries stop at the unreached canonical sw owner/type
+ * dependency52, preserving earlier source stores and the List. No arbitrary
+ * native void pointer is dereferenced as a fabricated chat-line instance.
+ * Constructor phase/history and Random/App/Font/GL state remain unchanged. */
+mc_client_gui_ingame_status mc_client_gui_ingame_tick(mc_client_source_uq *,
+                                                      mc_client_gui_ingame_error *);
 bool mc_client_gui_ingame_list_size(const mc_client_gui_ingame_list *, size_t *);
 
 #endif

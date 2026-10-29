@@ -418,12 +418,80 @@ static int clear_contracts(void) {
     return 0;
 }
 
+static int tick_contracts(void) {
+    fixture f;
+    CHECK(open_fixture(&f) == 0);
+    mc_client_gui_ingame_classes *classes = NULL;
+    mc_client_source_uq *owner = NULL;
+    mc_client_gui_ingame_error error = {0};
+    CHECK(mc_client_gui_ingame_tick(NULL, &error) == MC_CLIENT_GUI_INGAME_INVALID_ARGUMENT);
+    CHECK(mc_client_gui_ingame_classes_create(f.models, f.profile, 0, &classes, &error) ==
+          MC_CLIENT_GUI_INGAME_OK);
+    CHECK(mc_client_gui_ingame_allocate(classes, NULL, &owner, &error) == MC_CLIENT_GUI_INGAME_OK);
+    CHECK(mc_client_gui_ingame_tick(owner, &error) == MC_CLIENT_GUI_INGAME_SOURCE_NULL_REFERENCE &&
+          error.site.pc == 34 && !error.native_policy && owner->fields.h == 1 &&
+          owner->fields.j == 0 && owner->phase == MC_CLIENT_GUI_INGAME_RAW);
+    CHECK(mc_client_gui_ingame_retire(&owner, &error) == MC_CLIENT_GUI_INGAME_OK);
+    CHECK(mc_client_gui_ingame_allocate(classes, NULL, &owner, &error) == MC_CLIENT_GUI_INGAME_OK);
+    CHECK(mc_client_gui_ingame_construct(owner, NULL, &error) == MC_CLIENT_GUI_INGAME_OK);
+    const mc_client_gui_ingame_fields before = owner->fields;
+    const unsigned int constructor_pc = owner->last_pc, stores = owner->store_count;
+    const uint64_t initial_random = uniquifier(&f);
+    CHECK(mc_client_gui_ingame_tick(owner, &error) == MC_CLIENT_GUI_INGAME_OK &&
+          error.source_returned && error.site.pc == 70 && strcmp(error.site.method, "a") == 0 &&
+          owner->fields.h == 1 && owner->fields.j == 0);
+    owner->fields.j = 2;
+    owner->fields.h = INT32_MAX;
+    CHECK(mc_client_gui_ingame_tick(owner, &error) == MC_CLIENT_GUI_INGAME_OK &&
+          owner->fields.j == 1 && owner->fields.h == INT32_MIN);
+    CHECK(mc_client_gui_ingame_tick(owner, &error) == MC_CLIENT_GUI_INGAME_OK &&
+          owner->fields.j == 0 && owner->fields.h == INT32_MIN + 1);
+    owner->fields.j = INT32_MIN;
+    CHECK(mc_client_gui_ingame_tick(owner, &error) == MC_CLIENT_GUI_INGAME_OK &&
+          owner->fields.j == INT32_MIN && owner->fields.h == INT32_MIN + 2 &&
+          owner->fields.e == before.e && owner->fields.f == before.f &&
+          owner->fields.g == before.g && owner->fields.i == before.i &&
+          owner->last_pc == constructor_pc && owner->store_count == stores &&
+          uniquifier(&f) == initial_random && owner->fields.e->mod_count == 0);
+    CHECK(mtx_lock(&classes->mutex) == thrd_success);
+    CHECK(mc_client_gui_ingame_tick(owner, &error) == MC_CLIENT_GUI_INGAME_BUSY &&
+          error.native_policy && owner->fields.h == INT32_MIN + 2);
+    CHECK(mtx_unlock(&classes->mutex) == thrd_success);
+    mc_client_gui_ingame_list *list = owner->fields.e;
+    list->entries = calloc(1, sizeof(*list->entries));
+    CHECK(list->entries != NULL);
+    list->size = list->capacity = 1;
+    owner->fields.j = 3;
+    CHECK(mc_client_gui_ingame_tick(owner, &error) == MC_CLIENT_GUI_INGAME_SOURCE_NULL_REFERENCE &&
+          error.site.pc == 56 && !error.native_policy && owner->fields.j == 2 &&
+          owner->fields.h == INT32_MIN + 3 && list->size == 1 && list->entries[0] == NULL);
+    /* This is a genuine String owner, never a fabricated sw. The unimplemented
+     * message-type boundary must not dereference it as a chat-line instance. */
+    const uint16_t units[] = {'x'};
+    mc_player_string *text = NULL;
+    CHECK(mc_player_string_create(units, 1, &text) == MC_PLAYER_OK);
+    list->entries[0] = text;
+    CHECK(mc_client_gui_ingame_tick(owner, &error) == MC_CLIENT_GUI_INGAME_UNIMPLEMENTED &&
+          error.site.pc == 52 && error.native_policy && !error.source_returned &&
+          owner->fields.j == 1 && owner->fields.h == INT32_MIN + 4 && list->entries[0] == text &&
+          list->size == 1 && list->mod_count == 0);
+    CHECK(mc_client_gui_ingame_clear_messages(owner, &error) == MC_CLIENT_GUI_INGAME_OK);
+    CHECK(mc_client_gui_ingame_tick(owner, &error) == MC_CLIENT_GUI_INGAME_OK &&
+          owner->fields.j == 0 && owner->fields.h == INT32_MIN + 5 && error.source_returned);
+    mc_player_string_release(text);
+    CHECK(mc_client_gui_ingame_retire(&owner, &error) == MC_CLIENT_GUI_INGAME_OK);
+    CHECK(mc_client_gui_ingame_classes_release(&classes, &error) == MC_CLIENT_GUI_INGAME_OK);
+    CHECK(close_fixture(&f) == 0);
+    return 0;
+}
+
 int main(void) {
     CHECK(fields_and_holds() == 0);
     CHECK(class_failures() == 0);
     CHECK(instance_prefixes() == 0);
     CHECK(instance_random_failure() == 0);
     CHECK(clear_contracts() == 0);
+    CHECK(tick_contracts() == 0);
     printf("GuiIngame constructor contracts: %u checks\n", checks);
     return 0;
 }

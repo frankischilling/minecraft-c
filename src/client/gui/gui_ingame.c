@@ -515,3 +515,64 @@ mc_client_gui_ingame_status mc_client_gui_ingame_clear_messages(mc_client_source
     }
     return publish(&e, error);
 }
+
+static void tick_failure(mc_client_gui_ingame_error *error, mc_client_gui_ingame_status status,
+                         const char *operation, unsigned int pc, bool native) {
+    error->status = status;
+    error->operation = operation;
+    error->site = (mc_client_gui_ingame_site){"uq", "a", "()V", pc};
+    error->native_policy = native;
+}
+
+mc_client_gui_ingame_status mc_client_gui_ingame_tick(mc_client_source_uq *o,
+                                                      mc_client_gui_ingame_error *error) {
+    mc_client_gui_ingame_error e = {0};
+    if (o == NULL || o->classes == NULL) {
+        tick_failure(&e, MC_CLIENT_GUI_INGAME_INVALID_ARGUMENT, "GuiIngame tick native receiver", 0,
+                     true);
+        return publish(&e, error);
+    }
+    const int locked = mtx_trylock(&o->classes->mutex);
+    if (locked != thrd_success) {
+        e.native_thread_error = locked;
+        tick_failure(&e,
+                     locked == thrd_busy ? MC_CLIENT_GUI_INGAME_BUSY
+                                         : MC_CLIENT_GUI_INGAME_THREAD_FAILED,
+                     "GuiIngame tick native class monitor", 0, true);
+        return publish(&e, error);
+    }
+    if (o->classes->retiring || o->classes->phase == MC_CLIENT_GUI_INGAME_CLASS_INITIALIZING ||
+        o->phase == MC_CLIENT_GUI_INGAME_CONSTRUCTING ||
+        o->phase == MC_CLIENT_GUI_INGAME_RETIRING) {
+        tick_failure(&e, MC_CLIENT_GUI_INGAME_BUSY, "GuiIngame tick native active/retiring owner",
+                     0, true);
+    } else {
+        if (o->fields.j > 0)
+            o->fields.j = mc_java_i32_sub(o->fields.j, 1); /* Actual putfield14. */
+        o->fields.h = mc_java_i32_add(o->fields.h, 1);     /* Actual putfield24. */
+        mc_client_gui_ingame_list *list = o->fields.e;     /* Actual e31 before List.size34. */
+        if (list == NULL)
+            tick_failure(&e, MC_CLIENT_GUI_INGAME_SOURCE_NULL_REFERENCE,
+                         "uq tick actual List.size null receiver", 34, false);
+        else if (list->size > list->capacity || list->size > INT32_MAX ||
+                 (list->size != 0 && list->entries == NULL))
+            tick_failure(&e, MC_CLIENT_GUI_INGAME_INVALID_PHASE,
+                         "GuiIngame tick native List storage invariant", 34, true);
+        else if (list->size != 0) {
+            /* No source callback occurs between size34 and get47. This is the
+             * same current List/first element, never a diagnostic substitute. */
+            void *entry = list->entries[0];
+            if (entry == NULL)
+                tick_failure(&e, MC_CLIENT_GUI_INGAME_SOURCE_NULL_REFERENCE,
+                             "uq tick actual sw.b null receiver", 56, false);
+            else
+                tick_failure(&e, MC_CLIENT_GUI_INGAME_UNIMPLEMENTED,
+                             "uq tick canonical sw message owner/type dependency", 52, true);
+        } else {
+            e.site = (mc_client_gui_ingame_site){"uq", "a", "()V", 70};
+            e.source_returned = true;
+        }
+    }
+    (void)mtx_unlock(&o->classes->mutex);
+    return publish(&e, error);
+}

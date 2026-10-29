@@ -50,6 +50,10 @@ virtual-device attach/detach; they do not supply replacement IDs or a fake
 created flag. Polling does not pump or remove shared transport events.
 
 The [startup-tail qualification](normal-startup.md#validation-and-remaining-work)
-contains Windows and sanitized Linux CPU/device results. Complete physical
-Controller behavior, input timing and the connected input/tick/gameplay loop
-remain unfinished.
+contains Windows and sanitized Linux CPU/device results. The new
+[default menu runtime](menu-runtime.md) connects physical menu events to the same
+SDK queues and source screen methods, draining mouse before keyboard and keeping
+source ticks separate from input polling. Quit is connected; other menu routes
+retain explicit dependencies. Focused Windows source-event and native-menu tests
+pass; the latest complete suite, hosted CI, Linux and original input timing remain
+pending. Complete physical Controllers and gameplay input remain unfinished.

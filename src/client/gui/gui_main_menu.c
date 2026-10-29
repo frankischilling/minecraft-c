@@ -15,6 +15,9 @@ struct mc_gui_main_menu {
     mc_client_texture font_texture, background_texture, logo_texture, button_texture;
     mc_math_trig trig;
     bool trig_ready, anaglyph;
+    bool active;
+    mc_gui_main_menu_measure_fn measure_source;
+    void *measure_context;
 };
 
 static bool fail(mc_gui_main_menu_error *error, mc_gui_main_menu_status status,
@@ -173,8 +176,22 @@ static bool measure(mc_gui_main_menu *menu, const mc_font_text *value, int32_t *
     }
     if (!font_ready(menu, error))
         return false;
-    const mc_font_renderer_status status = mc_font_renderer_measure(menu->font, value, out);
-    return status == MC_FONT_RENDERER_OK || font_failure(error, "measure GuiMainMenu text", status);
+    int32_t width = 0;
+    const mc_font_renderer_status status = mc_font_renderer_measure(menu->font, value, &width);
+    if (status != MC_FONT_RENDERER_OK)
+        return font_failure(error, "measure GuiMainMenu text", status);
+    if (menu->measure_source != NULL) {
+        int32_t source_width = 0;
+        if (!menu->measure_source(menu->measure_context, value, &source_width))
+            return fail(error, MC_GUI_MAIN_MENU_FONT_FAILED,
+                        "measure canonical source GuiMainMenu Font");
+        if (source_width != width)
+            return fail(error, MC_GUI_MAIN_MENU_UNSUPPORTED_STATE,
+                        "source Font and native glyph width disagree");
+        width = source_width;
+    }
+    *out = width;
+    return true;
 }
 
 static bool text(mc_gui_main_menu *menu, const mc_font_text *value, int32_t x, int32_t y,
@@ -323,9 +340,9 @@ void mc_gui_main_menu_free(mc_gui_main_menu *menu) {
     }
 }
 
-bool mc_gui_main_menu_draw(mc_gui_main_menu *menu, const mc_gui_main_menu_frame *frame,
-                           mc_gui_main_menu_millis_fn read_millis, void *clock_context,
-                           mc_gui_main_menu_error *error) {
+static bool draw(mc_gui_main_menu *menu, const mc_gui_main_menu_frame *frame,
+                 mc_gui_main_menu_millis_fn read_millis, void *clock_context,
+                 mc_gui_main_menu_error *error) {
     if (menu == NULL || frame == NULL || read_millis == NULL ||
         (frame->button_count != 0 && frame->buttons == NULL))
         return fail(error, MC_GUI_MAIN_MENU_INVALID_ARGUMENT, "draw GuiMainMenu");
@@ -392,4 +409,36 @@ bool mc_gui_main_menu_draw(mc_gui_main_menu *menu, const mc_gui_main_menu_frame 
         if (!button(menu, &frame->buttons[i], frame->mouse, error))
             return false;
     return success(error);
+}
+
+bool mc_gui_main_menu_draw_measured(mc_gui_main_menu *menu, const mc_gui_main_menu_frame *frame,
+                                    mc_gui_main_menu_millis_fn read_millis, void *clock_context,
+                                    mc_gui_main_menu_measure_fn measure_source,
+                                    void *measure_context, mc_gui_main_menu_error *error) {
+    if (menu == NULL || menu->active)
+        return fail(error, MC_GUI_MAIN_MENU_INVALID_ARGUMENT,
+                    "GuiMainMenu exclusive native draw admission");
+    menu->active = true;
+    menu->measure_source = measure_source;
+    menu->measure_context = measure_context;
+    const bool ok = draw(menu, frame, read_millis, clock_context, error);
+    menu->measure_source = NULL;
+    menu->measure_context = NULL;
+    menu->active = false;
+    return ok;
+}
+
+bool mc_gui_main_menu_draw(mc_gui_main_menu *menu, const mc_gui_main_menu_frame *frame,
+                           mc_gui_main_menu_millis_fn read_millis, void *clock_context,
+                           mc_gui_main_menu_error *error) {
+    return mc_gui_main_menu_draw_measured(menu, frame, read_millis, clock_context, NULL, NULL,
+                                          error);
+}
+
+bool mc_gui_main_menu_same_source(const mc_gui_main_menu *menu, const mc_client_display *display,
+                                  const mc_registry_resources *resources,
+                                  const mc_registry_classes *classes, bool anaglyph) {
+    return menu != NULL && !menu->active && menu->display == display &&
+           menu->anaglyph == anaglyph &&
+           mc_client_assets_same_source(menu->assets, resources, classes);
 }

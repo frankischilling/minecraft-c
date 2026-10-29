@@ -20,9 +20,14 @@ RenderManager on the same App. It continues through statistics, input, texture
 effects, RenderGlobal, particles and resource-thread startup. The default
 no-connection path now constructs GuiIngame and the main menu, publishes the
 screen, saves statistics and completes scaled screen initialization. That
-source startup method returns; the next unconnected operation is the clock
-read in `Minecraft.run` at offset 32. The executable still uses its
-title/inspection entry; frame scheduling and gameplay adoption remain unfinished.
+source startup method returns. The bounded probe stops at `Minecraft.run`32;
+the default [menu runtime](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/menu-runtime.md)
+continues with canonical Timer/input owners, no-World ticks and a drawing bridge
+that reads actual source menu fields and checks resource/Font identities. Quit
+clears the App run flag; other screen destinations remain dependencies. Four
+focused Windows tests pass, including 100 frames and 32 ticks with cleanup. The
+latest complete suite, hosted CI and Linux remain pending. Full source run/PX
+rendering, shutdown and gameplay adoption remain unqualified.
 
 The runtime uses C17 libraries with explicit ownership. The [architecture](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/architecture.md)
 describes the module boundaries; [parity](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md) records the qualified
@@ -65,7 +70,8 @@ controller updates, mining, item use and complete World entry remain unfinished.
 The water owner has its CPU animation body on the existing arrays and shared
 Math profile. Its [comparison guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/water_animation/README.md)
 records the finite raw-array/RGBA scope. The reached normal startup now registers
-the water effect; the isolated comparison does not establish GPU correspondence. [Notice/model ownership](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/achievement-notice.md) is also
+all nine effects and the menu invokes their real atlas-update path. The isolated
+comparison does not establish GPU correspondence. [Notice/model ownership](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/achievement-notice.md) is also
 separate from notice and Item drawing.
 
 [World rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-renderer.md) remains a fixed inspection of a
@@ -93,16 +99,18 @@ the hosted Windows/GCC/Clang matrix also compiles the resource lookup probes and
 passes four pure observer checks per compiler. The separate earlier native
 producer and retained seven-row Windows CPU original result keep their own
 source/admission scope. Supplied-original profiles and later startup source
-proposals are outside that hosted result; normal App adoption remains unfinished.
+proposals are outside that hosted result. The newer normal startup now adopts
+the real App resources; its scope is recorded separately above.
 
 The [OpenAL backend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/audio-backend.md) owns real devices, caches and
 workers; [sound resources](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/sound.md) retain streams and decoder state.
-Application audio startup and original device correspondence remain unfinished.
+Normal source startup binds the real SoundManager and scans local resources.
+Original device correspondence and complete gameplay audio remain unfinished.
 The shared simulation and server graph initializes no graphics or audio device.
 See [dependencies](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/dependencies.md) for source pins and notices.
 
 Application World entry, complete World time/block scheduling, Map tracking and
-terrain updates, remaining wake/hurt/GUI operations, fog and normal frame drawing still prevent a
+terrain updates, remaining wake/hurt/GUI operations, fog and dynamic World drawing still prevent a
 playable client. Dedicated-server startup and ticking remain separate work.
 [Test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md) distinguishes the current full integration
 from earlier full matrices and isolated module comparisons.

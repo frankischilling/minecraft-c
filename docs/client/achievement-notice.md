@@ -2,8 +2,8 @@
 
 The client notice owns the reached `vu -> ub` constructor prefix and its Item
 renderer's `bb -> bw -> fh(0) -> ko` graph. This is CPU construction and
-notification state. Notice and Item drawing still return an explicit unfinished
-dependency.
+notification state. The genuine no-notice draw branch now returns; active
+notice and Item drawing retain explicit unfinished dependencies.
 
 The Biped contains nine `ps` parts, 72 directly allocated Vec3 positions, 72
 original `ib` vertices, 216 distinct UV-copy vertices and 54 `tz` quads. UV copies
@@ -32,6 +32,15 @@ translates/stores `achievement.get`, then stores the achievement's name, samples
 the clock and stores the achievement and false. Null operands retain those
 distinct prefixes. Long subtraction uses the existing wrapping helper.
 
+The reached `vu.a()V` draw reads `Minecraft.H` from the App's genuine bound
+class namespace. A positive value stops at the watermark GL dependency at `11`.
+Otherwise a null `f` or zero `g` returns at `107` without a clock or GL call.
+A live notice stops before its clock call at `108`. A fixture without the real
+bound namespace retains an explicit dependency at `0`; it cannot infer a zero
+static field. The default source menu uses the genuine no-notice branch in its
+focused Windows run. This does not qualify active-notice pixels or the original
+watermark body.
+
 The concrete `kh` callback is allocated in the common Registry arena and holds
 the actual typed application identity. It reloads the application's current
 Settings, its named inventory binding `r`, and that binding's current code.
@@ -58,8 +67,9 @@ Every model position hold is released before the class owner retires. Session
 storage is unchanged.
 
 Inventory-callback installation belongs after genuine StatsWriter construction
-and publication at the normal startup site. The current menu initializer does
-not invent that completed `Minecraft.I` step. The isolated body observer calls
+and publication at the normal startup site. The default source startup now
+performs that `Minecraft.I` step; the separate diagnostic menu initializer does
+not invent it. The isolated body observer calls
 installation on actual diagnostic owners; its original helper invokes the
 genuine `kh` constructor and `ny.a(gt)` methods.
 

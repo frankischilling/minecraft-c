@@ -21,6 +21,30 @@ enabled state, half-open hover and Java integer arithmetic determine drawing.
 Nonzero z levels, arbitrary button subclasses and a World background remain
 unsupported. This module does not complete child screens or gameplay.
 
+## Drawing the source screen
+
+The [source screen bridge](../../src/client/gui/source_screen_drawing.h) draws an
+initialized GuiMainMenu through these same OpenGL 3.3 kernels. It reads the real
+GuiScreen dimensions, splash String and GuiButton list, including each button's
+position, label, enabled state and visibility. Its temporary frame arguments
+borrow those fields; it creates no second menu or replacement splash selection.
+
+The bridge checks that the renderer and screen share the Display, resource
+provider, Registry and anaglyph setting. It currently accepts the default
+texture pack without a World. GuiMainMenu's captured Font and the application's
+current Font must be the same owner, covering the ordinary startup profile.
+Every reached nonnull text measurement calls that canonical bitmap Font and
+requires the native glyph kernel to produce the same width before continuing.
+Other screens, texture packs, World backgrounds and Font rebinding remain
+explicit unsupported profiles.
+
+The bridge supplies drawing only. Its caller owns frame scheduling, input,
+source GUI ticks, actions, swaps and capture. Reusing the earlier qualified
+kernels does not establish a new original-game pixel comparison. The default
+source-menu runtime passes a focused Windows 100-frame, 32-tick run with cleanup
+and an inspected 854 by 480 capture. Its latest complete suite, hosted CI and
+Linux qualification remain pending.
+
 ## Conditional scene transport
 
 `mc_gui_main_menu_probe RESOURCE_ROOT SCENE_FILE` takes the extracted JAR

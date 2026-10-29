@@ -4,8 +4,9 @@ The [native client](client/startup.md) owns the resource source, shared Registry
 asset cache, font layout and SDL/OpenGL display. The display draws supplied
 quads and manages context/texture ownership; it has no World or screen logic.
 Image decoding and font layout work without an OpenGL context. Graphics and audio device libraries
-remain outside the simulation and server link graph. The current title screen
-does not yet start gameplay, child menus or audio. A separate
+remain outside the simulation and server link graph. The default constructed
+App now drives the no-World source menu; World entry, remaining child menus and
+gameplay remain unfinished. A separate
 [World inspection](client/world-renderer.md) owns actual World construction,
 finite CPU section meshes and independent GPU buffers. It retains no Chunk view
 after meshing and does not substitute a camera for a Player.
@@ -15,8 +16,13 @@ publishes the real source graph through SoundManager binding, nine texture
 effects, RenderGlobal/viewport and the particle renderer. It uses canonical
 File/stream ownership for Settings saves. External scene/effect occurrences
 preserve their App/Engine/Display dependencies through retryable retirement.
-Resource-thread allocation and later GUI adoption remain unfinished; the
-default executable still uses the diagnostic title/inspection entry.
+The resource worker and initial GUI publication are connected. The production
+[menu runtime](client/menu-runtime.md) owns native bootstrap, Timer/frame adoption,
+source screen input/ticks and the same-resource drawing bridge. Explicit flags
+retain the diagnostic title/World entry. Four focused Windows tests pass,
+including a 100-frame, 32-tick menu run with cleanup. The latest complete suite,
+hosted CI and Linux remain pending; full source run/PX/render/shutdown parity
+remains unproven.
 
 The [first-person component](client/first-person.md) reads genuine Player state
 and the actual App's late Settings/World fields. Its finite view can draw copied
@@ -30,7 +36,8 @@ The complete private application storage is shared by production and CPU tests.
 Entity/render classes live above menu and World lifetimes; the concrete inventory
 description callback reloads the same application's current Settings. Runtime
 formatted Strings retire on replacement. This construction/state layer requires
-no SDL headers or graphics/audio runtime. Notice drawing and complete startup remain unfinished. The
+no SDL headers or graphics/audio runtime. The no-notice draw branch returns
+without GL or clock work; active notice and Item drawing remain unfinished. The
 [active Player tick](entity/player-active-tick.md) uses these same application owners.
 
 The [GameSettings owner](client/game-settings.md) keeps options persistence
@@ -99,8 +106,8 @@ the concrete Player notification and the later Item death check. The
 four distinct effect Lists and the captured manager lifetime. Application f/p/j
 fields preserve the source World/RenderEngine/manager reads; a null manager fails
 after particle construction. The selected dn startup operation is implemented,
-while normal RenderEngine startup, effect drawing and frame scheduling remain
-unfinished.
+and adopted by normal startup. Nonempty effect drawing and World/gameplay
+frame scheduling remain unfinished.
 
 [Item ticking](entity/item-tick.md) executes hl.w_, inherited environment update,
 six-neighbor push-out, movement, friction and aging on constructed Items. Its
@@ -109,8 +116,9 @@ World Entity pass dispatches the implemented body; application ticking and
 the later World scheduler remain unfinished.
 
 The water effect has a CPU animation body on its existing constructor-owned
-float/RGBA arrays and shared Math profile. Texture registration, upload and
-normal RenderEngine startup remain unfinished.
+float/RGBA arrays and shared Math profile. Normal startup registers all nine
+effects; the menu runtime invokes their actual frame updates and atlas uploads.
+Original GPU correspondence and gameplay rendering remain unqualified.
 
 [Crafting inventories and containers](inventory/crafting.md) own the concrete
 Player inventory, crafting grid/result and Player/Workbench Slot graphs.

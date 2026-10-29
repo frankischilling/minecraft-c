@@ -98,8 +98,12 @@ mc_client_notice_status mc_client_achievement_notice_remind(mc_client_achievemen
                                                             mc_client_notice_error *);
 mc_client_notice_status mc_client_achievement_notice_free(mc_client_achievement_notice **,
                                                           mc_client_notice_error *);
-/* Entire vu.a() drawing is still a reached, explicit dependency; it never
- * becomes a successful empty draw, including the watermark path. */
+/* Reached vu.a() gate reads actual H from the constructed registered App's
+ * live bound class namespace. With H<=0, null f or zero g returns107 without
+ * clock/GL/Font work. Unbound/null/RAW App namespaces remain an explicit native
+ * dependency at0; no missing namespace is inferred as H=0. H>0 retains the
+ * watermark GL dependency11, and active notices retain clock/drawing108.
+ * App/class/Registry/model owners stay live and exclusively borrowed. */
 mc_client_notice_status mc_client_achievement_notice_draw(mc_client_achievement_notice *,
                                                           mc_client_notice_error *);
 #endif

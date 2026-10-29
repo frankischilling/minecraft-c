@@ -169,6 +169,10 @@ static mc_client_screen_status release_screen(mc_client_source_da **slot, bool s
             o->phase = MC_CLIENT_SCREEN_RETIRING;
             bool ready = !o->is_menu || mc_screen_menu_cleanup_locked((mc_client_source_fu *)o, &e);
             if (ready)
+                ready = mc_screen_button_release_locked(&o->selected_cleanup, &e);
+            if (ready)
+                ready = mc_screen_button_release_locked(&o->fields.a, &e);
+            if (ready)
                 ready = mc_screen_initializations_prepare_locked(o, &e);
             if (ready && c->holds == 1)
                 ready = mc_screen_class_final_locked(c, &e);
@@ -256,6 +260,7 @@ mc_client_screen_status mc_client_screen_inspect(mc_client_source_da *o,
                 m->buffered_reader != NULL && m->buffered_reader->constructed;
         }
         if (o->phase == MC_CLIENT_SCREEN_RETIRING) {
+            v.da.a = NULL;
             v.da.g = NULL;
             v.da.h = NULL;
             v.da.e = NULL;

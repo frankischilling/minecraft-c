@@ -13,7 +13,7 @@ typedef struct mc_client_application_options {
     int64_t world_seed;
     int32_t width, height, gui_scale;
     uint32_t frame_limit;
-    bool hidden, fixed_time, gui_scale_override;
+    bool hidden, fixed_time, gui_scale_override, inspect_menu;
     int64_t time_millis;
 } mc_client_application_options;
 

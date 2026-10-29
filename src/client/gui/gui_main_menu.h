@@ -59,6 +59,12 @@ typedef struct mc_gui_main_menu_frame {
  * time from pixels or accepts a precomputed pulse/scale. */
 typedef bool (*mc_gui_main_menu_millis_fn)(void *context, int64_t *out);
 
+/* Narrow source Font bridge. Text is a borrowed nullable UTF-16 view and the
+ * callback performs its real source measurement. The native glyph kernel must
+ * produce the same width; a disagreement stops drawing at that measurement.
+ * Callback/owners must not reenter or mutate any borrowed drawing state. */
+typedef bool (*mc_gui_main_menu_measure_fn)(void *context, const mc_font_text *, int32_t *out);
+
 /* Default-pack, no-World GuiMainMenu draw owner. Borrow assets
  * and display, which must outlive it and remain exclusively usable here.
  * Creation loads/uploads the genuine font image at this caller-selected point;
@@ -92,5 +98,16 @@ void mc_gui_main_menu_free(mc_gui_main_menu *menu); /* NULL is harmless; no GL c
 bool mc_gui_main_menu_draw(mc_gui_main_menu *menu, const mc_gui_main_menu_frame *frame,
                            mc_gui_main_menu_millis_fn read_millis, void *clock_context,
                            mc_gui_main_menu_error *error);
+
+/* Same drawing body with canonical source Font measurement at each reached
+ * measurement point. The original diagnostic entry above selects no callback.
+ * This does not replace labels, positions, Random, clock or menu state. */
+bool mc_gui_main_menu_draw_measured(mc_gui_main_menu *, const mc_gui_main_menu_frame *,
+                                    mc_gui_main_menu_millis_fn, void *clock_context,
+                                    mc_gui_main_menu_measure_fn, void *measure_context,
+                                    mc_gui_main_menu_error *);
+bool mc_gui_main_menu_same_source(const mc_gui_main_menu *, const mc_client_display *,
+                                  const mc_registry_resources *, const mc_registry_classes *,
+                                  bool anaglyph);
 
 #endif

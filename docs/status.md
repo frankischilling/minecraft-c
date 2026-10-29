@@ -1,14 +1,31 @@
 # Development status
 
-The native C client is pre-playable. It opens a title screen and renders a
-fixed-camera generated-world inspection with locally imported resources.
-Normal singleplayer World entry, physical input and frame/tick adoption,
-dynamic rendering and complete gameplay interactions remain unfinished.
+The native C client is pre-playable. Its new default path uses the constructed
+source App and initialized menu, with source events, ticks and Quit connected.
+All 463 selected Windows tests pass, including real startup, GPU uploads,
+source events and the native menu. A 100-frame, 32-tick menu run completes with
+cleanup and an inspected 854 by 480 capture. Hosted results retain their exact
+source scopes below. Explicit flags retain the diagnostic title and fixed-camera
+World inspection. World entry, dynamic
+terrain rendering, remaining menus and gameplay remain unfinished.
 
 ## Current integration
 
-The current Windows source builds ALL and passes 460 selected CTests without
-failures or skips, including the normal startup windows, resource worker,
+The new runtime builds ALL, passes 463 selected CTests without failure or skip,
+and passes a separate headless Release ALL build. Formatting checks 1,341 files.
+The selection excludes 45 configured reference-label profiles. See the
+[runtime checks](testing.md#default-source-menu-runtime) for native menu,
+prepared account-check boundary and GPU upload scopes.
+
+Published predecessor `3ec9892` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40796960416):
+434 Windows, 452 GCC and 452 Clang tests, 1,338 total, without failures or skips.
+Formatting checks 1,325 files. All tested merge trees match that published head.
+GCC restored timing estimates and started long cases early: its test step took
+189.20 seconds, compared with 253.61 seconds in the prior cold-cache run. Source
+and cloud conditions also differ; this observation establishes no causal speedup.
+
+The preceding startup/menu-initialization Windows source builds ALL and passes
+460 selected CTests without failures or skips, including the normal startup windows, resource worker,
 source menus and RenderGlobal device controls. This selection excludes configured
 reference-label profiles. Formatting checks 1,325 files. A separate headless
 Release ALL build also passes. See [the current scope](testing.md#normal-startup-through-menu-initialization).
@@ -20,8 +37,9 @@ GCC passes all 452 tests. Clang passes 451 of 452; Display creation fails in one
 GL setup case without its underlying cause in the old assertion output.
 Windows stops on MSVC C4127 in a constant layout check. The current source uses
 three equivalent compile-time assertions and retains the actual Display error
-on failure. Formatting passes for all 1,319 files in that checkpoint. Current
-Linux/hosted qualification remains separate from newer Windows results.
+on failure. Formatting passes for all 1,319 files in that checkpoint. The later
+`3ec9892` hosted run passes these checks; the old Display failure's cause remains
+unproven. Newer runtime qualification retains its own scope.
 
 Hosted baseline `5d61f89` passes [all four jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40746811719):
 410 Windows, 427 GCC and 427 Clang cases, 1,264 total, without failures or skips.
@@ -79,10 +97,13 @@ return before App publication `j660`. The resource-thread caller now constructs
 and publishes `U676`, starts its worker, and runs the `Post startup` diagnostic.
 GuiIngame construction and `v705` publication now complete. Startup constructs
 the main menu, saves statistics, clears messages, publishes the current screen
-and initializes its scaled layout and buttons. `Minecraft.a()` returns at `749`;
-the next unconnected operation is `Minecraft.run`'s clock call at `32`.
-The live frame loop, remaining transitions and World entry remain unfinished.
-The default executable continues to use title/inspection startup.
+and initializes its scaled layout and buttons. `Minecraft.a()` returns at `749`.
+The bounded startup probe stops before the clock call at `Minecraft.run`32;
+the default [native menu runtime](client/menu-runtime.md) continues from that
+same graph. It adopts Timer frames, canonical screen input, no-World ticks and
+source menu drawing. Quit clears the actual App run flag. Other transitions,
+World entry and gameplay remain unfinished. Full source run/PX rendering and
+`Minecraft.d()` shutdown parity are not established.
 
 The earlier scene-construction increment passes 24 selected Windows cases, with six recorded on
 the production successor and eighteen on its test-only triangle-observation
@@ -197,7 +218,8 @@ including retained clock-failure prefixes and independent render-partial storage
 [Minecraft class activation and the Timer hack worker](client/application-owner.md)
 pass 225 checks and 70 controls in each normal/optimized Python run. Five original
 class/worker projections retain their declared prepared-receiver scope. These
-owners are startup prerequisites; normal startup and World entry remain unfinished.
+owners are startup prerequisites adopted by the newer source startup above;
+World entry remains unfinished.
 
 [RenderEngine construction](client/render-engine.md) passes 8,333 CPU and 223
 device checks, with 55 separate texture-trace checks. Fresh original CPU runs

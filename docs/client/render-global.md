@@ -3,7 +3,7 @@
 The canonical `n` owner constructs the reached RenderGlobal state on the actual
 App, Engine and Display. Normal startup calls it at625, publishes `g628`, applies
 the viewport and constructs the particle renderer before publishing `j660`.
-Resource-thread allocation664 is the next unfinished startup operation.
+Startup now continues through the resource worker and initialized main menu.
 
 The interface is [render_global.h](../../include/mc/client/world/render_global.h).
 Cold allocation is separate from source construction. Construction retains
@@ -45,6 +45,16 @@ retains failed cleanup state and preserves the same slot for retry. It does not
 invent a source deletion call, reverse completed stores or retire another
 namespace's resources. Startup retires RenderGlobal and particle users before
 Engine effects and the shared graphics authority; Display stays alive throughout.
+
+## Chunk-update counter
+
+The `dk` class owner now exposes its actual `b` update counter. Active use first
+initializes the same-namespace `nw` Tessellator and stores it in `D`, then stores
+zero in `b`. Get, reset and wrapping increment operate on that class field.
+The [default menu runtime](menu-runtime.md) reads and resets it for the FPS
+String. This field-level implementation does not complete `dk` construction,
+chunk rebuilding or the dynamic render body. The no-World menu's zero count is
+the initialized field value, not a supplied statistic.
 
 ## Evidence and remaining work
 

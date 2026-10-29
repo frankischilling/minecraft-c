@@ -1,122 +1,95 @@
 # Native client startup
 
-`minecraft-client` is a C17 native executable using SDL3 and OpenGL 3.3 core.
-It draws the Beta 1.7.3 title screen from locally imported textures,
-translations and font data. It does not yet start a playable World. After asset
-import, normal startup needs neither the original JAR nor a Java runtime or
-launcher. A separate [World inspection](world-renderer.md) renders a fixed area
-of a real generated World; its diagnostic flag does not start gameplay.
+`minecraft-client` is a C17 executable using SDL3 and OpenGL 3.3 core. Its new
+default path constructs the source App, completes the no-connection startup and
+continues through the [no-World menu runtime](menu-runtime.md). World entry and
+gameplay remain unfinished. Four focused Windows tests pass, including a
+100-frame, 32-tick native menu run with cleanup and an inspected 854 by 480
+capture. All 463 selected Windows CTests pass. Hosted CI, Linux and original
+correspondence retain their separate source scopes in the testing record.
 
-Build with the default `MC_BUILD_CLIENT=ON`, then supply the asset import root:
+After [resource import](../reference/resources.md), it requires neither the
+original JAR, Java nor the launcher. Build with `MC_BUILD_CLIENT=ON`, then run:
 
 ```sh
-./build/minecraft-client --assets /absolute/path/to/imported-assets --game-directory /absolute/path/to/game
+./build/minecraft-client --assets /absolute/path/to/imported-assets --username Player
 ```
 
-For Visual Studio builds, use `build/Debug/minecraft-client.exe`. The import
-root contains `jar/`, `resources/` and the import manifest. It is separate from
-the game directory containing `options.txt`. See
-[resource import](../reference/resources.md) and [GameDirectory](game-directory.md).
-Without `--game-directory`, the client selects and, when required, creates the
-native default game directory. Controlled runs should use a fresh explicit
-directory.
+Visual Studio builds place the executable under `build/Debug/`. The import root
+and native default [game directory](game-directory.md) are separate. Normal
+startup loads Settings from that game directory, saves options during sound
+setup and saves statistics during screen publication. It does not substitute
+the import directory for the game directory or select a temporary fallback.
 
-SDL creates a resizable 854-by-480 window by default. `--width` and `--height`
-set its initial dimensions; physical pixels can differ on a high-DPI display.
-F11 toggles fullscreen. Window close and the title's Quit Game button exit.
+The default initial window is 854 by 480. `--width` and `--height` select initial
+dimensions; physical pixels can differ on a high-DPI display. `--frames N`
+limits a native observation, `--hidden` requires that limit, and `--capture`
+requests a completed-frame PNG. These are development options, not original game
+settings. The default path currently rejects `--game-directory` and
+`--gui-scale` overrides; it uses the actual default directory and loaded scale.
 
-## Source owner construction
+## Source startup and menu
 
-Separate source-owner modules implement the standalone Minecraft constructor and
-its retained Timer, loading-screen, achievement, Biped, SoundManager, water/lava
-and statistics prerequisites. The resource graph supplies selected Default/ZIP
-packs, shared image loading, bitmap fonts, texture lookups and mutable color
-arrays. Focused native construction, failure-prefix and retirement checks pass
-on Windows and sanitized Clang/GCC Linux builds; see [development status](../status.md).
+The [normal startup owner](normal-startup.md) constructs the actual Timer,
+loading/achievement/model and sound owners, Display, save manager,
+[Settings](game-settings.md), selected Pack, RenderEngine, bitmap Font, color
+maps, EntityRenderer, RenderManager and statistics. It creates input, registers
+nine texture effects, constructs RenderGlobal and particles, starts the resource
+worker, then publishes GuiIngame and the initialized main menu.
 
-The normal executable still follows the menu/inspection startup described here.
-The separate [normal startup owner](normal-startup.md) connects the real
-Display, directory, Settings, Pack, Engine, Font and color-map constructors.
-Adopting the complete source startup, physical input, World entry and the live
-gameplay loop remains unfinished. Unsupported resource branches retain explicit
-frontiers; native owner checks do not establish complete original-game parity.
+The bounded startup probe intentionally stops at `Minecraft.run`32 after source
+startup returns749. The production native bridge continues from that same
+completed graph. The [architecture](../architecture.md),
+[GameDirectory source contract](../reference/game-directory.md) and
+[development status](../status.md) separate implementation from verification.
 
-## Settings at startup
+The menu loop uses the canonical [Timer](timer.md), SDK input queues and source
+screen owners. It handles mouse events before keyboard events and advances the
+actual GuiMainMenu/GuiIngame counters. The [drawing bridge](gui-main-menu.md)
+reads the source splash, button labels, positions and flags, checks resource
+identities and canonical Font widths, and uses the existing OpenGL kernels.
+The admitted default-pack/no-World profile is narrower than complete rendering.
 
-The App now owns the [achievement notice/model constructor graph](achievement-notice.md)
-before Display and Settings creation. Its Entity and render-class owners survive
-menu/World changes, and each notice/model child retires before its Registry and
-Entity namespace. This supplies construction and notification state; full startup,
-notice drawing and Player ticking remain unfinished. The App also constructs
-its real water-effect owner before statistics initialization and adopts a real
-Session and StatsWriter, then installs the inventory-description callback after
-writer publication. [Player statistics](player-statistics.md) describes that
-ownership, reached dispatch and remaining filename profile.
+Quit and window close use the actual App run flag. Singleplayer, Multiplayer,
+Mods and Texture Packs, and Options retain explicit unfinished destination
+screens. Fullscreen, source F2 screenshots, debug timing and focused gameplay
+input also retain explicit dependencies. [Option actions](game-options.md),
+[achievement notices](achievement-notice.md) and
+[Player statistics](player-statistics.md) have their own component scopes.
 
-The App creates Display first, then a real GameDirectory owner and one
-file-backed [GameSettings](game-settings.md) owner. Settings load before the
-menu's font texture, lazy title textures and GUI layout. A directory or native
-settings failure stops startup. There is no asset-directory, temporary-directory
-or SDL preference-path fallback. Source-caught load failures retain defaults
-and any fields already changed, then allow later startup work to use that same
-owner. No replacement settings object hides the failure.
+Native teardown retires the live graph and joins workers. It does not establish
+the full original `Minecraft.d()` shutdown sequence. Complete source frame/PX
+rendering, World entry, dynamic terrain, menus and gameplay remain unverified
+or unfinished.
 
-GUI layout and resize read the retained `guiScale`. A supplied `--gui-scale N`
-applies after load, including when N is 0 or negative. Zero requests automatic
-scaling; a negative value leaves the scale factor at 1 in the source loop.
-Without the flag, the loaded value is used. The override changes memory only.
-Startup, resize and retirement do not save or rewrite `options.txt`.
+## Explicit diagnostic frontend
 
-Loaded initial anaglyph reaches the font-atlas upload during menu creation,
-later background/logo/button texture uploads, and FontRenderer's palette
-construction at first use. The menu retains that initial flag for its lifetime.
-This does not provide the effectful texture-refresh setter or live RenderEngine
-settings reads. Rendering still uses Default imported resources; a loaded
-texture-pack name does not select or scan custom packs.
+`--inspect-menu`, `--time-millis` or `--inspect-world` select the existing
+separate diagnostic entry. Its title renderer and finite
+[World inspection](world-renderer.md) retain their own options and test history.
+The World view is a fixed inspection, without Player controls or implicit save.
 
-Bad-option and caught load messages go to stdout. The adapter writes counted
-UTF-16 text as UTF-8 with the host line separator, retains embedded NUL,
-combines surrogate pairs and substitutes `?` for an unpaired surrogate.
-Native failures have their separate status and diagnostic path. No Java
-Throwable or stack trace is fabricated.
+An isolated diagnostic menu can use an explicit directory and fixed splash time:
 
-The original startup also constructs its save manager before settings and
-performs texture-pack, color-map, audio, input and screen-switch work around
-these consumers. Those descendants and their exact order remain unfinished.
-Original audio setup can save options; this App has no audio owner and performs
-no such save. The [source contract](../reference/game-directory.md) separates
-this implemented connection from complete original startup.
+```sh
+./build/minecraft-client --assets /absolute/path/to/imported-assets --inspect-menu --game-directory /absolute/path/to/fresh-diagnostic-game --time-millis 0 --frames 2
+```
 
-## Title rendering and input
-
-The title uses the original font atlas's blue-channel advance calculation,
-translated button labels, tiled dirt background, two logo quads and animated
-splash text. Splash selection preserves file order and duplicate entries and
-uses the shared Java Random implementation. Calendar greetings follow selection.
-GUI scaling and mouse conversion use the original integer arithmetic.
-The [GuiMainMenu renderer](gui-main-menu.md) supplies the shared title draw body
-for the application and its conditional observation probe.
-The [Timer](timer.md) supplies elapsed 20 Hz GUI ticks. Each tick drains mouse
-events before keyboard events. Timer and GUI input continue when a native
-drawable has zero size, using the last positive input geometry while drawing
-waits. Inactive windows sleep ten milliseconds at the end of a frame, including
-frames waiting for a drawable; loss of focus also leaves fullscreen. Actual
-input comparisons with the original and fullscreen behavior remain unverified.
-
-Singleplayer, Multiplayer, Mods and Texture Packs, and Options remain unfinished;
-their buttons currently report an unavailable screen. Options/Controls UI,
-physical key mapping, effectful settings setters, audio, custom texture packs
-and gameplay remain open. Loaded performance mode does not yet select source
-frame pacing. The title alone does not establish complete presentation or input
-parity with the original client.
+That diagnostic frontend supports its earlier scale/settings experiments.
+Those overrides and earlier captures do not qualify the default source runtime.
 
 ## Diagnostic runs and tests
 
-`--frames N` exits after a finite number of drawn frames. `--hidden` requires
-that limit. `--capture OUTPUT.png` writes the first completed frame before swap;
-`--time-millis N` fixes only the splash animation's clock input. It does not fix
-the default Random constructor or pretend to observe the original clock.
-These flags support bounded startup checks; they are not original game options.
+
+`--frames N`, `--hidden` and `--capture OUTPUT.png` provide bounded native
+observations. Hidden runs require a frame limit. In the separate diagnostic
+frontend, `--time-millis N` fixes only the splash clock. It does not fix default
+Random entropy or represent an original clock observation.
+
+## Earlier diagnostic qualification
+
+The results below belong to the explicit diagnostic frontend and its earlier
+source snapshots. They do not qualify the new default constructed-source loop.
 
 The new `client.game_directory` and optional graphics `client.startup` tests
 pass on Windows MSVC x64 Debug. The directory test passes 57 native checks and

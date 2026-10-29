@@ -31,6 +31,10 @@ typedef void(GLAPIENTRY *mc_client_gl_texture_image_fn)(GLenum target, GLint lev
                                                         GLsizei height, GLint border, GLenum format,
                                                         GLenum type, const GLvoid *pixels);
 typedef void(GLAPIENTRY *mc_client_gl_pixel_store_fn)(GLenum name, GLint value);
+typedef void(GLAPIENTRY *mc_client_gl_texture_sub_image_fn)(GLenum target, GLint level, GLint x,
+                                                            GLint y, GLsizei width, GLsizei height,
+                                                            GLenum format, GLenum type,
+                                                            const GLvoid *pixels);
 typedef void(GLAPIENTRY *mc_client_gl_draw_arrays_fn)(GLenum mode, GLint first, GLsizei count);
 typedef void(GLAPIENTRY *mc_client_gl_read_buffer_fn)(GLenum mode);
 typedef void(GLAPIENTRY *mc_client_gl_read_pixels_fn)(GLint x, GLint y, GLsizei width,
@@ -61,6 +65,7 @@ typedef void(GLAPIENTRY *mc_client_gl_cull_face_fn)(GLenum mode);
     X(mc_client_gl_bind_texture_fn, BindTexture, "glBindTexture")                                  \
     X(mc_client_gl_texture_parameter_fn, TexParameteri, "glTexParameteri")                         \
     X(mc_client_gl_texture_image_fn, TexImage2D, "glTexImage2D")                                   \
+    X(mc_client_gl_texture_sub_image_fn, TexSubImage2D, "glTexSubImage2D")                         \
     X(mc_client_gl_pixel_store_fn, PixelStorei, "glPixelStorei")                                   \
     X(PFNGLACTIVETEXTUREPROC, ActiveTexture, "glActiveTexture")                                    \
     X(PFNGLCREATESHADERPROC, CreateShader, "glCreateShader")                                       \

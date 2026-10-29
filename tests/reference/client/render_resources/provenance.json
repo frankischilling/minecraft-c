@@ -114,16 +114,16 @@
       "sha256": "92c369c867f422806331d3a2efa27defcf7b3908c57c6f1c36e586d130476b62"
     },
     "include/mc/client/gui/achievement_notice.h": {
-      "bytes": 6188,
-      "sha256": "8df61d7ae5db1432d6b7f2fceac2983eced90eb9beb71eafe7f69a07924475c2"
+      "bytes": 6503,
+      "sha256": "fd3c1880912d8e690c2cc1453a693a521a9256476bb0e68f8e82de0e5ac716db"
     },
     "include/mc/client/gui/font_renderer.h": {
       "bytes": 6943,
       "sha256": "5cec2bc41e8a9782c6c01f033c3a60ba19104999c4ca494051d431ab33a751ce"
     },
     "include/mc/client/gui/gui_ingame.h": {
-      "bytes": 9810,
-      "sha256": "70600622b30151e4feccfaf19d27b6c33898a83e0825851fa9b3ea43373e0a38"
+      "bytes": 10576,
+      "sha256": "700f845665a0914702f4bec1e5095ba4246d53b1d9ce8652db8b5c295a14c21c"
     },
     "include/mc/client/gui/scaled_resolution.h": {
       "bytes": 1727,
@@ -638,8 +638,8 @@
       "sha256": "5af10ea1132740f4b32bb50efae54fe7972cd3e000a76639b6ca470641ca8fbf"
     },
     "src/client/application.h": {
-      "bytes": 573,
-      "sha256": "1af9cc2c4f3b54532440a38c184fd514f1f74af19dd3093f1966b19333aed162"
+      "bytes": 587,
+      "sha256": "d3d1cbbf72de4e6ee0374430b32a58ed44c23456d5f94c2dcc88144ef4745d36"
     },
     "src/client/application_access.c": {
       "bytes": 11498,
@@ -654,8 +654,8 @@
       "sha256": "39d5d9076ee879feb8471e33ef587d9b6459e7d81a631b0cccba64d60ddec2c2"
     },
     "src/client/display/display.c": {
-      "bytes": 61016,
-      "sha256": "15c82f3893b681fe62716c1dc83418075475c79f4117f529e0e42fe8e784e2cf"
+      "bytes": 61053,
+      "sha256": "30b20c4202f003bbff98c754349960b3a99ec0bdcb1de67661704354da01f0d4"
     },
     "src/client/display/display.h": {
       "bytes": 13727,
@@ -666,8 +666,8 @@
       "sha256": "0898f275df390472bb18f7f01cab729b2efb7468c479a7e05388214a01c54ab4"
     },
     "src/client/display/gl_internal.h": {
-      "bytes": 8470,
-      "sha256": "e846aa1c4b63c2d73fd365c8827ad3b6d311b3f03d7c86835b3007ec4edd5205"
+      "bytes": 8939,
+      "sha256": "b00c996b37bb7aeeca6928414762cf30ba0b96d85e637d264a691da8dcbc1c10"
     },
     "src/client/display/loading_projection.inc": {
       "bytes": 2975,
@@ -830,20 +830,20 @@
       "sha256": "080fcf9026c26d2274dbe4d777e0ab6301048a613ed11ce02c818b087bd70505"
     },
     "src/client/gui/gui_ingame.c": {
-      "bytes": 21950,
-      "sha256": "35ff2ad4d85d39c10cb726736ea55b2d3df754f6b56336a646f656e4c5632bd4"
+      "bytes": 25061,
+      "sha256": "cafacd1e507989279856a05c32a6fd82a26e8d7d957d934d7d60d3ca10ec7693"
     },
     "src/client/gui/gui_ingame_internal.h": {
       "bytes": 1195,
       "sha256": "ebb00ff58603a444b1151c996ae94d45407415282d570154209fb2664966b2fc"
     },
     "src/client/gui/gui_main_menu.c": {
-      "bytes": 19198,
-      "sha256": "5b3aed7523e9af9acdef30a9edb2fa3056fa9afc5864c75f6e25e00095562a99"
+      "bytes": 21492,
+      "sha256": "9971ead15bf2ffd9ce20a76a99a4e99af6b3557f592fb013b8c191bc71cf21b7"
     },
     "src/client/gui/gui_main_menu.h": {
-      "bytes": 4554,
-      "sha256": "11272906207c76f6065e7b1b73577a8cd82a47a45a2b56f6d041bbece5d8abe9"
+      "bytes": 5749,
+      "sha256": "3e5da643358912297eb0b0e38ef9fe8bb07b67c1e41b74284e11aff7b876d4be"
     },
     "src/client/gui/loading_draw.c": {
       "bytes": 6016,
@@ -994,8 +994,8 @@
       "sha256": "afea1fc77e43e745b354a231e4a6801406d69873fcca700bf50270a8b1c7814e"
     },
     "src/client/render_engine/internal.h": {
-      "bytes": 3775,
-      "sha256": "d87b23a5db13dcbb11a0ed94ff58743e649b2f77fde85ebd19ad573d8fd05c8b"
+      "bytes": 4013,
+      "sha256": "f7cc648b9114d433565c13e0dfe8d5e57d0c22c3177a86015a25050d195aef4c"
     },
     "src/client/render_engine/nw.c": {
       "bytes": 18663,
@@ -1038,8 +1038,8 @@
       "sha256": "72fab24b19d0fa24ec1cf524b13bc53c4414afeeac1a4fb815b336fc988c92cb"
     },
     "src/client/resources/assets.h": {
-      "bytes": 7837,
-      "sha256": "68e9d96b80e9513a0e0defc1627c77124d0ecc3e7ba7f1f9138b67ccd0fe5c00"
+      "bytes": 8074,
+      "sha256": "1e8d7271832e8c742fbcc3c73f9d228aab4ac779c938d9570bdcbcb1413019e2"
     },
     "src/client/settings/construction_internal.h": {
       "bytes": 1764,
@@ -1418,8 +1418,8 @@
       "sha256": "2bd2cfbbbc5a7f6f2e3cf4cb3596860c984a58b780c6a19c0d1734fd1ce5935d"
     },
     "tests/client/gui/test_gui_ingame.c": {
-      "bytes": 24695,
-      "sha256": "fe9005057502d049c190d4ccd4c05e0a5a5659c8e045fc323abe3a6c5ac9e947"
+      "bytes": 29003,
+      "sha256": "1e438b4a6ea5ab506cbee5cff74e803623d01df1ab153dbca22adc0bfd75847f"
     },
     "tests/client/gui/test_loading_source_flag.c": {
       "bytes": 10314,
@@ -1478,8 +1478,8 @@
       "sha256": "94117d7da5e44ff3f98ce7753318e0ae0ce576f0d968e4ab703afddb96e02a6d"
     },
     "tests/client/startup/application_startup_statistics_controls.inc": {
-      "bytes": 47120,
-      "sha256": "3b0645c4c911621f6d73bbf3ccf1be4be3cda9d87c89d966ab442e5827bb7a25"
+      "bytes": 47614,
+      "sha256": "2eaa67a90b236ee7355be5a600bb2834346c88a2f691713c23154041ff847e90"
     },
     "tests/client/startup/controller_boundary_observer.c": {
       "bytes": 2816,
@@ -1730,12 +1730,12 @@
       "sha256": "ca0880b7a50a15384ba59428d642f69dd6035be592abe10e911d25822822564d"
     },
     "src/client/gui/source_screen.c": {
-      "bytes": 11755,
-      "sha256": "07905aecee32f4fb4f15aea4efa493a2b50ced597eea36d797b942a8c73122b6"
+      "bytes": 11986,
+      "sha256": "a75d71f1492745d28470710a13a05c2dc58ed3b5ca28a51a590fc7538472858f"
     },
     "src/client/gui/source_screen.h": {
-      "bytes": 14322,
-      "sha256": "3416ca9921b708a9f06d528fa4a156e7ee6e4307e0757738886cdbc5247f23a0"
+      "bytes": 14469,
+      "sha256": "93f01d9c468c5183d2bc798b7130e22300b31eaa92e26acf7f05a8d12f01b38b"
     },
     "src/client/gui/source_screen_classes.c": {
       "bytes": 13060,
@@ -1754,8 +1754,8 @@
       "sha256": "9d2bc09393a28d966c1d081e281e2e39bddd4f00ecd63810d2bc34ff9b78b278"
     },
     "src/client/gui/source_screen_internal.h": {
-      "bytes": 6160,
-      "sha256": "6572aa0ddd9a5e48a953a4845692ef02fc41aabef1e0e42e2f27b7ae57e63fe0"
+      "bytes": 6250,
+      "sha256": "ff0230deee2ff10bdd31be195ad38004256713d2407c1bae1daa5e6968a53bb4"
     },
     "src/client/gui/source_widgets.c": {
       "bytes": 21068,
@@ -1948,6 +1948,122 @@
     "src/client/startup/application_startup_menu.h": {
       "bytes": 512,
       "sha256": "8e66266b8d500d9ace1cb10b44b063c91d294644ddc467dd096cbb4f901ef917"
+    },
+    "cmake/client_effect_upload.cmake": {
+      "bytes": 1246,
+      "sha256": "78321bb335d5f90fc5e419fa97ead8dd8ac486dc148be73f3abf4dab4ebf6253"
+    },
+    "cmake/client_runtime.cmake": {
+      "bytes": 2517,
+      "sha256": "50d8fc17d1e5d2183fc06c19dfd23d8766a5d2c717fdf54faa9660c0b78b1281"
+    },
+    "cmake/client_source_screen_drawing.cmake": {
+      "bytes": 589,
+      "sha256": "b1327889917283cac93c0c996b2bd3e60f6d1339e69bd644f4811e37fd4c518f"
+    },
+    "cmake/client_source_screen_events.cmake": {
+      "bytes": 515,
+      "sha256": "c4e6f081bbd6012e86525b8c08dfaf14450879b117e9459253fc75baef54e520"
+    },
+    "cmake/tests/source_screen_events.cmake": {
+      "bytes": 822,
+      "sha256": "8252109ad38050a87780d39190b84c14a8c41f91bd3c772fea5ca7f90cad54cf"
+    },
+    "src/client/display/source_texture_update.h": {
+      "bytes": 1017,
+      "sha256": "bb9ad86429c180843240dc237bdda8791e1a72beb8801d9e315383a82280437d"
+    },
+    "src/client/display/source_texture_update.inc": {
+      "bytes": 3422,
+      "sha256": "212721c7613acb948d8874a1cfc66ee76fd39af31f757f416e31c40bee9e3af3"
+    },
+    "src/client/gui/source_screen_drawing.c": {
+      "bytes": 7478,
+      "sha256": "c9b143a1a5935ebf3caf2cd253b19fae25a220aeb5de6a56fad5ccbc3a5c38fd"
+    },
+    "src/client/gui/source_screen_drawing.h": {
+      "bytes": 2518,
+      "sha256": "63b2a4dbf4781d950f91a210ed3f763afa428abf7fb591b8ccde02a457734d1a"
+    },
+    "src/client/gui/source_screen_events.c": {
+      "bytes": 18898,
+      "sha256": "277672bfe0d9163890aaf376596db26865ef22bfc4e375596d11f5f5526eef94"
+    },
+    "src/client/gui/source_screen_events.h": {
+      "bytes": 4479,
+      "sha256": "8c63a24778c0251dc5d9f68542701ded4d5388e6ac831753d4724fd06dc9c0b5"
+    },
+    "src/client/render/model_graph_internal.h": {
+      "bytes": 2723,
+      "sha256": "07a773e4a0f8870fa64e614955a3c45634989e21b7b457625e2a0eb553b433a1"
+    },
+    "src/client/render_engine/chunk_statistics.c": {
+      "bytes": 3955,
+      "sha256": "f6a43d49cb9576a0acc9bbad39e2971fd22be312bfbb13f64c2d98b347c612e5"
+    },
+    "src/client/render_engine/chunk_statistics.h": {
+      "bytes": 1356,
+      "sha256": "edc6291e6f9c6266212bbad76fdf1d95c85341b11a1d6a19fb2e76ca914d76ee"
+    },
+    "src/client/render_engine/effect_upload.c": {
+      "bytes": 12221,
+      "sha256": "f0eba57f477a1ed1cd0da7d985bb7dd5df5a72ef69b31f5a9c89115d631f06bd"
+    },
+    "src/client/render_engine/effect_upload.h": {
+      "bytes": 1767,
+      "sha256": "253914a08f69c1a13527e24bbe43c9faa40fba294aa4da8369469a6995291498"
+    },
+    "src/client/runtime/bootstrap.c": {
+      "bytes": 28316,
+      "sha256": "b75f22d97da833a76a6a187bf3afa9ccfa86594bd5d3132be0a954ad0913a45d"
+    },
+    "src/client/runtime/bootstrap.h": {
+      "bytes": 2428,
+      "sha256": "b3f9e7d9f54a2641e57ba333da7a9c6a514e4de404d0c519e650d379debb29dd"
+    },
+    "src/client/runtime/menu_loop.c": {
+      "bytes": 25123,
+      "sha256": "2678ec44f141d8d16feeb013baf66d8803aea6bcf40afbe2b24b5ca9c939edaa"
+    },
+    "src/client/runtime/menu_loop.h": {
+      "bytes": 1595,
+      "sha256": "fd4df55c7c0b5b89f3dcdc17aa24086c0c9726fad85b68ec335f2501eb24d8e3"
+    },
+    "src/client/texture_packs/image_io.h": {
+      "bytes": 482,
+      "sha256": "72df1e4f5241ba4a3036dbe36fd3136fb9a7cf102ccc8eb8909f0f199acb6094"
+    },
+    "src/client/texture_packs/internal.h": {
+      "bytes": 8270,
+      "sha256": "551b1194bd000235d51dd5ce069e438110a4cece6c5458042bcaf4399e7c809d"
+    },
+    "src/client/texture_packs/zip.h": {
+      "bytes": 2683,
+      "sha256": "efcdb02b2b551242214323795ab1c868f7f2cb0568cedccdbb4f440ab568c223"
+    },
+    "src/client/world/entity_renderer/internal.h": {
+      "bytes": 3590,
+      "sha256": "e915992d2a878b4ef500696d0437bd9719787e2ddbeafe50a876a5f55c9dd4bb"
+    },
+    "tests/client/gui/test_source_screen_events.c": {
+      "bytes": 11463,
+      "sha256": "01e4a41e67f6e9bf5bb198b878956d58e7d970555a3d48e046c8e3122c0f9210"
+    },
+    "tests/client/startup/test_menu_loop.c": {
+      "bytes": 6526,
+      "sha256": "38c59234e0213856339b110f9ce2e547418b785410db24c829466a3cfee4809b"
+    },
+    "tests/client/texture_effects/test_effect_upload.c": {
+      "bytes": 12639,
+      "sha256": "af9f4b7367d230d32958549e8f9884f566d7b716da90d430b9c8eb6ca0828c34"
+    },
+    "tests/tools/client/test_effect_upload.py": {
+      "bytes": 1217,
+      "sha256": "949e79770dc15cb2559b28071f59f4037a12523787d40d2e89f35412cf22fd81"
+    },
+    "tests/tools/client/test_menu_loop.py": {
+      "bytes": 1543,
+      "sha256": "665925a7a64ee9e3730619e2c095354f70bbdf64538c4db1aad199d0ef23754d"
     }
   },
   "source_suppliers": {

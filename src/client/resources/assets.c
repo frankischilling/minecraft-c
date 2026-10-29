@@ -345,6 +345,13 @@ void mc_client_assets_free(mc_client_assets *assets) {
     free(assets);
 }
 
+bool mc_client_assets_same_source(const mc_client_assets *assets,
+                                  const mc_registry_resources *resources,
+                                  const mc_registry_classes *classes) {
+    return assets != NULL && resources != NULL && classes != NULL &&
+           assets->resources == resources && assets->classes == classes;
+}
+
 mc_client_assets_status mc_client_assets_image(mc_client_assets *assets, const char *name,
                                                const mc_image **out,
                                                mc_client_assets_error *error) {

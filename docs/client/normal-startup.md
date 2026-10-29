@@ -2,8 +2,9 @@
 
 The normal no-connection startup owner implements Beta 1.7.3's
 `Minecraft.a()V`. It uses the same constructed App and real class/service
-owners. The default executable still opens its title screen or fixed-camera
-inspection. Normal World entry and a connected gameplay loop remain unfinished.
+owners. The default executable continues from that graph through the
+[no-World menu runtime](menu-runtime.md). Its focused Windows runtime checks
+pass; normal World entry and gameplay remain unfinished.
 
 ## Reached construction
 
@@ -35,8 +36,9 @@ The caller constructs GuiIngame at `702`, publishes `v705`, then constructs the
 main menu at `743` and invokes the real display-screen method at `746`.
 That method performs the statistics save, clears GuiIngame messages, publishes
 `r106`, computes GUI scaling, initializes the screen and its buttons, and stores
-`w158`. Normal startup returns at `749`. Execution stops before the next
-`Minecraft.run` clock call at `32`; the frame loop remains unconnected.
+`w158`. Normal startup returns at `749`. The bounded startup probe stops before
+the next `Minecraft.run` clock call at `32`. The production menu loop continues
+from that completed graph through its admitted no-World frame/tick path.
 The nonnull server-address branch still stops before its connecting-screen
 constructor. World entry and complete menu/input/rendering behavior remain work.
 
@@ -192,8 +194,10 @@ five prepared logo profiles and cursor controls. Wider Linux qualification is
 still recorded separately from the Windows default-directory profile.
 
 Nonempty physical Controllers mapping, remaining screen transitions, World/Player
-publication, frame/tick scheduling and the live game loop remain unfinished. The default executable continues to use title/inspection
-startup.
+publication and gameplay remain unfinished. The default menu loop passes its
+focused Windows run; the latest complete suite, hosted CI and Linux qualification
+remain pending. Full source run/PX rendering and `Minecraft.d()` shutdown parity
+remain unproven.
 
 ## Menu ownership and verification
 

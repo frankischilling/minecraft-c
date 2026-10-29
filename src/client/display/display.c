@@ -1261,6 +1261,7 @@ bool mc_client_display_destroy(mc_client_display *display, mc_client_display_err
 // clang-format off
 #include "source_surface.inc"
 #include "texture_leases.inc"
+#include "source_texture_update.inc"
 #include "loading_projection.inc"
 #include "startup_surface.inc"
 #include "occlusion.inc"

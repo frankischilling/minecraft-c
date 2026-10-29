@@ -10,8 +10,8 @@
       "sha256": "db4dec4547b63592bdecd00e5b1af5165acb788c578663eac5afca57a3c70ef0"
     },
     "include/mc/client/gui/achievement_notice.h": {
-      "bytes": 6188,
-      "sha256": "8df61d7ae5db1432d6b7f2fceac2983eced90eb9beb71eafe7f69a07924475c2"
+      "bytes": 6503,
+      "sha256": "fd3c1880912d8e690c2cc1453a693a521a9256476bb0e68f8e82de0e5ac716db"
     },
     "include/mc/client/gui/font_renderer.h": {
       "bytes": 6943,
@@ -322,8 +322,8 @@
       "sha256": "5986855871d5e5ad8707c2c62ed690e1fbc93aec993c8bf749d82ba9734097d2"
     },
     "src/client/application.h": {
-      "bytes": 573,
-      "sha256": "1af9cc2c4f3b54532440a38c184fd514f1f74af19dd3093f1966b19333aed162"
+      "bytes": 587,
+      "sha256": "d3d1cbbf72de4e6ee0374430b32a58ed44c23456d5f94c2dcc88144ef4745d36"
     },
     "src/client/application_access.h": {
       "bytes": 3807,
@@ -354,8 +354,8 @@
       "sha256": "6460ff09b50bf2735941f4efca9098faa0f329b97ad8e3534c0a5e870bd4a7af"
     },
     "src/client/resources/assets.h": {
-      "bytes": 7837,
-      "sha256": "68e9d96b80e9513a0e0defc1627c77124d0ecc3e7ba7f1f9138b67ccd0fe5c00"
+      "bytes": 8074,
+      "sha256": "1e8d7271832e8c742fbcc3c73f9d228aab4ac779c938d9570bdcbcb1413019e2"
     },
     "src/client/startup/application_classes.c": {
       "bytes": 16672,
@@ -434,16 +434,16 @@
       "sha256": "92c369c867f422806331d3a2efa27defcf7b3908c57c6f1c36e586d130476b62"
     },
     "include/mc/client/gui/gui_ingame.h": {
-      "bytes": 9810,
-      "sha256": "70600622b30151e4feccfaf19d27b6c33898a83e0825851fa9b3ea43373e0a38"
+      "bytes": 10576,
+      "sha256": "700f845665a0914702f4bec1e5095ba4246d53b1d9ce8652db8b5c295a14c21c"
     },
     "include/mc/client/render_engine/render_engine.h": {
       "bytes": 8919,
       "sha256": "52358dfa80bb708ea01b3a1c7ee54a2368f1b63d406a7a7b14de56dc137390a6"
     },
     "src/client/gui/source_screen.h": {
-      "bytes": 14322,
-      "sha256": "3416ca9921b708a9f06d528fa4a156e7ee6e4307e0757738886cdbc5247f23a0"
+      "bytes": 14469,
+      "sha256": "93f01d9c468c5183d2bc798b7130e22300b31eaa92e26acf7f05a8d12f01b38b"
     },
     "src/client/images/class_stream.h": {
       "bytes": 3513,

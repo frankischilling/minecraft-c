@@ -7,6 +7,12 @@
 There are no other approved gameplay exceptions. The MIT license choice covers
 new project work and does not grant rights to distribute original resources.
 
+The account-authentication exclusion includes the `kp` session-validation
+worker reached from `Minecraft.k` at tick6000. The native local-name runtime
+omits that request and its response-dependent license-status update. Multiplayer
+handshakes, join messages and other online-resource behavior retain their scopes
+in the table and notes above.
+
 Malformed input uses bounded memory and defined C behavior. Necessary
 departures from original malformed-input behavior are recorded separately
 with the parser evidence. Valid gameplay behavior remains in scope.

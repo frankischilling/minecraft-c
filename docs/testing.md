@@ -1,14 +1,42 @@
 # Test scope and reproduction
 
+## Default source menu runtime
+
+The Windows MSVC Debug ALL build includes the new default client runtime.
+All 463 selected CTests pass without failures or skips; `-LE reference`
+excludes 45 configured reference-label profiles. A separate headless Release
+ALL build passes with client, sound, audio and testing disabled. Formatting
+checks 1,341 files.
+
+`client.source_menu_loop` constructs the genuine App and startup graph, updates
+all nine registered effects with 15 real atlas uploads, advances the Timer and
+source menu counters, reaches the one-second FPS path, then dispatches SDL
+mouse events to Quit and retires the graph. A prepared `V=5999` control checks
+the approved omission of account-session validation at tick6000. The executable
+also produces an 854 by 480 PNG through its default entry point. A separate
+100-frame, 32-tick run and its capture were inspected. These Windows checks do
+not qualify original visual correspondence or a playable session.
+
+The authored-resource upload test covers duplicate effects, repeated tiles,
+separate texture IDs, anaglyph, actual GPU readback, preserved GL errors and
+unsafe unpack rejection. Four-level mipmap uploads remain unexecuted. Source
+events cover mouse-before-keyboard draining and unread tails at a dependency.
+
+Published predecessor `3ec9892` passes [all hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40796960416):
+434 Windows, 452 GCC and 452 Clang tests, 1,338 total, without failures or skips.
+Formatting passes for 1,325 files; all tested checkout trees match that head.
+The new runtime has its own later hosted results. Full source run/PX/shutdown,
+World entry, other menu destinations and gameplay remain unfinished.
+
 ## Normal startup through menu initialization
 
-The current Windows MSVC Debug ALL build passes, including the client, followed
+The preceding startup checkpoint's Windows MSVC Debug ALL build passes, including the client, followed
 by 460 selected CTests with no failures or skips in 207.15 seconds. The selection
 uses `-LE reference`; configured reference-label profiles remain outside it.
 Normal and GL-error window cases reach GuiIngame publication, typed statistics
 saving, current-screen publication and scaled menu initialization. Startup
 returns at `749` and stops before `Minecraft.run` clock `32`. The executable's
-default title/inspection loop remains separate.
+default title/inspection loop was separate at that checkpoint.
 
 Nine focused cases cover startup, RenderGlobal, source statistics, File.delete
 and MouseHelper CPU behavior. Four additional MouseHelper window runs each pass
@@ -24,7 +52,7 @@ and its two test-source corrections are recorded in [status](status.md).
 
 ## Resource worker and source menu integration
 
-The current Windows MSVC Debug source builds ALL, including the client, and
+The earlier resource-worker checkpoint builds ALL on Windows MSVC Debug and
 passes 460 selected CTests without failures or skips:
 
 ```powershell
@@ -49,7 +77,9 @@ result follows from that build. Current Linux qualification remains separate.
 
 CI retains four test workers and its complete existing suites. It caches CTest
 timing estimates by platform/compiler so later runs can start long tests early.
-A warm hosted run is needed to measure the resulting speedup.
+GCC restores these estimates in the `3ec9892` hosted run and starts long cases
+early. Its test step takes189.20 seconds versus253.61 seconds in the preceding
+cold run; source and cloud differences prevent a causal speedup claim.
 
 <a id="current-public-runtime-integration"></a>
 
@@ -878,7 +908,7 @@ and [constructor/state scope](client/achievement-notice.md).
 
 ## Continuous integration scheduling
 
-The hosted workflow runs two CTest cases concurrently and allows four parallel
+The hosted workflow runs four CTest cases concurrently and allows four parallel
 Windows build jobs. The existing compiler, sanitizer, graphics, formatting and
 controller checks stay enabled. New revisions cancel superseded review checks;
 default-branch runs are allowed to finish. Linux build jobs cache downloaded APT

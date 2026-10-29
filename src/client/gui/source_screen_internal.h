@@ -63,6 +63,7 @@ struct mc_client_source_da {
     mc_client_screen_initialization *initializations, *last_initialization;
     size_t initialization_count;
     bool native_field_occurrences_retired;
+    mc_client_source_ke *selected_cleanup; /* Retained replaced/released a occurrence. */
 };
 
 typedef struct mc_screen_string_hold {

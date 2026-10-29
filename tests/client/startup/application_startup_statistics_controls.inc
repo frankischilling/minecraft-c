@@ -561,6 +561,13 @@ static int statistics_session_window(const char *resources, const char *assets, 
               initialized.phase == MC_CLIENT_SCREEN_INIT_RETURNED &&
               initialized.button_count == 5 && initialized.app_argument == app &&
               initialized.held_font == app->font_renderer);
+        /* The actual bound MC class owns H; empty notice returns before clock/GL. */
+        mc_client_notice_error notice_gate = {0};
+        CHECK(mc_client_achievement_notice_draw(app->achievement_notice, &notice_gate) ==
+                  MC_CLIENT_NOTICE_OK &&
+              notice_gate.notice_pc == 107);
+        CHECK(mc_client_achievement_notice_fields_get(app->achievement_notice)->f == NULL &&
+              mc_client_achievement_notice_fields_get(app->achievement_notice)->g == 0);
         /* A new real displayGuiScreen invocation preserves r106 and h24 when
          * the standalone profile reaches the actual null Component fault. */
         app->N = true;

@@ -188,12 +188,12 @@
       "sha256": "9b8de1ccdbe70a9a8e41e3715fd074b55465e98d2356412332e967ba58e6b138"
     },
     "include/mc/client/gui/achievement_notice.h": {
-      "bytes": 6188,
-      "sha256": "8df61d7ae5db1432d6b7f2fceac2983eced90eb9beb71eafe7f69a07924475c2"
+      "bytes": 6503,
+      "sha256": "fd3c1880912d8e690c2cc1453a693a521a9256476bb0e68f8e82de0e5ac716db"
     },
     "src/client/gui/achievement_notice.c": {
-      "bytes": 9209,
-      "sha256": "1257d61ecf59477bd22736881c300255cd1d428238269109ce1a3196406afdec"
+      "bytes": 10746,
+      "sha256": "c3a16b23968b9118a159add3fab34d1b898b443cd4b49a741a2c8b6499055f42"
     },
     "src/client/achievements/description.c": {
       "bytes": 3340,

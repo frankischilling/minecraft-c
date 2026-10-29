@@ -1,6 +1,13 @@
 # Build and tests
 
-The current Windows MSVC Debug source passes all 460 selected CTests without
+The new default source menu passes four focused Windows MSVC Debug CTests:
+GuiIngame, texture uploads, source screen events and the native menu loop. The
+menu completes 100 frames and 32 ticks with cleanup; its 854 by 480 capture was
+inspected. All 463 selected Windows CTests pass. Hosted CI, Linux and original-game
+correspondence retain their separate source scopes. This run does not qualify the full source
+run/PX/render/shutdown methods or a playable client.
+
+The preceding startup/menu-initialization source passes all 460 selected CTests without
 failures or skips in 207.15 seconds. The selection excludes configured
 reference-label profiles. Nine focused cases also pass, including real normal
 Session and GL-error startup through the source startup return, statistics and
@@ -10,6 +17,15 @@ Formatting checks 1,325 files. A separate headless Release ALL build passes.
 These results do not establish Linux qualification, original visual
 correspondence, a running dedicated server or a playable session.
 
+The new runtime passes all 463 selected Windows CTests, excluding 45 configured
+reference-label profiles. Formatting checks 1,341 files and a separate headless
+Release ALL build passes.
+
+Published predecessor `3ec9892` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40796960416):
+434 Windows, 452 GCC and 452 Clang tests, 1,338 total, zero failures or skips.
+Formatting checks 1,325 files and all tested checkout trees match that head.
+The old Clang Display failure below remains undiagnosed despite passing later.
+
 Published source `8288290` has a [failed hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40792366222).
 GCC passes all 452 cases. Clang passes 451 of 452; `client.source_gl_startup_device`
 fails during Display creation, and its log does not establish the underlying
@@ -18,7 +34,7 @@ condition. Formatting passes for 1,319 files. Both Linux jobs have 452 unique
 Start/result pairs and zero skips; all four tested checkout trees match the
 published source. The current source preserves the layout invariants with
 compile-time assertions and adds actual Display error details without changing
-the failing check. A later hosted run must verify those changes.
+the failing check. The later `3ec9892` hosted run verifies those test-source changes.
 
 Earlier hosted baseline `5d61f89` passes
 [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40746811719):
@@ -44,8 +60,9 @@ cover prerequisites, resource import and opt-in window/reference profiles.
 
 CI caches CTest timing estimates by platform/compiler and retains four workers
 and complete suites. Both Linux jobs in the `8288290` run had cold timing
-caches; the successful GCC job saved its estimates. A later warm hosted run
-must establish any speedup.
+caches; the successful GCC job saved its estimates. GCC restores estimates in the `3ec9892` run and starts long cases early. Its
+test step takes189.20 seconds versus253.61 seconds in the earlier cold run;
+source/cloud differences prevent a causal speedup claim.
 
 ## Earlier checkpoints
 
