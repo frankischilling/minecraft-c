@@ -2,8 +2,8 @@
   "scope": "Current authored real-owner loading draw/update/yield/retirement controls; native results are recorded separately for their exact tested snapshots.",
   "native_sources": {
     "CMakeLists.txt": {
-      "bytes": 329990,
-      "sha256": "7db82cd14b8cb29fb206cdf6026aa9a1a538d7fa9e9941cb247516a948b26095"
+      "bytes": 329992,
+      "sha256": "1a81203c01bd3021c58ac674080ebd7ae48dd3a905588cf789d1bc58b1eef8a6"
     },
     "cmake/client_controllers.cmake": {
       "bytes": 1093,

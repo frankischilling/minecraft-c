@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 329990,
-      "sha256": "7db82cd14b8cb29fb206cdf6026aa9a1a538d7fa9e9941cb247516a948b26095"
+      "bytes": 329992,
+      "sha256": "1a81203c01bd3021c58ac674080ebd7ae48dd3a905588cf789d1bc58b1eef8a6"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -6471,7 +6471,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 285026,
-      "sha256": "d61db7aa2370200f72a3507e019d28a431012a0a8b56a22f3edcce16a2f73a3c"
+      "sha256": "18aedf65aafb5e319c76464357f500a256632550dec4b1622abe92baee3bdb05"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
