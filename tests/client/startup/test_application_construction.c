@@ -2,6 +2,7 @@
 #include "mc/block/registry/runtime.h"
 #include "mc/resources/files/files.h"
 #include "random_profile_internal.h"
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -522,8 +523,12 @@ static int later_owner_case(const char *root, unsigned kind) {
     if ((kind & 1u) != 0) {
         if (!mc_client_display_create("App later-owner retirement control", 64, 64, true,
                                       &saved_display, &app->display_error)) {
-            fprintf(stderr, "LATER-OWNER %u real Display refused status=%d\n", kind,
-                    (int)app->display_error.status);
+            fprintf(stderr,
+                    "LATER-OWNER %u real Display refused status=%d operation=%s detail=%s "
+                    "gl_error=%" PRIu32 "\n",
+                    kind, (int)app->display_error.status,
+                    app->display_error.operation == NULL ? "<none>" : app->display_error.operation,
+                    app->display_error.detail, app->display_error.gl_error);
             const bool cleaned =
                 later_owner_cleanup(&f, &app, &saved_display, &saved_splash, &assets);
             fprintf(stderr, "LATER-OWNER-REFUSAL-CLEANUP %u ok=%d\n", kind, (int)cleaned);

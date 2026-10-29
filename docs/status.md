@@ -25,6 +25,18 @@ The preceding native-menu source passes all 463 selected Windows CTests without
 failure or skip, a separate headless Release ALL build and formatting for 1,341
 files. That selection excludes 45 configured reference-label profiles.
 
+The [World-selection run at `1334db5`](https://github.com/frankischilling/minecraft-c/actions/runs/40813601193)
+is terminal: Windows 440/440 and Clang 461/461 pass, while GCC passes 460/461.
+Its sole failure is a real Display creation refusal in the later-owner
+constructor profile. Cleanup succeeds; the underlying SDL operation/detail
+was not printed, so its cause remains undiagnosed. A diagnostic-only follow-up
+prints those captured fields without changing failures or assertions. Both
+optional constructor profiles pass separately on Windows after enabling them;
+this is separate from the complete 468-case selection above. Formatting passes
+for 1,356 files; all checkout trees match the tested head. Startup and its
+fingerprint regression pass on all three hosts. See the
+[hosted record](testing.md#hosted-world-selection-checkpoint-1334db5).
+
 The corrected runtime [hosted run at `de4290b`](https://github.com/frankischilling/minecraft-c/actions/runs/40802203908)
 passes all 435 Windows tests in 329.63 seconds and all 454 Clang tests in 189.45
 seconds. GCC passes 453 of 454 in 339.00 seconds; `client.startup` stops in the
@@ -35,7 +47,7 @@ measure the artifact size. The current streaming hash has its own finite 1 GiB
 bound, full-file/identity checks and a public sparse-file regression over 128 MiB;
 resource/image limits remain unchanged. That fix passes on Windows and Linux
 and is included in the current increment. The [audit](testing.md#hosted-runtime-checkpoint-de4290b)
-keeps its evidence separate from the pending complete rerun.
+keeps its evidence separate from the later World-selection run.
 
 The first runtime [hosted run at `fab3769`](https://github.com/frankischilling/minecraft-c/actions/runs/40801330270)
 stops both Linux builds on a signed-to-unsigned diagnostic-site conversion;

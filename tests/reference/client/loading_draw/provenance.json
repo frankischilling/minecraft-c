@@ -4114,8 +4114,8 @@
       "sha256": "22f338db7095aef624a85bfb2e786cd397b091251a490da399fcae4994486a39"
     },
     "tests/client/startup/test_application_construction.c": {
-      "bytes": 34100,
-      "sha256": "69549ae84136e93a95cb05fc843ddd6d5d77585f9c899846251f090516894a94"
+      "bytes": 34385,
+      "sha256": "b19846448f1740a0b577b3a73ae3df0fa8c7ae9ab2795c4a94460cbd6773893b"
     },
     "tests/client/startup/test_application_gl_diagnostics.c": {
       "bytes": 3827,

@@ -44,6 +44,29 @@ production translation units pass strict GCC13.3/Clang18.1.3 C17 syntax checks
 under WSL; those checks are separate from a complete Linux build and suite.
 Earlier local and hosted checkpoints below retain their source scopes.
 
+The complete 468-case selection had the optional application-constructor
+profiles disabled. Enabling them adds two cases; both pass separately in
+0.74 seconds after the diagnostic-only change described below. That is not a
+complete 470-case rerun.
+
+## Hosted World-selection checkpoint 1334db5
+
+The [exact World-selection run](https://github.com/frankischilling/minecraft-c/actions/runs/40813601193)
+is terminal with one failure. Windows passes 440/440 in 243.78 seconds and
+Clang passes 461/461 in 370.74 seconds. GCC passes 460/461 in 193.30 seconds.
+Formatting passes for 1,356 files. All unique test starts/results match, with
+zero skips; every checkout tree matches `1334db5`. Startup and its new
+fingerprint regression pass on all three hosts.
+
+GCC's sole failure is `client.application_construction_later_owners`: the third
+profile reports `MC_CLIENT_DISPLAY_SDL_ERROR` while creating its real Display.
+The first Display profile succeeds in that invocation, and refusal cleanup
+completes. The log does not contain the captured SDL operation or detail, so
+the underlying cause remains undiagnosed. A diagnostic-only follow-up prints
+those existing error fields before cleanup, without changing the failure,
+assertions or runtime behavior. Its two native Windows constructor profiles
+and strict GCC/Clang syntax checks pass; another hosted run is required.
+
 ## Default source menu runtime
 
 The preceding Windows MSVC Debug ALL build includes the default client runtime.
@@ -109,7 +132,7 @@ difference: path stat infers execute bits from the extension, while descriptor
 stat has no filename. Cross-API identity compares file type; full modes still
 must remain unchanged within each API. The real Windows executable passes two
 independent complete-hash comparisons. No large binary fixture is committed. This correction is included in
-the current World-selection increment; its complete hosted rerun is pending.
+the World-selection increment; its later hosted result is recorded above.
 
 ## Normal startup through menu initialization
 

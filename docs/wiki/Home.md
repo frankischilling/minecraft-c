@@ -20,7 +20,12 @@ retain the diagnostic title and fixed-camera terrain inspection.
 
 DateFormat matches 2,926 JDK17 vectors on Windows and Linux within its admitted
 English/en_US, UTC/Eastern and 1967..2099 profile. Other profiles fail explicitly.
-All 468 selected Windows CTests and formatting for 1,356 files pass. The preceding
+All 468 selected Windows CTests and formatting for 1,356 files pass. The
+[`1334db5` hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40813601193)
+passes Windows 440/440 and Clang 461/461; GCC passes 460/461, with a real Display
+creation refusal in its later-owner constructor profile. Cleanup succeeds,
+but the underlying SDL cause remains undiagnosed. A diagnostic-only follow-up
+retains the captured error details. The preceding
 [`de4290b` hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40802203908)
 passes 435 Windows and 454 Clang tests; GCC passes 453/454, stopping before client
 launch in its executable fingerprint guard. The current streaming-hash

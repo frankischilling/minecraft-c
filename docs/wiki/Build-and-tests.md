@@ -22,6 +22,18 @@ The [World-selection contract](https://github.com/frankischilling/minecraft-c/bl
 and [testing record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#world-selection-in-the-default-runtime)
 give the focused checks and remaining dependencies.
 
+The [exact World-selection run at `1334db5`](https://github.com/frankischilling/minecraft-c/actions/runs/40813601193)
+is terminal: Windows 440/440 pass in 243.78 seconds, Clang 461/461 pass in
+370.74 seconds and GCC 460/461 pass in 193.30 seconds. Formatting passes for
+1,356 files, with matching checkout trees and zero skips. Startup and its
+fingerprint regression pass on all three hosts. GCC's sole failure is a real
+Display creation refusal in the third later-owner constructor profile. Its
+cleanup succeeds, but the captured SDL operation/detail was not printed and
+the cause remains undiagnosed. A diagnostic-only follow-up prints those fields
+without changing assertions or runtime behavior. Both optional constructor
+profiles pass separately on Windows in 0.74 seconds; the complete 468-case run
+had those two profiles disabled, so this is not a complete 470-case rerun.
+
 The preceding default source menu passes four focused Windows MSVC Debug CTests:
 GuiIngame, texture uploads, source screen events and the native menu loop.
 Its 100-frame/32-tick run completes with cleanup and an inspected 854 by 480 capture.
@@ -63,7 +75,7 @@ The public regression uses an authored sparse 134,217,985-byte regular file,
 checks its full SHA256 including the nonzero tail and bounded memory, and
 preserves the 128 MiB resource and 16 MiB PNG limits. It passes on Windows and Linux,
 normally and under optimized Python. The fix is included in the current
-increment; its complete hosted rerun is pending.
+increment; its later hosted result is recorded above.
 
 Published predecessor `3ec9892` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40796960416):
 434 Windows, 452 GCC and 452 Clang tests, 1,338 total, zero failures or skips.

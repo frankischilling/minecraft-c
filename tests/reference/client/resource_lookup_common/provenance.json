@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 20176,
-      "sha256": "f1f90754d50b72de76f0b404ac877e59be5b5bfa6a8fa8794e5a26e990a3dbdc"
+      "bytes": 21030,
+      "sha256": "f8e672ef228a03bd53c4e30dc117259099e059f6797c352ed9edc762d4d9709d"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,24 +826,24 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 237744,
-      "sha256": "d9f9a953fc9a098831a2021df2250ba74a11e4f2029729b0b0c3f73fb50ca8d8"
+      "bytes": 239104,
+      "sha256": "22c5fffb0ab693802933c73a5e3f274a9e99ceff352a4888763c4004140bcfd0"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 12182,
       "sha256": "10b4782bd5e9c2f61c332acffed1fc2d9e48e9dc580d37dd759a4a8a87a0ba22"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 18712,
-      "sha256": "5989a64d6d0a80b06c7366371621e6a770ffbcbfcf37b5ab7fa5acbb9acfcea7"
+      "bytes": 19598,
+      "sha256": "7c3e4f73268bd0e0a54e0a050440a74a9be01a87b24b8a54b421409f800ba924"
     },
     "docs/wiki/History.md": {
       "bytes": 26029,
       "sha256": "3c215b221963d328333a1f5efa7c766b2ad1b8fb1fd7dd787501cec11cf46a66"
     },
     "docs/wiki/Home.md": {
-      "bytes": 4561,
-      "sha256": "a19447b7f00333fb098a79a2130123b67f7a9535631a7115294bc8485cd489eb"
+      "bytes": 4932,
+      "sha256": "bae3435a90eb83d5e13ec76b68758a30d0244b12150ca6ffa94dba2dda55d0c2"
     },
     "docs/wiki/Startup.md": {
       "bytes": 5554,
@@ -5638,8 +5638,8 @@
       "sha256": "22f338db7095aef624a85bfb2e786cd397b091251a490da399fcae4994486a39"
     },
     "tests/client/startup/test_application_construction.c": {
-      "bytes": 34100,
-      "sha256": "69549ae84136e93a95cb05fc843ddd6d5d77585f9c899846251f090516894a94"
+      "bytes": 34385,
+      "sha256": "b19846448f1740a0b577b3a73ae3df0fa8c7ae9ab2795c4a94460cbd6773893b"
     },
     "tests/client/startup/test_application_gl_diagnostics.c": {
       "bytes": 3827,
@@ -6471,7 +6471,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 275078,
-      "sha256": "50429e692a0692cd5af1949f52f408ca515d83c4723270b7a0783657e1e9ed55"
+      "sha256": "d26ac53199cfea35f99f7d7f725c335c830bbe8e763c2f31e1742b72fc7e2023"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
