@@ -2,6 +2,7 @@
 #include "../application_state.h"
 #include "../startup/application_startup_internal.h"
 #include "../startup/application_startup_menu.h"
+#include "../world/load_world.h"
 #include "display_screen.h"
 #include "mc/client/controller/singleplayer.h"
 #include "mc/core/java/java.h"
@@ -16,6 +17,7 @@ typedef struct screen_node {
     struct screen_node *next;
     mc_client_source_rq *rq;
     mc_client_display_screen_call *display;
+    mc_client_world_load_call *load;
 } screen_node;
 
 struct mc_client_screen_transitions {
@@ -26,6 +28,8 @@ struct mc_client_screen_transitions {
     size_t node_count, screens, calls;
     bool active, retiring, slot_handed_off;
     mc_client_singleplayer_controller *controller;
+    mc_client_world_load_classes *world_classes;
+    mc_client_world_load_call *last_load;
     mc_world_info_name *fallback_filename, *fallback_display;
     mc_client_save_error save;
     mc_singleplayer_controller_error controller_error;
@@ -82,6 +86,47 @@ static screen_node *node(mc_client_screen_transitions *r) {
     r->nodes = n;
     ++r->node_count;
     return n;
+}
+
+static mc_client_screen_status world_status(mc_client_world_load_status status) {
+    switch (status) {
+        case MC_CLIENT_WORLD_LOAD_OK:
+            return MC_CLIENT_SCREEN_OK;
+        case MC_CLIENT_WORLD_LOAD_BUSY:
+            return MC_CLIENT_SCREEN_BUSY;
+        case MC_CLIENT_WORLD_LOAD_LIMIT:
+            return MC_CLIENT_SCREEN_LIMIT;
+        case MC_CLIENT_WORLD_LOAD_ALLOCATION:
+            return MC_CLIENT_SCREEN_ALLOCATION_FAILED;
+        case MC_CLIENT_WORLD_LOAD_ARGUMENT:
+            return MC_CLIENT_SCREEN_INVALID_ARGUMENT;
+        case MC_CLIENT_WORLD_LOAD_STATE:
+            return MC_CLIENT_SCREEN_INVALID_PHASE;
+        case MC_CLIENT_WORLD_LOAD_NULL_REFERENCE:
+            return MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE;
+        case MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED:
+            return MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY;
+        default:
+            return MC_CLIENT_SCREEN_APP_FAILED;
+    }
+}
+
+static bool world_failure(mc_client_screen_transitions *r, mc_client_world_load_status status,
+                          const mc_client_world_load_call *call) {
+    mc_client_world_load_state state;
+    if (call == NULL || !mc_client_world_load_inspect(call, &state) || state.failure == NULL) {
+        fail(r, world_status(status), "native World-load invocation admission", NULL, NULL, NULL,
+             0);
+        return false;
+    }
+    const mc_client_world_load_error *error = state.failure;
+    const mc_client_world_load_site *site =
+        error->child.class_name == NULL ? &error->site : &error->child;
+    fail(r, world_status(status), error->operation, site->class_name, site->method,
+         site->descriptor, site->pc < 0 ? 0u : (unsigned int)site->pc);
+    r->failure.native_policy = error->native_policy;
+    r->failure.parent_site = (mc_client_screen_site){"rq", "e", "(I)V", 80};
+    return false;
 }
 
 static bool display(mc_client_screen_transitions *r, mc_client_source_da *target, const char *type,
@@ -152,6 +197,16 @@ mc_client_screen_status mc_client_screen_transitions_create(client_application *
     if (status != MC_CLIENT_SCREEN_OK) {
         free(r);
         return status;
+    }
+    const mc_client_world_load_status world =
+        mc_client_world_load_classes_create(app, &r->world_classes);
+    if (world != MC_CLIENT_WORLD_LOAD_OK) {
+        /* The retained native graph is returned for checked cleanup even if a
+         * namespace association fails after acquiring an earlier occurrence. */
+        *out = r;
+        app->screen_transitions = r;
+        return mc_screen_fail(e, world_status(world), "native World-load class association", NULL,
+                              NULL, NULL, 0);
     }
     *out = r;
     app->screen_transitions = r;
@@ -261,10 +316,19 @@ static bool select_body(mc_client_screen_transitions *r, mc_client_source_rq *rq
             return false;
         }
     }
-    fail(r, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY, "actual Minecraft World-load orchestration",
-         "net/minecraft/client/Minecraft", "a", "(Ljava/lang/String;Ljava/lang/String;J)V", 2);
-    r->failure.parent_site = (mc_client_screen_site){"rq", "e", "(I)V", 80};
-    return false;
+    screen_node *invocation = node(r);
+    if (invocation == NULL)
+        return false;
+    const mc_client_world_load_status loaded = mc_client_world_load_begin(
+        r->world_classes, fields.filename == NULL ? r->fallback_filename : fields.filename,
+        fields.display_name == NULL || mc_world_info_name_text(fields.display_name).length == 0
+            ? r->fallback_display
+            : fields.display_name,
+        0, &invocation->load);
+    r->last_load = invocation->load;
+    if (loaded != MC_CLIENT_WORLD_LOAD_OK)
+        return world_failure(r, loaded, invocation->load);
+    return display(r, NULL, "rq", "e", "(I)V", 88);
 }
 
 mc_client_screen_status mc_client_screen_transitions_select(mc_client_screen_transitions *r,
@@ -329,8 +393,9 @@ bool mc_client_screen_transitions_inspect(const mc_client_screen_transitions *r,
                                           mc_client_screen_transition_state *out) {
     if (r == NULL || out == NULL)
         return false;
-    *out = (mc_client_screen_transition_state){
-        r->active, r->retiring, r->slot_handed_off, r->screens, r->calls, r->initial, &r->failure};
+    *out = (mc_client_screen_transition_state){r->active,   r->retiring, r->slot_handed_off,
+                                               r->screens,  r->calls,    r->initial,
+                                               &r->failure, r->last_load};
     return true;
 }
 
@@ -348,6 +413,13 @@ mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_tra
     r->retiring = true;
     while (r->nodes != NULL) {
         screen_node *n = r->nodes;
+        mc_client_world_load_call *load = n->load;
+        const mc_client_world_load_status loaded = mc_client_world_load_retire(&n->load);
+        if (loaded != MC_CLIENT_WORLD_LOAD_OK)
+            return mc_screen_fail(e, world_status(loaded), "retained actual World-load prefix",
+                                  NULL, NULL, NULL, 0);
+        if (load != NULL && r->last_load == load)
+            r->last_load = NULL;
         if (mc_client_display_screen_retire(&n->display) != MC_CLIENT_DISPLAY_SCREEN_OK)
             return mc_screen_fail(e, MC_CLIENT_SCREEN_BUSY, "retained actual display prefix", NULL,
                                   NULL, NULL, 0);
@@ -371,6 +443,11 @@ mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_tra
     }
     if (r->slot_handed_off)
         r->app->r = NULL; /* End the runtime's remaining initial-screen slot borrow. */
+    const mc_client_world_load_status world =
+        mc_client_world_load_classes_retire(&r->world_classes);
+    if (world != MC_CLIENT_WORLD_LOAD_OK)
+        return mc_screen_fail(e, world_status(world), "native World-load namespace retirement",
+                              NULL, NULL, NULL, 0);
     const mc_client_screen_status status = mc_client_screen_classes_release(&r->classes, e);
     if (status != MC_CLIENT_SCREEN_OK)
         return status;

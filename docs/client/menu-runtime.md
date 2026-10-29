@@ -56,8 +56,10 @@ The original menu action dispatch is connected. Singleplayer synchronously
 constructs and initializes RQ; its real save rows can be selected during drawing.
 Cancel returns to the same parent. Source input retains its original receiver
 through the trailing input even after App.r changes. Quit and window close clear
-the actual App run flag. Select constructs the actual controller before stopping
-at World-load `a(NULL World)`2. Create, Rename and Delete retain the precise
+the actual App run flag. Select constructs the actual controller and enters the
+[source World loader](world-loading.md). Version-zero saves stop at conversion;
+an existing-save load can publish the World, Player and movement input before
+the renderer attachment dependency. Create, Rename and Delete retain the precise
 [unfinished prefixes](world-selection.md#transitions-and-lifetime).
 Fullscreen, source F2 screenshots, debug timing, connection screens and gameplay
 input also retain explicit dependencies. Native `--capture` is a separate

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Format project-owned C source/headers and two handwritten NBT fragments."""
+"""Format project-owned C source/headers and selected handwritten fragments."""
 
 import argparse
 import os
@@ -56,7 +56,10 @@ def main():
         return 77
     root = Path(__file__).resolve().parents[2]
     fragments = {"src/storage/nbt/stream_support.inc",
-                 "src/storage/nbt/stream_owner.inc"}
+                 "src/storage/nbt/stream_owner.inc",
+                 "src/client/display/source_world_list_surface.inc",
+                 "src/world/saved_data/source_storage.inc",
+                 "src/world/storage/source_game_stage.inc"}
     files = sorted(path for directory in ("src", "include", "tests")
                    for path in (root / directory).rglob("*")
                    if path.is_file() and (path.suffix in (".c", ".h") or

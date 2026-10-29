@@ -17,6 +17,7 @@
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/entities.h"
 #include "millis.h"
+#include "source_construction_internal.h"
 #include "world_access_internal.h"
 
 #include <limits.h>
@@ -477,14 +478,18 @@ static bool world_new_info(mc_world_runtime *runtime,
 static bool world_saved_data(mc_world_runtime *runtime, unsigned int call_pc,
                              unsigned int store_pc) {
     mc_world_saved_data *saved = NULL;
-    mc_world_storage_status status = mc_world_saved_data_create_for_side(
-        runtime->fields.w, runtime->classes->side, &runtime->construction_limits.saved_data, &saved,
-        &runtime->last_error);
+    const bool source = mc_world_store_is_source(runtime->fields.w);
+    mc_world_storage_status status =
+        source ? mc_world_runtime_source_saved_data(runtime, &runtime->last_error)
+               : mc_world_saved_data_create_for_side(runtime->fields.w, runtime->classes->side,
+                                                     &runtime->construction_limits.saved_data,
+                                                     &saved, &runtime->last_error);
     if (status != MC_WORLD_STORAGE_OK) {
         runtime->construction.failed_call_pc = call_pc;
         return false;
     }
-    runtime->fields.z = saved;
+    if (!source)
+        runtime->fields.z = saved;
     runtime->construction.last_store_pc = store_pc;
     return true;
 }
@@ -529,6 +534,11 @@ static bool world_metadata_tail(mc_world_runtime *runtime,
         }
         f->I = parent->fields.I;
         state->last_store_pc = 267;
+        if (mc_world_runtime_source_bind_store(runtime, parent->fields.w, &runtime->last_error) !=
+            MC_WORLD_STORAGE_OK) {
+            state->failed_call_pc = 275;
+            return false;
+        }
         f->w = parent->fields.w;
         runtime->options.store = f->w;
         state->last_store_pc = 275;
@@ -536,6 +546,11 @@ static bool world_metadata_tail(mc_world_runtime *runtime,
             !world_saved_data(runtime, 302, 305))
             return false;
         return world_set_dimension(runtime, arguments->dimension, 310);
+    }
+    if (mc_world_runtime_source_bind_store(runtime, arguments->store, &runtime->last_error) !=
+        MC_WORLD_STORAGE_OK) {
+        state->failed_call_pc = 264;
+        return false;
     }
     f->w = arguments->store;
     runtime->options.store = f->w;
@@ -551,7 +566,10 @@ static bool world_metadata_tail(mc_world_runtime *runtime,
         return false;
     mc_world_info *loaded = NULL;
     mc_world_storage_status status =
-        mc_world_store_load_world_info(f->w, runtime->classes->side, &loaded, &runtime->last_error);
+        mc_world_store_is_source(f->w)
+            ? mc_world_runtime_source_read_info(runtime, &loaded, &runtime->last_error)
+            : mc_world_store_load_world_info(f->w, runtime->classes->side, &loaded,
+                                             &runtime->last_error);
     if (status != MC_WORLD_STORAGE_OK && status != MC_WORLD_STORAGE_MISSING) {
         state->failed_call_pc = 281;
         return false;
@@ -605,6 +623,11 @@ static bool world_chunk_provider(mc_world_runtime *runtime, unsigned int call_pc
         result(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World loader Dimension");
         return false;
     }
+    /* Actual fd.b() calls wt.a(Dimension)8 BEFORE Dimension.generator24 and
+     * ok27. This creates the genuine ld/File owner without opening regions. */
+    if (mc_world_store_is_source(runtime->fields.w) &&
+        mc_world_runtime_source_create_loader(runtime, &runtime->last_error) != MC_WORLD_STORAGE_OK)
+        return false;
     runtime->loader =
         (mc_world_store_loader){.store = runtime->fields.w,
                                 .dimension = dimension.kind == MC_WORLD_PROVIDER_NETHER ? -1 : 0};
@@ -844,6 +867,13 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
         return result(error, MC_WORLD_STORAGE_BUSY, "World collision occurrences remain");
     if (!mc_world_accesses_retirement_valid(runtime))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "WorldAccess ownership metadata");
+    /* Every existing active/registration/container guard above has passed.
+     * Checked source child cleanup may consume earlier native slots on failure;
+     * preserve this SAME World and all remaining owners for retry. */
+    const mc_world_storage_status source_cleanup =
+        mc_world_runtime_source_prepare_free(runtime, error);
+    if (source_cleanup != MC_WORLD_STORAGE_OK)
+        return source_cleanup;
     if (runtime->dedicated.F != NULL) {
         if (mc_server_runtime_release(runtime->dedicated.F) != MC_SERVER_OK)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -886,6 +916,7 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
     mc_world_info_release(f->x);
     mc_world_saved_data_free(f->z);
     mc_world_provider_release(f->t);
+    mc_world_runtime_source_free(runtime);
     --runtime->classes->live_worlds;
     free(runtime);
     return result(error, MC_WORLD_STORAGE_OK, NULL);

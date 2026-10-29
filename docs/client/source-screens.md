@@ -63,7 +63,9 @@ App teardown BUSY until their external occurrences are released.
 Windows empty/populated, scrolling and double-click loop profiles pass and their captures were
 inspected. DateFormat matches 2,926 JDK17 vectors on Windows and Linux within
 its documented English, UTC/Eastern and 1967..2099 profile. The current full
-suite passes all 468 selected cases; formatting checks 1,356 files. World loading, creation, rename,
+World-loading suite passes all 475 selected cases; formatting checks 1,379 files.
+The later [World-load route](world-loading.md) reaches real World/Player/input
+publication for an authored existing save. Rendering attachment, creation, rename,
 deletion, gameplay and original menu-pixel correspondence remain unfinished
 or unqualified. Earlier complete results retain their source scopes in
 [testing](../testing.md).

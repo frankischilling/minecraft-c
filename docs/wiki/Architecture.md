@@ -30,9 +30,11 @@ real SaveFormat metadata and stable sorting, scrolling rows, selection during
 drawing and same-parent Cancel. Synchronous publication keeps the original
 input receiver alive through its trailing input. Retained old RQ occurrences
 keep App dependencies live through BUSY teardown. Select constructs the actual
-controller and stops at World-load `a(NULL World)`2. No World or Player is
-fabricated. Empty, populated, scrolling and double-click native Windows profiles
-pass. All 468 selected Windows CTests and formatting for 1,356 files pass.
+controller and invokes the actual retained World-load call. Existing-save
+loading constructs the canonical source World, completes all 289 terrain
+samples and publishes its real Player/input before renderer attachment at 220.
+Version-zero conversion stops at 52. Empty, populated, scrolling and double-click native Windows profiles
+pass. All 475 selected Windows CTests and formatting for 1,379 files pass.
 Full source run/PX rendering, shutdown
 and gameplay adoption remain unqualified.
 
@@ -49,7 +51,9 @@ with default last-client resets, while three `-noreset` runs complete all
 2,400 window cycles. CI now disables that automatic reset without changing
 the default screen or test selection. SDL refusal diagnostics remain real
 failures. [Build and tests](Build-and-tests) records the matched controls,
-the distinct hosted refusals and pending complete verification.
+the distinct hosted refusals and the following exact `9d83665` green checkpoint:
+all 1,362 selected Windows/GCC/Clang tests pass without skips, with unchanged
+test names and matching trees. That checkpoint predates source World loading.
 
 The runtime uses C17 libraries with explicit ownership. The [architecture](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/architecture.md)
 describes the module boundaries; [parity](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md) records the qualified
@@ -86,8 +90,9 @@ Neither completes application World entry.
 The [singleplayer controller](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/singleplayer-controller.md)
 constructs genuine LocalPlayers from the live Session and World provider,
 preserves failed candidates and applies yaw preparation. Its World and final
-Player hooks use the actual empty bodies. Application Player/view publication,
-controller updates, mining, item use and complete World entry remain unfinished.
+Player hooks use the actual empty bodies. Selected existing-save loading now
+publishes the actual App Player and movement input. View publication, controller
+updates, mining, item use and complete World entry remain unfinished.
 
 The water owner has its CPU animation body on the existing arrays and shared
 Math profile. Its [comparison guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/water_animation/README.md)

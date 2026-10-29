@@ -11,7 +11,8 @@ Tests, reference tools and a local resource importer support development.
 The [parity matrix](docs/parity.md) records verified scenarios and outstanding work.
 The default client runs the constructed source App and its
 [menus](docs/client/menu-runtime.md), including real save-list selection and
-Cancel. World loading and gameplay remain unfinished. A separate
+Cancel. Existing-save loading reaches World and Player/input publication;
+rendering attachment and gameplay remain unfinished. A separate
 [generated-world inspection](docs/client/world-renderer.md) remains available.
 
 ## Build

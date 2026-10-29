@@ -214,6 +214,31 @@ mc_stored_chunk_status mc_stored_chunk_decode_game(const uint8_t *input, size_t 
     return stored_decode(input, length, requested, true, out, consumed, error);
 }
 
+mc_stored_chunk_status mc_stored_chunk_adopt_game_document(mc_nbt_document **document,
+                                                           const mc_nbt_limits *requested,
+                                                           mc_stored_chunk **out,
+                                                           mc_stored_chunk_error *error) {
+    mc_nbt_limits limits;
+    if (document == NULL || *document == NULL || out == NULL || !stored_limits(requested, &limits))
+        return stored_status(error, MC_STORED_CHUNK_INVALID_ARGUMENT, NULL);
+    if (sizeof(mc_stored_chunk) > limits.max_allocation_bytes)
+        return stored_status(error, MC_STORED_CHUNK_LIMIT, NULL);
+    mc_stored_chunk *chunk = calloc(1, sizeof(*chunk));
+    if (chunk == NULL)
+        return stored_status(error, MC_STORED_CHUNK_ALLOCATION_FAILED, NULL);
+    chunk->source = *document;
+    stored_bind(chunk);
+    mc_stored_chunk_status status = stored_decode_fields(chunk, true, error);
+    if (status != MC_STORED_CHUNK_OK) {
+        chunk->source = NULL;
+        free(chunk);
+        return status;
+    }
+    *document = NULL;
+    *out = chunk;
+    return stored_status(error, MC_STORED_CHUNK_OK, NULL);
+}
+
 mc_stored_chunk_status mc_stored_chunk_create(const mc_chunk_state *state,
                                               const mc_nbt_limits *requested, mc_stored_chunk **out,
                                               mc_stored_chunk_error *error) {

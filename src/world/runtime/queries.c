@@ -101,6 +101,7 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, query_chunk *
     mc_world_runtime_acquisition_error detail;
     error->acquisition = mc_world_runtime_get_detailed(world, mc_java_i32_shr(x, 4),
                                                        mc_java_i32_shr(z, 4), &out->state, &detail);
+    error->source_chunk = detail.source_chunk;
     if (error->acquisition != MC_CHUNK_ACQUIRE_OK) {
         error->population = detail.population;
         error->registry = detail.registry;

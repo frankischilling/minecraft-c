@@ -5439,3 +5439,21 @@ if(BUILD_TESTING)
 endif()
 include(cmake/tests/platform_calendar.cmake)
 include(cmake/tests/application_resource_services.cmake)
+
+# Canonical source SaveHandler, SavedData and region transport inside GAME Worlds.
+include(cmake/source_chunk_loader.cmake)
+include(cmake/world_source_construction.cmake)
+if(TARGET mc_client_screen_transitions)
+    add_library(mc_client_world_load STATIC
+        src/client/world/load_world.c src/client/world/prepare_world.c)
+    target_include_directories(mc_client_world_load PUBLIC src/client/world
+        PRIVATE src include src/platform/time)
+    target_link_libraries(mc_client_world_load PUBLIC mc_client_application_startup
+        mc_client_singleplayer_controller mc_simulation mc_c_atomics PRIVATE mc_build_options)
+    target_link_libraries(mc_client_screen_transitions PUBLIC mc_client_world_load)
+endif()
+if(BUILD_TESTING)
+    include(cmake/tests/source_saved_data.cmake)
+    include(cmake/tests/source_regions.cmake)
+    target_link_libraries(mc_test_source_handler PRIVATE mc_simulation)
+endif()

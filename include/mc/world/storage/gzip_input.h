@@ -56,6 +56,9 @@ typedef struct mc_gzip_state {
     int last_store_pc;
     const char *last_store_class;
     bool ignored_next_header;
+    const uint8_t *source_memory;
+    size_t source_memory_length, source_memory_position;
+    bool zlib_wrapped;
 } mc_gzip_state;
 
 mc_gzip_options mc_gzip_default_options(void);
@@ -63,6 +66,12 @@ mc_gzip_status mc_gzip_input_allocate(const mc_gzip_options *options, mc_gzip_in
                                       mc_gzip_error *error);
 mc_gzip_status mc_gzip_input_construct(mc_gzip_input *raw, mc_java_file_stream *actual_input,
                                        mc_gzip_error *error);
+/* qj's actual ByteArrayInputStream over its zero-filled compressed byte[].
+ * Borrows that SAME immutable array until retirement. gzip=true selects
+ * GZIPInputStream; false selects InflaterInputStream(new Inflater()).
+ * No eager decompression/drain/trailer validation is introduced. */
+mc_gzip_status mc_gzip_input_construct_memory(mc_gzip_input *, const uint8_t *, size_t, bool gzip,
+                                              mc_gzip_error *);
 mc_gzip_status mc_gzip_input_retain(mc_gzip_input *input, mc_gzip_error *error);
 /* Real incremental read: no drain/read-all. Source EOS is tested before the
  * inherited len0/array checks. Native output written before a zlib error is

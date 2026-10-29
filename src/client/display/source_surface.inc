@@ -274,11 +274,18 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source interleaved draw", "unsupported mode/span/client vertex state", 0);
     if ((arrays & color_bit) == 0 && !s->color_known)
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source current color", "unspecified color after prior color-array draw", 0);
+    /* nw has already expanded its default quads before sending mode4. The
+     * selected bridge admits only decoded GL_TRIANGLES above, so each complete
+     * group of three is one actual primitive. Smooth interpolation is exactly
+     * constant for that primitive when all its RGBA bytes agree; independent
+     * triangles may have different colors. Incomplete trailing vertices create
+     * no primitive and do not require a flat interpolation shader. */
     if (s->shade_flat && (arrays & color_bit) != 0)
-        for (size_t i = 1; i < (size_t)count; ++i)
-            if (memcmp(data + 20, data + i * 32u + 20, 4) != 0)
-                return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source GL_FLAT vertex colors",
-                            "varying-color flat source batch requires its shader profile", 0);
+        for (size_t first = 0; first + 2u < (size_t)count; first += 3u)
+            for (size_t i = first + 1u; i < first + 3u; ++i)
+                if (memcmp(data + first * 32u + 20, data + i * 32u + 20, 4) != 0)
+                    return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source GL_FLAT vertex colors",
+                                "varying-color flat source primitive requires its shader profile", 0);
     if (s->texture_enabled && (arrays & uv_bit) == 0)
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source current texture coordinate", "nonarray textured-coordinate path", 0);
     if (!source_fp_admit("source native draw conversion FP", error)) return false;

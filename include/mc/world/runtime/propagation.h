@@ -15,6 +15,9 @@ typedef struct mc_world_light_acquisition_error {
     unsigned int load_bytecode, load_builder_bytecode;
     mc_world_entity_load_error load_entity;
     mc_world_population_context population;
+    /* Borrows the actual ld failure through the retained World/loader until
+     * its next mutation or retirement, like runtime acquisition diagnostics. */
+    const mc_world_source_chunk_error *source_chunk;
 } mc_world_light_acquisition_error;
 
 /* Fresh nested source sites; zero means that frame was not reached. World

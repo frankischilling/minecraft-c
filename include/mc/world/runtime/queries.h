@@ -12,6 +12,9 @@ typedef struct mc_world_query_error {
     mc_world_storage_error cause;
     mc_registry_error registry;
     mc_world_population_context population;
+    /* Borrows the actual ld failure through the retained World/loader until
+     * its next mutation or retirement. No second acquisition is performed. */
+    const mc_world_source_chunk_error *source_chunk;
 } mc_world_query_error;
 
 /* Actual fd.e/dj.e(II)I: acquire one Chunk before masking coordinates, then

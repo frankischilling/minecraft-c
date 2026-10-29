@@ -25,8 +25,8 @@
       "sha256": "d5ed6ad20bd01e9f14f0dc2bec3278d9ec929d2f236718b3a75b3ffdb52181f7"
     },
     "include/mc/storage/compression/inflater.h": {
-      "bytes": 3032,
-      "sha256": "6c84e96ad1d339023683b851229bc2f656a783398819f7b81ef197b2827e1600"
+      "bytes": 3266,
+      "sha256": "e0d737b636cc649b14125531e1e9beb4278362e1fe1c23220a555ee06435d444"
     },
     "include/mc/storage/nbt/input.h": {
       "bytes": 5164,
@@ -41,8 +41,8 @@
       "sha256": "ce3f532dadb59f3e856b7eed079b7bbad0501a990278ef289429d32828739647"
     },
     "include/mc/world/storage/gzip_input.h": {
-      "bytes": 3526,
-      "sha256": "e0399f26a08f05031bec8fdda8da83b3af652666683d5d861b42dfb2dfc161fe"
+      "bytes": 4092,
+      "sha256": "9a8aacf64e52c1e021e6b8c6197690dcbe2072abea5a0348af1c760ce9534cdd"
     },
     "include/mc/world/storage/java_file.h": {
       "bytes": 11908,
@@ -121,8 +121,8 @@
       "sha256": "cea41f665222059ecb6098b4d1409cb8d0fc0794f204b52cf62ea0353818c56d"
     },
     "src/storage/compression/inflater.c": {
-      "bytes": 9083,
-      "sha256": "b982c8e1ca2cafc5094e8f84d95a66da9a8c368969aff81853b1e92c7ea83db0"
+      "bytes": 9465,
+      "sha256": "0960b9f483e7f94e742222e019c3cf0538c4a2c60e8ba686bb03d368d188ec80"
     },
     "src/storage/compression/kernel.c": {
       "bytes": 3541,
@@ -153,8 +153,8 @@
       "sha256": "f5629c9368073e43dfcefdb309bfd6ce54bee2931a76c525a0d75c9a875c5a01"
     },
     "src/world/storage/gzip_input.c": {
-      "bytes": 34055,
-      "sha256": "e10066a9fa571595569560d1144416a47a1448a1a283f1cf570f4458f037087d"
+      "bytes": 36657,
+      "sha256": "8d6885a0e95c44b2fb2b5e7a904fee0d9cb5132da79be1a720761344d2a1a0e3"
     },
     "src/world/storage/java_file.c": {
       "bytes": 30190,
@@ -253,8 +253,8 @@
       "sha256": "4eadb829176da3e8a9609b13447e87803c8a8c95aa834d60ffa0e0819f6b3418"
     },
     "include/mc/world/storage/chunk.h": {
-      "bytes": 5539,
-      "sha256": "f58c096313fd841d0ce1a4436e520251497a1b72318d04b68f29bafa2f62091b"
+      "bytes": 6096,
+      "sha256": "cb35acf4bda6e60d3a7325692c242f7ca5d5ca3e14b834269bd2d782705ec9cc"
     },
     "include/mc/world/storage/regions.h": {
       "bytes": 4655,

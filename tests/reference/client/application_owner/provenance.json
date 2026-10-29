@@ -290,8 +290,8 @@
       "sha256": "30d6f6e102df2a6c9b3d69074c86ebff20e66c86e1f00660303fdf424efcd574"
     },
     "include/mc/world/storage/chunk.h": {
-      "bytes": 5539,
-      "sha256": "f58c096313fd841d0ce1a4436e520251497a1b72318d04b68f29bafa2f62091b"
+      "bytes": 6096,
+      "sha256": "cb35acf4bda6e60d3a7325692c242f7ca5d5ca3e14b834269bd2d782705ec9cc"
     },
     "include/mc/world/storage/java_file.h": {
       "bytes": 11908,
@@ -358,8 +358,8 @@
       "sha256": "1e8d7271832e8c742fbcc3c73f9d228aab4ac779c938d9570bdcbcb1413019e2"
     },
     "src/client/startup/application_classes.c": {
-      "bytes": 16672,
-      "sha256": "fd659a82acf9eaf57802e87920f8dc680f66cf21edc07a5bd223b76ed5829145"
+      "bytes": 17030,
+      "sha256": "e80ddc0df36c0b566289c6a702207138c2884028febaa08c4743aed19437e7fb"
     },
     "src/client/startup/application_lifetime.c": {
       "bytes": 8113,
@@ -370,8 +370,8 @@
       "sha256": "479e73496008f7ed8f76fec603a0e86c67585f34040a22f642fea8b2b26a6911"
     },
     "src/client/startup/application_owner_internal.h": {
-      "bytes": 4880,
-      "sha256": "d11d84516ad4070a104802ae1f5027b1768aeef80ef79126c083cced23b28279"
+      "bytes": 5146,
+      "sha256": "abb0a05df2581f8e5d2cbd36e436882225aad01356f9026e650cfe56517664d8"
     },
     "src/client/startup/timer_hack.c": {
       "bytes": 18780,

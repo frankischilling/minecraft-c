@@ -4,6 +4,7 @@
 #include "mc/world/runtime/loading/entity_errors.h"
 #include "mc/world/runtime/runtime.h"
 #include "mc/world/runtime/tile_entities/errors.h"
+typedef struct mc_world_source_chunk_error mc_world_source_chunk_error;
 
 typedef struct mc_world_game_load_error {
     mc_world_storage_status status;
@@ -11,6 +12,7 @@ typedef struct mc_world_game_load_error {
     unsigned int region_bytecode, builder_bytecode;
     mc_live_tile_entity_error tile_entity;
     mc_world_entity_load_error entity;
+    const mc_world_source_chunk_error *source_chunk;
 } mc_world_game_load_error;
 
 /* Concrete GAME coordinator above persistence: the same Store-owned decoded

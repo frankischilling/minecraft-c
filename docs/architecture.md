@@ -6,8 +6,11 @@ quads and manages context/texture ownership; it has no World or screen logic.
 Image decoding and font layout work without an OpenGL context. Graphics and audio device libraries
 remain outside the simulation and server link graph. The default constructed
 App now drives the no-World source menu and genuine
-[World-selection screen](client/world-selection.md). World loading, remaining
-child menus and gameplay remain unfinished. A separate
+[World-selection screen](client/world-selection.md). The
+[selected World loader](client/world-loading.md) constructs the canonical source
+SaveHandler/World and publishes a real Player and movement input after terrain
+preparation. Renderer attachment, remaining child menus and gameplay remain
+unfinished. A separate
 [World inspection](client/world-renderer.md) owns actual World construction,
 finite CPU section meshes and independent GPU buffers. It retains no Chunk view
 after meshing and does not substitute a camera for a Player.

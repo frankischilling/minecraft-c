@@ -2,7 +2,8 @@
 #include <stddef.h>
 #include <stdio.h>
 
-/* Exact pinned pre-move type, renamed solely for compile-time ABI comparison. */
+/* Pinned prefix from the entity-tick header move. Source-loader diagnostics now
+ * append one borrowed pointer; the existing field offsets remain unchanged. */
 typedef struct mc_world_runtime_acquisition_error_before {
     mc_chunk_acquire_status status;
     mc_world_storage_error cause;
@@ -16,8 +17,12 @@ typedef struct mc_world_runtime_acquisition_error_before {
 } mc_world_runtime_acquisition_error_before;
 
 _Static_assert(sizeof(mc_world_runtime_acquisition_error) ==
+                   sizeof(mc_world_runtime_acquisition_error_before) +
+                       sizeof(((mc_world_runtime_acquisition_error *)0)->source_chunk),
+               "acquisition appended diagnostic sizeof");
+_Static_assert(offsetof(mc_world_runtime_acquisition_error, source_chunk) ==
                    sizeof(mc_world_runtime_acquisition_error_before),
-               "acquisition sizeof");
+               "acquisition appended source_chunk offsetof");
 _Static_assert(_Alignof(mc_world_runtime_acquisition_error) ==
                    _Alignof(mc_world_runtime_acquisition_error_before),
                "acquisition alignof");
@@ -56,5 +61,5 @@ _Static_assert(offsetof(mc_world_runtime_acquisition_error, population) ==
                "acquisition population offsetof");
 
 int main(void) {
-    return printf("World acquisition ABI: 13 checks\n") < 0 ? 1 : 0;
+    return printf("World acquisition diagnostic layout: 14 checks\n") < 0 ? 1 : 0;
 }

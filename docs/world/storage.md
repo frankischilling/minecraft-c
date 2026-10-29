@@ -8,9 +8,9 @@ and exact-source acceptance passes for the finite foundation scenarios at
 [checkpoint evidence](../reference/storage.md#exact-source-storage-checkpoint).
 
 The separate [SavedData manager](saved-data.md) owns ID counters, named MapData
-values and ordered save occurrences. It copies the store's `data/idcounts.dat`
-path and uses the same data directory for named files. ID writes directly
-overwrite raw NBT; dirty named values directly overwrite gzip under their own
+values and ordered save occurrences. Its path-based entry copies
+`data/idcounts.dat` and uses that data directory for named files. ID writes
+directly overwrite raw NBT; dirty named values directly overwrite gzip under their own
 name. Both routes have separate caught-error and partial-file contracts,
 without a session check or metadata rotation. The
 [named comparison](../reference/population-named-data.md) retains the finite
@@ -24,6 +24,73 @@ keeps the staged native failure control separate from the full loader route.
 Existing Item/Falling storage evidence retains its recorded scope and source
 binding. Original/native Minecart inventory, NBT and storage equality remains
 pending; optional unknown-field preservation is native policy.
+
+## Source SaveHandler and World ownership
+
+The selected client load uses the source SaveFormat's actual
+[`mx/fm` SaveHandler](save-handler.md). Its class context shares the existing File
+and Logging namespaces and the bound `rj` region namespace. The source handler
+retains its actual world, players and data File identities and the constructor's session-lock
+output prefix. Its legacy root is NULL. Path-based Store operations refuse this
+owner; callers use the typed source interfaces instead.
+
+The [retained client load call](../../src/client/world/load_world.h) keeps the
+selected folder and display-name `mc_world_info_name` identities. The folder
+goes directly to SaveFormat and the display name directly to the World
+constructor. File construction uses the existing UTF-16 File namespace; these
+arguments are not converted to UTF-8 and reconstructed. Opening the handler
+still creates the reached directories and replaces `session.lock`, including
+when the players-directory boolean is false.
+
+In the load/create constructor, the World acquires its own source Store
+occurrence before publishing `w264`. Its `hc` constructor acquires another at
+`a39`. The World publishes `z276` only after SavedData returns, then invokes
+the same handler's metadata method at 281 and publishes its actual nullable
+Info at 286. A loaded Info receives the same supplied display-name identity at
+the source setter at 390. That setter updates the Info's name in memory;
+metadata persistence remains a separate source call. Its scalar cells and
+retained Data remain independent of the metadata input's later native cleanup.
+Native READY describes completion of the represented World constructor; it does
+not establish a completed client
+entry or rendering attachment.
+
+Source metadata uses actual FileInputStream, GZIPInputStream, DataInputStream
+and NBT owners. A missing primary file selects `level.dat_old`. An exception
+while reading an existing primary does not authorize a backup read: the source
+call stops at its reached diagnostic dependency with the original cause and
+input prefix retained. The World keeps complete typed source errors by value,
+including SavedData and loader construction/retirement errors. It retains an
+unpublished failed SavedData candidate separately from `World.z`. The normal
+source loader owns the actual `ld`/directory File and shares the same Store and
+region namespace. Failed calls do not publish a ready World or retry source
+construction on that identity.
+
+Native cleanup retains the App, Settings, class namespaces and handler while
+their children can still use them. It retires the actual terrain/Loading calls,
+clears only this call's captured failed Player candidate, and ends its owned
+Player/view/input occurrences before releasing the World. Foreign retained
+Loading or SaveFormat failures keep their original caller's cleanup rights.
+An external Player or movement-input occurrence can keep this load call and its
+App dependencies alive with BUSY. Native cleanup never releases an unknown
+borrowed Player or treats App.h and App.i as one occurrence.
+
+World cleanup first retires the joint Entity/TileEntity containers, then its
+concrete pending/cache descriptors and registered contexts. Store Chunk records,
+including failed stages, retire individually under their existing lease and
+reference checks. Final World free retires its pending/published `hc` and `ld`
+before releasing the source `w` occurrence. A later BUSY can follow an earlier
+consumed child; the same World, remaining slots and typed cleanup errors stay
+available for retry. The load call retires its own handler occurrence after
+World free. SaveHandler teardown leaves directories and the session file in
+place and does not save, roll back files, flush the shared region cache or replay
+a source close, unload or constructor.
+
+The `regions.h` transport and path-based metadata contracts below retain their
+separate scope. Their whole-file buffers and copied paths do not replace the
+source owners. Both transports feed the canonical staged GAME owner described
+later. The source-constructor controls cover input and cleanup prefixes;
+complete terrain preparation and original client entry remain outside those
+controls.
 
 ## Stable chunks
 
@@ -86,7 +153,7 @@ no containment, symlink exclusion or concurrent-writer protection. Network UNC
 behavior has not been validated. No fsync, crash-safe recovery or power-loss
 durability is claimed.
 
-## World-store ownership
+## Path-based World-store ownership
 
 [`store.h`](../../include/mc/world/storage/store.h) owns metadata and retained
 chunks while borrowing the shared region owner. It creates data/optional-player

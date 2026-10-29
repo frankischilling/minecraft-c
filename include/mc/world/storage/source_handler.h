@@ -6,6 +6,9 @@
 #include "mc/world/storage/store.h"
 
 typedef struct mc_world_store_source_classes mc_world_store_source_classes;
+typedef struct mc_world_source_regions mc_world_source_regions;
+typedef struct mc_world_source_chunk_loader mc_world_source_chunk_loader;
+typedef struct mc_world_provider mc_world_provider;
 
 typedef enum mc_world_source_status {
     MC_WORLD_SOURCE_OK,
@@ -82,6 +85,8 @@ typedef struct mc_world_source_state {
     mc_java_file *pending_file, *session_file;
     mc_java_file_output *pending_fos;
     mc_java_data_output *pending_dos;
+    mc_java_file *data_factory_file;
+    mc_world_info_name *data_factory_name;
     const mc_world_store_source_classes *classes;
     const mc_world_source_error *failure, *cleanup;
 } mc_world_source_state;
@@ -163,7 +168,23 @@ mc_world_source_status mc_world_store_source_read_info(mc_world_store *, mc_worl
                                                        mc_world_source_error *);
 mc_world_source_status mc_world_store_source_check_session(mc_world_store *,
                                                            mc_world_source_error *);
-mc_world_source_status mc_world_store_source_loader(mc_world_store *, mc_world_source_error *);
+/* Cold binding of the one client rj namespace. No class activation or IO.
+ * Bind before the first handler; classes own an independent occurrence. */
+mc_world_source_status mc_world_store_source_classes_bind_regions(mc_world_store_source_classes *,
+                                                                  mc_world_source_regions *,
+                                                                  mc_world_source_error *);
+mc_world_source_regions *mc_world_store_source_regions(const mc_world_store *);
+mc_java_files *mc_world_store_source_files(const mc_world_store *);
+/* Actual fm.a(String), including StringBuilder's null -> "null" append.
+ * Success transfers the actual newly constructed File occurrence. */
+mc_world_source_status mc_world_store_source_data_file(mc_world_store *, mc_world_info_name *,
+                                                       mc_java_file **, mc_world_source_error *);
+/* Actual mx.a(xa), including DIM-1 File/mkdirs for real wd. Once allocation
+ * succeeds, candidate owns the retained native failure prefix even if the
+ * source invocation fails. Caller records and retires that candidate. */
+mc_world_source_status mc_world_store_source_loader(mc_world_store *, mc_world_provider *,
+                                                    mc_world_source_chunk_loader **,
+                                                    mc_world_source_error *);
 /* Successful release consumes/nulls this occurrence, including nonfinal.
  * BUSY/failure preserves it; final cleanup is allocation-free and retryable.
  * Native retirement never deletes session.lock, flushes shared regions, samples

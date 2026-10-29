@@ -4,9 +4,11 @@
 default path constructs the source App, completes the no-connection startup and
 continues through the [no-World menu runtime](menu-runtime.md). Singleplayer now
 opens the genuine [World-selection screen](world-selection.md). Focused Windows
-empty/populated, scrolling and double-click save-list loops pass and their captures were inspected. World
-loading and gameplay remain unfinished. All 468 selected Windows CTests and
-formatting for 1,356 files pass; hosted and original correspondence retain their source
+empty/populated, scrolling and double-click save-list loops pass and their captures were inspected.
+The [selected World loader](world-loading.md) also reaches actual World/Player/input
+publication for an authored existing save; renderer attachment and gameplay
+remain unfinished. All 475 selected Windows CTests and
+formatting for 1,379 files pass; hosted and original correspondence retain their source
 scopes in the [testing record](../testing.md).
 
 After [resource import](../reference/resources.md), it requires neither the
@@ -53,7 +55,9 @@ The admitted default-pack/no-World profile is narrower than complete rendering.
 
 Quit and window close use the actual App run flag. Singleplayer now initializes
 the actual save List and scrolling screen. Cancel returns to the same parent;
-Select constructs the actual controller and stops at World-load `a(NULL World)`2.
+Select constructs the actual controller, then runs the retained World-load call.
+The admitted existing-save profile completes all 289 terrain samples and
+publishes its real Player/input before World-change bytecode 220.
 Create, Rename, Delete, Multiplayer, Mods and Texture Packs, and Options retain
 explicit unfinished routes. Fullscreen, source F2 screenshots, debug timing and
 focused gameplay input also retain explicit dependencies. [Option actions](game-options.md),

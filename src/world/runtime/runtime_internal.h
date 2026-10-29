@@ -87,6 +87,8 @@ struct mc_world_runtime {
     mc_world_runtime_construction construction;
     mc_world_runtime_construction_limits construction_limits;
     mc_world_runtime_classes *classes;
+    /* Native source SaveHandler construction prefix and checked child ownership. */
+    struct mc_world_runtime_source_construction *source_construction;
 };
 
 /* Bind installed options/live cells without acquiring or retiring their owners.

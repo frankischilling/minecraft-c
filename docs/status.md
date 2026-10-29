@@ -4,9 +4,11 @@ The native C client is pre-playable. Its default path uses the constructed
 source App, initialized menu and genuine [World-selection screen](client/world-selection.md).
 Four Windows native save-list profiles pass, including row selection, scrollbar drag,
 same-parent Cancel, original-receiver trailing input and retained-screen cleanup.
-Empty, populated and bottom-scroll captures were inspected. Select constructs the actual controller, then
-stops at World-load `a(NULL World)`2. World loading, Player publication, dynamic
-terrain rendering and gameplay remain unfinished. Explicit flags retain the
+Empty, populated and bottom-scroll captures were inspected. Select now enters the
+[source World loader](client/world-loading.md) after constructing the actual
+controller. The existing-save profile reaches `READY`, all 289 terrain samples
+and real Player/input publication before renderer attachment at bytecode 220.
+Dynamic terrain rendering and gameplay remain unfinished. Explicit flags retain the
 diagnostic title and fixed-camera World inspection.
 
 ## Current integration
@@ -16,9 +18,12 @@ Its DateFormat module matches 2,926 JDK17 vectors on Windows and Linux for
 English/en_US, UTC/US Eastern and UTC years 1967..2099; other profiles fail
 explicitly. Create and Rename stop at `NEW162` and `NEW189`. Delete stops at
 preparation 21 without skipping its prefix. The Windows MSVC Debug ALL build
-and all 468 selected CTests pass without failures or skips in 197.43 seconds;
+and all 475 selected CTests pass without failures or skips in 208.25 seconds;
 46 configured reference-label profiles are excluded. The separate headless
-Release ALL build and formatting for 1,356 files also pass. See the
+Release ALL build and formatting for 1,379 files also pass. Ten focused source
+runtime cases per Linux compiler pass across two ASan/UBSan selections. The separate Windows
+generated-terrain Release profile completes all 289 samples and Player/input
+through the same renderer frontier. See the
 [current checks](testing.md#world-selection-in-the-default-runtime).
 
 The preceding native-menu source passes all 463 selected Windows CTests without
@@ -32,7 +37,7 @@ constructor profile. Cleanup succeeds; the underlying SDL operation/detail
 was not printed, so its cause remains undiagnosed. A diagnostic-only follow-up
 prints those captured fields without changing failures or assertions. Both
 optional constructor profiles pass separately on Windows after enabling them;
-this is separate from the complete 468-case selection above. Formatting passes
+this is separate from the complete 468-case selection recorded at that checkpoint. Formatting passes
 for 1,356 files; all checkout trees match the tested head. The fingerprint
 regression passes on all three hosts; `client.startup` passes on both Linux
 compilers. See the
@@ -51,7 +56,11 @@ cycles across three servers and twelve processes. Linux CI now supplies that
 server flag while retaining the default screen, four workers and full suite.
 The SDK test also preserves failed-init error text without changing its checks.
 The [matched evidence](testing.md#sdl-initialization-and-xvfb-lifetime) supports
-the environment correction; complete hosted verification remains pending.
+the environment correction. The exact
+[`9d83665` run](https://github.com/frankischilling/minecraft-c/actions/runs/40819123976)
+passes all 1,362 tests across Windows 440/GCC 461/Clang 461, with zero skips and
+matching trees; formatting passes for 1,356 files. This checkpoint precedes the
+source World-loading extension and leaves the old missing SDL strings unknown.
 
 The corrected runtime [hosted run at `de4290b`](https://github.com/frankischilling/minecraft-c/actions/runs/40802203908)
 passes all 435 Windows tests in 329.63 seconds and all 454 Clang tests in 189.45
@@ -158,7 +167,8 @@ the default [native menu runtime](client/menu-runtime.md) continues from that
 same graph. It adopts Timer frames, canonical screen input, no-World ticks and
 source menu drawing. Quit clears the actual App run flag. The later
 [World-selection increment](client/world-selection.md) connects Singleplayer,
-save rows and Cancel; World loading and gameplay remain unfinished. Full source
+save rows and Cancel. Selected existing-save loading now constructs the real
+World and Player/input; renderer attachment and gameplay remain unfinished. Full source
 run/PX rendering and `Minecraft.d()` shutdown parity are not established.
 
 The earlier scene-construction increment passes 24 selected Windows cases, with six recorded on

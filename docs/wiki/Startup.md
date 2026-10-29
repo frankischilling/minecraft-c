@@ -42,9 +42,11 @@ Singleplayer now constructs the genuine RQ, initializes its real sorted save
 List and scrolling owner, and draws selectable rows. Cancel returns to the
 exact parent. A synchronous screen change keeps the original source receiver
 for the remaining input. Select constructs and publishes the actual `os`, then
-stops at World-load `a(NULL World)`2. Create/Rename stop at `NEW162`/`NEW189`;
-Delete stops at preparation 21 without skipping its prefix. World/Player
-publication and gameplay remain unfinished. See the
+enters the source World loader. Existing-save loading constructs the canonical
+World, completes 289 terrain samples and publishes its real Player/input before
+renderer attachment at bytecode 220. Version-zero conversion stops at 52.
+Create/Rename stop at `NEW162`/`NEW189`; Delete stops at preparation 21 without
+skipping its prefix. Complete World entry and gameplay remain unfinished. See the
 [World-selection contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-selection.md).
 
 The preceding startup/menu-initialization Windows MSVC Debug source passes all
@@ -61,8 +63,8 @@ inspected. Retaining an old RQ blocks teardown while preserving the App, then
 cleanup succeeds after its release. DateFormat matches 2,926 JDK17 vectors on
 Windows and Linux for English/en_US, UTC/Eastern and UTC years 1967..2099;
 other profiles fail explicitly. The current full suite and formatting check
-pass: all 468 selected Windows CTests without failures or skips and formatting
-for 1,356 files. Hosted CI and original-game correspondence retain their source scopes.
+pass: all 475 selected Windows CTests without failures or skips and formatting
+for 1,379 files. Hosted CI and original-game correspondence retain their source scopes.
 Full source run/PX rendering and `Minecraft.d()` shutdown parity are unproven;
 native cleanup is a separate implementation.
 
@@ -73,8 +75,10 @@ last-client reset as a cause of the same failure pattern. Three default runs
 fail and one passes; three `-noreset` runs complete all 2,400 window cycles.
 Linux CI now keeps the server between clients, with its default screen, four
 workers and suite unchanged. SDK initialization failures now print the actual
-SDL error. [Build and tests](Build-and-tests) records the controls and pending
-hosted verification; the old hosted error strings remain unrecorded.
+SDL error. [Build and tests](Build-and-tests) records the controls and exact
+`9d83665` green checkpoint: all 1,362 selected tests pass across Windows, GCC and
+Clang, without skips or removed test names. It predates source World loading;
+the old hosted error strings remain unrecorded.
 
 [Current status](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md)
 and the [testing record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)

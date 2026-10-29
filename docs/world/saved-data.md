@@ -2,23 +2,85 @@
 
 `mc_world_saved_data` owns the ID counters, named cache and ordered save list
 used by the actual World. It is separate from WorldInfo and chunk storage.
-The ordinary load-or-create World constructor creates this owner
-before loading WorldInfo; the direct-metadata and copy overloads have their own
-order. The complete native World constructor remains unfinished.
+The ordinary load-or-create World constructor creates this owner before loading
+WorldInfo; the direct-metadata and copy overloads have their own order.
 
 The [interface](../../include/mc/world/saved_data/storage.h) constructs an owner,
 loads and publishes named MapData values, saves dirty ordered occurrences,
 allocates IDs, exposes passive inspection and retires its retained owners.
-Construction copies the store's fixed `data/idcounts.dat` path and admitted
-UTF-16 keys. No retained pointer borrows a metadata document or the supplying
-store. Each owner has independent counters, even when several use one file.
-The owner remains usable after that store closes. A NULL store selects the
-original in-memory mode and performs no file operations.
+The path-based entry copies the store's fixed `data/idcounts.dat` path and
+admitted UTF-16 keys. Its counters remain independent of the supplying store's
+lifetime. The [source constructor](../../include/mc/world/saved_data/source_storage.h)
+retains the actual SaveHandler instead. Both entries use the same canonical
+collection owners. A NULL store selects the original in-memory mode.
 
-## Construction and allocation
+## Source constructor and input ownership
 
-Construction reads one raw named Compound, without gzip or a `data`/`Data`
-envelope. It keeps only Short children. Ordinary NBT duplicate-name replacement
+`mc_world_saved_data_source_allocate` creates a RAW `hc` or `es` identity with
+null source fields. It records the explicit client/server base-type domain.
+Construction publishes the named cache at 12, ordered list at 23 and ID map at 34,
+then stores the supplied Store in `a` at 39. A nonnull Store gains an independent
+native occurrence at that store.
+The loader runs at 43; the constructor returns at 46 only after that loader
+returns. Failed construction retains every completed field and child for
+inspection and checked retirement.
+
+For the client source Store, `hc.b()` clears the ID map at 4. A null Store returns
+at 16. Otherwise it calls `wt.a("idcounts")` at 23, which runs the actual
+`fm.a(String)` File factory. That factory constructs a new File beneath the
+handler's actual `data` File, appending `.dat` through UTF-16 text. SavedData
+uses that exact returned File and the handler's File namespace. It does not
+copy a legacy UTF-8 root path. A nonnull source Store requires this constructor;
+the path-based create entry returns `UNSUPPORTED_STATE` for it.
+
+`File.exists` runs at 34. A missing file completes the loader with an empty ID
+map, without creating the file or allocating input streams. A present file
+reaches these operations in order:
+
+| Source operation | Offset |
+| --- | ---: |
+| Allocate DataInputStream identity | 40 |
+| Allocate FileInputStream, then construct it from the returned File | 44,49 |
+| Construct DataInputStream over that same FileInputStream | 52 |
+| Parse the raw named Compound through `as.a(DataInput)` | 57 |
+| Close DataInputStream | 62 |
+| Obtain Compound values, filter Short children and insert their names/values | 66,100,138 |
+| Return from the loader | 155 |
+
+The input has no gzip or `data`/`Data` envelope. NBT duplicate-name replacement
+precedes the Short filter, so a later non-Short replacement removes an earlier
+counter. Imported names preserve their UTF-16 code units, including NUL and
+unpaired surrogates. Native counter entries copy those units; that ownership
+does not establish Java String identity or HashMap bucket traversal.
+
+The source close at 62 follows a successful parse. An open or parse exception
+does not reach it, and there is no source finally in this loader. A close
+exception precedes every map import. Caught source exceptions stop at the
+unimplemented `Exception.printStackTrace` call at 152 with their typed cause and
+reached File, stream and partial-document owners retained. They do not count as a
+normal constructor return. Native bounds and allocation failures remain native
+errors; a later import bound preserves the counters already inserted.
+
+`mc_world_saved_data_retire` performs checked native cleanup of RAW, failed,
+ready or partly retired owners. It retires the reader/document, FileInputStream
+and File occurrences before releasing SavedData's Store occurrence. Native
+descriptor cleanup does not credit the unreached source close at 62. A failure
+keeps the owner and remaining slots for retry; consumed slots stay null.
+The legacy void free leaves source owners for this checked entry. Borrowed
+inspection views do not grant another reader, File or stream occurrence.
+
+The source sidecar counts toward the manager's allocation bound. File, String,
+DataInputStream and NBT document owners retain their separate canonical bounds.
+Embedded collection descriptors and native insertion order do not reproduce
+Java collection allocation failures or physical HashMap iteration. A null Store
+constructor completes for either side. The current nonnull source Store is the
+client `mx/fm` namespace; a server `es` supplied that Store stops at its distinct
+`om.b(String)` dependency at 23.
+
+## Path-based construction and ID writes
+
+The path-based constructor reads one raw named Compound, without gzip or a
+`data`/`Data` envelope. It keeps only Short children. Ordinary NBT duplicate-name replacement
 happens before that filtering, so a later non-Short replacement removes an
 earlier counter. Root names and trailing input bytes do not become counter
 fields. Construction does not create a missing ID file or world metadata.
@@ -35,7 +97,7 @@ rotation or implicit metadata save on this route. A stale session token therefor
 does not prevent ID allocation. Other store operations retain their own session
 policy.
 
-## Files, diagnostics and bounds
+## Path-based files, diagnostics and bounds
 
 The opened writer truncates the actual file and emits the reached Compound,
 Short type, modified-UTF name, payload and End bytes. An encoded name over
@@ -43,8 +105,8 @@ Short type, modified-UTF name, payload and End bytes. An encoded name over
 bytes survive a later encoding, write or output-byte-limit failure. The native
 writer always attempts checked flush/close and retains the first error.
 
-Caught I/O or malformed-data/encoding failures preserve the original normal
-counter return. `last_caught` retains their diagnostic instead of printing a
+For this entry, caught I/O or malformed-data/encoding failures preserve the
+original normal counter return. `last_caught` retains their diagnostic instead of printing a
 Java stack trace. A missing constructor input is an empty owner without a caught
 error. Native allocation, capacity and codec limits return explicit failures;
 `next_id` preserves its output parameter but retains any completed counter
@@ -52,8 +114,8 @@ change. Neither result implies rollback of an earlier file effect.
 
 Defaults allow 4096 counters, 65536 retained UTF-16 units and 4 MiB of owner
 allocations. The header defines accounting exclusions and separate input/NBT
-budgets. Raw output applies byte, tag, element and depth bounds. Input uses the
-existing bounded regular-file reader, which closes before parsing; the original
+budgets. Raw output applies byte, tag, element and depth bounds. Path-based input
+uses the bounded regular-file reader, which closes before parsing; the original
 parses before its close. These checked native resource/lifetime policies do not
 claim equivalent JVM allocation failures, streaming read errors or durability.
 
@@ -62,7 +124,7 @@ claim equivalent JVM allocation failures, streaming read errors or durability.
 Native emission currently follows insertion order. Actual Java HashMap ordering
 remains unfinished, including which key's encoding failure is reached first.
 NULL and empty keys would both serialize with empty tag names, making that
-ordering affect the reloaded counter. A file-backed owner containing both now
+ordering affect the reloaded counter. A path-based owner containing both now
 returns `UNSUPPORTED_STATE` before opening, after its counter change. It preserves
 the prior file and output parameter. In-memory coexistence remains supported.
 This explicit gap must be implemented before complete equivalence is claimed.
@@ -74,6 +136,17 @@ separates constructed native contracts, actual original captures and the limited
 memory replay.
 
 ## Named values and MapData
+
+The source constructor shares the cache and ordered-list operations below.
+Cache hits, put/replacement, and saves whose actual list is empty or contains
+only clean values complete normally. Source managers with a nonnull Store
+return `UNSUPPORTED_STATE` for a cache miss needing File transport, dirty named
+saving and `next_id`. Those calls do not fall through to the path-based or
+in-memory transport. The rejected ID call preserves its map and output; a
+rejected dirty save preserves that value's dirty flag. RAW and failed source
+constructors admit inspection and checked retirement, not ordinary mutation.
+The file-reading/writing behavior in the following paragraphs applies to the
+path-based entry; it does not qualify those unfinished source descendants.
 
 The manager retains actual nullable UTF-16 String keys, MapData values and
 ordered occurrences. GAME managers bind the distinct client or server base
@@ -142,6 +215,6 @@ seed23 origin prefix while retaining the same World. Gameplay restart and
 original qualification of nondefault maps or failure behavior remain separate
 work.
 Map item updates, player trackers, map packets and nonempty Player serialization
-remain unfinished. Filename conversion, original stream/error byte prefixes,
+remain unfinished. Named-file conversion and stream/error byte prefixes,
 printed caught diagnostics, Java allocation timing and unrestricted collection
 ordering remain unqualified; these are not approved full-game exceptions.

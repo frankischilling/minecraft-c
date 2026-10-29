@@ -26,6 +26,13 @@ typedef struct mc_stored_chunk_error {
 } mc_stored_chunk_error;
 
 const char *mc_stored_chunk_status_string(mc_stored_chunk_status status);
+/* Adopt a completed incremental source parse into the SAME canonical stored
+ * GAME payload. The sole field decoder below is reused. Success consumes the
+ * document slot; failure preserves document/out, without serializing it. */
+mc_stored_chunk_status mc_stored_chunk_adopt_game_document(mc_nbt_document **,
+                                                           const mc_nbt_limits *,
+                                                           mc_stored_chunk **,
+                                                           mc_stored_chunk_error *);
 
 /* Parse one uncompressed region NBT record and own all retained state. Requires
  * Level and Level.Blocks, exact original field types, and the supported fixed

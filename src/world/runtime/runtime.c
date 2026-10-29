@@ -8,6 +8,8 @@
 #include "loading/loading_internal.h"
 #include "mc/world/runtime/maintenance.h"
 #include "mc/world/runtime/population/overworld.h"
+#include "mc/world/storage/source_chunk_loader.h"
+#include "mc/world/storage/source_handler.h"
 #include "millis.h"
 #include "runtime_internal.h"
 #include "saving/player_metadata_internal.h"
@@ -137,6 +139,10 @@ static mc_chunk_load_result load(void *owner, const mc_chunk_acquire_context *co
                 runtime->acquisition_error->registry = error.tile_entity.registry;
                 runtime->acquisition_error->load_bytecode = error.region_bytecode;
                 runtime->acquisition_error->load_builder_bytecode = error.builder_bytecode;
+                runtime->acquisition_error->source_chunk = error.source_chunk;
+                if (error.source_chunk != NULL &&
+                    error.source_chunk->registry.status != MC_REGISTRY_OK)
+                    runtime->acquisition_error->registry = error.source_chunk->registry;
             }
         }
         return status == MC_WORLD_STORAGE_OK        ? MC_CHUNK_LOAD_LOADED
@@ -369,8 +375,20 @@ provider_maintenance(void *owner, const mc_chunk_lifecycle_context *context, boo
 static mc_chunk_callback_result session(void *owner, const mc_world_save_context *context) {
     (void)context;
     mc_world_runtime *runtime = owner;
-    const mc_world_storage_status status =
-        mc_world_store_check_session(runtime->options.store, &runtime->last_error);
+    mc_world_storage_status status;
+    if (mc_world_store_is_source(runtime->options.store)) {
+        mc_world_source_error source;
+        mc_world_source_status child =
+            mc_world_store_source_check_session(runtime->options.store, &source);
+        status = child == MC_WORLD_SOURCE_OK           ? MC_WORLD_STORAGE_OK
+                 : child == MC_WORLD_SOURCE_BUSY       ? MC_WORLD_STORAGE_BUSY
+                 : child == MC_WORLD_SOURCE_LIMIT      ? MC_WORLD_STORAGE_LIMIT
+                 : child == MC_WORLD_SOURCE_ALLOCATION ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+                 : child == MC_WORLD_SOURCE_FILE       ? MC_WORLD_STORAGE_IO_ERROR
+                                                       : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        runtime_error(&runtime->last_error, status, source.operation);
+    } else
+        status = mc_world_store_check_session(runtime->options.store, &runtime->last_error);
     if (status != MC_WORLD_STORAGE_OK)
         lifecycle_cause(runtime, runtime->last_error);
     return status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK : MC_CHUNK_CALLBACK_FATAL;

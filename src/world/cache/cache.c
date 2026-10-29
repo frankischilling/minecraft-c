@@ -29,15 +29,45 @@ bool mc_chunk_cache_init(mc_chunk_cache *cache, mc_chunk_cache_entry *entries, s
     return true;
 }
 
-bool mc_chunk_cache_validate(const mc_chunk_cache *cache) {
-    if (!metadata_valid(cache))
-        return false;
+static bool compact_entries_valid(const mc_chunk_cache *cache) {
+    /* Validate caller-mutable entries on every call. Store indices in bounded
+     * scratch space so no allocation, cache mutation or stale validity flag is
+     * needed. At most half the slots are occupied; all int keys remain valid. */
+    uint16_t seen[1024] = {0};
     for (size_t i = 0; i < cache->count; ++i) {
         if (!chunk_valid(cache->entries[i].chunk))
             return false;
-        for (size_t j = 0; j < i; ++j) {
-            if (cache->entries[i].key == cache->entries[j].key)
+        uint32_t hash = (uint32_t)cache->entries[i].key;
+        hash ^= hash >> 16u;
+        hash *= UINT32_C(0x7feb352d);
+        hash ^= hash >> 15u;
+        hash *= UINT32_C(0x846ca68b);
+        hash ^= hash >> 16u;
+        size_t slot = hash & 1023u;
+        while (seen[slot] != 0u) {
+            if (cache->entries[seen[slot] - 1u].key == cache->entries[i].key)
                 return false;
+            slot = (slot + 1u) & 1023u;
+        }
+        seen[slot] = (uint16_t)(i + 1u);
+    }
+    return true;
+}
+
+bool mc_chunk_cache_validate(const mc_chunk_cache *cache) {
+    if (!metadata_valid(cache))
+        return false;
+    if (cache->count > 8u && cache->count <= 512u) {
+        if (!compact_entries_valid(cache))
+            return false;
+    } else {
+        for (size_t i = 0; i < cache->count; ++i) {
+            if (!chunk_valid(cache->entries[i].chunk))
+                return false;
+            for (size_t j = 0; j < i; ++j) {
+                if (cache->entries[i].key == cache->entries[j].key)
+                    return false;
+            }
         }
     }
     for (size_t i = 0; i < cache->insertion_count; ++i) {

@@ -39,6 +39,7 @@ struct store_chunk {
     size_t leases;
     mc_world_store_game_stage_phase phase;
     bool game_stage, imports_started, coordinator_lease;
+    bool source_header_failed;
     mc_world_store_game_stage stage;
     /* Native occurrence provenance over the exact immutable decoded owner.
      * No Entity/World holds or replacement source objects live here. */
@@ -711,6 +712,13 @@ mc_world_storage_status mc_world_store_write_info_record(mc_world_store *store, 
 
 static mc_world_storage_status store_dimension(const mc_world_store *store, int32_t dimension,
                                                const char **out, mc_world_storage_error *error) {
+    if (store->source != NULL) {
+        if (dimension != 0 && dimension != -1)
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "source native chunk dimension");
+        *out = NULL; /* Native bookkeeping never invents a legacy path. */
+        return MC_WORLD_STORAGE_OK;
+    }
     if (dimension == 0)
         *out = store->root;
     else if (dimension == -1)
@@ -761,8 +769,11 @@ mc_world_storage_status mc_world_store_create_generated(mc_world_store *store,
                                                         int32_t x, int32_t z, uint8_t **blocks,
                                                         size_t length, mc_world_chunk **out,
                                                         mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+    if (store != NULL && store->source != NULL) {
+        mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
     if (store == NULL || world == NULL || blocks == NULL || *blocks == NULL ||
         length != MC_CHUNK_BLOCKS || out == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "generated chunk arguments");
@@ -918,8 +929,11 @@ mc_world_storage_status mc_world_store_retain_chunk(mc_world_store *store, int32
                                                     const mc_chunk_state *chunk,
                                                     mc_chunk_state **out,
                                                     mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+    if (store != NULL && store->source != NULL) {
+        mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
     if (store == NULL || chunk == NULL || out == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "chunk retain arguments");
     const char *root = NULL;
@@ -1048,8 +1062,11 @@ size_t mc_world_store_chunk_count(const mc_world_store *store) {
 mc_world_storage_status mc_world_store_chunk_at(const mc_world_store *store, size_t ordinal,
                                                 mc_chunk_state **out,
                                                 mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+    if (store != NULL && store->source != NULL) {
+        mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
     if (store == NULL || out == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "chunk ordinal arguments");
     for (const store_chunk *entry = store->chunks; entry != NULL; entry = entry->next) {
@@ -1073,8 +1090,11 @@ bool mc_world_store_owns_chunk(const mc_world_store *store, const mc_chunk_state
 mc_world_storage_status mc_world_store_lease_chunk(mc_world_store *store,
                                                    const mc_chunk_state *chunk,
                                                    mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+    if (store != NULL && store->source != NULL) {
+        mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
     store_chunk *entry = store_find_chunk(store, chunk);
     if (entry == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign chunk identity");
@@ -1087,8 +1107,11 @@ mc_world_storage_status mc_world_store_lease_chunk(mc_world_store *store,
 mc_world_storage_status mc_world_store_release_chunk(mc_world_store *store,
                                                      const mc_chunk_state *chunk,
                                                      mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+    if (store != NULL && store->source != NULL) {
+        mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
     store_chunk *entry = store_find_chunk(store, chunk);
     if (entry == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign chunk identity");
@@ -1111,8 +1134,11 @@ mc_world_storage_status mc_world_store_register_cache(mc_world_store *store,
                                                       const mc_chunk_cache *cache,
                                                       mc_chunk_state *const *fallback,
                                                       mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+    if (store != NULL && store->source != NULL) {
+        mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
     if (store == NULL || !store_cache_valid(cache, fallback))
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "registered cache metadata");
     for (store_cache *entry = store->caches; entry != NULL; entry = entry->next) {
@@ -1137,8 +1163,11 @@ mc_world_storage_status mc_world_store_register_cache(mc_world_store *store,
 mc_world_storage_status mc_world_store_unregister_cache(mc_world_store *store,
                                                         const mc_chunk_cache *cache,
                                                         mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+    if (store != NULL && store->source != NULL) {
+        mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
     if (store == NULL || cache == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "cache unregister arguments");
     store_cache **link = &store->caches;
@@ -1155,8 +1184,11 @@ mc_world_storage_status mc_world_store_unregister_cache(mc_world_store *store,
 
 mc_world_storage_status mc_world_store_retire_chunk(mc_world_store *store, mc_chunk_state *chunk,
                                                     mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+    if (store != NULL && store->source != NULL) {
+        mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
     if (store == NULL || chunk == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "chunk retire arguments");
     store_chunk **link = &store->chunks;
@@ -1207,8 +1239,11 @@ store_find_reservation(mc_world_store *store, mc_world_store_reservation *reserv
 mc_world_storage_status mc_world_store_reserve_chunk(mc_world_store *store, int32_t dimension,
                                                      mc_world_store_reservation **out,
                                                      mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+    if (store != NULL && store->source != NULL) {
+        mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
     if (store == NULL || out == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "chunk reservation arguments");
     const char *root = NULL;
@@ -1236,8 +1271,11 @@ mc_world_storage_status mc_world_store_reserve_chunk(mc_world_store *store, int3
 mc_world_storage_status mc_world_store_cancel_reservation(mc_world_store *store,
                                                           mc_world_store_reservation *reservation,
                                                           mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+    if (store != NULL && store->source != NULL) {
+        mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
     if (store == NULL || reservation == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "chunk reservation arguments");
     mc_world_store_reservation **link = store_find_reservation(store, reservation);
@@ -1256,8 +1294,11 @@ mc_world_storage_status mc_world_store_retain_reserved(mc_world_store *store,
                                                        const mc_chunk_state *chunk,
                                                        mc_chunk_state **out,
                                                        mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+    if (store != NULL && store->source != NULL) {
+        mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
     if (store == NULL || reservation == NULL || chunk == NULL || out == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "reserved retain arguments");
     mc_world_store_reservation **link = store_find_reservation(store, reservation);
@@ -1327,6 +1368,11 @@ static bool store_chunk_phase_valid(const store_chunk *entry) {
     if (!entry->game_stage)
         return entry->phase == MC_WORLD_STORE_GAME_COMMITTED && !entry->imports_started &&
                !entry->coordinator_lease;
+    if (entry->source_header_failed)
+        return entry->kind == STORE_CHUNK_STORED && entry->owner.stored != NULL &&
+               entry->loaded_binding == NULL && entry->stage.entry == entry &&
+               entry->phase == MC_WORLD_STORE_GAME_FAILED && !entry->imports_started &&
+               !entry->coordinator_lease && entry->leases == 0;
     if (entry->kind != STORE_CHUNK_STORED || entry->owner.stored == NULL ||
         entry->loaded_binding == NULL || entry->stage.entry != entry)
         return false;
@@ -1373,7 +1419,8 @@ static bool store_chunk_owner_valid(const store_chunk *entry) {
         return false;
     mc_world_chunk *chunk = store_runtime_chunk(entry);
     if (chunk == NULL)
-        return entry->kind == STORE_CHUNK_STORED && !entry->game_stage && !entry->game_save_open;
+        return entry->kind == STORE_CHUNK_STORED &&
+               (!entry->game_stage || entry->source_header_failed) && !entry->game_save_open;
     if (mc_world_chunk_state(chunk) != state || !mc_world_chunk_entities_validate(chunk))
         return false;
     mc_world_chunk_fields fields;
@@ -1399,7 +1446,7 @@ mc_world_store_game_save_begin(mc_world_store *store, mc_world_runtime *world,
                                mc_world_store_game_save **out, mc_world_store_game_save_view *view,
                                mc_world_storage_error *error) {
     if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+        return store_source_save_frontier(store, error);
     if (store == NULL || world == NULL || state == NULL || out == NULL || view == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "GAME save arguments");
     store_chunk *entry = store_find_chunk(store, state);
@@ -1616,8 +1663,11 @@ mc_world_storage_status mc_world_store_game_stage_view_get(const mc_world_store 
                                                            const mc_world_store_game_stage *stage,
                                                            mc_world_store_game_stage_view *out,
                                                            mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+    if (store != NULL && store->source != NULL) {
+        mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
     if (out == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "GAME stage view output");
     const store_chunk *entry = store_find_game_stage(store, stage);
@@ -1633,8 +1683,11 @@ mc_world_storage_status mc_world_store_game_stage_view_get(const mc_world_store 
 mc_world_storage_status mc_world_store_game_stage_imports_begin(mc_world_store *store,
                                                                 mc_world_store_game_stage *stage,
                                                                 mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+    if (store != NULL && store->source != NULL) {
+        mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
     store_chunk *entry = store_find_game_stage(store, stage);
     if (entry == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign GAME stage");
@@ -1650,8 +1703,11 @@ mc_world_storage_status
 mc_world_store_game_stage_record_entity_result(mc_world_store *store,
                                                mc_world_store_game_stage *stage, size_t index,
                                                bool consumed, mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+    if (store != NULL && store->source != NULL) {
+        mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
     store_chunk *entry = store_find_game_stage(store, stage);
     if (entry == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign GAME stage");
@@ -1695,8 +1751,11 @@ mc_world_storage_status mc_world_store_game_stage_finish(mc_world_store *store,
                                                          mc_world_store_game_stage *stage,
                                                          mc_chunk_state **out,
                                                          mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+    if (store != NULL && store->source != NULL) {
+        mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
     if (out == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "GAME stage result output");
     store_chunk *entry = store_find_game_stage(store, stage);
@@ -1710,7 +1769,9 @@ mc_world_storage_status mc_world_store_game_stage_finish(mc_world_store *store,
         return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                            "GAME stage incomplete Entity occurrence journal");
     const mc_stored_chunk_status normalized =
-        mc_stored_chunk_normalize(entry->owner.stored, store->block_map, sizeof(store->block_map));
+        store->source != NULL ? store_source_normalize(store, entry, error)
+                              : mc_stored_chunk_normalize(entry->owner.stored, store->block_map,
+                                                          sizeof(store->block_map));
     if (normalized != MC_STORED_CHUNK_OK)
         return store_error(error, MC_WORLD_STORAGE_INVALID_DATA,
                            "GAME stage postload normalization");
@@ -1728,8 +1789,11 @@ mc_world_storage_status mc_world_store_game_stage_fail(mc_world_store *store,
                                                        mc_world_store_game_stage *stage,
                                                        mc_world_storage_status original_status,
                                                        mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+    if (store != NULL && store->source != NULL) {
+        mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
     if (original_status == MC_WORLD_STORAGE_OK)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "GAME stage failure status");
     store_chunk *entry = store_find_game_stage(store, stage);
@@ -1759,8 +1823,11 @@ mc_world_storage_status mc_world_store_game_stage_at(const mc_world_store *store
                                                      mc_world_store_game_stage **out,
                                                      mc_world_store_game_stage_view *view,
                                                      mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+    if (store != NULL && store->source != NULL) {
+        mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
     if (store == NULL || out == NULL || view == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                            "GAME stage ordinal arguments");
@@ -1848,15 +1915,8 @@ void mc_world_store_free(mc_world_store *store) {
     free(store);
 }
 
-mc_world_storage_status mc_world_store_free_checked(mc_world_store **owner,
-                                                    mc_world_storage_error *error) {
-    if (owner != NULL && *owner != NULL && (*owner)->source != NULL)
-        return store_source_checked_free(owner, error);
-    if (owner == NULL)
-        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Store close owner output");
-    mc_world_store *store = *owner;
-    if (store == NULL)
-        return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+static mc_world_storage_status store_free_admit(const mc_world_store *store,
+                                                mc_world_storage_error *error) {
     if (store->chunk_count > store->limits.max_loaded_chunks ||
         store->reservation_count > store->limits.max_loaded_chunks - store->chunk_count ||
         store->cache_count > MC_WORLD_STORE_MAX_REGISTERED_CACHES)
@@ -1904,6 +1964,21 @@ mc_world_storage_status mc_world_store_free_checked(mc_world_store **owner,
     if (busy)
         return store_error(error, MC_WORLD_STORAGE_BUSY, "Store owners not quiescent");
 
+    return MC_WORLD_STORAGE_OK;
+}
+
+mc_world_storage_status mc_world_store_free_checked(mc_world_store **owner,
+                                                    mc_world_storage_error *error) {
+    if (owner != NULL && *owner != NULL && (*owner)->source != NULL)
+        return store_source_checked_free(owner, error);
+    if (owner == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Store close owner output");
+    mc_world_store *store = *owner;
+    if (store == NULL)
+        return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+    mc_world_storage_status admission = store_free_admit(store, error);
+    if (admission != MC_WORLD_STORAGE_OK)
+        return admission;
     /* Complete admission above; no allocation, source call or later owner
      * validation can be introduced after the first release. The real lower
      * finalizers accept already-retired coherent empty containers. */
@@ -1915,8 +1990,11 @@ mc_world_storage_status mc_world_store_free_checked(mc_world_store **owner,
 mc_world_storage_status mc_world_store_entity_containers_validate(const mc_world_store *store,
                                                                   const mc_world_runtime *world,
                                                                   mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+    if (store != NULL && store->source != NULL) {
+        mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
     if (store == NULL || world == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                            "Store entity retirement arguments");
@@ -1959,4 +2037,5 @@ void mc_world_store_entity_containers_release(mc_world_store *store,
     }
 }
 
+#include "source_game_stage.inc"
 #include "store_source.inc"

@@ -5,7 +5,8 @@
 bool mc_client_display_world_list_blend(mc_client_display *, bool, mc_client_display_error *);
 bool mc_client_display_world_list_blend_function(mc_client_display *, mc_client_display_error *);
 /* GL3.3 has no fixed-function glShadeModel. Record the reached FLAT state;
- * subsequent canonical source batches admit constant vertex colors only.
+ * subsequent canonical source batches admit constant vertex color within each
+ * decoded primitive, with independent colors across primitives.
  * LG fade strips select actual SMOOTH before their varying-alpha geometry. */
 bool mc_client_display_world_list_flat(mc_client_display *, mc_client_display_error *);
 #endif

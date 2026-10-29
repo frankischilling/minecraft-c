@@ -1,6 +1,7 @@
 #ifndef MC_WORLD_RUNTIME_BLOCKS_H
 #define MC_WORLD_RUNTIME_BLOCKS_H
 
+#include "mc/world/runtime/acquisition_error.h"
 #include "mc/world/runtime/construction.h"
 
 /* Actual GAME World block reads through its installed provider/cache. The
@@ -15,6 +16,19 @@
 mc_world_storage_status mc_world_runtime_block_get(mc_world_runtime *runtime, int32_t x, int32_t y,
                                                    int32_t z, int32_t *out,
                                                    mc_world_storage_error *error);
+
+/* SAME block-read implementation and source ordering, with the complete
+ * acquisition child copied directly from its reached invocation. The required
+ * acquisition frame is caller-owned/disjoint (use heap storage for enclosing
+ * retained client calls). No discarded-cause reconstruction or second read.
+ * Before acquisition it reports OK/unreached with fresh child diagnostics;
+ * error retains ordinary block/storage failures, and out stays unchanged on
+ * failure exactly as in block_get. Child source-loader views borrow the live
+ * World/ld through their next mutation/retirement. No extra source operation. */
+mc_world_storage_status
+mc_world_runtime_block_get_detailed(mc_world_runtime *, int32_t x, int32_t y, int32_t z,
+                                    int32_t *out, mc_world_storage_error *error,
+                                    mc_world_runtime_acquisition_error *acquisition);
 
 /* Same admission and real acquisition as block_get. Outside returns zero;
  * the actual blank-chunk getter also returns zero. A normal chunk reads its

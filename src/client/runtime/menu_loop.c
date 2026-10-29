@@ -360,7 +360,11 @@ bool mc_client_menu_loop_create(mc_client_bootstrap *bootstrap, mc_client_menu_l
         fprintf(stderr, "Client menu renderer setup failed: %s\n",
                 error.operation == NULL ? "native Settings/assets/clock prerequisite"
                                         : error.operation);
-        mc_client_menu_loop_free(loop);
+        if (!mc_client_menu_loop_retire(&loop)) {
+            loop->state.failed = true;
+            loop->state.operation = "retained native menu setup cleanup";
+            *out = loop;
+        }
         return false;
     }
     loop->state.running = atomic_load(&app->J);

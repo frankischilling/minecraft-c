@@ -5,12 +5,14 @@
 
 typedef struct mc_client_screen_transitions mc_client_screen_transitions;
 typedef struct mc_client_source_rq mc_client_source_rq;
+typedef struct mc_client_world_load_call mc_client_world_load_call;
 
 typedef struct mc_client_screen_transition_state {
     bool active, retiring, slot_handed_off;
     size_t screens, calls;
     const mc_client_source_da *initial_screen;
     const mc_client_screen_error *failure;
+    const mc_client_world_load_call *world_load; /* Actual last retained invocation, borrowed. */
 } mc_client_screen_transition_state;
 
 /* Native ownership for actual synchronous screen calls on one genuine App.

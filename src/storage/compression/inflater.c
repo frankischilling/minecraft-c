@@ -57,7 +57,7 @@ mc_raw_inflater_status mc_raw_inflater_allocate(size_t maximum, mc_raw_inflater 
     return result(e, MC_RAW_INFLATER_OK, NULL, 0, MC_COMPRESSION_OK);
 }
 
-mc_raw_inflater_status mc_raw_inflater_construct(mc_raw_inflater *r, mc_raw_inflater_error *e) {
+static mc_raw_inflater_status construct(mc_raw_inflater *r, bool nowrap, mc_raw_inflater_error *e) {
     if (r == NULL)
         return result(e, MC_RAW_INFLATER_ARGUMENT, "raw inflater null receiver", 0,
                       MC_COMPRESSION_OK);
@@ -68,15 +68,24 @@ mc_raw_inflater_status mc_raw_inflater_construct(mc_raw_inflater *r, mc_raw_infl
         return result(e, MC_RAW_INFLATER_STATE, "raw inflater constructor phase", 0,
                       MC_COMPRESSION_OK);
     r->active = true;
-    int z = inflateInit2(&r->stream, -15);
+    int z = inflateInit2(&r->stream, nowrap ? -15 : 15);
     r->active = false;
     if (z != Z_OK) {
         r->phase = MC_RAW_INFLATER_FAILED;
-        return backend(r, e, "inflateInit2(-15)", z);
+        return backend(r, e, nowrap ? "inflateInit2(-15)" : "inflateInit2(15)", z);
     }
     r->armed = true;
     r->phase = MC_RAW_INFLATER_READY;
     return result(e, MC_RAW_INFLATER_OK, NULL, z, MC_COMPRESSION_OK);
+}
+
+mc_raw_inflater_status mc_raw_inflater_construct(mc_raw_inflater *r, mc_raw_inflater_error *e) {
+    return construct(r, true, e);
+}
+
+mc_raw_inflater_status mc_raw_inflater_construct_wrapped(mc_raw_inflater *r,
+                                                         mc_raw_inflater_error *e) {
+    return construct(r, false, e);
 }
 
 static mc_raw_inflater_status ready(mc_raw_inflater *r, mc_raw_inflater_error *e) {

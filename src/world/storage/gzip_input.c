@@ -9,6 +9,9 @@ struct mc_gzip_input {
     mc_gzip_state state;
     mc_raw_inflater *inflater, *pending_inflater;
     mc_java_file_stream *input, *pending_input;
+    const uint8_t *memory_input;
+    size_t memory_length, memory_position;
+    bool uses_memory, zlib_wrapped;
     uint8_t *single, *skip, *fill, *tmp;
     uint32_t *crc;
     uint64_t native_output;
@@ -143,10 +146,20 @@ static mc_gzip_status input_read(mc_gzip_input *g, uint8_t *bytes, size_t n,
     if (g->state.compressed_read > g->options.maximum_compressed_bytes)
         return result(e, MC_GZIP_LIMIT, "GZIP compressed input bound", false, NULL, NULL, NULL, -1);
     mc_java_file_read read;
-    mc_java_file_error fe;
-    mc_java_file_status fs = mc_java_file_stream_read(g->input, bytes, n, &read, &fe);
-    if (fs != MC_JAVA_FILE_OK)
-        return file_error(e, fs, fe, "read");
+    if (g->uses_memory) {
+        size_t count = g->memory_length - g->memory_position;
+        if (count > n)
+            count = n;
+        if (count != 0)
+            memcpy(bytes, g->memory_input + g->memory_position, count);
+        g->memory_position += count;
+        read = (mc_java_file_read){count, n != 0 && count == 0};
+    } else {
+        mc_java_file_error fe = {0};
+        mc_java_file_status fs = mc_java_file_stream_read(g->input, bytes, n, &read, &fe);
+        if (fs != MC_JAVA_FILE_OK)
+            return file_error(e, fs, fe, "read");
+    }
     uint64_t before = g->state.compressed_read;
     g->state.compressed_read += (uint64_t)read.count;
     if (read.count > g->options.maximum_compressed_bytes - (size_t)before)
@@ -191,10 +204,15 @@ static mc_gzip_status octet(gzip_cursor *c, uint8_t *out, mc_gzip_error *e) {
         if (g->state.compressed_read > g->options.maximum_compressed_bytes)
             return result(e, MC_GZIP_LIMIT, "GZIP compressed byte bound", false, NULL, NULL, NULL,
                           -1);
-        mc_java_file_error fe;
-        mc_java_file_status fs = mc_java_file_stream_read_byte(g->input, &value, &fe);
-        if (fs != MC_JAVA_FILE_OK)
-            return file_error(e, fs, fe, "read()");
+        if (g->uses_memory)
+            value =
+                g->memory_position == g->memory_length ? -1 : g->memory_input[g->memory_position++];
+        else {
+            mc_java_file_error fe = {0};
+            mc_java_file_status fs = mc_java_file_stream_read_byte(g->input, &value, &fe);
+            if (fs != MC_JAVA_FILE_OK)
+                return file_error(e, fs, fe, "read()");
+        }
         if (value >= 0) {
             ++g->state.compressed_read;
             if (g->state.compressed_read > g->options.maximum_compressed_bytes)
@@ -320,8 +338,9 @@ static mc_gzip_status header(gzip_cursor *c, size_t *used, mc_gzip_error *e) {
     return MC_GZIP_OK;
 }
 
-mc_gzip_status mc_gzip_input_construct(mc_gzip_input *g, mc_java_file_stream *input,
-                                       mc_gzip_error *error) {
+static mc_gzip_status construct(mc_gzip_input *g, mc_java_file_stream *input,
+                                const uint8_t *memory_input, size_t memory_length, bool uses_memory,
+                                bool gzip, mc_gzip_error *error) {
     mc_gzip_error local;
     mc_gzip_error *e = error == NULL ? &local : error;
     if (g == NULL)
@@ -333,16 +352,22 @@ mc_gzip_status mc_gzip_input_construct(mc_gzip_input *g, mc_java_file_stream *in
         return result(e, MC_GZIP_STATE, "GZIP constructor phase", false, NULL, NULL, NULL, -1);
     g->state.active = true;
     g->state.phase = MC_GZIP_CONSTRUCTING;
+    g->uses_memory = uses_memory;
+    g->memory_input = memory_input;
+    g->memory_length = memory_length;
+    g->zlib_wrapped = !gzip;
     mc_gzip_status s = MC_GZIP_OK;
     void *memory = NULL;
     if (input != NULL) {
-        mc_java_file_error fe;
+        mc_java_file_error fe = {0};
         mc_java_file_status fs = mc_java_file_stream_retain(input, &fe);
         if (fs != MC_JAVA_FILE_OK) {
             s = file_error(e, fs, fe, "native argument hold");
             goto failed;
         }
         g->pending_input = input;
+    }
+    if (input != NULL || uses_memory) {
         mc_raw_inflater_error ie;
         mc_raw_inflater_status is =
             mc_raw_inflater_allocate(g->options.maximum_inflater_bytes, &g->pending_inflater, &ie);
@@ -353,7 +378,8 @@ mc_gzip_status mc_gzip_input_construct(mc_gzip_input *g, mc_java_file_stream *in
             e->source_pc = 6;
             goto failed;
         }
-        is = mc_raw_inflater_construct(g->pending_inflater, &ie);
+        is = gzip ? mc_raw_inflater_construct(g->pending_inflater, &ie)
+                  : mc_raw_inflater_construct_wrapped(g->pending_inflater, &ie);
         if (is != MC_RAW_INFLATER_OK) {
             s = inflate_error(e, is, ie, "Inflater(true) construction");
             e->source_class = "java/util/zip/GZIPInputStream";
@@ -383,7 +409,7 @@ mc_gzip_status mc_gzip_input_construct(mc_gzip_input *g, mc_java_file_stream *in
         goto failed;
     g->skip = memory;
     store(g, "java/util/zip/InflaterInputStream", 33);
-    if (input == NULL) {
+    if (input == NULL && !uses_memory) {
         s = result(e, MC_GZIP_SOURCE_NULL, "InflaterInputStream null input branch", true, NULL,
                    "java/util/zip/InflaterInputStream",
                    "<init>(Ljava/io/InputStream;Ljava/util/zip/Inflater;I)V", 37);
@@ -397,6 +423,13 @@ mc_gzip_status mc_gzip_input_construct(mc_gzip_input *g, mc_java_file_stream *in
         goto failed;
     g->fill = memory;
     store(g, "java/util/zip/InflaterInputStream", 75);
+    if (!gzip) {
+        g->state.uses_default_inflater = true;
+        g->state.phase = MC_GZIP_READY;
+        g->state.active = false;
+        result(&g->last_error, MC_GZIP_OK, NULL, false, NULL, NULL, NULL, -1);
+        return result(e, MC_GZIP_OK, NULL, false, NULL, NULL, NULL, -1);
+    }
     s = child(g, 1, sizeof(*g->crc), &memory, e, "java/util/zip/GZIPInputStream", 23);
     if (s != MC_GZIP_OK)
         goto failed;
@@ -426,6 +459,19 @@ failed:
     g->state.active = false;
     g->last_error = *e;
     return s;
+}
+
+mc_gzip_status mc_gzip_input_construct(mc_gzip_input *g, mc_java_file_stream *input,
+                                       mc_gzip_error *error) {
+    return construct(g, input, NULL, 0, false, true, error);
+}
+
+mc_gzip_status mc_gzip_input_construct_memory(mc_gzip_input *g, const uint8_t *bytes, size_t length,
+                                              bool gzip, mc_gzip_error *error) {
+    if (bytes == NULL && length != 0)
+        return result(error, MC_GZIP_ARGUMENT, "ByteArrayInputStream native array", false, NULL,
+                      NULL, NULL, -1);
+    return construct(g, NULL, bytes, length, true, gzip, error);
 }
 
 static mc_gzip_status trailer(mc_gzip_input *g, bool *eos, mc_gzip_error *e) {
@@ -458,10 +504,14 @@ static mc_gzip_status trailer(mc_gzip_input *g, bool *eos, mc_gzip_error *e) {
         return result(e, MC_GZIP_SOURCE_FORMAT, "GZIP trailer size", true, "Corrupt GZIP trailer",
                       "java/util/zip/GZIPInputStream", "readTrailer", -1);
     size_t available;
-    mc_java_file_error fe;
-    mc_java_file_status fs = mc_java_file_stream_available(g->input, &available, &fe);
-    if (fs != MC_JAVA_FILE_OK)
-        return file_error(e, fs, fe, "available");
+    if (g->uses_memory)
+        available = g->memory_length - g->memory_position;
+    else {
+        mc_java_file_error fe = {0};
+        mc_java_file_status fs = mc_java_file_stream_available(g->input, &available, &fe);
+        if (fs != MC_JAVA_FILE_OK)
+            return file_error(e, fs, fe, "available");
+    }
     if (available > 0 || n > 26u) {
         size_t h = 0;
         s = header(&c, &h, e);
@@ -528,7 +578,8 @@ static mc_gzip_status read_body(mc_gzip_input *g, uint8_t *bytes, size_t cap,
             return result(e, MC_GZIP_LIMIT, "GZIP output bound after actual inflate", false, NULL,
                           NULL, NULL, -1);
         if (produced != 0) {
-            *g->crc = (uint32_t)crc32(*g->crc, bytes, (uInt)produced);
+            if (!g->zlib_wrapped)
+                *g->crc = (uint32_t)crc32(*g->crc, bytes, (uInt)produced);
             g->state.output_returned += (uint64_t)produced;
             return MC_GZIP_OK;
         }
@@ -538,6 +589,11 @@ static mc_gzip_status read_body(mc_gzip_input *g, uint8_t *bytes, size_t cap,
             return inflate_error(e, is, ie, "read/state");
         if (inf.finished || inf.needs_dictionary) {
             g->state.reach_eof = true;
+            if (g->zlib_wrapped) {
+                g->state.eos = true;
+                *out = (mc_nbt_input_result){0, true};
+                return MC_GZIP_OK;
+            }
             bool eos;
             mc_gzip_status s = trailer(g, &eos, e);
             if (s != MC_GZIP_OK)
@@ -650,11 +706,13 @@ static mc_gzip_status source_close(mc_gzip_input *g, mc_gzip_error *e) {
             g->state.active = false;
             return inflate_error(e, is, ie, "close/end");
         }
-        mc_java_file_error fe;
-        mc_java_file_status fs = mc_java_file_stream_source_close(g->input, &fe);
-        if (fs != MC_JAVA_FILE_OK) {
-            g->state.active = false;
-            return file_error(e, fs, fe, "close");
+        if (!g->uses_memory) {
+            mc_java_file_error fe = {0};
+            mc_java_file_status fs = mc_java_file_stream_source_close(g->input, &fe);
+            if (fs != MC_JAVA_FILE_OK) {
+                g->state.active = false;
+                return file_error(e, fs, fe, "close");
+            }
         }
         g->state.super_closed = true;
     }
@@ -697,7 +755,7 @@ mc_gzip_status mc_gzip_input_release(mc_gzip_input **slot, mc_gzip_error *e) {
         g->state.active = false;
         return inflate_error(e, is, ie, "native inflater retirement");
     }
-    mc_java_file_error fe;
+    mc_java_file_error fe = {0};
     mc_java_file_status fs = mc_java_file_stream_release(&g->pending_input, &fe);
     if (fs == MC_JAVA_FILE_OK)
         fs = mc_java_file_stream_release(&g->input, &fe);
@@ -733,6 +791,10 @@ mc_gzip_status mc_gzip_input_state_read(const mc_gzip_input *g, mc_gzip_state *o
     out->fill_buffer = g->fill;
     out->tmp_buffer = g->tmp;
     out->crc = g->crc;
+    out->source_memory = g->memory_input;
+    out->source_memory_length = g->memory_length;
+    out->source_memory_position = g->memory_position;
+    out->zlib_wrapped = g->zlib_wrapped;
     return result(e, MC_GZIP_OK, NULL, false, NULL, NULL, NULL, -1);
 }
 

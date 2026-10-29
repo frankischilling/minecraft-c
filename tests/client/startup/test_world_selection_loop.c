@@ -1,15 +1,22 @@
 /* Genuine native bootstrap/menu composition with authored SDL transport events. */
+#include "../world/test_load_world_foreign_loading.h"
 #include "client/application_state.h"
 #include "client/display/sdk_input.h"
 #include "client/display/staged.h"
 #include "client/gui/source_screen_initialize_internal.h"
+#include "client/gui/source_screen_transitions.h"
 #include "client/gui/source_world_list.h"
 #include "client/gui/source_world_selection_drawing.h"
 #include "client/gui/source_world_selection_internal.h"
 #include "client/runtime/menu_loop.h"
 #include "client/startup/application_startup.h"
+#include "client/world/load_world.h"
+#include "client/world/prepare_world.h"
 #include "mc/client/controller/singleplayer.h"
+#include "mc/client/input/movement_input.h"
 #include "mc/core/java/java.h"
+#include "mc/entity/player/player.h"
+#include "mc/world/runtime/blocks.h"
 #include "platform/time/millis.h"
 
 #include <SDL3/SDL.h>
@@ -336,9 +343,11 @@ static bool filename_is(const mc_client_save_selection *selection, const char *a
 
 int main(int argc, char **argv) {
     CHECK(argc == 4 && (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
-                        strcmp(argv[2], "large") == 0 || strcmp(argv[2], "double") == 0));
+                        strcmp(argv[2], "large") == 0 || strcmp(argv[2], "double") == 0 ||
+                        strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0));
     const bool double_click = strcmp(argv[2], "double") == 0;
-    const bool populated = strcmp(argv[2], "populated") == 0 || double_click;
+    const bool loading_world = strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0;
+    const bool populated = strcmp(argv[2], "populated") == 0 || double_click || loading_world;
     const bool large = strcmp(argv[2], "large") == 0;
     fixture f = {0};
     const mc_client_application_options options = {.assets = argv[1],
@@ -367,6 +376,8 @@ int main(int argc, char **argv) {
     free(blocked);
     CHECK(mc_client_menu_loop_inspect(f.loop, &f.state));
     CHECK(ticks(&f, 2) == 0);
+    if (!populated && !large)
+        CHECK(mc_test_world_load_foreign_loading(f.app) == 0);
     mc_client_source_rq *rq = NULL;
     CHECK(open_selection(&f, initial, &rq) == 0);
     CHECK(drawing_monitor_recovery(rq) == 0);
@@ -440,9 +451,103 @@ int main(int argc, char **argv) {
             CHECK(mc_client_menu_loop_inspect(f.loop, &f.state));
             SDL_Delay(1);
         }
-        CHECK(stopped && f.state.failed && f.state.source_class != NULL &&
-              strcmp(f.state.source_class, "net/minecraft/client/Minecraft") == 0 &&
-              strcmp(f.state.source_method, "a") == 0 && f.state.source_pc == 2);
+        CHECK(stopped && f.state.failed && f.state.source_class != NULL);
+        mc_client_screen_transition_state transitions;
+        mc_client_world_load_state load;
+        CHECK(mc_client_screen_transitions_inspect(f.app->screen_transitions, &transitions) &&
+              transitions.world_load != NULL &&
+              mc_client_world_load_inspect(transitions.world_load, &load));
+        if (loading_world &&
+            (load.failure == NULL || load.failure->site.pc != 220 || !load.player_published)) {
+            fprintf(stderr,
+                    "World load reached status=%d %s.%s:%d child=%s:%d operation=%s terrain=%zu\n",
+                    load.failure == NULL ? -1 : (int)load.failure->status,
+                    load.failure == NULL || load.failure->site.class_name == NULL
+                        ? "native"
+                        : load.failure->site.class_name,
+                    load.failure == NULL || load.failure->site.method == NULL
+                        ? "none"
+                        : load.failure->site.method,
+                    load.failure == NULL ? -1 : load.failure->site.pc,
+                    load.failure == NULL || load.failure->child.class_name == NULL
+                        ? "none"
+                        : load.failure->child.class_name,
+                    load.failure == NULL ? -1 : load.failure->child.pc,
+                    load.failure == NULL || load.failure->operation == NULL
+                        ? "none"
+                        : load.failure->operation,
+                    load.terrain_samples);
+            if (load.failure != NULL && load.failure->terrain != NULL &&
+                load.failure->terrain->loading != NULL) {
+                const mc_client_loading_error *detail = load.failure->terrain->loading;
+                fprintf(stderr, "Loading failure status=%d %s.%s:%d child=%s:%d op=%s display=%s\n",
+                        (int)detail->status,
+                        detail->site.class_name == NULL ? "native" : detail->site.class_name,
+                        detail->site.method == NULL ? "none" : detail->site.method, detail->site.pc,
+                        detail->child.class_name == NULL ? "none" : detail->child.class_name,
+                        detail->child.pc, detail->operation == NULL ? "none" : detail->operation,
+                        detail->display.operation == NULL ? "none" : detail->display.operation);
+                fprintf(stderr, "Graphics status=%d op=%s display=%d:%s detail=%s\n",
+                        (int)detail->graphics.status,
+                        detail->graphics.operation == NULL ? "none" : detail->graphics.operation,
+                        (int)detail->graphics.display.status,
+                        detail->graphics.display.operation == NULL
+                            ? "none"
+                            : detail->graphics.display.operation,
+                        detail->graphics.display.detail);
+            }
+        }
+        CHECK(load.failure != NULL && load.failure->status == MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED &&
+              strcmp(load.failure->site.class_name, "net/minecraft/client/Minecraft") == 0 &&
+              strcmp(load.failure->site.method, loading_world ? "a" : "b") == 0 &&
+              load.failure->site.pc == (loading_world ? 220 : 52));
+        CHECK(load.initial_detach_returned && load.initial_i_cleared && load.initial_h_cleared &&
+              load.initial_P_stored && load.gc_requests == 2 && load.conversion_checked);
+        if (loading_world) {
+            CHECK(!load.needs_conversion && load.handler_opened && load.world_constructed &&
+                  load.world_published && load.player_published && load.input_published &&
+                  load.world == f.app->active_world && load.player == f.app->h &&
+                  f.app->i == NULL && load.input != NULL && load.terrain_samples == 289);
+            mc_world_runtime_construction constructed;
+            mc_client_world_prepare_state prepared;
+            mc_local_player_snapshot player;
+            CHECK(mc_world_runtime_construction_get(load.world, &constructed) ==
+                      MC_WORLD_STORAGE_OK &&
+                  constructed.mode == MC_WORLD_RUNTIME_GAME &&
+                  constructed.phase == MC_WORLD_RUNTIME_READY &&
+                  constructed.entry == MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE);
+            CHECK(mc_client_world_prepare_inspect(load.prepare, &prepared) &&
+                  prepared.source_returned && prepared.count == 289 && prepared.total == 289 &&
+                  prepared.block_samples == 289 && prepared.progress_calls == 289 &&
+                  prepared.progress_returns == 289 && prepared.last_progress == 99 &&
+                  prepared.unused_simulation_count == 2000 && prepared.spawn_constructed &&
+                  !prepared.player_x_stored && !prepared.player_z_stored);
+            for (size_t sample = 0; sample < 289; ++sample) {
+                const mc_client_world_prepare_sample *actual = &prepared.samples[sample];
+                CHECK(actual->dx == -128 + (int32_t)(sample / 17) * 16 &&
+                      actual->dz == -128 + (int32_t)(sample % 17) * 16 &&
+                      actual->progress == (int32_t)(sample * 100 / 289) &&
+                      actual->progress_returned && actual->block_returned &&
+                      actual->block_world == load.world && actual->light_calls != 0);
+            }
+            CHECK(mc_local_player_get_snapshot(load.player, &player) == MC_ENTITY_OK &&
+                  player.minecraft == f.app && player.input == load.input);
+            int32_t marker = 0;
+            mc_world_storage_error stored;
+            CHECK(mc_world_runtime_block_get(load.world, 0, 127, 0, &marker, &stored) ==
+                      MC_WORLD_STORAGE_OK &&
+                  marker == 57);
+            printf(
+                "WORLD_LOAD ready=1 terrain=289 stored-marker=57 player=1 input=1 source=n220\n");
+        } else {
+            CHECK(load.needs_conversion && !load.handler_opened && load.world == NULL &&
+                  load.player == NULL && !load.world_published);
+        }
+        const mc_client_world_load_site *reached =
+            load.failure->child.class_name == NULL ? &load.failure->site : &load.failure->child;
+        CHECK(strcmp(f.state.source_class, reached->class_name) == 0 &&
+              strcmp(f.state.source_method, reached->method) == 0 &&
+              f.state.source_pc == reached->pc);
         if (double_click) {
             /* MG85 failed before LG's n187/o194 and k400 stores. Both clicks
              * came through the real SDK and the formatter/clock is unmodified. */
@@ -460,7 +565,8 @@ int main(int argc, char **argv) {
         CHECK(controller.phase == MC_SINGLEPLAYER_CONTROLLER_READY && controller.a == f.app &&
               controller.constructor_pc == 40 && controller.c == -1 && controller.d == -1 &&
               controller.e == -1 && controller.failed_player == NULL);
-        CHECK(f.app->active_world == NULL && f.app->h == NULL && f.app->i == NULL && !f.app->N);
+        CHECK((loading_world || (f.app->active_world == NULL && f.app->h == NULL)) &&
+              f.app->i == NULL && !f.app->N);
     } else {
         CHECK(push_button(&f, initial, 4, true) == 0 && push_button(&f, initial, 4, false) == 0 &&
               transfer(&f) == 0);

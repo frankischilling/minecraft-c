@@ -3,6 +3,7 @@
 #include "../../chunk/object_internal.h"
 #include "../../storage/objects_internal.h"
 #include "../runtime_internal.h"
+#include "../source_construction_internal.h"
 #include "mc/entity/nbt/storage.h"
 
 #include <limits.h>
@@ -156,8 +157,17 @@ mc_world_storage_status mc_world_runtime_load_game(mc_world_runtime *world, int3
     mc_world_store_game_stage_view view = {0};
     mc_chunk_state *state = NULL;
     bool committed = false;
-    frame.status = mc_world_store_game_stage_begin(store, world, world->options.dimension, x, z,
-                                                   &stage, &frame.cause);
+    if (mc_world_store_is_source(store)) {
+        mc_world_source_chunk_loader *loader = mc_world_runtime_source_loader(world);
+        frame.status = mc_world_source_chunk_loader_begin(loader, world, world->options.dimension,
+                                                          x, z, 0, &stage, &frame.cause);
+        if (frame.status != MC_WORLD_STORAGE_OK && frame.status != MC_WORLD_STORAGE_MISSING) {
+            frame.source_chunk = mc_world_source_chunk_loader_last_error(loader);
+            frame.region_bytecode = 6;
+        }
+    } else
+        frame.status = mc_world_store_game_stage_begin(store, world, world->options.dimension, x, z,
+                                                       &stage, &frame.cause);
     if (frame.status == MC_WORLD_STORAGE_OK)
         frame.status = mc_world_store_game_stage_view_get(store, stage, &view, &frame.cause);
     if (frame.status == MC_WORLD_STORAGE_OK)
@@ -187,7 +197,15 @@ mc_world_storage_status mc_world_runtime_load_game(mc_world_runtime *world, int3
     if (frame.status == MC_WORLD_STORAGE_OK) {
         frame.region_bytecode = 272;
         frame.builder_bytecode = 0;
-        frame.status = mc_world_store_game_stage_finish(store, stage, &state, &frame.cause);
+        if (mc_world_store_is_source(store)) {
+            mc_world_source_chunk_loader *loader = mc_world_runtime_source_loader(world);
+            frame.status =
+                mc_world_source_chunk_loader_prepare_normalizer(loader, world, &frame.cause);
+            if (frame.status != MC_WORLD_STORAGE_OK)
+                frame.source_chunk = mc_world_source_chunk_loader_last_error(loader);
+        }
+        if (frame.status == MC_WORLD_STORAGE_OK)
+            frame.status = mc_world_store_game_stage_finish(store, stage, &state, &frame.cause);
         committed = frame.status == MC_WORLD_STORAGE_OK;
     }
     if (stage != NULL && !committed)

@@ -5,7 +5,11 @@
 #include "../startup/application_startup_internal.h"
 #include "../startup/application_startup_menu.h"
 #include "mc/block/registry/runtime.h"
+#include "mc/core/java/logging.h"
 #include "mc/core/math/classes.h"
+#include "mc/world/runtime/entities.h"
+#include "mc/world/storage/source_handler.h"
+#include "mc/world/storage/source_regions.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,6 +24,15 @@ struct mc_client_bootstrap {
     mc_math_classes *math;
     const mc_math_trig *trig;
     mc_math_class_error math_error;
+    mc_java_logging *logging;
+    mc_java_logging_error logging_error;
+    mc_world_store_source_classes *handlers;
+    mc_world_source_error handler_error;
+    mc_world_source_regions *regions;
+    mc_world_source_region_error region_error;
+    mc_world_runtime_classes *world_classes;
+    mc_world_storage_error world_error;
+    mc_registry_error world_registry_error;
     client_application *app;
     mc_client_application_startup *startup;
     mc_client_render_manager_classes *manager;
@@ -175,6 +188,38 @@ static mc_client_bootstrap_status open_startup_services(mc_client_bootstrap *con
     return MC_CLIENT_BOOTSTRAP_OK;
 }
 
+static mc_client_bootstrap_status open_world_services(mc_client_bootstrap *context) {
+    /* Cold namespace binding only. The first reached handler/World allocation
+     * still performs its actual class activation and source construction. */
+    OPEN_OWNER(mc_java_logging_create(NULL, &context->logging, &context->logging_error),
+               MC_JAVA_LOGGING_OK, "shared SaveHandler logging namespace");
+    OPEN_OWNER(mc_world_source_regions_create(context->services.files, NULL, &context->regions,
+                                              &context->region_error),
+               MC_WORLD_SOURCE_OK, "shared source region namespace");
+    OPEN_OWNER(mc_world_store_source_classes_create(context->services.files, context->logging, NULL,
+                                                    &context->handlers, &context->handler_error),
+               MC_WORLD_SOURCE_OK, "source SaveHandler namespace");
+    OPEN_OWNER(mc_world_store_source_classes_bind_regions(context->handlers, context->regions,
+                                                          &context->handler_error),
+               MC_WORLD_SOURCE_OK, "same SaveHandler/region namespace binding");
+    OPEN_OWNER(mc_client_save_formats_bind_handlers(
+                   context->services.save_formats, context->handlers, &context->startup_error.save),
+               MC_CLIENT_SAVE_OK, "same SaveFormat/SaveHandler namespace binding");
+    OPEN_OWNER(mc_world_runtime_classes_create(MC_WORLD_INFO_CLIENT, context->constructor.profile,
+                                               context->trig, &context->world_classes,
+                                               &context->world_error),
+               MC_WORLD_STORAGE_OK, "client World namespace");
+    OPEN_OWNER(mc_world_runtime_classes_bind_registry(context->world_classes,
+                                                      context->constructor.registry,
+                                                      &context->world_registry_error),
+               MC_REGISTRY_OK, "same World/Registry namespace binding");
+    OPEN_OWNER(mc_world_runtime_classes_bind_entities(context->world_classes,
+                                                      context->constructor.entities),
+               MC_ENTITY_OK, "same World/Entity namespace binding");
+    context->app->world_classes = context->world_classes; /* Native class namespace view. */
+    return MC_CLIENT_BOOTSTRAP_OK;
+}
+
 /* This explicit CLI boundary accepts UTF8 and creates the real immutable
  * UTF16 Session argument. It does not reinterpret bytes as Java characters. */
 static mc_player_status username_string(const char *argument, mc_player_string **out) {
@@ -288,6 +333,9 @@ mc_client_bootstrap_status mc_client_bootstrap_open(const mc_client_application_
         return MC_CLIENT_BOOTSTRAP_OWNER_FAILED;
     }
     context->app->options = *options; /* Native CLI context, never a source field publication. */
+    status = open_world_services(context);
+    if (status != MC_CLIENT_BOOTSTRAP_OK)
+        return status;
     status = open_session(context, options->username);
     if (status != MC_CLIENT_BOOTSTRAP_OK)
         return status;
@@ -435,6 +483,14 @@ mc_client_bootstrap_status mc_client_bootstrap_close(mc_client_bootstrap **slot)
     mc_client_bootstrap_status status = close_startup(context);
     if (status != MC_CLIENT_BOOTSTRAP_OK)
         return status;
+    if (context->world_classes != NULL) {
+        CLOSE_OWNER(mc_world_runtime_classes_free(context->world_classes, &context->world_error),
+                    MC_WORLD_STORAGE_OK, MC_WORLD_STORAGE_BUSY,
+                    "client World namespace retirement");
+        if (context->app != NULL && context->app->world_classes == context->world_classes)
+            context->app->world_classes = NULL; /* End the consumed native class view. */
+        context->world_classes = NULL;
+    }
     status = close_application(context);
     if (status != MC_CLIENT_BOOTSTRAP_OK)
         return status;
@@ -451,6 +507,13 @@ mc_client_bootstrap_status mc_client_bootstrap_close(mc_client_bootstrap **slot)
     CLOSE_OWNER(
         mc_client_save_formats_release(&services->save_formats, &context->startup_error.save),
         MC_CLIENT_SAVE_OK, MC_CLIENT_SAVE_BUSY, "SaveFormat namespace retirement");
+    CLOSE_OWNER(mc_world_store_source_classes_release(&context->handlers, &context->handler_error),
+                MC_WORLD_SOURCE_OK, MC_WORLD_SOURCE_BUSY,
+                "source SaveHandler namespace retirement");
+    CLOSE_OWNER(mc_world_source_regions_release(&context->regions, &context->region_error),
+                MC_WORLD_SOURCE_OK, MC_WORLD_SOURCE_BUSY, "shared region namespace retirement");
+    CLOSE_OWNER(mc_java_logging_release(&context->logging, &context->logging_error),
+                MC_JAVA_LOGGING_OK, MC_JAVA_LOGGING_BUSY, "shared logging namespace retirement");
     CLOSE_OWNER(mc_java_files_release(&services->files, &context->startup_error.file),
                 MC_JAVA_FILE_OK, MC_JAVA_FILE_BUSY, "File namespace retirement");
     mc_client_application_constructor_services *constructor = &context->constructor;

@@ -202,9 +202,21 @@ static int normal(mc_world_store_source_classes *classes, mc_java_files *files, 
             reader.candidate == NULL);
     REQUIRE(mc_world_store_source_input_clear(*out, e) == MC_WORLD_SOURCE_OK);
     REQUIRE(!mc_world_store_source_input_inspect(*out, &input));
-    REQUIRE(mc_world_store_source_loader(*out, e) == MC_WORLD_SOURCE_UNIMPLEMENTED &&
-            strcmp(e->frames[0].class_name, "mx") == 0 &&
-            strcmp(e->frames[0].descriptor, "(Lxa;)Lbf;") == 0);
+    /* This fixture deliberately has no shared rj namespace. The genuine mx
+     * factory must reject that native binding before allocating an ld, rather
+     * than returning the old source-loader implementation frontier. */
+    mc_world_source_chunk_loader *loader = NULL;
+    REQUIRE(mc_world_store_source_regions(*out) == NULL);
+    REQUIRE(mc_world_store_source_loader(*out, NULL, &loader, e) == MC_WORLD_SOURCE_STATE &&
+            loader == NULL && e->native_policy && !e->source_exception && !e->diagnostic_frontier &&
+            e->frame_count == 0 && e->operation != NULL &&
+            strcmp(e->operation, "mx.a shared rj namespace binding") == 0);
+    mc_world_source_state after_loader;
+    REQUIRE(mc_world_store_source_inspect(*out, &after_loader) &&
+            after_loader.phase == MC_WORLD_SOURCE_READY && after_loader.holds == state.holds &&
+            after_loader.source_b == state.source_b && after_loader.source_c == state.source_c &&
+            after_loader.source_d == state.source_d && after_loader.source_e == state.source_e &&
+            !after_loader.active && !after_loader.pending_file);
     return 0;
 }
 

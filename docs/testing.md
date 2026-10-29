@@ -8,8 +8,8 @@ profiles. It opens the actual RQ from GuiMainMenu, obtains and sorts the real
 SaveFormat List, draws and selects its rows, and returns to the exact parent
 on Cancel. Held-button entry and trailing keyboard input keep the original
 source receiver after synchronous screen publication. Select constructs the
-actual `os` controller and stops at World-load `a(NULL World)`2, with no World
-or Player fabricated. Holding an old RQ blocks teardown until its external
+actual `os` controller and enters the retained source World-load call. Version-zero
+saves reach the conversion dependency at bytecode 52. Holding an old RQ blocks teardown until its external
 occurrence is released; cleanup then completes.
 
 The actual scrollbar drag reaches the lower clamp at 436 and returns to zero
@@ -21,10 +21,62 @@ cleanup, active-call refusal and idempotence. No host mutex failure was forced.
 
 The profiles use isolated native APPDATA directories and authored NBT metadata,
 including `level.dat_old` fallback. Save and imported-resource hashes remain
-unchanged, with no new session lock. Their empty and populated 854 by 480 captures
+unchanged, with no new session lock in these menu/conversion profiles. Their empty and populated 854 by 480 captures
 were inspected, along with the bottom-scroll capture. Create/Rename still stop at `NEW162`/`NEW189`; Delete stops at
 preparation 21 without skipping its earlier source work. See the
 [World-selection contract](client/world-selection.md).
+
+The additional existing-save Windows profile supplies version 19132 metadata
+and all 289 authored Chunks in real zlib region files. It verifies source
+`CLIENT_LOAD_OR_CREATE`/`READY`, all 289 x-major progress-before-block samples,
+light drains through false, the final message/maintenance, and the same-App
+Player/input publication. The source stops at renderer attachment, World-change
+bytecode 220; `i` remains null. A stored block 57 marker distinguishes the real
+file-backed Chunk from generated terrain. Actual loading creates its session
+lock; every pre-existing save byte and imported resource remains unchanged.
+Foreign retained Loading and SaveFormat failure controls verify that BUSY
+cleanup preserves their original owner and child identities.
+
+A separate `--mode generate` Release invocation keeps only the stored marker
+Chunk and generates its surroundings through the same complete preparation.
+It also passes all 289 samples, Player/input, renderer frontier and cleanup,
+with a 180-second process limit. The default five-profile integration selection
+uses existing Chunks; the optional generation profile has a separate longer
+default limit for Debug builds. Neither profile establishes rendered World
+pixels, playability or save interoperability with the original game.
+
+Seven focused headless source tests pass on each of GCC13.3 and Clang18.1.3:
+handler construction/read/close, SavedData ordinary/close, source World
+construction and regions. Both Linux Debug builds use strict C17 warnings,
+ASan, UBSan and leak detection: 14 tests pass without skips. The World case
+executes eight constructor scenarios; region controls include live Unix
+descriptors and renamed paths, incremental compressed input and retained
+malformed-reader cleanup. This is runtime qualification, separate from earlier
+syntax checks and from the Windows Display integration.
+
+Three further headless cases per compiler pass after the cache/gravel changes:
+diagnostic layout (14 checks), Chunk finishing/cache (3,511) and falling (616).
+These six tests also use ASan/UBSan and leak detection. All 24 selected
+translation units pass strict GCC/Clang syntax checks, 48 checks total, with
+pinned dependency headers and no extra diagnostic suppressions.
+
+The generated-terrain profile exposed a native stack overflow during recursive
+gravel updates. A 75-block authored column reproduces it in 0.63 seconds before
+the fix. Checked heap diagnostic workspaces preserve synchronous notification
+and immediate-tick order; the focused Windows case then passes 616 checks.
+The [optional original observer](../tests/reference/world/falling/README.md)
+uses the unchanged pinned client JAR and genuine World/SaveHandler constructors.
+It independently confirms 38 surviving blocks at Y5..42, 150 scheduled-record
+identities, unchanged F/E and unchanged World Random for that exact scenario.
+This unusual result follows from source reentry and discarded setter booleans;
+the test does not substitute a mass-conserving gravity algorithm.
+
+Cache validation was also measured on the actual source function before its
+change. For 289 entries, 5,000 validations improve by 18.5..31.5 times across
+strict GCC/Clang O0/O2 probes. The bounded scratch index still validates every
+mutable key, Chunk and insertion; it adds no allocation or cached validity flag.
+Larger caches retain the existing exact fallback. These microbenchmarks do not
+establish an overall client startup speedup.
 
 DateFormat matches all 2,926 JDK17 timestamp vectors on Windows and Linux for
 English/en_US, UTC/US Eastern and UTC years 1967..2099. Other locales, zones and
@@ -34,7 +86,14 @@ record the selected JDKs, historical Eastern transitions and exact UTF16 scope.
 These observations qualify the formatter's UTF16 results. Original menu pixels
 and gameplay remain unqualified.
 
-The Windows MSVC Debug ALL build passes, followed by all 468 selected CTests
+The current Windows MSVC Debug ALL build and all 475 selected CTests pass with
+zero failures or skips in 208.25 seconds. This selection includes all five
+native UI profiles, the source storage/World controls, the gravel regression
+and all three optional application-constructor/ownership cases. There are 521
+configured tests; `-LE reference` excludes 46. The independent headless Release
+ALL build also passes. Formatting checks 1,379 C/header/selected fragment files.
+
+The preceding World-selection Windows MSVC Debug ALL build passes, followed by all 468 selected CTests
 without failures or skips in 197.43 seconds. The selection uses `-LE reference`
 and excludes 46 configured reference-label profiles. The four native
 World-selection profiles and the corrected startup fingerprint are included.
@@ -107,8 +166,13 @@ Linux CI now keeps that owned Xvfb server alive between clients with
 `-screen 0 1280x1024x24 -noreset`. It retains four CTest workers and the complete
 suite. The actual SDK transport test passes all 37 checks in the private
 sanitized Linux build; a real unsupported-driver refusal confirms the new
-diagnostic and still exits with failure. Complete hosted verification of this
-environment correction is pending.
+diagnostic and still exits with failure. The exact
+[`9d83665` hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40819123976)
+then passes all 1,362 selected tests: Windows 440, GCC 461 and Clang 461, with zero
+skips and matching checkout trees. Formatting passes for 1,356 files. Both
+earlier Linux refusal cases pass and every test name remains in the selection.
+This green checkpoint precedes the source World-loading extension; it does not
+recover the old missing SDL strings or establish a general CI speedup.
 
 ## Default source menu runtime
 

@@ -7,6 +7,18 @@ provided storage and callbacks. `mc_world_runtime_allocate_world` and
 `mc_world_runtime_construct_world` model the ordered base and dedicated-World
 constructors.
 
+The default client's [selected World loader](../client/world-loading.md) now
+uses a separate source-SaveHandler entry on that same canonical runtime. It
+retains the exact Store before the source `w` publication, constructs actual
+SavedData before loading nullable WorldInfo, and assigns the selected name
+before constructing the source Chunk loader and provider. It never routes a
+source Store through the legacy root-string loader. Existing metadata can
+reach `READY`; absent metadata retains the actual unfinished new-spawn branch.
+Typed errors retain the reached constructor and its lower File/NBT/loader
+prefix until checked retirement. The source constructor tests cover primary
+and old-only metadata, raw Short idcounts, malformed primary/backup, failed
+SavedData, Nether and new-World prefixes, plus external-loader BUSY cleanup.
+
 The GAME owner has all 43 case-sensitive base fields. Ten list owners are
 distinct, E and F use the real scheduled collections, and P has its own empty
 identity. Collection construction does not implement every later list/set

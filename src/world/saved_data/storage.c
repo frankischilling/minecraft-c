@@ -1,4 +1,5 @@
 #include "mc/world/saved_data/storage.h"
+#include "mc/world/saved_data/source_storage.h"
 
 #include "files.h"
 #include "mc/core/java/java.h"
@@ -48,6 +49,8 @@ typedef struct saved_storage {
     char *path;
 } saved_storage;
 
+typedef struct saved_source saved_source;
+
 struct mc_world_saved_data {
     mc_world_saved_data_limits limits;
     saved_named_cache named_cache;
@@ -59,7 +62,11 @@ struct mc_world_saved_data {
     mc_saved_data_error last_value_error;
     bool class_bound;
     mc_world_info_side side;
+    saved_source *source;
 };
+
+static mc_world_storage_status saved_source_guard(const mc_world_saved_data *, bool,
+                                                  mc_world_storage_error *);
 
 static mc_world_storage_status saved_error(mc_world_storage_error *error,
                                            mc_world_storage_status status, const char *operation) {
@@ -185,6 +192,9 @@ mc_world_storage_status mc_world_saved_data_create(const mc_world_store *store,
         chosen.nbt.max_input_bytes > MC_WS_FILE_MAX_BYTES ||
         chosen.nbt.max_output_bytes > MC_WS_FILE_MAX_BYTES)
         return saved_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "saved data arguments");
+    if (store != NULL && mc_world_store_root(store) == NULL)
+        return saved_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "source Store requires SavedData source constructor");
     if (chosen.max_allocation_bytes < sizeof(mc_world_saved_data))
         return saved_error(error, MC_WORLD_STORAGE_LIMIT, "saved data owner budget");
     mc_world_saved_data *owner = calloc(1, sizeof(*owner));
@@ -316,6 +326,9 @@ mc_world_storage_status mc_world_saved_data_put(mc_world_saved_data *owner, mc_w
                                                 mc_world_storage_error *error) {
     if (owner == NULL || value == NULL)
         return saved_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "saved data put arguments");
+    mc_world_storage_status gate = saved_source_guard(owner, false, error);
+    if (gate != MC_WORLD_STORAGE_OK)
+        return gate;
     if (owner->class_bound &&
         mc_saved_data_value_class(value) != mc_saved_data_map_class(owner->side))
         return saved_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "saved data value base type");
@@ -499,6 +512,9 @@ mc_world_storage_status mc_world_saved_data_get(mc_world_saved_data *owner,
                                                 mc_world_storage_error *error) {
     if (owner == NULL || out == NULL)
         return saved_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "saved data get arguments");
+    mc_world_storage_status gate = saved_source_guard(owner, false, error);
+    if (gate != MC_WORLD_STORAGE_OK)
+        return gate;
     saved_named_entry *entry = *named_find(owner, key);
     if (entry != NULL) {
         mc_world_storage_status status = mc_saved_data_value_retain(entry->value);
@@ -507,6 +523,9 @@ mc_world_storage_status mc_world_saved_data_get(mc_world_saved_data *owner,
         *out = entry->value;
         return saved_error(error, MC_WORLD_STORAGE_OK, NULL);
     }
+    gate = saved_source_guard(owner, true, error);
+    if (gate != MC_WORLD_STORAGE_OK)
+        return gate;
     if (owner->storage.path == NULL) {
         *out = NULL;
         return saved_error(error, MC_WORLD_STORAGE_OK, NULL);
@@ -566,6 +585,9 @@ mc_world_storage_status mc_world_saved_data_get(mc_world_saved_data *owner,
 
 static mc_world_storage_status named_write(mc_world_saved_data *owner, mc_saved_data_value *value,
                                            mc_world_storage_error *error) {
+    mc_world_storage_status gate = saved_source_guard(owner, true, error);
+    if (gate != MC_WORLD_STORAGE_OK)
+        return gate;
     if (owner->storage.path == NULL)
         return MC_WORLD_STORAGE_OK;
     char *path = NULL;
@@ -705,6 +727,9 @@ mc_world_storage_status mc_world_saved_data_next_id(mc_world_saved_data *owner,
                                                     mc_world_storage_error *error) {
     if (owner == NULL || out == NULL || !saved_key_valid(key))
         return saved_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "saved data ID arguments");
+    mc_world_storage_status gate = saved_source_guard(owner, true, error);
+    if (gate != MC_WORLD_STORAGE_OK)
+        return gate;
     owner->last_caught = (mc_world_storage_error){0};
     saved_id_entry *entry = saved_find(owner, key);
     mc_world_storage_error detail = {0};
@@ -730,6 +755,9 @@ mc_world_storage_status mc_world_saved_data_save(mc_world_saved_data *owner,
                                                  mc_world_storage_error *error) {
     if (owner == NULL)
         return saved_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "saved data save receiver");
+    mc_world_storage_status gate = saved_source_guard(owner, false, error);
+    if (gate != MC_WORLD_STORAGE_OK)
+        return gate;
     /* Reread the actual list size, and test the SAME value for each alias. */
     for (size_t i = 0; i < owner->ordered_list.count; ++i) {
         mc_saved_data_value *value = owner->ordered_list.items[i];
@@ -811,7 +839,7 @@ const mc_world_storage_error *mc_world_saved_data_last_caught(const mc_world_sav
     return owner == NULL ? NULL : &owner->last_caught;
 }
 
-void mc_world_saved_data_free(mc_world_saved_data *owner) {
+static void saved_free(mc_world_saved_data *owner) {
     if (owner == NULL)
         return;
     while (owner->named_cache.first != NULL) {
@@ -832,3 +860,10 @@ void mc_world_saved_data_free(mc_world_saved_data *owner) {
     free(owner->storage.path);
     free(owner);
 }
+
+void mc_world_saved_data_free(mc_world_saved_data *owner) {
+    if (owner != NULL && owner->source == NULL)
+        saved_free(owner);
+}
+
+#include "source_storage.inc"

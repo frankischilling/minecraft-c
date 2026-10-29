@@ -62,6 +62,10 @@ struct mc_client_application_classes {
     mc_player_string *startup_logo_resource; /* Lazy actual MC.x ldc119, namespace-owned. */
     mc_player_string
         *startup_color_literals[3]; /* Lazy MC ldc266/278/290, same source identities. */
+    /* Lazy constant-pool Strings shared by the actual World-load methods. */
+    mc_player_string *world_generating, *world_loading, *world_converting;
+    mc_player_string *world_conversion_message;
+    mc_player_string *world_building_terrain, *world_simulating;
     struct application_directory_classes *directory_classes;
     size_t holds, array_bytes, array_allocations, allocation_attempts;
     size_t native_app_borrows;

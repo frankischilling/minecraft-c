@@ -14,13 +14,16 @@ now opens genuine
 with real sorted saves, row selection and Cancel returning to the same parent.
 Four native Windows profiles pass, including scrollbar drag and real double-click.
 Empty, populated and bottom-scroll captures were inspected.
-Select constructs the actual controller, then stops at World-load
-`a(NULL World)`2. World loading and gameplay remain unfinished. Explicit flags
+Select constructs the actual controller and enters the retained
+[source World loader](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-loading.md).
+Existing-save loading completes 289 terrain samples and publishes the real
+Player/input before renderer attachment at bytecode 220. Version-zero saves
+stop at conversion bytecode 52. Rendering and gameplay remain unfinished. Explicit flags
 retain the diagnostic title and fixed-camera terrain inspection.
 
 DateFormat matches 2,926 JDK17 vectors on Windows and Linux within its admitted
 English/en_US, UTC/Eastern and 1967..2099 profile. Other profiles fail explicitly.
-All 468 selected Windows CTests and formatting for 1,356 files pass. The
+All 475 selected Windows CTests and formatting for 1,379 files pass. The
 [`1334db5` hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40813601193)
 passes Windows 440/440 and Clang 461/461; GCC passes 460/461, with a real Display
 creation refusal in its later-owner constructor profile. Cleanup succeeds,
@@ -39,7 +42,10 @@ under default Xvfb; adding only `-noreset` passes 2,400 repeated window cycles.
 Linux CI now preserves its server between clients, keeping four workers and
 all tests. The SDK test retains actual SDL refusal details. The
 [matched evidence](Build-and-tests) keeps these local results separate from
-the pending complete hosted verification.
+the historical hosted refusals. The following exact
+[`9d83665` run](https://github.com/frankischilling/minecraft-c/actions/runs/40819123976)
+passes all 1,362 selected tests across Windows, GCC and Clang, with zero skips,
+matching trees and unchanged test names. It predates the World-loading extension.
 
 The earlier `8288290` [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40792366222)
 passes all 452 GCC cases, but Clang has one Display-creation failure and Windows

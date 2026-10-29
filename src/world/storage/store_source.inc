@@ -75,6 +75,8 @@ mc_world_source_options mc_world_store_source_default_options(void) {
 }
 
 static const char *source_method_descriptor(const char *method) {
+    if (strcmp(method, "a") == 0)
+        return "(Ljava/lang/String;)Ljava/io/File;";
     if (strcmp(method, "c") == 0)
         return "()Lei;";
     return strcmp(method, "<init>") == 0 ? "(Ljava/io/File;Ljava/lang/String;Z)V" : "()V";
@@ -227,6 +229,13 @@ mc_world_source_status mc_world_store_source_classes_release(mc_world_store_sour
     c->phase = MC_WORLD_SOURCE_RETIRING;
     c->active = true;
     source_result(&c->work, MC_WORLD_SOURCE_OK, NULL, NULL, NULL, NULL, -1);
+    mc_world_source_region_error re;
+    mc_world_source_status rs = mc_world_source_regions_release(&c->regions, &re);
+    if (rs != MC_WORLD_SOURCE_OK) {
+        c->active = false;
+        c->cleanup = re.source;
+        return source_copy(e, &c->cleanup);
+    }
     mc_java_logging_status ls = mc_java_logger_release(&c->pending_logger, &c->work.logging);
     if (ls == MC_JAVA_LOGGING_OK)
         ls = mc_java_logger_release(&c->source_a, &c->work.logging);
@@ -551,6 +560,8 @@ bool mc_world_store_source_inspect(const mc_world_store *store, mc_world_source_
     out->classes = s->classes;
     out->failure = &s->failure;
     out->cleanup = &s->cleanup;
+    out->data_factory_file = s->data_file;
+    out->data_factory_name = s->data_name;
     return true;
 }
 
@@ -594,15 +605,26 @@ mc_world_source_status mc_world_store_source_release(mc_world_store **slot,
         *slot = NULL;
         return source_result(e, MC_WORLD_SOURCE_OK, NULL, NULL, NULL, NULL, -1);
     }
-    if (store->chunks != NULL || store->caches != NULL || store->reservations != NULL)
-        return source_result(e, MC_WORLD_SOURCE_BUSY, "source Store later owners not adopted", NULL,
-                             NULL, NULL, -1);
+    mc_world_storage_error graph;
+    mc_world_storage_status graph_status = store_free_admit(store, &graph);
+    if (graph_status != MC_WORLD_STORAGE_OK)
+        return source_result(
+            e, graph_status == MC_WORLD_STORAGE_BUSY ? MC_WORLD_SOURCE_BUSY : MC_WORLD_SOURCE_STATE,
+            graph.operation, NULL, NULL, NULL, -1);
     v->active = true;
     s->classes->active = true;
     v->phase = MC_WORLD_SOURCE_RETIRING;
     source_result(&s->work, MC_WORLD_SOURCE_OK, NULL, NULL, NULL, NULL, -1);
     if (source_input_clear(s) != MC_WORLD_SOURCE_OK)
         goto incomplete;
+    while (store->chunks != NULL) {
+        store_chunk *entry = store->chunks;
+        store->chunks = entry->next;
+        store_chunk_free(entry);
+        free(entry);
+        --store->chunk_count;
+    }
+    store->last_chunk = NULL;
     mc_java_output_status os = mc_java_data_output_release(&v->pending_dos, &s->work.output);
     if (os == MC_JAVA_OUTPUT_OK)
         os = mc_java_file_output_release(&v->pending_fos, &s->work.output);
@@ -612,8 +634,8 @@ mc_world_source_status mc_world_store_source_release(mc_world_store **slot,
         s->work.native_policy = true;
         goto incomplete;
     }
-    mc_java_file **files[] = {&v->session_file, &v->pending_file, &v->source_d, &v->source_c,
-                              &v->source_b};
+    mc_java_file **files[] = {&s->data_file, &v->session_file, &v->pending_file,
+                              &v->source_d,  &v->source_c,     &v->source_b};
     for (size_t i = 0; i < sizeof(files) / sizeof(*files); ++i) {
         mc_java_file_status fs = mc_java_file_release(files[i], &s->work.file);
         if (fs != MC_JAVA_FILE_OK) {
@@ -621,6 +643,8 @@ mc_world_source_status mc_world_store_source_release(mc_world_store **slot,
             goto incomplete;
         }
     }
+    mc_world_info_name_release(s->data_name);
+    s->data_name = NULL;
     /* The last handler count ends immediately before its class occurrence.
      * A failed class release restores the count for exact retry admission. */
     mc_world_store_source_classes *c = s->classes;
@@ -653,9 +677,7 @@ mc_world_source_status mc_world_store_source_retire(mc_world_store **slot,
     return mc_world_store_source_release(slot, e);
 }
 
-static mc_world_source_status source_frontier(mc_world_store *store, const char *method,
-                                              const char *desc, int pc, const char *operation,
-                                              mc_world_source_error *e) {
+static mc_world_source_status source_admit(mc_world_store *store, mc_world_source_error *e) {
     if (!mc_world_store_is_source(store))
         return source_result(e, MC_WORLD_SOURCE_ARGUMENT, "actual source handler required", NULL,
                              NULL, NULL, -1);
@@ -664,28 +686,133 @@ static mc_world_source_status source_frontier(mc_world_store *store, const char 
         return source_result(
             e, s->state.active || s->classes->active ? MC_WORLD_SOURCE_BUSY : MC_WORLD_SOURCE_STATE,
             "source handler operation phase", NULL, NULL, NULL, -1);
-    source_result(&s->failure, MC_WORLD_SOURCE_UNIMPLEMENTED, operation, "fm", method, desc, pc);
-    return source_copy(e, &s->failure);
+    return source_result(e, MC_WORLD_SOURCE_OK, NULL, NULL, NULL, NULL, -1);
 }
 
 #include "source_metadata.inc"
 
-mc_world_source_status mc_world_store_source_loader(mc_world_store *store,
-                                                    mc_world_source_error *e) {
-    mc_world_source_status result = source_frontier(
-        store, "a", "(Lxa;)Lbf;", 0, "actual mx.a provider/region-loader dispatch", e);
-    if (result == MC_WORLD_SOURCE_UNIMPLEMENTED) {
-        store->source->failure.frames[0].class_name = "mx";
-        if (e != NULL)
-            *e = store->source->failure;
+mc_world_source_status mc_world_store_source_classes_bind_regions(mc_world_store_source_classes *c,
+                                                                  mc_world_source_regions *r,
+                                                                  mc_world_source_error *e) {
+    if (c == NULL || r == NULL)
+        return source_result(e, MC_WORLD_SOURCE_ARGUMENT, "cold rj binding", NULL, NULL, NULL, -1);
+    mc_world_source_regions_state v;
+    if (c->active || c->handlers != 0 || c->regions != NULL ||
+        !mc_world_source_regions_inspect(r, &v) || v.files != c->files)
+        return source_result(e, MC_WORLD_SOURCE_BUSY, "cold rj binding owner/domain", NULL, NULL,
+                             NULL, -1);
+    mc_world_source_region_error re;
+    mc_world_source_status status = mc_world_source_regions_retain(r, &re);
+    if (status != MC_WORLD_SOURCE_OK)
+        return source_copy(e, &re.source);
+    c->regions = r;
+    return source_result(e, MC_WORLD_SOURCE_OK, NULL, NULL, NULL, NULL, -1);
+}
+
+mc_world_source_regions *mc_world_store_source_regions(const mc_world_store *store) {
+    return mc_world_store_is_source(store) ? store->source->classes->regions : NULL;
+}
+
+mc_java_files *mc_world_store_source_files(const mc_world_store *store) {
+    return mc_world_store_is_source(store) ? store->source->classes->files : NULL;
+}
+
+mc_world_source_status mc_world_store_source_data_file(mc_world_store *store,
+                                                       mc_world_info_name *name, mc_java_file **out,
+                                                       mc_world_source_error *e) {
+    mc_world_source_status status = source_admit(store, e);
+    if (status != MC_WORLD_SOURCE_OK)
+        return status;
+    if (out == NULL)
+        return source_result(e, MC_WORLD_SOURCE_ARGUMENT, "fm.a(String) output", "fm", "a",
+                             "(Ljava/lang/String;)Ljava/io/File;", 0);
+    mc_world_store_source *s = store->source;
+    s->state.active = s->classes->active = true;
+    source_result(&s->work, MC_WORLD_SOURCE_OK, NULL, NULL, NULL, NULL, -1);
+    mc_java_file_status fs = mc_java_file_release(&s->data_file, &s->work.file);
+    if (fs != MC_JAVA_FILE_OK) {
+        source_file(&s->work, fs, "a", 0);
+        goto done;
     }
-    return result;
+    mc_world_info_name_release(s->data_name);
+    s->data_name = NULL;
+    fs = mc_java_file_allocate(s->classes->files, &s->data_file, &s->work.file);
+    if (fs != MC_JAVA_FILE_OK) {
+        source_file(&s->work, fs, "a", 0);
+        goto done;
+    }
+    const uint16_t null_units[] = {'n', 'u', 'l', 'l'};
+    mc_nbt_string value =
+        name == NULL ? (mc_nbt_string){null_units, 4} : mc_world_info_name_text(name);
+    if (value.length > (SIZE_MAX / sizeof(uint16_t)) - 4u ||
+        (value.length + 4u) * sizeof(uint16_t) > s->classes->options.max_literal_bytes) {
+        source_result(&s->work, MC_WORLD_SOURCE_LIMIT, "fm.a StringBuilder native bound", "fm", "a",
+                      "(Ljava/lang/String;)Ljava/io/File;", 21);
+        goto done;
+    }
+    uint16_t *units = malloc((value.length + 4u) * sizeof(*units));
+    if (units == NULL) {
+        source_result(&s->work, MC_WORLD_SOURCE_ALLOCATION, "fm.a StringBuilder storage", "fm", "a",
+                      "(Ljava/lang/String;)Ljava/io/File;", 21);
+        goto done;
+    }
+    if (value.length != 0)
+        memcpy(units, value.units, value.length * sizeof(*units));
+    units[value.length] = '.';
+    units[value.length + 1] = 'd';
+    units[value.length + 2] = 'a';
+    units[value.length + 3] = 't';
+    mc_world_info_status ns =
+        mc_world_info_name_copy((mc_nbt_string){units, value.length + 4u},
+                                s->classes->options.max_literal_bytes, &s->data_name);
+    free(units);
+    if (ns != MC_WORLD_INFO_OK) {
+        source_result(
+            &s->work,
+            ns == MC_WORLD_INFO_LIMIT ? MC_WORLD_SOURCE_LIMIT : MC_WORLD_SOURCE_ALLOCATION,
+            "fm.a StringBuilder result", "fm", "a", "(Ljava/lang/String;)Ljava/io/File;", 24);
+        s->work.string_status = ns;
+        goto done;
+    }
+    fs = mc_java_file_construct_child(s->data_file, s->state.source_d, s->data_name, &s->work.file);
+    if (fs != MC_JAVA_FILE_OK) {
+        source_file(&s->work, fs, "a", 27);
+        goto done;
+    }
+    *out = s->data_file;
+    s->data_file = NULL;
+    mc_world_info_name_release(s->data_name);
+    s->data_name = NULL;
+done:
+    s->state.active = s->classes->active = false;
+    if (s->work.status != MC_WORLD_SOURCE_OK)
+        s->failure = s->work;
+    return source_copy(e, &s->work);
 }
 
 static mc_world_storage_status store_source_legacy(mc_world_storage_error *error) {
     return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                        "Source fm/mx transport requires its actual method; legacy Store transport "
                        "is not source completion");
+}
+
+static mc_world_storage_status store_source_save_frontier(mc_world_store *store,
+                                                          mc_world_storage_error *error) {
+    mc_world_source_error source;
+    mc_world_source_status status = mc_world_store_source_check_session(store, &source);
+    if (status != MC_WORLD_SOURCE_OK)
+        return store_error(error,
+                           status == MC_WORLD_SOURCE_BUSY    ? MC_WORLD_STORAGE_BUSY
+                           : status == MC_WORLD_SOURCE_LIMIT ? MC_WORLD_STORAGE_LIMIT
+                           : status == MC_WORLD_SOURCE_ALLOCATION
+                               ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+                           : status == MC_WORLD_SOURCE_FILE ? MC_WORLD_STORAGE_IO_ERROR
+                                                            : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           source.operation);
+    source_result(&store->source->failure, MC_WORLD_SOURCE_UNIMPLEMENTED,
+                  "actual source ld.a rj.d/DeflaterOutputStream save transport", "ld", "a",
+                  "(Lfd;Llm;)V", 16);
+    return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, store->source->failure.operation);
 }
 
 static mc_world_storage_status store_source_checked_free(mc_world_store **slot,

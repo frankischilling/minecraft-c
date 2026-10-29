@@ -258,8 +258,8 @@
       "sha256": "30d6f6e102df2a6c9b3d69074c86ebff20e66c86e1f00660303fdf424efcd574"
     },
     "include/mc/world/storage/chunk.h": {
-      "bytes": 5539,
-      "sha256": "f58c096313fd841d0ce1a4436e520251497a1b72318d04b68f29bafa2f62091b"
+      "bytes": 6096,
+      "sha256": "cb35acf4bda6e60d3a7325692c242f7ca5d5ca3e14b834269bd2d782705ec9cc"
     },
     "include/mc/world/storage/regions.h": {
       "bytes": 4655,
@@ -478,8 +478,8 @@
       "sha256": "a19bf1b6b1389d186cdd75966d9fa41754a4c5cb479be580c3c7da8ad54fff4a"
     },
     "src/client/startup/application_owner_internal.h": {
-      "bytes": 4880,
-      "sha256": "d11d84516ad4070a104802ae1f5027b1768aeef80ef79126c083cced23b28279"
+      "bytes": 5146,
+      "sha256": "abb0a05df2581f8e5d2cbd36e436882225aad01356f9026e650cfe56517664d8"
     }
   },
   "reference_files": {

@@ -101,6 +101,33 @@ static void release(light_chunk *chunk) {
     *chunk = (light_chunk){0};
 }
 
+static void capture_acquisition(mc_world_light_operation_error *frame,
+                                const mc_world_runtime_acquisition_error *detail) {
+    frame->acquisition = (mc_world_light_acquisition_error){
+        .status = detail->status,
+        .cause = detail->cause,
+        .registry = detail->registry,
+        .tile_entity = detail->tile_entity,
+        .batch = detail->batch,
+        .activation_bytecode = detail->activation_bytecode,
+        .activation_world_bytecode = detail->activation_world_bytecode,
+        .load_bytecode = detail->load_bytecode,
+        .load_builder_bytecode = detail->load_builder_bytecode,
+        .load_entity = detail->load_entity,
+        .population = detail->population,
+        .source_chunk = detail->source_chunk};
+}
+
+static bool block_get(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int32_t *out,
+                      mc_world_light_operation_error *frame) {
+    mc_world_runtime_acquisition_error detail;
+    mc_world_storage_error cause = {0};
+    const mc_world_storage_status status =
+        mc_world_runtime_block_get_detailed(world, x, y, z, out, &cause, &detail);
+    capture_acquisition(frame, &detail);
+    return status == MC_WORLD_STORAGE_OK || storage_failed(frame, cause);
+}
+
 /* Capture the actual separate getter result and protect a normal Chunk across
  * reached Registry initialization/callback reentry. Do not preflight payloads. */
 static bool acquire(mc_world_runtime *world, int32_t chunk_x, int32_t chunk_z, light_chunk *out,
@@ -120,18 +147,7 @@ static bool acquire(mc_world_runtime *world, int32_t chunk_x, int32_t chunk_z, l
     mc_world_runtime_acquisition_error detail;
     mc_chunk_acquire_status status =
         mc_world_runtime_get_detailed(world, chunk_x, chunk_z, &out->state, &detail);
-    frame->acquisition = (mc_world_light_acquisition_error){
-        .status = detail.status,
-        .cause = detail.cause,
-        .registry = detail.registry,
-        .tile_entity = detail.tile_entity,
-        .batch = detail.batch,
-        .activation_bytecode = detail.activation_bytecode,
-        .activation_world_bytecode = detail.activation_world_bytecode,
-        .load_bytecode = detail.load_bytecode,
-        .load_builder_bytecode = detail.load_builder_bytecode,
-        .load_entity = detail.load_entity,
-        .population = detail.population};
+    capture_acquisition(frame, &detail);
     if (status != MC_CHUNK_ACQUIRE_OK) {
         if (frame->acquisition.cause.status != MC_WORLD_STORAGE_OK)
             return storage_failed(frame, frame->acquisition.cause);
@@ -385,9 +401,8 @@ static bool recheck(mc_world_runtime *world, const mc_world_light_type *type, in
         if (type == selected) {
             frame->point_bytecode = 67;
             int32_t id;
-            mc_world_storage_error cause = {0};
-            if (mc_world_runtime_block_get(world, x, y, z, &id, &cause) != MC_WORLD_STORAGE_OK)
-                return storage_failed(frame, cause);
+            if (!block_get(world, x, y, z, &id, frame))
+                return false;
             int32_t intrinsic;
             if (!emission(world, id, &intrinsic, 72, 77, false, frame))
                 return false;
@@ -508,9 +523,8 @@ static bool propagate(mc_world_runtime *world, mc_world_light_region *region, si
                     return false;
                 frame->region_bytecode = 272;
                 int32_t id;
-                mc_world_storage_error cause = {0};
-                if (mc_world_runtime_block_get(world, x, y, z, &id, &cause) != MC_WORLD_STORAGE_OK)
-                    return storage_failed(frame, cause);
+                if (!block_get(world, x, y, z, &id, frame))
+                    return false;
                 frame->region_bytecode = 277;
                 mc_registry_classes *classes = mc_world_runtime_registry(world);
                 mc_registry_error registry = empty_registry();

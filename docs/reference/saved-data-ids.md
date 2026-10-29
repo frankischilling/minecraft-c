@@ -31,6 +31,60 @@ can emit physical empty-name children. Reload retains the last serialized
 duplicate. The actual collection profile determines that order; native insertion
 order cannot establish the original winner.
 
+## Source constructor implementation
+
+The [source SavedData entry](../../include/mc/world/saved_data/source_storage.h)
+uses the constructor and private loader above inside the canonical manager.
+These class pins identify the inspected bytecode in the supplied archives:
+
+| Class | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Client `hc` | 4017 | `d6885902c84fe2cf2602d6259a5b2862d0402439529e13ca75a7a5951bfe1385` |
+| Client `fm` | 3482 | `82f848599887eaf5cd033d6886db167a3abdf1680151ac9e61fd4ca71a22b529` |
+| Server `es` | 4017 | `c6fc8ecb771c7976af9a42c7f1197bd54598aa235ba5c4ecdcdd5e1ebfd2a668` |
+
+Client `hc.<init>(wt)` and server `es.<init>(om)` have the same constructor and
+loader offsets listed above. The implemented nonnull source transport uses the
+client `fm` handler. The explicit server allocation profile can complete the
+null-Store constructor; it does not substitute that client handler for `om`.
+
+`hc.b()` calls the actual `wt.a("idcounts")` File factory at 23, then
+`File.exists` at 34. `fm.a(String)` allocates File at 0, captures the actual data
+File at 5, appends the nullable name at 16 and `.dat` at 21, forms the new String
+at 24 and constructs File at 27. The returned File is the one supplied to
+FileInputStream at 49. DataInputStream allocation at 40 precedes FileInputStream
+allocation at 44, with its constructor at 52 following the successful
+FileInputStream constructor. The raw DataInput NBT reader at 57 precedes source
+close at 62 and Short imports at 100/138.
+
+Missing input returns normally without creating `idcounts.dat`. An open or
+parse exception reaches the source diagnostic at 152 without running close at 62;
+there is no finally. A close exception occurs before any map import. The C
+owner retains the typed fault and actual stream prefix at that diagnostic
+dependency. Native retirement closes remaining inputs without claiming source
+close or normal constructor return. Native capacity/allocation failures keep
+their own classification and any completed map prefix.
+
+The [authored source controls](../../tests/world/saved_data/test_source_storage.c)
+exercise null/missing input, raw Short filtering and duplicate replacement,
+UTF-16 names, a directory target, corrupt input, native bounds, Store retention,
+source close failure and retryable native close cleanup. They use real File and
+stream owners. Native input/collection budgets, copied counter-name units and
+insertion traversal do not qualify Java allocation timing, String identity,
+HashMap bucket order or original printed exception bytes. Source-backed dirty
+saves, named cache-miss input and next-ID persistence remain explicit
+dependencies; they do not enter the legacy path-based or memory transport.
+
+These controls and the connected World-constructor lifetime are separate from
+the original captures and public memory projection below. They do not qualify
+complete terrain preparation or original client entry. Run their native targets
+separately:
+
+```sh
+cmake --build build --target mc_test_source_saved_data mc_test_source_saved_data_close
+ctest --test-dir build --output-on-failure -R '^world[.]saved_data_source_(ordinary|close)$'
+```
+
 ## Actual original capture
 
 The [observer](../../tests/reference/world/SavedDataIdObservation.java) executes

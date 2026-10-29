@@ -4,14 +4,17 @@ The genuine World-selection loop passes empty, populated, sixteen-save scrollbar
 and real double-click Windows profiles:
 real SaveFormat metadata and stable sorting, row selection during drawing,
 same-parent Cancel, original-receiver trailing input and retained-old-RQ cleanup.
-Select constructs the actual controller and stops at World-load `a(NULL World)`2.
+Select constructs the actual controller and enters the retained source World
+loader. Existing-save and separate generated-terrain profiles complete all 289
+samples and real Player/input publication before renderer attachment at 220.
+Version-zero conversion stops at 52.
 Empty, populated and bottom-scroll 854 by 480 captures were inspected. Save and resource hashes remain unchanged,
 without a new session lock. Create/Rename remain at `NEW162`/`NEW189`; Delete
 stops at preparation 21 without skipping its prefix. The Windows MSVC Debug
-ALL build and all 468 selected CTests pass without failures or skips in 197.43
+ALL build and all 475 selected CTests pass without failures or skips in 208.25
 seconds, excluding 46 configured reference-label profiles. The separate
-headless Release ALL build and formatting for 1,356 files also pass. World
-loading and gameplay remain unfinished.
+headless Release ALL build and formatting for 1,379 files also pass. World
+entry, rendering attachment and gameplay remain unfinished.
 
 The DateFormat owner matches 2,926 JDK17 vectors on Windows and Linux for
 English/en_US, UTC/Eastern and UTC years 1967..2099. Other locales, zones and
@@ -59,8 +62,12 @@ four workers and complete suite. The actual SDK transport test passes its
 37 checks in the private sanitized Linux build; an unsupported-driver refusal
 verifies the diagnostic without turning failure into success. The
 [detailed evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#sdl-initialization-and-xvfb-lifetime)
-includes the controls and X.Org flag contract. Complete hosted verification
-of this environment correction is pending.
+includes the controls and X.Org flag contract. The exact
+[`9d83665` run](https://github.com/frankischilling/minecraft-c/actions/runs/40819123976)
+passes Windows 440/GCC 461/Clang 461: all 1,362 selected tests, with zero skips,
+matching trees and unchanged test names. Formatting passes for 1,356 files.
+Both preceding Linux refusal cases pass. This hosted checkpoint precedes the
+source World-loading extension and does not recover the old SDL error strings.
 
 The preceding default source menu passes four focused Windows MSVC Debug CTests:
 GuiIngame, texture uploads, source screen events and the native menu loop.

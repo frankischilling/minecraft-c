@@ -38,9 +38,12 @@ receiver and List alive until its remaining mouse and keyboard input has
 drained; it does not switch the unread tail to the newly published screen.
 
 Selecting a save performs the display-screen call, sets the loading guard and
-constructs and publishes the real singleplayer controller `os`. It then stops
-at the World-load method's `a(NULL World)` call at offset 2. No World or Player
-is fabricated, and no playable session follows from this route. Create and
+constructs and publishes the real singleplayer controller `os`. The retained
+[World-load call](world-loading.md) completes its initial null-World change.
+Version-zero saves reach the conversion dependency at bytecode 52. Existing
+saves can construct the source World, run all 289 terrain samples and publish
+the real Player and movement input before the renderer dependency at
+World-change bytecode 220. Complete entry and gameplay remain unfinished. Create and
 Rename stop at their destination allocations, `NEW162` and `NEW189`. Delete
 stops at preparation offset 21; its earlier preparation is not skipped to reach
 a confirmation screen.
@@ -67,9 +70,12 @@ and idempotent cleanup; it does not force a host mutex failure. The DateFormat
 owner matches all 2,926 JDK17 vectors on Windows and Linux for its admitted
 profiles; this does not qualify original game-menu pixels or all timezone data.
 
-All 468 selected Windows CTests pass without failures or skips, alongside the
-client and headless builds and formatting for 1,356 files. The
+All 475 selected Windows CTests pass without failures or skips, alongside the
+client and headless builds and formatting for 1,379 files. The
 [testing record](../testing.md#world-selection-in-the-default-runtime) separates
 these focused results from earlier complete local and hosted checkpoints.
-World construction/loading, Player publication, creation, rename, deletion and
-gameplay remain unfinished.
+The existing-save profile verifies `READY`, all 289 samples, a real stored
+block marker, same-App Player/input publication, renderer frontier and checked
+cleanup. The profile reads authored region files and allows the actual new
+session lock while preserving pre-existing save and resource bytes. Creation,
+rename, deletion, rendering attachment and gameplay remain unfinished.

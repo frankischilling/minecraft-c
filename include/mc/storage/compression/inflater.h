@@ -44,6 +44,9 @@ mc_raw_inflater_status mc_raw_inflater_allocate(size_t maximum_bytes, mc_raw_inf
                                                 mc_raw_inflater_error *error);
 mc_raw_inflater_status mc_raw_inflater_construct(mc_raw_inflater *raw,
                                                  mc_raw_inflater_error *error);
+/* Actual new Inflater() uses the same owner/backend with nowrap=false. */
+mc_raw_inflater_status mc_raw_inflater_construct_wrapped(mc_raw_inflater *,
+                                                         mc_raw_inflater_error *);
 /* Input is borrowed until consumed/reset/end; replacing unread input fails.
  * Pull records actual native output even on data error, never a successful Java
  * read acknowledgement on error. No copying/read-ahead/whole-file buffer. */

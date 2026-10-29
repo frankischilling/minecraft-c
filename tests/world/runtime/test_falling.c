@@ -14,6 +14,8 @@
 static input_cell falling_input(int32_t x, int32_t y, int32_t z) {
     if (y == 4)
         return (input_cell){1, 0};
+    if (x == 20 && z == 20 && y >= 6 && y <= 80)
+        return (input_cell){13, 0};
     if (y == 50 && z == 4) {
         if (x == 5)
             return (input_cell){51, 0};
@@ -400,6 +402,55 @@ cleanup:
     return ok;
 }
 
+static bool falling_recursive_gravel(fixture *f, size_t side) {
+    bool ok = false, flag = false;
+    mc_world_runtime *w = f->worlds[side];
+    mc_registry_classes *r = f->registry[side];
+    const mc_block *gravel = NULL;
+    mc_world_mutation_error *error = malloc(sizeof(*error));
+    schedule_state before;
+    mc_entity_class_snapshot entities_before = {0}, entities_after = {0};
+    const mc_java_random world_random = *w->fields.r, math = math_snapshot(f);
+    CHECK(error != NULL && mc_registry_block_get(r, 13, &gravel, NULL) == MC_REGISTRY_OK &&
+          gravel != NULL && mc_registry_falling_flag_get(r, &flag, NULL) == MC_REGISTRY_OK &&
+          scheduled(w, &before) &&
+          mc_entity_classes_get_snapshot(f->entities[side], &entities_before) == MC_ENTITY_OK);
+    for (int32_t y = 6; y <= 80; ++y)
+        CHECK(at(w, 20, y, 20, 13, 0));
+    CHECK(at(w, 20, 5, 20, 0, 0) && at(w, 20, 4, 20, 1, 0));
+
+    /* Actual removal notifies the next gravel above before this invocation
+     * can scan down/place. All 75 real immediate ticks therefore nest; source
+     * order then rebuilds the column from its topmost original block first. */
+    const bool immediate = w->fields.a;
+    CHECK(mc_registry_falling_flag_set(r, true, NULL) == MC_REGISTRY_OK);
+    w->fields.a = true;
+    const bool completed = falling_hook(w, gravel, 20, 6, 20, true, error);
+    w->fields.a = immediate;
+    const mc_registry_status restored = mc_registry_falling_flag_set(r, flag, NULL);
+    CHECK(restored == MC_REGISTRY_OK && completed && error->status == MC_WORLD_STORAGE_OK);
+    CHECK(at(w, 20, 4, 20, 1, 0));
+    /* Reentrant descendants refill some ancestors' original Y cells before
+     * those ancestors resume. The unchanged final writes return false and are
+     * discarded by the actual source, leaving 38 Blocks, not a compacted 75. */
+    for (int32_t y = 5; y <= 42; ++y)
+        CHECK(at(w, 20, y, 20, 13, 0));
+    for (int32_t y = 43; y <= 80; ++y)
+        CHECK(at(w, 20, y, 20, 0, 0));
+    /* 75 original ticks + 38 placed-block added ticks + 37 settled neighbors.
+     * Immediate scheduling consumes real record IDs without publishing F/E. */
+    CHECK(delta(w, &before, 150, 0) &&
+          mc_entity_classes_get_snapshot(f->entities[side], &entities_after) == MC_ENTITY_OK &&
+          entities_after.next_id == entities_before.next_id &&
+          entities_after.live_entities == entities_before.live_entities &&
+          mc_test_java_random_equal(w->fields.r, &world_random) && math_is(f, &math) &&
+          w->active_calls == 0 && w->local_leases == 0);
+    ok = true;
+cleanup:
+    free(error);
+    return ok;
+}
+
 static bool falling_quota(fixture *f, size_t slot) {
     bool ok = false, flag = false;
     const size_t side = slot % 2u;
@@ -564,6 +615,7 @@ int main(int argc, char **argv) {
         CHECK(falling_predicates(f, side));
         CHECK(falling_moves(f, side));
         CHECK(falling_schedules(f, side));
+        CHECK(falling_recursive_gravel(f, side));
         CHECK(falling_failure_prefix(f, side));
         CHECK(falling_quota(f, side + 2u));
         CHECK(falling_entities(f, side));

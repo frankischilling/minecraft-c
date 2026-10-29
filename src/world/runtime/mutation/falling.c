@@ -11,6 +11,7 @@
 #include "mc/world/runtime/scheduling.h"
 
 #include <float.h>
+#include <stdlib.h>
 
 #if !defined(_M_X64) && !defined(_M_AMD64) && !defined(__x86_64__)
 #error "Falling Block centers require x86-64/SSE2"
@@ -99,17 +100,39 @@ static bool falling_storage_fail(const falling_frame *frame, unsigned int pc,
  * or a gameplay recursion limit. lower may alias the destination. */
 static bool falling_nested(const falling_frame *frame, unsigned int pc,
                            const mc_world_mutation_error *lower) {
-    const mc_world_mutation_error captured = *lower;
-    *frame->error = captured;
-    if (captured.cause_hook_class == NULL) {
-        frame->error->cause_hook_class = captured.hook_class;
-        frame->error->cause_hook_method = captured.hook_method;
-        frame->error->cause_hook_bytecode = captured.hook_bytecode;
+    if (frame->error != lower)
+        *frame->error = *lower;
+    if (frame->error->cause_hook_class == NULL) {
+        frame->error->cause_hook_class = frame->error->hook_class;
+        frame->error->cause_hook_method = frame->error->hook_method;
+        frame->error->cause_hook_bytecode = frame->error->hook_bytecode;
     }
+    const mc_world_storage_error cause = frame->error->cause;
     falling_at(frame, pc);
     if (frame->world != NULL)
-        frame->world->last_error = captured.cause;
+        frame->world->last_error = cause;
     return false;
+}
+
+/* A notifying write can synchronously tick the next unsupported gravel Block.
+ * Keep complete child diagnostics independent on the heap while descendants
+ * run, rather than retaining one large native stack record per source call. */
+static mc_world_mutation_error *falling_workspace(const falling_frame *frame, unsigned int pc) {
+    mc_world_mutation_error *lower = malloc(sizeof(*lower));
+    if (lower == NULL)
+        (void)falling_fail(frame, pc, MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                           "Falling child diagnostic allocation");
+    else
+        mc_world_mutation_error_init(lower);
+    return lower;
+}
+
+static bool falling_child_result(const falling_frame *frame, unsigned int pc,
+                                 mc_world_mutation_error *lower, bool complete) {
+    if (!complete)
+        (void)falling_nested(frame, pc, lower);
+    free(lower);
+    return complete;
 }
 
 static bool falling_registry_fail(const falling_frame *frame, unsigned int pc,
@@ -227,22 +250,26 @@ bool mc_world_mutation_falling_can_pass(mc_world_runtime *world, mc_registry_cla
 
 static bool falling_predicate_call(const falling_frame *frame, unsigned int pc, int32_t x,
                                    int32_t y, int32_t z, bool *out) {
-    mc_world_mutation_error lower = mc_world_mutation_empty_error();
     falling_at(frame, pc);
-    return mc_world_mutation_falling_can_pass(frame->world, frame->classes, x, y, z, out, &lower)
-               ? true
-               : falling_nested(frame, pc, &lower);
+    mc_world_mutation_error *lower = falling_workspace(frame, pc);
+    if (lower == NULL)
+        return false;
+    const bool complete =
+        mc_world_mutation_falling_can_pass(frame->world, frame->classes, x, y, z, out, lower);
+    return falling_child_result(frame, pc, lower, complete);
 }
 
 static bool falling_write(const falling_frame *frame, unsigned int pc, int32_t x, int32_t y,
                           int32_t z, int32_t id) {
-    mc_world_mutation_error lower = mc_world_mutation_empty_error();
-    bool written;
     falling_at(frame, pc);
-    if (mc_world_runtime_block_set(frame->world, x, y, z, id, &written, &lower) !=
-        MC_WORLD_STORAGE_OK)
-        return falling_nested(frame, pc, &lower);
-    return true; /* Both actual setter booleans are discarded by the source. */
+    mc_world_mutation_error *lower = falling_workspace(frame, pc);
+    if (lower == NULL)
+        return false;
+    bool written;
+    const bool complete = mc_world_runtime_block_set(frame->world, x, y, z, id, &written, lower) ==
+                          MC_WORLD_STORAGE_OK;
+    /* Both actual setter booleans are discarded by the source. */
+    return falling_child_result(frame, pc, lower, complete);
 }
 
 static bool falling_region(const falling_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {
@@ -398,36 +425,43 @@ static bool falling_schedule(const falling_frame *frame, int32_t x, int32_t y, i
     int32_t delay;
     if (!falling_delay(frame, &delay))
         return false;
-    mc_world_schedule_error scheduled;
     falling_at(frame, 13);
-    if (mc_world_runtime_schedule(frame->world, x, y, z, id, delay, &scheduled) ==
-        MC_WORLD_STORAGE_OK)
+    mc_world_schedule_error *scheduled = malloc(sizeof(*scheduled));
+    if (scheduled == NULL)
+        return falling_fail(frame, 13, MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                            "Falling scheduled diagnostic allocation");
+    if (mc_world_runtime_schedule(frame->world, x, y, z, id, delay, scheduled) ==
+        MC_WORLD_STORAGE_OK) {
+        free(scheduled);
         return falling_return(frame);
+    }
 
-    mc_world_mutation_error lower = scheduled.tick;
-    lower.schedule = (mc_world_schedule_prefix){.status = scheduled.status,
-                                                .operation = scheduled.operation,
-                                                .bytecode = scheduled.bytecode,
-                                                .presence_bytecode = scheduled.presence_bytecode,
-                                                .provider_bytecode = scheduled.provider_bytecode,
-                                                .cause = scheduled.cause,
-                                                .record = scheduled.record,
-                                                .membership = scheduled.membership,
-                                                .ordered = scheduled.ordered,
-                                                .registry = scheduled.registry};
-    lower.status = scheduled.status;
-    lower.operation = scheduled.operation;
-    lower.cause = scheduled.cause;
-    lower.registry = scheduled.registry;
-    lower.schedule_bytecode = scheduled.bytecode;
-    lower.record = scheduled.record;
-    lower.membership = scheduled.membership;
-    lower.ordered = scheduled.ordered;
-    if (scheduled.presence_bytecode != 0)
-        lower.presence_bytecode = scheduled.presence_bytecode;
-    if (scheduled.provider_bytecode != 0)
-        lower.provider_bytecode = scheduled.provider_bytecode;
-    return falling_nested(frame, 13, &lower);
+    mc_world_mutation_error *lower = &scheduled->tick;
+    lower->schedule = (mc_world_schedule_prefix){.status = scheduled->status,
+                                                 .operation = scheduled->operation,
+                                                 .bytecode = scheduled->bytecode,
+                                                 .presence_bytecode = scheduled->presence_bytecode,
+                                                 .provider_bytecode = scheduled->provider_bytecode,
+                                                 .cause = scheduled->cause,
+                                                 .record = scheduled->record,
+                                                 .membership = scheduled->membership,
+                                                 .ordered = scheduled->ordered,
+                                                 .registry = scheduled->registry};
+    lower->status = scheduled->status;
+    lower->operation = scheduled->operation;
+    lower->cause = scheduled->cause;
+    lower->registry = scheduled->registry;
+    lower->schedule_bytecode = scheduled->bytecode;
+    lower->record = scheduled->record;
+    lower->membership = scheduled->membership;
+    lower->ordered = scheduled->ordered;
+    if (scheduled->presence_bytecode != 0)
+        lower->presence_bytecode = scheduled->presence_bytecode;
+    if (scheduled->provider_bytecode != 0)
+        lower->provider_bytecode = scheduled->provider_bytecode;
+    (void)falling_nested(frame, 13, lower);
+    free(scheduled);
+    return false;
 }
 
 bool mc_world_mutation_falling_added(mc_world_runtime *world, const mc_block *block, int32_t x,

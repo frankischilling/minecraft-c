@@ -23,7 +23,8 @@ typedef struct mc_client_menu_loop_state {
  *
  * Calls and callbacks require exclusive use of this whole graph on the video
  * thread. A failed frame is terminal; inspect remains available. Output stays
- * unchanged on create failure. Retirement releases native renderer and transition
+ * unchanged on ordinary create failure. A blocked setup cleanup returns its
+ * retained failed loop for checked retirement. Retirement releases native renderer and transition
  * ownership without running source shutdown or restoring historical fields.
  * Source run's exception handlers and d() shutdown are separate dependencies. */
 bool mc_client_menu_loop_create(mc_client_bootstrap *, mc_client_menu_loop **);

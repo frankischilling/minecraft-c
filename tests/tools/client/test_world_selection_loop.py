@@ -7,7 +7,9 @@ import os
 from pathlib import Path
 import struct
 import subprocess
+import sys
 import tempfile
+import zlib
 
 
 def string(value):
@@ -24,7 +26,62 @@ def metadata(display, played, version):
     data += tag(4, "LastPlayed", struct.pack(">q", played))
     data += tag(4, "SizeOnDisk", struct.pack(">q", 3145728))
     data += tag(3, "version", struct.pack(">i", version))
+    data += tag(4, "RandomSeed", struct.pack(">q", 123))
+    for name, value in (("SpawnX", 0), ("SpawnY", 64), ("SpawnZ", 0)):
+        data += tag(3, name, struct.pack(">i", value))
     return b"\x0a\x00\x00" + tag(10, "Data", data + b"\x00") + b"\x00"
+
+
+def chunk_record(chunk_x, chunk_z):
+    blocks = bytearray(32768)
+    skylight = bytearray(16384)
+    heights = bytearray([64] * 256)
+    for x in range(16):
+        for z in range(16):
+            base = (x << 11) | (z << 7)
+            blocks[base] = 7
+            blocks[base + 1:base + 60] = bytes([1] * 59)
+            blocks[base + 60:base + 63] = bytes([3] * 3)
+            blocks[base + 63] = 2
+            skylight[(base + 64) // 2:(base + 128) // 2] = bytes([255] * 32)
+    # A valid high marker distinguishes the actual stored Chunk from generation.
+    if (chunk_x, chunk_z) == (0, 0):
+        blocks[127] = 57
+        skylight[127 // 2] &= 15
+        heights[0] = 128
+    level = tag(3, "xPos", struct.pack(">i", chunk_x))
+    level += tag(3, "zPos", struct.pack(">i", chunk_z))
+    level += tag(4, "LastUpdate", struct.pack(">q", 0))
+    for name, values in (("Blocks", blocks), ("Data", bytes(16384)),
+                         ("SkyLight", skylight), ("BlockLight", bytes(16384)),
+                         ("HeightMap", heights)):
+        level += tag(7, name, struct.pack(">i", len(values)) + values)
+    level += tag(1, "TerrainPopulated", b"\x01")
+    level += tag(9, "Entities", b"\x0a\x00\x00\x00\x00")
+    level += tag(9, "TileEntities", b"\x0a\x00\x00\x00\x00")
+    raw = b"\x0a\x00\x00" + tag(10, "Level", level + b"\x00") + b"\x00"
+    compressed = zlib.compress(raw)
+    record = struct.pack(">I", len(compressed) + 1) + b"\x02" + compressed
+    sectors = (len(record) + 4095) // 4096
+    return record + bytes(sectors * 4096 - len(record)), sectors
+
+
+def saved_regions(directory, generate):
+    # The default UI profile reads all 289 existing Chunks. The optional
+    # generation profile retains one saved marker Chunk and generates its
+    # surroundings through the same source path.
+    coordinates = [(0, 0)] if generate else [(x, z) for x in range(-8, 9)
+                                            for z in range(-8, 9)]
+    regions = {}
+    for x, z in coordinates:
+        body, sectors = chunk_record(x, z)
+        region = regions.setdefault((x >> 5, z >> 5), bytearray(8192))
+        offset = len(region) // 4096
+        index = (x & 31) + (z & 31) * 32
+        struct.pack_into(">I", region, index * 4, (offset << 8) | sectors)
+        region.extend(body)
+    for (x, z), data in regions.items():
+        (directory / f"r.{x}.{z}.mcr").write_bytes(data)
 
 
 def snapshot(root):
@@ -37,6 +94,9 @@ def main():
     parser.add_argument("--executable", type=Path, required=True)
     parser.add_argument("--assets", type=Path, required=True)
     parser.add_argument("--artifacts", type=Path, required=True)
+    parser.add_argument("--mode", action="append",
+                        choices=("empty", "populated", "large", "double", "load", "generate"))
+    parser.add_argument("--timeout", type=float)
     args = parser.parse_args()
     if os.name != "nt":
         raise RuntimeError("This native APPDATA isolation profile requires Windows")
@@ -45,7 +105,7 @@ def main():
     artifacts = args.artifacts.resolve()
     artifacts.mkdir(parents=True, exist_ok=True)
     resources_before = snapshot(assets)
-    for mode in ("empty", "populated", "large", "double"):
+    for mode in args.mode or ("empty", "populated", "large", "double", "load"):
         with tempfile.TemporaryDirectory(prefix="mc-rq-loop-") as work:
             appdata = Path(work)
             game = appdata / ".minecraft"
@@ -55,11 +115,12 @@ def main():
             if mode == "large":
                 worlds = [(f"world{i:02d}", f"Scroll world {i:02d}", 1304000000000, 19132)
                           for i in range(16)]
-            elif mode in ("populated", "double"):
+            elif mode in ("populated", "double", "load", "generate"):
                 worlds = [
                     ("older", "Old world", 1303000000000, 19132),
                     ("bravo", "", 1304000000000, 19132),
-                    ("alpha", "Alpha world", 1304000000000, 0),
+                    ("alpha", "Alpha world", 1304000000000,
+                     19132 if mode in ("load", "generate") else 0),
                 ]
             else:
                 worlds = []
@@ -70,15 +131,29 @@ def main():
                 (directory / filename).write_bytes(
                     gzip.compress(metadata(display, played, version), mtime=0))
                 (directory / "preserve-chunk.dat").write_bytes(b"authored untouched chunk")
+            if mode in ("load", "generate"):
+                regions = saves / "alpha" / "region"
+                regions.mkdir()
+                saved_regions(regions, generate=mode == "generate")
             before = snapshot(saves)
             environment = os.environ.copy()
             environment["APPDATA"] = str(appdata)
             capture = artifacts / (mode + ".png")
             result = subprocess.run([str(executable), str(assets), mode, str(capture)],
-                                    env=environment, timeout=110, check=False)
+                                    env=environment,
+                                    timeout=args.timeout if args.timeout is not None else
+                                    (600 if mode == "generate" else 110), check=False)
             if result.returncode:
+                print(f"World-selection native {mode} exited {result.returncode} "
+                      f"(0x{result.returncode & 0xffffffff:08x})", file=sys.stderr)
                 return result.returncode
-            if snapshot(saves) != before:
+            after = snapshot(saves)
+            if mode in ("load", "generate"):
+                if any(after.get(name) != digest for name, digest in before.items()):
+                    raise RuntimeError("World loading changed pre-existing fixture bytes")
+                if not (saves / "alpha" / "session.lock").is_file():
+                    raise RuntimeError("Actual source SaveHandler did not create its session lock")
+            elif after != before:
                 raise RuntimeError("World-selection loop modified save files or created a lock")
             data = capture.read_bytes()
             if data[:8] != b"\x89PNG\r\n\x1a\n" or len(data) < 4096:
