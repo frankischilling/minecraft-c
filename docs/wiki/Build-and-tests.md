@@ -21,6 +21,12 @@ The new runtime passes all 463 selected Windows CTests, excluding 45 configured
 reference-label profiles. Formatting checks 1,341 files and a separate headless
 Release ALL build passes.
 
+The first runtime [hosted run at `fab3769`](https://github.com/frankischilling/minecraft-c/actions/runs/40801330270)
+stops both Linux builds on signed diagnostic-site conversion before tests.
+The corrected transport preserves native `-1` and unsigned source sites.
+Strict GCC/Clang syntax checks under WSL and three rebuilt Windows tests pass;
+the next complete hosted run retains its own scope.
+
 Published predecessor `3ec9892` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40796960416):
 434 Windows, 452 GCC and 452 Clang tests, 1,338 total, zero failures or skips.
 Formatting checks 1,325 files and all tested checkout trees match that head.

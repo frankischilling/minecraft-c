@@ -8,6 +8,11 @@ excludes 45 configured reference-label profiles. A separate headless Release
 ALL build passes with client, sound, audio and testing disabled. Formatting
 checks 1,341 files.
 
+That 463-case run precedes the diagnostic-site transport correction described
+in [status](status.md). The affected runtime translation unit also passes strict
+GCC and Clang syntax checks under WSL, and three affected native Windows tests
+pass after that correction. Complete Linux hosted verification is separate.
+
 `client.source_menu_loop` constructs the genuine App and startup graph, updates
 all nine registered effects with 15 real atlas uploads, advances the Timer and
 source menu counters, reaches the one-second FPS path, then dispatches SDL

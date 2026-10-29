@@ -10,7 +10,7 @@ typedef struct mc_client_menu_loop_state {
     size_t font_measurements, mouse_events, keyboard_events;
     bool failed, running;
     const char *operation, *source_class, *source_method;
-    unsigned int source_pc;
+    int64_t source_pc; /* Source unsigned PCs and native -1 both retain their value. */
 } mc_client_menu_loop_state;
 
 /* Native frame composition for the genuine constructed, initialized no-World

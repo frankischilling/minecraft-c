@@ -51,13 +51,13 @@ struct mc_client_menu_loop {
 };
 
 static bool stop(mc_client_menu_loop *loop, const char *operation, const char *source_class,
-                 const char *method, unsigned int pc) {
+                 const char *method, int64_t pc) {
     loop->state.failed = true;
     loop->state.operation = operation;
     loop->state.source_class = source_class;
     loop->state.source_method = method;
     loop->state.source_pc = pc;
-    fprintf(stderr, "Client menu: %s (%s.%s:%u)\n", operation,
+    fprintf(stderr, "Client menu: %s (%s.%s:%" PRId64 ")\n", operation,
             source_class == NULL ? "native" : source_class, method == NULL ? "frame" : method, pc);
     return false;
 }
@@ -113,7 +113,7 @@ static bool screen_state(mc_client_menu_loop *loop, mc_client_screen_state *out)
 static bool texture_tick(mc_client_menu_loop *loop) {
     if (!mc_client_render_engine_update_effects(loop->app->render_engine, loop->app->display,
                                                 &loop->effects))
-        return stop(loop, loop->effects.operation, "ji", "a", (unsigned int)loop->effects.ji_pc);
+        return stop(loop, loop->effects.operation, "ji", "a", loop->effects.ji_pc);
     ++loop->state.texture_ticks;
     return true;
 }
@@ -433,7 +433,7 @@ bool mc_client_menu_loop_frame(mc_client_menu_loop *loop) {
     if (mc_client_achievement_notice_draw(app->achievement_notice, &loop->notice) !=
         MC_CLIENT_NOTICE_OK)
         return stop(loop, "actual achievement notice draw dependency", "vu", "a",
-                    (unsigned int)loop->notice.source_pc);
+                    loop->notice.source_pc);
     thrd_yield();
     if (!key_down(loop, 65, &f7, 405) || (f7 && !display_update(loop, 411)))
         return false;

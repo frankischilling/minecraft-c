@@ -5678,12 +5678,12 @@
       "sha256": "b3f9e7d9f54a2641e57ba333da7a9c6a514e4de404d0c519e650d379debb29dd"
     },
     "src/client/runtime/menu_loop.c": {
-      "bytes": 25123,
-      "sha256": "2678ec44f141d8d16feeb013baf66d8803aea6bcf40afbe2b24b5ca9c939edaa"
+      "bytes": 25099,
+      "sha256": "c257473fae0c25653387eb8bbdd462d8157f69070c6c99d5aace174a85ed1995"
     },
     "src/client/runtime/menu_loop.h": {
-      "bytes": 1595,
-      "sha256": "fd4df55c7c0b5b89f3dcdc17aa24086c0c9726fad85b68ec335f2501eb24d8e3"
+      "bytes": 1655,
+      "sha256": "152b907ab389e510074737372c74b77041b9e13f8cc858d3f9bfa4c7c681ada0"
     },
     "tests/client/gui/test_source_screen_events.c": {
       "bytes": 11463,

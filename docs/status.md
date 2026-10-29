@@ -17,6 +17,13 @@ The selection excludes 45 configured reference-label profiles. See the
 [runtime checks](testing.md#default-source-menu-runtime) for native menu,
 prepared account-check boundary and GPU upload scopes.
 
+The first runtime [hosted run at `fab3769`](https://github.com/frankischilling/minecraft-c/actions/runs/40801330270)
+stops both Linux builds on a signed-to-unsigned diagnostic-site conversion;
+neither Linux test suite starts. The correction preserves native `-1` and
+unsigned source bytecode sites in a wider signed record. Strict GCC/Clang syntax
+checks pass under WSL, and three affected Windows tests pass after rebuilding
+the client. These checks do not replace the next complete hosted run.
+
 Published predecessor `3ec9892` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40796960416):
 434 Windows, 452 GCC and 452 Clang tests, 1,338 total, without failures or skips.
 Formatting checks 1,325 files. All tested merge trees match that published head.
