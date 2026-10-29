@@ -1,6 +1,6 @@
 # Test scope and reproduction
 
-## ChunkCache and compilation qualification in progress
+## ChunkCache and compilation qualification
 
 The current source increment reaches real dirty-chunk selection and padded
 cache/list/NW construction. The loaded Windows frame retains missing RenderBlocks
@@ -65,8 +65,22 @@ authority manifests. The resumed GCC build finds one zero-byte FreeType object
 left by the earlier disk failure; its exact object/archive are preserved before
 regenerating the object. GCC then completes the remaining 422 actions in 73.015
 seconds. Delayed VHD writes leave insufficient host headroom for local runtime
-qualification, so no Linux tests are launched. Hosted Linux results remain
-pending; successful builds alone do not establish runtime parity.
+qualification, so no local Linux tests are launched. Successful local builds
+alone do not establish runtime parity.
+
+Hosted source checkpoint
+[`91da6e2`](https://github.com/frankischilling/minecraft-c/actions/runs/40937788071)
+passes all four jobs and 1,475 tests: Windows 473 in 241.13 seconds, GCC 501 in
+344.56 seconds and Clang 501 in 348.19 seconds. Formatting checks 1,541 files.
+There are zero failures/skips, and comparison with the preceding hosted
+inventory finds no dropped test names. Windows adds five cases; its hosted
+profile does not enable the device-only `client.chunk_compile` case. Both
+Linux software-GL profiles add all six cases and execute that regression.
+The local Windows profile separately executes all six additions.
+
+The current runtime and test sources match that qualified source checkpoint.
+Subsequent qualification-record edits change documentation and current file
+bindings; the four metadata lookup checks are rerun for those edits.
 
 The published
 fog/Sky/culling checkpoint e65860c passes all four hosted jobs and 1,458 tests:

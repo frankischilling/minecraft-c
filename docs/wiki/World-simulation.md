@@ -34,14 +34,22 @@ frame stops at missing RenderBlocks geometry, `n.a(Lls;Z)Z:442` with child
 cache/list effects survive the failed child. Shared U class active use also
 precedes the source lighting disables.
 
-Selected Windows checks pass 950 original cache rows, the complete empty DK
-call, eight sky-change profiles, three lighting rows and 108 JDK17 sort
-histories. The loaded graph preserves all 72 focus histories. The final Windows
+Selected Windows checks pass 950 original cache rows, 42 whole selector profiles,
+the complete empty DK call, eight sky-change profiles, three lighting rows and
+108 JDK17 sort histories. The loaded graph preserves all 72 focus histories. The final Windows
 Debug ALL build and all 512 selected CTests pass after the lease-publication fix
 in 215.93 seconds. All 506 prior test names remain, with six additions; seven
-separate JDK/Sky device cases also pass. No local Linux tests ran for this
-increment. Linux runtime qualification remains pending hosted CI, separate from
-the local Clang/GCC build results in [Build and tests](Build-and-tests).
+separate JDK/Sky device cases also pass.
+
+Qualified source checkpoint
+[`91da6e2`](https://github.com/frankischilling/minecraft-c/actions/runs/40937788071)
+passes all four hosted jobs and 1,475 tests (Windows 473/GCC 501/Clang 501),
+with zero failures or skips and every preceding hosted name retained. Hosted
+Windows executes five additions because its device-only `client.chunk_compile`
+case is disabled; local Windows and both Linux software-GL profiles execute all
+six. These hosted Linux runtime passes are separate from the local Clang/GCC
+builds: no local Linux runtime tests ran after host-disk exhaustion. Exact times
+and profile details are in [Build and tests](Build-and-tests).
 The preceding fog/Sky/culling
 checkpoint retains 506 Windows and 489 public cases per Linux compiler;
 published [`e65860c`](https://github.com/frankischilling/minecraft-c/actions/runs/40920088558) passes four hosted jobs and 1,458 tests

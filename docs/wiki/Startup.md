@@ -69,15 +69,23 @@ Create/Rename stop at `NEW162`/`NEW189`; Delete stops at preparation 21 without
 skipping its prefix. Complete World entry and gameplay remain unfinished. See the
 [World-selection contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-selection.md).
 
-Selected Windows checks pass 950 original cache rows, a complete empty DK call,
-eight sky-change profiles, three lighting rows and 108 JDK17 sort histories.
+Selected Windows checks pass 950 original cache rows, 42 whole selector profiles,
+a complete empty DK call, eight sky-change profiles, three lighting rows and
+108 JDK17 sort histories.
 The loaded UI reaches the nested geometry failure while preserving saves,
 resources and all 72 focus histories. The final Windows Debug ALL build and all
 512 selected CTests pass after the lease-publication fix in 215.93 seconds.
 All 506 prior test names remain, with six additions; seven separate JDK/Sky
-device cases also pass. No local Linux tests ran for this increment. Linux
-runtime qualification remains pending hosted CI; [Build and tests](Build-and-tests)
-separates the local Clang/GCC build evidence from runtime results.
+device cases also pass.
+
+Qualified source checkpoint
+[`91da6e2`](https://github.com/frankischilling/minecraft-c/actions/runs/40937788071)
+passes all four hosted jobs and 1,475 tests (Windows 473/GCC 501/Clang 501),
+with zero failures or skips and no preceding hosted names dropped. Hosted
+Windows executes five additions because its device-only `client.chunk_compile`
+case is disabled; local Windows and both Linux software-GL profiles execute all
+six. No local Linux runtime tests ran after host-disk exhaustion. The hosted
+GCC/Clang runtime passes have their own evidence in [Build and tests](Build-and-tests).
 
 The preceding fog/Sky/culling checkpoint passes all 506 selected Windows CTests
 and 489 public cases per Linux sanitizer graph, plus six JDK-reference cases per compiler.

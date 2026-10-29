@@ -1,9 +1,9 @@
 # Build and tests
 
 The current [chunk-compilation increment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md)
-passes selected Windows checks for 950 original ChunkCache rows, a complete
-empty DK compiler call, eight sky-change profiles, three lighting rows and 108
-JDK17 sort histories. The loaded App/World/Player graph reaches the real
+passes selected Windows checks for 950 original ChunkCache rows, 42 whole
+selector profiles, a complete empty DK compiler call, eight sky-change profiles,
+three lighting rows and 108 JDK17 sort histories. The loaded App/World/Player graph reaches the real
 RenderBlocks geometry failure at `dk.a()V:464`, retained by
 `n.a(Lls;Z)Z:442` under frame `px.a(FJ)V:396`. Save/resource checks and all 72
 focus histories pass.
@@ -12,12 +12,30 @@ The final Windows MSVC Debug ALL build passes after the lease-publication fix.
 All 512 selected CTests pass in 215.93 seconds, retaining every one of the 506
 prior test names and adding six. Seven separate JDK/Sky device cases also pass.
 
+Qualified source checkpoint
+[`91da6e2`](https://github.com/frankischilling/minecraft-c/actions/runs/40937788071)
+is terminal SUCCESS in all four hosted jobs, with 1,475 tests and zero failures
+or skips. Every preceding hosted test name remains.
+
+| Hosted profile | Tests | Test time (seconds) |
+| --- | ---: | ---: |
+| Windows | 473 | 241.13 |
+| GCC | 501 | 344.56 |
+| Clang | 501 | 348.19 |
+
+Hosted Windows adds five tests because the device-only `client.chunk_compile`
+case is disabled in that profile. Local Windows and both Linux software-GL
+profiles execute all six additions. The hosted GCC/Clang runtime suites pass at
+this source checkpoint.
+
 Local Linux build evidence is separate. The phase 1 Clang full build completed
 2,233 actions in 168.659 seconds. The current GCC full build also passes after
 regenerating a zero-byte FreeType object caused by host-disk EIO. No local Linux
-tests ran for this increment. Linux runtime qualification is pending hosted CI.
+runtime tests ran after host-disk exhaustion; the Linux runtime passes above
+come from hosted CI.
 
-Published [`e65860c`](https://github.com/frankischilling/minecraft-c/actions/runs/40920088558)
+The preceding published fog/Sky/culling checkpoint
+[`e65860c`](https://github.com/frankischilling/minecraft-c/actions/runs/40920088558)
 passes all four hosted jobs and 1,458 tests: Windows 468, GCC 495 and Clang 495,
 with zero failures or skips. Test times are 346.10/198.39/367.95 seconds,
 respectively. This hosted checkpoint precedes the current compilation/callback

@@ -74,10 +74,15 @@ and gameplay adoption remain unqualified.
 The selected Windows cache/compiler/callback/lighting/sort checks and all 72
 focus histories on the loaded graph pass. After the lease fix, Windows Debug
 ALL and all 512 selected CTests pass in 215.93 seconds, with all 506 prior names
-retained and six additions. Seven separate JDK/Sky device cases pass. Local
-Clang/GCC build evidence is recorded in [Build and tests](Build-and-tests); no
-local Linux tests ran for this increment, and Linux runtime qualification is
-pending hosted CI. The previous fog/Sky/culling checkpoint retains its 506 Windows and
+retained and six additions. Seven separate JDK/Sky device cases pass. Qualified
+source checkpoint [`91da6e2`](https://github.com/frankischilling/minecraft-c/actions/runs/40937788071)
+passes all four hosted jobs and 1,475 tests (Windows 473/GCC 501/Clang 501),
+without failures, skips or dropped preceding hosted names. Hosted Linux runtime
+passes are separate from local Clang/GCC build evidence: no local Linux runtime
+tests ran after host-disk exhaustion. [Build and tests](Build-and-tests) records
+the timings and why the hosted Windows profile adds five cases while local
+Windows and both Linux software-GL profiles execute all six.
+The previous fog/Sky/culling checkpoint retains its 506 Windows and
 489 public cases per Linux compiler. Published [`e65860c`](https://github.com/frankischilling/minecraft-c/actions/runs/40920088558) passes four hosted jobs
 and 1,458 tests (Windows 468/GCC 495/Clang 495), before the new increment.
 

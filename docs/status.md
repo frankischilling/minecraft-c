@@ -47,12 +47,16 @@ and three lighting profiles. The loaded UI reaches the real nonair geometry
 frontier while preserving saves, resources and all 72 focus histories. A final
 lease-refusal regression verifies that unpublished cache cells stay NULL.
 
-Linux runtime qualification is pending hosted CI. The pre-fix local Clang build
-and current repaired GCC build pass, but no local Linux tests execute after
-host-disk exhaustion.
-Sources and dependencies remain byte-identical after recovery. See the
-[qualification record](testing.md#chunkcache-and-compilation-qualification-in-progress)
-for the failure, repair and remaining platform scope.
+Hosted source checkpoint
+[`91da6e2`](https://github.com/frankischilling/minecraft-c/actions/runs/40937788071)
+passes formatting and all three native platform jobs: Windows 473, GCC 501 and
+Clang 501 tests, zero failures/skips. Every preceding hosted test name is retained.
+The Windows hosted profile excludes the device-only compile case; the local
+Windows selection and both Linux software-GL profiles execute it.
+Local Linux runtime tests remain unrun after host-disk exhaustion; hosted Linux
+runtime evidence is separate from the repaired local build. See the
+[qualification record](testing.md#chunkcache-and-compilation-qualification)
+for the failure, repair and measured platform scope.
 
 The preceding fog/Sky/culling checkpoint's Windows Debug ALL and all 506 selected tests pass in 304.44 seconds,
 retaining all 502 preceding cases. Audio-enabled GCC13/Clang18 sanitizer ALL

@@ -31,8 +31,8 @@ terrain submission remain unfinished. The concrete sky-change callback runs
 the whole `n.e()V`, and standard lighting includes the shared U class's actual
 buffer initialization. The [chunk-compilation contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md)
 records source effects, retained failures and remaining children. Skin and cloak
-requests use actual
-asynchronous image owners, with separate factory and worker results. Native
+requests use actual asynchronous image owners, with separate factory and worker
+results. Native
 cleanup retains dependencies through worker stop/join and refuses retirement
 while external owners remain.
 
@@ -41,15 +41,23 @@ Canvas integration, gameplay, multiplayer interoperability and the standalone
 server remain unfinished or unqualified. Diagnostic title and fixed-camera
 terrain inspection remain explicit options.
 
-Selected Windows checks pass 950 original cache rows, a complete empty DK call,
-eight sky-change profiles, three lighting rows and 108 JDK17 sort histories.
+Selected Windows checks pass 950 original cache rows, 42 whole selector profiles,
+a complete empty DK call, eight sky-change profiles, three lighting rows and
+108 JDK17 sort histories.
 The loaded graph reaches the geometry frontier and preserves all 72 focus
 histories. After the lease-publication fix, Windows Debug ALL and all 512
 selected CTests pass in 215.93 seconds, retaining all 506 prior test names and
-adding six. Seven separate JDK/Sky device cases also pass. Local Linux builds
-have separate evidence; no local Linux tests ran for this increment. Linux
-runtime qualification is pending hosted CI. [Build and tests](Build-and-tests)
-records the compiler and host-disk details.
+adding six. Seven separate JDK/Sky device cases also pass.
+
+Qualified source checkpoint
+[`91da6e2`](https://github.com/frankischilling/minecraft-c/actions/runs/40937788071)
+passes all four hosted jobs and 1,475 tests: Windows 473/GCC 501/Clang 501,
+with zero failures or skips and every preceding hosted test name retained.
+Hosted Linux runtime passes are separate from the local build evidence; no
+local Linux runtime tests ran after host-disk exhaustion.
+[Build and tests](Build-and-tests) records exact times and the device-profile
+difference: hosted Windows executes five additions, while local Windows and
+both Linux software-GL profiles execute all six.
 
 At the preceding fog/Sky/culling checkpoint, all 506 selected Windows CTests
 pass after Debug ALL. Audio-enabled Linux GCC13/Clang18 ALL builds and 489
