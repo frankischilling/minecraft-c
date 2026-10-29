@@ -2,9 +2,9 @@
 
 The default client now executes focused mouse look and opens the source pause
 screen. Its World draw enters the real `px.a(FJ)V` pipeline and stops at the
-missing ChunkRenderer compilation at `px.a(FJ)V:396`. Colors, fog state, sky
-drawing, camera transforms and ChunkRenderer culling execute before that frontier.
-Terrain meshes,
+missing terrain submission at `px.a(FJ)V:486`. Colors, fog state, Sky drawing,
+camera transforms, culling and standard Block list compilation execute before
+that frontier. Specialized Block shapes,
 HUD composition and a playable frame remain unfinished.
 
 ## Focused mouse input
@@ -92,9 +92,11 @@ For render distance below 2 the frame invokes actual fog setup 306 and
 RenderGlobal sky 312. It then enables fog 318, performs terrain fog setup 324,
 reads ambient occlusion and applies smooth shading343 when selected. The real
 SR constructor350 calls W again; recenter 363 stores the interpolated camera
-position before the fresh App.g culling call378. The first eye then stops at
-missing ChunkRenderer compilation `n.a(Entity,boolean)` at396. Terrain, Entities,
-particles, HUD and hand work are not skipped.
+position before the fresh App.g culling call378. Dirty-chunk compilation396
+now completes for standard Block sections. The actual deadline controls further
+update calls. Draw fog449, terrain texture470/473 and standard lighting476 then
+run before missing terrain submission486. Entities, particles, HUD and hand work
+remain later dependencies.
 
 The performance deadline uses the source 200/120/40 target and Java long
 wrapping. Retained frames preserve completed fields, matrices, GL state and
@@ -191,7 +193,8 @@ operands and authored native sun/moon textures bound that comparison. See the
 
 The genuine loaded Windows graph now enters [ChunkRenderer compilation](chunk-compilation.md)
 at396 after sky, both fog setups and real culling. Selection and the genuine
-cache/list/NW prefix reach missing block geometry at n442/dk464. Its854 by 480 back-buffer capture was inspected;
+cache/list/NW path now compiles standard Block geometry and reaches terrain
+submission at PX486. Its 854 by 480 back-buffer capture was inspected;
 it shows the reached sky passes. Terrain and HUD are absent. Neither that capture
 nor the finite body/state comparisons establish a matched original gameplay
 frame. Compilation, terrain drawing, Entities, particles, HUD, hand composition

@@ -7,6 +7,7 @@ typedef struct mc_client_chunk_cache mc_client_chunk_cache;
 typedef struct mc_client_chunk_cache_error mc_client_chunk_cache_error;
 typedef struct mc_source_dk_compile mc_source_dk_compile;
 typedef struct mc_client_chunk_compile_state mc_client_chunk_compile_state;
+typedef struct mc_cv_context mc_cv_context;
 
 struct mc_client_chunk_compile_state {
     mc_client_source_dk *chunk;
@@ -14,6 +15,7 @@ struct mc_client_chunk_compile_state {
     const mc_client_chunk_cache_error *cache_failure;
     const mc_client_chunk_cache_error *cache_cleanup;
     mc_client_render_blocks renderer;
+    const mc_cv_context *render_blocks;
     unsigned int source_pc, last_store_pc;
     int32_t x, y, z, block_id, pass;
     bool active, returned, list_open, matrix_pushed, tessellator_started;

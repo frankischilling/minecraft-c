@@ -15,8 +15,10 @@ renderer/entity updates and the ordered scheduler's weather/spawn prefix.
 Focused mouse look and source pause entry now run. The hidden-window profile
 opens OZ and completes colors, fog, camera, W/SR frustum work, actual sky
 drawing, ChunkRenderer culling and [dirty-chunk selection](client/chunk-compilation.md).
-Actual ChunkCache/list compilation reaches missing RenderBlocks geometry at
-`n.a:442`, retaining `dk.a:464` under frame `px.a:396`.
+The same ChunkCache, RenderBlocks and NW now compile standard Block sections
+into source display lists. The loaded authored saved World reaches terrain
+submission at `px.a(FJ)V:486`; specialized Block shapes and TileEntity rendering
+remain missing descendants.
 Direct unpaused
 checks on that graph select an actual Biome spawn entry and reach the concrete
 Mob constructor at `cq.a:773` after gathering 289 candidate Chunks.
@@ -31,6 +33,13 @@ diagnostic title and fixed-camera World inspection.
 
 ## Current integration
 
+The [standard Block increment](client/render-blocks.md) passes six focused MSVC
+CTests, including 1,680 face/color rows, 25 flat rows, 48 AO rows and 25 Block
+color plus seven static AO-query rows. The native one-stone DK section publishes
+a 36-vertex list. The loaded UI passes 702 checks, preserves saves/resources and
+all 72 focus histories, and reaches the separate terrain-submission child at486.
+This increment has not yet completed a full ALL or hosted platform suite.
+
 The [source frame extension](client/renderer-frames.md) connects real SDK motion,
 CU smoothing, Player turning, OZ transitions and the initial World-render/fog
 pipeline, including portal/third-person camera and source frustum state.
@@ -39,12 +48,12 @@ spawning prefixes, provider maintenance, sky callbacks, time/autosave and schedu
 drain in reached source order. Its no-Player branches can return; ordinary
 spawning and random Chunk work retain concrete missing descendants.
 
-The compilation increment passes Windows MSVC Debug ALL and all 512 selected
+The preceding cache/compiler increment passes Windows MSVC Debug ALL and all 512 selected
 tests in 215.93 seconds, with zero failures/skips. Every preceding 506 test name
 is retained, with six additions. Original comparisons cover 950 cache rows,
 42 whole selector profiles, a complete empty DK call, eight sky-change profiles
-and three lighting profiles. The loaded UI reaches the real nonair geometry
-frontier while preserving saves, resources and all 72 focus histories. A final
+and three lighting profiles. That checkpoint's loaded UI reaches the earlier
+nonair geometry frontier while preserving saves, resources and all 72 focus histories. A final
 lease-refusal regression verifies that unpublished cache cells stay NULL.
 
 Hosted source checkpoint
@@ -232,7 +241,7 @@ is separate from this complete hosted baseline.
 Earlier checkpoint `6249a64` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40692181754):
 407 Windows, 423 GCC and 423 Clang cases, 1,253 total, without failures or skips.
 
-Earlier checkpoint `671c003` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40639713371):
+Earlier checkpoint `671c003` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40639702371):
 398 Windows, 414 GCC and 414 Clang cases, 1,226 total. None fail or skip.
 Formatting checks 1,164 files. The native jobs check current input bindings
 before configuration and retain their complete test suites. This checkpoint

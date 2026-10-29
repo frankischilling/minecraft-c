@@ -57,10 +57,11 @@ Frame sound, lighting, suffocation and controller interpolation are connected.
 Focused mouse look uses the actual SDK/CU/Player fields. Inactive pause entry
 constructs OZ; actual World drawing completes fog, camera, Sky and real
 ChunkRenderer culling. It now runs the dirty-chunk selector, constructs the
-actual ChunkCache and starts the source list/Tessellator. The reached failure
-is missing RenderBlocks geometry at `dk.a()V:464`, retained under
-`n.a(Lls;Z)Z:442`; the enclosing frame remains at `px.a(FJ)V:396`.
-Empty sections complete source compilation. The whole `n.e()V` sky-change
+actual ChunkCache and compiles standard Block geometry into source lists
+through the same RenderBlocks/Tessellator. Empty and standard Block sections
+complete; the loaded authored saved World reaches terrain submission at
+`px.a(FJ)V:486`. Specialized Block shapes and TileEntity rendering remain
+unfinished. The whole `n.e()V` sky-change
 callback and shared U class active use are connected. See the
 [chunk-compilation contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md).
 Whole ordinary World ticks, terrain frames and gameplay actions remain unfinished.
@@ -69,11 +70,18 @@ Create/Rename stop at `NEW162`/`NEW189`; Delete stops at preparation 21 without
 skipping its prefix. Complete World entry and gameplay remain unfinished. See the
 [World-selection contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-selection.md).
 
+The new [standard Block geometry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-blocks.md)
+passes six focused MSVC tests, including 1,680 face/color rows, 25 flat rows,
+48 AO rows, 25 Block colors and seven actual static AO queries. The loaded UI
+passes 702 checks and preserves resources, saves and all 72 focus histories
+before terrain submission at486. Its full ALL and hosted platform qualification
+remain pending; the suite totals below describe earlier checkpoints.
+
 Selected Windows checks pass 950 original cache rows, 42 whole selector profiles,
 a complete empty DK call, eight sky-change profiles, three lighting rows and
 108 JDK17 sort histories.
-The loaded UI reaches the nested geometry failure while preserving saves,
-resources and all 72 focus histories. The final Windows Debug ALL build and all
+That checkpoint's loaded UI reaches the earlier nested geometry failure
+while preserving saves, resources and all 72 focus histories. The final Windows Debug ALL build and all
 512 selected CTests pass after the lease-publication fix in 215.93 seconds.
 All 506 prior test names remain, with six additions; seven separate JDK/Sky
 device cases also pass.

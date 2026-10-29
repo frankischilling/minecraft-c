@@ -4,6 +4,7 @@
 #include "../world/test_renderer_focus.h"
 #include "client/application_state.h"
 #include "client/display/sdk_input.h"
+#include "client/display/source_surface.h"
 #include "client/display/staged.h"
 #include "client/gui/display_screen.h"
 #include "client/gui/source_pause_screen.h"
@@ -836,8 +837,8 @@ int main(int argc, char **argv) {
             CHECK(mc_client_sdk_display_active(mc_client_display_update_owner(f.app->display),
                                                &display_active,
                                                &update) == MC_CLIENT_SDK_UPDATE_OK);
-            CHECK(strcmp(f.state.source_class, "n") == 0 &&
-                  strcmp(f.state.source_method, "a") == 0 && f.state.source_pc == 442 &&
+            CHECK(strcmp(f.state.source_class, "px") == 0 &&
+                  strcmp(f.state.source_method, "a") == 0 && f.state.source_pc == 486 &&
                   f.state.world_frame != NULL && f.state.world_frame->picking_returned &&
                   f.state.world_frame->viewport_set && f.state.world_frame->fog_blend_computed &&
                   f.state.world_frame->fog_returned && f.state.world_frame->camera_returned &&
@@ -848,32 +849,30 @@ int main(int argc, char **argv) {
                   f.state.world_frame->frustum_constructed &&
                   f.state.world_frame->frustum_recentered && f.state.world_frame->culling_returned);
             const mc_client_world_frame_state *frame = f.state.world_frame;
-            CHECK(frame->source_pc == 396 && frame->update_calls >= 1 && !frame->updates_returned &&
-                  !frame->draw_fog_returned && !frame->terrain_texture_bound &&
-                  !frame->lighting_disabled && frame->update != NULL && !frame->update->active &&
-                  !frame->update->returned && frame->failure->update == frame->update->failure &&
-                  frame->update->failure->source_pc == 442 &&
-                  strcmp(frame->update->failure->source_class, "n") == 0 &&
-                  strcmp(frame->update->failure->source_descriptor, "(Lls;Z)Z") == 0 &&
-                  strcmp(frame->update->failure->child.class_name, "dk") == 0 &&
-                  frame->update->failure->child.pc == 464 &&
-                  frame->update->compile_attempts == frame->update->completed_compiles + 1);
-            const mc_client_chunk_compile_state *compile = frame->update->compilation;
-            CHECK(compile != NULL && !compile->active && !compile->returned &&
-                  compile->source_pc == 464 && compile->failure->source_pc == 464 &&
-                  strcmp(compile->failure->source_class, "dk") == 0 &&
-                  strcmp(compile->failure->source_descriptor, "()V") == 0 &&
-                  compile->failure->status == MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY &&
-                  compile->failure->native_policy && compile->chunk != NULL &&
-                  compile->chunk->fields.u && compile->pass >= 0 && compile->pass < 2 &&
-                  compile->block_id > 0 && compile->list_open && compile->matrix_pushed &&
-                  compile->tessellator_started && !compile->pass_rendered &&
-                  compile->cache != NULL && compile->cache_failure == NULL &&
-                  compile->renderer.c == compile->cache);
-            mc_client_chunk_cache_state cache;
-            CHECK(mc_client_chunk_cache_inspect(compile->cache, &cache) && cache.returned &&
-                  !cache.active && !cache.retiring && cache.d == load.world && cache.acquired > 0 &&
-                  cache.leased > 0 && cache.c != NULL);
+            CHECK(frame->source_pc == 486 && frame->update_calls >= 1 && frame->updates_returned &&
+                  frame->draw_fog_returned && frame->terrain_texture_bound &&
+                  frame->lighting_disabled && frame->update != NULL && !frame->update->active &&
+                  frame->update->returned && frame->update->failure == NULL &&
+                  frame->failure->update == NULL && frame->update->compilation == NULL &&
+                  frame->update->near_chunks == NULL && frame->update->compile_order == NULL &&
+                  frame->update->compile_attempts == frame->update->completed_compiles &&
+                  frame->failure->site.pc == 486 &&
+                  strcmp(frame->failure->child.class_name, "n") == 0 &&
+                  strcmp(frame->failure->child.descriptor, "(Lls;ID)I") == 0);
+            /* Source updates finish and retire their borrowed cache/call views.
+             * At least one real nonempty DK list has been published. */
+            size_t compiled_lists = 0;
+            for (const mc_client_source_dk *dk = frame->render_global->chunk_owners; dk != NULL;
+                 dk = dk->next) {
+                if (!dk->fields.E || dk->fields.u || dk->fields.p == NULL || dk->fields.p[0])
+                    continue;
+                mc_client_source_list_state compiled;
+                CHECK(mc_client_display_list_inspect(f.app->display, dk->fields.C, &compiled) &&
+                      compiled.defined && !compiled.building && compiled.draws > 0 &&
+                      compiled.vertices > 0);
+                ++compiled_lists;
+            }
+            CHECK(compiled_lists > 0);
             /* Observe the actual failed World frame's back buffer before
              * separate component controls change its inherited GL state. */
             const size_t prefix_length = strlen(argv[3]);

@@ -1,8 +1,49 @@
 # Test scope and reproduction
 
+## Standard Block geometry qualification
+
+The new [RenderBlocks path](client/render-blocks.md) passes six focused MSVC
+Debug CTests in 1.61 seconds: `client.chunk_compile`, `client.render_blocks_ao`,
+`client.render_blocks_faces`, `client.render_blocks_flat`,
+`client.render_block_colors` and `client.application_queries`. The replays match
+1,680 face/float-color rows, 25 whole flat calls, 48 AO calls, 25 Block colors
+and seven actual static AO queries. Four AO profiles invoke the whole
+dispatcher/standard entry with the real published Minecraft singleton,
+Settings and PX anaglyph flag. The final AO row preserves n after a later
+EW array failure; m remains true. Native rail/bed controls check bound updates
+before the remaining specialized geometry calls.
+
+An actual one-stone DK section publishes one draw with 36 expanded vertices,
+closes its batch and resets translation. The N caller clears its dirty flag.
+A following specialized-family failure preserves the completed list and the
+unfinished definition. These native device controls are separate from the
+one-row unchanged-original empty DK fixture.
+
+The loaded authored saved-World UI passes 702 checks, preserves resources and
+saves, and retains all 72 original focus histories. Actual standard Block lists
+are defined before the frame reaches missing terrain submission at
+`px.a(FJ)V:486`. Its inspected 854 by 480 back buffer still shows Sky without
+terrain or HUD. No matched original whole-frame or playable-client result is
+claimed. The eight selected Windows targets build; this increment's full ALL
+and hosted Windows/Linux qualification remain pending. Local Linux checks are
+strict syntax checks, with runtime validation reserved for hosted CI while the
+host disk has limited space.
+
+Final verification rebuilds all eight selected Windows targets. The six
+focused tests and four current-file binding checks pass together: ten tests in
+3.51 seconds, zero failures/skips. Strict Clang18 and GCC13 syntax checks pass
+for the production geometry and focused native helpers. Pinned clang-format18
+checks 1,557 source/header/fragment files. Full-suite execution remains reserved
+for hosted CI; a CTest inventory comparison confirms all 512 preceding selected
+names remain, with five new geometry/query tests. The final loaded-UI repeat
+passes 702 checks; an earlier successful repeat passes 713. These real-clock
+profiles retain their recorded frame/tick counts and the same required 72
+focus histories. Lossless NTFS compression preserves all 16 checked final
+executable/PDB hashes and recovers about 210 MB without deleting files.
+
 ## ChunkCache and compilation qualification
 
-The current source increment reaches real dirty-chunk selection and padded
+The preceding cache/compiler source increment reaches real dirty-chunk selection and padded
 cache/list/NW construction. The loaded Windows frame retains missing RenderBlocks
 geometry at n442/dk464 under frame396. Its source back buffer was inspected and
 still contains Sky without terrain or HUD. Save/resource bytes, checked cleanup
@@ -78,9 +119,10 @@ profile does not enable the device-only `client.chunk_compile` case. Both
 Linux software-GL profiles add all six cases and execute that regression.
 The local Windows profile separately executes all six additions.
 
-The current runtime and test sources match that qualified source checkpoint.
-Subsequent qualification-record edits change documentation and current file
-bindings; the four metadata lookup checks are rerun for those edits.
+That qualification describes the cache/compiler checkpoint before the standard
+Block geometry extension above. The later documentation-only head9141b2f also
+passes all four hosted jobs; its runtime bytes match91da6e2. Current geometry
+changes require their own platform qualification.
 
 The published
 fog/Sky/culling checkpoint e65860c passes all four hosted jobs and 1,458 tests:
@@ -906,7 +948,7 @@ pass counts. All selected cases run without failure or skip, Linux sanitizers
 remain enabled, and link maps exclude a second Writer archive object. This
 headless scope does not claim a full client or System.out implementation.
 
-Checkpoint `671c003` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40639713371).
+Checkpoint `671c003` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40639702371).
 Actual job logs contain 398 Windows, 414 GCC and 414 Clang Start/Passed pairs:
 1,226 total, with no failure, skip or disabled case. Formatting checks 1,164
 files. Early input preflight checks 4,085 entries covering 2,209 distinct files
@@ -1354,7 +1396,7 @@ tick and dedicated-server weather entry remain unfinished. See
 
 The subsequent camera integration passes 34 selected Windows Debug CTests and
 26 cases on each fresh sanitized Clang/GCC Debug build with leak detection.
-Its tested cohort has 1,713 files and 863 formatted C/header files. All matching
+Its tested cohort has 1,702 files and 863 formatted C/header files. All matching
 targets rebuild; the selected Windows cases include the actual client
 executable, startup, three World inspection captures, GPU drawing and the
 unchanged-original GL comparison. Source inventories and configured products
@@ -1793,7 +1835,7 @@ The SoundManager checkpoint `2c311612d78028e8ab17e454925e1d0106d4f124`
 passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40203404635).
 That earlier hosted result predates the World renderer, WAV and OpenAL backend.
 
-The nonzero sound checkpoint `aa39f8f663d250052d6d2b9cae9c691cfa7136f3`
+The nonzero sound checkpoint `aa39f8f663d250052d6d2b9cae9c691cfa7026f3`
 passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40190426923):
 229 Windows, 233 GCC and 233 Clang tests, with 695 complete Start/Passed pairs
 and no failures, skips or missing cases. Formatting covers all 658 C/header

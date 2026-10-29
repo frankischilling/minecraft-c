@@ -40,8 +40,9 @@ through weather and weighted Biome spawn selection before concrete Mob
 construction 773. Source focused mouse look and pause entry are connected.
 World-frame rendering completes colors, fog state, canonical camera, actual
 Sky programs and W/SR/DK culling. The dirty-chunk selector now constructs the
-real EW cache and begins the DK list and shared NW before missing CV geometry
-at `dk.a()V:464`, retained by `n.a(Lls;Z)Z:442` under frame `px.a(FJ)V:396`.
+real EW cache and compiles standard Block geometry through the same CV, DK
+list and NW. The loaded authored World reaches terrain submission at
+`px.a(FJ)V:486`.
 The Display owns its ordered matrix ledger; RenderModels owns the checked
 static-frustum lifetime.
 Complete presentation remains unfinished.
@@ -52,8 +53,8 @@ clears the original dirty List slots before compilation; a failed child keeps
 that prefix. The lease-publication fix keeps a normal cache cell NULL until its
 exact Store lease succeeds, so a failed getter, binding or lease preserves a
 valid partial cache. DK.u clears only after the same compiler returns. Empty sections
-complete, while nonair geometry and TileEntity rendering remain explicit
-children. Checked cleanup releases native occurrences without replaying source
+and standard Block sections complete, while specialized geometry and
+TileEntity rendering remain explicit children. Checked cleanup releases native occurrences without replaying source
 calls or compacting a failed queue. The whole sky-change callback rereads the
 live DK array, appends the same DK when A is true and u is false, then marks it dirty.
 Sky and the later frame lighting call share the actual U class buffer and its
@@ -70,6 +71,13 @@ Thirty selected Linux sanitizer cases and 86 strict compiler checks also pass;
 the private CPU-wrapper scope is recorded in [Build and tests](Build-and-tests).
 Full source run/PX rendering, shutdown
 and gameplay adoption remain unqualified.
+
+The new [standard Block geometry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-blocks.md)
+passes six focused MSVC tests, including 1,680 face/color rows, 25 flat rows,
+48 AO rows, 25 Block colors and seven actual static AO queries. The loaded UI
+passes 702 checks and preserves resources, saves and all 72 focus histories
+before terrain submission at486. Its full ALL and hosted platform qualification
+remain pending; the suite totals below describe earlier checkpoints.
 
 The selected Windows cache/compiler/callback/lighting/sort checks and all 72
 focus histories on the loaded graph pass. After the lease fix, Windows Debug

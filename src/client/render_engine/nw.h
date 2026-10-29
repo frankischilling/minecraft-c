@@ -54,6 +54,10 @@ bool mc_client_nw_translation(mc_client_tessellator *, double x, double y, doubl
                               mc_client_graphics_error *);
 bool mc_client_nw_color(mc_client_tessellator *, int32_t red, int32_t green, int32_t blue,
                         int32_t alpha, mc_client_graphics_error *);
+/* Actual nw.a(FFF)V -> a(III)V -> a(IIII)V, with binary32 *255 and Java f2i
+ * before the integer color guard/stores. It does not require an open batch. */
+bool mc_client_nw_color_float(mc_client_tessellator *, float red, float green, float blue,
+                              mc_client_graphics_error *);
 bool mc_client_nw_rgb(mc_client_tessellator *, int32_t packed_rgb, mc_client_graphics_error *);
 bool mc_client_nw_vertex(mc_client_tessellator *, double x, double y, double z,
                          mc_client_graphics_error *);

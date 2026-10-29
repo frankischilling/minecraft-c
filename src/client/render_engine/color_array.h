@@ -20,7 +20,8 @@ typedef enum mc_client_color_array_status {
     MC_CLIENT_COLOR_ARRAY_BUSY,
     MC_CLIENT_COLOR_ARRAY_NULL_REFERENCE,
     MC_CLIENT_COLOR_ARRAY_NEGATIVE_SIZE,
-    MC_CLIENT_COLOR_ARRAY_UNIMPLEMENTED
+    MC_CLIENT_COLOR_ARRAY_UNIMPLEMENTED,
+    MC_CLIENT_COLOR_ARRAY_INDEX_OUT_OF_RANGE
 } mc_client_color_array_status;
 
 typedef struct mc_client_color_array_limits {

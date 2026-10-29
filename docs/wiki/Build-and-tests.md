@@ -1,6 +1,17 @@
 # Build and tests
 
-The current [chunk-compilation increment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md)
+The new [standard Block geometry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-blocks.md)
+passes six focused MSVC Debug CTests in 1.61 seconds. Exact replays cover 1,680
+face/float-color rows, 25 flat calls, 48 AO calls, 25 Block colors and seven
+actual static AO queries. Native DK controls publish one draw with 36 expanded
+vertices and preserve that list across a following specialized-family failure.
+The loaded UI passes 702 checks, preserves saves/resources and all 72 focus
+histories, and reaches terrain submission at `px.a(FJ)V:486`. Its inspected back
+buffer still shows Sky without terrain or HUD. The new source has not yet
+completed a full ALL or hosted platform suite; the totals below qualify the
+earlier cache/compiler checkpoint.
+
+The preceding [cache/compiler checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md)
 passes selected Windows checks for 950 original ChunkCache rows, 42 whole
 selector profiles, a complete empty DK compiler call, eight sky-change profiles,
 three lighting rows and 108 JDK17 sort histories. The loaded App/World/Player graph reaches the real
@@ -310,7 +321,7 @@ behavior. The focused client cases do not establish a complete local suite,
 Linux default-directory/Session startup, original-JVM or visual correspondence,
 World entry or a playable client.
 
-Earlier hosted checkpoint `671c003` passes [all four jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40639713371):
+Earlier hosted checkpoint `671c003` passes [all four jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40639702371):
 1,226 public/JDK cases, with 398 Windows and 414 per Linux compiler. Formatting
 covers 1,164 files. The Font cleanup correction and preceding failures remain
 in the testing record.

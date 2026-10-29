@@ -131,10 +131,7 @@ bool mc_client_nw_translation(mc_client_tessellator *o, double x, double y, doub
     return leave(o, true, e);
 }
 
-bool mc_client_nw_color(mc_client_tessellator *o, int32_t r, int32_t g, int32_t b, int32_t a,
-                        mc_client_graphics_error *e) {
-    if (!enter(o, e))
-        return false;
+static void color(mc_client_tessellator *o, int32_t r, int32_t g, int32_t b, int32_t a) {
     if (!o->fields.q) {
         if (r > 255)
             r = 255;
@@ -160,6 +157,35 @@ bool mc_client_nw_color(mc_client_tessellator *o, int32_t r, int32_t g, int32_t 
         memcpy(&o->fields.k, &packed, sizeof(packed));
         o->last_store_pc = 112;
     }
+}
+
+bool mc_client_nw_color(mc_client_tessellator *o, int32_t r, int32_t g, int32_t b, int32_t a,
+                        mc_client_graphics_error *e) {
+    if (!enter(o, e))
+        return false;
+    color(o, r, g, b, a);
+    return leave(o, true, e);
+}
+
+bool mc_client_nw_color_float(mc_client_tessellator *o, float r, float g, float b,
+                              mc_client_graphics_error *e) {
+    if (!enter(o, e))
+        return false;
+    if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
+        mc_client_graphics_fail(e, MC_CLIENT_GRAPHICS_UNSUPPORTED_FP,
+                                "nw float color floating environment", site("a", "(FFF)V", 2),
+                                true);
+        return leave(o, false, e);
+    }
+    /* Actual a(FFF): three ordered fmul/f2i pairs, then a(III)16 supplies
+     * alpha255 to the SAME a(IIII)7 body. Even q=true does these conversions. */
+    const float red = _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(r), _mm_set_ss(255.0f)));
+    const int32_t ir = mc_java_float_to_i32(red);
+    const float green = _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(g), _mm_set_ss(255.0f)));
+    const int32_t ig = mc_java_float_to_i32(green);
+    const float blue = _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(b), _mm_set_ss(255.0f)));
+    const int32_t ib = mc_java_float_to_i32(blue);
+    color(o, ir, ig, ib, 255);
     return leave(o, true, e);
 }
 

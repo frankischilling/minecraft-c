@@ -16,8 +16,9 @@ renderer attachment, picking, gameplay input and
 [focused mouse look](docs/client/renderer-frames.md) run. Pause entry and ordered
 World ticks reach concrete Mob construction. World drawing now completes fog,
 sky, camera, ChunkRenderer culling and dirty-chunk selection. Real cache/list
-compilation reaches missing block geometry; dynamic terrain drawing remains
-unfinished. A separate
+compilation now emits standard Block geometry through the actual
+[RenderBlocks path](docs/client/render-blocks.md). Terrain submission, specialized
+Block shapes and dynamic frames remain unfinished. A separate
 [generated-world inspection](docs/client/world-renderer.md) remains available.
 
 ## Build

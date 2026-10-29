@@ -16,18 +16,19 @@ held-item/entity ticking, weather and real Biome spawn selection before missing
 concrete Mob construction at `cq.a:773`. Focused mouse look and source pause
 entry run. The hidden inactive frame opens OZ and completes colors, fog, camera,
 actual Sky drawing and W/SR/ChunkRenderer culling. It now enters the dirty-chunk
-selector, constructs the real ChunkCache and starts the source list and
-Tessellator before missing RenderBlocks geometry at `dk.a()V:464`, retained by
-`n.a(Lls;Z)Z:442` under frame `px.a(FJ)V:396`. Terrain drawing and gameplay
-actions remain unfinished. See the
+selector, constructs the real ChunkCache and compiles standard Blocks through
+the same RenderBlocks and Tessellator. The loaded authored saved World reaches
+missing terrain submission at `px.a(FJ)V:486`. Specialized Block shapes, terrain
+drawing and gameplay actions remain unfinished. See the
 [source frame scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/renderer-frames.md).
 The real READY renderer also
 completes [picking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/picking.md)
 through return452; existing-World ticks call it at `k:33`.
 
 Renderer attachment creates the source ChunkRenderer grid and bounding-box
-lists. Empty sections now complete source compilation; nonair geometry and
-terrain submission remain unfinished. The concrete sky-change callback runs
+lists. Empty and standard Block sections now complete source compilation;
+specialized Block shapes, TileEntity rendering and terrain submission remain
+unfinished. The concrete sky-change callback runs
 the whole `n.e()V`, and standard lighting includes the shared U class's actual
 buffer initialization. The [chunk-compilation contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md)
 records source effects, retained failures and remaining children. Skin and cloak
@@ -48,6 +49,13 @@ The loaded graph reaches the geometry frontier and preserves all 72 focus
 histories. After the lease-publication fix, Windows Debug ALL and all 512
 selected CTests pass in 215.93 seconds, retaining all 506 prior test names and
 adding six. Seven separate JDK/Sky device cases also pass.
+
+The new [standard Block geometry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-blocks.md)
+passes six focused MSVC tests, including 1,680 face/color rows, 25 flat rows,
+48 AO rows, 25 Block colors and seven actual static AO queries. The loaded UI
+passes 702 checks and preserves resources, saves and all 72 focus histories
+before terrain submission at486. Its full ALL and hosted platform qualification
+remain pending; the suite totals below describe earlier checkpoints.
 
 Qualified source checkpoint
 [`91da6e2`](https://github.com/frankischilling/minecraft-c/actions/runs/40937788071)

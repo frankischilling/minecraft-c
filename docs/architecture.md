@@ -39,7 +39,9 @@ portal/third-person and the W frustum namespace. [World colors](world/colors.md)
 feed source clear-color and Sky drawing. The canonical source program consumes
 actual fog state; W/SR and real DK bounds drive culling. [Terrain compilation
 and drawing](client/chunk-compilation.md) now select real dirty chunks and compile
-empty sections; nonair geometry remains unfinished. The inspection component
+empty and standard Block sections through the actual
+[RenderBlocks geometry](client/render-blocks.md). Specialized shapes, TileEntity
+rendering and terrain submission remain unfinished. The inspection component
 retains its separate finite scope.
 
 The [achievement notice](client/achievement-notice.md) constructs its actual

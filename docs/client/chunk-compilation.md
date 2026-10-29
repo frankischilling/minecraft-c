@@ -1,11 +1,12 @@
 # Source ChunkRenderer compilation
 
-The loaded Windows frame now enters the real dirty-chunk selector, constructs
-its padded ChunkCache and starts the actual ChunkRenderer list and Tessellator.
-It stops at the missing RenderBlocks geometry call: `n.a(Lls;Z)Z:442` retains
-`dk.a()V:464`. The enclosing frame remains at `px.a(FJ)V:396`. Empty sections
-complete compilation. Nonair terrain, TileEntity rendering and terrain submission
-remain unfinished; this does not establish a playable frame.
+The loaded authored saved-World frame runs the real dirty-chunk selector,
+constructs its padded ChunkCache and compiles standard Block geometry through
+the actual RenderBlocks and Tessellator. Empty and standard Block sections
+complete. The frame then reaches missing terrain submission at
+`px.a(FJ)V:486`. Specialized Block shapes and TileEntity rendering remain
+unfinished; this does not establish a playable frame. See the
+[RenderBlocks contract](render-blocks.md) for geometry and finite comparisons.
 
 ## Selection and source effects
 
@@ -51,8 +52,11 @@ clears the shared Chunk light marker, captures old TileEntity identities and
 clears its actual B List. It then constructs EW and CV. Empty sections execute
 the source TileEntity List operations and publish A/E; the N caller then clears u.
 Nonair work begins C+pass, compiles Push/translation/scale/translation commands,
-begins the same static NW and installs its actual translation. Missing CV or
-TileEntity eligibility calls retain this reached prefix.
+begins the same static NW and installs its actual translation. Standard
+RenderBlocks calls append four vertices per face; NW performs its source quad
+expansion. Successful passes draw, Pop, end the same list and reset translation
+before A/E publication. A missing specialized geometry or TileEntity eligibility
+child retains its reached prefix.
 
 Compiled matrix commands execute on the canonical selected matrix and stacks.
 Compilation copies operands without changing them. Failed native replay keeps
@@ -79,8 +83,11 @@ The [cache fixture](../../tests/reference/client/chunk_cache/README.md) contains
 950 unchanged-original rows. The [empty compiler fixture](../../tests/reference/client/chunk_compile/README.md)
 compares a complete real DK/EW/CV call without GL. Native controls additionally
 check real cache leases, failed-constructor access, nested source PCs, unchanged
-outputs, nonair list/NW prefixes and checked retirement. These prepared bodies
-have narrower scope than ordinary generated sections and rendered terrain.
+outputs, nonair list completion, subsequent failed-family prefixes and checked
+retirement. A one-stone section publishes 36 expanded vertices and the caller
+clears u; rail and bed controls verify bounds change before their missing mesh
+children. These prepared bodies have narrower scope than ordinary generated
+sections and rendered terrain.
 
 The [sky-change fixture](../../tests/reference/client/sky_changed/README.md)
 contains eight original profiles. [Matrix and translation observations](../../tests/reference/client/compiled_matrices/README.md)

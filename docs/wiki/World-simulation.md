@@ -28,11 +28,19 @@ retain the append-before-dirty boundary and typed callback receipts.
 
 The [client compiler](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md)
 now reads those actual dirty identities, acquires the padded EW cache and
-starts the real DK list/NW prefix. Empty sections complete. The loaded Windows
-frame stops at missing RenderBlocks geometry, `n.a(Lls;Z)Z:442` with child
-`dk.a()V:464`, under frame `px.a(FJ)V:396`. Source queue mutations and completed
-cache/list effects survive the failed child. Shared U class active use also
+compiles standard Block geometry into the real DK list/NW. Empty and
+standard Block sections complete. The loaded authored Windows World reaches
+terrain submission at `px.a(FJ)V:486`; specialized Block shapes and TileEntity
+rendering remain unfinished. Source queue mutations and completed cache/list
+effects survive a later failed child. Shared U class active use also
 precedes the source lighting disables.
+
+The new [standard Block geometry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-blocks.md)
+passes six focused MSVC tests, including 1,680 face/color rows, 25 flat rows,
+48 AO rows, 25 Block colors and seven actual static AO queries. The loaded UI
+passes 702 checks and preserves resources, saves and all 72 focus histories
+before terrain submission at486. Its full ALL and hosted platform qualification
+remain pending; the suite totals below describe earlier checkpoints.
 
 Selected Windows checks pass 950 original cache rows, 42 whole selector profiles,
 the complete empty DK call, eight sky-change profiles, three lighting rows and

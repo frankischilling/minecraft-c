@@ -5,6 +5,7 @@
 #include "../../world/runtime/runtime_internal.h"
 #include "../application_state.h"
 #include "../display/camera_surface.h"
+#include "../render/blocks/internal.h"
 #include "../render/model_graph_internal.h"
 #include "../render_engine/chunk_statistics.h"
 #include "../render_engine/internal.h"
@@ -23,6 +24,7 @@ struct mc_source_dk_compile {
     mc_client_chunk_cache *cache;
     mc_client_chunk_cache_error cache_error, cache_cleanup;
     mc_world_runtime_classes *world_classes;
+    mc_cv_context render_blocks;
     mc_tile_entity **old_tiles;
     size_t old_count;
     mc_tile_entity *tile;
@@ -210,15 +212,27 @@ static bool block(mc_source_dk_compile *c) {
         c->state.needs_later_pass = true;
         return true;
     }
-    (void)dk;
-    return fail(c, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
-                "actual RenderBlocks geometry child is not connected", 464, true);
+    bool rendered;
+    if (!mc_cv_render(&c->render_blocks, b, c->state.x, c->state.y, c->state.z, &rendered)) {
+        c->failure = c->render_blocks.failure;
+        if (c->render_blocks.depth != 0) {
+            const mc_cv_frame *f = &c->render_blocks.frames[0];
+            c->failure.child =
+                (mc_client_graphics_site){f->class_name, f->method, f->descriptor, (int32_t)f->pc};
+        }
+        if (c->render_blocks.cache_error.status != MC_CLIENT_CHUNK_CACHE_OK)
+            c->state.cache_failure = &c->render_blocks.cache_error;
+        return fail(c, c->failure.status, c->failure.operation, 464, c->failure.native_policy);
+    }
+    c->state.pass_rendered = c->state.pass_rendered | rendered;
+    c->state.source_pc = dk->source_pc = 467;
+    return true;
 }
 
 static bool finish_empty(mc_source_dk_compile *c) {
     mc_client_source_dk *dk = c->state.chunk;
-    /* No CV geometry is credited at a missing child. Every successful path
-     * currently has an empty B; the real shared F calls still dereference it. */
+    /* The real shared F calls still dereference B after geometry. TileEntity
+     * renderer dispatch remains a separate child from successful CV faces. */
     if (!shape(c, dk->fields.B, 562) || !shape(c, dk->fields.F, 584))
         return false;
     if (dk->fields.B->count != 0)
@@ -295,6 +309,13 @@ static bool body(mc_source_dk_compile *c) {
         return fail(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED, "actual RenderBlocks active use",
                     164, true);
     mc_client_render_blocks_construct_fields(&c->state.renderer, c->cache, true);
+    c->render_blocks = (mc_cv_context){.fields = &c->state.renderer,
+                                       .cache = c->cache,
+                                       .registry = c->world_classes->registry,
+                                       .models = app->render_classes,
+                                       .graphics = dk->owner->classes,
+                                       .application = app};
+    c->state.render_blocks = &c->render_blocks;
     for (c->state.pass = 0; c->state.pass < 2; ++c->state.pass) {
         c->state.needs_later_pass = false;
         c->state.pass_rendered = false;

@@ -42,8 +42,10 @@ constructs and publishes the real singleplayer controller `os`. The retained
 [World-load call](world-loading.md) completes its initial null-World change.
 Version-zero saves reach the conversion dependency at bytecode 52. Existing
 saves can construct the source World, run all 289 terrain samples and publish
-the real Player and movement input before the renderer dependency at
-World-change bytecode 220. Complete entry and gameplay remain unfinished. Create and
+the real Player and movement input. Renderer/effect attachment and view
+publication complete; the loaded authored saved World compiles standard Block
+lists before terrain submission486 remains unfinished. Complete gameplay
+remains unfinished. Create and
 Rename stop at their destination allocations, `NEW162` and `NEW189`. Delete
 stops at preparation offset 21; its earlier preparation is not skipped to reach
 a confirmation screen.
