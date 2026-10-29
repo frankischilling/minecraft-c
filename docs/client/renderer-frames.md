@@ -1,11 +1,13 @@
 # Source frame input and World drawing
 
 The default client now executes focused mouse look and opens the source pause
-screen. Its World draw enters the real `px.a(FJ)V` pipeline and stops at the
-missing terrain submission at `px.a(FJ)V:486`. Colors, fog state, Sky drawing,
-camera transforms, culling and standard Block list compilation execute before
-that frontier. Specialized Block shapes,
-HUD composition and a playable frame remain unfinished.
+screen. Its World-frame source calls real
+[terrain submission](terrain-submission.md) at `px.a(FJ)V:486` after colors,
+fog, Sky, camera, culling and standard Block list compilation. A normal N return
+continues through FLAT493 to the explicit lighting-enable dependency `u.b()`496.
+Submission is implemented but native-unverified; its build/replay and hosted
+qualification are pending. Specialized Block shapes, HUD composition and a
+playable frame remain unfinished.
 
 ## Focused mouse input
 
@@ -95,8 +97,11 @@ SR constructor350 calls W again; recenter 363 stores the interpolated camera
 position before the fresh App.g culling call378. Dirty-chunk compilation396
 now completes for standard Block sections. The actual deadline controls further
 update calls. Draw fog449, terrain texture470/473 and standard lighting476 then
-run before missing terrain submission486. Entities, particles, HUD and hand work
-remain later dependencies.
+run before real [N terrain submission](terrain-submission.md)486. The source
+connects its ordinary and occlusion paths with recenter/JO sorting and TG replay.
+After a normal N return it sets FLAT493 and reaches missing U.b496. Native
+build/replay and hosted qualification for this continuation are pending.
+Entities, particles, HUD and hand work remain later dependencies.
 
 The performance deadline uses the source 200/120/40 target and Java long
 wrapping. Retained frames preserve completed fields, matrices, GL state and
@@ -191,12 +196,13 @@ operands and authored native sun/moon textures bound that comparison. See the
 [sky fixture](../../tests/reference/client/render_global_sky/README.md) and
 [culling fixture](../../tests/reference/client/frustum_culling/README.md).
 
-The genuine loaded Windows graph now enters [ChunkRenderer compilation](chunk-compilation.md)
-at396 after sky, both fog setups and real culling. Selection and the genuine
-cache/list/NW path now compiles standard Block geometry and reaches terrain
-submission at PX486. Its 854 by 480 back-buffer capture was inspected;
-it shows the reached sky passes. Terrain and HUD are absent. Neither that capture
-nor the finite body/state comparisons establish a matched original gameplay
-frame. Compilation, terrain drawing, Entities, particles, HUD, hand composition
-and extended play remain unfinished or unqualified. The separate diagnostic
-World renderer remains outside the default source path.
+At the previous qualified standard Block checkpoint, the loaded Windows graph
+entered [ChunkRenderer compilation](chunk-compilation.md) at396 after Sky, fog
+and culling, compiled standard Block lists and reached PX486. Its inspected
+854 by 480 back buffer showed the reached Sky passes without terrain or HUD.
+Current submission source is later, native-unverified work and has no new
+loaded-frame capture. Neither the earlier capture nor finite body/state
+comparisons establish a matched original gameplay frame. Specialized geometry,
+terrain drawing, Entities, particles, HUD, hand composition and extended play
+remain unfinished or unqualified. The separate diagnostic World renderer
+remains outside the default source path.

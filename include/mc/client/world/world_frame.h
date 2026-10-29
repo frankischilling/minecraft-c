@@ -5,6 +5,7 @@
 #include "mc/client/world/frustum_culling.h"
 #include "mc/client/world/picking.h"
 #include "mc/client/world/render_global_sky.h"
+#include "mc/client/world/render_global_submit.h"
 #include "mc/client/world/render_global_update.h"
 #include "mc/client/world/renderer_camera.h"
 #include "mc/client/world/renderer_fog.h"
@@ -40,6 +41,7 @@ typedef struct mc_client_world_frame_error {
     const mc_client_render_global_sky_error *sky;
     const mc_client_culling_error *culling;
     const mc_client_render_global_error *update;
+    const mc_client_render_global_error *submission;
     const mc_client_texture_lookup_error *texture;
     const mc_client_graphics_error *lighting;
     mc_platform_nanotime_status clock;
@@ -59,6 +61,8 @@ typedef struct mc_client_world_frame_state {
     bool ambient_occlusion_read, ambient_occlusion, smooth_shade_set;
     bool frustum_constructed, frustum_recentered, culling_returned;
     bool updates_returned, draw_fog_returned, terrain_texture_bound, lighting_disabled;
+    bool terrain_returned;
+    int32_t terrain_count;
     size_t update_calls;
     int64_t last_clock, deadline_remaining;
     int32_t post_camera_render_distance;
@@ -83,6 +87,7 @@ typedef struct mc_client_world_frame_state {
     const mc_client_source_frustum_state *culler;
     const mc_client_culling_state *culling;
     const mc_client_render_global_update_state *update;
+    const mc_client_render_global_submit_state *submission;
     const mc_client_renderer_fog_state_view *draw_fog;
 } mc_client_world_frame_state;
 

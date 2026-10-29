@@ -298,8 +298,8 @@
       "sha256": "3e98b97d04a0195f05f22aac84a1805d3ae9a84ca385a283ab2f039693f8eff1"
     },
     "src/client/application_state.h": {
-      "bytes": 8202,
-      "sha256": "d66b9477b8e8b24e14e02fddf89c052af35240ab782e8d4d0f32ed2e0ce45c02"
+      "bytes": 8407,
+      "sha256": "b3b7027a8292dcc18fe909060ecbacdf3a1d724acf1706464044844771ee7503"
     },
     "src/client/display/display.h": {
       "bytes": 13727,
@@ -458,8 +458,8 @@
       "sha256": "7055aeb260c1ad7d7547f057feab23c7b8141eefa7a10771854a45bf1f55add6"
     },
     "src/client/display/occlusion.h": {
-      "bytes": 2516,
-      "sha256": "6c714fa5dd3e1b4c844d09acadc59e94fe05056c31fd603bbf68066daab7a23e"
+      "bytes": 5414,
+      "sha256": "fe9320454db23758f443d6169c21db708a7e553aa67ca749a6daf2f95d4d24c0"
     },
     "src/client/gui/source_screen.h": {
       "bytes": 14723,

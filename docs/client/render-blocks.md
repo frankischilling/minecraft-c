@@ -4,11 +4,13 @@ The actual ChunkRenderer compiler now calls RenderBlocks through
 `dk.a()V:464`. Standard blocks execute the `cv.b -> cv.l` path, sample the
 same ChunkCache, and append geometry to the real NW Tessellator. A native
 one-stone section completes its display list with 36 expanded vertices, then
-the N caller clears that DK's dirty flag. The loaded authored saved World now
-reaches `px.a(FJ)V:486`, the terrain-submission call.
+the N caller clears that DK's dirty flag. Current frame source invokes real
+[terrain submission](terrain-submission.md) at `px.a(FJ)V:486`; a normal N return
+continues to the explicit U.b496 lighting-enable dependency.
 
-Terrain submission and the rest of the frame remain unfinished. These changes
-do not establish a complete rendered frame or matched original pixels.
+Submission is implemented but native-unverified. Native build/replay and hosted
+qualification are pending. The remaining frame children are unfinished, and
+these changes establish no complete rendered frame or matched original pixels.
 
 ## Dispatcher and standard blocks
 
@@ -109,12 +111,13 @@ Their native runners compare the declared fields and vertex words exactly.
 | [Ambient occlusion](../../tests/reference/client/render_blocks_ao/README.md) | 48 | Whole AO calls and retained fields, including four complete dispatcher/standard entries with AO and anaglyph profiles |
 | [Chunk compilation](../../tests/reference/client/chunk_compile/README.md) | 1 original row | Empty whole DK call; separate native controls cover real nonempty list completion and a remaining-family failure |
 
-All six focused MSVC CTests pass, including all the finite rows above and
-the native DK controls. The loaded UI passes 702 checks, preserves resources and
-saves, and retains all 72 focus histories. Hosted [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797)
-passes all four jobs and 1,490 tests: Windows 478/GCC 506/Clang 506, zero failures
-or skips and no preceding hosted test names dropped. The current runtime and
-test sources remain that qualified checkpoint; later record edits update
-documentation and file bindings. Historical suite totals qualify their earlier
-checkpoints. See [ChunkRenderer compilation](chunk-compilation.md)
+At the previous [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797),
+all six focused MSVC CTests passed, including the finite rows above and native
+DK controls. The loaded UI passed 702 checks, preserved resources and saves,
+and retained all 72 focus histories. That checkpoint passed all four hosted
+jobs and 1,490 tests: Windows 478/GCC 506/Clang 506, zero failures or skips and
+no preceding hosted test names dropped. The runtime and test sources qualified
+there were those of 6ccdc82; current submission source has separate qualification
+pending. Historical suite totals qualify their earlier checkpoints. See
+[ChunkRenderer compilation](chunk-compilation.md)
 for the selector and cache ownership that this geometry path uses.

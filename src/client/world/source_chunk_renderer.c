@@ -72,14 +72,82 @@ bool mc_source_dk_clear(mc_client_source_dk *o, mc_client_render_global_error *e
 }
 
 bool mc_source_dk_close(mc_client_source_dk *o, mc_client_render_global_error *e) {
-    if (!mc_source_dk_clear(o, e))
+    if (!mc_source_dk_clear(o, e)) {
+        e->parent = (mc_client_graphics_site){"dk", "c", "()V", 1};
+        o->owner->failure = *e;
         return false;
+    }
     mc_world_runtime *previous = o->world_held ? o->fields.a : NULL;
     o->fields.a = NULL; /* Actual c() putfield6, after b()1. */
     o->world_held = false;
     o->last_store_pc = 6;
     o->source_pc = 9;
     mc_world_runtime_binding_release(previous);
+    return true;
+}
+
+bool mc_source_dk_render_list(mc_client_source_dk *o, int32_t pass, int32_t *out,
+                              mc_client_render_global_error *e) {
+    if (o == NULL || out == NULL || e == NULL)
+        return false; /* Internal entered-leaf argument contract. */
+    if (!o->fields.o) {
+        *out = -1;
+        o->source_pc = 8;
+        return true;
+    }
+    if (o->fields.p == NULL)
+        return fail(o, e, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE, "actual DK pass array", "a",
+                    "(I)I", 14, false);
+    if (pass < 0 || pass >= 2) {
+        mc_client_graphics_fail(&e->graphics, MC_CLIENT_GRAPHICS_ARRAY_INDEX,
+                                "actual DK pass array index",
+                                (mc_client_graphics_site){"dk", "a", "(I)I", 14}, false);
+        e->graphics.actual_index = pass;
+        e->child = e->graphics.site;
+        return fail(o, e, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED, "actual DK pass array index",
+                    "a", "(I)I", 14, false);
+    }
+    if (o->fields.p[pass]) {
+        *out = -1;
+        o->source_pc = 26;
+    } else {
+        *out = mc_java_i32_add(o->fields.C, pass);
+        o->source_pc = 24;
+    }
+    return true;
+}
+
+bool mc_source_dk_empty(mc_client_source_dk *o, bool *out, mc_client_render_global_error *e) {
+    if (o == NULL || out == NULL || e == NULL)
+        return false;
+    if (!o->fields.E) {
+        *out = false;
+        o->source_pc = 8;
+        return true;
+    }
+    if (o->fields.p == NULL)
+        return fail(o, e, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE, "actual DK empty pass array", "e",
+                    "()Z", 14, false);
+    *out = o->fields.p[0] && o->fields.p[1];
+    o->source_pc = 32;
+    return true;
+}
+
+bool mc_source_dk_call_bounds(mc_client_source_dk *o, mc_client_render_global_error *e) {
+    if (o == NULL || e == NULL)
+        return false;
+    const int32_t id = mc_java_i32_add(o->fields.C, 2);
+    o->source_pc = 6;
+    if (!mc_client_display_lists_call(o->owner->display, &id, 1, &e->display))
+        return fail(o, e,
+                    e->display.status == MC_CLIENT_DISPLAY_BUSY ? MC_CLIENT_RENDER_GLOBAL_BUSY
+                    : e->display.status == MC_CLIENT_DISPLAY_UNSUPPORTED_FP
+                        ? MC_CLIENT_RENDER_GLOBAL_UNSUPPORTED_FP
+                    : e->display.status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL
+                        ? MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY
+                        : MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
+                    e->display.operation, "d", "()V", 6, true);
+    o->source_pc = 9;
     return true;
 }
 
@@ -96,8 +164,11 @@ bool mc_source_dk_position(mc_client_source_dk *o, int32_t x, int32_t y, int32_t
         o->source_pc = 24;
         return true;
     }
-    if (!mc_source_dk_clear(o, e))
+    if (!mc_source_dk_clear(o, e)) {
+        e->parent = (mc_client_graphics_site){"dk", "a", "(III)V", 26};
+        o->owner->failure = *e;
         return false;
+    }
     f->c = x;
     o->last_store_pc = 31;
     f->d = y;
@@ -250,17 +321,31 @@ failed:
     return false;
 }
 
+static mc_client_render_global_status retire_bounds(mc_client_source_dk *o, mc_entity_bounds **slot,
+                                                    const char *operation,
+                                                    mc_client_render_global_error *e) {
+    if (*slot == NULL)
+        return MC_CLIENT_RENDER_GLOBAL_OK;
+    client_application *app = o->owner->fields.t;
+    if (app == NULL || app->entities == NULL) {
+        e->bounds.status = MC_ENTITY_INVALID_PHASE;
+        return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED,
+                                            "DK retained bounds require actual Entities owner",
+                                            NULL, NULL, NULL, 0, true);
+    }
+    e->bounds.status = mc_entity_bounds_release(app->entities, *slot);
+    if (e->bounds.status != MC_ENTITY_OK)
+        return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED, operation,
+                                            NULL, NULL, NULL, 0, true);
+    *slot = NULL;
+    return MC_CLIENT_RENDER_GLOBAL_OK;
+}
+
 mc_client_render_global_status mc_source_dk_native_retire(mc_client_source_dk *o,
                                                           mc_client_render_global_error *e) {
-    mc_entity_classes *classes = o->owner->fields.t->entities;
-    if (o->displaced_bounds != NULL) {
-        e->bounds.status = mc_entity_bounds_release(classes, o->displaced_bounds);
-        if (e->bounds.status != MC_ENTITY_OK)
-            return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED,
-                                                "DK displaced bounds native cleanup", NULL, NULL,
-                                                NULL, 0, true);
-        o->displaced_bounds = NULL;
-    }
+    if (retire_bounds(o, &o->displaced_bounds, "DK displaced bounds native cleanup", e) !=
+        MC_CLIENT_RENDER_GLOBAL_OK)
+        return e->status;
     if (o->list_open) {
         if (!mc_client_display_lists_abort(o->owner->display, mc_java_i32_add(o->fields.C, 2),
                                            &e->cleanup_display))
@@ -270,22 +355,12 @@ mc_client_render_global_status mc_source_dk_native_retire(mc_client_source_dk *o
         o->list_open = false;
         o->owner->open_list = 0;
     }
-    if (o->pending_pooled_bounds != NULL) {
-        e->bounds.status = mc_entity_bounds_release(classes, o->pending_pooled_bounds);
-        if (e->bounds.status != MC_ENTITY_OK)
-            return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED,
-                                                "DK local bounds native cleanup", NULL, NULL, NULL,
-                                                0, true);
-        o->pending_pooled_bounds = NULL;
-    }
-    if (o->fields.v != NULL) {
-        e->bounds.status = mc_entity_bounds_release(classes, o->fields.v);
-        if (e->bounds.status != MC_ENTITY_OK)
-            return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED,
-                                                "DK field bounds native cleanup", NULL, NULL, NULL,
-                                                0, true);
-        o->fields.v = NULL;
-    }
+    if (retire_bounds(o, &o->pending_pooled_bounds, "DK local bounds native cleanup", e) !=
+        MC_CLIENT_RENDER_GLOBAL_OK)
+        return e->status;
+    if (retire_bounds(o, &o->fields.v, "DK field bounds native cleanup", e) !=
+        MC_CLIENT_RENDER_GLOBAL_OK)
+        return e->status;
     if (o->world_held) {
         mc_world_runtime_binding_release(o->fields.a);
         o->world_held = false;

@@ -838,7 +838,7 @@ int main(int argc, char **argv) {
                                                &display_active,
                                                &update) == MC_CLIENT_SDK_UPDATE_OK);
             CHECK(strcmp(f.state.source_class, "px") == 0 &&
-                  strcmp(f.state.source_method, "a") == 0 && f.state.source_pc == 486 &&
+                  strcmp(f.state.source_method, "a") == 0 && f.state.source_pc == 496 &&
                   f.state.world_frame != NULL && f.state.world_frame->picking_returned &&
                   f.state.world_frame->viewport_set && f.state.world_frame->fog_blend_computed &&
                   f.state.world_frame->fog_returned && f.state.world_frame->camera_returned &&
@@ -849,19 +849,29 @@ int main(int argc, char **argv) {
                   f.state.world_frame->frustum_constructed &&
                   f.state.world_frame->frustum_recentered && f.state.world_frame->culling_returned);
             const mc_client_world_frame_state *frame = f.state.world_frame;
-            CHECK(frame->source_pc == 486 && frame->update_calls >= 1 && frame->updates_returned &&
+            CHECK(frame->source_pc == 496 && frame->update_calls >= 1 && frame->updates_returned &&
                   frame->draw_fog_returned && frame->terrain_texture_bound &&
                   frame->lighting_disabled && frame->update != NULL && !frame->update->active &&
                   frame->update->returned && frame->update->failure == NULL &&
                   frame->failure->update == NULL && frame->update->compilation == NULL &&
                   frame->update->near_chunks == NULL && frame->update->compile_order == NULL &&
                   frame->update->compile_attempts == frame->update->completed_compiles &&
-                  frame->failure->site.pc == 486 &&
-                  strcmp(frame->failure->child.class_name, "n") == 0 &&
-                  strcmp(frame->failure->child.descriptor, "(Lls;ID)I") == 0);
+                  frame->terrain_returned && frame->submission != NULL &&
+                  frame->submission->returned && frame->submission->source_pc == 896 &&
+                  frame->submission->result == frame->terrain_count &&
+                  frame->submission->dirty_polls == 10 && frame->submission->subsets >= 1 &&
+                  frame->submission->frames == NULL && frame->submission->rebuild == NULL &&
+                  frame->submission->failure == NULL && frame->submission->cleanup == NULL &&
+                  frame->submission->owner == NULL && frame->submission->camera == NULL &&
+                  frame->submission->batch_camera == NULL && frame->submission->math == NULL &&
+                  !frame->submission->matrix_pushed && !frame->submission->query_active &&
+                  frame->failure->site.pc == 496 &&
+                  strcmp(frame->failure->child.class_name, "u") == 0 &&
+                  strcmp(frame->failure->child.method, "b") == 0 &&
+                  strcmp(frame->failure->child.descriptor, "()V") == 0);
             /* Source updates finish and retire their borrowed cache/call views.
-             * At least one real nonempty DK list has been published. */
-            size_t compiled_lists = 0;
+             * The following submission may recenter those SAME DKs, which
+             * invalidates their earlier geometry until a later source update. */
             for (const mc_client_source_dk *dk = frame->render_global->chunk_owners; dk != NULL;
                  dk = dk->next) {
                 if (!dk->fields.E || dk->fields.u || dk->fields.p == NULL || dk->fields.p[0])
@@ -870,9 +880,7 @@ int main(int argc, char **argv) {
                 CHECK(mc_client_display_list_inspect(f.app->display, dk->fields.C, &compiled) &&
                       compiled.defined && !compiled.building && compiled.draws > 0 &&
                       compiled.vertices > 0);
-                ++compiled_lists;
             }
-            CHECK(compiled_lists > 0);
             /* Observe the actual failed World frame's back buffer before
              * separate component controls change its inherited GL state. */
             const size_t prefix_length = strlen(argv[3]);

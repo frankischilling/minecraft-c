@@ -9,6 +9,7 @@
 #include "mc/client/sound/sound.h"
 #include "mc/client/world/render_global.h"
 #include "mc/core/java/java.h"
+#include "mc/core/math/classes.h"
 #include "mc/entity/bounds/bounds.h"
 
 typedef struct mc_render_global_access mc_render_global_access;
@@ -25,7 +26,7 @@ struct mc_client_render_global_error {
     mc_client_graphics_error graphics, cleanup_graphics;
     mc_client_cx_error cx;
     mc_client_display_error display, cleanup_display;
-    mc_client_graphics_site parent, child;
+    mc_client_graphics_site ancestor, parent, child;
     mc_world_storage_error world;
     mc_client_manager_error manager;
     mc_client_model_error model;
@@ -34,6 +35,7 @@ struct mc_client_render_global_error {
     mc_sound_error sound;
     mc_entity_error entity;
     mc_player_error player;
+    mc_math_class_error math;
     const mc_client_image_download_error *image_download;
     const mc_client_image_buffer_error *image_buffer;
 };
@@ -66,12 +68,13 @@ struct mc_client_render_global {
     struct mc_client_render_global_sky_call *sky_call;
     struct mc_client_culling_call *cull_call;
     struct mc_client_render_global_update_call *update_call;
+    struct mc_client_render_global_submit_call *submit_call;
     mc_world_runtime *world_occurrence;         /* Independent occurrence backing actual k. */
     mc_world_runtime *manager_world_occurrence; /* Captured TH publication cleanup right. */
     mc_client_render_manager *world_manager;
     mc_render_global_cv *cv_owners;
     mc_client_source_dk *chunk_owners;
-    size_t o_length, n_length;
+    size_t o_length, n_length, t_length;
     bool world_retiring;
 };
 

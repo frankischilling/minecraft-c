@@ -34,7 +34,9 @@ typedef enum mc_client_render_global_status {
     MC_CLIENT_RENDER_GLOBAL_UNSUPPORTED_FP,
     MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
     MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED,
-    MC_CLIENT_RENDER_GLOBAL_SOURCE_ILLEGAL_ARGUMENT
+    MC_CLIENT_RENDER_GLOBAL_SOURCE_ILLEGAL_ARGUMENT,
+    MC_CLIENT_RENDER_GLOBAL_SOURCE_ARITHMETIC,
+    MC_CLIENT_RENDER_GLOBAL_SOURCE_INDEX
 } mc_client_render_global_status;
 
 /* These are the actual n fields, not diagnostic world-renderer storage.
@@ -70,6 +72,8 @@ typedef struct mc_client_render_batch_state {
     const mc_client_direct_int_buffer *g;
     bool h, i;
     unsigned int last_store_pc;
+    unsigned int source_pc;
+    bool matrix_pushed; /* Retained native prefix of the actual TG draw body. */
 } mc_client_render_batch_state;
 
 typedef struct mc_client_render_global_state {

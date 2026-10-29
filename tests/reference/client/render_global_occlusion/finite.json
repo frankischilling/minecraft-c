@@ -1,0 +1,18 @@
+{
+  "rows": [
+    "POLL empty_null_array OK 00,11,10 -1 -1",
+    "POLL reverse_null_array OK 00,11,10 1 1",
+    "POLL null_array NULL 00,11,10 -1 -1",
+    "POLL empty_array INDEX 00,11,10 1 1",
+    "POLL negative_index INDEX 00,11,10 1 1",
+    "POLL past_end INDEX 00,11,10 1 1",
+    "POLL null_cell NULL 00,11,10 1 1",
+    "POLL idle_null_buffer OK 00,11,10 -1 -1",
+    "POLL two_idle_null_buffer OK 00,11,10 -1 -1",
+    "POLL idle_then_null NULL 00,11,10 1 1",
+    "POLL waiting_null_buffer NULL 00,11,10 -1 -1",
+    "POLL idle_then_waiting_null_buffer NULL 00,11,10 -1 -1",
+    "POLL skipped_waiting OK 00,11,10 1 1",
+    "POLL initial16_unclamped INDEX 00,11,10 1 1"
+  ]
+}

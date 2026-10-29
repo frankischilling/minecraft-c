@@ -85,6 +85,7 @@ struct mc_client_display {
     mc_client_display_stage_error stage_failure;
     uint64_t native_context_generation;
     display_occlusion_capability occlusion;
+    mc_client_display_active_query *active_query;
 };
 
 /* The real source SDK is process-wide and admits one window. Diagnostic

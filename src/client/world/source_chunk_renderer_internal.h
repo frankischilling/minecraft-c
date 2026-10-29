@@ -24,6 +24,12 @@ bool mc_source_dk_position(mc_client_source_dk *, int32_t, int32_t, int32_t,
                            mc_client_render_global_error *);
 bool mc_source_dk_clear(mc_client_source_dk *, mc_client_render_global_error *);
 bool mc_source_dk_close(mc_client_source_dk *, mc_client_render_global_error *);
+/* Whole entered dk.a(I)I, e()Z and d()V leaves. No class activation or
+ * compilation is implied. Caller retains the real N/DK/Display graph. */
+bool mc_source_dk_render_list(mc_client_source_dk *, int32_t pass, int32_t *out,
+                              mc_client_render_global_error *);
+bool mc_source_dk_empty(mc_client_source_dk *, bool *out, mc_client_render_global_error *);
+bool mc_source_dk_call_bounds(mc_client_source_dk *, mc_client_render_global_error *);
 void mc_source_dk_dirty(mc_client_source_dk *);
 mc_client_render_global_status mc_source_dk_native_retire(mc_client_source_dk *,
                                                           mc_client_render_global_error *);

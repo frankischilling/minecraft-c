@@ -40,8 +40,12 @@ feed source clear-color and Sky drawing. The canonical source program consumes
 actual fog state; W/SR and real DK bounds drive culling. [Terrain compilation
 and drawing](client/chunk-compilation.md) now select real dirty chunks and compile
 empty and standard Block sections through the actual
-[RenderBlocks geometry](client/render-blocks.md). Specialized shapes, TileEntity
-rendering and terrain submission remain unfinished. The inspection component
+[RenderBlocks geometry](client/render-blocks.md). The frame source invokes real
+[terrain submission](client/terrain-submission.md) at PX486. Its N selection,
+recenter/JO, TG buffers and ARB queries use the same retained owners; a normal
+return reaches the explicit lighting-enable dependency U.b496. Native
+build/replay and hosted qualification for submission are pending. Specialized
+shapes and TileEntity rendering remain unfinished. The inspection component
 retains its separate finite scope.
 
 The [achievement notice](client/achievement-notice.md) constructs its actual

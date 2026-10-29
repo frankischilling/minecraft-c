@@ -59,9 +59,12 @@ constructs OZ; actual World drawing completes fog, camera, Sky and real
 ChunkRenderer culling. It now runs the dirty-chunk selector, constructs the
 actual ChunkCache and compiles standard Block geometry into source lists
 through the same RenderBlocks/Tessellator. Empty and standard Block sections
-complete; the loaded authored saved World reaches terrain submission at
-`px.a(FJ)V:486`. Specialized Block shapes and TileEntity rendering remain
-unfinished. The whole `n.e()V` sky-change
+complete. Current frame source invokes real
+[terrain submission](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terrain-submission.md)
+at `px.a(FJ)V:486`; a normal N return reaches the explicit U.b496 lighting-enable
+dependency. Submission is implemented but native-unverified; build/replay and
+hosted qualification are pending. Specialized Block shapes and TileEntity
+rendering remain unfinished. The whole `n.e()V` sky-change
 callback and shared U class active use are connected. See the
 [chunk-compilation contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md).
 Whole ordinary World ticks, terrain frames and gameplay actions remain unfinished.
@@ -70,16 +73,17 @@ Create/Rename stop at `NEW162`/`NEW189`; Delete stops at preparation 21 without
 skipping its prefix. Complete World entry and gameplay remain unfinished. See the
 [World-selection contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-selection.md).
 
-The new [standard Block geometry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-blocks.md)
-passes six focused MSVC tests, including 1,680 face/color rows, 25 flat rows,
+At the previous [standard Block geometry checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-blocks.md),
+six focused MSVC tests passed, including 1,680 face/color rows, 25 flat rows,
 48 AO rows, 25 Block colors and seven actual static AO queries. The loaded UI
-passes 702 checks and preserves resources, saves and all 72 focus histories
-before terrain submission at 486. Hosted [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797)
-passes all four jobs and 1,490 tests (Windows 478/GCC 506/Clang 506), zero failures
-or skips. Every preceding hosted name remains; five new geometry/query tests
-run on each platform. The current runtime/test sources match that qualified
-checkpoint; subsequent record edits change documentation and file bindings.
-The remaining suite totals below describe earlier checkpoints.
+passed 702 checks and preserved resources, saves and all 72 focus histories
+before submission was connected at PX486. Hosted [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797)
+passed all four jobs and 1,490 tests (Windows 478/GCC 506/Clang 506), zero failures
+or skips. Every preceding hosted name remained, with five additions per
+platform. That record's runtime/test sources were those of 6ccdc82; its later
+record edits changed documentation and file bindings. Current submission work
+has separate qualification pending. Remaining suite totals describe earlier
+checkpoints.
 
 Selected Windows checks pass 950 original cache rows, 42 whole selector profiles,
 a complete empty DK call, eight sky-change profiles, three lighting rows and

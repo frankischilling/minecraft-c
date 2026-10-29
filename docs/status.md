@@ -16,9 +16,12 @@ Focused mouse look and source pause entry now run. The hidden-window profile
 opens OZ and completes colors, fog, camera, W/SR frustum work, actual sky
 drawing, ChunkRenderer culling and [dirty-chunk selection](client/chunk-compilation.md).
 The same ChunkCache, RenderBlocks and NW now compile standard Block sections
-into source display lists. The loaded authored saved World reaches terrain
-submission at `px.a(FJ)V:486`; specialized Block shapes and TileEntity rendering
-remain missing descendants.
+into source display lists. Current frame source invokes real
+[terrain submission](client/terrain-submission.md) at `px.a(FJ)V:486`.
+A normal N return continues through FLAT shading493 to the explicit `u.b()`
+lighting-enable dependency at496. This submission increment is implemented
+but native-unverified; specialized Block shapes and TileEntity rendering remain
+missing descendants.
 Direct unpaused
 checks on that graph select an actual Biome spawn entry and reach the concrete
 Mob constructor at `cq.a:773` after gathering 289 candidate Chunks.
@@ -33,14 +36,22 @@ diagnostic title and fixed-camera World inspection.
 
 ## Current integration
 
-The [standard Block increment](client/render-blocks.md) passes six focused MSVC
+The [terrain-submission increment](client/terrain-submission.md) implements the
+whole N outer/subset paths, recenter/JO sorting, TG list replay and ARB query
+operations on the retained graph. Finite original component observations are
+available, alongside 12 whole-N CPU failure profiles and seven device profiles
+with 35 exact rows. Native build/replay and
+hosted qualification are pending. No new loaded-frame or pixel result is claimed.
+
+At the previous [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797),
+the [standard Block increment](client/render-blocks.md) passed six focused MSVC
 CTests, including 1,680 face/color rows, 25 flat rows, 48 AO rows and 25 Block
-color plus seven static AO-query rows. The native one-stone DK section publishes
-a 36-vertex list. The loaded UI passes 702 checks, preserves saves/resources and
-all 72 focus histories, and reaches the separate terrain-submission child at 486.
-Hosted [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797) passes all four jobs and 1,490 tests:
-Windows 478/GCC 506/Clang 506, zero failures/skips. Every preceding hosted
-test name remains, with five additions per platform.
+color plus seven static AO-query rows. A one-stone DK section published a
+36-vertex list. The loaded UI passed 702 checks, preserved saves/resources and
+all 72 focus histories, and reached PX486 before submission was connected.
+That checkpoint passed all four hosted jobs and 1,490 tests: Windows 478/GCC
+506/Clang 506, zero failures/skips. Every preceding hosted test name remained,
+with five additions per platform.
 
 The [source frame extension](client/renderer-frames.md) connects real SDK motion,
 CU smoothing, Player turning, OZ transitions and the initial World-render/fog

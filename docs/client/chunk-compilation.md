@@ -3,9 +3,12 @@
 The loaded authored saved-World frame runs the real dirty-chunk selector,
 constructs its padded ChunkCache and compiles standard Block geometry through
 the actual RenderBlocks and Tessellator. Empty and standard Block sections
-complete. The frame then reaches missing terrain submission at
-`px.a(FJ)V:486`. Specialized Block shapes and TileEntity rendering remain
-unfinished; this does not establish a playable frame. See the
+complete. Current frame source calls real
+[terrain submission](terrain-submission.md) at `px.a(FJ)V:486`; a normal N return
+continues to the explicit U.b496 lighting-enable dependency. Submission is
+implemented but native-unverified, with build/replay and hosted qualification
+pending. Specialized Block shapes and TileEntity rendering remain unfinished;
+this does not establish a playable frame. See the
 [RenderBlocks contract](render-blocks.md) for geometry and finite comparisons.
 
 ## Selection and source effects
@@ -93,8 +96,10 @@ The [sky-change fixture](../../tests/reference/client/sky_changed/README.md)
 contains eight original profiles. [Matrix and translation observations](../../tests/reference/client/compiled_matrices/README.md)
 and the [lighting fixture](../../tests/reference/client/lighting/README.md)
 separately qualify their declared class, method and
-device scopes. The loaded frame's captured back buffer still contains Sky
-without terrain or HUD. Full matched original frames remain unqualified.
+device scopes. The preceding standard Block checkpoint's captured back buffer
+contains Sky without terrain or HUD. There is no new loaded-frame result for
+the native-unverified submission increment. Full matched original frames remain
+unqualified.
 
 The [object-sort regression](../../tests/reference/client/render_global_update_sort/README.md)
 checks 108 authored JDK17 cases, including every comparison and final or partial

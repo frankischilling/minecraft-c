@@ -1,18 +1,27 @@
 # Build and tests
 
-The new [standard Block geometry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-blocks.md)
-passes six focused MSVC Debug CTests in 1.61 seconds. Exact replays cover 1,680
+The [terrain-submission increment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terrain-submission.md)
+implements N outer/subset paths, recenter/JO, TG buffers and ARB query operations.
+Current frame source calls real N at PX486; a normal return reaches the explicit
+U.b496 dependency. Native build/replay and hosted qualification are pending,
+and whole-N originals cover 12 CPU failure profiles plus seven device profiles
+with 35 exact rows. No new loaded-frame or
+pixel result is claimed.
+
+The following [standard Block geometry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-blocks.md)
+results belong to the previous checkpoint `6ccdc82`. Six focused MSVC Debug CTests
+passed in 1.61 seconds. Exact replays covered 1,680
 face/float-color rows, 25 flat calls, 48 AO calls, 25 Block colors and seven
-actual static AO queries. Native DK controls publish one draw with 36 expanded
-vertices and preserve that list across a following specialized-family failure.
-The loaded UI passes 702 checks, preserves saves/resources and all 72 focus
-histories, and reaches terrain submission at `px.a(FJ)V:486`. Its inspected back
-buffer still shows Sky without terrain or HUD. Hosted [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797)
-passes all four jobs and 1,490 tests: Windows 478 in 338.57 seconds, GCC 506
-in 200.46 seconds and Clang 506 in 365.99 seconds. There are zero failures/skips,
+actual static AO queries. Native DK controls published one draw with 36 expanded
+vertices and preserved it across a following specialized-family failure.
+The loaded UI passed 702 checks, preserved saves/resources and all 72 focus
+histories, and reached PX486 before submission was connected. Its inspected
+back buffer showed Sky without terrain or HUD. Hosted [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797)
+passed all four jobs and 1,490 tests: Windows 478 in 338.57 seconds, GCC 506
+in 200.46 seconds and Clang 506 in 365.99 seconds. There were zero failures/skips,
 no dropped preceding test names and five additions per platform. Formatting
-checks 1,557 files. Runtime/test sources remain that qualified checkpoint;
-subsequent record edits change only documentation and current bindings. The
+checked 1,557 files. Runtime/test sources qualified there were those of `6ccdc82`;
+subsequent record edits changed documentation and bindings. The
 remaining totals below qualify the earlier cache/compiler checkpoint.
 
 The preceding [cache/compiler checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md)

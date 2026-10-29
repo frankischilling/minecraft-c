@@ -1,5 +1,22 @@
 # Test scope and reproduction
 
+## Terrain submission implementation, qualification pending
+
+Current source implements [N terrain submission](client/terrain-submission.md),
+including its outer/subset methods, recenter/JO, TG buffers and ARB query paths.
+The frame calls real N at PX486; a normal return continues to FLAT493 and the
+explicit U.b496 lighting-enable dependency. Native build/replay and hosted
+qualification for this increment are pending. Component original observations
+retain their declared scopes. Whole-N originals cover 12 CPU failure profiles
+and seven device profiles with 35 exact rows, including the real-capability
+16-entry occlusion branch and its subsequent empty range.
+No new loaded-frame, pixel or gameplay result is recorded here.
+
+The following standard Block section records the previous checkpoint
+6ccdc82 and its 1,490 passed tests. Its PX486 stopping point, back-buffer capture
+and suite totals describe that checkpoint. Historical qualifications below
+keep their own source and execution scopes.
+
 ## Standard Block geometry qualification
 
 The new [RenderBlocks path](client/render-blocks.md) passes six focused MSVC
@@ -56,9 +73,10 @@ client.render_blocks_ao, client.render_blocks_faces and client.render_blocks_fla
 Formatting checks all 1,557 files. The Windows hosted profile still excludes
 the device-only client.chunk_compile; local Windows and both Linux software-GL
 profiles execute it. Linux runtime passes are hosted evidence, separate from
-local syntax checks and earlier disk-repair builds. This qualification-record
-update changes documentation and current file bindings; runtime and test
-sources remain exactly 6ccdc82.
+local syntax checks and earlier disk-repair builds. That qualification-record
+update changed documentation and file bindings; its runtime and test sources
+were exactly 6ccdc82. Terrain submission is later source work with qualification
+pending above.
 
 ## ChunkCache and compilation qualification
 

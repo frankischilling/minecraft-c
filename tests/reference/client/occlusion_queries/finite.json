@@ -1,0 +1,8 @@
+{
+  "driver": "QUERY_DRIVER NVIDIA Corporation | NVIDIA GeForce RTX 3060/PCIe/SSE2 | 4.6.0 NVIDIA 581.42",
+  "capability": "QUERY_CAPABILITY 1",
+  "rows": [
+    "QUERY_EMPTY 0 0 1 2 1",
+    "QUERY_VISIBLE 0 5503680 32 1 2 1"
+  ]
+}

@@ -119,6 +119,7 @@ static bool construct(mc_client_render_global *o, client_application *app,
         o->last_constructor_pc = stores[index];
     }
     o->fields.T = o->pending_T;
+    o->t_length = 4;
     o->pending_T = NULL;
     o->last_store_pc = 119;
     o->fields.d = 0;

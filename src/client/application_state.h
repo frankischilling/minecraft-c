@@ -163,6 +163,9 @@ struct client_application {
     mc_client_application_construction *construction;
     mc_client_application_constructor_phase constructor_phase;
     mc_client_application_classes *source_namespace;
+    /* Borrowed canonical bootstrap namespace, never a copied sine table or
+     * Minecraft source field. Bootstrap keeps it live through App teardown. */
+    struct mc_math_classes *source_math_classes;
     bool source_namespace_borrowed;
     /* Native startup-call lifetime; borrows this actual App until retirement. */
     mc_client_application_startup *startup;

@@ -41,8 +41,11 @@ construction 773. Source focused mouse look and pause entry are connected.
 World-frame rendering completes colors, fog state, canonical camera, actual
 Sky programs and W/SR/DK culling. The dirty-chunk selector now constructs the
 real EW cache and compiles standard Block geometry through the same CV, DK
-list and NW. The loaded authored World reaches terrain submission at
-`px.a(FJ)V:486`.
+list and NW. Current frame source invokes real
+[terrain submission](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terrain-submission.md)
+at `px.a(FJ)V:486`, using the same N/Ge/TG and ARB owners. A normal N return
+reaches the explicit U.b496 lighting-enable dependency. Native build/replay and
+hosted qualification for this implemented path are pending.
 The Display owns its ordered matrix ledger; RenderModels owns the checked
 static-frustum lifetime.
 Complete presentation remains unfinished.
@@ -72,16 +75,17 @@ the private CPU-wrapper scope is recorded in [Build and tests](Build-and-tests).
 Full source run/PX rendering, shutdown
 and gameplay adoption remain unqualified.
 
-The new [standard Block geometry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-blocks.md)
-passes six focused MSVC tests, including 1,680 face/color rows, 25 flat rows,
+At the previous [standard Block geometry checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-blocks.md),
+six focused MSVC tests passed, including 1,680 face/color rows, 25 flat rows,
 48 AO rows, 25 Block colors and seven actual static AO queries. The loaded UI
-passes 702 checks and preserves resources, saves and all 72 focus histories
-before terrain submission at 486. Hosted [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797)
-passes all four jobs and 1,490 tests (Windows 478/GCC 506/Clang 506), zero failures
-or skips. Every preceding hosted name remains; five new geometry/query tests
-run on each platform. The current runtime/test sources match that qualified
-checkpoint; subsequent record edits change documentation and file bindings.
-The remaining suite totals below describe earlier checkpoints.
+passed 702 checks and preserved resources, saves and all 72 focus histories
+before submission was connected at PX486. Hosted [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797)
+passed all four jobs and 1,490 tests (Windows 478/GCC 506/Clang 506), zero failures
+or skips. Every preceding hosted name remained, with five additions per
+platform. That record's runtime/test sources were those of 6ccdc82; its later
+record edits changed documentation and file bindings. Current submission work
+has separate qualification pending. Remaining suite totals describe earlier
+checkpoints.
 
 The selected Windows cache/compiler/callback/lighting/sort checks and all 72
 focus histories on the loaded graph pass. After the lease fix, Windows Debug

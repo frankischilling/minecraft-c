@@ -58,6 +58,9 @@ struct mc_client_world_frame_call {
     mc_client_render_global_update_call *update;
     mc_client_render_global_update_state update_state;
     mc_client_render_global_error update_error, update_cleanup;
+    mc_client_render_global_submit_call *submission;
+    mc_client_render_global_submit_state submission_state;
+    mc_client_render_global_error submission_error, submission_cleanup;
     mc_client_render_engine *terrain_engine;
     mc_client_texture_lookup_error terrain_texture_error, terrain_texture_cleanup;
     mc_client_graphics_error lighting_error;
@@ -406,9 +409,54 @@ static bool culling_body(mc_client_world_frame_call *call, mc_math_classes *math
     if (call->state.render_global == NULL)
         return outer_fail(call, MC_CLIENT_WORLD_FRAME_SOURCE_NULL,
                           "actual captured terrain RenderGlobal receiver", 486, false);
-    call->failure.child = (mc_client_graphics_site){"n", "a", "(Lls;ID)I", 0};
+    const mc_client_render_global_status submitted = mc_client_render_global_submit_begin(
+        call->state.render_global, call->state.camera, 0, (double)call->state.partial, math,
+        &call->submission, &call->submission_error);
+    if (call->submission != NULL) {
+        (void)mc_client_render_global_submit_inspect(call->submission, &call->submission_state);
+        call->state.submission = &call->submission_state;
+    }
+    if (submitted != MC_CLIENT_RENDER_GLOBAL_OK) {
+        call->failure.submission =
+            call->submission == NULL ? &call->submission_error : call->submission_state.failure;
+        call->failure.status = submitted == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE
+                                   ? MC_CLIENT_WORLD_FRAME_SOURCE_NULL
+                               : submitted == MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY
+                                   ? MC_CLIENT_WORLD_FRAME_DEPENDENCY
+                                   : MC_CLIENT_WORLD_FRAME_CHILD_FAILED;
+        call->failure.operation = call->submission_error.operation;
+        call->failure.native_policy = call->submission_error.native_policy;
+        call->failure.site = (mc_client_graphics_site){
+            call->submission_error.source_class, call->submission_error.source_method,
+            call->submission_error.source_descriptor, (int32_t)call->submission_error.source_pc};
+        call->failure.child = call->submission_error.child;
+        call->state.source_pc = 486;
+        return false;
+    }
+    call->state.terrain_count = call->submission_state.result;
+    if (mc_client_render_global_submit_retire(&call->submission, &call->submission_cleanup) !=
+        MC_CLIENT_RENDER_GLOBAL_OK) {
+        if (call->submission != NULL)
+            (void)mc_client_render_global_submit_inspect(call->submission, &call->submission_state);
+        return outer_fail(call, MC_CLIENT_WORLD_FRAME_BUSY,
+                          "completed N submission native retirement", 486, true);
+    }
+    call->submission_state.frames = NULL;
+    call->submission_state.frame_count = 0;
+    call->submission_state.rebuild = NULL;
+    call->submission_state.failure = call->submission_state.cleanup = NULL;
+    call->submission_state.owner = NULL;
+    call->submission_state.camera = call->submission_state.batch_camera = NULL;
+    call->submission_state.math = NULL;
+    call->state.terrain_returned = true;
+    if (!display_result(call,
+                        mc_client_display_source_shade_model(owner->services.display, 7424,
+                                                             &call->failure.display),
+                        493))
+        return false;
+    call->failure.child = (mc_client_graphics_site){"u", "b", "()V", 0};
     return outer_fail(call, MC_CLIENT_WORLD_FRAME_DEPENDENCY,
-                      "actual ChunkRenderer terrain submission child is not connected", 486, true);
+                      "actual standard-lighting enable child is not connected", 496, true);
 }
 #endif
 
@@ -713,6 +761,14 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
     if (call->state.active || call->state.owner->active)
         return result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame active retirement");
 #ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+    if (mc_client_render_global_submit_retire(&call->submission, &call->submission_cleanup) !=
+        MC_CLIENT_RENDER_GLOBAL_OK) {
+        if (call->submission != NULL)
+            (void)mc_client_render_global_submit_inspect(call->submission, &call->submission_state);
+        return result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame N submission retirement");
+    }
+    call->state.submission = NULL;
+    call->failure.submission = NULL;
     if (mc_client_render_global_update_retire(&call->update, &call->update_cleanup) !=
         MC_CLIENT_RENDER_GLOBAL_OK) {
         if (call->update != NULL)

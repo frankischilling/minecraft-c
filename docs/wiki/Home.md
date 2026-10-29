@@ -17,8 +17,11 @@ concrete Mob construction at `cq.a:773`. Focused mouse look and source pause
 entry run. The hidden inactive frame opens OZ and completes colors, fog, camera,
 actual Sky drawing and W/SR/ChunkRenderer culling. It now enters the dirty-chunk
 selector, constructs the real ChunkCache and compiles standard Blocks through
-the same RenderBlocks and Tessellator. The loaded authored saved World reaches
-missing terrain submission at `px.a(FJ)V:486`. Specialized Block shapes, terrain
+the same RenderBlocks and Tessellator. Current frame source calls real
+[terrain submission](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terrain-submission.md)
+at `px.a(FJ)V:486`; a normal return reaches the explicit U.b496 lighting-enable
+dependency. Submission is implemented but native-unverified, with build/replay
+and hosted qualification pending. Specialized Block shapes, later frame
 drawing and gameplay actions remain unfinished. See the
 [source frame scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/renderer-frames.md).
 The real READY renderer also
@@ -27,8 +30,9 @@ through return452; existing-World ticks call it at `k:33`.
 
 Renderer attachment creates the source ChunkRenderer grid and bounding-box
 lists. Empty and standard Block sections now complete source compilation;
-specialized Block shapes, TileEntity rendering and terrain submission remain
-unfinished. The concrete sky-change callback runs
+specialized Block shapes and TileEntity rendering remain unfinished. The
+submission extension uses the same retained graph and has qualification pending.
+The concrete sky-change callback runs
 the whole `n.e()V`, and standard lighting includes the shared U class's actual
 buffer initialization. The [chunk-compilation contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md)
 records source effects, retained failures and remaining children. Skin and cloak
@@ -50,16 +54,17 @@ histories. After the lease-publication fix, Windows Debug ALL and all 512
 selected CTests pass in 215.93 seconds, retaining all 506 prior test names and
 adding six. Seven separate JDK/Sky device cases also pass.
 
-The new [standard Block geometry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-blocks.md)
-passes six focused MSVC tests, including 1,680 face/color rows, 25 flat rows,
+At the previous [standard Block geometry checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-blocks.md),
+six focused MSVC tests passed, including 1,680 face/color rows, 25 flat rows,
 48 AO rows, 25 Block colors and seven actual static AO queries. The loaded UI
-passes 702 checks and preserves resources, saves and all 72 focus histories
-before terrain submission at 486. Hosted [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797)
-passes all four jobs and 1,490 tests (Windows 478/GCC 506/Clang 506), zero failures
-or skips. Every preceding hosted name remains; five new geometry/query tests
-run on each platform. The current runtime/test sources match that qualified
-checkpoint; subsequent record edits change documentation and file bindings.
-The remaining suite totals below describe earlier checkpoints.
+passed 702 checks and preserved resources, saves and all 72 focus histories
+before submission was connected at PX486. Hosted [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797)
+passed all four jobs and 1,490 tests (Windows 478/GCC 506/Clang 506), zero failures
+or skips. Every preceding hosted name remained, with five additions per
+platform. That record's runtime/test sources were those of 6ccdc82; its later
+record edits changed documentation and file bindings. Current submission work
+has separate qualification pending. Remaining suite totals describe earlier
+checkpoints.
 
 Qualified source checkpoint
 [`91da6e2`](https://github.com/frankischilling/minecraft-c/actions/runs/40937788071)

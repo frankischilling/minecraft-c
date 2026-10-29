@@ -8,6 +8,8 @@
 #include "mc/world/runtime/entities.h"
 #include "mc/world/runtime/runtime.h"
 #include "render_global_access.h"
+#include "render_global_jo.h"
+#include "render_global_recenter.h"
 #include "source_chunk_renderer_internal.h"
 
 #include <limits.h>
@@ -102,16 +104,22 @@ static bool failure(mc_client_render_global_world_call *c, mc_client_render_glob
     return false;
 }
 
-static bool rebuild_failure(mc_client_render_global_world_call *c,
-                            mc_client_render_global_status status, const char *op, unsigned int pc,
-                            bool native) {
-    c->state.rebuild_pc = pc;
-    mc_render_global_source_fail(&c->failure, status, op, "n", "a", "()V", pc, native);
+typedef struct rebuild_context {
+    mc_client_render_global *owner;
+    mc_math_classes *math;
+    mc_client_render_global_world_state *state;
+    mc_client_render_global_error *failure;
+} rebuild_context;
+
+static bool rebuild_failure(rebuild_context *c, mc_client_render_global_status status,
+                            const char *op, unsigned int pc, bool native) {
+    c->state->rebuild_pc = pc;
+    mc_render_global_source_fail(c->failure, status, op, "n", "a", "()V", pc, native);
     return false;
 }
 
-static bool settings(mc_client_render_global_world_call *c, unsigned int app_pc,
-                     unsigned int settings_pc, mc_game_settings_state *out) {
+static bool settings(rebuild_context *c, unsigned int app_pc, unsigned int settings_pc,
+                     mc_game_settings_state *out) {
     client_application *app = c->owner->fields.t;
     if (app == NULL)
         return rebuild_failure(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
@@ -126,13 +134,13 @@ static bool settings(mc_client_render_global_world_call *c, unsigned int app_pc,
     return true;
 }
 
-static bool rebuild(mc_client_render_global_world_call *c) {
+static bool rebuild(rebuild_context *c) {
     mc_client_render_global *o = c->owner;
     client_application *app = o->fields.t;
     const mc_block *leaves = NULL;
-    c->state.rebuild_pc = 0;
+    c->state->rebuild_pc = 0;
     if (app == NULL || mc_registry_block_static_get(app->registry, "L", &leaves,
-                                                    &c->failure.registry) != MC_REGISTRY_OK)
+                                                    &c->failure->registry) != MC_REGISTRY_OK)
         return rebuild_failure(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED, "actual uu.L active use",
                                0, true);
     mc_game_settings_state opts;
@@ -145,56 +153,56 @@ static bool rebuild(mc_client_render_global_world_call *c) {
     if (!settings(c, 21, 24, &opts))
         return false;
     o->fields.H = opts.values.render_distance;
-    c->state.last_store_pc = 27;
+    c->state->last_store_pc = 27;
     if (o->fields.o != NULL) {
         for (size_t index = 0; index < o->o_length; ++index) {
             mc_client_source_dk *old = o->fields.o[index];
-            c->state.rebuild_pc = 54;
+            c->state->rebuild_pc = 54;
             if (old == NULL)
                 return rebuild_failure(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
                                        "actual old DK.c receiver", 54, false);
-            if (!mc_source_dk_close(old, &c->failure))
+            if (!mc_source_dk_close(old, c->failure))
                 return false;
         }
     }
     int32_t distance = mc_java_i32_shl(64, mc_java_i32_sub(3, o->fields.H));
     if (distance > 400)
         distance = 400;
-    c->state.distance = distance;
+    c->state->distance = distance;
     int32_t sections;
     (void)mc_java_i32_div(distance, 16, &sections);
     o->fields.p = mc_java_i32_add(sections, 1);
-    c->state.last_store_pc = 91;
+    c->state->last_store_pc = 91;
     o->fields.q = 8;
-    c->state.last_store_pc = 97;
+    c->state->last_store_pc = 97;
     o->fields.r = mc_java_i32_add(sections, 1);
-    c->state.last_store_pc = 107;
+    c->state->last_store_pc = 107;
     const int32_t count = mc_java_i32_mul(mc_java_i32_mul(o->fields.p, o->fields.q), o->fields.r);
     if (count < 0 || (size_t)count > SIZE_MAX / sizeof(*o->fields.o))
         return rebuild_failure(c, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
                                "actual renderer array length dependency", 125, false);
     const mc_client_graphics_site old_array = {"n", "a", "()V", 125};
     mc_client_source_dk **array =
-        mc_render_global_allocate(o, (size_t)count * sizeof(*array), old_array, &c->failure);
+        mc_render_global_allocate(o, (size_t)count * sizeof(*array), old_array, c->failure);
     if (array == NULL)
         return false;
     o->fields.o = array;
     o->o_length = (size_t)count;
-    c->state.last_store_pc = 128;
+    c->state->last_store_pc = 128;
     array = mc_render_global_allocate(o, (size_t)count * sizeof(*array),
-                                      (mc_client_graphics_site){"n", "a", "()V", 146}, &c->failure);
+                                      (mc_client_graphics_site){"n", "a", "()V", 146}, c->failure);
     if (array == NULL)
         return false;
     o->fields.n = array;
     o->n_length = (size_t)count;
-    c->state.last_store_pc = 149;
+    c->state->last_store_pc = 149;
     o->fields.B = 0;
     o->fields.C = 0;
     o->fields.D = 0;
     o->fields.E = o->fields.p;
     o->fields.F = o->fields.q;
     o->fields.G = o->fields.r;
-    c->state.last_store_pc = 192;
+    c->state->last_store_pc = 192;
     if (!list_shape(o->fields.m))
         return rebuild_failure(c,
                                o->fields.m == NULL ? MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE
@@ -215,34 +223,34 @@ static bool rebuild(mc_client_render_global_world_call *c) {
                                "actual TileEntity List.clear receiver", 249, o->fields.a != NULL);
     o->fields.a->count = 0;
     int32_t offset = 0, ordinal = 0;
-    for (c->state.x = 0; c->state.x < o->fields.p; ++c->state.x)
-        for (c->state.y = 0; c->state.y < o->fields.q; ++c->state.y)
-            for (c->state.z = 0; c->state.z < o->fields.r; ++c->state.z) {
+    for (c->state->x = 0; c->state->x < o->fields.p; ++c->state->x)
+        for (c->state->y = 0; c->state->y < o->fields.q; ++c->state->y)
+            for (c->state->z = 0; c->state->z < o->fields.r; ++c->state->z) {
                 const int32_t index =
-                    ((c->state.z * o->fields.q) + c->state.y) * o->fields.p + c->state.x;
-                c->state.rebuild_pc = 312;
-                mc_client_source_dk *chunk = mc_source_dk_allocate(o, &c->failure);
-                c->state.pending_chunk = chunk;
+                    ((c->state->z * o->fields.q) + c->state->y) * o->fields.p + c->state->x;
+                c->state->rebuild_pc = 312;
+                mc_client_source_dk *chunk = mc_source_dk_allocate(o, c->failure);
+                c->state->pending_chunk = chunk;
                 if (chunk == NULL)
                     return false;
-                c->state.rebuild_pc = 347;
+                c->state->rebuild_pc = 347;
                 if (!mc_source_dk_construct(
-                        chunk, o->fields.k, o->fields.a, mc_java_i32_mul(c->state.x, 16),
-                        mc_java_i32_mul(c->state.y, 16), mc_java_i32_mul(c->state.z, 16), 16,
-                        mc_java_i32_add(o->fields.s, offset), &c->failure))
+                        chunk, o->fields.k, o->fields.a, mc_java_i32_mul(c->state->x, 16),
+                        mc_java_i32_mul(c->state->y, 16), mc_java_i32_mul(c->state->z, 16), 16,
+                        mc_java_i32_add(o->fields.s, offset), c->failure))
                     return false;
-                ++c->state.constructed_chunks;
+                ++c->state->constructed_chunks;
                 o->fields.o[index] = chunk;
-                ++c->state.published_chunks;
-                c->state.pending_chunk = NULL;
+                ++c->state->published_chunks;
+                c->state->pending_chunk = NULL;
                 if (o->fields.w) {
                     if (!mc_client_ge_int_get(o->fields.v, ordinal, &chunk->fields.z,
                                               (mc_client_graphics_site){"n", "a", "()V", 386},
-                                              &c->failure.graphics)) {
-                        c->failure.child = c->failure.graphics.site;
+                                              &c->failure->graphics)) {
+                        c->failure->child = c->failure->graphics.site;
                         return rebuild_failure(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
-                                               c->failure.graphics.operation, 386,
-                                               c->failure.graphics.native_policy);
+                                               c->failure->graphics.operation, 386,
+                                               c->failure->graphics.native_policy);
                     }
                 }
                 chunk->fields.y = false;
@@ -252,22 +260,74 @@ static bool rebuild(mc_client_render_global_world_call *c) {
                 ordinal = mc_java_i32_add(ordinal, 1);
                 mc_source_dk_dirty(chunk);
                 o->fields.n[index] = chunk;
-                c->state.rebuild_pc = 602;
+                c->state->rebuild_pc = 602;
                 if (!mc_render_global_pointer_append(
                         o, o->fields.m, chunk, (mc_client_graphics_site){"n", "a", "()V", 602},
-                        &c->failure))
+                        c->failure))
                     return false;
-                ++c->state.queued_chunks;
+                ++c->state->queued_chunks;
                 offset = mc_java_i32_add(offset, 3);
             }
-    if (o->fields.k != NULL && o->fields.t->i != NULL)
-        return rebuild_failure(c, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
-                               "actual actor recenter/sort branch", 675, true);
+    if (o->fields.k != NULL) {
+        client_application *current = o->fields.t;
+        if (current == NULL)
+            return rebuild_failure(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
+                                   "actual rebuild App.i receiver", 640, false);
+        mc_entity *camera = current->i;
+        if (camera != NULL) {
+            mc_entity_snapshot fields;
+            c->failure->entity.status = mc_entity_get_snapshot(camera, &fields);
+            if (c->failure->entity.status != MC_ENTITY_OK)
+                return rebuild_failure(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
+                                       "actual rebuild camera native fields", 653, true);
+            int32_t x, y, z;
+            c->state->rebuild_pc = 656;
+            if (mc_math_classes_ensure(c->math, &c->failure->math) != MC_MATH_CLASS_OK)
+                return rebuild_failure(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
+                                       c->failure->math.operation, 656, true);
+            x = mc_math_floor_double(fields.base.x);
+            c->state->rebuild_pc = 664;
+            if (mc_math_classes_ensure(c->math, &c->failure->math) != MC_MATH_CLASS_OK)
+                return rebuild_failure(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
+                                       c->failure->math.operation, 664, true);
+            y = mc_math_floor_double(fields.base.y);
+            c->state->rebuild_pc = 672;
+            if (mc_math_classes_ensure(c->math, &c->failure->math) != MC_MATH_CLASS_OK)
+                return rebuild_failure(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
+                                       c->failure->math.operation, 672, true);
+            z = mc_math_floor_double(fields.base.z);
+            c->state->rebuild_pc = 675;
+            if (!mc_render_global_recenter_entered(o, x, y, z, c->failure))
+                return false;
+            c->state->rebuild_pc = 691;
+            if (!mc_render_global_sort_at_entered(
+                    o, camera, (mc_client_graphics_site){"n", "a", "()V", 691}, c->failure))
+                return false;
+        }
+    }
     o->fields.I = 2;
-    c->state.last_store_pc = 696;
-    c->state.rebuild_pc = 699;
-    c->state.rebuild_returned = true;
+    c->state->last_store_pc = 696;
+    c->state->rebuild_pc = 699;
+    c->state->rebuild_returned = true;
     return true;
+}
+
+bool mc_render_global_rebuild_entered(mc_client_render_global *owner, mc_math_classes *math,
+                                      mc_client_render_global_world_state *state,
+                                      mc_client_render_global_error *error) {
+    if (error == NULL)
+        return false;
+    if (owner == NULL || state == NULL || !owner->active) {
+        mc_render_global_source_fail(error, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
+                                     "rebuild requires the admitted actual N guard", NULL, NULL,
+                                     NULL, 0, true);
+        return false;
+    }
+    state->owner = owner;
+    state->failure = error;
+    state->rebuild_returned = false;
+    rebuild_context c = {owner, math, state, error};
+    return rebuild(&c);
 }
 
 static bool run(mc_client_render_global_world_call *c) {
@@ -370,7 +430,8 @@ static bool run(mc_client_render_global_world_call *c) {
             return false;
         c->state.registered = true;
         c->state.source_pc = 70;
-        if (!rebuild(c)) {
+        if (!mc_render_global_rebuild_entered(o, app->source_math_classes, &c->state,
+                                              &c->failure)) {
             c->failure.parent = (mc_client_graphics_site){"n", "a", "(Lfd;)V", 70};
             return false;
         }
@@ -387,7 +448,8 @@ mc_client_render_global_world_begin(mc_client_render_global *o, mc_world_runtime
     if (o == NULL || out == NULL || *out != NULL)
         return MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT;
     if (o->active || o->world_retiring || o->world_call != NULL || o->sky_call != NULL ||
-        o->cull_call != NULL || o->update_call != NULL || o->phase != MC_CLIENT_RENDER_GLOBAL_READY)
+        o->cull_call != NULL || o->update_call != NULL || o->submit_call != NULL ||
+        o->phase != MC_CLIENT_RENDER_GLOBAL_READY)
         return MC_CLIENT_RENDER_GLOBAL_BUSY;
     if (world != NULL) {
         mc_world_runtime_construction construction;
@@ -473,7 +535,7 @@ mc_client_render_global_world_detach(mc_client_render_global *o, mc_client_rende
         return MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT;
     memset(e, 0, sizeof(*e));
     if (o->active || o->holds != 1 || o->world_call != NULL || o->sky_call != NULL ||
-        o->cull_call != NULL || o->update_call != NULL)
+        o->cull_call != NULL || o->update_call != NULL || o->submit_call != NULL)
         return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_BUSY,
                                             "RenderGlobal World terminal admission", NULL, NULL,
                                             NULL, 0, true);

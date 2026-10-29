@@ -7,6 +7,10 @@ if(TARGET mc_client_render_global)
         src/client/world/chunk_cache.c
         src/client/world/render_global_update.c
         src/client/world/render_global_update_sort.c
+        src/client/world/render_global_submit.c
+        src/client/world/render_global_submit_access.c
+        src/client/world/render_global_submit_draw.c
+        src/client/world/render_global_occlusion.c
         src/client/world/source_chunk_compile.c
         src/client/render/blocks/access.c
         src/client/render/blocks/block.c

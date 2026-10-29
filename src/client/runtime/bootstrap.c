@@ -336,6 +336,7 @@ mc_client_bootstrap_status mc_client_bootstrap_open(const mc_client_application_
         return MC_CLIENT_BOOTSTRAP_OWNER_FAILED;
     }
     context->app->options = *options; /* Native CLI context, never a source field publication. */
+    context->app->source_math_classes = context->math;
     status = open_world_services(context);
     if (status != MC_CLIENT_BOOTSTRAP_OK)
         return status;
