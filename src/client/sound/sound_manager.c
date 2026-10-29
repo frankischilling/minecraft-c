@@ -1,4 +1,5 @@
 #include "mc/client/sound/construction.h"
+#include "mc/client/sound/sound_file_registration.h"
 
 #include "pool_construction.h"
 
@@ -588,6 +589,20 @@ done:
     return finish(manager, &report, out, error, status);
 }
 
+mc_sound_status mc_sound_manager_detach_settings(mc_sound_manager *manager,
+                                                 const mc_game_settings *expected,
+                                                 mc_sound_error *error) {
+    if (manager == NULL)
+        return result(error, MC_SOUND_INVALID_ARGUMENT, "SoundManager native Settings borrow", -1);
+    if (manager->active || manager->shared->active)
+        return result(error, MC_SOUND_BUSY, "SoundManager active Settings borrow", -1);
+    if (manager->phase != MC_SOUND_MANAGER_READY || manager->settings != expected)
+        return result(error, MC_SOUND_INVALID_ARGUMENT,
+                      "SoundManager native Settings borrow identity", -1);
+    manager->settings = NULL;
+    return result(error, MC_SOUND_OK, NULL, -1);
+}
+
 mc_sound_status mc_sound_manager_options_changed(mc_sound_manager *manager,
                                                  const mc_game_settings_diagnostics *diagnostics,
                                                  mc_sound_manager_report *out,
@@ -935,4 +950,27 @@ mc_sound_status mc_sound_manager_ui(mc_sound_manager *manager, mc_sound_text nam
                                     float pitch, mc_sound_manager_report *report,
                                     mc_sound_error *error) {
     return one_shot(manager, name, false, 0.0f, 0.0f, 0.0f, volume, pitch, report, error);
+}
+
+mc_sound_status mc_sound_manager_add_java_file(mc_sound_manager *manager,
+                                               mc_sound_manager_pool_kind kind, mc_sound_text name,
+                                               mc_java_file *file, mc_sound_pool_file_call **call,
+                                               const mc_sound_pool_entry **entry,
+                                               mc_sound_pool_file_error *error) {
+    if (manager == NULL || manager->phase != MC_SOUND_MANAGER_READY ||
+        (unsigned int)kind >= (unsigned int)MC_SOUND_MANAGER_POOL_COUNT) {
+        mc_sound_pool_file_error e = {.status = MC_SOUND_INVALID_ARGUMENT};
+        if (error != NULL)
+            *error = e;
+        return e.status;
+    }
+    /* Actual immutable source b/c/d read1. Worker does not touch manager/shared
+     * backend active flags. App retirement joins cz before pool destruction. */
+    mc_sound_pool *captured = manager->pools[(size_t)kind];
+    mc_sound_pool_file_error e = {0};
+    mc_sound_status s = mc_sound_pool_add_java_file(captured, name, file, call, entry, &e);
+    e.yo_pc = 6;
+    if (error != NULL)
+        *error = e;
+    return s;
 }

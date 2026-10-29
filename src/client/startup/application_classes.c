@@ -15,7 +15,8 @@ application_owner_fail(mc_client_application_owner_error *error,
                                                      .native_error = native_error,
                                                      .file = NULL,
                                                      .statistics = NULL,
-                                                     .standard_output = NULL};
+                                                     .standard_output = NULL,
+                                                     .cx = NULL};
     return status;
 }
 
@@ -231,6 +232,18 @@ mc_client_application_classes_release(mc_client_application_classes **owner,
             error->standard_output = &classes->output_retirement;
         return status;
     }
+    if (mc_client_cx_classes_release(&classes->startup_cx_classes, &classes->cx_retirement) !=
+        MC_CLIENT_CX_OK) {
+        const mc_client_application_owner_status status =
+            classes->cx_retirement.status == MC_CLIENT_CX_BUSY
+                ? MC_CLIENT_APPLICATION_OWNER_BUSY
+                : MC_CLIENT_APPLICATION_OWNER_CX_FAILED;
+        application_owner_fail(error, status, "Minecraft native cx namespace release", NULL, NULL,
+                               NULL, 0, 0);
+        if (error != NULL)
+            error->cx = &classes->cx_retirement;
+        return status;
+    }
     application_directory_classes_destroy(classes->directory_classes);
     client_application *last_app = classes->a;
     mc_player_string *timer_name = classes->timer_name;
@@ -239,6 +252,7 @@ mc_client_application_classes_release(mc_client_application_classes **owner,
     mc_player_string *startup_title = classes->startup_title;
     mc_player_string *startup_font_resource = classes->startup_font_resource;
     mc_player_string *startup_logo_resource = classes->startup_logo_resource;
+    mc_player_string *startup_post_label = classes->startup_post_label;
     mc_player_string *startup_gl_labels[2] = {classes->startup_gl_labels[0],
                                               classes->startup_gl_labels[1]};
     mc_player_string *startup_color_literals[3] = {classes->startup_color_literals[0],
@@ -253,6 +267,7 @@ mc_client_application_classes_release(mc_client_application_classes **owner,
         mc_player_string_release(startup_color_literals[index]);
     mc_player_string_release(startup_font_resource);
     mc_player_string_release(startup_logo_resource);
+    mc_player_string_release(startup_post_label);
     for (size_t index = 0; index < 2; ++index)
         mc_player_string_release(startup_gl_labels[index]);
     mc_player_string_release(startup_title);

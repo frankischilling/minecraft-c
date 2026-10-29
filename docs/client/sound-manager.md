@@ -32,6 +32,13 @@ Later setup calls return that failure without overwriting an already published
 backend or repeating writes. Native retirement still releases the handle.
 This resource policy does not qualify original exception equivalence.
 
+Normal startup now invokes this bind on its actual `B` manager and `z` settings.
+The two setup saves use the canonical options File and typed FileWriter. The
+real Windows Session returns from the bind at488, all nine texture-effect
+registrations and both scene constructors, stopping before resource-thread
+allocation664. This establishes that startup's earlier settings-save failure
+is cleared; original SoundManager/device correspondence remains unverified.
+
 `mc_game_settings_attach_sound_manager` binds the actual borrowed owner used
 by music/sound option actions. The attached manager must retain those settings.
 The original null-Minecraft failure still occurs before manager access.

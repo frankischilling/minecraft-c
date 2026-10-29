@@ -1,5 +1,6 @@
 #include "display.h"
 #include "gl_internal.h"
+#include "occlusion.h"
 #include "sdk_display_internal.h"
 #include "sdk_mode_internal.h"
 #include "sdk_update.h"
@@ -42,6 +43,19 @@ typedef struct display_vertex {
     GLubyte color[4];
 } display_vertex;
 
+typedef struct display_occlusion_capability {
+    uint64_t generation;
+    bool initialized, advertised, supported;
+    PFNGLGENQUERIESARBPROC GenQueries;
+    PFNGLDELETEQUERIESARBPROC DeleteQueries;
+    PFNGLISQUERYARBPROC IsQuery;
+    PFNGLBEGINQUERYARBPROC BeginQuery;
+    PFNGLENDQUERYARBPROC EndQuery;
+    PFNGLGETQUERYIVARBPROC GetQueryiv;
+    PFNGLGETQUERYOBJECTIVARBPROC GetQueryObjectiv;
+    PFNGLGETQUERYOBJECTUIVARBPROC GetQueryObjectuiv;
+} display_occlusion_capability;
+
 struct mc_client_display {
     SDL_Window *window;
     SDL_GLContext context;
@@ -69,6 +83,8 @@ struct mc_client_display {
     mc_client_event_port *events;
     int32_t source_last_store, native_width, native_height;
     mc_client_display_stage_error stage_failure;
+    uint64_t native_context_generation;
+    display_occlusion_capability occlusion;
 };
 
 /* The real source SDK is process-wide and admits one window. Diagnostic
@@ -398,11 +414,15 @@ static bool native_create_window(mc_client_display *display, const char *title, 
 }
 
 static bool native_create_context(mc_client_display *display, mc_client_display_error *error) {
+    if (display->native_context_generation == UINT64_MAX)
+        return fail(error, MC_CLIENT_DISPLAY_LIMIT, "create OpenGL context",
+                    "native context generation limit", 0);
     display->context = SDL_GL_CreateContext(display->window);
     if (display->context == NULL) {
         sdl_failure(error, "create OpenGL context");
         return false;
     }
+    ++display->native_context_generation;
     if (!load_gl(display, error) || !context_check(display, error) ||
         !renderer_create(display, error))
         return false;
@@ -1243,6 +1263,9 @@ bool mc_client_display_destroy(mc_client_display *display, mc_client_display_err
 #include "texture_leases.inc"
 #include "loading_projection.inc"
 #include "startup_surface.inc"
+#include "occlusion.inc"
+#include "query_names.inc"
+#include "source_viewport.inc"
 // clang-format on
 
 /* Canonical staged SDK owner uses the same native constructor/destructor. */

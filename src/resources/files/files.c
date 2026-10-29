@@ -106,28 +106,50 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *destination,
     return MC_JAVA_PROPERTIES_OK;
 }
 
+#ifdef _WIN32
+static wchar_t *resource_native_path(const char *path, mc_registry_status *status) {
+    const size_t length = strlen(path);
+    if (length > (size_t)INT_MAX) {
+        *status = MC_REGISTRY_LIMIT;
+        return NULL;
+    }
+    const int units =
+        MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path, (int)length, NULL, 0);
+    if (units == 0) {
+        *status = MC_REGISTRY_INVALID_ARGUMENT;
+        return NULL;
+    }
+    if ((size_t)units > SIZE_MAX / sizeof(wchar_t) - 1) {
+        *status = MC_REGISTRY_LIMIT;
+        return NULL;
+    }
+    wchar_t *native = malloc(((size_t)units + 1) * sizeof(*native));
+    if (native == NULL) {
+        *status = MC_REGISTRY_ALLOCATION_FAILED;
+        return NULL;
+    }
+    if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path, (int)length, native, units) !=
+        units) {
+        free(native);
+        {
+            *status = MC_REGISTRY_INVALID_ARGUMENT;
+            return NULL;
+        }
+    }
+    native[units] = L'\0';
+    *status = MC_REGISTRY_OK;
+    return native;
+}
+#endif
+
 static mc_registry_status open_file(const char *path, FILE **out) {
     FILE *file = NULL;
     int code;
 #ifdef _WIN32
-    const size_t length = strlen(path);
-    if (length > (size_t)INT_MAX)
-        return MC_REGISTRY_LIMIT;
-    const int units =
-        MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path, (int)length, NULL, 0);
-    if (units == 0)
-        return MC_REGISTRY_INVALID_ARGUMENT;
-    if ((size_t)units > SIZE_MAX / sizeof(wchar_t) - 1)
-        return MC_REGISTRY_LIMIT;
-    wchar_t *native = malloc(((size_t)units + 1) * sizeof(*native));
+    mc_registry_status native_status = MC_REGISTRY_OK;
+    wchar_t *native = resource_native_path(path, &native_status);
     if (native == NULL)
-        return MC_REGISTRY_ALLOCATION_FAILED;
-    if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path, (int)length, native, units) !=
-        units) {
-        free(native);
-        return MC_REGISTRY_INVALID_ARGUMENT;
-    }
-    native[units] = L'\0';
+        return native_status;
 #ifdef _MSC_VER
     code = (int)_wfopen_s(&file, native, L"rb");
 #else
@@ -148,10 +170,8 @@ static mc_registry_status open_file(const char *path, FILE **out) {
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out) {
-    mc_resource_files *files = context;
-    if (out == NULL || !resource_name(name))
+static mc_registry_status resource_path(mc_resource_files *files, const char *name, char **out) {
+    if (files == NULL || out == NULL || !resource_name(name))
         return MC_REGISTRY_INVALID_ARGUMENT;
     const size_t name_length = strlen(name);
     size_t skip = files->root[files->root_length - 1] == '/' ? 1u : 0u;
@@ -173,6 +193,19 @@ static mc_registry_status open_resource(void *context, const char *name,
         return MC_REGISTRY_ALLOCATION_FAILED;
     memcpy(path, files->root, files->root_length);
     memcpy(path + files->root_length, name + skip, suffix_length + 1);
+    *out = path;
+    return MC_REGISTRY_OK;
+}
+
+static mc_registry_status open_resource(void *context, const char *name,
+                                        mc_java_properties_input *out) {
+    mc_resource_files *files = context;
+    if (out == NULL || !resource_name(name))
+        return MC_REGISTRY_INVALID_ARGUMENT;
+    char *path = NULL;
+    const mc_registry_status prepared = resource_path(files, name, &path);
+    if (prepared != MC_REGISTRY_OK)
+        return prepared;
     FILE *file = NULL;
     mc_registry_status status = open_file(path, &file);
     free(path);
@@ -278,5 +311,42 @@ mc_registry_status mc_resource_files_free(mc_resource_files *files) {
     }
     free(files->root);
     free(files);
+    return status;
+}
+
+mc_registry_status mc_resource_files_locate(mc_resource_files *files, const char *name,
+                                            bool *found) {
+    if (found == NULL)
+        return MC_REGISTRY_INVALID_ARGUMENT;
+    char *path = NULL;
+    mc_registry_status status = resource_path(files, name, &path);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    bool exists = false;
+#ifdef _WIN32
+    wchar_t *native = resource_native_path(path, &status);
+    if (native == NULL) {
+        free(path);
+        return status;
+    }
+    const DWORD attributes = GetFileAttributesW(native);
+    if (attributes != INVALID_FILE_ATTRIBUTES)
+        exists = true;
+    else {
+        const DWORD code = GetLastError();
+        if (code != ERROR_FILE_NOT_FOUND && code != ERROR_PATH_NOT_FOUND)
+            status = MC_REGISTRY_IO_FAILED;
+    }
+    free(native);
+#else
+    struct stat attributes;
+    if (stat(path, &attributes) == 0)
+        exists = true;
+    else if (errno != ENOENT && errno != ENOTDIR)
+        status = MC_REGISTRY_IO_FAILED;
+#endif
+    free(path);
+    if (status == MC_REGISTRY_OK)
+        *found = exists;
     return status;
 }

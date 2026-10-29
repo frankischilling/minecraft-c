@@ -7,10 +7,10 @@ or dedicated server yet; the C runtime requires no JVM.
 
 The [native title frontend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md)
 draws imported resources. A separate fixed-camera inspection renders generated
-terrain. Checkpoint `671c003` passes 1,226 hosted public/JDK tests: 398 Windows
-and 414 per Linux compiler. Later native startup checks reach actual Stats,
-callback installation, logo drawing and MouseHelper publication. The next
-unexecuted source call is Controllers.create at offset 383.
+terrain. The normal startup owner now reaches resource-thread construction and
+start, followed by the final GL diagnostic. GuiIngame caller allocation at
+Minecraft offset 697 remains unconnected. Independent source-screen owners
+cover splash loading, initialization and buttons.
 [Build and tests](Build-and-tests) separates hosted coverage, local graphical
 startup, component checks and finite original comparisons.
 

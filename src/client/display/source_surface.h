@@ -27,6 +27,10 @@ typedef enum mc_client_source_array {
  * failure preserves value. Keep owner/value/error storage live and disjoint. */
 bool mc_client_display_source_get_error(mc_client_display *, uint32_t *value,
                                         mc_client_display_error *);
+/* Exactly the reached glViewport, with signed source dimensions and sticky GL
+ * errors left to the source. No ClearColor, GetError, clear, swap or pump. */
+bool mc_client_display_source_viewport(mc_client_display *, int32_t width, int32_t height,
+                                       mc_client_display_error *);
 
 bool mc_client_display_context_acquire(mc_client_display *, mc_client_display_context_lease **,
                                        mc_client_display_error *);
@@ -50,6 +54,29 @@ bool mc_client_display_lists_generate(mc_client_display *, int32_t count, size_t
                                       mc_client_display_error *);
 bool mc_client_display_lists_begin(mc_client_display *, int32_t id, mc_client_display_error *);
 bool mc_client_display_lists_end(mc_client_display *, mc_client_display_error *);
+/* Native terminal abort of exactly the owned pending definition. Does not
+ * acknowledge a source glEndList, erase completed commands or restore matrices.
+ * A foreign pending list is rejected and remains untouched. */
+bool mc_client_display_lists_abort(mc_client_display *, int32_t owned_id,
+                                   mc_client_display_error *);
+
+typedef struct mc_client_source_list_state {
+    bool defined, building;
+    size_t commands, draws, vertices;
+} mc_client_source_list_state;
+
+typedef struct mc_client_source_batch_view {
+    const uint8_t *bytes;
+    size_t byte_count;
+    int32_t vertices, mode;
+    unsigned int arrays;
+} mc_client_source_batch_view;
+
+/* Passive native inspection of the real immutable compiled commands. Views
+ * expire at namespace retirement; no activation, allocation, GL or cursor work. */
+bool mc_client_display_list_inspect(mc_client_display *, int32_t, mc_client_source_list_state *);
+bool mc_client_display_list_batch(mc_client_display *, int32_t, size_t draw_index,
+                                  mc_client_source_batch_view *);
 bool mc_client_display_lists_call(mc_client_display *, const int32_t *ids, size_t count,
                                   mc_client_display_error *);
 bool mc_client_display_lists_retire(mc_client_display_list_range **, mc_client_display_error *);

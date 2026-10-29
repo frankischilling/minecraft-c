@@ -98,6 +98,35 @@ metadata without rerunning tests. Clang's complete controller passes with an
 explicit passed-output bound. These are native contracts. The later finite
 original comparison is described below.
 
+## Typed FileWriter(File) bridge
+
+[java_file_writer.h](../../include/mc/world/storage/java_file_writer.h) adds the
+canonical typed File route above the existing Writer kernel. It constructs the
+same non-append FileOutputStream from the supplied File before resolving the
+charset or allocating the encoder. It keeps the actual File/namespace identity;
+it does not extract a native filename and reopen it through another adapter.
+The shared physical-output span also serves the existing DataOutputStream.
+
+The wrapper retains the first complete output failure, including I/O swallowed
+by PrintWriter. Native BUSY, quota and provider outcomes remain native failures.
+Per-operation callback records recover a selected native outcome across the
+legacy Writer callback contract; historical errors never override a later
+operation. A swallowed primary I/O error still takes precedence over a later
+native close refusal.
+
+Source close performs the actual stream close. Native retirement performs no
+encoder flush, final surrogate replacement or source close. If the core Writer
+is consumed while the FileOutputStream remains BUSY or fails cleanup, the wrapper
+retains that stream and its state for retry. A consumed native close is not
+attempted again against a reused descriptor.
+
+The typed Writer control passes 582 checks in the selected Windows increment,
+with Clang coverage in its separate 41-case selection. It exercises truncation,
+charset/constructor order, shared DataOutputStream behavior, source-close versus
+native cleanup, real partial I/O, quota failures, current-operation status and
+close precedence. Existing core Writer source and layout are unchanged. These
+native checks are separate from the original-JDK comparison below.
+
 ## Input-driven observation tool
 
 `mc_java_writer_probe PLAN FRESH_JSONL` calls the same public writer interface

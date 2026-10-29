@@ -167,3 +167,30 @@ sanitizer runtime; their own sources compile as C17.
 fmt, GSL, bs2b and KEMAR terms and attributions. A future executable distribution
 must account for the shared library's license and corresponding source. No
 release package is created by the current build.
+
+## Resource download transport and XML
+
+Graphical client builds add static curl 8.23.0 and Expat 2.9.0 for the original
+resource-download worker. The HTTP input owner uses curl's C API; the XML
+document owner uses Expat. Project code owns stream bounds, cancellation,
+document state and cleanup. These targets are guarded by `MC_BUILD_CLIENT`;
+fresh headless builds and simulation/server targets do not acquire them.
+
+| Library | Source archive | SHA-256 |
+| --- | --- | --- |
+| curl 8.23.0 | [curl source](https://curl.se/download/curl-8.23.0.tar.xz) | `8dadd7d2536a314f982ad05a651b713f426bf7d02cc2c76cffb9796f2218e6c5` |
+| Expat 2.9.0 | [Expat release](https://github.com/libexpat/libexpat/releases/download/R_2_9_0/expat-2.9.0.tar.xz) | `1e6371862cc31999b368c3b89b49994f0677e1bab5f1b2b85ae3741f5d803051` |
+
+The curl profile enables HTTP with the threaded resolver. TLS, other transfer
+protocols and optional compression/HTTP2 libraries are disabled. Expat uses its
+ordinary character interface. Dependency tools, examples, tests, documentation
+and installation rules are disabled. Neither dependency supplies game code.
+The original resource host's availability is separate from native transport
+support and remains subject to runtime verification.
+
+Offline source overrides are `FETCHCONTENT_SOURCE_DIR_MC_RESOURCE_CURL` and
+`FETCHCONTENT_SOURCE_DIR_MC_RESOURCE_EXPAT`. These bypass archive verification;
+verify supplied source trees before configuring. Upstream permission notices
+are retained verbatim in [licenses/curl.txt](../licenses/curl.txt) and
+[licenses/expat.txt](../licenses/expat.txt). Include them with distributions
+containing these libraries.

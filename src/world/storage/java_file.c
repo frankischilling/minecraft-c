@@ -646,3 +646,97 @@ bool mc_file_invalid(const mc_java_file *f) {
             return true;
     return false;
 }
+
+/* Actual private File(String,int) body; no normalization or filesystem effect. */
+static mc_java_file_status private_path_file(mc_java_file *receiver, mc_world_info_name *path,
+                                             size_t prefix_length, mc_java_file **out,
+                                             mc_java_file_error *e) {
+    mc_java_file *result = NULL;
+    mc_java_file_status s = mc_java_file_allocate(receiver->files, &result, e);
+    if (s != MC_JAVA_FILE_OK)
+        return s;
+    s = mc_file_name_hold(path, e);
+    if (s != MC_JAVA_FILE_OK) {
+        /* Receiver's live namespace occurrence makes this RAW release nonfinal. */
+        mc_java_file_error cleanup = {0};
+        if (mc_java_file_release(&result, &cleanup) != MC_JAVA_FILE_OK)
+            return mc_file_result(e, MC_JAVA_FILE_STATE_ERROR, "private File RAW cleanup contract",
+                                  cleanup.system_error);
+        return s;
+    }
+    result->state.phase = MC_JAVA_FILE_CONSTRUCTING;
+    result->state.path = path;
+    result->state.prefix_length = prefix_length;
+    result->state.phase = MC_JAVA_FILE_READY;
+    *out = result;
+    return mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
+}
+
+mc_java_file_status mc_java_file_get_parent_file(mc_java_file *f, mc_java_file **out,
+                                                 mc_java_file_error *e) {
+    if (out == NULL)
+        return mc_file_result(e, MC_JAVA_FILE_INVALID_ARGUMENT, "File parent output", 0);
+    mc_java_file_status s = mc_file_ready(f, e);
+    if (s != MC_JAVA_FILE_OK)
+        return s;
+    const mc_nbt_string path = mc_world_info_name_text(f->state.path);
+    const size_t pl = f->state.prefix_length;
+    size_t last = path.length;
+    while (last != 0) {
+        --last;
+#ifdef _WIN32
+        if (path.units[last] == '\\')
+            break;
+#else
+        if (path.units[last] == '/')
+            break;
+#endif
+    }
+    size_t parent_length;
+    bool found = false;
+#ifdef _WIN32
+    for (size_t i = 0; i < path.length; ++i)
+        if (path.units[i] == '\\')
+            found = true;
+#else
+    for (size_t i = 0; i < path.length; ++i)
+        if (path.units[i] == '/')
+            found = true;
+#endif
+    if (found && last >= pl)
+        parent_length = last;
+    else if (pl > 0 && path.length > pl)
+        parent_length = pl;
+    else {
+        *out = NULL;
+        return mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
+    }
+    mc_world_info_name *name = NULL;
+    s = name_copy(f->files, path.units, parent_length, &name, e);
+    if (s == MC_JAVA_FILE_OK)
+        s = private_path_file(f, name, pl, out, e);
+    mc_world_info_name_release(name);
+    return s;
+}
+
+mc_java_file_status mc_java_file_get_absolute_file(mc_java_file *f, mc_java_file **out,
+                                                   mc_java_file_error *e) {
+    if (out == NULL)
+        return mc_file_result(e, MC_JAVA_FILE_INVALID_ARGUMENT, "File absolute output", 0);
+    mc_java_file_status s = mc_file_ready(f, e);
+    if (s != MC_JAVA_FILE_OK)
+        return s;
+    const mc_nbt_string path = mc_world_info_name_text(f->state.path);
+#ifdef _WIN32
+    const bool absolute =
+        f->state.prefix_length == 3 ||
+        (f->state.prefix_length == 2 && path.length >= 2 && path.units[0] == '\\');
+#else
+    (void)path;
+    const bool absolute = f->state.prefix_length == 1;
+#endif
+    if (!absolute)
+        return mc_file_result(e, MC_JAVA_FILE_UNSUPPORTED_PROVIDER,
+                              "FileSystem.resolve relative/default-drive provider", 0);
+    return private_path_file(f, f->state.path, f->state.prefix_length, out, e);
+}

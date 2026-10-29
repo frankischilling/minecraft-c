@@ -34,4 +34,8 @@ typedef enum mc_java_integer_parse_status {
 mc_java_integer_parse_status mc_java_integer_parse(const mc_java_integer_parse_text *text,
                                                    int32_t *out);
 
+/* Same selected Character.digit(char,10), signed64 Long.parseLong(String).
+ * Failure preserves out. Native shape/budget policy is the int32 API's. */
+mc_java_integer_parse_status mc_java_long_parse(const mc_java_integer_parse_text *, int64_t *);
+
 #endif

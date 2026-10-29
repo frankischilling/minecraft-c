@@ -225,6 +225,66 @@ size_t mc_client_ge_int_remaining(const mc_client_direct_int_buffer *b) {
     return b->limit - b->position;
 }
 
+bool mc_client_ge_int_position(mc_client_direct_int_buffer *b, int32_t value,
+                               mc_client_graphics_site site, mc_client_graphics_error *e) {
+    if (b == NULL) {
+        mc_client_graphics_fail(e, MC_CLIENT_GRAPHICS_NULL_REFERENCE,
+                                "actual IntBuffer.position receiver", site, false);
+        return false;
+    }
+    if (value < 0 || (size_t)value > b->limit) {
+        e->actual_index = value;
+        mc_client_graphics_fail(e, MC_CLIENT_GRAPHICS_SOURCE_ILLEGAL_ARGUMENT,
+                                "actual IntBuffer.position argument", site, false);
+        return false;
+    }
+    b->position = (size_t)value;
+    return true;
+}
+
+bool mc_client_ge_int_limit(mc_client_direct_int_buffer *b, int32_t value,
+                            mc_client_graphics_site site, mc_client_graphics_error *e) {
+    if (b == NULL) {
+        mc_client_graphics_fail(e, MC_CLIENT_GRAPHICS_NULL_REFERENCE,
+                                "actual IntBuffer.limit receiver", site, false);
+        return false;
+    }
+    if (value < 0 || (size_t)value > b->capacity) {
+        e->actual_index = value;
+        mc_client_graphics_fail(e, MC_CLIENT_GRAPHICS_SOURCE_ILLEGAL_ARGUMENT,
+                                "actual IntBuffer.limit argument", site, false);
+        return false;
+    }
+    b->limit = (size_t)value;
+    if (b->position > b->limit)
+        b->position = b->limit;
+    return true;
+}
+
+bool mc_client_ge_int_writable_remaining(mc_client_direct_int_buffer *b, void **storage,
+                                         size_t *remaining, mc_client_graphics_site site,
+                                         mc_client_graphics_error *e) {
+    if (storage == NULL || remaining == NULL) {
+        mc_client_graphics_fail(e, MC_CLIENT_GRAPHICS_INVALID_ARGUMENT,
+                                "native direct IntBuffer span output", site, true);
+        return false;
+    }
+    if (b == NULL) {
+        mc_client_graphics_fail(e, MC_CLIENT_GRAPHICS_NULL_REFERENCE,
+                                "actual native IntBuffer address receiver", site, false);
+        return false;
+    }
+    if (b->bytes == NULL || b->bytes->data == NULL || b->position > b->limit ||
+        b->limit > b->capacity || b->capacity > b->bytes->capacity / sizeof(int32_t)) {
+        mc_client_graphics_fail(e, MC_CLIENT_GRAPHICS_INVALID_ARGUMENT,
+                                "native actual direct IntBuffer storage invariant", site, true);
+        return false;
+    }
+    *storage = b->bytes->data + b->position * sizeof(int32_t);
+    *remaining = b->limit - b->position;
+    return true;
+}
+
 bool mc_client_ge_append(mc_client_render_list *list, int32_t value, size_t limit,
                          mc_client_graphics_site site, mc_client_graphics_error *e) {
     if (list == NULL) {

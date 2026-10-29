@@ -16,7 +16,9 @@ mc_client_startup_options mc_client_application_startup_default_options(void) {
                                        .colorizers = mc_client_colorizer_default_options(),
                                        .entity_renderer =
                                            mc_client_entity_renderer_default_options(),
-                                       .manager = mc_client_render_manager_default_options()};
+                                       .manager = mc_client_render_manager_default_options(),
+                                       .render_global = {8u * 1024u * 1024u, SIZE_MAX},
+                                       .particles = {16u * 1024u * 1024u}};
 }
 
 static bool app_ready(const client_application *app) {
@@ -287,6 +289,7 @@ bool mc_client_application_startup_inspect(const mc_client_application_startup *
         return false;
     *out = (mc_client_startup_state){
         .phase = startup->phase,
+        .rendering = startup->rendering,
         .app = startup->app,
         .display = startup->display,
         .mode = startup->mode,

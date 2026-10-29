@@ -86,6 +86,7 @@ struct mc_client_render_engine_classes {
     mc_client_nw_namespace nw;
     mc_client_graphics_limits limits;
     size_t active_source_calls, font_lease_count, command_range_count;
+    size_t scene_lease_count; /* Native RenderGlobal consumers, not a ge/nw source field. */
     mc_client_command_range *command_ranges;
     struct mc_client_display_context_lease *context_lease;
     mc_client_display *bound_display;
@@ -106,6 +107,8 @@ struct mc_client_render_engine {
     mc_client_render_engine_error failure;
     struct mc_client_texture_lookup_native *lookup; /* Bounded native attempt, no cache mirror. */
     bool lookup_retired; /* Explicit final native source stop, not a ji field. */
+    size_t effect_release_index;
+    bool effects_retiring, effects_retired; /* Native terminal ownership, not source List state. */
 };
 
 #endif

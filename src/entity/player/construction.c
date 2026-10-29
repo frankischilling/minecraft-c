@@ -2,6 +2,7 @@
 #include "player_internal.h"
 
 #include "../../world/runtime/runtime_internal.h"
+#include "../../world/runtime/spawn_internal.h"
 #include "../construction_internal.h"
 #include "mc/client/input/movement_input.h"
 #include "mc/core/java/java.h"
@@ -141,21 +142,31 @@ static mc_player_status spawn(mc_entity *entity, mc_world_runtime *world,
                               "World spawn coordinate allocation", "fd", "u", "()Lbr;", 0);
     /* fd.u reloads x for each of the three actual Info getters. No provider,
      * terrain-top guess or cached diagnostic spawn replaces these cells. */
-    mc_world_runtime_fields fields;
-    mc_world_info_fields info;
     int32_t values[3];
-    for (size_t i = 0; i < 3; ++i) {
-        mc_player_status status = world_fields(world, &fields, 100, error);
-        if (status != MC_PLAYER_OK)
-            goto failed;
-        error->info = mc_world_info_fields_get(fields.x, &info);
-        if (error->info != MC_WORLD_INFO_OK) {
-            mc_player_fail(
-                error, fields.x == NULL ? MC_PLAYER_NULL_REFERENCE : MC_PLAYER_WORLD_FAILED,
-                "World spawn Info getter", "fd", "u", "()Lbr;", 8u + (unsigned int)i * 7u);
-            goto failed;
+    mc_world_spawn_error child = {0};
+    const bool complete = mc_world_source_spawn_values(world, values, &child);
+    if (child.info_getter_entered)
+        error->info = child.info;
+    if (!complete) {
+        if (child.fields_failed) {
+            /* Same old world_fields(world,...,100) diagnostic mapping. */
+            if (world == NULL)
+                mc_player_fail(error, MC_PLAYER_NULL_REFERENCE, "Player null World receiver", "gs",
+                               "<init>", "(Lfd;)V", 100);
+            else {
+                error->world =
+                    (mc_world_storage_error){child.world, "Player actual World fields", 0};
+                mc_player_fail(error, MC_PLAYER_WORLD_FAILED, "Player actual World fields", "gs",
+                               "<init>", "(Lfd;)V", 100);
+            }
+        } else {
+            error->info = child.info;
+            /* Actual Info NULL is exactly the old fields.x==NULL branch. */
+            mc_player_fail(error,
+                           child.info_was_null ? MC_PLAYER_NULL_REFERENCE : MC_PLAYER_WORLD_FAILED,
+                           "World spawn Info getter", "fd", "u", "()Lbr;", child.pc);
         }
-        values[i] = i == 0 ? info.value.spawn_x : i == 1 ? info.value.spawn_y : info.value.spawn_z;
+        goto failed;
     }
     coordinate->x = values[0];
     coordinate->y = values[1];

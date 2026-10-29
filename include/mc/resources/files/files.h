@@ -20,4 +20,10 @@ const mc_registry_resources *mc_resource_files_source(mc_resource_files *files);
  * all storage is released even if a close reports an I/O error. */
 mc_registry_status mc_resource_files_free(mc_resource_files *files);
 
+/* Concrete Class.getResource existence lookup in the SAME imported namespace.
+ * It allocates only a temporary native path; no InputStream is opened or
+ * published. A subsequent ImageIO(URL) open can still observe real FS races.
+ * This is a trusted imported-directory adapter, not a symlink sandbox. */
+mc_registry_status mc_resource_files_locate(mc_resource_files *, const char *absolute_name,
+                                            bool *found);
 #endif

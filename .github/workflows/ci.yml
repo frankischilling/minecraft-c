@@ -81,6 +81,13 @@ jobs:
           -DMC_ENABLE_RESOURCE_LOOKUP_OBSERVERS=ON
       - name: Build
         run: cmake --build build
+      # Preserve only scheduling estimates. Every test still runs from this build.
+      - name: Restore test timing estimates
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: build/Testing/Temporary/CTestCostData.txt
+          key: linux-ubuntu24.04-${{ matrix.compiler }}-ctest-costs-v1-${{ github.sha }}
+          restore-keys: linux-ubuntu24.04-${{ matrix.compiler }}-ctest-costs-v1-
       - name: Test
         run: xvfb-run -a env LIBGL_ALWAYS_SOFTWARE=1 ctest --test-dir build --parallel 4 --output-on-failure
       - name: Check controller mirror identities
@@ -112,6 +119,13 @@ jobs:
           -DMC_ENABLE_RESOURCE_LOOKUP_OBSERVERS=ON
       - name: Build
         run: cmake --build build --config Debug --parallel 4
+      # Preserve only scheduling estimates. Every test still runs from this build.
+      - name: Restore test timing estimates
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: build/Testing/Temporary/CTestCostData.txt
+          key: windows-2022-msvc-ctest-costs-v1-${{ github.sha }}
+          restore-keys: windows-2022-msvc-ctest-costs-v1-
       - name: Test
         run: ctest --test-dir build -C Debug --parallel 4 --output-on-failure
       - name: Check controller mirror identities

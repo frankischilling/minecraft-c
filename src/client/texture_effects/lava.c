@@ -1,3 +1,4 @@
+#include "base.h"
 #include "lava_construction.h"
 #include "mc/block/registry/runtime.h"
 #include <float.h>
@@ -8,6 +9,7 @@ _Static_assert(FLT_RADIX == 2 && FLT_MANT_DIG == 24 && FLT_EVAL_METHOD == 0,
                "cg animation binary32 evaluation profile");
 
 struct mc_client_lava_texture_effect {
+    mc_client_texture_effect base;
     mc_registry_classes *registry;
     mc_lava_texture_state state;
     size_t maximum;
@@ -51,6 +53,8 @@ allocate_actual(mc_registry_classes *registry, mc_java_random_profile *profile,
         return fail(error, MC_LAVA_TEXTURE_REGISTRY_FAILED, "lava texture Registry namespace", NULL,
                     -1, -1);
     }
+    owner->base.kind = MC_TEXTURE_EFFECT_LAVA;
+    owner->base.holds = 1;
     owner->registry = registry;
     owner->profile = profile;
     owner->trig = trig;
@@ -131,15 +135,15 @@ mc_lava_texture_status mc_client_lava_texture_construct(mc_client_lava_texture_e
         else {
             const int32_t texture = mc_block_fields_get(block)->bm; /* cg4 argument before aw7. */
             mc_lava_texture_fields *f = &owner->state.fields;
-            /* aw Object1; actual array8 and fields10,15,20,25,30,35. */
-            f->a = array(owner, 1024, "aw", 8, 7, &error);
-            if (f->a != NULL) {
-                f->a_length = 1024;
-                f->c = false;
-                f->d = 0;
-                f->e = 1;
-                f->f = 0;
-                f->b = texture;
+            mc_aw_error aw = {0};
+            const mc_aw_slots aw_slots = {&f->a, &f->a_length, &f->b, &f->c, &f->d, &f->e, &f->f};
+            const bool base_done = mc_texture_aw_construct(aw_slots, owner->maximum,
+                                                           &owner->state.array_bytes, texture, &aw);
+            if (!base_done)
+                fail(&error, aw.limit ? MC_LAVA_TEXTURE_LIMIT : MC_LAVA_TEXTURE_ALLOCATION_FAILED,
+                     aw.limit ? "lava texture native array quota" : "lava texture array allocation",
+                     "aw", 8, 7);
+            if (base_done) {
                 const float **slots[] = {&f->g, &f->h, &f->i, &f->j};
                 size_t *lengths[] = {&f->g_length, &f->h_length, &f->i_length, &f->j_length};
                 /* Exact cg newarray PCs. Their completed publications are
@@ -242,6 +246,7 @@ mc_lava_texture_status mc_client_lava_texture_animate(mc_client_lava_texture_eff
              -1, -1);
     else {
         owner->animating = true;
+        owner->base.active = true;
         mc_lava_texture_fields *f = &owner->state.fields;
         for (int32_t x = 0; x < 16; ++x) {
             for (int32_t y = 0; y < 16; ++y) {
@@ -363,6 +368,7 @@ mc_lava_texture_status mc_client_lava_texture_animate(mc_client_lava_texture_eff
         }
     finished:
         owner->animating = false;
+        owner->base.active = false;
     }
     if (out != NULL)
         *out = error;
@@ -396,8 +402,14 @@ mc_lava_texture_status mc_client_lava_texture_retire(mc_client_lava_texture_effe
     mc_client_lava_texture_effect *owner = *slot;
     if (owner == NULL)
         return MC_LAVA_TEXTURE_OK;
-    if (owner->state.phase == MC_LAVA_TEXTURE_CONSTRUCTING || owner->animating)
+    if (owner->state.phase == MC_LAVA_TEXTURE_CONSTRUCTING || owner->animating ||
+        owner->base.active)
         return fail(error, MC_LAVA_TEXTURE_BUSY, "lava effect operation entered", NULL, -1, -1);
+    if (owner->base.holds > 1) {
+        --owner->base.holds;
+        *slot = NULL;
+        return MC_LAVA_TEXTURE_OK;
+    }
     mc_registry_error cause = {0};
     if (mc_registry_classes_release(owner->registry, &cause) != MC_REGISTRY_OK) {
         if (error != NULL)
@@ -414,4 +426,8 @@ mc_lava_texture_status mc_client_lava_texture_retire(mc_client_lava_texture_effe
     free(owner);
     *slot = NULL;
     return MC_LAVA_TEXTURE_OK;
+}
+
+mc_client_texture_effect *mc_client_lava_texture_as_effect(mc_client_lava_texture_effect *owner) {
+    return owner == NULL ? NULL : &owner->base;
 }

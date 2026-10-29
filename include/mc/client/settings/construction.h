@@ -7,6 +7,9 @@
 typedef struct mc_game_settings_classes mc_game_settings_classes;
 typedef struct client_application client_application;
 
+typedef struct mc_java_typed_file_writer mc_java_typed_file_writer;
+typedef struct mc_java_typed_file_writer_error mc_java_typed_file_writer_error;
+
 typedef enum mc_game_settings_source_phase {
     MC_GAME_SETTINGS_SOURCE_RAW,
     MC_GAME_SETTINGS_SOURCE_CONSTRUCTING,
@@ -31,10 +34,13 @@ typedef struct mc_game_settings_source_site {
 typedef struct mc_game_settings_source_error {
     mc_game_settings_error native;
     int thread_error;
-    mc_game_settings_source_site site, child;
+    mc_game_settings_source_site site, child, exception_site;
     mc_java_file_error file;
     mc_java_writer_error output;
     mc_java_writer_state output_state;
+    /* Borrowed from this owner's last typed save attempt until its next save
+     * or retirement mutation. The actual FOS/Writer prefix stays retained. */
+    const mc_java_typed_file_writer_error *typed_output;
     mc_game_settings_source_exception source_exception;
     const char *exception_class;
     /* NULL means the actual Java Throwable message was not constructed/known.
@@ -73,6 +79,8 @@ typedef struct mc_game_settings_source_state {
     size_t source_stores;
     const int32_t *stores;
     int32_t last_store_pc, last_load_pc;
+    int32_t last_save_pc;
+    const mc_java_typed_file_writer *save_writer; /* Same next-mutation lifetime. */
     bool active, reader_present;
 } mc_game_settings_source_state;
 

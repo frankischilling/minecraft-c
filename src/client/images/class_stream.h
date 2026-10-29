@@ -40,6 +40,16 @@ mc_client_class_stream_status mc_client_class_stream_open(const mc_registry_reso
                                                           mc_client_class_stream **out,
                                                           mc_client_class_stream_error *);
 mc_client_image_io_input mc_client_class_stream_image_input(mc_client_class_stream *);
+
+/* Actual InputStream.available()>0 observation for the shared Reader kernel.
+ * Uses the SAME retained source/byte identity under its existing active guard.
+ * A missing optional provider ready callback has that input's documented false
+ * default. False includes a provider availability IOException, as declared by
+ * the canonical resource interface. Native admission failure leaves out
+ * unchanged. Nested read/ready/retire during an external callback is BUSY. */
+mc_client_class_stream_status mc_client_class_stream_ready(mc_client_class_stream *, bool *out,
+                                                           mc_client_class_stream_error *);
+
 bool mc_client_class_stream_inspect(const mc_client_class_stream *, mc_client_class_stream_error *);
 /* Native file retirement, distinctly not source InputStream.close. ImageIO
  * itself leaves input open. The actual close callback runs under this owner's

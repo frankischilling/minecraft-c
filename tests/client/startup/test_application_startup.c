@@ -1,10 +1,13 @@
 #include "client/gui/loading_internal.h"
+#include "client/particles/effect_renderer_internal.h"
 #include "client/startup/application_construction_internal.h"
 #include "client/startup/application_directory_classes.h"
 #include "client/startup/application_owner_internal.h"
 #include "client/startup/application_startup.h"
+#include "client/startup/application_startup_effects.h"
 #include "client/startup/application_startup_input.h"
 #include "client/startup/application_startup_internal.h"
+#include "client/startup/application_startup_rendering.h"
 #include "client/startup/application_startup_statistics.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/resources/files/files.h"
@@ -91,6 +94,7 @@ typedef struct startup_fixture {
     mc_client_startup_error *error;
     mc_resource_files *imported_files;
     mc_resource_files *texture_files; /* Actual jar-child class-resource provider. */
+    mc_math_trig *effect_trig;        /* Explicit initialized immutable native prerequisite. */
 } startup_fixture;
 
 static int startup_services_options(startup_fixture *f,
@@ -130,6 +134,10 @@ static int startup_icons(startup_fixture *f, const char *imported_resources) {
     free(jar_root);
     CHECK(class_source == MC_REGISTRY_OK);
     f->services.texture_resources = mc_resource_files_source(f->texture_files);
+    f->services.class_files = f->texture_files;
+    f->effect_trig = malloc(sizeof(*f->effect_trig));
+    CHECK(f->effect_trig != NULL && mc_math_trig_init(f->effect_trig));
+    f->services.texture_effect_trig = f->effect_trig;
     return 0;
 }
 
@@ -146,6 +154,8 @@ static int startup_services_close(startup_fixture *f, fixture *runtime) {
     /* GUI/ge class owners borrow the class provider through final retirement.
      * End the actual runtime owners before consuming either provider. */
     CHECK(fixture_close(runtime) == 0);
+    free(f->effect_trig);
+    f->effect_trig = NULL;
     if (f->texture_files != NULL) {
         CHECK(mc_resource_files_free(f->texture_files) == MC_REGISTRY_OK);
         f->texture_files = NULL;
@@ -1107,6 +1117,10 @@ static int prepared_line_lifetime(const char *resources, const char *imported,
 
 #include "application_startup_statistics_controls.inc"
 
+/* Effect-failure profiles use the session lifetime helpers defined above. */
+#include "application_startup_effects_controls.inc"
+#include "application_startup_rendering_controls.inc"
+
 int main(int argc, char **argv) {
     CHECK(argc >= 3);
     if (strcmp(argv[2], "entity-renderer-cpu") == 0)
@@ -1124,6 +1138,16 @@ int main(int argc, char **argv) {
     } else if (strcmp(argv[2], "statistics-null-z") == 0) {
         CHECK(argc == 3);
         CHECK(statistics_null_z(argv[1]) == 0);
+    } else if (strcmp(argv[2], "window-render-global-limit") == 0 ||
+               strcmp(argv[2], "window-particle-constructor-limit") == 0) {
+        CHECK(argc == 4);
+        CHECK(rendering_failure_window(argv[1], argv[3],
+                                       strcmp(argv[2], "window-render-global-limit") == 0) == 0);
+    } else if (strcmp(argv[2], "window-effects-constructor-limit") == 0 ||
+               strcmp(argv[2], "window-effects-list-limit") == 0) {
+        CHECK(argc == 4);
+        CHECK(effects_failure_window(
+                  argv[1], argv[3], strcmp(argv[2], "window-effects-constructor-limit") == 0) == 0);
     } else if (strcmp(argv[2], "window-session") == 0 ||
                strcmp(argv[2], "window-session-gl-error") == 0 ||
                strcmp(argv[2], "window-statistics-foreign-ready") == 0) {

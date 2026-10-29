@@ -265,9 +265,8 @@ mc_java_output_status mc_java_file_output_retain(mc_java_file_output *f,
     return e.status;
 }
 
-mc_java_output_status mc_output_file_write_long_bytes(mc_java_file_output *f,
-                                                      const uint8_t bytes[8],
-                                                      mc_java_output_error *out) {
+static mc_java_output_status file_write_bytes(mc_java_file_output *f, const uint8_t *bytes,
+                                              size_t length, mc_java_output_error *out) {
     mc_java_output_error e = {0};
     if (admit(f, &e) != MC_JAVA_OUTPUT_OK) {
         if (out != NULL)
@@ -275,16 +274,18 @@ mc_java_output_status mc_output_file_write_long_bytes(mc_java_file_output *f,
         return e.status;
     }
     f->active = true;
+    if (length == 0)
+        return finish(f, &e, out);
     if (f->closed || f->fd == NULL || f->fd->file == NULL)
         mc_output_fail(&e, MC_JAVA_OUTPUT_SOURCE_IO, "java/io/FileOutputStream", "write", "([BII)V",
                        16, "actual closed binary write", EBADF, true);
     else if (f->committed > f->options.max_written_bytes ||
-             UINT64_C(8) > f->options.max_written_bytes - f->committed)
+             (uint64_t)length > f->options.max_written_bytes - f->committed)
         mc_output_fail(&e, MC_JAVA_OUTPUT_LIMIT, "java/io/FileOutputStream", "write", "([BII)V", 16,
                        "native cumulative output bound", 0, false);
     else {
         size_t sent = 0;
-        while (sent < 8) {
+        while (sent < length) {
             size_t n = 0;
             mc_byte_output_error ne;
             if (f->writes == SIZE_MAX) {
@@ -293,8 +294,8 @@ mc_java_output_status mc_output_file_write_long_bytes(mc_java_file_output *f,
                 break;
             }
             ++f->writes;
-            const bool ok = mc_byte_output_write(f->fd->file, bytes + sent, 8 - sent, &n, &ne);
-            if (n > 8 - sent) {
+            const bool ok = mc_byte_output_write(f->fd->file, bytes + sent, length - sent, &n, &ne);
+            if (n > length - sent) {
                 mc_output_fail(&e, MC_JAVA_OUTPUT_NATIVE_FAILURE, NULL, NULL, NULL, -1,
                                "native output count contract", 0, false);
                 break;
@@ -316,6 +317,27 @@ mc_java_output_status mc_output_file_write_long_bytes(mc_java_file_output *f,
         }
     }
     return finish(f, &e, out);
+}
+
+mc_java_output_status mc_output_file_write_long_bytes(mc_java_file_output *f,
+                                                      const uint8_t bytes[8],
+                                                      mc_java_output_error *out) {
+    return file_write_bytes(f, bytes, 8, out);
+}
+
+mc_java_output_status mc_java_file_output_write_span(mc_java_file_output *f, const uint8_t *bytes,
+                                                     size_t length, mc_java_output_error *out) {
+    if (bytes == NULL || length > INT32_MAX) {
+        mc_java_output_error error = {0};
+        const mc_java_output_status status =
+            bytes == NULL ? MC_JAVA_OUTPUT_ARGUMENT : MC_JAVA_OUTPUT_LIMIT;
+        mc_output_fail(&error, status, NULL, NULL, NULL, -1, "native FOS nonnull counted byte span",
+                       0, false);
+        if (out != NULL)
+            *out = error;
+        return status;
+    }
+    return file_write_bytes(f, bytes, length, out);
 }
 
 mc_java_output_status mc_java_file_output_flush(mc_java_file_output *f, mc_java_output_error *out) {
@@ -448,4 +470,36 @@ bool mc_java_file_output_inspect(const mc_java_file_output *f, mc_java_file_outp
                                                                               : "<init>",
                                        .failure = &f->failure};
     return true;
+}
+
+mc_java_output_status mc_java_file_output_write_array(mc_java_file_output *f,
+                                                      const mc_java_byte_array_view *array,
+                                                      int32_t offset, int32_t length,
+                                                      mc_java_output_error *out) {
+    mc_java_output_error e = {0};
+    if (admit(f, &e) != MC_JAVA_OUTPUT_OK) {
+        if (out != NULL)
+            *out = e;
+        return e.status;
+    }
+    if (array != NULL && (array->length < 0 || (array->length != 0 && array->bytes == NULL)))
+        mc_output_fail(&e, MC_JAVA_OUTPUT_ARGUMENT, NULL, NULL, NULL, -1, "native byte-array view",
+                       0, false);
+    else if (array == NULL)
+        mc_output_fail(&e, MC_JAVA_OUTPUT_SOURCE_NULL, "java/io/FileOutputStream", "write",
+                       "([BII)V", 16, "actual null byte array", 0, true);
+    else if (offset < 0 || length < 0 || offset > array->length ||
+             length > array->length - offset) {
+        mc_output_fail(&e, MC_JAVA_OUTPUT_SOURCE_BOUNDS, "java/io/FileOutputStream", "write",
+                       "([BII)V", 16, "actual byte-array bounds", 0, true);
+        e.cause.exception_class = "java/lang/IndexOutOfBoundsException";
+    } else {
+        /* No pointer arithmetic on a permitted empty native array. */
+        static const uint8_t empty = 0;
+        const uint8_t *bytes = length == 0 ? &empty : array->bytes + (size_t)offset;
+        return file_write_bytes(f, bytes, (size_t)length, out);
+    }
+    if (out != NULL)
+        *out = e;
+    return e.status;
 }

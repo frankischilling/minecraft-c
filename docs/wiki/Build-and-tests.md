@@ -1,5 +1,24 @@
 # Build and tests
 
+The current Windows MSVC Debug source passes 460 selected CTests without
+failures or skips, including real startup windows, resource HTTP/XML and source
+menu controls. The selection excludes configured reference-label profiles.
+Formatting checks 1,319 files. A separate headless Release ALL build passes.
+Current Linux qualification remains separate.
+
+Hosted baseline `5d61f89` passes [all four jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40746811719):
+410 Windows cases and 427 per Linux compiler, 1,264 total, without skips.
+The [testing record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
+keeps this hosted baseline separate from newer local results.
+[Build instructions](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/building.md)
+cover prerequisites, resource import and opt-in window/reference profiles.
+
+CI caches CTest timing estimates by platform/compiler and retains four workers
+and complete suites. A later warm hosted run must establish the speedup.
+
+## Earlier checkpoints
+
+
 Checkpoint `671c003` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40639713371):
 1,226 public/JDK cases, with 398 Windows and 414 per Linux compiler. None failed
 or skipped. Formatting covers 1,164 files. Native jobs check current source

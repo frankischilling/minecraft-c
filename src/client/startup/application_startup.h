@@ -8,9 +8,11 @@
 #include "../render_engine/colorizer.h"
 #include "application_owner.h"
 #include "directory_inputs.h"
+#include "mc/client/particles/effect_renderer.h"
 #include "mc/client/render/manager/manager.h"
 #include "mc/client/saves/save_format.h"
 #include "mc/client/settings/construction.h"
+#include "mc/client/texture_effects/effect.h"
 #include "mc/client/texture_packs/construction.h"
 #include "mc/client/world/entity_renderer.h"
 
@@ -22,6 +24,8 @@ typedef struct mc_client_startup_stats_call mc_client_startup_stats_call;
 typedef struct mc_client_startup_input_call mc_client_startup_input_call;
 
 typedef struct mc_client_startup_graphics_call mc_client_startup_graphics_call;
+typedef struct mc_client_startup_effects_call mc_client_startup_effects_call;
+typedef struct mc_client_startup_rendering_call mc_client_startup_rendering_call;
 
 typedef enum mc_client_startup_status {
     MC_CLIENT_STARTUP_OK,
@@ -47,7 +51,12 @@ typedef enum mc_client_startup_status {
     MC_CLIENT_STARTUP_LOGO_FAILED,
     MC_CLIENT_STARTUP_STATISTICS_FAILED,
     MC_CLIENT_STARTUP_INPUT_FAILED,
-    MC_CLIENT_STARTUP_GRAPHICS_FAILED
+    MC_CLIENT_STARTUP_GRAPHICS_FAILED,
+    MC_CLIENT_STARTUP_CX_FAILED,
+    MC_CLIENT_STARTUP_SOUND_FAILED,
+    MC_CLIENT_STARTUP_EFFECTS_FAILED,
+    MC_CLIENT_STARTUP_RENDER_GLOBAL_FAILED,
+    MC_CLIENT_STARTUP_PARTICLES_FAILED
 } mc_client_startup_status;
 
 typedef enum mc_client_startup_phase {
@@ -94,6 +103,8 @@ typedef struct mc_client_startup_error {
     const mc_client_startup_stats_call *statistics; /* Same call-record lifetime as logo. */
     const mc_client_startup_input_call *input;
     const mc_client_startup_graphics_call *graphics;
+    const mc_client_startup_effects_call *effects;
+    const mc_client_startup_rendering_call *rendering;
     mc_client_entity_renderer_error entity_renderer;
     mc_client_manager_error manager;
 } mc_client_startup_error;
@@ -107,6 +118,12 @@ typedef struct mc_client_startup_services {
     /* Borrowed real class resource provider; must outlive startup and every
      * retained Pack/stream. Read only at actual reached Pack operations. */
     const mc_registry_resources *texture_resources;
+    /* Real class resource namespace and already initialized immutable native
+     * trig prerequisite. Borrowed through every retained effect occurrence.
+     * No cast of texture_resources->context, eager activation or early check.
+     * class_files must expose the SAME texture_resources identity. */
+    mc_resource_files *class_files;
+    const mc_math_trig *texture_effect_trig;
 } mc_client_startup_services;
 
 typedef struct mc_client_startup_options {
@@ -119,10 +136,15 @@ typedef struct mc_client_startup_options {
     mc_client_colorizer_options colorizers;
     mc_client_entity_renderer_options entity_renderer;
     mc_client_manager_options manager;
+    mc_texture_effect_options texture_effects; /* Native new-owner quota; zero selects defaults. */
+    size_t maximum_effect_registrations;       /* Canonical g List bound; zero selects4096. */
+    mc_client_render_engine_options render_global;
+    mc_effect_renderer_options particles;
 } mc_client_startup_options;
 
 typedef struct mc_client_startup_state {
     mc_client_startup_phase phase;
+    const mc_client_startup_rendering_call *rendering;
     const client_application *app;
     const mc_client_display *display;
     const mc_client_display_mode *mode;
@@ -165,7 +187,10 @@ mc_client_startup_options mc_client_application_startup_default_options(void);
 /* Native record/admission only. Requires the genuine constructor-READY App,
  * registered actual storage, no existing startup record or later owners.
  * It retains the supplied concrete services. No SDL/System/File IO or source
- * field store occurs here. App storage is borrowed until successful retire. */
+ * field store occurs here. App storage is borrowed until successful retire.
+ * The same record retains actual n/dn constructor operands and failed owners;
+ * callers cannot retire or rebind their stable App/Engine/Display dependencies
+ * outside this exclusive owner contract. */
 mc_client_startup_status mc_client_application_startup_allocate(client_application *,
                                                                 const mc_client_startup_services *,
                                                                 const mc_client_startup_options *,
@@ -173,7 +198,10 @@ mc_client_startup_status mc_client_application_startup_allocate(client_applicati
                                                                 mc_client_startup_error *);
 /* One shot: actual run J=true2, then invokes startup a6. The implemented
  * null-Canvas/windowed prefix performs actual Display methods and the real
- * directory/SaveFormat/actual Settings, Pack, RenderEngine and bitmap FontRenderer calls. Its
+ * directory/SaveFormat/actual Settings, Pack, RenderEngine and bitmap FontRenderer calls. Later
+ * actual calls include statistics, input, graphics, sound/effects, n625/g628,
+ * viewport641, dn657/j660, cz673/U676/start683 and Post startup693.
+ * The next unconnected caller allocation is uq697. Its
  * finite later frontier is NOT a return from a749 or run32, and is never a whole-client/playability
  * claim. */
 mc_client_startup_status mc_client_application_run_prefix(mc_client_application_startup *,
@@ -187,7 +215,9 @@ bool mc_client_application_startup_inspect(const mc_client_application_startup *
 /* Native terminal cleanup has no source J/o store. BUSY/error retains pointer
  * and all still-owned children. External operations are exclusive; source f
  * may be called serially while the retained stopped attempt remains live.
- * Native manager consumer detaches before waiting on global F dependencies.
+ * Strict n/dn retirement precedes all earlier effects/resources; extra n/dn
+ * occurrences preserve the complete App/Engine/Display graph on BUSY. Native
+ * manager consumer detaches before waiting on global F dependencies.
  * Only actual outer authority retires global manager/hands/resources.
  * Strict px retirement precedes its actual sj/Engine/Settings dependencies;
  * an external px occurrence blocks startup and App retirement. Strict font

@@ -3,6 +3,7 @@
 #endif
 
 #include "mc/client/sound/sound_file.h"
+#include "../../platform/files/url_path.h"
 
 #include <errno.h>
 #include <fcntl.h>
@@ -48,80 +49,6 @@ static mc_sound_status result(mc_sound_error *error, mc_sound_status status, int
                                   .exception = MC_SOUND_EXCEPTION_NONE,
                                   .random_status = MC_JAVA_RANDOM_PROFILE_OK};
     return status;
-}
-
-static bool separator(char c) {
-#ifdef _WIN32
-    return c == '/' || c == '\\';
-#else
-    return c == '/';
-#endif
-}
-
-static bool absolute_path(const char *path, size_t length) {
-#ifdef _WIN32
-    if (length >= 4u && separator(path[0]) && separator(path[1]) &&
-        (path[2] == '.' || path[2] == '?') && separator(path[3]))
-        return false;
-    return (length >= 3u &&
-            ((path[0] >= 'a' && path[0] <= 'z') || (path[0] >= 'A' && path[0] <= 'Z')) &&
-            path[1] == ':' && separator(path[2])) ||
-           (length >= 3u && separator(path[0]) && separator(path[1]) && !separator(path[2]));
-#else
-    return length != 0 && path[0] == '/';
-#endif
-}
-
-static bool next_utf8(const char *text, size_t length, size_t *offset, uint32_t *out) {
-    const unsigned char *bytes = (const unsigned char *)text;
-    uint32_t value = bytes[(*offset)++];
-    if (value < 128u) {
-        *out = value;
-        return true;
-    }
-    size_t following;
-    uint32_t minimum;
-    if (value >= 194u && value <= 223u) {
-        following = 1;
-        minimum = 128u;
-        value &= 31u;
-    } else if (value >= 224u && value <= 239u) {
-        following = 2;
-        minimum = 2048u;
-        value &= 15u;
-    } else if (value >= 240u && value <= 244u) {
-        following = 3;
-        minimum = 65536u;
-        value &= 7u;
-    } else {
-        return false;
-    }
-    if (following > length - *offset)
-        return false;
-    for (size_t i = 0; i < following; ++i) {
-        const uint32_t next = bytes[(*offset)++];
-        if ((next & 192u) != 128u)
-            return false;
-        value = value * 64u + (next & 63u);
-    }
-    if (value < minimum || value > 0x10ffffu || (value >= 0xd800u && value <= 0xdfffu))
-        return false;
-    *out = value;
-    return true;
-}
-
-static bool quote_ascii(uint32_t unit) {
-    if ((unit >= 'a' && unit <= 'z') || (unit >= 'A' && unit <= 'Z') ||
-        (unit >= '0' && unit <= '9'))
-        return false;
-    const char *allowed = "-_.!~*'():@&=+$,;/";
-    return unit == 0 || strchr(allowed, (int)unit) == NULL;
-}
-
-static bool quote_unicode(uint32_t unit) {
-    return (unit >= 0x80u && unit <= 0x9fu) || unit == 0xa0u || unit == 0x1680u ||
-           (unit >= 0x2000u && unit <= 0x200au) || unit == 0x2028u || unit == 0x2029u ||
-           unit == 0x202fu || unit == 0x205fu || unit == 0x3000u;
 }
 
 #ifdef _WIN32
@@ -175,11 +102,11 @@ static mc_sound_status admit_path(const char *native_utf8_path, size_t *out,
         ++length;
     if (length > MC_SOUND_FILE_MAX_PATH_BYTES)
         return result(error, MC_SOUND_LIMIT, 0, "sound File path length");
-    if (!absolute_path(native_utf8_path, length))
+    if (!mc_url_path_absolute(native_utf8_path, length))
         return result(error, MC_SOUND_UNSUPPORTED_PATH, 0, "sound File requires absolute path");
     for (size_t at = 0; at < length;) {
         uint32_t unit;
-        if (!next_utf8(native_utf8_path, length, &at, &unit))
+        if (!mc_url_path_next_utf8(native_utf8_path, length, &at, &unit))
             return result(error, MC_SOUND_UNSUPPORTED_PATH, 0, "sound File UTF8 path");
     }
     *out = length;
@@ -206,7 +133,7 @@ mc_sound_status mc_sound_file_resolve(const char *native_utf8_path, mc_sound_fil
     }
     size_t write_at = 0, read_at = 0;
 #ifdef _WIN32
-    if (separator(native_utf8_path[0]) && separator(native_utf8_path[1])) {
+    if (mc_url_path_separator(native_utf8_path[0]) && mc_url_path_separator(native_utf8_path[1])) {
         file->path[write_at++] = '\\';
         file->path[write_at++] = '\\';
         read_at = 2;
@@ -216,11 +143,11 @@ mc_sound_status mc_sound_file_resolve(const char *native_utf8_path, mc_sound_fil
     const char native_separator = '/';
 #endif
     while (read_at < length) {
-        if (!separator(native_utf8_path[read_at])) {
+        if (!mc_url_path_separator(native_utf8_path[read_at])) {
             file->path[write_at++] = native_utf8_path[read_at++];
             continue;
         }
-        while (read_at < length && separator(native_utf8_path[read_at]))
+        while (read_at < length && mc_url_path_separator(native_utf8_path[read_at]))
             ++read_at;
         if (read_at != length || write_at == 0
 #ifdef _WIN32
@@ -237,41 +164,11 @@ mc_sound_status mc_sound_file_resolve(const char *native_utf8_path, mc_sound_fil
         mc_sound_file_free(file);
         return status;
     }
-    size_t url_at = 0;
-#ifdef _WIN32
-    if (separator(file->path[0]) && separator(file->path[1])) {
-        file->url_path[url_at++] = '/';
-        file->url_path[url_at++] = '/';
-    } else {
-        file->url_path[url_at++] = '/';
+    if (!mc_url_path_encode(file->path, length, is_directory, file->url_path, length * 3u + 6u,
+                            &file->url_length)) {
+        mc_sound_file_free(file);
+        return result(error, MC_SOUND_UNSUPPORTED_PATH, 0, "sound File URI native admission");
     }
-#endif
-    static const char hex[] = "0123456789ABCDEF";
-    for (size_t at = 0; at < length;) {
-        const size_t first = at;
-        uint32_t unit;
-        (void)next_utf8(file->path, length, &at, &unit);
-        if (separator(file->path[first])) {
-            file->url_path[url_at++] = '/';
-        } else if ((unit < 128u && quote_ascii(unit)) || quote_unicode(unit)) {
-            for (size_t i = first; i < at; ++i) {
-                const unsigned int byte = (unsigned char)file->path[i];
-                file->url_path[url_at++] = '%';
-                file->url_path[url_at++] = (uint16_t)hex[byte >> 4u];
-                file->url_path[url_at++] = (uint16_t)hex[byte & 15u];
-            }
-        } else if (unit >= 65536u) {
-            const uint32_t pair = unit - 65536u;
-            file->url_path[url_at++] = (uint16_t)(0xd800u + (pair >> 10u));
-            file->url_path[url_at++] = (uint16_t)(0xdc00u + (pair & 1023u));
-        } else {
-            file->url_path[url_at++] = (uint16_t)unit;
-        }
-    }
-    if (is_directory && file->url_path[url_at - 1u] != '/')
-        file->url_path[url_at++] = '/';
-    file->url_path[url_at] = 0;
-    file->url_length = url_at;
     *out = file;
     return result(error, MC_SOUND_OK, 0, "sound File identity resolved");
 }

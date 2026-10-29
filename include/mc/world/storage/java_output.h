@@ -15,7 +15,8 @@ typedef enum mc_java_output_status {
     MC_JAVA_OUTPUT_SOURCE_NULL,
     MC_JAVA_OUTPUT_SOURCE_IO,
     MC_JAVA_OUTPUT_NATIVE_PROVIDER,
-    MC_JAVA_OUTPUT_NATIVE_FAILURE
+    MC_JAVA_OUTPUT_NATIVE_FAILURE,
+    MC_JAVA_OUTPUT_SOURCE_BOUNDS
 } mc_java_output_status;
 
 typedef enum mc_java_output_phase {
@@ -106,6 +107,16 @@ mc_java_output_status mc_java_file_output_allocate(mc_java_files *, const mc_jav
 mc_java_output_status mc_java_file_output_construct(mc_java_file_output *, mc_java_file *,
                                                     mc_java_output_error *);
 mc_java_output_status mc_java_file_output_retain(mc_java_file_output *, mc_java_output_error *);
+/* Concrete nonnull counted byte-array slice, offset zero, length<=INT32_MAX.
+ * No Java null-array/index representation or copy/OOM timing is claimed.
+ * Native owner/reentry admission precedes operations. An admitted zero span
+ * performs no fd check/write, including after actual source close; nonzero
+ * closed writes retain the existing Source IOException. Full/partial native
+ * writes share the canonical DOS8 kernel and report committed prefix bytes.
+ * EINTR/ENOMEM remain its declared native provider frontier, never fabricated
+ * Java exceptions or generic Native failures swallowed by PrintWriter. */
+mc_java_output_status mc_java_file_output_write_span(mc_java_file_output *, const uint8_t *, size_t,
+                                                     mc_java_output_error *);
 mc_java_output_status mc_java_file_output_flush(mc_java_file_output *, mc_java_output_error *);
 mc_java_output_status mc_java_file_output_source_close(mc_java_file_output *,
                                                        mc_java_output_error *);
@@ -123,6 +134,7 @@ mc_java_output_status mc_java_data_output_source_close(mc_java_data_output *,
                                                        mc_java_output_error *);
 mc_java_output_status mc_java_data_output_release(mc_java_data_output **, mc_java_output_error *);
 bool mc_java_data_output_inspect(const mc_java_data_output *, mc_java_data_output_state *);
+
 /* Release success always consumes/nulls this occurrence, including nonfinal.
  * BUSY/failed cleanup preserves it. Final retirement closes only a still armed
  * native handle, with no source flush/close credit. A close error consumes that
@@ -131,4 +143,18 @@ bool mc_java_data_output_inspect(const mc_java_data_output *, mc_java_data_outpu
  * Inspect failure pointers borrow the same owner until successful final release.
  * ThreadDeath/general Throwable services are not reached by this concrete FOS
  * profile; native policy faults never become fabricated caught Java Throwables. */
+/* NULL view is Java null byte[]. A nonnull array is native readable storage,
+ * with declared nonnegative Java length. Null/bounds checks occur in the
+ * actual FOS invocation, after DOS's nullable out receiver priority. */
+typedef struct mc_java_byte_array_view {
+    const uint8_t *bytes;
+    int32_t length;
+} mc_java_byte_array_view;
+
+mc_java_output_status mc_java_file_output_write_array(mc_java_file_output *,
+                                                      const mc_java_byte_array_view *, int32_t,
+                                                      int32_t, mc_java_output_error *);
+mc_java_output_status mc_java_data_output_write_array(mc_java_data_output *,
+                                                      const mc_java_byte_array_view *, int32_t,
+                                                      int32_t, mc_java_output_error *);
 #endif

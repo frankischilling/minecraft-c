@@ -60,8 +60,8 @@
       "sha256": "88db116e2f3f6044f3a6d3faac4bf87134ee833a13b5b24bda8260d653e516f7"
     },
     "src/block/registry/registry_internal.h": {
-      "bytes": 13672,
-      "sha256": "dfa07e99d8ebd2483fc912b47eeacacf5d50bf88ec0f8e529e7c034653344ecf"
+      "bytes": 13838,
+      "sha256": "ade35ac909f9a1c66f0905095655971fdeede5845d466936952fd32d1ea700ae"
     },
     "src/block/registry/runtime.c": {
       "bytes": 20864,
@@ -88,8 +88,8 @@
       "sha256": "128ab3c15215208ec5e66987896d69ebeefec68265019f85205e3b6ab7964392"
     },
     "src/client/texture_effects/lava.c": {
-      "bytes": 20128,
-      "sha256": "ef781403b5a76058d2258db6d143edaafa18dbf0867d137da2d62c4a66cf3839"
+      "bytes": 20901,
+      "sha256": "8f645586f6deb694c4ee7c8df9e4cca72636e887073650d68f381410dc7260c1"
     },
     "tests/client/texture_effects/test_lava_animation.c": {
       "bytes": 18844,

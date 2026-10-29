@@ -20,10 +20,20 @@ writer from the live Session and game directory, publishes Minecraft.I and
 installs its achievement-description callback. It invokes the startup logo,
 creates the actual keyboard and mouse state, constructs MouseHelper and
 publishes Minecraft.C at offset 380. It then runs Controllers.create383.
-The admitted empty-device path continues through the first GL diagnostic397,
-GL setup through460 and the second diagnostic466. The next unexecuted
-operation is `new cx470`. No later capability-checker publication, sound bind
-or texture-effect registration is credited by this checkpoint.
+The admitted empty-device path continues through both GL diagnostics and setup.
+It constructs the capability checker and publishes `S477`, binds the real
+SoundManager to Settings, and completes nine texture-effect registrations.
+The caller then constructs [RenderGlobal](render-global.md), publishes `g628`,
+sets the viewport, constructs the particle renderer and publishes `j660`.
+Startup constructs the real resource download thread, publishes `U676` and
+starts it at `683`. The worker retains its App, File and output dependencies;
+native retirement requests cancellation and joins before earlier owners retire.
+It uses the original HTTP endpoint, scans local resources on the original
+failure branch, and registers sounds through the real SoundManager pools.
+The caller then performs the third GL diagnostic, `Post startup` at `693`.
+The next unconnected caller operation is GuiIngame allocation at `697`.
+Its independent constructor and the source menu owners exist, but GUI caller
+publication, menu transitions and World entry remain unfinished.
 
 A null Session fails in the genuine statistics constructor at `xi337/cj48`;
 it cannot reach the logo or input setup. The successful Session profile starts
@@ -54,12 +64,34 @@ physical-device mapping stops at the explicit SDK Native12 frontier. The
 official SDL HIDAPI and virtual joystick drivers are enabled; controls attach
 and detach real virtual devices. Polling adds no event pump or FIFO removal.
 
-The two diagnostics call `Minecraft.c(String)` over the same Display. Each
+The reached diagnostics call `Minecraft.c(String)` over the same Display. Each
 invocation consumes exactly one glGetError result. Zero returns immediately;
 nonzero maps GLU text and performs three fresh System.out reads before their
 arguments and println calls. The counted PrintStream pipeline retains source
 return separately from physical output and ordinary swallowed I/O failures.
 See [the GL and output scope](display-sdk.md#startup-gl-setup-and-diagnostics).
+
+## Sound, texture effects and scene constructors
+
+SoundManager uses the actual Settings identity and its canonical options File.
+Setup saves zero music/sound volumes before backend construction, restores the
+values and saves again. The [typed FileWriter](../core/java-writer.md#typed-filewriterfile-bridge)
+keeps those writes on the same File namespace and stream implementation.
+
+The nine registration calls capture the live Engine before evaluating each
+argument. In source order they register the constructor-owned lava and water
+effects, then portal, compass, watch, flowing water, flowing lava and the two
+fire orientations. Each call appends its actual effect and executes its first
+update. Failed construction, appended occurrences and completed updates remain
+separate retained effects; cleanup does not reverse their Random or field stores.
+See [texture effects](texture-effects.md).
+
+RenderGlobal receives the actual App and captured Engine. Its completed owner
+defines the star/sky lists and optional query names before `g` publication.
+The viewport reads the actual width and height independently. The particle
+constructor receives the current nullable World and live Engine; normal startup
+constructs its four Lists before publishing `j`. These steps do not enter a World
+or execute a frame.
 
 ## Failure and retirement
 
@@ -93,9 +125,30 @@ Native retirement releases the candidate's counted occurrence before graphics
 and Display teardown. An external MouseHelper or cursor hold preserves its
 actual Display lease and makes final teardown retryable.
 
+Later scene owners retire before the registered texture effects and Engine.
+External RenderGlobal, particle or effect occurrences return BUSY while keeping
+their App/Engine/Display dependencies alive. Native list/query retirement and
+context leases remain retryable. Completed source publications are not rolled
+back by terminal cleanup.
+
 ## Validation and remaining work
 
-The current startup-tail source passes 47 selected Windows cases; nine Core
+The current increment passes 24 selected Windows cases: six on the production
+successor and eighteen after a test-only triangle-observation correction.
+All production code, headers, CMake and flags are identical across those two
+snapshots. The normal Session performs 181 checks through `j660`, stopping at
+`new cz664`. Typed Writer and Settings-save controls perform 582 and 202 checks;
+the RenderGlobal device control performs 16,723 checks, including complete cleanup.
+No successful case was rerun merely to change its source label.
+
+Clang 18 passes 41 selected cases with ASan, UBSan and leak detection on the
+production successor. That selection excludes the Windows default-directory
+Session and RenderGlobal device profile. GCC qualification remains separate.
+The [testing record](../testing.md#startup-scene-construction-and-typed-settings-save)
+records source scopes and remaining platform checks. These results do not
+establish original-JVM/visual correspondence, World entry or gameplay.
+
+The earlier GL-diagnostic startup-tail source passes 47 selected Windows cases; nine Core
 output cases retain their preceding Windows source scope. Clang 18 and GCC 13
 each pass 41 CPU/protocol and twelve real-device cases with ASan, UBSan and
 leak detection. Fresh Windows normal and real-GL-error Session profiles pass
@@ -133,6 +186,7 @@ The later test record also retains failed-statistics/shared-Font cleanup,
 five prepared logo profiles and cursor controls. Wider Linux qualification is
 still recorded separately from the Windows default-directory profile.
 
-Nonempty physical Controllers mapping, cx construction and later startup
-audio/effects, screen transitions, World/Player publication, frame/tick
-scheduling and the live game loop remain unfinished. The default executable continues to use title/inspection startup.
+Nonempty physical Controllers mapping and later GUI/menu
+transitions, World/Player publication, frame/tick scheduling and the live game
+loop remain unfinished. The default executable continues to use title/inspection
+startup.

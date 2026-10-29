@@ -41,6 +41,16 @@ bool mc_client_ge_int_put(mc_client_direct_int_buffer *, int32_t, mc_client_grap
 bool mc_client_ge_int_get(const mc_client_direct_int_buffer *, int32_t index, int32_t *out,
                           mc_client_graphics_site, mc_client_graphics_error *);
 size_t mc_client_ge_int_remaining(const mc_client_direct_int_buffer *);
+/* Actual unmarked Buffer position/limit operations for newly constructed
+ * direct IntBuffers. No clear/flip/relative-get is implied. The native span
+ * view borrows actual position..limit storage without changing either cursor. */
+bool mc_client_ge_int_position(mc_client_direct_int_buffer *, int32_t, mc_client_graphics_site,
+                               mc_client_graphics_error *);
+bool mc_client_ge_int_limit(mc_client_direct_int_buffer *, int32_t, mc_client_graphics_site,
+                            mc_client_graphics_error *);
+bool mc_client_ge_int_writable_remaining(mc_client_direct_int_buffer *, void **storage,
+                                         size_t *remaining, mc_client_graphics_site,
+                                         mc_client_graphics_error *);
 
 /* Actual List.add kernel used on the same a/b List identities. Source valueOf
  * integers are represented by their exact int32 payload, as in the existing

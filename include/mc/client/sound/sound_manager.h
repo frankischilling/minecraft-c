@@ -147,6 +147,12 @@ mc_sound_status mc_sound_manager_add_file(mc_sound_manager *manager,
 mc_sound_status mc_sound_manager_bind(mc_sound_manager *manager, mc_game_settings *settings,
                                       const mc_game_settings_diagnostics *diagnostics,
                                       mc_sound_manager_report *report, mc_sound_error *error);
+/* End only the native Settings borrow during App retirement. No source bind,
+ * save, cleanup, backend command or volume change. BUSY or an identity mismatch
+ * leaves the manager unchanged; the actual expected Settings must remain live. */
+mc_sound_status mc_sound_manager_detach_settings(mc_sound_manager *manager,
+                                                 const mc_game_settings *expected,
+                                                 mc_sound_error *error);
 mc_sound_status mc_sound_manager_options_changed(mc_sound_manager *manager,
                                                  const mc_game_settings_diagnostics *diagnostics,
                                                  mc_sound_manager_report *report,

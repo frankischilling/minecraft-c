@@ -17,6 +17,9 @@ mc_client_application_lifetime_register(client_application *app,
     atomic_init(&app->timer_hack_holds, 0);
     atomic_init(&app->source_static_holds, 0);
     atomic_init(&app->callback_holds, 0);
+    atomic_init(&app->effect_borrows, 0);
+    atomic_init(&app->resource_thread_borrows, 0);
+    atomic_init(&app->screen_borrows, 0);
     app->native_lifetime_phase = MC_CLIENT_APPLICATION_LIFETIME_REGISTERED;
     return MC_CLIENT_APPLICATION_OWNER_OK;
 }
@@ -38,6 +41,14 @@ mc_client_application_lifetime_retire(client_application *app,
     if (app->startup != NULL)
         return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_BUSY,
                                       "Minecraft attached startup record", NULL, NULL, NULL, 0, 0);
+    if (atomic_load_explicit(&app->resource_thread_borrows, memory_order_seq_cst) != 0)
+        return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_BUSY,
+                                      "Minecraft borrowed by actual resource thread", NULL, NULL,
+                                      NULL, 0, 0);
+    if (atomic_load_explicit(&app->screen_borrows, memory_order_seq_cst) != 0)
+        return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_BUSY,
+                                      "Minecraft borrowed by actual screen or GUI particles", NULL,
+                                      NULL, NULL, 0, 0);
     if (atomic_load_explicit(&app->timer_hack_holds, memory_order_seq_cst) != 0)
         return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_BUSY,
                                       "Minecraft retained by Timer hack owner", NULL, NULL, NULL, 0,
@@ -46,6 +57,10 @@ mc_client_application_lifetime_retire(client_application *app,
         return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_BUSY,
                                       "Minecraft retained by actual kh native borrow", NULL, NULL,
                                       NULL, 0, 0);
+    if (atomic_load_explicit(&app->effect_borrows, memory_order_seq_cst) != 0)
+        return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_BUSY,
+                                      "Minecraft borrowed by actual compass/watch effects", NULL,
+                                      NULL, NULL, 0, 0);
     if (app->source_namespace_borrowed ||
         atomic_load_explicit(&app->source_static_holds, memory_order_seq_cst) != 0)
         return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_BUSY,
@@ -66,7 +81,11 @@ bool mc_client_application_volatile_inspect(const client_application *app,
         .native_worker_holds = atomic_load_explicit(&app->timer_hack_holds, memory_order_seq_cst),
         .native_static_holds =
             atomic_load_explicit(&app->source_static_holds, memory_order_seq_cst),
-        .native_callback_holds = atomic_load_explicit(&app->callback_holds, memory_order_seq_cst)};
+        .native_callback_holds = atomic_load_explicit(&app->callback_holds, memory_order_seq_cst),
+        .native_effect_borrows = atomic_load_explicit(&app->effect_borrows, memory_order_seq_cst),
+        .native_resource_thread_borrows =
+            atomic_load_explicit(&app->resource_thread_borrows, memory_order_seq_cst),
+        .native_screen_borrows = atomic_load_explicit(&app->screen_borrows, memory_order_seq_cst)};
     return true;
 }
 

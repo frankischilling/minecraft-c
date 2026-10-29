@@ -32,16 +32,16 @@
   },
   "native_sources": {
     "include/mc/client/statistics/writer.h": {
-      "bytes": 13738,
-      "sha256": "27ff592a8f737a20885d893bd2becc9f0c4b250bef1c3179a2e8c43eff44e12c"
+      "bytes": 18531,
+      "sha256": "dfac5a05d802908a5100382c1152918cfdcbc899f3f8d1f4d430b7dfe97bd06f"
     },
     "include/mc/entity/player/player.h": {
       "bytes": 10280,
       "sha256": "806977baa19465b3c49ff1ec9b8a05f5ad386f67292c09cbbf3222773c6d8725"
     },
     "src/block/registry/registry_internal.h": {
-      "bytes": 13672,
-      "sha256": "dfa07e99d8ebd2483fc912b47eeacacf5d50bf88ec0f8e529e7c034653344ecf"
+      "bytes": 13838,
+      "sha256": "ade35ac909f9a1c66f0905095655971fdeede5845d466936952fd32d1ea700ae"
     },
     "src/block/registry/runtime.c": {
       "bytes": 20864,
@@ -52,20 +52,20 @@
       "sha256": "3017ef52fd95728ef02a61ed223f6799cdf00d2a4c8af14859ef898230eee88d"
     },
     "src/client/statistics/diagnostic.c": {
-      "bytes": 2689,
-      "sha256": "b0845c7a102af7d6c4afd891902988ff9c6183534bf110055a85e744c136799a"
+      "bytes": 2817,
+      "sha256": "dd8fa87f7fcf7c400f3aaad579ede89507a8344191af0628d3b913be2fa5ca0a"
     },
     "src/client/statistics/files.c": {
-      "bytes": 28784,
-      "sha256": "83778026ba679f4836c10f1371c9c666ad64fe08609bd97cc5c238036ef65ccf"
+      "bytes": 36105,
+      "sha256": "98135497363666abe3f26f2ad4198df3e91bf99adff5770bda380f683386f17f"
     },
     "src/client/statistics/internal.h": {
-      "bytes": 8672,
-      "sha256": "8e6aa43d7273e0849ee272533b5f58610040a7389221295852500e7893baf514"
+      "bytes": 12939,
+      "sha256": "1c19f7068e0d794ce6a48b53b2c80a2930a3cab86f7d5f5c6cd56df0e79c3779"
     },
     "src/client/statistics/json.c": {
-      "bytes": 29360,
-      "sha256": "aeac0dad99a3cbb6ca4c49674958332f19559591fc6bc7a72741554308cca0e7"
+      "bytes": 30030,
+      "sha256": "836232adec410c3aa4ae7475bec772d90d62e84f4386418f28ae9135a6a096a4"
     },
     "src/client/statistics/maps.c": {
       "bytes": 10853,
@@ -76,24 +76,24 @@
       "sha256": "fa8de03d896ebedf807d62f2ce91c8a19d53e88e76ee73e55b7591b0d545ebf2"
     },
     "src/client/statistics/workers.c": {
-      "bytes": 7907,
-      "sha256": "e4f793efc42fbcfe85b8344cd4458fd9e679335ec2a6a0bb60d36b8b014d9237"
+      "bytes": 11199,
+      "sha256": "bb02d641d265574a180e14f962952af8be9fbba6468d3a47508c9b967f00e620"
     },
     "src/client/statistics/writer.c": {
-      "bytes": 23298,
-      "sha256": "b390af2b7829d22729f1f838dabaf3f92008222c5f18c5e1318e3cf58b7f82b0"
+      "bytes": 29214,
+      "sha256": "266c661b52073266d126b4b2243f6f9a8554f22a76497d6ff4c5ce64070246fa"
     },
     "src/core/java/integer_parse.c": {
-      "bytes": 2482,
-      "sha256": "ee53aa32e83c0d7706f22bf52dea92f8b06495193d42df11c4adbc6985bc42c3"
+      "bytes": 3904,
+      "sha256": "ccf946bee6694184aafd31dde3c2ee2bfeec652db7f679920dd0220dde46d89e"
     },
     "src/core/java/reader.c": {
       "bytes": 17077,
       "sha256": "b0e8934f73989f8aaa1a41297355041f616144b1f750d4f2b98a98243760f965"
     },
     "src/core/java/writer.c": {
-      "bytes": 24554,
-      "sha256": "7c4abfb51db1fc43c4638d2c4cb7ddb63050e042f2ea6a42acd2fc822a9cf310"
+      "bytes": 33670,
+      "sha256": "9620ada89023045b73fa69ff63d1faca83d7ac9bec1d98e2143d82cef856e0c4"
     },
     "src/entity/classes/classes_internal.h": {
       "bytes": 2535,
@@ -104,8 +104,8 @@
       "sha256": "969794a224de4429ee447f5fa51462e14ac1e67ed4bbd660ae3b146dc85911de"
     },
     "src/entity/player/construction.c": {
-      "bytes": 17815,
-      "sha256": "5d48a422be3bfb94c62a01dcd91f80496dc05618d01d30662a3166390e546771"
+      "bytes": 18363,
+      "sha256": "851f8795fe82df81f53c3dd04518e8f6de5277c2dd82976310ac45fcbe24f77d"
     },
     "src/entity/player/player_internal.h": {
       "bytes": 1857,
@@ -168,24 +168,24 @@
       "sha256": "c0459e59987816af23e7cfc6313c336faa2b6588174dbe50e166575d9512c377"
     },
     "src/client/application_state.h": {
-      "bytes": 7475,
-      "sha256": "f6afdba462d626da467bd8e7e063c73941dc1df91be64f12f06cbc90a30d4f23"
+      "bytes": 7839,
+      "sha256": "39d5d9076ee879feb8471e33ef587d9b6459e7d81a631b0cccba64d60ddec2c2"
     },
     "src/client/application_access.h": {
-      "bytes": 1153,
-      "sha256": "13e72e08e958fb3e1ee2da0967ee59a0c78e1dece3abac41f66e98b68313ca4a"
+      "bytes": 3807,
+      "sha256": "3e98b97d04a0195f05f22aac84a1805d3ae9a84ca385a283ab2f039693f8eff1"
     },
     "src/client/application_access.c": {
-      "bytes": 2710,
-      "sha256": "f1689d2a936d079703b87d0be8960c30de431f353a9727a2921a4ff6b744d200"
+      "bytes": 11498,
+      "sha256": "35366a9e512add6ff114fa83fa749d57fe88f930835275a7ebb2861ff5dfb8ce"
     },
     "src/client/statistics/application.h": {
-      "bytes": 4908,
-      "sha256": "0dc5a1a2cb7ade47ca7c62e98f82d31672ecd9da017b155314fcb1d8fc1b89a1"
+      "bytes": 5683,
+      "sha256": "8a676df68e1f5527112c423183940450e4793ce1d3a1f46ceb96cedae374b130"
     },
     "src/client/statistics/application.c": {
-      "bytes": 16283,
-      "sha256": "825ccbcd0896ce9bb5bae175e8d30d13c68889fb832ce5975e3827285c655b44"
+      "bytes": 18131,
+      "sha256": "9b8de1ccdbe70a9a8e41e3715fd074b55465e98d2356412332e967ba58e6b138"
     },
     "include/mc/client/gui/achievement_notice.h": {
       "bytes": 6188,
@@ -196,20 +196,20 @@
       "sha256": "1257d61ecf59477bd22736881c300255cd1d428238269109ce1a3196406afdec"
     },
     "src/client/achievements/description.c": {
-      "bytes": 3127,
-      "sha256": "6f01c5375927e48a4f8305a0fa0356df9347f17b060835a0fa4ad3b89887533a"
+      "bytes": 3340,
+      "sha256": "3776a3384a41f4a4cf8a481f4bcdd3dc1887ca399662d81df14df2c7ed2b5d23"
     },
     "src/client/achievements/description_registry.c": {
-      "bytes": 10391,
-      "sha256": "03118a3c6c5bc1ccec1f6a9ab3486e155f83b0d1e9f41d804e481b4d896661d5"
+      "bytes": 13153,
+      "sha256": "bdb9f95eea7e6ccc6dea615987c53ab35ab650766a8b93e519acd9b5d915b045"
     },
     "src/client/achievements/description_registry.h": {
-      "bytes": 1446,
-      "sha256": "ed04a7f4aa107501b92753cfe59e42d4b4f6460e93627b5d3d12bf27bbe0d913"
+      "bytes": 2378,
+      "sha256": "5af10ea1132740f4b32bb50efae54fe7972cd3e000a76639b6ca470641ca8fbf"
     },
     "src/client/render/model.c": {
-      "bytes": 7917,
-      "sha256": "921d7715e77273a347b3227e71440f15d1e2837cd276763db4802399a1333e15"
+      "bytes": 7764,
+      "sha256": "9bc69f8aaa50b3cb95fba0c5e3ed58046e9ee32ab404bbf0de686fea02734a46"
     },
     "src/client/startup/game_directory.c": {
       "bytes": 15042,
@@ -228,8 +228,8 @@
       "sha256": "be29675facc5b5b98d186c89374c0486228182d6d8bfa9fea0ec64f8785b7da9"
     },
     "tests/client/statistics/test_player_dispatch.c": {
-      "bytes": 30888,
-      "sha256": "7b62f48765e5f06d2f7de9eba11e9013269eafaabd83fb326355b9ea4c25b381"
+      "bytes": 35628,
+      "sha256": "5d38f5164c41f34212b8512fd5a0c72b33107fc55991c50980a4031638d94094"
     },
     "tests/client/statistics/notice_clock_fault.c": {
       "bytes": 1116,
@@ -248,8 +248,8 @@
       "sha256": "0c31bb6964d32453ee1785ad0df17bf4babe8940307bced9bdec4d69a3ea6dcb"
     },
     "src/client/texture_effects/water.c": {
-      "bytes": 17481,
-      "sha256": "dd01fc5a772485ab52775ac60ebe7a5f9739ca8b2049454425924485b80a3f67"
+      "bytes": 18292,
+      "sha256": "867318a835651121edb383768c5f7197a0d909832afe8eec3364826dfe0f190a"
     },
     "src/block/registry/registration.c": {
       "bytes": 32164,
@@ -303,6 +303,44 @@
         ]
       },
       "preserved_unrelated_producer_rows": true
+    },
+    {
+      "role": "Current unqualified source admission only; prior producers, original/JDK/Code/capture facts and results retain their exact historical bindings.",
+      "public_parent": {
+        "commit": "5d61f89760507eea33c752bbea352fd407ecc1ff",
+        "source_map": {
+          "bytes": 348140,
+          "sha256": "69fd935f0def729b0c4b0fb9b0145333f788eb5077fcd20756f3d7598d5f9567"
+        },
+        "files": 2284
+      },
+      "previous_metadata": {
+        "bytes": 11818,
+        "sha256": "6ab6c78f4ef50cc6ee072e04bbba4a25c75821792840a022fdab4c3ed7ac350d"
+      },
+      "frozen_nonmetadata_source_set": {
+        "bytes": 358070,
+        "sha256": "bc6675580594e57eda57baae11fbbc0c8bf29e52f39b626cd445ac464f2cd476"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 57,
+          "after_count": 57,
+          "previous": {
+            "src/entity/player/construction.c": {
+              "bytes": 17815,
+              "sha256": "5d48a422be3bfb94c62a01dcd91f80496dc05618d01d30662a3166390e546771"
+            },
+            "src/client/texture_effects/water.c": {
+              "bytes": 17481,
+              "sha256": "dd01fc5a772485ab52775ac60ebe7a5f9739ca8b2049454425924485b80a3f67"
+            }
+          },
+          "added_paths": [],
+          "removed_paths": []
+        }
+      },
+      "native_compiler_JVM_or_original_results_transferred": false
     }
   ]
 }

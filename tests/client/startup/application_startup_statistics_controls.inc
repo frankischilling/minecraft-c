@@ -3,6 +3,23 @@
 #include "client/achievements/description_registry.h"
 #include "client/startup/application_logo.h"
 #include "client/startup/application_startup_graphics.h"
+#include "client/startup/application_startup_resources.h"
+
+/* Native worker cancellation never fabricates a source cz.b() call. The
+ * original network endpoint may be unavailable; bounded native retirement
+ * still joins before any App sound/File dependency is consumed. */
+static int statistics_retire_resources(mc_client_application_startup *attempt) {
+    for (unsigned int tries = 0; tries < 35000; ++tries) {
+        const mc_client_startup_status status = application_startup_resources_retire(attempt);
+        if (status == MC_CLIENT_STARTUP_OK)
+            return 0;
+        CHECK(status == MC_CLIENT_STARTUP_BUSY);
+        const struct timespec delay = {0, 1000000};
+        (void)thrd_sleep(&delay, NULL);
+    }
+    CHECK(false);
+    return 1;
+}
 
 static int statistics_session(client_application *app) {
     static const uint16_t username[] = {'S', 't', 'a', 'r', 't', 'u', 'p',
@@ -126,6 +143,25 @@ static int statistics_admission_profiles(const char *resources) {
     CHECK(rejected == NULL && app->startup == NULL && app->C == foreign);
     CHECK(mc_client_mouse_helper_release(&app->C, &mouse) == MC_CLIENT_MOUSE_HELPER_OK &&
           app->C == NULL);
+    mc_client_application_startup *before_rendering = NULL;
+    CHECK(mc_client_application_startup_allocate(app, &startup.services, NULL, &before_rendering,
+                                                 startup.error) == MC_CLIENT_STARTUP_OK);
+    /* A real external RAW dn is a native retained owner, never a completed
+     * source j. Retirement cannot consume it or its earlier dependencies. */
+    CHECK(mc_client_effect_renderer_allocate(app->entities, NULL, &app->effect_renderer_retained,
+                                             NULL) == MC_EFFECT_RENDERER_OK);
+    mc_client_effect_renderer *raw_particles = app->effect_renderer_retained;
+    CHECK(mc_client_application_startup_retire(&before_rendering, startup.error) ==
+          MC_CLIENT_STARTUP_BUSY);
+    CHECK(before_rendering != NULL && before_rendering->rendering == NULL &&
+          app->effect_renderer_retained == raw_particles && app->effect_renderer == NULL &&
+          app->startup == before_rendering && app->settings == NULL && app->display == NULL);
+    CHECK(mc_client_effect_renderer_free(&app->effect_renderer_retained) == MC_EFFECT_RENDERER_OK &&
+          app->effect_renderer_retained == NULL);
+    raw_particles = NULL;
+    CHECK(mc_client_application_startup_retire(&before_rendering, startup.error) ==
+              MC_CLIENT_STARTUP_OK &&
+          before_rendering == NULL && app->startup == NULL);
     CHECK(statistics_end_app(&f, &startup, &app) == 0);
     return 0;
 }
@@ -194,6 +230,8 @@ static int statistics_session_window(const char *resources, const char *assets, 
     CHECK(mc_client_application_startup_allocate(app, &startup.services, &options, &attempt,
                                                  startup.error) == MC_CLIENT_STARTUP_OK);
     CHECK(app->source_namespace->startup_stats_classes == NULL);
+    CHECK(app->source_namespace->startup_cx_classes == NULL &&
+          !app->source_namespace->startup_cx_attempted);
 #ifdef MC_STARTUP_CONTROLLER_BOUNDARY
     if (gl_error)
         CHECK(mc_test_controller_boundary_arm());
@@ -239,7 +277,7 @@ static int statistics_session_window(const char *resources, const char *assets, 
                   attempt->graphics == NULL && app->source_namespace->system_output == NULL);
             fprintf(stderr,
                     "Genuine nonempty Controllers native count%d: SDK Native12; "
-                    "normal470 not reached; no Source391 completion\n",
+                    "normal697 not reached; no Source391 completion\n",
                     controllers.native_count);
         }
         CHECK(controllers.native_count == 0); /* Never replace physical discovery with empty. */
@@ -258,9 +296,141 @@ static int statistics_session_window(const char *resources, const char *assets, 
                   observed.display == app->display);
         }
 #endif
-        CHECK(result == MC_CLIENT_STARTUP_UNIMPLEMENTED && startup.error->caller.pc == 470 &&
-              startup.error->child.pc == 470 && attempt->last_startup_store == 380 &&
+        if (result != MC_CLIENT_STARTUP_UNIMPLEMENTED || startup.error->caller.pc != 697 ||
+            startup.error->child.pc != 697) {
+            fprintf(stderr,
+                    "Unexpected startup result=%d operation=%s caller=%s.%s:%u "
+                    "child=%s.%s:%u last_store=%d manager_pc=%d\n",
+                    (int)result,
+                    startup.error->operation != NULL ? startup.error->operation : "<null>",
+                    startup.error->caller.class_name != NULL ? startup.error->caller.class_name
+                                                             : "<null>",
+                    startup.error->caller.method != NULL ? startup.error->caller.method : "<null>",
+                    startup.error->caller.pc,
+                    startup.error->child.class_name != NULL ? startup.error->child.class_name
+                                                            : "<null>",
+                    startup.error->child.method != NULL ? startup.error->child.method : "<null>",
+                    startup.error->child.pc, (int)attempt->last_startup_store,
+                    (int)attempt->last_manager_pc);
+            const mc_client_startup_effects_call *observed = attempt->effects;
+            if (observed != NULL) {
+                fprintf(stderr,
+                        "Effects cx_status=%d cx_operation=%s sound_status=%d sound_operation=%s "
+                        "sound_error_pc=%d sound_report_pc=%d setup_pc=%d native_terminal=%d "
+                        "settings_status=%d settings_operation=%s backend_status=%d "
+                        "backend_operation=%s backend_system_error=%d registrations=%u "
+                        "last_pc=%u\n",
+                        (int)observed->cx.status,
+                        observed->cx.operation != NULL ? observed->cx.operation : "<null>",
+                        (int)observed->sound_error.status,
+                        observed->sound_error.operation != NULL ? observed->sound_error.operation
+                                                                : "<null>",
+                        observed->sound_error.source_pc, observed->sound_report.source_pc,
+                        observed->sound_report.setup.source_pc,
+                        (int)observed->sound_report.setup.native_terminal,
+                        (int)observed->sound_report.setup.settings_status,
+                        observed->sound_report.setup.settings_error.operation != NULL
+                            ? observed->sound_report.setup.settings_error.operation
+                            : "<null>",
+                        (int)observed->sound_report.setup.backend_error.status,
+                        observed->sound_report.setup.backend_error.operation != NULL
+                            ? observed->sound_report.setup.backend_error.operation
+                            : "<null>",
+                        observed->sound_report.setup.backend_error.system_error,
+                        observed->registrations_completed, observed->last_pc);
+                if (observed->registrations_completed < MC_CLIENT_STARTUP_EFFECT_CALLS) {
+                    const unsigned int index = observed->registrations_completed;
+                    const mc_client_startup_effect_call *entry = &observed->effects[index];
+                    fprintf(stderr,
+                            "Pending/failed effect index=%u receiver=%d allocated=%d "
+                            "constructed=%d registration_entered=%d construction_status=%d "
+                            "construction_operation=%s construction_pc=%d "
+                            "registration_status=%d registration_operation=%s ji_pc=%d "
+                            "child_status=%d child_operation=%s child_pc=%d\n",
+                            index, (int)entry->receiver_captured, (int)entry->allocated,
+                            (int)entry->constructed, (int)entry->registration_entered,
+                            (int)entry->construction.status,
+                            entry->construction.operation != NULL ? entry->construction.operation
+                                                                  : "<null>",
+                            entry->construction.source_pc, (int)entry->registration.status,
+                            entry->registration.operation != NULL ? entry->registration.operation
+                                                                  : "<null>",
+                            entry->registration.ji_pc, (int)entry->registration.child.status,
+                            entry->registration.child.operation != NULL
+                                ? entry->registration.child.operation
+                                : "<null>",
+                            entry->registration.child.source_pc);
+                }
+            }
+        }
+        CHECK(result == MC_CLIENT_STARTUP_UNIMPLEMENTED && startup.error->caller.pc == 697 &&
+              startup.error->child.pc == 697 && attempt->last_startup_store == 676 &&
               attempt->last_manager_pc == 321);
+        const mc_client_startup_rendering_call *rendering = attempt->rendering;
+        CHECK(rendering != NULL && rendering->entered && !rendering->active &&
+              !rendering->retired && rendering->calls_completed && rendering->g_stored &&
+              rendering->j_stored && rendering->global_allocated &&
+              rendering->global_constructor_returned && rendering->global_constructor_pc == 651 &&
+              rendering->global_last_store == 489 && rendering->viewport_returned &&
+              rendering->viewport_width == app->d && rendering->viewport_height == app->e &&
+              rendering->particle_constructor_returned &&
+              rendering->particle_constructor_pc == 63 && rendering->last_pc == 660 &&
+              rendering->failed_pc == 0 && app->g == rendering->global &&
+              app->effect_renderer == rendering->particle &&
+              app->effect_renderer_retained == rendering->particle &&
+              rendering->global_engine == app->render_engine &&
+              rendering->particle_engine == app->render_engine &&
+              rendering->particle_world == NULL && !rendering->world_held);
+        mc_effect_renderer_snapshot particles;
+        CHECK(mc_client_effect_renderer_read(app->effect_renderer, &particles) &&
+              particles.phase == MC_EFFECT_RENDERER_READY && particles.world == NULL &&
+              particles.render_engine == app->render_engine && particles.random != NULL);
+        for (size_t layer = 0; layer < 4; ++layer) {
+            CHECK(particles.lists[layer] != NULL && particles.sizes[layer] == 0);
+            for (size_t prior = 0; prior < layer; ++prior)
+                CHECK(particles.lists[layer] != particles.lists[prior]);
+        }
+        const mc_client_startup_effects_call *effects = attempt->effects;
+        CHECK(effects != NULL && effects->entered && !effects->active && !effects->retired &&
+              effects->S_stored && effects->cx_candidate == app->S && app->S != NULL &&
+              effects->cx_classes == app->source_namespace->startup_cx_classes &&
+              effects->sound_entered && effects->sound_returned && effects->sound_settings_borrow &&
+              effects->sound_hook_attached && effects->sound == app->B &&
+              effects->sound_settings == app->settings && effects->sound_report.source_pc == 45 &&
+              effects->registrations_completed == 9 && effects->last_pc == 612 &&
+              effects->lava_trig_bound);
+        mc_client_cx_class_state cx_classes = {0};
+        mc_client_cx_state cx = {0};
+        CHECK(mc_client_cx_classes_inspect(effects->cx_classes, &cx_classes, NULL) ==
+                  MC_CLIENT_CX_OK &&
+              cx_classes.phase == MC_CLIENT_CX_CLASS_READY && cx_classes.enabled &&
+              cx_classes.last_store == 1 && cx_classes.holds == 2 &&
+              mc_client_cx_inspect(app->S, &cx, NULL) == MC_CLIENT_CX_OK &&
+              cx.phase == MC_CLIENT_CX_READY && cx.constructor_pc == 4);
+        mc_sound_manager_state sound;
+        CHECK(mc_sound_manager_read_state(app->B, &sound) && sound.settings == app->settings &&
+              sound.shared_initialized && sound.backend_present);
+        static const unsigned int effect_calls[] = {499, 510, 524, 539, 554, 568, 582, 597, 612};
+        for (size_t index = 0; index < MC_CLIENT_STARTUP_EFFECT_CALLS; ++index) {
+            const mc_client_startup_effect_call *entry = &effects->effects[index];
+            const mc_client_texture_effect *registered = NULL;
+            CHECK(entry->engine == app->render_engine && entry->receiver_captured &&
+                  entry->registration_entered && entry->invocation_pc == effect_calls[index] &&
+                  entry->registration.appended && entry->registration.child_returned &&
+                  entry->registration.source_returned && entry->registration.ji_pc == 15 &&
+                  entry->snapshot_valid && entry->observed_phase == MC_TEXTURE_EFFECT_READY &&
+                  mc_client_render_engine_effect_at(app->render_engine, index, &registered) &&
+                  registered == entry->argument);
+            CHECK((entry->owned != NULL) == (index >= 2));
+            if (index >= 2)
+                CHECK(entry->allocated && entry->constructed && entry->owned == entry->argument);
+        }
+        CHECK(effects->effects[0].argument == mc_client_lava_texture_as_effect(app->ae) &&
+              effects->effects[1].argument == mc_client_water_texture_as_effect(app->water_effect));
+        mc_client_texture_effect *external_compass = effects->effects[3].owned;
+        mc_texture_effect_error *effect_error = calloc(1, sizeof(*effect_error));
+        CHECK(effect_error != NULL && mc_client_texture_effect_retain(
+                                          external_compass, effect_error) == MC_TEXTURE_EFFECT_OK);
         const mc_client_startup_stats_call *call = attempt->statistics;
         CHECK(call != NULL && call->source_calls_completed && call->callback_installed &&
               call->I_stored && call->last_pc == 354 && call->candidate == app->stats_writer &&
@@ -357,6 +527,67 @@ static int statistics_session_window(const char *resources, const char *assets, 
               captured == app && atomic_load(&app->callback_holds) == 1);
         CHECK(mc_client_application_run_prefix(attempt, startup.error) ==
               MC_CLIENT_STARTUP_INVALID_PHASE);
+        const mc_client_startup_resources_call *resource_call = attempt->resources;
+        CHECK(resource_call != NULL && resource_call->constructed && resource_call->started &&
+              resource_call->U_stored && resource_call->post_returned && !resource_call->active &&
+              app->U == resource_call->candidate &&
+              atomic_load(&app->resource_thread_borrows) == 1);
+        mc_client_gl_output_state post;
+        CHECK(mc_client_gl_output_inspect(resource_call->diagnostic, &post) &&
+              post.error->source_returned && post.error->prefix.query_completed);
+        CHECK(statistics_retire_resources(attempt) == 0);
+        CHECK(app->U == NULL && resource_call->retired &&
+              atomic_load(&app->resource_thread_borrows) == 0);
+        /* Both actual later owners keep the complete App dependency graph
+         * live while an external occurrence exists. No counted App cycle. */
+        mc_client_render_global *external_global = app->g;
+        CHECK(mc_client_render_global_retain(external_global, NULL) == MC_CLIENT_RENDER_GLOBAL_OK);
+        CHECK(mc_client_application_startup_retire(&attempt, startup.error) ==
+              MC_CLIENT_STARTUP_BUSY);
+        CHECK(attempt != NULL && app->g == external_global &&
+              app->effect_renderer == rendering->particle && rendering->g_stored &&
+              rendering->j_stored && !rendering->retired && !effects->retired &&
+              atomic_load(&app->effect_borrows) == 2 && app->stats_writer != NULL &&
+              app->C != NULL && app->settings != NULL && app->display != NULL);
+        CHECK(mc_client_render_global_release(&external_global, NULL) ==
+                  MC_CLIENT_RENDER_GLOBAL_OK &&
+              external_global == NULL);
+        mc_client_effect_renderer *external_particles = app->effect_renderer;
+        CHECK(mc_client_effect_renderer_retain(external_particles) == MC_EFFECT_RENDERER_OK);
+        CHECK(mc_client_application_startup_retire(&attempt, startup.error) ==
+              MC_CLIENT_STARTUP_BUSY);
+        CHECK(app->g == rendering->global && app->effect_renderer == external_particles &&
+              rendering->j_stored && rendering->g_stored && !effects->retired &&
+              atomic_load(&app->effect_borrows) == 2);
+        CHECK(mc_client_effect_renderer_release(external_particles) == MC_EFFECT_RENDERER_OK);
+        external_particles = NULL;
+        /* Real external occurrence keeps its counted actual-App borrow. The
+         * owner first drops all g and caller occurrences, then stops BEFORE
+         * any earlier resource, worker, cursor, Settings or S teardown. */
+        CHECK(atomic_load(&app->effect_borrows) == 2);
+        CHECK(mc_client_application_startup_retire(&attempt, startup.error) ==
+              MC_CLIENT_STARTUP_BUSY);
+        CHECK(attempt != NULL && !effects->retired && app->S == effects->cx_candidate &&
+              app->settings == effects->sound_settings && app->stats_writer != NULL &&
+              app->display != NULL && app->C != NULL && !attempt->graphics->retired &&
+              !attempt->input->retired && atomic_load(&app->effect_borrows) == 1);
+        CHECK(rendering->retired && rendering->global == NULL && rendering->particle == NULL &&
+              !rendering->g_stored && !rendering->j_stored && app->g == NULL &&
+              app->effect_renderer == NULL && app->effect_renderer_retained == NULL &&
+              rendering->global_engine == NULL && rendering->particle_engine == NULL &&
+              rendering->global_constructor_pc == 651 && rendering->last_pc == 660 &&
+              rendering->calls_completed && attempt->last_startup_store == 676);
+        mc_texture_effect_state compass;
+        CHECK(mc_client_texture_effect_inspect(external_compass, &compass) && compass.app == app &&
+              compass.phase == MC_TEXTURE_EFFECT_READY && compass.native_holds == 1);
+        for (size_t index = 0; index < MC_CLIENT_STARTUP_EFFECT_CALLS; ++index)
+            CHECK(effects->effects[index].owned == NULL &&
+                  effects->effects[index].argument == NULL &&
+                  effects->effects[index].container_retired);
+        CHECK(mc_client_texture_effect_release(&external_compass, effect_error) ==
+                  MC_TEXTURE_EFFECT_OK &&
+              external_compass == NULL && atomic_load(&app->effect_borrows) == 0);
+        free(effect_error);
         mc_client_bitmap_font *external_font = app->font_renderer;
         CHECK(mc_client_bitmap_font_retain(external_font) == MC_CLIENT_BITMAP_FONT_OK);
         mc_client_render_manager_classes *manager = attempt->manager_classes;
@@ -368,6 +599,19 @@ static int statistics_session_window(const char *resources, const char *assets, 
               app->statistics_retired && app->font_renderer == external_font &&
               app->display != NULL && app->C == NULL && attempt->input->retired && call->I_stored &&
               call->callback_installed);
+        CHECK(effects->retired && app->S == NULL && !effects->S_stored &&
+              effects->cx_candidate == NULL && effects->cx_classes == NULL &&
+              !effects->sound_settings_borrow && !effects->sound_hook_attached &&
+              effects->sound == NULL && effects->sound_settings == NULL &&
+              effects->registrations_completed == 9 && effects->last_pc == 612 &&
+              mc_sound_manager_read_state(app->B, &sound) && sound.settings == NULL);
+        for (size_t index = 0; index < MC_CLIENT_STARTUP_EFFECT_CALLS; ++index)
+            CHECK(effects->effects[index].engine == NULL &&
+                  effects->effects[index].registration.source_returned);
+        CHECK(mc_client_cx_classes_inspect(app->source_namespace->startup_cx_classes, &cx_classes,
+                                           NULL) == MC_CLIENT_CX_OK &&
+              cx_classes.phase == MC_CLIENT_CX_CLASS_READY && cx_classes.enabled &&
+              cx_classes.holds == 1); /* No source static reset during native App cleanup. */
         CHECK(attempt->graphics == graphics && graphics->retired &&
               graphics->diagnostics[0] == NULL && graphics->diagnostics[1] == NULL &&
               graphics->namespace_identity == NULL && graphics->labels[0] == NULL &&

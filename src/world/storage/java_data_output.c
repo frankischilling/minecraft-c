@@ -278,3 +278,30 @@ bool mc_java_data_output_inspect(const mc_java_data_output *d, mc_java_data_outp
         .failure = &d->failure};
     return true;
 }
+
+mc_java_output_status mc_java_data_output_write_array(mc_java_data_output *d,
+                                                      const mc_java_byte_array_view *array,
+                                                      int32_t offset, int32_t length,
+                                                      mc_java_output_error *out) {
+    mc_java_output_error e = {0};
+    if (enter(d, &e) != MC_JAVA_OUTPUT_OK) {
+        if (out != NULL)
+            *out = e;
+        return e.status;
+    }
+    /* Actual getfield out1 precedes invoked FOS null/bounds checks at7. */
+    mc_java_file_output *captured = d->out;
+    if (captured == NULL)
+        mc_output_fail(&e, MC_JAVA_OUTPUT_SOURCE_NULL, "java/io/DataOutputStream", "write",
+                       "([BII)V", 7, "actual null OutputStream receiver", 0, true);
+    else if (mc_java_file_output_write_array(captured, array, offset, length, &e) !=
+             MC_JAVA_OUTPUT_OK)
+        mc_output_caller(&e, "java/io/DataOutputStream", "write", "([BII)V", 7);
+    else {
+        d->written = length > INT32_MAX - d->written ? INT32_MAX : d->written + length;
+        d->last_class = "java/io/DataOutputStream";
+        d->last_method = "incCount";
+        d->last_store = 16;
+    }
+    return finish(d, &e, out);
+}

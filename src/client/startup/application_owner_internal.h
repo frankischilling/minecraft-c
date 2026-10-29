@@ -2,6 +2,7 @@
 #define MC_CLIENT_STARTUP_APPLICATION_OWNER_INTERNAL_H
 
 #include "../application_state.h"
+#include "../render/cx.h"
 #include "application_owner.h"
 #include "mc/client/statistics/writer.h"
 #include "mc/core/java/print_stream.h"
@@ -38,7 +39,12 @@ struct mc_client_application_classes {
     mc_java_system_output *system_output;
     bool system_output_attempted;
     mc_java_print_error system_output_failure, output_retirement;
+    /* Native cold association only. Actual new cx470 performs active use. */
+    mc_client_cx_classes *startup_cx_classes;
+    bool startup_cx_attempted;
+    mc_client_cx_error cx_service_failure, cx_retirement;
     mc_player_string *startup_gl_labels[2]; /* Actual MC ldc395 and ldc464. */
+    mc_player_string *startup_post_label;   /* Actual MC ldc691. */
     mc_player_string *startup_title;
     mc_player_string *startup_font_resource; /* Lazy actual MC ldc250, namespace-owned. */
     mc_player_string *startup_logo_resource; /* Lazy actual MC.x ldc119, namespace-owned. */

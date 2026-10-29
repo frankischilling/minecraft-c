@@ -13,6 +13,7 @@
 #include "mc/core/java/float_parse.h"
 #include "mc/core/java/integer_parse.h"
 #include "mc/core/java/java.h"
+#include "mc/world/storage/java_file_writer.h"
 
 #include <errno.h>
 #include <limits.h>
@@ -64,6 +65,11 @@ typedef struct retained_text {
 
 typedef struct source_load_attempt source_load_attempt;
 
+typedef struct source_save_attempt {
+    mc_java_typed_file_writer *writer;
+    mc_java_typed_file_writer_error failure, retirement;
+} source_save_attempt;
+
 struct mc_game_settings {
     arena memory;
     mc_game_settings_state state;
@@ -80,10 +86,12 @@ struct mc_game_settings {
     mc_java_file *source_N, *source_pending_file;
     mc_key_binding *source_pending_binding;
     source_load_attempt *source_attempt;
+    source_save_attempt *source_save;
     mc_game_settings_source_error source_failure, source_retirement;
     mc_game_settings_report source_load_report;
     size_t source_stores;
     int32_t source_store_pcs[64], last_source_store, last_load_pc;
+    int32_t last_save_pc;
 };
 
 typedef struct file_input {
@@ -1200,6 +1208,84 @@ static mc_game_settings_status writer_native(mc_java_writer_status status,
     return result(error, mapped, cause.system_error, cause.operation);
 }
 
+static mc_game_settings_status typed_save_result(mc_game_settings *settings,
+                                                 mc_java_writer_status status,
+                                                 mc_game_settings_error *error) {
+    source_save_attempt *attempt = settings->source_save;
+    mc_java_writer_error cause = attempt->failure.writer;
+    cause.status = status;
+    cause.operation = attempt->failure.operation;
+    if (attempt->failure.output.cause.system_error != 0)
+        cause.system_error = attempt->failure.output.cause.system_error;
+    const mc_game_settings_status returned =
+        status == MC_JAVA_WRITER_BUSY
+            ? result(error, MC_GAME_SETTINGS_BUSY, cause.system_error, cause.operation)
+            : writer_native(status, cause, error);
+    settings->source_failure.native = *error;
+    settings->source_failure.site =
+        (mc_game_settings_source_site){"kv", "b", "()V", settings->last_save_pc};
+    settings->source_failure.output = cause;
+    settings->source_failure.file = attempt->failure.output.file;
+    settings->source_failure.typed_output = &attempt->failure;
+    const mc_java_output_site child = attempt->failure.output.cause.site;
+    settings->source_failure.child =
+        (mc_game_settings_source_site){child.class_name, child.method, child.descriptor, child.pc};
+    return returned;
+}
+
+static mc_game_settings_status typed_save_dispose(mc_game_settings *settings,
+                                                  mc_game_settings_error *error) {
+    source_save_attempt *attempt = settings->source_save;
+    if (attempt == NULL)
+        return MC_GAME_SETTINGS_OK;
+    const mc_java_writer_status status =
+        mc_java_typed_file_writer_retire(&attempt->writer, &attempt->retirement);
+    if (status != MC_JAVA_WRITER_OK) {
+        mc_java_writer_error cause = attempt->retirement.writer;
+        cause.status = status;
+        cause.operation = attempt->retirement.operation;
+        if (attempt->retirement.output.cause.system_error != 0)
+            cause.system_error = attempt->retirement.output.cause.system_error;
+        const mc_game_settings_status returned =
+            status == MC_JAVA_WRITER_BUSY
+                ? result(error, MC_GAME_SETTINGS_BUSY, cause.system_error, cause.operation)
+                : writer_native(status, cause, error);
+        settings->source_retirement.native = *error;
+        settings->source_retirement.typed_output = &attempt->retirement;
+        return returned;
+    }
+    settings->source_failure.typed_output = NULL;
+    settings->source_retirement.typed_output = NULL;
+    free(attempt);
+    settings->source_save = NULL;
+    return MC_GAME_SETTINGS_OK;
+}
+
+static mc_game_settings_status typed_save_caught(mc_game_settings *settings,
+                                                 mc_game_settings_report *report,
+                                                 mc_game_settings_source_exception exception,
+                                                 const char *exception_class, int system_error,
+                                                 mc_game_settings_error *error) {
+    report->outer_exception_caught = true;
+    report->outer_exception = exception;
+    report->source_system_error = system_error;
+    settings->source_failure.source_exception = exception;
+    settings->source_failure.exception_site =
+        (mc_game_settings_source_site){"kv", "b", "()V", settings->last_save_pc};
+    settings->source_failure.exception_class = exception_class;
+    settings->source_failure.diagnostic_message = "Failed to save options";
+    /* The actual catch target is481. Its next effect reads System.out482,
+     * not the separate load handler's println496/stack presentation500.
+     * This class has not yet acquired that canonical namespace association. */
+    settings->last_save_pc = 482;
+    settings_source_error(&settings->source_failure, MC_GAME_SETTINGS_UNIMPLEMENTED_DEPENDENCY,
+                          "actual kv save System.out namespace association", "kv", "b", "()V", 482);
+    settings->source_failure.child =
+        (mc_game_settings_source_site){"java/lang/System", NULL, NULL, -1};
+    return result(error, MC_GAME_SETTINGS_UNIMPLEMENTED_DEPENDENCY, system_error,
+                  settings->source_failure.native.operation);
+}
+
 /* Only an already admitted public save/action calls this body. Its owner stays
  * active through writer retirement, diagnostic callbacks and report delivery;
  * the outer entry alone clears active. No nested public admission is invented. */
@@ -1207,26 +1293,65 @@ static mc_game_settings_status save_admitted(mc_game_settings *settings,
                                              const mc_game_settings_diagnostics *diagnostics,
                                              mc_game_settings_report *out,
                                              mc_game_settings_error *error) {
+    mc_game_settings_error local = {0};
+    if (error == NULL)
+        error = &local;
     mc_game_settings_status status = MC_GAME_SETTINGS_OK;
     mc_game_settings_report report = {0};
     mc_java_writer *writer = NULL;
+    mc_java_typed_file_writer *typed_writer = NULL;
     uint16_t *scratch = NULL;
-    if (settings->source_mode) {
-        settings_source_error(&settings->source_failure, MC_GAME_SETTINGS_UNIMPLEMENTED_DEPENDENCY,
-                              "actual typed kv FileWriter constructor", "kv", "b", "()V", 12);
-        return result(error, MC_GAME_SETTINGS_UNIMPLEMENTED_DEPENDENCY, 0,
-                      "actual typed kv FileWriter constructor");
-    }
-    if (settings->state.options_path == NULL) {
-        status = caught(settings, diagnostics, &report, true, MC_GAME_SETTINGS_SOURCE_NULL_FILE, 0,
-                        error);
-        goto cleanup;
-    }
     const mc_java_writer_profile profile = {settings->profile.charset, MC_JAVA_WRITER_PRINT,
                                             settings->profile.lines};
     mc_java_writer_error cause = {0};
-    mc_java_writer_status writer_status =
-        mc_java_file_writer_open(settings->state.options_path, &profile, &writer, &cause);
+    mc_java_writer_status writer_status;
+    if (settings->source_mode) {
+        status = typed_save_dispose(settings, error);
+        if (status != MC_GAME_SETTINGS_OK)
+            return status;
+        settings->source_failure = (mc_game_settings_source_error){0};
+        settings->last_save_pc = 0;
+        settings->source_save = calloc(1, sizeof(*settings->source_save));
+        if (settings->source_save == NULL)
+            return result(error, MC_GAME_SETTINGS_ALLOCATION_FAILED, 0,
+                          "kv save native invocation storage");
+        source_save_attempt *attempt = settings->source_save;
+        settings->last_save_pc = 4;
+        writer_status = mc_java_typed_file_writer_allocate(settings->source_classes->files, NULL,
+                                                           &attempt->writer, &attempt->failure);
+        if (writer_status != MC_JAVA_WRITER_OK) {
+            status = typed_save_result(settings, writer_status, error);
+            goto cleanup;
+        }
+        typed_writer = attempt->writer;
+        settings->last_save_pc = 12;
+        writer_status = mc_java_typed_file_writer_construct(typed_writer, settings->source_N,
+                                                            &profile, &attempt->failure);
+        mc_java_typed_file_writer_state typed_state;
+        if (mc_java_typed_file_writer_inspect(typed_writer, &typed_state))
+            report.source_opened = typed_state.file_output_returned;
+        if (writer_status != MC_JAVA_WRITER_OK) {
+            status = typed_save_result(settings, writer_status, error);
+            if (attempt->failure.source_exception) {
+                const mc_java_output_cause *output = &attempt->failure.output.cause;
+                status = typed_save_caught(settings, &report,
+                                           output->status == MC_JAVA_OUTPUT_SOURCE_NULL
+                                               ? MC_GAME_SETTINGS_SOURCE_NULL_FILE
+                                               : MC_GAME_SETTINGS_SOURCE_FILE_IO,
+                                           output->exception_class, output->system_error, error);
+            }
+            goto cleanup;
+        }
+        settings->last_save_pc = 18; /* Actual completed PW(FileWriter) local. */
+    } else {
+        if (settings->state.options_path == NULL) {
+            status = caught(settings, diagnostics, &report, true, MC_GAME_SETTINGS_SOURCE_NULL_FILE,
+                            0, error);
+            goto cleanup;
+        }
+        writer_status =
+            mc_java_file_writer_open(settings->state.options_path, &profile, &writer, &cause);
+    }
     if (writer_status != MC_JAVA_WRITER_OK) {
         report.native_cleanup_failed = cause.native_cleanup_failed;
         report.native_cleanup_system_error = cause.native_cleanup_system_error;
@@ -1246,6 +1371,8 @@ static mc_game_settings_status save_admitted(mc_game_settings *settings,
     /* FileWriter already created/truncated the actual file before any line
      * workspace/formatting. Each bounded line has room for a maximal name. */
     const size_t capacity = MC_GAME_SETTINGS_MAX_TEXT_UNITS + 64u;
+    if (settings->source_mode)
+        settings->last_save_pc = 20;
     scratch = malloc(capacity * sizeof(*scratch));
     if (scratch == NULL) {
         status = result(error, MC_GAME_SETTINGS_ALLOCATION_FAILED, 0, "GameSettings save line");
@@ -1269,6 +1396,8 @@ static mc_game_settings_status save_admitted(mc_game_settings *settings,
     const mc_game_settings_values *values = &settings->state.values;
     size_t index = 0;
     for (;;) {
+        if (settings->source_mode)
+            settings->last_save_pc = index < 15u ? 20 + 26 * (int32_t)index : 416;
         line_builder line = {scratch, 0, capacity};
         bool appended = true;
         if (index < 15u) {
@@ -1304,22 +1433,39 @@ static mc_game_settings_status save_admitted(mc_game_settings *settings,
             }
         } else {
             if (settings->state.bindings_null) {
-                status = caught(settings, diagnostics, &report, true,
-                                MC_GAME_SETTINGS_SOURCE_NULL_BINDING_ARRAY, 0, error);
+                status = settings->source_mode
+                             ? typed_save_caught(settings, &report,
+                                                 MC_GAME_SETTINGS_SOURCE_NULL_BINDING_ARRAY,
+                                                 "java/lang/NullPointerException", 0, error)
+                             : caught(settings, diagnostics, &report, true,
+                                      MC_GAME_SETTINGS_SOURCE_NULL_BINDING_ARRAY, 0, error);
                 break;
             }
             const size_t binding_index = index - 15u;
             if (binding_index == settings->state.binding_count) {
                 report.source_close_reached = true;
-                writer_status = mc_java_writer_close(writer, &cause);
+                if (settings->source_mode) {
+                    settings->last_save_pc = 475;
+                    writer_status = mc_java_typed_file_writer_source_close(
+                        typed_writer, &settings->source_save->failure);
+                } else
+                    writer_status = mc_java_writer_close(writer, &cause);
                 if (writer_status != MC_JAVA_WRITER_OK)
-                    status = writer_native(writer_status, cause, error);
+                    status = settings->source_mode
+                                 ? typed_save_result(settings, writer_status, error)
+                                 : writer_native(writer_status, cause, error);
                 break;
             }
             const mc_key_binding *binding = settings->state.bindings[binding_index];
             if (binding == NULL) {
-                status = caught(settings, diagnostics, &report, true,
-                                MC_GAME_SETTINGS_SOURCE_NULL_BINDING, 0, error);
+                if (settings->source_mode) {
+                    settings->last_save_pc = 439;
+                    status =
+                        typed_save_caught(settings, &report, MC_GAME_SETTINGS_SOURCE_NULL_BINDING,
+                                          "java/lang/NullPointerException", 0, error);
+                } else
+                    status = caught(settings, diagnostics, &report, true,
+                                    MC_GAME_SETTINGS_SOURCE_NULL_BINDING, 0, error);
                 break;
             }
             appended = append_ascii(&line, "key_") && append_text(&line, binding->name) &&
@@ -1333,14 +1479,28 @@ static mc_game_settings_status save_admitted(mc_game_settings *settings,
         }
         const mc_java_properties_string_view text = {line.units, line.length};
         ++report.println_attempts;
-        writer_status = mc_java_writer_println(writer, &text, &cause);
+        if (settings->source_mode) {
+            settings->last_save_pc = index < 15u ? 42 + 26 * (int32_t)index : 465;
+            writer_status = mc_java_typed_file_writer_println(typed_writer, &text,
+                                                              &settings->source_save->failure);
+        } else
+            writer_status = mc_java_writer_println(writer, &text, &cause);
         if (writer_status != MC_JAVA_WRITER_OK) {
-            status = writer_native(writer_status, cause, error);
+            status = settings->source_mode ? typed_save_result(settings, writer_status, error)
+                                           : writer_native(writer_status, cause, error);
             break;
         }
         ++index;
     }
 cleanup:
+    if (settings->source_mode && typed_writer != NULL) {
+        mc_java_typed_file_writer_state typed_state;
+        if (mc_java_typed_file_writer_inspect(typed_writer, &typed_state)) {
+            report.writer_state_present = typed_state.writer_state_present;
+            if (report.writer_state_present)
+                report.writer_state = typed_state.writer_state;
+        }
+    }
     if (writer != NULL) {
         report.writer_state_present = mc_java_writer_read_state(writer, &report.writer_state);
         mc_java_writer_retirement retired = {0};
@@ -1356,6 +1516,15 @@ cleanup:
         }
     }
     free(scratch);
+    if (settings->source_mode) {
+        if (status == MC_GAME_SETTINGS_OK)
+            settings->last_save_pc = 494;
+        else {
+            settings->source_failure.native = *error;
+            settings->source_failure.site =
+                (mc_game_settings_source_site){"kv", "b", "()V", settings->last_save_pc};
+        }
+    }
     if (out != NULL)
         *out = report;
     if (status == MC_GAME_SETTINGS_OK)
@@ -1944,6 +2113,8 @@ bool mc_game_settings_source_inspect(const mc_game_settings *settings,
         .stores = settings->source_store_pcs,
         .last_store_pc = settings->last_source_store,
         .last_load_pc = settings->last_load_pc,
+        .last_save_pc = settings->last_save_pc,
+        .save_writer = settings->source_save == NULL ? NULL : settings->source_save->writer,
         .active = settings->active,
         .reader_present =
             settings->source_attempt != NULL && settings->source_attempt->reader != NULL};
@@ -1973,7 +2144,10 @@ static mc_game_settings_status source_retire(mc_game_settings *settings,
     if (error == NULL)
         error = &local;
     settings->source_phase = MC_GAME_SETTINGS_SOURCE_RETIRING;
-    mc_game_settings_status status = source_attempt_dispose(settings, error);
+    mc_game_settings_status status = typed_save_dispose(settings, error);
+    if (status != MC_GAME_SETTINGS_OK)
+        return status;
+    status = source_attempt_dispose(settings, error);
     if (status != MC_GAME_SETTINGS_OK) {
         settings->source_retirement.native = *error;
         return status;

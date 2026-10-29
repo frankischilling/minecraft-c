@@ -65,6 +65,8 @@ static mc_sound_status boundary(backend_fixture *fixture, int kind, const char *
             mc_sound_manager_ui(fixture->manager, (mc_sound_text){.is_null = true}, 1.0f, 1.0f,
                                 &report, NULL) != MC_SOUND_BUSY ||
             report.source_pc != 12345 ||
+            mc_sound_manager_detach_settings(fixture->manager, fixture->settings, NULL) !=
+                MC_SOUND_BUSY ||
             mc_sound_manager_retire(&fixture->manager, NULL) != MC_SOUND_BUSY ||
             mc_sound_manager_shared_retire(&fixture->shared, NULL) != MC_SOUND_BUSY)
             fixture->invalid = true;
@@ -284,6 +286,12 @@ static bool construction_and_setup(mc_java_random_profile *profile) {
           fixture.calls[0].kind == MC_SOUND_MANAGER_CLEANUP);
     CHECK(mc_sound_manager_read_state(second, &state) && state.shared_initialized &&
           state.backend_present);
+    CHECK(mc_sound_manager_detach_settings(second, NULL, NULL) == MC_SOUND_INVALID_ARGUMENT);
+    CHECK(mc_sound_manager_read_state(second, &state) && state.settings == fixture.settings);
+    CHECK(mc_sound_manager_detach_settings(second, fixture.settings, NULL) == MC_SOUND_OK &&
+          fixture.count == 1);
+    CHECK(mc_sound_manager_read_state(second, &state) && state.settings == NULL &&
+          state.shared_initialized && state.backend_present);
     CHECK(mc_sound_manager_retire(&second, NULL) == MC_SOUND_OK);
     CHECK(!fixture.invalid);
     ok = true;

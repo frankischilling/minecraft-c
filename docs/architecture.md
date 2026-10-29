@@ -10,6 +10,14 @@ does not yet start gameplay, child menus or audio. A separate
 finite CPU section meshes and independent GPU buffers. It retains no Chunk view
 after meshing and does not substitute a camera for a Player.
 
+The separate [normal startup owner](client/normal-startup.md) constructs and
+publishes the real source graph through SoundManager binding, nine texture
+effects, RenderGlobal/viewport and the particle renderer. It uses canonical
+File/stream ownership for Settings saves. External scene/effect occurrences
+preserve their App/Engine/Display dependencies through retryable retirement.
+Resource-thread allocation and later GUI adoption remain unfinished; the
+default executable still uses the diagnostic title/inspection entry.
+
 The [first-person component](client/first-person.md) reads genuine Player state
 and the actual App's late Settings/World fields. Its finite view can draw copied
 section geometry through those matrices while retaining its real World. Normal

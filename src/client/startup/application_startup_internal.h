@@ -62,6 +62,9 @@ struct mc_client_application_startup {
     mc_client_startup_stats_call *statistics;
     mc_client_startup_input_call *input;
     mc_client_startup_graphics_call *graphics;
+    mc_client_startup_effects_call *effects;
+    mc_client_startup_rendering_call *rendering;
+    struct mc_client_startup_resources_call *resources;
 };
 
 mc_client_startup_status application_startup_fail(mc_client_startup_error *,
@@ -81,6 +84,12 @@ mc_client_startup_status application_startup_input(mc_client_application_startup
 mc_client_startup_status application_startup_input_retire(mc_client_application_startup *);
 mc_client_startup_status application_startup_graphics(mc_client_application_startup *);
 mc_client_startup_status application_startup_graphics_retire(mc_client_application_startup *);
+mc_client_startup_status application_startup_effects(mc_client_application_startup *);
+mc_client_startup_status application_startup_effects_retire(mc_client_application_startup *);
+mc_client_startup_status application_startup_rendering(mc_client_application_startup *);
+mc_client_startup_status application_startup_rendering_retire(mc_client_application_startup *);
+mc_client_startup_status application_startup_resources(mc_client_application_startup *);
+mc_client_startup_status application_startup_resources_retire(mc_client_application_startup *);
 mc_client_startup_status application_startup_font(mc_client_application_startup *);
 mc_client_startup_status application_startup_render_engine(mc_client_application_startup *);
 mc_client_startup_status application_startup_pack(mc_client_application_startup *);

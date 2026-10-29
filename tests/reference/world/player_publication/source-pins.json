@@ -328,8 +328,8 @@
       "sha256": "806977baa19465b3c49ff1ec9b8a05f5ad386f67292c09cbbf3222773c6d8725"
     },
     "src/world/info/info.c": {
-      "bytes": 43559,
-      "sha256": "8679d499d1b78adedb6cc6e6f393321ae61f3abca108a6917f50877a905c8265"
+      "bytes": 45078,
+      "sha256": "f5629c9368073e43dfcefdb309bfd6ce54bee2931a76c525a0d75c9a875c5a01"
     },
     "src/world/runtime/chunk_provider.c": {
       "bytes": 17171,
@@ -364,8 +364,8 @@
       "sha256": "40a16d6e0174952c799787ccffff8b960e45d9a1802cc6089084121687ffb5e7"
     },
     "src/entity/player/construction.c": {
-      "bytes": 17815,
-      "sha256": "5d48a422be3bfb94c62a01dcd91f80496dc05618d01d30662a3166390e546771"
+      "bytes": 18363,
+      "sha256": "851f8795fe82df81f53c3dd04518e8f6de5277c2dd82976310ac45fcbe24f77d"
     },
     "tests/world/runtime/player_publication/test_publication.c": {
       "bytes": 22492,
@@ -427,6 +427,40 @@
         ]
       },
       "preserved_unrelated_producer_rows": true
+    },
+    {
+      "role": "Current unqualified source admission only; prior producers, original/JDK/Code/capture facts and results retain their exact historical bindings.",
+      "public_parent": {
+        "commit": "5d61f89760507eea33c752bbea352fd407ecc1ff",
+        "source_map": {
+          "bytes": 348140,
+          "sha256": "69fd935f0def729b0c4b0fb9b0145333f788eb5077fcd20756f3d7598d5f9567"
+        },
+        "files": 2284
+      },
+      "previous_metadata": {
+        "bytes": 15668,
+        "sha256": "389db722108267c7b3c8be963d2935f2c580fd238372a7aa07c0c4ff7bf140ae"
+      },
+      "frozen_nonmetadata_source_set": {
+        "bytes": 358070,
+        "sha256": "bc6675580594e57eda57baae11fbbc0c8bf29e52f39b626cd445ac464f2cd476"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 19,
+          "after_count": 19,
+          "previous": {
+            "src/entity/player/construction.c": {
+              "bytes": 17815,
+              "sha256": "5d48a422be3bfb94c62a01dcd91f80496dc05618d01d30662a3166390e546771"
+            }
+          },
+          "added_paths": [],
+          "removed_paths": []
+        }
+      },
+      "native_compiler_JVM_or_original_results_transferred": false
     }
   ]
 }

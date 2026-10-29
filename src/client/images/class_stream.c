@@ -198,3 +198,28 @@ mc_client_class_stream_status mc_client_class_stream_retire(mc_client_class_stre
         *error = e;
     return e.status;
 }
+
+mc_client_class_stream_status mc_client_class_stream_ready(mc_client_class_stream *stream,
+                                                           bool *out,
+                                                           mc_client_class_stream_error *error) {
+    mc_client_class_stream_error e = {0};
+    if (stream == NULL || out == NULL)
+        fail(&e, MC_CLIENT_CLASS_STREAM_INVALID_ARGUMENT, "class-resource availability arguments");
+    else if (stream->active)
+        fail(&e, MC_CLIENT_CLASS_STREAM_BUSY,
+             "class-resource availability during read/ready/close");
+    else if (stream->source == NULL)
+        fail(&e, MC_CLIENT_CLASS_STREAM_UNIMPLEMENTED, "class-resource availability source");
+    else {
+        bool ready = false;
+        if (stream->source->ready != NULL) {
+            stream->active = true;
+            ready = stream->source->ready(stream->source->context, &stream->bytes);
+            stream->active = false;
+        }
+        *out = ready;
+    }
+    if (error != NULL)
+        *error = e;
+    return e.status;
+}

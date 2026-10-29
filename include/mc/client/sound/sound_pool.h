@@ -122,4 +122,9 @@ mc_sound_status mc_sound_pool_entry_at(const mc_sound_pool *pool, size_t index,
 mc_sound_status mc_sound_pool_entry_read(const mc_sound_pool_entry *entry,
                                          mc_sound_pool_entry_view *out, mc_sound_error *error);
 
+/* Native worker profile: typed File registration serializes with selection,
+ * flag writes and observations. Legacy begin/commit/add_file remain exclusive
+ * external protocols and must not overlap that profile. Final free requires
+ * joined/quiescent workers and no borrowed entries in use. Fixed monitor
+ * storage is separate from the unchanged source allocation ledger/quota. */
 #endif

@@ -7,10 +7,21 @@ dynamic rendering and complete gameplay interactions remain unfinished.
 
 ## Current integration
 
-Published checkpoint `6249a64` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40692181754):
+The current Windows source builds ALL and passes 460 selected CTests without
+failures or skips, including the normal startup windows, resource worker,
+source menus and RenderGlobal device controls. This selection excludes configured
+reference-label profiles. Formatting checks 1,319 files. A separate headless
+Release ALL build also passes. See [the current scope](testing.md#resource-worker-and-source-menu-integration).
+Current Linux results remain to be established for this increment.
+
+
+Hosted baseline `5d61f89` passes [all four jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40746811719):
+410 Windows, 427 GCC and 427 Clang cases, 1,264 total, without failures or skips.
+The later startup increment has selected native qualification below; that scope
+is separate from this complete hosted baseline.
+
+Earlier checkpoint `6249a64` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40692181754):
 407 Windows, 423 GCC and 423 Clang cases, 1,253 total, without failures or skips.
-The focused startup-tail results below use a later local source snapshot and
-remain separate from that hosted suite.
 
 Earlier checkpoint `671c003` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40639713371):
 398 Windows, 414 GCC and 414 Clang cases, 1,226 total. None fail or skip.
@@ -52,13 +63,28 @@ water/grass/foliage color maps and calls their real setters. It now also
 constructs EntityRenderer and RenderManager with their distinct held-item
 renderers. The newer source continues through the real statistics writer and
 callback, startup logo, keyboard/mouse creation and MouseHelper publication.
-It now completes the admitted empty-Controllers path, the first GL diagnostic,
-GL setup through offset 460 and the second diagnostic at 466. The next
-unexecuted operation is the `cx` allocation at offset 470; the last App field
-publication remains MouseHelper `C380`.
+It completes the admitted empty-Controllers path, both GL diagnostics and setup,
+then constructs the capability checker and binds SoundManager through the real
+typed Settings-save path. Nine texture effects register and perform their first
+updates. RenderGlobal construction, viewport setup and the particle constructor
+return before App publication `j660`. The resource-thread caller now constructs
+and publishes `U676`, starts its worker, and runs the `Post startup` diagnostic.
+GuiIngame allocation at `697` is the next unconnected caller operation.
+The pending source-screen owners cover splash loading, initialization, Calendar
+and buttons; connecting menu transitions and the live gameplay loop remains work.
 The default executable continues to use title/inspection startup.
 
-The current focused source passes 47 Windows cases. Nine Core output cases
+The current increment passes 24 selected Windows cases, with six recorded on
+the production successor and eighteen on its test-only triangle-observation
+successor. Production, headers, CMake and flags match across those snapshots.
+The real normal Session passes 181 checks; typed Writer/Settings save pass
+582/202 and the RenderGlobal device profile passes 16,723 checks. Clang 18
+passes 41 selected cases with ASan, UBSan and leak detection. GCC validation is
+tracked separately. These results do not establish Linux default-directory
+startup, original/JVM or visual correspondence, World entry or gameplay.
+See [the exact scope](testing.md#startup-scene-construction-and-typed-settings-save).
+
+The earlier GL-diagnostic source passes 47 Windows cases. Nine Core output cases
 retain their separate earlier Windows test-header source. Clang 18 and GCC 13
 each pass 53 selected cases: 41 CPU/protocol and twelve real-device cases,
 with ASan, UBSan and leak detection. Fresh Windows normal and real-GL-error

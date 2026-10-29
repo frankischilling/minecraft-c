@@ -114,9 +114,11 @@ records capture, actual-origin and producer/policy boundaries.
 
 ## Remaining source boundary
 
-There is no App.p publication or normal bootstrap adoption in this component.
-Startup adoption of the selected-pack/String/ImageIO and FontRenderer owners,
-effects registration and update/subimage upload remain separate work. The mipmap path stops
+Normal startup now publishes the real App.p and registers nine constructor-owned
+or newly constructed texture effects on the same Engine. Registration appends
+the actual occurrence and performs its first update; see
+[texture effects](texture-effects.md) and [startup](normal-startup.md).
+Frame-driven updates and subimage upload remain separate work. The mipmap path stops
 at its first unimplemented body after level zero; source GL_CLAMP stops at its
 first incompatible parameter instead of silently becoming CLAMP_TO_EDGE.
 Dynamic textures, source ge cleanup and full scene rendering remain unfinished.

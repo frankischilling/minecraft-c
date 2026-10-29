@@ -432,6 +432,8 @@ static void destroy_engine(mc_client_render_engine *o, bool drop_class) {
                  : i == 1 ? (void *)maps[i]->color_arrays
                           : (void *)maps[i]->entries);
         }
+    if (o->fields.g != NULL)
+        free(((mc_client_render_list *)o->fields.g)->entries);
     mc_client_render_arena_free(&o->arena);
     if (drop_class)
         (void)mc_client_render_engine_classes_release(o->classes);
@@ -447,6 +449,8 @@ mc_client_render_engine_status mc_client_render_engine_release(mc_client_render_
         return MC_CLIENT_RENDER_ENGINE_BUSY;
     /* Opaque client-device prefix/policy storage is retired explicitly in its
      * own layer. CPU ownership never calls Pack/Display or a cleanup callback. */
+    if (o->holds == 1 && o->fields.g != NULL && o->fields.g->count != 0 && !o->effects_retired)
+        return MC_CLIENT_RENDER_ENGINE_BUSY;
     if (o->holds == 1 && o->lookup != NULL)
         return MC_CLIENT_RENDER_ENGINE_BUSY;
     if (o->holds == 1 && atomic_load_explicit(&o->classes->holds, memory_order_acquire) == 1 &&
@@ -477,7 +481,8 @@ mc_client_render_engine_retire(mc_client_render_engine **slot,
          * counters. Every retained lookup prefix also prevents final release;
          * registration/lookup calls and font leases hold the actual Engine. */
         if (o->holds != 1 || o->phase == MC_CLIENT_RENDER_ENGINE_CONSTRUCTING ||
-            o->active_resource_calls != 0 || o->lookup != NULL)
+            o->active_resource_calls != 0 || o->lookup != NULL ||
+            (o->fields.g != NULL && o->fields.g->count != 0 && !o->effects_retired))
             fail(&e, MC_CLIENT_RENDER_ENGINE_BUSY, "Engine own operation/hold/pending dependency",
                  NULL, 0, 0, NULL, 0);
         else {

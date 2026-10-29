@@ -36,8 +36,8 @@
       "sha256": "0c31bb6964d32453ee1785ad0df17bf4babe8940307bced9bdec4d69a3ea6dcb"
     },
     "src/client/texture_effects/water.c": {
-      "bytes": 17481,
-      "sha256": "dd01fc5a772485ab52775ac60ebe7a5f9739ca8b2049454425924485b80a3f67"
+      "bytes": 18292,
+      "sha256": "867318a835651121edb383768c5f7197a0d909832afe8eec3364826dfe0f190a"
     },
     "include/mc/core/java/java.h": {
       "bytes": 3573,
@@ -68,8 +68,8 @@
       "sha256": "88db116e2f3f6044f3a6d3faac4bf87134ee833a13b5b24bda8260d653e516f7"
     },
     "src/block/registry/registry_internal.h": {
-      "bytes": 13672,
-      "sha256": "dfa07e99d8ebd2483fc912b47eeacacf5d50bf88ec0f8e529e7c034653344ecf"
+      "bytes": 13838,
+      "sha256": "ade35ac909f9a1c66f0905095655971fdeede5845d466936952fd32d1ea700ae"
     },
     "src/block/registry/runtime.c": {
       "bytes": 20864,

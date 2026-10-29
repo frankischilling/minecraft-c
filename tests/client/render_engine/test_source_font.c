@@ -8,6 +8,7 @@
 #include "../../../src/client/render_engine/ge.h"
 #include "../../../src/client/render_engine/internal.h"
 #include "../../../src/client/startup/application_owner.h"
+#include "mc/block/registry/runtime.h"
 #include "mc/resources/files/files.h"
 #include <SDL3/SDL_main.h>
 #include <stdio.h>
@@ -29,6 +30,8 @@ static mc_client_gl_draw_arrays_fn probe_real_draw;
 static mc_client_bitmap_font **probe_slot;
 static unsigned probe_callbacks;
 static bool probe_callback_ok = true;
+static mc_registry_classes *probe_registry;
+static const mc_player_string_view *probe_view;
 
 static void probe_reentry(void) {
     ++probe_callbacks;
@@ -41,6 +44,16 @@ static void probe_reentry(void) {
     }
     if (mc_client_bitmap_font_retain(before) != MC_CLIENT_BITMAP_FONT_BUSY)
         probe_callback_ok = false;
+    if (probe_registry != NULL &&
+        mc_registry_classes_free(probe_registry, NULL) != MC_REGISTRY_BUSY)
+        probe_callback_ok = false;
+    if (probe_view != NULL) {
+        int32_t untouched = -77;
+        if (mc_client_bitmap_font_measure_view(before, probe_view, &untouched, NULL) !=
+                MC_CLIENT_BITMAP_FONT_BUSY ||
+            untouched != -77)
+            probe_callback_ok = false;
+    }
 }
 
 static void GLAPIENTRY probe_image(GLenum target, GLint level, GLint internal_format, GLsizei width,
@@ -130,6 +143,11 @@ int main(int argc, char **argv) {
     }
     int result = 1;
     mc_resource_files *files = NULL;
+    mc_java_random_profile *label_profile = NULL;
+    mc_materials *label_materials = NULL;
+    mc_registry_classes *label_registry = NULL;
+    bool label_registry_held = false;
+    mc_client_capture legacy_capture = {0};
     mc_client_display *display = NULL;
     mc_client_render_engine_classes *classes = NULL;
     mc_client_default_font *default_font = NULL;
@@ -261,7 +279,126 @@ int main(int argc, char **argv) {
             nio.limit == 3);
     REQUIRE(mc_client_display_capture_rgba(display, &capture, &device_error));
     REQUIRE(probe_pixel(&capture, 10, 10, 255) && probe_pixel(&capture, 31, 31, 0));
+    /* The borrowed label is an ACTUAL translation String, not a copied Player
+     * wrapper. Its real namespace occurrence keeps the UTF16 owner alive. */
+    REQUIRE(mc_java_random_profile_create(SIZE_MAX, &label_profile) == MC_JAVA_RANDOM_PROFILE_OK);
+    REQUIRE(mc_materials_create(&label_materials));
+    const mc_registry_options label_options = {.side = MC_REGISTRY_CLIENT,
+                                               .random_profile = label_profile,
+                                               .materials = label_materials,
+                                               .resources = mc_resource_files_source(files)};
+    REQUIRE(mc_registry_classes_allocate(&label_options, &label_registry, NULL) == MC_REGISTRY_OK);
+    REQUIRE(mc_registry_classes_initialize_translation_singleton(label_registry, NULL) ==
+            MC_REGISTRY_OK);
+    REQUIRE(mc_registry_classes_retain(label_registry, MC_REGISTRY_CLIENT, label_profile, NULL) ==
+            MC_REGISTRY_OK);
+    label_registry_held = true;
+    mc_registry_translation_view translations;
+    REQUIRE(mc_registry_classes_inspect_translation(label_registry, &translations, NULL) ==
+            MC_REGISTRY_OK);
+    const uint16_t key[] = {'g', 'u', 'i', '.', 't', 'e', 's', 't'};
+    const mc_registry_string *registry_label = NULL, *same_label = NULL;
+    REQUIRE(mc_translation_property(translations.singleton_a, key, sizeof(key) / sizeof(key[0]),
+                                    &registry_label, NULL) == MC_REGISTRY_OK &&
+            registry_label != NULL);
+    REQUIRE(mc_translation_property(translations.singleton_a, key, sizeof(key) / sizeof(key[0]),
+                                    &same_label, NULL) == MC_REGISTRY_OK &&
+            same_label == registry_label);
+    mc_registry_string_view registry_view;
+    REQUIRE(mc_registry_string_read(registry_label, &registry_view));
+    const mc_player_string_view held_view = {registry_view.units, registry_view.length};
+    REQUIRE(held_view.length == 3 && held_view.units[0] == 'A' && held_view.units[1] == ' ' &&
+            held_view.units[2] == 'B');
+    measured = -1;
+    REQUIRE(mc_client_bitmap_font_measure_view(ready, &held_view, &measured, error) ==
+                MC_CLIENT_BITMAP_FONT_OK &&
+            measured == 22);
+    measured = -1;
+    REQUIRE(mc_client_bitmap_font_measure_view(ready, NULL, &measured, error) ==
+                MC_CLIENT_BITMAP_FONT_OK &&
+            measured == 0);
+    const mc_player_string_view empty_view = {NULL, 0};
+    REQUIRE(mc_client_bitmap_font_measure_view(ready, &empty_view, &measured, error) ==
+                MC_CLIENT_BITMAP_FONT_OK &&
+            measured == 0);
+    const mc_player_string_view malformed_view = {NULL, 1};
+    measured = -77;
+    REQUIRE(mc_client_bitmap_font_measure_view(ready, &malformed_view, &measured, error) ==
+                MC_CLIENT_BITMAP_FONT_INVALID_ARGUMENT &&
+            measured == -77 && error->native_policy);
+    const mc_player_string_view long_view = {held_view.units, 65537u};
+    REQUIRE(mc_client_bitmap_font_measure_view(ready, &long_view, &measured, error) ==
+                MC_CLIENT_BITMAP_FONT_LIMIT &&
+            measured == -77);
+    REQUIRE(mc_client_bitmap_font_inspect(ready, state) && state->holds == 1 && !state->active);
+
+    legacy_capture = capture;
+    capture = (mc_client_capture){0};
+    REQUIRE(mc_client_display_begin_scene(display, 0, 0, 0, &device_error));
+    REQUIRE(
+        mc_client_display_loading_projection(display, 64, 64, &projection_stage, &device_error));
+    REQUIRE(mc_client_display_source_texture_enable(display, true, &device_error));
+    REQUIRE(mc_client_display_source_alpha_test(display, true, &device_error));
+    probe_callbacks = 0;
+    probe_registry = label_registry;
+    probe_view = &held_view;
+    display->gl.DrawArrays = probe_draw;
+    const mc_client_bitmap_font_status view_drawn = mc_client_bitmap_font_draw_view(
+        ready, &held_view, 8, 8, UINT32_C(0xffffffff), false, error);
+    display->gl.DrawArrays = probe_real_draw;
+    probe_view = NULL;
+    probe_registry = NULL;
+    REQUIRE(view_drawn == MC_CLIENT_BITMAP_FONT_OK && probe_callbacks == 3 && probe_callback_ok);
+    REQUIRE(mc_client_display_capture_rgba(display, &capture, &device_error));
+    REQUIRE(capture.width == legacy_capture.width && capture.height == legacy_capture.height &&
+            capture.stride == legacy_capture.stride &&
+            memcmp(capture.pixels, legacy_capture.pixels,
+                   capture.stride * (size_t)capture.height) == 0);
     mc_client_capture_free(&capture);
+    mc_client_capture_free(&legacy_capture);
+
+    REQUIRE(mc_client_display_begin_scene(display, 0, 0, 0, &device_error));
+    REQUIRE(
+        mc_client_display_loading_projection(display, 64, 64, &projection_stage, &device_error));
+    REQUIRE(mc_client_display_source_texture_enable(display, true, &device_error));
+    REQUIRE(mc_client_display_source_alpha_test(display, true, &device_error));
+    REQUIRE(mc_client_bitmap_font_draw_shadow(ready, text, 8, 8, UINT32_C(0xffffffff), error) ==
+            MC_CLIENT_BITMAP_FONT_OK);
+    REQUIRE(mc_client_display_capture_rgba(display, &legacy_capture, &device_error));
+    REQUIRE(mc_client_display_begin_scene(display, 0, 0, 0, &device_error));
+    REQUIRE(
+        mc_client_display_loading_projection(display, 64, 64, &projection_stage, &device_error));
+    REQUIRE(mc_client_display_source_texture_enable(display, true, &device_error));
+    REQUIRE(mc_client_display_source_alpha_test(display, true, &device_error));
+    REQUIRE(mc_client_bitmap_font_draw_shadow_view(ready, &held_view, 8, 8, UINT32_C(0xffffffff),
+                                                   error) == MC_CLIENT_BITMAP_FONT_OK);
+    REQUIRE(mc_client_display_capture_rgba(display, &capture, &device_error));
+    REQUIRE(capture.width == legacy_capture.width && capture.height == legacy_capture.height &&
+            capture.stride == legacy_capture.stride &&
+            memcmp(capture.pixels, legacy_capture.pixels,
+                   capture.stride * (size_t)capture.height) == 0);
+    mc_client_capture_free(&capture);
+    mc_client_capture_free(&legacy_capture);
+
+    const unsigned int old_csr = _mm_getcsr();
+    _mm_setcsr(old_csr | 0x8000u); /* Real unsupported FTZ environment, no repair in source. */
+    const mc_client_bitmap_font_status null_draw =
+        mc_client_bitmap_font_draw_view(ready, NULL, 8, 8, UINT32_C(0xffffffff), false, error);
+    const mc_client_bitmap_font_status empty_draw = mc_client_bitmap_font_draw_view(
+        ready, &empty_view, 8, 8, UINT32_C(0xffffffff), false, error);
+    const int32_t empty_pc = error->pc;
+    _mm_setcsr(old_csr);
+    REQUIRE(null_draw == MC_CLIENT_BITMAP_FONT_OK &&
+            empty_draw == MC_CLIENT_BITMAP_FONT_UNSUPPORTED_FP && empty_pc == 55);
+    REQUIRE(mc_client_bitmap_font_inspect(ready, state) && state->holds == 1 && !state->active);
+    REQUIRE(mc_registry_classes_release(label_registry, NULL) == MC_REGISTRY_OK);
+    label_registry_held = false;
+    REQUIRE(mc_registry_classes_free(label_registry, NULL) == MC_REGISTRY_OK);
+    label_registry = NULL;
+    mc_materials_destroy(label_materials);
+    label_materials = NULL;
+    mc_java_random_profile_free(label_profile);
+    label_profile = NULL;
     puts("FONT measure-draw-capture PASS");
     puts("FONT draw-reentry PASS");
 
@@ -380,6 +517,18 @@ int main(int argc, char **argv) {
     REQUIRE(fflush(stdout) == 0 && !ferror(stdout));
     result = 0;
 done:
+    probe_registry = NULL;
+    probe_view = NULL;
+    mc_client_capture_free(&legacy_capture);
+    if (label_registry_held && mc_registry_classes_release(label_registry, NULL) == MC_REGISTRY_OK)
+        label_registry_held = false;
+    if (label_registry != NULL && !label_registry_held &&
+        mc_registry_classes_free(label_registry, NULL) == MC_REGISTRY_OK)
+        label_registry = NULL;
+    if (label_registry == NULL) {
+        mc_materials_destroy(label_materials);
+        mc_java_random_profile_free(label_profile);
+    }
     if (display != NULL) {
         if (probe_real_image != NULL)
             display->gl.TexImage2D = probe_real_image;
@@ -419,7 +568,7 @@ done:
         (void)mc_client_default_font_release(default_font);
     if (settings != NULL)
         (void)mc_game_settings_retire(&settings, NULL);
-    if (files != NULL)
+    if (files != NULL && label_registry == NULL)
         (void)mc_resource_files_free(files);
     if (display != NULL)
         (void)mc_client_display_destroy(display, &device_error);

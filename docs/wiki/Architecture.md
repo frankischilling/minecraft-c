@@ -16,7 +16,9 @@ separate from source stores. The standalone constructor and retained resource
 owners have separate [native coverage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md).
 The [normal startup owner](Startup) now connects Display, the game directory,
 Settings, selected Pack, RenderEngine, Font, color maps, EntityRenderer and
-RenderManager on the same App. Its next source call is statistics startup.
+RenderManager on the same App. It continues through statistics, input, texture
+effects, RenderGlobal, particles and resource-thread startup. Its next
+unconnected caller operation is GuiIngame allocation at offset 697.
 The executable still uses its title/inspection entry; complete startup and
 gameplay adoption remain unfinished.
 

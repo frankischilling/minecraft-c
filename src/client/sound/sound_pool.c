@@ -1,4 +1,7 @@
 #include "mc/client/sound/sound_pool.h"
+#include "mc/client/sound/sound_file_registration.h"
+#include <stddef.h>
+#include <threads.h>
 
 #include "pool_construction.h"
 
@@ -46,6 +49,18 @@ struct mc_sound_pool {
     size_t allocation_bytes, allocation_limit;
     mc_sound_pool_registration *registration;
 };
+
+/* Fixed native monitor header is outside the unchanged source pool ledger.
+ * No HTTP/XML/device ownership lives here. Final retirement is quiescent. */
+typedef struct pool_native {
+    mtx_t monitor;
+    bool active;
+    mc_sound_pool body;
+} pool_native;
+
+static pool_native *native_pool(const mc_sound_pool *pool) {
+    return (pool_native *)((unsigned char *)(void *)pool - offsetof(pool_native, body));
+}
 
 struct mc_sound_pool_registration {
     mc_sound_pool *pool;
@@ -200,10 +215,16 @@ mc_sound_status mc_sound_pool_allocate_raw(size_t max_allocation_bytes, mc_sound
         max_allocation_bytes > MC_SOUND_POOL_MAX_ALLOCATION_BYTES)
         return fail(error, MC_SOUND_LIMIT, "SoundPool allocation budget", -1,
                     MC_SOUND_EXCEPTION_NONE);
-    mc_sound_pool *pool = MC_SOUND_POOL_CALLOC(1, sizeof(*pool));
+    pool_native *native = MC_SOUND_POOL_CALLOC(1, sizeof(*native));
+    mc_sound_pool *pool = native == NULL ? NULL : &native->body;
     if (pool == NULL)
         return fail(error, MC_SOUND_ALLOCATION_FAILED, "SoundPool owner", -1,
                     MC_SOUND_EXCEPTION_NONE);
+    if (mtx_init(&native->monitor, mtx_recursive) != thrd_success) {
+        free(native);
+        return fail(error, MC_SOUND_IO_FAILED, "SoundPool native monitor initialization", -1,
+                    MC_SOUND_EXCEPTION_NONE);
+    }
     /* Native charge is real even if the source constructor later fails. This
      * does not publish the embedded source Map/List or Random. */
     pool->allocation_bytes = sizeof(*pool);
@@ -271,7 +292,7 @@ mc_sound_status mc_sound_pool_create(mc_java_random_profile *profile, size_t max
     return success(error);
 }
 
-mc_sound_status mc_sound_pool_free(mc_sound_pool *pool, mc_sound_error *error) {
+static mc_sound_status mc_sound_pool_free_body(mc_sound_pool *pool, mc_sound_error *error) {
     if (pool != NULL) {
         if (pool->registration != NULL)
             return fail(error, MC_SOUND_BUSY, "SoundPool active registration retirement", -1,
@@ -282,13 +303,13 @@ mc_sound_status mc_sound_pool_free(mc_sound_pool *pool, mc_sound_error *error) {
             free(allocation);
             allocation = next;
         }
-        free(pool);
+        free(native_pool(pool));
     }
     return success(error);
 }
 
-mc_sound_status mc_sound_pool_set_strip_digits(mc_sound_pool *pool, bool strip_digits,
-                                               mc_sound_error *error) {
+static mc_sound_status mc_sound_pool_set_strip_digits_body(mc_sound_pool *pool, bool strip_digits,
+                                                           mc_sound_error *error) {
     if (pool == NULL)
         return fail(error, MC_SOUND_INVALID_ARGUMENT, "SoundPool digit flag owner", -1,
                     MC_SOUND_EXCEPTION_NONE);
@@ -578,9 +599,10 @@ static mc_sound_status select_entries(mc_sound_pool *pool,
     return success(error);
 }
 
-mc_sound_status mc_sound_pool_select(mc_sound_pool *pool, mc_sound_text key,
-                                     const mc_sound_pool_entry **out, mc_sound_pool_report *report,
-                                     mc_sound_error *error) {
+static mc_sound_status mc_sound_pool_select_body(mc_sound_pool *pool, mc_sound_text key,
+                                                 const mc_sound_pool_entry **out,
+                                                 mc_sound_pool_report *report,
+                                                 mc_sound_error *error) {
     report_empty(report);
     if (pool == NULL || out == NULL)
         return fail(error, MC_SOUND_INVALID_ARGUMENT, "SoundPool selection arguments", -1,
@@ -601,8 +623,10 @@ mc_sound_status mc_sound_pool_select(mc_sound_pool *pool, mc_sound_text key,
     return select_entries(pool, group->entries, group->count, out, report, error);
 }
 
-mc_sound_status mc_sound_pool_select_any(mc_sound_pool *pool, const mc_sound_pool_entry **out,
-                                         mc_sound_pool_report *report, mc_sound_error *error) {
+static mc_sound_status mc_sound_pool_select_any_body(mc_sound_pool *pool,
+                                                     const mc_sound_pool_entry **out,
+                                                     mc_sound_pool_report *report,
+                                                     mc_sound_error *error) {
     report_empty(report);
     if (pool == NULL || out == NULL)
         return fail(error, MC_SOUND_INVALID_ARGUMENT, "SoundPool any-selection arguments", -1,
@@ -619,8 +643,9 @@ mc_sound_status mc_sound_pool_select_any(mc_sound_pool *pool, const mc_sound_poo
     return select_entries(pool, pool->entries, pool->entry_count, out, report, error);
 }
 
-mc_sound_status mc_sound_pool_read_state(const mc_sound_pool *pool, mc_sound_pool_state *out,
-                                         mc_sound_error *error) {
+static mc_sound_status mc_sound_pool_read_state_body(const mc_sound_pool *pool,
+                                                     mc_sound_pool_state *out,
+                                                     mc_sound_error *error) {
     if (pool == NULL || out == NULL)
         return fail(error, MC_SOUND_INVALID_ARGUMENT, "SoundPool state arguments", -1,
                     MC_SOUND_EXCEPTION_NONE);
@@ -645,8 +670,9 @@ static const pool_group *group_at(const mc_sound_pool *pool, size_t index) {
     return group;
 }
 
-mc_sound_status mc_sound_pool_read_group(const mc_sound_pool *pool, size_t index,
-                                         mc_sound_pool_group_view *out, mc_sound_error *error) {
+static mc_sound_status mc_sound_pool_read_group_body(const mc_sound_pool *pool, size_t index,
+                                                     mc_sound_pool_group_view *out,
+                                                     mc_sound_error *error) {
     if (pool == NULL || out == NULL || index >= pool->group_count)
         return fail(error, MC_SOUND_INVALID_ARGUMENT, "SoundPool group index", -1,
                     MC_SOUND_EXCEPTION_NONE);
@@ -655,8 +681,9 @@ mc_sound_status mc_sound_pool_read_group(const mc_sound_pool *pool, size_t index
     return success(error);
 }
 
-mc_sound_status mc_sound_pool_group_entry(const mc_sound_pool *pool, size_t group, size_t index,
-                                          const mc_sound_pool_entry **out, mc_sound_error *error) {
+static mc_sound_status mc_sound_pool_group_entry_body(const mc_sound_pool *pool, size_t group,
+                                                      size_t index, const mc_sound_pool_entry **out,
+                                                      mc_sound_error *error) {
     if (pool == NULL || out == NULL || group >= pool->group_count)
         return fail(error, MC_SOUND_INVALID_ARGUMENT, "SoundPool group-entry index", -1,
                     MC_SOUND_EXCEPTION_NONE);
@@ -668,8 +695,9 @@ mc_sound_status mc_sound_pool_group_entry(const mc_sound_pool *pool, size_t grou
     return success(error);
 }
 
-mc_sound_status mc_sound_pool_entry_at(const mc_sound_pool *pool, size_t index,
-                                       const mc_sound_pool_entry **out, mc_sound_error *error) {
+static mc_sound_status mc_sound_pool_entry_at_body(const mc_sound_pool *pool, size_t index,
+                                                   const mc_sound_pool_entry **out,
+                                                   mc_sound_error *error) {
     if (pool == NULL || out == NULL || index >= pool->entry_count)
         return fail(error, MC_SOUND_INVALID_ARGUMENT, "SoundPool full-list index", -1,
                     MC_SOUND_EXCEPTION_NONE);
@@ -684,4 +712,216 @@ mc_sound_status mc_sound_pool_entry_read(const mc_sound_pool_entry *entry,
                     MC_SOUND_EXCEPTION_NONE);
     *out = entry->view;
     return success(error);
+}
+
+static mc_sound_status pool_enter(mc_sound_pool *pool, mc_sound_error *e) {
+    if (pool == NULL)
+        return fail(e, MC_SOUND_INVALID_ARGUMENT, "SoundPool native receiver", -1,
+                    MC_SOUND_EXCEPTION_NONE);
+    pool_native *n = native_pool(pool);
+    if (mtx_lock(&n->monitor) != thrd_success)
+        return fail(e, MC_SOUND_IO_FAILED, "SoundPool native monitor lock", -1,
+                    MC_SOUND_EXCEPTION_NONE);
+    if (n->active) {
+        mtx_unlock(&n->monitor);
+        return fail(e, MC_SOUND_BUSY, "SoundPool same-thread native reentry", -1,
+                    MC_SOUND_EXCEPTION_NONE);
+    }
+    n->active = true;
+    return MC_SOUND_OK;
+}
+
+static mc_sound_status pool_leave(mc_sound_pool *pool, mc_sound_status status, mc_sound_error *e) {
+    pool_native *n = native_pool(pool);
+    n->active = false;
+    if (mtx_unlock(&n->monitor) != thrd_success)
+        return fail(e, MC_SOUND_IO_FAILED, "SoundPool native monitor unlock", -1,
+                    MC_SOUND_EXCEPTION_NONE);
+    return status;
+}
+
+mc_sound_status mc_sound_pool_free(mc_sound_pool *pool, mc_sound_error *e) {
+    if (pool == NULL)
+        return success(e);
+    mc_sound_status s = pool_enter(pool, e);
+    if (s != MC_SOUND_OK)
+        return s;
+    if (pool->registration != NULL)
+        return pool_leave(pool,
+                          fail(e, MC_SOUND_BUSY, "SoundPool active registration retirement", -1,
+                               MC_SOUND_EXCEPTION_NONE),
+                          e);
+    /* Caller proves all worker/borrowed-entry users ended; no concurrent final
+     * free is admitted. Unlock before destroying the sole native header. */
+    s = pool_leave(pool, MC_SOUND_OK, e);
+    if (s != MC_SOUND_OK)
+        return s;
+    mtx_destroy(&native_pool(pool)->monitor);
+    return mc_sound_pool_free_body(pool, e);
+}
+
+mc_sound_status mc_sound_pool_set_strip_digits(mc_sound_pool *p, bool b, mc_sound_error *e) {
+    if (p == NULL)
+        return mc_sound_pool_set_strip_digits_body(p, b, e);
+    mc_sound_status s = pool_enter(p, e);
+    return s != MC_SOUND_OK ? s : pool_leave(p, mc_sound_pool_set_strip_digits_body(p, b, e), e);
+}
+
+mc_sound_status mc_sound_pool_select(mc_sound_pool *p, mc_sound_text key,
+                                     const mc_sound_pool_entry **out, mc_sound_pool_report *r,
+                                     mc_sound_error *e) {
+    if (p == NULL || out == NULL)
+        return mc_sound_pool_select_body(p, key, out, r, e);
+    mc_sound_status s = pool_enter(p, e);
+    return s != MC_SOUND_OK ? s : pool_leave(p, mc_sound_pool_select_body(p, key, out, r, e), e);
+}
+
+mc_sound_status mc_sound_pool_select_any(mc_sound_pool *p, const mc_sound_pool_entry **out,
+                                         mc_sound_pool_report *r, mc_sound_error *e) {
+    if (p == NULL || out == NULL)
+        return mc_sound_pool_select_any_body(p, out, r, e);
+    mc_sound_status s = pool_enter(p, e);
+    return s != MC_SOUND_OK ? s : pool_leave(p, mc_sound_pool_select_any_body(p, out, r, e), e);
+}
+
+mc_sound_status mc_sound_pool_read_state(const mc_sound_pool *p, mc_sound_pool_state *out,
+                                         mc_sound_error *e) {
+    if (p == NULL || out == NULL)
+        return mc_sound_pool_read_state_body(p, out, e);
+    mc_sound_pool *m = (mc_sound_pool *)(void *)p;
+    mc_sound_status s = pool_enter(m, e);
+    return s != MC_SOUND_OK ? s : pool_leave(m, mc_sound_pool_read_state_body(p, out, e), e);
+}
+
+mc_sound_status mc_sound_pool_read_group(const mc_sound_pool *p, size_t i,
+                                         mc_sound_pool_group_view *out, mc_sound_error *e) {
+    if (p == NULL || out == NULL)
+        return mc_sound_pool_read_group_body(p, i, out, e);
+    mc_sound_pool *m = (mc_sound_pool *)(void *)p;
+    mc_sound_status s = pool_enter(m, e);
+    return s != MC_SOUND_OK ? s : pool_leave(m, mc_sound_pool_read_group_body(p, i, out, e), e);
+}
+
+mc_sound_status mc_sound_pool_group_entry(const mc_sound_pool *p, size_t g, size_t i,
+                                          const mc_sound_pool_entry **out, mc_sound_error *e) {
+    if (p == NULL || out == NULL)
+        return mc_sound_pool_group_entry_body(p, g, i, out, e);
+    mc_sound_pool *m = (mc_sound_pool *)(void *)p;
+    mc_sound_status s = pool_enter(m, e);
+    return s != MC_SOUND_OK ? s : pool_leave(m, mc_sound_pool_group_entry_body(p, g, i, out, e), e);
+}
+
+mc_sound_status mc_sound_pool_entry_at(const mc_sound_pool *p, size_t i,
+                                       const mc_sound_pool_entry **out, mc_sound_error *e) {
+    if (p == NULL || out == NULL)
+        return mc_sound_pool_entry_at_body(p, i, out, e);
+    mc_sound_pool *m = (mc_sound_pool *)(void *)p;
+    mc_sound_status s = pool_enter(m, e);
+    return s != MC_SOUND_OK ? s : pool_leave(m, mc_sound_pool_entry_at_body(p, i, out, e), e);
+}
+
+struct mc_sound_pool_file_call {
+    mc_java_uri *uri;
+    mc_java_url *url;
+    mc_sound_pool_file_error failure;
+};
+
+mc_sound_status mc_sound_pool_add_java_file(mc_sound_pool *pool, mc_sound_text name,
+                                            mc_java_file *file, mc_sound_pool_file_call **out,
+                                            const mc_sound_pool_entry **entry,
+                                            mc_sound_pool_file_error *error) {
+    mc_sound_pool_file_error e = {0};
+    if (out == NULL || entry == NULL) {
+        e.status = MC_SOUND_INVALID_ARGUMENT;
+        if (error != NULL)
+            *error = e;
+        return e.status;
+    }
+    mc_sound_pool_file_call *call = calloc(1, sizeof(*call));
+    if (call == NULL) {
+        e.status = MC_SOUND_ALLOCATION_FAILED;
+        if (error != NULL)
+            *error = e;
+        return e.status;
+    }
+    *out = call;
+    e.status = pool_enter(pool, &e.pool);
+    if (e.status != MC_SOUND_OK)
+        goto done;
+    mc_sound_pool_registration *registration = NULL;
+    e.status = mc_sound_pool_begin(pool, name, &registration, &e.report, &e.pool);
+    e.hr_pc = e.report.source_pc;
+    if (e.status != MC_SOUND_OK)
+        goto leave;
+    e.hr_pc = 98;
+    if (file == NULL) {
+        e.status = MC_SOUND_SOURCE_EXCEPTION;
+        e.pool = (mc_sound_error){.status = e.status,
+                                  .operation = "actual hr null File receiver",
+                                  .source_pc = 98,
+                                  .exception = MC_SOUND_EXCEPTION_NULL_FILE};
+        goto leave;
+    }
+    if (mc_java_file_to_uri(file, &call->uri, &e.url) != MC_JAVA_URL_OK) {
+        e.status = e.url.status == MC_JAVA_URL_BUSY         ? MC_SOUND_BUSY
+                   : e.url.status == MC_JAVA_URL_LIMIT      ? MC_SOUND_LIMIT
+                   : e.url.status == MC_JAVA_URL_ALLOCATION ? MC_SOUND_ALLOCATION_FAILED
+                                                            : MC_SOUND_UNSUPPORTED_PATH;
+        goto leave;
+    }
+    e.hr_pc = 101;
+    if (mc_java_uri_to_url(call->uri, &call->url, &e.url) != MC_JAVA_URL_OK) {
+        e.status = MC_SOUND_UNSUPPORTED_PATH;
+        e.print_stack_trace_pending = e.url.source_exception;
+        goto leave;
+    }
+    mc_java_url_view view;
+    if (!mc_java_url_inspect(call->url, &view) || !view.file) {
+        e.status = MC_SOUND_INVALID_ARGUMENT;
+        goto leave;
+    }
+    mc_sound_file_identity identity = {view.native_file,
+                                       {view.file_url_path, view.file_url_length, false}};
+    e.status = mc_sound_pool_commit(&registration, &identity, entry, &e.report, &e.pool);
+    e.hr_pc = e.report.source_pc;
+    if (e.status == MC_SOUND_OK) {
+        e.hr_pc = 154;
+        e.source_returned = true;
+    }
+leave:
+    /* Native token retirement cannot remove any reached source pool effect.
+     * No thread exits while owning this monitor or a split registration. */
+    mc_sound_pool_registration_free(registration);
+    e.status = pool_leave(pool, e.status, &e.pool);
+done:
+    call->failure = e;
+    if (error != NULL)
+        *error = e;
+    return e.status;
+}
+
+mc_sound_status mc_sound_pool_file_call_release(mc_sound_pool_file_call **slot,
+                                                mc_sound_pool_file_error *error) {
+    mc_sound_pool_file_error e = {0};
+    if (slot == NULL) {
+        e.status = MC_SOUND_INVALID_ARGUMENT;
+        if (error != NULL)
+            *error = e;
+        return e.status;
+    }
+    mc_sound_pool_file_call *c = *slot;
+    if (c != NULL) {
+        if (mc_java_url_release(&c->url, &e.url) != MC_JAVA_URL_OK ||
+            mc_java_uri_release(&c->uri, &e.url) != MC_JAVA_URL_OK) {
+            e.status = e.url.status == MC_JAVA_URL_BUSY ? MC_SOUND_BUSY : MC_SOUND_IO_FAILED;
+            if (error != NULL)
+                *error = e;
+            return e.status;
+        }
+        free(c);
+        *slot = NULL;
+    }
+    if (error != NULL)
+        *error = e;
+    return e.status;
 }

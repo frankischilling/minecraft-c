@@ -26,8 +26,8 @@
       "sha256": "63bb56dc1425a8115b36e878d8c0cab33b9cc36ae397ccab9d5d02f12a16ec56"
     },
     "include/mc/entity/classes/classes.h": {
-      "bytes": 6476,
-      "sha256": "d52f7274eb36411cc4a5173c958bdc1cb4d47ad503e7f2af5949819131611236"
+      "bytes": 6811,
+      "sha256": "bc267b43e9dad1419ef11ace17e39814c608513d267682b0f972f1a36845c1ad"
     },
     "include/mc/entity/entity.h": {
       "bytes": 8689,
@@ -54,8 +54,8 @@
       "sha256": "e5beff867ecaa268117a2854dd0b12bc9f5bf72c7f832cbc6d90d8304663e586"
     },
     "src/client/settings/game_settings.c": {
-      "bytes": 94263,
-      "sha256": "8e7262b68713edaf8bcc0edbc789362643e33e026bf2d7babf36b72ce27ad288"
+      "bytes": 103551,
+      "sha256": "516162eb9cf264efc437fe3ee297f2f5572ba418f86617701c3fe7408f8d1795"
     },
     "src/client/world/first_person.c": {
       "bytes": 20028,
@@ -98,8 +98,8 @@
       "sha256": "a30f814a880be7c7081103016c2635ae5c72b106da6bb59f008d4f88ac797040"
     },
     "src/entity/player/construction.c": {
-      "bytes": 17815,
-      "sha256": "5d48a422be3bfb94c62a01dcd91f80496dc05618d01d30662a3166390e546771"
+      "bytes": 18363,
+      "sha256": "851f8795fe82df81f53c3dd04518e8f6de5277c2dd82976310ac45fcbe24f77d"
     },
     "src/entity/player/player_internal.h": {
       "bytes": 1857,
@@ -126,16 +126,16 @@
       "sha256": "1ac10e26456a6a8c9ba21751f49499549ec8ed322874c0d5c07be74c5fed4fa1"
     },
     "src/client/application_state.h": {
-      "bytes": 7475,
-      "sha256": "f6afdba462d626da467bd8e7e063c73941dc1df91be64f12f06cbc90a30d4f23"
+      "bytes": 7839,
+      "sha256": "39d5d9076ee879feb8471e33ef587d9b6459e7d81a631b0cccba64d60ddec2c2"
     },
     "src/client/application_access.h": {
-      "bytes": 1153,
-      "sha256": "13e72e08e958fb3e1ee2da0967ee59a0c78e1dece3abac41f66e98b68313ca4a"
+      "bytes": 3807,
+      "sha256": "3e98b97d04a0195f05f22aac84a1805d3ae9a84ca385a283ab2f039693f8eff1"
     },
     "src/client/application_access.c": {
-      "bytes": 2710,
-      "sha256": "f1689d2a936d079703b87d0be8960c30de431f353a9727a2921a4ff6b744d200"
+      "bytes": 11498,
+      "sha256": "35366a9e512add6ff114fa83fa749d57fe88f930835275a7ebb2861ff5dfb8ce"
     },
     "src/client/particles/application.h": {
       "bytes": 1290,
@@ -259,6 +259,40 @@
         ]
       },
       "preserved_unrelated_producer_rows": true
+    },
+    {
+      "role": "Current unqualified source admission only; prior producers, original/JDK/Code/capture facts and results retain their exact historical bindings.",
+      "public_parent": {
+        "commit": "5d61f89760507eea33c752bbea352fd407ecc1ff",
+        "source_map": {
+          "bytes": 348140,
+          "sha256": "69fd935f0def729b0c4b0fb9b0145333f788eb5077fcd20756f3d7598d5f9567"
+        },
+        "files": 2284
+      },
+      "previous_metadata": {
+        "bytes": 10006,
+        "sha256": "3b76c5339337424ecdba28aa013a6f4c462e191ebb9426e68b5f4221e6f4d86c"
+      },
+      "frozen_nonmetadata_source_set": {
+        "bytes": 358070,
+        "sha256": "bc6675580594e57eda57baae11fbbc0c8bf29e52f39b626cd445ac464f2cd476"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 46,
+          "after_count": 46,
+          "previous": {
+            "src/entity/player/construction.c": {
+              "bytes": 17815,
+              "sha256": "5d48a422be3bfb94c62a01dcd91f80496dc05618d01d30662a3166390e546771"
+            }
+          },
+          "added_paths": [],
+          "removed_paths": []
+        }
+      },
+      "native_compiler_JVM_or_original_results_transferred": false
     }
   ]
 }

@@ -17,8 +17,8 @@
   },
   "native_sources": {
     "include/mc/client/saves/save_format.h": {
-      "bytes": 10745,
-      "sha256": "f8c2bc79edf07274735e56f1617424269466c0abf81b5bad69c0757523305cac"
+      "bytes": 11775,
+      "sha256": "e079ba732245271e16794a19ff6dc6ed6f0854377e4dd8073d02a8549f5b07af"
     },
     "include/mc/core/math/classes.h": {
       "bytes": 2851,
@@ -29,8 +29,8 @@
       "sha256": "6c84e96ad1d339023683b851229bc2f656a783398819f7b81ef197b2827e1600"
     },
     "include/mc/storage/nbt/input.h": {
-      "bytes": 4025,
-      "sha256": "0b44f3491ce554c5af7da91fb41d9ef438a9b82d19d36a0ba3057c9fc42ce98a"
+      "bytes": 5164,
+      "sha256": "6c8182e95e51764943eb8f486292aa8ab4c79b82a9b09b1c978ea9f35f66d95b"
     },
     "include/mc/storage/nbt/nbt.h": {
       "bytes": 5416,
@@ -45,24 +45,24 @@
       "sha256": "e0399f26a08f05031bec8fdda8da83b3af652666683d5d861b42dfb2dfc161fe"
     },
     "include/mc/world/storage/java_file.h": {
-      "bytes": 9762,
-      "sha256": "90f055fdf01d9e04eb1d0881492868968ab4fab814fd29b5bcf8d8360eedba67"
+      "bytes": 11649,
+      "sha256": "5ce6520317b2d3d903d23399a6a6554272564644f037500899f734b6cb9b735a"
     },
     "src/client/saves/internal.h": {
-      "bytes": 2248,
-      "sha256": "78ce2c0f0eaa48312ef9dc66b1bab20c84528c4c3165015dd9d6352af8649eda"
+      "bytes": 2629,
+      "sha256": "daab90eb8789fcfc3a9549d9dfc8704a517c3d4bad4c78098d95ee5bcbdb2728"
     },
     "src/client/saves/list.c": {
       "bytes": 6827,
       "sha256": "99dddf4f0be43029e76242e86815c58f4bda5713057e2f2e9af5a1b02a0757a9"
     },
     "src/client/saves/metadata.c": {
-      "bytes": 21131,
-      "sha256": "8a458f12e59a048ec84559327ca8760effa109dd1a4023b89c5c32b236424623"
+      "bytes": 22270,
+      "sha256": "4f705c417da74ade42edd7a9a396e26b5745cec49f9c94a8dbb1027230bd57f9"
     },
     "src/client/saves/owner.c": {
-      "bytes": 17724,
-      "sha256": "0c3e7111cc7358be4ec0ed6afe873f3847262998c962dbeb856d942185077830"
+      "bytes": 21836,
+      "sha256": "7d4ca47fc5580a669d9a471d30b78af5d22e1fe2cbc7b66ed71360e9c2e08052"
     },
     "src/client/saves/selection.c": {
       "bytes": 11917,
@@ -105,12 +105,12 @@
       "sha256": "4b359c0853772300305bb9237cea7dd059cdd44bb5604410a467864d946bc8f5"
     },
     "src/platform/files/directory.c": {
-      "bytes": 25948,
-      "sha256": "8f0b22e72af405854eded307571cb10fb3a8ba6028d1a95795fc46d7688874bf"
+      "bytes": 26727,
+      "sha256": "a55415fc7d1f6e7c2cf608a839f618369ac2569be9f37351eff81f7d5cf11f57"
     },
     "src/platform/files/directory.h": {
-      "bytes": 3094,
-      "sha256": "6e5d7cdc6e1da7195565d9f014424f3381fd1250755c753efa7c665c87f8c791"
+      "bytes": 3400,
+      "sha256": "3aaeb266d4770815bcf62070f35d87cce2b72cfebec2907cfc833fd06f7b2e54"
     },
     "src/platform/files/normalize.inc": {
       "bytes": 1339,
@@ -141,36 +141,36 @@
       "sha256": "f177fc3fa9b4512d9012b410b5f39e679df2013e3b68758b476d2529c829200d"
     },
     "src/storage/nbt/stream_owner.inc": {
-      "bytes": 10585,
-      "sha256": "84d5301eebcfdd3eb7f33aa6f2e9a5d10163c3a467360b5cd1f3aa26113a1afa"
+      "bytes": 14556,
+      "sha256": "cf41f289f6c195e24f96a160af339db52af2b0b0f5adaf68bc115912138f57c6"
     },
     "src/storage/nbt/stream_support.inc": {
       "bytes": 10454,
       "sha256": "20cd1c54661ff2083e60326f4b4c0df23a12c25bb2f6c934d22ca5296dba0103"
     },
     "src/world/info/info.c": {
-      "bytes": 43559,
-      "sha256": "8679d499d1b78adedb6cc6e6f393321ae61f3abca108a6917f50877a905c8265"
+      "bytes": 45078,
+      "sha256": "f5629c9368073e43dfcefdb309bfd6ce54bee2931a76c525a0d75c9a875c5a01"
     },
     "src/world/storage/gzip_input.c": {
       "bytes": 34055,
       "sha256": "e10066a9fa571595569560d1144416a47a1448a1a283f1cf570f4458f037087d"
     },
     "src/world/storage/java_file.c": {
-      "bytes": 20200,
-      "sha256": "78b98d53c4bda8e9562e9352de2276e3013bc4c9ebc0f11dcda1ffd238706725"
+      "bytes": 30190,
+      "sha256": "bec82cfd39129fc7fa23bbd509c254e0d8dc6256ab374d3d2d2d96a8d3919b7d"
     },
     "src/world/storage/java_file_internal.h": {
-      "bytes": 2483,
-      "sha256": "338b72d5814c58a7f7df26abf880c4cef481ccc13950b5a0d752e48a18cd252e"
+      "bytes": 3051,
+      "sha256": "ea45f4fb9f5c22f8a176f15d5dcdb05aeb8f3df6e4225e2bb418958a68145001"
     },
     "src/world/storage/java_file_io.c": {
-      "bytes": 23540,
-      "sha256": "45a3b4ba821604c0996a5e24d6d976241a1e50a2716c3ce2aec59eec4048a62a"
+      "bytes": 26157,
+      "sha256": "e02b828377a13d116eeb2ec03cde95b3caedb032124fc2b91db54998d7f8403d"
     },
     "src/world/storage/java_file_list.c": {
-      "bytes": 12132,
-      "sha256": "b1ad299f9d0b6393ebefb7b33201c63e15438245be5b920374d5cea12aec4553"
+      "bytes": 12266,
+      "sha256": "0073d16f65e65ca6185f62dd38dda65a2b69e4aceced624218ad39cf219512fe"
     },
     "src/world/storage/java_file_text.c": {
       "bytes": 2600,

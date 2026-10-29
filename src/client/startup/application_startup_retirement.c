@@ -1,5 +1,7 @@
+#include "application_startup_effects.h"
 #include "application_startup_input.h"
 #include "application_startup_internal.h"
+#include "application_startup_rendering.h"
 #include "application_startup_statistics.h"
 
 #include <stdlib.h>
@@ -34,14 +36,27 @@ mc_client_startup_status mc_client_application_startup_retire(mc_client_applicat
     startup->active = true;
     startup->retirement = error;
     client_application *app = startup->app;
+    const mc_client_startup_status resources = application_startup_resources_retire(startup);
+    if (resources != MC_CLIENT_STARTUP_OK)
+        return cleanup_failure(startup, resources, "startup resource worker retirement", out);
     /* Do not consume unrelated later children. Until their actual caller and
      * retirement route exist they keep this App and its startup services live. */
-    if (app->g != NULL || app->active_world != NULL ||
+    if ((app->g != NULL && (startup->rendering == NULL || !startup->rendering->g_stored)) ||
+        app->active_world != NULL ||
+        (app->S != NULL && (startup->effects == NULL || !startup->effects->S_stored)) ||
         (app->C != NULL && (startup->input == NULL || !startup->input->C_stored)) ||
         ((app->stats_writer != NULL || app->stats_writer_retained != NULL) &&
          (startup->statistics == NULL || !startup->statistics->entered)))
         return cleanup_failure(startup, MC_CLIENT_STARTUP_BUSY,
                                "later source children still borrow startup resources", out);
+    const mc_client_startup_status rendering = application_startup_rendering_retire(startup);
+    if (rendering != MC_CLIENT_STARTUP_OK)
+        return cleanup_failure(startup, rendering,
+                               "startup actual RenderGlobal/dn native retirement", out);
+    const mc_client_startup_status effects = application_startup_effects_retire(startup);
+    if (effects != MC_CLIENT_STARTUP_OK)
+        return cleanup_failure(startup, effects,
+                               "startup actual effect occurrences and App borrows", out);
     const mc_client_startup_status graphics = application_startup_graphics_retire(startup);
     if (graphics != MC_CLIENT_STARTUP_OK)
         return cleanup_failure(startup, graphics,
@@ -352,6 +367,11 @@ mc_client_startup_status mc_client_application_startup_retire(mc_client_applicat
     startup->input = NULL;
     free(startup->graphics);
     startup->graphics = NULL;
+    free(startup->effects);
+    startup->effects = NULL;
+    free(startup->rendering);
+    free(startup->resources);
+    startup->rendering = NULL;
     app->startup = NULL;
     /* No source f/J/o mutation and no kg join: constructor retirement owns
      * native worker cancellation after this actual borrowed App is detached. */

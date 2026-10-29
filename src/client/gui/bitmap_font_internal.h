@@ -37,4 +37,12 @@ mc_client_bitmap_font_status mc_client_bitmap_font_call_leave(mc_client_bitmap_f
                                                               const mc_player_string *,
                                                               mc_client_bitmap_font_error *,
                                                               mc_client_bitmap_font_error *);
+mc_client_bitmap_font_status mc_client_bitmap_font_view_enter(mc_client_bitmap_font *,
+                                                              const mc_player_string_view *,
+                                                              const char *, const char *,
+                                                              mc_client_bitmap_font_error **,
+                                                              mc_client_bitmap_font_error *);
+mc_client_bitmap_font_status mc_client_bitmap_font_view_leave(mc_client_bitmap_font *,
+                                                              mc_client_bitmap_font_error *,
+                                                              mc_client_bitmap_font_error *);
 #endif

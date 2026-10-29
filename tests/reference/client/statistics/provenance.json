@@ -28,16 +28,16 @@
   },
   "native_sources": {
     "include/mc/client/statistics/writer.h": {
-      "bytes": 13738,
-      "sha256": "27ff592a8f737a20885d893bd2becc9f0c4b250bef1c3179a2e8c43eff44e12c"
+      "bytes": 18531,
+      "sha256": "dfac5a05d802908a5100382c1152918cfdcbc899f3f8d1f4d430b7dfe97bd06f"
     },
     "include/mc/entity/player/player.h": {
       "bytes": 10280,
       "sha256": "806977baa19465b3c49ff1ec9b8a05f5ad386f67292c09cbbf3222773c6d8725"
     },
     "src/block/registry/registry_internal.h": {
-      "bytes": 13672,
-      "sha256": "dfa07e99d8ebd2483fc912b47eeacacf5d50bf88ec0f8e529e7c034653344ecf"
+      "bytes": 13838,
+      "sha256": "ade35ac909f9a1c66f0905095655971fdeede5845d466936952fd32d1ea700ae"
     },
     "src/block/registry/runtime.c": {
       "bytes": 20864,
@@ -48,20 +48,20 @@
       "sha256": "3017ef52fd95728ef02a61ed223f6799cdf00d2a4c8af14859ef898230eee88d"
     },
     "src/client/statistics/diagnostic.c": {
-      "bytes": 2689,
-      "sha256": "b0845c7a102af7d6c4afd891902988ff9c6183534bf110055a85e744c136799a"
+      "bytes": 2817,
+      "sha256": "dd8fa87f7fcf7c400f3aaad579ede89507a8344191af0628d3b913be2fa5ca0a"
     },
     "src/client/statistics/files.c": {
-      "bytes": 28784,
-      "sha256": "83778026ba679f4836c10f1371c9c666ad64fe08609bd97cc5c238036ef65ccf"
+      "bytes": 36105,
+      "sha256": "98135497363666abe3f26f2ad4198df3e91bf99adff5770bda380f683386f17f"
     },
     "src/client/statistics/internal.h": {
-      "bytes": 8672,
-      "sha256": "8e6aa43d7273e0849ee272533b5f58610040a7389221295852500e7893baf514"
+      "bytes": 12939,
+      "sha256": "1c19f7068e0d794ce6a48b53b2c80a2930a3cab86f7d5f5c6cd56df0e79c3779"
     },
     "src/client/statistics/json.c": {
-      "bytes": 29360,
-      "sha256": "aeac0dad99a3cbb6ca4c49674958332f19559591fc6bc7a72741554308cca0e7"
+      "bytes": 30030,
+      "sha256": "836232adec410c3aa4ae7475bec772d90d62e84f4386418f28ae9135a6a096a4"
     },
     "src/client/statistics/maps.c": {
       "bytes": 10853,
@@ -72,24 +72,24 @@
       "sha256": "fa8de03d896ebedf807d62f2ce91c8a19d53e88e76ee73e55b7591b0d545ebf2"
     },
     "src/client/statistics/workers.c": {
-      "bytes": 7907,
-      "sha256": "e4f793efc42fbcfe85b8344cd4458fd9e679335ec2a6a0bb60d36b8b014d9237"
+      "bytes": 11199,
+      "sha256": "bb02d641d265574a180e14f962952af8be9fbba6468d3a47508c9b967f00e620"
     },
     "src/client/statistics/writer.c": {
-      "bytes": 23298,
-      "sha256": "b390af2b7829d22729f1f838dabaf3f92008222c5f18c5e1318e3cf58b7f82b0"
+      "bytes": 29214,
+      "sha256": "266c661b52073266d126b4b2243f6f9a8554f22a76497d6ff4c5ce64070246fa"
     },
     "src/core/java/integer_parse.c": {
-      "bytes": 2482,
-      "sha256": "ee53aa32e83c0d7706f22bf52dea92f8b06495193d42df11c4adbc6985bc42c3"
+      "bytes": 3904,
+      "sha256": "ccf946bee6694184aafd31dde3c2ee2bfeec652db7f679920dd0220dde46d89e"
     },
     "src/core/java/reader.c": {
       "bytes": 17077,
       "sha256": "b0e8934f73989f8aaa1a41297355041f616144b1f750d4f2b98a98243760f965"
     },
     "src/core/java/writer.c": {
-      "bytes": 24554,
-      "sha256": "7c4abfb51db1fc43c4638d2c4cb7ddb63050e042f2ea6a42acd2fc822a9cf310"
+      "bytes": 33670,
+      "sha256": "9620ada89023045b73fa69ff63d1faca83d7ac9bec1d98e2143d82cef856e0c4"
     },
     "src/entity/classes/classes_internal.h": {
       "bytes": 2535,
@@ -100,8 +100,8 @@
       "sha256": "969794a224de4429ee447f5fa51462e14ac1e67ed4bbd660ae3b146dc85911de"
     },
     "src/entity/player/construction.c": {
-      "bytes": 17815,
-      "sha256": "5d48a422be3bfb94c62a01dcd91f80496dc05618d01d30662a3166390e546771"
+      "bytes": 18363,
+      "sha256": "851f8795fe82df81f53c3dd04518e8f6de5277c2dd82976310ac45fcbe24f77d"
     },
     "src/entity/player/player_internal.h": {
       "bytes": 1857,
@@ -487,6 +487,40 @@
         ]
       },
       "preserved_unrelated_producer_rows": true
+    },
+    {
+      "role": "Current unqualified source admission only; prior producers, original/JDK/Code/capture facts and results retain their exact historical bindings.",
+      "public_parent": {
+        "commit": "5d61f89760507eea33c752bbea352fd407ecc1ff",
+        "source_map": {
+          "bytes": 348140,
+          "sha256": "69fd935f0def729b0c4b0fb9b0145333f788eb5077fcd20756f3d7598d5f9567"
+        },
+        "files": 2284
+      },
+      "previous_metadata": {
+        "bytes": 16388,
+        "sha256": "2dc3f965a4cc78d14e12000ec27d28bffc727911144a6789f3ab22e5e8e90a3f"
+      },
+      "frozen_nonmetadata_source_set": {
+        "bytes": 358070,
+        "sha256": "bc6675580594e57eda57baae11fbbc0c8bf29e52f39b626cd445ac464f2cd476"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 32,
+          "after_count": 32,
+          "previous": {
+            "src/entity/player/construction.c": {
+              "bytes": 17815,
+              "sha256": "5d48a422be3bfb94c62a01dcd91f80496dc05618d01d30662a3166390e546771"
+            }
+          },
+          "added_paths": [],
+          "removed_paths": []
+        }
+      },
+      "native_compiler_JVM_or_original_results_transferred": false
     }
   ]
 }

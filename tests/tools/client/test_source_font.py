@@ -26,6 +26,9 @@ def resources(root):
     (root / "font/white.png").write_bytes(image)
     (root / "font.txt").write_bytes(bytes(range(32, 127)) + b"\n")
     (root / "not-image.bin").write_bytes(b"authored input with no recognized ImageIO image\n")
+    (root / "lang").mkdir()
+    (root / "lang/en_US.lang").write_bytes(b"gui.test=A B\n")
+    (root / "lang/stats_US.lang").write_bytes(b"# authored translation input\n")
     return {p.relative_to(root).as_posix(): fingerprint(p) for p in sorted(root.rglob("*")) if p.is_file()}
 
 

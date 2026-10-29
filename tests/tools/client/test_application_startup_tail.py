@@ -1,7 +1,9 @@
 """Finite actual startup statistics/input controls; no original/JVM execution.
 
-Only window-session and its real GL-error boundary mode credit the genuine
-normal prefix through actual GL setup/diagnostics to the next unexecuted cx470.
+Window-session and its real GL-error boundary mode credit the genuine normal
+prefix through cx/S, sound bind, nine effects, RenderGlobal, viewport and dn to
+resource Thread construction/start and Post startup to the next unconnected uq697. Effect and rendering bounds preserve their real
+constructor/List failure prefixes.
 Nonempty Controllers discovery remains an honest SDK Native12 refusal.
 Other modes test explicit native admission
 or private-helper ownership over genuine, partially constructed owners.
@@ -19,7 +21,17 @@ import tempfile
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[3]
 MODES = ("statistics-admission", "statistics-null-z", "window-session",
-         "window-statistics-foreign-ready", "window-session-gl-error")
+         "window-statistics-foreign-ready", "window-session-gl-error",
+         "window-effects-constructor-limit", "window-effects-list-limit",
+         "window-render-global-limit", "window-particle-constructor-limit")
+EFFECT_MODES = ("window-session", "window-session-gl-error",
+                "window-effects-constructor-limit", "window-effects-list-limit",
+                "window-render-global-limit", "window-particle-constructor-limit")
+NINE_EFFECT_MODES = ("window-session", "window-session-gl-error",
+                     "window-render-global-limit", "window-particle-constructor-limit")
+GLOBAL_MODES = ("window-session", "window-session-gl-error",
+                "window-particle-constructor-limit")
+RENDERING_MODES = ("window-session", "window-session-gl-error")
 
 
 def require(value, message):
@@ -145,10 +157,17 @@ def main():
               "appdata": None if appdata is None else str(appdata),
               "child_environment_overrides": [] if appdata is None else ["APPDATA"],
               "native_default_home_on_POSIX": os.name != "nt",
-              "normal_source_through_C380": args.mode in ("window-session", "window-session-gl-error"),
-              "normal_source_through_GL460_and_diagnostic466": args.mode in
-                  ("window-session", "window-session-gl-error"),
-              "next_unexecuted_MC470": args.mode in ("window-session", "window-session-gl-error"),
+              "normal_source_through_C380": args.mode in EFFECT_MODES,
+              "normal_source_through_GL460_and_diagnostic466": args.mode in EFFECT_MODES,
+              "normal_source_through_S477_and_sound_bind488": args.mode in EFFECT_MODES,
+              "nine_effect_registration_calls_returned": args.mode in NINE_EFFECT_MODES,
+              "actual_n_constructor625_g628_viewport641_returned": args.mode in GLOBAL_MODES,
+              "actual_dn_constructor657_j660_returned": args.mode in RENDERING_MODES,
+              "next_unexecuted_NEWcz664": args.mode in RENDERING_MODES,
+              "actual_effect_constructor_bound": args.mode == "window-effects-constructor-limit",
+              "actual_effect_List_bound": args.mode == "window-effects-list-limit",
+              "actual_RenderGlobal_constructor_bound": args.mode == "window-render-global-limit",
+              "actual_dn_constructor_bound": args.mode == "window-particle-constructor-limit",
               "real_controller_boundary_invalid_enum": args.mode == "window-session-gl-error",
               "original_JVM_or_visual_parity": False}
     (work / "report.json").write_text(json.dumps(record, indent=2) + "\n")

@@ -267,3 +267,66 @@ mc_nbt_status mc_nbt_stream_release(mc_nbt_stream **slot, mc_nbt_stream_error *e
     free(s);
     return nbt_stream_result(e, MC_NBT_OK, 0, NULL, NULL, -1);
 }
+
+mc_nbt_status mc_nbt_stream_read_array(mc_nbt_stream *s, uint8_t *bytes, int32_t length,
+                                       bool is_null, int32_t *out, mc_nbt_stream_error *error) {
+    if (s == NULL || out == NULL || length < 0 || (!is_null && length != 0 && bytes == NULL) ||
+        (is_null && (bytes != NULL || length != 0)))
+        return nbt_stream_result(error, MC_NBT_INVALID_ARGUMENT, 0, NULL, NULL, -1);
+    if (s->active)
+        return nbt_stream_result(error, MC_NBT_STREAM_BUSY, s->position, NULL, NULL, -1);
+    if (s->phase != MC_NBT_STREAM_READY)
+        return nbt_stream_result(error, MC_NBT_STREAM_STATE, s->position, NULL, NULL, -1);
+    s->active = true;
+    s->error = (mc_nbt_stream_error){0};
+    /* Actual getfield in1, before evaluating b.length7. */
+    const mc_nbt_byte_input captured = s->input;
+    mc_nbt_stream_error *e = &s->error;
+    if (is_null) {
+        nbt_stream_result(e, MC_NBT_SOURCE_FAILURE, s->position, "java/io/DataInputStream",
+                          "read([B)I", 7);
+        e->source_fault = MC_NBT_SOURCE_NULL_ARRAY;
+        goto done;
+    }
+    if (captured.context == NULL) {
+        nbt_stream_result(e, MC_NBT_SOURCE_FAILURE, s->position, "java/io/DataInputStream",
+                          "read([B)I", 8);
+        e->source_fault = MC_NBT_SOURCE_NULL_INPUT;
+        goto done;
+    }
+    if (captured.read == NULL) {
+        nbt_stream_result(e, MC_NBT_INPUT_ERROR, s->position, "java/io/DataInputStream",
+                          "read([B)I", 8);
+        goto done;
+    }
+    if ((size_t)length > s->limits.max_input_bytes - s->position || s->read_calls == SIZE_MAX) {
+        nbt_stream_result(e, MC_NBT_LIMIT, s->position, "java/io/DataInputStream", "read([B)I", 8);
+        goto done;
+    }
+    ++s->read_calls;
+    mc_nbt_input_result got = {0};
+    mc_nbt_input_error child = {0};
+    static uint8_t empty;
+    mc_nbt_input_status status =
+        captured.read(captured.context, length == 0 ? &empty : bytes, (size_t)length, &got, &child);
+    if (status != MC_NBT_INPUT_OK) {
+        nbt_stream_result(e, MC_NBT_INPUT_ERROR, s->position, "java/io/DataInputStream",
+                          "read([B)I", 8);
+        e->input = child;
+        e->source_fault = child.source_exception ? MC_NBT_SOURCE_INPUT : MC_NBT_SOURCE_NONE;
+        goto done;
+    }
+    if (got.count > (size_t)length || (got.eof && got.count != 0)) {
+        nbt_stream_result(e, MC_NBT_INPUT_ERROR, s->position, "java/io/DataInputStream",
+                          "read([B)I", 8);
+        goto done;
+    }
+    s->position += got.count;
+    *out = got.eof ? -1 : (int32_t)got.count;
+    nbt_stream_result(e, MC_NBT_OK, s->position, NULL, NULL, -1);
+done:
+    s->active = false;
+    if (error != NULL)
+        *error = *e;
+    return e->parse.status;
+}

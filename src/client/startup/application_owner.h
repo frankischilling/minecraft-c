@@ -15,6 +15,7 @@ typedef struct mc_java_file_error mc_java_file_error;
 typedef struct mc_client_stats_error mc_client_stats_error;
 
 typedef struct mc_java_print_error mc_java_print_error;
+typedef struct mc_client_cx_error mc_client_cx_error;
 
 #define MC_CLIENT_APPLICATION_RESERVE_BYTES 10485760u
 #define MC_CLIENT_APPLICATION_HISTORY_LENGTH 512u
@@ -34,7 +35,8 @@ typedef enum mc_client_application_owner_status {
     MC_CLIENT_APPLICATION_OWNER_CLASS_ERRONEOUS,
     MC_CLIENT_APPLICATION_OWNER_FILE_FAILED,
     MC_CLIENT_APPLICATION_OWNER_STATS_FAILED,
-    MC_CLIENT_APPLICATION_OWNER_OUTPUT_FAILED
+    MC_CLIENT_APPLICATION_OWNER_OUTPUT_FAILED,
+    MC_CLIENT_APPLICATION_OWNER_CX_FAILED
 } mc_client_application_owner_status;
 
 typedef struct mc_client_application_owner_site {
@@ -52,6 +54,7 @@ typedef struct mc_client_application_owner_error {
     const mc_java_file_error *file;
     const mc_client_stats_error *statistics;
     const mc_java_print_error *standard_output;
+    const mc_client_cx_error *cx; /* Namespace-owned; re-inspect after the next class mutation. */
 } mc_client_application_owner_error;
 
 /* Native actual-App constructor state, separate from source J/o and the
@@ -130,6 +133,9 @@ typedef enum mc_client_application_lifetime_phase {
 typedef struct mc_client_application_volatile_state {
     bool J, o;
     size_t native_worker_holds, native_static_holds, native_callback_holds;
+    size_t native_effect_borrows;
+    size_t native_resource_thread_borrows;
+    size_t native_screen_borrows;
 } mc_client_application_volatile_state;
 
 /* Register the unique real App storage before any atomic access. The App may

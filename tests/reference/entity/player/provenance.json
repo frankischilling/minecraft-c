@@ -40,16 +40,16 @@
   },
   "native_sources": {
     "include/mc/entity/classes/classes.h": {
-      "bytes": 6476,
-      "sha256": "d52f7274eb36411cc4a5173c958bdc1cb4d47ad503e7f2af5949819131611236"
+      "bytes": 6811,
+      "sha256": "bc267b43e9dad1419ef11ace17e39814c608513d267682b0f972f1a36845c1ad"
     },
     "include/mc/entity/player/player.h": {
       "bytes": 10280,
       "sha256": "806977baa19465b3c49ff1ec9b8a05f5ad386f67292c09cbbf3222773c6d8725"
     },
     "src/entity/classes/classes.c": {
-      "bytes": 11997,
-      "sha256": "11b6e8f79ca4dd42d2955fda21a039d56a1fe1617dff906bdf2ddb8d28133fa8"
+      "bytes": 12390,
+      "sha256": "97582fff0eff6192bf6ebb787c041f839dcecc22b23321c738bf85e010b1ae6b"
     },
     "src/entity/construction_internal.h": {
       "bytes": 2869,
@@ -64,8 +64,8 @@
       "sha256": "969794a224de4429ee447f5fa51462e14ac1e67ed4bbd660ae3b146dc85911de"
     },
     "src/entity/player/construction.c": {
-      "bytes": 17815,
-      "sha256": "5d48a422be3bfb94c62a01dcd91f80496dc05618d01d30662a3166390e546771"
+      "bytes": 18363,
+      "sha256": "851f8795fe82df81f53c3dd04518e8f6de5277c2dd82976310ac45fcbe24f77d"
     },
     "src/entity/player/player_internal.h": {
       "bytes": 1857,
@@ -84,8 +84,8 @@
       "sha256": "4fdc948113943c9c9cdec161a02bf27b077d727cfc63d1ed83c8ac4c1158df98"
     },
     "tests/entity/minecart/test_minecart.c": {
-      "bytes": 64463,
-      "sha256": "be961dcf1572345340c74f5a2a37f95fd926d7d4be55f44e72b222b191ed89e3"
+      "bytes": 64639,
+      "sha256": "44e3a91c5d2fec46e54c7a094e8385b0ff878f0e3755817bd19fd1189bc543bc"
     },
     "tests/entity/player/test_construction.c": {
       "bytes": 20032,
@@ -995,6 +995,40 @@
         ]
       },
       "preserved_unrelated_producer_rows": true
+    },
+    {
+      "role": "Current unqualified source admission only; prior producers, original/JDK/Code/capture facts and results retain their exact historical bindings.",
+      "public_parent": {
+        "commit": "5d61f89760507eea33c752bbea352fd407ecc1ff",
+        "source_map": {
+          "bytes": 348140,
+          "sha256": "69fd935f0def729b0c4b0fb9b0145333f788eb5077fcd20756f3d7598d5f9567"
+        },
+        "files": 2284
+      },
+      "previous_metadata": {
+        "bytes": 31003,
+        "sha256": "24a02be4af74e4f45d9e81b67481df9a782393489b3d2b46014af273e9ce5711"
+      },
+      "frozen_nonmetadata_source_set": {
+        "bytes": 358070,
+        "sha256": "bc6675580594e57eda57baae11fbbc0c8bf29e52f39b626cd445ac464f2cd476"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 17,
+          "after_count": 17,
+          "previous": {
+            "src/entity/player/construction.c": {
+              "bytes": 17815,
+              "sha256": "5d48a422be3bfb94c62a01dcd91f80496dc05618d01d30662a3166390e546771"
+            }
+          },
+          "added_paths": [],
+          "removed_paths": []
+        }
+      },
+      "native_compiler_JVM_or_original_results_transferred": false
     }
   ]
 }

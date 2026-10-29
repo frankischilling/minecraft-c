@@ -52,9 +52,10 @@ mc_java_output_status mc_output_file_error(mc_java_output_error *, mc_java_file_
 mc_java_output_status mc_output_lock_create(mc_output_lock **, size_t *, size_t,
                                             mc_java_output_error *, const char *, const char *);
 void mc_output_lock_free(mc_output_lock **);
-/* Only the real DOS writeLong's known nonnull eight-byte array reaches this
- * internal FOS write([BII) path. General array/null/index overloads are not
- * promised by a counted native span. No callback can supply its result. */
+/* The real DOS writeLong retains its known nonnull eight-byte entry.
+ * It and public nonnull counted spans share ONE actual write([BII) body.
+ * General Java array/null/index overloads are not promised; no callback can
+ * supply the FOS result. */
 mc_java_output_status mc_output_file_write_long_bytes(mc_java_file_output *, const uint8_t[8],
                                                       mc_java_output_error *);
 #endif

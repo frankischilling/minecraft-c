@@ -29,6 +29,122 @@ bool mc_client_application_callback_dispatch_admitted(const client_application *
            app->constructor_phase != MC_CLIENT_APP_RETIRING;
 }
 
+bool mc_client_application_effect_borrow(client_application *app, bool *counted) {
+    if (counted == NULL)
+        return false;
+    *counted = false;
+    if (app == NULL)
+        return true;
+    if (app->constructor_phase == MC_CLIENT_APP_RETIRING)
+        return false;
+    if (app->native_lifetime_phase == MC_CLIENT_APPLICATION_LIFETIME_RAW)
+        return true;
+    if (app->native_lifetime_phase != MC_CLIENT_APPLICATION_LIFETIME_REGISTERED)
+        return false;
+    size_t holds = atomic_load_explicit(&app->effect_borrows, memory_order_seq_cst);
+    do {
+        if (holds == SIZE_MAX)
+            return false;
+    } while (!atomic_compare_exchange_weak_explicit(&app->effect_borrows, &holds, holds + 1u,
+                                                    memory_order_seq_cst, memory_order_seq_cst));
+    *counted = true;
+    return true;
+}
+
+void mc_client_application_effect_release(client_application *app, bool counted) {
+    if (!counted)
+        return;
+    assert(app != NULL);
+    const size_t previous =
+        atomic_fetch_sub_explicit(&app->effect_borrows, 1u, memory_order_seq_cst);
+    assert(previous != 0);
+    (void)previous;
+}
+
+bool mc_client_application_effect_borrows_pending(const client_application *app) {
+    return app != NULL && app->native_lifetime_phase == MC_CLIENT_APPLICATION_LIFETIME_REGISTERED &&
+           atomic_load_explicit(&app->effect_borrows, memory_order_seq_cst) != 0;
+}
+
+bool mc_client_application_resource_thread_borrow(client_application *app, bool *counted) {
+    if (counted == NULL)
+        return false;
+    *counted = false;
+    if (app == NULL)
+        return true;
+    if (app->constructor_phase == MC_CLIENT_APP_RETIRING)
+        return false;
+    if (app->native_lifetime_phase == MC_CLIENT_APPLICATION_LIFETIME_RAW)
+        return true;
+    if (app->native_lifetime_phase != MC_CLIENT_APPLICATION_LIFETIME_REGISTERED)
+        return false;
+    size_t holds = atomic_load_explicit(&app->resource_thread_borrows, memory_order_seq_cst);
+    do {
+        if (holds == SIZE_MAX)
+            return false;
+    } while (!atomic_compare_exchange_weak_explicit(&app->resource_thread_borrows, &holds,
+                                                    holds + 1u, memory_order_seq_cst,
+                                                    memory_order_seq_cst));
+    *counted = true;
+    return true;
+}
+
+void mc_client_application_resource_thread_release(client_application *app, bool counted) {
+    if (!counted)
+        return;
+    assert(app != NULL);
+    const size_t previous =
+        atomic_fetch_sub_explicit(&app->resource_thread_borrows, 1u, memory_order_seq_cst);
+    assert(previous != 0);
+    (void)previous;
+}
+
+bool mc_client_application_resource_thread_borrows_pending(const client_application *app) {
+    return app != NULL && app->native_lifetime_phase == MC_CLIENT_APPLICATION_LIFETIME_REGISTERED &&
+           atomic_load_explicit(&app->resource_thread_borrows, memory_order_seq_cst) != 0;
+}
+
+bool mc_client_application_screen_borrow(client_application *app, bool *counted) {
+    if (counted == NULL)
+        return false;
+    *counted = false;
+    if (app == NULL)
+        return true;
+    if (app->constructor_phase == MC_CLIENT_APP_RETIRING)
+        return false;
+    if (app->native_lifetime_phase == MC_CLIENT_APPLICATION_LIFETIME_RAW)
+        return true;
+    if (app->native_lifetime_phase != MC_CLIENT_APPLICATION_LIFETIME_REGISTERED)
+        return false;
+    size_t holds = atomic_load_explicit(&app->screen_borrows, memory_order_seq_cst);
+    do {
+        if (holds == SIZE_MAX)
+            return false;
+    } while (!atomic_compare_exchange_weak_explicit(&app->screen_borrows, &holds, holds + 1u,
+                                                    memory_order_seq_cst, memory_order_seq_cst));
+    *counted = true;
+    return true;
+}
+
+bool mc_client_application_screen_release(client_application *app, bool counted) {
+    if (!counted)
+        return true;
+    if (app == NULL || app->native_lifetime_phase != MC_CLIENT_APPLICATION_LIFETIME_REGISTERED)
+        return false;
+    size_t holds = atomic_load_explicit(&app->screen_borrows, memory_order_seq_cst);
+    do {
+        if (holds == 0)
+            return false;
+    } while (!atomic_compare_exchange_weak_explicit(&app->screen_borrows, &holds, holds - 1u,
+                                                    memory_order_seq_cst, memory_order_seq_cst));
+    return true;
+}
+
+bool mc_client_application_screen_borrows_pending(const client_application *app) {
+    return app != NULL && app->native_lifetime_phase == MC_CLIENT_APPLICATION_LIFETIME_REGISTERED &&
+           atomic_load_explicit(&app->screen_borrows, memory_order_seq_cst) != 0;
+}
+
 static void callback_release(client_application *app) {
     const size_t previous =
         atomic_fetch_sub_explicit(&app->callback_holds, 1u, memory_order_seq_cst);

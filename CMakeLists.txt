@@ -277,6 +277,7 @@ if(MC_BUILD_CLIENT)
 endif()
 
 add_library(mc_platform_time STATIC src/platform/time/nanotime.c src/platform/time/millis.c)
+target_sources(mc_platform_time PRIVATE src/platform/time/calendar.c)
 target_link_libraries(mc_platform_time PRIVATE mc_build_options)
 
 add_library(mc_platform_text STATIC src/platform/text/charset.c src/platform/text/locale.c
@@ -507,6 +508,9 @@ add_library(mc_java_outputs STATIC
     src/world/storage/java_output.c src/world/storage/java_data_output.c)
 target_link_libraries(mc_java_outputs PUBLIC mc_java_files
     PRIVATE mc_core mc_platform_files Threads::Threads mc_build_options)
+include(cmake/java_file_writer.cmake)
+include(cmake/java_file_urls.cmake)
+include(cmake/client_settings_source_save.cmake)
 add_library(mc_client_directory_inputs STATIC src/client/startup/directory_inputs.c)
 target_include_directories(mc_client_directory_inputs PUBLIC src/client/startup)
 target_link_libraries(mc_client_directory_inputs PUBLIC mc_world_info
@@ -747,6 +751,12 @@ foreach(target IN ITEMS mc_simulation mc_client_first_person mc_client_singlepla
     target_link_libraries(${target} PRIVATE mc_c_atomics)
 endforeach()
 
+include(cmake/client_texture_effects.cmake)
+include(cmake/client_cx.cmake)
+include(cmake/client_gui_ingame.cmake)
+include(cmake/client_font_views.cmake)
+include(cmake/client_source_screens.cmake)
+
 add_library(mc_client_application_owner STATIC
     src/client/startup/application_classes.c
     src/client/startup/application_lifetime.c
@@ -758,6 +768,7 @@ target_sources(mc_client_application_owner PRIVATE
     src/client/startup/application_directory_classes.c
     src/client/startup/application_startup_error.c)
 target_link_libraries(mc_client_application_owner PUBLIC mc_java_files)
+include(cmake/client_application_services.cmake)
 
 # The real class namespace/publication API remains in its canonical owner target.
 target_sources(mc_client_application_owner PRIVATE
@@ -791,6 +802,16 @@ if(MC_BUILD_CLIENT)
     include(cmake/client_input.cmake)
     include(cmake/client_gl_diagnostics.cmake)
     include(cmake/client_startup_graphics.cmake)
+endif()
+
+include(cmake/client_startup_effects.cmake)
+include(cmake/client_render_global.cmake)
+include(cmake/client_startup_rendering.cmake)
+include(cmake/client_resource_download.cmake)
+if(TARGET mc_client_application_startup)
+    target_sources(mc_client_application_startup PRIVATE
+        src/client/startup/application_startup_resources.c)
+    target_link_libraries(mc_client_application_startup PUBLIC mc_client_resource_download)
 endif()
 
 option(MC_ENABLE_APPLICATION_STARTUP_TESTS "Run genuine source run/startup CPU prefix controls" OFF)
@@ -1062,12 +1083,12 @@ if(BUILD_TESTING)
     target_include_directories(mc_sound_constructor_failure_manager PRIVATE include)
     target_compile_definitions(mc_sound_constructor_failure_manager PRIVATE
         MC_SOUND_MANAGER_CALLOC=mc_test_manager_calloc)
-    target_link_libraries(mc_sound_constructor_failure_manager PRIVATE mc_core mc_build_options)
+    target_link_libraries(mc_sound_constructor_failure_manager PRIVATE mc_core mc_c_atomics mc_build_options)
     add_library(mc_sound_constructor_failure_pool OBJECT src/client/sound/sound_pool.c)
     target_include_directories(mc_sound_constructor_failure_pool PRIVATE include)
     target_compile_definitions(mc_sound_constructor_failure_pool PRIVATE
         MC_SOUND_POOL_CALLOC=mc_test_pool_calloc)
-    target_link_libraries(mc_sound_constructor_failure_pool PRIVATE mc_client_sound_files mc_build_options)
+    target_link_libraries(mc_sound_constructor_failure_pool PRIVATE mc_client_sound_files mc_c_atomics mc_build_options)
     add_executable(mc_test_sound_construction_allocation
         tests/client/sound/test_construction_allocation.c
         $<TARGET_OBJECTS:mc_sound_constructor_failure_manager>
@@ -5361,6 +5382,12 @@ if(BUILD_TESTING)
     include(cmake/tests/application_ownership.cmake)
     include(cmake/tests/client_input.cmake)
     include(cmake/tests/client_gl_diagnostics.cmake)
+    include(cmake/tests/texture_effects.cmake)
+    include(cmake/tests/client_cx.cmake)
+    include(cmake/tests/gui_ingame.cmake)
+    include(cmake/tests/java_file_writer.cmake)
+    include(cmake/tests/game_settings_source_save.cmake)
+    include(cmake/tests/render_global.cmake)
     if(MC_BUILD_CLIENT)
         include(cmake/tests/client_controllers.cmake)
         include(cmake/tests/client_gl_setup.cmake)
@@ -5375,3 +5402,10 @@ include(cmake/tests/java_print_stream.cmake)
 
 # Reviewed startup-tail boundary observer after ordinary target links.
 include(cmake/tests/client_startup_tail_boundary.cmake)
+
+include(cmake/tests/startup_effects.cmake)
+include(cmake/tests/startup_rendering.cmake)
+include(cmake/tests/resource_download.cmake)
+include(cmake/tests/client_source_screens.cmake)
+include(cmake/tests/platform_calendar.cmake)
+include(cmake/tests/application_resource_services.cmake)

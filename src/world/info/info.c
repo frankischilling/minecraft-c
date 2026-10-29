@@ -4,6 +4,8 @@
 #include "mc/storage/nbt/tree.h"
 #include "millis.h"
 
+#include <stdatomic.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -13,10 +15,26 @@ typedef struct info_backing {
 } info_backing;
 
 struct mc_world_info_name {
-    size_t holds;
+    atomic_size_t holds;
     size_t length;
     const uint16_t *units;
 };
+
+/* Admitted native targets preserve every existing Name/header allocation
+ * charge and inline-unit offset; atomics do not enlarge the source owner. */
+typedef struct info_name_legacy_layout {
+    size_t holds, length;
+    const uint16_t *units;
+} info_name_legacy_layout;
+
+_Static_assert(sizeof(atomic_size_t) == sizeof(size_t), "InfoName atomic counter width");
+_Static_assert(_Alignof(atomic_size_t) == _Alignof(size_t), "InfoName atomic counter alignment");
+_Static_assert(sizeof(mc_world_info_name) == sizeof(info_name_legacy_layout),
+               "InfoName legacy allocation charge");
+_Static_assert(_Alignof(mc_world_info_name) == _Alignof(info_name_legacy_layout),
+               "InfoName legacy alignment");
+_Static_assert(offsetof(mc_world_info_name, units) == offsetof(info_name_legacy_layout, units),
+               "InfoName inline data offset");
 
 struct mc_world_info_player {
     size_t holds;
@@ -75,8 +93,10 @@ struct mc_world_info_record {
 };
 
 static const uint16_t info_player_key[] = {'P', 'l', 'a', 'y', 'e', 'r'};
-static mc_world_info_name info_empty_name = {SIZE_MAX, 0, NULL};
-static mc_world_info_name info_player_name = {SIZE_MAX, 6, info_player_key};
+/* Immortal identities never access their counter. Leave it statically zero;
+ * MSVC cannot initialize a nonzero atomic member through an aggregate. */
+static mc_world_info_name info_empty_name = {.length = 0, .units = NULL};
+static mc_world_info_name info_player_name = {.length = 6, .units = info_player_key};
 
 static mc_world_info_status info_error(mc_world_info_error *error, mc_world_info_status status,
                                        const char *field, mc_nbt_error nbt) {
@@ -151,7 +171,7 @@ mc_world_info_status mc_world_info_name_copy(mc_nbt_string text, size_t max_byte
     mc_world_info_name *name = malloc(bytes);
     if (name == NULL)
         return MC_WORLD_INFO_ALLOCATION_FAILED;
-    name->holds = 1;
+    atomic_init(&name->holds, 1);
     name->length = text.length;
     uint16_t *units = (uint16_t *)(name + 1);
     name->units = units;
@@ -175,15 +195,20 @@ mc_world_info_status mc_world_info_name_retain(mc_world_info_name *name) {
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     if (name == &info_empty_name || name == &info_player_name)
         return MC_WORLD_INFO_OK;
-    if (name->holds == SIZE_MAX)
-        return MC_WORLD_INFO_LIMIT;
-    ++name->holds;
+    size_t holds = atomic_load_explicit(&name->holds, memory_order_acquire);
+    do {
+        if (holds == 0)
+            return MC_WORLD_INFO_INVALID_ARGUMENT;
+        if (holds == SIZE_MAX)
+            return MC_WORLD_INFO_LIMIT;
+    } while (!atomic_compare_exchange_weak_explicit(&name->holds, &holds, holds + 1,
+                                                    memory_order_acq_rel, memory_order_acquire));
     return MC_WORLD_INFO_OK;
 }
 
 void mc_world_info_name_release(mc_world_info_name *name) {
     if (name != NULL && name != &info_empty_name && name != &info_player_name &&
-        --name->holds == 0) {
+        atomic_fetch_sub_explicit(&name->holds, 1, memory_order_acq_rel) == 1) {
         if (name->units != (const uint16_t *)(name + 1))
             mc_nbt_document_free(((info_document_name *)name)->document);
         free(name);
@@ -960,7 +985,9 @@ static mc_world_info_status info_name_document(mc_nbt_string text, mc_nbt_docume
         free(name);
         return held == MC_NBT_LIMIT ? MC_WORLD_INFO_LIMIT : MC_WORLD_INFO_INVALID_ARGUMENT;
     }
-    name->base = (mc_world_info_name){1, text.length, text.units};
+    atomic_init(&name->base.holds, 1);
+    name->base.length = text.length;
+    name->base.units = text.units;
     name->document = document;
     *out = &name->base;
     return MC_WORLD_INFO_OK;

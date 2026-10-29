@@ -41,8 +41,10 @@ candidates retire without reversing shared IDs or Random effects.
 The application has explicit f/p/j storage. Its selected startup operation
 allocates `dn` at645, reads f650/p654, constructs657 and publishes j660 only on
 success. A failed candidate stays privately owned until terminal retirement.
-This operation is not inserted into menu startup before the still-incomplete
-RenderEngine construction. Native shutdown releases views, particles and World
+The genuine normal startup caller now reaches this operation after RenderGlobal
+and viewport setup. The Windows Session constructs all four Lists and publishes
+j660 before stopping at resource-thread allocation664. This does not execute a
+World or particle frame. Native shutdown releases views, particles and World
 owners before the Session class namespace, because their Players retain Sessions.
 It adds no source save or unload operation.
 

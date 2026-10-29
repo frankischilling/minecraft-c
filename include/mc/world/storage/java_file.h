@@ -177,4 +177,11 @@ mc_java_file_status mc_java_file_stream_release(mc_java_file_stream **occurrence
 mc_java_file_status mc_java_file_stream_read_state(const mc_java_file_stream *stream,
                                                    mc_java_file_stream_state *out,
                                                    mc_java_file_error *error);
+/* Distinct real File results; NULL parent is successful. Absolute normal
+ * profile returns a new File sharing the source path String, never this.
+ * Relative/default-drive resolution remains a reached provider frontier. */
+mc_java_file_status mc_java_file_get_parent_file(mc_java_file *, mc_java_file **,
+                                                 mc_java_file_error *);
+mc_java_file_status mc_java_file_get_absolute_file(mc_java_file *, mc_java_file **,
+                                                   mc_java_file_error *);
 #endif

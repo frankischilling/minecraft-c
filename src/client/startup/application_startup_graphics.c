@@ -205,13 +205,8 @@ mc_client_startup_status application_startup_graphics(mc_client_application_star
     }
     call->setup_completed = true;
     status = diagnostic(startup, call, 1);
-    if (status == MC_CLIENT_STARTUP_OK) {
-        startup->failure.caller.pc = 470;
-        status = application_startup_fail(
-            &startup->failure, MC_CLIENT_STARTUP_UNIMPLEMENTED,
-            "next unexecuted cx allocation; no later constructor/frame/tick entered", MC_CLASS, "a",
-            "()V", 470);
-    }
+    if (status == MC_CLIENT_STARTUP_OK)
+        status = application_startup_effects(startup);
 done:
     call->active = false;
     startup->active = outer_active;

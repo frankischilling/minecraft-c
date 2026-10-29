@@ -121,8 +121,10 @@ including zero, overrides the loaded value after load without saving. Initial
 anaglyph reaches the font upload, lazy title texture uploads and FontRenderer
 palette. The menu caches this initial flag; no effectful live refresh setter
 is supplied. Custom pack selection, audio, source performance pacing, options
-screens and physical input remain unfinished. The App performs no automatic
-startup or shutdown save.
+screens and physical input remain unfinished. The diagnostic title/inspection
+entry performs no automatic save. The separate normal startup owner now reaches
+SoundManager's two source saves through the canonical options File, before later
+renderer construction. Shutdown saving and options-screen adoption remain unfinished.
 
 The native diagnostic adapter emits source messages and counted line text as
 UTF-8 with host line separators. It retains NUL, joins surrogate pairs and
@@ -166,7 +168,8 @@ calls. Already committed bytes remain. Native retirement closes an unclosed
 sink without flushing the encoder or encoding its pending text. Reports keep
 source-close reachability, additional native close and cleanup errors separate.
 
-Caught source failures return native `OK` with the diagnostic/report. Native
+Caught source failures in the earlier native-path adapter return native `OK`
+with the diagnostic/report. Native
 allocation, limit, unsupported-charset, diagnostic-delivery and cleanup failures
 propagate separately. No Java OutOfMemoryError timing or Java stack trace is
 fabricated. The optional diagnostic adapter receives the source message and
@@ -177,6 +180,35 @@ Profiles support UTF-8, windows-1252, ISO-8859-1 and US-ASCII with LF or CRLF ou
 Pass the measured charset/separator explicitly for reference work. `DEFAULT`
 uses native discovery at Reader/Writer admission and does not model Java's
 globally cached defaultCharset or arbitrary file.encoding changes.
+
+## Canonical File-backed source saves
+
+When the settings owner has its actual `N` File, `kv.b()V` uses the
+[typed FileWriter bridge](../core/java-writer.md#typed-filewriterfile-bridge).
+It preserves the PrintWriter allocation, FileWriter allocation, live `N` read,
+constructor calls and local publication order. The same canonical stream opens
+or truncates the File before charset/encoder setup. No native path extraction,
+second file open or directory creation is added.
+
+Scalar println calls precede the live binding-array read. Source close is
+reached at475 and a normal return at494. One bounded native save-attempt record
+keeps the actual stream, encoder and typed failure through the next save or
+final settings retirement. BUSY/fallible cleanup preserves that record and its
+File dependencies for retry; cleanup does not replay source writes.
+
+The caught-exception branch is still unfinished at its actual System.out
+read482. It is reported as a reached dependency, with its real earlier output
+and field effects. The typed path does not invent the missing println or stack
+trace and report a successful handler.
+
+The selected Windows control passes 202 checks: two source saves, exact 25-line
+readback through the canonical input stream, zero-volume then restored values,
+the same `N` identity, shorter-file truncation and reload. It explicitly sets
+lastServer to null so that this case does not invoke the separate empty-value
+split diagnostic. Clang runs the same control in its 41-case selection.
+The successful normal startup profile now reaches SoundManager's nested saves
+and later renderer construction. Original save comparisons above keep their
+earlier native-path scope.
 
 ## Float and discrete option actions
 

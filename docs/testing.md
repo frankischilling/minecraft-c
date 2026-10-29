@@ -1,12 +1,44 @@
 # Test scope and reproduction
 
+## Resource worker and source menu integration
+
+The current Windows MSVC Debug source builds ALL, including the client, and
+passes 460 selected CTests without failures or skips:
+
+```powershell
+ctest --test-dir build-client-startup-20261027b -C Debug -LE reference --parallel 4 --output-on-failure
+```
+
+This selection excludes the configured reference-label profiles. It includes
+actual startup windows through resource-thread construction, `U676`, worker
+start and the `Post startup` GL diagnostic. GuiIngame caller allocation at `697`
+remains unconnected. Both normal and injected GL-error paths pass, along with
+RenderGlobal device behavior and retained startup failures. Windows startup
+controls isolate APPDATA while preserving the real native home. The default
+executable still uses its title/inspection loop.
+
+The selection includes six [resource-worker](client/resource-download.md) cases,
+including a real loopback HTTP peer, and seven [source-menu](client/source-screens.md)
+cases. Four separately observed original constructor scenarios retain their
+finite scope; they do not verify the complete original worker or menu behavior.
+The formatter checks 1,319 C/header/fragment files. A separate Release ALL build
+passes with client, sound, audio and testing disabled; no dedicated-server runtime
+result follows from that build. Current Linux qualification remains separate.
+
+CI retains four test workers and its complete existing suites. It caches CTest
+timing estimates by platform/compiler so later runs can start long tests early.
+A warm hosted run is needed to measure the resulting speedup.
+
 <a id="current-public-runtime-integration"></a>
 
 ## Current client runtime integration
 
-Published `6249a64` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40692181754):
-407 Windows, 423 GCC and 423 Clang cases, 1,253 total, without failure or skip.
-The later focused startup-tail results below retain a separate source scope.
+Hosted baseline `5d61f89` passes [all four jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40746811719):
+410 Windows, 427 GCC and 427 Clang cases, 1,264 total, without failure or skip.
+The later focused startup results below retain a separate source scope.
+
+Earlier `6249a64` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40692181754):
+407 Windows, 423 GCC and 423 Clang cases, 1,253 total.
 
 Earlier checkpoint `37dc83f` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40544932686).
 The audited logs contain 1,127 unique Start/Passed pairs: 367 Windows, 380 GCC
@@ -42,9 +74,57 @@ scope was 936 C/header files. The `37dc83f` hosted run retains every one of thos
 
 ## Normal startup owner qualification
 
+### Startup scene construction and typed Settings save
+
+The current local increment builds the native client and passes 24 selected
+Windows CTests. Six cases belong to source snapshot `ff886a21`; eighteen belong
+to `5f0bf5d0`. The latter changes only the RenderGlobal device control and four
+current input maps. Production C/headers, CMake, flags and all other tests are
+byte-identical. Earlier successful cases retain their original scope and were
+not rerun to change labels. All 24 exact names/JUnits, process results and
+current/historical evidence closures received independent read-only review.
+
+The selection covers typed Writer and Settings save, normal and real-GL-error
+Sessions, GuiIngame/RenderGlobal CPU construction, RenderGlobal device behavior,
+four startup allocation bounds, Settings compatibility/actions/sound,
+DataOutputStream/Stats and App ownership. Windows retains the default 1 MiB
+stack, strict C17/floating-point settings, actual link maps and the unchanged
+265-product SDL cohort, including 38 driver objects. Source, tools, original
+inputs, imported resources and configured products remain fixed through each
+admitted run.
+
+| Actual native control | Checks and reached behavior |
+| --- | --- |
+| Typed FileWriter | 582; same FOS/File identity, source/native close distinction, quota/BUSY restoration and error precedence |
+| Typed Settings save | 202; two saves, exact 25-line canonical-stream readback, shorter truncation and reload |
+| Normal Session | 181; sound bind488, nine registrations, actual n625/g628/viewport641 and dn657/j660; next unexecuted NEWcz664 |
+| RenderGlobal device | 16,723; actual triangle records/XYZ copies, sticky error, independent namespaces and full retryable cleanup |
+
+Five genuine earlier build/runtime failures remain preserved: missing source
+declarations/include path, device OpenGL linkage, a wrong physical-close count,
+native-status loss at the new Writer adapter and wrong quad counts in the device
+control. Corrections retain the core Writer and original authority. The final
+device test checks six emitted triangle vertices per logical quad and the
+original `[0,1,2,0,2,3]` copied-position order; disabled attribute slots are not
+given invented equality.
+
+Clang 18 passes 41 selected cases on production snapshot `ff886a21`: Writer and
+Settings save first, 32 further CPU cases, then seven actual-device cases under
+an owned authenticated Xvfb. ASan, UBSan and leak detection are enabled. Product,
+SDK, source, tool, dependency, imported-resource and real-HOME guards close
+without change. The later Windows device-test-only successor is outside this
+selection. GCC qualification remains separate.
+
+These selected cohorts are not a complete local/hosted suite. They execute no
+original JVM/game, establish no original pixels or star/trigonometric
+correspondence, and do not cover Linux default-directory/Session startup,
+World entry, input/frame/tick scheduling or gameplay. The default executable
+still uses title/fixed-camera inspection. The next ordinary startup child is
+the resource download thread; GuiIngame caller publication and menus follow it.
+
 ### Startup tail through GL diagnostics
 
-The focused startup-tail source builds the client and passes 47 selected
+The earlier focused startup-tail source builds the client and passes 47 selected
 Windows cases without failure or skip. Nine Core output cases retain their
 separate preceding Windows test-header source. Clang 18 and GCC 13 each pass
 53 selected cases: 41 CPU/protocol and twelve real-device cases, with ASan,

@@ -515,7 +515,7 @@ mc_client_render_engine_retire_resources(mc_client_render_engine_classes *classe
         fail(&e, MC_CLIENT_RENDER_TEXTURE_INVALID_ARGUMENT,
              "RenderEngine resource retirement receiver", NULL, NULL, NULL, 0);
     else if (classes->active_resource_calls != 0 || classes->active_source_calls != 0 ||
-             classes->font_lease_count != 0)
+             classes->font_lease_count != 0 || classes->scene_lease_count != 0)
         fail(&e, MC_CLIENT_RENDER_TEXTURE_BUSY, "RenderEngine resource operation active", NULL,
              NULL, NULL, 0);
     else {
@@ -556,7 +556,8 @@ mc_client_render_engine_retire_resources(mc_client_render_engine_classes *classe
 bool mc_client_render_engine_resources_pending(const mc_client_render_engine_classes *classes) {
     return classes != NULL &&
            (classes->native_resource_count != 0 || classes->command_range_count != 0 ||
-            classes->font_lease_count != 0 || classes->context_lease != NULL);
+            classes->font_lease_count != 0 || classes->scene_lease_count != 0 ||
+            classes->context_lease != NULL);
 }
 
 bool mc_client_render_engine_registered_image(const mc_client_render_engine *o,

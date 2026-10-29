@@ -124,6 +124,27 @@ mc_client_bitmap_font_status mc_client_bitmap_font_draw(mc_client_bitmap_font *,
                                                         const mc_player_string *nullable_text,
                                                         int32_t x, int32_t y, uint32_t argb,
                                                         bool shadow, mc_client_bitmap_font_error *);
+/* Borrowed immutable source String content from an already-held canonical
+ * owner (for example Registry String). No copy, conversion, interning or new
+ * String/Font is performed. Caller keeps that actual namespace/String owner
+ * alive and immutable through the entire call, including native callbacks.
+ * NULL view is source null; nonnull {NULL,0} is source empty. Same sj methods,
+ * native bounds, source/FP/GL order and failure prefixes as PlayerString APIs.
+ * These calls acquire the real Font hold/active scope; they do not retain or
+ * release the externally held String namespace. No pointer may alias Font,
+ * output/error storage or mutable callback-owned memory. */
+mc_client_bitmap_font_status
+mc_client_bitmap_font_measure_view(mc_client_bitmap_font *,
+                                   const mc_player_string_view *nullable_text, int32_t *out,
+                                   mc_client_bitmap_font_error *);
+mc_client_bitmap_font_status
+mc_client_bitmap_font_draw_view(mc_client_bitmap_font *, const mc_player_string_view *nullable_text,
+                                int32_t x, int32_t y, uint32_t argb, bool shadow,
+                                mc_client_bitmap_font_error *);
+mc_client_bitmap_font_status
+mc_client_bitmap_font_draw_shadow_view(mc_client_bitmap_font *,
+                                       const mc_player_string_view *nullable_text, int32_t x,
+                                       int32_t y, uint32_t argb, mc_client_bitmap_font_error *);
 /* Native identity check only: no activation, resource/GL call, hold or source
  * receiver admission. A RAW font has no Display yet. The caller preserves
  * the actual nullable source operand order before requesting this check. */

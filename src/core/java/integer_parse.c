@@ -55,3 +55,34 @@ mc_java_integer_parse_status mc_java_integer_parse(const mc_java_integer_parse_t
                     : (int32_t)magnitude;
     return MC_JAVA_INTEGER_PARSE_OK;
 }
+
+mc_java_integer_parse_status mc_java_long_parse(const mc_java_integer_parse_text *text,
+                                                int64_t *out) {
+    if (out == NULL)
+        return MC_JAVA_INTEGER_PARSE_INVALID_ARGUMENT;
+    if (text == NULL)
+        return MC_JAVA_INTEGER_PARSE_NUMBER_FORMAT;
+    if (text->length > MC_JAVA_INTEGER_PARSE_MAX_UNITS)
+        return MC_JAVA_INTEGER_PARSE_LIMIT;
+    if (text->length != 0 && text->units == NULL)
+        return MC_JAVA_INTEGER_PARSE_INVALID_ARGUMENT;
+    if (text->length == 0)
+        return MC_JAVA_INTEGER_PARSE_NUMBER_FORMAT;
+    size_t index = 0;
+    const bool negative = text->units[0] == '-';
+    if (negative || text->units[0] == '+')
+        ++index;
+    if (index == text->length)
+        return MC_JAVA_INTEGER_PARSE_NUMBER_FORMAT;
+    const uint64_t limit = negative ? UINT64_C(9223372036854775808) : UINT64_C(9223372036854775807);
+    uint64_t magnitude = 0;
+    for (; index < text->length; ++index) {
+        const int digit = decimal_digit(text->units[index]);
+        if (digit < 0 || magnitude > (limit - (uint64_t)digit) / UINT64_C(10))
+            return MC_JAVA_INTEGER_PARSE_NUMBER_FORMAT;
+        magnitude = magnitude * UINT64_C(10) + (uint64_t)digit;
+    }
+    *out = negative ? (magnitude == UINT64_C(9223372036854775808) ? INT64_MIN : -(int64_t)magnitude)
+                    : (int64_t)magnitude;
+    return MC_JAVA_INTEGER_PARSE_OK;
+}
