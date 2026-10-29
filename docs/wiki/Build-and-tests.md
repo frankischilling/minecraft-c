@@ -1,15 +1,32 @@
 # Build and tests
 
+The [standard-lighting extension](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/standard-lighting.md)
+matches all 86 original state/parameter rows on Windows MSVC Debug. Three
+focused lighting tests pass in 2.05 seconds. The loaded-World test passes in
+18.59 seconds, preserves all 72 focus histories and saves/resources, and reaches
+Entity/TileEntity rendering at PX510 after lighting and eye-position return.
+Lit pixels and repeated interactive frames remain unfinished. Hosted lighting
+qualification is pending.
+
+The preceding terrain [source checkpoint 33f12b1](https://github.com/frankischilling/minecraft-c/actions/runs/40966959872)
+passes all four jobs and 1,513 tests: Windows 483/GCC 515/Clang 515, with zero
+failures/skips and no dropped names from 6ccdc82. Linux software contexts compare
+30 ordinary N rows and leave five unsupported occlusion rows uncredited; strict
+local Windows replay compares all 35. Linux CI now caches compilation separately
+for GCC and Clang and saves successful builds before running tests. The first
+cache population is complete; a warm-build timing comparison is pending.
+The earlier native terrain qualification follows.
+
 The [terrain-submission increment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terrain-submission.md)
 implements N outer/subset paths, recenter/JO, TG buffers and ARB query operations.
-Current frame source calls real N at PX486; a normal return reaches the explicit
+At that checkpoint the frame called real N at PX486 and reached the explicit
 U.b496 dependency. Seven selected MSVC Debug targets were built one at a time;
 all eight focused CTests pass in 4.51 seconds, zero failures/skips. Whole-N
 comparisons cover 12 CPU failure profiles and 35 exact device rows. The loaded
 UI separately passes 704 checks in 12.69 seconds, preserves all 72 focus histories
 and resource/save bytes, and reaches 496. Its inspected back buffer shows real
-authored grass terrain with Sky and no HUD. Hosted qualification is pending;
-there was no ALL build or local Linux runtime suite for this result. Issued-query
+authored grass terrain with Sky and no HUD. That local result included no ALL
+build or local Linux runtime suite. Issued-query
 N execution, including a 17-entry case, and matched whole frames remain outside
 the qualification. The [testing record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#terrain-submission-windows-qualification)
 records the fixture corrections and first hosted attempt.

@@ -15,6 +15,7 @@
 
 typedef struct mc_client_world_frame_call mc_client_world_frame_call;
 typedef struct mc_client_texture_lookup_error mc_client_texture_lookup_error;
+typedef struct mc_client_lighting_error mc_client_lighting_error;
 
 typedef enum mc_client_world_frame_status {
     MC_CLIENT_WORLD_FRAME_OK,
@@ -44,6 +45,8 @@ typedef struct mc_client_world_frame_error {
     const mc_client_render_global_error *submission;
     const mc_client_texture_lookup_error *texture;
     const mc_client_graphics_error *lighting;
+    const mc_client_lighting_error *lighting_enable;
+    const mc_entity_view_error *view;
     mc_platform_nanotime_status clock;
     mc_client_display_error display;
     mc_entity_status entity;
@@ -61,7 +64,7 @@ typedef struct mc_client_world_frame_state {
     bool ambient_occlusion_read, ambient_occlusion, smooth_shade_set;
     bool frustum_constructed, frustum_recentered, culling_returned;
     bool updates_returned, draw_fog_returned, terrain_texture_bound, lighting_disabled;
-    bool terrain_returned;
+    bool terrain_returned, lighting_enabled, eye_position_returned;
     int32_t terrain_count;
     size_t update_calls;
     int64_t last_clock, deadline_remaining;
@@ -88,6 +91,8 @@ typedef struct mc_client_world_frame_state {
     const mc_client_culling_state *culling;
     const mc_client_render_global_update_state *update;
     const mc_client_render_global_submit_state *submission;
+    const mc_client_lighting_error *standard_lighting;
+    const mc_entity_vector *entity_eye;
     const mc_client_renderer_fog_state_view *draw_fog;
 } mc_client_world_frame_state;
 

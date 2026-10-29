@@ -3,6 +3,7 @@
 #include "fog_surface.h"
 #include "matrix_source.h"
 #include "source_surface.h"
+#include <string.h>
 
 enum { SOURCE_RANGES = 128, SOURCE_COMMAND_BYTES = 32 * 1024 * 1024, SOURCE_MATRIX_DEPTH = 32 };
 
@@ -104,4 +105,21 @@ typedef struct mc_client_source_state {
     mc_client_modelview projection_stack[SOURCE_MATRIX_DEPTH];
     size_t projection_depth;
 } mc_client_source_state;
+
+/* Called once by source_initialize, before the owner is published initialized.
+ * These are the legacy GL initial values, not the parameters written by U.b. */
+static inline void source_lighting_initialize(mc_client_source_state *state) {
+    state->fog.light_parameters[0] = (mc_client_source_light_state){.ambient = {0, 0, 0, 1},
+                                                                    .diffuse = {1, 1, 1, 1},
+                                                                    .specular = {1, 1, 1, 1},
+                                                                    .position = {0, 0, 1, 0},
+                                                                    .position_eye = {0, 0, 1, 0}};
+    state->fog.light_parameters[1] = (mc_client_source_light_state){.ambient = {0, 0, 0, 1},
+                                                                    .diffuse = {0, 0, 0, 1},
+                                                                    .specular = {0, 0, 0, 1},
+                                                                    .position = {0, 0, 1, 0},
+                                                                    .position_eye = {0, 0, 1, 0}};
+    const float ambient[4] = {0.2f, 0.2f, 0.2f, 1};
+    memcpy(state->fog.light_model_ambient, ambient, sizeof(ambient));
+}
 #endif

@@ -9,6 +9,8 @@ bool mc_client_display_source_fog_inspect(const mc_client_display *display,
         return false;
     *out = display->source.fog;
     out->enabled = display->source.fog_enabled;
+    out->lighting_enabled = display->source.lighting_enabled;
+    out->matrix_mode = display->source.matrix_mode;
     memcpy(out->current_color, display->source.color, sizeof(out->current_color));
     out->current_color_known = display->source.color_known;
     return true;
@@ -165,6 +167,91 @@ bool mc_client_display_source_light_enable(mc_client_display *display, unsigned 
                                  "unimplemented source light index", 0),
                             error);
     display->source.fog.lights[light] = enabled;
+    return source_leave(display, true, error);
+}
+
+bool mc_client_display_source_lighting_enable(mc_client_display *display, bool enabled,
+                                              mc_client_display_error *error) {
+    if (!source_setting_enter(display, "source lighting enable", error))
+        return false;
+    display->source.lighting_enabled = enabled;
+    return source_leave(display, true, error);
+}
+
+bool mc_client_display_source_light_parameter(mc_client_display *display, unsigned int light,
+                                              int32_t pname, const void *storage, size_t remaining,
+                                              mc_client_display_error *error) {
+    const char *operation = "source light parameter";
+    if (!source_setting_enter(display, operation, error))
+        return false;
+    if (storage == NULL)
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, operation,
+                                 "null remaining FloatBuffer storage", 0),
+                            error);
+    if (remaining < 4)
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_BUFFER_TOO_SMALL, operation,
+                                 "FloatBuffer requires at least four remaining floats", 0),
+                            error);
+    if (light >= 2 || (pname != GL_AMBIENT && pname != GL_DIFFUSE && pname != GL_SPECULAR &&
+                       pname != GL_POSITION))
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation,
+                                 "unimplemented source light index or parameter", 0),
+                            error);
+    mc_client_source_light_state *parameters = &display->source.fog.light_parameters[light];
+    float values[4];
+    memcpy(values, storage, sizeof(values));
+    if (pname == GL_POSITION) {
+        if (!source_fp_admit("source light position transform FP", error))
+            return source_leave(display, false, error);
+        /* glLight's POSITION always uses MODELVIEW, independently of the
+         * currently selected matrix mode. Later matrix changes do not replay it. */
+        const float *matrix = display->source.modelview.column_major;
+        float eye[4];
+        for (size_t row = 0; row < 4; ++row) {
+            float value = mc_client_source_product(matrix[row], values[0]);
+            for (size_t column = 1; column < 4; ++column)
+                value = mc_client_source_sum(
+                    value, mc_client_source_product(matrix[column * 4 + row], values[column]));
+            eye[row] = value;
+        }
+        memcpy(parameters->position, values, sizeof(values));
+        memcpy(parameters->position_eye, eye, sizeof(eye));
+    } else if (pname == GL_AMBIENT)
+        memcpy(parameters->ambient, values, sizeof(values));
+    else if (pname == GL_DIFFUSE)
+        memcpy(parameters->diffuse, values, sizeof(values));
+    else
+        memcpy(parameters->specular, values, sizeof(values));
+    return source_leave(display, true, error);
+}
+
+bool mc_client_display_source_light_model(mc_client_display *display, int32_t pname,
+                                          const void *storage, size_t remaining,
+                                          mc_client_display_error *error) {
+    const char *operation = "source light model parameter";
+    if (!source_setting_enter(display, operation, error))
+        return false;
+    if (storage == NULL)
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, operation,
+                                 "null remaining FloatBuffer storage", 0),
+                            error);
+    if (remaining < 4)
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_BUFFER_TOO_SMALL, operation,
+                                 "FloatBuffer requires at least four remaining floats", 0),
+                            error);
+    if (pname != GL_LIGHT_MODEL_AMBIENT)
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation,
+                                 "unimplemented source light model parameter", 0),
+                            error);
+    float values[4];
+    memcpy(values, storage, sizeof(values));
+    memcpy(display->source.fog.light_model_ambient, values, sizeof(values));
     return source_leave(display, true, error);
 }
 

@@ -31,6 +31,7 @@ static void source_initialize(mc_client_display *display) {
     memcpy(s->projection, identity.column_major, sizeof(s->projection));
     s->matrix_mode = GL_MODELVIEW;
     s->next_list_base = 1;
+    source_lighting_initialize(s);
     s->initialized = true;
 }
 

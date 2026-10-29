@@ -4,9 +4,10 @@ The default client now executes focused mouse look and opens the source pause
 screen. Its World-frame source calls real
 [terrain submission](terrain-submission.md) at `px.a(FJ)V:486` after colors,
 fog, Sky, camera, culling and standard Block list compilation. A normal N return
-continues through FLAT493 to the explicit lighting-enable dependency `u.b()`496.
-The specified Windows MSVC Debug submission profiles pass; hosted qualification
-is pending. Specialized Block shapes, HUD composition and a
+continues through FLAT493, [standard lighting](standard-lighting.md)496 and the
+captured camera's eye position504 to Entity/TileEntity rendering510.
+The specified Windows MSVC Debug state profiles pass; hosted lighting qualification
+is pending. Specialized Block shapes, lit geometry, HUD composition and a
 playable frame remain unfinished.
 
 ## Focused mouse input

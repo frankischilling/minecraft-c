@@ -1,5 +1,6 @@
 #include "mc/client/world/world_frame.h"
 
+#include "../../../entity/entity_internal.h"
 #include "../../../world/runtime/chunk_provider_internal.h"
 #include "../../application_state.h"
 #include "../../display/fog_surface.h"
@@ -10,6 +11,7 @@
 #include "../../view_slot.h"
 #include "internal.h"
 #include "mc/core/java/java.h"
+#include "mc/entity/living/view.h"
 #include "renderer_camera_internal.h"
 #include "renderer_fog_internal.h"
 #include "renderer_fog_state_internal.h"
@@ -64,6 +66,10 @@ struct mc_client_world_frame_call {
     mc_client_render_engine *terrain_engine;
     mc_client_texture_lookup_error terrain_texture_error, terrain_texture_cleanup;
     mc_client_graphics_error lighting_error;
+    mc_client_lighting_error lighting_enable_error;
+    mc_entity_view_error eye_error;
+    mc_entity_vector *entity_eye;
+    mc_entity_classes *eye_classes;
     mc_platform_nanotime update_clock;
 #endif
     bool owner_held, camera_held;
@@ -454,9 +460,37 @@ static bool culling_body(mc_client_world_frame_call *call, mc_math_classes *math
                                                              &call->failure.display),
                         493))
         return false;
-    call->failure.child = (mc_client_graphics_site){"u", "b", "()V", 0};
+    call->state.standard_lighting = &call->lighting_enable_error;
+    if (!mc_client_lighting_enable(
+            owner->services.graphics, call->state.app->entities, math, owner->services.display,
+            (mc_client_graphics_site){"px", "a", "(FJ)V", 496}, &call->lighting_enable_error)) {
+        call->failure.lighting_enable = &call->lighting_enable_error;
+        call->failure.child = call->lighting_enable_error.site;
+        return outer_fail(call, MC_CLIENT_WORLD_FRAME_CHILD_FAILED,
+                          call->lighting_enable_error.operation, 496,
+                          call->lighting_enable_error.native_policy);
+    }
+    call->state.lighting_enabled = true;
+    const mc_entity_view_status view_status = mc_entity_living_position(
+        call->state.camera, call->state.partial, &call->entity_eye, &call->eye_error);
+    if (view_status != MC_ENTITY_VIEW_OK) {
+        call->failure.view = &call->eye_error;
+        call->failure.child =
+            (mc_client_graphics_site){call->eye_error.site.class_name, call->eye_error.site.method,
+                                      call->eye_error.site.descriptor, call->eye_error.site.pc};
+        return outer_fail(
+            call,
+            view_status == MC_ENTITY_VIEW_SOURCE_NULL_REFERENCE ? MC_CLIENT_WORLD_FRAME_SOURCE_NULL
+            : view_status == MC_ENTITY_VIEW_UNSUPPORTED_FP ? MC_CLIENT_WORLD_FRAME_UNSUPPORTED_FP
+                                                           : MC_CLIENT_WORLD_FRAME_CHILD_FAILED,
+            call->eye_error.operation, 504, call->eye_error.native_policy);
+    }
+    call->eye_classes = call->state.camera->classes;
+    call->state.entity_eye = call->entity_eye;
+    call->state.eye_position_returned = true;
+    call->failure.child = (mc_client_graphics_site){"n", "a", "(Lbt;Lyn;F)V", 0};
     return outer_fail(call, MC_CLIENT_WORLD_FRAME_DEPENDENCY,
-                      "actual standard-lighting enable child is not connected", 496, true);
+                      "actual Entity and TileEntity rendering child is not connected", 510, true);
 }
 #endif
 
@@ -761,6 +795,16 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
     if (call->state.active || call->state.owner->active)
         return result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame active retirement");
 #ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+    if (call->entity_eye != NULL) {
+        const mc_entity_status released =
+            mc_entity_vector_release(call->eye_classes, call->entity_eye);
+        if (released != MC_ENTITY_OK)
+            return result(error, MC_CLIENT_WORLD_FRAME_BUSY,
+                          "World-frame Entity eye vector retirement");
+        call->entity_eye = NULL;
+        call->state.entity_eye = NULL;
+        call->eye_classes = NULL;
+    }
     if (mc_client_render_global_submit_retire(&call->submission, &call->submission_cleanup) !=
         MC_CLIENT_RENDER_GLOBAL_OK) {
         if (call->submission != NULL)

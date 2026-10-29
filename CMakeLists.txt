@@ -196,10 +196,11 @@ if(MC_BUILD_CLIENT)
     add_library(mc_client_render_textures STATIC
         src/client/render_engine/textures.c src/client/render_engine/context_display.c
         src/client/render_engine/ge_ranges.c src/client/render_engine/nw.c
-        src/client/render_engine/lighting.c)
+        src/client/render_engine/lighting.c src/client/render_engine/lighting_enable.c)
     target_include_directories(mc_client_render_textures PUBLIC src/client/render_engine)
     target_link_libraries(mc_client_render_textures PUBLIC
-        mc_client_render_engine mc_client_display PRIVATE mc_build_options)
+        mc_client_render_engine mc_client_display mc_entity_classes mc_math_classes
+        PRIVATE mc_build_options)
     # Class-resource and Pack inputs share the scoped ImageIO core. The optional
     # Pack owners/adapter are not part of this component.
     add_library(mc_client_image_io STATIC
@@ -5508,4 +5509,5 @@ if(MC_BUILD_CLIENT)
     include(cmake/tests/client_render_global_recenter.cmake)
     include(cmake/client_render_global_submit_tests.cmake)
     include(cmake/tests/client_render_global_submit_cpu.cmake)
+    include(cmake/tests/client_lighting_enable.cmake)
 endif()

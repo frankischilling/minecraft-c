@@ -9,6 +9,7 @@ GROUPS = (
     "render-batch-cpu", "render-batch-device", "render-global-recenter",
     "render-global-recenter-device", "render-global-occlusion",
     "render-global-submit", "render-global-submit-cpu",
+    "lighting-enable",
 )
 
 
@@ -77,7 +78,8 @@ def main():
     log = build / "Testing/Temporary/LastTest.log"
     if log.is_file():
         prefixes = ("Source N submit:", "Source N submit unsupported:", "Source submission CPU:",
-                    "Source recenter/JO:", "Source batches:", "Source ARB queries:")
+                    "Source recenter/JO:", "Source batches:", "Source ARB queries:",
+                    "Source U.b lighting:", "Source lighting controls:")
         for line in log.read_text(encoding="utf-8", errors="replace").splitlines():
             if line.startswith(prefixes):
                 print("  completion: " + line)

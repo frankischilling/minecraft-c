@@ -1,6 +1,31 @@
 # Test scope and reproduction
 
+## Standard lighting state qualification
+
+The [standard-lighting owner](client/standard-lighting.md) passes three Windows
+MSVC Debug CTests in 2.05 seconds, with zero failures or skips. Its replay matches
+all 86 original state/parameter rows across five fresh profiles. The native CPU
+and device controls separately check first-child failure, buffer admission,
+strict FP handling, compilation rejection, sticky GL errors and MathHelper
+failure prefixes. The native lit-batch control requires the current explicit
+unsupported renderer result; it supplies no lighting pixels.
+
+The loaded-World test passes in 18.59 seconds and reaches `px.a(FJ)V:510` after
+U.b496 and the actual pooled eye getter504 return. It preserves saves/resources
+and all 72 original focus histories. Its inspected back buffer shows authored
+grass terrain and Sky without HUD. These selected target builds and runtime
+tests are native Windows evidence; hosted lighting qualification is pending.
+The terrain records below retain their preceding source scopes.
+
 ## Terrain submission Windows qualification
+
+Hosted [source checkpoint 33f12b1](https://github.com/frankischilling/minecraft-c/actions/runs/40966959872)
+passes all four jobs and 1,513 tests: Windows 483 in 346.19 seconds, GCC 515 in
+355.22 seconds and Clang 515 in 371.82 seconds. There are zero failures/skips
+and no dropped names from checkpoint 6ccdc82. Both Linux software contexts
+compare 30 ordinary N rows and explicitly leave five unsupported occlusion rows
+uncredited. The strict local supported-device replay still compares all 35.
+This hosted checkpoint precedes the standard-lighting extension above.
 
 The current capability follow-up passes nine focused MSVC Debug CTests in
 5.43 seconds, with zero failures or skips. The supported Windows context uses

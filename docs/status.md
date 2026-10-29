@@ -1,5 +1,15 @@
 # Development status
 
+The [standard-lighting extension](client/standard-lighting.md) completes U.b496
+and the captured camera's eye-position getter504. The loaded Windows World frame
+now reaches Entity/TileEntity rendering510. All 86 original lighting state and
+parameter rows match exactly; three focused MSVC CTests pass in 2.05 seconds.
+The loaded-World test passes in 18.59 seconds, preserving saves/resources and
+all 72 original focus histories. Its inspected back buffer shows authored grass
+terrain and Sky without HUD. Lit geometry and repeated interactive frames remain
+unfinished. Hosted lighting qualification is pending. The terrain checkpoint
+described below predates this extension.
+
 The native C client is pre-playable. Its default path uses the constructed
 source App, initialized menu and genuine [World-selection screen](client/world-selection.md).
 Four Windows native save-list profiles pass, including row selection, scrollbar drag,

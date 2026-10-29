@@ -838,7 +838,7 @@ int main(int argc, char **argv) {
                                                &display_active,
                                                &update) == MC_CLIENT_SDK_UPDATE_OK);
             CHECK(strcmp(f.state.source_class, "px") == 0 &&
-                  strcmp(f.state.source_method, "a") == 0 && f.state.source_pc == 496 &&
+                  strcmp(f.state.source_method, "a") == 0 && f.state.source_pc == 510 &&
                   f.state.world_frame != NULL && f.state.world_frame->picking_returned &&
                   f.state.world_frame->viewport_set && f.state.world_frame->fog_blend_computed &&
                   f.state.world_frame->fog_returned && f.state.world_frame->camera_returned &&
@@ -849,7 +849,7 @@ int main(int argc, char **argv) {
                   f.state.world_frame->frustum_constructed &&
                   f.state.world_frame->frustum_recentered && f.state.world_frame->culling_returned);
             const mc_client_world_frame_state *frame = f.state.world_frame;
-            CHECK(frame->source_pc == 496 && frame->update_calls >= 1 && frame->updates_returned &&
+            CHECK(frame->source_pc == 510 && frame->update_calls >= 1 && frame->updates_returned &&
                   frame->draw_fog_returned && frame->terrain_texture_bound &&
                   frame->lighting_disabled && frame->update != NULL && !frame->update->active &&
                   frame->update->returned && frame->update->failure == NULL &&
@@ -865,10 +865,13 @@ int main(int argc, char **argv) {
                   frame->submission->owner == NULL && frame->submission->camera == NULL &&
                   frame->submission->batch_camera == NULL && frame->submission->math == NULL &&
                   !frame->submission->matrix_pushed && !frame->submission->query_active &&
-                  frame->failure->site.pc == 496 &&
-                  strcmp(frame->failure->child.class_name, "u") == 0 &&
-                  strcmp(frame->failure->child.method, "b") == 0 &&
-                  strcmp(frame->failure->child.descriptor, "()V") == 0);
+                  frame->lighting_enabled && frame->eye_position_returned &&
+                  frame->entity_eye != NULL && frame->standard_lighting != NULL &&
+                  frame->failure->lighting_enable == NULL && frame->failure->view == NULL &&
+                  frame->failure->site.pc == 510 &&
+                  strcmp(frame->failure->child.class_name, "n") == 0 &&
+                  strcmp(frame->failure->child.method, "a") == 0 &&
+                  strcmp(frame->failure->child.descriptor, "(Lbt;Lyn;F)V") == 0);
             /* Source updates finish and retire their borrowed cache/call views.
              * The following submission may recenter those SAME DKs, which
              * invalidates their earlier geometry until a later source update. */

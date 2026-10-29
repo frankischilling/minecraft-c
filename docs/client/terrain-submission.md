@@ -6,7 +6,11 @@ rebuilds, recentering and JO sorting, subset selection, the four TG batches,
 and the ARB occlusion branch. Eight focused Windows MSVC Debug CTests pass in
 4.51 seconds, with zero failures or skips. The original whole-N fixtures record
 12 CPU failure profiles and seven device profiles with 35 exact rows. Hosted
-qualification is pending; verification applies to the specified native profiles.
+checkpoint [33f12b1](https://github.com/frankischilling/minecraft-c/actions/runs/40966959872)
+passes Windows 483/GCC 515/Clang 515 tests, with zero failures/skips and no
+dropped preceding names. Linux N replay compares 30 ordinary rows and leaves
+five unsupported occlusion rows uncredited. Standard lighting has its separate
+qualification below.
 
 The capability follow-up passes nine focused MSVC CTests in 5.43 seconds.
 Its strict supported-device configuration requires and compares all 35 original
@@ -18,8 +22,10 @@ describes that admission and the required-device option.
 The World-frame caller invokes submission at `px.a(FJ)V:486`, passing its
 captured camera, pass0 and the float partial widened to double. A normal N
 return supplies the source integer result at896. PX discards it at489, sets
-FLAT shading at493 and reaches the unfinished `u.b()` lighting-enable child
-at496. This contract does not establish a complete World frame or gameplay.
+FLAT shading at493 and calls [standard lighting](standard-lighting.md) at496.
+Lighting and the captured camera's eye-position getter504 now return; the frame
+reaches unfinished Entity/TileEntity rendering510. This contract does not
+establish a complete World frame or gameplay.
 
 The public [begin/inspect/retire API](../../include/mc/client/world/render_global_submit.h)
 keeps the source result separate from native status. Its implementation is in
