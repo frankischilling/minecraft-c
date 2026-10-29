@@ -6,8 +6,8 @@ screen. Its World-frame source calls real
 fog, Sky, camera, culling and standard Block list compilation. A normal N return
 continues through FLAT493, [standard lighting](standard-lighting.md)496 and the
 captured camera's eye position504 to Entity/TileEntity rendering510.
-The specified Windows MSVC Debug state profiles pass; hosted lighting qualification
-is pending. Specialized Block shapes, lit geometry, HUD composition and a
+The specified Windows MSVC Debug state profiles and both hosted Linux sanitizer
+replays pass. Specialized Block shapes, lit geometry, HUD composition and a
 playable frame remain unfinished.
 
 ## Focused mouse input

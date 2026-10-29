@@ -7,7 +7,9 @@ parameter rows match exactly; three focused MSVC CTests pass in 2.05 seconds.
 The loaded-World test passes in 18.59 seconds, preserving saves/resources and
 all 72 original focus histories. Its inspected back buffer shows authored grass
 terrain and Sky without HUD. Lit geometry and repeated interactive frames remain
-unfinished. Hosted lighting qualification is pending. The terrain checkpoint
+unfinished. Hosted [lighting checkpoint 0c0cc5a](https://github.com/frankischilling/minecraft-c/actions/runs/40968986848)
+passes all four jobs and 1,520 tests (Windows 484/GCC 518/Clang 518), with zero
+failures/skips and no dropped preceding names. The terrain checkpoint
 described below predates this extension.
 
 The native C client is pre-playable. Its default path uses the constructed

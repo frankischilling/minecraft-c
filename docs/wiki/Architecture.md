@@ -43,11 +43,12 @@ Sky programs and W/SR/DK culling. The dirty-chunk selector now constructs the
 real EW cache and compiles standard Block geometry through the same CV, DK
 list and NW. Current frame source invokes real
 [terrain submission](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terrain-submission.md)
-at `px.a(FJ)V:486`, using the same N/Ge/TG and ARB owners. A normal N return
-reaches the explicit U.b496 lighting-enable dependency. Eight focused Windows
-MSVC Debug CTests pass in 4.51 seconds, zero failures/skips. The loaded profile
-passes 704 checks and shows authored grass terrain and Sky without HUD at that
-frontier. Hosted qualification is pending.
+at `px.a(FJ)V:486`, using the same N/Ge/TG and ARB owners. Standard lighting496
+and camera eye positioning504 return before Entity/TileEntity rendering510.
+Windows lighting replay matches 86 original state rows. The loaded profile
+passes in 18.59 seconds and shows authored grass terrain and Sky without HUD.
+Hosted source 0c0cc5a passes all four jobs and 1,520 tests. See
+[Build and tests](Build-and-tests) for native and device scopes.
 The Display owns its ordered matrix ledger; RenderModels owns the checked
 static-frustum lifetime.
 Complete presentation remains unfinished.
@@ -85,8 +86,7 @@ before submission was connected at PX486. Hosted [source checkpoint 6ccdc82](htt
 passed all four jobs and 1,490 tests (Windows 478/GCC 506/Clang 506), zero failures
 or skips. Every preceding hosted name remained, with five additions per
 platform. That record's runtime/test sources were those of 6ccdc82; its later
-record edits changed documentation and file bindings. Current submission passes its specified Windows profiles; hosted
-qualification is pending. Remaining suite totals describe earlier
+record edits changed documentation and file bindings. Remaining suite totals describe earlier
 checkpoints.
 
 The selected Windows cache/compiler/callback/lighting/sort checks and all 72

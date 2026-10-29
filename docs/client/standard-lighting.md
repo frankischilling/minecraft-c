@@ -49,7 +49,15 @@ These native resource limits are separate from the original observations.
 The loaded-World test passes in 18.59 seconds with all 72 original focus
 histories and unchanged saves/resources. Its actual frame reaches N510 after
 lighting and eye-position return. The inspected back buffer still shows authored
-grass terrain and Sky without HUD. Hosted lighting qualification is pending.
+grass terrain and Sky without HUD. The real `minecraft-client` executable also
+renders and captures two normal menu frames from imported assets, with an
+isolated game directory and no JVM/JAR runtime, then exits cleanly.
+
+Hosted [source checkpoint 0c0cc5a](https://github.com/frankischilling/minecraft-c/actions/runs/40968986848)
+passes all four jobs and 1,520 tests: Windows 484/GCC 518/Clang 518, with zero
+failures/skips and no dropped preceding names. GCC and Clang run the 86-row
+lighting replay and device controls under sanitizers. Hosted Windows runs the
+CPU control; the local Windows device evidence above remains separate.
 
 Lit geometry remains an explicit unsupported draw profile. Normal decoding,
 material inheritance, lighting rasterization, Entities, particles and the later

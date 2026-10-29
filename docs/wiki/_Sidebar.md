@@ -1,4 +1,5 @@
 - [Home](Home)
+- [Client startup](Startup)
 - [World simulation](World-simulation)
 - [Systems and subsystems](Architecture)
 - [Build and tests](Build-and-tests)

@@ -61,12 +61,13 @@ actual ChunkCache and compiles standard Block geometry into source lists
 through the same RenderBlocks/Tessellator. Empty and standard Block sections
 complete. Current frame source invokes real
 [terrain submission](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terrain-submission.md)
-at `px.a(FJ)V:486`; a normal N return reaches the explicit U.b496 lighting-enable
-dependency. The loaded Windows profile reaches 496, passes 704 checks in 12.69
-seconds and preserves all 72 focus histories/resources/saves. Its inspected
-back buffer shows authored grass terrain and Sky without HUD. Eight focused
-MSVC Debug CTests pass in 4.51 seconds, zero failures/skips; hosted qualification
-is pending. Specialized Block shapes and TileEntity
+at `px.a(FJ)V:486`; standard lighting496 and camera eye positioning504 now return.
+The loaded Windows profile reaches Entity/TileEntity rendering510, passes in
+18.59 seconds and preserves all 72 focus histories/resources/saves. Its inspected
+back buffer shows authored grass terrain and Sky without HUD. Three focused
+lighting tests pass in 2.05 seconds, zero failures/skips. Hosted source 0c0cc5a
+passes all four jobs and 1,520 tests; [Build and tests](Build-and-tests) records
+the distinct device scopes. Specialized Block shapes and TileEntity
 rendering remain unfinished. The whole `n.e()V` sky-change
 callback and shared U class active use are connected. See the
 [chunk-compilation contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md).
@@ -84,8 +85,7 @@ before submission was connected at PX486. Hosted [source checkpoint 6ccdc82](htt
 passed all four jobs and 1,490 tests (Windows 478/GCC 506/Clang 506), zero failures
 or skips. Every preceding hosted name remained, with five additions per
 platform. That record's runtime/test sources were those of 6ccdc82; its later
-record edits changed documentation and file bindings. Current submission passes its specified Windows profiles; hosted
-qualification is pending. Remaining suite totals describe earlier
+record edits changed documentation and file bindings. Remaining suite totals describe earlier
 checkpoints.
 
 Selected Windows checks pass 950 original cache rows, 42 whole selector profiles,

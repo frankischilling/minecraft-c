@@ -466,8 +466,8 @@
       "sha256": "93226a41c97403c4e3e61a23f633b553fc6c96c3058e44d362bf01409dfdaff9"
     },
     "docs/parity.md": {
-      "bytes": 115904,
-      "sha256": "a0f92cd445caf60c50c9b8fa5373d7bb583ca48109f96693923ad31489ab091d"
+      "bytes": 116052,
+      "sha256": "a7fa417c88b2325e25379938e5ef53e040c90d4e198b6226f5d5b7a1b6b60222"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 33361,
-      "sha256": "d70056265f5abde2425eb885a0193ed9779bcb6e5ee5091c6dcf0c64fa50fe08"
+      "bytes": 33556,
+      "sha256": "18b0f707045c022bf45d2a037bd2181bb7311e39896f5e2be756edbab5431b69"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,40 +826,40 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 285998,
-      "sha256": "bf29da0c7ee0e2ad2b27b33ea4e0b41a255c9c0707fcb6ebc2a0a595120fa48e"
+      "bytes": 287008,
+      "sha256": "e417eb1e7a1d3d27de284a640f374cd487d53237def88f6ef2381a6755685805"
     },
     "docs/wiki/Architecture.md": {
-      "bytes": 18194,
-      "sha256": "e7f97de4fc11d15176422c2aae810354bf7bba0173e0e88c7ded324f9f28d436"
+      "bytes": 18184,
+      "sha256": "9dd54110ed2699d5149abb29279feb4f5dd3fea4f4f180ec853e6b503ed8753a"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 34019,
-      "sha256": "905d18829aa7bc4ac815874a2626bbcd8f66005a7b37ff5a9c107d9b1dd7614d"
+      "bytes": 34504,
+      "sha256": "a96d3390cd8005d512e97917b08d86754aefb86e4ba1418a7201ffc989fa9a6d"
     },
     "docs/wiki/History.md": {
       "bytes": 26029,
       "sha256": "3c215b221963d328333a1f5efa7c766b2ad1b8fb1fd7dd787501cec11cf46a66"
     },
     "docs/wiki/Home.md": {
-      "bytes": 8115,
-      "sha256": "18a282e6cfd4e88084835784796999f4e37f702eb37344b220138890ace330bf"
+      "bytes": 8111,
+      "sha256": "d8218a48d739000d9c95c5a0288fa9ce7ce62d508b607599f5e083be35b02909"
     },
     "docs/wiki/Startup.md": {
-      "bytes": 11688,
-      "sha256": "125d7a5c84032b48134408205cfcf3f6a5bd9f67680f4ca4e23c969f683b6ae7"
+      "bytes": 11697,
+      "sha256": "563cd60673b0c5eadffcb5e7a05b2012d0336b2a1642b675aca331af85f33fe6"
     },
     "docs/wiki/Storage-and-reference.md": {
       "bytes": 7959,
       "sha256": "f38b25652fb9616f8011aa7942d38384f61b89096662a2bba59879271c46fe82"
     },
     "docs/wiki/World-simulation.md": {
-      "bytes": 17264,
-      "sha256": "b0c876b5908bf0b706e89dd10a11b2091c09dd2009cfcfd7e09f605834764e54"
+      "bytes": 17281,
+      "sha256": "b747f9d19ebf85d95f761aa28610c1811262829c51105497680b26389269d9a9"
     },
     "docs/wiki/_Sidebar.md": {
-      "bytes": 394,
-      "sha256": "c51392702c956f8c134ce57963070d2fdce9e24f9de2c55257e1735576fa34cc"
+      "bytes": 422,
+      "sha256": "8367ad797de8546d74c11acbf4950696afb8b00caea9d5bbfb251eb4ec132c51"
     },
     "docs/world/biome-registry.md": {
       "bytes": 10503,
@@ -10810,8 +10810,8 @@
       "sha256": "aeaf94c1de931037c94f616707f7e677b2f58627be582ab5c422dfbdd64207c2"
     },
     "docs/client/renderer-frames.md": {
-      "bytes": 13236,
-      "sha256": "82b614df53957eb023494f0d5defb75a75f90976178f9c772095ac85ea79897f"
+      "bytes": 13234,
+      "sha256": "49ebb18033d817c7ad3adf72c7007e4e8569d90db6b4e50644ba20332461703d"
     },
     "docs/world/ticking.md": {
       "bytes": 3413,
@@ -12170,8 +12170,8 @@
       "sha256": "36512d45e39aa6e0f73218f50c75c84f0b3ca86b7ceb155081189529f1609751"
     },
     "docs/client/standard-lighting.md": {
-      "bytes": 3559,
-      "sha256": "05f022fa2b01fad0a6ed4a446b454f2e3b108ed887bdb5a1dafbd4b89b104e42"
+      "bytes": 4116,
+      "sha256": "3cbe99d071574af913446105a1002fdd5567ad578684e52c934629e5acf85f0d"
     },
     "src/client/render_engine/lighting_enable.c": {
       "bytes": 12561,
@@ -12186,8 +12186,8 @@
       "sha256": "f415f367b011ac2143db9322ba0e71a44f56ae26861bbe3d8b02a3f1e78fe1eb"
     },
     "tests/reference/client/lighting_enable/README.md": {
-      "bytes": 4479,
-      "sha256": "c2784d5b9fbfbf9bddba4ca9a225b3305bdb2fa1a03cacc879b93ea1a3aaea16"
+      "bytes": 4546,
+      "sha256": "5bcee1fd1e2d908f590d78b3f073d3ae6d58cc0373479b5c12c4061f9a29a602"
     },
     "tests/reference/client/lighting_enable/capture_reference.py": {
       "bytes": 11749,

@@ -5,16 +5,22 @@ matches all 86 original state/parameter rows on Windows MSVC Debug. Three
 focused lighting tests pass in 2.05 seconds. The loaded-World test passes in
 18.59 seconds, preserves all 72 focus histories and saves/resources, and reaches
 Entity/TileEntity rendering at PX510 after lighting and eye-position return.
-Lit pixels and repeated interactive frames remain unfinished. Hosted lighting
-qualification is pending.
+Lit pixels and repeated interactive frames remain unfinished. Hosted
+[lighting source 0c0cc5a](https://github.com/frankischilling/minecraft-c/actions/runs/40968986848)
+passes all four jobs and 1,520 tests: Windows 484/GCC 518/Clang 518, with zero
+failures/skips and no dropped names from the preceding terrain checkpoint.
+Both Linux sanitizer profiles match all 86 lighting rows; hosted Windows runs
+the CPU control, with local device evidence described above.
 
 The preceding terrain [source checkpoint 33f12b1](https://github.com/frankischilling/minecraft-c/actions/runs/40966959872)
 passes all four jobs and 1,513 tests: Windows 483/GCC 515/Clang 515, with zero
 failures/skips and no dropped names from 6ccdc82. Linux software contexts compare
 30 ordinary N rows and leave five unsupported occlusion rows uncredited; strict
 local Windows replay compares all 35. Linux CI now caches compilation separately
-for GCC and Clang and saves successful builds before running tests. The first
-cache population is complete; a warm-build timing comparison is pending.
+for GCC and Clang and saves successful builds before running tests. Warm builds
+take 91/85 seconds, versus 304/294 during the preceding cache population. Both
+compilers report 97.99% cache hits. These runs use different revisions and
+runner instances; every test still executes.
 The earlier native terrain qualification follows.
 
 The [terrain-submission increment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terrain-submission.md)

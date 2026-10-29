@@ -14,7 +14,22 @@ The loaded-World test passes in 18.59 seconds and reaches `px.a(FJ)V:510` after
 U.b496 and the actual pooled eye getter504 return. It preserves saves/resources
 and all 72 original focus histories. Its inspected back buffer shows authored
 grass terrain and Sky without HUD. These selected target builds and runtime
-tests are native Windows evidence; hosted lighting qualification is pending.
+tests are native Windows evidence. The real rebuilt executable also captures
+two normal menu frames from imported assets, with an isolated game directory,
+then exits cleanly without a JVM or JAR at runtime.
+
+Hosted [source checkpoint 0c0cc5a](https://github.com/frankischilling/minecraft-c/actions/runs/40968986848)
+passes all four jobs and 1,520 tests: Windows 484 in 341.13 seconds, GCC 518 in
+262.52 seconds and Clang 518 in 369.63 seconds. There are zero failures/skips
+and no dropped names from 33f12b1. Both Linux sanitizer profiles run the full
+86-row lighting comparison and native device controls; hosted Windows adds the
+CPU control, with local device coverage recorded above. Linux N submission
+still leaves five unsupported occlusion rows uncredited per compiler.
+
+The warm GCC/Clang builds take 91/85 seconds, versus 304/294 seconds during
+the preceding cache population. Both compilers report 1,368 hits out of 1,396
+cacheable calls (97.99%). These observations span different revisions and runner
+instances; they are not a controlled benchmark. Every test still executes.
 The terrain records below retain their preceding source scopes.
 
 ## Terrain submission Windows qualification

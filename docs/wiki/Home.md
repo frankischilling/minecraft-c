@@ -22,7 +22,8 @@ the same RenderBlocks and Tessellator. Current frame source calls real
 at `px.a(FJ)V:486`; [standard lighting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/standard-lighting.md)
 and the actual camera eye getter now return before Entity/TileEntity rendering510.
 Native Windows lighting replay matches 86 original state/parameter rows. Three
-focused tests pass in 2.05 seconds; hosted lighting qualification is pending.
+focused tests pass in 2.05 seconds. Hosted lighting source 0c0cc5a passes all
+four jobs and 1,520 tests; [Build and tests](Build-and-tests) records platform limits.
 The loaded UI passes in 18.59 seconds with all 72 focus histories/resources/saves. Its inspected
 back buffer shows authored grass terrain and Sky without HUD. Specialized Block shapes, later frame
 drawing and gameplay actions remain unfinished. See the
@@ -67,8 +68,7 @@ before submission was connected at PX486. Hosted [source checkpoint 6ccdc82](htt
 passed all four jobs and 1,490 tests (Windows 478/GCC 506/Clang 506), zero failures
 or skips. Every preceding hosted name remained, with five additions per
 platform. That record's runtime/test sources were those of 6ccdc82; its later
-record edits changed documentation and file bindings. Current submission passes its specified Windows profiles; hosted
-qualification is pending. Remaining suite totals describe earlier
+record edits changed documentation and file bindings. Remaining suite totals describe earlier
 checkpoints.
 
 Qualified source checkpoint
