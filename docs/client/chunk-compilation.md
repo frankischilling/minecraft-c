@@ -5,9 +5,9 @@ constructs its padded ChunkCache and compiles standard Block geometry through
 the actual RenderBlocks and Tessellator. Empty and standard Block sections
 complete. Current frame source calls real
 [terrain submission](terrain-submission.md) at `px.a(FJ)V:486`; a normal N return
-continues to the explicit U.b496 lighting-enable dependency. Submission is
-implemented but native-unverified, with build/replay and hosted qualification
-pending. Specialized Block shapes and TileEntity rendering remain unfinished;
+continues to the explicit U.b496 lighting-enable dependency. The specified
+Windows MSVC Debug submission profiles pass; hosted qualification is pending.
+Specialized Block shapes and TileEntity rendering remain unfinished;
 this does not establish a playable frame. See the
 [RenderBlocks contract](render-blocks.md) for geometry and finite comparisons.
 
@@ -97,9 +97,11 @@ contains eight original profiles. [Matrix and translation observations](../../te
 and the [lighting fixture](../../tests/reference/client/lighting/README.md)
 separately qualify their declared class, method and
 device scopes. The preceding standard Block checkpoint's captured back buffer
-contains Sky without terrain or HUD. There is no new loaded-frame result for
-the native-unverified submission increment. Full matched original frames remain
-unqualified.
+contains Sky without terrain or HUD. The current loaded Windows profile passes
+704 checks and reaches U.b496; its inspected back buffer now shows real authored
+grass terrain and Sky without HUD. Eight focused submission CTests pass in
+4.51 seconds, with hosted qualification pending. Full matched original frames
+remain unqualified.
 
 The [object-sort regression](../../tests/reference/client/render_global_update_sort/README.md)
 checks 108 authored JDK17 cases, including every comparison and final or partial

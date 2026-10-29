@@ -56,11 +56,16 @@ static bool get_result(mc_client_render_global_submit_call *c, int32_t id, uint3
                                                                  &c->failure.graphics),
                              pc))
         return false;
-    return mc_terrain_display(
-        c,
+    const bool ok =
         mc_client_display_source_query_result(c->state.owner->display, c->state.owner->queries, id,
-                                              pname, storage, remaining, &c->failure.display),
-        pc);
+                                              pname, storage, remaining, &c->failure.display);
+    /* The distinct rejection occurs only after actual context, Names/ID,
+     * function and pointer admission. This is LWJGL's reached checkBuffer1,
+     * rather than an earlier native provenance failure with the same span. */
+    if (!ok && remaining == 0 && c->failure.display.status == MC_CLIENT_DISPLAY_BUFFER_TOO_SMALL)
+        return mc_terrain_fail(c, MC_CLIENT_RENDER_GLOBAL_SOURCE_ILLEGAL_ARGUMENT,
+                               "actual LWJGL query-result IntBuffer minimum1", pc, false);
+    return mc_terrain_display(c, ok, pc);
 }
 
 static bool read_result(mc_client_render_global_submit_call *c, unsigned int pc, int32_t *out) {
@@ -144,6 +149,7 @@ static bool ended_query_release(mc_client_render_global_submit_call *c) {
     c->cleanup.status = MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED;
     c->cleanup.operation = c->cleanup.display.operation;
     c->cleanup.native_policy = true;
+    c->failure.cleanup_display = c->cleanup.display;
     return mc_terrain_fail(c, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED, c->cleanup.display.operation,
                            769, true);
 }

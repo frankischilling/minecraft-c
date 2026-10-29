@@ -14,8 +14,8 @@
       "sha256": "498dd8689b2c7d9d944c8ae7cda627f2714c93c5ccbe7d97cd3c08b40dc5d262"
     },
     "src/client/display/display.h": {
-      "bytes": 13727,
-      "sha256": "26a76c514949f22879211d37492996b79b11d779e4b85ea1b4d96a50c256bb18"
+      "bytes": 13767,
+      "sha256": "433bddbf5b7a4dba37a3291c2297301eaa63c13f2fc4b56a909cf081bb4ab9d2"
     },
     "src/client/fonts/default_font.c": {
       "bytes": 13768,

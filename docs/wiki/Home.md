@@ -20,8 +20,10 @@ selector, constructs the real ChunkCache and compiles standard Blocks through
 the same RenderBlocks and Tessellator. Current frame source calls real
 [terrain submission](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terrain-submission.md)
 at `px.a(FJ)V:486`; a normal return reaches the explicit U.b496 lighting-enable
-dependency. Submission is implemented but native-unverified, with build/replay
-and hosted qualification pending. Specialized Block shapes, later frame
+dependency. All eight focused Windows MSVC Debug CTests pass in 4.51 seconds,
+zero failures/skips; hosted qualification is pending. The loaded UI passes 704
+checks in 12.69 seconds with all 72 focus histories/resources/saves. Its inspected
+back buffer shows authored grass terrain and Sky without HUD. Specialized Block shapes, later frame
 drawing and gameplay actions remain unfinished. See the
 [source frame scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/renderer-frames.md).
 The real READY renderer also
@@ -31,7 +33,8 @@ through return452; existing-World ticks call it at `k:33`.
 Renderer attachment creates the source ChunkRenderer grid and bounding-box
 lists. Empty and standard Block sections now complete source compilation;
 specialized Block shapes and TileEntity rendering remain unfinished. The
-submission extension uses the same retained graph and has qualification pending.
+submission extension uses the same retained graph and passes its specified
+Windows profiles, with hosted qualification pending.
 The concrete sky-change callback runs
 the whole `n.e()V`, and standard lighting includes the shared U class's actual
 buffer initialization. The [chunk-compilation contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md)
@@ -62,8 +65,8 @@ before submission was connected at PX486. Hosted [source checkpoint 6ccdc82](htt
 passed all four jobs and 1,490 tests (Windows 478/GCC 506/Clang 506), zero failures
 or skips. Every preceding hosted name remained, with five additions per
 platform. That record's runtime/test sources were those of 6ccdc82; its later
-record edits changed documentation and file bindings. Current submission work
-has separate qualification pending. Remaining suite totals describe earlier
+record edits changed documentation and file bindings. Current submission passes its specified Windows profiles; hosted
+qualification is pending. Remaining suite totals describe earlier
 checkpoints.
 
 Qualified source checkpoint

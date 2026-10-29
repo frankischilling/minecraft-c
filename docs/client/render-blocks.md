@@ -8,8 +8,9 @@ the N caller clears that DK's dirty flag. Current frame source invokes real
 [terrain submission](terrain-submission.md) at `px.a(FJ)V:486`; a normal N return
 continues to the explicit U.b496 lighting-enable dependency.
 
-Submission is implemented but native-unverified. Native build/replay and hosted
-qualification are pending. The remaining frame children are unfinished, and
+The specified Windows MSVC Debug submission profiles pass, and the loaded
+profile's inspected back buffer now shows authored grass terrain and Sky without
+HUD at frontier 496. Hosted qualification is pending. Later frame children are unfinished, and
 these changes establish no complete rendered frame or matched original pixels.
 
 ## Dispatcher and standard blocks
@@ -117,7 +118,8 @@ DK controls. The loaded UI passed 702 checks, preserved resources and saves,
 and retained all 72 focus histories. That checkpoint passed all four hosted
 jobs and 1,490 tests: Windows 478/GCC 506/Clang 506, zero failures or skips and
 no preceding hosted test names dropped. The runtime and test sources qualified
-there were those of 6ccdc82; current submission source has separate qualification
-pending. Historical suite totals qualify their earlier checkpoints. See
+there were those of 6ccdc82. Current submission passes its specified Windows
+profiles, with hosted qualification pending. Historical suite totals qualify
+their earlier checkpoints. See
 [ChunkRenderer compilation](chunk-compilation.md)
 for the selector and cache ownership that this geometry path uses.

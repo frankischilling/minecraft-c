@@ -89,7 +89,7 @@ int main(int argc, char **argv) {
     CHECK(span(output, &storage, &remaining, &graphics) && remaining == 1);
     const uint32_t sentinel = word(output, 1);
     CHECK(!mc_client_display_source_query_result(display, names, id, 34919, storage, 0, &error) &&
-          error.status == MC_CLIENT_DISPLAY_INVALID_ARGUMENT && word(output, 1) == sentinel &&
+          error.status == MC_CLIENT_DISPLAY_BUFFER_TOO_SMALL && word(output, 1) == sentinel &&
           output->position == 1 && output->limit == 2);
 
     /* A genuine sticky enum error survives only these actual query wrappers.

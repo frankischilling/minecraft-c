@@ -5,8 +5,8 @@ screen. Its World-frame source calls real
 [terrain submission](terrain-submission.md) at `px.a(FJ)V:486` after colors,
 fog, Sky, camera, culling and standard Block list compilation. A normal N return
 continues through FLAT493 to the explicit lighting-enable dependency `u.b()`496.
-Submission is implemented but native-unverified; its build/replay and hosted
-qualification are pending. Specialized Block shapes, HUD composition and a
+The specified Windows MSVC Debug submission profiles pass; hosted qualification
+is pending. Specialized Block shapes, HUD composition and a
 playable frame remain unfinished.
 
 ## Focused mouse input
@@ -99,8 +99,8 @@ now completes for standard Block sections. The actual deadline controls further
 update calls. Draw fog449, terrain texture470/473 and standard lighting476 then
 run before real [N terrain submission](terrain-submission.md)486. The source
 connects its ordinary and occlusion paths with recenter/JO sorting and TG replay.
-After a normal N return it sets FLAT493 and reaches missing U.b496. Native
-build/replay and hosted qualification for this continuation are pending.
+After a normal N return it sets FLAT493 and reaches missing U.b496. The loaded
+Windows profile now reaches that actual frontier; hosted qualification is pending.
 Entities, particles, HUD and hand work remain later dependencies.
 
 The performance deadline uses the source 200/120/40 target and Java long
@@ -200,9 +200,13 @@ At the previous qualified standard Block checkpoint, the loaded Windows graph
 entered [ChunkRenderer compilation](chunk-compilation.md) at396 after Sky, fog
 and culling, compiled standard Block lists and reached PX486. Its inspected
 854 by 480 back buffer showed the reached Sky passes without terrain or HUD.
-Current submission source is later, native-unverified work and has no new
-loaded-frame capture. Neither the earlier capture nor finite body/state
-comparisons establish a matched original gameplay frame. Specialized geometry,
-terrain drawing, Entities, particles, HUD, hand composition and extended play
+The current loaded-World Windows profile passes 704 checks in 12.69 seconds,
+retains all 72 original focus histories/resources/saves and reaches U.b496.
+Its inspected `load.png.world-prefix.png` shows real authored grass terrain and
+Sky without HUD. Eight focused submission CTests pass in 4.51 seconds, zero
+failures/skips; hosted qualification is pending. Neither these native captures
+nor finite body/state comparisons establish a matched original gameplay frame.
+The seven-profile original N cohort excludes issued-query N execution, including
+a 17-entry case. Specialized geometry, Entities, particles, HUD, hand composition and extended play
 remain unfinished or unqualified. The separate diagnostic World renderer
 remains outside the default source path.

@@ -66,6 +66,8 @@ bool mc_client_display_source_end_query(mc_client_display_active_query *,
 /* pname is RESULT_AVAILABLE (34919) or unsigned RESULT (34918). storage is
  * the actual writable Ge IntBuffer position..limit span; remaining counts
  * int32 elements and must be at least1, matching LWJGL2.9 checkBuffer(...,1).
+ * A smaller span returns BUFFER_TOO_SMALL after current context, owner,
+ * function address, pname, storage and alignment admissions have succeeded.
  * Only the first word is passed to the real GetQueryObjectuivARB. No cursor
  * changes or writes happen before that call; source callers retain the Ge
  * owner and use their actual absolute read afterwards. A RESULT call may

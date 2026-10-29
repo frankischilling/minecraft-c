@@ -334,12 +334,12 @@
       "sha256": "b3b7027a8292dcc18fe909060ecbacdf3a1d724acf1706464044844771ee7503"
     },
     "src/client/display/display.h": {
-      "bytes": 13727,
-      "sha256": "26a76c514949f22879211d37492996b79b11d779e4b85ea1b4d96a50c256bb18"
+      "bytes": 13767,
+      "sha256": "433bddbf5b7a4dba37a3291c2297301eaa63c13f2fc4b56a909cf081bb4ab9d2"
     },
     "src/client/display/occlusion.h": {
-      "bytes": 5414,
-      "sha256": "fe9320454db23758f443d6169c21db708a7e553aa67ca749a6daf2f95d4d24c0"
+      "bytes": 5564,
+      "sha256": "93353ee105827bc46bb38396e224dbd902ba0f668f7be50c25d59f9ce373a499"
     },
     "src/client/render/cx.c": {
       "bytes": 7819,

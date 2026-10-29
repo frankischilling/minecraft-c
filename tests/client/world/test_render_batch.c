@@ -1,6 +1,7 @@
 #include "client/application_state.h"
 #include "client/display/camera_surface.h"
 #include "client/render_engine/internal.h"
+#include "client/render_engine/textures.h"
 #include "client/world/render_batch_internal.h"
 #include "client/world/source_chunk_renderer_internal.h"
 
@@ -296,6 +297,33 @@ static bool run(bool gl) {
     mc_client_display *display = n->display;
     n->active = false;
     CHECK(mc_client_render_global_retire(&n, &e) == MC_CLIENT_RENDER_GLOBAL_OK && n == NULL);
+    CHECK(atomic_load_explicit(&graphics->holds, memory_order_acquire) == 1 &&
+          graphics->scene_lease_count == 0 && graphics->active_source_calls == 0 &&
+          graphics->active_resource_calls == 0 && graphics->font_lease_count == 0 &&
+          graphics->native_resource_count == 0);
+    CHECK(graphics->command_range_count == (gl ? 1u : 0u) &&
+          (graphics->context_lease != NULL) == gl);
+    if (gl) {
+        /* Ge's generated range belongs to this class owner, independently of N.
+         * Final CPU release must refuse it until canonical resource retirement. */
+        CHECK(mc_client_render_engine_resources_pending(graphics));
+        CHECK(mc_client_render_engine_classes_release(graphics) == MC_CLIENT_RENDER_ENGINE_BUSY &&
+              atomic_load_explicit(&graphics->holds, memory_order_acquire) == 1);
+        mc_client_render_texture_error terminal;
+        CHECK(mc_client_render_engine_retire_resources(graphics, &terminal) ==
+              MC_CLIENT_RENDER_TEXTURE_OK);
+        CHECK(graphics->resource_retirement_started && graphics->command_range_count == 0 &&
+              graphics->command_ranges == NULL && graphics->context_lease == NULL &&
+              graphics->bound_display == NULL &&
+              !mc_client_render_engine_resources_pending(graphics));
+        /* Native range/context disposal does not execute the failed TG's Pop. */
+        float projection[16], matrix[16];
+        mc_client_source_draw_state color;
+        CHECK(mc_client_display_camera_matrices_inspect(display, projection, matrix) &&
+              matrix[12] == 3.25f && matrix[13] == -1.75f && matrix[14] == 1.875f &&
+              mc_client_display_source_draw_inspect(display, &color) && color.color_known &&
+              color.color[0] == .125f && color.color[3] == .75f);
+    }
     CHECK(mc_client_render_engine_classes_release(graphics) == MC_CLIENT_RENDER_ENGINE_OK);
     if (display != NULL) {
         mc_client_display_error de;

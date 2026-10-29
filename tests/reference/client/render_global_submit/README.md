@@ -33,7 +33,16 @@ no successful ordinary substitute or forced visibility is credited.
 Original capture uses a declared RGBA8/depth16 PixelFormat matching the native
 Display's requested color/depth profile. Actual driver/format receipts are
 retained. Pixels are compared exactly; no tolerance or omitted channel is
-used. The guard permits only the pinned LWJGL64 native link and reports zero
+used. The measured original format is RGBA8/depth24/stencil0: depth16 is the
+request, not an assertion about the chosen format. Native fixture setup first
+uses the canonical startup projection to admit a readback frame, then overwrites
+its projection/modelview, viewport and explicit GL state before N execution.
+This preparation neither supplies an N draw nor changes the capture API.
+An additional supported-device native control uses a real zero-capacity Ge
+buffer and generated query Names. It checks the source minimum1 exception and
+that missing native Names still fail earlier; it supplies no query result.
+These controls are separate from the35 original rows.
+The guard permits only the pinned LWJGL64 native link and reports zero
 network/listener attempts. Original game bodies remain unchanged, with no
 replacement class, override, transformation or callback supplying results.
 

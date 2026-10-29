@@ -215,7 +215,10 @@ static bool rows(picking_fixture *f, const char *path) {
                    n->fields.F, n->fields.G);
             ids(c, array, length < 0 ? 0 : (size_t)length);
             putchar(' ');
-            ids(c, (mc_client_source_dk **)(void *)n->fields.m->entries, n->fields.m->count);
+            if (n->fields.m->count == 0)
+                putchar('-');
+            else
+                ids(c, (mc_client_source_dk **)(void *)n->fields.m->entries, n->fields.m->count);
             putchar(' ');
             if (count == 0)
                 putchar('-');
@@ -242,7 +245,9 @@ static bool device(picking_fixture *f) {
     CHECK(mc_client_display_create("Source recenter and rebuild", 64, 64, true, &display, &gl));
     mc_client_display_list_range *range = NULL;
     int32_t base;
-    CHECK(mc_client_display_lists_generate(display, 600, 64, &range, &base, &gl));
+    /* The command quota covers the WHOLE range, not each name. Two hundred
+     * real bounding-list draws plus one replacement prefix must fit. */
+    CHECK(mc_client_display_lists_generate(display, 600, 600, &range, &base, &gl));
     mc_game_settings *settings = NULL;
     CHECK(mc_game_settings_create_defaults(NULL, &settings, NULL) == MC_GAME_SETTINGS_OK);
     mc_game_settings_state opts;
@@ -264,7 +269,37 @@ static bool device(picking_fixture *f) {
     const size_t bindings = f->base.world->persistent_bindings;
     mc_client_render_global_world_state state = {0};
     n->active = true;
-    CHECK(mc_render_global_rebuild_entered(n, f->math, &state, &error));
+    const bool rebuilt = mc_render_global_rebuild_entered(n, f->math, &state, &error);
+    if (!rebuilt) {
+        fprintf(stderr,
+                "Rebuild status%d %s.%s%s:%u native%d operation=%s; progress%u xyz=%" PRId32
+                ",%" PRId32 ",%" PRId32 " constructed=%zu published=%zu arena=%zu; "
+                "registry%d %s; graphics%d %s.%s%s:%" PRId32 " %s; "
+                "Display%d %s [%s]; graphics.Display%d %s [%s]; Math%d %s; "
+                "Entities%d Bounds%d %s\n",
+                (int)error.status, error.source_class == NULL ? "?" : error.source_class,
+                error.source_method == NULL ? "?" : error.source_method,
+                error.source_descriptor == NULL ? "?" : error.source_descriptor, error.source_pc,
+                error.native_policy, error.operation == NULL ? "?" : error.operation,
+                state.rebuild_pc, state.x, state.y, state.z, state.constructed_chunks,
+                state.published_chunks, n->arena.bytes, (int)error.registry.status,
+                error.registry.message == NULL ? "?" : error.registry.message,
+                (int)error.graphics.status,
+                error.graphics.site.class_name == NULL ? "?" : error.graphics.site.class_name,
+                error.graphics.site.method == NULL ? "?" : error.graphics.site.method,
+                error.graphics.site.descriptor == NULL ? "?" : error.graphics.site.descriptor,
+                error.graphics.site.pc,
+                error.graphics.operation == NULL ? "?" : error.graphics.operation,
+                (int)error.display.status,
+                error.display.operation == NULL ? "?" : error.display.operation,
+                error.display.detail, (int)error.graphics.display.status,
+                error.graphics.display.operation == NULL ? "?" : error.graphics.display.operation,
+                error.graphics.display.detail, (int)error.math.status,
+                error.math.operation == NULL ? "?" : error.math.operation, (int)error.entity.status,
+                (int)error.bounds.status,
+                error.bounds.operation == NULL ? "?" : error.bounds.operation);
+    }
+    CHECK(rebuilt);
     CHECK(state.rebuild_returned && state.rebuild_pc == 699 && state.last_store_pc == 696 &&
           state.constructed_chunks == 200 && state.published_chunks == 200 &&
           state.queued_chunks == 200 && n->fields.I == 2 && n->fields.H == 3 &&
@@ -300,11 +335,14 @@ static bool device(picking_fixture *f) {
     third->fields.p = NULL;
     CHECK(!mc_render_global_recenter_entered(n, 320, 0, 320, &error));
     CHECK(!error.native_policy && error.source_pc == 13 && strcmp(error.source_class, "dk") == 0 &&
-          strcmp(error.source_method, "b") == 0 && error.parent.pc == 327 &&
-          n->fields.m->count == 2 && n->fields.m->entries[0] == n->fields.o[0] &&
-          n->fields.m->entries[1] == n->fields.o[5] && n->fields.o[0]->fields.c == 320 &&
-          n->fields.o[5]->fields.c == 320 && third->fields.c == 160 && !third->fields.u &&
-          n->fields.C == 0 && n->fields.F == 32);
+          strcmp(error.source_method, "b") == 0 && error.parent.pc == 26 &&
+          strcmp(error.parent.class_name, "dk") == 0 && strcmp(error.parent.method, "a") == 0 &&
+          strcmp(error.parent.descriptor, "(III)V") == 0 && error.ancestor.pc == 327 &&
+          strcmp(error.ancestor.class_name, "n") == 0 && strcmp(error.ancestor.method, "b") == 0 &&
+          strcmp(error.ancestor.descriptor, "(III)V") == 0 && n->fields.m->count == 2 &&
+          n->fields.m->entries[0] == n->fields.o[0] && n->fields.m->entries[1] == n->fields.o[5] &&
+          n->fields.o[0]->fields.c == 320 && n->fields.o[5]->fields.c == 320 &&
+          third->fields.c == 160 && !third->fields.u && n->fields.C == 0 && n->fields.F == 32);
     third->fields.p = passes; /* End declared corruption after observing its source prefix. */
     n->active = false;
     CHECK(mc_client_render_global_retire(&n, &error) == MC_CLIENT_RENDER_GLOBAL_OK && n == NULL);

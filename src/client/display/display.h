@@ -22,7 +22,8 @@ typedef enum mc_client_display_status {
     MC_CLIENT_DISPLAY_CONTEXT_LOST,
     MC_CLIENT_DISPLAY_NOT_DRAWABLE,
     MC_CLIENT_DISPLAY_BUSY,
-    MC_CLIENT_DISPLAY_UNSUPPORTED_FP
+    MC_CLIENT_DISPLAY_UNSUPPORTED_FP,
+    MC_CLIENT_DISPLAY_BUFFER_TOO_SMALL
 } mc_client_display_status;
 
 typedef struct mc_client_display_error {

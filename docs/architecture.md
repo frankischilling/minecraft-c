@@ -43,8 +43,9 @@ empty and standard Block sections through the actual
 [RenderBlocks geometry](client/render-blocks.md). The frame source invokes real
 [terrain submission](client/terrain-submission.md) at PX486. Its N selection,
 recenter/JO, TG buffers and ARB queries use the same retained owners; a normal
-return reaches the explicit lighting-enable dependency U.b496. Native
-build/replay and hosted qualification for submission are pending. Specialized
+return reaches the explicit lighting-enable dependency U.b496. The specified
+Windows MSVC Debug profiles pass, including loaded authored terrain and Sky
+before that frontier; hosted qualification remains pending. Specialized
 shapes and TileEntity rendering remain unfinished. The inspection component
 retains its separate finite scope.
 

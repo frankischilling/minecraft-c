@@ -81,6 +81,54 @@ static void define_list(mc_client_render_global *n, int32_t id, int32_t local_x,
     CHECK(mc_client_display_lists_end(n->display, &de));
 }
 
+static void short_result_control(mc_client_render_global *n, mc_client_source_dk *dk) {
+    const mc_client_graphics_site prepared = {"fixture", "zero_result", "()V", -1};
+    mc_client_render_global_error e;
+    mc_client_direct_int_buffer *zero = NULL;
+    CHECK(mc_client_ge_d(n->classes, &n->arena, 0, prepared, &zero, &e.graphics));
+    void *storage = NULL;
+    size_t remaining = 1;
+    CHECK(mc_client_ge_int_writable_remaining(zero, &storage, &remaining, prepared, &e.graphics));
+    CHECK(storage != NULL && remaining == 0 && (uintptr_t)storage % _Alignof(uint32_t) == 0);
+    CHECK(mc_client_ge_d(n->classes, &n->arena, 1, prepared, &n->fields.v, &e.graphics));
+    CHECK(mc_client_ge_int_writable_remaining(n->fields.v, &storage, &remaining, prepared,
+                                              &e.graphics));
+    CHECK(remaining == 1 && n->queries == NULL);
+    CHECK(mc_client_display_source_gen_queries(n->display, storage, remaining, &n->queries,
+                                               &e.display));
+    int32_t id;
+    CHECK(mc_client_ge_int_get(n->fields.v, 0, &id, prepared, &e.graphics));
+    mc_client_direct_int_buffer *saved_buffer = n->fields.c;
+    const int32_t saved_id = dk->fields.z;
+    const bool saved_y = dk->fields.y, saved_x = dk->fields.x;
+    n->fields.c = zero;
+    dk->fields.z = id;
+    dk->fields.y = true;
+    for (unsigned int policy = 0; policy < 2; ++policy) {
+        mc_client_display_query_names *query_names = n->queries;
+        if (policy != 0)
+            n->queries = NULL;
+        mc_client_render_global_submit_call child = {0};
+        child.state.owner = n;
+        CHECK(mc_terrain_push(&child, "n", "a", "(Lls;ID)I"));
+        n->active = child.state.active = true;
+        CHECK(!mc_terrain_poll(&child, 0, 1, 357));
+        n->active = child.state.active = false;
+        CHECK(child.state.source_pc == 42 && child.depth == 2 && child.frames[0].pc == 357 &&
+              child.frames[1].pc == 42 && dk->fields.y && dk->fields.x == saved_x &&
+              zero->position == 0 && zero->limit == 0 && child.state.query_polls == 0);
+        CHECK(child.failure.status == (policy == 0 ? MC_CLIENT_RENDER_GLOBAL_SOURCE_ILLEGAL_ARGUMENT
+                                                   : MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED));
+        CHECK(child.failure.native_policy == (policy != 0));
+        CHECK(child.failure.display.status == (policy == 0 ? MC_CLIENT_DISPLAY_BUFFER_TOO_SMALL
+                                                           : MC_CLIENT_DISPLAY_INVALID_ARGUMENT));
+        n->queries = query_names;
+    }
+    n->fields.c = saved_buffer;
+    dk->fields.z = saved_id;
+    dk->fields.y = saved_y;
+}
+
 int main(int argc, char **argv) {
     if (argc != 2)
         return 1;
@@ -205,6 +253,8 @@ int main(int argc, char **argv) {
     CHECK(n->fields.n != NULL);
     for (size_t i = 0; i < n->n_length; ++i)
         n->fields.n[i] = query_profile ? actors[0] : actors[i];
+    mc_client_startup_projection_stage stage;
+    CHECK(mc_client_display_startup_projection(display, 64, 64, &stage, &de));
     CHECK(mc_client_display_source_viewport(display, 64, 64, &de));
     CHECK(mc_client_display_source_matrix_mode(display, 5889, &de) &&
           mc_client_display_source_load_identity(display, &de));
@@ -272,6 +322,8 @@ int main(int argc, char **argv) {
     CHECK(mc_client_render_global_retire(&n, &error) == MC_CLIENT_RENDER_GLOBAL_BUSY);
     CHECK(mc_client_render_global_submit_retire(&call, &error) == MC_CLIENT_RENDER_GLOBAL_OK &&
           call == NULL);
+    if (query_profile && capability)
+        short_result_control(n, actors[0]);
     for (size_t i = 0; i < 4; ++i)
         CHECK(buffer_hash(n->fields.T[i]->state.g) == hashes[i]);
     for (size_t i = 0; i < 3; ++i)

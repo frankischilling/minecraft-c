@@ -3,10 +3,16 @@
 The [terrain-submission increment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terrain-submission.md)
 implements N outer/subset paths, recenter/JO, TG buffers and ARB query operations.
 Current frame source calls real N at PX486; a normal return reaches the explicit
-U.b496 dependency. Native build/replay and hosted qualification are pending,
-and whole-N originals cover 12 CPU failure profiles plus seven device profiles
-with 35 exact rows. No new loaded-frame or
-pixel result is claimed.
+U.b496 dependency. Seven selected MSVC Debug targets were built one at a time;
+all eight focused CTests pass in 4.51 seconds, zero failures/skips. Whole-N
+comparisons cover 12 CPU failure profiles and 35 exact device rows. The loaded
+UI separately passes 704 checks in 12.69 seconds, preserves all 72 focus histories
+and resource/save bytes, and reaches 496. Its inspected back buffer shows real
+authored grass terrain with Sky and no HUD. Hosted qualification is pending;
+there was no ALL build or local Linux runtime suite for this result. Issued-query
+N execution, including a 17-entry case, and matched whole frames remain outside
+the qualification. The [testing record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#terrain-submission-windows-qualification)
+records the fixture corrections and first hosted attempt.
 
 The following [standard Block geometry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-blocks.md)
 results belong to the previous checkpoint `6ccdc82`. Six focused MSVC Debug CTests

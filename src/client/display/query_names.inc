@@ -198,10 +198,13 @@ bool mc_client_display_source_query_result(mc_client_display *display,
     if (display->occlusion.GetQueryObjectuiv == NULL)
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation,
                     "original unsigned ARB result address unavailable", 0);
-    if ((pname != 34919u && pname != 34918u) || storage == NULL || remaining < 1 ||
+    if ((pname != 34919u && pname != 34918u) || storage == NULL ||
         (uintptr_t)storage % _Alignof(GLuint) != 0)
         return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, operation,
                     "selected pname and writable remaining IntBuffer word required", 0);
+    if (remaining < 1)
+        return fail(error, MC_CLIENT_DISPLAY_BUFFER_TOO_SMALL, operation,
+                    "IntBuffer requires at least one remaining word", 0);
     if (!source_enter(display, operation, error))
         return false;
     display->occlusion.GetQueryObjectuiv((GLuint)(uint32_t)id, (GLenum)pname, (GLuint *)storage);

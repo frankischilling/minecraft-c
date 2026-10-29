@@ -19,8 +19,8 @@ The same ChunkCache, RenderBlocks and NW now compile standard Block sections
 into source display lists. Current frame source invokes real
 [terrain submission](client/terrain-submission.md) at `px.a(FJ)V:486`.
 A normal N return continues through FLAT shading493 to the explicit `u.b()`
-lighting-enable dependency at496. This submission increment is implemented
-but native-unverified; specialized Block shapes and TileEntity rendering remain
+lighting-enable dependency at496. The specified Windows MSVC Debug submission
+profiles now pass; hosted qualification is pending. Specialized Block shapes and TileEntity rendering remain
 missing descendants.
 Direct unpaused
 checks on that graph select an actual Biome spawn entry and reach the concrete
@@ -40,8 +40,12 @@ The [terrain-submission increment](client/terrain-submission.md) implements the
 whole N outer/subset paths, recenter/JO sorting, TG list replay and ARB query
 operations on the retained graph. Finite original component observations are
 available, alongside 12 whole-N CPU failure profiles and seven device profiles
-with 35 exact rows. Native build/replay and
-hosted qualification are pending. No new loaded-frame or pixel result is claimed.
+with 35 exact rows. All eight focused MSVC Debug CTests pass in 4.51 seconds,
+zero failures/skips. The loaded-World UI separately passes 704 checks in
+12.69 seconds, preserves all 72 focus histories/resources/saves and reaches
+frontier 496. Its inspected back buffer shows real authored grass terrain and
+Sky without HUD. Hosted qualification is pending; no whole-frame correspondence
+or playable-client result is claimed.
 
 At the previous [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797),
 the [standard Block increment](client/render-blocks.md) passed six focused MSVC

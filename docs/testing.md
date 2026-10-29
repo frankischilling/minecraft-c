@@ -1,16 +1,39 @@
 # Test scope and reproduction
 
-## Terrain submission implementation, qualification pending
+## Terrain submission Windows qualification
 
 Current source implements [N terrain submission](client/terrain-submission.md),
 including its outer/subset methods, recenter/JO, TG buffers and ARB query paths.
 The frame calls real N at PX486; a normal return continues to FLAT493 and the
-explicit U.b496 lighting-enable dependency. Native build/replay and hosted
-qualification for this increment are pending. Component original observations
-retain their declared scopes. Whole-N originals cover 12 CPU failure profiles
+explicit U.b496 lighting-enable dependency. Seven selected MSVC Debug targets
+were built one at a time: six focused executables and the World-selection loop.
+All eight focused CTests pass in 4.51 seconds, with zero failures or skips.
+Component original observations retain their declared scopes. Whole-N originals
+cover 12 CPU failure profiles
 and seven device profiles with 35 exact rows, including the real-capability
 16-entry occlusion branch and its subsequent empty range.
-No new loaded-frame, pixel or gameplay result is recorded here.
+The separate loaded-World UI profile passes 704 checks in 12.69 seconds,
+preserves all 72 original focus histories and resource/save bytes, and reaches
+the actual frame frontier 496. The inspected `load.png.world-prefix.png` shows
+real authored grass terrain with Sky and no HUD. This supersedes the previous
+Sky-only capture for the current loaded profile; it is not an original matched
+full-frame or gameplay comparison.
+
+Fixture corrections establish the intended setup: canonical startup projection
+admits an active capture frame before explicit GL preparation; an empty identity
+List emits its declared `-` marker; the recenter fixture's range-wide command
+budget is 600 rather than 64; and generated Ge ranges use canonical resource
+retirement before final class release. Original rows and comparison tolerances
+were not shifted or weakened. Zero-capacity Ge query controls preserve the
+source IllegalArgumentException/minimum1 boundary and earlier native Names
+admission priority. Cleanup retains its own cause without overwriting the
+immutable source failure.
+
+The initial [hosted submission run](https://github.com/frankischilling/minecraft-c/actions/runs/40958303944)
+built all three compiler profiles but failed new fixture cases. Follow-up hosted
+qualification is pending. This local result includes no ALL build or local
+Linux runtime suite. The 35-row N device cohort does not qualify an issued-query
+N path or a 17-entry issued-query case; standalone ARB controls remain separate.
 
 The following standard Block section records the previous checkpoint
 6ccdc82 and its 1,490 passed tests. Its PX486 stopping point, back-buffer capture

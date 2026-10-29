@@ -3,9 +3,10 @@
 `n.a(Lls;ID)I` submits compiled ChunkRenderer lists through the retained
 RenderGlobal graph. Its implementation covers dirty polling, render-distance
 rebuilds, recentering and JO sorting, subset selection, the four TG batches,
-and the ARB occlusion branch. Native build/replay and hosted qualification for
-this increment are pending. The original whole-N fixtures record 12 CPU
-failure profiles and seven device profiles with 35 exact rows.
+and the ARB occlusion branch. Eight focused Windows MSVC Debug CTests pass in
+4.51 seconds, with zero failures or skips. The original whole-N fixtures record
+12 CPU failure profiles and seven device profiles with 35 exact rows. Hosted
+qualification is pending; verification applies to the specified native profiles.
 
 The World-frame caller invokes submission at `px.a(FJ)V:486`, passing its
 captured camera, pass0 and the float partial widened to double. A normal N
@@ -156,6 +157,11 @@ the same handle for retry. Query-name deletion and context destruction remain
 blocked while that right exists. Result values and readiness come from the
 device; wrappers preserve sticky GL errors and do not supply visibility.
 
+A valid query owner with zero remaining Ge integers fails the source minimum1
+check before the GL call. Polling reports source IllegalArgumentException at42,
+preserves the waiting flag/cursor and records no completed query poll. Missing
+native Names has earlier admission priority and remains a native-policy failure.
+
 ## Failure lifetime and evidence
 
 An admitted submission retains N, the argument camera and supplied Math owner.
@@ -174,6 +180,8 @@ fail after Push, translation and an earlier list. The source Pop is not run
 by failure cleanup. The retained frame is terminal and cannot be replayed to
 resume at its last PC. Borrowed views expire on mutation or retirement,
 including partial retirement.
+The stored source failure remains immutable when retirement writes its separate
+cleanup cause, including a refused cleanup that leaves the call inspectable.
 
 The finite observations have separate scopes:
 
@@ -191,9 +199,17 @@ The original game components bind the supplied JAR SHA256
 and selected method/class bytes. Their capture scripts also record JDK17,
 SDK/helper/input hashes, bounded execution and network/native-link guards.
 Public replays use the retained observations without distributing the JAR,
-SDK binaries or saved game assets. These component records establish neither
-arbitrary driver matrix equality nor matched terrain pixels.
+SDK binaries or saved game assets. Exact center-pixel comparison uses the
+declared RGBA8/depth16 request and its measured original RGBA8/depth24 format.
+The component matrix/pixel profiles do not establish a matched original World frame.
 
-Native build/replay and hosted qualification remain pending until their
-results are recorded. The device comparison requires a context with actual
-ARB occlusion support; it does not force capability or visibility results.
+The focused Windows replays pass, including native query ownership, zero-buffer
+priority and failed TG prefix cleanup. The loaded-World profile passes 704
+checks in 12.69 seconds, preserves all 72 focus histories/resources/saves and
+reaches the actual frame frontier 496. Its inspected back buffer shows authored
+grass terrain and Sky without HUD. These are scoped native results, without a
+matched original full-frame claim. The seven-profile N cohort does not qualify
+an issued-query N path, including a 17-entry case. Standalone ARB device controls
+have their separate scope. Hosted qualification is pending; no new ALL build or
+local Linux runtime suite is recorded. The device comparison requires actual
+ARB occlusion support.
