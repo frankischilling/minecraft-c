@@ -5,6 +5,7 @@
 #include "../startup/application_startup.h"
 #include "mc/core/java/java.h"
 #include "source_screen_internal.h"
+#include "source_screen_transitions.h"
 
 #include <fenv.h>
 #include <float.h>
@@ -28,13 +29,35 @@ static bool admit(mc_client_source_da *o, mc_client_screen_event_error *e) {
     }
     if (!mc_screen_lock(o->classes, &e->screen))
         return false;
-    if (o->classes->retiring || o->phase != MC_CLIENT_SCREEN_READY || o->selected_cleanup != NULL) {
+    if (o->classes->retiring || o->phase != MC_CLIENT_SCREEN_READY || o->selected_cleanup != NULL ||
+        o->active_calls != 0) {
         fail(e, MC_CLIENT_SCREEN_BUSY, "screen active/retiring event admission", NULL, NULL, NULL,
              0, true);
         (void)mtx_unlock(&o->classes->mutex);
         return false;
     }
+    ++o->active_calls;
+    o->transitions = NULL;
+    e->pending_receiver = o;
     return true;
+}
+
+static bool transition(mc_client_source_da *o, mc_client_source_ke *button,
+                       mc_client_screen_event_report *r, mc_client_screen_event_error *e) {
+    mc_client_screen_transitions *router = o->transitions;
+    mc_client_screen_classes *classes = o->classes;
+    (void)mtx_unlock(&classes->mutex);
+    const mc_client_screen_status status =
+        mc_client_screen_transitions_button(router, o, button, &e->screen);
+    if (mtx_lock(&classes->mutex) != thrd_success) {
+        e->monitor_lost = true;
+        fail(e, MC_CLIENT_SCREEN_THREAD_FAILED, "screen source-call monitor reacquisition", NULL,
+             NULL, NULL, 0, true);
+        return false;
+    }
+    if (status == MC_CLIENT_SCREEN_OK)
+        r->pending = (mc_client_screen_site){0};
+    return status == MC_CLIENT_SCREEN_OK;
 }
 
 static bool button_hit(mc_client_source_ke *button, int32_t x, int32_t y, bool *out,
@@ -75,7 +98,23 @@ mc_client_screen_status mc_client_screen_button_hit(mc_client_source_ke *button,
 
 static bool action(mc_client_source_da *o, mc_client_source_ke *button,
                    mc_client_screen_event_report *r, mc_client_screen_event_error *e) {
-    if (!o->is_menu)
+    if (o->kind == MC_CLIENT_SCREEN_WORLD_SELECTION) {
+        r->button = button;
+        r->button_id = button->fields.f;
+        ++r->actions;
+        r->action = button->fields.f == 0   ? MC_CLIENT_SCREEN_ACTION_CANCEL
+                    : button->fields.f == 1 ? MC_CLIENT_SCREEN_ACTION_SELECT_WORLD
+                    : button->fields.f == 2 ? MC_CLIENT_SCREEN_ACTION_DELETE_WORLD
+                    : button->fields.f == 3 ? MC_CLIENT_SCREEN_ACTION_CREATE_WORLD
+                    : button->fields.f == 6 ? MC_CLIENT_SCREEN_ACTION_RENAME_WORLD
+                                            : MC_CLIENT_SCREEN_ACTION_NONE;
+        if (o->transitions != NULL)
+            return transition(o, button, r, e);
+        fail(e, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY,
+             "RQ requires actual screen transition ownership", "rq", "a", "(Lke;)V", 0, true);
+        return false;
+    }
+    if (!(o->kind == MC_CLIENT_SCREEN_MAIN_MENU))
         return true; /* Actual da.a(ke) is return0. */
     const int32_t id = button->fields.f;
     unsigned int pc = 0;
@@ -107,6 +146,8 @@ static bool action(mc_client_source_da *o, mc_client_source_ke *button,
     r->button_id = id;
     ++r->actions;
     r->pending = (mc_client_screen_site){"fu", "a", "(Lke;)V", pc};
+    if (id == 1 && o->transitions != NULL)
+        return transition(o, button, r, e);
     if (id != 4) {
         fail(e, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY,
              id == 0   ? "actual options co allocation"
@@ -229,7 +270,7 @@ static bool key(mc_client_source_da *o, const mc_client_sdk_key_event *event,
              "da", "g", "()V", 18, true);
         return false;
     }
-    if (!o->is_menu && event->key == 1) {
+    if (!(o->kind == MC_CLIENT_SCREEN_MAIN_MENU) && event->key == 1) {
         r->action = MC_CLIENT_SCREEN_ACTION_CLOSE;
         r->pending = (mc_client_screen_site){"da", "a", "(CI)V", 10};
         fail(e, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY,
@@ -242,8 +283,13 @@ static bool key(mc_client_source_da *o, const mc_client_sdk_key_event *event,
 static mc_client_screen_status finish(mc_client_source_da *o, bool returned,
                                       mc_client_screen_event_report *r,
                                       mc_client_screen_event_error *e) {
+    if (e->monitor_lost)
+        return e->screen.status;
     if (returned)
         e->screen.source_returned = r->source_returned = true;
+    --o->active_calls;
+    o->transitions = NULL;
+    e->pending_receiver = NULL;
     (void)mtx_unlock(&o->classes->mutex);
     return e->screen.status;
 }
@@ -276,16 +322,16 @@ mc_client_screen_status mc_client_screen_key_event(mc_client_source_da *o,
     return finish(o, key(o, event, r, e), r, e);
 }
 
-mc_client_screen_status mc_client_screen_handle_input(mc_client_source_da *o,
-                                                      mc_client_sdk_input *input,
-                                                      mc_client_screen_event_report *r,
-                                                      mc_client_screen_event_error *e) {
+mc_client_screen_status mc_client_screen_handle_input_with_transitions(
+    mc_client_source_da *o, mc_client_sdk_input *input, mc_client_screen_transitions *router,
+    mc_client_screen_event_report *r, mc_client_screen_event_error *e) {
     if (e == NULL || r == NULL)
         return MC_CLIENT_SCREEN_INVALID_ARGUMENT;
     *e = (mc_client_screen_event_error){0};
     *r = (mc_client_screen_event_report){0};
     if (!admit(o, e))
         return e->screen.status;
+    o->transitions = router;
     bool returned = false;
     for (;;) {
         bool next = false;
@@ -321,6 +367,32 @@ done:
     return finish(o, returned, r, e);
 }
 
+mc_client_screen_status mc_client_screen_handle_input(mc_client_source_da *o,
+                                                      mc_client_sdk_input *input,
+                                                      mc_client_screen_event_report *r,
+                                                      mc_client_screen_event_error *e) {
+    return mc_client_screen_handle_input_with_transitions(o, input, NULL, r, e);
+}
+
+mc_client_screen_status mc_client_screen_event_retire(mc_client_screen_event_error *e) {
+    if (e == NULL)
+        return MC_CLIENT_SCREEN_INVALID_ARGUMENT;
+    mc_client_source_da *o = e->pending_receiver;
+    if (o == NULL)
+        return MC_CLIENT_SCREEN_OK;
+    if (!e->monitor_lost)
+        return MC_CLIENT_SCREEN_BUSY; /* The source invocation has not returned yet. */
+    mc_client_screen_error lock_error = {0};
+    if (!mc_screen_lock(o->classes, &lock_error))
+        return lock_error.status;
+    --o->active_calls;
+    o->transitions = NULL;
+    e->pending_receiver = NULL;
+    e->monitor_lost = false;
+    (void)mtx_unlock(&o->classes->mutex);
+    return MC_CLIENT_SCREEN_OK;
+}
+
 mc_client_screen_status mc_client_screen_tick(mc_client_source_da *o,
                                               mc_client_screen_event_error *e) {
     if (e == NULL)
@@ -328,7 +400,7 @@ mc_client_screen_status mc_client_screen_tick(mc_client_source_da *o,
     *e = (mc_client_screen_event_error){0};
     if (!admit(o, e))
         return e->screen.status;
-    if (o->is_menu) {
+    if (o->kind == MC_CLIENT_SCREEN_MAIN_MENU) {
         if (FLT_RADIX != 2 || FLT_MANT_DIG != 24 || sizeof(float) != 4 ||
             fegetround() != FE_TONEAREST)
             fail(e, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY, "fu binary32 arithmetic profile",
@@ -341,6 +413,8 @@ mc_client_screen_status mc_client_screen_tick(mc_client_source_da *o,
         }
     } else
         e->screen.source_returned = true;
+    --o->active_calls;
+    e->pending_receiver = NULL;
     (void)mtx_unlock(&o->classes->mutex);
     return e->screen.status;
 }

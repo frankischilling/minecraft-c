@@ -37,24 +37,40 @@ uses native HTTP/XML and retains App dependencies until stop/join completes.
 The [source screen owners](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/source-screens.md)
 cover splash loading, initialization and buttons. The initial main-menu
 publication is connected. The default runtime drains actual source mouse and
-keyboard methods, ticks the menu and connects Quit to the App run flag. Other
-menu destinations, World entry and gameplay remain explicit dependencies.
+keyboard methods, ticks the menu and connects Quit to the App run flag.
+Singleplayer now constructs the genuine RQ, initializes its real sorted save
+List and scrolling owner, and draws selectable rows. Cancel returns to the
+exact parent. A synchronous screen change keeps the original source receiver
+for the remaining input. Select constructs and publishes the actual `os`, then
+stops at World-load `a(NULL World)`2. Create/Rename stop at `NEW162`/`NEW189`;
+Delete stops at preparation 21 without skipping its prefix. World/Player
+publication and gameplay remain unfinished. See the
+[World-selection contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-selection.md).
 
 The preceding startup/menu-initialization Windows MSVC Debug source passes all
 460 selected CTests without failures or skips. The selected normal Session and GL-error startup profiles
 reach the source startup return; RenderGlobal device controls also pass. A
 separate headless Release ALL build passes, without utility runtime or server
-qualification. The new default runtime passes four focused Windows tests for
+qualification. The preceding default runtime passes four focused Windows tests for
 GuiIngame, uploads, source events and the native menu. Its run completes 100
-frames and 32 ticks with cleanup; an 854 by 480 capture was inspected. All 463 selected Windows CTests pass. Hosted CI, Linux and original-game
-correspondence retain their separate source scopes.
+frames and 32 ticks with cleanup; an 854 by 480 capture was inspected. That
+source passes all 463 selected Windows CTests. The later World-selection loop
+passes isolated empty/populated, scrolling and double-click Windows profiles.
+Empty, populated and bottom-scroll captures were
+inspected. Retaining an old RQ blocks teardown while preserving the App, then
+cleanup succeeds after its release. DateFormat matches 2,926 JDK17 vectors on
+Windows and Linux for English/en_US, UTC/Eastern and UTC years 1967..2099;
+other profiles fail explicitly. The current full suite and formatting check
+pass: all 468 selected Windows CTests without failures or skips and formatting
+for 1,356 files. Hosted CI and original-game correspondence retain their source scopes.
 Full source run/PX rendering and `Minecraft.d()` shutdown parity are unproven;
 native cleanup is a separate implementation.
 
 [Current status](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md)
 and the [testing record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
-separate the newer Windows results, the failed `8288290` hosted run, the earlier
-green hosted baseline, focused GL-diagnostic profiles and original comparisons. The earlier Windows 47-case and
+separate the newer Windows results, the `de4290b` executable-fingerprint failure,
+the failed `8288290` hosted run, earlier green hosted baselines, focused
+GL-diagnostic profiles and original comparisons. The earlier Windows 47-case and
 Linux 53-case scopes remain recorded in [Build and tests](Build-and-tests).
 Neither these component comparisons nor the current local checks establish
 original-JVM or visual correspondence, World entry or gameplay.

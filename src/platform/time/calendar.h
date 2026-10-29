@@ -39,6 +39,16 @@ typedef struct mc_platform_calendar_state {
     bool date_installed;
 } mc_platform_calendar_state;
 
+typedef enum mc_platform_calendar_zone {
+    MC_PLATFORM_CALENDAR_ZONE_UNSUPPORTED,
+    MC_PLATFORM_CALENDAR_ZONE_UTC,
+    MC_PLATFORM_CALENDAR_ZONE_US_EASTERN
+} mc_platform_calendar_zone;
+
+typedef struct mc_platform_calendar_date_time {
+    int32_t year, month, day, hour, minute, second; /* month1..12; hour0..23 */
+} mc_platform_calendar_date_time;
+
 /* Private native profile for the reached default Calendar/Date calls. Each
  * Calendar owns its selected timezone and cached Gregorian fields. Date is a
  * distinct caller-owned value whose address represents that source occurrence.
@@ -82,6 +92,21 @@ mc_platform_calendar_status mc_platform_calendar_get(const mc_platform_calendar 
                                                      mc_platform_calendar_error *error);
 bool mc_platform_calendar_inspect(const mc_platform_calendar *calendar,
                                   mc_platform_calendar_state *out);
+
+/* Captured zone identity for the selected date-format profile. No environment
+ * query, clock or mutation. Existing month/day calls admit their broader native
+ * zone profile independently. */
+mc_platform_calendar_zone mc_platform_calendar_date_format_zone(const mc_platform_calendar *);
+
+/* Full Gregorian fields for the captured UTC/US Eastern DateFormat profile,
+ * UTC years1967..2099. Uses the selected JDK17 US Eastern historical rules;
+ * Windows' present-day rule extrapolation is insufficient before2007. Linux
+ * uses the actual captured native zone under the stable-environment contract.
+ * No clock sample or allocation. Failure preserves out and Calendar state. */
+mc_platform_calendar_status
+mc_platform_calendar_date_time_fields(mc_platform_calendar *, int64_t millis,
+                                      mc_platform_calendar_date_time *out,
+                                      mc_platform_calendar_error *error);
 
 /* Native cleanup only. NULL *slot succeeds. No source close/finalizer exists. */
 mc_platform_calendar_status mc_platform_calendar_retire(mc_platform_calendar **slot,

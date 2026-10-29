@@ -61,7 +61,9 @@ keeps these scopes separate from earlier water/lava original comparisons.
 The focused Windows `client.effect_upload` test passes, along with GuiIngame,
 source screen events and a 100-frame, 32-tick native menu run. This finite native
 result does not qualify original GPU pixels or animation in playable sessions.
-All 463 selected Windows CTests pass. Native controls also update the genuine
+The preceding complete Windows selection passes all 463 CTests. Native controls also update the genuine
 nine-effect startup list with 15 terrain/items atlas uploads. Four-level mipmaps
-remain unexecuted. Hosted CI, Linux and original numerical/pixel correspondence
-retain separate source scopes; the complete gameplay render loop is unfinished.
+remain unexecuted. Both Linux effect-upload cases pass at the hosted
+[`de4290b` checkpoint](../testing.md#hosted-runtime-checkpoint-de4290b).
+Original numerical/pixel correspondence retains its separate scope; the
+complete gameplay render loop is unfinished.

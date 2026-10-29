@@ -5,8 +5,9 @@ asset cache, font layout and SDL/OpenGL display. The display draws supplied
 quads and manages context/texture ownership; it has no World or screen logic.
 Image decoding and font layout work without an OpenGL context. Graphics and audio device libraries
 remain outside the simulation and server link graph. The default constructed
-App now drives the no-World source menu; World entry, remaining child menus and
-gameplay remain unfinished. A separate
+App now drives the no-World source menu and genuine
+[World-selection screen](client/world-selection.md). World loading, remaining
+child menus and gameplay remain unfinished. A separate
 [World inspection](client/world-renderer.md) owns actual World construction,
 finite CPU section meshes and independent GPU buffers. It retains no Chunk view
 after meshing and does not substitute a camera for a Player.
@@ -19,10 +20,13 @@ preserve their App/Engine/Display dependencies through retryable retirement.
 The resource worker and initial GUI publication are connected. The production
 [menu runtime](client/menu-runtime.md) owns native bootstrap, Timer/frame adoption,
 source screen input/ticks and the same-resource drawing bridge. Explicit flags
-retain the diagnostic title/World entry. Four focused Windows tests pass,
-including a 100-frame, 32-tick menu run with cleanup. The latest complete suite,
-hosted CI and Linux remain pending; full source run/PX/render/shutdown parity
-remains unproven.
+retain the diagnostic title/World inspection. Synchronous transitions retain
+the original input receiver and exact parent identity; old screens keep their
+App dependencies through BUSY cleanup. Focused Windows empty/populated save-list
+loops pass. DateFormat matches 2,926 JDK17 vectors on Windows and Linux within
+its admitted profiles. All 468 selected Windows CTests and formatting for 1,356 files pass;
+[earlier hosted results](testing.md#hosted-runtime-checkpoint-de4290b) retain
+their own scope. Full source run/PX/render/shutdown parity remains unproven.
 
 The [first-person component](client/first-person.md) reads genuine Player state
 and the actual App's late Settings/World fields. Its finite view can draw copied

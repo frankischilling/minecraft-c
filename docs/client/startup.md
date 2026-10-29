@@ -2,11 +2,12 @@
 
 `minecraft-client` is a C17 executable using SDL3 and OpenGL 3.3 core. Its new
 default path constructs the source App, completes the no-connection startup and
-continues through the [no-World menu runtime](menu-runtime.md). World entry and
-gameplay remain unfinished. Four focused Windows tests pass, including a
-100-frame, 32-tick native menu run with cleanup and an inspected 854 by 480
-capture. All 463 selected Windows CTests pass. Hosted CI, Linux and original
-correspondence retain their separate source scopes in the testing record.
+continues through the [no-World menu runtime](menu-runtime.md). Singleplayer now
+opens the genuine [World-selection screen](world-selection.md). Focused Windows
+empty/populated, scrolling and double-click save-list loops pass and their captures were inspected. World
+loading and gameplay remain unfinished. All 468 selected Windows CTests and
+formatting for 1,356 files pass; hosted and original correspondence retain their source
+scopes in the [testing record](../testing.md).
 
 After [resource import](../reference/resources.md), it requires neither the
 original JAR, Java nor the launcher. Build with `MC_BUILD_CLIENT=ON`, then run:
@@ -50,10 +51,12 @@ reads the source splash, button labels, positions and flags, checks resource
 identities and canonical Font widths, and uses the existing OpenGL kernels.
 The admitted default-pack/no-World profile is narrower than complete rendering.
 
-Quit and window close use the actual App run flag. Singleplayer, Multiplayer,
-Mods and Texture Packs, and Options retain explicit unfinished destination
-screens. Fullscreen, source F2 screenshots, debug timing and focused gameplay
-input also retain explicit dependencies. [Option actions](game-options.md),
+Quit and window close use the actual App run flag. Singleplayer now initializes
+the actual save List and scrolling screen. Cancel returns to the same parent;
+Select constructs the actual controller and stops at World-load `a(NULL World)`2.
+Create, Rename, Delete, Multiplayer, Mods and Texture Packs, and Options retain
+explicit unfinished routes. Fullscreen, source F2 screenshots, debug timing and
+focused gameplay input also retain explicit dependencies. [Option actions](game-options.md),
 [achievement notices](achievement-notice.md) and
 [Player statistics](player-statistics.md) have their own component scopes.
 

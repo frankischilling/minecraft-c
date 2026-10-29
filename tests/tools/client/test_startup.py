@@ -15,6 +15,7 @@ import os
 from pathlib import Path
 import re
 import signal
+import stat
 import struct
 import subprocess
 import tempfile
@@ -27,6 +28,8 @@ CASE_SECONDS = 20
 STREAM_LIMIT = 1024 * 1024
 PNG_LIMIT = 16 * 1024 * 1024
 FILE_LIMIT = 128 * 1024 * 1024
+EXECUTABLE_LIMIT = 1024 * 1024 * 1024
+EXECUTABLE_CHUNK = 1024 * 1024
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 
 
@@ -43,7 +46,10 @@ def ordinary(path: Path) -> None:
 
 def raw_file(path: Path, limit: int = FILE_LIMIT) -> bytes:
     ordinary(path)
-    need(path.is_file() and path.stat().st_size <= limit, f"bounded file: {path}")
+    info = path.stat()
+    need(stat.S_ISREG(info.st_mode) and info.st_size <= limit,
+         f"bounded file: {path} (mode={stat.filemode(info.st_mode)}, "
+         f"bytes={info.st_size}, limit={limit})")
     raw = path.read_bytes()
     need(len(raw) <= limit and path.stat().st_size == len(raw), f"complete file: {path}")
     return raw
@@ -55,6 +61,45 @@ def raw_pin(raw: bytes) -> dict:
 
 def pin(path: Path, limit: int = FILE_LIMIT) -> dict:
     return raw_pin(raw_file(path, limit))
+
+
+def file_identity(info: os.stat_result) -> tuple:
+    # Windows path stat infers execute bits from the filename; descriptor stat
+    # cannot. Their st_ctime meanings also differ. Compare the actual file type
+    # across APIs and check the complete mode separately within each API.
+    return (info.st_dev, info.st_ino, stat.S_IFMT(info.st_mode), info.st_size,
+            info.st_mtime_ns)
+
+
+def executable_pin(path: Path) -> dict:
+    """Hash a bounded compiled artifact without loading it into a resource buffer."""
+    ordinary(path)
+    before = path.stat()
+    need(stat.S_ISREG(before.st_mode) and before.st_size <= EXECUTABLE_LIMIT,
+         f"bounded executable: {path} (mode={stat.filemode(before.st_mode)}, "
+         f"bytes={before.st_size}, limit={EXECUTABLE_LIMIT})")
+    digest = hashlib.sha256()
+    count = 0
+    with path.open("rb") as stream:
+        opened = os.fstat(stream.fileno())
+        need(file_identity(opened) == file_identity(before),
+             f"unchanged executable before reading: {path}")
+        while True:
+            block = stream.read(min(EXECUTABLE_CHUNK, before.st_size - count + 1))
+            if not block:
+                break
+            count += len(block)
+            need(count <= before.st_size, f"executable grew while reading: {path}")
+            digest.update(block)
+        read = os.fstat(stream.fileno())
+        need(count == before.st_size and file_identity(read) == file_identity(opened) and
+             read.st_mode == opened.st_mode,
+             f"complete unchanged executable read: {path}")
+    ordinary(path)
+    after = path.stat()
+    need(file_identity(after) == file_identity(before) and after.st_mode == before.st_mode,
+         f"unchanged executable after reading: {path}")
+    return {"bytes": count, "sha256": digest.hexdigest()}
 
 
 def tree(root: Path) -> dict:
@@ -353,7 +398,7 @@ def main() -> int:
     failure = None
     errors = []
     try:
-        receipt["binary_before"] = pin(binary)
+        receipt["binary_before"] = executable_pin(binary)
         resources(assets)
         receipt["assets_before"] = tree(assets)
         cases = (
@@ -396,7 +441,7 @@ def main() -> int:
         failure = error
         receipt["failure"] = f"{type(error).__name__}: {error}"
     finally:
-        for label, action in (("binary_after", lambda: pin(binary)),
+        for label, action in (("binary_after", lambda: executable_pin(binary)),
                               ("assets_after", lambda: tree(assets))):
             try:
                 receipt[label] = action()

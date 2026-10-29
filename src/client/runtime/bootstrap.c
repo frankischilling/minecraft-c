@@ -5,6 +5,7 @@
 #include "../startup/application_startup_internal.h"
 #include "../startup/application_startup_menu.h"
 #include "mc/block/registry/runtime.h"
+#include "mc/core/math/classes.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,7 +17,9 @@ struct mc_client_bootstrap {
     mc_materials *materials;
     mc_resource_files *imported_files, *class_files;
     mc_client_render_engine_classes *graphics;
-    mc_math_trig *trig;
+    mc_math_classes *math;
+    const mc_math_trig *trig;
+    mc_math_class_error math_error;
     client_application *app;
     mc_client_application_startup *startup;
     mc_client_render_manager_classes *manager;
@@ -100,11 +103,14 @@ static mc_client_bootstrap_status open_resources(mc_client_bootstrap *context, c
         return owner_failure("imported class resource namespace", (int)status);
     context->services.class_files = context->class_files;
     context->services.texture_resources = mc_resource_files_source(context->class_files);
-    context->trig = malloc(sizeof(*context->trig));
-    if (context->trig == NULL)
-        return allocation_failure("native trigonometric table");
-    if (!mc_math_trig_init(context->trig))
-        return owner_failure("immutable native trigonometric prerequisite", 0);
+    OPEN_OWNER(mc_math_classes_create(SIZE_MAX, &context->math, &context->math_error),
+               MC_MATH_CLASS_OK, "native shared MathHelper namespace");
+    /* The existing effect interface requires an initialized native trig
+     * prerequisite. Use the same canonical table as SaveFormat, rather than an
+     * unrelated copy. This prerequisite does not claim Java clinit ordering. */
+    OPEN_OWNER(mc_math_classes_ensure(context->math, &context->math_error), MC_MATH_CLASS_OK,
+               "immutable shared trigonometric prerequisite");
+    context->trig = mc_math_classes_table(context->math);
     context->services.texture_effect_trig = context->trig;
     return MC_CLIENT_BOOTSTRAP_OK;
 }
@@ -148,8 +154,8 @@ static mc_client_bootstrap_status open_startup_services(mc_client_bootstrap *con
     mc_client_startup_error *error = &context->startup_error;
     OPEN_OWNER(mc_java_files_create(NULL, &services->files, &error->file), MC_JAVA_FILE_OK,
                "File namespace");
-    OPEN_OWNER(mc_client_save_formats_create(services->files, NULL, NULL, &services->save_formats,
-                                             &error->save),
+    OPEN_OWNER(mc_client_save_formats_create(services->files, context->math, NULL,
+                                             &services->save_formats, &error->save),
                MC_CLIENT_SAVE_OK, "SaveFormat namespace");
     OPEN_OWNER(mc_game_settings_classes_create(services->files, NULL, NULL,
                                                &services->settings_classes, &error->settings),
@@ -485,7 +491,8 @@ mc_client_bootstrap_status mc_client_bootstrap_close(mc_client_bootstrap **slot)
     context->materials = NULL;
     mc_java_random_profile_free(constructor->profile);
     constructor->profile = NULL;
-    free(context->trig);
+    CLOSE_OWNER(mc_math_classes_release(&context->math, &context->math_error), MC_MATH_CLASS_OK,
+                MC_MATH_CLASS_BUSY, "shared MathHelper namespace retirement");
     context->trig = NULL;
     if (context->class_files != NULL) {
         const mc_registry_status resource = mc_resource_files_free(context->class_files);
@@ -520,6 +527,10 @@ mc_resource_files *mc_client_bootstrap_class_files(const mc_client_bootstrap *co
 
 const mc_math_trig *mc_client_bootstrap_trig(const mc_client_bootstrap *context) {
     return context == NULL || context->retiring ? NULL : context->trig;
+}
+
+mc_math_classes *mc_client_bootstrap_math(const mc_client_bootstrap *context) {
+    return context == NULL || context->retiring ? NULL : context->math;
 }
 
 mc_client_render_engine_classes *mc_client_bootstrap_graphics(const mc_client_bootstrap *context) {

@@ -1,11 +1,31 @@
 # Build and tests
 
-The new default source menu passes four focused Windows MSVC Debug CTests:
-GuiIngame, texture uploads, source screen events and the native menu loop. The
-menu completes 100 frames and 32 ticks with cleanup; its 854 by 480 capture was
-inspected. All 463 selected Windows CTests pass. Hosted CI, Linux and original-game
-correspondence retain their separate source scopes. This run does not qualify the full source
-run/PX/render/shutdown methods or a playable client.
+The genuine World-selection loop passes empty, populated, sixteen-save scrollbar
+and real double-click Windows profiles:
+real SaveFormat metadata and stable sorting, row selection during drawing,
+same-parent Cancel, original-receiver trailing input and retained-old-RQ cleanup.
+Select constructs the actual controller and stops at World-load `a(NULL World)`2.
+Empty, populated and bottom-scroll 854 by 480 captures were inspected. Save and resource hashes remain unchanged,
+without a new session lock. Create/Rename remain at `NEW162`/`NEW189`; Delete
+stops at preparation 21 without skipping its prefix. The Windows MSVC Debug
+ALL build and all 468 selected CTests pass without failures or skips in 197.43
+seconds, excluding 46 configured reference-label profiles. The separate
+headless Release ALL build and formatting for 1,356 files also pass. World
+loading and gameplay remain unfinished.
+
+The DateFormat owner matches 2,926 JDK17 vectors on Windows and Linux for
+English/en_US, UTC/Eastern and UTC years 1967..2099. Other locales, zones and
+ranges fail explicitly. The
+[observations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/platform/date_format/README.md)
+record the selected JDKs and exact UTF16 scope. Native runtime requires no JVM.
+The [World-selection contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-selection.md)
+and [testing record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#world-selection-in-the-default-runtime)
+give the focused checks and remaining dependencies.
+
+The preceding default source menu passes four focused Windows MSVC Debug CTests:
+GuiIngame, texture uploads, source screen events and the native menu loop.
+Its 100-frame/32-tick run completes with cleanup and an inspected 854 by 480 capture.
+That result does not qualify complete source run/PX/render/shutdown or gameplay.
 
 The preceding startup/menu-initialization source passes all 460 selected CTests without
 failures or skips in 207.15 seconds. The selection excludes configured
@@ -17,15 +37,33 @@ Formatting checks 1,325 files. A separate headless Release ALL build passes.
 These results do not establish Linux qualification, original visual
 correspondence, a running dedicated server or a playable session.
 
-The new runtime passes all 463 selected Windows CTests, excluding 45 configured
+The preceding runtime passes all 463 selected Windows CTests, excluding 45 configured
 reference-label profiles. Formatting checks 1,341 files and a separate headless
 Release ALL build passes.
 
 The first runtime [hosted run at `fab3769`](https://github.com/frankischilling/minecraft-c/actions/runs/40801330270)
 stops both Linux builds on signed diagnostic-site conversion before tests.
 The corrected transport preserves native `-1` and unsigned source sites.
-Strict GCC/Clang syntax checks under WSL and three rebuilt Windows tests pass;
-the next complete hosted run retains its own scope.
+Strict GCC/Clang syntax checks under WSL and three rebuilt Windows tests pass.
+
+The later [exact `de4290b` run](https://github.com/frankischilling/minecraft-c/actions/runs/40802203908)
+is terminal: Windows 435/435 pass in 329.63 seconds, Clang 454/454 pass in 189.45
+seconds and GCC 453/454 pass in 339.00 seconds. Formatting passes for 1,341 files.
+Unique Start/result pairs match every native selection, with zero skips; all
+four checkout trees match that published head. Both Linux effect-upload and
+source-event cases pass.
+
+GCC's sole failure is the prelaunch `client.startup` fingerprint guard, whose
+old assertion combines regular-file type and a 128 MiB bound. The log contains
+no actual mode or size. A larger linked artifact is inferred from the completed
+link and resolved path; the original artifact's size was not measured. The
+current fix hashes complete executables in 1 MiB chunks with a separate 1 GiB bound,
+retains identity/before-after checks, and reports actual type/size on rejection.
+The public regression uses an authored sparse 134,217,985-byte regular file,
+checks its full SHA256 including the nonzero tail and bounded memory, and
+preserves the 128 MiB resource and 16 MiB PNG limits. It passes on Windows and Linux,
+normally and under optimized Python. The fix is included in the current
+increment; its complete hosted rerun is pending.
 
 Published predecessor `3ec9892` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40796960416):
 434 Windows, 452 GCC and 452 Clang tests, 1,338 total, zero failures or skips.

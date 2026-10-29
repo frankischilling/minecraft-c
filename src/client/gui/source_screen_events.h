@@ -6,6 +6,8 @@
 #include "mc/client/sound/sound_manager.h"
 #include "source_screen.h"
 
+typedef struct mc_client_screen_transitions mc_client_screen_transitions;
+
 typedef enum mc_client_screen_action {
     MC_CLIENT_SCREEN_ACTION_NONE,
     MC_CLIENT_SCREEN_ACTION_OPTIONS,
@@ -14,7 +16,12 @@ typedef enum mc_client_screen_action {
     MC_CLIENT_SCREEN_ACTION_TEXTURE_PACKS,
     MC_CLIENT_SCREEN_ACTION_QUIT,
     MC_CLIENT_SCREEN_ACTION_FULLSCREEN,
-    MC_CLIENT_SCREEN_ACTION_CLOSE
+    MC_CLIENT_SCREEN_ACTION_CLOSE,
+    MC_CLIENT_SCREEN_ACTION_CANCEL,
+    MC_CLIENT_SCREEN_ACTION_SELECT_WORLD,
+    MC_CLIENT_SCREEN_ACTION_CREATE_WORLD,
+    MC_CLIENT_SCREEN_ACTION_RENAME_WORLD,
+    MC_CLIENT_SCREEN_ACTION_DELETE_WORLD
 } mc_client_screen_action;
 
 typedef struct mc_client_screen_event_report {
@@ -35,6 +42,8 @@ typedef struct mc_client_screen_event_error {
     int application_status;
     mc_client_texture_lookup_error lookup;
     mc_client_display_error display;
+    mc_client_source_da *pending_receiver; /* Native monitor-recovery occurrence only. */
+    bool monitor_lost;
 } mc_client_screen_event_error;
 
 /* Actual virtual a()V: fu increments its canonical i by binary32 +1; da is
@@ -57,6 +66,13 @@ mc_client_screen_status mc_client_screen_particles_draw(mc_client_source_du *, f
 mc_client_screen_status mc_client_screen_handle_input(mc_client_source_da *, mc_client_sdk_input *,
                                                       mc_client_screen_event_report *,
                                                       mc_client_screen_event_error *);
+mc_client_screen_status mc_client_screen_handle_input_with_transitions(
+    mc_client_source_da *, mc_client_sdk_input *, mc_client_screen_transitions *,
+    mc_client_screen_event_report *, mc_client_screen_event_error *);
+/* Complete native call cleanup after a monitor reacquisition failure. Reuse
+ * error storage/retire the graph only after this consumes pending_receiver.
+ * This performs no source input, action, initialization or field rollback. */
+mc_client_screen_status mc_client_screen_event_retire(mc_client_screen_event_error *);
 /* Prepared-current-event controls and source callees. They do not claim SDK
  * next/poll completion. Mouse scaling reads actual da.c/d and App.d/e, with
  * Java wrapping multiplication, integer division and inverted Y. */

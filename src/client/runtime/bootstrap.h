@@ -3,6 +3,7 @@
 
 #include "../application.h"
 #include "../startup/application_owner.h"
+#include "mc/core/math/classes.h"
 #include "mc/core/math/math.h"
 #include "mc/resources/files/files.h"
 
@@ -42,6 +43,7 @@ client_application *mc_client_bootstrap_app(mc_client_bootstrap *);
 const mc_registry_resources *mc_client_bootstrap_resources(const mc_client_bootstrap *);
 mc_resource_files *mc_client_bootstrap_class_files(const mc_client_bootstrap *);
 const mc_math_trig *mc_client_bootstrap_trig(const mc_client_bootstrap *);
+mc_math_classes *mc_client_bootstrap_math(const mc_client_bootstrap *);
 mc_client_render_engine_classes *mc_client_bootstrap_graphics(const mc_client_bootstrap *);
 
 #endif

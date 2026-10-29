@@ -17,8 +17,8 @@
   },
   "native_sources": {
     "include/mc/client/saves/save_format.h": {
-      "bytes": 11775,
-      "sha256": "e079ba732245271e16794a19ff6dc6ed6f0854377e4dd8073d02a8549f5b07af"
+      "bytes": 12348,
+      "sha256": "e0208525d40c27ab925eb24e5fce4787275af0ed3fdfde4fd02e3b3e0d1bbd4d"
     },
     "include/mc/core/math/classes.h": {
       "bytes": 2851,
@@ -53,8 +53,8 @@
       "sha256": "daab90eb8789fcfc3a9549d9dfc8704a517c3d4bad4c78098d95ee5bcbdb2728"
     },
     "src/client/saves/list.c": {
-      "bytes": 6827,
-      "sha256": "99dddf4f0be43029e76242e86815c58f4bda5713057e2f2e9af5a1b02a0757a9"
+      "bytes": 10467,
+      "sha256": "51c6f1db26800de1ed1908a1d7f8c1fc273f8152abb8578595e3effc70772533"
     },
     "src/client/saves/metadata.c": {
       "bytes": 22270,

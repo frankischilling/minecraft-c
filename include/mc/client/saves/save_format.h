@@ -200,6 +200,13 @@ mc_client_save_status mc_client_save_selection_read(const mc_client_save_selecti
 mc_client_save_status mc_client_save_selection_compare(const mc_client_save_selection *a,
                                                        const mc_client_save_selection *b,
                                                        int32_t *out, mc_client_save_error *error);
+/* Stable natural ordering of the SAME canonical List and vb row identities:
+ * lastPlayed descending, then Java UTF16 filename comparison. Equal comparisons
+ * retain insertion order. Shared List aliases remain valid. Comparison uses a
+ * bounded temporary pointer array before committing the permutation, so child
+ * failure preserves the original List order. No metadata, String, timestamp or
+ * row is copied/reconstructed. Requires exclusive access; no filesystem work. */
+mc_client_save_status mc_client_save_list_sort(mc_client_save_list *, mc_client_save_error *);
 size_t mc_client_save_list_size(const mc_client_save_list *list);
 mc_client_save_selection *mc_client_save_list_at(const mc_client_save_list *list, size_t index);
 mc_client_save_status mc_client_save_list_retain(mc_client_save_list *list,

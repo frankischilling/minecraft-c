@@ -442,3 +442,58 @@ bool mc_gui_main_menu_same_source(const mc_gui_main_menu *menu, const mc_client_
            menu->anaglyph == anaglyph &&
            mc_client_assets_same_source(menu->assets, resources, classes);
 }
+
+bool mc_gui_canvas_begin(mc_gui_main_menu *menu, const mc_scaled_resolution *scale,
+                         mc_gui_main_menu_measure_fn source, void *context,
+                         mc_gui_main_menu_error *error) {
+    if (menu == NULL || scale == NULL || menu->active || scale->width <= 0 || scale->height <= 0 ||
+        !isfinite(scale->width_exact) || !isfinite(scale->height_exact) ||
+        scale->width_exact <= 0 || scale->height_exact <= 0)
+        return fail(error, MC_GUI_MAIN_MENU_INVALID_ARGUMENT, "begin shared GUI canvas");
+    menu->active = true;
+    menu->measure_source = source;
+    menu->measure_context = context;
+    mc_client_display_error display;
+    if (!mc_client_display_begin(menu->display, scale->width_exact, scale->height_exact,
+                                 &display)) {
+        mc_gui_canvas_end(menu);
+        return display_failure(error, "begin shared GUI projection", &display);
+    }
+    return success(error);
+}
+
+bool mc_gui_canvas_quad(mc_gui_main_menu *menu, bool background, const mc_client_vertex vertices[4],
+                        bool blend, bool alpha_test, mc_gui_main_menu_error *error) {
+    if (menu == NULL || !menu->active || vertices == NULL)
+        return fail(error, MC_GUI_MAIN_MENU_INVALID_ARGUMENT, "shared GUI quad scope");
+    if (background && menu->background_texture == 0 &&
+        !texture(menu, "/gui/background.png", &menu->background_texture, error))
+        return false;
+    mc_client_display_error display;
+    if (!mc_client_display_draw_quad(menu->display, background ? menu->background_texture : 0,
+                                     vertices, blend, alpha_test, &display))
+        return display_failure(error, "draw shared GUI quad", &display);
+    return success(error);
+}
+
+bool mc_gui_canvas_text(mc_gui_main_menu *menu, const mc_font_text *value, int32_t x, int32_t y,
+                        uint32_t color, bool centered, mc_gui_main_menu_error *error) {
+    if (menu == NULL || !menu->active)
+        return fail(error, MC_GUI_MAIN_MENU_INVALID_ARGUMENT, "shared GUI text scope");
+    return text(menu, value, x, y, color, centered, NULL, error);
+}
+
+bool mc_gui_canvas_button(mc_gui_main_menu *menu, const mc_gui_button *value,
+                          mc_gui_mouse_position mouse, mc_gui_main_menu_error *error) {
+    if (menu == NULL || !menu->active || value == NULL)
+        return fail(error, MC_GUI_MAIN_MENU_INVALID_ARGUMENT, "shared GUI button scope");
+    return button(menu, value, mouse, error);
+}
+
+void mc_gui_canvas_end(mc_gui_main_menu *menu) {
+    if (menu == NULL)
+        return;
+    menu->measure_source = NULL;
+    menu->measure_context = NULL;
+    menu->active = false;
+}

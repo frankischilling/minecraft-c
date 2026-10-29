@@ -1,8 +1,52 @@
 # Test scope and reproduction
 
+## World selection in the default runtime
+
+The genuine Windows native loop passes empty, populated, sixteen-save scrolling
+and double-click save-directory
+profiles. It opens the actual RQ from GuiMainMenu, obtains and sorts the real
+SaveFormat List, draws and selects its rows, and returns to the exact parent
+on Cancel. Held-button entry and trailing keyboard input keep the original
+source receiver after synchronous screen publication. Select constructs the
+actual `os` controller and stops at World-load `a(NULL World)`2, with no World
+or Player fabricated. Holding an old RQ blocks teardown until its external
+occurrence is released; cleanup then completes.
+
+The actual scrollbar drag reaches the lower clamp at 436 and returns to zero
+without selecting a row. A second click within the real 250 ms window reaches
+the controller/loader failure before LG's later index, clock and drag stores.
+The startup owner refuses teardown while the runtime graph holds its lease.
+A separate prepared native monitor-failure receipt checks retryable guard
+cleanup, active-call refusal and idempotence. No host mutex failure was forced.
+
+The profiles use isolated native APPDATA directories and authored NBT metadata,
+including `level.dat_old` fallback. Save and imported-resource hashes remain
+unchanged, with no new session lock. Their empty and populated 854 by 480 captures
+were inspected, along with the bottom-scroll capture. Create/Rename still stop at `NEW162`/`NEW189`; Delete stops at
+preparation 21 without skipping its earlier source work. See the
+[World-selection contract](client/world-selection.md).
+
+DateFormat matches all 2,926 JDK17 timestamp vectors on Windows and Linux for
+English/en_US, UTC/US Eastern and UTC years 1967..2099. Other locales, zones and
+ranges return explicit unsupported errors. The
+[observer and input provenance](../tests/reference/platform/date_format/README.md)
+record the selected JDKs, historical Eastern transitions and exact UTF16 scope.
+These observations qualify the formatter's UTF16 results. Original menu pixels
+and gameplay remain unqualified.
+
+The Windows MSVC Debug ALL build passes, followed by all 468 selected CTests
+without failures or skips in 197.43 seconds. The selection uses `-LE reference`
+and excludes 46 configured reference-label profiles. The four native
+World-selection profiles and the corrected startup fingerprint are included.
+A separate headless Release ALL build passes with client, sound, audio and
+testing disabled. Clang-format18.1.3 checks 1,356 files. Eleven affected
+production translation units pass strict GCC13.3/Clang18.1.3 C17 syntax checks
+under WSL; those checks are separate from a complete Linux build and suite.
+Earlier local and hosted checkpoints below retain their source scopes.
+
 ## Default source menu runtime
 
-The Windows MSVC Debug ALL build includes the new default client runtime.
+The preceding Windows MSVC Debug ALL build includes the default client runtime.
 All 463 selected CTests pass without failures or skips; `-LE reference`
 excludes 45 configured reference-label profiles. A separate headless Release
 ALL build passes with client, sound, audio and testing disabled. Formatting
@@ -11,7 +55,7 @@ checks 1,341 files.
 That 463-case run precedes the diagnostic-site transport correction described
 in [status](status.md). The affected runtime translation unit also passes strict
 GCC and Clang syntax checks under WSL, and three affected native Windows tests
-pass after that correction. Complete Linux hosted verification is separate.
+pass after that correction. The later `de4290b` hosted result is recorded below.
 
 `client.source_menu_loop` constructs the genuine App and startup graph, updates
 all nine registered effects with 15 real atlas uploads, advances the Timer and
@@ -30,8 +74,42 @@ events cover mouse-before-keyboard draining and unread tails at a dependency.
 Published predecessor `3ec9892` passes [all hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40796960416):
 434 Windows, 452 GCC and 452 Clang tests, 1,338 total, without failures or skips.
 Formatting passes for 1,325 files; all tested checkout trees match that head.
-The new runtime has its own later hosted results. Full source run/PX/shutdown,
-World entry, other menu destinations and gameplay remain unfinished.
+The runtime has its own later hosted results below. Full source run/PX/shutdown,
+World loading, other menu destinations and gameplay remain unfinished.
+
+## Hosted runtime checkpoint de4290b
+
+The [exact `de4290b` run](https://github.com/frankischilling/minecraft-c/actions/runs/40802203908)
+is terminal with one failing test. Windows passes 435/435 in 329.63 seconds and
+Clang passes 454/454 in 189.45 seconds. GCC passes 453/454 in 339.00 seconds.
+Formatting passes for 1,341 files. Each native job has matching unique test
+starts/results and zero skips; all four checkout trees match the published head.
+The effect-upload and source-event cases pass in both Linux selections.
+
+GCC's sole failure is `client.startup`, before launching the client. The old
+`raw_file` guard used one assertion for regular-file type and the 128 MiB bound.
+Its log reports neither actual mode nor size. A larger linked artifact is the
+size explanation inferred from the completed link and resolved executable path;
+the original bytes were not measured. This failure supplies no SDL/GL result.
+
+The current executable fingerprint uses a separate 1 GiB bound and 1 MiB streaming
+buffers, checks identity and size across the open/read/close operation, and
+retains the receipt's before/after equality assertion. General resource files
+remain bounded at 128 MiB and captures at 16 MiB. Failure output now includes the
+actual file type, size and bound.
+
+`tools.startup_executable_fingerprint` creates an authored sparse regular file
+of 134,217,985 bytes, computes its independent expected SHA256 including a nonzero
+tail, and checks the complete hash with bounded Python allocation. It also
+checks stable identity, directory and over-limit rejection, and unchanged
+resource/PNG limits. The regression reproduces the old guard failure and passes
+with the streaming fix on Windows and Linux, normally and under optimized
+Python. Its `.exe` filename also reproduces Windows' path/handle execute-bit
+difference: path stat infers execute bits from the extension, while descriptor
+stat has no filename. Cross-API identity compares file type; full modes still
+must remain unchanged within each API. The real Windows executable passes two
+independent complete-hash comparisons. No large binary fixture is committed. This correction is included in
+the current World-selection increment; its complete hosted rerun is pending.
 
 ## Normal startup through menu initialization
 

@@ -9,9 +9,10 @@ There is no playable C client or server yet. Shared libraries cover numerical
 and text compatibility, NBT/compression, and terrain-generation components.
 Tests, reference tools and a local resource importer support development.
 The [parity matrix](docs/parity.md) records verified scenarios and outstanding work.
-The default client now connects the constructed source App to its
-[menu runtime](docs/client/menu-runtime.md), with a focused Windows run verified.
-A separate [generated-world inspection](docs/client/world-renderer.md) remains available. World entry, remaining menus and gameplay are unfinished.
+The default client runs the constructed source App and its
+[menus](docs/client/menu-runtime.md), including real save-list selection and
+Cancel. World loading and gameplay remain unfinished. A separate
+[generated-world inspection](docs/client/world-renderer.md) remains available.
 
 ## Build
 

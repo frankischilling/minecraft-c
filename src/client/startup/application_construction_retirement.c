@@ -88,7 +88,8 @@ mc_client_application_constructor_retire(client_application **slot,
         app->effect_renderer_retained != NULL || app->font_renderer_retained != NULL ||
         app->session_classes != NULL || app->world_session != NULL || app->world_view != NULL ||
         app->main_menu != NULL || app->assets != NULL || app->files != NULL ||
-        app->materials != NULL || app->world_classes != NULL || app->trig != NULL) {
+        app->materials != NULL || app->world_classes != NULL || app->trig != NULL ||
+        app->screen_transitions != NULL) {
         application_constructor_error(e, MC_CLIENT_APP_UNIMPLEMENTED, MC_CLIENT_APP_CHILD_PLATFORM,
                                       -1,
                                       "later source owners require their own native retirement");

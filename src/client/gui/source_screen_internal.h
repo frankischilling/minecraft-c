@@ -54,7 +54,9 @@ struct mc_client_source_da {
     mc_client_screen_classes *classes;
     mc_client_screen_phase phase;
     size_t holds;
-    bool is_menu;
+    mc_client_screen_kind kind;
+    size_t active_calls;
+    struct mc_client_screen_transitions *transitions; /* Scoped native source-call context. */
     mc_screen_memory memory;
     mc_client_screen_da_fields fields;
     unsigned int last_pc, store_count;
@@ -138,6 +140,10 @@ void mc_screen_store(mc_client_source_da *, const char *, unsigned int);
 bool mc_screen_base_construct_locked(mc_client_source_da *, mc_client_screen_error *);
 bool mc_screen_menu_construct_locked(mc_client_source_fu *, mc_client_screen_error *);
 bool mc_screen_menu_cleanup_locked(mc_client_source_fu *, mc_client_screen_error *);
+bool mc_screen_instance_hold_locked(mc_client_source_da *, mc_client_screen_error *);
+/* The same class monitor remains locked. Final consumption requires another
+ * live class occurrence; nested parent cleanup never retires its caller's class. */
+bool mc_screen_instance_release_locked(mc_client_source_da **, mc_client_screen_error *);
 void mc_screen_menu_strings_free(mc_client_source_fu *);
 
 mc_client_source_du *mc_screen_particles_allocate_locked(mc_client_screen_classes *,

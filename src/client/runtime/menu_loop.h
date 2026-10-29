@@ -14,7 +14,8 @@ typedef struct mc_client_menu_loop_state {
 } mc_client_menu_loop_state;
 
 /* Native frame composition for the genuine constructed, initialized no-World
- * main menu. Borrows the complete bootstrap through free. It uses the actual
+ * main menu and World selection. Borrows the complete bootstrap through retirement.
+ * It uses the actual
  * App Timer, SDK, screen, statistics, sound and texture-effect owners. The
  * existing OpenGL3.3 GUI kernels present source-owned screen records. Unsupported
  * World/controller/focus/fullscreen/debug/screenshot routes retain a reached
@@ -22,12 +23,15 @@ typedef struct mc_client_menu_loop_state {
  *
  * Calls and callbacks require exclusive use of this whole graph on the video
  * thread. A failed frame is terminal; inspect remains available. Output stays
- * unchanged on create failure. Free performs only native renderer cleanup.
+ * unchanged on create failure. Retirement releases native renderer and transition
+ * ownership without running source shutdown or restoring historical fields.
  * Source run's exception handlers and d() shutdown are separate dependencies. */
 bool mc_client_menu_loop_create(mc_client_bootstrap *, mc_client_menu_loop **);
 bool mc_client_menu_loop_frame(mc_client_menu_loop *);
 bool mc_client_menu_loop_inspect(const mc_client_menu_loop *, mc_client_menu_loop_state *);
 void mc_client_menu_loop_free(mc_client_menu_loop *);
+/* Retryable native retirement preserves the same slot and graph on refusal. */
+bool mc_client_menu_loop_retire(mc_client_menu_loop **);
 int mc_client_menu_run(const mc_client_application_options *);
 
 #endif

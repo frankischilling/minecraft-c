@@ -57,6 +57,79 @@ static void equal_text(mc_world_info_name *a, mc_world_info_name *b) {
     REQUIRE(x.length == 0 || memcmp(x.units, y.units, x.length * sizeof(*x.units)) == 0);
 }
 
+static void list_sorting(mc_client_save_format *format) {
+    mc_client_save_error e;
+    REQUIRE(save_list_allocate(format, &e) == MC_CLIENT_SAVE_OK);
+    mc_client_save_list *list = format->state.pending_list;
+    REQUIRE(mc_client_save_list_sort(list, &e) == MC_CLIENT_SAVE_OK);
+    REQUIRE(mc_client_save_list_size(list) == 0 && list->items == NULL);
+    mc_world_info_name *a = name("a"), *b = name("b");
+    mc_world_info_name *first = name("first"), *second = name("second"), *unicode = NULL;
+    const uint16_t high[] = {0xd800u};
+    REQUIRE(mc_world_info_name_copy((mc_nbt_string){high, 1}, SIZE_MAX, &unicode) ==
+            MC_WORLD_INFO_OK);
+    mc_world_info_name *filenames[] = {b, a, b, b, unicode};
+    mc_world_info_name *displays[] = {NULL, NULL, first, second, NULL};
+    mc_client_save_selection *rows[5] = {0};
+    for (size_t i = 0; i < 5; ++i) {
+        mc_client_save_selection *row = NULL;
+        REQUIRE(mc_client_save_selection_allocate(SIZE_MAX, &row, &e) == MC_CLIENT_SAVE_OK);
+        REQUIRE(mc_client_save_selection_construct(row, filenames[i], displays[i], i == 0 ? 7 : 9,
+                                                   (int64_t)i, false, &e) == MC_CLIENT_SAVE_OK);
+        rows[i] = row; /* Borrowed exact identity, held by the real appended List below. */
+        REQUIRE(save_list_append(list, row, &e) == MC_CLIENT_SAVE_OK);
+        REQUIRE(mc_client_save_selection_release(&row, &e) == MC_CLIENT_SAVE_OK && row == NULL);
+    }
+    mc_client_save_list *alias = list;
+    REQUIRE(mc_client_save_list_retain(alias, &e) == MC_CLIENT_SAVE_OK);
+    mc_client_save_selection **same_array = list->items;
+    REQUIRE(mc_client_save_list_sort(list, &e) == MC_CLIENT_SAVE_OK);
+    REQUIRE(alias == list && list->items == same_array && mc_client_save_list_size(alias) == 5);
+    const size_t expected[] = {1, 2, 3, 4, 0};
+    for (size_t i = 0; i < 5; ++i)
+        REQUIRE(mc_client_save_list_at(alias, i) == rows[expected[i]]);
+    mc_client_save_selection_fields fields;
+    REQUIRE(mc_client_save_selection_read(mc_client_save_list_at(alias, 1), &fields, &e) ==
+                MC_CLIENT_SAVE_OK &&
+            fields.display_name == first && fields.size_on_disk == 2);
+    REQUIRE(mc_client_save_selection_read(mc_client_save_list_at(alias, 2), &fields, &e) ==
+                MC_CLIENT_SAVE_OK &&
+            fields.display_name == second && fields.size_on_disk == 3);
+    REQUIRE(mc_client_save_list_sort(list, &e) == MC_CLIENT_SAVE_OK);
+    for (size_t i = 0; i < 5; ++i)
+        REQUIRE(mc_client_save_list_at(alias, i) == rows[expected[i]]);
+    list->active = true;
+    REQUIRE(mc_client_save_list_sort(list, &e) == MC_CLIENT_SAVE_BUSY);
+    list->active = false;
+    const size_t budget = list->maximum_bytes;
+    list->maximum_bytes = 0;
+    REQUIRE(mc_client_save_list_sort(list, &e) == MC_CLIENT_SAVE_LIMIT);
+    list->maximum_bytes = budget;
+    for (size_t i = 0; i < 5; ++i)
+        REQUIRE(mc_client_save_list_at(alias, i) == rows[expected[i]]);
+    mc_client_save_selection *bad = NULL;
+    REQUIRE(mc_client_save_selection_allocate(SIZE_MAX, &bad, &e) == MC_CLIENT_SAVE_OK);
+    REQUIRE(mc_client_save_selection_construct(bad, NULL, NULL, 9, 0, false, &e) ==
+            MC_CLIENT_SAVE_OK);
+    REQUIRE(save_list_append(list, bad, &e) == MC_CLIENT_SAVE_OK);
+    mc_client_save_selection *before[6];
+    for (size_t i = 0; i < 6; ++i)
+        before[i] = mc_client_save_list_at(list, i);
+    REQUIRE(mc_client_save_list_sort(list, &e) == MC_CLIENT_SAVE_SOURCE_NULL_REFERENCE &&
+            e.frame_count == 1 && e.frames[0].pc == 36 && !list->active);
+    for (size_t i = 0; i < 6; ++i)
+        REQUIRE(mc_client_save_list_at(alias, i) == before[i]);
+    REQUIRE(mc_client_save_selection_release(&bad, &e) == MC_CLIENT_SAVE_OK);
+    REQUIRE(mc_client_save_list_release(&alias, &e) == MC_CLIENT_SAVE_OK && alias == NULL);
+    REQUIRE(mc_client_save_list_release(&format->state.pending_list, &e) == MC_CLIENT_SAVE_OK);
+    REQUIRE(mc_client_save_list_sort(NULL, &e) == MC_CLIENT_SAVE_SOURCE_NULL_REFERENCE);
+    mc_world_info_name_release(a);
+    mc_world_info_name_release(b);
+    mc_world_info_name_release(first);
+    mc_world_info_name_release(second);
+    mc_world_info_name_release(unicode);
+}
+
 static void models(void) {
     mc_java_files *files = NULL;
     mc_java_file_error fe;
@@ -126,6 +199,7 @@ static void models(void) {
     REQUIRE(mc_client_save_format_read_state(failed_format, &cstate, &ce) == MC_CLIENT_SAVE_OK &&
             cstate.source_a == NULL && cstate.last_store_pc == 0);
     REQUIRE(mc_client_save_format_release(&failed_format, &ce) == MC_CLIENT_SAVE_OK);
+    list_sorting(fm);
     REQUIRE(mc_client_save_format_release(&fm, &ce) == MC_CLIENT_SAVE_OK);
     REQUIRE(mc_client_save_formats_release(&fc, &ce) == MC_CLIENT_SAVE_OK);
     mc_world_info *raw_info = NULL;

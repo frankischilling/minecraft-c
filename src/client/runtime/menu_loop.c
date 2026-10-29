@@ -6,6 +6,8 @@
 #include "../display/staged.h"
 #include "../gui/source_screen_drawing.h"
 #include "../gui/source_screen_events.h"
+#include "../gui/source_screen_transitions.h"
+#include "../gui/source_world_selection_drawing.h"
 #include "../render/model_graph_internal.h"
 #include "../render_engine/chunk_statistics.h"
 #include "../render_engine/effect_upload.h"
@@ -30,10 +32,13 @@ struct mc_client_menu_loop {
     mc_gui_main_menu *renderer;
     mc_client_assets *assets;
     mc_client_render_engine_classes *graphics;
+    mc_client_screen_transitions *transitions;
+    bool active, retiring;
     mc_client_menu_loop_state state;
     int64_t last_second;
     int32_t second_frames;
     mc_client_source_screen_draw_error draw;
+    mc_client_world_selection_draw_error world_draw;
     mc_client_screen_event_error events;
     mc_client_screen_event_report event_report;
     mc_client_effect_upload_error effects;
@@ -160,9 +165,9 @@ static bool tick(mc_client_menu_loop *loop) {
     if (app->r != NULL) {
         app->W = 10000;
         app->ag = mc_java_i32_add(app->V, 10000);
-        if (mc_client_screen_handle_input(app->r, mc_client_display_inputs(app->display),
-                                          &loop->event_report,
-                                          &loop->events) != MC_CLIENT_SCREEN_OK)
+        if (mc_client_screen_handle_input_with_transitions(
+                app->r, mc_client_display_inputs(app->display), loop->transitions,
+                &loop->event_report, &loop->events) != MC_CLIENT_SCREEN_OK)
             return screen_failure(loop);
         loop->state.mouse_events += loop->event_report.mouse_events;
         loop->state.keyboard_events += loop->event_report.keyboard_events;
@@ -262,10 +267,24 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
     if (!render_nanoseconds(loop, &px->fields.I, 635))
         return false;
     if (app->r != NULL) {
-        if (!mc_client_source_screen_draw(app->r, loop->renderer, &projection, mouse, partial,
-                                          millis, NULL, &loop->draw))
-            return stop(loop, loop->draw.operation, "px", "b", 669);
-        loop->state.font_measurements += loop->draw.font_measurements;
+        mc_client_screen_state drawn;
+        if (!screen_state(loop, &drawn))
+            return false;
+        if (drawn.kind == MC_CLIENT_SCREEN_WORLD_SELECTION) {
+            if (!mc_client_source_world_selection_draw(
+                    (mc_client_source_rq *)app->r, loop->renderer, &projection, mouse, partial,
+                    input, millis, NULL, loop->transitions, &loop->world_draw)) {
+                const mc_client_screen_error *e = &loop->world_draw.list.screen;
+                return stop(loop, e->operation == NULL ? "RQ source drawing bridge" : e->operation,
+                            e->site.class_name, e->site.method, e->site.pc);
+            }
+            loop->state.font_measurements += loop->world_draw.list.font_measurements;
+        } else {
+            if (!mc_client_source_screen_draw(app->r, loop->renderer, &projection, mouse, partial,
+                                              millis, NULL, &loop->draw))
+                return stop(loop, loop->draw.operation, "px", "b", 669);
+            loop->state.font_measurements += loop->draw.font_measurements;
+        }
         if (app->r != NULL) {
             mc_client_screen_state screen;
             if (!screen_state(loop, &screen))
@@ -335,7 +354,9 @@ bool mc_client_menu_loop_create(mc_client_bootstrap *bootstrap, mc_client_menu_l
                                 &loop->assets) != MC_CLIENT_ASSETS_OK ||
         !mc_gui_main_menu_create(app->display, loop->assets, settings.values.anaglyph,
                                  &loop->renderer, &error) ||
-        !millis(NULL, &loop->last_second)) {
+        !millis(NULL, &loop->last_second) ||
+        mc_client_screen_transitions_create(app, &loop->transitions, &loop->screen) !=
+            MC_CLIENT_SCREEN_OK) {
         fprintf(stderr, "Client menu renderer setup failed: %s\n",
                 error.operation == NULL ? "native Settings/assets/clock prerequisite"
                                         : error.operation);
@@ -347,7 +368,7 @@ bool mc_client_menu_loop_create(mc_client_bootstrap *bootstrap, mc_client_menu_l
     return true;
 }
 
-bool mc_client_menu_loop_frame(mc_client_menu_loop *loop) {
+static bool frame_body(mc_client_menu_loop *loop) {
     if (loop == NULL || loop->state.failed || !loop->state.running)
         return false;
     client_application *app = loop->app;
@@ -461,7 +482,8 @@ bool mc_client_menu_loop_frame(mc_client_menu_loop *loop) {
         mc_client_screen_state screen;
         if (!screen_state(loop, &screen))
             return false;
-        if (!screen.is_menu)
+        if (screen.kind != MC_CLIENT_SCREEN_MAIN_MENU &&
+            screen.kind != MC_CLIENT_SCREEN_WORLD_SELECTION)
             return run_stop(loop, "actual screen pause virtual route is not connected", 546);
         pauses = true;
     }
@@ -473,6 +495,15 @@ bool mc_client_menu_loop_frame(mc_client_menu_loop *loop) {
     return true;
 }
 
+bool mc_client_menu_loop_frame(mc_client_menu_loop *loop) {
+    if (loop == NULL || loop->active || loop->retiring)
+        return false;
+    loop->active = true;
+    const bool returned = frame_body(loop);
+    loop->active = false;
+    return returned;
+}
+
 bool mc_client_menu_loop_inspect(const mc_client_menu_loop *loop, mc_client_menu_loop_state *out) {
     if (loop == NULL || out == NULL)
         return false;
@@ -480,12 +511,30 @@ bool mc_client_menu_loop_inspect(const mc_client_menu_loop *loop, mc_client_menu
     return true;
 }
 
+bool mc_client_menu_loop_retire(mc_client_menu_loop **slot) {
+    if (slot == NULL)
+        return false;
+    mc_client_menu_loop *loop = *slot;
+    if (loop == NULL)
+        return true;
+    if (loop->active)
+        return false;
+    loop->retiring = true;
+    if (mc_client_screen_event_retire(&loop->events) != MC_CLIENT_SCREEN_OK ||
+        mc_client_source_world_selection_draw_retire(&loop->world_draw) != MC_CLIENT_SCREEN_OK ||
+        mc_client_screen_transitions_retire(&loop->transitions, &loop->screen) !=
+            MC_CLIENT_SCREEN_OK)
+        return false;
+    mc_gui_main_menu_free(loop->renderer);
+    mc_client_assets_free(loop->assets);
+    free(loop);
+    *slot = NULL;
+    return true;
+}
+
 void mc_client_menu_loop_free(mc_client_menu_loop *loop) {
-    if (loop != NULL) {
-        mc_gui_main_menu_free(loop->renderer);
-        mc_client_assets_free(loop->assets);
-        free(loop);
-    }
+    if (!mc_client_menu_loop_retire(&loop))
+        fputs("Native menu still owns an active or externally retained screen\n", stderr);
 }
 
 static bool capture(mc_client_menu_loop *loop, const char *path) {
@@ -528,7 +577,14 @@ int mc_client_menu_run(const mc_client_application_options *options) {
             loop->state.frames, loop->state.ticks, loop->state.texture_ticks);
     result = 0;
 cleanup:
-    mc_client_menu_loop_free(loop);
+    for (unsigned int attempt = 0; loop != NULL && attempt < 35000; ++attempt) {
+        if (!mc_client_menu_loop_retire(&loop))
+            SDL_Delay(1);
+    }
+    if (loop != NULL) {
+        fputs("Native menu cleanup retains a live screen graph\n", stderr);
+        return 1;
+    }
     mc_client_bootstrap_status closed = MC_CLIENT_BOOTSTRAP_BUSY;
     for (unsigned int attempt = 0; closed == MC_CLIENT_BOOTSTRAP_BUSY && attempt < 35000;
          ++attempt) {

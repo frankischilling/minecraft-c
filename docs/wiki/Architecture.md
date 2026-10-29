@@ -24,10 +24,24 @@ source startup method returns. The bounded probe stops at `Minecraft.run`32;
 the default [menu runtime](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/menu-runtime.md)
 continues with canonical Timer/input owners, no-World ticks and a drawing bridge
 that reads actual source menu fields and checks resource/Font identities. Quit
-clears the App run flag; other screen destinations remain dependencies. Four
-focused Windows tests pass, including 100 frames and 32 ticks with cleanup. The
-latest complete suite, hosted CI and Linux remain pending. Full source run/PX
-rendering, shutdown and gameplay adoption remain unqualified.
+clears the App run flag. Singleplayer now constructs the genuine
+[World-selection graph](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-selection.md):
+real SaveFormat metadata and stable sorting, scrolling rows, selection during
+drawing and same-parent Cancel. Synchronous publication keeps the original
+input receiver alive through its trailing input. Retained old RQ occurrences
+keep App dependencies live through BUSY teardown. Select constructs the actual
+controller and stops at World-load `a(NULL World)`2. No World or Player is
+fabricated. Empty, populated, scrolling and double-click native Windows profiles
+pass. All 468 selected Windows CTests and formatting for 1,356 files pass.
+Full source run/PX rendering, shutdown
+and gameplay adoption remain unqualified.
+
+The save manager uses the same shared MathHelper class owner as the App. Its
+DateFormat captures the actual default profile, including for an empty List.
+The supported English/en_US, UTC/US Eastern and UTC years 1967..2099 profile
+matches 2,926 JDK17 vectors on Windows and Linux; other profiles fail explicitly.
+[Build and tests](Build-and-tests) separates these focused results from the
+preceding complete hosted scopes.
 
 The runtime uses C17 libraries with explicit ownership. The [architecture](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/architecture.md)
 describes the module boundaries; [parity](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md) records the qualified

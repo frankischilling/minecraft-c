@@ -54,12 +54,19 @@ Normal startup now invokes the actual display-screen path, including the
 statistics save, message clearing, App.r publication, GUI scaling, initialization
 and App.w store. External descendants preserve App dependencies through cleanup
 retries. The [default menu runtime](menu-runtime.md) now adopts source drawing,
-input draining, screen ticks and Quit. Other button routes, World selection and
-creation, and gameplay remain unfinished. Focused Windows source-event and
-native-menu tests pass, including 100 frames and 32 ticks with cleanup and an
-inspected 854 by 480 capture. All 463 selected Windows CTests pass. Hosted CI and Linux retain their
-separate source scopes; original menu/Calendar correspondence and matched
-visual comparison remain pending.
+input draining, screen ticks and Quit. Singleplayer now constructs the genuine
+[World-selection screen](world-selection.md), lists and sorts actual saves,
+draws selectable rows and returns to the same parent on Cancel. Input drains
+its original receiver after synchronous publication. Retained old screens keep
+App teardown BUSY until their external occurrences are released.
+
+Windows empty/populated, scrolling and double-click loop profiles pass and their captures were
+inspected. DateFormat matches 2,926 JDK17 vectors on Windows and Linux within
+its documented English, UTC/Eastern and 1967..2099 profile. The current full
+suite passes all 468 selected cases; formatting checks 1,356 files. World loading, creation, rename,
+deletion, gameplay and original menu-pixel correspondence remain unfinished
+or unqualified. Earlier complete results retain their source scopes in
+[testing](../testing.md).
 
 Seven selected Windows MSVC Debug CTests pass for GuiIngame, source-screen
 construction/initialization, authored resource files, Calendar and App services.

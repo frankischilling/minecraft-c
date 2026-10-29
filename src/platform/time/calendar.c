@@ -21,6 +21,7 @@
 #include <windows.h>
 #elif defined(__linux__)
 #include <time.h>
+#include <unistd.h>
 _Static_assert(sizeof(time_t) == sizeof(int64_t), "Calendar requires signed 64-bit time_t");
 _Static_assert((time_t)-1 < (time_t)0, "Calendar requires signed time_t");
 #else
@@ -32,6 +33,7 @@ _Static_assert((time_t)-1 < (time_t)0, "Calendar requires signed time_t");
 
 struct mc_platform_calendar {
     mc_platform_calendar_state state;
+    mc_platform_calendar_zone date_format_zone;
 #ifdef _WIN32
     DYNAMIC_TIME_ZONE_INFORMATION zone;
 #else
@@ -39,6 +41,37 @@ struct mc_platform_calendar {
     bool tz_present;
 #endif
 };
+
+#ifndef _WIN32
+static mc_platform_calendar_zone date_format_zone(const char *supplied) {
+    char selected[4096];
+    const char *name = supplied;
+    if (name == NULL) {
+        const ssize_t size = readlink("/etc/localtime", selected, sizeof(selected) - 1u);
+        if (size < 0 || (size_t)size >= sizeof(selected) - 1u)
+            return MC_PLATFORM_CALENDAR_ZONE_UNSUPPORTED;
+        selected[size] = '\0';
+        name = selected;
+    }
+    if (name[0] == ':')
+        ++name;
+    static const char *const prefixes[] = {"/usr/share/zoneinfo/", "/usr/lib/zoneinfo/",
+                                           "/usr/share/lib/zoneinfo/"};
+    for (size_t i = 0; i < sizeof(prefixes) / sizeof(prefixes[0]); ++i) {
+        const size_t length = strlen(prefixes[i]);
+        if (strncmp(name, prefixes[i], length) == 0) {
+            name += length;
+            break;
+        }
+    }
+    if (strcmp(name, "America/New_York") == 0 || strcmp(name, "US/Eastern") == 0)
+        return MC_PLATFORM_CALENDAR_ZONE_US_EASTERN;
+    if (strcmp(name, "UTC") == 0 || strcmp(name, "Etc/UTC") == 0 || strcmp(name, "Etc/GMT") == 0 ||
+        strcmp(name, "GMT") == 0 || strcmp(name, "UTC0") == 0 || strcmp(name, "GMT0") == 0)
+        return MC_PLATFORM_CALENDAR_ZONE_UTC;
+    return MC_PLATFORM_CALENDAR_ZONE_UNSUPPORTED;
+}
+#endif
 
 static mc_platform_calendar_status result(mc_platform_calendar_error *out,
                                           mc_platform_calendar_status status, uint32_t system_error,
@@ -78,6 +111,13 @@ static mc_platform_calendar_status select_defaults(mc_platform_calendar *calenda
     if (GetDynamicTimeZoneInformation(&calendar->zone) == TIME_ZONE_ID_INVALID)
         return result(error, MC_PLATFORM_CALENDAR_TIMEZONE, GetLastError(),
                       "default dynamic timezone");
+    if (wcscmp(calendar->zone.TimeZoneKeyName, L"UTC") == 0 && calendar->zone.Bias == 0 &&
+        calendar->zone.StandardBias == 0 && calendar->zone.DaylightBias == 0)
+        calendar->date_format_zone = MC_PLATFORM_CALENDAR_ZONE_UTC;
+    else if (wcscmp(calendar->zone.TimeZoneKeyName, L"Eastern Standard Time") == 0 &&
+             calendar->zone.Bias == 300 && calendar->zone.StandardBias == 0 &&
+             calendar->zone.DaylightBias == -60 && !calendar->zone.DynamicDaylightTimeDisabled)
+        calendar->date_format_zone = MC_PLATFORM_CALENDAR_ZONE_US_EASTERN;
 #else
     /* Restrict every supplied locale category instead of guessing which
      * platform default-locale precedence a different JDK build uses. */
@@ -89,6 +129,7 @@ static mc_platform_calendar_status select_defaults(mc_platform_calendar *calenda
      * time. No concurrent process environment or timezone mutation is admitted. */
     tzset();
     const char *tz = getenv("TZ");
+    calendar->date_format_zone = date_format_zone(tz);
     calendar->tz_present = tz != NULL;
     if (tz != NULL) {
         const size_t length = strlen(tz);
@@ -237,6 +278,97 @@ bool mc_platform_calendar_inspect(const mc_platform_calendar *calendar,
         return false;
     *out = calendar->state;
     return true;
+}
+
+mc_platform_calendar_zone mc_platform_calendar_date_format_zone(const mc_platform_calendar *c) {
+    return c == NULL ? MC_PLATFORM_CALENDAR_ZONE_UNSUPPORTED : c->date_format_zone;
+}
+
+mc_platform_calendar_status
+mc_platform_calendar_date_time_fields(mc_platform_calendar *c, int64_t millis,
+                                      mc_platform_calendar_date_time *out,
+                                      mc_platform_calendar_error *error) {
+    if (c == NULL || out == NULL)
+        return result(error, MC_PLATFORM_CALENDAR_ARGUMENT, 0, "DateFormat Calendar fields output");
+    if (c->date_format_zone == MC_PLATFORM_CALENDAR_ZONE_UNSUPPORTED)
+        return result(error, MC_PLATFORM_CALENDAR_TIMEZONE, 0, "DateFormat captured zone profile");
+    mc_platform_calendar_date_time value;
+#ifdef _WIN32
+    const int64_t epoch = INT64_C(116444736000000000);
+    if (millis < -INT64_C(11644473600000) || millis > (INT64_MAX - epoch) / INT64_C(10000))
+        return result(error, MC_PLATFORM_CALENDAR_RANGE, 0, "DateFormat FILETIME range");
+    const uint64_t ticks = (uint64_t)(millis * INT64_C(10000) + epoch);
+    const FILETIME file = {(DWORD)ticks, (DWORD)(ticks >> 32u)};
+    SYSTEMTIME utc, local;
+    if (!FileTimeToSystemTime(&file, &utc))
+        return result(error, MC_PLATFORM_CALENDAR_RANGE, GetLastError(), "DateFormat UTC fields");
+    if (utc.wYear < 1967 || utc.wYear > 2099)
+        return result(error, MC_PLATFORM_CALENDAR_RANGE, 0, "DateFormat UTC year profile");
+    if (c->date_format_zone == MC_PLATFORM_CALENDAR_ZONE_US_EASTERN) {
+        /* Selected JDK17 America/New_York transition observations,1967..2099.
+         * Windows otherwise extrapolates its first stored dynamic rule into
+         * earlier years, changing pre2007 DST. The actual native captured zone
+         * identity and biases are admitted before this selected rule closure. */
+        TIME_ZONE_INFORMATION zone = {0};
+        zone.Bias = c->zone.Bias;
+        zone.StandardBias = c->zone.StandardBias;
+        zone.DaylightBias = c->zone.DaylightBias;
+        zone.DaylightDate.wDayOfWeek = 0;
+        zone.DaylightDate.wHour = 2;
+        zone.StandardDate.wDayOfWeek = 0;
+        zone.StandardDate.wHour = 2;
+        if (utc.wYear >= 2007) {
+            zone.DaylightDate.wMonth = 3;
+            zone.DaylightDate.wDay = 2;
+            zone.StandardDate.wMonth = 11;
+            zone.StandardDate.wDay = 1;
+        } else {
+            zone.DaylightDate.wMonth = 4;
+            zone.DaylightDate.wDay = utc.wYear >= 1987 ? 1 : 5;
+            zone.StandardDate.wMonth = 10;
+            zone.StandardDate.wDay = 5;
+            if (utc.wYear == 1974) {
+                zone.DaylightDate.wMonth = 1;
+                zone.DaylightDate.wDay = 1;
+            } else if (utc.wYear == 1975) {
+                zone.DaylightDate.wMonth = 2;
+                zone.DaylightDate.wDay = 4;
+            }
+        }
+        if (!SystemTimeToTzSpecificLocalTime(&zone, &utc, &local))
+            return result(error, MC_PLATFORM_CALENDAR_TIMEZONE, GetLastError(),
+                          "DateFormat selected Eastern conversion");
+    } else
+        local = utc;
+    value = (mc_platform_calendar_date_time){(int32_t)local.wYear,   (int32_t)local.wMonth,
+                                             (int32_t)local.wDay,    (int32_t)local.wHour,
+                                             (int32_t)local.wMinute, (int32_t)local.wSecond};
+#else
+    const char *tz = getenv("TZ");
+    if ((tz != NULL) != c->tz_present || (tz != NULL && strcmp(tz, c->tz) != 0))
+        return result(error, MC_PLATFORM_CALENDAR_ENVIRONMENT, 0, "DateFormat captured TZ changed");
+    int64_t seconds = millis / INT64_C(1000);
+    if (millis % INT64_C(1000) < 0)
+        --seconds;
+    const time_t instant = (time_t)seconds;
+    struct tm utc, local;
+    errno = 0;
+    if (gmtime_r(&instant, &utc) == NULL)
+        return result(error, MC_PLATFORM_CALENDAR_RANGE, (uint32_t)errno, "DateFormat UTC fields");
+    if (utc.tm_year < 67 || utc.tm_year > 199)
+        return result(error, MC_PLATFORM_CALENDAR_RANGE, 0, "DateFormat UTC year profile");
+    if (localtime_r(&instant, &local) == NULL)
+        return result(error, MC_PLATFORM_CALENDAR_TIMEZONE, (uint32_t)errno,
+                      "DateFormat captured-zone conversion");
+    value = (mc_platform_calendar_date_time){local.tm_year + 1900, local.tm_mon + 1, local.tm_mday,
+                                             local.tm_hour,        local.tm_min,     local.tm_sec};
+#endif
+    *out = value;
+    c->state.millis = millis;
+    c->state.month = value.month - 1;
+    c->state.day_of_month = value.day;
+    c->state.date_installed = true;
+    return result(error, MC_PLATFORM_CALENDAR_OK, 0, NULL);
 }
 
 mc_platform_calendar_status mc_platform_calendar_retire(mc_platform_calendar **slot,

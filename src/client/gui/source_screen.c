@@ -1,4 +1,5 @@
 #include "source_screen_internal.h"
+#include "source_world_selection_internal.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -55,7 +56,7 @@ static mc_client_screen_status allocate_screen(mc_client_screen_classes *c,
                 else {
                     o->classes = c;
                     o->holds = 1;
-                    o->is_menu = menu;
+                    o->kind = menu ? MC_CLIENT_SCREEN_MAIN_MENU : MC_CLIENT_SCREEN_BASE;
                     mc_screen_memory_init(&o->memory, options, size);
                     ++c->holds;
                     *out = o;
@@ -98,7 +99,9 @@ static mc_client_screen_status construct_screen(mc_client_source_da *o, bool men
         mc_screen_fail(&e, MC_CLIENT_SCREEN_INVALID_ARGUMENT, "screen constructor receiver", NULL,
                        NULL, NULL, 0);
     else if (mc_screen_lock(o->classes, &e)) {
-        if (o->phase != MC_CLIENT_SCREEN_RAW || o->is_menu != menu || o->classes->retiring)
+        if (o->phase != MC_CLIENT_SCREEN_RAW ||
+            o->kind != (menu ? MC_CLIENT_SCREEN_MAIN_MENU : MC_CLIENT_SCREEN_BASE) ||
+            o->classes->retiring)
             mc_screen_fail(&e, MC_CLIENT_SCREEN_INVALID_PHASE, "one-shot actual screen constructor",
                            menu ? "fu" : "da", "<init>", "()V", 0);
         else {
@@ -131,6 +134,78 @@ mc_client_source_da *mc_client_screen_menu_base(mc_client_source_fu *o) {
     return o == NULL ? NULL : &o->base;
 }
 
+bool mc_screen_instance_hold_locked(mc_client_source_da *o, mc_client_screen_error *e) {
+    if (o == NULL || o->classes->retiring || o->phase == MC_CLIENT_SCREEN_CONSTRUCTING ||
+        o->phase == MC_CLIENT_SCREEN_RETIRING || o->holds == SIZE_MAX) {
+        mc_screen_fail(
+            e, o != NULL && o->holds == SIZE_MAX ? MC_CLIENT_SCREEN_LIMIT : MC_CLIENT_SCREEN_BUSY,
+            "screen native nested occurrence", NULL, NULL, NULL, 0);
+        return false;
+    }
+    ++o->holds;
+    return true;
+}
+
+static bool prepare_final(mc_client_source_da *o, mc_client_screen_error *e) {
+    o->phase = MC_CLIENT_SCREEN_RETIRING;
+    bool ready = true;
+    if (o->kind == MC_CLIENT_SCREEN_MAIN_MENU)
+        ready = mc_screen_menu_cleanup_locked((mc_client_source_fu *)o, e);
+    else if (o->kind == MC_CLIENT_SCREEN_WORLD_SELECTION)
+        ready = mc_screen_world_selection_cleanup_locked((mc_client_source_rq *)o, e);
+    if (ready)
+        ready = mc_screen_button_release_locked(&o->selected_cleanup, e);
+    if (ready)
+        ready = mc_screen_button_release_locked(&o->fields.a, e);
+    if (ready)
+        ready = mc_screen_initializations_prepare_locked(o, e);
+    if (ready && o->classes->holds == 1)
+        ready = mc_screen_class_final_locked(o->classes, e);
+    if (ready)
+        ready = mc_screen_initializations_release_apps_locked(o, e);
+    return ready;
+}
+
+static void free_screen(mc_client_source_da *o) {
+    if (o->kind == MC_CLIENT_SCREEN_MAIN_MENU)
+        mc_screen_menu_strings_free((mc_client_source_fu *)o);
+    mc_screen_memory_free(&o->memory);
+    free(o);
+}
+
+bool mc_screen_instance_release_locked(mc_client_source_da **slot, mc_client_screen_error *e) {
+    if (slot == NULL) {
+        mc_screen_fail(e, MC_CLIENT_SCREEN_INVALID_ARGUMENT, "nested screen release slot", NULL,
+                       NULL, NULL, 0);
+        return false;
+    }
+    mc_client_source_da *o = *slot;
+    if (o == NULL)
+        return true;
+    if (o->phase == MC_CLIENT_SCREEN_CONSTRUCTING ||
+        (o->holds == 1 && (o->active_calls != 0 || o->classes->holds <= 1))) {
+        mc_screen_fail(e, MC_CLIENT_SCREEN_BUSY, "nested screen active/final class occurrence",
+                       NULL, NULL, NULL, 0);
+        return false;
+    }
+    if (o->holds > 1)
+        --o->holds;
+    else {
+        if (!prepare_final(o, e))
+            return false;
+        mc_client_screen_classes *c = o->classes;
+        if (c->holds <= 1) {
+            mc_screen_fail(e, MC_CLIENT_SCREEN_BUSY, "nested caller class occurrence required",
+                           NULL, NULL, NULL, 0);
+            return false;
+        }
+        free_screen(o);
+        --c->holds; /* Retain the enclosing caller's monitor and class occurrence. */
+    }
+    *slot = NULL;
+    return true;
+}
+
 mc_client_screen_status mc_client_screen_retain(mc_client_source_da *o,
                                                 mc_client_screen_error *error) {
     mc_client_screen_error e = {0};
@@ -138,13 +213,7 @@ mc_client_screen_status mc_client_screen_retain(mc_client_source_da *o,
         mc_screen_fail(&e, MC_CLIENT_SCREEN_INVALID_ARGUMENT, "screen retain receiver", NULL, NULL,
                        NULL, 0);
     else if (mc_screen_lock(o->classes, &e)) {
-        if (o->classes->retiring || o->phase == MC_CLIENT_SCREEN_CONSTRUCTING ||
-            o->phase == MC_CLIENT_SCREEN_RETIRING || o->holds == SIZE_MAX)
-            mc_screen_fail(&e,
-                           o->holds == SIZE_MAX ? MC_CLIENT_SCREEN_LIMIT : MC_CLIENT_SCREEN_BUSY,
-                           "screen native retain", NULL, NULL, NULL, 0);
-        else
-            ++o->holds;
+        (void)mc_screen_instance_hold_locked(o, &e);
         (void)mtx_unlock(&o->classes->mutex);
     }
     return mc_screen_publish(&e, error);
@@ -159,30 +228,17 @@ static mc_client_screen_status release_screen(mc_client_source_da **slot, bool s
     else if (*slot != NULL && mc_screen_lock((*slot)->classes, &e)) {
         mc_client_source_da *o = *slot;
         mc_client_screen_classes *c = o->classes;
-        if (o->phase == MC_CLIENT_SCREEN_CONSTRUCTING || (strict && o->holds != 1))
+        if (o->phase == MC_CLIENT_SCREEN_CONSTRUCTING ||
+            (strict && (o->holds != 1 || o->active_calls != 0)) ||
+            (o->holds == 1 && o->active_calls != 0))
             mc_screen_fail(&e, MC_CLIENT_SCREEN_BUSY, "screen strict retirement/active operation",
                            NULL, NULL, NULL, 0);
         else if (o->holds > 1) {
             --o->holds;
             *slot = NULL;
         } else {
-            o->phase = MC_CLIENT_SCREEN_RETIRING;
-            bool ready = !o->is_menu || mc_screen_menu_cleanup_locked((mc_client_source_fu *)o, &e);
-            if (ready)
-                ready = mc_screen_button_release_locked(&o->selected_cleanup, &e);
-            if (ready)
-                ready = mc_screen_button_release_locked(&o->fields.a, &e);
-            if (ready)
-                ready = mc_screen_initializations_prepare_locked(o, &e);
-            if (ready && c->holds == 1)
-                ready = mc_screen_class_final_locked(c, &e);
-            if (ready)
-                ready = mc_screen_initializations_release_apps_locked(o, &e);
-            if (ready) {
-                if (o->is_menu)
-                    mc_screen_menu_strings_free((mc_client_source_fu *)o);
-                mc_screen_memory_free(&o->memory);
-                free(o);
+            if (prepare_final(o, &e)) {
+                free_screen(o);
                 *slot = NULL;
                 mc_screen_class_drop_locked(c);
                 return mc_screen_publish(&e, error);
@@ -238,13 +294,14 @@ mc_client_screen_status mc_client_screen_inspect(mc_client_source_da *o,
         v.arena_bytes = o->memory.bytes;
         v.allocations = o->memory.allocations;
         v.allocation_attempts = o->memory.attempts;
-        v.is_menu = o->is_menu;
+        v.is_menu = (o->kind == MC_CLIENT_SCREEN_MAIN_MENU);
+        v.kind = o->kind;
         v.da = o->fields;
         v.last_pc = o->last_pc;
         v.store_count = o->store_count;
         memcpy(v.stores, o->stores, sizeof(v.stores));
         v.failure = o->failure;
-        if (o->is_menu) {
+        if (o->kind == MC_CLIENT_SCREEN_MAIN_MENU) {
             const mc_client_source_fu *m = (const mc_client_source_fu *)o;
             v.fu = m->fields;
             v.caught_exception = m->caught;

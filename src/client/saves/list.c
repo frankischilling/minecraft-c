@@ -1,5 +1,8 @@
 #include "internal.h"
 
+#include <stdlib.h>
+#include <string.h>
+
 static mc_client_save_status info_failure(mc_client_save_error *e, mc_world_info_status status,
                                           int pc) {
     mc_client_save_status mapped = status == MC_WORLD_INFO_LIMIT ? MC_CLIENT_SAVE_LIMIT
@@ -149,4 +152,73 @@ mc_client_save_status mc_client_save_format_list(mc_client_save_format *f,
 failed:
     f->state.active = false;
     return s;
+}
+
+mc_client_save_status mc_client_save_list_sort(mc_client_save_list *list, mc_client_save_error *e) {
+    if (list == NULL)
+        return save_result(e, MC_CLIENT_SAVE_SOURCE_NULL_REFERENCE, "Collections.sort null List",
+                           "java/util/Collections", "sort(Ljava/util/List;)V", 0);
+    if (list->active || list->retiring)
+        return save_result(e, MC_CLIENT_SAVE_BUSY, "save List sort native active/retiring owner",
+                           NULL, NULL, -1);
+    if (list->count > list->capacity || (list->count != 0 && list->items == NULL))
+        return save_result(e, MC_CLIENT_SAVE_STATE_ERROR, "save List native storage invariant",
+                           NULL, NULL, -1);
+    if (list->count < 2)
+        return save_result(e, MC_CLIENT_SAVE_OK, NULL, NULL, NULL, -1);
+    if (list->count > SIZE_MAX / (2u * sizeof(*list->items)) ||
+        list->count * (2u * sizeof(*list->items)) > list->maximum_bytes)
+        return save_result(e, MC_CLIENT_SAVE_LIMIT, "save List stable-sort native scratch bound",
+                           NULL, NULL, -1);
+    mc_client_save_selection **work = malloc(list->count * 2u * sizeof(*work));
+    if (work == NULL)
+        return save_result(e, MC_CLIENT_SAVE_ALLOCATION_FAILED,
+                           "save List stable-sort native scratch", NULL, NULL, -1);
+    list->active = true;
+    mc_client_save_selection **from = work, **to = work + list->count;
+    memcpy(from, list->items, list->count * sizeof(*from));
+    mc_client_save_status status = MC_CLIENT_SAVE_OK;
+    /* Native stable-sort kernel over canonical vb objects. Left-first equality
+     * preserves ties; success commits into the SAME List storage without
+     * replacing any List/row identity or changing native occurrence counts.
+     * Scratch/failed-comparator cleanup preserves that storage. This kernel
+     * does not claim the selected JDK's internal comparison/failure schedule. */
+    for (size_t width = 1; width < list->count;) {
+        for (size_t start = 0; start < list->count;) {
+            const size_t middle = list->count - start < width ? list->count : start + width;
+            const size_t end = list->count - middle < width ? list->count : middle + width;
+            size_t left = start, right = middle, next = start;
+            while (left < middle && right < end) {
+                int32_t order = 0;
+                if (from[left] == NULL) {
+                    status = save_result(e, MC_CLIENT_SAVE_SOURCE_NULL_REFERENCE,
+                                         "save List sort null Comparable receiver",
+                                         "java/util/Collections", "sort(Ljava/util/List;)V", 0);
+                    goto complete;
+                }
+                status = mc_client_save_selection_compare(from[left], from[right], &order, e);
+                if (status != MC_CLIENT_SAVE_OK)
+                    goto complete;
+                to[next++] = order <= 0 ? from[left++] : from[right++];
+            }
+            while (left < middle)
+                to[next++] = from[left++];
+            while (right < end)
+                to[next++] = from[right++];
+            start = end;
+        }
+        mc_client_save_selection **swap = from;
+        from = to;
+        to = swap;
+        if (width > list->count / 2u)
+            break;
+        width *= 2u;
+    }
+    memcpy(list->items, from, list->count * sizeof(*from));
+complete:
+    list->active = false;
+    free(work);
+    if (status == MC_CLIENT_SAVE_OK)
+        return save_result(e, MC_CLIENT_SAVE_OK, NULL, NULL, NULL, -1);
+    return status;
 }

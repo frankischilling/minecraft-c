@@ -8,12 +8,24 @@ or dedicated server yet; the C runtime requires no JVM.
 The [native client](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md)
 now defaults to the constructed source App and initialized main menu. Its
 [menu runtime](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/menu-runtime.md)
-connects source events, no-World ticks, source menu drawing and Quit. Explicit
-flags retain the diagnostic title and fixed-camera terrain inspection. Four
-focused Windows tests pass, including 100 menu frames and 32 ticks with cleanup
-and an inspected 854 by 480 capture. All 463 selected Windows CTests pass. Hosted CI, Linux and original-game
-correspondence retain their separate source scopes. World entry and other menu
-destinations are unfinished; full source run/PX/shutdown parity is unproven.
+connects source events, no-World ticks, source menu drawing and Quit. Singleplayer
+now opens genuine
+[World selection](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-selection.md),
+with real sorted saves, row selection and Cancel returning to the same parent.
+Four native Windows profiles pass, including scrollbar drag and real double-click.
+Empty, populated and bottom-scroll captures were inspected.
+Select constructs the actual controller, then stops at World-load
+`a(NULL World)`2. World loading and gameplay remain unfinished. Explicit flags
+retain the diagnostic title and fixed-camera terrain inspection.
+
+DateFormat matches 2,926 JDK17 vectors on Windows and Linux within its admitted
+English/en_US, UTC/Eastern and 1967..2099 profile. Other profiles fail explicitly.
+All 468 selected Windows CTests and formatting for 1,356 files pass. The preceding
+[`de4290b` hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40802203908)
+passes 435 Windows and 454 Clang tests; GCC passes 453/454, stopping before client
+launch in its executable fingerprint guard. The current streaming-hash
+correction passes its public Windows/Linux regression. Full results and the
+unmeasured original-artifact size are recorded in [Build and tests](Build-and-tests).
 
 The earlier `8288290` [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40792366222)
 passes all 452 GCC cases, but Clang has one Display-creation failure and Windows

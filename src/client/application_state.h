@@ -14,7 +14,7 @@
 #include <stdatomic.h>
 
 /* Source-only references whose later method bodies remain separate. */
-typedef struct mc_client_controller_base mc_client_controller_base; /* actual ob */
+typedef struct mc_client_singleplayer_controller mc_client_singleplayer_controller;
 typedef struct mc_client_source_cx mc_client_source_cx;
 typedef struct mc_client_render_global mc_client_render_global; /* actual n */
 typedef struct mc_client_source_canvas mc_client_source_canvas;
@@ -121,7 +121,9 @@ struct client_application {
     /* Remaining actual Minecraft instance fields. Canonical fields above are
      * their sole T/f/j/k/p/q/s/u/z/Z/I/ad storage. Native display/options/loop
      * values never mirror these source fields. All start at actual defaults. */
-    mc_client_controller_base *controller; /* c: ob base identity, not os wrapper */
+    /* Actual c: the canonical implemented ob/os owner. Other concrete ob
+     * classes require their own source dispatch; no diagnostic controller is adopted. */
+    mc_client_singleplayer_controller *controller;
     bool Q, R;
     int32_t d, e;
     mc_client_source_cx *S;
@@ -163,6 +165,8 @@ struct client_application {
     bool source_namespace_borrowed;
     /* Native startup-call lifetime; borrows this actual App until retirement. */
     mc_client_application_startup *startup;
+    struct mc_client_screen_transitions
+        *screen_transitions; /* Native graph lease, not a source field. */
 };
 
 #endif

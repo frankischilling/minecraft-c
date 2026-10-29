@@ -1,6 +1,7 @@
 #include "../application_access.h"
 #include "../application_state.h"
 #include "source_screen_initialize_internal.h"
+#include "source_world_selection_internal.h"
 
 #include <limits.h>
 #include <string.h>
@@ -349,9 +350,16 @@ static bool da_body(mc_client_source_da *o, mc_client_screen_initialization *r, 
     if (!list_clear(o, r))
         return false;
     r->da_pc = 45;
-    if (o->is_menu) {
+    if (o->kind == MC_CLIENT_SCREEN_MAIN_MENU) {
         if (!menu_body((mc_client_source_fu *)o, r)) {
             r->failure.entry = site(true, 45);
+            return false;
+        }
+    } else if (o->kind == MC_CLIENT_SCREEN_WORLD_SELECTION) {
+        if (!mc_screen_world_selection_initialize_locked((mc_client_source_rq *)o,
+                                                         &r->failure.screen)) {
+            r->failure.entry = site(true, 45);
+            r->failure.caller = site(true, 45);
             return false;
         }
     } /* Actual da.b()V is return0. No generic successful callback. */
@@ -375,7 +383,8 @@ static mc_client_screen_status begin(mc_client_source_da *o, client_application 
         mc_screen_fail(&early, MC_CLIENT_SCREEN_INVALID_ARGUMENT, "screen initialize receiver",
                        NULL, NULL, NULL, 0);
     else if (mc_screen_lock(o->classes, &early)) {
-        if (o->phase != MC_CLIENT_SCREEN_READY || o->classes->retiring || (!da && !o->is_menu))
+        if (o->phase != MC_CLIENT_SCREEN_READY || o->classes->retiring || o->active_calls != 0 ||
+            (!da && !(o->kind == MC_CLIENT_SCREEN_MAIN_MENU)))
             mc_screen_fail(&early, MC_CLIENT_SCREEN_INVALID_PHASE,
                            "actual initialized screen native admission", NULL, NULL, NULL, 0);
         else {
@@ -439,7 +448,7 @@ static bool cleanup_failed(mc_client_screen_initialization *r, mc_client_screen_
 
 bool mc_screen_initializations_prepare_locked(mc_client_source_da *o, mc_client_screen_error *e) {
     if (!o->native_field_occurrences_retired) {
-        if (o->is_menu &&
+        if ((o->kind == MC_CLIENT_SCREEN_MAIN_MENU) &&
             !mc_screen_button_release_locked(&((mc_client_source_fu *)o)->fields.l, e))
             return false;
         mc_client_screen_list *list = (mc_client_screen_list *)o->fields.e;

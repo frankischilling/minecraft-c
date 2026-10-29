@@ -110,4 +110,23 @@ bool mc_gui_main_menu_same_source(const mc_gui_main_menu *, const mc_client_disp
                                   const mc_registry_resources *, const mc_registry_classes *,
                                   bool anaglyph);
 
+/* Shared no-World GUI kernels, without FU logo/splash/version/copyright.
+ * Begin owns one exclusive drawing scope and the existing GL3.3 projection;
+ * every successful begin requires end, including a later failed draw. End is
+ * native scope cleanup only and never rolls back GL effects. Text measures the
+ * same captured source Font before using the established glyph kernels.
+ * Quad vertices retain source order; background selects the real dirt image,
+ * false selects untextured vertex colors. These kernels do not sample input,
+ * clocks, select rows, swap, or claim arbitrary fixed-function GL state. */
+bool mc_gui_canvas_begin(mc_gui_main_menu *, const mc_scaled_resolution *,
+                         mc_gui_main_menu_measure_fn, void *measure_context,
+                         mc_gui_main_menu_error *);
+bool mc_gui_canvas_quad(mc_gui_main_menu *, bool background, const mc_client_vertex[4], bool blend,
+                        bool alpha_test, mc_gui_main_menu_error *);
+bool mc_gui_canvas_text(mc_gui_main_menu *, const mc_font_text *, int32_t x, int32_t y,
+                        uint32_t color, bool centered, mc_gui_main_menu_error *);
+bool mc_gui_canvas_button(mc_gui_main_menu *, const mc_gui_button *, mc_gui_mouse_position,
+                          mc_gui_main_menu_error *);
+void mc_gui_canvas_end(mc_gui_main_menu *);
+
 #endif

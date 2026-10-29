@@ -119,7 +119,8 @@ mc_client_startup_status application_startup_menu_retire(mc_client_application_s
     if (call->retired)
         return s->app->r == NULL ? MC_CLIENT_STARTUP_OK : MC_CLIENT_STARTUP_INVALID_PHASE;
     mc_client_source_da *base = mc_client_screen_menu_base(call->candidate);
-    if (call->r_stored ? s->app->r != base : s->app->r != NULL)
+    if (call->slot_handed_off ? s->app->r != NULL
+                              : (call->r_stored ? s->app->r != base : s->app->r != NULL))
         return MC_CLIENT_STARTUP_INVALID_PHASE;
     if (call->candidate != NULL) {
         mc_client_screen_state state;
@@ -138,7 +139,8 @@ mc_client_startup_status application_startup_menu_retire(mc_client_application_s
         return status == MC_CLIENT_SCREEN_BUSY ? MC_CLIENT_STARTUP_BUSY
                                                : MC_CLIENT_STARTUP_OWNER_FAILED;
     if (call->r_stored) {
-        s->app->r = NULL; /* Native view ended after actual owner consumption. */
+        if (!call->slot_handed_off)
+            s->app->r = NULL; /* Native view ended after actual owner consumption. */
         call->r_stored = false;
     }
     call->classes = NULL;

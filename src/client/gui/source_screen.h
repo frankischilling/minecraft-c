@@ -38,7 +38,8 @@ typedef enum mc_client_screen_status {
     MC_CLIENT_SCREEN_SOURCE_ARITHMETIC,
     MC_CLIENT_SCREEN_INPUT_FAILED,
     MC_CLIENT_SCREEN_SOUND_FAILED,
-    MC_CLIENT_SCREEN_TEXTURE_FAILED
+    MC_CLIENT_SCREEN_TEXTURE_FAILED,
+    MC_CLIENT_SCREEN_SOURCE_INDEX
 } mc_client_screen_status;
 
 typedef enum mc_client_screen_phase {
@@ -48,6 +49,12 @@ typedef enum mc_client_screen_phase {
     MC_CLIENT_SCREEN_FAILED,
     MC_CLIENT_SCREEN_RETIRING
 } mc_client_screen_phase;
+
+typedef enum mc_client_screen_kind {
+    MC_CLIENT_SCREEN_BASE,
+    MC_CLIENT_SCREEN_MAIN_MENU,
+    MC_CLIENT_SCREEN_WORLD_SELECTION
+} mc_client_screen_kind;
 
 typedef enum mc_client_screen_class_phase {
     MC_CLIENT_SCREEN_CLASS_COLD,
@@ -134,6 +141,7 @@ typedef struct mc_client_screen_state {
     mc_client_screen_phase phase;
     size_t holds, arena_bytes, allocations, allocation_attempts;
     bool is_menu;
+    mc_client_screen_kind kind;
     mc_client_screen_da_fields da;
     mc_client_screen_fu_fields fu;
     unsigned int last_pc, store_count;

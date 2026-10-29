@@ -194,10 +194,12 @@ five prepared logo profiles and cursor controls. Wider Linux qualification is
 still recorded separately from the Windows default-directory profile.
 
 Nonempty physical Controllers mapping, remaining screen transitions, World/Player
-publication and gameplay remain unfinished. The default menu loop passes its
-focused Windows run; the latest complete suite, hosted CI and Linux qualification
-remain pending. Full source run/PX rendering and `Minecraft.d()` shutdown parity
-remain unproven.
+publication and gameplay remain unfinished. The default menu loop now adopts
+the genuine [World-selection screen](world-selection.md), with focused Windows
+empty/populated, scrolling and double-click loops passing. All 468 selected
+Windows CTests and formatting for 1,356 files pass; [earlier hosted results](../testing.md#hosted-runtime-checkpoint-de4290b)
+retain their own source scope. Full source run/PX rendering and `Minecraft.d()`
+shutdown parity remain unproven.
 
 ## Menu ownership and verification
 

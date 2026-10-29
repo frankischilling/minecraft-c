@@ -6,11 +6,13 @@ services, local Session and imported-resource namespaces. The bounded startup
 probe still stops before `Minecraft.run`32 after `Minecraft.a()` returns749.
 The production `runtime/menu_loop.c` continues from that completed graph.
 
-This is a no-World menu increment. All 463 selected Windows MSVC Debug CTests pass,
-including GuiIngame, texture uploads, source screen events and the native menu loop. The
-menu run completes 100 frames and 32 ticks with cleanup; its 854 by 480 capture
-was inspected. Hosted CI, Linux and original-game correspondence retain their
-separate source scopes in the [testing record](../testing.md).
+Singleplayer now opens the genuine [World-selection screen](world-selection.md).
+Focused Windows empty and populated save-list runs pass, including drawing,
+selection, same-parent Cancel, the World-load frontier and retained-screen
+cleanup. Sixteen-save scrolling and real double-click profiles also pass.
+Their captures were inspected. All 468 selected Windows CTests and formatting
+for 1,356 files pass; earlier local and hosted results retain their exact source
+scopes in the [testing record](../testing.md).
 
 ## Launch and files
 
@@ -50,11 +52,16 @@ existing OpenGL 3.3 kernels. The admitted profile has the default texture pack,
 no World and the same captured/current Font. Empty screen particles and the
 genuine no-notice achievement branch complete without inventing active drawing.
 
-The original menu action dispatch is connected. Quit clears the actual App run
-flag; the other buttons retain explicit unfinished screen-construction routes.
-Window close uses the same run flag. Fullscreen, screenshots through the source
-F2 action, debug timing, connection screens, World entry and gameplay input still
-have explicit dependencies. Native `--capture` is a separate observation option.
+The original menu action dispatch is connected. Singleplayer synchronously
+constructs and initializes RQ; its real save rows can be selected during drawing.
+Cancel returns to the same parent. Source input retains its original receiver
+through the trailing input even after App.r changes. Quit and window close clear
+the actual App run flag. Select constructs the actual controller before stopping
+at World-load `a(NULL World)`2. Create, Rename and Delete retain the precise
+[unfinished prefixes](world-selection.md#transitions-and-lifetime).
+Fullscreen, source F2 screenshots, debug timing, connection screens and gameplay
+input also retain explicit dependencies. Native `--capture` is a separate
+observation option.
 
 The FPS path reads and resets the real `dk.b` counter. First use initializes its
 same-namespace Tessellator reference and zero field; it does not fabricate a
@@ -71,7 +78,8 @@ worker. A prepared counter-boundary test checks continued menu operation.
 
 Native cleanup stops and joins workers and retires screens, renderers, effects,
 sound and shared resources in dependency order. External descendants preserve
-their live App dependencies through BUSY and retry. This cleanup does not
+their live App dependencies through BUSY and retry, including an old RQ retained
+after a later screen is published. This cleanup does not
 establish the original `Minecraft.d()` shutdown sequence.
 
 The full `Minecraft.run`, `Minecraft.k`, EntityRenderer/PX rendering and shutdown

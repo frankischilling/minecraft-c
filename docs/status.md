@@ -1,28 +1,48 @@
 # Development status
 
-The native C client is pre-playable. Its new default path uses the constructed
-source App and initialized menu, with source events, ticks and Quit connected.
-All 463 selected Windows tests pass, including real startup, GPU uploads,
-source events and the native menu. A 100-frame, 32-tick menu run completes with
-cleanup and an inspected 854 by 480 capture. Hosted results retain their exact
-source scopes below. Explicit flags retain the diagnostic title and fixed-camera
-World inspection. World entry, dynamic
-terrain rendering, remaining menus and gameplay remain unfinished.
+The native C client is pre-playable. Its default path uses the constructed
+source App, initialized menu and genuine [World-selection screen](client/world-selection.md).
+Four Windows native save-list profiles pass, including row selection, scrollbar drag,
+same-parent Cancel, original-receiver trailing input and retained-screen cleanup.
+Empty, populated and bottom-scroll captures were inspected. Select constructs the actual controller, then
+stops at World-load `a(NULL World)`2. World loading, Player publication, dynamic
+terrain rendering and gameplay remain unfinished. Explicit flags retain the
+diagnostic title and fixed-camera World inspection.
 
 ## Current integration
 
-The new runtime builds ALL, passes 463 selected CTests without failure or skip,
-and passes a separate headless Release ALL build. Formatting checks 1,341 files.
-The selection excludes 45 configured reference-label profiles. See the
-[runtime checks](testing.md#default-source-menu-runtime) for native menu,
-prepared account-check boundary and GPU upload scopes.
+The current World-selection increment passes its focused native Windows loop.
+Its DateFormat module matches 2,926 JDK17 vectors on Windows and Linux for
+English/en_US, UTC/US Eastern and UTC years 1967..2099; other profiles fail
+explicitly. Create and Rename stop at `NEW162` and `NEW189`. Delete stops at
+preparation 21 without skipping its prefix. The Windows MSVC Debug ALL build
+and all 468 selected CTests pass without failures or skips in 197.43 seconds;
+46 configured reference-label profiles are excluded. The separate headless
+Release ALL build and formatting for 1,356 files also pass. See the
+[current checks](testing.md#world-selection-in-the-default-runtime).
+
+The preceding native-menu source passes all 463 selected Windows CTests without
+failure or skip, a separate headless Release ALL build and formatting for 1,341
+files. That selection excludes 45 configured reference-label profiles.
+
+The corrected runtime [hosted run at `de4290b`](https://github.com/frankischilling/minecraft-c/actions/runs/40802203908)
+passes all 435 Windows tests in 329.63 seconds and all 454 Clang tests in 189.45
+seconds. GCC passes 453 of 454 in 339.00 seconds; `client.startup` stops in the
+prelaunch executable fingerprint guard. Formatting passes for 1,341 files. All
+unique starts/results and tested checkout trees match that head. The old guard
+combined regular-file and 128 MiB size predicates, so the log does not directly
+measure the artifact size. The current streaming hash has its own finite 1 GiB
+bound, full-file/identity checks and a public sparse-file regression over 128 MiB;
+resource/image limits remain unchanged. That fix passes on Windows and Linux
+and is included in the current increment. The [audit](testing.md#hosted-runtime-checkpoint-de4290b)
+keeps its evidence separate from the pending complete rerun.
 
 The first runtime [hosted run at `fab3769`](https://github.com/frankischilling/minecraft-c/actions/runs/40801330270)
 stops both Linux builds on a signed-to-unsigned diagnostic-site conversion;
 neither Linux test suite starts. The correction preserves native `-1` and
 unsigned source bytecode sites in a wider signed record. Strict GCC/Clang syntax
-checks pass under WSL, and three affected Windows tests pass after rebuilding
-the client. These checks do not replace the next complete hosted run.
+checks and three affected Windows tests pass after rebuilding. The later
+`de4290b` run above completes both Linux builds and their full test selections.
 
 Published predecessor `3ec9892` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40796960416):
 434 Windows, 452 GCC and 452 Clang tests, 1,338 total, without failures or skips.
@@ -36,7 +56,7 @@ The preceding startup/menu-initialization Windows source builds ALL and passes
 source menus and RenderGlobal device controls. This selection excludes configured
 reference-label profiles. Formatting checks 1,325 files. A separate headless
 Release ALL build also passes. See [the current scope](testing.md#normal-startup-through-menu-initialization).
-Current Linux results remain to be established for this increment.
+Later hosted results are recorded above with their exact source scopes.
 
 
 Checkpoint `8288290` has a [failed hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40792366222).
@@ -108,9 +128,10 @@ and initializes its scaled layout and buttons. `Minecraft.a()` returns at `749`.
 The bounded startup probe stops before the clock call at `Minecraft.run`32;
 the default [native menu runtime](client/menu-runtime.md) continues from that
 same graph. It adopts Timer frames, canonical screen input, no-World ticks and
-source menu drawing. Quit clears the actual App run flag. Other transitions,
-World entry and gameplay remain unfinished. Full source run/PX rendering and
-`Minecraft.d()` shutdown parity are not established.
+source menu drawing. Quit clears the actual App run flag. The later
+[World-selection increment](client/world-selection.md) connects Singleplayer,
+save rows and Cancel; World loading and gameplay remain unfinished. Full source
+run/PX rendering and `Minecraft.d()` shutdown parity are not established.
 
 The earlier scene-construction increment passes 24 selected Windows cases, with six recorded on
 the production successor and eighteen on its test-only triangle-observation

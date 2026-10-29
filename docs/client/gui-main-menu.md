@@ -35,15 +35,18 @@ texture pack without a World. GuiMainMenu's captured Font and the application's
 current Font must be the same owner, covering the ordinary startup profile.
 Every reached nonnull text measurement calls that canonical bitmap Font and
 requires the native glyph kernel to produce the same width before continuing.
-Other screens, texture packs, World backgrounds and Font rebinding remain
-explicit unsupported profiles.
+The [World-selection bridge](world-selection.md) uses these same kernels from
+its own source drawing caller. Other texture packs, World backgrounds and Font
+rebinding remain explicit unsupported profiles.
 
 The bridge supplies drawing only. Its caller owns frame scheduling, input,
 source GUI ticks, actions, swaps and capture. Reusing the earlier qualified
 kernels does not establish a new original-game pixel comparison. The default
 source-menu runtime passes a focused Windows 100-frame, 32-tick run with cleanup
-and an inspected 854 by 480 capture. Its latest complete suite, hosted CI and
-Linux qualification remain pending.
+and an inspected 854 by 480 capture. The later World-selection increment has
+Windows results; all 468 selected CTests and formatting for 1,356 files pass.
+[Hosted results](../testing.md#hosted-runtime-checkpoint-de4290b) retain their
+exact source scope.
 
 ## Conditional scene transport
 

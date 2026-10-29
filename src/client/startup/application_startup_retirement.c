@@ -33,6 +33,10 @@ mc_client_startup_status mc_client_application_startup_retire(mc_client_applicat
     if (startup->active || startup->app == NULL || startup->app->startup != startup)
         return application_startup_fail(out == NULL ? &error : out, MC_CLIENT_STARTUP_BUSY,
                                         "startup active/live App borrow", NULL, NULL, NULL, 0);
+    if (startup->app->screen_transitions != NULL)
+        return application_startup_fail(out == NULL ? &error : out, MC_CLIENT_STARTUP_BUSY,
+                                        "runtime screen graph still leases startup dependencies",
+                                        NULL, NULL, NULL, 0);
     startup->phase = MC_CLIENT_STARTUP_RETIRING;
     startup->active = true;
     startup->retirement = error;
