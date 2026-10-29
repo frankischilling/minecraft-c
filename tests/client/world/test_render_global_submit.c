@@ -160,11 +160,55 @@ int main(int argc, char **argv) {
     mc_client_source_cx *cx = NULL;
     bool capability = false;
     if (query_profile) {
+        mc_client_cx_error cx_error;
+        mc_client_cx_class_state cx_state;
         CHECK(mc_client_cx_classes_create(&cx_classes, NULL) == MC_CLIENT_CX_OK);
         CHECK(mc_client_cx_allocate(cx_classes, &cx, NULL) == MC_CLIENT_CX_OK);
         CHECK(mc_client_cx_construct(cx, NULL) == MC_CLIENT_CX_OK);
-        CHECK(mc_client_cx_supported(cx, display, &capability, NULL) == MC_CLIENT_CX_OK);
+        CHECK(mc_client_cx_supported(cx, display, &capability, &cx_error) == MC_CLIENT_CX_OK);
+        CHECK(cx_error.status == MC_CLIENT_CX_OK && cx_error.source_returned &&
+              cx_error.capability_read && cx_error.source_pc == 20 &&
+              cx_error.source_class != NULL && cx_error.source_method != NULL &&
+              cx_error.source_descriptor != NULL && strcmp(cx_error.source_class, "cx") == 0 &&
+              strcmp(cx_error.source_method, "a") == 0 &&
+              strcmp(cx_error.source_descriptor, "()Z") == 0);
+        CHECK(mc_client_cx_classes_inspect(cx_classes, &cx_state, NULL) == MC_CLIENT_CX_OK);
+        CHECK(cx_state.phase == MC_CLIENT_CX_CLASS_READY && cx_state.enabled &&
+              cx_state.last_store == 1);
+        const mc_client_display_info *info = mc_client_display_info_get(display);
+        CHECK(info != NULL && info->gl_major >= 3 && info->gl_minor >= 0 && info->profile > 0);
+        CHECK(info->vendor[0] != '\0' && info->renderer[0] != '\0' && info->version[0] != '\0');
+        CHECK(strchr(info->vendor, '\n') == NULL && strchr(info->vendor, '\r') == NULL &&
+              strchr(info->renderer, '\n') == NULL && strchr(info->renderer, '\r') == NULL &&
+              strchr(info->version, '\n') == NULL && strchr(info->version, '\r') == NULL);
+        printf("SUBMIT_CONTEXT %s %d %d %d\n", name, info->gl_major, info->gl_minor, info->profile);
+        printf("SUBMIT_VENDOR %s %s\n", name, info->vendor);
+        printf("SUBMIT_RENDERER %s %s\n", name, info->renderer);
+        printf("SUBMIT_VERSION %s %s\n", name, info->version);
+        printf("SUBMIT_CX %s status=%u static_a=%u source_returned=%u capability_read=%u "
+               "capability=%u source_pc=%u\n",
+               name, (unsigned int)cx_error.status, cx_state.enabled ? 1u : 0u,
+               cx_error.source_returned ? 1u : 0u, cx_error.capability_read ? 1u : 0u,
+               capability ? 1u : 0u, cx_error.source_pc);
         printf("SUBMIT_CAPABILITY %s %u\n", name, capability ? 1u : 0u);
+        if (!capability) {
+            /* No Settings, cameras, App, N, Ge, TG or DK exists on this path.
+             * A false source capability is not an ordinary N substitute. */
+            CHECK(mc_client_cx_release(&cx, NULL) == MC_CLIENT_CX_OK && cx == NULL);
+            CHECK(mc_client_cx_classes_release(&cx_classes, NULL) == MC_CLIENT_CX_OK &&
+                  cx_classes == NULL);
+            CHECK(mc_client_display_destroy(display, &de));
+            display = NULL;
+            CHECK(mc_client_render_engine_classes_release(graphics) == MC_CLIENT_RENDER_ENGINE_OK);
+            graphics = NULL;
+            CHECK(mc_math_classes_release(&math, NULL) == MC_MATH_CLASS_OK && math == NULL);
+            CHECK(mc_entity_classes_free(entities) == MC_ENTITY_OK);
+            entities = NULL;
+            mc_java_random_profile_free(profile); /* Quiescent free has no failure result. */
+            profile = NULL;
+            printf("Source N submit unsupported: %s; N-not-entered; cleanup-complete\n", name);
+            return 77;
+        }
     }
     mc_game_settings *settings = NULL;
     CHECK(mc_game_settings_create_defaults(NULL, &settings, NULL) == MC_GAME_SETTINGS_OK);

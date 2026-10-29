@@ -8,6 +8,13 @@ and the ARB occlusion branch. Eight focused Windows MSVC Debug CTests pass in
 12 CPU failure profiles and seven device profiles with 35 exact rows. Hosted
 qualification is pending; verification applies to the specified native profiles.
 
+The capability follow-up passes nine focused MSVC CTests in 5.43 seconds.
+Its strict supported-device configuration requires and compares all 35 original
+rows. Contexts without the original ARB capability must still compare all 30
+ordinary rows and explicitly leave five occlusion rows uncredited after checked
+teardown. The [replay contract](../../tests/reference/client/render_global_submit/README.md)
+describes that admission and the required-device option.
+
 The World-frame caller invokes submission at `px.a(FJ)V:486`, passing its
 captured camera, pass0 and the float partial widened to double. A normal N
 return supplies the source integer result at896. PX discards it at489, sets

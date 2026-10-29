@@ -6754,8 +6754,8 @@
       "sha256": "1cb1ecf260669d6576e2bb69fe9813e8e643a617395528cc5af6779c7220ac01"
     },
     "cmake/client_render_global_submit_tests.cmake": {
-      "bytes": 2029,
-      "sha256": "cf0ceb83757af298f9dca5dbc10f7c82eea7cd4d22e456c75798d5d8c65e63c8"
+      "bytes": 2666,
+      "sha256": "2b51cfcba141b133d15fa96bfe45d5ebf0e9fb457fcbd4eeb72d820142532fa8"
     },
     "cmake/tests/client_occlusion_queries.cmake": {
       "bytes": 1088,
@@ -6834,8 +6834,8 @@
       "sha256": "0150cfa135b7dcd16a5e714303cb5e70fd91934a2174ba0023aec1e585696052"
     },
     "tests/client/world/test_render_global_submit.c": {
-      "bytes": 17570,
-      "sha256": "04566a18a62d276e65f1697dc636b17c76dddf9c4dae119775a53803cfa4c3c8"
+      "bytes": 20574,
+      "sha256": "102d2a4814a3df13934c42243564d91357b50d376e4dd96522ac0c73655cb9f1"
     },
     "tests/client/world/test_render_global_submit_cpu.c": {
       "bytes": 10064,

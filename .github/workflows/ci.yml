@@ -28,6 +28,10 @@ jobs:
 
   linux:
     runs-on: ubuntu-24.04
+    env:
+      CCACHE_DIR: ${{ runner.temp }}/mc-ccache
+      CCACHE_BASEDIR: ${{ github.workspace }}
+      CCACHE_MAXSIZE: 512M
     strategy:
       fail-fast: false
       matrix:
@@ -64,14 +68,23 @@ jobs:
           sudo apt-get update
           sudo apt-get -o "Dir::Cache::archives=$RUNNER_TEMP/mc-apt-archives" \
             -o APT::Keep-Downloaded-Packages=true install -y --no-install-recommends \
-            pkg-config libfontconfig-dev fonts-dejavu-core libasound2-dev libpulse-dev \
+            ccache pkg-config libfontconfig-dev fonts-dejavu-core libasound2-dev libpulse-dev \
             libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev \
             libxi-dev libxss-dev libxtst-dev libgl1-mesa-dev libgl1-mesa-dri xvfb xauth
+      - name: Restore compiler cache
+        id: compiler-cache
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: linux-ubuntu24.04-${{ matrix.compiler }}-ccache-v1-${{ github.sha }}
+          restore-keys: linux-ubuntu24.04-${{ matrix.compiler }}-ccache-v1-
       - name: Configure
         run: >-
           cmake -S . -B build -G Ninja
           -DCMAKE_C_COMPILER=${{ matrix.compiler }}
           -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache
+          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
           -DCMAKE_BUILD_TYPE=Debug
           -DMC_ENABLE_SANITIZERS=ON
           -DMC_ENABLE_JAVA_REFERENCE_TESTS=ON
@@ -80,7 +93,19 @@ jobs:
           -DMC_ENABLE_APPLICATION_STARTUP_TESTS=ON
           -DMC_ENABLE_RESOURCE_LOOKUP_OBSERVERS=ON
       - name: Build
-        run: cmake --build build
+        id: build
+        run: |
+          ccache --zero-stats
+          cmake --build build
+      - name: Report compiler cache
+        if: always()
+        run: ccache --show-stats
+      - name: Save compiler cache
+        if: steps.build.outcome == 'success' && steps.compiler-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: linux-ubuntu24.04-${{ matrix.compiler }}-ccache-v1-${{ github.sha }}
       # Preserve only scheduling estimates. Every test still runs from this build.
       - name: Restore test timing estimates
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
@@ -90,6 +115,9 @@ jobs:
           restore-keys: linux-ubuntu24.04-${{ matrix.compiler }}-ctest-costs-v1-
       - name: Test
         run: xvfb-run -a -s "-screen 0 1280x1024x24 -noreset" env LIBGL_ALWAYS_SOFTWARE=1 ctest --test-dir build --parallel 4 --output-on-failure
+      - name: Report terrain test scopes and failures
+        if: always()
+        run: python -B scripts/development/report_terrain_tests.py --build build
       - name: Check controller mirror identities
         run: python tests/tools/cache/check_controller_mirrors.py --work-dir build/controller-mirrors
       - name: Check lifecycle interval bounds
@@ -144,6 +172,9 @@ jobs:
           restore-keys: windows-2022-msvc-ctest-costs-v1-
       - name: Test
         run: ctest --test-dir build -C Debug --parallel 4 --output-on-failure
+      - name: Report terrain test scopes and failures
+        if: always()
+        run: python -B scripts/development/report_terrain_tests.py --build build
       - name: Check controller mirror identities
         run: python tests/tools/cache/check_controller_mirrors.py --work-dir build/controller-mirrors
       - name: Check lifecycle interval bounds

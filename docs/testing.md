@@ -2,6 +2,23 @@
 
 ## Terrain submission Windows qualification
 
+The current capability follow-up passes nine focused MSVC Debug CTests in
+5.43 seconds, with zero failures or skips. The supported Windows context uses
+`MC_REQUIRE_TERRAIN_OCCLUSION_TEST=ON`: all seven device profiles and all 35
+original rows, including exact pixels, are mandatory and pass. Seven additional
+receipt controls reject malformed capability evidence, incomplete captures,
+missing cleanup and any execution output on an unsupported path.
+
+Hosted [checkpoint 08c6cec](https://github.com/frankischilling/minecraft-c/actions/runs/40961956762)
+passed Windows 482 tests and all but `client.render_global_submit` on each Linux
+compiler. The Linux context did not expose the original ARB capability. The
+follow-up accepts that result only after a genuine false CX query, complete
+checked teardown and no N execution, while still comparing all 30 ordinary rows
+exactly. It reports five original occlusion rows as uncredited. This does not
+provide Linux occlusion coverage. Hosted Windows has display tests disabled;
+the local strict run supplies the supported-device evidence above. New hosted
+qualification remains pending.
+
 Current source implements [N terrain submission](client/terrain-submission.md),
 including its outer/subset methods, recenter/JO, TG buffers and ARB query paths.
 The frame calls real N at PX486; a normal return continues to FLAT493 and the

@@ -3994,8 +3994,8 @@
       "sha256": "1cb1ecf260669d6576e2bb69fe9813e8e643a617395528cc5af6779c7220ac01"
     },
     "cmake/client_render_global_submit_tests.cmake": {
-      "bytes": 2029,
-      "sha256": "cf0ceb83757af298f9dca5dbc10f7c82eea7cd4d22e456c75798d5d8c65e63c8"
+      "bytes": 2666,
+      "sha256": "2b51cfcba141b133d15fa96bfe45d5ebf0e9fb457fcbd4eeb72d820142532fa8"
     },
     "cmake/tests/client_occlusion_queries.cmake": {
       "bytes": 1088,
@@ -4074,8 +4074,8 @@
       "sha256": "0150cfa135b7dcd16a5e714303cb5e70fd91934a2174ba0023aec1e585696052"
     },
     "tests/client/world/test_render_global_submit.c": {
-      "bytes": 17570,
-      "sha256": "04566a18a62d276e65f1697dc636b17c76dddf9c4dae119775a53803cfa4c3c8"
+      "bytes": 20574,
+      "sha256": "102d2a4814a3df13934c42243564d91357b50d376e4dd96522ac0c73655cb9f1"
     },
     "tests/client/world/test_render_global_submit_cpu.c": {
       "bytes": 10064,
@@ -4118,8 +4118,8 @@
       "sha256": "05c8b594963135faa99c8d3cd01b0b2f1e81d11918db5012cfd1d71995a475d7"
     },
     "tests/reference/client/render_global_submit/run_native.py": {
-      "bytes": 3839,
-      "sha256": "7a709dd95a188e4c4cac19b2dd3dc3ce621c183d402ad2ae9c2915482e4f3028"
+      "bytes": 8750,
+      "sha256": "8e3311c607f2bdf8e1246e61b92f38975eb226309a0756f736f5f16671436ccb"
     },
     "tests/reference/client/render_global_submit_cpu/capture_reference.py": {
       "bytes": 8605,
@@ -4132,6 +4132,14 @@
     "tests/reference/client/render_global_submit_cpu/run_native.py": {
       "bytes": 3936,
       "sha256": "f261c8ac687a25c8d5d8a75759e2c187e1b45b23dd9f8cf45acc7c49737cfec1"
+    },
+    "scripts/development/report_terrain_tests.py": {
+      "bytes": 3754,
+      "sha256": "f5f6cc6619b674c1110380a3e3e6a02d354a0e6c82e78e8e34d1ab0fdf808fbe"
+    },
+    "tests/tools/client/test_submit_capability.py": {
+      "bytes": 6390,
+      "sha256": "818804fa3fc950d71fa7e509330326c07ba20f75a9db6277b8e73c9b678221c1"
     }
   },
   "authorities": {

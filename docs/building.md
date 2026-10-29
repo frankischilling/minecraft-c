@@ -68,6 +68,19 @@ It creates hidden windows with real OpenGL contexts and fails if the desktop
 cannot provide OpenGL 3.3 core. It uses authored pixels and needs no Minecraft
 resources. Keep this option off on runners without a graphics environment.
 
+Terrain submission compares 35 original rows when the current context supports
+the original ARB occlusion capability. Otherwise it compares 30 ordinary rows
+and explicitly reports the five unsupported rows. Use
+`-DMC_REQUIRE_TERRAIN_OCCLUSION_TEST=ON` together with display tests for a
+supported-device run that requires all 35 rows. See the
+[replay contract](../tests/reference/client/render_global_submit/README.md).
+
+Linux CI uses ccache for C and C++ compilation, with separate GCC and Clang
+caches capped at 512 MB each. A successful build saves its cache before tests,
+so a later test failure does not discard compilation work. Cache statistics
+are printed for each build. Tests still execute from the newly built targets;
+dependency-download and CTest scheduling caches remain separate.
+
 `client.movement_input` and `entity.turn` build without graphics or audio.
 Optional `MC_ENABLE_INPUT_REFERENCE_TESTS=ON` and
 `MC_ENABLE_TURN_REFERENCE_TESTS=ON` compare their configured native observers
