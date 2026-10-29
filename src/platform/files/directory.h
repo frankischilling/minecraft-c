@@ -49,6 +49,7 @@ bool mc_file_native_exists(const mc_file_native_char *path, mc_file_io_state *st
 bool mc_file_native_mkdir(const mc_file_native_char *path, mc_file_io_state *state);
 bool mc_file_native_rename(const mc_file_native_char *from, const mc_file_native_char *to,
                            int *system_error);
+bool mc_file_native_delete(const mc_file_native_char *path, int *system_error);
 mc_file_io_status mc_file_native_mkdirs(const mc_file_native_char *path, size_t depth,
                                         bool *created, mc_file_io_state *state,
                                         mc_file_io_error *error);

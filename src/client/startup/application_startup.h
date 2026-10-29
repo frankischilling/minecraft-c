@@ -116,7 +116,8 @@ typedef struct mc_client_startup_services {
     mc_game_settings_classes *settings_classes;
     mc_client_sdk_icons *icons; /* Native imported prerequisite; NULL keeps its reached failure. */
     /* Borrowed real class resource provider; must outlive startup and every
-     * retained Pack/stream. Read only at actual reached Pack operations. */
+     * retained Pack/stream and source screen class namespace. Read only at
+     * actual reached Pack or screen operations. */
     const mc_registry_resources *texture_resources;
     /* Real class resource namespace and already initialized immutable native
      * trig prerequisite. Borrowed through every retained effect occurrence.
@@ -200,10 +201,11 @@ mc_client_startup_status mc_client_application_startup_allocate(client_applicati
  * null-Canvas/windowed prefix performs actual Display methods and the real
  * directory/SaveFormat/actual Settings, Pack, RenderEngine and bitmap FontRenderer calls. Later
  * actual calls include statistics, input, graphics, sound/effects, n625/g628,
- * viewport641, dn657/j660, cz673/U676/start683 and Post startup693.
- * The next unconnected caller allocation is uq697. Its
- * finite later frontier is NOT a return from a749 or run32, and is never a whole-client/playability
- * claim. */
+ * viewport641, dn657/j660, cz673/U676/start683, Post startup693,
+ * uq702/v705 and the main-menu display/initialization path through a749.
+ * The next unconnected caller operation is Minecraft.run currentTimeMillis32,
+ * after the actual a749 return. Startup completion is distinct from frame-loop
+ * completion or a playable session. */
 mc_client_startup_status mc_client_application_run_prefix(mc_client_application_startup *,
                                                           mc_client_startup_error *);
 /* Actual f()V body: only J=false2. Requires live registered actual storage;

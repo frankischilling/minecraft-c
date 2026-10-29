@@ -131,6 +131,9 @@ mc_java_file_status mc_java_file_is_directory(mc_java_file *file, bool *out,
  * Ordinary false is successful source completion; native bounds/providers
  * preserve out. rename borrows both same-namespace READY Files exclusively. */
 mc_java_file_status mc_java_file_mkdir(mc_java_file *file, bool *out, mc_java_file_error *error);
+/* One nonrecursive File.delete operation. Missing/nonempty/provider refusal
+ * returns successful source false; native encoding/budget errors preserve out. */
+mc_java_file_status mc_java_file_delete(mc_java_file *file, bool *out, mc_java_file_error *error);
 mc_java_file_status mc_java_file_rename_to(mc_java_file *file, mc_java_file *destination, bool *out,
                                            mc_java_file_error *error);
 mc_java_file_status mc_java_file_mkdirs(mc_java_file *file, bool *out, mc_java_file_error *error);

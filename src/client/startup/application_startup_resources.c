@@ -56,10 +56,7 @@ static mc_client_startup_status post_startup(mc_client_application_startup *s) {
                                         "(Ljava/lang/String;)V", call->graphics.site.pc);
     }
     call->post_returned = true;
-    s->failure.caller.pc = 697;
-    return application_startup_fail(&s->failure, MC_CLIENT_STARTUP_UNIMPLEMENTED,
-                                    "next actual GuiIngame caller allocation is not connected",
-                                    MC_CLASS, "a", "()V", 697);
+    return application_startup_gui_ingame(s);
 }
 
 mc_client_startup_status application_startup_resources(mc_client_application_startup *s) {

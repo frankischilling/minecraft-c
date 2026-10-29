@@ -28,8 +28,8 @@
   },
   "native_sources": {
     "include/mc/client/statistics/writer.h": {
-      "bytes": 18531,
-      "sha256": "dfac5a05d802908a5100382c1152918cfdcbc899f3f8d1f4d430b7dfe97bd06f"
+      "bytes": 18579,
+      "sha256": "d67c860882eee759f1cef7fe12f0a9609bcc7e043bb569bf30bd92369fb87a64"
     },
     "include/mc/entity/player/player.h": {
       "bytes": 10280,
@@ -52,12 +52,12 @@
       "sha256": "dd8fa87f7fcf7c400f3aaad579ede89507a8344191af0628d3b913be2fa5ca0a"
     },
     "src/client/statistics/files.c": {
-      "bytes": 36105,
-      "sha256": "98135497363666abe3f26f2ad4198df3e91bf99adff5770bda380f683386f17f"
+      "bytes": 35921,
+      "sha256": "4b954e2ac753572e6eac8321ef8c2c30d7d6a0e00edbe75c65a590d978eb7d83"
     },
     "src/client/statistics/internal.h": {
-      "bytes": 12939,
-      "sha256": "1c19f7068e0d794ce6a48b53b2c80a2930a3cab86f7d5f5c6cd56df0e79c3779"
+      "bytes": 13621,
+      "sha256": "49425de06bdd52866db8f357a12e875a271159080f63406977ee910b2f209a52"
     },
     "src/client/statistics/json.c": {
       "bytes": 30030,
@@ -76,8 +76,8 @@
       "sha256": "bb02d641d265574a180e14f962952af8be9fbba6468d3a47508c9b967f00e620"
     },
     "src/client/statistics/writer.c": {
-      "bytes": 29214,
-      "sha256": "266c661b52073266d126b4b2243f6f9a8554f22a76497d6ff4c5ce64070246fa"
+      "bytes": 29317,
+      "sha256": "ff6ca7d53b42c5a1a883dec02b905a069e963882b55dcd8050f2efb5a4c805a0"
     },
     "src/core/java/integer_parse.c": {
       "bytes": 3904,

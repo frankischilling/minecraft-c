@@ -6,6 +6,10 @@
 #include <stdio.h>
 #include <threads.h>
 
+_Static_assert(sizeof(mc_world_info_name) == 24u, "InfoName allocation size");
+_Static_assert(_Alignof(mc_world_info_name) == 8u, "InfoName allocation alignment");
+_Static_assert(offsetof(mc_world_info_name, units) == 16u, "InfoName units offset");
+
 typedef struct name_job {
     mc_java_files *files;
     mc_world_info_name *shared, *expected;
@@ -52,9 +56,6 @@ int main(void) {
     atomic_bool go;
     atomic_init(&go, false);
     const uint16_t text[] = {'a', 'b', 'c'};
-    if (sizeof(mc_world_info_name) != 24u || _Alignof(mc_world_info_name) != 8u ||
-        offsetof(mc_world_info_name, units) != 16u)
-        goto cleanup;
     if (mc_world_info_name_copy((mc_nbt_string){text, 3}, sizeof(mc_world_info_name) + 6u, &name) !=
         MC_WORLD_INFO_OK)
         goto cleanup;

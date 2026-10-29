@@ -84,6 +84,45 @@ static void write_file(mc_java_file *f, bool append) {
     CHECK(fclose(out) == 0);
 }
 
+static mc_java_file *child(mc_java_files *files, mc_java_file *parent, const char *name) {
+    mc_world_info_name *text = ascii(name);
+    mc_java_file *result = file(files, parent, text);
+    mc_world_info_name_release(text);
+    return result;
+}
+
+static void deletion(mc_java_files *files, mc_java_file *root) {
+    mc_java_file_error error;
+    mc_java_file *regular = child(files, root, "delete-file.bin");
+    bool result = true;
+    CHECK(mc_java_file_delete(regular, &result, &error) == MC_JAVA_FILE_OK && !result);
+    write_file(regular, false);
+    mc_file_native_char *native = path(regular);
+#ifdef _WIN32
+    CHECK(SetFileAttributesW(native, FILE_ATTRIBUTE_READONLY) != 0);
+#else
+    CHECK(chmod(native, 0444) == 0);
+#endif
+    free(native);
+    CHECK(mc_java_file_delete(regular, &result, &error) == MC_JAVA_FILE_OK && result);
+    result = true;
+    CHECK(mc_java_file_exists(regular, &result, &error) == MC_JAVA_FILE_OK && !result);
+    CHECK(mc_java_file_delete(regular, &result, &error) == MC_JAVA_FILE_OK && !result);
+    mc_java_file *directory = child(files, root, "delete-directory");
+    CHECK(mc_java_file_mkdir(directory, &result, &error) == MC_JAVA_FILE_OK && result);
+    mc_java_file *entry = child(files, directory, "entry.bin");
+    write_file(entry, false);
+    result = true;
+    CHECK(mc_java_file_delete(directory, &result, &error) == MC_JAVA_FILE_OK && !result);
+    CHECK(mc_java_file_exists(entry, &result, &error) == MC_JAVA_FILE_OK && result);
+    CHECK(mc_java_file_delete(entry, &result, &error) == MC_JAVA_FILE_OK && result);
+    CHECK(mc_java_file_delete(directory, &result, &error) == MC_JAVA_FILE_OK && result);
+    CHECK(mc_java_file_delete(directory, &result, &error) == MC_JAVA_FILE_OK && !result);
+    CHECK(mc_java_file_release(&entry, &error) == MC_JAVA_FILE_OK);
+    CHECK(mc_java_file_release(&directory, &error) == MC_JAVA_FILE_OK);
+    CHECK(mc_java_file_release(&regular, &error) == MC_JAVA_FILE_OK);
+}
+
 static void set_time(mc_java_file *f, int64_t milliseconds) {
     mc_file_native_char *p = path(f);
 #ifdef _WIN32
@@ -263,6 +302,7 @@ static void run(mc_nbt_string text) {
 #endif
 #endif
     mc_java_file *raw = NULL;
+    deletion(files, root);
     CHECK(mc_java_file_allocate(files, &raw, &e) == MC_JAVA_FILE_OK);
     rejected(raw, MC_JAVA_FILE_STATE_ERROR);
     CHECK(mc_java_file_construct_string(raw, NULL, &e) == MC_JAVA_FILE_SOURCE_NULL_STRING);
@@ -277,6 +317,8 @@ static void run(mc_nbt_string text) {
     CHECK(mc_java_files_create(&options, &bounded, &e) == MC_JAVA_FILE_OK);
     mc_java_file *limited = file(bounded, NULL, mc_java_file_path(regular));
     rejected(limited, MC_JAVA_FILE_LIMIT);
+    b = true;
+    CHECK(mc_java_file_delete(limited, &b, &e) == MC_JAVA_FILE_LIMIT && b);
     uint16_t nul = 0;
     mc_world_info_name *nul_name = copy_name((mc_nbt_string){&nul, 1});
     mc_java_file *invalid = file(bounded, NULL, nul_name);
@@ -284,6 +326,8 @@ static void run(mc_nbt_string text) {
     b = true;
     number = 9;
     CHECK(mc_java_file_is_file(invalid, &b, &e) == MC_JAVA_FILE_OK && !b);
+    b = true;
+    CHECK(mc_java_file_delete(invalid, &b, &e) == MC_JAVA_FILE_OK && !b);
     CHECK(mc_java_file_length(invalid, &number, &e) == MC_JAVA_FILE_OK && number == 0);
     CHECK(mc_java_file_last_modified(invalid, &number, &e) == MC_JAVA_FILE_OK && number == 0);
     CHECK(mc_java_file_release(&invalid, &e) == MC_JAVA_FILE_OK &&

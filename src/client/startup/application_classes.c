@@ -192,6 +192,25 @@ mc_client_application_classes_release(mc_client_application_classes **owner,
     }
     classes->native_retiring = true;
     (void)mtx_unlock(&classes->mutex);
+    if (mc_client_screen_classes_release(&classes->startup_screen_classes,
+                                         &classes->screen_retirement) != MC_CLIENT_SCREEN_OK)
+        return application_owner_fail(error,
+                                      classes->screen_retirement.status == MC_CLIENT_SCREEN_BUSY
+                                          ? MC_CLIENT_APPLICATION_OWNER_BUSY
+                                          : MC_CLIENT_APPLICATION_OWNER_INVALID_PHASE,
+                                      "Minecraft native screen namespace retirement", NULL, NULL,
+                                      NULL, 0, 0);
+    if (mc_client_gui_ingame_classes_release(&classes->startup_gui_ingame_classes,
+                                             &classes->gui_ingame_retirement) !=
+        MC_CLIENT_GUI_INGAME_OK)
+        return application_owner_fail(
+            error,
+            classes->gui_ingame_retirement.status == MC_CLIENT_GUI_INGAME_BUSY
+                ? MC_CLIENT_APPLICATION_OWNER_BUSY
+                : MC_CLIENT_APPLICATION_OWNER_INVALID_PHASE,
+            "Minecraft native GuiIngame namespace retirement", NULL, NULL, NULL, 0, 0);
+    classes->startup_gui_ingame_models = NULL;
+    classes->startup_gui_ingame_profile = NULL;
     /* File retirement may fail/BUSY. Keep the final class occurrence and its
      * exact af identity for retry; no source putstatic af=NULL is performed. */
     if (classes->af != NULL &&

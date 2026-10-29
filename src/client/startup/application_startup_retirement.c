@@ -1,4 +1,5 @@
 #include "application_startup_effects.h"
+#include "application_startup_gui_ingame.h"
 #include "application_startup_input.h"
 #include "application_startup_internal.h"
 #include "application_startup_rendering.h"
@@ -36,6 +37,16 @@ mc_client_startup_status mc_client_application_startup_retire(mc_client_applicat
     startup->active = true;
     startup->retirement = error;
     client_application *app = startup->app;
+    const mc_client_startup_status menu = application_startup_menu_retire(startup);
+    if (menu != MC_CLIENT_STARTUP_OK)
+        return cleanup_failure(startup, menu, "startup menu/screen retirement", out);
+    if (atomic_load_explicit(&app->screen_borrows, memory_order_acquire) != 0)
+        return cleanup_failure(startup, MC_CLIENT_STARTUP_BUSY,
+                               "external screen descendants still borrow App dependencies", out);
+    const mc_client_startup_status gui_ingame = application_startup_gui_ingame_retire(startup);
+    if (gui_ingame != MC_CLIENT_STARTUP_OK)
+        return cleanup_failure(startup, gui_ingame, "startup actual GuiIngame native retirement",
+                               out);
     const mc_client_startup_status resources = application_startup_resources_retire(startup);
     if (resources != MC_CLIENT_STARTUP_OK)
         return cleanup_failure(startup, resources, "startup resource worker retirement", out);
@@ -371,6 +382,8 @@ mc_client_startup_status mc_client_application_startup_retire(mc_client_applicat
     startup->effects = NULL;
     free(startup->rendering);
     free(startup->resources);
+    free(startup->menu);
+    free(startup->gui_ingame);
     startup->rendering = NULL;
     app->startup = NULL;
     /* No source f/J/o mutation and no kg join: constructor retirement owns

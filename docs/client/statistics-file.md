@@ -83,3 +83,23 @@ path without changing the filename profile. Test capture rejects every recorded
 pipe/artifact error and requires explicit empty reader-errors; read1 detects
 overflow while a child remains asleep. Source-only controls run normally and
 with Python optimization enabled.
+
+## Typed source saves
+
+The source File path now uses the canonical typed FileWriter/PrintWriter owner.
+It opens and truncates the actual temporary File before serialization, prints
+without checkError, closes at the normal/finally source sites, then performs
+exists/delete/exists/rename/rename in the original order. Ignored false File
+results remain source booleans. Save attempts retain their failed prefixes and
+native cleanup remains separate from source close.
+
+The source-file test verifies exact delivered text over two rotations, prior
+data moving into the old File, and absence of the temporary File after success.
+It also verifies serializer-exception closure without rotation and failed-open
+retention. Normal startup's menu caller now reaches this synchronous save.
+Throwable printing on the caught save-error path remains an explicit dependency.
+
+File.delete uses one nonrecursive operation. Tests cover missing files,
+read-only files, nonempty directory refusal, empty directories, invalid names
+and bounds. The Windows provider follows the selected
+[JDK 17 implementation](https://github.com/openjdk/jdk17u/blob/jdk-17.0.17%2B10/src/java.base/windows/native/libjava/WinNTFileSystem_md.c#L615-L643).

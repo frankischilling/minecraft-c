@@ -740,9 +740,7 @@ mc_client_stats_status stats_write_file_set(mc_client_stats_writer *writer,
                                             mc_client_stats_report *report,
                                             mc_client_stats_error *error) {
     if (writer->memory->source != NULL)
-        return stats_fail(error, MC_CLIENT_STATS_UNIMPLEMENTED_DEPENDENCY,
-                          "actual raw PrintWriter/FileWriter construction dependency", "cj", "a",
-                          "(Ljava/util/Map;Ljava/io/File;Ljava/io/File;Ljava/io/File;)V", 0);
+        return stats_source_write_file_set(writer, map, dat_index, report, error);
     stats_syncher *syncher = writer->retained_syncher;
     const stats_file *dat = syncher->files[dat_index], *old = syncher->files[dat_index + 2u],
                      *temporary = syncher->files[dat_index + 4u];

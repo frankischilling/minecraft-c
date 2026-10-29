@@ -26,6 +26,12 @@ static bool cpu_prefixes(void) {
     mc_client_mouse_helper_state state = {0}, unchanged = {0};
     mc_client_render_engine_class_state class_state = {0};
     mc_client_sdk_input_error input_error = {0};
+    CHECK(mc_client_mouse_helper_grab(NULL, NULL, &error) ==
+          MC_CLIENT_MOUSE_HELPER_INVALID_ARGUMENT);
+    CHECK(mc_client_mouse_helper_read_motion(NULL, NULL, &error) ==
+          MC_CLIENT_MOUSE_HELPER_INVALID_ARGUMENT);
+    CHECK(mc_client_mouse_helper_ungrab(NULL, NULL, &error) ==
+          MC_CLIENT_MOUSE_HELPER_INVALID_ARGUMENT);
     CHECK(mc_client_sdk_keyboard_create(NULL, &input_error) ==
           MC_CLIENT_SDK_INPUT_INVALID_ARGUMENT);
     CHECK(mc_client_sdk_mouse_create(NULL, &input_error) == MC_CLIENT_SDK_INPUT_INVALID_ARGUMENT);
@@ -40,6 +46,15 @@ static bool cpu_prefixes(void) {
         CHECK(mc_client_mouse_helper_inspect(owner, &state) &&
               state.phase == MC_CLIENT_MOUSE_HELPER_RAW && !state.source_c_stored &&
               !state.source_e_stored && !state.source_d_stored);
+        CHECK(mc_client_mouse_helper_grab(owner, NULL, &error) ==
+                  MC_CLIENT_MOUSE_HELPER_INVALID_PHASE &&
+              error.native_policy && strcmp(error.site.method, "a") == 0);
+        CHECK(mc_client_mouse_helper_read_motion(owner, NULL, &error) ==
+                  MC_CLIENT_MOUSE_HELPER_INVALID_PHASE &&
+              strcmp(error.site.method, "c") == 0);
+        CHECK(mc_client_mouse_helper_ungrab(owner, NULL, &error) ==
+                  MC_CLIENT_MOUSE_HELPER_INVALID_PHASE &&
+              strcmp(error.site.method, "b") == 0);
         const mc_client_mouse_helper_status status =
             mc_client_mouse_helper_construct(owner, NULL, NULL, NULL, &error);
         CHECK(status == MC_CLIENT_MOUSE_HELPER_LIMIT ||
@@ -98,6 +113,90 @@ cleanup:
         ok = false;
     if (classes != NULL &&
         mc_client_render_engine_classes_release(classes) != MC_CLIENT_RENDER_ENGINE_OK)
+        ok = false;
+    return ok;
+}
+
+static bool source_methods(mc_client_source_vy *owner, mc_client_sdk_input *input,
+                           mc_client_display *display) {
+    bool ok = false;
+    mc_client_mouse_helper_error error = {0};
+    mc_client_mouse_helper_state helper;
+    mc_client_sdk_input_state before, after;
+    mc_client_sdk_input_error input_error = {0};
+    mc_client_sdk_bytes_state bytes_before, bytes_after;
+    mc_client_events_error events_error = {0};
+    mc_client_events_state transport_before, transport_after;
+    CHECK(mc_client_mouse_helper_grab(owner, input, &error) == MC_CLIENT_MOUSE_HELPER_OK &&
+          error.source_returned && strcmp(error.site.method, "a") == 0 && error.site.pc == 14);
+    CHECK(mc_client_mouse_helper_inspect(owner, &helper) && helper.source_a == 0 &&
+          helper.source_b == 0 && helper.last_store_pc == 11 &&
+          strcmp(helper.last_method, "a") == 0);
+    CHECK(mc_client_sdk_input_inspect(input, &before) && before.grabbed);
+    mc_client_event_port *events = mc_client_display_event_port(display);
+    CHECK(mc_client_events_inspect(events, &transport_before));
+    SDL_Event event = {0};
+    event.type = SDL_EVENT_MOUSE_MOTION;
+    event.motion.windowID = SDL_GetWindowID(mc_client_display_window(display));
+    event.motion.xrel = 7.0f;
+    event.motion.yrel = -9.0f;
+    CHECK(SDL_PushEvent(&event));
+    /* Mouse.poll consumes the Display's retained transport, not SDL's FIFO.
+     * Transfer this real event through that transport without another pump. */
+    CHECK(mc_client_events_retain_pending(events, &events_error) == MC_CLIENT_EVENTS_OK);
+    CHECK(mc_client_events_inspect(events, &transport_after) &&
+          transport_after.records > transport_before.records &&
+          transport_after.pump_generation == transport_before.pump_generation);
+    CHECK(mc_client_sdk_mouse_poll(input, &input_error) == MC_CLIENT_SDK_INPUT_OK);
+    CHECK(mc_client_sdk_input_inspect(input, &before) && before.dx == 7 && before.dy == 9);
+    CHECK(mc_client_sdk_bytes_inspect(before.mouse_read, &bytes_before));
+    event = (SDL_Event){0};
+    event.type = SDL_EVENT_KEY_DOWN;
+    event.key.windowID = SDL_GetWindowID(mc_client_display_window(display));
+    event.key.scancode = SDL_SCANCODE_B;
+    event.key.key = SDLK_B;
+    CHECK(SDL_PushEvent(&event));
+    event = (SDL_Event){0};
+    event.type = SDL_EVENT_MOUSE_MOTION;
+    event.motion.windowID = SDL_GetWindowID(mc_client_display_window(display));
+    event.motion.xrel = 3.0f;
+    event.motion.yrel = 5.0f;
+    CHECK(SDL_PushEvent(&event));
+    CHECK(mc_client_mouse_helper_read_motion(owner, input, &error) == MC_CLIENT_MOUSE_HELPER_OK &&
+          error.source_returned && strcmp(error.site.method, "c") == 0 && error.site.pc == 14);
+    CHECK(SDL_HasEvent(SDL_EVENT_MOUSE_MOTION) && SDL_HasEvent(SDL_EVENT_KEY_DOWN));
+    CHECK(mc_client_mouse_helper_inspect(owner, &helper) && helper.source_a == before.dx &&
+          helper.source_b == before.dy && helper.last_store_pc == 11 &&
+          strcmp(helper.last_method, "c") == 0);
+    CHECK(mc_client_sdk_input_inspect(input, &after) && after.dx == 0 && after.dy == 0 &&
+          after.x == before.x && after.y == before.y && after.wheel == before.wheel &&
+          after.mouse_read == before.mouse_read && after.mouse_events == before.mouse_events &&
+          after.keyboard_events == before.keyboard_events);
+    CHECK(mc_client_sdk_bytes_inspect(after.mouse_read, &bytes_after) &&
+          bytes_before.position == bytes_after.position && bytes_before.limit == bytes_after.limit);
+    CHECK(mc_client_mouse_helper_read_motion(owner, input, &error) == MC_CLIENT_MOUSE_HELPER_OK);
+    CHECK(mc_client_mouse_helper_inspect(owner, &helper) && helper.source_a == 0 &&
+          helper.source_b == 0 && SDL_HasEvent(SDL_EVENT_MOUSE_MOTION));
+    CHECK(mc_client_mouse_helper_read_motion(owner, NULL, &error) ==
+              MC_CLIENT_MOUSE_HELPER_INVALID_ARGUMENT &&
+          error.native_policy && error.site.pc == 1 && !error.source_returned);
+    CHECK(mc_client_mouse_helper_ungrab(owner, NULL, &error) ==
+              MC_CLIENT_MOUSE_HELPER_NULL_REFERENCE &&
+          !error.native_policy && !error.source_returned && strcmp(error.site.method, "b") == 0 &&
+          error.site.pc == 4 &&
+          strcmp(error.exception_class, "java/lang/NullPointerException") == 0);
+    CHECK(mc_client_sdk_input_inspect(input, &after) && after.grabbed &&
+          SDL_HasEvent(SDL_EVENT_MOUSE_MOTION) && SDL_HasEvent(SDL_EVENT_KEY_DOWN));
+    CHECK(mc_client_mouse_helper_inspect(owner, &helper) && helper.last_store_pc == 11 &&
+          helper.source_a == 0 && helper.source_b == 0);
+    CHECK(mc_client_mouse_helper_grab(owner, input, &error) == MC_CLIENT_MOUSE_HELPER_OK);
+    CHECK(mc_client_mouse_helper_inspect(owner, &helper) && helper.source_a == 0 &&
+          helper.source_b == 0 && strcmp(helper.last_method, "a") == 0);
+    ok = true;
+cleanup:
+    /* The source b() null fault intentionally leaves the grab unchanged. End
+     * this test's real SDK grab explicitly before continuing cursor controls. */
+    if (mc_client_sdk_mouse_set_grabbed(input, false, &input_error) != MC_CLIENT_SDK_INPUT_OK)
         ok = false;
     return ok;
 }
@@ -192,6 +291,7 @@ static bool native_window(const char *root) {
           state.phase == MC_CLIENT_MOUSE_HELPER_READY && state.source_d_stored &&
           state.source_d != NULL && state.pending_pc == 70 && state.last_store_pc == 57 &&
           state.source_e == 10 && state.source_c == NULL);
+    CHECK(source_methods(owner, input, display));
     mc_client_sdk_cursor *borrowed_cursor = state.source_d;
     CHECK(mc_client_sdk_cursor_retain(borrowed_cursor, &cursor_error) == MC_CLIENT_SDK_CURSOR_OK);
     cursor = borrowed_cursor;

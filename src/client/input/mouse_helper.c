@@ -17,6 +17,8 @@ struct mc_client_source_vy {
     mc_client_sdk_cursor *d, *candidate;
     mc_client_direct_int_buffer *delays, *images;
     mc_client_mouse_helper_error failure;
+    mc_client_sdk_input *input; /* Native borrow protected by the owned Cursor's Display lease. */
+    const char *last_method;
 };
 
 static mc_client_mouse_helper_status fail(mc_client_mouse_helper_error *error,
@@ -93,6 +95,8 @@ mc_client_mouse_helper_status mc_client_mouse_helper_construct(mc_client_source_
     }
     owner->active = true;
     owner->phase = MC_CLIENT_MOUSE_HELPER_CONSTRUCTING;
+    owner->input = input;
+    owner->last_method = "<init>";
     owner->pending_pc = 1; /* Actual empty Object constructor. */
     owner->e = 10;
     owner->e_stored = true;
@@ -167,6 +171,124 @@ done:
     if (e.status != MC_CLIENT_MOUSE_HELPER_OK)
         owner->failure = e;
     return publish(&e, out);
+}
+
+static bool method_enter(mc_client_source_vy *owner, const char *method,
+                         mc_client_mouse_helper_error *error) {
+    error->site = (mc_client_graphics_site){"vy", method, "()V", -1};
+    if (owner == NULL || owner->active || owner->phase != MC_CLIENT_MOUSE_HELPER_READY) {
+        error->status = owner == NULL   ? MC_CLIENT_MOUSE_HELPER_INVALID_ARGUMENT
+                        : owner->active ? MC_CLIENT_MOUSE_HELPER_BUSY
+                                        : MC_CLIENT_MOUSE_HELPER_INVALID_PHASE;
+        error->operation = "native vy READY method admission";
+        error->native_policy = true;
+        return false;
+    }
+    owner->active = true;
+    owner->last_method = method;
+    return true;
+}
+
+static mc_client_mouse_helper_status method_leave(mc_client_source_vy *owner,
+                                                  mc_client_mouse_helper_error *error,
+                                                  mc_client_mouse_helper_error *out) {
+    owner->active = false;
+    if (error->status != MC_CLIENT_MOUSE_HELPER_OK)
+        owner->failure = *error;
+    return publish(error, out);
+}
+
+static bool method_input(mc_client_source_vy *owner, mc_client_sdk_input *input,
+                         mc_client_mouse_helper_error *error, int32_t pc) {
+    error->site.pc = pc;
+    if (input != NULL && input == owner->input)
+        return true;
+    error->status = MC_CLIENT_MOUSE_HELPER_INVALID_ARGUMENT;
+    error->operation = "native vy same canonical SDK input";
+    error->native_policy = true;
+    return false;
+}
+
+static void input_failed(mc_client_mouse_helper_error *error) {
+    error->status = error->input.status == MC_CLIENT_SDK_INPUT_BUSY ? MC_CLIENT_MOUSE_HELPER_BUSY
+                    : error->input.status == MC_CLIENT_SDK_INPUT_SOURCE_ILLEGAL_STATE ||
+                            error->input.status == MC_CLIENT_SDK_INPUT_SOURCE_INDEX
+                        ? MC_CLIENT_MOUSE_HELPER_SOURCE_EXCEPTION
+                        : MC_CLIENT_MOUSE_HELPER_INPUT_FAILED;
+    error->operation = error->input.operation;
+    error->native_policy = error->input.native_policy;
+    error->child = (mc_client_graphics_site){error->input.site.class_name, error->input.site.method,
+                                             error->input.site.descriptor, error->input.site.pc};
+}
+
+mc_client_mouse_helper_status mc_client_mouse_helper_grab(mc_client_source_vy *owner,
+                                                          mc_client_sdk_input *input,
+                                                          mc_client_mouse_helper_error *out) {
+    mc_client_mouse_helper_error error = {0};
+    if (!method_enter(owner, "a", &error))
+        return publish(&error, out);
+    if (!method_input(owner, input, &error, 1))
+        return method_leave(owner, &error, out);
+    if (mc_client_sdk_mouse_set_grabbed(input, true, &error.input) != MC_CLIENT_SDK_INPUT_OK) {
+        input_failed(&error);
+        return method_leave(owner, &error, out);
+    }
+    owner->a = 0;
+    owner->last_store = 6;
+    owner->b = 0;
+    owner->last_store = 11;
+    error.site.pc = 14;
+    error.source_returned = true;
+    return method_leave(owner, &error, out);
+}
+
+mc_client_mouse_helper_status
+mc_client_mouse_helper_read_motion(mc_client_source_vy *owner, mc_client_sdk_input *input,
+                                   mc_client_mouse_helper_error *out) {
+    mc_client_mouse_helper_error error = {0};
+    if (!method_enter(owner, "c", &error))
+        return publish(&error, out);
+    if (!method_input(owner, input, &error, 1))
+        return method_leave(owner, &error, out);
+    int32_t dx;
+    if (mc_client_sdk_mouse_take_dx(input, &dx, &error.input) != MC_CLIENT_SDK_INPUT_OK) {
+        input_failed(&error);
+        return method_leave(owner, &error, out);
+    }
+    owner->a = dx;
+    owner->last_store = 4;
+    error.site.pc = 8;
+    int32_t dy;
+    if (mc_client_sdk_mouse_take_dy(input, &dy, &error.input) != MC_CLIENT_SDK_INPUT_OK) {
+        input_failed(&error);
+        return method_leave(owner, &error, out);
+    }
+    owner->b = dy;
+    owner->last_store = 11;
+    error.site.pc = 14;
+    error.source_returned = true;
+    return method_leave(owner, &error, out);
+}
+
+mc_client_mouse_helper_status mc_client_mouse_helper_ungrab(mc_client_source_vy *owner,
+                                                            mc_client_sdk_input *input,
+                                                            mc_client_mouse_helper_error *out) {
+    (void)input; /* No Mouse call precedes the reached Component.getWidth. */
+    mc_client_mouse_helper_error error = {0};
+    if (!method_enter(owner, "b", &error))
+        return publish(&error, out);
+    error.site.pc = 4;
+    error.child = (mc_client_graphics_site){"java/awt/Component", "getWidth", "()I", 0};
+    if (owner->c == NULL) {
+        error.status = MC_CLIENT_MOUSE_HELPER_NULL_REFERENCE;
+        error.operation = "actual vy Component.getWidth null receiver";
+        error.exception_class = "java/lang/NullPointerException";
+    } else {
+        error.status = MC_CLIENT_MOUSE_HELPER_UNIMPLEMENTED_DEPENDENCY;
+        error.operation = "actual Component.getWidth owner dependency";
+        error.native_policy = true;
+    }
+    return method_leave(owner, &error, out);
 }
 
 mc_client_mouse_helper_status mc_client_mouse_helper_retain(mc_client_source_vy *owner,
@@ -255,6 +377,7 @@ bool mc_client_mouse_helper_inspect(const mc_client_source_vy *owner,
                                           .cursor_candidate = owner->candidate,
                                           .delay_buffer = owner->delays,
                                           .image_buffer = owner->images,
-                                          .failure = &owner->failure};
+                                          .failure = &owner->failure,
+                                          .last_method = owner->last_method};
     return true;
 }

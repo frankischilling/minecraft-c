@@ -1,7 +1,6 @@
 # GuiIngame constructor
 
-The canonical `uq` constructor is implemented separately from its later startup
-caller. Its CPU owner has the actual inherited `ub.k`, ten instance fields,
+The canonical `uq` constructor is connected to normal startup. Its CPU owner has the actual inherited `ub.k`, ten instance fields,
 distinct List and ordinary Random, literal String identities and borrowed App.
 The interface is [gui_ingame.h](../../include/mc/client/gui/gui_ingame.h).
 
@@ -21,6 +20,8 @@ cleanup retains retryable slots on BUSY or failure.
 `client.gui_ingame_constructor` passes in the selected Windows and Clang cohorts.
 These CPU controls perform no GUI drawing, frame update, filesystem or device
 operation. Constructor readiness does not mean that the HUD is attached.
-Normal startup still stops at resource-thread allocation664, before `uq`
-allocation697 and App.v publication705. Chat clearing, HUD drawing and caller
-adoption remain unfinished.
+Normal startup constructs the canonical instance at `702` and publishes App.v
+at `705`, then constructs and initializes the main menu. The real display-screen
+caller invokes message clearing at its `101` call. Strict startup retirement
+preserves App and its dependencies while an external GuiIngame occurrence exists.
+HUD drawing, chat interaction and frame adoption remain unfinished.

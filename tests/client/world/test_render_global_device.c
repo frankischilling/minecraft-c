@@ -38,7 +38,7 @@ static int global_device(const char *resources, const char *assets) {
                                                  startup.error) == MC_CLIENT_STARTUP_OK);
     CHECK(mc_client_application_run_prefix(attempt, startup.error) ==
               MC_CLIENT_STARTUP_UNIMPLEMENTED &&
-          startup.error->caller.pc == 697 && app->S != NULL && app->g != NULL);
+          startup.error->caller.pc == 32 && app->S != NULL && app->g != NULL);
     CHECK(statistics_retire_resources(attempt) == 0);
     mc_client_render_global *published_global = app->g;
     const size_t scene_before = f.graphics->scene_lease_count;
@@ -88,7 +88,7 @@ static int global_device(const char *resources, const char *assets) {
           state.fields.A == state.fields.y + 2 && state.fields.e != state.fields.s &&
           state.fields.s != state.fields.y && f.graphics->a->count == ledger_before + 6 &&
           f.graphics->scene_lease_count == scene_before + 1 && app->g == published_global &&
-          attempt->last_startup_store == 676);
+          attempt->last_startup_store == 705);
     if (state.fields.w) {
         mc_client_display_query_state queries;
         CHECK(state.queries_issued && state.fields.v != NULL && owner->queries != NULL &&

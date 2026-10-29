@@ -45,8 +45,8 @@
       "sha256": "e0399f26a08f05031bec8fdda8da83b3af652666683d5d861b42dfb2dfc161fe"
     },
     "include/mc/world/storage/java_file.h": {
-      "bytes": 11649,
-      "sha256": "5ce6520317b2d3d903d23399a6a6554272564644f037500899f734b6cb9b735a"
+      "bytes": 11908,
+      "sha256": "7055aeb260c1ad7d7547f057feab23c7b8141eefa7a10771854a45bf1f55add6"
     },
     "src/client/saves/internal.h": {
       "bytes": 2629,
@@ -105,12 +105,12 @@
       "sha256": "4b359c0853772300305bb9237cea7dd059cdd44bb5604410a467864d946bc8f5"
     },
     "src/platform/files/directory.c": {
-      "bytes": 26727,
-      "sha256": "a55415fc7d1f6e7c2cf608a839f618369ac2569be9f37351eff81f7d5cf11f57"
+      "bytes": 27879,
+      "sha256": "7be5b166458f90a632589d562f7888451e46d47ac144e60ece7ef768bb03083a"
     },
     "src/platform/files/directory.h": {
-      "bytes": 3400,
-      "sha256": "3aaeb266d4770815bcf62070f35d87cce2b72cfebec2907cfc833fd06f7b2e54"
+      "bytes": 3480,
+      "sha256": "c4b2ac47d2b953964e0decb4723296fd53a08bde767658431c1b3a00222133a3"
     },
     "src/platform/files/normalize.inc": {
       "bytes": 1339,
@@ -165,8 +165,8 @@
       "sha256": "ea45f4fb9f5c22f8a176f15d5dcdb05aeb8f3df6e4225e2bb418958a68145001"
     },
     "src/world/storage/java_file_io.c": {
-      "bytes": 26157,
-      "sha256": "e02b828377a13d116eeb2ec03cde95b3caedb032124fc2b91db54998d7f8403d"
+      "bytes": 27046,
+      "sha256": "397dd2b8d4a22eb9039d229ddbe126e81d6991faaa08c80680a3cfb582b64f4c"
     },
     "src/world/storage/java_file_list.c": {
       "bytes": 12266,

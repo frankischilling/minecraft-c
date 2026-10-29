@@ -49,9 +49,11 @@ authored splash/translation files. Font device controls compare borrowed-view
 measurement and drawing with the existing String interface. These checks have
 their own execution results; source presence alone does not establish a pass.
 
-Current-screen transitions, menu drawing and physical input dispatch, button
-actions, world selection/creation and a connected gameplay loop remain
-unfinished. Original menu, Calendar and visual correspondence remain unverified.
+Normal startup now invokes the actual display-screen path, including the
+statistics save, message clearing, App.r publication, GUI scaling, initialization
+and App.w store. External descendants preserve App dependencies through cleanup
+retries. Remaining transitions, menu drawing and physical input dispatch, button
+actions, world selection/creation and the gameplay loop remain unfinished. Original menu, Calendar and visual correspondence remain unverified.
 
 Seven selected Windows MSVC Debug CTests pass for GuiIngame, source-screen
 construction/initialization, authored resource files, Calendar and App services.

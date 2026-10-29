@@ -2,8 +2,10 @@
 #define MC_CLIENT_STARTUP_APPLICATION_OWNER_INTERNAL_H
 
 #include "../application_state.h"
+#include "../gui/source_screen.h"
 #include "../render/cx.h"
 #include "application_owner.h"
+#include "mc/client/gui/gui_ingame.h"
 #include "mc/client/statistics/writer.h"
 #include "mc/core/java/print_stream.h"
 #include "mc/world/storage/java_file.h"
@@ -34,6 +36,16 @@ struct mc_client_application_classes {
     mc_java_file_error file_retirement;
     mc_client_stats_classes *startup_stats_classes; /* SAME outer xi literal namespace. */
     mc_client_stats_error stats_retirement;
+    /* Cold associations; actual NEW697 and later NEWfu trigger active use. */
+    mc_client_gui_ingame_classes *startup_gui_ingame_classes;
+    mc_client_render_classes *startup_gui_ingame_models;
+    mc_java_random_profile *startup_gui_ingame_profile;
+    mc_client_gui_ingame_error gui_ingame_retirement;
+    mc_client_screen_classes *startup_screen_classes;
+    mc_java_random_profile *startup_screen_profile;
+    const mc_registry_resources *startup_screen_resources;
+    mc_registry_classes *startup_screen_registry;
+    mc_client_screen_error screen_retirement;
     /* One selected System-output bootstrap per actual native class namespace.
      * This is a native service association, never Minecraft's source clinit. */
     mc_java_system_output *system_output;

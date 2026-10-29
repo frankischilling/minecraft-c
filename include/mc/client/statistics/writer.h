@@ -208,7 +208,8 @@ typedef struct mc_client_stats_file_state {
  * files/classes are existing shared cold services, never created per writer.
  * Parent and Session retain actual null/source identity. All partial candidates
  * stay privately owned. The real constructor worker starts without a join.
- * Source diagnostics/unfinished typed write bodies stop at their real call.
+ * Source diagnostic dependencies stop at their real call. Typed write failures
+ * retain their actual File/Writer prefixes.
  * This additive mode preserves the legacy path API below and its allocation
  * ledger; source backing is separately charged. */
 mc_client_stats_status

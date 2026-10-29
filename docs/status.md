@@ -10,10 +10,18 @@ dynamic rendering and complete gameplay interactions remain unfinished.
 The current Windows source builds ALL and passes 460 selected CTests without
 failures or skips, including the normal startup windows, resource worker,
 source menus and RenderGlobal device controls. This selection excludes configured
-reference-label profiles. Formatting checks 1,319 files. A separate headless
-Release ALL build also passes. See [the current scope](testing.md#resource-worker-and-source-menu-integration).
+reference-label profiles. Formatting checks 1,325 files. A separate headless
+Release ALL build also passes. See [the current scope](testing.md#normal-startup-through-menu-initialization).
 Current Linux results remain to be established for this increment.
 
+
+Checkpoint `8288290` has a [failed hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40792366222).
+GCC passes all 452 tests. Clang passes 451 of 452; Display creation fails in one
+GL setup case without its underlying cause in the old assertion output.
+Windows stops on MSVC C4127 in a constant layout check. The current source uses
+three equivalent compile-time assertions and retains the actual Display error
+on failure. Formatting passes for all 1,319 files in that checkpoint. Current
+Linux/hosted qualification remains separate from newer Windows results.
 
 Hosted baseline `5d61f89` passes [all four jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40746811719):
 410 Windows, 427 GCC and 427 Clang cases, 1,264 total, without failures or skips.
@@ -69,12 +77,14 @@ typed Settings-save path. Nine texture effects register and perform their first
 updates. RenderGlobal construction, viewport setup and the particle constructor
 return before App publication `j660`. The resource-thread caller now constructs
 and publishes `U676`, starts its worker, and runs the `Post startup` diagnostic.
-GuiIngame allocation at `697` is the next unconnected caller operation.
-The pending source-screen owners cover splash loading, initialization, Calendar
-and buttons; connecting menu transitions and the live gameplay loop remains work.
+GuiIngame construction and `v705` publication now complete. Startup constructs
+the main menu, saves statistics, clears messages, publishes the current screen
+and initializes its scaled layout and buttons. `Minecraft.a()` returns at `749`;
+the next unconnected operation is `Minecraft.run`'s clock call at `32`.
+The live frame loop, remaining transitions and World entry remain unfinished.
 The default executable continues to use title/inspection startup.
 
-The current increment passes 24 selected Windows cases, with six recorded on
+The earlier scene-construction increment passes 24 selected Windows cases, with six recorded on
 the production successor and eighteen on its test-only triangle-observation
 successor. Production, headers, CMake and flags match across those snapshots.
 The real normal Session passes 181 checks; typed Writer/Settings save pass

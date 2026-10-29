@@ -502,12 +502,195 @@ static mc_client_stats_status cleanup_file(mc_java_file **file, mc_client_stats_
                : stats_source_file_error(error, status, child, NULL, NULL, NULL, 0);
 }
 
+static const char write_descriptor[] =
+    "(Ljava/util/Map;Ljava/io/File;Ljava/io/File;Ljava/io/File;)V";
+
+static mc_client_stats_status write_result(stats_source *source, mc_java_writer_status status,
+                                           unsigned int pc, mc_client_stats_error *error) {
+    const mc_java_typed_file_writer_error *cause = &source->write_error;
+    error->writer = status;
+    error->system_error = cause->writer.system_error != 0 ? cause->writer.system_error
+                                                          : cause->output.cause.system_error;
+    if (cause->source_exception)
+        return stats_exception(error,
+                               cause->output.status == MC_JAVA_OUTPUT_SOURCE_NULL
+                                   ? MC_CLIENT_STATS_NULL_REFERENCE
+                                   : MC_CLIENT_STATS_SOURCE_IO,
+                               cause->operation, "cj", "a", write_descriptor, pc);
+    return stats_fail(
+        error,
+        status == MC_JAVA_WRITER_BUSY                  ? MC_CLIENT_STATS_BUSY
+        : status == MC_JAVA_WRITER_LIMIT               ? MC_CLIENT_STATS_LIMIT
+        : status == MC_JAVA_WRITER_ALLOCATION_FAILED   ? MC_CLIENT_STATS_ALLOCATION_FAILED
+        : status == MC_JAVA_WRITER_UNSUPPORTED_CHARSET ? MC_CLIENT_STATS_UNSUPPORTED_PROFILE
+                                                       : MC_CLIENT_STATS_IO_FAILED,
+        cause->operation, "cj", "a", write_descriptor, pc);
+}
+
+static mc_client_stats_status write_dispose(stats_source *source, mc_client_stats_error *error) {
+    const mc_java_writer_status status =
+        mc_java_typed_file_writer_retire(&source->write_output, &source->write_retirement);
+    if (status != MC_JAVA_WRITER_OK) {
+        error->writer = status;
+        error->system_error = source->write_retirement.writer.system_error;
+        return stats_fail(
+            error, status == MC_JAVA_WRITER_BUSY ? MC_CLIENT_STATS_BUSY : MC_CLIENT_STATS_IO_FAILED,
+            "native Stats typed writer retirement", NULL, NULL, NULL, 0);
+    }
+    mc_client_stats_text_retire(&source->write_text);
+    return MC_CLIENT_STATS_OK;
+}
+
+mc_client_stats_status stats_source_write_file_set(mc_client_stats_writer *writer,
+                                                   const mc_client_stats_map *map, size_t dat_index,
+                                                   mc_client_stats_report *report,
+                                                   mc_client_stats_error *error) {
+    stats_source *source = writer->memory->source;
+    if (dat_index > 1u || source == NULL)
+        return stats_fail(error, MC_CLIENT_STATS_INVALID_ARGUMENT, "Stats typed File set", NULL,
+                          NULL, NULL, 0);
+    if (mtx_lock(&writer->mutex) != thrd_success)
+        return stats_fail(error, MC_CLIENT_STATS_THREAD_FAILED, "Stats typed save admission lock",
+                          NULL, NULL, NULL, 0);
+    if (source->write_active || (source->write_output != NULL && !source->write_complete)) {
+        (void)mtx_unlock(&writer->mutex);
+        return stats_fail(error, MC_CLIENT_STATS_BUSY, "Stats retained/active typed save prefix",
+                          NULL, NULL, NULL, 0);
+    }
+    source->write_active = true;
+    (void)mtx_unlock(&writer->mutex);
+    mc_client_stats_status status = write_dispose(source, error);
+    if (status != MC_CLIENT_STATS_OK)
+        goto done;
+    source->write_complete = false;
+    source->write_error = (mc_java_typed_file_writer_error){0};
+    source->write_retirement = (mc_java_typed_file_writer_error){0};
+    source->write_pc = 0;
+    mc_java_writer_status ws = mc_java_typed_file_writer_allocate(
+        source->files, NULL, &source->write_output, &source->write_error);
+    if (ws != MC_JAVA_WRITER_OK) {
+        status = write_result(source, ws, 0, error);
+        goto done;
+    }
+    const mc_java_writer_profile profile = {writer->options.charset, MC_JAVA_WRITER_PRINT,
+#ifdef _WIN32
+                                            MC_JAVA_WRITER_CRLF
+#else
+                                            MC_JAVA_WRITER_LF
+#endif
+    };
+    source->write_pc = 10;
+    ws = mc_java_typed_file_writer_construct(source->write_output, source->children[dat_index + 4u],
+                                             &profile, &source->write_error);
+    if (ws != MC_JAVA_WRITER_OK) {
+        status = write_result(source, ws, 10, error);
+        goto done;
+    }
+    source->write_pc = 16; /* Completed PW(FileWriter(File,false)) local. */
+    stats_syncher *syncher = writer->retained_syncher;
+    if (syncher->session == NULL) {
+        status = stats_exception(error, MC_CLIENT_STATS_NULL_REFERENCE,
+                                 "Stats source null Session username receiver", "cj", "a",
+                                 write_descriptor, 24);
+    } else {
+        mc_player_string_view username;
+        const bool present = mc_player_string_read(syncher->session->username, &username);
+        static const uint16_t local[] = {'l', 'o', 'c', 'a', 'l'};
+        source->write_pc = 30;
+        status =
+            map == NULL
+                ? stats_exception(
+                      error, MC_CLIENT_STATS_NULL_REFERENCE, "Stats serializer null Map", "xi", "a",
+                      "(Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ljava/lang/String;", 89)
+                : mc_client_stats_serialize(
+                      map,
+                      (mc_client_stats_string){present ? username.units : NULL,
+                                               present ? username.length : 0, !present},
+                      (mc_client_stats_string){local, 5, false}, &source->write_text, error);
+    }
+    if (status == MC_CLIENT_STATS_OK) {
+        source->write_pc = 33;
+        const mc_java_properties_string_view view = {source->write_text->units,
+                                                     source->write_text->length};
+        ws = mc_java_typed_file_writer_print(source->write_output, &view, &source->write_error);
+        if (ws != MC_JAVA_WRITER_OK)
+            status = write_result(source, ws, 33, error);
+    }
+    /* Only a completed source operation or actual source Throwable reaches
+     * close38/finally48. Native policy stops preserve the unclosed prefix. */
+    if (status == MC_CLIENT_STATS_OK || status == MC_CLIENT_STATS_SOURCE_EXCEPTION) {
+        const mc_client_stats_error prior = *error;
+        if (status == MC_CLIENT_STATS_SOURCE_EXCEPTION)
+            stats_source_cause_set(error, &prior);
+        source->write_pc = status == MC_CLIENT_STATS_OK ? 38u : 48u;
+        ws = mc_java_typed_file_writer_source_close(source->write_output, &source->write_error);
+        if (ws != MC_JAVA_WRITER_OK)
+            status = write_result(source, ws, source->write_pc, error);
+        else
+            *error = prior;
+    }
+    mc_java_typed_file_writer_state output;
+    if (mc_java_typed_file_writer_inspect(source->write_output, &output) &&
+        output.writer_state_present && output.writer_state.trouble && report != NULL)
+        report->print_trouble = true;
+    if (status != MC_CLIENT_STATS_OK)
+        goto done;
+    mc_java_file *dat = source->children[dat_index], *old = source->children[dat_index + 2u],
+                 *temporary = source->children[dat_index + 4u];
+    mc_java_file_error child = {0};
+    bool exists = false, ignored = false;
+#define SOURCE_FILE_CALL(pc, call)                                                                 \
+    do {                                                                                           \
+        source->write_pc = (pc);                                                                   \
+        const mc_java_file_status fs = (call);                                                     \
+        if (fs != MC_JAVA_FILE_OK) {                                                               \
+            status = stats_source_file_error(error, fs, child, "cj", "a", write_descriptor, (pc)); \
+            goto done;                                                                             \
+        }                                                                                          \
+    } while (0)
+    SOURCE_FILE_CALL(56, mc_java_file_exists(old, &exists, &child));
+    if (exists)
+        SOURCE_FILE_CALL(64, mc_java_file_delete(old, &ignored, &child));
+    SOURCE_FILE_CALL(69, mc_java_file_exists(dat, &exists, &child));
+    if (exists)
+        SOURCE_FILE_CALL(78, mc_java_file_rename_to(dat, old, &ignored, &child));
+    SOURCE_FILE_CALL(84, mc_java_file_rename_to(temporary, dat, &ignored, &child));
+#undef SOURCE_FILE_CALL
+    source->write_pc = 88;
+    source->write_complete = true;
+done:
+    if (mtx_lock(&writer->mutex) != thrd_success)
+        return stats_fail(error, MC_CLIENT_STATS_THREAD_FAILED, "Stats typed save completion lock",
+                          NULL, NULL, NULL, 0);
+    source->write_active = false;
+    (void)mtx_unlock(&writer->mutex);
+    return status;
+}
+
+mc_client_stats_status stats_source_save_caught(mc_client_stats_report *report,
+                                                mc_client_stats_error *error) {
+    const mc_client_stats_error cause = *error;
+    if (report != NULL) {
+        ++report->diagnostics;
+        report->file_exception_caught = true;
+        report->caught = cause;
+    }
+    stats_source_cause_set(error, &cause);
+    return stats_fail(error, MC_CLIENT_STATS_UNIMPLEMENTED_DEPENDENCY,
+                      "actual synchronous save Exception.printStackTrace dependency", "cj", "b",
+                      "(Ljava/util/Map;)V", 66);
+}
+
 mc_client_stats_status stats_source_retire(mc_client_stats_writer *writer,
                                            mc_client_stats_error *error) {
     stats_source *source = writer->memory->source;
     if (source == NULL)
         return MC_CLIENT_STATS_OK;
     source->retiring = true;
+    if (write_dispose(source, error) != MC_CLIENT_STATS_OK) {
+        source->cleanup_failure = stats_source_snapshot(error);
+        return error->status;
+    }
     /* Caller already joined every real worker. No foreground name occurrence
      * change or final File destruction races the handed-off worker. */
     while (source->readers != NULL) {

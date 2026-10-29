@@ -1,6 +1,6 @@
 # Normal client startup
 
-The source startup owner implements the reached beginning of Beta 1.7.3's
+The normal no-connection startup owner implements Beta 1.7.3's
 `Minecraft.a()V`. It uses the same constructed App and real class/service
 owners. The default executable still opens its title screen or fixed-camera
 inspection. Normal World entry and a connected gameplay loop remain unfinished.
@@ -31,9 +31,14 @@ native retirement requests cancellation and joins before earlier owners retire.
 It uses the original HTTP endpoint, scans local resources on the original
 failure branch, and registers sounds through the real SoundManager pools.
 The caller then performs the third GL diagnostic, `Post startup` at `693`.
-The next unconnected caller operation is GuiIngame allocation at `697`.
-Its independent constructor and the source menu owners exist, but GUI caller
-publication, menu transitions and World entry remain unfinished.
+The caller constructs GuiIngame at `702`, publishes `v705`, then constructs the
+main menu at `743` and invokes the real display-screen method at `746`.
+That method performs the statistics save, clears GuiIngame messages, publishes
+`r106`, computes GUI scaling, initializes the screen and its buttons, and stores
+`w158`. Normal startup returns at `749`. Execution stops before the next
+`Minecraft.run` clock call at `32`; the frame loop remains unconnected.
+The nonnull server-address branch still stops before its connecting-screen
+constructor. World entry and complete menu/input/rendering behavior remain work.
 
 A null Session fails in the genuine statistics constructor at `xi337/cj48`;
 it cannot reach the logo or input setup. The successful Session profile starts
@@ -133,7 +138,7 @@ back by terminal cleanup.
 
 ## Validation and remaining work
 
-The current increment passes 24 selected Windows cases: six on the production
+The earlier scene-construction increment passes 24 selected Windows cases: six on the production
 successor and eighteen after a test-only triangle-observation correction.
 All production code, headers, CMake and flags are identical across those two
 snapshots. The normal Session performs 181 checks through `j660`, stopping at
@@ -186,7 +191,21 @@ The later test record also retains failed-statistics/shared-Font cleanup,
 five prepared logo profiles and cursor controls. Wider Linux qualification is
 still recorded separately from the Windows default-directory profile.
 
-Nonempty physical Controllers mapping and later GUI/menu
-transitions, World/Player publication, frame/tick scheduling and the live game
-loop remain unfinished. The default executable continues to use title/inspection
+Nonempty physical Controllers mapping, remaining screen transitions, World/Player
+publication, frame/tick scheduling and the live game loop remain unfinished. The default executable continues to use title/inspection
 startup.
+
+## Menu ownership and verification
+
+Windows normal and GL-error controls reach startup return and verify the same
+GuiIngame, menu, Font, App and class identities. Strict retirement preserves the
+complete earlier graph while an external GuiIngame or Screen occurrence exists.
+A surviving menu-particle descendant keeps its own App borrow after its menu
+retires; startup waits before consuming GuiIngame, resources or graphics.
+Publication history survives fallible cleanup retries independently of the
+invocation record. A separate focus control verifies that the null-Component
+fault preserves the reached `r106` and `N=false` stores without initializing a
+new screen or clearing `w`.
+
+These cases are included in 460 selected Windows CTests. They do not establish
+original menu visuals, Linux normal-directory startup or a playable session.

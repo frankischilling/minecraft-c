@@ -20,7 +20,9 @@ typedef enum mc_client_mouse_helper_status {
     MC_CLIENT_MOUSE_HELPER_GRAPHICS_FAILED,
     MC_CLIENT_MOUSE_HELPER_CURSOR_FAILED,
     MC_CLIENT_MOUSE_HELPER_SOURCE_EXCEPTION,
-    MC_CLIENT_MOUSE_HELPER_UNIMPLEMENTED_DEPENDENCY
+    MC_CLIENT_MOUSE_HELPER_UNIMPLEMENTED_DEPENDENCY,
+    MC_CLIENT_MOUSE_HELPER_NULL_REFERENCE,
+    MC_CLIENT_MOUSE_HELPER_INPUT_FAILED
 } mc_client_mouse_helper_status;
 
 typedef enum mc_client_mouse_helper_phase {
@@ -39,11 +41,12 @@ typedef struct mc_client_mouse_helper_options {
 typedef struct mc_client_mouse_helper_error {
     mc_client_mouse_helper_status status;
     const char *operation, *exception_class;
-    mc_client_graphics_site site;
-    bool native_policy, diagnostic_frontier;
+    mc_client_graphics_site site, child;
+    bool native_policy, diagnostic_frontier, source_returned;
     mc_client_graphics_error graphics;
     mc_client_sdk_cursor_error cursor;
     mc_client_render_engine_status classes;
+    mc_client_sdk_input_error input;
 } mc_client_mouse_helper_error;
 
 typedef struct mc_client_mouse_helper_state {
@@ -55,6 +58,7 @@ typedef struct mc_client_mouse_helper_state {
     mc_client_sdk_cursor *source_d, *cursor_candidate;
     const mc_client_direct_int_buffer *delay_buffer, *image_buffer;
     const mc_client_mouse_helper_error *failure;
+    const char *last_method;
 } mc_client_mouse_helper_state;
 
 mc_client_mouse_helper_options mc_client_mouse_helper_default_options(void);
@@ -80,11 +84,30 @@ mc_client_mouse_helper_status mc_client_mouse_helper_construct(mc_client_source_
                                                                mc_client_mouse_helper_error *);
 mc_client_mouse_helper_status mc_client_mouse_helper_retain(mc_client_source_vy *,
                                                             mc_client_mouse_helper_error *);
+/* Actual vy.a()V: Mouse.setGrabbed(true)1, a=0 at6, b=0 at11, return14.
+ * Actual vy.c()V independently consumes getDX1/store4 then getDY8/store11.
+ * Both use the SAME canonical input passed to this owner's constructor. The
+ * SDK entries retain their existing queue/pump behavior; read_motion adds no
+ * poll, SDL event removal or shared read of the two accumulated deltas.
+ * READY/exclusive owners and disjoint error storage are required. Native
+ * cleanup never calls these source methods or changes the source grab state. */
+mc_client_mouse_helper_status mc_client_mouse_helper_grab(mc_client_source_vy *,
+                                                          mc_client_sdk_input *,
+                                                          mc_client_mouse_helper_error *);
+mc_client_mouse_helper_status mc_client_mouse_helper_read_motion(mc_client_source_vy *,
+                                                                 mc_client_sdk_input *,
+                                                                 mc_client_mouse_helper_error *);
+/* Actual vy.b()V first dereferences c at Component.getWidth4. NULL fails there
+ * before any Mouse operation. A nonnull Component remains an explicit owner
+ * dependency; SDL window dimensions do not substitute for that source object. */
+mc_client_mouse_helper_status mc_client_mouse_helper_ungrab(mc_client_source_vy *,
+                                                            mc_client_sdk_input *,
+                                                            mc_client_mouse_helper_error *);
 mc_client_mouse_helper_status mc_client_mouse_helper_release(mc_client_source_vy **,
                                                              mc_client_mouse_helper_error *);
 bool mc_client_mouse_helper_inspect(const mc_client_source_vy *, mc_client_mouse_helper_state *);
-/* Inspection views expire at the next owner mutation. Source vy.a/b/c and
- * generic Cursor selection/animation/destroy are separate unimplemented bodies.
+/* Inspection views expire at the next owner mutation. Generic Cursor
+ * selection/animation/destroy are separate unimplemented bodies.
  * Native cleanup never calls those source bodies or changes the mouse grab. */
 
 #endif

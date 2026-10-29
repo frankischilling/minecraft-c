@@ -17,10 +17,12 @@ owners have separate [native coverage](https://github.com/frankischilling/minecr
 The [normal startup owner](Startup) now connects Display, the game directory,
 Settings, selected Pack, RenderEngine, Font, color maps, EntityRenderer and
 RenderManager on the same App. It continues through statistics, input, texture
-effects, RenderGlobal, particles and resource-thread startup. Its next
-unconnected caller operation is GuiIngame allocation at offset 697.
-The executable still uses its title/inspection entry; complete startup and
-gameplay adoption remain unfinished.
+effects, RenderGlobal, particles and resource-thread startup. The default
+no-connection path now constructs GuiIngame and the main menu, publishes the
+screen, saves statistics and completes scaled screen initialization. That
+source startup method returns; the next unconnected operation is the clock
+read in `Minecraft.run` at offset 32. The executable still uses its
+title/inspection entry; frame scheduling and gameplay adoption remain unfinished.
 
 The runtime uses C17 libraries with explicit ownership. The [architecture](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/architecture.md)
 describes the module boundaries; [parity](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md) records the qualified
@@ -62,8 +64,8 @@ controller updates, mining, item use and complete World entry remain unfinished.
 
 The water owner has its CPU animation body on the existing arrays and shared
 Math profile. Its [comparison guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/water_animation/README.md)
-records the finite raw-array/RGBA scope. Texture registration and upload remain
-unfinished. [Notice/model ownership](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/achievement-notice.md) is also
+records the finite raw-array/RGBA scope. The reached normal startup now registers
+the water effect; the isolated comparison does not establish GPU correspondence. [Notice/model ownership](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/achievement-notice.md) is also
 separate from notice and Item drawing.
 
 [World rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-renderer.md) remains a fixed inspection of a

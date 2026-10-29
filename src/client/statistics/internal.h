@@ -7,6 +7,7 @@
 #include "mc/block/registry/runtime.h"
 #include "mc/client/statistics/writer.h"
 #include "mc/core/java/integer_parse.h"
+#include "mc/world/storage/java_file_writer.h"
 #include <stdio.h>
 #include <threads.h>
 
@@ -117,6 +118,11 @@ struct stats_source {
     stats_builder *builder;
     stats_source_reader *readers, *current_reader;
     mc_client_stats_map *parse_candidate;
+    mc_java_typed_file_writer *write_output;
+    mc_java_typed_file_writer_error write_error, write_retirement;
+    mc_client_stats_text *write_text;
+    unsigned int write_pc;
+    bool write_active, write_complete;
     bool retiring;
     mc_client_stats_file_error failure, cleanup_failure;
 };
@@ -255,6 +261,11 @@ mc_client_stats_status stats_source_file_error(mc_client_stats_error *, mc_java_
                                                const char *, unsigned int);
 bool stats_owner_file_exists(mc_client_stats_writer *, size_t, mc_client_stats_error *);
 mc_client_stats_status stats_source_retire(mc_client_stats_writer *, mc_client_stats_error *);
+mc_client_stats_status stats_source_write_file_set(mc_client_stats_writer *,
+                                                   const mc_client_stats_map *, size_t,
+                                                   mc_client_stats_report *,
+                                                   mc_client_stats_error *);
+mc_client_stats_status stats_source_save_caught(mc_client_stats_report *, mc_client_stats_error *);
 mc_client_stats_status stats_source_diagnostic(mc_client_stats_writer *,
                                                const mc_client_stats_diagnostic *,
                                                mc_client_stats_report *, mc_client_stats_error *);

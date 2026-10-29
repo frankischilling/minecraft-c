@@ -1,42 +1,93 @@
 # Build and tests
 
-The current Windows MSVC Debug source passes 460 selected CTests without
-failures or skips, including real startup windows, resource HTTP/XML and source
-menu controls. The selection excludes configured reference-label profiles.
-Formatting checks 1,319 files. A separate headless Release ALL build passes.
-Current Linux qualification remains separate.
+The current Windows MSVC Debug source passes all 460 selected CTests without
+failures or skips in 207.15 seconds. The selection excludes configured
+reference-label profiles. Nine focused cases also pass, including real normal
+Session and GL-error startup through the source startup return, statistics and
+source-file deletion, and MouseHelper CPU behavior. MouseHelper methods pass
+4,225 CPU checks and 91 real-window checks; four consecutive window runs pass.
+Formatting checks 1,325 files. A separate headless Release ALL build passes.
+These results do not establish Linux qualification, original visual
+correspondence, a running dedicated server or a playable session.
 
-Hosted baseline `5d61f89` passes [all four jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40746811719):
-410 Windows cases and 427 per Linux compiler, 1,264 total, without skips.
+Published source `8288290` has a [failed hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40792366222).
+GCC passes all 452 cases. Clang passes 451 of 452; `client.source_gl_startup_device`
+fails during Display creation, and its log does not establish the underlying
+cause. Windows stops during compilation on MSVC C4127 for a constant layout
+condition. Formatting passes for 1,319 files. Both Linux jobs have 452 unique
+Start/result pairs and zero skips; all four tested checkout trees match the
+published source. The current source preserves the layout invariants with
+compile-time assertions and adds actual Display error details without changing
+the failing check. A later hosted run must verify those changes.
+
+Earlier hosted baseline `5d61f89` passes
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40746811719):
+1,264 public/JDK cases, with 410 Windows, 427 GCC and 427 Clang cases. None failed
+or skipped. Formatting checks 1,220 files. Native jobs check 4,445 current source
+bindings across 2,283 distinct files before configuration and retain their
+complete test suites. Audited logs contain matching unique Start/Passed pairs;
+all four tested merge checkouts have the same complete tree as the published
+head. Supplied-original comparisons keep their separate scopes.
+
+That hosted checkpoint uses four CTest workers. A timing-dependent
+owned-child fixture was corrected with a real live-inventory handshake; its
+supervisor, validation assertions and timeout stay unchanged. The corrected
+run retains every baseline case. Its test steps took 346/355/371 seconds on
+Windows/GCC/Clang, compared with the earlier two-worker 432/417/273 seconds. These
+separate hosted observations include cloud/build variance and do not establish
+a general or causal speedup.
+
 The [testing record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
-keeps this hosted baseline separate from newer local results.
+keeps this hosted baseline separate from the newer local results.
 [Build instructions](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/building.md)
 cover prerequisites, resource import and opt-in window/reference profiles.
 
 CI caches CTest timing estimates by platform/compiler and retains four workers
-and complete suites. A later warm hosted run must establish the speedup.
+and complete suites. Both Linux jobs in the `8288290` run had cold timing
+caches; the successful GCC job saved its estimates. A later warm hosted run
+must establish any speedup.
 
 ## Earlier checkpoints
 
+The preceding resource-startup increment passed 460 selected CTests without
+failures or skips, including real startup windows, resource HTTP/XML and source
+menu controls. The selection excludes configured reference-label profiles.
+Formatting checked 1,319 files. A separate headless Release ALL build passed.
+That local result did not establish Linux qualification.
 
-Checkpoint `671c003` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40639713371):
-1,226 public/JDK cases, with 398 Windows and 414 per Linux compiler. None failed
-or skipped. Formatting covers 1,164 files. Native jobs check current source
-bindings before configuration and retain the complete test suites. The Font
-cleanup correction and preceding failed runs remain in the testing record.
-Supplied-original comparisons and newer startup additions keep separate scopes.
+An earlier startup-tail source has focused local coverage of 47 selected
+Windows cases. Nine Core output cases retain their earlier Windows source and
+test-header binding. Clang 18 and GCC 13 each pass 41 CPU/protocol and twelve
+real-device cases, 53 per compiler, with ASan, UBSan and leak detection. Fresh
+Windows normal Session and real-GL-error startup profiles pass 103 and 109
+checks. At that source, startup reached the second GL diagnostic at 466 and
+stopped before `cx` allocation at 470; the last App publication was MouseHelper
+`C380`.
 
-Later focused native coverage includes nineteen Windows loading-screen drawing
+That earlier Release headless build completed all 372 build steps and linked the
+actual `mc_region_inspect` utility, with `MC_BUILD_CLIENT`,
+`MC_BUILD_CLIENT_SOUND`, `MC_BUILD_CLIENT_AUDIO` and `BUILD_TESTING` disabled.
+No runtime tests ran in that graph. Utility linkage does not qualify server
+behavior. The focused client cases do not establish a complete local suite,
+Linux default-directory/Session startup, original-JVM or visual correspondence,
+World entry or a playable client.
+
+Earlier hosted checkpoint `671c003` passes [all four jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40639713371):
+1,226 public/JDK cases, with 398 Windows and 414 per Linux compiler. Formatting
+covers 1,164 files. The Font cleanup correction and preceding failures remain
+in the testing record.
+
+Earlier focused native coverage includes nineteen Windows loading-screen drawing
 profiles with 888 checks and nine Windows startup profiles with 173,090 checks
-across twelve actual Apps. Startup reaches EntityRenderer and RenderManager
-construction, then stops before statistics startup at offset 324. A combined
+across twelve actual Apps. At that source, startup reached EntityRenderer and
+RenderManager construction, then stopped before statistics at offset 324. A combined
 source snapshot also passes 29 selected CTests on both sanitized Clang and GCC
 builds and links the native client. These selected runs do not establish a
 playable session. The separate SaveHandler metadata/session cohort passes 27
 selected tests per Linux compiler, with native Windows coverage recorded in
 the [test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md).
 
-The newer statistics/callback/logo/input composition reaches Controllers383
+An earlier statistics/callback/logo/input composition reaches Controllers383
 on the genuine Windows Session path (92 checks). Its Windows qualification
 retains 26 actual CTests and two direct profiles over separately recorded
 source phases. Clang and GCC each build the client and pass 56 selected CPU
@@ -92,10 +143,10 @@ individual operation profiles:
 | Water animation | 103,098 native checks and the separate exact original array/RGBA comparison |
 | Item tick | 1,089 native checks and 70 original records: 37 states, 33 complete calls and four prefixes |
 
-Earlier isolated profiles retain their own coherent products. The genuine active-App original
-profile retains its Windows LWJGL scope. Method comparisons do not establish a
-World gameplay loop, fog, normal RenderEngine startup, drawing or a playable
-client. See [active Player ticking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-active-tick.md),
+Earlier isolated profiles retain their own coherent products. The genuine
+active-App original profile retains its Windows LWJGL scope. These component
+comparisons do not establish a connected World gameplay loop or original visual
+parity. Native startup and drawing results above keep their separate scopes. See [active Player ticking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-active-tick.md),
 [pickup/effects](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particles.md) and [Item ticking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/item-tick.md).
 
 The preceding published `4a6b805`
@@ -108,8 +159,8 @@ controls passed per platform. Its original-archive comparisons retain their loca
 scope. Current owner and gameplay limits are in
 [development status](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md).
 
-CI runs two CTests concurrently and allows four parallel Windows build jobs.
-At `4a6b805`, both Linux jobs restored 11,318,434 cache bytes and downloaded no
+At `4a6b805`, CI ran two CTests concurrently and allowed four parallel Windows
+build jobs. In that run, both Linux jobs restored 11,318,434 cache bytes and downloaded no
 additional package archives from the required 11.4 MB. Dependency installation
 took eleven/twelve seconds; each package-index update still fetched 12.6 MB.
 All compiler, sanitizer, graphics,

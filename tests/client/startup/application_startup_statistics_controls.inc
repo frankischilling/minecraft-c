@@ -3,6 +3,8 @@
 #include "client/achievements/description_registry.h"
 #include "client/startup/application_logo.h"
 #include "client/startup/application_startup_graphics.h"
+#include "client/startup/application_startup_gui_ingame.h"
+#include "client/startup/application_startup_menu.h"
 #include "client/startup/application_startup_resources.h"
 
 /* Native worker cancellation never fabricates a source cz.b() call. The
@@ -277,7 +279,7 @@ static int statistics_session_window(const char *resources, const char *assets, 
                   attempt->graphics == NULL && app->source_namespace->system_output == NULL);
             fprintf(stderr,
                     "Genuine nonempty Controllers native count%d: SDK Native12; "
-                    "normal697 not reached; no Source391 completion\n",
+                    "normal_run32 not reached; no Source391 completion\n",
                     controllers.native_count);
         }
         CHECK(controllers.native_count == 0); /* Never replace physical discovery with empty. */
@@ -296,8 +298,8 @@ static int statistics_session_window(const char *resources, const char *assets, 
                   observed.display == app->display);
         }
 #endif
-        if (result != MC_CLIENT_STARTUP_UNIMPLEMENTED || startup.error->caller.pc != 697 ||
-            startup.error->child.pc != 697) {
+        if (result != MC_CLIENT_STARTUP_UNIMPLEMENTED || startup.error->caller.pc != 32 ||
+            startup.error->child.pc != 32) {
             fprintf(stderr,
                     "Unexpected startup result=%d operation=%s caller=%s.%s:%u "
                     "child=%s.%s:%u last_store=%d manager_pc=%d\n",
@@ -363,8 +365,8 @@ static int statistics_session_window(const char *resources, const char *assets, 
                 }
             }
         }
-        CHECK(result == MC_CLIENT_STARTUP_UNIMPLEMENTED && startup.error->caller.pc == 697 &&
-              startup.error->child.pc == 697 && attempt->last_startup_store == 676 &&
+        CHECK(result == MC_CLIENT_STARTUP_UNIMPLEMENTED && startup.error->caller.pc == 32 &&
+              startup.error->child.pc == 32 && attempt->last_startup_store == 705 &&
               attempt->last_manager_pc == 321);
         const mc_client_startup_rendering_call *rendering = attempt->rendering;
         CHECK(rendering != NULL && rendering->entered && !rendering->active &&
@@ -535,6 +537,75 @@ static int statistics_session_window(const char *resources, const char *assets, 
         mc_client_gl_output_state post;
         CHECK(mc_client_gl_output_inspect(resource_call->diagnostic, &post) &&
               post.error->source_returned && post.error->prefix.query_completed);
+        const mc_client_startup_gui_ingame_call *ingame = attempt->gui_ingame;
+        const mc_client_startup_menu_call *menu_call = attempt->menu;
+        CHECK(ingame != NULL && ingame->allocated && ingame->constructor_returned &&
+              ingame->v_stored && ingame->last_pc == 705 && app->v == ingame->candidate);
+        mc_client_gui_ingame_state ingame_state;
+        CHECK(mc_client_gui_ingame_inspect(app->v, &ingame_state, NULL) ==
+                  MC_CLIENT_GUI_INGAME_OK &&
+              ingame_state.phase == MC_CLIENT_GUI_INGAME_READY && ingame_state.fields.g == app &&
+              ingame_state.fields.e != NULL && ingame_state.fields.f != NULL);
+        CHECK(menu_call != NULL && menu_call->constructed && menu_call->source_startup_returned &&
+              menu_call->last_pc == 749 && menu_call->display != NULL &&
+              menu_call->display->source_returned && menu_call->display->site.pc == 168 &&
+              menu_call->display->stats_b_returned && menu_call->display->stats_c_returned &&
+              menu_call->display->messages_cleared && menu_call->display->r_stored &&
+              menu_call->display->focus_released && menu_call->display->resolution_returned &&
+              menu_call->display->initialized && menu_call->display->w_stored && !app->w &&
+              !app->N);
+        mc_client_source_da *current_screen = mc_client_screen_menu_base(menu_call->candidate);
+        CHECK(app->r == current_screen && atomic_load(&app->screen_borrows) == 2);
+        mc_client_screen_init_state initialized;
+        CHECK(mc_client_screen_initialization_inspect(current_screen, 0, &initialized) &&
+              initialized.phase == MC_CLIENT_SCREEN_INIT_RETURNED &&
+              initialized.button_count == 5 && initialized.app_argument == app &&
+              initialized.held_font == app->font_renderer);
+        /* A new real displayGuiScreen invocation preserves r106 and h24 when
+         * the standalone profile reaches the actual null Component fault. */
+        app->N = true;
+        app->w = true;
+        mc_client_display_screen_call *focus_failure = NULL;
+        CHECK(
+            mc_client_display_screen_run(app, menu_call->classes, current_screen, &focus_failure) ==
+            MC_CLIENT_DISPLAY_SCREEN_NULL_REFERENCE);
+        CHECK(focus_failure != NULL && focus_failure->old_closed &&
+              focus_failure->stats_b_returned && focus_failure->stats_c_returned &&
+              focus_failure->messages_cleared && focus_failure->r_stored &&
+              !focus_failure->initialized && !focus_failure->w_stored &&
+              focus_failure->site.pc == 114 && focus_failure->mouse.site.pc == 4 &&
+              focus_failure->mouse.status == MC_CLIENT_MOUSE_HELPER_NULL_REFERENCE &&
+              app->r == current_screen && !app->N && app->w);
+        CHECK(mc_client_display_screen_retire(&focus_failure) == MC_CLIENT_DISPLAY_SCREEN_OK &&
+              focus_failure == NULL);
+        app->w = false; /* End the prepared nondefault w control. */
+        CHECK(mc_client_screen_retain(current_screen, NULL) == MC_CLIENT_SCREEN_OK);
+        CHECK(mc_client_application_startup_retire(&attempt, startup.error) ==
+                  MC_CLIENT_STARTUP_BUSY &&
+              app->r == current_screen && app->v == ingame->candidate &&
+              app->U == resource_call->candidate && app->display != NULL && !menu_call->retired);
+        CHECK(mc_client_screen_release(&current_screen, NULL) == MC_CLIENT_SCREEN_OK &&
+              current_screen == NULL);
+        mc_client_source_uq *external_gui = app->v;
+        CHECK(mc_client_gui_ingame_retain(external_gui, NULL) == MC_CLIENT_GUI_INGAME_OK);
+        mc_client_source_du *external_particles_gui = initialized.held_particles;
+        CHECK(mc_client_screen_particles_retain(external_particles_gui, NULL) ==
+              MC_CLIENT_SCREEN_OK);
+        CHECK(mc_client_application_startup_retire(&attempt, startup.error) ==
+                  MC_CLIENT_STARTUP_BUSY &&
+              menu_call->retired && !menu_call->r_stored && menu_call->display == NULL &&
+              app->r == NULL && atomic_load(&app->screen_borrows) == 1 && app->v == external_gui &&
+              app->U == resource_call->candidate && app->settings != NULL);
+        CHECK(mc_client_screen_particles_release(&external_particles_gui, NULL) ==
+                  MC_CLIENT_SCREEN_OK &&
+              external_particles_gui == NULL);
+        CHECK(mc_client_application_startup_retire(&attempt, startup.error) ==
+                  MC_CLIENT_STARTUP_BUSY &&
+              app->r == NULL && menu_call->retired && app->v == external_gui &&
+              app->U == resource_call->candidate && !ingame->retired &&
+              atomic_load(&app->screen_borrows) == 0);
+        CHECK(mc_client_gui_ingame_release(&external_gui, NULL) == MC_CLIENT_GUI_INGAME_OK &&
+              external_gui == NULL);
         CHECK(statistics_retire_resources(attempt) == 0);
         CHECK(app->U == NULL && resource_call->retired &&
               atomic_load(&app->resource_thread_borrows) == 0);
@@ -576,7 +647,7 @@ static int statistics_session_window(const char *resources, const char *assets, 
               app->effect_renderer == NULL && app->effect_renderer_retained == NULL &&
               rendering->global_engine == NULL && rendering->particle_engine == NULL &&
               rendering->global_constructor_pc == 651 && rendering->last_pc == 660 &&
-              rendering->calls_completed && attempt->last_startup_store == 676);
+              rendering->calls_completed && attempt->last_startup_store == 705);
         mc_texture_effect_state compass;
         CHECK(mc_client_texture_effect_inspect(external_compass, &compass) && compass.app == app &&
               compass.phase == MC_TEXTURE_EFFECT_READY && compass.native_holds == 1);

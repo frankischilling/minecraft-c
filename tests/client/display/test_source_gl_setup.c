@@ -362,6 +362,10 @@ int main(int argc, char **argv) {
     CHECK(pixels_have_rgb(&capture, false));
     result = 0;
 cleanup:
+    if (result != 0)
+        fprintf(stderr, "Display: %s: %s (status%d, GL%u)\n",
+                error.operation == NULL ? "test assertion" : error.operation, error.detail,
+                (int)error.status, error.gl_error);
     _mm_setcsr(0x1f80u);
     if (display != NULL && have_native_gl) {
         display->gl = native_gl;

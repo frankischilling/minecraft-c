@@ -1,5 +1,27 @@
 # Test scope and reproduction
 
+## Normal startup through menu initialization
+
+The current Windows MSVC Debug ALL build passes, including the client, followed
+by 460 selected CTests with no failures or skips in 207.15 seconds. The selection
+uses `-LE reference`; configured reference-label profiles remain outside it.
+Normal and GL-error window cases reach GuiIngame publication, typed statistics
+saving, current-screen publication and scaled menu initialization. Startup
+returns at `749` and stops before `Minecraft.run` clock `32`. The executable's
+default title/inspection loop remains separate.
+
+Nine focused cases cover startup, RenderGlobal, source statistics, File.delete
+and MouseHelper CPU behavior. Four additional MouseHelper window runs each pass
+91 checks; CPU controls pass 4,225. The fixture transfers real SDL motion into
+the retained Display transport before polling and checks exact deltas 7/9.
+MouseHelper adds no event pump or FIFO removal. Cleanup controls retain external
+Screen, GuiIngame and menu-particle descendants while checking App dependencies.
+
+Formatting passes for 1,325 files. The separate Release ALL build with client,
+sound, audio and testing disabled also passes. Current original menu/visual and
+Linux startup qualification remain unfinished. The failed `8288290` hosted run
+and its two test-source corrections are recorded in [status](status.md).
+
 ## Resource worker and source menu integration
 
 The current Windows MSVC Debug source builds ALL, including the client, and

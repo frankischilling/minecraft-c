@@ -12,6 +12,20 @@ Creating a cursor does not select it, synthesize mouse motion or pump events.
 The source cursor index keeps its actual default zero. Native retirement and
 source cursor operations remain separate.
 
+MouseHelper's grab method calls the existing SDK `Mouse.setGrabbed(true)` before
+zeroing its two motion fields. Its motion method consumes `getDX` and `getDY`
+independently, storing each result in source order. It adds no polling or event
+removal. The release method first reads the supplied Component's width. A null
+Component reports the source null-reference failure at that read; nonnull
+Component sizing remains unfinished. Window dimensions do not replace it.
+The method successor passes 4,225 CPU checks and 91 real-window checks on Windows
+MSVC Debug. The window test transfers authored SDL motion through the retained
+Display transport before SDK polling, verifies exact accumulated deltas and
+checks that MouseHelper motion reads leave later mouse/keyboard events queued.
+Four consecutive window runs pass. Original method comparisons and Linux method
+qualification remain unverified; the earlier constructor results below retain
+their own scope.
+
 Pixel conversion follows the pinned SDK constructor and `ge` image behavior.
 Windows controls use asymmetric rows, channels and partial alpha so a flipped
 or swapped-channel image cannot pass by symmetry. The X11 adapter queries

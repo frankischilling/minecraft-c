@@ -594,7 +594,8 @@ mc_client_stats_status mc_client_stats_writer_save(mc_client_stats_writer *write
                     mc_client_stats_status status =
                         stats_write_file_set(writer, copy, 0, &report, &error);
                     if (status == MC_CLIENT_STATS_SOURCE_EXCEPTION)
-                        status = stats_catch(writer, &report, &error);
+                        status = source_mode ? stats_source_save_caught(&report, &error)
+                                             : stats_catch(writer, &report, &error);
                     (void)status;
                     (void)mtx_lock(&writer->mutex);
                     if (writer->memory->source == NULL || error.status == MC_CLIENT_STATS_OK)

@@ -651,3 +651,28 @@ mc_java_file_status mc_java_file_rename_to(mc_java_file *file, mc_java_file *des
     file->state.active = false;
     return status;
 }
+
+mc_java_file_status mc_java_file_delete(mc_java_file *file, bool *out, mc_java_file_error *e) {
+    if (out == NULL)
+        return mc_file_result(e, MC_JAVA_FILE_INVALID_ARGUMENT, "File delete output", 0);
+    mc_java_file_status status = mc_file_ready(file, e);
+    if (status != MC_JAVA_FILE_OK)
+        return status;
+    if (mc_file_invalid(file)) {
+        *out = false;
+        return mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
+    }
+    file->state.active = true;
+    mc_file_native_char *path = NULL;
+    status = mc_file_native(file, &path, e);
+    if (status == MC_JAVA_FILE_OK) {
+        int system_error = 0;
+        *out = mc_file_native_delete(path, &system_error);
+        if (!*out)
+            file->state.last_native_error = system_error;
+        mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
+    }
+    free(path);
+    file->state.active = false;
+    return status;
+}

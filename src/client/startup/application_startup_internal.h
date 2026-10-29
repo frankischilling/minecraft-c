@@ -65,6 +65,8 @@ struct mc_client_application_startup {
     mc_client_startup_effects_call *effects;
     mc_client_startup_rendering_call *rendering;
     struct mc_client_startup_resources_call *resources;
+    struct mc_client_startup_menu_call *menu;
+    struct mc_client_startup_gui_ingame_call *gui_ingame;
 };
 
 mc_client_startup_status application_startup_fail(mc_client_startup_error *,
@@ -90,6 +92,10 @@ mc_client_startup_status application_startup_rendering(mc_client_application_sta
 mc_client_startup_status application_startup_rendering_retire(mc_client_application_startup *);
 mc_client_startup_status application_startup_resources(mc_client_application_startup *);
 mc_client_startup_status application_startup_resources_retire(mc_client_application_startup *);
+mc_client_startup_status application_startup_menu(mc_client_application_startup *);
+mc_client_startup_status application_startup_menu_retire(mc_client_application_startup *);
+mc_client_startup_status application_startup_gui_ingame(mc_client_application_startup *);
+mc_client_startup_status application_startup_gui_ingame_retire(mc_client_application_startup *);
 mc_client_startup_status application_startup_font(mc_client_application_startup *);
 mc_client_startup_status application_startup_render_engine(mc_client_application_startup *);
 mc_client_startup_status application_startup_pack(mc_client_application_startup *);

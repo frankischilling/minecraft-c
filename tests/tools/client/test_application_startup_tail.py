@@ -2,7 +2,7 @@
 
 Window-session and its real GL-error boundary mode credit the genuine normal
 prefix through cx/S, sound bind, nine effects, RenderGlobal, viewport and dn to
-resource Thread construction/start and Post startup to the next unconnected uq697. Effect and rendering bounds preserve their real
+resource Thread construction/start and Post startup to GuiIngame and menu initialization to the next unconnected run clock32. Effect and rendering bounds preserve their real
 constructor/List failure prefixes.
 Nonempty Controllers discovery remains an honest SDK Native12 refusal.
 Other modes test explicit native admission

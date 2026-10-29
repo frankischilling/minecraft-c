@@ -2,8 +2,8 @@
 
 Minecraft class activation and the `kg` worker are integrated startup
 prerequisites. The combined source passes 393 Windows and 385 cases per sanitized
-Linux compiler. The complete application constructor and normal startup remain
-unfinished.
+Linux compiler. The normal no-connection startup path now returns from `Minecraft.a()`;
+frame-loop adoption and World entry remain unfinished.
 
 The current title/inspection frontend remains a component bootstrap. Its native
 `running` and `captured` flags do not establish the roles of source volatile

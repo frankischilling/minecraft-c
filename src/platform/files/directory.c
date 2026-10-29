@@ -665,3 +665,36 @@ bool mc_file_native_rename(const mc_file_native_char *from, const mc_file_native
 #endif
     return false;
 }
+
+#ifdef _WIN32
+/* End the legacy GameDirectory observation alias before this independent
+ * operation, which has no GameDirectory creation/provider state. */
+#undef GetFileAttributesW
+#endif
+
+bool mc_file_native_delete(const mc_file_native_char *path, int *system_error) {
+#ifdef _WIN32
+    /* The selected JDK Windows provider clears attributes before choosing the
+     * file or directory removal primitive. A failed attribute write is ignored. */
+    (void)SetFileAttributesW(path, FILE_ATTRIBUTE_NORMAL);
+    const DWORD attributes = GetFileAttributesW(path);
+    if (attributes != INVALID_FILE_ATTRIBUTES &&
+        ((attributes & FILE_ATTRIBUTE_DIRECTORY) != 0 ? RemoveDirectoryW(path)
+                                                      : DeleteFileW(path))) {
+        if (system_error != NULL)
+            *system_error = 0;
+        return true;
+    }
+    if (system_error != NULL)
+        *system_error = (int)GetLastError();
+#else
+    if (remove(path) == 0) {
+        if (system_error != NULL)
+            *system_error = 0;
+        return true;
+    }
+    if (system_error != NULL)
+        *system_error = errno;
+#endif
+    return false;
+}
