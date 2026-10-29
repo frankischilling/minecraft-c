@@ -167,7 +167,7 @@ static bool construct(mc_client_render_engine *o, mc_client_texture_pack_list *p
     }
     o->arena.bytes += sizeof(*o->candidate);
     ++o->arena.allocations;
-    o->candidate->holds = 1;
+    atomic_init(&o->candidate->holds, 1);
     if (!charge_external(o, 64u * 64u * sizeof(uint32_t), 96))
         return false;
     o->candidate->pixels = calloc(64u * 64u, sizeof(uint32_t));
@@ -414,8 +414,8 @@ static void destroy_engine(mc_client_render_engine *o, bool drop_class) {
     }
     mc_client_argb_image_release(o->candidate);
     mc_client_argb_image_release(o->fields.m);
-    const mc_client_render_map *maps[4] = {o->fields.b, o->fields.c, o->fields.d, o->fields.h};
-    for (size_t i = 0; i < 4; ++i)
+    const mc_client_render_map *maps[3] = {o->fields.b, o->fields.c, o->fields.d};
+    for (size_t i = 0; i < 3; ++i)
         if (maps[i] != NULL) {
             if (i > 1 && maps[i]->entries != NULL)
                 for (size_t j = 0; j < maps[i]->count; ++j)
@@ -432,6 +432,10 @@ static void destroy_engine(mc_client_render_engine *o, bool drop_class) {
                  : i == 1 ? (void *)maps[i]->color_arrays
                           : (void *)maps[i]->entries);
         }
+    /* h contains ek owners, never BufferedImages. The client layer retires its
+     * workers and values before this pure CPU destructor is admitted. */
+    if (o->fields.h != NULL)
+        free(o->fields.h->downloads);
     if (o->fields.g != NULL)
         free(((mc_client_render_list *)o->fields.g)->entries);
     mc_client_render_arena_free(&o->arena);
@@ -452,6 +456,9 @@ mc_client_render_engine_status mc_client_render_engine_release(mc_client_render_
     if (o->holds == 1 && o->fields.g != NULL && o->fields.g->count != 0 && !o->effects_retired)
         return MC_CLIENT_RENDER_ENGINE_BUSY;
     if (o->holds == 1 && o->lookup != NULL)
+        return MC_CLIENT_RENDER_ENGINE_BUSY;
+    if (o->holds == 1 &&
+        (o->image_downloads != NULL || (o->fields.h != NULL && o->fields.h->count != 0)))
         return MC_CLIENT_RENDER_ENGINE_BUSY;
     if (o->holds == 1 && atomic_load_explicit(&o->classes->holds, memory_order_acquire) == 1 &&
         (o->classes->native_resource_count != 0 || o->classes->command_range_count != 0 ||
@@ -481,7 +488,8 @@ mc_client_render_engine_retire(mc_client_render_engine **slot,
          * counters. Every retained lookup prefix also prevents final release;
          * registration/lookup calls and font leases hold the actual Engine. */
         if (o->holds != 1 || o->phase == MC_CLIENT_RENDER_ENGINE_CONSTRUCTING ||
-            o->active_resource_calls != 0 || o->lookup != NULL ||
+            o->active_resource_calls != 0 || o->lookup != NULL || o->image_downloads != NULL ||
+            (o->fields.h != NULL && o->fields.h->count != 0) ||
             (o->fields.g != NULL && o->fields.g->count != 0 && !o->effects_retired))
             fail(&e, MC_CLIENT_RENDER_ENGINE_BUSY, "Engine own operation/hold/pending dependency",
                  NULL, 0, 0, NULL, 0);
@@ -565,19 +573,29 @@ bool mc_client_direct_int_buffer_inspect(const mc_client_direct_int_buffer *b,
 bool mc_client_argb_image_inspect(const mc_client_argb_image *i, mc_client_argb_image_state *out) {
     if (i == NULL || out == NULL)
         return false;
-    *out =
-        (mc_client_argb_image_state){i->holds,  i->width, i->height,     i->constructed ? 2u : 0u,
-                                     i->pixels, i->count, i->constructed};
+    *out = (mc_client_argb_image_state){atomic_load_explicit(&i->holds, memory_order_acquire),
+                                        i->width,
+                                        i->height,
+                                        i->constructed ? 2u : 0u,
+                                        i->pixels,
+                                        i->count,
+                                        i->constructed};
     return true;
 }
 
 mc_client_render_engine_status mc_client_argb_image_retain(mc_client_argb_image *i) {
     if (i == NULL)
         return MC_CLIENT_RENDER_ENGINE_INVALID_ARGUMENT;
-    if (i->holds == SIZE_MAX)
-        return MC_CLIENT_RENDER_ENGINE_LIMIT;
-    ++i->holds;
-    return MC_CLIENT_RENDER_ENGINE_OK;
+    size_t observed = atomic_load_explicit(&i->holds, memory_order_acquire);
+    for (;;) {
+        if (observed == 0)
+            return MC_CLIENT_RENDER_ENGINE_INVALID_PHASE;
+        if (observed == SIZE_MAX)
+            return MC_CLIENT_RENDER_ENGINE_LIMIT;
+        if (atomic_compare_exchange_weak_explicit(&i->holds, &observed, observed + 1,
+                                                  memory_order_acq_rel, memory_order_acquire))
+            return MC_CLIENT_RENDER_ENGINE_OK;
+    }
 }
 
 mc_client_render_engine_status mc_client_argb_image_create(int32_t width, int32_t height,
@@ -601,7 +619,7 @@ mc_client_render_engine_status mc_client_argb_image_create(int32_t width, int32_
         free(image);
         return MC_CLIENT_RENDER_ENGINE_ALLOCATION_FAILED;
     }
-    image->holds = 1;
+    atomic_init(&image->holds, 1);
     image->width = (uint32_t)width;
     image->height = (uint32_t)height;
     image->count = count;
@@ -623,8 +641,17 @@ mc_client_render_engine_status mc_client_argb_image_set_pixel(mc_client_argb_ima
 }
 
 void mc_client_argb_image_release(mc_client_argb_image *i) {
-    if (i == NULL || --i->holds != 0)
+    if (i == NULL)
         return;
-    free(i->pixels);
-    free(i);
+    size_t observed = atomic_load_explicit(&i->holds, memory_order_acquire);
+    while (observed != 0) {
+        if (atomic_compare_exchange_weak_explicit(&i->holds, &observed, observed - 1,
+                                                  memory_order_acq_rel, memory_order_acquire)) {
+            if (observed == 1) {
+                free(i->pixels);
+                free(i);
+            }
+            return;
+        }
+    }
 }

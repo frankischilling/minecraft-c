@@ -43,11 +43,19 @@ List and scrolling owner, and draws selectable rows. Cancel returns to the
 exact parent. A synchronous screen change keeps the original source receiver
 for the remaining input. Select constructs and publishes the actual `os`, then
 enters the source World loader. Existing-save loading constructs the canonical
-World, completes 289 terrain samples and publishes its real Player/input before
-renderer attachment at bytecode 220. Version-zero conversion stops at 52.
+World, completes 289 terrain samples, attaches renderer/particles and inserts
+the real Player. View publication and healthy null-screen/focus handling also
+return; the same tick then stops at gameplay input `Minecraft.k:337`.
+Version-zero conversion stops at 52.
 Create/Rename stop at `NEW162`/`NEW189`; Delete stops at preparation 21 without
 skipping its prefix. Complete World entry and gameplay remain unfinished. See the
 [World-selection contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-selection.md).
+
+The current extension passes all 482 selected Windows CTests, 86 strict
+compiler checks and 30 selected Linux sanitizer cases. Existing-save and
+generated-terrain entry both reach World-load return and checked cleanup.
+The [testing scope](Build-and-tests) separates native, private CPU-wrapper and
+finite original-image results from complete playability.
 
 The preceding startup/menu-initialization Windows MSVC Debug source passes all
 460 selected CTests without failures or skips. The selected normal Session and GL-error startup profiles

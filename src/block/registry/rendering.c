@@ -126,6 +126,10 @@ mc_registry_status mc_block_render_fancy_leaves(mc_registry_classes *classes, bo
     mc_block *block = classes->blocks.named[17]; /* uu.L, field u..bl */
     /* Use the actual class receiver, not the numerical slot as a replacement
      * for a missing static field. L is cell17 in this declaration sequence. */
+    return mc_block_render_fancy_leaves_receiver(block, fancy);
+}
+
+mc_registry_status mc_block_render_fancy_leaves_receiver(mc_block *block, bool fancy) {
     if (!valid(block) || block->kind != MC_BLOCK_LEAVES)
         return MC_REGISTRY_NULL_REFERENCE;
     block->nr_b = fancy;

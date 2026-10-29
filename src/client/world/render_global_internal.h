@@ -5,8 +5,16 @@
 #include "../render/cx.h"
 #include "../render_engine/ge.h"
 #include "../render_engine/nw.h"
+#include "mc/client/render/manager/manager.h"
+#include "mc/client/sound/sound.h"
 #include "mc/client/world/render_global.h"
 #include "mc/core/java/java.h"
+#include "mc/entity/bounds/bounds.h"
+
+typedef struct mc_render_global_access mc_render_global_access;
+typedef struct mc_render_global_cv mc_render_global_cv;
+typedef struct mc_client_image_download_error mc_client_image_download_error;
+typedef struct mc_client_image_buffer_error mc_client_image_buffer_error;
 
 struct mc_client_render_global_error {
     mc_client_render_global_status status;
@@ -17,6 +25,17 @@ struct mc_client_render_global_error {
     mc_client_graphics_error graphics, cleanup_graphics;
     mc_client_cx_error cx;
     mc_client_display_error display, cleanup_display;
+    mc_client_graphics_site parent, child;
+    mc_world_storage_error world;
+    mc_client_manager_error manager;
+    mc_client_model_error model;
+    mc_entity_bounds_error bounds;
+    mc_registry_error registry;
+    mc_sound_error sound;
+    mc_entity_error entity;
+    mc_player_error player;
+    const mc_client_image_download_error *image_download;
+    const mc_client_image_buffer_error *image_buffer;
 };
 
 struct mc_client_render_batch {
@@ -42,7 +61,28 @@ struct mc_client_render_global {
     int32_t open_list;
     bool matrix_pushed, source_returned, queries_issued;
     mc_client_render_global_error failure, retirement;
+    mc_render_global_access *access; /* Native stable interface for this SAME n. */
+    mc_client_render_global_world_call *world_call;
+    mc_world_runtime *world_occurrence;         /* Independent occurrence backing actual k. */
+    mc_world_runtime *manager_world_occurrence; /* Captured TH publication cleanup right. */
+    mc_client_render_manager *world_manager;
+    mc_render_global_cv *cv_owners;
+    mc_client_source_dk *chunk_owners;
+    size_t o_length, n_length;
+    bool world_retiring;
 };
+
+mc_client_render_global_status
+mc_render_global_source_fail(mc_client_render_global_error *, mc_client_render_global_status,
+                             const char *operation, const char *class_name, const char *method,
+                             const char *descriptor, unsigned int pc, bool native_policy);
+mc_client_render_global_status mc_render_global_mark_cell(mc_client_render_global *, int32_t,
+                                                          int32_t, int32_t,
+                                                          mc_client_render_global_error *);
+mc_client_render_global_status mc_render_global_mark_range(mc_client_render_global *, int32_t,
+                                                           int32_t, int32_t, int32_t, int32_t,
+                                                           int32_t,
+                                                           mc_client_render_global_error *);
 
 mc_client_render_global_status mc_render_global_fail(mc_client_render_global_error *,
                                                      mc_client_render_global_status, const char *,

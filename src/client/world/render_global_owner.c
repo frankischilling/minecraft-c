@@ -1,6 +1,7 @@
 #include "../display/source_surface.h"
 #include "../render_engine/context_internal.h"
 #include "../render_engine/internal.h"
+#include "render_global_access.h"
 #include "render_global_internal.h"
 
 #include <emmintrin.h>
@@ -129,6 +130,10 @@ mc_client_render_global_release(mc_client_render_global **slot,
         *slot = NULL;
         goto done;
     }
+    if (mc_client_render_global_world_detach(o, &e) != MC_CLIENT_RENDER_GLOBAL_OK)
+        goto retained;
+    if (mc_render_global_access_retire(&o->access, &e) != MC_CLIENT_RENDER_GLOBAL_OK)
+        goto retained;
     o->phase = MC_CLIENT_RENDER_GLOBAL_RETIRING;
     o->active = true;
     if (!mc_client_display_query_names_retire(&o->queries, &e.cleanup_display)) {

@@ -309,11 +309,8 @@ static bool saved_set(mc_world_runtime *world, const mc_world_light_type *type, 
             if (!has)
                 break;
             frame->setter_bytecode = frame->world_access_bytecode = 121;
-            mc_world_storage_status status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
-            if (access != NULL && access->callbacks.cell != NULL)
-                status = access->callbacks.cell(access->context, world, x, y, z, &cause);
-            else
-                cause.operation = "World light WorldAccess invocation";
+            const mc_world_storage_status status = mc_world_access_call_cell(
+                access, world, x, y, z, &cause, &frame->world_access_failure);
             mc_world_access_release_held(access);
             if (status != MC_WORLD_STORAGE_OK) {
                 ok = storage_failed(frame, mc_world_access_callback_error(status, cause));

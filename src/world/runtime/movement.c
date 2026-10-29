@@ -451,12 +451,9 @@ static bool entity_sound_held(mc_world_runtime *world, mc_entity *entity,
         /* Even a NULL receiver or missing slot is tested only after the
          * Entity x/y/offset/z reads and actual y-offset argument arithmetic. */
         frame->bytecode = frame->world_access_bytecode = 53;
-        mc_world_storage_status status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
-        if (world_access == NULL || world_access->callbacks.sound == NULL)
-            cause.operation = "World Entity sound WorldAccess invocation";
-        else
-            status = world_access->callbacks.sound(world_access->context, world, name, x, sound_y,
-                                                   z, volume, pitch, &cause);
+        const mc_world_storage_status status =
+            mc_world_access_call_sound(world_access, world, name, x, sound_y, z, volume, pitch,
+                                       &cause, &frame->world_access_failure);
         mc_entity_release(entity);
         mc_world_access_release_held(world_access);
         if (status != MC_WORLD_STORAGE_OK)

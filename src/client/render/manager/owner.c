@@ -387,6 +387,7 @@ mc_client_render_manager_classes_retire(mc_client_render_manager_classes **slot,
                 free(map);
             }
             /* Source views end with native storage; no Source o/a/f reset. */
+            mc_world_runtime_binding_release(m->world_occurrence);
             free(m);
             c->candidate = NULL;
         }

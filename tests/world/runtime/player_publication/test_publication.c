@@ -195,6 +195,8 @@ static mc_world_storage_status observed(void *owner, mc_world_runtime *world, mc
     return MC_WORLD_STORAGE_OK;
 }
 
+#include "load_cases.h"
+
 static bool nbt_prefixes(fixture *f, mc_entity *player) {
     mc_world_info *info = mc_world_runtime_info(f->world);
     mc_world_info_player *owner = NULL, *current = NULL;
@@ -371,6 +373,7 @@ static bool normal_case(fixture *f) {
     f->world->fields.d = saved;
     CHECK(mc_world_runtime_update_player_sleeping(f->world, &sleep) == MC_WORLD_STORAGE_OK &&
           !f->world->fields.J);
+    CHECK(detailed_load_cases(f, player));
     CHECK(nbt_prefixes(f, player));
     CHECK(mc_world_runtime_attach_player(f->world, NULL, &attachment) ==
               MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
@@ -394,6 +397,14 @@ static bool acquisition_failure(fixture *f) {
           inserted && error.bytecode == 83 && error.presence_bytecode == 0 &&
           f->world->fields.d->count == 1 && f->world->fields.b->count == 0 && !f->world->fields.J &&
           player->holds == 2 && mc_world_store_chunk_count(f->store) == 0);
+    mc_world_player_load_error *load = malloc(sizeof(*load));
+    CHECK(load != NULL);
+    CHECK(mc_world_runtime_load_player(f->world, player, load) == MC_WORLD_STORAGE_LIMIT &&
+          load->bytecode == 79 && load->publication.bytecode == 83 && load->native_policy &&
+          !load->source_exception && !load->print_stack_trace_pending &&
+          load->catch_bytecode == 0 && !load->source_returned && !load->publication_returned &&
+          f->world->fields.d->count == 2 && f->world->fields.b->count == 0 && player->holds == 3);
+    free(load);
     CHECK(f->world->active_calls == 0 && f->world->local_leases == 0);
     CHECK(mc_world_runtime_retire_entity_containers(f->world, NULL) == MC_WORLD_STORAGE_OK &&
           player->holds == 1);

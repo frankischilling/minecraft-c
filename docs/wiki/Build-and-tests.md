@@ -5,16 +5,24 @@ and real double-click Windows profiles:
 real SaveFormat metadata and stable sorting, row selection during drawing,
 same-parent Cancel, original-receiver trailing input and retained-old-RQ cleanup.
 Select constructs the actual controller and enters the retained source World
-loader. Existing-save and separate generated-terrain profiles complete all 289
-samples and real Player/input publication before renderer attachment at 220.
+loader. The existing-save profile completes all 289 samples, renderer/particle
+attachment, real Player insertion, view publication and healthy null-screen
+focus. It then reaches gameplay input `Minecraft.k:337`. The current separate
+generated-terrain Release profile also reaches full World-load return and
+cleanup under a 300-second process bound.
 Version-zero conversion stops at 52.
 Empty, populated and bottom-scroll 854 by 480 captures were inspected. Save and resource hashes remain unchanged,
 without a new session lock. Create/Rename remain at `NEW162`/`NEW189`; Delete
 stops at preparation 21 without skipping its prefix. The Windows MSVC Debug
-ALL build and all 475 selected CTests pass without failures or skips in 208.25
-seconds, excluding 46 configured reference-label profiles. The separate
-headless Release ALL build and formatting for 1,379 files also pass. World
-entry, rendering attachment and gameplay remain unfinished.
+ALL build and all 482 selected CTests pass without failures or skips in
+209.59 seconds, excluding 46 of 528 configured reference-label profiles.
+The separate headless Release ALL build and formatting for 1,405 files also
+pass. All 43 affected translation units pass 86 strict GCC/Clang checks.
+Thirty Linux sanitizer cases pass across the two compilers: 26 public headless
+cases and four private Engine/RR CPU-wrapper cases. Full Linux graphical play
+remains unqualified. The [testing record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#renderer-attachment-and-image-worker-qualification)
+records the Player stack regression, exact scopes and original pixel observer.
+Unrestricted World entry, dynamic rendering and gameplay remain unfinished.
 
 The DateFormat owner matches 2,926 JDK17 vectors on Windows and Linux for
 English/en_US, UTC/Eastern and UTC years 1967..2099. Other locales, zones and

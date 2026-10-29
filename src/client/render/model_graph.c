@@ -329,21 +329,39 @@ mc_client_model_status mc_client_model_graph_retire(mc_client_model_graph *o,
     return MC_CLIENT_MODEL_OK;
 }
 
+bool mc_client_render_blocks_active_use(mc_client_render_classes *classes,
+                                        mc_client_model_error *error) {
+    if (classes == NULL) {
+        if (error != NULL)
+            *error = (mc_client_model_error){.status = MC_CLIENT_MODEL_INVALID_ARGUMENT};
+        return false;
+    }
+    if (!classes->cv_ready) {
+        classes->cv_a = true;
+        classes->cv_ready = true;
+    }
+    return true;
+}
+
+void mc_client_render_blocks_construct_fields(mc_client_render_blocks *p, const void *xp,
+                                              bool with_xp) {
+    p->d = -1;
+    p->e = false;
+    p->f = false;
+    p->b = true;
+    p->g = p->h = p->i = p->j = p->k = p->l = 0;
+    p->O = 1;
+    if (with_xp)
+        p->c = xp; /* Actual cv(xp) putfield61, absent from no-argument ctor. */
+}
+
 mc_client_render_blocks *mc_client_model_graph_blocks(mc_client_model_graph *o, const char *source,
                                                       int32_t pc) {
-    if (!o->classes->cv_ready) {
-        o->classes->cv_a = true;
-        o->classes->cv_ready = true;
-    }
+    if (!mc_client_render_blocks_active_use(o->classes, o->failure))
+        return NULL;
     mc_client_render_blocks *p = mc_client_model_graph_allocate(o, sizeof(*p), source, pc);
-    if (p != NULL) {
-        p->d = -1;
-        p->e = false;
-        p->f = false;
-        p->b = true;
-        p->g = p->h = p->i = p->j = p->k = p->l = 0;
-        p->O = 1;
-    }
+    if (p != NULL)
+        mc_client_render_blocks_construct_fields(p, NULL, false);
     return p;
 }
 

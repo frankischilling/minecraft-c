@@ -24,6 +24,8 @@ typedef struct mc_world_access_list_ledger {
     mc_world_reference_list *list;
     void **items;
     mc_world_access **entries;
+    uint64_t *identities;
+    uint64_t last_identity;
     size_t count, capacity;
 } mc_world_access_list_ledger;
 

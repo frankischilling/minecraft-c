@@ -28,8 +28,14 @@ typedef struct mc_client_source_command {
     } value;
 } mc_client_source_command;
 
+typedef struct mc_client_source_definition {
+    mc_client_source_command *first, *last;
+    size_t commands, bytes;
+} mc_client_source_definition;
+
 typedef struct mc_client_source_list {
     mc_client_source_command *first, *last;
+    mc_client_source_definition *pending;
     bool defined, building;
 } mc_client_source_list;
 

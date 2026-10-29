@@ -63,6 +63,12 @@ bool mc_client_chunk_statistics_get(mc_client_render_engine_classes *c,
     return true;
 }
 
+bool mc_client_chunk_renderer_active_use(mc_client_render_engine_classes *c,
+                                         mc_client_graphics_site caller,
+                                         mc_client_graphics_error *e) {
+    return e != NULL && active_use(c, caller, e);
+}
+
 bool mc_client_chunk_statistics_reset(mc_client_render_engine_classes *c,
                                       mc_client_graphics_site caller, mc_client_graphics_error *e) {
     if (e == NULL || !active_use(c, caller, e))

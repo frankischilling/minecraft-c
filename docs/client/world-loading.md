@@ -22,7 +22,8 @@ SaveHandler and `fd` constructor. A missing WorldInfo takes the new-World branch
 and retains that branch's explicit unfinished spawn-construction dependency.
 
 An existing WorldInfo can reach `CLIENT_LOAD_OR_CREATE` and `READY`. The
-constructor uses the canonical [SaveHandler](../world/save-handler.md),+[SavedData](../world/saved-data.md), source region loader and existing World
+constructor uses the canonical [SaveHandler](../world/save-handler.md),
+[SavedData](../world/saved-data.md), source region loader and existing World
 construction graph. Metadata fallback, idcounts loading, session-token effects,
 dimension choice and loaded-name assignment occur at their actual source
 positions. Corrupt metadata is not replaced by a generated World.
@@ -37,11 +38,35 @@ follow; the dead local containing 2000 does not run simulation ticks.
 
 On normal preparation return, the existing controller creates the real
 LocalPlayer. The same App publishes `h`, performs spawn/yaw preparation and
-attaches its canonical movement input. The next dependency is
-`RenderGlobal.a(World)` at World-change bytecode 220. At that frontier `i` is still
-null; the later effects, finish-loading call, World Player-data call and final
-GC/`P` stores have not run. Rendering attachment and complete World entry remain
-unfinished, so this path is not a playable session.
+attaches its canonical movement input. At World-change bytecode 220, the actual
+[RenderGlobal](render-global.md) attaches that World and constructs its source
+ChunkRenderer grid. Those constructors compile bounding boxes; they do not
+compile terrain meshes or increment the Chunk-update counter. The particle
+manager then receives the same World at 235, and the controller finishes loading
+at 246.
+
+The canonical `fd.a(gs)` call at 324 consumes optional WorldInfo Player NBT in
+source order, then inserts the actual Player into World and Chunk containers.
+Its WorldAccess callback invokes the Player's appearance override before
+requesting skin and cloak images through the real
+[image factory](image-downloads.md). Factory return and asynchronous worker
+completion remain distinct. A callback failure retains the partial publication
+and its exact invocation receipt; it does not acknowledge the source boolean
+return that follows the callback.
+
+For the existing-save profile, the final new-World save branch is false. The
+caller publishes the same Player in `i347`, requests its third advisory GC,
+stores `P=0` and returns at World-change 366 and outer load 130. The following
+`displayScreen(NULL)` reads actual Player health. A healthy Player leaves `r`
+null and runs the actual focus operation: Display activity and `N` guards,
+`N=true`, MouseHelper grab, recursive null-screen call, then `W`/`ag` stores.
+The recursive call returns through the now-true `N` guard. Null Player and
+death-screen paths preserve their reached source boundaries.
+
+The native selection profile next stops at gameplay input `Minecraft.k:337`
+in the same tick. Later ticks also require the unfinished mouseover and World
+tick paths; a frame requires sound, controller and terrain-render integration.
+Loading a World is therefore still not a playable session.
 
 ## Native lifetime and errors
 
@@ -54,10 +79,14 @@ and lighting error; it is not reduced to a generic block-get failure.
 Checked native retirement drains only calls owned by this invocation. A
 pre-existing retained Loading or SaveFormat failure belongs to its original
 caller, even when the new load acquires a native borrow and returns BUSY.
-Cleanup preserves completed source effects and releases actual containers,
-cache registrations and Store-owned Chunks before retiring their World and
-SaveHandler. External occurrences can make retirement return BUSY for a later
-retry. Retirement never replays the load or restores prior source fields.
+Cleanup releases captured callback receipts before renderer detachment. It
+ends only owned WorldAccess registrations and the renderer/particle World
+occurrences before retiring World containers. Actual containers, cache
+registrations and Store-owned Chunks retire before their World and SaveHandler;
+the input owner remains alive through Player membership cleanup. External
+occurrences can make retirement return BUSY for a later retry. Retirement
+preserves completed source effects, never replays the load and never restores
+prior source fields.
 
 World-list drawing leaves its dedicated flat-shading state active. Loading-bar
 batches can contain differently colored triangles when each complete triangle

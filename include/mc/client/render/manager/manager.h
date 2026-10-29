@@ -131,6 +131,17 @@ mc_client_manager_status mc_client_render_manager_retain(mc_client_render_manage
                                                          mc_client_manager_error *);
 mc_client_manager_status mc_client_render_manager_release(mc_client_render_manager **,
                                                           mc_client_manager_error *);
+/* Exact th.a(fd): source g2 store and return5. Holds the SAME nullable World
+ * independently until replacement or checked terminal detach. No World query,
+ * renderer lookup or other source field is read. */
+mc_client_manager_status mc_client_render_manager_change_world(mc_client_render_manager *,
+                                                               mc_world_runtime *,
+                                                               mc_client_manager_error *);
+/* Native terminal occurrence ending only if this manager still holds the
+ * specified actual World. A different current World is left untouched. */
+mc_client_manager_status mc_client_render_manager_detach_world(mc_client_render_manager *,
+                                                               mc_world_runtime *,
+                                                               mc_client_manager_error *);
 mc_client_manager_status mc_client_render_manager_entry(mc_client_render_manager *, size_t,
                                                         const mc_entity_class_literal **,
                                                         mc_client_managed_renderer **,

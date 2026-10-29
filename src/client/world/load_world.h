@@ -29,6 +29,10 @@ typedef struct mc_player_spawn_error mc_player_spawn_error;
 typedef struct mc_player_input_error mc_player_input_error;
 typedef struct mc_movement_input_error mc_movement_input_error;
 typedef struct mc_registry_error mc_registry_error;
+typedef struct mc_client_render_global_world_state mc_client_render_global_world_state;
+typedef struct mc_client_render_global_error mc_client_render_global_error;
+typedef struct mc_effect_renderer_error mc_effect_renderer_error;
+typedef struct mc_world_player_load_error mc_world_player_load_error;
 
 typedef enum mc_client_world_load_status {
     MC_CLIENT_WORLD_LOAD_OK,
@@ -71,6 +75,10 @@ typedef struct mc_client_world_load_error {
     const mc_movement_input_error *input;
     const mc_registry_error *registry;
     const mc_client_world_prepare_state *terrain;
+    const mc_client_render_global_world_state *renderer;
+    const mc_client_render_global_error *render_global;
+    const mc_effect_renderer_error *effects;
+    const mc_world_player_load_error *player_load;
 } mc_client_world_load_error;
 
 typedef struct mc_client_world_load_state {
@@ -79,6 +87,7 @@ typedef struct mc_client_world_load_state {
     bool handler_opened, world_constructed, world_published, player_published, input_published;
     bool initial_i_cleared, initial_h_cleared, initial_P_stored;
     bool statistics_first_returned, statistics_second_returned;
+    bool renderer_returned, effects_returned, player_load_returned, view_published;
     size_t gc_requests, terrain_samples;
     int last_outer_pc, last_change_pc;
     int64_t seed;
@@ -112,7 +121,9 @@ mc_client_world_load_classes_retire(mc_client_world_load_classes **slot);
  * The admitted selected-entry closure has no prior World/Player occurrences;
  * other reached branches stop explicitly instead of releasing unknown borrows.
  * A failure is terminal: inspect and retire, never replay its source effects.
- * Source RenderGlobal change220 remains an explicit reached dependency. */
+ * Existing saved Worlds reach renderer/effect attachment, Player insertion and
+ * view publication. New-World saving and centered providers remain explicit
+ * reached dependencies. */
 mc_client_world_load_status mc_client_world_load_begin(mc_client_world_load_classes *,
                                                        mc_world_info_name *folder,
                                                        mc_world_info_name *display, int64_t seed,
@@ -121,8 +132,10 @@ bool mc_client_world_load_inspect(const mc_client_world_load_call *,
                                   mc_client_world_load_state *out);
 
 /* Checked native cleanup without source save/unload or rollback. Drain actual
- * retained loading/terrain calls, end owned App.h/i/f occurrences and input/
- * failed controller candidates before World/handler release. BUSY/error keeps
+ * retained loading/terrain calls, detach owned renderer/particle World users
+ * and end owned App.h/i/f occurrences and failed controller candidates before
+ * World/handler release. The input owner outlives World/Chunk Player memberships.
+ * BUSY/error keeps
  * the call and every remaining slot; successful earlier consumption is final.
  * Keep App/controller/settings/Registry/Files/GUI dependencies alive throughout
  * retries. Native GC requests are advisory counters, not JVM execution. */

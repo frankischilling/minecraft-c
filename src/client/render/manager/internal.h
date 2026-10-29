@@ -80,6 +80,7 @@ struct mc_client_render_manager {
     mc_client_held_item *hand;
     manager_displaced_hand *displaced;
     size_t displaced_count;
+    mc_world_runtime *world_occurrence; /* Independent native hold backing actual g. */
 };
 
 struct mc_client_render_manager_classes {

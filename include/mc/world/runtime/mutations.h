@@ -7,6 +7,7 @@
 #include "mc/world/runtime/entities.h"
 #include "mc/world/runtime/power/power.h"
 #include "mc/world/runtime/rails/errors.h"
+#include "mc/world/runtime/world_access_error.h"
 
 #include "mc/world/runtime/lighting.h"
 #include "mc/world/runtime/plants.h"
@@ -101,6 +102,7 @@ typedef struct mc_world_mutation_error {
      * duplicating that large graph in every enclosing mutation diagnostic. */
     bool redstone_value_failed;
     int32_t redstone_x, redstone_y, redstone_z;
+    mc_world_access_failure world_access_failure;
 } mc_world_mutation_error;
 
 /* Actual GAME World setters. Bounds and acquisition precede the selected

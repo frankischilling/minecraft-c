@@ -406,6 +406,8 @@ void mc_local_player_dispose(mc_entity *entity) {
     (void)mc_inventory_player_retire(&s->player.c, NULL);
     mc_player_string_release((mc_player_string *)s->skin_url);
     mc_player_string_release((mc_player_string *)s->player.l);
+    mc_player_string_release((mc_player_string *)s->player.n);
+    mc_player_string_release((mc_player_string *)entity->base.client_only.bB);
     for (size_t i = 0; i < 3; ++i)
         mc_entity_construction_retire(entity, (void *)s->filters[i], sizeof(*s->filters[i]));
 }

@@ -155,7 +155,12 @@ bool mc_client_argb_image_inspect(const mc_client_argb_image *, mc_client_argb_i
  * Positive dimensions, checked native byte quota, fixed8192-axis/64MiB plane
  * bounds; out preserved on failure. These are native limits, not full AWT.
  * set_pixel is the selected exact ARGB32 field write; invalid coordinates do
- * not change the image. Retain before independent lifetime beyond its owner. */
+ * not change the image. Image retain/release and the occurrence snapshot in
+ * inspect are atomic. Keep an existing live image occurrence while retaining,
+ * inspecting or releasing another; final release cannot overlap a borrowed
+ * view. Shape/pixels require publication synchronization and exclusive pixel
+ * mutation; atomic occurrences do not make set_pixel concurrent-safe. Retain
+ * before independent lifetime beyond its owner. */
 mc_client_render_engine_status mc_client_argb_image_create(int32_t width, int32_t height,
                                                            size_t max_bytes,
                                                            mc_client_argb_image **out);

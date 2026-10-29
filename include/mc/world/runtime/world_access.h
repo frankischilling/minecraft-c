@@ -2,6 +2,7 @@
 #define MC_WORLD_RUNTIME_WORLD_ACCESS_H
 
 #include "mc/world/runtime/construction.h"
+#include "mc/world/runtime/world_access_error.h"
 #include "mc/world/storage/status.h"
 
 typedef struct mc_world_access mc_world_access;
@@ -35,6 +36,34 @@ typedef struct mc_world_access_callbacks {
     mc_world_storage_status (*entity_removed)(void *context, mc_world_runtime *world,
                                               mc_entity *entity, mc_world_storage_error *error);
 } mc_world_access_callbacks;
+
+/* Concrete source receivers return the full, stable failure receipt as part of
+ * this invocation. Native adapters above remain supported without a receipt. */
+typedef struct mc_world_access_source_callbacks {
+    mc_world_storage_status (*cell)(void *, mc_world_runtime *, int32_t, int32_t, int32_t,
+                                    mc_world_storage_error *, mc_world_access_failure *);
+    mc_world_storage_status (*range)(void *, mc_world_runtime *, int32_t, int32_t, int32_t, int32_t,
+                                     int32_t, int32_t, mc_world_storage_error *,
+                                     mc_world_access_failure *);
+    mc_world_storage_status (*sound)(void *, mc_world_runtime *, const mc_registry_string *, double,
+                                     double, double, float, float, mc_world_storage_error *,
+                                     mc_world_access_failure *);
+    mc_world_storage_status (*particle)(void *, mc_world_runtime *, const mc_registry_string *,
+                                        double, double, double, double, double, double,
+                                        mc_world_storage_error *, mc_world_access_failure *);
+    mc_world_storage_status (*entity_added)(void *, mc_world_runtime *, mc_entity *,
+                                            mc_world_storage_error *, mc_world_access_failure *);
+    mc_world_storage_status (*tile_entity_dirty)(void *, mc_world_runtime *, int32_t, int32_t,
+                                                 int32_t, mc_tile_entity *,
+                                                 mc_world_storage_error *,
+                                                 mc_world_access_failure *);
+    mc_world_storage_status (*entity_removed)(void *, mc_world_runtime *, mc_entity *,
+                                              mc_world_storage_error *, mc_world_access_failure *);
+} mc_world_access_source_callbacks;
+
+mc_world_storage_status mc_world_access_source_create(const mc_world_access_source_callbacks *,
+                                                      void *, mc_world_access **,
+                                                      mc_world_storage_error *);
 
 /* Copies the table and borrows context until successful free. The table may
  * contain missing slots and context may be NULL. No callback, World access,

@@ -323,6 +323,28 @@ bool mc_client_effect_renderer_read(const mc_client_effect_renderer *r,
     return true;
 }
 
+mc_effect_renderer_status mc_client_effect_renderer_retire_world(mc_client_effect_renderer *r,
+                                                                 mc_world_runtime *expected,
+                                                                 mc_effect_renderer_error *error) {
+    mc_effect_renderer_error e = fresh();
+    if (r == NULL)
+        fail(&e, MC_EFFECT_RENDERER_INVALID_ARGUMENT, "EffectRenderer native World owner", NULL,
+             NULL, 0);
+    else if (r->entered || r->holds != 1)
+        fail(&e, MC_EFFECT_RENDERER_BUSY, "EffectRenderer native World occurrence", NULL, NULL, 0);
+    else if (r->world != expected)
+        fail(&e, MC_EFFECT_RENDERER_INVALID_PHASE, "EffectRenderer expected World changed", NULL,
+             NULL, 0);
+    else {
+        if (r->layers != NULL)
+            for (size_t i = 0; i < 4; ++i)
+                clear(r->layers[i]);
+        r->world = NULL;
+        mc_world_runtime_binding_release(expected);
+    }
+    return publish(&e, error);
+}
+
 mc_entity *mc_client_effect_renderer_particle(const mc_client_effect_renderer *r, size_t layer,
                                               size_t index) {
     return r == NULL || r->phase != MC_EFFECT_RENDERER_READY || layer >= 4 ||

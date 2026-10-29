@@ -6,6 +6,7 @@
 #include "mc/world/chunk/entity_errors.h"
 #include "mc/world/runtime/acquisition_error.h"
 #include "mc/world/runtime/tile_entities/piston.h"
+#include "mc/world/runtime/world_access_error.h"
 
 typedef struct mc_world_entity_tick_context {
     mc_player_action_context player;
@@ -69,6 +70,8 @@ typedef struct mc_world_entity_tick_error {
         mc_world_mutation_error presentation;
         mc_registry_error registry;
     } child_error;
+
+    mc_world_access_failure world_access_failure;
 } mc_world_entity_tick_error;
 
 void mc_world_entity_tick_error_init(mc_world_entity_tick_error *);

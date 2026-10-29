@@ -108,3 +108,29 @@ mc_player_status mc_player_skin_string(const mc_player_string *name, mc_player_s
     *out = string;
     return MC_PLAYER_OK;
 }
+
+mc_player_status mc_player_cloak_string(const mc_player_string *name, mc_player_string **out) {
+    static const char prefix[] = "http://s3.amazonaws.com/MinecraftCloaks/";
+    static const char suffix[] = ".png";
+    static const uint16_t null_units[] = {'n', 'u', 'l', 'l'};
+    const size_t before = sizeof(prefix) - 1u, after = sizeof(suffix) - 1u;
+    const size_t length = name == NULL ? sizeof(null_units) / sizeof(null_units[0]) : name->length;
+    const uint16_t *text = name == NULL ? null_units : name->units;
+    if (out == NULL)
+        return MC_PLAYER_INVALID_ARGUMENT;
+    if (length > MC_PLAYER_MAX_TEXT_UNITS - before - after)
+        return MC_PLAYER_LIMIT;
+    mc_player_string *string = NULL;
+    const mc_player_status status = allocate_string(before + length + after, &string);
+    if (status != MC_PLAYER_OK)
+        return status;
+    uint16_t *units = (uint16_t *)(string + 1);
+    for (size_t i = 0; i < before; ++i)
+        units[i] = (uint8_t)prefix[i];
+    if (length != 0)
+        memcpy(units + before, text, length * sizeof(*units));
+    for (size_t i = 0; i < after; ++i)
+        units[before + length + i] = (uint8_t)suffix[i];
+    *out = string;
+    return MC_PLAYER_OK;
+}

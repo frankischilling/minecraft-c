@@ -1,5 +1,7 @@
 #include "action_internal.h"
 
+#include <stdlib.h>
+
 static void living_at(mc_player_action_error *e, unsigned int pc) {
     e->source_class = "ls";
     e->source_method = "o()V";
@@ -408,18 +410,31 @@ static bool player_body(mc_entity *p, const mc_player_action_context *context,
 static mc_entity_status run(mc_entity *p, const mc_player_action_context *context,
                             const mc_player_action_limits *limits, bool player,
                             mc_player_action_error *out) {
-    mc_player_action_error frame;
-    mc_player_action_error_init(&frame);
-    frame.max_loop_work =
+    /* Full nested World/Player causes need independent per-invocation storage,
+     * including synchronous callback reentry. Native workspace failure precedes
+     * source work and is not a fabricated Java allocation exception. */
+    mc_player_action_error *frame = malloc(sizeof(*frame));
+    if (frame == NULL) {
+        mc_player_action_error_init(out);
+        if (out != NULL) {
+            out->status = MC_ENTITY_ALLOCATION_FAILED;
+            out->operation = "Player action diagnostic workspace";
+        }
+        return MC_ENTITY_ALLOCATION_FAILED;
+    }
+    mc_player_action_error_init(frame);
+    frame->max_loop_work =
         limits == NULL ? MC_PLAYER_ACTION_DEFAULT_LOOP_WORK : limits->max_loop_work;
-    if (mc_action_enter(p, &frame)) {
+    if (mc_action_enter(p, frame)) {
         if (player)
-            (void)player_body(p, context, &frame);
+            (void)player_body(p, context, frame);
         else
-            (void)living_body(p, context, &frame);
+            (void)living_body(p, context, frame);
         mc_entity_release(p);
     }
-    return mc_action_finish(&frame, out);
+    const mc_entity_status status = mc_action_finish(frame, out);
+    free(frame);
+    return status;
 }
 
 mc_entity_status mc_player_action(mc_entity *p, const mc_player_action_context *c,

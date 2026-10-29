@@ -70,12 +70,15 @@ and idempotent cleanup; it does not force a host mutex failure. The DateFormat
 owner matches all 2,926 JDK17 vectors on Windows and Linux for its admitted
 profiles; this does not qualify original game-menu pixels or all timezone data.
 
-All 475 selected Windows CTests pass without failures or skips, alongside the
+The preceding source-loading checkpoint passes all 475 selected Windows CTests
+without failures or skips, alongside the
 client and headless builds and formatting for 1,379 files. The
 [testing record](../testing.md#world-selection-in-the-default-runtime) separates
 these focused results from earlier complete local and hosted checkpoints.
 The existing-save profile verifies `READY`, all 289 samples, a real stored
-block marker, same-App Player/input publication, renderer frontier and checked
-cleanup. The profile reads authored region files and allows the actual new
+block marker, same-App Player/input, renderer/effect attachment, actual Player
+insertion, view publication and checked cleanup. The profile reads authored region files and allows the actual new
 session lock while preserving pre-existing save and resource bytes. Creation,
-rename, deletion, rendering attachment and gameplay remain unfinished.
+rename, deletion, dynamic rendering and gameplay remain unfinished. Healthy
+null-screen handling returns; the same native tick next stops at gameplay
+input `Minecraft.k:337`.

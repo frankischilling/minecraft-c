@@ -78,6 +78,8 @@ typedef struct mc_java_http_state {
     bool source_open, native_open, completed, active;
     long response_code;
     mc_java_url_error failure;
+    size_t disconnects;
+    bool connection_ready, disconnected;
 } mc_java_http_state;
 
 mc_java_http_options mc_java_http_default_options(void);
@@ -88,6 +90,19 @@ mc_java_http_options mc_java_http_default_options(void);
 mc_java_url_status mc_java_http_open(mc_java_url *, const mc_java_http_options *,
                                      const atomic_bool *stop, mc_java_http_input **candidate,
                                      mc_java_url_error *);
+/* Bounded native connection/header transport, separate from successful source
+ * InputStream acknowledgement. All HTTP status codes, including 4xx/5xx, are
+ * available after connect; get_input alone applies the source response error.
+ * This is the existing real transport, not a synthetic response or a second
+ * request. It does not qualify individual JDK socket/request timing boundaries.
+ * A published candidate is owned even on failure. Each connection has one
+ * input occurrence; disconnect is distinct from an InputStream.close call. */
+mc_java_url_status mc_java_http_connect(mc_java_url *, const mc_java_http_options *,
+                                        const atomic_bool *stop, mc_java_http_input **candidate,
+                                        mc_java_url_error *);
+mc_java_url_status mc_java_http_response_code(mc_java_http_input *, long *, mc_java_url_error *);
+mc_java_url_status mc_java_http_get_input(mc_java_http_input *, mc_java_url_error *);
+mc_java_url_status mc_java_http_disconnect(mc_java_http_input *, mc_java_url_error *);
 mc_java_url_status mc_java_http_retain(mc_java_http_input *, mc_java_url_error *);
 mc_java_url_status mc_java_http_read(mc_java_http_input *, uint8_t *, size_t, int32_t *,
                                      mc_java_url_error *);

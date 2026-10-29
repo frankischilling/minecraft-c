@@ -86,12 +86,9 @@ bool mc_world_mutation_sound(mc_world_runtime *world, double x, double y, double
             return true;
         }
         error->world_access_bytecode = 41;
-        mc_world_storage_status status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
-        if (world_access != NULL && world_access->callbacks.sound != NULL)
-            status = world_access->callbacks.sound(world_access->context, world, name, x, y, z,
-                                                   volume, pitch, &cause);
-        else
-            cause.operation = "World sound WorldAccess invocation";
+        const mc_world_storage_status status =
+            mc_world_access_call_sound(world_access, world, name, x, y, z, volume, pitch, &cause,
+                                       &error->world_access_failure);
         mc_world_access_release_held(world_access);
         if (status != MC_WORLD_STORAGE_OK)
             return presentation_failure(world, error,
@@ -116,12 +113,9 @@ bool mc_world_mutation_particle(mc_world_runtime *world, const mc_registry_strin
             return true;
         }
         error->world_access_bytecode = 43;
-        mc_world_storage_status status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
-        if (world_access != NULL && world_access->callbacks.particle != NULL)
-            status = world_access->callbacks.particle(world_access->context, world, name, x, y, z,
-                                                      velocity_x, velocity_y, velocity_z, &cause);
-        else
-            cause.operation = "World particle WorldAccess invocation";
+        const mc_world_storage_status status = mc_world_access_call_particle(
+            world_access, world, name, x, y, z, velocity_x, velocity_y, velocity_z, &cause,
+            &error->world_access_failure);
         mc_world_access_release_held(world_access);
         if (status != MC_WORLD_STORAGE_OK)
             return presentation_failure(world, error,

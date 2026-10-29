@@ -1,74 +1,133 @@
-# RenderGlobal construction
+# RenderGlobal and chunk-renderer ownership
 
-The canonical `n` owner constructs the reached RenderGlobal state on the actual
-App, Engine and Display. Normal startup calls it at625, publishes `g628`, applies
-the viewport and constructs the particle renderer before publishing `j660`.
-Startup now continues through the resource worker and initialized main menu.
+The canonical `n` owner constructs RenderGlobal on the actual App, Engine and
+Display. Startup calls it at625, publishes `g628`, applies the viewport and
+constructs the particle renderer before publishing `j660`. Selected-World
+loading now invokes the actual `n.a(fd)` attachment. This constructs the source
+chunk-renderer grid and its bounding-box lists. Terrain mesh compilation and a
+complete World frame remain unfinished.
 
-The interface is [render_global.h](../../include/mc/client/world/render_global.h).
-Cold allocation is separate from source construction. Construction retains
-failed arrays, buffers, batch owners and GL definitions, with their reached
-source stores and native causes. A completed constructor is not a rendered World.
+The interfaces are [RenderGlobal](../../include/mc/client/world/render_global.h)
+and [ChunkRenderer](../../include/mc/client/world/source_chunk_renderer.h).
+Cold allocation is separate from source construction. Failed arrays, buffers,
+batch owners and list definitions retain their reached stores and typed causes.
 
-## Source and device state
+## Constructor state
 
-Construction creates the direct buffers, two large display-list ranges, optional
-occlusion-query names, constructor fields and four batch owners. It defines
-the star list and the upper/lower sky planes with the canonical tessellator.
-List names come from the actual Display allocator, shared across independent
-Engine namespaces. A null App fails only after the earlier constructor effects;
-the control does not substitute another App or infer its fields from a view.
+Construction creates direct buffers, reserved display-list ranges, optional
+occlusion-query names and four batch owners. It defines stars and the upper and
+lower sky planes through the same `nw` tessellator. Names come from one Display
+allocator shared across Engine namespaces. A null App fails after the earlier
+constructor effects; the control does not substitute another App.
 
-Logical star generation submits four vertices for each accepted star. The
-original tessellator's `b=true` profile expands those quads to triangles in
-order `[0,1,2,0,2,3]`, so a compiled list contains six records per star. Each sky
-plane contains 169 quads and 1,014 submitted triangle vertices. Upper sky uses
-169 draw batches; lower sky uses one. These source counts and submitted records
-are separate observations.
+Each accepted star contributes four source vertices. The original tessellator's
+`b=true` profile expands each quad to six triangle records in order
+`[0,1,2,0,2,3]`. Each sky plane has 169 source quads and 1,014 submitted triangle
+vertices. Upper sky uses 169 batches; lower sky uses one. Compiled-command
+inspection borrows those actual records. Device controls check copied XYZ and
+the position-only array profile; disabled attribute slots are not asserted equal.
 
-The compiled-command inspection API borrows the actual immutable records. The
-device control verifies every expanded star position and the exact copied XYZ
-records for stars and both planes. It checks the vertex-only enabled-array
-profile; disabled attribute slots are not asserted equal. No regenerated
-geometry or captured pixel fixture supplies those answers.
+## World attachment and the DK grid
+
+`n.a(fd)` removes the old WorldAccess occurrence at12, resets the three distance
+fields, calls the shared RenderManager World setter at40, stores `k45`,
+constructs a new `cv` with that World at54 and publishes `u57`. A nonnull World
+then receives the same RenderGlobal interface at66 before grid rebuild70.
+
+Rebuild updates the actual Leaves graphics setting, reads render distance,
+clears each old DK's World reference, allocates `o/n`, resets the range fields
+and clears the existing dirty and TileEntity Lists. Construction loops X, Y, Z
+in source order. Array indexing, queue insertion and list offsets retain their
+separate source order.
+
+| Render distance H | Grid p × q × r | DK owners |
+| --- | --- | --- |
+| 0 | 26 × 8 × 26 | 5,408 |
+| 1 | 17 × 8 × 17 | 2,312 |
+| 2 | 9 × 8 × 9 | 648 |
+| 3 | 5 × 8 × 5 | 200 |
+
+Each genuine `dk` owns its two-element boolean array and distinct List `B`,
+borrows the actual shared List `F`, retains the World and constructs its
+position fields and bounding box. Its display-list base is `n.s + 3*ordinal`.
+Positioning defines `C+2` with inherited `bw.a(eq)`: 24 source vertices become
+36 submitted triangle vertices through the same `nw`. This method does not
+construct a `bb`, create another Random, compile terrain or increment the
+chunk-update counter.
+
+The initial selected-World path reaches N before App `i` is published, so the
+camera recenter/sort branch is genuinely skipped. A nonnull camera reaches the
+explicit unfinished branch at675. Same-name list replacement supports later
+positioning, but does not complete the N recenter/sort caller, visibility,
+update scheduling or `dk.a()` terrain compilation. World cell/range callbacks
+now mark the actual DK owners and dirty List. Appearance callbacks use the same
+graph; see [image downloads](image-downloads.md).
+
+## List replacement on OpenGL 3.3
+
+The source-list bridge stores commands behind the original reserved logical
+names and executes them on the actual OpenGL 3.3 context. `glNewList` in the
+selected `GL_COMPILE` profile starts a separate pending definition. The old
+definition stays associated with the same name until `glEndList` publishes the
+replacement. Empty replacement is supported. This follows the
+[OpenGL display-list association rule](https://registry.khronos.org/OpenGL/specs/gl/glspec21.pdf#page=256).
+
+Old and pending storage both count against the unchanged 32 MiB command quota
+and range command limits. There is no early eviction or replacement list ID.
+A native failure retains the committed definition and exact pending prefix.
+Native abort ends compilation without acknowledging source `glEndList`; it
+retains the pending commands for checked range cleanup. The committed definition
+can still execute afterwards. Inspection exposes committed records and pending
+counts, bytes and batches. Borrowed views expire on successful replacement of
+that name or range retirement.
+
+The 786,432-name source range remains one range. The N constructor arena keeps
+its default 8 MiB limit. Display metadata, compiled commands, the tessellator
+and the shared Entity bounds namespace have separate accounting. The N arena
+count is not total process or driver memory.
 
 ## Ownership and retirement
 
-The owner holds its scene namespace and live Display context independently of
-the App field publication. Generated lists/queries and failed candidates remain
-owned until native retirement. An external occurrence makes strict retirement
-BUSY before revocation. Native occurrence release can consume one hold while
-another owner remains.
+Source `n.k`, RenderManager World, `cv.c` and each `dk.a` require independent
+native World occurrences. Source `n.a(NULL)` removes the WorldAccess occurrence
+and replaces `k/u`, but leaves the old DK arrays and their World references
+intact. Those references end at a later source DK clear or checked native cleanup.
 
-Native teardown releases the scene guard before terminal namespace resources,
-retains failed cleanup state and preserves the same slot for retry. It does not
-invent a source deletion call, reverse completed stores or retire another
-namespace's resources. Startup retires RenderGlobal and particle users before
-Engine effects and the shared graphics authority; Display stays alive throughout.
+The owner retains its graphics namespace and context independently of App
+publication. Optional query names keep their original context generation and
+buffer alive until checked deletion. Failed cleanup retains its rights and the
+same slot for retry. Strict retirement refuses external occurrences and active
+callbacks before revocation. Terminal coordination detaches WorldAccess users
+and retires DK/CV references before their dependencies die. It does not replay
+World attachment or invent source disposal calls.
 
 ## Chunk-update counter
 
-The `dk` class owner now exposes its actual `b` update counter. Active use first
-initializes the same-namespace `nw` Tessellator and stores it in `D`, then stores
-zero in `b`. Get, reset and wrapping increment operate on that class field.
-The [default menu runtime](menu-runtime.md) reads and resets it for the FPS
-String. This field-level implementation does not complete `dk` construction,
-chunk rebuilding or the dynamic render body. The no-World menu's zero count is
-the initialized field value, not a supplied statistic.
+The shared `dk` class initializes its actual `D` from the same `nw` singleton,
+then stores zero in `b`. Get, reset and wrapping increment use that field. The
+[menu runtime](menu-runtime.md) reads and resets it for the FPS String. DK
+construction and bounding-box replacement leave it unchanged; mesh compilation
+has not run merely because the grid exists.
 
-## Evidence and remaining work
+## Qualification and limits
 
-The current selected Windows cohort passes the CPU test, a real device profile
-with 16,723 checks, normal startup and allocation-bound startup cases. The
-device profile constructs a second independent RenderGlobal after genuine
-startup has published its own `g`, checks a real sticky GL error and viewport,
-and completes shared/failed-owner cleanup. The earlier failed test expected
-quad counts from the submitted triangle list; its evidence remains separate.
-Only the test expectations and added record checks changed.
+The selected Windows native controls pass World-attachment CPU coverage in
+0.11 s and the device profile in 1.60 s. The device profile has 23,403 checks
+covering the source grid, optional query assignment, repeat/null attachment behavior,
+failure prefixes and cleanup. H0 uses 3,954,984 bytes in the actual N arena.
+Separate source-list device controls pass in about 0.54 s: all 5,408 bounding-box
+definitions, a rebuild using the same IDs and stable accounting, empty
+replacement, real framebuffer results, sticky errors and quota failure with
+the old definition retained.
 
-Clang's selected sanitized cohort covers the CPU constructor and affected
-owners. Its selection excludes this device profile and normal default-directory
-startup. See [the complete scope](../testing.md#startup-scene-construction-and-typed-settings-save).
-Star/trigonometric/GL correspondence to the original remains unverified.
-World attachment, dynamic chunk rendering, sky drawing in the real frame loop
-and gameplay remain unfinished.
+Earlier constructor-only evidence includes a 16,723-check device profile after
+genuine startup, independent namespace allocation and failed-owner cleanup.
+Earlier selected Clang sanitizers covered the CPU constructor and affected
+owners, excluding that device profile and default-directory startup. These
+results retain their original scope. The complete local Windows selection now
+passes 482 cases. The updated strict syntax checks cover both Linux compilers;
+full Linux graphical play remains unqualified. See [the earlier qualification](../testing.md#startup-scene-construction-and-typed-settings-save).
+
+These controls do not establish original pixels, star/trigonometric/driver
+correspondence, query execution, terrain rendering, HUD/hand drawing or a
+playable frame. The finite inspection renderer is separate from this owner.

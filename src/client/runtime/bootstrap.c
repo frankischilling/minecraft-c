@@ -1,5 +1,6 @@
 #include "bootstrap.h"
 #include "../application_state.h"
+#include "../render_engine/image_download.h"
 #include "../render_engine/textures.h"
 #include "../startup/application_construction.h"
 #include "../startup/application_startup_internal.h"
@@ -40,6 +41,7 @@ struct mc_client_bootstrap {
     mc_client_startup_error startup_error;
     mc_client_statistics_owner_error session_error;
     mc_client_render_texture_error texture_error;
+    mc_client_image_download_error image_download_error;
     bool retiring, startup_returned;
 };
 
@@ -370,6 +372,18 @@ static mc_client_bootstrap_status close_startup(mc_client_bootstrap *context) {
         return MC_CLIENT_BOOTSTRAP_OK;
     mc_client_startup_status status =
         mc_client_application_startup_retire(&context->startup, &context->startup_error);
+    if (status == MC_CLIENT_STARTUP_BUSY && context->startup != NULL &&
+        !context->startup->manager_consumer.attached && context->manager == NULL &&
+        context->startup->entity_renderer_candidate == NULL && context->app->g == NULL &&
+        context->app->font_renderer_retained == NULL && context->app->render_engine != NULL) {
+        const mc_client_image_download_status images = mc_client_render_image_downloads_retire(
+            context->app->render_engine, &context->image_download_error);
+        if (images != MC_CLIENT_IMAGE_DOWNLOAD_OK)
+            return images == MC_CLIENT_IMAGE_DOWNLOAD_BUSY
+                       ? MC_CLIENT_BOOTSTRAP_BUSY
+                       : owner_failure(text(context->image_download_error.operation), (int)images);
+        status = mc_client_application_startup_retire(&context->startup, &context->startup_error);
+    }
     if (status == MC_CLIENT_STARTUP_BUSY && context->startup != NULL &&
         !context->startup->manager_consumer.attached && context->manager != NULL) {
         mc_client_manager_status manager = mc_client_render_manager_retire_hands(

@@ -7,23 +7,33 @@ same-parent Cancel, original-receiver trailing input and retained-screen cleanup
 Empty, populated and bottom-scroll captures were inspected. Select now enters the
 [source World loader](client/world-loading.md) after constructing the actual
 controller. The existing-save profile reaches `READY`, all 289 terrain samples
-and real Player/input publication before renderer attachment at bytecode 220.
+renderer/particle attachment, real Player insertion and view publication.
+World loading and healthy null-screen/focus handling return; the same tick
+then reaches gameplay input `Minecraft.k:337`.
 Dynamic terrain rendering and gameplay remain unfinished. Explicit flags retain the
 diagnostic title and fixed-camera World inspection.
 
 ## Current integration
 
-The current World-selection increment passes its focused native Windows loop.
+All 482 selected Windows CTests pass without failures or skips in 209.59
+seconds after the complete Debug ALL build. The headless Release ALL build,
+formatting for 1,405 files, 86 strict compiler checks and 30 selected Linux
+sanitizer cases also pass. The latter includes four private Engine/RR CPU
+wrapper cases; it does not qualify a complete Linux graphical session. Existing
+save and generated-terrain entry both reach World-load return and cleanup.
+See the [current qualification](testing.md#renderer-attachment-and-image-worker-qualification).
+
+The current World-entry extension passes its focused native Windows loop.
 Its DateFormat module matches 2,926 JDK17 vectors on Windows and Linux for
 English/en_US, UTC/US Eastern and UTC years 1967..2099; other profiles fail
 explicitly. Create and Rename stop at `NEW162` and `NEW189`. Delete stops at
-preparation 21 without skipping its prefix. The Windows MSVC Debug ALL build
+preparation 21 without skipping its prefix. The preceding source-loading Windows MSVC Debug ALL build
 and all 475 selected CTests pass without failures or skips in 208.25 seconds;
 46 configured reference-label profiles are excluded. The separate headless
 Release ALL build and formatting for 1,379 files also pass. Ten focused source
 runtime cases per Linux compiler pass across two ASan/UBSan selections. The separate Windows
-generated-terrain Release profile completes all 289 samples and Player/input
-through the same renderer frontier. See the
+generated-terrain Release profile at that preceding checkpoint completed all
+289 samples and Player/input through its then-reached renderer frontier. See the
 [current checks](testing.md#world-selection-in-the-default-runtime).
 
 The preceding native-menu source passes all 463 selected Windows CTests without

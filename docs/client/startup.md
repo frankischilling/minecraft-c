@@ -56,8 +56,10 @@ The admitted default-pack/no-World profile is narrower than complete rendering.
 Quit and window close use the actual App run flag. Singleplayer now initializes
 the actual save List and scrolling screen. Cancel returns to the same parent;
 Select constructs the actual controller, then runs the retained World-load call.
-The admitted existing-save profile completes all 289 terrain samples and
-publishes its real Player/input before World-change bytecode 220.
+The admitted existing-save profile completes all 289 terrain samples, attaches
+the actual renderer and particles, inserts its real Player and publishes the
+view entity. World loading returns, followed by healthy null-screen/focus
+handling. The same selection tick then reaches gameplay input at `k:337`.
 Create, Rename, Delete, Multiplayer, Mods and Texture Packs, and Options retain
 explicit unfinished routes. Fullscreen, source F2 screenshots, debug timing and
 focused gameplay input also retain explicit dependencies. [Option actions](game-options.md),

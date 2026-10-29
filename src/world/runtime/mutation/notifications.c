@@ -29,11 +29,8 @@ bool mc_world_mutation_observe_cell(mc_world_runtime *world, int32_t x, int32_t 
             return true;
         }
         error->world_access_bytecode = 34;
-        mc_world_storage_status status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
-        if (world_access != NULL && world_access->callbacks.cell != NULL)
-            status = world_access->callbacks.cell(world_access->context, world, x, y, z, &cause);
-        else
-            cause.operation = "World cell WorldAccess invocation";
+        const mc_world_storage_status status = mc_world_access_call_cell(
+            world_access, world, x, y, z, &cause, &error->world_access_failure);
         mc_world_access_release_held(world_access);
         if (status != MC_WORLD_STORAGE_OK)
             return world_access_failure(world, error,
@@ -60,12 +57,9 @@ bool mc_world_mutation_observe_range(mc_world_runtime *world, int32_t min_x, int
             return true;
         }
         error->world_access_bytecode = 40;
-        mc_world_storage_status status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
-        if (world_access != NULL && world_access->callbacks.range != NULL)
-            status = world_access->callbacks.range(world_access->context, world, min_x, min_y,
-                                                   min_z, max_x, max_y, max_z, &cause);
-        else
-            cause.operation = "World range WorldAccess invocation";
+        const mc_world_storage_status status =
+            mc_world_access_call_range(world_access, world, min_x, min_y, min_z, max_x, max_y,
+                                       max_z, &cause, &error->world_access_failure);
         mc_world_access_release_held(world_access);
         if (status != MC_WORLD_STORAGE_OK)
             return world_access_failure(world, error,

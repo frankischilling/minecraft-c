@@ -1,6 +1,7 @@
 #ifndef MC_CLIENT_GUI_DISPLAY_SCREEN_H
 #define MC_CLIENT_GUI_DISPLAY_SCREEN_H
 
+#include "../display/sdk_update.h"
 #include "../input/mouse_helper.h"
 #include "loading_screen.h"
 #include "mc/client/gui/gui_ingame.h"
@@ -21,9 +22,13 @@ typedef enum mc_client_display_screen_status {
 typedef struct mc_client_display_screen_call {
     bool active, source_returned, old_closed, stats_b_returned, stats_c_returned;
     bool messages_cleared, r_stored, focus_released, resolution_returned, initialized, w_stored;
+    bool health_read, display_active, focus_stored, mouse_grabbed, focus_returned;
+    int32_t player_health;
+    unsigned int focus_pc;
     client_application *app; /* Stable caller borrow through retirement. */
     mc_client_source_da *argument, *target, *old_screen; /* Stable caller-owned source operands. */
     mc_client_source_fu *fallback; /* Actual new fu57, if the null/no-World branch is reached. */
+    struct mc_client_display_screen_call *focus_display; /* Actual recursive a(NULL)29. */
     mc_client_display_screen_status status;
     const char *operation;
     mc_client_screen_site site, child;
@@ -34,6 +39,7 @@ typedef struct mc_client_display_screen_call {
     mc_client_screen_init_error initialization;
     mc_client_gui_ingame_error gui;
     mc_client_mouse_helper_error mouse;
+    mc_client_sdk_update_error update;
     mc_client_loading_error resolution_error;
     mc_scaled_resolution resolution;
 } mc_client_display_screen_call;
@@ -43,7 +49,9 @@ typedef struct mc_client_display_screen_call {
  * live. A failed invocation retains its actual stores and child prefixes;
  * retirement performs no source close, save, initialization or field rollback.
  * Screen owners, including source initialization records, retire before App.
- * Unimplemented death/focus paths report their actual reached dependency. */
+ * Healthy null-screen focus uses the actual Player/SDK and retained recursive
+ * display call. Death-screen construction and Player key release still report
+ * their actual reached dependencies. */
 mc_client_display_screen_status mc_client_display_screen_run(client_application *,
                                                              mc_client_screen_classes *,
                                                              mc_client_source_da *,

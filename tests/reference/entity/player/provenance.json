@@ -64,20 +64,20 @@
       "sha256": "969794a224de4429ee447f5fa51462e14ac1e67ed4bbd660ae3b146dc85911de"
     },
     "src/entity/player/construction.c": {
-      "bytes": 18363,
-      "sha256": "851f8795fe82df81f53c3dd04518e8f6de5277c2dd82976310ac45fcbe24f77d"
+      "bytes": 18505,
+      "sha256": "3ca91a7602849e25b8d4a60eeb986887fff32023993f3cf32b03c91121870d61"
     },
     "src/entity/player/player_internal.h": {
-      "bytes": 1857,
-      "sha256": "0555675757288070ccfff4fe9fe9945f5af01cc33791a91a60d7b97d8f895f3a"
+      "bytes": 1952,
+      "sha256": "0e36fba7cc38c03adeed6f1fa4d8257501d150e7d6855a12be48e35d2721f42c"
     },
     "src/entity/player/session.c": {
       "bytes": 9465,
       "sha256": "577ebfa4de26e898335ff82a837203484c43df1616f817babee3b30f605a3240"
     },
     "src/entity/player/strings.c": {
-      "bytes": 4199,
-      "sha256": "691694658b3ee310a7d8f9626d3bd69949ed5a0842790426828b1f33f79abc6a"
+      "bytes": 5409,
+      "sha256": "d7e204b9fc456d5a9d82c4859dd421b51756f817779c0c59ab318ad61e9af559"
     },
     "tests/entity/classes/test_classes.c": {
       "bytes": 54743,
@@ -88,8 +88,8 @@
       "sha256": "44e3a91c5d2fec46e54c7a094e8385b0ff878f0e3755817bd19fd1189bc543bc"
     },
     "tests/entity/player/test_construction.c": {
-      "bytes": 20032,
-      "sha256": "76f43f4d8bc2f7b2a13d023caa01a6d6d9a7ce9c70b02fdccf98ab23ef43f561"
+      "bytes": 21311,
+      "sha256": "6a81c8815b274101abde5ab4d0e11c328fdcb6bc6d53bb991083e5364f8ff2b5"
     },
     "tests/entity/player/trace_construction.c": {
       "bytes": 10052,

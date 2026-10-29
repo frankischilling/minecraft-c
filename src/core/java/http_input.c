@@ -7,7 +7,7 @@
 #include <time.h>
 
 struct mc_java_http_input {
-    size_t holds, reads, source_closes;
+    size_t holds, reads, source_closes, disconnects;
     uint64_t received, consumed;
     mc_java_url *original, *current, *pending;
     mc_java_http_options options;
@@ -16,6 +16,7 @@ struct mc_java_http_input {
     CURLM *multi;
     struct curl_slist *request_headers;
     bool attached, global_hold, source_open, completed, active, paused, header_done;
+    bool connection_ready, disconnected;
     long response;
     unsigned int redirects;
     uint8_t *buffer;
@@ -275,9 +276,9 @@ static mc_java_url_status drive(mc_java_http_input *s, bool opening, mc_java_url
     }
 }
 
-mc_java_url_status mc_java_http_open(mc_java_url *url, const mc_java_http_options *options,
-                                     const atomic_bool *stop, mc_java_http_input **out,
-                                     mc_java_url_error *e) {
+mc_java_url_status mc_java_http_connect(mc_java_url *url, const mc_java_http_options *options,
+                                        const atomic_bool *stop, mc_java_http_input **out,
+                                        mc_java_url_error *e) {
     if (e == NULL)
         return MC_JAVA_URL_ARGUMENT;
     if (out == NULL || url == NULL)
@@ -353,6 +354,35 @@ mc_java_url_status mc_java_http_open(mc_java_url *url, const mc_java_http_option
         s->current = next;
         s->pending = NULL;
     }
+    s->connection_ready = true;
+    return mc_url_fail(e, MC_JAVA_URL_OK, NULL, 0);
+}
+
+mc_java_url_status mc_java_http_response_code(mc_java_http_input *s, long *out,
+                                              mc_java_url_error *e) {
+    if (e == NULL)
+        return MC_JAVA_URL_ARGUMENT;
+    if (s == NULL)
+        return mc_url_fail(e, MC_JAVA_URL_SOURCE_NULL, "HTTP response receiver", 0);
+    if (out == NULL)
+        return mc_url_fail(e, MC_JAVA_URL_ARGUMENT, "HTTP response output", 0);
+    if (s->active)
+        return mc_url_fail(e, MC_JAVA_URL_BUSY, "HTTP response reentry", 0);
+    if (!s->connection_ready || s->disconnected)
+        return mc_url_fail(e, MC_JAVA_URL_STATE, "HTTP response connection state", 0);
+    *out = s->response;
+    return mc_url_fail(e, MC_JAVA_URL_OK, NULL, 0);
+}
+
+mc_java_url_status mc_java_http_get_input(mc_java_http_input *s, mc_java_url_error *e) {
+    if (e == NULL)
+        return MC_JAVA_URL_ARGUMENT;
+    if (s == NULL)
+        return mc_url_fail(e, MC_JAVA_URL_SOURCE_NULL, "HTTP input receiver", 0);
+    if (s->active)
+        return mc_url_fail(e, MC_JAVA_URL_BUSY, "HTTP input acknowledgement reentry", 0);
+    if (!s->connection_ready || s->disconnected)
+        return mc_url_fail(e, MC_JAVA_URL_STATE, "HTTP input connection state", 0);
     if (s->response >= 400L)
         return remember(s, e,
                         (s->response == 404L || s->response == 410L) ? MC_JAVA_URL_SOURCE_NOT_FOUND
@@ -360,6 +390,32 @@ mc_java_url_status mc_java_http_open(mc_java_url *url, const mc_java_http_option
                         "actual HTTP response error", 0);
     s->source_open = true;
     return mc_url_fail(e, MC_JAVA_URL_OK, NULL, 0);
+}
+
+mc_java_url_status mc_java_http_open(mc_java_url *url, const mc_java_http_options *options,
+                                     const atomic_bool *stop, mc_java_http_input **out,
+                                     mc_java_url_error *e) {
+    const mc_java_url_status status = mc_java_http_connect(url, options, stop, out, e);
+    return status == MC_JAVA_URL_OK ? mc_java_http_get_input(*out, e) : status;
+}
+
+mc_java_url_status mc_java_http_disconnect(mc_java_http_input *s, mc_java_url_error *e) {
+    if (e == NULL)
+        return MC_JAVA_URL_ARGUMENT;
+    if (s == NULL)
+        return mc_url_fail(e, MC_JAVA_URL_SOURCE_NULL, "HTTP disconnect receiver", 0);
+    if (s->active)
+        return mc_url_fail(e, MC_JAVA_URL_BUSY, "HTTP disconnect reentry", 0);
+    if (s->disconnects == SIZE_MAX)
+        return remember(s, e, MC_JAVA_URL_LIMIT, "HTTP disconnect counter", 0);
+    ++s->disconnects;
+    const mc_java_url_status status = transfer_cleanup(s, e);
+    if (status == MC_JAVA_URL_OK) {
+        s->source_open = false;
+        s->disconnected = true;
+        mc_url_fail(e, MC_JAVA_URL_OK, NULL, 0);
+    }
+    return status;
 }
 
 mc_java_url_status mc_java_http_read(mc_java_http_input *s, uint8_t *bytes, size_t capacity,
@@ -446,9 +502,10 @@ mc_java_url_status mc_java_http_release(mc_java_http_input **slot, mc_java_url_e
 bool mc_java_http_inspect(const mc_java_http_input *s, mc_java_http_state *out) {
     if (s == NULL || out == NULL)
         return false;
-    *out = (mc_java_http_state){s->holds,    s->reads,       s->source_closes, s->received,
-                                s->consumed, s->source_open, s->easy != NULL,  s->completed,
-                                s->active,   s->response,    s->failure};
+    *out = (mc_java_http_state){
+        s->holds,       s->reads,        s->source_closes,    s->received,    s->consumed,
+        s->source_open, s->easy != NULL, s->completed,        s->active,      s->response,
+        s->failure,     s->disconnects,  s->connection_ready, s->disconnected};
     return true;
 }
 

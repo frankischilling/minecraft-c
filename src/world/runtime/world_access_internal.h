@@ -7,9 +7,69 @@
 
 struct mc_world_access {
     mc_world_access_callbacks callbacks;
+    mc_world_access_source_callbacks source_callbacks;
     void *context;
-    size_t memberships, active_holds;
+    size_t memberships, active_holds, receipt_holds;
 };
+
+struct mc_world_access_receipt {
+    mc_world_access *receiver;
+    const mc_client_render_global_error *render_global;
+    const char *exception_class;
+    size_t holds;
+};
+
+mc_world_storage_status mc_world_access_receipt_create(mc_world_access *,
+                                                       const mc_client_render_global_error *,
+                                                       mc_world_access_receipt **,
+                                                       mc_world_access_failure *,
+                                                       mc_world_storage_error *);
+mc_world_storage_status mc_world_access_receipt_retire(mc_world_access_receipt **,
+                                                       mc_world_storage_error *);
+
+/* Exact native receipts for actual List.add/remove and terminal ownership.
+ * Every added occurrence has a nonzero identity, including NULL. Removal is
+ * still first-equal source removal and reports the actual removed identity.
+ * Native detach/probe use only the independently captured owning descriptor,
+ * never a replaceable foreign source List, and require exclusive quiescence. */
+mc_world_storage_status mc_world_access_add_receipted(mc_world_runtime *, mc_world_access *,
+                                                      uint64_t *, mc_world_storage_error *);
+mc_world_storage_status mc_world_access_remove_receipted(mc_world_runtime *, mc_world_access *,
+                                                         bool *, uint64_t *,
+                                                         mc_world_storage_error *);
+mc_world_storage_status mc_world_access_occurrence_present(const mc_world_runtime *,
+                                                           const mc_world_access *, uint64_t,
+                                                           bool *, mc_world_storage_error *);
+mc_world_storage_status mc_world_access_detach_occurrence(mc_world_runtime *, mc_world_access *,
+                                                          uint64_t, mc_world_storage_error *);
+
+mc_world_storage_status mc_world_access_call_cell(mc_world_access *, mc_world_runtime *, int32_t,
+                                                  int32_t, int32_t, mc_world_storage_error *,
+                                                  mc_world_access_failure *);
+mc_world_storage_status mc_world_access_call_range(mc_world_access *, mc_world_runtime *, int32_t,
+                                                   int32_t, int32_t, int32_t, int32_t, int32_t,
+                                                   mc_world_storage_error *,
+                                                   mc_world_access_failure *);
+mc_world_storage_status mc_world_access_call_sound(mc_world_access *, mc_world_runtime *,
+                                                   const mc_registry_string *, double, double,
+                                                   double, float, float, mc_world_storage_error *,
+                                                   mc_world_access_failure *);
+mc_world_storage_status mc_world_access_call_particle(mc_world_access *, mc_world_runtime *,
+                                                      const mc_registry_string *, double, double,
+                                                      double, double, double, double,
+                                                      mc_world_storage_error *,
+                                                      mc_world_access_failure *);
+mc_world_storage_status mc_world_access_call_entity_added(mc_world_access *, mc_world_runtime *,
+                                                          mc_entity *, mc_world_storage_error *,
+                                                          mc_world_access_failure *);
+mc_world_storage_status mc_world_access_call_entity_removed(mc_world_access *, mc_world_runtime *,
+                                                            mc_entity *, mc_world_storage_error *,
+                                                            mc_world_access_failure *);
+mc_world_storage_status mc_world_access_call_tile_entity_dirty(mc_world_access *,
+                                                               mc_world_runtime *, int32_t, int32_t,
+                                                               int32_t, mc_tile_entity *,
+                                                               mc_world_storage_error *,
+                                                               mc_world_access_failure *);
 
 /* The caller already holds the exact World. Reload current u at size/get,
  * validate only reached metadata and prove nonnull casts against the captured

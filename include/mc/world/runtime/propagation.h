@@ -4,6 +4,7 @@
 #include "mc/world/runtime/entity_errors.h"
 #include "mc/world/runtime/queries.h"
 #include "mc/world/runtime/tile_entities/errors.h"
+#include "mc/world/runtime/world_access_error.h"
 
 typedef struct mc_world_light_acquisition_error {
     mc_chunk_acquire_status status;
@@ -34,6 +35,7 @@ typedef struct mc_world_light_operation_error {
     mc_world_light_error submit;
     mc_registry_error registry;
     mc_world_light_acquisition_error acquisition;
+    mc_world_access_failure world_access_failure;
 } mc_world_light_operation_error;
 
 /* Actual fd.o(III)Z, distinct from the acquiring fd.l sky_visible query.

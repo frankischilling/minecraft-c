@@ -32,6 +32,7 @@ void mc_local_player_dispose(mc_entity *entity);
 const mc_player_string *mc_player_texture_literal(void);
 const mc_player_string *mc_player_model_literal(void);
 mc_player_status mc_player_skin_string(const mc_player_string *name, mc_player_string **out);
+mc_player_status mc_player_cloak_string(const mc_player_string *name, mc_player_string **out);
 bool mc_player_session_matches(const mc_player_session *session, const mc_entity_classes *entities,
                                const mc_registry_classes *registry);
 bool mc_player_session_registry_matches(const mc_player_session *session,

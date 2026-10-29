@@ -52,6 +52,11 @@ bool mc_client_display_source_batch(mc_client_display_context_lease *,
 bool mc_client_display_lists_generate(mc_client_display *, int32_t count, size_t max_commands,
                                       mc_client_display_list_range **, int32_t *base,
                                       mc_client_display_error *);
+/* Selected GL_COMPILE bridge. Begin keeps the committed definition associated
+ * with the SAME reserved name; only End publishes the complete pending chain.
+ * Both definitions count against the existing native byte/command limits.
+ * Native admission/allocation failures retain the exact pending prefix; they
+ * neither publish it nor fabricate a source GL_OUT_OF_MEMORY. */
 bool mc_client_display_lists_begin(mc_client_display *, int32_t id, mc_client_display_error *);
 bool mc_client_display_lists_end(mc_client_display *, mc_client_display_error *);
 /* Native terminal abort of exactly the owned pending definition. Does not
@@ -63,6 +68,7 @@ bool mc_client_display_lists_abort(mc_client_display *, int32_t owned_id,
 typedef struct mc_client_source_list_state {
     bool defined, building;
     size_t commands, draws, vertices;
+    size_t pending_commands, pending_bytes;
 } mc_client_source_list_state;
 
 typedef struct mc_client_source_batch_view {
@@ -72,11 +78,17 @@ typedef struct mc_client_source_batch_view {
     unsigned int arrays;
 } mc_client_source_batch_view;
 
-/* Passive native inspection of the real immutable compiled commands. Views
- * expire at namespace retirement; no activation, allocation, GL or cursor work. */
+/* Passive inspection of committed commands and the retained pending prefix.
+ * Pending bytes include actual command charges and the pending record itself.
+ * Views expire at successful replacement of the SAME name or range retirement;
+ * a pending view also expires when End publishes it. No activation, allocation,
+ * GL or buffer-cursor work. Native abort leaves committed commands callable and
+ * retains the pending prefix until range cleanup; it does not permit replay. */
 bool mc_client_display_list_inspect(mc_client_display *, int32_t, mc_client_source_list_state *);
 bool mc_client_display_list_batch(mc_client_display *, int32_t, size_t draw_index,
                                   mc_client_source_batch_view *);
+bool mc_client_display_list_pending_batch(mc_client_display *, int32_t, size_t draw_index,
+                                          mc_client_source_batch_view *);
 bool mc_client_display_lists_call(mc_client_display *, const int32_t *ids, size_t count,
                                   mc_client_display_error *);
 bool mc_client_display_lists_retire(mc_client_display_list_range **, mc_client_display_error *);

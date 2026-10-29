@@ -1,5 +1,47 @@
 # Test scope and reproduction
 
+## Renderer attachment and image-worker qualification
+
+The Windows MSVC Debug ALL build and all 482 selected CTests pass with zero
+failures or skips in 209.59 seconds. There are 528 configured tests;
+`-LE reference` excludes 46. All five native World-selection profiles and the
+three optional application-constructor/ownership cases are included. The
+independent headless Release ALL build also passes. clang-format18 checks
+1,405 C/header/selected fragment files, and strict GCC13/Clang18 checks pass
+for all 43 affected translation units, 86 checks total.
+
+The new controls cover renderer World attachment and source DK bounding boxes,
+logical list replacement, exact WorldAccess failure receipts, Player loading,
+appearance and HTTP/ImageIO/RR workers. Full saved-World loading returns at
+outer bytecode130; healthy null-screen focus returns before gameplay input337.
+Foreign renderer and particle-manager occurrences retain the same World and
+Player through BUSY cleanup. A separate current Release generation profile
+also reaches that return and completes cleanup under a 300-second process
+bound. That bound is not an elapsed-time benchmark.
+
+GCC13 and Clang18 ASan/UBSan runs each pass 13 public headless cases and two
+private CPU-wrapper cases, 30 total without failures or skips. Leak detection
+is enabled. The wrappers compile the actual Engine/Font/RR source closure
+with pinned dependencies and use no SDL/window/graphics context. They exercise
+the original-grid pixel hash, concurrent image holds and genuine Engine CPU
+construction. These results do not qualify a complete Linux graphical session.
+
+The first complete Windows run exposed three stack overflows in Player action,
+active tick and allocation controls. A real debugger trace follows Player
+action/travel through movement to the World rain query. Complete nested error
+records exhausted the existing 1 MiB native stack. Per-invocation checked heap
+workspaces reduce the action/travel stack reservations to 64/288 bytes while
+preserving full public diagnostics and source order. The same three unmodified
+tests then pass on Windows and both sanitized Linux compilers. No stack-reserve
+increase or removed assertion supplies the result.
+
+The [image observer](../tests/reference/client/image_buffer/README.md) separately
+matches 524,288 authored original-JAR pixels across two raster families.
+Native image processing checks the canonical 262,144-pixel grid against its
+original hash. The loopback image-factory control uses 14 GETs, 12 authored
+routes and six release barriers. These finite checks do not establish original
+HTTP timing, live-service behavior or terrain pixels.
+
 ## World selection in the default runtime
 
 The genuine Windows native loop passes empty, populated, sixteen-save scrolling
@@ -30,8 +72,10 @@ The additional existing-save Windows profile supplies version 19132 metadata
 and all 289 authored Chunks in real zlib region files. It verifies source
 `CLIENT_LOAD_OR_CREATE`/`READY`, all 289 x-major progress-before-block samples,
 light drains through false, the final message/maintenance, and the same-App
-Player/input publication. The source stops at renderer attachment, World-change
-bytecode 220; `i` remains null. A stored block 57 marker distinguishes the real
+Player/input publication. Renderer and particle attachment, actual Player
+insertion, and view publication now complete. World loading returns at 130;
+healthy null-screen/focus handling follows, before the same tick stops at
+gameplay input `Minecraft.k:337`. A stored block 57 marker distinguishes the real
 file-backed Chunk from generated terrain. Actual loading creates its session
 lock; every pre-existing save byte and imported resource remains unchanged.
 Foreign retained Loading and SaveFormat failure controls verify that BUSY
@@ -39,8 +83,9 @@ cleanup preserves their original owner and child identities.
 
 A separate `--mode generate` Release invocation keeps only the stored marker
 Chunk and generates its surroundings through the same complete preparation.
-It also passes all 289 samples, Player/input, renderer frontier and cleanup,
-with a 180-second process limit. The default five-profile integration selection
+The current rebuilt Release profile passes all 289 samples, renderer/effect
+attachment, Player insertion, view publication, healthy null-screen focus and
+cleanup with a 300-second process limit. It retains the same stored marker. The default five-profile integration selection
 uses existing Chunks; the optional generation profile has a separate longer
 default limit for Debug builds. Neither profile establishes rendered World
 pixels, playability or save interoperability with the original game.
@@ -86,7 +131,8 @@ record the selected JDKs, historical Eastern transitions and exact UTF16 scope.
 These observations qualify the formatter's UTF16 results. Original menu pixels
 and gameplay remain unqualified.
 
-The current Windows MSVC Debug ALL build and all 475 selected CTests pass with
+The preceding source-loading Windows MSVC Debug ALL build and all 475 selected
+CTests pass with
 zero failures or skips in 208.25 seconds. This selection includes all five
 native UI profiles, the source storage/World controls, the gravel regression
 and all three optional application-constructor/ownership cases. There are 521

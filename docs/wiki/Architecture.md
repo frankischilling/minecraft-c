@@ -32,9 +32,13 @@ input receiver alive through its trailing input. Retained old RQ occurrences
 keep App dependencies live through BUSY teardown. Select constructs the actual
 controller and invokes the actual retained World-load call. Existing-save
 loading constructs the canonical source World, completes all 289 terrain
-samples and publishes its real Player/input before renderer attachment at 220.
+samples, attaches its renderer and particles, inserts the real Player and
+publishes the view entity. Healthy null-screen/focus handling returns; the
+native selection tick next stops at gameplay input `Minecraft.k:337`.
 Version-zero conversion stops at 52. Empty, populated, scrolling and double-click native Windows profiles
-pass. All 475 selected Windows CTests and formatting for 1,379 files pass.
+pass. All 482 selected Windows CTests and formatting for 1,405 files pass.
+Thirty selected Linux sanitizer cases and 86 strict compiler checks also pass;
+the private CPU-wrapper scope is recorded in [Build and tests](Build-and-tests).
 Full source run/PX rendering, shutdown
 and gameplay adoption remain unqualified.
 

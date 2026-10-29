@@ -230,8 +230,8 @@
       "sha256": "bb0517cf7861399a7af9da443369804d22224af5fa465fcf050073e88067df5c"
     },
     "include/mc/world/runtime/entity_errors.h": {
-      "bytes": 1976,
-      "sha256": "d5d95b544f211c8f0d3cac36ebde0ede2f3fa06b3b4e5c54085d35b5c8a0bec7"
+      "bytes": 2075,
+      "sha256": "24827d487a83879fdd4027f1b5eedf26a1ae03abac2fea18841dabdbda99171c"
     },
     "include/mc/world/runtime/runtime.h": {
       "bytes": 12283,
@@ -322,12 +322,12 @@
       "sha256": "9bc69f8aaa50b3cb95fba0c5e3ed58046e9ee32ab404bbf0de686fea02734a46"
     },
     "src/client/render/model_graph.c": {
-      "bytes": 13649,
-      "sha256": "74784f1fd56d4f5cecc975d3e4bd0b844f12412cacbd329128836c4ebb252c32"
+      "bytes": 14356,
+      "sha256": "0792285188cb96e23f2b0d815bb2cfb5c3b3161791a92ead79ef7ca6273ed063"
     },
     "src/client/render/model_graph_internal.h": {
-      "bytes": 2723,
-      "sha256": "07a773e4a0f8870fa64e614955a3c45634989e21b7b457625e2a0eb553b433a1"
+      "bytes": 2985,
+      "sha256": "8c1855f8aefacf130dd71471bfbec814176b59168f0ba8e8136db9caa020d08b"
     },
     "src/client/render/model_graph_trace.inc": {
       "bytes": 2643,
@@ -414,8 +414,8 @@
       "sha256": "700f845665a0914702f4bec1e5095ba4246d53b1d9ce8652db8b5c295a14c21c"
     },
     "include/mc/client/render_engine/render_engine.h": {
-      "bytes": 8919,
-      "sha256": "52358dfa80bb708ea01b3a1c7ee54a2368f1b63d406a7a7b14de56dc137390a6"
+      "bytes": 9278,
+      "sha256": "b3f5135585c5f38e255cd37878b31807b04826b3f65510e1daf2e10321b50289"
     },
     "include/mc/client/statistics/writer.h": {
       "bytes": 18579,
@@ -480,6 +480,10 @@
     "src/client/startup/application_owner_internal.h": {
       "bytes": 5146,
       "sha256": "abb0a05df2581f8e5d2cbd36e436882225aad01356f9026e650cfe56517664d8"
+    },
+    "include/mc/world/runtime/world_access_error.h": {
+      "bytes": 1925,
+      "sha256": "02892855a6184002eb7c7d9974d1366fecd10981f571c78dc58050a96865054c"
     }
   },
   "reference_files": {

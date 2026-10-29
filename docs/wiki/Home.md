@@ -1,86 +1,48 @@
 # minecraft-c
 
 minecraft-c is a C17 implementation of Minecraft Beta 1.7.3 for x86-64 Windows
-and Linux. Its native libraries cover compatibility primitives, storage,
-terrain generation and parts of World simulation. There is no playable client
-or dedicated server yet; the C runtime requires no JVM.
+and Linux. There is no playable client or dedicated server yet. The native
+runtime requires no JVM after local resource import.
 
-The [native client](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md)
-now defaults to the constructed source App and initialized main menu. Its
-[menu runtime](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/menu-runtime.md)
-connects source events, no-World ticks, source menu drawing and Quit. Singleplayer
-now opens genuine
-[World selection](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-selection.md),
-with real sorted saves, row selection and Cancel returning to the same parent.
-Four native Windows profiles pass, including scrollbar drag and real double-click.
-Empty, populated and bottom-scroll captures were inspected.
-Select constructs the actual controller and enters the retained
-[source World loader](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-loading.md).
-Existing-save loading completes 289 terrain samples and publishes the real
-Player/input before renderer attachment at bytecode 220. Version-zero saves
-stop at conversion bytecode 52. Rendering and gameplay remain unfinished. Explicit flags
-retain the diagnostic title and fixed-camera terrain inspection.
+The default client constructs the source App, initializes its main menu and
+opens genuine World selection. Save metadata, sorting, scrolling, row selection
+and same-parent Cancel use the actual source owners. Existing-save loading now
+completes all 289 terrain samples, attaches the renderer and particle manager,
+inserts the real Player and publishes that Player as the view entity. Healthy
+null-screen handling and mouse focus also run. The native selection profile
+then stops at gameplay input `Minecraft.k:337`; terrain drawing, movement and
+the connected World tick remain unfinished.
 
-DateFormat matches 2,926 JDK17 vectors on Windows and Linux within its admitted
-English/en_US, UTC/Eastern and 1967..2099 profile. Other profiles fail explicitly.
-All 475 selected Windows CTests and formatting for 1,379 files pass. The
-[`1334db5` hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40813601193)
-passes Windows 440/440 and Clang 461/461; GCC passes 460/461, with a real Display
-creation refusal in its later-owner constructor profile. Cleanup succeeds,
-but the underlying SDL cause remains undiagnosed. A diagnostic-only follow-up
-retains the captured error details. The preceding
-[`de4290b` hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40802203908)
-passes 435 Windows and 454 Clang tests; GCC passes 453/454, stopping before client
-launch in its executable fingerprint guard. The current streaming-hash
-correction passes its public Windows/Linux regression. Full results and the
-unmeasured original-artifact size are recorded in [Build and tests](Build-and-tests).
+Renderer attachment creates the source ChunkRenderer grid and bounding-box
+lists. It does not compile terrain meshes. Skin and cloak requests use actual
+asynchronous image owners, with separate factory and worker results. Native
+cleanup retains dependencies through worker stop/join and refuses retirement
+while external owners remain.
 
-The later [`d71bd94` run](https://github.com/frankischilling/minecraft-c/actions/runs/40815149868)
-again passes Windows and Clang, with one GCC SDL video-init failure in SDK
-transport. A private pinned-SDL reproduction captures `x11 not available`
-under default Xvfb; adding only `-noreset` passes 2,400 repeated window cycles.
-Linux CI now preserves its server between clients, keeping four workers and
-all tests. The SDK test retains actual SDL refusal details. The
-[matched evidence](Build-and-tests) keeps these local results separate from
-the historical hosted refusals. The following exact
-[`9d83665` run](https://github.com/frankischilling/minecraft-c/actions/runs/40819123976)
-passes all 1,362 selected tests across Windows, GCC and Clang, with zero skips,
-matching trees and unchanged test names. It predates the World-loading extension.
+Version-zero conversion, new-World spawn completion, remaining menus, native
+Canvas integration, gameplay, multiplayer interoperability and the standalone
+server remain unfinished or unqualified. Diagnostic title and fixed-camera
+terrain inspection remain explicit options.
 
-The earlier `8288290` [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40792366222)
-passes all 452 GCC cases, but Clang has one Display-creation failure and Windows
-stops on a compiler warning. Those results and the newer Windows menu checks
-have separate scopes in [Build and tests](Build-and-tests).
+All 482 selected Windows CTests pass locally, with zero failures or skips,
+alongside the client/headless builds, 86 strict compiler checks and 30 selected
+Linux sanitizer cases. Complete World rendering and play remain unfinished.
 
-Published predecessor `3ec9892` passes [all four jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40796960416):
-434 Windows, 452 GCC and 452 Clang tests, 1,338 total, without failures or skips.
-That result precedes the new default menu runtime.
+The preceding published
+[`add19c6` hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40829676327)
+passes all 1,374 selected tests: Windows 444, GCC 465 and Clang 465, with zero
+failures or skips and matching checkout trees. That checkpoint precedes the
+renderer-attachment and image-worker extension described above. Local, hosted
+and finite original-game checks have separate scopes in [Build and tests](Build-and-tests).
 
-Earlier hosted baseline `5d61f89` passes
-[all four jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40746811719):
-1,264 public/JDK cases, with 410 Windows and 427 per Linux compiler. That hosted
-result predates the newer resource-thread and menu additions.
-[Build and tests](Build-and-tests) separates hosted coverage, local graphical
-startup, component checks and finite original comparisons.
+- [Client startup](Startup) covers the default runtime and remaining session work.
+- [World simulation](World-simulation) links simulation contracts and reference evidence.
+- [Build and tests](Build-and-tests) records commands and qualified results.
+- [Architecture](Architecture) describes module ownership and boundaries.
+- [Storage and reference work](Storage-and-reference) covers saves and reference testing.
 
-[LocalPlayer NBT](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-nbt.md)
-now reaches actual Inventory hooks, first-Player metadata saving and saved
-Info.Player attachment. Lava CPU animation also matches fresh original runs on
-both hosts. These finite component results leave normal World entry, gameplay
-input/tick adoption, dynamic rendering and gameplay interactions unfinished. The next
-session milestone is loading one World, walking, changing Blocks and saving/reloading.
-
-- [Client startup](Startup) describes the normal constructor chain and remaining World-entry work.
-- [World simulation](World-simulation) links the plant, Minecart, rail, power,
-  Piston, movement and population contracts and their reference evidence.
-- [Build and tests](Build-and-tests) links build instructions and validation scope.
-- [Architecture](Architecture) describes the native systems and their boundaries.
-- [Storage and reference work](Storage-and-reference) links persistence and
-  reference-development documentation.
-
-The repository's [current status](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md)
+The repository's
+[status](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md)
 and [parity matrix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md)
-separate implemented behavior, native tests and finite original comparisons.
-Detailed checkpoint records are in the
-[population and runtime history](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/population.md);
-[wiki history](History) preserves the earlier overview.
+distinguish implemented behavior from verified scenarios. Earlier checkpoint
+records remain in [History](History) and the linked testing documents.

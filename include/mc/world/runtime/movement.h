@@ -6,6 +6,7 @@
 #include "mc/world/runtime/collision/boxes.h"
 #include "mc/world/runtime/presentation.h"
 #include "mc/world/runtime/queries.h"
+#include "mc/world/runtime/world_access_error.h"
 
 typedef struct mc_world_movement_error {
     mc_world_storage_status status;
@@ -26,6 +27,7 @@ typedef struct mc_world_movement_error {
     mc_world_chunk_manager_error biome;
     mc_world_mutation_error presentation;
     mc_entity_error entity;
+    mc_world_access_failure world_access_failure;
 } mc_world_movement_error;
 
 /* Full passive initialization without a returned diagnostic copy. NULL is a no-op. */

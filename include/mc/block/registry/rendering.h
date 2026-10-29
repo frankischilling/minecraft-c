@@ -36,6 +36,8 @@ mc_registry_status mc_block_render_update_bounds(mc_block *block,
                                                  const mc_block_render_access *access, int32_t x,
                                                  int32_t y, int32_t z);
 mc_registry_status mc_block_render_fancy_leaves(mc_registry_classes *classes, bool fancy);
+/* Exact bk.a(Z) on the already captured uu.L receiver; no static reread. */
+mc_registry_status mc_block_render_fancy_leaves_receiver(mc_block *block, bool fancy);
 mc_registry_status mc_block_render_finish_fluid(mc_block *block);
 /* Actual uu.a(FFFFFF)V bound mutation used by composite render families. */
 mc_registry_status mc_block_render_bounds(mc_block *block, float x0, float y0, float z0, float x1,

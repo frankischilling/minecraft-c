@@ -34,6 +34,9 @@ typedef struct mc_client_model_graph {
 void *mc_client_model_graph_allocate(mc_client_model_graph *, size_t, const char *, int32_t);
 mc_client_render_blocks *mc_client_model_graph_blocks(mc_client_model_graph *, const char *,
                                                       int32_t);
+bool mc_client_render_blocks_active_use(mc_client_render_classes *, mc_client_model_error *);
+void mc_client_render_blocks_construct_fields(mc_client_render_blocks *, const void *nullable_xp,
+                                              bool with_xp_argument);
 mc_client_model_part *mc_client_model_graph_part_allocate(mc_client_model_graph *, const char *,
                                                           int32_t);
 void mc_client_model_graph_part_construct(mc_client_model_part *, int32_t, int32_t);

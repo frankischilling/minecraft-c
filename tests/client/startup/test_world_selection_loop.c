@@ -3,6 +3,7 @@
 #include "client/application_state.h"
 #include "client/display/sdk_input.h"
 #include "client/display/staged.h"
+#include "client/gui/display_screen.h"
 #include "client/gui/source_screen_initialize_internal.h"
 #include "client/gui/source_screen_transitions.h"
 #include "client/gui/source_world_list.h"
@@ -12,8 +13,10 @@
 #include "client/startup/application_startup.h"
 #include "client/world/load_world.h"
 #include "client/world/prepare_world.h"
+#include "client/world/render_global_internal.h"
 #include "mc/client/controller/singleplayer.h"
 #include "mc/client/input/movement_input.h"
+#include "mc/client/particles/effect_renderer.h"
 #include "mc/core/java/java.h"
 #include "mc/entity/player/player.h"
 #include "mc/world/runtime/blocks.h"
@@ -279,6 +282,42 @@ static int capture(fixture *f, const char *path) {
     return 0;
 }
 
+static int world_display_controls(fixture *f, mc_client_screen_classes *classes) {
+    mc_client_display_screen_call *call = NULL;
+    const bool had_focus = f->app->N;
+    CHECK(mc_client_display_screen_run(f->app, classes, NULL, &call) ==
+          MC_CLIENT_DISPLAY_SCREEN_OK);
+    CHECK(call != NULL && call->source_returned && call->site.pc == 168 && call->health_read &&
+          call->player_health > 0 && call->r_stored && call->target == NULL &&
+          call->stats_c_returned && call->focus_returned && !call->initialized &&
+          f->app->r == NULL);
+    if (had_focus && call->display_active)
+        CHECK(call->focus_pc == 14 && !call->focus_stored && !call->mouse_grabbed &&
+              call->focus_display == NULL);
+    else if (!call->display_active)
+        CHECK(call->focus_pc == 6 && !call->focus_stored && !call->mouse_grabbed &&
+              call->focus_display == NULL);
+    else
+        CHECK(call->focus_pc == 51 && call->focus_stored && call->mouse_grabbed &&
+              call->focus_display != NULL && call->focus_display->source_returned &&
+              call->focus_display->health_read && call->focus_display->focus_pc == 14 &&
+              call->focus_display->focus_display == NULL && f->app->W == 10000 &&
+              f->app->ag == mc_java_i32_add(f->app->V, 10000));
+    CHECK(mc_client_display_screen_retire(&call) == MC_CLIENT_DISPLAY_SCREEN_OK && call == NULL);
+    mc_entity *player = f->app->h;
+    const bool focus = f->app->N;
+    f->app->h = NULL;
+    const mc_client_display_screen_status status =
+        mc_client_display_screen_run(f->app, classes, NULL, &call);
+    f->app->h = player;
+    CHECK(status == MC_CLIENT_DISPLAY_SCREEN_NULL_REFERENCE && call != NULL &&
+          call->site.pc == 76 && call->stats_c_returned && !call->health_read && !call->r_stored &&
+          !call->focus_returned && !call->source_returned && f->app->N == focus &&
+          f->app->r == NULL && f->app->i == player);
+    CHECK(mc_client_display_screen_retire(&call) == MC_CLIENT_DISPLAY_SCREEN_OK && call == NULL);
+    return 0;
+}
+
 static int large_drag(fixture *f, mc_client_source_rq *rq, const char *capture_path) {
     mc_client_world_list_fields *list = &rq->fields.o->fields;
     CHECK(mc_client_save_list_size(rq->fields.n) == 16 && list->m == 0.0f && list->k == -1.0f);
@@ -458,7 +497,8 @@ int main(int argc, char **argv) {
               transitions.world_load != NULL &&
               mc_client_world_load_inspect(transitions.world_load, &load));
         if (loading_world &&
-            (load.failure == NULL || load.failure->site.pc != 220 || !load.player_published)) {
+            (load.failure == NULL || load.failure->status != MC_CLIENT_WORLD_LOAD_OK ||
+             !load.source_returned || !load.player_published)) {
             fprintf(stderr,
                     "World load reached status=%d %s.%s:%d child=%s:%d operation=%s terrain=%zu\n",
                     load.failure == NULL ? -1 : (int)load.failure->status,
@@ -497,17 +537,24 @@ int main(int argc, char **argv) {
                         detail->graphics.display.detail);
             }
         }
-        CHECK(load.failure != NULL && load.failure->status == MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED &&
-              strcmp(load.failure->site.class_name, "net/minecraft/client/Minecraft") == 0 &&
-              strcmp(load.failure->site.method, loading_world ? "a" : "b") == 0 &&
-              load.failure->site.pc == (loading_world ? 220 : 52));
+        CHECK(load.failure != NULL);
+        if (loading_world)
+            CHECK(load.failure->status == MC_CLIENT_WORLD_LOAD_OK && load.source_returned &&
+                  load.last_outer_pc == 130 && load.last_change_pc == 366 &&
+                  load.renderer_returned && load.effects_returned && load.player_load_returned &&
+                  load.view_published);
+        else
+            CHECK(load.failure->status == MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED &&
+                  strcmp(load.failure->site.class_name, "net/minecraft/client/Minecraft") == 0 &&
+                  strcmp(load.failure->site.method, "b") == 0 && load.failure->site.pc == 52);
         CHECK(load.initial_detach_returned && load.initial_i_cleared && load.initial_h_cleared &&
-              load.initial_P_stored && load.gc_requests == 2 && load.conversion_checked);
+              load.initial_P_stored && load.gc_requests == (loading_world ? 3u : 2u) &&
+              load.conversion_checked);
         if (loading_world) {
             CHECK(!load.needs_conversion && load.handler_opened && load.world_constructed &&
                   load.world_published && load.player_published && load.input_published &&
                   load.world == f.app->active_world && load.player == f.app->h &&
-                  f.app->i == NULL && load.input != NULL && load.terrain_samples == 289);
+                  f.app->i == f.app->h && load.input != NULL && load.terrain_samples == 289);
             mc_world_runtime_construction constructed;
             mc_client_world_prepare_state prepared;
             mc_local_player_snapshot player;
@@ -537,17 +584,26 @@ int main(int argc, char **argv) {
             CHECK(mc_world_runtime_block_get(load.world, 0, 127, 0, &marker, &stored) ==
                       MC_WORLD_STORAGE_OK &&
                   marker == 57);
-            printf(
-                "WORLD_LOAD ready=1 terrain=289 stored-marker=57 player=1 input=1 source=n220\n");
+            mc_client_sdk_input_state input;
+            CHECK(f.app->r == NULL &&
+                  mc_client_sdk_input_inspect(mc_client_display_inputs(f.app->display), &input) &&
+                  input.grabbed == f.app->N && player.living.Y > 0);
+            CHECK(strcmp(f.state.source_class, "net/minecraft/client/Minecraft") == 0 &&
+                  strcmp(f.state.source_method, "k") == 0 && f.state.source_pc == 337);
+            CHECK(world_display_controls(&f, initial->classes) == 0);
+            printf("WORLD_LOAD ready=1 terrain=289 stored-marker=57 player=1 input=1 "
+                   "renderer=1 effects=1 publication=1 view=1 returned=130 next=k337\n");
         } else {
             CHECK(load.needs_conversion && !load.handler_opened && load.world == NULL &&
                   load.player == NULL && !load.world_published);
         }
-        const mc_client_world_load_site *reached =
-            load.failure->child.class_name == NULL ? &load.failure->site : &load.failure->child;
-        CHECK(strcmp(f.state.source_class, reached->class_name) == 0 &&
-              strcmp(f.state.source_method, reached->method) == 0 &&
-              f.state.source_pc == reached->pc);
+        if (!loading_world) {
+            const mc_client_world_load_site *reached =
+                load.failure->child.class_name == NULL ? &load.failure->site : &load.failure->child;
+            CHECK(strcmp(f.state.source_class, reached->class_name) == 0 &&
+                  strcmp(f.state.source_method, reached->method) == 0 &&
+                  f.state.source_pc == reached->pc);
+        }
         if (double_click) {
             /* MG85 failed before LG's n187/o194 and k400 stores. Both clicks
              * came through the real SDK and the formatter/clock is unmodified. */
@@ -556,17 +612,18 @@ int main(int argc, char **argv) {
             printf("WORLD_SELECTION double-clock-gap=%" PRId64 " failed-callback-n-o-preserved=1\n",
                    mc_java_i64_sub(double_started, previous_click));
         }
-        CHECK(next->fields.l && next->fields.m == 0 && f.app->controller != NULL &&
-              f.app->r != NULL && f.app->r != &next->base &&
-              f.app->r->kind == MC_CLIENT_SCREEN_MAIN_MENU);
+        CHECK(next->fields.l && next->fields.m == 0 && f.app->controller != NULL);
+        if (!loading_world)
+            CHECK(f.app->r != NULL && f.app->r != &next->base &&
+                  f.app->r->kind == MC_CLIENT_SCREEN_MAIN_MENU);
         mc_singleplayer_controller_snapshot controller;
         CHECK(mc_client_singleplayer_controller_read(
             (const mc_client_singleplayer_controller *)f.app->controller, &controller));
         CHECK(controller.phase == MC_SINGLEPLAYER_CONTROLLER_READY && controller.a == f.app &&
               controller.constructor_pc == 40 && controller.c == -1 && controller.d == -1 &&
               controller.e == -1 && controller.failed_player == NULL);
-        CHECK((loading_world || (f.app->active_world == NULL && f.app->h == NULL)) &&
-              f.app->i == NULL && !f.app->N);
+        CHECK(loading_world ||
+              (f.app->active_world == NULL && f.app->h == NULL && f.app->i == NULL && !f.app->N));
     } else {
         CHECK(push_button(&f, initial, 4, true) == 0 && push_button(&f, initial, 4, false) == 0 &&
               transfer(&f) == 0);
@@ -582,6 +639,34 @@ int main(int argc, char **argv) {
            " mouse=%zu keyboard=%zu held-entry=1 row=1 cancel-same-parent=1 select-frontier=%d\n",
            argv[2], f.state.frames, f.state.ticks, f.state.mouse_events, f.state.keyboard_events,
            populated ? 1 : 0);
+    if (loading_world) {
+        mc_world_runtime *world = f.app->active_world;
+        mc_entity *player = f.app->h;
+        mc_client_render_global *renderer = f.app->g;
+        mc_client_render_global_error *error = calloc(1, sizeof(*error));
+        CHECK(error != NULL &&
+              mc_client_render_global_retain(renderer, error) == MC_CLIENT_RENDER_GLOBAL_OK);
+        CHECK(!mc_client_menu_loop_retire(&f.loop) && f.loop != NULL);
+        mc_client_screen_transition_state transitions;
+        mc_client_world_load_state load;
+        CHECK(mc_client_screen_transitions_inspect(f.app->screen_transitions, &transitions) &&
+              transitions.world_load != NULL &&
+              mc_client_world_load_inspect(transitions.world_load, &load) && load.source_returned &&
+              load.cleanup->status == MC_CLIENT_WORLD_LOAD_BUSY && load.cleanup->renderer == NULL &&
+              load.cleanup->render_global != NULL &&
+              load.cleanup->render_global->status == MC_CLIENT_RENDER_GLOBAL_BUSY &&
+              renderer->fields.k == world && f.app->active_world == world && f.app->h == player &&
+              f.app->i == player);
+        CHECK(mc_client_render_global_release(&renderer, error) == MC_CLIENT_RENDER_GLOBAL_OK);
+        free(error);
+        mc_client_effect_renderer *effects = f.app->effect_renderer;
+        CHECK(mc_client_effect_renderer_retain(effects) == MC_EFFECT_RENDERER_OK);
+        CHECK(!mc_client_menu_loop_retire(&f.loop) && f.loop != NULL);
+        mc_effect_renderer_snapshot state;
+        CHECK(mc_client_effect_renderer_read(effects, &state) && state.world == world &&
+              f.app->active_world == world && f.app->h == player && f.app->i == player);
+        CHECK(mc_client_effect_renderer_release(effects) == MC_EFFECT_RENDERER_OK);
+    }
     CHECK(!mc_client_menu_loop_retire(&f.loop) && f.loop != NULL && external != NULL);
     CHECK(mc_client_bootstrap_app(f.bootstrap) == f.app &&
           f.app->native_lifetime_phase == MC_CLIENT_APPLICATION_LIFETIME_REGISTERED);

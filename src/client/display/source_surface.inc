@@ -170,9 +170,12 @@ static mc_client_source_command *source_append(mc_client_display *display,
     }
     command->kind = kind;
     command->charge = sizeof(*command) + bytes;
-    if (s->compiling->last == NULL) s->compiling->first = command;
-    else s->compiling->last->next = command;
-    s->compiling->last = command;
+    mc_client_source_definition *pending = s->compiling->pending;
+    if (pending->last == NULL) pending->first = command;
+    else pending->last->next = command;
+    pending->last = command;
+    ++pending->commands;
+    pending->bytes += command->charge;
     ++range->command_count;
     s->command_bytes += command->charge;
     return command;
@@ -430,14 +433,38 @@ static mc_client_source_list *source_find_list(mc_client_display *display, int32
     return NULL;
 }
 
+static void source_free_commands(mc_client_display_list_range *range,
+                                  mc_client_source_command *command) {
+    while (command != NULL) {
+        mc_client_source_command *next = command->next;
+        range->display->source.command_bytes -= command->charge;
+        --range->command_count;
+        free(command);
+        command = next;
+    }
+}
+
 bool mc_client_display_lists_begin(mc_client_display *display, int32_t id, mc_client_display_error *error) {
     if (!source_enter(display, "source glNewList", error)) return false;
     bool ok = false;
     mc_client_display_list_range *range = NULL;
     mc_client_source_list *list = source_find_list(display, id, &range);
-    if (display->source.compiling != NULL || list == NULL || list->defined || list->building) {
-        fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glNewList", "unregistered/redefined/nested list path", 0);
+    if (display->source.compiling != NULL || list == NULL || list->building) {
+        fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glNewList", "unregistered/interrupted/nested list path", 0);
+    } else if (sizeof(mc_client_source_definition) >
+               SOURCE_COMMAND_BYTES - display->source.command_bytes) {
+        fail(error, MC_CLIENT_DISPLAY_LIMIT, "source glNewList", "pending definition byte limit", 0);
     } else {
+        mc_client_source_definition *pending = calloc(1, sizeof(*pending));
+        if (pending == NULL)
+            return source_leave(display,
+                                fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED,
+                                     "source glNewList", "pending definition allocation failed", 0),
+                                error);
+        /* GL_COMPILE preserves the current definition until the matching
+         * EndList. Old and pending commands both remain owned and charged. */
+        list->pending = pending;
+        display->source.command_bytes += sizeof(*pending);
         list->building = true;
         display->source.compiling = list;
         display->source.compiling_range = range;
@@ -452,10 +479,20 @@ bool mc_client_display_lists_end(mc_client_display *display, mc_client_display_e
     if (display->source.compiling == NULL) {
         fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glEndList", "no source definition active", 0);
     } else {
-        display->source.compiling->defined = true;
-        display->source.compiling->building = false;
+        mc_client_source_list *list = display->source.compiling;
+        mc_client_display_list_range *range = display->source.compiling_range;
+        mc_client_source_definition *pending = list->pending;
+        mc_client_source_command *old = list->first;
+        list->first = pending->first;
+        list->last = pending->last;
+        list->pending = NULL;
+        list->defined = true;
+        list->building = false;
         display->source.compiling = NULL;
         display->source.compiling_range = NULL;
+        display->source.command_bytes -= sizeof(*pending);
+        free(pending);
+        source_free_commands(range, old);
         ok = true;
     }
     return source_leave(display, ok, error);
@@ -706,12 +743,12 @@ bool mc_client_display_lists_retire(mc_client_display_list_range **slot, mc_clie
     while (*link != range) link = &(*link)->next;
     *link = range->next;
     for (int32_t i = 0; i < range->count; ++i) {
-        mc_client_source_command *command = range->lists[i].first;
-        while (command != NULL) {
-            mc_client_source_command *next = command->next;
-            display->source.command_bytes -= command->charge;
-            free(command);
-            command = next;
+        mc_client_source_list *list = &range->lists[i];
+        source_free_commands(range, list->first);
+        if (list->pending != NULL) {
+            source_free_commands(range, list->pending->first);
+            display->source.command_bytes -= sizeof(*list->pending);
+            free(list->pending);
         }
     }
     --display->source.range_count;

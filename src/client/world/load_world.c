@@ -17,8 +17,10 @@
 #include "mc/entity/player/spawn.h"
 #include "mc/statistics/registry/registry.h"
 #include "mc/world/runtime/entities.h"
+#include "mc/world/runtime/loading/player.h"
 #include "mc/world/runtime/source_construction.h"
 #include "prepare_world.h"
+#include "render_global_internal.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -82,6 +84,16 @@ struct mc_client_world_load_call {
     mc_player_string *level_text;
     mc_entity *h_occurrence, *i_occurrence;
     bool world_slot_owned, folder_held, display_held, world_retired, cache_retired;
+    mc_client_render_global *render_owner;
+    mc_client_render_global_world_call *render_call;
+    mc_client_render_global_world_state render_state;
+    mc_client_render_global_error render_cleanup;
+    bool render_world_owned;
+    mc_client_effect_renderer *effects_owner;
+    bool effects_held, effects_world_owned;
+    mc_effect_renderer_error effects, effects_cleanup;
+    mc_world_player_load_error player_load;
+    mc_world_access_failure captured_player_failure;
 };
 
 static mc_client_world_load_site site(const char *method, const char *descriptor, int pc) {
@@ -512,15 +524,74 @@ static bool change_world(mc_client_world_load_call *call, mc_world_runtime *worl
     }
     call->state.input_published = true;
     if (app->g != NULL) {
-        change_fail(call, MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED,
-                    "actual RenderGlobal n.a(World) owner closure", 220);
-        call->failure.child = (mc_client_world_load_site){"n", "a", "(Lfd;)V", 0};
-        return false;
+        call->state.last_change_pc = 220;
+        call->render_owner = app->g;
+        mc_client_render_global_state before_renderer;
+        if (!mc_client_render_global_inspect(call->render_owner, &before_renderer) ||
+            before_renderer.fields.k != NULL) {
+            change_fail(call, MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED,
+                        "prior renderer World outside selected entry closure", 220);
+            return false;
+        }
+        const mc_client_render_global_status status =
+            mc_client_render_global_world_begin(call->render_owner, world, &call->render_call);
+        if (call->render_call != NULL) {
+            (void)mc_client_render_global_world_inspect(call->render_call, &call->render_state);
+            call->render_world_owned = call->render_state.manager_returned ||
+                                       call->render_state.k_stored || call->render_state.u_stored;
+        }
+        if (status != MC_CLIENT_RENDER_GLOBAL_OK) {
+            call->failure.renderer = call->render_call == NULL ? NULL : &call->render_state;
+            if (call->render_state.failure != NULL)
+                call->failure.child =
+                    (mc_client_world_load_site){call->render_state.failure->source_class,
+                                                call->render_state.failure->source_method,
+                                                call->render_state.failure->source_descriptor,
+                                                (int)call->render_state.failure->source_pc};
+            change_fail(call,
+                        status == MC_CLIENT_RENDER_GLOBAL_BUSY ? MC_CLIENT_WORLD_LOAD_BUSY
+                        : status == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE
+                            ? MC_CLIENT_WORLD_LOAD_NULL_REFERENCE
+                            : MC_CLIENT_WORLD_LOAD_CHILD_FAILED,
+                        call->render_state.failure == NULL ? "actual n.a(World) native admission"
+                                                           : call->render_state.failure->operation,
+                        220);
+            if (call->render_state.failure != NULL)
+                call->failure.native_policy = call->render_state.failure->native_policy;
+            return false;
+        }
+        call->state.renderer_returned = true;
     }
     if (app->effect_renderer != NULL) {
-        change_fail(call, MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED,
-                    "actual EffectRenderer World-change caller closure", 235);
-        return false;
+        call->state.last_change_pc = 235;
+        call->effects_owner = app->effect_renderer;
+        if (mc_client_effect_renderer_retain(call->effects_owner) != MC_EFFECT_RENDERER_OK) {
+            change_fail(call, MC_CLIENT_WORLD_LOAD_BUSY, "captured actual particle manager", 235);
+            return false;
+        }
+        call->effects_held = true;
+        mc_effect_renderer_snapshot before_effects;
+        if (!mc_client_effect_renderer_read(call->effects_owner, &before_effects) ||
+            before_effects.world != NULL) {
+            change_fail(call, MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED,
+                        "prior particle World outside selected entry closure", 235);
+            return false;
+        }
+        const mc_effect_renderer_status status =
+            mc_client_effect_renderer_change_world(call->effects_owner, world, &call->effects);
+        mc_effect_renderer_snapshot effects;
+        if (mc_client_effect_renderer_read(call->effects_owner, &effects))
+            call->effects_world_owned = effects.world == world;
+        if (status != MC_EFFECT_RENDERER_OK) {
+            call->failure.effects = &call->effects;
+            call->failure.child = (mc_client_world_load_site){"dn", call->effects.source_method,
+                                                              call->effects.source_descriptor,
+                                                              (int)call->effects.source_pc};
+            change_fail(call, MC_CLIENT_WORLD_LOAD_CHILD_FAILED,
+                        "actual EffectRenderer World-change child", 235);
+            return false;
+        }
+        call->state.effects_returned = true;
     }
     actual = controller(call, 246);
     if (actual == NULL)
@@ -528,9 +599,62 @@ static bool change_world(mc_client_world_load_call *call, mc_world_runtime *worl
     if (mc_client_singleplayer_controller_finish_player(actual, app->h, &call->controller_error) !=
         MC_SINGLEPLAYER_CONTROLLER_OK)
         return controller_failure(call, 246);
-    change_fail(call, MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED,
-                "actual World Player-data load outside RenderGlobal entry closure", 324);
-    return false;
+    /* Supplied gs is NULL in this selected overload, so fd.e254 is skipped.
+     * Read the argument World's current provider at w258, not its earlier
+     * terrain-preparation capture. */
+    call->state.last_change_pc = 258;
+    if (mc_world_runtime_fields_get(world, &fields) != MC_WORLD_STORAGE_OK) {
+        change_fail(call, MC_CLIENT_WORLD_LOAD_CHILD_FAILED, "actual World.w258 fields", 258);
+        return false;
+    }
+    if (mc_chunk_provider_concrete_kind_of(fields.v) != MC_CHUNK_PROVIDER_MAP_CACHE &&
+        fields.v != NULL) {
+        change_fail(call, MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED,
+                    "actual kx recenter branch outside selected provider closure", 316);
+        return false;
+    }
+    call->state.last_change_pc = 324;
+    if (mc_world_runtime_load_player(world, app->h, &call->player_load) != MC_WORLD_STORAGE_OK) {
+        call->failure.player_load = &call->player_load;
+        if (call->player_load.publication.world_access_failure.receipt != NULL &&
+            mc_world_access_failure_retain(&call->player_load.publication.world_access_failure,
+                                           &call->captured_player_failure) != MC_WORLD_STORAGE_OK) {
+            change_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
+                        "actual Player publication failure receipt capture", 324);
+            return false;
+        }
+        call->failure.child = (mc_client_world_load_site){
+            "fd", "a", "(Lgs;)V",
+            (int)(call->player_load.print_stack_trace_pending ? call->player_load.catch_bytecode
+                                                              : call->player_load.bytecode)};
+        change_fail(call, MC_CLIENT_WORLD_LOAD_CHILD_FAILED, call->player_load.operation, 324);
+        return false;
+    }
+    call->state.player_load_returned = true;
+    call->state.last_change_pc = 331;
+    if (mc_world_runtime_fields_get(world, &fields) != MC_WORLD_STORAGE_OK) {
+        change_fail(call, MC_CLIENT_WORLD_LOAD_CHILD_FAILED, "actual World.s331 fields", 331);
+        return false;
+    }
+    if (fields.s) {
+        change_fail(call, MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED,
+                    "actual new-World save with LoadingScreen", 339);
+        return false;
+    }
+    call->state.last_change_pc = 347;
+    if (app->h != NULL && mc_entity_retain(app->h) != MC_ENTITY_OK) {
+        change_fail(call, MC_CLIENT_WORLD_LOAD_BUSY, "actual i347 native occurrence", 347);
+        return false;
+    }
+    call->i_occurrence = app->h;
+    app->i = app->h;
+    call->state.view_published = true;
+    ++call->state.gc_requests;
+    app->P = 0;
+    call->changes[1].P_stored = true;
+    call->changes[1].source_returned = true;
+    call->state.last_change_pc = 366;
+    return true;
 }
 
 static bool increment(mc_client_world_load_call *call, size_t index, int get_pc, int invoke_pc) {
@@ -938,6 +1062,44 @@ mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_cal
                                 "captured Loading occurrence release");
         call->pending_loading = NULL;
     }
+    mc_world_access_failure_release(&call->captured_player_failure);
+    call->player_load.publication.world_access_failure = (mc_world_access_failure){0};
+    if (call->render_call != NULL) {
+        if (mc_client_render_global_world_retire(&call->render_call) !=
+            MC_CLIENT_RENDER_GLOBAL_OK) {
+            (void)mc_client_render_global_world_inspect(call->render_call, &call->render_state);
+            call->cleanup.renderer = &call->render_state;
+            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
+                                "actual renderer World-call native retirement");
+        }
+        call->failure.renderer = NULL;
+        call->render_state = (mc_client_render_global_world_state){0};
+    }
+    if (call->render_world_owned) {
+        if (mc_client_render_global_world_detach(call->render_owner, &call->render_cleanup) !=
+            MC_CLIENT_RENDER_GLOBAL_OK) {
+            call->cleanup.render_global = &call->render_cleanup;
+            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
+                                "actual renderer World native detachment");
+        }
+        call->render_world_owned = false;
+    }
+    if (call->effects_held) {
+        if (mc_client_effect_renderer_release(call->effects_owner) != MC_EFFECT_RENDERER_OK)
+            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
+                                "captured particle manager occurrence release");
+        call->effects_held = false;
+    }
+    if (call->effects_world_owned) {
+        if (mc_client_effect_renderer_retire_world(call->effects_owner, call->state.world,
+                                                   &call->effects_cleanup) !=
+            MC_EFFECT_RENDERER_OK) {
+            call->cleanup.effects = &call->effects_cleanup;
+            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
+                                "actual particle manager World native detachment");
+        }
+        call->effects_world_owned = false;
+    }
     if (call->failed_controller != NULL) {
         mc_singleplayer_controller_snapshot current;
         if (!mc_client_singleplayer_controller_read(call->failed_controller, &current) ||
@@ -974,18 +1136,6 @@ mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_cal
     }
     mc_entity_release(call->state.player);
     call->state.player = NULL;
-    if (call->state.input != NULL) {
-        mc_movement_input_state input;
-        if (!mc_movement_input_read_state(call->state.input, &input) || input.native_holds != 1)
-            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
-                                "external Player/input occurrences still borrow App Settings");
-        if (mc_movement_input_retire(&call->state.input, &call->input_error) !=
-            MC_MOVEMENT_INPUT_OK) {
-            call->cleanup.input = &call->input_error;
-            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_CLEANUP_FAILED,
-                                "actual owned input retirement");
-        }
-    }
     if (call->world_slot_owned) {
         if (app->active_world != call->state.world)
             return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
@@ -1038,6 +1188,21 @@ mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_cal
             return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY, "actual World checked free");
         }
         call->state.world = NULL;
+    }
+    /* Publication gives World/Chunk Lists independent Player occurrences.
+     * Their terminal retirement precedes the last Input/Settings occurrence;
+     * waiting for Input alone earlier would deadlock these owned memberships. */
+    if (call->state.input != NULL) {
+        mc_movement_input_state input;
+        if (!mc_movement_input_read_state(call->state.input, &input) || input.native_holds != 1)
+            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
+                                "external Player/input occurrences still borrow App Settings");
+        if (mc_movement_input_retire(&call->state.input, &call->input_error) !=
+            MC_MOVEMENT_INPUT_OK) {
+            call->cleanup.input = &call->input_error;
+            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_CLEANUP_FAILED,
+                                "actual owned input retirement");
+        }
     }
     if (mc_world_store_source_retire(&call->state.handler, &call->handler_cleanup) !=
         MC_WORLD_SOURCE_OK) {

@@ -17,14 +17,9 @@ bool wt_observe_removed(wt_scope *s, mc_entity *entity, unsigned int pc) {
             mc_world_access_release_held(access);
             return false;
         }
-        if (access == NULL || access->callbacks.entity_removed == NULL) {
-            mc_world_access_release_held(access);
-            return wt_fail(s, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                           "World removed Entity WorldAccess invocation");
-        }
         /* The source local remains independently held by the outer loop. */
-        const mc_world_storage_status status =
-            access->callbacks.entity_removed(access->context, s->world, entity, &cause);
+        const mc_world_storage_status status = mc_world_access_call_entity_removed(
+            access, s->world, entity, &cause, &s->error.world_access_failure);
         mc_world_access_release_held(access);
         if (status != MC_WORLD_STORAGE_OK)
             return wt_cause(s, mc_world_access_callback_error(status, cause));

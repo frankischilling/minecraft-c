@@ -10,6 +10,7 @@
 #include "mc/core/math/math.h"
 #include "mc/world/runtime/blocks.h"
 #include "travel_math_internal.h"
+#include <stdlib.h>
 #include <string.h>
 
 typedef struct travel_scope {
@@ -506,8 +507,19 @@ typedef enum travel_operation {
 static mc_entity_status invoke(mc_entity *p, const mc_player_travel_context *context,
                                travel_operation op, float strafe, float forward, double x, double y,
                                double z, bool *out, mc_player_travel_error *error) {
-    mc_player_travel_error e;
-    mc_player_travel_error_init(&e);
+    /* This complete diagnostic graph can exceed200 KiB. Keep it off the
+     * native call chain and independent across synchronous source callbacks. */
+    mc_player_travel_error *e = malloc(sizeof(*e));
+    if (e == NULL) {
+        mc_player_travel_error_init(error);
+        if (error != NULL) {
+            error->status = MC_ENTITY_ALLOCATION_FAILED;
+            error->cause = MC_PLAYER_TRAVEL_OWNER;
+            error->operation = "Player travel diagnostic workspace";
+        }
+        return MC_ENTITY_ALLOCATION_FAILED;
+    }
+    mc_player_travel_error_init(e);
     travel_scope s = {0};
     bool value = false, completed = false;
     const bool base = op == LIVING_TRAVEL || op == LADDER || op == LIVING_JUMP;
@@ -515,41 +527,42 @@ static mc_entity_status invoke(mc_entity *p, const mc_player_travel_context *con
                          : op == LIVING_JUMP || op == PLAYER_JUMP ? "R()V"
                          : op == MOVEMENT_STATISTICS              ? "i(DDD)V"
                                                                   : "a_(FF)V";
-    if (enter(&s, p, context, base ? "ls" : "gs", method, op != LADDER || out != NULL, &e)) {
+    if (enter(&s, p, context, base ? "ls" : "gs", method, op != LADDER || out != NULL, e)) {
         if (op == LADDER)
-            completed = ladder(&s, &value, &e);
+            completed = ladder(&s, &value, e);
         else if (op == LIVING_JUMP || op == PLAYER_JUMP) {
             p->base.velocity_y = 0.41999998688697815;
             completed = true;
             if (op == PLAYER_JUMP) {
-                completed = statistic_get(&s, "u", 15, 5, &e);
+                completed = statistic_get(&s, "u", 15, 5, e);
                 if (completed)
-                    completed = statistic_dispatch(&s, &e, 1, 9);
+                    completed = statistic_dispatch(&s, e, 1, 9);
             }
         } else if (op == MOVEMENT_STATISTICS)
-            completed = statistics(&s, x, y, z, &e);
+            completed = statistics(&s, x, y, z, e);
         else if (op == LIVING_TRAVEL)
-            completed = living(&s, strafe, forward, &e);
+            completed = living(&s, strafe, forward, e);
         else {
             const double old_x = p->base.x, old_y = p->base.y, old_z = p->base.z;
-            e.player_bytecode = 20;
-            completed = living(&s, strafe, forward, &e);
+            e->player_bytecode = 20;
+            completed = living(&s, strafe, forward, e);
             if (completed) {
-                e.player_bytecode = 29;
-                if (fp(&e)) {
+                e->player_bytecode = 29;
+                if (fp(e)) {
                     const double dx = mc_travel_dsub(p->base.x, old_x),
                                  dy = mc_travel_dsub(p->base.y, old_y),
                                  dz = mc_travel_dsub(p->base.z, old_z);
-                    e.player_bytecode = 44;
-                    completed = statistics(&s, dx, dy, dz, &e);
+                    e->player_bytecode = 44;
+                    completed = statistics(&s, dx, dy, dz, e);
                 } else
                     completed = false;
             }
         }
     }
-    const mc_entity_status status = finish(&s, &e, error);
+    const mc_entity_status status = finish(&s, e, error);
     if (status == MC_ENTITY_OK && completed && op == LADDER)
         *out = value;
+    free(e);
     return status;
 }
 

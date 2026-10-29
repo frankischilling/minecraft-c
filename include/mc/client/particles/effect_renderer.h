@@ -92,6 +92,15 @@ mc_effect_renderer_status mc_client_effect_renderer_change_world(mc_client_effec
                                                                  mc_world_runtime *,
                                                                  mc_effect_renderer_error *);
 
+/* Native terminal World coordination before its containers/free. Requires the
+ * sole manager occurrence and SAME expected World. Releases every actual List
+ * occurrence, then this manager's World binding, without invoking source world
+ * change/tick callbacks. Failed admission leaves all fields and holds intact.
+ * Source operations must not resume while this enclosing graph retires. */
+mc_effect_renderer_status mc_client_effect_renderer_retire_world(mc_client_effect_renderer *,
+                                                                 mc_world_runtime *expected_world,
+                                                                 mc_effect_renderer_error *);
+
 bool mc_client_effect_renderer_read(const mc_client_effect_renderer *,
                                     mc_effect_renderer_snapshot *);
 /* Borrowed occurrence; caller holds this exclusive manager through use. */

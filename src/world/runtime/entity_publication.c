@@ -2,6 +2,7 @@
 #include "mc/entity/player/player.h"
 #include "mc/world/runtime/entities.h"
 #include "mc/world/runtime/entity_tick.h"
+#include "mc/world/runtime/loading/player.h"
 #include "mc/world/runtime/players.h"
 
 #include "../../entity/entity_internal.h"
@@ -271,7 +272,8 @@ static bool observe_base_entity_at(mc_world_runtime *world, mc_entity *entity,
         if (!present)
             return true; /* Actual base fd/dj.c(Entity)V return40. */
         frame->world_access_bytecode = 29;
-        if (world_access == NULL || world_access->callbacks.entity_added == NULL) {
+        if (world_access == NULL || (world_access->callbacks.entity_added == NULL &&
+                                     world_access->source_callbacks.entity_added == NULL)) {
             mc_world_access_release_held(world_access);
             return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                "World Entity WorldAccess invocation");
@@ -285,8 +287,8 @@ static bool observe_base_entity_at(mc_world_runtime *world, mc_entity *entity,
                 return entity_fail(frame, ownership_status(held), frame->entity.operation);
             }
         }
-        const mc_world_storage_status status =
-            world_access->callbacks.entity_added(world_access->context, world, entity, &cause);
+        const mc_world_storage_status status = mc_world_access_call_entity_added(
+            world_access, world, entity, &cause, &frame->world_access_failure);
         mc_entity_release(entity);
         mc_world_access_release_held(world_access);
         if (status != MC_WORLD_STORAGE_OK)
@@ -782,110 +784,33 @@ mc_world_runtime_update_player_sleeping(mc_world_runtime *world,
     return frame.status;
 }
 
-static void attachment_fail(mc_world_player_attachment_error *frame, mc_world_storage_status status,
-                            const char *operation) {
-    frame->status = status;
-    frame->operation = operation;
-    frame->cause = (mc_world_storage_error){status, operation, 0};
-}
-
 mc_world_storage_status
 mc_world_runtime_attach_player(mc_world_runtime *world, mc_entity *player,
                                mc_world_player_attachment_error *out_error) {
-    mc_world_player_attachment_error frame = {0};
-    mc_entity_nbt_error_init(&frame.nbt);
-    bool entered = false;
-    mc_world_info_player *tag = NULL;
-    if (player != NULL && !mc_entity_is_kind(player, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
-        attachment_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT,
-                        "World attach concrete Player argument");
-        goto done;
+    if (out_error == NULL)
+        return mc_world_runtime_load_player(world, player, NULL);
+    static const mc_world_player_attachment_error zero = {0};
+    *out_error = zero;
+    mc_entity_nbt_error_init(&out_error->nbt);
+    mc_world_player_load_error *detail = malloc(sizeof(*detail));
+    if (detail == NULL) {
+        out_error->status = MC_WORLD_STORAGE_ALLOCATION_FAILED;
+        out_error->operation = "World Player attachment diagnostic workspace";
+        out_error->cause = (mc_world_storage_error){out_error->status, out_error->operation, 0};
+        return out_error->status;
     }
-    if (world != NULL && (world->classes == NULL || world->classes->side != MC_WORLD_INFO_CLIENT)) {
-        attachment_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                        "World attach client source owner");
-        goto done;
+    const mc_world_storage_status status = mc_world_runtime_load_player(world, player, detail);
+    if (status != MC_WORLD_STORAGE_OK) {
+        out_error->status = status;
+        out_error->operation = detail->operation;
+        out_error->bytecode = detail->bytecode;
+        out_error->cause = detail->cause;
+        out_error->info = detail->info;
+        out_error->nbt = detail->nbt;
+        out_error->publication = detail->publication;
     }
-    if (!enter_entity(world, player, &frame.publication)) {
-        frame.status = frame.publication.status;
-        frame.operation = frame.publication.operation;
-        frame.cause = frame.publication.cause;
-        goto done;
-    }
-    entered = true;
-    frame.bytecode = 4;
-    frame.info = mc_world_info_player_get(world->fields.x, &tag);
-    if (frame.info != MC_WORLD_INFO_OK) {
-        attachment_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                        "World attach Info Player receiver");
-        goto done;
-    }
-    if (tag != NULL) {
-        /* Source local2 retains this exact object across the inherited load
-         * and later clear. Native holding neither copies nor renames its root. */
-        mc_world_info_status held = mc_world_info_player_retain(tag);
-        if (held != MC_WORLD_INFO_OK) {
-            tag = NULL; /* The Info still owns its unchanged source reference. */
-            frame.info = held;
-            attachment_fail(&frame, MC_WORLD_STORAGE_LIMIT,
-                            "World attach captured Player NBT hold");
-            goto done;
-        }
-        frame.bytecode = 14;
-        if (player == NULL) {
-            attachment_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                            "World attach Player NBT receiver");
-            goto done;
-        }
-        mc_entity_nbt_status loaded = mc_entity_read_nbt_in_context(
-            player, world->classes->registry, mc_world_info_player_root(tag), NULL, &frame.nbt);
-        if (loaded != MC_ENTITY_NBT_OK) {
-            attachment_fail(&frame,
-                            loaded == MC_ENTITY_NBT_LIMIT ? MC_WORLD_STORAGE_LIMIT
-                            : loaded == MC_ENTITY_NBT_ALLOCATION_FAILED
-                                ? MC_WORLD_STORAGE_ALLOCATION_FAILED
-                                : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                            frame.nbt.operation);
-            goto done;
-        }
-        frame.bytecode = 22;
-        frame.info = mc_world_info_player_set(world->fields.x, NULL);
-        if (frame.info != MC_WORLD_INFO_OK) {
-            attachment_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                            "World attach Info Player clear");
-            goto done;
-        }
-    }
-    frame.bytecode = 29;
-    mc_chunk_provider_concrete_kind kind = mc_chunk_provider_concrete_kind_of(world->fields.v);
-    if (kind != MC_CHUNK_PROVIDER_NULL && kind != MC_CHUNK_PROVIDER_MAP_CACHE) {
-        attachment_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                        "World attach provider concrete class dependency");
-        goto done;
-    }
-    /* The actual implemented constructor created ok/jb, an unrelated class to
-     * client kx. Never infer kx from BASE/DEDICATED policy or retained grid. */
-    frame.bytecode = 79;
-    bool ignored;
-    if (!insert_entity(world, player, &ignored, &frame.publication)) {
-        frame.status = frame.publication.status;
-        frame.operation = frame.publication.operation;
-        frame.cause = frame.publication.cause;
-        goto done;
-    }
-    frame = (mc_world_player_attachment_error){0};
-    mc_entity_nbt_error_init(&frame.nbt);
-done:
-    mc_world_info_player_release(tag);
-    if (entered) {
-        if (frame.status != MC_WORLD_STORAGE_OK)
-            world->last_error = frame.cause;
-        mc_entity_release(player);
-        mc_world_runtime_call_leave(world);
-    }
-    if (out_error != NULL)
-        *out_error = frame;
-    return frame.status;
+    free(detail);
+    return status;
 }
 
 mc_world_storage_status mc_world_runtime_chunk_add_entity(mc_world_chunk *chunk, mc_entity *entity,

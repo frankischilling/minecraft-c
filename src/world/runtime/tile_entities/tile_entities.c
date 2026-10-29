@@ -4061,7 +4061,8 @@ mc_world_runtime_tile_entity_dirty_detailed(mc_world_runtime *world, int32_t x, 
         if (!has)
             break; /* return66, without preflighting the TileEntity argument */
         frame.bytecode = frame.world_access_bytecode = 55;
-        if (world_access == NULL || world_access->callbacks.tile_entity_dirty == NULL) {
+        if (world_access == NULL || (world_access->callbacks.tile_entity_dirty == NULL &&
+                                     world_access->source_callbacks.tile_entity_dirty == NULL)) {
             mc_world_access_release_held(world_access);
             live_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "TileEntity dirty WorldAccess invocation");
@@ -4075,8 +4076,8 @@ mc_world_runtime_tile_entity_dirty_detailed(mc_world_runtime *world, int32_t x, 
                 break;
             }
         }
-        const mc_world_storage_status status = world_access->callbacks.tile_entity_dirty(
-            world_access->context, world, x, y, z, tile_entity, &cause);
+        const mc_world_storage_status status = mc_world_access_call_tile_entity_dirty(
+            world_access, world, x, y, z, tile_entity, &cause, &frame.world_access_failure);
         mc_tile_entity_release(tile_entity);
         mc_world_access_release_held(world_access);
         if (status != MC_WORLD_STORAGE_OK)

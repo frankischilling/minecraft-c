@@ -3,6 +3,7 @@
 
 #include "mc/entity/errors.h"
 #include "mc/world/cache/acquire.h"
+#include "mc/world/runtime/world_access_error.h"
 #include "mc/world/storage/status.h"
 
 #include <stddef.h>
@@ -36,6 +37,7 @@ typedef struct mc_world_entity_error {
     mc_entity_error entity;
     /* Player-positive fd.b invokes fd.y after d.add and before Chunk lookup. */
     mc_world_player_sleep_context sleep;
+    mc_world_access_failure world_access_failure;
 } mc_world_entity_error;
 
 /* Separate batch occurrence from single-publication diagnostics. SIZE_MAX

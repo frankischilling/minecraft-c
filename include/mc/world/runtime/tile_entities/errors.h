@@ -7,6 +7,7 @@
 #include "mc/storage/nbt/nbt.h"
 #include "mc/world/runtime/entity_errors.h"
 #include "mc/world/runtime/loading/entity_errors.h"
+#include "mc/world/runtime/world_access_error.h"
 #include "mc/world/storage/status.h"
 
 #include <stddef.h>
@@ -94,6 +95,7 @@ typedef struct mc_live_tile_entity_error {
      * load/activation child above. Current supported import/activation bodies
      * do not perform another acquiring TileEntity call. */
     mc_live_tile_entity_call_frame acquisition_parent;
+    mc_world_access_failure world_access_failure;
 } mc_live_tile_entity_error;
 
 const char *mc_tile_entity_status_string(mc_tile_entity_status status);

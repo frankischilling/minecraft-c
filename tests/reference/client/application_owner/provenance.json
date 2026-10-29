@@ -262,8 +262,8 @@
       "sha256": "bb0517cf7861399a7af9da443369804d22224af5fa465fcf050073e88067df5c"
     },
     "include/mc/world/runtime/entity_errors.h": {
-      "bytes": 1976,
-      "sha256": "d5d95b544f211c8f0d3cac36ebde0ede2f3fa06b3b4e5c54085d35b5c8a0bec7"
+      "bytes": 2075,
+      "sha256": "24827d487a83879fdd4027f1b5eedf26a1ae03abac2fea18841dabdbda99171c"
     },
     "include/mc/world/runtime/runtime.h": {
       "bytes": 12283,
@@ -402,12 +402,12 @@
       "sha256": "969794a224de4429ee447f5fa51462e14ac1e67ed4bbd660ae3b146dc85911de"
     },
     "src/entity/player/player_internal.h": {
-      "bytes": 1857,
-      "sha256": "0555675757288070ccfff4fe9fe9945f5af01cc33791a91a60d7b97d8f895f3a"
+      "bytes": 1952,
+      "sha256": "0e36fba7cc38c03adeed6f1fa4d8257501d150e7d6855a12be48e35d2721f42c"
     },
     "src/entity/player/strings.c": {
-      "bytes": 4199,
-      "sha256": "691694658b3ee310a7d8f9626d3bd69949ed5a0842790426828b1f33f79abc6a"
+      "bytes": 5409,
+      "sha256": "d7e204b9fc456d5a9d82c4859dd421b51756f817779c0c59ab318ad61e9af559"
     },
     "src/entity/registry/registry_internal.h": {
       "bytes": 951,
@@ -438,8 +438,8 @@
       "sha256": "700f845665a0914702f4bec1e5095ba4246d53b1d9ce8652db8b5c295a14c21c"
     },
     "include/mc/client/render_engine/render_engine.h": {
-      "bytes": 8919,
-      "sha256": "52358dfa80bb708ea01b3a1c7ee54a2368f1b63d406a7a7b14de56dc137390a6"
+      "bytes": 9278,
+      "sha256": "b3f5135585c5f38e255cd37878b31807b04826b3f65510e1daf2e10321b50289"
     },
     "src/client/gui/source_screen.h": {
       "bytes": 14695,
@@ -452,6 +452,10 @@
     "src/client/images/image_io.h": {
       "bytes": 2789,
       "sha256": "4a308bc84d1dc1f4aec704476fcc6bb2fb7c5d0fb71612a5adff4b95790a5f48"
+    },
+    "include/mc/world/runtime/world_access_error.h": {
+      "bytes": 1925,
+      "sha256": "02892855a6184002eb7c7d9974d1366fecd10981f571c78dc58050a96865054c"
     }
   },
   "reference_files": {

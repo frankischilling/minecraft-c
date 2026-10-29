@@ -6,8 +6,8 @@
       "sha256": "92c369c867f422806331d3a2efa27defcf7b3908c57c6f1c36e586d130476b62"
     },
     "include/mc/client/render_engine/render_engine.h": {
-      "bytes": 8919,
-      "sha256": "52358dfa80bb708ea01b3a1c7ee54a2368f1b63d406a7a7b14de56dc137390a6"
+      "bytes": 9278,
+      "sha256": "b3f5135585c5f38e255cd37878b31807b04826b3f65510e1daf2e10321b50289"
     },
     "src/client/display/display.c": {
       "bytes": 61094,
@@ -22,12 +22,12 @@
       "sha256": "b4f850b175e4a1032a1812f78d7b2acf8e13277453401db249e76f49bc80eb66"
     },
     "src/client/render_engine/internal.h": {
-      "bytes": 4013,
-      "sha256": "f7cc648b9114d433565c13e0dfe8d5e57d0c22c3177a86015a25050d195aef4c"
+      "bytes": 4650,
+      "sha256": "d4a6144dff9da56e3cea29609622fe5007a815663acae5cebc4ae8b3db005220"
     },
     "src/client/render_engine/owner.c": {
-      "bytes": 27770,
-      "sha256": "60bb52033864bfcd1409312bc5ca8f9567fb38b319f87a24086e4fe69951294d"
+      "bytes": 29233,
+      "sha256": "92c946757eabaa1001c0955be65072e4dc4ab9e8875d76acef4f44a49c665061"
     },
     "src/client/render_engine/textures.c": {
       "bytes": 25685,

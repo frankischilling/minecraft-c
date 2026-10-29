@@ -6,6 +6,9 @@
 #include "nw_internal.h"
 #include <stdatomic.h>
 
+typedef struct mc_client_image_download_entry mc_client_image_download_entry;
+typedef struct mc_client_image_download_native mc_client_image_download_native;
+
 typedef struct mc_client_render_map_entry {
     uint32_t key;
     mc_client_argb_image *image;
@@ -32,6 +35,7 @@ struct mc_client_render_map {
         mc_client_render_map_entry *entries;              /* Existing d image table. */
         mc_client_render_string_id_entry *string_ids;     /* Actual b table. */
         mc_client_render_color_array_entry *color_arrays; /* Actual c table. */
+        mc_client_image_download_entry *downloads;        /* Actual h String -> ek table. */
     }; /* One source Map table pointer; preserves the old constructor charge. */
 };
 
@@ -59,11 +63,16 @@ struct mc_client_direct_float_buffer {
 };
 
 struct mc_client_argb_image {
-    size_t holds, count;
+    atomic_size_t holds;
+    size_t count;
     uint32_t width, height;
     uint32_t *pixels;
     bool constructed;
 };
+
+_Static_assert(sizeof(atomic_size_t) == sizeof(size_t) &&
+                   _Alignof(atomic_size_t) == _Alignof(size_t),
+               "atomic image occurrences preserve the canonical constructor charge/layout");
 
 typedef struct render_graphics {
     mc_client_argb_image *image;
@@ -113,6 +122,8 @@ struct mc_client_render_engine {
     bool lookup_retired; /* Explicit final native source stop, not a ji field. */
     size_t effect_release_index;
     bool effects_retiring, effects_retired; /* Native terminal ownership, not source List state. */
+    mc_client_image_download_native *image_downloads;
+    bool image_downloads_retired; /* Persistent native stop, even after sidecar storage ends. */
 };
 
 #endif

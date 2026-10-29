@@ -119,6 +119,10 @@ bool mc_client_display_list_inspect(mc_client_display *display, int32_t id,
     if (list == NULL)
         return false;
     mc_client_source_list_state state = {.defined = list->defined, .building = list->building};
+    if (list->pending != NULL) {
+        state.pending_commands = list->pending->commands;
+        state.pending_bytes = sizeof(*list->pending) + list->pending->bytes;
+    }
     for (const mc_client_source_command *c = list->first; c != NULL; c = c->next) {
         ++state.commands;
         if (c->kind == SOURCE_COMMAND_DRAW) {
@@ -130,14 +134,9 @@ bool mc_client_display_list_inspect(mc_client_display *display, int32_t id,
     return true;
 }
 
-bool mc_client_display_list_batch(mc_client_display *display, int32_t id, size_t index,
+static bool source_inspect_batch(const mc_client_source_command *first, size_t index,
                                   mc_client_source_batch_view *out) {
-    if (display == NULL || out == NULL)
-        return false;
-    const mc_client_source_list *list = source_find_list(display, id, NULL);
-    if (list == NULL)
-        return false;
-    for (const mc_client_source_command *c = list->first; c != NULL; c = c->next) {
+    for (const mc_client_source_command *c = first; c != NULL; c = c->next) {
         if (c->kind != SOURCE_COMMAND_DRAW)
             continue;
         if (index-- == 0) {
@@ -150,4 +149,21 @@ bool mc_client_display_list_batch(mc_client_display *display, int32_t id, size_t
         }
     }
     return false;
+}
+
+bool mc_client_display_list_batch(mc_client_display *display, int32_t id, size_t index,
+                                  mc_client_source_batch_view *out) {
+    if (display == NULL || out == NULL)
+        return false;
+    const mc_client_source_list *list = source_find_list(display, id, NULL);
+    return list != NULL && source_inspect_batch(list->first, index, out);
+}
+
+bool mc_client_display_list_pending_batch(mc_client_display *display, int32_t id, size_t index,
+                                          mc_client_source_batch_view *out) {
+    if (display == NULL || out == NULL)
+        return false;
+    const mc_client_source_list *list = source_find_list(display, id, NULL);
+    return list != NULL && list->pending != NULL &&
+           source_inspect_batch(list->pending->first, index, out);
 }

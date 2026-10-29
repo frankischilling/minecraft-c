@@ -6,6 +6,7 @@
 #include "mc/core/java/java.h"
 
 typedef struct client_application client_application;
+typedef struct mc_client_display mc_client_display;
 typedef struct mc_world_runtime mc_world_runtime;
 typedef struct mc_client_render_global mc_client_render_global;
 typedef struct mc_client_render_batch mc_client_render_batch; /* Actual tg, graph-owned. */
@@ -30,7 +31,9 @@ typedef enum mc_client_render_global_status {
     MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
     MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
     MC_CLIENT_RENDER_GLOBAL_CX_FAILED,
-    MC_CLIENT_RENDER_GLOBAL_UNSUPPORTED_FP
+    MC_CLIENT_RENDER_GLOBAL_UNSUPPORTED_FP,
+    MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
+    MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED
 } mc_client_render_global_status;
 
 /* These are the actual n fields, not diagnostic world-renderer storage.
@@ -114,6 +117,42 @@ mc_client_render_global_status mc_client_render_global_retire(mc_client_render_g
 bool mc_client_render_global_inspect(const mc_client_render_global *,
                                      mc_client_render_global_state *);
 bool mc_client_render_batch_inspect(const mc_client_render_batch *, mc_client_render_batch_state *);
+
+typedef struct mc_client_render_global_world_call mc_client_render_global_world_call;
+
+typedef struct mc_client_render_global_world_state {
+    bool active, retiring, source_returned, old_removed, manager_returned, k_stored;
+    bool cv_constructed, u_stored, registered, rebuild_returned;
+    unsigned int source_pc, rebuild_pc, last_store_pc;
+    size_t constructed_chunks, published_chunks, queued_chunks;
+    int32_t distance, x, y, z;
+    const mc_client_render_global *owner;
+    const mc_world_runtime *argument, *old_world;
+    const mc_client_source_dk *pending_chunk;
+    const mc_client_render_global_error *failure, *cleanup;
+} mc_client_render_global_world_state;
+
+/* Actual n.a(fd), once, on this SAME constructed renderer. Captures nullable
+ * World with an independent native occurrence. All reached stores, registered
+ * callbacks, DK identities and compiled lists remain in the actual owner on
+ * failure. No retry/resume or diagnostic World/mesh substitution occurs.
+ * Caller holds App/Settings/Registry/Entity/Display/TH dependencies live and
+ * exclusive until checked retirement; a retained call blocks another call and
+ * strict renderer retirement. Native admission failure preserves initially
+ * NULL *out; after allocation both source success and failure transfer it. */
+mc_client_render_global_status
+mc_client_render_global_world_begin(mc_client_render_global *, mc_world_runtime *nullable_world,
+                                    mc_client_render_global_world_call **out);
+bool mc_client_render_global_world_inspect(const mc_client_render_global_world_call *,
+                                           mc_client_render_global_world_state *);
+mc_client_render_global_status
+mc_client_render_global_world_retire(mc_client_render_global_world_call **);
+/* Native terminal coordination before World containers/free, with no source
+ * n.a(NULL), save or source DK clear replay. Ends the actual owned interface
+ * registrations and World references; BUSY/error preserves remaining rights.
+ * Retire retained calls/external renderer occurrences first. */
+mc_client_render_global_status
+mc_client_render_global_world_detach(mc_client_render_global *, mc_client_render_global_error *);
 
 /* Owners/classes and returned views require exclusive serialized native use.
  * Device calls run on the Display thread. Cold CPU calls need no Display.

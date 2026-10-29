@@ -1,6 +1,9 @@
 #include "display_screen.h"
 #include "../application_state.h"
+#include "../display/staged.h"
 #include "loading_internal.h"
+#include "mc/core/java/java.h"
+#include "mc/entity/player/player.h"
 
 #include <stdlib.h>
 
@@ -28,6 +31,63 @@ static bool menu(mc_client_display_screen_call *call, mc_client_source_da *scree
     }
     *out = state.is_menu;
     return true;
+}
+
+static mc_client_display_screen_status focus(mc_client_display_screen_call *call,
+                                             mc_client_screen_classes *classes) {
+    client_application *app = call->app;
+    call->focus_pc = 0;
+    if (mc_client_sdk_display_active(mc_client_display_update_owner(app->display),
+                                     &call->display_active,
+                                     &call->update) != MC_CLIENT_SDK_UPDATE_OK) {
+        call->child = (mc_client_screen_site){
+            call->update.site.class_name, call->update.site.method, call->update.site.descriptor,
+            call->update.site.pc < 0 ? 0u : (unsigned int)call->update.site.pc};
+        return fail(call, MC_CLIENT_DISPLAY_SCREEN_CHILD_FAILED, call->update.operation, 165);
+    }
+    if (!call->display_active) {
+        call->focus_pc = 6;
+        call->focus_returned = true;
+        return MC_CLIENT_DISPLAY_SCREEN_OK;
+    }
+    if (app->N) {
+        call->focus_pc = 14;
+        call->focus_returned = true;
+        return MC_CLIENT_DISPLAY_SCREEN_OK;
+    }
+    app->N = true;
+    call->focus_stored = true;
+    call->focus_pc = 24;
+    if (app->C == NULL) {
+        call->child = (mc_client_screen_site){MC_CLASS, "g", "()V", 24};
+        return fail(call, MC_CLIENT_DISPLAY_SCREEN_NULL_REFERENCE,
+                    "actual focus MouseHelper null receiver", 165);
+    }
+    if (mc_client_mouse_helper_grab(app->C, mc_client_display_inputs(app->display), &call->mouse) !=
+        MC_CLIENT_MOUSE_HELPER_OK) {
+        call->child = (mc_client_screen_site){
+            call->mouse.site.class_name, call->mouse.site.method, call->mouse.site.descriptor,
+            call->mouse.site.pc < 0 ? 0u : (unsigned int)call->mouse.site.pc};
+        return fail(call, MC_CLIENT_DISPLAY_SCREEN_CHILD_FAILED, call->mouse.operation, 165);
+    }
+    call->mouse_grabbed = true;
+    call->focus_pc = 29;
+    const mc_client_display_screen_status status =
+        mc_client_display_screen_run(app, classes, NULL, &call->focus_display);
+    if (status != MC_CLIENT_DISPLAY_SCREEN_OK) {
+        call->child = call->focus_display == NULL
+                          ? (mc_client_screen_site){MC_CLASS, "g", "()V", 29}
+                          : call->focus_display->site;
+        return fail(call, status,
+                    call->focus_display == NULL ? "actual recursive display call allocation"
+                                                : call->focus_display->operation,
+                    165);
+    }
+    app->W = 10000;
+    app->ag = mc_java_i32_add(app->V, 10000);
+    call->focus_pc = 51;
+    call->focus_returned = true;
+    return MC_CLIENT_DISPLAY_SCREEN_OK;
 }
 
 static mc_client_display_screen_status run(mc_client_display_screen_call *call,
@@ -78,10 +138,18 @@ static mc_client_display_screen_status run(mc_client_display_screen_call *call,
         }
         call->target = mc_client_screen_menu_base(call->fallback);
     } else if (call->target == NULL) {
-        /* Preserve the actual h73/Y76 dependency; no fabricated Player health
-         * or death-screen object substitutes for that source branch. */
-        return fail(call, MC_CLIENT_DISPLAY_SCREEN_UNIMPLEMENTED,
-                    "World null-screen Player/death branch", 76);
+        if (app->h == NULL)
+            return fail(call, MC_CLIENT_DISPLAY_SCREEN_NULL_REFERENCE, "actual dc.Y null receiver",
+                        76);
+        mc_local_player_snapshot player;
+        if (mc_local_player_get_snapshot(app->h, &player) != MC_ENTITY_OK)
+            return fail(call, MC_CLIENT_DISPLAY_SCREEN_CHILD_FAILED,
+                        "actual dc.Y Player field access", 76);
+        call->player_health = player.living.Y;
+        call->health_read = true;
+        if (call->player_health <= 0)
+            return fail(call, MC_CLIENT_DISPLAY_SCREEN_UNIMPLEMENTED,
+                        "actual ch death-screen allocation", 82);
     }
     if (!menu(call, call->target, 91, &is_menu))
         return call->status;
@@ -99,9 +167,14 @@ static mc_client_display_screen_status run(mc_client_display_screen_call *call,
     }
     app->r = call->target; /* Actual putfield106, before focus/qq/initialization. */
     call->r_stored = true;
-    if (call->target == NULL)
-        return fail(call, MC_CLIENT_DISPLAY_SCREEN_UNIMPLEMENTED,
-                    "actual Minecraft.g focus acquisition", 165);
+    if (call->target == NULL) {
+        const mc_client_display_screen_status status = focus(call, classes);
+        if (status != MC_CLIENT_DISPLAY_SCREEN_OK)
+            return status;
+        call->source_returned = true;
+        call->site = (mc_client_screen_site){MC_CLASS, "a", "(Lda;)V", 168};
+        return MC_CLIENT_DISPLAY_SCREEN_OK;
+    }
     /* Actual h(): a false N returns7 before any Player/MouseHelper operation. */
     if (app->N) {
         if (app->h != NULL) {
@@ -115,8 +188,8 @@ static mc_client_display_screen_status run(mc_client_display_screen_call *call,
             return fail(call, MC_CLIENT_DISPLAY_SCREEN_NULL_REFERENCE,
                         "actual MouseHelper null receiver", 114);
         }
-        const mc_client_mouse_helper_status released =
-            mc_client_mouse_helper_ungrab(app->C, NULL, &call->mouse);
+        const mc_client_mouse_helper_status released = mc_client_mouse_helper_ungrab(
+            app->C, mc_client_display_inputs(app->display), &call->mouse);
         if (released != MC_CLIENT_MOUSE_HELPER_OK) {
             call->child = (mc_client_screen_site){
                 call->mouse.site.class_name, call->mouse.site.method, call->mouse.site.descriptor,
@@ -181,6 +254,10 @@ mc_client_display_screen_retire(mc_client_display_screen_call **slot) {
         return MC_CLIENT_DISPLAY_SCREEN_OK;
     if (call->active)
         return MC_CLIENT_DISPLAY_SCREEN_BUSY;
+    const mc_client_display_screen_status nested =
+        mc_client_display_screen_retire(&call->focus_display);
+    if (nested != MC_CLIENT_DISPLAY_SCREEN_OK)
+        return nested;
     if (call->fallback != NULL) {
         mc_client_source_da *base = mc_client_screen_menu_base(call->fallback);
         const mc_client_screen_status status =

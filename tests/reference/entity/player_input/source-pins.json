@@ -321,8 +321,8 @@
       "sha256": "1acb11415719d45a9cd6792b67c1a9a81c5e3b25279acf19fc5b0c336ec1add3"
     },
     "src/entity/player/construction.c": {
-      "bytes": 18363,
-      "sha256": "851f8795fe82df81f53c3dd04518e8f6de5277c2dd82976310ac45fcbe24f77d"
+      "bytes": 18505,
+      "sha256": "3ca91a7602849e25b8d4a60eeb986887fff32023993f3cf32b03c91121870d61"
     },
     "src/entity/player/input.c": {
       "bytes": 5543,

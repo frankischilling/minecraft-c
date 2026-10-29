@@ -1,6 +1,7 @@
 #include "../../../src/core/java/random_profile_internal.h"
 #include "../../../src/entity/player/player_internal.h"
 #include "mc/block/registry/runtime.h"
+#include "mc/entity/appearance.h"
 #include "mc/entity/player/player.h"
 #include "mc/resources/files/files.h"
 #include "mc/statistics/registry/registry.h"
@@ -249,6 +250,27 @@ static bool construct_case(fixture *f, const uint16_t *name, size_t length, bool
     if (!null_world && !null_session && !null_name) {
         mc_player_string_view kept;
         CHECK(mc_player_string_read(s.player.l, &kept) && kept.length == length);
+    }
+    if (!null_world && !null_session) {
+        const mc_player_string *skin = s.skin_url;
+        const mc_java_random ordinary = *entity->random;
+        const uint64_t math_before = atomic_load(&f->profile->math->state);
+        const size_t entity_holds = entity->holds;
+        CHECK(mc_entity_update_cloak(entity, &error) == MC_PLAYER_OK);
+        CHECK(mc_local_player_get_snapshot(entity, &s) == MC_ENTITY_OK &&
+              s.player.n == entity->base.client_only.bB &&
+              mc_entity_cloak_url(entity) == s.player.n && s.player.n->holds == 2 &&
+              mc_entity_skin_url(entity) == skin && s.skin_url == skin &&
+              entity->holds == entity_holds);
+        mc_player_string_view cloak;
+        CHECK(mc_player_string_read(s.player.n, &cloak) &&
+              cloak.length == 44 + (null_name ? 4 : length));
+        static const uint16_t null_text[] = {'n', 'u', 'l', 'l'};
+        if (null_name || length != 0)
+            CHECK(memcmp(cloak.units + 40, null_name ? null_text : name,
+                         (null_name ? 4 : length) * sizeof(uint16_t)) == 0);
+        CHECK(atomic_load(&f->profile->math->state) == math_before &&
+              memcmp(&ordinary, entity->random, sizeof(ordinary)) == 0);
     }
     CHECK(mc_local_player_construct(entity, NULL, NULL, NULL, 0, NULL, NULL) ==
           MC_PLAYER_INVALID_PHASE);
