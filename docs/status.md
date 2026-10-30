@@ -1,5 +1,33 @@
 # Development status
 
+The [first-person hand](client/first-person-hand.md) now executes the real
+empty-slot arm and dry overlay bodies. The loaded Windows frame returns from
+World drawing at PX1013, then stops at its parent's delay/HUD segment,
+`px.b(F)V:383`. Held items, active overlays, full Entity drawing, repeated
+frames and interactive gameplay remain unfinished.
+
+All 53 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 62 Windows tests pass in 79.72 seconds and all 58 Linux tests in 120.12
+seconds, without failures, skips or sanitizer findings. All 2,341 C/helper/build
+inputs remain unchanged through builds and tests; formatting checks 1,647 files.
+
+Both hosts compare all six
+arm face payloads, 16 Biped flag poses, arm compilation/reuse and four complete
+empty-arm/dry-overlay states exactly. All 64 outer outcomes, stack depths and
+matrix modes match; matrix elements stay within the declared 2e-6 absolute
+tolerance. The observed maximum is 1.79e-7 on both hosts. Each host passes 1,741
+hand/arm checks and renders 146 authored-skin pixels. Native controls also
+check arm pixels, pending-call exclusion, foreign texture lookup preservation
+and reached fire/inside-block/water barriers. These finite results do not prove
+whole-frame or original hand-pixel equality.
+
+The [cloud checkpoint's hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/41129544397)
+passes formatting, Windows and both Linux jobs. The archive cache and bounded
+download retry are validated in the workflow; a controlled timing comparison
+remains pending.
+
+## Preceding cloud checkpoint
+
 Both [cloud modes](client/clouds.md) now draw through the actual RenderGlobal,
 World colors, Dimension heights, NW and Display. The loaded frame continues
 through post-cloud fog and depth clear to first-person hand drawing at PX997.
@@ -20,7 +48,8 @@ passes formatting and both Linux jobs. Windows stops before compilation because
 GitHub returns HTTP500 for pinned Expat. Native CI now caches verified dependency
 archives and retries one qualifying transient HTTP download failure. Tests and
 hash checks remain required. Local archive reuse/corruption and retry controls
-pass; hosted validation and a controlled timing comparison remain pending.
+pass. The following hosted run passes all four jobs; a controlled timing
+comparison remains pending.
 
 ## Preceding weather checkpoint
 

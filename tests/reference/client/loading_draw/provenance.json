@@ -2,8 +2,8 @@
   "scope": "Current authored real-owner loading draw/update/yield/retirement controls; native results are recorded separately for their exact tested snapshots.",
   "native_sources": {
     "CMakeLists.txt": {
-      "bytes": 334096,
-      "sha256": "1b36edf130fe344d6ba6701e069ad10b15056b4473901334c23a7363df7ee15c"
+      "bytes": 334142,
+      "sha256": "6fcc03da7593761b2c9ed2bf4ffdb5d341c209d214319ff82f90abc8c9514103"
     },
     "cmake/client_controllers.cmake": {
       "bytes": 1093,
@@ -2182,12 +2182,12 @@
       "sha256": "9a6edca6b70401c4948fdd0dab839ad2549cf723109b16643f0768cc79e740f3"
     },
     "src/client/world/entity_renderer/held_owner.c": {
-      "bytes": 10884,
-      "sha256": "94cf47c76bec0bcb7de5dd83e89be069b42e9aa6bea3d1cf75c0416e24436893"
+      "bytes": 11005,
+      "sha256": "450ae4b921468a1057af9ed13e2566cbc7d8025188c7cd8f56a0aeea8e06159c"
     },
     "src/client/world/entity_renderer/internal.h": {
-      "bytes": 4233,
-      "sha256": "031c0453edda84158f5d0f0890e3880fad3e100807ea09d405f3e14d33162a1c"
+      "bytes": 4286,
+      "sha256": "c6980e346be63884fe8dd1dbf719efcf433bdb8b3116a71f791b1737c1cf0a6a"
     },
     "src/client/world/entity_renderer/map.c": {
       "bytes": 4941,
@@ -5678,8 +5678,8 @@
       "sha256": "5c9149eaa4b84d1e6d1c22e84316deeb479e7b5b201cba472b7199f779ebc1ac"
     },
     "src/client/runtime/menu_loop.c": {
-      "bytes": 47514,
-      "sha256": "4c275e4cbca5a83c12f5d1512e6e8be65d2c693e6fd9342e4d9e1ebd1c1e36fd"
+      "bytes": 47511,
+      "sha256": "cf7c7a471f5005f47cdc138268c0b90e5c53449ddae1866fa92eecf6925743bb"
     },
     "src/client/runtime/menu_loop.h": {
       "bytes": 4550,
@@ -5774,8 +5774,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 104917,
-      "sha256": "e1ad2061b3098d88750bdfbdfb1a565a61defbf419d6d149109d63a9beef7e97"
+      "bytes": 105810,
+      "sha256": "09c4bc60d3ceb3d27866394e95e06e453d133a7bd3346b234bf7e188b3052a89"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -5890,8 +5890,8 @@
       "sha256": "b33898cb759605ebfa1bffb157bcbea86613439f74b014849a210e742b03fcc2"
     },
     "cmake/client_image_download.cmake": {
-      "bytes": 686,
-      "sha256": "5420f12ffd777ca2a3a5de912629d10a8d23710e588ed78d33136156d31821a6"
+      "bytes": 712,
+      "sha256": "bef0927b9593fca5b564b0cad905cea5e1d6a4b239d3f19f0901ac9cd740ef90"
     },
     "cmake/client_render_global_access.cmake": {
       "bytes": 231,
@@ -5962,12 +5962,12 @@
       "sha256": "950decea21b8a179aba65081f2c45d090076bd4f863514ceabe3c4aeeabb4182"
     },
     "src/client/render_engine/image_download.c": {
-      "bytes": 33916,
-      "sha256": "f339ee3f8918e73bd92ff39d0e854e4958b25b3faa17a9d09ef0ad9d48fb0245"
+      "bytes": 38885,
+      "sha256": "cd2bbfd3d83256e52f8becdf992baf5961b06c04d79e44454c86b5dae01042fd"
     },
     "src/client/render_engine/image_download.h": {
-      "bytes": 5655,
-      "sha256": "70e3dd3d66b2bed3684a9d022ce26793b51ddc5e873db14b448b1b5a0ab3365c"
+      "bytes": 6569,
+      "sha256": "4c27a952596ec7d60c0c0e851c4c7f200defcac1c6a00bcbed87a1d270c4e287"
     },
     "src/client/world/render_global_access.c": {
       "bytes": 42637,
@@ -6234,8 +6234,8 @@
       "sha256": "7db927eabb1057908e98a718b09cb0b14561ed840efeda0bea5ff2b41fe040bd"
     },
     "src/client/world/entity_renderer/held_item_tick.c": {
-      "bytes": 11640,
-      "sha256": "9e751bd93321b109efec8c038667f8125a054a0137b9c711fe46cfabc8518a07"
+      "bytes": 11676,
+      "sha256": "6f9d8d89677a668b24f14ecdf76b983c8e39a85b37d6b61e84d878d13f552bbf"
     },
     "src/client/world/entity_renderer/rain_tick.c": {
       "bytes": 19009,
@@ -6318,8 +6318,8 @@
       "sha256": "f332863a8dbdac177226c5e86a8f34a317a47c774d24fc813488c07b496b02a8"
     },
     "include/mc/client/world/world_frame.h": {
-      "bytes": 8759,
-      "sha256": "94f8e1c65a0e6065432ae2f8c7c526f4556070b002bf86293d2246560be73856"
+      "bytes": 8984,
+      "sha256": "a4f7631a2ef2adc1e93015eafcd60c58d60dbb9fea409b2a099c8525c9d2a369"
     },
     "include/mc/entity/player/mouse_filter.h": {
       "bytes": 847,
@@ -6362,8 +6362,8 @@
       "sha256": "baa5fdacd446c1edd4c66b1b2506d4ac804755e0538cdb82431b1e82f6955489"
     },
     "src/client/world/entity_renderer/world_frame.c": {
-      "bytes": 61372,
-      "sha256": "02e30d9cd76740a6ff9e57124fbcf96324222f2212d6bd725c157bd2b7b5beee"
+      "bytes": 62075,
+      "sha256": "7655664630a7012a954a0467b1342930fd94d9d6d4bbe0a57c0d253a7c8bfe94"
     },
     "src/entity/player/mouse_filter.c": {
       "bytes": 1627,
@@ -6446,24 +6446,24 @@
       "sha256": "f45f85a512ac04adb904fe9338f367405e4e5bfdabfbd01205c5a21bdb222a4d"
     },
     "src/client/display/camera_surface.h": {
-      "bytes": 1361,
-      "sha256": "823246476dd1faee8f41dff68d10c5edff5d4be5bbbba47cb1529bd62aeffb42"
+      "bytes": 1543,
+      "sha256": "21800bb1fa7b29fdb8f568c09759c5d1bee0db967382930c9b03814ed5c7332c"
     },
     "src/client/display/camera_surface.inc": {
-      "bytes": 5690,
-      "sha256": "d58c1c394bb9c41c22768fa0d1b255fcb42485c66a334684e482cc8d8bf72590"
+      "bytes": 6248,
+      "sha256": "92dc178cebbfdf1cceeffe65fd79d7016a9e1365b1715e0c6d0c2fb0325c1500"
     },
     "src/client/render_engine/ge_float.c": {
       "bytes": 4941,
       "sha256": "5e5fb9c6e20acbef902e5e37b573ef0a8e825b6f3fbd91bf1641b206ecff5c91"
     },
     "src/client/world/entity_renderer/camera.c": {
-      "bytes": 30505,
-      "sha256": "c0bd12719ed1b013fcb620f3398e76862876876d5e99ae9023f5d1127d272e8e"
+      "bytes": 32270,
+      "sha256": "757f51ffcb5f6893daabfc7afea8dd71ead11dc970970d5e81aec2dd15bdbad1"
     },
     "src/client/world/entity_renderer/renderer_camera_internal.h": {
-      "bytes": 922,
-      "sha256": "7e4b7c5d85f71f9a275e3aab77f602fcd913b0d37cac94279b75a7365584df1a"
+      "bytes": 1356,
+      "sha256": "959d644f3f4c61082c35befea5411be6dc0e7621cecb64618a199d616425ffc2"
     },
     "src/client/world/entity_renderer/renderer_fog.c": {
       "bytes": 18281,
@@ -7082,8 +7082,8 @@
       "sha256": "0d7669cd32004f742c86177577ce8b9223e15665e3c2c05d7b7d9b5d842e38aa"
     },
     "src/client/world/entity_renderer/world_frame_after_particles.inc": {
-      "bytes": 31969,
-      "sha256": "5f3ef00e84e1fde8b8236686d6cead5bb19ea31e94f2c7c57410011afd21c10b"
+      "bytes": 33098,
+      "sha256": "ac6df56cf82b5bdb79a8dede3fd88cf20a7a51ee357a5ff906fdd233f05172d5"
     },
     "src/entity/particles/origin.c": {
       "bytes": 1518,
@@ -7180,6 +7180,46 @@
     "tests/tools/client/test_render_global_clouds.py": {
       "bytes": 8028,
       "sha256": "65e198ef13dcbac8b96ce9003805053827b06aeeefe59b95313fceca0ff4ff0a"
+    },
+    "cmake/client_first_person_hand.cmake": {
+      "bytes": 1775,
+      "sha256": "d4d61a5c030239ba773b4292bdc6b43c648e895ab71ec927e0c95c04ce62f2a4"
+    },
+    "include/mc/client/render/model_draw.h": {
+      "bytes": 1134,
+      "sha256": "a6a0c8c6b4c486807b80e7fb67716344376f0c33e76aa309a920f2f58bcc25df"
+    },
+    "include/mc/client/world/first_person_hand.h": {
+      "bytes": 2407,
+      "sha256": "1ad79072782b8ec19226dba1ef079acd7f01d455b39e227d4a5a617e6f1bc344"
+    },
+    "include/mc/client/world/held_item_draw.h": {
+      "bytes": 3488,
+      "sha256": "b1542115dfbae653a7f51dba311358893bc27a8cd7588a371aa0a10bbeec1db7"
+    },
+    "src/client/render/model_draw.c": {
+      "bytes": 10988,
+      "sha256": "2f86a5342fd87550c5290e064d8526a20087cbb03df569ad932b0dd7b1de7565"
+    },
+    "src/client/world/entity_renderer/first_person_hand.c": {
+      "bytes": 15927,
+      "sha256": "dc8aa119904e2a3128113ff2c3fcb90e73322d7171062ae03db34760e8d59d70"
+    },
+    "src/client/world/entity_renderer/first_person_hand_internal.h": {
+      "bytes": 670,
+      "sha256": "eb5ab3b1cbb831ae07689979ece538dc612584bd154da4f1ab9de2488d755dd9"
+    },
+    "src/client/world/entity_renderer/held_item_draw.c": {
+      "bytes": 34147,
+      "sha256": "0820c82a8a325309e7c9ae1c5168752ebdad4ee4725d1eefa017f1cd1357faa5"
+    },
+    "src/client/world/entity_renderer/held_item_draw_internal.h": {
+      "bytes": 1412,
+      "sha256": "61117a0f8024f40b6505f7cb8d5a2a4b93fbc85abeaad443b8c884f09792977c"
+    },
+    "tests/client/world/test_first_person_hand.c": {
+      "bytes": 36982,
+      "sha256": "f567085c4f53756fb11a47b02ec10d4f917aef2681f09994dde807a0e5354d1c"
     }
   },
   "actual_source_method": {

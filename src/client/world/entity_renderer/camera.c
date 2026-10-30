@@ -209,8 +209,10 @@ static bool hurt(mc_client_renderer_camera_call *c) {
         if (!rotate(c, "e", 46, at_fsub(40.0f, at_fdiv(8000.0f, at_fadd(death, 200.0f))), 0, 0, 1))
             return false;
     }
-    if (amount < 0)
+    if (amount < 0) {
+        c->state.source_pc = 55;
         return true;
+    }
     if (!fp(c, "e", 63))
         return false;
     amount = at_fdiv(amount, convert(living->ab));
@@ -219,9 +221,12 @@ static bool hurt(mc_client_renderer_camera_call *c) {
         return false;
     amount = mc_math_sin(mc_math_classes_table(c->math), amount);
     const float direction = living->ac;
-    return rotate(c, "e", 90, -direction, 0, 1, 0) && fp(c, "e", 96) &&
-           rotate(c, "e", 101, at_fmul(-amount, 14.0f), 0, 0, 1) &&
-           rotate(c, "e", 109, direction, 0, 1, 0);
+    const bool returned = rotate(c, "e", 90, -direction, 0, 1, 0) && fp(c, "e", 96) &&
+                          rotate(c, "e", 101, at_fmul(-amount, 14.0f), 0, 0, 1) &&
+                          rotate(c, "e", 109, direction, 0, 1, 0);
+    if (returned)
+        c->state.source_pc = 112;
+    return returned;
 }
 
 static bool bob(mc_client_renderer_camera_call *c) {
@@ -232,8 +237,10 @@ static bool bob(mc_client_renderer_camera_call *c) {
         mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PLAYER))
         return fail(c, MC_CLIENT_RENDERER_CAMERA_DEPENDENCY,
                     "camera concrete remote Player bobbing fields", "f", "(F)V", 28, true);
-    if (entity == NULL || !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
+    if (entity == NULL || !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
+        c->state.source_pc = 13;
         return true; /* Actual instanceof gs fails, including NULL. */
+    }
     if (!fp(c, "f", 31))
         return false;
     const mc_entity_base_fields *base = &entity->base;
@@ -251,13 +258,16 @@ static bool bob(mc_client_renderer_camera_call *c) {
         return false;
     if (!fp(c, "f", 115))
         return false;
-    return rotate(c, "f", 132, at_fmul(at_fmul(mc_math_sin(trig, angle), amplitude), 3.0f), 0, 0,
-                  1) &&
-           fp(c, "f", 135) &&
-           rotate(c, "f", 158,
-                  at_fmul(fabsf(at_fmul(mc_math_cos(trig, at_fsub(angle, 0.2f)), amplitude)), 5.0f),
-                  1, 0, 0) &&
-           rotate(c, "f", 166, sway, 1, 0, 0);
+    const bool returned =
+        rotate(c, "f", 132, at_fmul(at_fmul(mc_math_sin(trig, angle), amplitude), 3.0f), 0, 0, 1) &&
+        fp(c, "f", 135) &&
+        rotate(c, "f", 158,
+               at_fmul(fabsf(at_fmul(mc_math_cos(trig, at_fsub(angle, 0.2f)), amplitude)), 5.0f), 1,
+               0, 0) &&
+        rotate(c, "f", 166, sway, 1, 0, 0);
+    if (returned)
+        c->state.source_pc = 169;
+    return returned;
 }
 
 static bool pooled(mc_client_renderer_camera_call *c, double x, double y, double z, unsigned int pc,
@@ -604,6 +614,37 @@ entity_renderer_camera_entered(mc_client_source_px *owner, mc_math_classes *math
         c->state.active = true;
         (void)body(c);
         c->state.active = false;
+    }
+    if (error != NULL)
+        *error = c->failure;
+    return c->failure.status;
+}
+
+mc_client_renderer_camera_status entity_renderer_camera_effect_entered(
+    mc_client_source_px *owner, mc_math_classes *math, float partial, bool is_bob,
+    mc_client_renderer_camera_call **out, mc_client_renderer_camera_error *error) {
+    if (owner == NULL || out == NULL || *out != NULL || math == NULL)
+        return result(error, MC_CLIENT_RENDERER_CAMERA_ARGUMENT, "camera effect entered arguments");
+    if (!owner->active || owner->phase != MC_CLIENT_ENTITY_RENDERER_READY)
+        return result(error, MC_CLIENT_RENDERER_CAMERA_BUSY, "camera effect requires active PX");
+    mc_client_renderer_camera_call *c = calloc(1, sizeof(*c));
+    if (c == NULL)
+        return result(error, MC_CLIENT_RENDERER_CAMERA_ALLOCATION,
+                      "camera effect retained call allocation");
+    c->state.owner = owner;
+    c->state.partial = partial;
+    c->state.error = &c->failure;
+    *out = c;
+    if (mc_math_classes_retain(math, &c->failure.math) != MC_MATH_CLASS_OK) {
+        fail(c, MC_CLIENT_RENDERER_CAMERA_NATIVE_FAILED, "camera effect MathHelper occurrence",
+             is_bob ? "f" : "e", "(F)V", 0, true);
+    } else {
+        c->math = math;
+        c->state.active = true;
+        c->state.returned = is_bob ? bob(c) : hurt(c);
+        c->state.active = false;
+        c->state.hurt_returned = !is_bob && c->state.returned;
+        c->state.bob_returned = is_bob && c->state.returned;
     }
     if (error != NULL)
         *error = c->failure;

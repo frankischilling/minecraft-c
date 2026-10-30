@@ -4,6 +4,7 @@
 #include "mc/client/render_engine/render_engine.h"
 #include "mc/core/java/url.h"
 #include "mc/entity/player/player.h"
+#include "texture_lookup.h"
 
 typedef struct mc_client_image_buffer mc_client_image_buffer;
 typedef struct mc_client_image_download mc_client_image_download;
@@ -96,6 +97,23 @@ mc_client_image_download_status
 mc_client_image_download_call_retire(mc_client_image_download_call **);
 bool mc_client_image_download_inspect(const mc_client_image_download *,
                                       mc_client_image_download_state *);
+
+typedef struct mc_client_download_texture_error {
+    mc_client_image_download_error download;
+    mc_client_texture_lookup_error lookup;
+    mc_client_render_texture_error texture;
+    bool fallback, returned;
+    unsigned int source_pc;
+} mc_client_download_texture_error;
+
+/* Actual ji.a(String,String). Reads the real h map and synchronizes the worker
+ * image publication. The same Engine and String arguments remain live and
+ * exclusive. A failed fallback lookup belongs to the caller only if no lookup
+ * was pending on entry. No worker/request is created by this query. */
+mc_client_image_download_status
+mc_client_render_download_texture(mc_client_render_engine *, mc_client_display *,
+                                  const mc_player_string *url, const mc_player_string *fallback,
+                                  mc_client_texture *, mc_client_download_texture_error *);
 mc_client_image_download_status
 mc_client_render_image_download_release(mc_client_render_engine *, mc_player_string *nullable_url,
                                         mc_client_image_download_error *);

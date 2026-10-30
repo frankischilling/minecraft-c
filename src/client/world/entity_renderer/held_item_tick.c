@@ -199,7 +199,8 @@ mc_client_held_item_tick_begin(mc_client_held_item *owner, mc_client_held_item_t
     if (owner == NULL || owner->source == NULL || out == NULL || *out != NULL)
         return result(error, MC_CLIENT_HELD_ITEM_TICK_ARGUMENT,
                       "held-item tick native owner/output", true);
-    if (owner->active || owner->source->phase == MC_CLIENT_ENTITY_RENDERER_CONSTRUCTING)
+    if (owner->active || owner->draw_call != NULL ||
+        owner->source->phase == MC_CLIENT_ENTITY_RENDERER_CONSTRUCTING)
         return result(error, MC_CLIENT_HELD_ITEM_TICK_BUSY, "held-item tick active owner", true);
     if (owner->source->phase == MC_CLIENT_ENTITY_RENDERER_RETIRING)
         return result(error, MC_CLIENT_HELD_ITEM_TICK_PHASE, "held-item tick terminal owner", true);

@@ -3,7 +3,8 @@
 The [RenderGlobal Entity pass](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) now runs its actual delay, LL/TH frame
 bindings and visibility predicates with checked ownership. The initial loaded
 frame executes both [particle draw entries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md), further fog setup, translucent terrain and the dry
-[precipitation return](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/precipitation.md), then draws both [cloud modes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/clouds.md) and reaches hand997. Entity draws,
+[precipitation return](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/precipitation.md), both [cloud modes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/clouds.md), and the [empty first-person hand](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/first-person-hand.md).
+World drawing returns at1013; its parent reaches delay/HUD383. Entity draws,
 rendered-TileEntity row ownership and playable frames remain unfinished;
 composed original/native N parity remains unverified.
 

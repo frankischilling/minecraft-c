@@ -30,6 +30,7 @@
 #include "mc/client/input/movement_input.h"
 #include "mc/client/particles/effect_renderer.h"
 #include "mc/client/world/chunk_cache.h"
+#include "mc/client/world/held_item_draw.h"
 #include "mc/client/world/picking.h"
 #include "mc/client/world/world_frame.h"
 #include "mc/core/java/java.h"
@@ -50,7 +51,7 @@
 
 static unsigned int checks;
 
-enum { loaded_world_frame_frontier = 997 };
+enum { loaded_world_frame_frontier = 383 };
 
 #define CHECK(condition)                                                                           \
     do {                                                                                           \
@@ -862,7 +863,7 @@ static int loaded_terminal_admission_controls(fixture *f) {
     mc_client_menu_loop_state source;
     CHECK(mc_client_menu_loop_inspect(f->loop, &source) && source.failed &&
           source.source_class != NULL && strcmp(source.source_class, "px") == 0 &&
-          source.source_method != NULL && strcmp(source.source_method, "a") == 0 &&
+          source.source_method != NULL && strcmp(source.source_method, "b") == 0 &&
           source.source_pc == loaded_world_frame_frontier && !source.terminal_tail_entered);
     CHECK(mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
           transitions.world_load != NULL &&
@@ -1015,7 +1016,7 @@ static int normal_terminal_retirement_controls(fixture *f, mc_client_source_da *
     } else {
         CHECK(source.failed && source.source_class != NULL &&
               strcmp(source.source_class, "px") == 0 && source.source_method != NULL &&
-              strcmp(source.source_method, "a") == 0 &&
+              strcmp(source.source_method, "b") == 0 &&
               source.source_pc == loaded_world_frame_frontier && controller != NULL);
     }
     CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
@@ -1435,7 +1436,7 @@ int main(int argc, char **argv) {
                 fprintf(stderr, "Loaded World frame reached %s.%s:%" PRId64 "\n",
                         f.state.source_class, f.state.source_method, f.state.source_pc);
             CHECK(strcmp(f.state.source_class, "px") == 0 &&
-                  strcmp(f.state.source_method, "a") == 0 &&
+                  strcmp(f.state.source_method, "b") == 0 &&
                   f.state.source_pc == loaded_world_frame_frontier && f.state.world_frame != NULL &&
                   f.state.world_frame->picking_returned && f.state.world_frame->viewport_set &&
                   f.state.world_frame->fog_blend_computed && f.state.world_frame->fog_returned &&
@@ -1446,7 +1447,7 @@ int main(int argc, char **argv) {
                   f.state.world_frame->frustum_constructed &&
                   f.state.world_frame->frustum_recentered && f.state.world_frame->culling_returned);
             const mc_client_world_frame_state *frame = f.state.world_frame;
-            CHECK(frame->source_pc == loaded_world_frame_frontier && frame->update_calls >= 1 &&
+            CHECK(frame->source_pc == 1013 && frame->returned && frame->update_calls >= 1 &&
                   frame->updates_returned && frame->draw_fog_returned &&
                   frame->terrain_texture_bound && frame->lighting_disabled &&
                   frame->update != NULL && !frame->update->active && frame->update->returned &&
@@ -1475,10 +1476,9 @@ int main(int argc, char **argv) {
                   frame->entities->failure == NULL && frame->entities->cleanup == NULL &&
                   frame->entities->ll == NULL && frame->entities->th == NULL &&
                   frame->failure->entities == NULL &&
-                  frame->failure->site.pc == loaded_world_frame_frontier &&
-                  strcmp(frame->failure->child.class_name, "px") == 0 &&
-                  strcmp(frame->failure->child.method, "b") == 0 &&
-                  strcmp(frame->failure->child.descriptor, "(FI)V") == 0);
+                  frame->failure->status == MC_CLIENT_WORLD_FRAME_OK &&
+                  frame->failure->site.class_name == NULL &&
+                  frame->failure->child.class_name == NULL);
             CHECK(frame->effects_captured && frame->effects == f.app->effect_renderer &&
                   frame->camera == load.player && frame->render_global == f.app->g &&
                   frame->lit_particles_returned && frame->particle_lighting_disabled &&
@@ -1539,7 +1539,18 @@ int main(int argc, char **argv) {
                   frame->clouds->draws == 72 && frame->post_cloud_fog_disabled &&
                   frame->post_cloud_fog_returned && frame->post_cloud_fog != NULL &&
                   frame->post_cloud_fog->returned && frame->hand_zoom_read &&
-                  frame->hand_depth_cleared && !frame->tail_anaglyph_read);
+                  frame->hand_depth_cleared && frame->hand_returned && frame->hand != NULL &&
+                  frame->hand->returned && frame->hand->source_pc == 163 &&
+                  frame->hand->matrix_pushed && frame->hand->matrix_popped &&
+                  frame->hand->held_returned && frame->hand->overlays_returned &&
+                  frame->hand->held_item != NULL && frame->hand->overlays != NULL &&
+                  frame->hand->held_item->arm_returned && frame->hand->held_item->skin_returned &&
+                  frame->hand->held_item->renderer_returned &&
+                  frame->hand->held_item->pose_returned && frame->hand->held_item->faces == 6 &&
+                  frame->hand->held_item->vertices == 24 && frame->hand->held_item->owner == NULL &&
+                  frame->hand->held_item->failure == NULL && frame->hand->overlays->returned &&
+                  frame->hand->overlays->alpha_restored && frame->tail_anaglyph_read &&
+                  !frame->tail_anaglyph && frame->failure->hand == NULL);
             const bool replay_expected = frame->fancy_graphics && frame->translucent_count > 0;
             CHECK(frame->translucent_replay_returned == replay_expected);
             if (replay_expected) {
@@ -1573,7 +1584,7 @@ int main(int argc, char **argv) {
                       compiled.defined && !compiled.building && compiled.draws > 0 &&
                       compiled.vertices > 0);
             }
-            /* Observe the actual failed World frame's back buffer before
+            /* Observe the returned World draw's back buffer before
              * separate component controls change its inherited GL state. */
             const size_t prefix_length = strlen(argv[3]);
             static const char prefix_suffix[] = ".world-prefix.png";

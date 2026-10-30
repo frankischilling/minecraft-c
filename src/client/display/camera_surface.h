@@ -17,4 +17,6 @@ bool mc_client_display_source_perspective(mc_client_display *, float, float, flo
  * No GL query, context switch, FP arithmetic or source call is implied. */
 bool mc_client_display_camera_matrices_inspect(const mc_client_display *, float projection[16],
                                                float modelview[16]);
+bool mc_client_display_camera_stack_inspect(const mc_client_display *, int32_t *mode,
+                                            size_t *modelview_depth, size_t *projection_depth);
 #endif

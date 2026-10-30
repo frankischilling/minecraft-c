@@ -4,6 +4,7 @@
 - [Particle drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md)
 - [Rain and snow drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/precipitation.md)
 - [Cloud drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/clouds.md)
+- [First-person hand](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/first-person-hand.md)
 - [World simulation](World-simulation)
 - [Systems and subsystems](Architecture)
 - [Build and tests](Build-and-tests)

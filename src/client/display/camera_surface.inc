@@ -32,6 +32,17 @@ bool mc_client_display_camera_matrices_inspect(const mc_client_display *display,
     return true;
 }
 
+bool mc_client_display_camera_stack_inspect(const mc_client_display *display, int32_t *mode,
+                                            size_t *modelview_depth, size_t *projection_depth) {
+    if (display == NULL || mode == NULL || modelview_depth == NULL || projection_depth == NULL ||
+        display->source.active_calls != 0 || !display->source.initialized)
+        return false;
+    *mode = display->source.matrix_mode;
+    *modelview_depth = display->source.depth + 1;
+    *projection_depth = display->source.projection_depth + 1;
+    return true;
+}
+
 bool mc_client_display_source_scale(mc_client_display *display, double x, double y, double z,
                                     mc_client_display_error *error) {
     if (!source_enter(display, "source camera scale", error))

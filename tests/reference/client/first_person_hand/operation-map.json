@@ -1,0 +1,2184 @@
+{
+  "methods": {
+    "px private void b(float, int);": [
+      {
+        "pc": 0,
+        "operation": "Method org/lwjgl/opengl/GL11.glLoadIdentity:()V"
+      },
+      {
+        "pc": 4,
+        "operation": "Field j:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 7,
+        "operation": "Field net/minecraft/client/Minecraft.z:Lkv;"
+      },
+      {
+        "pc": 10,
+        "operation": "Field kv.g:Z"
+      },
+      {
+        "pc": 27,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      },
+      {
+        "pc": 30,
+        "operation": "Method org/lwjgl/opengl/GL11.glPushMatrix:()V"
+      },
+      {
+        "pc": 35,
+        "operation": "Method e:(F)V"
+      },
+      {
+        "pc": 39,
+        "operation": "Field j:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 42,
+        "operation": "Field net/minecraft/client/Minecraft.z:Lkv;"
+      },
+      {
+        "pc": 45,
+        "operation": "Field kv.f:Z"
+      },
+      {
+        "pc": 53,
+        "operation": "Method f:(F)V"
+      },
+      {
+        "pc": 57,
+        "operation": "Field j:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 60,
+        "operation": "Field net/minecraft/client/Minecraft.z:Lkv;"
+      },
+      {
+        "pc": 63,
+        "operation": "Field kv.A:Z"
+      },
+      {
+        "pc": 70,
+        "operation": "Field j:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 73,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 76,
+        "operation": "Method ls.N:()Z"
+      },
+      {
+        "pc": 83,
+        "operation": "Field j:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 86,
+        "operation": "Field net/minecraft/client/Minecraft.z:Lkv;"
+      },
+      {
+        "pc": 89,
+        "operation": "Field kv.z:Z"
+      },
+      {
+        "pc": 96,
+        "operation": "Field c:Lra;"
+      },
+      {
+        "pc": 100,
+        "operation": "Method ra.a:(F)V"
+      },
+      {
+        "pc": 103,
+        "operation": "Method org/lwjgl/opengl/GL11.glPopMatrix:()V"
+      },
+      {
+        "pc": 107,
+        "operation": "Field j:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 110,
+        "operation": "Field net/minecraft/client/Minecraft.z:Lkv;"
+      },
+      {
+        "pc": 113,
+        "operation": "Field kv.A:Z"
+      },
+      {
+        "pc": 120,
+        "operation": "Field j:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 123,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 126,
+        "operation": "Method ls.N:()Z"
+      },
+      {
+        "pc": 133,
+        "operation": "Field c:Lra;"
+      },
+      {
+        "pc": 137,
+        "operation": "Method ra.b:(F)V"
+      },
+      {
+        "pc": 142,
+        "operation": "Method e:(F)V"
+      },
+      {
+        "pc": 146,
+        "operation": "Field j:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 149,
+        "operation": "Field net/minecraft/client/Minecraft.z:Lkv;"
+      },
+      {
+        "pc": 152,
+        "operation": "Field kv.f:Z"
+      },
+      {
+        "pc": 160,
+        "operation": "Method f:(F)V"
+      }
+    ],
+    "ra public void a(float);": [
+      {
+        "pc": 1,
+        "operation": "Field d:F"
+      },
+      {
+        "pc": 5,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 9,
+        "operation": "Field d:F"
+      },
+      {
+        "pc": 18,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 21,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 26,
+        "operation": "Field gs.aV:F"
+      },
+      {
+        "pc": 30,
+        "operation": "Field gs.aT:F"
+      },
+      {
+        "pc": 34,
+        "operation": "Field gs.aV:F"
+      },
+      {
+        "pc": 43,
+        "operation": "Method org/lwjgl/opengl/GL11.glPushMatrix:()V"
+      },
+      {
+        "pc": 51,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 55,
+        "operation": "Field gs.aU:F"
+      },
+      {
+        "pc": 59,
+        "operation": "Field gs.aS:F"
+      },
+      {
+        "pc": 63,
+        "operation": "Field gs.aU:F"
+      },
+      {
+        "pc": 73,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 76,
+        "operation": "Method u.b:()V"
+      },
+      {
+        "pc": 79,
+        "operation": "Method org/lwjgl/opengl/GL11.glPopMatrix:()V"
+      },
+      {
+        "pc": 83,
+        "operation": "Field b:Liz;"
+      },
+      {
+        "pc": 89,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 92,
+        "operation": "Field net/minecraft/client/Minecraft.f:Lfd;"
+      },
+      {
+        "pc": 96,
+        "operation": "Field gs.aM:D"
+      },
+      {
+        "pc": 99,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 103,
+        "operation": "Field gs.aN:D"
+      },
+      {
+        "pc": 106,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 110,
+        "operation": "Field gs.aO:D"
+      },
+      {
+        "pc": 113,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 116,
+        "operation": "Method fd.c:(III)F"
+      },
+      {
+        "pc": 126,
+        "operation": "Field gm.c:[Lgm;"
+      },
+      {
+        "pc": 131,
+        "operation": "Field iz.c:I"
+      },
+      {
+        "pc": 137,
+        "operation": "Method iz.i:()I"
+      },
+      {
+        "pc": 140,
+        "operation": "Method gm.f:(I)I"
+      },
+      {
+        "pc": 203,
+        "operation": "Method org/lwjgl/opengl/GL11.glColor4f:(FFFF)V"
+      },
+      {
+        "pc": 216,
+        "operation": "Method org/lwjgl/opengl/GL11.glColor4f:(FFFF)V"
+      },
+      {
+        "pc": 226,
+        "operation": "Field iz.c:I"
+      },
+      {
+        "pc": 229,
+        "operation": "Field gm.bb:Lwr;"
+      },
+      {
+        "pc": 232,
+        "operation": "Field wr.bf:I"
+      },
+      {
+        "pc": 238,
+        "operation": "Method org/lwjgl/opengl/GL11.glPushMatrix:()V"
+      },
+      {
+        "pc": 247,
+        "operation": "Method gs.d:(F)F"
+      },
+      {
+        "pc": 257,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 264,
+        "operation": "Method in.c:(F)F"
+      },
+      {
+        "pc": 270,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 283,
+        "operation": "Method in.c:(F)F"
+      },
+      {
+        "pc": 291,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 303,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      },
+      {
+        "pc": 343,
+        "operation": "Method in.b:(F)F"
+      },
+      {
+        "pc": 381,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      },
+      {
+        "pc": 389,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 400,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 405,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 412,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 415,
+        "operation": "Field net/minecraft/client/Minecraft.p:Lji;"
+      },
+      {
+        "pc": 419,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 422,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 425,
+        "operation": "Field dc.bA:Ljava/lang/String;"
+      },
+      {
+        "pc": 429,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 432,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 435,
+        "operation": "Method dc.q_:()Ljava/lang/String;"
+      },
+      {
+        "pc": 438,
+        "operation": "Method ji.a:(Ljava/lang/String;Ljava/lang/String;)I"
+      },
+      {
+        "pc": 441,
+        "operation": "Method org/lwjgl/opengl/GL11.glBindTexture:(II)V"
+      },
+      {
+        "pc": 461,
+        "operation": "Method org/lwjgl/opengl/GL11.glPushMatrix:()V"
+      },
+      {
+        "pc": 474,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      },
+      {
+        "pc": 486,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 494,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 502,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 514,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 517,
+        "operation": "Field th.a:Lth;"
+      },
+      {
+        "pc": 521,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 524,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 527,
+        "operation": "Method th.a:(Lsn;)Lbw;"
+      },
+      {
+        "pc": 548,
+        "operation": "Method org/lwjgl/opengl/GL11.glScalef:(FFF)V"
+      },
+      {
+        "pc": 553,
+        "operation": "Method ds.b:()V"
+      },
+      {
+        "pc": 556,
+        "operation": "Method org/lwjgl/opengl/GL11.glPopMatrix:()V"
+      },
+      {
+        "pc": 567,
+        "operation": "Method gs.d:(F)F"
+      },
+      {
+        "pc": 580,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 587,
+        "operation": "Method in.c:(F)F"
+      },
+      {
+        "pc": 593,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 607,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 619,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 631,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 644,
+        "operation": "Method org/lwjgl/opengl/GL11.glScalef:(FFF)V"
+      },
+      {
+        "pc": 652,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 660,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 668,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      },
+      {
+        "pc": 681,
+        "operation": "Method org/lwjgl/opengl/GL11.glScalef:(FFF)V"
+      },
+      {
+        "pc": 685,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 688,
+        "operation": "Field net/minecraft/client/Minecraft.p:Lji;"
+      },
+      {
+        "pc": 692,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 695,
+        "operation": "Field net/minecraft/client/Minecraft.p:Lji;"
+      },
+      {
+        "pc": 700,
+        "operation": "Method ji.b:(Ljava/lang/String;)I"
+      },
+      {
+        "pc": 703,
+        "operation": "Method ji.b:(I)V"
+      },
+      {
+        "pc": 706,
+        "operation": "Field nw.a:Lnw;"
+      },
+      {
+        "pc": 715,
+        "operation": "Method org/lwjgl/opengl/GL11.glNormal3f:(FFF)V"
+      },
+      {
+        "pc": 720,
+        "operation": "Method nw.b:()V"
+      },
+      {
+        "pc": 744,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 766,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 786,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 804,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 809,
+        "operation": "Method nw.a:()V"
+      },
+      {
+        "pc": 812,
+        "operation": "Field gm.bb:Lwr;"
+      },
+      {
+        "pc": 818,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 821,
+        "operation": "Field net/minecraft/client/Minecraft.f:Lfd;"
+      },
+      {
+        "pc": 824,
+        "operation": "Method wr.a:(Liz;Lfd;)Liu;"
+      },
+      {
+        "pc": 830,
+        "operation": "Field f:Liy;"
+      },
+      {
+        "pc": 834,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 837,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 841,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 844,
+        "operation": "Field net/minecraft/client/Minecraft.p:Lji;"
+      },
+      {
+        "pc": 849,
+        "operation": "Method iy.a:(Lgs;Lji;Liu;)V"
+      },
+      {
+        "pc": 852,
+        "operation": "Method org/lwjgl/opengl/GL11.glPopMatrix:()V"
+      },
+      {
+        "pc": 863,
+        "operation": "Method org/lwjgl/opengl/GL11.glPushMatrix:()V"
+      },
+      {
+        "pc": 872,
+        "operation": "Method gs.d:(F)F"
+      },
+      {
+        "pc": 882,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 889,
+        "operation": "Method in.c:(F)F"
+      },
+      {
+        "pc": 895,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 908,
+        "operation": "Method in.c:(F)F"
+      },
+      {
+        "pc": 916,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 928,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      },
+      {
+        "pc": 953,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      },
+      {
+        "pc": 961,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 966,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 971,
+        "operation": "Method gs.d:(F)F"
+      },
+      {
+        "pc": 984,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 991,
+        "operation": "Method in.c:(F)F"
+      },
+      {
+        "pc": 997,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 1011,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 1023,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 1035,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 1048,
+        "operation": "Method org/lwjgl/opengl/GL11.glScalef:(FFF)V"
+      },
+      {
+        "pc": 1053,
+        "operation": "Method iz.a:()Lgm;"
+      },
+      {
+        "pc": 1056,
+        "operation": "Method gm.c:()Z"
+      },
+      {
+        "pc": 1067,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 1074,
+        "operation": "Method a:(Lls;Liz;)V"
+      },
+      {
+        "pc": 1077,
+        "operation": "Method org/lwjgl/opengl/GL11.glPopMatrix:()V"
+      },
+      {
+        "pc": 1083,
+        "operation": "Method org/lwjgl/opengl/GL11.glPushMatrix:()V"
+      },
+      {
+        "pc": 1092,
+        "operation": "Method gs.d:(F)F"
+      },
+      {
+        "pc": 1102,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 1109,
+        "operation": "Method in.c:(F)F"
+      },
+      {
+        "pc": 1115,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 1128,
+        "operation": "Method in.c:(F)F"
+      },
+      {
+        "pc": 1136,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 1148,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      },
+      {
+        "pc": 1173,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      },
+      {
+        "pc": 1181,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 1186,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 1191,
+        "operation": "Method gs.d:(F)F"
+      },
+      {
+        "pc": 1204,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 1211,
+        "operation": "Method in.c:(F)F"
+      },
+      {
+        "pc": 1217,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 1230,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 1242,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 1249,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 1252,
+        "operation": "Field net/minecraft/client/Minecraft.p:Lji;"
+      },
+      {
+        "pc": 1256,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 1259,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 1262,
+        "operation": "Field dc.bA:Ljava/lang/String;"
+      },
+      {
+        "pc": 1266,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 1269,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 1272,
+        "operation": "Method dc.q_:()Ljava/lang/String;"
+      },
+      {
+        "pc": 1275,
+        "operation": "Method ji.a:(Ljava/lang/String;Ljava/lang/String;)I"
+      },
+      {
+        "pc": 1278,
+        "operation": "Method org/lwjgl/opengl/GL11.glBindTexture:(II)V"
+      },
+      {
+        "pc": 1287,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      },
+      {
+        "pc": 1295,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 1303,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 1311,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 1317,
+        "operation": "Method org/lwjgl/opengl/GL11.glScalef:(FFF)V"
+      },
+      {
+        "pc": 1324,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      },
+      {
+        "pc": 1327,
+        "operation": "Field th.a:Lth;"
+      },
+      {
+        "pc": 1331,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 1334,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 1337,
+        "operation": "Method th.a:(Lsn;)Lbw;"
+      },
+      {
+        "pc": 1358,
+        "operation": "Method org/lwjgl/opengl/GL11.glScalef:(FFF)V"
+      },
+      {
+        "pc": 1363,
+        "operation": "Method ds.b:()V"
+      },
+      {
+        "pc": 1366,
+        "operation": "Method org/lwjgl/opengl/GL11.glPopMatrix:()V"
+      },
+      {
+        "pc": 1371,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 1374,
+        "operation": "Method u.a:()V"
+      }
+    ],
+    "ra public void b(float);": [
+      {
+        "pc": 3,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 7,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 10,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 13,
+        "operation": "Method dc.ak:()Z"
+      },
+      {
+        "pc": 20,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 23,
+        "operation": "Field net/minecraft/client/Minecraft.p:Lji;"
+      },
+      {
+        "pc": 28,
+        "operation": "Method ji.b:(Ljava/lang/String;)I"
+      },
+      {
+        "pc": 36,
+        "operation": "Method org/lwjgl/opengl/GL11.glBindTexture:(II)V"
+      },
+      {
+        "pc": 41,
+        "operation": "Method d:(F)V"
+      },
+      {
+        "pc": 45,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 48,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 51,
+        "operation": "Method dc.L:()Z"
+      },
+      {
+        "pc": 58,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 61,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 64,
+        "operation": "Field dc.aM:D"
+      },
+      {
+        "pc": 67,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 72,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 75,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 78,
+        "operation": "Field dc.aN:D"
+      },
+      {
+        "pc": 81,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 86,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 89,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 92,
+        "operation": "Field dc.aO:D"
+      },
+      {
+        "pc": 95,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 101,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 104,
+        "operation": "Field net/minecraft/client/Minecraft.p:Lji;"
+      },
+      {
+        "pc": 109,
+        "operation": "Method ji.b:(Ljava/lang/String;)I"
+      },
+      {
+        "pc": 119,
+        "operation": "Method org/lwjgl/opengl/GL11.glBindTexture:(II)V"
+      },
+      {
+        "pc": 123,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 126,
+        "operation": "Field net/minecraft/client/Minecraft.f:Lfd;"
+      },
+      {
+        "pc": 133,
+        "operation": "Method fd.a:(III)I"
+      },
+      {
+        "pc": 139,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 142,
+        "operation": "Field net/minecraft/client/Minecraft.f:Lfd;"
+      },
+      {
+        "pc": 149,
+        "operation": "Method fd.h:(III)Z"
+      },
+      {
+        "pc": 157,
+        "operation": "Field uu.m:[Luu;"
+      },
+      {
+        "pc": 164,
+        "operation": "Method uu.a:(I)I"
+      },
+      {
+        "pc": 167,
+        "operation": "Method a:(FI)V"
+      },
+      {
+        "pc": 194,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 197,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 200,
+        "operation": "Field dc.bg:F"
+      },
+      {
+        "pc": 220,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 223,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 226,
+        "operation": "Field dc.bh:F"
+      },
+      {
+        "pc": 246,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 249,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 252,
+        "operation": "Field dc.bg:F"
+      },
+      {
+        "pc": 266,
+        "operation": "Method in.d:(F)I"
+      },
+      {
+        "pc": 276,
+        "operation": "Method in.d:(F)I"
+      },
+      {
+        "pc": 287,
+        "operation": "Method in.d:(F)I"
+      },
+      {
+        "pc": 293,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 296,
+        "operation": "Field net/minecraft/client/Minecraft.f:Lfd;"
+      },
+      {
+        "pc": 305,
+        "operation": "Method fd.h:(III)Z"
+      },
+      {
+        "pc": 312,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 315,
+        "operation": "Field net/minecraft/client/Minecraft.f:Lfd;"
+      },
+      {
+        "pc": 324,
+        "operation": "Method fd.a:(III)I"
+      },
+      {
+        "pc": 335,
+        "operation": "Field uu.m:[Luu;"
+      },
+      {
+        "pc": 346,
+        "operation": "Field uu.m:[Luu;"
+      },
+      {
+        "pc": 353,
+        "operation": "Method uu.a:(I)I"
+      },
+      {
+        "pc": 356,
+        "operation": "Method a:(FI)V"
+      },
+      {
+        "pc": 360,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 363,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 366,
+        "operation": "Field ln.g:Lln;"
+      },
+      {
+        "pc": 369,
+        "operation": "Method dc.a:(Lln;)Z"
+      },
+      {
+        "pc": 376,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 379,
+        "operation": "Field net/minecraft/client/Minecraft.p:Lji;"
+      },
+      {
+        "pc": 384,
+        "operation": "Method ji.b:(Ljava/lang/String;)I"
+      },
+      {
+        "pc": 392,
+        "operation": "Method org/lwjgl/opengl/GL11.glBindTexture:(II)V"
+      },
+      {
+        "pc": 397,
+        "operation": "Method c:(F)V"
+      },
+      {
+        "pc": 403,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      }
+    ],
+    "ds public void b();": [
+      {
+        "pc": 1,
+        "operation": "Field a:Lfh;"
+      },
+      {
+        "pc": 5,
+        "operation": "Field fh.m:F"
+      },
+      {
+        "pc": 9,
+        "operation": "Field a:Lfh;"
+      },
+      {
+        "pc": 19,
+        "operation": "Method fh.b:(FFFFFF)V"
+      },
+      {
+        "pc": 23,
+        "operation": "Field a:Lfh;"
+      },
+      {
+        "pc": 26,
+        "operation": "Field fh.d:Lps;"
+      },
+      {
+        "pc": 31,
+        "operation": "Method ps.a:(F)V"
+      }
+    ],
+    "ps public void a(float);": [
+      {
+        "pc": 1,
+        "operation": "Field i:Z"
+      },
+      {
+        "pc": 9,
+        "operation": "Field h:Z"
+      },
+      {
+        "pc": 17,
+        "operation": "Field n:Z"
+      },
+      {
+        "pc": 25,
+        "operation": "Method d:(F)V"
+      },
+      {
+        "pc": 29,
+        "operation": "Field d:F"
+      },
+      {
+        "pc": 38,
+        "operation": "Field e:F"
+      },
+      {
+        "pc": 47,
+        "operation": "Field f:F"
+      },
+      {
+        "pc": 55,
+        "operation": "Method org/lwjgl/opengl/GL11.glPushMatrix:()V"
+      },
+      {
+        "pc": 59,
+        "operation": "Field a:F"
+      },
+      {
+        "pc": 65,
+        "operation": "Field b:F"
+      },
+      {
+        "pc": 71,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 76,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      },
+      {
+        "pc": 80,
+        "operation": "Field f:F"
+      },
+      {
+        "pc": 89,
+        "operation": "Field f:F"
+      },
+      {
+        "pc": 98,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 102,
+        "operation": "Field e:F"
+      },
+      {
+        "pc": 111,
+        "operation": "Field e:F"
+      },
+      {
+        "pc": 120,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 124,
+        "operation": "Field d:F"
+      },
+      {
+        "pc": 133,
+        "operation": "Field d:F"
+      },
+      {
+        "pc": 142,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 146,
+        "operation": "Field o:I"
+      },
+      {
+        "pc": 149,
+        "operation": "Method org/lwjgl/opengl/GL11.glCallList:(I)V"
+      },
+      {
+        "pc": 152,
+        "operation": "Method org/lwjgl/opengl/GL11.glPopMatrix:()V"
+      },
+      {
+        "pc": 159,
+        "operation": "Field a:F"
+      },
+      {
+        "pc": 168,
+        "operation": "Field b:F"
+      },
+      {
+        "pc": 177,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 186,
+        "operation": "Field a:F"
+      },
+      {
+        "pc": 192,
+        "operation": "Field b:F"
+      },
+      {
+        "pc": 198,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 203,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      },
+      {
+        "pc": 207,
+        "operation": "Field o:I"
+      },
+      {
+        "pc": 210,
+        "operation": "Method org/lwjgl/opengl/GL11.glCallList:(I)V"
+      },
+      {
+        "pc": 214,
+        "operation": "Field a:F"
+      },
+      {
+        "pc": 221,
+        "operation": "Field b:F"
+      },
+      {
+        "pc": 228,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 234,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      },
+      {
+        "pc": 241,
+        "operation": "Field o:I"
+      },
+      {
+        "pc": 244,
+        "operation": "Method org/lwjgl/opengl/GL11.glCallList:(I)V"
+      }
+    ],
+    "ps private void d(float);": [
+      {
+        "pc": 2,
+        "operation": "Method ge.a:(I)I"
+      },
+      {
+        "pc": 5,
+        "operation": "Field o:I"
+      },
+      {
+        "pc": 9,
+        "operation": "Field o:I"
+      },
+      {
+        "pc": 15,
+        "operation": "Method org/lwjgl/opengl/GL11.glNewList:(II)V"
+      },
+      {
+        "pc": 18,
+        "operation": "Field nw.a:Lnw;"
+      },
+      {
+        "pc": 26,
+        "operation": "Field k:[Ltz;"
+      },
+      {
+        "pc": 34,
+        "operation": "Field k:[Ltz;"
+      },
+      {
+        "pc": 41,
+        "operation": "Method tz.a:(Lnw;F)V"
+      },
+      {
+        "pc": 50,
+        "operation": "Method org/lwjgl/opengl/GL11.glEndList:()V"
+      },
+      {
+        "pc": 55,
+        "operation": "Field n:Z"
+      }
+    ],
+    "tz public void a(nw, float);": [
+      {
+        "pc": 1,
+        "operation": "Field a:[Lib;"
+      },
+      {
+        "pc": 6,
+        "operation": "Field ib.a:Lbt;"
+      },
+      {
+        "pc": 10,
+        "operation": "Field a:[Lib;"
+      },
+      {
+        "pc": 15,
+        "operation": "Field ib.a:Lbt;"
+      },
+      {
+        "pc": 18,
+        "operation": "Method bt.a:(Lbt;)Lbt;"
+      },
+      {
+        "pc": 23,
+        "operation": "Field a:[Lib;"
+      },
+      {
+        "pc": 28,
+        "operation": "Field ib.a:Lbt;"
+      },
+      {
+        "pc": 32,
+        "operation": "Field a:[Lib;"
+      },
+      {
+        "pc": 37,
+        "operation": "Field ib.a:Lbt;"
+      },
+      {
+        "pc": 40,
+        "operation": "Method bt.a:(Lbt;)Lbt;"
+      },
+      {
+        "pc": 48,
+        "operation": "Method bt.b:(Lbt;)Lbt;"
+      },
+      {
+        "pc": 51,
+        "operation": "Method bt.c:()Lbt;"
+      },
+      {
+        "pc": 57,
+        "operation": "Method nw.b:()V"
+      },
+      {
+        "pc": 61,
+        "operation": "Field c:Z"
+      },
+      {
+        "pc": 70,
+        "operation": "Field bt.a:D"
+      },
+      {
+        "pc": 77,
+        "operation": "Field bt.b:D"
+      },
+      {
+        "pc": 84,
+        "operation": "Field bt.c:D"
+      },
+      {
+        "pc": 89,
+        "operation": "Method nw.b:(FFF)V"
+      },
+      {
+        "pc": 98,
+        "operation": "Field bt.a:D"
+      },
+      {
+        "pc": 104,
+        "operation": "Field bt.b:D"
+      },
+      {
+        "pc": 110,
+        "operation": "Field bt.c:D"
+      },
+      {
+        "pc": 114,
+        "operation": "Method nw.b:(FFF)V"
+      },
+      {
+        "pc": 127,
+        "operation": "Field a:[Lib;"
+      },
+      {
+        "pc": 138,
+        "operation": "Field ib.a:Lbt;"
+      },
+      {
+        "pc": 141,
+        "operation": "Field bt.a:D"
+      },
+      {
+        "pc": 150,
+        "operation": "Field ib.a:Lbt;"
+      },
+      {
+        "pc": 153,
+        "operation": "Field bt.b:D"
+      },
+      {
+        "pc": 162,
+        "operation": "Field ib.a:Lbt;"
+      },
+      {
+        "pc": 165,
+        "operation": "Field bt.c:D"
+      },
+      {
+        "pc": 174,
+        "operation": "Field ib.b:F"
+      },
+      {
+        "pc": 180,
+        "operation": "Field ib.c:F"
+      },
+      {
+        "pc": 184,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 194,
+        "operation": "Method nw.a:()V"
+      }
+    ],
+    "fh public void b(float, float, float, float, float, float);": [
+      {
+        "pc": 1,
+        "operation": "Field a:Lps;"
+      },
+      {
+        "pc": 9,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 13,
+        "operation": "Field a:Lps;"
+      },
+      {
+        "pc": 21,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 25,
+        "operation": "Field b:Lps;"
+      },
+      {
+        "pc": 29,
+        "operation": "Field a:Lps;"
+      },
+      {
+        "pc": 32,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 35,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 39,
+        "operation": "Field b:Lps;"
+      },
+      {
+        "pc": 43,
+        "operation": "Field a:Lps;"
+      },
+      {
+        "pc": 46,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 49,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 53,
+        "operation": "Field d:Lps;"
+      },
+      {
+        "pc": 63,
+        "operation": "Method in.b:(F)F"
+      },
+      {
+        "pc": 73,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 77,
+        "operation": "Field e:Lps;"
+      },
+      {
+        "pc": 84,
+        "operation": "Method in.b:(F)F"
+      },
+      {
+        "pc": 94,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 98,
+        "operation": "Field d:Lps;"
+      },
+      {
+        "pc": 102,
+        "operation": "Field ps.f:F"
+      },
+      {
+        "pc": 106,
+        "operation": "Field e:Lps;"
+      },
+      {
+        "pc": 110,
+        "operation": "Field ps.f:F"
+      },
+      {
+        "pc": 114,
+        "operation": "Field f:Lps;"
+      },
+      {
+        "pc": 121,
+        "operation": "Method in.b:(F)F"
+      },
+      {
+        "pc": 129,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 133,
+        "operation": "Field g:Lps;"
+      },
+      {
+        "pc": 143,
+        "operation": "Method in.b:(F)F"
+      },
+      {
+        "pc": 151,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 155,
+        "operation": "Field f:Lps;"
+      },
+      {
+        "pc": 159,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 163,
+        "operation": "Field g:Lps;"
+      },
+      {
+        "pc": 167,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 171,
+        "operation": "Field n:Z"
+      },
+      {
+        "pc": 178,
+        "operation": "Field d:Lps;"
+      },
+      {
+        "pc": 182,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 188,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 192,
+        "operation": "Field e:Lps;"
+      },
+      {
+        "pc": 196,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 202,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 206,
+        "operation": "Field f:Lps;"
+      },
+      {
+        "pc": 211,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 215,
+        "operation": "Field g:Lps;"
+      },
+      {
+        "pc": 220,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 224,
+        "operation": "Field f:Lps;"
+      },
+      {
+        "pc": 229,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 233,
+        "operation": "Field g:Lps;"
+      },
+      {
+        "pc": 238,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 242,
+        "operation": "Field j:Z"
+      },
+      {
+        "pc": 249,
+        "operation": "Field e:Lps;"
+      },
+      {
+        "pc": 253,
+        "operation": "Field e:Lps;"
+      },
+      {
+        "pc": 256,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 265,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 269,
+        "operation": "Field k:Z"
+      },
+      {
+        "pc": 276,
+        "operation": "Field d:Lps;"
+      },
+      {
+        "pc": 280,
+        "operation": "Field d:Lps;"
+      },
+      {
+        "pc": 283,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 292,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 296,
+        "operation": "Field d:Lps;"
+      },
+      {
+        "pc": 300,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 304,
+        "operation": "Field e:Lps;"
+      },
+      {
+        "pc": 308,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 312,
+        "operation": "Field m:F"
+      },
+      {
+        "pc": 322,
+        "operation": "Field m:F"
+      },
+      {
+        "pc": 328,
+        "operation": "Field c:Lps;"
+      },
+      {
+        "pc": 333,
+        "operation": "Method in.c:(F)F"
+      },
+      {
+        "pc": 341,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 347,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 351,
+        "operation": "Field d:Lps;"
+      },
+      {
+        "pc": 355,
+        "operation": "Field c:Lps;"
+      },
+      {
+        "pc": 358,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 361,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 367,
+        "operation": "Field ps.c:F"
+      },
+      {
+        "pc": 371,
+        "operation": "Field d:Lps;"
+      },
+      {
+        "pc": 375,
+        "operation": "Field c:Lps;"
+      },
+      {
+        "pc": 378,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 381,
+        "operation": "Method in.b:(F)F"
+      },
+      {
+        "pc": 388,
+        "operation": "Field ps.a:F"
+      },
+      {
+        "pc": 392,
+        "operation": "Field e:Lps;"
+      },
+      {
+        "pc": 396,
+        "operation": "Field c:Lps;"
+      },
+      {
+        "pc": 399,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 402,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 409,
+        "operation": "Field ps.c:F"
+      },
+      {
+        "pc": 413,
+        "operation": "Field e:Lps;"
+      },
+      {
+        "pc": 417,
+        "operation": "Field c:Lps;"
+      },
+      {
+        "pc": 420,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 423,
+        "operation": "Method in.b:(F)F"
+      },
+      {
+        "pc": 429,
+        "operation": "Field ps.a:F"
+      },
+      {
+        "pc": 433,
+        "operation": "Field d:Lps;"
+      },
+      {
+        "pc": 437,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 441,
+        "operation": "Field c:Lps;"
+      },
+      {
+        "pc": 444,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 448,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 452,
+        "operation": "Field e:Lps;"
+      },
+      {
+        "pc": 456,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 460,
+        "operation": "Field c:Lps;"
+      },
+      {
+        "pc": 463,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 467,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 471,
+        "operation": "Field e:Lps;"
+      },
+      {
+        "pc": 475,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 479,
+        "operation": "Field c:Lps;"
+      },
+      {
+        "pc": 482,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 486,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 491,
+        "operation": "Field m:F"
+      },
+      {
+        "pc": 522,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 528,
+        "operation": "Field m:F"
+      },
+      {
+        "pc": 534,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 538,
+        "operation": "Field a:Lps;"
+      },
+      {
+        "pc": 541,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 555,
+        "operation": "Field d:Lps;"
+      },
+      {
+        "pc": 559,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 576,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 580,
+        "operation": "Field d:Lps;"
+      },
+      {
+        "pc": 584,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 588,
+        "operation": "Field c:Lps;"
+      },
+      {
+        "pc": 591,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 597,
+        "operation": "Field ps.e:F"
+      },
+      {
+        "pc": 601,
+        "operation": "Field d:Lps;"
+      },
+      {
+        "pc": 605,
+        "operation": "Field m:F"
+      },
+      {
+        "pc": 611,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 617,
+        "operation": "Field ps.f:F"
+      },
+      {
+        "pc": 621,
+        "operation": "Field l:Z"
+      },
+      {
+        "pc": 628,
+        "operation": "Field c:Lps;"
+      },
+      {
+        "pc": 633,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 637,
+        "operation": "Field f:Lps;"
+      },
+      {
+        "pc": 641,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 646,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 650,
+        "operation": "Field g:Lps;"
+      },
+      {
+        "pc": 654,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 659,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 663,
+        "operation": "Field d:Lps;"
+      },
+      {
+        "pc": 667,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 673,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 677,
+        "operation": "Field e:Lps;"
+      },
+      {
+        "pc": 681,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 687,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 691,
+        "operation": "Field f:Lps;"
+      },
+      {
+        "pc": 696,
+        "operation": "Field ps.c:F"
+      },
+      {
+        "pc": 700,
+        "operation": "Field g:Lps;"
+      },
+      {
+        "pc": 705,
+        "operation": "Field ps.c:F"
+      },
+      {
+        "pc": 709,
+        "operation": "Field f:Lps;"
+      },
+      {
+        "pc": 714,
+        "operation": "Field ps.b:F"
+      },
+      {
+        "pc": 718,
+        "operation": "Field g:Lps;"
+      },
+      {
+        "pc": 723,
+        "operation": "Field ps.b:F"
+      },
+      {
+        "pc": 727,
+        "operation": "Field a:Lps;"
+      },
+      {
+        "pc": 731,
+        "operation": "Field ps.b:F"
+      },
+      {
+        "pc": 738,
+        "operation": "Field c:Lps;"
+      },
+      {
+        "pc": 742,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 746,
+        "operation": "Field f:Lps;"
+      },
+      {
+        "pc": 750,
+        "operation": "Field ps.c:F"
+      },
+      {
+        "pc": 754,
+        "operation": "Field g:Lps;"
+      },
+      {
+        "pc": 758,
+        "operation": "Field ps.c:F"
+      },
+      {
+        "pc": 762,
+        "operation": "Field f:Lps;"
+      },
+      {
+        "pc": 767,
+        "operation": "Field ps.b:F"
+      },
+      {
+        "pc": 771,
+        "operation": "Field g:Lps;"
+      },
+      {
+        "pc": 776,
+        "operation": "Field ps.b:F"
+      },
+      {
+        "pc": 780,
+        "operation": "Field a:Lps;"
+      },
+      {
+        "pc": 784,
+        "operation": "Field ps.b:F"
+      },
+      {
+        "pc": 788,
+        "operation": "Field d:Lps;"
+      },
+      {
+        "pc": 792,
+        "operation": "Field ps.f:F"
+      },
+      {
+        "pc": 799,
+        "operation": "Method in.b:(F)F"
+      },
+      {
+        "pc": 809,
+        "operation": "Field ps.f:F"
+      },
+      {
+        "pc": 813,
+        "operation": "Field e:Lps;"
+      },
+      {
+        "pc": 817,
+        "operation": "Field ps.f:F"
+      },
+      {
+        "pc": 824,
+        "operation": "Method in.b:(F)F"
+      },
+      {
+        "pc": 834,
+        "operation": "Field ps.f:F"
+      },
+      {
+        "pc": 838,
+        "operation": "Field d:Lps;"
+      },
+      {
+        "pc": 842,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 849,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 856,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 860,
+        "operation": "Field e:Lps;"
+      },
+      {
+        "pc": 864,
+        "operation": "Field ps.d:F"
+      },
+      {
+        "pc": 871,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 878,
+        "operation": "Field ps.d:F"
+      }
+    ]
+  }
+}

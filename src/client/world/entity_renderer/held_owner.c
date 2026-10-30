@@ -86,7 +86,7 @@ mc_client_held_item_construct(mc_client_held_item *o, client_application *app,
     if (o == NULL || o->source == NULL)
         entity_renderer_fail(&local, MC_CLIENT_ENTITY_RENDERER_INVALID_ARGUMENT,
                              "actual RA constructor receiver", NULL, -1, true);
-    else if (o->active || o->source->phase != MC_CLIENT_ENTITY_RENDERER_RAW)
+    else if (o->active || o->draw_call != NULL || o->source->phase != MC_CLIENT_ENTITY_RENDERER_RAW)
         entity_renderer_fail(&local,
                              o->active ? MC_CLIENT_ENTITY_RENDERER_BUSY
                                        : MC_CLIENT_ENTITY_RENDERER_INVALID_PHASE,
@@ -103,7 +103,7 @@ mc_client_held_item_construct(mc_client_held_item *o, client_application *app,
 }
 
 bool mc_client_held_item_is_final_inactive(const mc_client_held_item *o) {
-    return o != NULL && !o->active && o->holds == 1 &&
+    return o != NULL && !o->active && o->draw_call == NULL && o->holds == 1 &&
            o->source->phase != MC_CLIENT_ENTITY_RENDERER_CONSTRUCTING;
 }
 
@@ -118,7 +118,8 @@ mc_client_entity_renderer_status mc_client_held_item_retain(mc_client_held_item 
     if (o == NULL)
         entity_renderer_fail(&e, MC_CLIENT_ENTITY_RENDERER_INVALID_ARGUMENT,
                              "actual RA occurrence receiver", NULL, -1, true);
-    else if (o->active || o->source->phase == MC_CLIENT_ENTITY_RENDERER_CONSTRUCTING)
+    else if (o->active || o->draw_call != NULL ||
+             o->source->phase == MC_CLIENT_ENTITY_RENDERER_CONSTRUCTING)
         entity_renderer_fail(&e, MC_CLIENT_ENTITY_RENDERER_BUSY, "actual RA active occurrence",
                              NULL, -1, true);
     else if (o->source->phase == MC_CLIENT_ENTITY_RENDERER_RETIRING)
@@ -143,7 +144,8 @@ held_release(mc_client_held_item **slot, mc_client_entity_renderer_error *out, b
                              "actual RA occurrence slot", NULL, -1, true);
     } else if (*slot != NULL) {
         mc_client_held_item *o = *slot;
-        if (o->active || o->source->phase == MC_CLIENT_ENTITY_RENDERER_CONSTRUCTING ||
+        if (o->active || o->draw_call != NULL ||
+            o->source->phase == MC_CLIENT_ENTITY_RENDERER_CONSTRUCTING ||
             (strict && o->holds != 1)) {
             entity_renderer_fail(&e, MC_CLIENT_ENTITY_RENDERER_BUSY,
                                  "actual RA active/external occurrence", NULL, -1, true);

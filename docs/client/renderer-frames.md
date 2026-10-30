@@ -11,7 +11,9 @@ I2 delay and returns17 with I1. PX then calls the actual EffectRenderer at518
 and535, performs two further fog calls and submits translucent terrain. The
 loaded profile returns from [precipitation drawing](precipitation.md), executes
 the next fog setup and draws [clouds](clouds.md). The following fog setup and
-depth clear reach the hand child at997. See the
+depth clear enter the [first-person hand](first-person-hand.md) at997. Its
+empty-arm and dry-overlay bodies return, allowing World draw1013 before the
+parent's delay/HUD frontier383. See the
 [particle continuation](particle-rendering.md) for ordering and retained views.
 Later N calls use actual LL/TH frame bindings, Entity Lists and
 visibility predicates; reached Entity/TileEntity draws remain unfinished.

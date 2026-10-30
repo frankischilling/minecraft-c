@@ -1,5 +1,39 @@
 # Test scope and reproduction
 
+## First-person hand and World-frame return
+
+The [hand contract](client/first-person-hand.md) covers the actual PX hand pass,
+empty-slot RA body, DS/FH pose, lazy PS/TZ geometry and ordinary dry overlays.
+All 53 selected production/test targets build on MSVC Debug and Clang18
+ASan/UBSan. All 62 Windows tests pass in 79.72 seconds and all 58 Linux tests in
+120.12 seconds, without failures, skips or sanitizer findings. All 2,341
+C/helper/build inputs remain unchanged through builds and tests; formatting
+checks 1,647 files. Both hosts pass the
+[native control](../tests/tools/client/test_first_person_hand.py). Two fresh
+App/GAME World/Player processes preserve the original lazy-list setup.
+
+The [paired fixtures](../tests/reference/client/first_person_hand/README.md)
+compare 64 outer return/null-receiver outcomes, matrix modes and stack depths
+exactly. Their 32 matrix components use a predeclared 2e-6 absolute tolerance;
+maximum on both hosts is 1.7881393432617188e-7. Four complete RA state rows,
+two arm compile/reuse rows, 16 exact flag-pose rows and all six selected face
+payload hashes match. Reserved word7 is excluded; duplicate normal words are
+preserved. The native list inspector compares the final pool cursor, while
+intermediate per-face cursors remain reference-only observations.
+
+Each host passes 1,741 hand/arm checks and renders 146 authored-skin pixels.
+Native controls also check pending RA exclusion, foreign
+texture lookup preservation and explicit fire/inside-block/water frontiers.
+Their null OpenAL playback device has no capture backend; the expected warning
+is recorded exactly and other diagnostics fail. No audio, ready downloaded-image
+upload, original pixel or whole-frame equality is established.
+
+The loaded Windows suite now requires a returning World draw at1013, completed
+arm and overlays, and the enclosing delay/HUD frontier at `px.b(F)V:383`. It
+preserves saves/resources and all 72 input histories. Its capture still precedes
+HUD composition. Full Entity drawing, repeated frames and gameplay remain
+unfinished.
+
 ## Cloud drawing and post-cloud continuation
 
 The [cloud contract](client/clouds.md) implements both source cloud bodies and

@@ -10,4 +10,10 @@ mc_client_renderer_camera_status entity_renderer_camera_entered(mc_client_source
                                                                 mc_math_classes *, float, int32_t,
                                                                 mc_client_renderer_camera_call **,
                                                                 mc_client_renderer_camera_error *);
+/* Actual reusable px.e(F) hurt / px.f(F) bob children. These run the same
+ * bodies used by camera setup and keep their captured Entities until retired. */
+mc_client_renderer_camera_status
+entity_renderer_camera_effect_entered(mc_client_source_px *, mc_math_classes *, float, bool bob,
+                                      mc_client_renderer_camera_call **,
+                                      mc_client_renderer_camera_error *);
 #endif

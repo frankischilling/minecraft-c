@@ -83,6 +83,7 @@ struct mc_client_held_item {
     mc_client_entity_renderer_options options;
     mc_client_render_arena arena;
     mc_client_entity_renderer_error failure, retirement;
+    struct mc_client_held_item_draw_call *draw_call;
 };
 
 void *entity_renderer_context_allocate(entity_renderer_context *, size_t, const char *, int32_t);

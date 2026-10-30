@@ -506,9 +506,29 @@ static bool after_particles_body(mc_client_world_frame_call *call, mc_math_class
                 call, mc_client_display_source_clear(display, 256, &call->failure.display), 990))
             return false;
         call->state.hand_depth_cleared = true;
-        call->failure.child = (mc_client_graphics_site){"px", "b", "(FI)V", 0};
-        return outer_fail(call, MC_CLIENT_WORLD_FRAME_DEPENDENCY,
-                          "actual first-person hand draw child is not connected", 997, true);
+        const mc_client_first_person_hand_status hand = entity_renderer_first_person_hand_entered(
+            owner, math, call->state.partial, (int32_t)call->state.eye, &call->hand,
+            &call->hand_error);
+        if (call->hand != NULL) {
+            (void)mc_client_first_person_hand_inspect(call->hand, &call->hand_state);
+            call->state.hand = &call->hand_state;
+        }
+        if (hand != MC_CLIENT_FIRST_PERSON_HAND_OK) {
+            const mc_client_first_person_hand_error *error =
+                call->hand == NULL ? &call->hand_error : call->hand_state.failure;
+            call->failure.hand = error;
+            call->failure.child = error->site;
+            return outer_fail(call,
+                              hand == MC_CLIENT_FIRST_PERSON_HAND_SOURCE_NULL
+                                  ? MC_CLIENT_WORLD_FRAME_SOURCE_NULL
+                              : hand == MC_CLIENT_FIRST_PERSON_HAND_UNSUPPORTED_FP
+                                  ? MC_CLIENT_WORLD_FRAME_UNSUPPORTED_FP
+                              : hand == MC_CLIENT_FIRST_PERSON_HAND_DEPENDENCY
+                                  ? MC_CLIENT_WORLD_FRAME_DEPENDENCY
+                                  : MC_CLIENT_WORLD_FRAME_CHILD_FAILED,
+                              error->operation, 997, error->native_policy);
+        }
+        call->state.hand_returned = true;
     }
     if (!settings_at(call, 1004, 1007, &settings))
         return false;

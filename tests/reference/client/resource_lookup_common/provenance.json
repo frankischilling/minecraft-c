@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 334096,
-      "sha256": "1b36edf130fe344d6ba6701e069ad10b15056b4473901334c23a7363df7ee15c"
+      "bytes": 334142,
+      "sha256": "6fcc03da7593761b2c9ed2bf4ffdb5d341c209d214319ff82f90abc8c9514103"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -466,8 +466,8 @@
       "sha256": "93226a41c97403c4e3e61a23f633b553fc6c96c3058e44d362bf01409dfdaff9"
     },
     "docs/parity.md": {
-      "bytes": 125943,
-      "sha256": "61c568ae6f935d8a2e223bbe948db07baf446e26e40459357a14da542a94383d"
+      "bytes": 126672,
+      "sha256": "8520842448080a881f7e7dd8a3b2882c753ce236b4ff5bd7c420ff3afccfd0cb"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 41951,
-      "sha256": "9dac57657bff407132f935f7c2c59d1de11e558b614e0a71a8dddf931f80f751"
+      "bytes": 43581,
+      "sha256": "5ebf37c5d5382c0218838f1a15569fa9663e7a317a77e11f105a9b575d47a387"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,24 +826,24 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 311053,
-      "sha256": "b47bc7bf1b94fa2221cfe7aa0fc143b3924c38ba17285201ad25a8c53d782218"
+      "bytes": 313115,
+      "sha256": "db477ccf43735e67597a5e73661bf8b89fd8e0057e757638379806f801819dce"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 22351,
       "sha256": "de263d051acc81660f4b803f97070b2a35aa0004fcf57d25866bce83ba38acf0"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 42520,
-      "sha256": "883b89ab1bb9be0a21fefd0e70780a6da56f641015a358e886bee9d5bfaf82e5"
+      "bytes": 43606,
+      "sha256": "fd7914a8edad0de52b95cb250f1d365fc29287c1fcb0923afe812f35d18968e1"
     },
     "docs/wiki/History.md": {
       "bytes": 26966,
       "sha256": "60c2185a29fa34238087d0be8cd967f0216e400129206c71b00d3864b4402542"
     },
     "docs/wiki/Home.md": {
-      "bytes": 10677,
-      "sha256": "1c3c381739d113f0d8690e836cc2e3b743e41549653e839e4e0d87c8612ba243"
+      "bytes": 10856,
+      "sha256": "625215dea9938e46da163b807575e67a7924d0758db4bbf48683bc275f4af4be"
     },
     "docs/wiki/Startup.md": {
       "bytes": 12233,
@@ -858,8 +858,8 @@
       "sha256": "f63734d535a5ded7dc18d652ecf5f83c3fc3ab6eb8c8ccd8bc6b19a0f8fa67a6"
     },
     "docs/wiki/_Sidebar.md": {
-      "bytes": 955,
-      "sha256": "eed292e0738ed51a4de28bd5260cc30e8b1316cf9c237e6d3707cbeda197ca8d"
+      "bytes": 1089,
+      "sha256": "c90d7f1e9d3a70539f22f998add02ef524f4f65abc227706e813902d7a2efceb"
     },
     "docs/world/biome-registry.md": {
       "bytes": 10503,
@@ -3662,12 +3662,12 @@
       "sha256": "9a6edca6b70401c4948fdd0dab839ad2549cf723109b16643f0768cc79e740f3"
     },
     "src/client/world/entity_renderer/held_owner.c": {
-      "bytes": 10884,
-      "sha256": "94cf47c76bec0bcb7de5dd83e89be069b42e9aa6bea3d1cf75c0416e24436893"
+      "bytes": 11005,
+      "sha256": "450ae4b921468a1057af9ed13e2566cbc7d8025188c7cd8f56a0aeea8e06159c"
     },
     "src/client/world/entity_renderer/internal.h": {
-      "bytes": 4233,
-      "sha256": "031c0453edda84158f5d0f0890e3880fad3e100807ea09d405f3e14d33162a1c"
+      "bytes": 4286,
+      "sha256": "c6980e346be63884fe8dd1dbf719efcf433bdb8b3116a71f791b1737c1cf0a6a"
     },
     "src/client/world/entity_renderer/map.c": {
       "bytes": 4941,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 230040,
-      "sha256": "4294deb50dd95bee03ac6b5db8f0ca8a8ddddfdfe04d2bb7dbd55a6c86f5ac8b"
+      "bytes": 232409,
+      "sha256": "f9ae204662016e02125d8b86181fed2fae28d5cf8aeeaf6e391ae50321e9519e"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 331371,
-      "sha256": "d5d5b222226b74b4a5e6d5f53a680348ea5c47d0491a5617a4db275048ba47de"
+      "bytes": 333034,
+      "sha256": "5f214c859043e6daa912b3308c17f68de4a9f19a093d9bd8c76d509d50aa6d86"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 226046,
-      "sha256": "115d631c45a3e436b35cfa8c6a9e532573d65fe4e49d131aecfc100c64b614db"
+      "bytes": 228415,
+      "sha256": "66da8d8c55299f601d46e84f8c72c1813e7ac1a6edc7a7180db6c7f318ef0ed7"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9818,8 +9818,8 @@
       "sha256": "5c9149eaa4b84d1e6d1c22e84316deeb479e7b5b201cba472b7199f779ebc1ac"
     },
     "src/client/runtime/menu_loop.c": {
-      "bytes": 47514,
-      "sha256": "4c275e4cbca5a83c12f5d1512e6e8be65d2c693e6fd9342e4d9e1ebd1c1e36fd"
+      "bytes": 47511,
+      "sha256": "cf7c7a471f5005f47cdc138268c0b90e5c53449ddae1866fa92eecf6925743bb"
     },
     "src/client/runtime/menu_loop.h": {
       "bytes": 4550,
@@ -9926,8 +9926,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 104917,
-      "sha256": "e1ad2061b3098d88750bdfbdfb1a565a61defbf419d6d149109d63a9beef7e97"
+      "bytes": 105810,
+      "sha256": "09c4bc60d3ceb3d27866394e95e06e453d133a7bd3346b234bf7e188b3052a89"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -10098,8 +10098,8 @@
       "sha256": "b33898cb759605ebfa1bffb157bcbea86613439f74b014849a210e742b03fcc2"
     },
     "cmake/client_image_download.cmake": {
-      "bytes": 686,
-      "sha256": "5420f12ffd777ca2a3a5de912629d10a8d23710e588ed78d33136156d31821a6"
+      "bytes": 712,
+      "sha256": "bef0927b9593fca5b564b0cad905cea5e1d6a4b239d3f19f0901ac9cd740ef90"
     },
     "cmake/client_render_global_access.cmake": {
       "bytes": 231,
@@ -10174,12 +10174,12 @@
       "sha256": "950decea21b8a179aba65081f2c45d090076bd4f863514ceabe3c4aeeabb4182"
     },
     "src/client/render_engine/image_download.c": {
-      "bytes": 33916,
-      "sha256": "f339ee3f8918e73bd92ff39d0e854e4958b25b3faa17a9d09ef0ad9d48fb0245"
+      "bytes": 38885,
+      "sha256": "cd2bbfd3d83256e52f8becdf992baf5961b06c04d79e44454c86b5dae01042fd"
     },
     "src/client/render_engine/image_download.h": {
-      "bytes": 5655,
-      "sha256": "70e3dd3d66b2bed3684a9d022ce26793b51ddc5e873db14b448b1b5a0ab3365c"
+      "bytes": 6569,
+      "sha256": "4c27a952596ec7d60c0c0e851c4c7f200defcac1c6a00bcbed87a1d270c4e287"
     },
     "src/client/world/render_global_access.c": {
       "bytes": 42637,
@@ -10606,8 +10606,8 @@
       "sha256": "7db927eabb1057908e98a718b09cb0b14561ed840efeda0bea5ff2b41fe040bd"
     },
     "src/client/world/entity_renderer/held_item_tick.c": {
-      "bytes": 11640,
-      "sha256": "9e751bd93321b109efec8c038667f8125a054a0137b9c711fe46cfabc8518a07"
+      "bytes": 11676,
+      "sha256": "6f9d8d89677a668b24f14ecdf76b983c8e39a85b37d6b61e84d878d13f552bbf"
     },
     "src/client/world/entity_renderer/rain_tick.c": {
       "bytes": 19009,
@@ -10810,8 +10810,8 @@
       "sha256": "aeaf94c1de931037c94f616707f7e677b2f58627be582ab5c422dfbdd64207c2"
     },
     "docs/client/renderer-frames.md": {
-      "bytes": 14095,
-      "sha256": "ba164fd29004804d4d1f46b3c90a72f5bb9605e69164c069351a72c0a8223e3c"
+      "bytes": 14238,
+      "sha256": "43fb2a90a9c4747e1eb8c1440a9f059768d09847afb44945927989d7766fb8fd"
     },
     "docs/world/ticking.md": {
       "bytes": 3413,
@@ -10822,8 +10822,8 @@
       "sha256": "f332863a8dbdac177226c5e86a8f34a317a47c774d24fc813488c07b496b02a8"
     },
     "include/mc/client/world/world_frame.h": {
-      "bytes": 8759,
-      "sha256": "94f8e1c65a0e6065432ae2f8c7c526f4556070b002bf86293d2246560be73856"
+      "bytes": 8984,
+      "sha256": "a4f7631a2ef2adc1e93015eafcd60c58d60dbb9fea409b2a099c8525c9d2a369"
     },
     "include/mc/entity/player/mouse_filter.h": {
       "bytes": 847,
@@ -10866,8 +10866,8 @@
       "sha256": "baa5fdacd446c1edd4c66b1b2506d4ac804755e0538cdb82431b1e82f6955489"
     },
     "src/client/world/entity_renderer/world_frame.c": {
-      "bytes": 61372,
-      "sha256": "02e30d9cd76740a6ff9e57124fbcf96324222f2212d6bd725c157bd2b7b5beee"
+      "bytes": 62075,
+      "sha256": "7655664630a7012a954a0467b1342930fd94d9d6d4bbe0a57c0d253a7c8bfe94"
     },
     "src/entity/player/mouse_filter.c": {
       "bytes": 1627,
@@ -11066,24 +11066,24 @@
       "sha256": "f45f85a512ac04adb904fe9338f367405e4e5bfdabfbd01205c5a21bdb222a4d"
     },
     "src/client/display/camera_surface.h": {
-      "bytes": 1361,
-      "sha256": "823246476dd1faee8f41dff68d10c5edff5d4be5bbbba47cb1529bd62aeffb42"
+      "bytes": 1543,
+      "sha256": "21800bb1fa7b29fdb8f568c09759c5d1bee0db967382930c9b03814ed5c7332c"
     },
     "src/client/display/camera_surface.inc": {
-      "bytes": 5690,
-      "sha256": "d58c1c394bb9c41c22768fa0d1b255fcb42485c66a334684e482cc8d8bf72590"
+      "bytes": 6248,
+      "sha256": "92dc178cebbfdf1cceeffe65fd79d7016a9e1365b1715e0c6d0c2fb0325c1500"
     },
     "src/client/render_engine/ge_float.c": {
       "bytes": 4941,
       "sha256": "5e5fb9c6e20acbef902e5e37b573ef0a8e825b6f3fbd91bf1641b206ecff5c91"
     },
     "src/client/world/entity_renderer/camera.c": {
-      "bytes": 30505,
-      "sha256": "c0bd12719ed1b013fcb620f3398e76862876876d5e99ae9023f5d1127d272e8e"
+      "bytes": 32270,
+      "sha256": "757f51ffcb5f6893daabfc7afea8dd71ead11dc970970d5e81aec2dd15bdbad1"
     },
     "src/client/world/entity_renderer/renderer_camera_internal.h": {
-      "bytes": 922,
-      "sha256": "7e4b7c5d85f71f9a275e3aab77f602fcd913b0d37cac94279b75a7365584df1a"
+      "bytes": 1356,
+      "sha256": "959d644f3f4c61082c35befea5411be6dc0e7621cecb64618a199d616425ffc2"
     },
     "src/client/world/entity_renderer/renderer_fog.c": {
       "bytes": 18281,
@@ -12870,8 +12870,8 @@
       "sha256": "0d7669cd32004f742c86177577ce8b9223e15665e3c2c05d7b7d9b5d842e38aa"
     },
     "src/client/world/entity_renderer/world_frame_after_particles.inc": {
-      "bytes": 31969,
-      "sha256": "5f3ef00e84e1fde8b8236686d6cead5bb19ea31e94f2c7c57410011afd21c10b"
+      "bytes": 33098,
+      "sha256": "ac6df56cf82b5bdb79a8dede3fd88cf20a7a51ee357a5ff906fdd233f05172d5"
     },
     "src/entity/particles/origin.c": {
       "bytes": 1518,
@@ -12988,6 +12988,118 @@
     "tests/tools/client/test_render_global_clouds.py": {
       "bytes": 8028,
       "sha256": "65e198ef13dcbac8b96ce9003805053827b06aeeefe59b95313fceca0ff4ff0a"
+    },
+    "cmake/client_first_person_hand.cmake": {
+      "bytes": 1775,
+      "sha256": "d4d61a5c030239ba773b4292bdc6b43c648e895ab71ec927e0c95c04ce62f2a4"
+    },
+    "docs/client/clouds.md": {
+      "bytes": 5633,
+      "sha256": "a6fa67254abc2125e499ec832a68d76a9236b8fbdc6c4c2bc84de9a1142fca88"
+    },
+    "docs/client/first-person-hand.md": {
+      "bytes": 5231,
+      "sha256": "ab512dc1b663a36a0987f68fe95b19d3b3a3898cf64aee9c10135a8f985d490f"
+    },
+    "docs/client/precipitation.md": {
+      "bytes": 6347,
+      "sha256": "9ae536511b66faf5a070d092c007912fb571652df06dbf48b355d897a62be6cf"
+    },
+    "include/mc/client/render/model_draw.h": {
+      "bytes": 1134,
+      "sha256": "a6a0c8c6b4c486807b80e7fb67716344376f0c33e76aa309a920f2f58bcc25df"
+    },
+    "include/mc/client/world/first_person_hand.h": {
+      "bytes": 2407,
+      "sha256": "1ad79072782b8ec19226dba1ef079acd7f01d455b39e227d4a5a617e6f1bc344"
+    },
+    "include/mc/client/world/held_item_draw.h": {
+      "bytes": 3488,
+      "sha256": "b1542115dfbae653a7f51dba311358893bc27a8cd7588a371aa0a10bbeec1db7"
+    },
+    "src/client/render/model_draw.c": {
+      "bytes": 10988,
+      "sha256": "2f86a5342fd87550c5290e064d8526a20087cbb03df569ad932b0dd7b1de7565"
+    },
+    "src/client/world/entity_renderer/first_person_hand.c": {
+      "bytes": 15927,
+      "sha256": "dc8aa119904e2a3128113ff2c3fcb90e73322d7171062ae03db34760e8d59d70"
+    },
+    "src/client/world/entity_renderer/first_person_hand_internal.h": {
+      "bytes": 670,
+      "sha256": "eb5ab3b1cbb831ae07689979ece538dc612584bd154da4f1ab9de2488d755dd9"
+    },
+    "src/client/world/entity_renderer/held_item_draw.c": {
+      "bytes": 34147,
+      "sha256": "0820c82a8a325309e7c9ae1c5168752ebdad4ee4725d1eefa017f1cd1357faa5"
+    },
+    "src/client/world/entity_renderer/held_item_draw_internal.h": {
+      "bytes": 1412,
+      "sha256": "61117a0f8024f40b6505f7cb8d5a2a4b93fbc85abeaad443b8c884f09792977c"
+    },
+    "tests/client/world/test_first_person_hand.c": {
+      "bytes": 36982,
+      "sha256": "f567085c4f53756fb11a47b02ec10d4f917aef2681f09994dde807a0e5354d1c"
+    },
+    "tests/reference/client/clouds/README.md": {
+      "bytes": 4902,
+      "sha256": "db019bb5ff3eabbdd8b754816a89031b47d455ce37fd6399a947895d6d501164"
+    },
+    "tests/reference/client/first_person_hand/ArmObservation.java": {
+      "bytes": 7697,
+      "sha256": "1e57c3ee5e6a9c51e4529c9cca8b90aa57057a04a64a18af93d070ebead3cba8"
+    },
+    "tests/reference/client/first_person_hand/FullHandObservation.java": {
+      "bytes": 7212,
+      "sha256": "edfecd7ba44151136d7dfe1d9c35a369e5f5f31933df1daf24da9b45d52bce99"
+    },
+    "tests/reference/client/first_person_hand/HandObservation.java": {
+      "bytes": 7937,
+      "sha256": "a9c5eb659d00780fd17024d8916f2f75dce6c9945f97f65eb9121c3c9e0ebe5a"
+    },
+    "tests/reference/client/first_person_hand/README.md": {
+      "bytes": 7614,
+      "sha256": "3d1463193974fa5509884d222d297c0a2e9a279cb07e5a8af1869d270c5ff12e"
+    },
+    "tests/reference/client/first_person_hand/arm.json": {
+      "bytes": 9256,
+      "sha256": "35db9f75c0d8d24be406ee2d70aa1505d32469f59b1a93c030fb0226ed84e4a7"
+    },
+    "tests/reference/client/first_person_hand/capture_arm.py": {
+      "bytes": 8606,
+      "sha256": "52921f849714d5b73bf63c31f7033e10d4e2606b921731cb0a182c0e83b7fdbe"
+    },
+    "tests/reference/client/first_person_hand/capture_full_hand.py": {
+      "bytes": 7942,
+      "sha256": "f062bc75b53d5da741552edd76f5ec7cfb207c0651b8291ff00d2903524b3169"
+    },
+    "tests/reference/client/first_person_hand/capture_reference.py": {
+      "bytes": 7738,
+      "sha256": "0fde4fb0a1bb065fbceac46cd9fdb69491fba048860dc4e9930541c87aea65f1"
+    },
+    "tests/reference/client/first_person_hand/full.json": {
+      "bytes": 988,
+      "sha256": "47ea40a221dc03a380dc1a0c8d0595beb829934825b2272c95b114f744240974"
+    },
+    "tests/reference/client/first_person_hand/operation-map.json": {
+      "bytes": 44971,
+      "sha256": "f1b766053df11e7e22bfe14eef483b96d2f7297840a2f93f608b594b79814ada"
+    },
+    "tests/reference/client/first_person_hand/outer.json": {
+      "bytes": 21220,
+      "sha256": "e0839ef788694dc3d3dca8c86c9ce1dec30132ad04c4f6d3d5b629efff93d933"
+    },
+    "tests/reference/client/first_person_hand/source-pins.json": {
+      "bytes": 13087,
+      "sha256": "10ec9e3c2ab1dd324862c9c44b0199f6e477b00570a1a82bf252475c9e00df78"
+    },
+    "tests/reference/client/precipitation/README.md": {
+      "bytes": 1449,
+      "sha256": "b4c17409e1bf8a5b3fff95908c43d64369b8eb5a4c1a21efeb9bf7ca648f71f3"
+    },
+    "tests/tools/client/test_first_person_hand.py": {
+      "bytes": 10903,
+      "sha256": "ffd9026f2f46e9679e49e1db1a12612022c689a61aa68502ded65e3c367d655e"
     }
   },
   "self_metadata_excluded": true,

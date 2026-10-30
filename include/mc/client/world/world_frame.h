@@ -2,6 +2,7 @@
 #define MC_CLIENT_WORLD_WORLD_FRAME_H
 
 #include "mc/client/particles/render.h"
+#include "mc/client/world/first_person_hand.h"
 #include "mc/client/world/frustum.h"
 #include "mc/client/world/frustum_culling.h"
 #include "mc/client/world/picking.h"
@@ -54,6 +55,7 @@ typedef struct mc_client_world_frame_error {
     const mc_client_render_global_error *entities;
     const mc_effect_draw_error *particles;
     const mc_client_precipitation_error *precipitation;
+    const mc_client_first_person_hand_error *hand;
     const mc_client_texture_lookup_error *texture;
     const mc_client_graphics_error *lighting;
     const mc_client_lighting_error *lighting_enable;
@@ -95,7 +97,7 @@ typedef struct mc_client_world_frame_state {
     bool selection_alpha_disabled, selection_current_returned;
     bool precipitation_returned, weather_fog_disabled, cloud_fog_returned, cloud_fog_enabled;
     bool clouds_returned, post_cloud_fog_disabled, post_cloud_fog_returned;
-    bool hand_zoom_read, hand_depth_cleared, tail_anaglyph_read, tail_anaglyph;
+    bool hand_zoom_read, hand_depth_cleared, hand_returned, tail_anaglyph_read, tail_anaglyph;
     int32_t terrain_count;
     int32_t translucent_count;
     size_t update_calls;
@@ -136,6 +138,7 @@ typedef struct mc_client_world_frame_state {
     const mc_client_renderer_fog_state_view *cloud_fog;
     const mc_client_renderer_fog_state_view *post_cloud_fog;
     const mc_client_render_global_clouds_state *clouds;
+    const mc_client_first_person_hand_state *hand;
 } mc_client_world_frame_state;
 
 /* Actual px.a(FJ) World draw entry, invoked from px.b's World branch. Uses the
@@ -150,8 +153,9 @@ typedef struct mc_client_world_frame_state {
  * has an independent occurrence through both real DN draw entries. Completed
  * native children retire before a later same-owner call, retaining scalar
  * receipts and ending their borrowed views. A returning particle prefix
- * continues through the actual predicates and translucent terrain calls to
- * the next reached missing source child; it does not complete the PX frame.
+ * continues through translucent terrain, weather, clouds and the first-person
+ * hand. A dry empty-hand nonanaglyph World draw can return; this does not
+ * complete the enclosing PX frame's delay/HUD composition.
  *
  * App and its complete graph stay live/exclusive on the video thread through
  * retirement. Out starts NULL; an allocated terminal call is returned even on

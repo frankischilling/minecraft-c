@@ -1,5 +1,18 @@
 # Build and tests
 
+The [first-person hand](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/first-person-hand.md)
+builds all 53 selected targets on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 62 Windows tests pass in 79.72 seconds and all 58 Linux tests in 120.12
+seconds, without failures, skips or sanitizer findings. All 2,341 C/helper/build
+inputs remain unchanged. Both hosts compare 64 original
+outer outcomes/stack/mode, four complete RA states, arm compilation/reuse,
+16 Biped poses and six face hashes. Outer matrix tolerance is 2e-6. Native
+authored-skin pixels and pending-call/foreign-lookup controls pass. The loaded
+Windows World draw now returns1013 and reaches parent delay/HUD383, while
+preserving saves/resources and 72 input histories. Whole-frame, original pixel
+and repeated gameplay parity remain unverified. Each host passes 1,741 hand/arm
+checks and renders 146 authored-skin pixels.
+
 The [cloud selection](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/clouds.md#qualification)
 builds 48 targets on Windows MSVC Debug and Linux Clang18 ASan/UBSan. All 57
 Windows tests pass in 75.89 seconds and all 53 Linux tests in 96.70 seconds,
@@ -12,7 +25,9 @@ saves/resources and 72 input histories, then reaches the hand call at997.
 The weather checkpoint passes hosted formatting and Linux jobs; Windows stops
 before compilation on a GitHub HTTP500 dependency download. CI now caches only
 verified archives and retries one qualifying transient download failure. Local
-reuse, corruption and retry controls pass. Hosted validation remains pending.
+reuse, corruption and retry controls pass. The following
+[cloud run](https://github.com/frankischilling/minecraft-c/actions/runs/41129544397)
+passes formatting, Windows and both Linux jobs. No controlled speedup is claimed.
 
 The [precipitation selection](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/precipitation.md#qualification)
 builds 46 targets on Windows MSVC Debug and Linux Clang18 ASan/UBSan. All 55 Windows

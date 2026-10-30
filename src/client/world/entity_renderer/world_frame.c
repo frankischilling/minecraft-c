@@ -9,6 +9,7 @@
 #include "../../display/world_frame_surface.h"
 #include "../../render_engine/lighting.h"
 #include "../../view_slot.h"
+#include "first_person_hand_internal.h"
 #include "internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
@@ -56,6 +57,9 @@ struct mc_client_world_frame_call {
     mc_client_precipitation_call *precipitation;
     mc_client_precipitation_state precipitation_state;
     mc_client_precipitation_error precipitation_error, precipitation_cleanup;
+    mc_client_first_person_hand_call *hand;
+    mc_client_first_person_hand_state hand_state;
+    mc_client_first_person_hand_error hand_error, hand_cleanup;
     mc_client_effect_renderer *effects_occurrence;
 #ifdef MC_SOURCE_HAS_RENDER_GLOBAL
     mc_client_effect_draw_call *lit_particles, *sprite_particles;
@@ -912,6 +916,17 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
         return result(error, MC_CLIENT_WORLD_FRAME_OK, NULL);
     if (call->state.active || call->state.owner->active)
         return result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame active retirement");
+    if (mc_client_first_person_hand_retire(&call->hand, &call->hand_cleanup) !=
+        MC_CLIENT_FIRST_PERSON_HAND_OK) {
+        if (call->hand != NULL)
+            (void)mc_client_first_person_hand_inspect(call->hand, &call->hand_state);
+        result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame hand retirement");
+        if (error != NULL)
+            error->hand = &call->hand_cleanup;
+        return MC_CLIENT_WORLD_FRAME_BUSY;
+    }
+    call->state.hand = NULL;
+    call->failure.hand = NULL;
 #ifdef MC_SOURCE_HAS_RENDER_GLOBAL
     if (mc_client_render_global_clouds_retire(&call->clouds, &call->clouds_cleanup) !=
         MC_CLIENT_RENDER_GLOBAL_OK) {

@@ -433,8 +433,8 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
             return stop(loop, loop->world_frame_error.operation,
                         loop->world_frame_error.site.class_name,
                         loop->world_frame_error.site.method, loop->world_frame_error.site.pc);
-        /* The source World draw still has an explicit missing descendant.
-         * Later frame delay/HUD work is never replaced by the menu bridge. */
+        /* A returned World draw retains its call until parent retirement.
+         * The following delay/HUD work still needs its own source body. */
         return stop(loop, "actual post-World frame delay/HUD composition dependency", "px", "b",
                     383);
     }

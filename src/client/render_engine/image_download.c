@@ -636,6 +636,104 @@ bool mc_client_image_download_inspect(const mc_client_image_download *entry,
 }
 
 mc_client_image_download_status
+mc_client_render_download_texture(mc_client_render_engine *engine, mc_client_display *display,
+                                  const mc_player_string *url, const mc_player_string *fallback,
+                                  mc_client_texture *out, mc_client_download_texture_error *e) {
+    if (e == NULL || out == NULL)
+        return MC_CLIENT_IMAGE_DOWNLOAD_ARGUMENT;
+    *e = (mc_client_download_texture_error){0};
+    const char *descriptor = "(Ljava/lang/String;Ljava/lang/String;)I";
+    if (engine == NULL)
+        return fail(&e->download, MC_CLIENT_IMAGE_DOWNLOAD_SOURCE_NULL,
+                    "actual downloaded texture null Engine", site("ji", "a", descriptor, 1));
+    if (engine->image_downloads_retired || engine->active_resource_calls != 0 ||
+        engine->classes->active_source_calls != 0 ||
+        (engine->image_downloads != NULL && engine->image_downloads->retiring))
+        return fail(&e->download, MC_CLIENT_IMAGE_DOWNLOAD_BUSY,
+                    "downloaded texture native operation admission",
+                    site("ji", "a", descriptor, 5));
+    mc_client_render_map *map = (mc_client_render_map *)engine->fields.h;
+    if (map == NULL)
+        return fail(&e->download, MC_CLIENT_IMAGE_DOWNLOAD_SOURCE_NULL,
+                    "actual downloaded texture h Map receiver", site("ji", "a", descriptor, 5));
+    if (!map_shape(map))
+        return fail(&e->download, MC_CLIENT_IMAGE_DOWNLOAD_STATE,
+                    "downloaded texture actual Map metadata", site("ji", "a", descriptor, 5));
+    mc_client_image_download *entry = NULL;
+    for (size_t i = 0; i < map->count; ++i)
+        if (key_equal(map->downloads[i].key, url)) {
+            entry = map->downloads[i].value;
+            break;
+        }
+    mc_client_argb_image *image = NULL;
+    if (entry != NULL) {
+        if (!entry->mutex_ready || mtx_lock(&entry->mutex) != thrd_success)
+            return fail(&e->download, MC_CLIENT_IMAGE_DOWNLOAD_BUSY,
+                        "downloaded texture image publication lock",
+                        site("ji", "a", descriptor, 19));
+        image = entry->a;
+        if (image != NULL && !entry->d &&
+            mc_client_argb_image_retain(image) != MC_CLIENT_RENDER_ENGINE_OK) {
+            mtx_unlock(&entry->mutex);
+            return fail(&e->download, MC_CLIENT_IMAGE_DOWNLOAD_LIMIT,
+                        "downloaded texture image occurrence", site("ji", "a", descriptor, 19));
+        }
+        const bool upload = image != NULL && !entry->d;
+        mtx_unlock(&entry->mutex);
+        if (upload) {
+            if (entry->c >= 0) {
+                mc_client_argb_image_release(image);
+                e->source_pc = 63;
+                return fail(&e->download, MC_CLIENT_IMAGE_DOWNLOAD_UNIMPLEMENTED,
+                            "actual downloaded texture existing-id image refresh",
+                            site("ji", "a", descriptor, 63));
+            }
+            mc_client_texture generated;
+            const mc_client_render_texture_status status = mc_client_render_engine_register_image(
+                engine, display, NULL, image, &generated, &e->texture);
+            mc_client_argb_image_release(image);
+            if (status != MC_CLIENT_RENDER_TEXTURE_OK) {
+                e->source_pc = 45;
+                return fail(&e->download, MC_CLIENT_IMAGE_DOWNLOAD_STATE,
+                            "actual downloaded texture image registration child",
+                            site("ji", "a", descriptor, 45));
+            }
+            entry->c = (int32_t)generated; /* Actual ek.c48. */
+            entry->d = true;               /* Actual ek.d68. */
+        }
+    }
+    if (entry == NULL || entry->c < 0) {
+        if (fallback == NULL) {
+            *out = (mc_client_texture)-1;
+            e->source_pc = 87;
+        } else {
+            mc_player_string_view text;
+            if (!mc_player_string_read(fallback, &text))
+                return fail(&e->download, MC_CLIENT_IMAGE_DOWNLOAD_STATE,
+                            "downloaded texture actual fallback String",
+                            site("ji", "a", descriptor, 90));
+            e->fallback = true;
+            const mc_texture_pack_text key = {text.units, text.length, false};
+            if (mc_client_render_engine_texture(engine, display, NULL, key, out, &e->lookup) !=
+                MC_CLIENT_LOOKUP_OK) {
+                e->source_pc = 90;
+                return fail(&e->download, MC_CLIENT_IMAGE_DOWNLOAD_STATE,
+                            "actual downloaded texture fallback lookup child",
+                            site("ji", "a", descriptor, 90));
+            }
+            e->source_pc = 93;
+        }
+    } else {
+        *out = (mc_client_texture)entry->c;
+        e->source_pc = 98;
+    }
+    e->returned = true;
+    e->download.source_returned = true;
+    e->download.site = site("ji", "a", descriptor, e->source_pc);
+    return MC_CLIENT_IMAGE_DOWNLOAD_OK;
+}
+
+mc_client_image_download_status
 mc_client_render_image_download_release(mc_client_render_engine *engine, mc_player_string *url,
                                         mc_client_image_download_error *error) {
     mc_client_image_download_error local = {0};
