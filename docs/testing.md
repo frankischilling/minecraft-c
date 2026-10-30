@@ -1,5 +1,46 @@
 # Test scope and reproduction
 
+## TileEntityRenderer CPU qualification
+
+The [canonical TileEntity dispatcher](client/tile-entity-renderer.md) matches
+254 original constructor/lookup rows, 251 null-World callback/failure rows,
+and 96 frame-method rows from all 24 arithmetic cases on native Windows and
+sanitized Linux. The raw original Pig-constructor prerequisite is retained
+separately and earns no native constructor credit. Native replay uses the
+common pose fields of a real RAW LocalPlayer; Random/Math/Watcher absence
+preservation earns no original instantiated-state credit. Java stack-line to
+source-PC projections apply only to the three declared null failures, with
+raw fixtures and hashes unchanged.
+
+Nineteen targets build on each platform. The selected 27 Windows MSVC Debug
+CTests pass in 46.56 seconds; 26 Linux Clang18 ASan/UBSan tests pass in 47.60
+seconds. The selection includes existing TileEntity, RenderManager, resource,
+lighting and terrain checks. Native controls cover actual RAW World, Engine,
+Font and Living holds; displaced RenderBlocks lifetime; quota prefixes;
+failed-init latching; strict floating controls; and completed stores on refusal.
+The new client tests use no original JAR, JVM, imported assets or graphics
+context. The broader regression selection includes its existing device scopes.
+
+The rebuilt Windows executable opens two normal menu frames with imported
+assets, an isolated APPDATA directory and no JVM/JAR runtime. These CPU methods
+are not yet connected to the complete RenderGlobal Entity/TileEntity pass.
+RenderManager frame binding, live traversal and renderer draws remain open
+dependencies; no complete World-frame or gameplay result is claimed.
+
+### Windows compiler cache
+
+The Windows job uses pinned sccache 0.19.0 with a local 512 MiB object cache
+restored between runs. CMake selects embedded MSVC debug information (`/Z7`)
+so each object carries its own debug data. The C11 atomics option uses MSVC's
+equivalent dash spelling, which the cache parser accepts as an option. An
+isolated native MSVC check preserves atomic and strict floating behavior and
+restores the identical object bytes on a cache hit.
+
+The job reports cache statistics, stops the cache server and saves successful
+compilation output before running the complete test suite. Test results are
+never reused. Hosted warm-cache speed remains unmeasured; the workflow retains
+all diagnostics, floating controls, tests and timeouts.
+
 ## Vertex lighting and normal qualification
 
 Nineteen selected Windows MSVC Debug CTests pass in 47.10 seconds. Eighteen

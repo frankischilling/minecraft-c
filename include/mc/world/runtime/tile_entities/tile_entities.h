@@ -4,6 +4,7 @@
 #include "mc/item/stack/stack.h"
 #include "mc/storage/nbt/tree.h"
 #include "mc/world/chunk/object.h"
+#include "mc/world/info/info.h"
 #include "mc/world/runtime/tile_entities/errors.h"
 
 #include <stdbool.h>
@@ -17,6 +18,7 @@ typedef struct mc_world_reference_list mc_world_reference_list;
 typedef struct mc_tile_entity mc_tile_entity;
 typedef struct mc_tile_entity_name mc_tile_entity_name;
 typedef struct mc_tile_entity_classes mc_tile_entity_classes;
+typedef struct mc_tile_entity_class_literal mc_tile_entity_class_literal;
 typedef struct mc_tile_entity_map_backing mc_tile_entity_map_backing;
 
 typedef enum mc_tile_entity_kind {
@@ -32,6 +34,72 @@ typedef enum mc_tile_entity_class_phase {
     MC_TILE_ENTITY_CLASS_FAILED
 } mc_tile_entity_class_phase;
 
+/* Passive Class selectors, independent of instance kinds, private registration
+ * IDs and constructor availability. All eight concrete classes directly extend
+ * base TileEntity in the unchanged client/server class declarations. */
+typedef enum mc_tile_entity_class_kind {
+    MC_TILE_ENTITY_CLASS_KIND_TILE_ENTITY = 0,
+    MC_TILE_ENTITY_CLASS_KIND_FURNACE,
+    MC_TILE_ENTITY_CLASS_KIND_CHEST,
+    MC_TILE_ENTITY_CLASS_KIND_JUKEBOX,
+    MC_TILE_ENTITY_CLASS_KIND_DISPENSER,
+    MC_TILE_ENTITY_CLASS_KIND_SIGN,
+    MC_TILE_ENTITY_CLASS_KIND_SPAWNER,
+    MC_TILE_ENTITY_CLASS_KIND_NOTE_BLOCK,
+    MC_TILE_ENTITY_CLASS_KIND_PISTON,
+    MC_TILE_ENTITY_CLASS_KIND_COUNT
+} mc_tile_entity_class_kind;
+
+typedef struct mc_tile_entity_class_literal_view {
+    const mc_tile_entity_classes *owner;
+    const mc_world_runtime_classes *world_classes;
+    mc_world_info_side side;
+    mc_tile_entity_class_kind kind;
+    const char *client_name, *server_name; /* Diagnostic names, not source Strings. */
+    const char *superclass_name; /* Actual side's declared name, including java.lang.Object. */
+} mc_tile_entity_class_literal_view;
+
+/* One counted native borrow of the SAME TileEntity class owner above these
+ * Worlds. The first borrow may allocate its cold native header/canonical cells;
+ * it initializes no source class, registration Map or Piston List, creates no
+ * World/TileEntity, reads no resource and consumes no Random/profile state.
+ * Later borrows return the identical owner; overflow is LIMIT. The borrow
+ * blocks explicit TileEntity class retirement and World-class destruction.
+ * release consumes one borrow and clears its slot; a NULL slot is invalid,
+ * a NULL *slot is harmless, and an unbalanced release is INVALID_ARGUMENT.
+ * Borrowing a namespace whose source initializer failed does not retry it. */
+mc_tile_entity_status mc_tile_entity_classes_borrow(mc_world_runtime_classes *world_classes,
+                                                    mc_tile_entity_classes **out);
+mc_tile_entity_status mc_tile_entity_classes_release(mc_tile_entity_classes **slot);
+
+/* Actual canonical Class identity is pointer equality within one live owner;
+ * distinct namespaces have distinct cells even with the same side/profile.
+ * Hold a counted namespace borrow throughout every returned literal/view and
+ * cached key use, including view.owner and view.world_classes. These passive
+ * queries allocate/initialize nothing and work independently of source class
+ * phases. Invalid arguments preserve out. get rejects an unknown selector with
+ * INVALID_KIND. superclass returns the same owner's base OW/JH for each of the
+ * eight concrete classes. The base's real java/lang/Object superclass is
+ * outside this admitted namespace: superclass(base) returns INVALID_KIND and
+ * preserves out, never a fabricated NULL Class. LL checks base before asking.
+ * All operations require exclusive live owners and disjoint outputs/slots;
+ * expired or noncanonical pointers are not admitted. */
+mc_tile_entity_status mc_tile_entity_class_literal_get(const mc_tile_entity_classes *classes,
+                                                       mc_tile_entity_class_kind kind,
+                                                       const mc_tile_entity_class_literal **out);
+mc_tile_entity_status
+mc_tile_entity_class_literal_inspect(const mc_tile_entity_class_literal *literal,
+                                     mc_tile_entity_class_literal_view *out);
+mc_tile_entity_status
+mc_tile_entity_class_literal_superclass(const mc_tile_entity_class_literal *literal,
+                                        const mc_tile_entity_class_literal **out);
+/* Actual Object.getClass for the fixed allocation type, in RAW, READY or failed
+ * construction phases. Hold the instance during this query and the counted
+ * class borrow for subsequent literal use. NULL instance is INVALID_ARGUMENT;
+ * an unsupported native instance kind is INVALID_KIND. No active use occurs. */
+mc_tile_entity_status mc_tile_entity_get_class(const mc_tile_entity *tile_entity,
+                                               const mc_tile_entity_class_literal **out);
+
 /* Passive class-owner view. No active use, initialization, allocation or holds.
  * List identity is borrowed until class retirement; it is not a mutable List
  * API. allocation_bytes counts only the Piston static List's requested native
@@ -46,6 +114,7 @@ typedef struct mc_tile_entity_piston_class_snapshot {
     const mc_world_reference_list *list_identity;
     size_t list_count, list_capacity, allocation_bytes, live_tile_entities;
     size_t max_allocation_bytes;
+    size_t class_literal_borrows; /* Counted passive namespace users, not source fields. */
     uint32_t list_mod_count_bits;
 } mc_tile_entity_piston_class_snapshot;
 

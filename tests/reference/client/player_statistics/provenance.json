@@ -208,8 +208,8 @@
       "sha256": "5af10ea1132740f4b32bb50efae54fe7972cd3e000a76639b6ca470641ca8fbf"
     },
     "src/client/render/model.c": {
-      "bytes": 7786,
-      "sha256": "82c15cc7ebf895b3217cc21eda867a6c1670a428f6fbcbdfccb810ff405fbcec"
+      "bytes": 7803,
+      "sha256": "a65b3c5267282b4a6c3ad51c23f596897d8b07066f7ad5ae5451a6fcf5ed0658"
     },
     "src/client/startup/game_directory.c": {
       "bytes": 15042,

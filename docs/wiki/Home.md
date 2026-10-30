@@ -1,8 +1,10 @@
 # minecraft-c
 
-The [source lighting renderer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md) now handles normals, material inheritance
-and flat/smooth vertex lighting. Windows and Linux pixel comparisons pass; [Build and tests](Build-and-tests)
-records the finite scope. Entity/TileEntity rendering510 and full frames remain unfinished.
+The [source lighting renderer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md)
+and [TileEntityRenderer CPU bodies](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/tile-entity-renderer.md)
+pass their specified Windows and Linux comparisons. [Build and tests](Build-and-tests)
+records the pixel, constructor and operand limits. Full Entity/TileEntity
+traversal, drawing and playable frames remain unfinished.
 
 minecraft-c is a C17 implementation of Minecraft Beta 1.7.3 for x86-64 Windows
 and Linux. There is no playable client or dedicated server yet. The native

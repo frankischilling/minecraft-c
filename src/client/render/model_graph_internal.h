@@ -11,6 +11,8 @@ struct mc_client_render_classes {
     int32_t px_b;
     bool th_retired; /* Explicit terminal association cannot be rebound in this namespace. */
     struct mc_client_render_manager_classes *th; /* Same actual native class namespace. */
+    struct mc_client_tile_renderer_classes *ll;  /* Actual TileEntityRenderer association. */
+    bool ll_retired;
     struct mc_client_frustum_namespace *frustum; /* Actual w.e in this class namespace. */
     bool frustum_retired;
 };

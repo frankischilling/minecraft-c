@@ -50,9 +50,26 @@ typedef struct live_class_entry {
     mc_tile_entity_name *name;
 } live_class_entry;
 
+struct mc_tile_entity_class_literal {
+    mc_tile_entity_classes *owner;
+    mc_tile_entity_class_kind kind;
+};
+
+/* Unchanged ow/jh.<clinit> Class/String pairs at20..73, independently checked
+ * against every referenced class's superclass metadata. The first row is the
+ * base itself; these diagnostic names do not create source String identities.
+ * Client archive af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c;
+ * server archive 033a127e4a25a60b038f15369c89305a3d53752242a1cff11ae964954e79ba4d. */
+static const char *const class_literal_client_names[MC_TILE_ENTITY_CLASS_KIND_COUNT] = {
+    "ow", "sk", "js", "eg", "az", "yk", "cy", "tn", "uk"};
+static const char *const class_literal_server_names[MC_TILE_ENTITY_CLASS_KIND_COUNT] = {
+    "jh", "ln", "gk", "cr", "ak", "pq", "bx", "mf", "mu"};
+
 struct mc_tile_entity_classes {
     mc_world_runtime_classes *parent;
     mc_registry_classes *registry;
+    mc_tile_entity_class_literal class_literals[MC_TILE_ENTITY_CLASS_KIND_COUNT];
+    size_t class_literal_borrows;
     unsigned int phase, initializer_pc;
     mc_tile_entity_status failure;
     mc_registry_error first_registry_failure;
@@ -1784,6 +1801,9 @@ static mc_tile_entity_status live_classes_owner_in(mc_world_runtime_classes *par
             return MC_TILE_ENTITY_ALLOCATION_FAILED;
         classes->parent = parent;
         classes->registry = parent->registry;
+        for (size_t i = 0; i < (size_t)MC_TILE_ENTITY_CLASS_KIND_COUNT; ++i)
+            classes->class_literals[i] =
+                (mc_tile_entity_class_literal){classes, (mc_tile_entity_class_kind)i};
         classes->allocation_bytes = sizeof(*classes);
         classes->piston_max_allocation_bytes = 1024u * 1024u;
         parent->tile_entities = classes; /* Native owner publication, no Java field. */
@@ -1791,6 +1811,105 @@ static mc_tile_entity_status live_classes_owner_in(mc_world_runtime_classes *par
     mc_tile_entity_classes *classes = parent->tile_entities;
     *out = classes;
     return MC_TILE_ENTITY_OK;
+}
+
+mc_tile_entity_status mc_tile_entity_classes_borrow(mc_world_runtime_classes *parent,
+                                                    mc_tile_entity_classes **out) {
+    if (parent == NULL || out == NULL)
+        return MC_TILE_ENTITY_INVALID_ARGUMENT;
+    mc_tile_entity_classes *classes = NULL;
+    const mc_tile_entity_status status = live_classes_owner_in(parent, &classes);
+    if (status != MC_TILE_ENTITY_OK)
+        return status;
+    if (classes->class_literal_borrows == SIZE_MAX)
+        return MC_TILE_ENTITY_LIMIT;
+    ++classes->class_literal_borrows;
+    *out = classes;
+    return MC_TILE_ENTITY_OK;
+}
+
+mc_tile_entity_status mc_tile_entity_classes_release(mc_tile_entity_classes **slot) {
+    if (slot == NULL)
+        return MC_TILE_ENTITY_INVALID_ARGUMENT;
+    mc_tile_entity_classes *classes = *slot;
+    if (classes == NULL)
+        return MC_TILE_ENTITY_OK;
+    if (classes->class_literal_borrows == 0)
+        return MC_TILE_ENTITY_INVALID_ARGUMENT;
+    --classes->class_literal_borrows;
+    *slot = NULL;
+    return MC_TILE_ENTITY_OK;
+}
+
+static bool class_literal_is_canonical(const mc_tile_entity_class_literal *literal) {
+    return literal != NULL && literal->owner != NULL && literal->owner->parent != NULL &&
+           literal->owner->parent->tile_entities == literal->owner &&
+           (unsigned int)literal->kind < (unsigned int)MC_TILE_ENTITY_CLASS_KIND_COUNT &&
+           literal == &literal->owner->class_literals[(size_t)literal->kind];
+}
+
+mc_tile_entity_status mc_tile_entity_class_literal_get(const mc_tile_entity_classes *classes,
+                                                       mc_tile_entity_class_kind kind,
+                                                       const mc_tile_entity_class_literal **out) {
+    if (classes == NULL || out == NULL)
+        return MC_TILE_ENTITY_INVALID_ARGUMENT;
+    if ((unsigned int)kind >= (unsigned int)MC_TILE_ENTITY_CLASS_KIND_COUNT)
+        return MC_TILE_ENTITY_INVALID_KIND;
+    *out = &classes->class_literals[(size_t)kind];
+    return MC_TILE_ENTITY_OK;
+}
+
+mc_tile_entity_status
+mc_tile_entity_class_literal_inspect(const mc_tile_entity_class_literal *literal,
+                                     mc_tile_entity_class_literal_view *out) {
+    if (out == NULL || !class_literal_is_canonical(literal))
+        return MC_TILE_ENTITY_INVALID_ARGUMENT;
+    const size_t index = (size_t)literal->kind;
+    *out = (mc_tile_entity_class_literal_view){
+        .owner = literal->owner,
+        .world_classes = literal->owner->parent,
+        .side = literal->owner->parent->side,
+        .kind = literal->kind,
+        .client_name = class_literal_client_names[index],
+        .server_name = class_literal_server_names[index],
+        .superclass_name = literal->kind == MC_TILE_ENTITY_CLASS_KIND_TILE_ENTITY
+                               ? "java.lang.Object"
+                               : (literal->owner->parent->side == MC_WORLD_INFO_CLIENT
+                                      ? class_literal_client_names[0]
+                                      : class_literal_server_names[0])};
+    return MC_TILE_ENTITY_OK;
+}
+
+mc_tile_entity_status
+mc_tile_entity_class_literal_superclass(const mc_tile_entity_class_literal *literal,
+                                        const mc_tile_entity_class_literal **out) {
+    if (out == NULL || !class_literal_is_canonical(literal))
+        return MC_TILE_ENTITY_INVALID_ARGUMENT;
+    if (literal->kind == MC_TILE_ENTITY_CLASS_KIND_TILE_ENTITY)
+        return MC_TILE_ENTITY_INVALID_KIND; /* Actual java/lang/Object is outside this namespace. */
+    *out = &literal->owner->class_literals[MC_TILE_ENTITY_CLASS_KIND_TILE_ENTITY];
+    return MC_TILE_ENTITY_OK;
+}
+
+mc_tile_entity_status mc_tile_entity_get_class(const mc_tile_entity *tile_entity,
+                                               const mc_tile_entity_class_literal **out) {
+    if (tile_entity == NULL || out == NULL || tile_entity->classes == NULL)
+        return MC_TILE_ENTITY_INVALID_ARGUMENT;
+    mc_tile_entity_class_kind kind;
+    switch (tile_entity->kind) {
+        case MC_TILE_ENTITY_CHEST:
+            kind = MC_TILE_ENTITY_CLASS_KIND_CHEST;
+            break;
+        case MC_TILE_ENTITY_SPAWNER:
+            kind = MC_TILE_ENTITY_CLASS_KIND_SPAWNER;
+            break;
+        case MC_TILE_ENTITY_PISTON:
+            kind = MC_TILE_ENTITY_CLASS_KIND_PISTON;
+            break;
+        default:
+            return MC_TILE_ENTITY_INVALID_KIND;
+    }
+    return mc_tile_entity_class_literal_get(tile_entity->classes, kind, out);
 }
 
 static mc_tile_entity_status live_classes_owner(mc_world_runtime *world,
@@ -1841,6 +1960,7 @@ mc_tile_entity_piston_class_get_snapshot(const mc_world_runtime_classes *parent,
         view.max_allocation_bytes = classes->piston_max_allocation_bytes;
         view.live_tile_entities = classes->live_tile_entities;
         view.list_mod_count_bits = classes->piston_mod_count;
+        view.class_literal_borrows = classes->class_literal_borrows;
     }
     *out = view;
     return MC_TILE_ENTITY_OK;
@@ -2306,6 +2426,10 @@ static mc_tile_entity_status live_classes_initialize(mc_tile_entity_classes *cla
         return classes->failure;
     if (classes->phase == 1)
         return MC_TILE_ENTITY_STATE_ERROR; /* No callback/reentrant clinit is synthesized. */
+    /* Passive literal users may have created this native owner before the
+     * one immutable application Registry binding. Refresh that dependency
+     * before first active use; never replace it in READY/FAILED phases. */
+    classes->registry = classes->parent->registry;
     classes->phase = 1;
     mc_registry_error attempt = live_empty_registry();
     mc_tile_entity_status status = MC_TILE_ENTITY_OK;
@@ -2398,7 +2522,8 @@ mc_world_storage_status mc_live_tile_entities_classes_retire(mc_world_runtime_cl
     mc_world_storage_error cause = {0};
     if (parent != NULL && parent->tile_entities != NULL) {
         mc_tile_entity_classes *classes = parent->tile_entities;
-        if (parent->live_worlds != 0 || classes->live_tile_entities != 0)
+        if (parent->live_worlds != 0 || classes->live_tile_entities != 0 ||
+            classes->class_literal_borrows != 0)
             cause = (mc_world_storage_error){MC_WORLD_STORAGE_BUSY,
                                              "TileEntity class has live owners", 0};
         for (mc_tile_entity_name *name = classes->literals;

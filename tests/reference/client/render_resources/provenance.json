@@ -558,8 +558,8 @@
       "sha256": "82693b43d26e8f61dd7f343d3e6fd59e47b93c53a198c6d9be4051981f59a943"
     },
     "include/mc/world/runtime/tile_entities/tile_entities.h": {
-      "bytes": 34806,
-      "sha256": "4572f909f0458a86fb888c54cf731851f8703b77d9329e08283eda467a62feff"
+      "bytes": 39141,
+      "sha256": "412671c503d2ce5f5d46eaa40bc243b7866989cca7e252ed230a367abc59779a"
     },
     "include/mc/world/runtime/world_access.h": {
       "bytes": 7633,
@@ -1994,8 +1994,8 @@
       "sha256": "f75d54bb2ff204de6fc7b1fe3f5b7992a61af20b7c6edd0f40f0d3a5563fdafc"
     },
     "src/client/render/model_graph_internal.h": {
-      "bytes": 3102,
-      "sha256": "80b8b0dbfbc9f5185088057dffae0bf43a24c9586eddfb6731589c21d55b3ab4"
+      "bytes": 3217,
+      "sha256": "23418f32ec78cb2fb08ed1c43baae57fa4c07e54653cb27459c8b46f5fc48392"
     },
     "src/client/render_engine/chunk_statistics.c": {
       "bytes": 4230,
@@ -4092,6 +4092,82 @@
     "tests/reference/client/lighting_raster/run_material_sequences.py": {
       "bytes": 7706,
       "sha256": "84e367863df760ee43523bfa24d8a0b516f65f29142b12a9c3b320fb565bc00c"
+    },
+    "cmake/tests/client_tile_entity_renderer.cmake": {
+      "bytes": 3408,
+      "sha256": "dd76402febdb63f973672e1970cc482a8ee7f551a61db23966768e8f4563940a"
+    },
+    "include/mc/client/render/tile_entity_renderer/tile_entity_renderer.h": {
+      "bytes": 17765,
+      "sha256": "d8b2fa3fb61ca1c87e35e3c7272d3f4d61d232c61604d6a7b36f47f273bc0984"
+    },
+    "src/client/render/tile_entity_renderer/constructor.c": {
+      "bytes": 8382,
+      "sha256": "2f449a496caacb2235f2177c8c827c4d4fbf8877e949536b3f57a4380021f540"
+    },
+    "src/client/render/tile_entity_renderer/frame.c": {
+      "bytes": 19384,
+      "sha256": "b15119a70a1593b8e25a156e35a1cf4bfe0144841f995827eaca0da0ffcafb02"
+    },
+    "src/client/render/tile_entity_renderer/internal.h": {
+      "bytes": 6198,
+      "sha256": "9183d8d2f0e0442a7c64285eb305b66415fec9c84e731c469c50bfc754232c28"
+    },
+    "src/client/render/tile_entity_renderer/map.c": {
+      "bytes": 13148,
+      "sha256": "a2c8717dd4de03a00dceeffcd62399a616d638d7a8a319dc3d8b916814dc957e"
+    },
+    "src/client/render/tile_entity_renderer/owner.c": {
+      "bytes": 23307,
+      "sha256": "728591f353b74603a397a76f43e1e311d57f6e64ef95b61e696ee84f1cfb8b61"
+    },
+    "src/client/render/tile_entity_renderer/world.c": {
+      "bytes": 15271,
+      "sha256": "396533c0ec948005f176e3e7c0b630e0e4170e0f9312f0f8a5872f74d278a229"
+    },
+    "tests/client/render/test_tile_entity_renderer.c": {
+      "bytes": 21387,
+      "sha256": "6c69ed0b893d6140ac34c6a5dcbae399a30fa682ac685380254d3f6b9fad0648"
+    },
+    "tests/client/render/test_tile_entity_renderer_frame.c": {
+      "bytes": 15398,
+      "sha256": "9a8e77a19ac7d66cdb159c8f74c70b984486fde65ece44b638cf3363bfa62d73"
+    },
+    "tests/client/render/test_tile_entity_renderer_lifetime.c": {
+      "bytes": 20643,
+      "sha256": "acc11b08800e8e194dc1e03b8c45c7e72f3e9ae59144e84cb4c9aa3e31375396"
+    },
+    "tests/client/render/test_tile_entity_renderer_world.c": {
+      "bytes": 17055,
+      "sha256": "9c767fdf0418c8d1ca75ff97ae86c8b5a9e5f7e622a778159590f271df6f9403"
+    },
+    "tests/reference/client/tile_entity_renderer/capture_frame.py": {
+      "bytes": 11228,
+      "sha256": "d420db26eb2356dfb14bddcb5eabfb22e98806eb9613f196553180af9e0ee4c4"
+    },
+    "tests/reference/client/tile_entity_renderer/capture_reference.py": {
+      "bytes": 13290,
+      "sha256": "66d089f96951ebf20a3a28a9fefd893bd3e469f203ed008c45787659c6a49155"
+    },
+    "tests/reference/client/tile_entity_renderer/capture_world.py": {
+      "bytes": 12460,
+      "sha256": "5b81c3e29f5f36e2e387154ee1f8914b78f54694990c73bc2bb858fb9b9845cb"
+    },
+    "tests/reference/client/tile_entity_renderer/run_frame.py": {
+      "bytes": 12448,
+      "sha256": "cba914484225421e052ac75c87ad18da908c7c6cb0ce86b09b05794d7927160a"
+    },
+    "tests/reference/client/tile_entity_renderer/run_native.py": {
+      "bytes": 13265,
+      "sha256": "379baa992b4f7c660d2c8c34f503e9130dc9d42f668c80283da85022747db955"
+    },
+    "tests/reference/client/tile_entity_renderer/run_world.py": {
+      "bytes": 18119,
+      "sha256": "e795253c4a9679ce67821d1afe04e6ff094956a9cd9de841a75dc3de1d42dae2"
+    },
+    "tests/world/runtime/tile_entities/test_class_literals.c": {
+      "bytes": 18051,
+      "sha256": "8b31376524c6f5c7580698cc3aa84b7ef564a45d532f576c47a0ec3913c3e257"
     }
   },
   "source_suppliers": {

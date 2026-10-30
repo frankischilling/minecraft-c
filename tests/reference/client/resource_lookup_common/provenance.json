@@ -10,16 +10,16 @@
       "sha256": "c060aa90caaf23a3309a36249ba727d64b2db36788028345cd453a8221348c5c"
     },
     ".github/workflows/ci.yml": {
-      "bytes": 8251,
-      "sha256": "b62c2e0e48715de7de132fd57ab5334d30ca1ab9f11bf9f60aebdded5d8839f0"
+      "bytes": 10033,
+      "sha256": "d8d001961dbeea08a16f3d22606b32fedb06ae0bc51f6aa6f8adc3d2e148563a"
     },
     ".gitignore": {
       "bytes": 282,
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 332041,
-      "sha256": "271e255f81918b8a7eb7e1da751fd22565656c7ffe7d71be29313d9864bab609"
+      "bytes": 332531,
+      "sha256": "f46e1e500424abd44f5aec4d443631e0a66eb7ec16f7bf4131bd0ab8468457bc"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -62,8 +62,8 @@
       "sha256": "83eb0a971b2379ca2ea0961f96cd05e502bf8ba2bc434aca6039d5724ba23b7b"
     },
     "cmake/client_rendering.cmake": {
-      "bytes": 2009,
-      "sha256": "ab43f8d3ee57ca293473a475a8942f254f8e204b8efa860651bbf38536e65011"
+      "bytes": 2572,
+      "sha256": "7cbb0b93c0d732983cbd05a07b29c5761bb169022584d1b9c011022d96750470"
     },
     "cmake/client_settings_source_save.cmake": {
       "bytes": 230,
@@ -466,8 +466,8 @@
       "sha256": "93226a41c97403c4e3e61a23f633b553fc6c96c3058e44d362bf01409dfdaff9"
     },
     "docs/parity.md": {
-      "bytes": 117038,
-      "sha256": "ab4919c3985326f928379d77f23958c92ae4ba6705eeb78f57dc5428c3268895"
+      "bytes": 117938,
+      "sha256": "f92c2aff2588015212472f6d6dd1265a9967bbd1e3bfe3d39155bf58718f1458"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -826,24 +826,24 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 290696,
-      "sha256": "82417a9c613420e6aa599635b5caa6de7c9359670ed19173324eb35607c29f27"
+      "bytes": 293123,
+      "sha256": "0232763c017bffc564824a2b8d27c6db1165171bc7aec7fcffd8a88c5c98e2af"
     },
     "docs/wiki/Architecture.md": {
-      "bytes": 18608,
-      "sha256": "5b3ab7f7c125130bbf1d7c4507656d296a42aba512383ded664704eff98d0eca"
+      "bytes": 19165,
+      "sha256": "4b00612d999597b4ff78e570f91c0650f9deb7f01ea091c34aab82e1c9376cc1"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 35486,
-      "sha256": "fe4c04f595f94d3ae0c743744c6fcd9e22e3b02bc45cd890fec6a5eb9e190eb6"
+      "bytes": 36179,
+      "sha256": "e99e5bda74e7334bfed7ebccbc0be4465bf0329cf300500c1e7f8896eb3ded56"
     },
     "docs/wiki/History.md": {
       "bytes": 26029,
       "sha256": "3c215b221963d328333a1f5efa7c766b2ad1b8fb1fd7dd787501cec11cf46a66"
     },
     "docs/wiki/Home.md": {
-      "bytes": 8497,
-      "sha256": "bfe10c0b0d901dd0a7bb765fb5d78596311ecdde2bd84bc139a44eb591a8350c"
+      "bytes": 8623,
+      "sha256": "d448cc8ca5cd1f2965a6043faf546794d5b01edb561b90855e190c1ea9bc8edd"
     },
     "docs/wiki/Startup.md": {
       "bytes": 12087,
@@ -1826,8 +1826,8 @@
       "sha256": "7534554dff416c82dda0b596152dadaadb5a39ad90f6a79100300c7aa70d5624"
     },
     "include/mc/world/runtime/tile_entities/tile_entities.h": {
-      "bytes": 34806,
-      "sha256": "4572f909f0458a86fb888c54cf731851f8703b77d9329e08283eda467a62feff"
+      "bytes": 39141,
+      "sha256": "412671c503d2ce5f5d46eaa40bc243b7866989cca7e252ed230a367abc59779a"
     },
     "include/mc/world/runtime/weather.h": {
       "bytes": 2009,
@@ -2974,16 +2974,16 @@
       "sha256": "7e90b98bc63cbde29769324556a51595f65a1c1c14baf5e0dff9470082cf3fb2"
     },
     "src/client/render/model.c": {
-      "bytes": 7786,
-      "sha256": "82c15cc7ebf895b3217cc21eda867a6c1670a428f6fbcbdfccb810ff405fbcec"
+      "bytes": 7803,
+      "sha256": "a65b3c5267282b4a6c3ad51c23f596897d8b07066f7ad5ae5451a6fcf5ed0658"
     },
     "src/client/render/model_graph.c": {
       "bytes": 14356,
       "sha256": "0792285188cb96e23f2b0d815bb2cfb5c3b3161791a92ead79ef7ca6273ed063"
     },
     "src/client/render/model_graph_internal.h": {
-      "bytes": 3102,
-      "sha256": "80b8b0dbfbc9f5185088057dffae0bf43a24c9586eddfb6731589c21d55b3ab4"
+      "bytes": 3217,
+      "sha256": "23418f32ec78cb2fb08ed1c43baae57fa4c07e54653cb27459c8b46f5fc48392"
     },
     "src/client/render/model_graph_trace.inc": {
       "bytes": 2643,
@@ -5086,8 +5086,8 @@
       "sha256": "297356b9101ba22b1c870779d7e66dd492436b48e7d70e32b7287aab9b7ad5cc"
     },
     "src/world/runtime/tile_entities/tile_entities.c": {
-      "bytes": 250022,
-      "sha256": "a7140e14c47f93b7c66623056855d07e4d566f212da934ae220e0ceda4813417"
+      "bytes": 256095,
+      "sha256": "f5bffb9e123129cbd1e7abe0cf9b4f1bade76f2ca70ed860f7c491584def8531"
     },
     "src/world/runtime/tile_entities/tile_entities_internal.h": {
       "bytes": 1112,
@@ -6307,7 +6307,7 @@
     },
     "tests/reference/client/biped/provenance.json": {
       "bytes": 26935,
-      "sha256": "7ce3eb755fcd362261768bc137478cdd4b9330e9495e600550edd71629cc15cb"
+      "sha256": "c9544966f985d82c6d16d1946671e77c73d31d9e6af1af54a137a5e24904ffdd"
     },
     "tests/reference/client/biped/run_native.py": {
       "bytes": 2290,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 214820,
-      "sha256": "e59987db9e61137d3cbcc27228f16537c063cc14fe1ce914d32c81650d5cfde5"
+      "bytes": 218148,
+      "sha256": "2dc59d6360afb6ca64374560c139e065155a61f782451a577f867eddd42ae2ee"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 319122,
-      "sha256": "9749945abc490ed7a4626a43011c9112808d98dced9a2fb91d2d8c83b832987a"
+      "bytes": 321365,
+      "sha256": "a62f47c16a5a3661930164ce9c85066310e1d3bbdabcceec287b0a53c767deb0"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6543,7 +6543,7 @@
     },
     "tests/reference/client/player_statistics/provenance.json": {
       "bytes": 13230,
-      "sha256": "bf4e0da7c4ec7b044b901f08d9225255da77e6d9e3547997eb4f3251a86fc0a4"
+      "sha256": "e0034f1972cc7417adb5a738a21a68eb597de28b549824e463d3234a60979fca"
     },
     "tests/reference/client/player_statistics/source-pins.json": {
       "bytes": 274422,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 210826,
-      "sha256": "12316a1e49b4224ba9973ce1ab20813b581b1b17dfa3237d6d39ecab0969ca6d"
+      "bytes": 214154,
+      "sha256": "9e6f368b157071a7004a616f8c4be81b5a0e77cde915c2908be413049fd0600e"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -12516,6 +12516,150 @@
     "tests/reference/client/lighting_raster/run_material_sequences.py": {
       "bytes": 7706,
       "sha256": "84e367863df760ee43523bfa24d8a0b516f65f29142b12a9c3b320fb565bc00c"
+    },
+    "cmake/tests/client_tile_entity_renderer.cmake": {
+      "bytes": 3408,
+      "sha256": "dd76402febdb63f973672e1970cc482a8ee7f551a61db23966768e8f4563940a"
+    },
+    "docs/client/tile-entity-renderer.md": {
+      "bytes": 6157,
+      "sha256": "7f077df280318f8e4042d507847ce9fc6df1e848c286e1e26fd4180a259955cf"
+    },
+    "include/mc/client/render/tile_entity_renderer/tile_entity_renderer.h": {
+      "bytes": 17765,
+      "sha256": "d8b2fa3fb61ca1c87e35e3c7272d3f4d61d232c61604d6a7b36f47f273bc0984"
+    },
+    "src/client/render/tile_entity_renderer/constructor.c": {
+      "bytes": 8382,
+      "sha256": "2f449a496caacb2235f2177c8c827c4d4fbf8877e949536b3f57a4380021f540"
+    },
+    "src/client/render/tile_entity_renderer/frame.c": {
+      "bytes": 19384,
+      "sha256": "b15119a70a1593b8e25a156e35a1cf4bfe0144841f995827eaca0da0ffcafb02"
+    },
+    "src/client/render/tile_entity_renderer/internal.h": {
+      "bytes": 6198,
+      "sha256": "9183d8d2f0e0442a7c64285eb305b66415fec9c84e731c469c50bfc754232c28"
+    },
+    "src/client/render/tile_entity_renderer/map.c": {
+      "bytes": 13148,
+      "sha256": "a2c8717dd4de03a00dceeffcd62399a616d638d7a8a319dc3d8b916814dc957e"
+    },
+    "src/client/render/tile_entity_renderer/owner.c": {
+      "bytes": 23307,
+      "sha256": "728591f353b74603a397a76f43e1e311d57f6e64ef95b61e696ee84f1cfb8b61"
+    },
+    "src/client/render/tile_entity_renderer/world.c": {
+      "bytes": 15271,
+      "sha256": "396533c0ec948005f176e3e7c0b630e0e4170e0f9312f0f8a5872f74d278a229"
+    },
+    "tests/client/render/test_tile_entity_renderer.c": {
+      "bytes": 21387,
+      "sha256": "6c69ed0b893d6140ac34c6a5dcbae399a30fa682ac685380254d3f6b9fad0648"
+    },
+    "tests/client/render/test_tile_entity_renderer_frame.c": {
+      "bytes": 15398,
+      "sha256": "9a8e77a19ac7d66cdb159c8f74c70b984486fde65ece44b638cf3363bfa62d73"
+    },
+    "tests/client/render/test_tile_entity_renderer_lifetime.c": {
+      "bytes": 20643,
+      "sha256": "acc11b08800e8e194dc1e03b8c45c7e72f3e9ae59144e84cb4c9aa3e31375396"
+    },
+    "tests/client/render/test_tile_entity_renderer_world.c": {
+      "bytes": 17055,
+      "sha256": "9c767fdf0418c8d1ca75ff97ae86c8b5a9e5f7e622a778159590f271df6f9403"
+    },
+    "tests/reference/client/tile_entity_renderer/FRAME_README.md": {
+      "bytes": 4706,
+      "sha256": "2b77bb707cd8be28290e8fec7b84ee343cf3fb1d102d50f4937a796d0ae92783"
+    },
+    "tests/reference/client/tile_entity_renderer/README.md": {
+      "bytes": 3546,
+      "sha256": "070f894aa0ee1e13553f3675999cc4e8b50fc7925ee82dff5cf91972df382c36"
+    },
+    "tests/reference/client/tile_entity_renderer/TileEntityRendererFrameObservation.java": {
+      "bytes": 10427,
+      "sha256": "904a5b32fb9b18f08a8c6c28cdf23eb6f83c99d06b4ea112be091a35d9977ef2"
+    },
+    "tests/reference/client/tile_entity_renderer/TileEntityRendererObservation.java": {
+      "bytes": 15967,
+      "sha256": "4d6d4a4d335431a3aa3a2f00f697f54b153608be1777f9ea0e51eec24bc51ad0"
+    },
+    "tests/reference/client/tile_entity_renderer/TileEntityRendererWorldObservation.java": {
+      "bytes": 11137,
+      "sha256": "d63d2bb41b18ddeca592c32fb7ca660025143c1e7bfb2e49fccad6db0b5b2a8e"
+    },
+    "tests/reference/client/tile_entity_renderer/WORLD_README.md": {
+      "bytes": 3443,
+      "sha256": "9f01d701284807f61e7804cbe39a1d4e7f8119b36b459e8a44d40e56a97682e1"
+    },
+    "tests/reference/client/tile_entity_renderer/capture_frame.py": {
+      "bytes": 11228,
+      "sha256": "d420db26eb2356dfb14bddcb5eabfb22e98806eb9613f196553180af9e0ee4c4"
+    },
+    "tests/reference/client/tile_entity_renderer/capture_reference.py": {
+      "bytes": 13290,
+      "sha256": "66d089f96951ebf20a3a28a9fefd893bd3e469f203ed008c45787659c6a49155"
+    },
+    "tests/reference/client/tile_entity_renderer/capture_world.py": {
+      "bytes": 12460,
+      "sha256": "5b81c3e29f5f36e2e387154ee1f8914b78f54694990c73bc2bb858fb9b9845cb"
+    },
+    "tests/reference/client/tile_entity_renderer/finite.json": {
+      "bytes": 11284,
+      "sha256": "e38ab36ec2b2da0c65d4445c02ce25d6402bd23656a452119512c6ca3a7ec6f0"
+    },
+    "tests/reference/client/tile_entity_renderer/frame-finite.json": {
+      "bytes": 12825,
+      "sha256": "dfec04b995618322b5872f2b15ab9dc757fd0efea2ec3f35c4d061197f17fe07"
+    },
+    "tests/reference/client/tile_entity_renderer/frame-inputs.json": {
+      "bytes": 9837,
+      "sha256": "ab7ab4711c039dd388cdc931f526efe10576bbe57a8d6eb9ae2f1a5afcbe3d34"
+    },
+    "tests/reference/client/tile_entity_renderer/frame-provenance.json": {
+      "bytes": 3394,
+      "sha256": "49bf56db205254321ecbb5e509bf55d163285860627a77703b987f9e118b165d"
+    },
+    "tests/reference/client/tile_entity_renderer/frame-source-pins.json": {
+      "bytes": 22646,
+      "sha256": "0b23f8b1fbce0a09070052d865eccc493927cf41cf53c3dd09fb9e0cfadfb1bd"
+    },
+    "tests/reference/client/tile_entity_renderer/provenance.json": {
+      "bytes": 3683,
+      "sha256": "fde4d4312b646d3923c3c04063b4f1e6cd5828b6e4c5b8a56157835ce02128b5"
+    },
+    "tests/reference/client/tile_entity_renderer/run_frame.py": {
+      "bytes": 12448,
+      "sha256": "cba914484225421e052ac75c87ad18da908c7c6cb0ce86b09b05794d7927160a"
+    },
+    "tests/reference/client/tile_entity_renderer/run_native.py": {
+      "bytes": 13265,
+      "sha256": "379baa992b4f7c660d2c8c34f503e9130dc9d42f668c80283da85022747db955"
+    },
+    "tests/reference/client/tile_entity_renderer/run_world.py": {
+      "bytes": 18119,
+      "sha256": "e795253c4a9679ce67821d1afe04e6ff094956a9cd9de841a75dc3de1d42dae2"
+    },
+    "tests/reference/client/tile_entity_renderer/source-pins.json": {
+      "bytes": 12620,
+      "sha256": "eb89380936351a17459da1cbde96d31646d9d72b02a8331186d8a954c1ae210f"
+    },
+    "tests/reference/client/tile_entity_renderer/world-finite.json": {
+      "bytes": 11094,
+      "sha256": "8f6fa73c9801bb2ca86a4b805271c8bab68e10df967696e2c3e721db399382d8"
+    },
+    "tests/reference/client/tile_entity_renderer/world-provenance.json": {
+      "bytes": 3418,
+      "sha256": "2404246b44f7a73388f924f818e024348e9f983bb27fe669acb7ce59782134f8"
+    },
+    "tests/reference/client/tile_entity_renderer/world-source-pins.json": {
+      "bytes": 16074,
+      "sha256": "499bfeace219f3c479a473aaadc2c6e9e7daf1ac7b3b867bb56157e972d2b2d8"
+    },
+    "tests/world/runtime/tile_entities/test_class_literals.c": {
+      "bytes": 18051,
+      "sha256": "8b31376524c6f5c7580698cc3aa84b7ef564a45d532f576c47a0ec3913c3e257"
     }
   },
   "self_metadata_excluded": true,

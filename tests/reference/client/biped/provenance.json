@@ -318,16 +318,16 @@
       "sha256": "ad48002075913c6db865c2474bbbc4b121055ef689ef6d9040e575624ce10cd8"
     },
     "src/client/render/model.c": {
-      "bytes": 7786,
-      "sha256": "82c15cc7ebf895b3217cc21eda867a6c1670a428f6fbcbdfccb810ff405fbcec"
+      "bytes": 7803,
+      "sha256": "a65b3c5267282b4a6c3ad51c23f596897d8b07066f7ad5ae5451a6fcf5ed0658"
     },
     "src/client/render/model_graph.c": {
       "bytes": 14356,
       "sha256": "0792285188cb96e23f2b0d815bb2cfb5c3b3161791a92ead79ef7ca6273ed063"
     },
     "src/client/render/model_graph_internal.h": {
-      "bytes": 3102,
-      "sha256": "80b8b0dbfbc9f5185088057dffae0bf43a24c9586eddfb6731589c21d55b3ab4"
+      "bytes": 3217,
+      "sha256": "23418f32ec78cb2fb08ed1c43baae57fa4c07e54653cb27459c8b46f5fc48392"
     },
     "src/client/render/model_graph_trace.inc": {
       "bytes": 2643,

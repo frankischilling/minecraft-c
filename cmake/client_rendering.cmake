@@ -23,6 +23,17 @@ target_include_directories(mc_client_render_manager_cpu PUBLIC include src src/p
 target_link_libraries(mc_client_render_manager_cpu PUBLIC
     mc_client_notice mc_simulation mc_c_atomics PRIVATE mc_build_options)
 
+add_library(mc_client_tile_renderer_cpu STATIC
+    src/client/render/tile_entity_renderer/owner.c
+    src/client/render/tile_entity_renderer/constructor.c
+    src/client/render/tile_entity_renderer/map.c
+    src/client/render/tile_entity_renderer/world.c
+    src/client/render/tile_entity_renderer/frame.c)
+target_include_directories(mc_client_tile_renderer_cpu PUBLIC include src src/platform/time)
+target_link_libraries(mc_client_tile_renderer_cpu PUBLIC
+    mc_client_notice mc_simulation mc_c_atomics mc_client_source_resources
+    PRIVATE mc_build_options)
+
 add_library(mc_client_render_manager_hands STATIC src/client/render/manager/hands.c)
 target_include_directories(mc_client_render_manager_hands PUBLIC include src src/platform/time)
 target_link_libraries(mc_client_render_manager_hands PUBLIC

@@ -1,5 +1,14 @@
 # Build and tests
 
+The [TileEntityRenderer CPU comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/tile-entity-renderer.md)
+matches all 254 constructor/lookup, 251 null-World/failure and 96 frame-method
+rows on Windows MSVC Debug and Linux Clang18 ASan/UBSan. The broader selection
+passes 27 Windows tests in 46.56 seconds and 26 Linux tests in 47.60 seconds.
+Native lifetime and quota controls use real RAW owners. The original Pig
+constructor and instantiated Random/Watcher channels remain uncredited; native
+arithmetic uses common pose fields on a genuine RAW LocalPlayer. This does not
+complete RenderGlobal traversal, renderer drawing or playable frames.
+
 The [vertex-lighting backend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md) now consumes source normals, materials,
 lights and the same matrix ledger. Separate NVIDIA and Mesa device captures
 each match all 58 profiles and 59 full RGBA8 frames exactly. Material sequences,

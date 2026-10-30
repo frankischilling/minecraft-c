@@ -1,0 +1,66 @@
+{
+  "scope": "Unchanged LL.a(fd) null-World callbacks (three actual HY CV(XP=null) constructors), and all-null-reference LL frame-bind failure after field stores, same-World skip. No World/TileEntity/Entity/Engine/Font instances, interpolation, resources, graphics or draw credit.",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "original_capture_sha256": "d1973225f2127d8afcd22331e032c6f464756c2025a630f0e8463a98117a27ae",
+  "fixture_sha256": "8f6fa73c9801bb2ca86a4b805271c8bab68e10df967696e2c3e721db399382d8",
+  "rows": 251,
+  "jdk": [
+    "openjdk version \"17.0.17\" 2025-10-21\nOpenJDK Runtime Environment Temurin-17.0.17+10 (build 17.0.17+10)\nOpenJDK 64-Bit Server VM Temurin-17.0.17+10 (build 17.0.17+10, mixed mode, sharing)\n",
+    "javac 17.0.17\n"
+  ],
+  "capture_input_sha256": {
+    "java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "b1.7.3.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "TileEntityRendererWorldObservation.java": "d63d2bb41b18ddeca592c32fb7ca660025143c1e7bfb2e49fccad6db0b5b2a8e",
+    "capture_world.py": "5b81c3e29f5f36e2e387154ee1f8914b78f54694990c73bc2bb858fb9b9845cb",
+    "world-source-pins.json": "499bfeace219f3c479a473aaadc2c6e9e7daf1ac7b3b867bb56157e972d2b2d8",
+    "WORLD_README.md": "9c31ba73905823b6e85433228f3832e3b44f206d4863c3a2a870dfb67f760635",
+    "capture_reference.py": "66d089f96951ebf20a3a28a9fefd893bd3e469f203ed008c45787659c6a49155",
+    "capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "classfile.py": "a2d6bf0923890ff6bd73c32bc5bcfabf89f883c421a2c1eab4270a3cb060857d"
+  },
+  "observer_class_sha256": {
+    "TileEntityRendererWorldObservation$1.class": "a9d22e9a78942bc740be83fe0d03369f90241360b4e116c359b336192e4ecdc1",
+    "TileEntityRendererWorldObservation.class": "f93e874e0929a025d5b6ff503e203f406004335aeb6b06fd74951210dd25b520"
+  },
+  "declared_scalar_inputs": {
+    "h_i_float_bits": [
+      "3f800001",
+      "bf400002"
+    ],
+    "j_k_l_double_bits": [
+      "3ff4000000000001",
+      "c004000000000002",
+      "400e000000000003"
+    ],
+    "partial_float_bits": "3f000000",
+    "reference_operands": "all null"
+  },
+  "frame_failure_source_site": {
+    "class": "ll",
+    "method": "a",
+    "descriptor": "(Lfd;Lji;Lsj;Lls;F)V",
+    "pc": 32,
+    "authority": "pinned original Code, separate from raw observed Java stack line"
+  },
+  "profiles": [
+    {
+      "name": "callbacks",
+      "status": "PASS",
+      "rows": 232,
+      "initialization_log_sha256": "0d1fb31e5749a5a1d848041c62522ad951944326a0d2ff0fbac72b5082c1b9f5"
+    },
+    {
+      "name": "frame_null_cold",
+      "status": "PASS",
+      "rows": 19,
+      "initialization_log_sha256": "b507dcd1d94c3be3debc861ee190a5400e38d5a5044a45a3e8a0adc3a08f4611"
+    }
+  ],
+  "raw_map_order": "Complete unsorted diagnostic rows remain in the private capture, with no native-order credit."
+}

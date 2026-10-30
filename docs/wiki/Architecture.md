@@ -1,5 +1,13 @@
 # Systems and subsystems
 
+The [TileEntityRenderer CPU owner](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/tile-entity-renderer.md)
+now constructs the real Sign, MobSpawner and Piston renderers. It shares
+canonical TileEntity Class identities and model geometry, preserves nullable
+lookup caching, and creates a fresh RenderBlocks object for each reached Piston
+World callback. Frame binding retains the actual owners and preserves ordered
+interpolation and failure prefixes. Full Entity/TileEntity traversal and draws
+remain unfinished.
+
 The canonical Display program now supplies [source vertex lighting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md).
 It uses the existing matrix/light ledger, front/back materials and ColorMaterial
 state. Compiled lists retain their actual attribute effects. This closes the

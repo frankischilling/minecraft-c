@@ -293,7 +293,7 @@ target_link_libraries(mc_platform_text PRIVATE Threads::Threads mc_build_options
 find_package(Threads REQUIRED)
 add_library(mc_c_atomics INTERFACE)
 if(MSVC)
-    target_compile_options(mc_c_atomics INTERFACE /experimental:c11atomics)
+    target_compile_options(mc_c_atomics INTERFACE -experimental:c11atomics)
 endif()
 
 # The shared core has no window, graphics, audio, JDK, or asset dependencies.
@@ -2976,6 +2976,10 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_tile_entities tests/world/runtime/tile_entities/test_tile_entities.c)
     target_link_libraries(mc_test_world_tile_entities PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_executable(mc_test_tile_entity_class_literals tests/world/runtime/tile_entities/test_class_literals.c)
+    target_link_libraries(mc_test_tile_entity_class_literals PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME world.tile_entity_class_literals COMMAND mc_test_tile_entity_class_literals)
+    set_tests_properties(world.tile_entity_class_literals PROPERTIES LABELS "public;unit;world;ownership")
 
     add_executable(mc_test_world_saving tests/world/runtime/saving/test_saving.c)
     target_link_libraries(mc_test_world_saving PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -5402,6 +5406,7 @@ if(BUILD_TESTING)
     endif()
     if(MC_BUILD_CLIENT)
         include(cmake/tests/client_rendering.cmake)
+        include(cmake/tests/client_tile_entity_renderer.cmake)
     endif()
 endif()
 

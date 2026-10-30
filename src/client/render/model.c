@@ -53,7 +53,7 @@ mc_client_model_status mc_client_render_classes_create(mc_entity_classes *entiti
 mc_client_model_status mc_client_render_classes_free(mc_client_render_classes *p) {
     if (p == NULL)
         return MC_CLIENT_MODEL_OK;
-    if (p->owners != 0 || p->th != NULL || p->frustum != NULL)
+    if (p->owners != 0 || p->th != NULL || p->ll != NULL || p->frustum != NULL)
         return MC_CLIENT_MODEL_BUSY;
     if (mc_entity_classes_release(p->entities) != MC_ENTITY_OK)
         return MC_CLIENT_MODEL_BUSY;
