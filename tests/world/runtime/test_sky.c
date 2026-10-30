@@ -62,7 +62,11 @@ static bool setup(fixture *f) {
           sun == NULL);
     for (size_t d = 0; d < 3; ++d) {
         bool tint;
-        float angle;
+        float angle, height = -1.0f;
+        CHECK(mc_world_provider_cloud_height(f->dimensions[d], &height, &provider_error) ==
+                  MC_WORLD_PROVIDER_OK &&
+              height == (d == 2 ? 8.0f : 108.0f) && provider_error.source_returned &&
+              provider_error.bytecode == 2);
         CHECK(mc_world_provider_horizon_tint(f->dimensions[d], &tint, &provider_error) ==
                   MC_WORLD_PROVIDER_OK &&
               tint == (d != 2));

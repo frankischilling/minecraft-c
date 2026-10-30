@@ -448,8 +448,9 @@ mc_client_render_global_world_begin(mc_client_render_global *o, mc_world_runtime
     if (o == NULL || out == NULL || *out != NULL)
         return MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT;
     if (o->active || o->world_retiring || o->world_call != NULL || o->sky_call != NULL ||
-        o->cull_call != NULL || o->update_call != NULL || o->submit_call != NULL ||
-        o->entities_call != NULL || o->phase != MC_CLIENT_RENDER_GLOBAL_READY)
+        o->clouds_call != NULL || o->cull_call != NULL || o->update_call != NULL ||
+        o->submit_call != NULL || o->entities_call != NULL ||
+        o->phase != MC_CLIENT_RENDER_GLOBAL_READY)
         return MC_CLIENT_RENDER_GLOBAL_BUSY;
     if (world != NULL) {
         mc_world_runtime_construction construction;
@@ -540,8 +541,8 @@ static mc_client_render_global_status world_detach(mc_client_render_global *o,
                                             "RenderGlobal legacy World detach already entered",
                                             NULL, NULL, NULL, 0, true);
     if (o->active || o->holds != 1 || o->world_call != NULL || o->sky_call != NULL ||
-        o->cull_call != NULL || o->update_call != NULL || o->submit_call != NULL ||
-        o->entities_call != NULL)
+        o->clouds_call != NULL || o->cull_call != NULL || o->update_call != NULL ||
+        o->submit_call != NULL || o->entities_call != NULL)
         return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_BUSY,
                                             "RenderGlobal World terminal admission", NULL, NULL,
                                             NULL, 0, true);

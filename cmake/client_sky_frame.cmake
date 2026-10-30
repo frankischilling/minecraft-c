@@ -24,7 +24,9 @@ if(TARGET mc_client_entity_renderer)
         target_sources(mc_client_entity_renderer PRIVATE src/client/world/frustum_culling.c)
         target_compile_definitions(mc_client_entity_renderer PRIVATE MC_SOURCE_HAS_RENDER_GLOBAL=1)
         target_link_libraries(mc_client_entity_renderer PRIVATE mc_client_render_global)
-        target_sources(mc_client_render_global PRIVATE src/client/world/render_global_sky_draw.c)
+        target_sources(mc_client_render_global PRIVATE
+            src/client/world/render_global_sky_draw.c
+            src/client/world/render_global_clouds.c)
         if(BUILD_TESTING)
             add_executable(mc_test_render_global_sky_cpu tests/client/world/test_render_global_sky_cpu.c)
             target_include_directories(mc_test_render_global_sky_cpu PRIVATE src src/platform/time)

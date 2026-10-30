@@ -20,6 +20,7 @@
 #include "renderer_fog_state_internal.h"
 #ifdef MC_SOURCE_HAS_RENDER_GLOBAL
 #include "../../startup/application_startup_internal.h"
+#include "../render_global_clouds_internal.h"
 #include "../render_global_internal.h"
 #include "../render_global_sky_internal.h"
 #endif
@@ -49,9 +50,9 @@ struct mc_client_world_frame_call {
     mc_client_renderer_camera_call *camera_setup;
     mc_client_renderer_camera_state camera_state;
     mc_client_renderer_camera_error camera_error, camera_cleanup;
-    mc_client_renderer_fog_state_call *fog_setup[6];
-    mc_client_renderer_fog_state_view fog_setup_state[6];
-    mc_client_renderer_fog_state_error fog_setup_error[6], fog_setup_cleanup[6];
+    mc_client_renderer_fog_state_call *fog_setup[7];
+    mc_client_renderer_fog_state_view fog_setup_state[7];
+    mc_client_renderer_fog_state_error fog_setup_error[7], fog_setup_cleanup[7];
     mc_client_precipitation_call *precipitation;
     mc_client_precipitation_state precipitation_state;
     mc_client_precipitation_error precipitation_error, precipitation_cleanup;
@@ -65,6 +66,9 @@ struct mc_client_world_frame_call {
     mc_client_render_global_sky_call *sky;
     mc_client_render_global_sky_state sky_state;
     mc_client_render_global_sky_error sky_error, sky_cleanup;
+    mc_client_render_global_clouds_call *clouds;
+    mc_client_render_global_clouds_state clouds_state;
+    mc_client_render_global_clouds_error clouds_error, clouds_cleanup;
     mc_client_source_frustum *culler;
     mc_client_source_frustum_state culler_state;
     mc_client_culling_call *culling;
@@ -216,8 +220,10 @@ static bool fog_setup_body(mc_client_world_frame_call *call, unsigned int index,
             call->state.particle_fog = &call->fog_setup_state[index];
         else if (index == 4)
             call->state.translucent_fog = &call->fog_setup_state[index];
-        else
+        else if (index == 5)
             call->state.cloud_fog = &call->fog_setup_state[index];
+        else
+            call->state.post_cloud_fog = &call->fog_setup_state[index];
     }
     if (status == MC_CLIENT_RENDERER_FOG_STATE_OK) {
         if (index == 0)
@@ -230,8 +236,10 @@ static bool fog_setup_body(mc_client_world_frame_call *call, unsigned int index,
             call->state.particle_fog_returned = true;
         else if (index == 4)
             call->state.translucent_fog_returned = true;
-        else
+        else if (index == 5)
             call->state.cloud_fog_returned = true;
+        else
+            call->state.post_cloud_fog_returned = true;
         return true;
     }
     const mc_client_renderer_fog_state_error *error = &call->fog_setup_error[index];
@@ -905,6 +913,17 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
     if (call->state.active || call->state.owner->active)
         return result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame active retirement");
 #ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+    if (mc_client_render_global_clouds_retire(&call->clouds, &call->clouds_cleanup) !=
+        MC_CLIENT_RENDER_GLOBAL_OK) {
+        if (call->clouds != NULL)
+            (void)mc_client_render_global_clouds_inspect(call->clouds, &call->clouds_state);
+        result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame clouds retirement");
+        if (error != NULL)
+            error->clouds = &call->clouds_cleanup;
+        return MC_CLIENT_WORLD_FRAME_BUSY;
+    }
+    call->state.clouds = NULL;
+    call->failure.clouds = NULL;
     const mc_effect_draw_error *particle_failure = call->sprite_particles_state.failure;
     if (mc_client_effect_renderer_draw_retire(
             &call->sprite_particles, &call->sprite_particles_cleanup) != MC_EFFECT_DRAW_OK) {
@@ -1084,7 +1103,7 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
     }
     call->state.precipitation = NULL;
     call->failure.precipitation = NULL;
-    for (unsigned int i = 0; i < 6; ++i) {
+    for (unsigned int i = 0; i < 7; ++i) {
         const mc_client_renderer_fog_state_error *failure = call->fog_setup_state[i].failure;
         if (mc_client_entity_renderer_fog_state_retire(&call->fog_setup[i],
                                                        &call->fog_setup_cleanup[i]) !=
@@ -1104,8 +1123,10 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
             call->state.particle_fog = NULL;
         else if (i == 4)
             call->state.translucent_fog = NULL;
-        else
+        else if (i == 5)
             call->state.cloud_fog = NULL;
+        else
+            call->state.post_cloud_fog = NULL;
         call->fog_setup_state[i].failure = NULL;
         if (call->failure.fog_setup == failure)
             call->failure.fog_setup = NULL;

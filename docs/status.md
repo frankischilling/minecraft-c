@@ -1,5 +1,29 @@
 # Development status
 
+Both [cloud modes](client/clouds.md) now draw through the actual RenderGlobal,
+World colors, Dimension heights, NW and Display. The loaded frame continues
+through post-cloud fog and depth clear to first-person hand drawing at PX997.
+Its inspected capture shows clouds above authored grass terrain and Sky.
+Hands, HUD, full Entity drawing and repeated interactive gameplay remain unfinished.
+
+All 48 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+The selection passes 57 Windows tests in 75.89 seconds and 53 Linux tests in
+96.70 seconds, without failures, skips or sanitizer findings. Both hosts compare
+72 unchanged-original cloud states and 72 final NW batch hashes exactly. Native
+controls pass 2,518 checks on Windows and 2,529 on Linux. All 2,327 C/helper/build
+inputs stay unchanged through builds/tests; formatting checks 1,638 files.
+The loaded Windows suite preserves saves/resources and all 72 input histories.
+These finite controls do not establish original cloud pixel or whole-frame equality.
+
+The [weather checkpoint's hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/41124927800)
+passes formatting and both Linux jobs. Windows stops before compilation because
+GitHub returns HTTP500 for pinned Expat. Native CI now caches verified dependency
+archives and retries one qualifying transient HTTP download failure. Tests and
+hash checks remain required. Local archive reuse/corruption and retry controls
+pass; hosted validation and a controlled timing comparison remain pending.
+
+## Preceding weather checkpoint
+
 The client now executes both [rain and snow draw passes](client/precipitation.md)
 through the canonical World queries, biome array, Random, NW and Display.
 Weather alpha testing uses its actual 0.01 reference and restores 0.1 afterward.

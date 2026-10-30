@@ -34,4 +34,9 @@ mc_world_provider_status mc_world_provider_sunrise_color(mc_world_provider *, fl
 mc_world_provider_status mc_world_provider_horizon_tint(mc_world_provider *, bool *out,
                                                         mc_world_provider_sky_error *);
 
+/* Actual xa.d()F inherited by RH/WD returns108; AY.d()F returns8. No field,
+ * World, Math, floating arithmetic or construction-phase read occurs. */
+mc_world_provider_status mc_world_provider_cloud_height(mc_world_provider *, float *out,
+                                                        mc_world_provider_sky_error *);
+
 #endif

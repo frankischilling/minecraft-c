@@ -124,7 +124,9 @@ execute the following source sequence:
 | 825 through930 | Evaluate zoom, Player, a fresh App Hit and water in order. A qualifying ordinary selection reaches the damage/placement overlay at897 before the outline at921. |
 | 932 | Invoke [precipitation drawing](precipitation.md) using a fresh App World and camera. |
 | 938 through957 | Disable fog, execute a fresh fog setup and enable fog. |
-| 963 | Invoke the captured N's cloud draw. This child remains an explicit dependency. |
+| 963 | Invoke the captured N's [cloud draw](clouds.md). |
+| 969 through990 | Disable fog, execute another fog setup, then clear depth when zoom equals 1. |
+| 997 | Invoke first-person hand drawing. This child remains an explicit dependency. |
 
 Fog calls at306,324,449,527,646 have distinct retained calls and snapshots.
 The completed N510 receipt retires before a later N invocation, leaving its
@@ -150,8 +152,9 @@ selection child is the damage/placement overlay
 `n.b(gs,vf,int,iz,float)` at625 or921 follows only after that first child
 returns. A failure keeps the alpha-test disable already performed by PX.
 
-The loaded native Windows fixture returns from both empty DN paths, executes
-the later terrain and selection predicates, and reaches the weather draw at
+At the preceding particle checkpoint, the loaded native Windows fixture returned
+from both empty DN paths, executed
+the later terrain and selection predicates, and reached the weather draw at
 PX932. That observation establishes this native prefix with the actual
 loaded owners. It does not establish composed original/native frame equality,
 successful nonempty particle rendering, weather, clouds, hand or HUD drawing,

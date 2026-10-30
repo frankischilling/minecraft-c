@@ -1,5 +1,19 @@
 # Build and tests
 
+The [cloud selection](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/clouds.md#qualification)
+builds 48 targets on Windows MSVC Debug and Linux Clang18 ASan/UBSan. All 57
+Windows tests pass in 75.89 seconds and all 53 Linux tests in 96.70 seconds,
+without failures, skips or sanitizer findings. Both hosts compare 72 original
+post-call states and 72 final NW batch hashes exactly. Current-color queries
+follow the original order, including Mesa's attribute commit. Full frame and
+original pixel equality remain unverified. The loaded Windows suite preserves
+saves/resources and 72 input histories, then reaches the hand call at997.
+
+The weather checkpoint passes hosted formatting and Linux jobs; Windows stops
+before compilation on a GitHub HTTP500 dependency download. CI now caches only
+verified archives and retries one qualifying transient download failure. Local
+reuse, corruption and retry controls pass. Hosted validation remains pending.
+
 The [precipitation selection](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/precipitation.md#qualification)
 builds 46 targets on Windows MSVC Debug and Linux Clang18 ASan/UBSan. All 55 Windows
 tests pass in 74.43 seconds and all 51 Linux tests in 112.59 seconds, without

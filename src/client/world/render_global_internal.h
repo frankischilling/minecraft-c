@@ -70,6 +70,7 @@ struct mc_client_render_global {
     mc_render_global_access *access; /* Native stable interface for this SAME n. */
     mc_client_render_global_world_call *world_call;
     struct mc_client_render_global_sky_call *sky_call;
+    struct mc_client_render_global_clouds_call *clouds_call;
     struct mc_client_culling_call *cull_call;
     struct mc_client_render_global_update_call *update_call;
     struct mc_client_render_global_submit_call *submit_call;

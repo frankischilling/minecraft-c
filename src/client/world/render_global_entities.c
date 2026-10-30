@@ -253,8 +253,9 @@ mc_client_render_global_status mc_client_render_global_entities_begin(
     const bool blocked = n->world_call != NULL &&
                          (!mc_client_render_global_world_inspect(n->world_call, &attachment) ||
                           attachment.active || !attachment.source_returned);
-    if (n->active || n->world_retiring || blocked || n->sky_call != NULL || n->cull_call != NULL ||
-        n->update_call != NULL || n->submit_call != NULL || n->entities_call != NULL ||
+    if (n->active || n->world_retiring || blocked || n->sky_call != NULL ||
+        n->clouds_call != NULL || n->cull_call != NULL || n->update_call != NULL ||
+        n->submit_call != NULL || n->entities_call != NULL ||
         n->phase != MC_CLIENT_RENDER_GLOBAL_READY)
         return mc_render_global_source_fail(error, MC_CLIENT_RENDER_GLOBAL_BUSY,
                                             "N entities entered/pending/retiring owner", NULL, NULL,

@@ -6,6 +6,7 @@
 #include "mc/client/world/frustum_culling.h"
 #include "mc/client/world/picking.h"
 #include "mc/client/world/precipitation.h"
+#include "mc/client/world/render_global_clouds.h"
 #include "mc/client/world/render_global_entities.h"
 #include "mc/client/world/render_global_sky.h"
 #include "mc/client/world/render_global_submit.h"
@@ -46,6 +47,7 @@ typedef struct mc_client_world_frame_error {
     const mc_client_renderer_camera_error *camera;
     const mc_client_renderer_fog_state_error *fog_setup;
     const mc_client_render_global_sky_error *sky;
+    const mc_client_render_global_clouds_error *clouds;
     const mc_client_culling_error *culling;
     const mc_client_render_global_error *update;
     const mc_client_render_global_error *submission;
@@ -92,6 +94,8 @@ typedef struct mc_client_world_frame_state {
     bool selection_hit_present, selection_water_read, selection_water;
     bool selection_alpha_disabled, selection_current_returned;
     bool precipitation_returned, weather_fog_disabled, cloud_fog_returned, cloud_fog_enabled;
+    bool clouds_returned, post_cloud_fog_disabled, post_cloud_fog_returned;
+    bool hand_zoom_read, hand_depth_cleared, tail_anaglyph_read, tail_anaglyph;
     int32_t terrain_count;
     int32_t translucent_count;
     size_t update_calls;
@@ -130,6 +134,8 @@ typedef struct mc_client_world_frame_state {
     const mc_item_stack *selection_stack;
     const mc_client_precipitation_state *precipitation;
     const mc_client_renderer_fog_state_view *cloud_fog;
+    const mc_client_renderer_fog_state_view *post_cloud_fog;
+    const mc_client_render_global_clouds_state *clouds;
 } mc_client_world_frame_state;
 
 /* Actual px.a(FJ) World draw entry, invoked from px.b's World branch. Uses the

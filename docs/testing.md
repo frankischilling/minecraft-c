@@ -1,5 +1,32 @@
 # Test scope and reproduction
 
+## Cloud drawing and post-cloud continuation
+
+The [cloud contract](client/clouds.md) implements both source cloud bodies and
+their actual Dimension height children. All 48 selected production/test targets
+build on Windows MSVC Debug and Linux Clang18 ASan/UBSan. All 57 Windows tests
+pass in 75.89 seconds and all 53 Linux tests in 96.70 seconds, without failures,
+skips or sanitizer findings. All 2,327 C/helper/build inputs remain unchanged
+through both builds and tests. Formatting checks 1,638 C/header/fragment files.
+
+The [paired fixture](../tests/reference/client/clouds/README.md) compares 72
+post-call states and 72 final NW batch hashes exactly on both hosts. Windows
+passes 2,518 native checks; Linux passes 2,529. The observer performs current-color
+queries in original order, including Mesa's staged-attribute commit. Its real
+OpenAL Soft null playback device has no capture backend. The fixture records
+the exact expected warning and rejects other diagnostics; it makes no audio claim.
+
+The loaded Windows suite retains all 72 input histories and save/resource bytes.
+Its actual clouds return before fog975, depth clear990 and the missing hand997
+child. The inspected capture shows terrain, Sky and clouds without HUD. Original
+observations cover the final NW batch, not every fancy tile or original pixels.
+Complete frame equality, hand/HUD drawing and gameplay remain unfinished.
+
+CI archive controls verify real CMake cache reuse without source/stamp reuse,
+corrupt-archive refusal and unchanged source archives. Five configure-wrapper
+cases check success, transient recovery, permanent/integrity refusal and final
+failure status. Actionlint passes. These checks do not establish hosted timing.
+
 ## Precipitation and World-frame continuation
 
 The [weather increment](client/precipitation.md#qualification) builds 46 selected

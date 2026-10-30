@@ -50,7 +50,7 @@
 
 static unsigned int checks;
 
-enum { loaded_world_frame_frontier = 963 };
+enum { loaded_world_frame_frontier = 997 };
 
 #define CHECK(condition)                                                                           \
     do {                                                                                           \
@@ -1476,9 +1476,9 @@ int main(int argc, char **argv) {
                   frame->entities->ll == NULL && frame->entities->th == NULL &&
                   frame->failure->entities == NULL &&
                   frame->failure->site.pc == loaded_world_frame_frontier &&
-                  strcmp(frame->failure->child.class_name, "n") == 0 &&
+                  strcmp(frame->failure->child.class_name, "px") == 0 &&
                   strcmp(frame->failure->child.method, "b") == 0 &&
-                  strcmp(frame->failure->child.descriptor, "(F)V") == 0);
+                  strcmp(frame->failure->child.descriptor, "(FI)V") == 0);
             CHECK(frame->effects_captured && frame->effects == f.app->effect_renderer &&
                   frame->camera == load.player && frame->render_global == f.app->g &&
                   frame->lit_particles_returned && frame->particle_lighting_disabled &&
@@ -1534,6 +1534,12 @@ int main(int argc, char **argv) {
                   frame->weather_fog_disabled && frame->cloud_fog_returned &&
                   frame->cloud_fog_enabled && frame->cloud_fog != NULL &&
                   frame->cloud_fog->returned);
+            CHECK(frame->clouds_returned && frame->clouds != NULL && frame->clouds->returned &&
+                  frame->clouds->fancy && frame->clouds->passes == 2 &&
+                  frame->clouds->draws == 72 && frame->post_cloud_fog_disabled &&
+                  frame->post_cloud_fog_returned && frame->post_cloud_fog != NULL &&
+                  frame->post_cloud_fog->returned && frame->hand_zoom_read &&
+                  frame->hand_depth_cleared && !frame->tail_anaglyph_read);
             const bool replay_expected = frame->fancy_graphics && frame->translucent_count > 0;
             CHECK(frame->translucent_replay_returned == replay_expected);
             if (replay_expected) {

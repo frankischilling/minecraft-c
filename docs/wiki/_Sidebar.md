@@ -3,6 +3,7 @@
 - [RenderGlobal Entity pass](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md)
 - [Particle drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md)
 - [Rain and snow drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/precipitation.md)
+- [Cloud drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/clouds.md)
 - [World simulation](World-simulation)
 - [Systems and subsystems](Architecture)
 - [Build and tests](Build-and-tests)

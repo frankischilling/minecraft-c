@@ -78,9 +78,22 @@ jobs:
           path: ${{ env.CCACHE_DIR }}
           key: linux-ubuntu24.04-${{ matrix.compiler }}-ccache-v1-${{ github.sha }}
           restore-keys: linux-ubuntu24.04-${{ matrix.compiler }}-ccache-v1-
+      # No source trees or populate stamps: CMake verifies URL_HASH on reuse.
+      - name: Restore pinned dependency archives
+        id: dependency-archives
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: |
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.gz
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.xz
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.bz2
+            build/_deps/*-subbuild/*-populate-prefix/src/*.zip
+          key: ${{ runner.os }}-fetchcontent-archives-v1-${{ hashFiles('CMakeLists.txt', 'cmake/*dependencies.cmake') }}
+          restore-keys: ${{ runner.os }}-fetchcontent-archives-v1-
       - name: Configure
+        id: configure
         run: >-
-          cmake -S . -B build -G Ninja
+          python -B scripts/development/configure_with_retry.py -- cmake -S . -B build -G Ninja
           -DCMAKE_C_COMPILER=${{ matrix.compiler }}
           -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
           -DCMAKE_C_COMPILER_LAUNCHER=ccache
@@ -92,13 +105,23 @@ jobs:
           -DMC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS=ON
           -DMC_ENABLE_APPLICATION_STARTUP_TESTS=ON
           -DMC_ENABLE_RESOURCE_LOOKUP_OBSERVERS=ON
+      - name: Save pinned dependency archives
+        if: steps.configure.outcome == 'success' && steps.dependency-archives.outputs.cache-hit != 'true'
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: |
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.gz
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.xz
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.bz2
+            build/_deps/*-subbuild/*-populate-prefix/src/*.zip
+          key: ${{ runner.os }}-fetchcontent-archives-v1-${{ hashFiles('CMakeLists.txt', 'cmake/*dependencies.cmake') }}
       - name: Build
         id: build
         run: |
           ccache --zero-stats
           cmake --build build
       - name: Report compiler cache
-        if: always()
+        if: always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure')
         run: ccache --show-stats
       - name: Save compiler cache
         if: steps.build.outcome == 'success' && steps.compiler-cache.outputs.cache-hit != 'true'
@@ -162,16 +185,31 @@ jobs:
         with:
           path: ${{ env.SCCACHE_DIR }}
           key: windows-2022-msvc-x64-sccache-v0.19.0-v1-${{ hashFiles('.github/workflows/ci.yml') }}-${{ github.sha }}
-          restore-keys: windows-2022-msvc-x64-sccache-v0.19.0-v1-${{ hashFiles('.github/workflows/ci.yml') }}-
+          restore-keys: |
+            windows-2022-msvc-x64-sccache-v0.19.0-v1-${{ hashFiles('.github/workflows/ci.yml') }}-
+            windows-2022-msvc-x64-sccache-v0.19.0-v1-
       - name: Set up sccache
         id: sccache
         uses: Mozilla-Actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
         with:
           version: v0.19.0
           disable_annotations: true
+      # Cache archive bytes only. URL_HASH and fresh extraction remain required.
+      - name: Restore pinned dependency archives
+        id: dependency-archives
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: |
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.gz
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.xz
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.bz2
+            build/_deps/*-subbuild/*-populate-prefix/src/*.zip
+          key: ${{ runner.os }}-fetchcontent-archives-v1-${{ hashFiles('CMakeLists.txt', 'cmake/*dependencies.cmake') }}
+          restore-keys: ${{ runner.os }}-fetchcontent-archives-v1-
       - name: Configure
+        id: configure
         run: >-
-          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+          python -B scripts/development/configure_with_retry.py -- cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
           -DCMAKE_POLICY_DEFAULT_CMP0141=NEW
           -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded
           -DCMAKE_C_COMPILER_LAUNCHER=sccache
@@ -182,17 +220,27 @@ jobs:
           -DMC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS=ON
           -DMC_ENABLE_APPLICATION_STARTUP_TESTS=ON
           -DMC_ENABLE_RESOURCE_LOOKUP_OBSERVERS=ON
+      - name: Save pinned dependency archives
+        if: steps.configure.outcome == 'success' && steps.dependency-archives.outputs.cache-hit != 'true'
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: |
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.gz
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.xz
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.bz2
+            build/_deps/*-subbuild/*-populate-prefix/src/*.zip
+          key: ${{ runner.os }}-fetchcontent-archives-v1-${{ hashFiles('CMakeLists.txt', 'cmake/*dependencies.cmake') }}
       - name: Build
         id: build
         run: |
           sccache --zero-stats
           cmake --build build --config Debug --parallel 4
       - name: Report compiler cache
-        if: always() && steps.sccache.outcome == 'success'
+        if: always() && steps.sccache.outcome == 'success' && (steps.build.outcome == 'success' || steps.build.outcome == 'failure')
         run: sccache --show-stats
       - name: Stop compiler cache
         id: stop-compiler-cache
-        if: always() && steps.sccache.outcome == 'success'
+        if: always() && steps.sccache.outcome == 'success' && (steps.build.outcome == 'success' || steps.build.outcome == 'failure')
         run: sccache --stop-server
       - name: Save compiler cache
         if: always() && steps.build.outcome == 'success' && steps.stop-compiler-cache.outcome == 'success' && steps.compiler-cache.outputs.cache-hit != 'true'

@@ -81,6 +81,19 @@ so a later test failure does not discard compilation work. Cache statistics
 are printed for each build. Tests still execute from the newly built targets;
 dependency-download and CTest scheduling caches remain separate.
 
+Both native CI jobs cache only the pinned FetchContent download archives.
+Source trees, populate stamps and dependency build products are excluded.
+CMake still checks each archive's `URL_HASH` and extracts it into a fresh build.
+This avoids repeated transfers when the archive cache is available; it does not
+cache test outcomes or establish a measured whole-workflow speedup.
+
+The configure wrapper retries once only when CMake reports a dependency download
+failure with HTTP 429, 500, 502, 503 or 504. A hash mismatch, HTTP 404 or ordinary
+configuration failure stops immediately. Both attempts retain their complete
+output, and a failed final attempt keeps its exit status. Windows compiler-cache
+fallbacks can reuse valid entries across workflow edits; cache shutdown runs
+only after an actual build attempt.
+
 `client.movement_input` and `entity.turn` build without graphics or audio.
 Optional `MC_ENABLE_INPUT_REFERENCE_TESTS=ON` and
 `MC_ENABLE_TURN_REFERENCE_TESTS=ON` compare their configured native observers

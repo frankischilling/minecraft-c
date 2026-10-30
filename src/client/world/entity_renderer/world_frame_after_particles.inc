@@ -470,9 +470,57 @@ static bool after_particles_body(mc_client_world_frame_call *call, mc_math_class
     if (call->state.render_global == NULL)
         return outer_fail(call, MC_CLIENT_WORLD_FRAME_SOURCE_NULL,
                           "actual captured clouds RenderGlobal receiver", 963, false);
-    call->failure.child = (mc_client_graphics_site){"n", "b", "(F)V", 0};
-    return outer_fail(call, MC_CLIENT_WORLD_FRAME_DEPENDENCY,
-                      "actual clouds draw child is not connected", 963, true);
+    if (!end_completed_entities(call, 963))
+        return false;
+    const mc_client_render_global_status clouds = mc_client_render_global_clouds_begin(
+        call->state.render_global, math, call->state.partial, &call->clouds, &call->clouds_error);
+    if (call->clouds != NULL) {
+        (void)mc_client_render_global_clouds_inspect(call->clouds, &call->clouds_state);
+        call->state.clouds = &call->clouds_state;
+    }
+    if (clouds != MC_CLIENT_RENDER_GLOBAL_OK) {
+        const mc_client_render_global_clouds_error *error =
+            call->clouds == NULL ? &call->clouds_error : call->clouds_state.failure;
+        call->failure.clouds = error;
+        call->failure.child = error->site;
+        return outer_fail(call,
+                          clouds == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE
+                              ? MC_CLIENT_WORLD_FRAME_SOURCE_NULL
+                          : clouds == MC_CLIENT_RENDER_GLOBAL_UNSUPPORTED_FP
+                              ? MC_CLIENT_WORLD_FRAME_UNSUPPORTED_FP
+                          : clouds == MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY
+                              ? MC_CLIENT_WORLD_FRAME_DEPENDENCY
+                              : MC_CLIENT_WORLD_FRAME_CHILD_FAILED,
+                          error->operation, 963, error->native_policy);
+    }
+    call->state.clouds_returned = true;
+    if (!display_result(
+            call, mc_client_display_source_fog_enable(display, false, &call->failure.display), 969))
+        return false;
+    call->state.post_cloud_fog_disabled = true;
+    if (!fog_setup_body(call, 6, 1, 975) || !fp(call, "a", "(FJ)V", 983))
+        return false;
+    call->state.hand_zoom_read = true;
+    if (owner->fields.E == 1.0) {
+        if (!display_result(
+                call, mc_client_display_source_clear(display, 256, &call->failure.display), 990))
+            return false;
+        call->state.hand_depth_cleared = true;
+        call->failure.child = (mc_client_graphics_site){"px", "b", "(FI)V", 0};
+        return outer_fail(call, MC_CLIENT_WORLD_FRAME_DEPENDENCY,
+                          "actual first-person hand draw child is not connected", 997, true);
+    }
+    if (!settings_at(call, 1004, 1007, &settings))
+        return false;
+    call->state.tail_anaglyph_read = true;
+    call->state.tail_anaglyph = settings.values.anaglyph;
+    if (settings.values.anaglyph)
+        return outer_fail(call, MC_CLIENT_WORLD_FRAME_DEPENDENCY,
+                          "actual second-eye World-frame continuation is not connected", 1017,
+                          true);
+    call->state.returned = true;
+    call->state.source_pc = 1013;
+    return true;
 }
 
 static bool particles_body(mc_client_world_frame_call *call, mc_math_classes *math) {

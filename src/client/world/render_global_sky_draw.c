@@ -551,8 +551,9 @@ mc_client_render_global_sky_begin(mc_client_render_global *owner, mc_math_classe
         (mc_client_render_global_world_inspect(owner->world_call, &attachment) &&
          !attachment.active && attachment.source_returned);
     if (owner->active || owner->world_retiring || !attachment_ready || owner->sky_call != NULL ||
-        owner->entities_call != NULL || owner->cull_call != NULL || owner->update_call != NULL ||
-        owner->submit_call != NULL || owner->phase == MC_CLIENT_RENDER_GLOBAL_CONSTRUCTING ||
+        owner->clouds_call != NULL || owner->entities_call != NULL || owner->cull_call != NULL ||
+        owner->update_call != NULL || owner->submit_call != NULL ||
+        owner->phase == MC_CLIENT_RENDER_GLOBAL_CONSTRUCTING ||
         owner->phase == MC_CLIENT_RENDER_GLOBAL_RETIRING)
         return admission(error, MC_CLIENT_RENDER_GLOBAL_BUSY,
                          "sky native entered/pending/retiring owner");

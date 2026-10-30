@@ -140,3 +140,15 @@ mc_world_provider_status mc_world_provider_horizon_tint(mc_world_provider *dimen
     call.error.source_returned = true;
     return finish(&call, error);
 }
+
+mc_world_provider_status mc_world_provider_cloud_height(mc_world_provider *dimension, float *out,
+                                                        mc_world_provider_sky_error *error) {
+    sunrise_call call;
+    mc_world_provider_kind kind;
+    if (!begin(&call, dimension, out, &kind))
+        return finish(&call, error);
+    *out = kind == MC_WORLD_PROVIDER_SKY ? 8.0f : 108.0f;
+    call.error.bytecode = 2;
+    call.error.source_returned = true;
+    return finish(&call, error);
+}
