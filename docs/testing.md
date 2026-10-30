@@ -1,5 +1,49 @@
 # Test scope and reproduction
 
+## Normal menu-run terminal coordinator
+
+All 40 selected targets build on Windows MSVC Debug and Linux Clang18
+ASan/UBSan. All 49 Windows CTests pass in 68.21 seconds; all 46 Linux cases pass
+in 98.26 seconds. There are no failures, skips or sanitizer findings in the
+complete retained output. All 2,283 C/helper/build inputs remain unchanged
+through both builds and tests. Formatting passes 1,607 C/header/fragment files.
+
+The [normal shutdown coordinator](client/terminal-retirement.md) is exercised
+by the real Windows menu and saved-World profiles. `client.source_menu_loop`
+keeps a genuine foreign TH consumer across early bootstrap close, verifies
+expired getters and unchanged source state, then balances that consumer and
+finishes through the same loop/context. Its existing default-client subprocess
+separately captures three menu frames through normal `mc_client_menu_run`.
+
+`client.world_selection_loop` preserves all preceding modes. Empty/large menus
+and populated/double conversion failures explicitly prove EMPTY_STORAGE before
+checked shutdown. The loaded terminal mode preserves the complete graph while
+the foreign TH consumer blocks; an early close must not bypass that refusal.
+After fresh selected-load admission, its actual external screen blocks the
+tail after World consumption. A new real controller retain then independently
+blocks the next checked destructor; releasing it completes the same owner slots.
+Every retained-loop attempt preserves the original source failure and counters.
+
+The additional `load-partial` input is authored saved NBT: Motion has three
+doubles, Pos is an empty double List, and Rotation has two floats. The actual
+Entity reader fails at Pos index zero after World ownership is acquired. The
+coordinator must refuse without tail entry or a fabricated successful load.
+Its final fixture cleanup explicitly uses the separate low-level native API;
+the normal runner never falls back to that path on unsupported storage.
+This is native failure/lifetime qualification, without a new original-runtime
+shutdown or NBT comparison claim.
+
+On Windows configured with imported resources and display tests enabled:
+
+```sh
+ctest --test-dir build -C Debug -R '^client\.(source_menu_loop|world_selection_loop)$' --output-on-failure
+```
+
+The driver preserves all pre-existing save and imported-asset bytes and the
+actual session-lock checks. Both successful loaded modes still compare all 72
+original focus histories. Hosted CI compiles these resource-dependent menu
+executables but does not register or execute either menu-loop test.
+
 ## Selected Handler and Store admission controls
 
 All 39 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
@@ -27,7 +71,7 @@ admission and checked cleanup with all 72 focus histories and prior save/asset
 bytes preserved. This resource-dependent profile remains local Windows
 qualification; it is not registered in the hosted test inventory. Active
 reentry and an independent compression occurrence are not newly executed.
-Complete Format/App/shared-service admission and normal shutdown adoption remain
+Complete Format/App/shared-service admission and partial-load shutdown remain
 unfinished; passive checks cannot guarantee future descriptor-close success.
 
 ## Client terminal admission and dispatcher controls
@@ -51,8 +95,7 @@ and existing-LL lookup for actual absent, cold, READY, quota-failed and consumed
 associations, with foreign Registry/WorldClasses refusals. Active lookup reentry,
 inactive RETIRING lookup, present/partial LL bootstrap retirement and two-App
 shutdown remain unexecuted, as does controller/effect inspector reentry.
-Normal runtime adoption and full service/handler
-admission remain separate work.
+Live dispatcher-frame adoption and full service admission remain separate work.
 
 ## World terminal admission controls
 
@@ -94,8 +137,8 @@ refusal and retained screen/service ownership. Existing successful loaded-World
 modes retain their original cleanup path; their 13.15-second test still enforces
 the 72 focus histories and save/resource preservation. The rebuilt client also
 completes two menu frames and three ticks with all 413 imported assets unchanged.
-The new prefix is not adopted in normal shutdown or N44/N80. Dispatcher admission
-ending and exact external-root checks remain prerequisites for that integration.
+Those recorded controls predate normal coordinator adoption above. N44/N80 frame
+adoption, complete external-root admission and deferred old Worlds remain unfinished.
 
 ## RenderManager frame qualification
 

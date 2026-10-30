@@ -1,33 +1,40 @@
 # Development status
 
-The [client terminal admission](client/terminal-retirement.md) now counts actual
-Handler, World, SavedData and loader slots, with separate loader/input lifetime
-checks and a full Store registration/work preflight. Real outside holds,
-reservations and generic-entry leases refuse before destructive cleanup. All
-39 selected targets build on both hosts; 48 Windows tests pass in 69.44 seconds
-and 46 sanitized Linux tests pass in 98.83 seconds. The loaded Windows terminal
-profile preserves its saves, assets and 72 original focus histories through
-checked dispatcher retirement, admission and cleanup. Complete Format/App/
-shared-service admission, partial loads, old-World deferral and normal
-shutdown/N44/N80 adoption remain unfinished.
+Normal menu-run shutdown now uses the [terminal coordinator](client/terminal-retirement.md):
+actual call preparation, checked LL/TH retirement, complete retained-load
+classification and fresh selected-World admission precede destructive cleanup.
+The loop keeps its actual bootstrap association for cleanup after an early
+close expires getters. Explicit no-storage proof includes genuine conversion
+failures. Tail progress preserves checked retries after World consumption;
+native cleanup diagnostics leave the original source failure intact. Complete
+Format/App/shared-service admission, partial loads, deferred old Worlds and
+N44/N80 frame adoption remain unfinished.
+
+All 40 selected targets build on Windows MSVC Debug and Linux Clang18
+ASan/UBSan. The current selection passes 49 Windows tests in 68.21 seconds and
+46 Linux tests in 98.26 seconds, with no failures, skips, sanitizer findings or
+C/helper/build input changes. Seven Windows World-selection profiles preserve
+saves/assets; both successful loaded modes still match all 72 focus histories.
+The authored partial-load failure refuses cleanup with its full graph live.
 
 The [RenderManager CPU frame](client/render-manager-frame.md) now has Windows
 MSVC Debug and Linux Clang18 ASan/UBSan comparisons against 432 unchanged-original
 rows. The ledger credits 2,738 exact columns, two explicit failure projections
 and 136 unqualified columns. Separate native controls cover all four sleeping
 Bed orientations, real World/Math failures and checked owner retirement. These
-methods are not yet adopted by live RenderGlobal traversal. Final shutdown and
-deferred World ownership remain prerequisites for that integration.
+methods are not yet adopted by live RenderGlobal traversal. N-owned consumer
+integration and deferred World ownership remain prerequisites for that integration.
 
-The latest recorded [hosted checkpoint 97705a6](https://github.com/frankischilling/minecraft-c/actions/runs/41077768119)
+The latest recorded [hosted checkpoint 692a33f](https://github.com/frankischilling/minecraft-c/actions/runs/41090526491)
 passes all four jobs and 1,566 tests: Windows 494, GCC 536 and Clang 536, with
 zero failures, skips or dropped preceding test names. It includes the canonical
 [TileEntityRenderer CPU owner](client/tile-entity-renderer.md) and RenderManager
-frame extension, World inventory and selected client-anchor/dispatcher methods.
-It predates the source Handler/Store extension above. The resource-dependent
+frame extension, World inventory and selected client-anchor/dispatcher methods,
+plus the source Handler and Store preflight. It predates normal coordinator
+adoption above. The resource-dependent
 menu loop compiles but is not executed by that hosted inventory. Windows restores
-the preceding 138,975,461-byte cache and records 1,359 hits, 53 misses and no cache
-or compile errors. Its build takes 182 seconds;
+the preceding 142,797,406-byte cache and records 1,398 hits, 14 misses and no cache
+or compile errors. Its build takes 153 seconds and the whole run takes 515 seconds;
 the changed workloads do not establish a controlled whole-workflow speedup.
 
 The source renderer implements [vertex lighting, normals and materials](client/lighting-raster.md)

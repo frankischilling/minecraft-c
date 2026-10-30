@@ -389,13 +389,19 @@ mc_client_bootstrap_status mc_client_bootstrap_open(const mc_client_application_
 mc_client_bootstrap_status mc_client_bootstrap_terminal_dispatchers(mc_client_bootstrap *context) {
     if (context == NULL || context->app == NULL || context->startup == NULL)
         return MC_CLIENT_BOOTSTRAP_INVALID_ARGUMENT;
-    if (context->retiring || context->startup->active)
+    if (context->startup->active || context->startup->app != context->app ||
+        context->app->startup != context->startup ||
+        (context->startup->phase == MC_CLIENT_STARTUP_RETIRING &&
+         !context->startup->terminal_manager_consumer_selected))
         return MC_CLIENT_BOOTSTRAP_BUSY;
     mc_client_screen_transition_state transitions;
     if (!mc_client_screen_transitions_inspect(context->app->screen_transitions, &transitions) ||
-        transitions.active || !transitions.terminal_prepare_selected ||
+        transitions.active || !transitions.retiring || !transitions.terminal_prepare_selected ||
         !transitions.terminal_prepared)
         return MC_CLIENT_BOOTSTRAP_BUSY;
+    /* A close attempt may have ended every getter before this SAME live lease
+     * was prepared. Its checked startup/App association and one-way prefix
+     * permit cleanup continuation, never renewed source/getter admission. */
     mc_client_tile_renderer_classes *existing = NULL;
     const mc_client_tile_renderer_status found = mc_client_tile_entity_renderer_classes_existing(
         context->constructor.render_classes, context->constructor.registry, context->world_classes,
@@ -440,6 +446,11 @@ mc_client_bootstrap_status mc_client_bootstrap_terminal_dispatchers(mc_client_bo
 static mc_client_bootstrap_status close_startup(mc_client_bootstrap *context) {
     if (context->startup == NULL)
         return MC_CLIENT_BOOTSTRAP_OK;
+    /* A live transition owner still leases the complete startup graph. In
+     * particular, do not let the legacy TH fallback bypass a partially
+     * completed LL-before-TH terminal dispatcher attempt. */
+    if (context->app != NULL && context->app->screen_transitions != NULL)
+        return MC_CLIENT_BOOTSTRAP_BUSY;
     mc_client_startup_status status =
         mc_client_application_startup_retire(&context->startup, &context->startup_error);
     if (status == MC_CLIENT_STARTUP_BUSY && context->startup != NULL &&

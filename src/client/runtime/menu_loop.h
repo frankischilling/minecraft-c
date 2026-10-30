@@ -4,12 +4,17 @@
 #include "bootstrap.h"
 
 typedef struct mc_client_menu_loop mc_client_menu_loop;
+typedef struct mc_world_storage_error mc_world_storage_error;
 
 typedef struct mc_client_menu_loop_state {
     uint64_t frames, ticks, texture_ticks, account_checks_omitted;
     size_t font_measurements, mouse_events, keyboard_events;
     bool failed, running;
     bool terminal_prepare_selected, terminal_prepared; /* Native cleanup progress only. */
+    bool terminal_tail_entered;
+    const char *retirement_operation; /* Native cleanup diagnosis, separate from source failure. */
+    const mc_world_storage_error *retirement_world;
+    mc_client_bootstrap_status retirement_bootstrap;
     const char *operation, *source_class, *source_method;
     int64_t source_pc; /* Source unsigned PCs and native -1 both retain their value. */
     /* Borrowed child diagnostics remain live until this loop retires. Gameplay
@@ -50,8 +55,19 @@ bool mc_client_menu_loop_inspect(const mc_client_menu_loop *, mc_client_menu_loo
  * World graph. Do not use this as source World clearing or resume frames after
  * the first attempt. NULL/active or previously entered legacy retire refuses. */
 bool mc_client_menu_loop_terminal_prepare(mc_client_menu_loop *);
+/* Normal native shutdown through this loop's original bootstrap association.
+ * End the real prefix and dispatchers, then prove no storage was acquired or
+ * admit the intact selected-load World graph before entering checked cleanup.
+ * Unsupported/partial loads remain live for diagnosis; no legacy fallback is
+ * selected. A retained setup failure uses only its never-entered setup cleanup.
+ * Once the destructive tail starts, retries continue its remaining checked
+ * owner slots instead of demanding an already consumed World. Keep the same
+ * bootstrap and exclusive graph alive throughout. Source failure is preserved;
+ * retirement_* fields report native cleanup separately. Success nulls *slot. */
+bool mc_client_menu_loop_terminal_retire(mc_client_menu_loop **);
 void mc_client_menu_loop_free(mc_client_menu_loop *);
-/* Retryable native retirement preserves the same slot and graph on refusal. */
+/* Separate low-level native retirement. The caller supplies outer dispatcher
+ * and storage admission; normal menu-run shutdown uses terminal_retire. */
 bool mc_client_menu_loop_retire(mc_client_menu_loop **);
 int mc_client_menu_run(const mc_client_application_options *);
 

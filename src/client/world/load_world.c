@@ -15,6 +15,7 @@
 #include "../startup/application_startup_menu.h"
 #include "../startup/application_startup_rendering.h"
 #include "../view_slot.h"
+#include "entity_renderer/internal.h"
 #include "mc/client/controller/singleplayer.h"
 #include "mc/client/input/movement_input.h"
 #include "mc/client/saves/save_format.h"
@@ -28,6 +29,7 @@
 #include "mc/world/runtime/loading/player.h"
 #include "mc/world/runtime/source_construction.h"
 #include "prepare_world.h"
+#include "render_global_access.h"
 #include "render_global_internal.h"
 
 #include <stdlib.h>
@@ -1142,6 +1144,248 @@ static mc_world_storage_status terminal_admission_result(mc_world_storage_error 
     if (error != NULL)
         *error = (mc_world_storage_error){status, operation, 0};
     return status;
+}
+
+static mc_world_storage_status terminal_empty_app(const client_application *app,
+                                                  mc_world_storage_error *error) {
+    if (app->active_world != NULL || app->h != NULL || app->i != NULL ||
+        app->view_occurrence != NULL || app->y != NULL)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
+                                         "Load terminal empty App has World/Player/view roots");
+    if (app->startup == NULL || app->startup->app != app || app->startup->rendering == NULL ||
+        app->effect_renderer_constructing || app->effect_renderer == NULL ||
+        app->effect_renderer != app->effect_renderer_retained ||
+        app->startup->rendering->particle != app->effect_renderer ||
+        app->startup->rendering->global == NULL || app->g != app->startup->rendering->global ||
+        app->aa == NULL || app->aa != app->startup->format_candidate || app->t == NULL ||
+        app->t != app->startup->entity_renderer_candidate ||
+        app->t->phase != MC_CLIENT_ENTITY_RENDERER_READY)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal empty App owner provenance");
+    if (app->startup->rendering->world_held || app->startup->rendering->particle_world != NULL)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal empty startup rendering World occurrence");
+    if (app->startup->active || app->startup->rendering->active || app->t->active ||
+        app->t->pick_call != NULL || app->t->tick_call != NULL || app->t->focus_call != NULL ||
+        app->t->world_frame_call != NULL)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
+                                         "Load terminal empty App child operation entered");
+    if (app->t->pick_m_occurrence != NULL || app->t->pick_y_occurrence != NULL ||
+        app->t->pick_m_published || app->t->pick_y_app != NULL || app->t->fields.m != NULL)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
+                                         "Load terminal empty App picking occurrences");
+    mc_effect_renderer_terminal_view effects;
+    const mc_effect_renderer_status effect_status =
+        mc_client_effect_renderer_terminal_inspect(app->effect_renderer, &effects, NULL);
+    if (effect_status != MC_EFFECT_RENDERER_OK)
+        return terminal_admission_result(error,
+                                         effect_status == MC_EFFECT_RENDERER_BUSY
+                                             ? MC_WORLD_STORAGE_BUSY
+                                             : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal empty App particle owner");
+    if (effects.classes != app->entities || effects.render_engine != app->render_engine ||
+        effects.world_slot == NULL || *effects.world_slot != NULL)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal empty App particle World provenance");
+    if (app->controller != NULL) {
+        mc_singleplayer_controller_terminal_view controller;
+        const mc_singleplayer_controller_status controller_status =
+            mc_client_singleplayer_controller_terminal_inspect(app->controller, &controller, NULL);
+        if (controller_status != MC_SINGLEPLAYER_CONTROLLER_OK)
+            return terminal_admission_result(error,
+                                             controller_status == MC_SINGLEPLAYER_CONTROLLER_BUSY
+                                                 ? MC_WORLD_STORAGE_BUSY
+                                                 : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                             "Load terminal empty App controller owner");
+        if (controller.app != app || controller.classes != app->entities ||
+            controller.profile != app->profile || controller.failed_player_slot == NULL ||
+            *controller.failed_player_slot != NULL)
+            return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                             "Load terminal empty App controller candidate");
+    }
+    mc_client_save_format_state format_state;
+    if (mc_client_save_format_read_state(app->aa, &format_state, NULL) != MC_CLIENT_SAVE_OK ||
+        format_state.phase != MC_CLIENT_SAVE_READY)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal empty App SaveFormat owner");
+    if (format_state.active || format_state.retiring)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
+                                         "Load terminal empty App SaveFormat active");
+    if (format_state.pending_handler != NULL)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal empty App retained SaveHandler");
+    const mc_client_render_global *renderer = app->startup->rendering->global;
+    if (renderer != NULL) {
+        if (renderer->phase != MC_CLIENT_RENDER_GLOBAL_READY &&
+            renderer->phase != MC_CLIENT_RENDER_GLOBAL_RETIRING)
+            return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                             "Load terminal empty App RenderGlobal owner phase");
+        /* scene_guard is the persistent graphics-context lease acquired by
+         * allocation, not an entered operation or a World occurrence. */
+        if (renderer->active || renderer->world_call != NULL || renderer->sky_call != NULL ||
+            renderer->cull_call != NULL || renderer->update_call != NULL ||
+            renderer->submit_call != NULL)
+            return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
+                                             "Load terminal empty App RenderGlobal call");
+        if (renderer->fields.k != NULL || renderer->world_occurrence != NULL ||
+            renderer->manager_world_occurrence != NULL || renderer->world_manager != NULL ||
+            renderer->fields.u != NULL || renderer->cv_owners != NULL ||
+            renderer->chunk_owners != NULL)
+            return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                             "Load terminal empty App RenderGlobal World rights");
+        if (renderer->access != NULL) {
+            mc_render_global_access_state access;
+            if (!mc_render_global_access_inspect(renderer->access, &access))
+                return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                                 "Load terminal empty App WorldAccess owner");
+            if (access.registrations != 0 || access.active_callbacks != 0 ||
+                access.retained_failures != 0)
+                return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
+                                                 "Load terminal empty App WorldAccess rights");
+        }
+    }
+    return terminal_admission_result(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_client_world_load_classes_terminal_validate(
+    const mc_client_world_load_classes *classes, client_application *expected_app,
+    size_t owned_call_count, mc_world_storage_error *error) {
+    if (classes == NULL || expected_app == NULL)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                         "Load terminal class owner and actual App required");
+    if (classes->app != expected_app || !classes->app_borrow || classes->gui == NULL ||
+        !classes->retiring || expected_app->startup == NULL ||
+        expected_app->startup->app != expected_app ||
+        expected_app->constructor_phase != MC_CLIENT_APP_READY ||
+        expected_app->loading_screen == NULL ||
+        mc_client_loading_screen_classes(expected_app->loading_screen) != classes->gui)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal prepared class/App provenance");
+    if (classes->active || expected_app->startup->active)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
+                                         "Load terminal class/App operation entered");
+    if (classes->calls > owned_call_count)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
+                                         "Load terminal unrepresented call occurrence");
+    if (classes->calls < owned_call_count)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal call occurrence deficit");
+    return owned_call_count == 0 ? terminal_empty_app(expected_app, error)
+                                 : terminal_admission_result(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_client_world_load_terminal_classify(
+    const mc_client_world_load_call *call, const mc_client_world_load_classes *expected_classes,
+    mc_client_terminal_storage_scope *out, mc_world_storage_error *error) {
+    if (call == NULL || expected_classes == NULL || out == NULL)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                         "Load terminal classification owners and output required");
+    const mc_client_world_load_classes *classes = call->classes;
+    if (classes != expected_classes || classes->app == NULL || call->state.app != classes->app ||
+        !classes->retiring || !call->state.retiring || !call->state.terminal_prepare_selected ||
+        !call->state.terminal_prepared || classes->calls == 0 ||
+        call->controller_count > sizeof(call->controllers) / sizeof(call->controllers[0]) ||
+        call->format_count > sizeof(call->formats) / sizeof(call->formats[0]))
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal classification intact prepared scope");
+    client_application *app = classes->app;
+    if (call->state.active || classes->active || app->startup == NULL || app->startup->app != app ||
+        app->startup->active)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
+                                         "Load terminal classification active App/call");
+    if (call->world_retired || call->cache_retired || call->prepare != NULL ||
+        call->pending_loading != NULL || call->pending_loading_owned_call ||
+        call->render_call != NULL || call->render_world_owned || call->failed_controller != NULL ||
+        call->failed_candidate != NULL || call->state.failed_player != NULL)
+        return terminal_admission_result(
+            error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+            "Load terminal classification partial cleanup or candidate");
+    for (size_t i = 0; i < call->controller_count; ++i)
+        if (call->controllers[i] == NULL)
+            return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                             "Load terminal consumed controller capture");
+    for (size_t i = 0; i < call->format_count; ++i)
+        if (call->formats[i].owner == NULL ||
+            (call->formats[i].was_pending && call->formats[i].owns_pending))
+            return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                             "Load terminal consumed Format capture");
+
+    if (call->state.world != NULL) {
+        mc_world_runtime_construction world;
+        if (!call->state.source_returned || call->failure.status != MC_CLIENT_WORLD_LOAD_OK ||
+            !call->state.handler_opened || !call->state.world_constructed ||
+            !call->state.world_published || !call->state.player_published ||
+            !call->state.input_published || !call->state.view_published ||
+            call->state.handler == NULL || call->state.player == NULL ||
+            call->state.input == NULL || !call->world_slot_owned || !call->effects_world_owned ||
+            !call->effects_held || call->effects_owner == NULL || call->render_owner != NULL ||
+            call->h_occurrence != call->state.player || call->i_occurrence != call->state.player ||
+            app->active_world != call->state.world || app->h != call->state.player ||
+            app->i != call->state.player || app->view_occurrence != call->state.player ||
+            mc_world_runtime_construction_get(call->state.world, &world) != MC_WORLD_STORAGE_OK ||
+            world.mode != MC_WORLD_RUNTIME_GAME || world.phase != MC_WORLD_RUNTIME_READY ||
+            world.entry != MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE)
+            return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                             "Load terminal classification partial selected World");
+        *out = MC_CLIENT_TERMINAL_SELECTED_LOAD;
+        return terminal_admission_result(error, MC_WORLD_STORAGE_OK, NULL);
+    }
+    if (call->state.handler != NULL || call->state.player != NULL || call->state.input != NULL ||
+        call->h_occurrence != NULL || call->i_occurrence != NULL || call->world_slot_owned ||
+        call->effects_world_owned || call->effects_held || call->effects_owner != NULL ||
+        call->render_owner != NULL || call->state.handler_opened || call->state.world_constructed ||
+        call->state.world_published || call->state.player_published ||
+        call->state.input_published || call->state.renderer_returned ||
+        call->state.effects_returned || call->state.player_load_returned ||
+        call->state.view_published || call->state.source_returned)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal classification acquired storage graph");
+    mc_world_storage_status status = terminal_empty_app(app, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    for (size_t i = 0; i < call->controller_count; ++i) {
+        mc_singleplayer_controller_terminal_view controller;
+        const mc_singleplayer_controller_status child =
+            mc_client_singleplayer_controller_terminal_inspect(call->controllers[i], &controller,
+                                                               NULL);
+        if (child != MC_SINGLEPLAYER_CONTROLLER_OK)
+            return terminal_admission_result(error,
+                                             child == MC_SINGLEPLAYER_CONTROLLER_BUSY
+                                                 ? MC_WORLD_STORAGE_BUSY
+                                                 : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                             "Load terminal empty captured controller");
+        if (controller.app != app || controller.classes != app->entities ||
+            controller.profile != app->profile || controller.failed_player_slot == NULL ||
+            *controller.failed_player_slot != NULL)
+            return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                             "Load terminal empty captured controller candidate");
+    }
+    for (size_t i = 0; i < call->format_count; ++i) {
+        mc_client_save_format_state format_state;
+        const captured_format *capture = &call->formats[i];
+        if (mc_client_save_format_read_state(capture->owner, &format_state, NULL) !=
+                MC_CLIENT_SAVE_OK ||
+            format_state.phase != MC_CLIENT_SAVE_READY)
+            return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                             "Load terminal empty captured Format owner");
+        if (format_state.active || format_state.retiring)
+            return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
+                                             "Load terminal empty captured Format active");
+        if (format_state.pending_handler != NULL)
+            return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                             "Load terminal empty captured Format Handler");
+        if (format_pending(&format_state)) {
+            size_t pending_owners = 0;
+            for (size_t j = 0; j < call->format_count; ++j)
+                if (call->formats[j].owner == capture->owner && call->formats[j].owns_pending)
+                    ++pending_owners;
+            if (pending_owners != 1)
+                return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                                 "Load terminal empty Format prefix ownership");
+        }
+    }
+    *out = MC_CLIENT_TERMINAL_EMPTY_STORAGE;
+    return terminal_admission_result(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
 mc_world_storage_status

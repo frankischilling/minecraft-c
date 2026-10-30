@@ -1,13 +1,17 @@
 # Build and tests
 
-The [source Handler and Store admission](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/terminal-retirement.md)
-now counts actual Load/World/SavedData/loader slots, checks separate loader
-holds and input lifetime, and rejects unknown cache registrations,
-reservations and unfinished entry work. All 39 targets build on both hosts;
-48 Windows and 46 sanitized Linux tests pass. The real loaded Windows
-profile preserves saves, assets and all 72 focus histories through checked
-cleanup. Complete Format/App/shared-service admission, partial loads,
-old-World deferral and normal runtime adoption remain unfinished.
+The [normal terminal coordinator](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
+now connects menu-run shutdown to actual prefix ending, checked LL/TH retirement,
+complete retained-load classification and fresh selected-World admission. Early
+bootstrap close keeps the same graph retryable while getters stay closed.
+Retained screens and newly retained controllers still block their checked
+cleanup after World consumption. All 40 targets build on both hosts; 49 Windows
+tests pass in 68.21 seconds and 46 sanitized Linux tests pass in 98.26 seconds.
+Seven Windows selection profiles preserve saves/assets and both successful
+loaded modes retain all 72 focus histories. Authored partial Player NBT refuses
+the coordinator with its acquired World intact. Complete Format/App/service
+admission, partial-load shutdown, deferred old Worlds and N44/N80 frame adoption
+remain unfinished. There is no original shutdown equivalence claim.
 
 The [terminal prefix controls](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
 pass 41 Windows tests in 55.82 seconds and 39 Linux Clang18 ASan/UBSan tests in
@@ -15,8 +19,8 @@ pass 41 Windows tests in 55.82 seconds and 39 Linux Clang18 ASan/UBSan tests in
 failure and foreign WorldAccess membership exercise separate cleanup stages;
 TH fields, the other N and a constructed GAME World stay live. This is one App
 with two N owners, not a completed outer shutdown or two-App qualification.
-Four nonloading menu profiles qualify preparation separately from the existing
-loaded-World path. Normal shutdown and N44/N80 remain unadopted.
+Those recorded controls predate the normal coordinator qualification above.
+N44/N80 frame adoption and deferred old Worlds remain unfinished.
 
 The [RenderManager CPU frame](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-manager-frame.md)
 retains all 432 original rows on Windows MSVC Debug and Linux Clang18 ASan/UBSan.

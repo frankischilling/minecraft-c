@@ -33,7 +33,10 @@
 #include "mc/core/java/java.h"
 #include "mc/entity/player/player.h"
 #include "mc/world/runtime/blocks.h"
+#include "mc/world/runtime/loading/player.h"
 #include "platform/time/millis.h"
+#include "world/runtime/chunk_provider_internal.h"
+#include "world/runtime/construction_internal.h"
 #include "world/runtime/runtime_internal.h"
 #include "world/runtime/source_construction_internal.h"
 
@@ -823,12 +826,31 @@ static int loaded_admission_attempt(fixture *f, mc_world_storage_status expected
     return 0;
 }
 
+static int terminal_source_diagnostic_same(fixture *f, const mc_client_menu_loop_state *before) {
+    CHECK(mc_client_menu_loop_inspect(f->loop, &f->state) && f->state.failed == before->failed &&
+          f->state.running == before->running && f->state.operation == before->operation &&
+          f->state.source_class == before->source_class &&
+          f->state.source_method == before->source_method &&
+          f->state.source_pc == before->source_pc && f->state.frames == before->frames &&
+          f->state.ticks == before->ticks && f->state.texture_ticks == before->texture_ticks &&
+          f->state.account_checks_omitted == before->account_checks_omitted &&
+          f->state.font_measurements == before->font_measurements &&
+          f->state.mouse_events == before->mouse_events &&
+          f->state.keyboard_events == before->keyboard_events);
+    return 0;
+}
+
 static int loaded_terminal_admission_controls(fixture *f) {
     client_application *app = f->app;
     mc_world_runtime *world = app->active_world;
     mc_entity *player = app->h;
     mc_client_screen_transition_state transitions;
     mc_client_world_load_state load;
+    mc_client_menu_loop_state source;
+    CHECK(mc_client_menu_loop_inspect(f->loop, &source) && source.failed &&
+          source.source_class != NULL && strcmp(source.source_class, "px") == 0 &&
+          source.source_method != NULL && strcmp(source.source_method, "a") == 0 &&
+          source.source_pc == 510 && !source.terminal_tail_entered);
     CHECK(mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
           transitions.world_load != NULL &&
           mc_client_world_load_inspect(transitions.world_load, &load) && load.source_returned &&
@@ -912,6 +934,29 @@ static int loaded_terminal_admission_controls(fixture *f) {
           foreign.attached && app->active_world == world && app->h == player && app->i == player &&
           world->construction.phase == MC_WORLD_RUNTIME_READY &&
           !world->entity_containers_retired && !world->tile_entity_containers_retired);
+    mc_client_menu_loop *same_loop = f->loop;
+    CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
+          terminal_source_diagnostic_same(f, &source) == 0 && foreign.attached &&
+          f->state.terminal_prepared && !f->state.terminal_tail_entered &&
+          f->state.retirement_bootstrap == MC_CLIENT_BOOTSTRAP_BUSY &&
+          f->state.retirement_world == NULL && f->state.retirement_operation != NULL &&
+          app->active_world == world && app->h == player && app->i == player &&
+          world->construction.phase == MC_WORLD_RUNTIME_READY &&
+          !world->entity_containers_retired && !world->tile_entity_containers_retired);
+    /* Close may end borrowed getters while the transition lease keeps the
+     * exact App/startup alive. The coordinator must still resume this owner. */
+    mc_client_bootstrap *same_bootstrap = f->bootstrap;
+    CHECK(mc_client_bootstrap_close(&f->bootstrap) == MC_CLIENT_BOOTSTRAP_BUSY &&
+          f->bootstrap == same_bootstrap && mc_client_bootstrap_app(f->bootstrap) == NULL &&
+          app->screen_transitions != NULL && app->active_world == world && app->h == player &&
+          app->i == player && terminal_source_diagnostic_same(f, &source) == 0);
+    CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
+          terminal_source_diagnostic_same(f, &source) == 0 && foreign.attached &&
+          !f->state.terminal_tail_entered &&
+          f->state.retirement_bootstrap == MC_CLIENT_BOOTSTRAP_BUSY &&
+          f->state.retirement_world == NULL && app->active_world == world &&
+          world->construction.phase == MC_WORLD_RUNTIME_READY &&
+          !world->entity_containers_retired && !world->tile_entity_containers_retired);
     CHECK(mc_client_render_manager_consumer_detach(&foreign, NULL) == MC_CLIENT_MANAGER_OK);
     CHECK(mc_client_bootstrap_terminal_dispatchers(f->bootstrap) == MC_CLIENT_BOOTSTRAP_OK &&
           mc_client_bootstrap_terminal_dispatchers(f->bootstrap) == MC_CLIENT_BOOTSTRAP_OK &&
@@ -927,18 +972,234 @@ static int loaded_terminal_admission_controls(fixture *f) {
     return 0;
 }
 
+static int normal_terminal_retirement_controls(fixture *f, mc_client_source_da **external,
+                                               bool selected_load) {
+    mc_client_menu_loop_state source;
+    client_application *app = f->app;
+    mc_client_menu_loop *same_loop = f->loop;
+    mc_client_screen_transitions *transitions = app->screen_transitions;
+    mc_client_singleplayer_controller *controller = app->controller;
+    mc_client_display *display = app->display;
+    SDL_Window *window = mc_client_display_window(display);
+    CHECK(external != NULL && *external != NULL && transitions != NULL && window != NULL &&
+          mc_client_menu_loop_inspect(f->loop, &source) && !source.terminal_tail_entered);
+    if (!selected_load) {
+        mc_client_terminal_storage_scope scope;
+        mc_world_storage_error error;
+        CHECK(mc_client_screen_transitions_terminal_classify(transitions, &scope, &error) ==
+                  MC_WORLD_STORAGE_OK &&
+              scope == MC_CLIENT_TERMINAL_EMPTY_STORAGE && error.status == MC_WORLD_STORAGE_OK);
+    } else {
+        CHECK(source.failed && source.source_class != NULL &&
+              strcmp(source.source_class, "px") == 0 && source.source_method != NULL &&
+              strcmp(source.source_method, "a") == 0 && source.source_pc == 510 &&
+              controller != NULL);
+    }
+    CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
+          terminal_source_diagnostic_same(f, &source) == 0 && f->state.terminal_prepare_selected &&
+          f->state.terminal_prepared && f->state.terminal_tail_entered &&
+          f->state.retirement_operation != NULL &&
+          f->state.retirement_bootstrap == MC_CLIENT_BOOTSTRAP_OK &&
+          f->state.retirement_world == NULL);
+    /* The first retained screen occurs AFTER actual Load/World destruction.
+     * Inspect surviving owners only; the former World/Player views expired. */
+    mc_client_screen_transition_state retained;
+    mc_client_screen_state screen;
+    CHECK(app->screen_transitions == transitions &&
+          mc_client_screen_transitions_inspect(transitions, &retained) && !retained.active &&
+          retained.retiring && retained.terminal_prepared && retained.world_load == NULL &&
+          app->active_world == NULL && app->h == NULL && app->i == NULL &&
+          app->view_occurrence == NULL && app->controller == controller &&
+          app->native_lifetime_phase == MC_CLIENT_APPLICATION_LIFETIME_REGISTERED &&
+          app->display == display && mc_client_display_window(display) == window &&
+          SDL_GetWindowID(window) != 0 &&
+          mc_client_screen_inspect(*external, &screen, NULL) == MC_CLIENT_SCREEN_OK &&
+          screen.phase == MC_CLIENT_SCREEN_READY && screen.holds >= 2);
+    if (selected_load) {
+        mc_singleplayer_controller_snapshot current;
+        CHECK(mc_client_singleplayer_controller_read(controller, &current) &&
+              current.phase == MC_SINGLEPLAYER_CONTROLLER_READY && !current.entered &&
+              current.native_holds == 1);
+        CHECK(mc_client_singleplayer_controller_retain(controller) ==
+              MC_SINGLEPLAYER_CONTROLLER_OK);
+        CHECK(mc_client_screen_release(external, NULL) == MC_CLIENT_SCREEN_OK && *external == NULL);
+        CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
+              terminal_source_diagnostic_same(f, &source) == 0 && f->state.terminal_tail_entered &&
+              f->state.retirement_world == NULL &&
+              f->state.retirement_bootstrap == MC_CLIENT_BOOTSTRAP_OK &&
+              f->state.retirement_operation != NULL &&
+              strcmp(f->state.retirement_operation, "actual controller native retirement") == 0 &&
+              app->screen_transitions == transitions && app->controller == controller &&
+              app->active_world == NULL && app->h == NULL && app->i == NULL &&
+              mc_client_screen_transitions_inspect(transitions, &retained) &&
+              retained.world_load == NULL && !retained.active &&
+              mc_client_singleplayer_controller_read(controller, &current) && !current.entered &&
+              current.native_holds == 2);
+        CHECK(mc_client_singleplayer_controller_release(controller) ==
+              MC_SINGLEPLAYER_CONTROLLER_OK);
+    } else {
+        CHECK(mc_client_screen_release(external, NULL) == MC_CLIENT_SCREEN_OK && *external == NULL);
+    }
+    CHECK(mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == NULL &&
+          mc_client_menu_loop_terminal_retire(&f->loop));
+    CHECK(app->screen_transitions == NULL && app->controller == NULL && app->active_world == NULL &&
+          app->h == NULL && app->i == NULL && app->view_occurrence == NULL &&
+          app->native_lifetime_phase == MC_CLIENT_APPLICATION_LIFETIME_REGISTERED &&
+          app->display == display && mc_client_display_window(display) == window);
+    return 0;
+}
+
+/* Authored malformed Player NBT reaches the real source exception after a
+ * nonnull World/Player/Input graph was acquired. This is a refusal control,
+ * not a normal-shutdown fallback for that unsupported partial graph. */
+static int partial_world_terminal_controls(fixture *f, mc_client_source_da **external,
+                                           const mc_client_world_load_state *failed_load) {
+    client_application *app = f->app;
+    mc_world_runtime *world = failed_load->world;
+    mc_entity *player = failed_load->player;
+    mc_client_menu_loop_state source;
+    CHECK(mc_client_menu_loop_inspect(f->loop, &source) && source.failed &&
+          source.source_class != NULL && strcmp(source.source_class, "fd") == 0 &&
+          source.source_method != NULL && strcmp(source.source_method, "a") == 0 &&
+          source.source_pc == 88 && !source.terminal_tail_entered);
+    CHECK(world != NULL && player != NULL && failed_load->handler != NULL &&
+          failed_load->input != NULL && failed_load->failure != NULL &&
+          failed_load->failure->status == MC_CLIENT_WORLD_LOAD_CHILD_FAILED &&
+          failed_load->last_change_pc == 324 && !failed_load->source_returned &&
+          !failed_load->player_load_returned && !failed_load->view_published &&
+          failed_load->handler_opened && failed_load->world_constructed &&
+          failed_load->world_published && failed_load->player_published &&
+          failed_load->input_published && failed_load->renderer_returned &&
+          failed_load->effects_returned && !failed_load->needs_conversion &&
+          failed_load->failure->child.class_name != NULL &&
+          strcmp(failed_load->failure->child.class_name, "fd") == 0 &&
+          strcmp(failed_load->failure->child.method, "a") == 0 &&
+          strcmp(failed_load->failure->child.descriptor, "(Lgs;)V") == 0 &&
+          failed_load->failure->child.pc == 88);
+    const mc_world_player_load_error *cause = failed_load->failure->player_load;
+    CHECK(cause != NULL && cause->saved_data_present && cause->print_stack_trace_pending &&
+          cause->catch_bytecode == 88 && cause->source_exception && cause->caught_exception &&
+          !cause->source_returned && !cause->nbt_returned && !cause->info_cleared &&
+          !cause->publication_returned && cause->nbt.status == MC_ENTITY_NBT_INDEX_OUT_OF_BOUNDS &&
+          cause->nbt.base_bytecode == 129 && cause->nbt.index == 0 && cause->nbt.field != NULL &&
+          strcmp(cause->nbt.field, "Pos") == 0);
+    CHECK(app->active_world == world && app->h == player && app->i == NULL &&
+          app->view_occurrence == NULL && world->construction.phase == MC_WORLD_RUNTIME_READY &&
+          !world->entity_containers_retired && !world->tile_entity_containers_retired &&
+          player->base.velocity_x == 0.25 && player->base.velocity_y == -0.5 &&
+          player->base.velocity_z == 0.75);
+    mc_entity_base_fields base;
+    memcpy(&base, &player->base, sizeof(base));
+    mc_client_menu_loop *same_loop = f->loop;
+    CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
+          terminal_source_diagnostic_same(f, &source) == 0 && f->state.terminal_prepared &&
+          !f->state.terminal_tail_entered &&
+          f->state.retirement_bootstrap == MC_CLIENT_BOOTSTRAP_OK &&
+          f->state.retirement_world != NULL &&
+          f->state.retirement_world->status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          app->active_world == world && app->h == player && app->i == NULL &&
+          app->view_occurrence == NULL && world->construction.phase == MC_WORLD_RUNTIME_READY &&
+          !world->entity_containers_retired && !world->tile_entity_containers_retired &&
+          memcmp(&base, &player->base, sizeof(base)) == 0);
+
+    /* Native prefix/dispatcher ending has completed. A repeated refusal must
+     * preserve these actual source owners, diagnostics and cache backing. */
+    mc_world_source_state handler;
+    mc_world_source_chunk_loader_state loader;
+    mc_world_saved_data_source_state saved_data;
+    mc_chunk_provider_fields provider;
+    mc_movement_input_state input_before, input_after;
+    CHECK(mc_world_store_source_inspect(failed_load->handler, &handler) &&
+          mc_world_source_chunk_loader_inspect(world->source_construction->loader, &loader) &&
+          mc_world_saved_data_source_inspect(world->fields.z, &saved_data) &&
+          mc_chunk_provider_bind_fields(world->fields.v, &provider, NULL) == MC_WORLD_STORAGE_OK &&
+          provider.cache != NULL && provider.pending != NULL &&
+          mc_movement_input_read_state(failed_load->input, &input_before));
+
+    struct partial_copy {
+        const void *owner;
+        size_t bytes;
+        unsigned char *before;
+    } copies[] = {{app, sizeof(*app), NULL},
+                  {world, sizeof(*world), NULL},
+                  {player, sizeof(*player), NULL},
+                  {world->source_construction, sizeof(*world->source_construction), NULL},
+                  {world->classes, sizeof(*world->classes), NULL},
+                  {failed_load->failure, sizeof(*failed_load->failure), NULL},
+                  {failed_load->cleanup, sizeof(*failed_load->cleanup), NULL},
+                  {cause, sizeof(*cause), NULL},
+                  {handler.failure, sizeof(*handler.failure), NULL},
+                  {handler.cleanup, sizeof(*handler.cleanup), NULL},
+                  {loader.failure, sizeof(*loader.failure), NULL},
+                  {loader.cleanup, sizeof(*loader.cleanup), NULL},
+                  {saved_data.failure, sizeof(*saved_data.failure), NULL},
+                  {saved_data.cleanup, sizeof(*saved_data.cleanup), NULL},
+                  {provider.cache, sizeof(*provider.cache), NULL},
+                  {provider.cache->entries,
+                   provider.cache->capacity * sizeof(*provider.cache->entries), NULL},
+                  {provider.cache->insertions,
+                   provider.cache->insertion_capacity * sizeof(*provider.cache->insertions), NULL},
+                  {provider.pending, sizeof(*provider.pending), NULL},
+                  {provider.pending->keys,
+                   provider.pending->capacity * sizeof(*provider.pending->keys), NULL}};
+
+    for (size_t i = 0; i < sizeof(copies) / sizeof(copies[0]); ++i) {
+        CHECK(copies[i].owner != NULL && copies[i].bytes != 0);
+        copies[i].before = malloc(copies[i].bytes);
+        CHECK(copies[i].before != NULL);
+        memcpy(copies[i].before, copies[i].owner, copies[i].bytes);
+    }
+    CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
+          terminal_source_diagnostic_same(f, &source) == 0 && !f->state.terminal_tail_entered &&
+          f->state.retirement_world != NULL &&
+          f->state.retirement_world->status == MC_WORLD_STORAGE_UNSUPPORTED_STATE);
+    for (size_t i = 0; i < sizeof(copies) / sizeof(copies[0]); ++i) {
+        CHECK(memcmp(copies[i].before, copies[i].owner, copies[i].bytes) == 0);
+        free(copies[i].before);
+    }
+    CHECK(mc_movement_input_read_state(failed_load->input, &input_after) &&
+          input_after.kind == input_before.kind &&
+          input_after.native_holds == input_before.native_holds &&
+          input_after.settings == input_before.settings &&
+          input_after.keys_identity == input_before.keys_identity &&
+          input_after.key_count == input_before.key_count &&
+          memcmp(input_after.keys, input_before.keys, sizeof(input_after.keys)) == 0 &&
+          memcmp(&input_after.fields.strafe, &input_before.fields.strafe, sizeof(float)) == 0 &&
+          memcmp(&input_after.fields.forward, &input_before.fields.forward, sizeof(float)) == 0 &&
+          input_after.fields.source_c == input_before.fields.source_c &&
+          input_after.fields.jump == input_before.fields.jump &&
+          input_after.fields.sneak == input_before.fields.sneak);
+
+    /* Deliberate fixture-owned low-level cleanup AFTER the normal coordinator
+     * refused. The production normal runner must never choose this fallback. */
+    CHECK(external != NULL && *external != NULL && !mc_client_menu_loop_retire(&f->loop) &&
+          f->loop == same_loop && terminal_source_diagnostic_same(f, &source) == 0 &&
+          !f->state.terminal_tail_entered && app->active_world == NULL && app->h == NULL &&
+          app->i == NULL);
+    CHECK(mc_client_screen_release(external, NULL) == MC_CLIENT_SCREEN_OK && *external == NULL);
+    CHECK(mc_client_menu_loop_retire(&f->loop) && f->loop == NULL);
+    puts("WORLD_LOAD_PARTIAL world-ready=1 player-nbt=Pos129:0 load-change=324 child=fd.a:88 "
+         "coordinator-refused=1 explicit-legacy-cleanup=1");
+    return 0;
+}
+
 int main(int argc, char **argv) {
-    CHECK(argc == 4 && (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
-                        strcmp(argv[2], "large") == 0 || strcmp(argv[2], "double") == 0 ||
-                        strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
-                        strcmp(argv[2], "load-terminal") == 0));
+    CHECK(argc == 4 &&
+          (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
+           strcmp(argv[2], "large") == 0 || strcmp(argv[2], "double") == 0 ||
+           strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
+           strcmp(argv[2], "load-terminal") == 0 || strcmp(argv[2], "load-partial") == 0));
     const bool double_click = strcmp(argv[2], "double") == 0;
     const bool terminal_admission = strcmp(argv[2], "load-terminal") == 0;
+    const bool partial_load = strcmp(argv[2], "load-partial") == 0;
     const bool loading_world =
         strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 || terminal_admission;
-    const bool populated = strcmp(argv[2], "populated") == 0 || double_click || loading_world;
+    const bool populated =
+        strcmp(argv[2], "populated") == 0 || double_click || loading_world || partial_load;
     const bool large = strcmp(argv[2], "large") == 0;
     fixture f = {0};
+    mc_client_bootstrap_status closed;
+    uint64_t close_deadline;
     const mc_client_application_options options = {.assets = argv[1],
                                                    .username = "Selection control",
                                                    .width = 854,
@@ -1046,6 +1307,10 @@ int main(int argc, char **argv) {
         CHECK(mc_client_screen_transitions_inspect(f.app->screen_transitions, &transitions) &&
               transitions.world_load != NULL &&
               mc_client_world_load_inspect(transitions.world_load, &load));
+        if (partial_load) {
+            CHECK(partial_world_terminal_controls(&f, &external, &load) == 0);
+            goto close_bootstrap;
+        }
         if (loading_world &&
             (load.failure == NULL || load.failure->status != MC_CLIENT_WORLD_LOAD_OK ||
              !load.source_returned || !load.player_published)) {
@@ -1311,13 +1576,17 @@ int main(int argc, char **argv) {
               f.app->active_world == world && f.app->h == player && f.app->i == player);
         CHECK(mc_client_effect_renderer_release(effects) == MC_EFFECT_RENDERER_OK);
     }
-    CHECK(!mc_client_menu_loop_retire(&f.loop) && f.loop != NULL && external != NULL);
-    CHECK(mc_client_bootstrap_app(f.bootstrap) == f.app &&
-          f.app->native_lifetime_phase == MC_CLIENT_APPLICATION_LIFETIME_REGISTERED);
-    CHECK(mc_client_screen_release(&external, NULL) == MC_CLIENT_SCREEN_OK && external == NULL);
-    CHECK(mc_client_menu_loop_retire(&f.loop) && f.loop == NULL);
-    mc_client_bootstrap_status closed;
-    const uint64_t close_deadline = SDL_GetTicks() + 35000;
+    if (!loading_world || terminal_admission) {
+        CHECK(normal_terminal_retirement_controls(&f, &external, terminal_admission) == 0);
+    } else {
+        CHECK(!mc_client_menu_loop_retire(&f.loop) && f.loop != NULL && external != NULL);
+        CHECK(mc_client_bootstrap_app(f.bootstrap) == f.app &&
+              f.app->native_lifetime_phase == MC_CLIENT_APPLICATION_LIFETIME_REGISTERED);
+        CHECK(mc_client_screen_release(&external, NULL) == MC_CLIENT_SCREEN_OK && external == NULL);
+        CHECK(mc_client_menu_loop_retire(&f.loop) && f.loop == NULL);
+    }
+close_bootstrap:
+    close_deadline = SDL_GetTicks() + 35000;
     do {
         closed = mc_client_bootstrap_close(&f.bootstrap);
         if (closed == MC_CLIENT_BOOTSTRAP_BUSY)

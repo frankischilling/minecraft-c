@@ -22,7 +22,7 @@ def tag(kind, key, value):
     return bytes([kind]) + string(key) + value
 
 
-def metadata(display, played, version):
+def metadata(display, played, version, partial=False):
     data = tag(8, "LevelName", string(display))
     data += tag(4, "LastPlayed", struct.pack(">q", played))
     data += tag(4, "SizeOnDisk", struct.pack(">q", 3145728))
@@ -30,6 +30,14 @@ def metadata(display, played, version):
     data += tag(4, "RandomSeed", struct.pack(">q", 123))
     for name, value in (("SpawnX", 0), ("SpawnY", 64), ("SpawnZ", 0)):
         data += tag(3, name, struct.pack(">i", value))
+    if partial:
+        # Authored saved input: the real Entity reader reaches Pos[0] only
+        # after Motion and after the client acquired its World/Player graph.
+        player = tag(3, "Dimension", struct.pack(">i", 0))
+        player += tag(9, "Motion", b"\x06" + struct.pack(">i3d", 3, .25, -.5, .75))
+        player += tag(9, "Pos", b"\x06" + struct.pack(">i", 0))
+        player += tag(9, "Rotation", b"\x05" + struct.pack(">i2f", 2, 0, 0))
+        data += tag(10, "Player", player + b"\x00")
     return b"\x0a\x00\x00" + tag(10, "Data", data + b"\x00") + b"\x00"
 
 
@@ -96,7 +104,8 @@ def main():
     parser.add_argument("--assets", type=Path, required=True)
     parser.add_argument("--artifacts", type=Path, required=True)
     parser.add_argument("--mode", action="append",
-                        choices=("empty", "populated", "large", "double", "load", "generate", "load-terminal"))
+                        choices=("empty", "populated", "large", "double", "load", "generate",
+                                 "load-terminal", "load-partial"))
     parser.add_argument("--timeout", type=float)
     args = parser.parse_args()
     if os.name != "nt":
@@ -106,7 +115,8 @@ def main():
     artifacts = args.artifacts.resolve()
     artifacts.mkdir(parents=True, exist_ok=True)
     resources_before = snapshot(assets)
-    for mode in args.mode or ("empty", "populated", "large", "double", "load", "load-terminal"):
+    for mode in args.mode or ("empty", "populated", "large", "double", "load", "load-terminal",
+                             "load-partial"):
         with tempfile.TemporaryDirectory(prefix="mc-rq-loop-") as work:
             appdata = Path(work)
             game = appdata / ".minecraft"
@@ -116,12 +126,12 @@ def main():
             if mode == "large":
                 worlds = [(f"world{i:02d}", f"Scroll world {i:02d}", 1304000000000, 19132)
                           for i in range(16)]
-            elif mode in ("populated", "double", "load", "generate", "load-terminal"):
+            elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial"):
                 worlds = [
                     ("older", "Old world", 1303000000000, 19132),
                     ("bravo", "", 1304000000000, 19132),
                     ("alpha", "Alpha world", 1304000000000,
-                     19132 if mode in ("load", "generate", "load-terminal") else 0),
+                     19132 if mode in ("load", "generate", "load-terminal", "load-partial") else 0),
                 ]
             else:
                 worlds = []
@@ -130,9 +140,11 @@ def main():
                 directory.mkdir()
                 filename = "level.dat_old" if folder == "bravo" else "level.dat"
                 (directory / filename).write_bytes(
-                    gzip.compress(metadata(display, played, version), mtime=0))
+                    gzip.compress(metadata(display, played, version,
+                                           partial=mode == "load-partial" and folder == "alpha"),
+                                  mtime=0))
                 (directory / "preserve-chunk.dat").write_bytes(b"authored untouched chunk")
-            if mode in ("load", "generate", "load-terminal"):
+            if mode in ("load", "generate", "load-terminal", "load-partial"):
                 regions = saves / "alpha" / "region"
                 regions.mkdir()
                 saved_regions(regions, generate=mode == "generate")
@@ -158,7 +170,7 @@ def main():
                 if observed != expected:
                     raise RuntimeError("Actual SDK focus segment differs from 72 original PX histories")
             after = snapshot(saves)
-            if mode in ("load", "generate", "load-terminal"):
+            if mode in ("load", "generate", "load-terminal", "load-partial"):
                 if any(after.get(name) != digest for name, digest in before.items()):
                     raise RuntimeError("World loading changed pre-existing fixture bytes")
                 if not (saves / "alpha" / "session.lock").is_file():

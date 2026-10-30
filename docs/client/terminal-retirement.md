@@ -3,9 +3,10 @@
 The native terminal prefix ends source admission and releases selected local
 call and renderer occurrences while keeping the application and World graphs
 live. It is one way: a prepared owner cannot resume frames or source loading.
-Successful preparation does not authorize World destruction. Explicit native
-dispatcher retirement and first-scope client World admission now follow it;
-normal shutdown and the complete outer destruction coordinator remain unfinished.
+Successful preparation does not authorize World destruction. Normal menu-run
+shutdown now follows the prefix with checked dispatcher retirement and a
+passive storage classification before its destructive cleanup tail. Complete
+Format/App/shared-service admission remains unfinished.
 
 The prefix is available through
 [RenderGlobal](../../include/mc/client/world/render_global.h),
@@ -135,7 +136,7 @@ Native preparation is separate from that source operation. It does not
 replay `n.a(NULL)`, clear LL/TH globals, save a World or acknowledge source
 disposal. An advisory GC request cannot replace native ownership accounting.
 
-## Destruction and runtime adoption remain separate
+## Dispatcher retirement and normal shutdown
 
 The lower [World admission](../world/terminal-retirement.md) counts exact
 Entity, TileEntity, Provider and static Piston owners without releasing them.
@@ -167,17 +168,56 @@ source reference changes do not destroy a graph still held by those roots.
 The full-retire APIs remain explicitly destructive; they are not an outer
 external-root admission check.
 
-The normal menu-run shutdown path has not adopted these explicit primitives.
-RenderGlobal's delay and LL/TH frame invokes at N44/N80 also remain separate
-integration work. Full World frames, ordinary menu World replacement and
-gameplay lifetime parity remain unfinished.
+`mc_client_menu_loop_terminal_retire` now composes those operations for normal
+menu-run shutdown. The loop retains its actual creator bootstrap association;
+it never tries to recover the App through an expired getter. An early bootstrap
+close returns BUSY while the actual transition lease remains live, before
+startup or its legacy dispatcher fallback can consume dependencies. Getters
+stay closed, but the same inactive prepared lease can continue cleanup.
+
+The passive classifier walks the complete bounded transition-node ledger and
+every actual Load slot. Its derived call count must match the Load class's
+real occurrences. A null `last_load` alone cannot establish an empty graph:
+a failed second invocation can leave an earlier call in another node. Empty
+storage requires no retained Handler, World, Player, Input, failed candidate,
+pending Format Handler, particle World or renderer World rights. Genuine
+pre-World conversion failures can pass this proof without changing their
+source failure. One intact successful selected load instead needs fresh
+controller/effect/Input, source Handler and complete World admission.
+
+Only then does the loop record that its real destructive tail has entered.
+If a retained screen blocks after World consumption, retries continue the
+remaining checked owner slots; they do not demand the consumed intact World
+or treat earlier admission as permission for a new source graph. A later
+controller retain still blocks its own destructor. Source frames and new
+loads remain closed. Native `retirement_*` diagnostics are separate from the
+original frame failure and preserve its source class, method, PC and exit status.
+
+A failed setup that never completed loop creation retains its original setup
+cleanup route. Failed or partial loads with acquired storage refuse the normal
+coordinator before tail entry and keep their remaining graph for diagnosis;
+there is no unsupported-to-legacy fallback. Low-level explicit legacy APIs
+retain their separate contracts. This is bounded normal shutdown adoption,
+not complete Format/App/service external-root admission or source shutdown.
+RenderGlobal's delay and LL/TH frame invokes at N44/N80, deferred old Worlds,
+full World frames and gameplay lifetime parity remain unfinished.
 
 ## Qualified native scope
 
-All 39 selected targets build on Windows MSVC Debug and Linux Clang18 with
-ASan/UBSan. The selected CTests pass 48 Windows cases in 69.44 seconds and 46
-Linux cases in 98.83 seconds, with source inputs unchanged and no sanitizer
+All 40 selected targets build on Windows MSVC Debug and Linux Clang18 with
+ASan/UBSan. The selected CTests pass 49 Windows cases in 68.21 seconds and 46
+Linux cases in 98.26 seconds, with source inputs unchanged and no sanitizer
 findings. All 1,607 C/header/fragment inputs pass clang-format18.1.3.
+
+The normal no-World menu, four nonloading selection modes and successful
+loaded terminal profile now execute the coordinator. The tests exercise early
+bootstrap close before preparation and after dispatcher refusal, expired
+getters, a real foreign TH consumer, external-screen retention after World
+consumption and a newly acquired controller hold during tail retry. The seventh
+selection mode supplies authored saved Player NBT with an empty Pos List.
+It reaches the actual Pos129/index0 failure at World catch88 with World/Player/
+Input acquired, then preserves the complete graph across repeated coordinator
+refusal. Its explicit fixture-only legacy cleanup is not a normal fallback.
 
 The RenderGlobal CPU test passes 28 checks on both hosts. The Windows device
 test passes 28,892 checks, including the sticky terminal policy, real callback
@@ -199,7 +239,8 @@ through the actual transition/Load owners succeeds with its three Player
 anchors and two direct World anchors. The test then completes checked full
 cleanup. Its wrapper preserves all pre-existing save and asset bytes and
 checks all 72 original focus histories for each of the ordinary and terminal
-loaded profiles. Existing native UI modes retain their prior path.
+loaded profiles. The separate ordinary load and optional generate modes retain
+their explicit legacy cleanup controls.
 
 The same loaded profile now refuses direct Handler and selected-loader retains,
 an independent source SavedData manager and a second real loader. Both hosts'

@@ -1,14 +1,17 @@
 #include "client/application_state.h"
 #include "client/display/staged.h"
 #include "client/gui/source_screen_initialize.h"
+#include "client/gui/source_screen_transitions.h"
 #include "client/render_engine/effect_upload.h"
 #include "client/runtime/menu_loop.h"
+#include "client/startup/application_startup_internal.h"
 #include "mc/client/gui/gui_ingame.h"
 
 #include <SDL3/SDL.h>
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define CHECK(condition)                                                                           \
     do {                                                                                           \
@@ -17,6 +20,47 @@
             return 1;                                                                              \
         }                                                                                          \
     } while (0)
+
+static bool same_source_state(const mc_client_menu_loop_state *a,
+                              const mc_client_menu_loop_state *b) {
+    return a->frames == b->frames && a->ticks == b->ticks && a->texture_ticks == b->texture_ticks &&
+           a->account_checks_omitted == b->account_checks_omitted &&
+           a->font_measurements == b->font_measurements && a->mouse_events == b->mouse_events &&
+           a->keyboard_events == b->keyboard_events && a->failed == b->failed &&
+           a->running == b->running && a->operation == b->operation &&
+           a->source_class == b->source_class && a->source_method == b->source_method &&
+           a->source_pc == b->source_pc;
+}
+
+static bool getters_closed(mc_client_bootstrap *bootstrap) {
+    return mc_client_bootstrap_app(bootstrap) == NULL &&
+           mc_client_bootstrap_resources(bootstrap) == NULL &&
+           mc_client_bootstrap_class_files(bootstrap) == NULL &&
+           mc_client_bootstrap_trig(bootstrap) == NULL &&
+           mc_client_bootstrap_math(bootstrap) == NULL &&
+           mc_client_bootstrap_graphics(bootstrap) == NULL;
+}
+
+/* Compare actual source references and native graph ownership while a real
+ * foreign consumer keeps TH READY. Consumer count is checked separately at
+ * each actual attach/detach boundary; no count grants cleanup authority. */
+static bool same_manager_graph(const mc_client_manager_state *a, const mc_client_manager_state *b) {
+    return a->phase == MC_CLIENT_MANAGER_READY && b->phase == a->phase &&
+           a->source_views_available && b->source_views_available && a->a == b->a &&
+           a->candidate == b->candidate && a->entries == b->entries &&
+           a->completed_bw_stores == b->completed_bw_stores && a->class_bytes == b->class_bytes &&
+           a->manager_holds == b->manager_holds && a->displaced_hands == b->displaced_hands &&
+           a->hand_occurrence == b->hand_occurrence && a->fields.o == b->fields.o &&
+           a->fields.p == b->fields.p && a->fields.e == b->fields.e && a->fields.f == b->fields.f &&
+           a->fields.g == b->fields.g && a->fields.h == b->fields.h && a->fields.k == b->fields.k &&
+           memcmp(&a->fields.i, &b->fields.i, sizeof(a->fields.i)) == 0 &&
+           memcmp(&a->fields.j, &b->fields.j, sizeof(a->fields.j)) == 0 &&
+           memcmp(&a->fields.l, &b->fields.l, sizeof(a->fields.l)) == 0 &&
+           memcmp(&a->fields.m, &b->fields.m, sizeof(a->fields.m)) == 0 &&
+           memcmp(&a->fields.n, &b->fields.n, sizeof(a->fields.n)) == 0 &&
+           memcmp(&a->b, &b->b, sizeof(a->b)) == 0 && memcmp(&a->c, &b->c, sizeof(a->c)) == 0 &&
+           memcmp(&a->d, &b->d, sizeof(a->d)) == 0;
+}
 
 int main(int argc, char **argv) {
     CHECK(argc == 2);
@@ -111,7 +155,87 @@ int main(int argc, char **argv) {
     CHECK(app->active_world == NULL && app->h == NULL && app->i == NULL && !app->N);
     printf("SOURCE_MENU frames=%" PRIu64 " ticks=%" PRIu64 " mouse=%zu measured=%zu quit=1\n",
            state.frames, state.ticks, state.mouse_events, state.font_measurements);
-    mc_client_menu_loop_free(loop);
+    /* The real source Quit above is unchanged. These controls exercise only
+     * native no-World shutdown on that same fully constructed App and loop. */
+    const mc_client_menu_loop_state source = state;
+    const bool source_J = atomic_load(&app->J), source_o = atomic_load(&app->o);
+    mc_client_application_startup *startup = app->startup;
+    mc_client_render_manager_classes *manager = startup->manager_classes;
+    mc_client_manager_state manager_before, manager_after;
+    mc_client_manager_consumer foreign = {0};
+    CHECK(manager != NULL && mc_client_render_manager_inspect(manager, &manager_before));
+    CHECK(manager_before.phase == MC_CLIENT_MANAGER_READY && manager_before.native_consumers == 1 &&
+          manager_before.entries == 28 && manager_before.hand_occurrence != NULL);
+    CHECK(mc_client_render_manager_consumer_attach(manager, &foreign, NULL) ==
+          MC_CLIENT_MANAGER_OK);
+    CHECK(foreign.attached && foreign.classes == manager);
+    CHECK(mc_client_render_manager_inspect(manager, &manager_before) &&
+          manager_before.native_consumers == 2);
+    mc_client_screen_transitions *transitions = app->screen_transitions;
+    mc_client_source_da *menu = app->r;
+    mc_client_render_engine *engine = app->render_engine;
+    mc_client_bitmap_font *font = app->font_renderer;
+    mc_game_settings *settings = app->settings;
+    CHECK(transitions != NULL && !state.terminal_prepare_selected && !state.terminal_prepared &&
+          !state.terminal_tail_entered && startup->app == app);
+    CHECK(mc_client_bootstrap_close(&bootstrap) == MC_CLIENT_BOOTSTRAP_BUSY && bootstrap != NULL);
+    CHECK(getters_closed(bootstrap) && app->startup == startup && startup->app == app &&
+          app->screen_transitions == transitions && app->r == menu);
+    CHECK(mc_client_render_manager_inspect(manager, &manager_after) &&
+          same_manager_graph(&manager_before, &manager_after) &&
+          manager_after.native_consumers == 2);
+    CHECK(mc_client_menu_loop_inspect(loop, &state) && same_source_state(&source, &state) &&
+          !state.terminal_prepare_selected && !state.terminal_prepared &&
+          !state.terminal_tail_entered);
+    mc_client_menu_loop *blocked = NULL;
+    CHECK(!mc_client_menu_loop_create(bootstrap, &blocked) && blocked == NULL);
+
+    mc_client_menu_loop *same_loop = loop;
+    CHECK(!mc_client_menu_loop_terminal_retire(&loop) && loop == same_loop);
+    CHECK(mc_client_menu_loop_inspect(loop, &state) && same_source_state(&source, &state));
+    CHECK(state.terminal_prepare_selected && state.terminal_prepared &&
+          !state.terminal_tail_entered && state.retirement_bootstrap == MC_CLIENT_BOOTSTRAP_BUSY &&
+          state.retirement_world == NULL && state.retirement_operation != NULL &&
+          strcmp(state.retirement_operation, "menu terminal dispatcher retirement") == 0);
+    CHECK(startup->terminal_manager_consumer_selected && startup->terminal_manager_consumer_ended &&
+          !startup->manager_consumer.attached && startup->manager_consumer.classes == NULL &&
+          startup->manager_classes == NULL && startup->manager_capture == NULL);
+    CHECK(foreign.attached && foreign.classes == manager &&
+          mc_client_render_manager_inspect(manager, &manager_after) &&
+          same_manager_graph(&manager_before, &manager_after) &&
+          manager_after.native_consumers == 1);
+    CHECK(!mc_client_menu_loop_frame(loop));
+    CHECK(mc_client_menu_loop_inspect(loop, &state) && same_source_state(&source, &state));
+    CHECK(atomic_load(&app->J) == source_J && atomic_load(&app->o) == source_o &&
+          app->active_world == NULL && app->h == NULL && app->i == NULL && !app->N &&
+          app->r == menu && app->render_engine == engine && app->font_renderer == font &&
+          app->settings == settings && app->screen_transitions == transitions);
+    /* Early close must not bypass LL-before-TH after its own startup record
+     * has ended. The actual foreign consumer still owns its admission right. */
+    CHECK(mc_client_bootstrap_close(&bootstrap) == MC_CLIENT_BOOTSTRAP_BUSY && bootstrap != NULL);
+    CHECK(getters_closed(bootstrap) && mc_client_render_manager_inspect(manager, &manager_after) &&
+          same_manager_graph(&manager_before, &manager_after) &&
+          manager_after.native_consumers == 1);
+    CHECK(!mc_client_menu_loop_terminal_retire(&loop) && loop == same_loop);
+    CHECK(mc_client_menu_loop_inspect(loop, &state) && same_source_state(&source, &state) &&
+          state.terminal_prepared && !state.terminal_tail_entered &&
+          state.retirement_bootstrap == MC_CLIENT_BOOTSTRAP_BUSY && state.retirement_world == NULL);
+    CHECK(mc_client_render_manager_consumer_detach(&foreign, NULL) == MC_CLIENT_MANAGER_OK &&
+          !foreign.attached && foreign.classes == NULL);
+    CHECK(mc_client_render_manager_inspect(manager, &manager_after) &&
+          same_manager_graph(&manager_before, &manager_after) &&
+          manager_after.native_consumers == 0);
+    const bool retired = mc_client_menu_loop_terminal_retire(&loop);
+    if (!retired && mc_client_menu_loop_inspect(loop, &state))
+        fprintf(stderr, "Menu terminal refusal: %s (bootstrap=%d, tail=%d)\n",
+                state.retirement_operation == NULL ? "none" : state.retirement_operation,
+                (int)state.retirement_bootstrap, (int)state.terminal_tail_entered);
+    CHECK(retired && loop == NULL);
+    CHECK(mc_client_menu_loop_terminal_retire(&loop) && loop == NULL);
+    CHECK(getters_closed(bootstrap) && app->screen_transitions == NULL &&
+          atomic_load(&app->J) == source_J && atomic_load(&app->o) == source_o &&
+          app->active_world == NULL && app->h == NULL && app->i == NULL && !app->N);
+    puts("SOURCE_MENU terminal=1 early_close=1 foreign_th=1 source_preserved=1");
     mc_client_bootstrap_status closed;
     const uint64_t close_deadline = SDL_GetTicks() + 35000;
     do {

@@ -650,6 +650,81 @@ mc_world_storage_status mc_client_screen_transitions_terminal_admit(
     return status;
 }
 
+static mc_world_storage_status terminal_classification_result(mc_world_storage_error *error,
+                                                              mc_world_storage_status status,
+                                                              const char *operation) {
+    if (error != NULL)
+        *error = (mc_world_storage_error){status, operation, 0};
+    return status;
+}
+
+mc_world_storage_status
+mc_client_screen_transitions_terminal_classify(const mc_client_screen_transitions *r,
+                                               mc_client_terminal_storage_scope *out,
+                                               mc_world_storage_error *error) {
+    if (r == NULL || out == NULL)
+        return terminal_classification_result(
+            error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+            "screen terminal classification owner/output required");
+    if (r->active)
+        return terminal_classification_result(error, MC_WORLD_STORAGE_BUSY,
+                                              "screen terminal classification operation entered");
+    if (!r->terminal_prepared || !r->terminal_prepare_selected || !r->retiring || r->app == NULL ||
+        r->app->screen_transitions != r || r->classes == NULL || r->world_classes == NULL ||
+        r->app->controller != r->controller)
+        return terminal_classification_result(
+            error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+            "screen terminal classification prepared owner scope");
+    size_t nodes = 0, loads = 0, selected = 0;
+    bool last_load_found = r->last_load == NULL;
+    const mc_client_world_load_call *selected_load = NULL;
+    for (const screen_node *n = r->nodes; n != NULL; n = n->next) {
+        if (nodes == r->node_count)
+            return terminal_classification_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                                  "screen terminal classification node ledger");
+        ++nodes;
+        if (n->load == NULL)
+            continue;
+        /* A Load call has one owning node slot, unlike counted equal Format
+         * captures. Do not replace a missing call with a duplicate pointer. */
+        for (const screen_node *prior = r->nodes; prior != n; prior = prior->next)
+            if (prior->load == n->load)
+                return terminal_classification_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                                      "screen terminal repeated Load owner");
+        ++loads;
+        if (n->load == r->last_load)
+            last_load_found = true;
+        mc_client_terminal_storage_scope scope;
+        const mc_world_storage_status status =
+            mc_client_world_load_terminal_classify(n->load, r->world_classes, &scope, error);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
+        if (scope == MC_CLIENT_TERMINAL_SELECTED_LOAD) {
+            ++selected;
+            selected_load = n->load;
+        } else if (scope != MC_CLIENT_TERMINAL_EMPTY_STORAGE)
+            return terminal_classification_result(
+                error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                "screen terminal classification unknown Load scope");
+    }
+    if (nodes != r->node_count || !last_load_found)
+        return terminal_classification_result(
+            error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+            "screen terminal classification complete node ledger");
+    const mc_world_storage_status status =
+        mc_client_world_load_classes_terminal_validate(r->world_classes, r->app, loads, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    if (selected != 0) {
+        if (selected != 1 || loads != 1 || selected_load != r->last_load || r->controller == NULL)
+            return terminal_classification_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                                  "screen terminal one intact selected Load scope");
+        *out = MC_CLIENT_TERMINAL_SELECTED_LOAD;
+    } else
+        *out = MC_CLIENT_TERMINAL_EMPTY_STORAGE;
+    return terminal_classification_result(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
 mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_transitions **slot,
                                                             mc_client_screen_error *e) {
     if (slot == NULL || e == NULL)

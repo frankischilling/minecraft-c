@@ -11,6 +11,7 @@
 #include "../gui/source_screen_drawing.h"
 #include "../gui/source_screen_events.h"
 #include "../gui/source_screen_transitions.h"
+#include "../gui/source_screen_transitions_terminal_internal.h"
 #include "../gui/source_world_selection_drawing.h"
 #include "../render/model_graph_internal.h"
 #include "../render_engine/chunk_statistics.h"
@@ -42,6 +43,7 @@
 #include <threads.h>
 
 struct mc_client_menu_loop {
+    mc_client_bootstrap *bootstrap; /* Actual creator, borrowed through checked retirement. */
     client_application *app;
     mc_gui_main_menu *renderer;
     mc_client_assets *assets;
@@ -74,7 +76,8 @@ struct mc_client_menu_loop {
     mc_game_settings_error frame_settings;
     mc_singleplayer_render_interpolation_report interpolation;
     mc_singleplayer_render_interpolation_error interpolation_error;
-    bool active, retiring;
+    bool active, retiring, setup_complete;
+    mc_world_storage_error retirement_world;
     mc_client_menu_loop_state state;
     int64_t last_second;
     int32_t second_frames;
@@ -541,6 +544,7 @@ bool mc_client_menu_loop_create(mc_client_bootstrap *bootstrap, mc_client_menu_l
     mc_client_menu_loop *loop = calloc(1, sizeof(*loop));
     if (loop == NULL)
         return false;
+    loop->bootstrap = bootstrap;
     loop->app = app;
     loop->math = mc_client_bootstrap_math(bootstrap);
     loop->graphics = mc_client_bootstrap_graphics(bootstrap);
@@ -564,6 +568,7 @@ bool mc_client_menu_loop_create(mc_client_bootstrap *bootstrap, mc_client_menu_l
         }
         return false;
     }
+    loop->setup_complete = true;
     loop->state.running = atomic_load(&app->J);
     *out = loop;
     return true;
@@ -737,7 +742,7 @@ static bool frame_body(mc_client_menu_loop *loop) {
 }
 
 bool mc_client_menu_loop_frame(mc_client_menu_loop *loop) {
-    if (loop == NULL || loop->active || loop->retiring)
+    if (loop == NULL || !loop->setup_complete || loop->active || loop->retiring)
         return false;
     loop->active = true;
     const bool returned = frame_body(loop);
@@ -852,6 +857,65 @@ bool mc_client_menu_loop_retire(mc_client_menu_loop **slot) {
     return true;
 }
 
+bool mc_client_menu_loop_terminal_retire(mc_client_menu_loop **slot) {
+    if (slot == NULL)
+        return false;
+    mc_client_menu_loop *loop = *slot;
+    if (loop == NULL)
+        return true;
+    if (loop->active)
+        return false;
+    loop->state.retirement_operation = NULL;
+    loop->state.retirement_world = NULL;
+    loop->state.retirement_bootstrap = MC_CLIENT_BOOTSTRAP_OK;
+    if (loop->bootstrap == NULL) {
+        loop->state.retirement_operation = "actual menu bootstrap association required";
+        return false;
+    }
+    /* No frame/source entry is possible before create completes. This is the
+     * original retained setup cleanup, including a partial class association;
+     * it is not a fallback for a refused live storage graph. */
+    if (!loop->setup_complete) {
+        loop->state.retirement_operation = "retained native menu setup cleanup";
+        return mc_client_menu_loop_retire(slot);
+    }
+    if (!loop->state.terminal_tail_entered) {
+        if (!mc_client_menu_loop_terminal_prepare(loop)) {
+            loop->state.retirement_operation = "menu terminal prefix remains owned";
+            return false;
+        }
+        loop->state.retirement_bootstrap =
+            mc_client_bootstrap_terminal_dispatchers(loop->bootstrap);
+        if (loop->state.retirement_bootstrap != MC_CLIENT_BOOTSTRAP_OK) {
+            loop->state.retirement_operation = "menu terminal dispatcher retirement";
+            return false;
+        }
+        mc_client_terminal_storage_scope scope;
+        mc_world_storage_status status = mc_client_screen_transitions_terminal_classify(
+            loop->transitions, &scope, &loop->retirement_world);
+        if (status == MC_WORLD_STORAGE_OK && scope == MC_CLIENT_TERMINAL_SELECTED_LOAD) {
+            mc_world_terminal_inventory inventory;
+            status = mc_client_screen_transitions_terminal_admit(
+                loop->transitions, NULL, &inventory, &loop->retirement_world);
+        }
+        if (status != MC_WORLD_STORAGE_OK) {
+            loop->state.retirement_world = &loop->retirement_world;
+            loop->state.retirement_operation = loop->retirement_world.operation;
+            return false;
+        }
+        /* Producer admission is closed and the exclusive, freshly admitted
+         * graph enters its real destructive tail now. This records progress,
+         * never an admission permit for a different or resumed source graph. */
+        loop->state.terminal_tail_entered = true;
+    }
+    loop->state.retirement_operation = "menu terminal checked owner cleanup";
+    if (mc_client_menu_loop_retire(slot))
+        return true;
+    if (loop->screen.operation != NULL)
+        loop->state.retirement_operation = loop->screen.operation;
+    return false;
+}
+
 void mc_client_menu_loop_free(mc_client_menu_loop *loop) {
     if (!mc_client_menu_loop_retire(&loop))
         fputs("Native menu still owns an active or externally retained screen\n", stderr);
@@ -898,11 +962,13 @@ int mc_client_menu_run(const mc_client_application_options *options) {
     result = 0;
 cleanup:
     for (unsigned int attempt = 0; loop != NULL && attempt < 35000; ++attempt) {
-        if (!mc_client_menu_loop_retire(&loop))
+        if (!mc_client_menu_loop_terminal_retire(&loop))
             SDL_Delay(1);
     }
     if (loop != NULL) {
-        fputs("Native menu cleanup retains a live screen graph\n", stderr);
+        fprintf(stderr, "Native menu cleanup retains its live graph: %s\n",
+                loop->state.retirement_operation == NULL ? "active native menu"
+                                                         : loop->state.retirement_operation);
         return 1;
     }
     mc_client_bootstrap_status closed = MC_CLIENT_BOOTSTRAP_BUSY;

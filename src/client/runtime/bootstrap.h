@@ -36,7 +36,9 @@ mc_client_bootstrap_status mc_client_bootstrap_open(const mc_client_application_
  * cancellation/join, manager/graphics terminal retirement and App callback-cycle
  * teardown retain their real dependencies on BUSY or failure. Retry while *slot
  * remains nonnull; success consumes/nulls it. No source J/o store is synthesized.
- * All borrowed getters expire at the first close attempt. */
+ * All borrowed getters expire at the first close attempt. A live transition
+ * lease returns BUSY before startup/global fallback destruction; keep that
+ * same owner graph for explicit terminal preparation and cleanup retry. */
 mc_client_bootstrap_status mc_client_bootstrap_close(mc_client_bootstrap **slot);
 
 /* Explicit native dispatcher retirement after the caller's actual menu/Load/N
@@ -46,7 +48,13 @@ mc_client_bootstrap_status mc_client_bootstrap_close(mc_client_bootstrap **slot)
  * retains each remaining owner for retry; successful earlier consumption is
  * final and borrowed source views expire. No World container/cache/provider or
  * handler cleanup occurs. Success alone is not World/App destruction authority.
- * Normal close does not implicitly select this policy. */
+ * Normal close does not implicitly select this policy. A prior close attempt
+ * does not prevent cleanup-only continuation through the SAME live App,
+ * startup and inactive prepared terminal transition lease. Startup/App identity
+ * must still match; legacy startup RETIRING cannot be upgraded without its
+ * actual terminal consumer policy. Use the retained bootstrap association:
+ * expired getters stay closed, retiring is never undone, and no source entry
+ * or new borrow is authorized by this cleanup call. */
 mc_client_bootstrap_status mc_client_bootstrap_terminal_dispatchers(mc_client_bootstrap *);
 
 client_application *mc_client_bootstrap_app(mc_client_bootstrap *);

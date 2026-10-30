@@ -32,7 +32,10 @@ The public function grants no exemptions for client owners. The private
 [selected-load adapter](../client/terminal-retirement.md) supplies typed
 addresses of actual owned Entity and World slots in its intact successful-load
 scope. Mirrors, borrowed fields and guessed hold allowances are not anchors.
-Failed/partial load support and the complete outer coordinator remain unfinished.
+Failed/partial load admission and complete Format/App/service external-root
+admission remain unfinished. The normal menu-run coordinator now uses this
+selected-load gate after its genuine prefix and dispatcher retirement; an
+independent passive classification proves when storage was never acquired.
 
 ## Store registrations and unfinished work
 
@@ -126,5 +129,6 @@ selected-load controller/effect/Input checks and actual dispatcher consumer
 ending with passive LL discovery and checked LL/TH retirement, plus the actual
 source Handler and loader inventory described above. Full service admission
 remains unfinished. World admission alone does not authorize
-SaveHandler or App destruction. Normal shutdown, deferred old-World ownership
-and live N44/N80 adoption remain unfinished.
+SaveHandler or App destruction. Normal menu-run shutdown composes the existing
+checked owner cleanup for its admitted scope. Deferred old-World ownership,
+partial loads and live N44/N80 adoption remain unfinished.

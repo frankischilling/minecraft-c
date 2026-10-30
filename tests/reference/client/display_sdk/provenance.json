@@ -2342,20 +2342,20 @@
       "sha256": "253914a08f69c1a13527e24bbe43c9faa40fba294aa4da8369469a6995291498"
     },
     "src/client/runtime/bootstrap.c": {
-      "bytes": 39336,
-      "sha256": "67f9c18437ede31e3ddb276c261625e42135c30c7cf7412334c21cab123028b4"
+      "bytes": 40124,
+      "sha256": "89addd308ca0a9dfa4b6b8f62cd3a222be073a06e258c623a865e40775d236e0"
     },
     "src/client/runtime/bootstrap.h": {
-      "bytes": 3242,
-      "sha256": "d7e8d898bc445844eb70d4de95dadef1918bf4dd09d2a799907e25ae95b25da0"
+      "bytes": 3868,
+      "sha256": "5c9149eaa4b84d1e6d1c22e84316deeb479e7b5b201cba472b7199f779ebc1ac"
     },
     "src/client/runtime/menu_loop.c": {
-      "bytes": 44263,
-      "sha256": "66ba8f3defc3f8889f07e182a8e2066b59ec3f0f67fce519b12ac789352c1119"
+      "bytes": 47514,
+      "sha256": "4c275e4cbca5a83c12f5d1512e6e8be65d2c693e6fd9342e4d9e1ebd1c1e36fd"
     },
     "src/client/runtime/menu_loop.h": {
-      "bytes": 3403,
-      "sha256": "ed6df58b056c255be7449fdef61a4183d3d0d869ffefd2a059048035c969ea23"
+      "bytes": 4550,
+      "sha256": "ac6c78d03373746a58f78727b81961365366b9153c0a8b1d600b02d4b58410ed"
     },
     "src/client/texture_packs/image_io.h": {
       "bytes": 482,
@@ -2374,8 +2374,8 @@
       "sha256": "01e4a41e67f6e9bf5bb198b878956d58e7d970555a3d48e046c8e3122c0f9210"
     },
     "tests/client/startup/test_menu_loop.c": {
-      "bytes": 6526,
-      "sha256": "38c59234e0213856339b110f9ce2e547418b785410db24c829466a3cfee4809b"
+      "bytes": 15107,
+      "sha256": "ae050504c590f3bc7a832fd26085c51e84b83ecf9c1dbedb4a3cbd2a7a255fa5"
     },
     "tests/client/texture_effects/test_effect_upload.c": {
       "bytes": 12639,
@@ -2422,8 +2422,8 @@
       "sha256": "610682740237465ff495b5f2e339aea2c77a81aac38e0754892922a2fcbe7f02"
     },
     "src/client/gui/source_screen_transitions.c": {
-      "bytes": 33199,
-      "sha256": "d8ac76874138802e4771505d2b0c12035476d1f1f4f51d416a0efda60749a8a6"
+      "bytes": 37298,
+      "sha256": "78d523665c2c6d3d303d5a04cc8152726348aabb650f107393039b020ff8c711"
     },
     "src/client/gui/source_screen_transitions.h": {
       "bytes": 4963,
@@ -2474,8 +2474,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 78631,
-      "sha256": "d2a45c5acc0b1d53716ab2247161ecb995d584c5dbfc63f9cada9b56bcd2a960"
+      "bytes": 95834,
+      "sha256": "ea9e0bb3d2831323a810977016a75cc2be5437a0a8acef9e277df3131558c574"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -2490,8 +2490,8 @@
       "sha256": "5337d15e53e776798d0a4f394e74432da7a578951b72f5c761439accb811786b"
     },
     "tests/tools/client/test_world_selection_loop.py": {
-      "bytes": 9007,
-      "sha256": "c25388da4c650cad3993905e2dec8b2fd2efd4c393d34b1073e9e6ad9dba7d52"
+      "bytes": 9815,
+      "sha256": "611971d4b9654e6db4d0d99ec6e386dcd3a5ff032861e708a6df4cfbad240ebe"
     },
     "tests/tools/platform/test_date_format_reference.py": {
       "bytes": 4341,
@@ -2550,8 +2550,8 @@
       "sha256": "7aca6fcbd8139daeac6da779a0c3cacc49d46cb6738167287c5b0e4d68686b5e"
     },
     "src/client/world/load_world.c": {
-      "bytes": 73570,
-      "sha256": "821bc772b67bcc3789194b4639b7fbcc2650049f4d3af7e1de58681cb79a142f"
+      "bytes": 90702,
+      "sha256": "a75e0ff28e0da7268e58f3665b3923bd7eeac1d9e21fa66bbeae8ca63d698311"
     },
     "src/client/world/load_world.h": {
       "bytes": 9477,
@@ -4430,12 +4430,12 @@
       "sha256": "e83c26473009de7278b842ec466397471cec71ca2bcfcf0b7708f440aee76be8"
     },
     "src/client/gui/source_screen_transitions_terminal_internal.h": {
-      "bytes": 893,
-      "sha256": "664f7a2d55d0acc07f6d8c0c3a92f1b22d7efedbc18c147914ffe9cccafd6182"
+      "bytes": 1642,
+      "sha256": "61c50ee5031c03177bcfe3d03b399465fe1e48f2ae9d403caa7c0fe46e1cd75e"
     },
     "src/client/world/load_world_terminal_internal.h": {
-      "bytes": 1471,
-      "sha256": "187b4368818e6ca6a170f1405ce4b40817c93d0111dac9b041c74bb37730b591"
+      "bytes": 3016,
+      "sha256": "4dbf55bdb9ae972e85ad57ea16895cfdce3d23ac4fbd5a9739daf1c2fad60a93"
     },
     "src/world/runtime/source_terminal_internal.h": {
       "bytes": 2664,
