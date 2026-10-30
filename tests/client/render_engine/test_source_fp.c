@@ -163,6 +163,9 @@ int main(int argc, char **argv) {
     CHECK(mc_client_display_lists_end(display, &error));
     const size_t commands_before = display->source.command_bytes;
     const mc_client_modelview before_draw = display->source.modelview;
+    float color_before[4];
+    memcpy(color_before, display->source.color, sizeof(color_before));
+    const bool color_known_before = display->source.color_known;
     display->gl.DrawArrays = draw_then_controls;
     const bool replayed = mc_client_display_lists_call(display, &id, 1, &error);
     const unsigned draw_controls = _mm_getcsr();
@@ -170,8 +173,16 @@ int main(int argc, char **argv) {
     _mm_setcsr(0x1f80u);
     CHECK(!replayed && error.status == MC_CLIENT_DISPLAY_UNSUPPORTED_FP && error.gl_error == 0);
     CHECK(draw_calls == 1 && (draw_controls & 0xffc0u) == (callback_controls & 0xffc0u));
-    CHECK(display->frame_started && !display->source.color_known &&
-          display->source.active_calls == 0);
+    /* The completed array draw preserves its measured driver effect even
+     * though the later translation child is refused: NVIDIA adopts the last
+     * array color, while Mesa retains the preceding current attribute. */
+    static const float last_array_color[4] = {1, 0, 0, 1};
+    const bool adopts_array =
+        display->source.attribute_profile == SOURCE_ATTRIBUTE_PROFILE_NVIDIA_581_42;
+    CHECK(display->frame_started && display->source.active_calls == 0 &&
+          display->source.color_known == (adopts_array || color_known_before) &&
+          memcmp(display->source.color, adopts_array ? last_array_color : color_before,
+                 sizeof(color_before)) == 0);
     CHECK(display->source.command_bytes == commands_before && range->lists[0].defined);
     CHECK(memcmp(&before_draw, &display->source.modelview, sizeof before_draw) == 0);
     CHECK(mc_client_display_capture_rgba(display, &capture, &error));

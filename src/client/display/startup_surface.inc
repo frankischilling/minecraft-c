@@ -1,4 +1,8 @@
 /* Included once by Display, sharing its real GL table and source state. */
+/* Defined in source_viewport.inc later in the same Display translation unit. */
+static bool source_material_viewport(mc_client_display *, int32_t, int32_t,
+                                     mc_client_display_error *);
+
 bool mc_client_display_startup_projection(mc_client_display *display, double width, double height,
                                           mc_client_startup_projection_stage *stage,
                                           mc_client_display_error *error) {
@@ -20,6 +24,7 @@ bool mc_client_display_startup_projection(mc_client_display *display, double wid
                                  "compiled matrix path", 0),
                             error);
     display->source.loading_ready = false;
+    source_material_vertices(&display->source); /* Mesa clear, before mask validation. */
     display->gl.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     if (!gl_check(display, "startup inherited color/depth clear", error))
         return source_leave(display, false, error);
@@ -27,9 +32,12 @@ bool mc_client_display_startup_projection(mc_client_display *display, double wid
     *stage = MC_CLIENT_STARTUP_PROJECTION_ORTHO;
     display->source.matrix_mode = GL_PROJECTION; /* Actual MatrixMode29. */
     const float identity[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+    source_material_vertices(&display->source); /* Actual identity32, even unchanged. */
+    source_matrix_changed(&display->source);
     memcpy(display->source.projection, identity, sizeof(identity)); /* Actual identity32. */
     if (!source_fp_admit("startup ortho FP after clear", error))
         return source_leave(display, false, error);
+    source_material_vertices(&display->source); /* Admitted nondegenerate glOrtho. */
     const float projection[16] = {(float)(2.0 / width),
                                   0,
                                   0,
@@ -49,6 +57,10 @@ bool mc_client_display_startup_projection(mc_client_display *display, double wid
     memcpy(display->source.projection, projection, sizeof(projection));
     *stage = MC_CLIENT_STARTUP_PROJECTION_MODELVIEW;
     display->source.matrix_mode = GL_MODELVIEW; /* Actual MatrixMode57. */
+    /* LoadIdentity and its following Translate both flush; nothing stages
+     * fixed attributes between these represented matrix operations. */
+    source_material_vertices(&display->source);
+    source_matrix_changed(&display->source);
     display->source.modelview =
         (mc_client_modelview){{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -2000, 1}};
     display->source.loading_ready = true;
@@ -74,6 +86,8 @@ bool mc_client_display_startup_viewport(mc_client_display *display, int32_t widt
                             fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "startup viewport",
                                  "compiled viewport path", 0),
                             error);
+    if (!source_material_viewport(display, width, height, error))
+        return source_leave(display, false, error);
     display->gl.Viewport(0, 0, width, height);
     if (!gl_check(display, "startup actual App viewport", error))
         return source_leave(display, false, error);
@@ -95,10 +109,15 @@ bool mc_client_display_source_disable_unlit_feature(mc_client_display *display,
                             fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source unlit state",
                                  "compiled lighting/fog path", 0),
                             error);
-    if (feature == MC_CLIENT_SOURCE_LIGHTING)
+    if (feature == MC_CLIENT_SOURCE_LIGHTING) {
+        if (display->source.lighting_enabled)
+            source_material_vertices(&display->source);
         display->source.lighting_enabled = false;
-    else
+    } else {
+        if (display->source.fog_enabled)
+            source_material_vertices(&display->source);
         display->source.fog_enabled = false;
+    }
     return source_leave(display, true, error);
 }
 
@@ -110,8 +129,14 @@ bool mc_client_display_startup_alpha(mc_client_display *display, mc_client_displ
                             fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "startup alpha state",
                                  "compiled alpha path", 0),
                             error);
+    if (display->source.lighting_enabled)
+        source_material_vertices(&display->source);
     display->source.lighting_enabled = false;
+    if (display->source.fog_enabled)
+        source_material_vertices(&display->source);
     display->source.fog_enabled = false;
+    if (!display->source.alpha_test)
+        source_material_vertices(&display->source);
     display->source.alpha_test = true;
     return source_leave(display, true, error);
 }

@@ -71,13 +71,32 @@ typedef struct mc_client_source_gpu_vertex {
     float position[3], uv[2], color[4], normal[3];
 } mc_client_source_gpu_vertex;
 
+typedef enum mc_client_source_attribute_profile {
+    SOURCE_ATTRIBUTE_PROFILE_UNKNOWN,
+    SOURCE_ATTRIBUTE_PROFILE_NVIDIA_581_42,
+    SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8
+} mc_client_source_attribute_profile;
+
+/* Mesa's active fixed-size float attributes are retained independently from
+ * their committed current values. Bits select normal, color and six material
+ * properties per face; the shared source owner retains all bytes/knowledge. */
+typedef struct mc_client_source_attribute_staging {
+    uint32_t enabled, flags;
+    float color[4], normal[3];
+    bool color_known, normal_known;
+    mc_client_source_material_state materials[2];
+} mc_client_source_attribute_staging;
+
 typedef struct mc_client_source_state {
     bool initialized, loading_ready, texture_enabled, alpha_test, color_known,
         internal_resource_bind;
     bool lighting_enabled, fog_enabled;
     mc_client_source_fog_state fog;
     uint64_t fog_capability_generation;
-    bool shade_flat;
+    uint64_t attribute_profile_generation;
+    mc_client_source_attribute_profile attribute_profile;
+    mc_client_source_attribute_staging attribute_staging;
+    bool shade_flat, alpha_function_set;
     unsigned arrays, pointers;
     const void *array_buffers[4];
     uint64_t array_contexts[4];
@@ -111,6 +130,7 @@ typedef struct mc_client_source_state {
     size_t vbo_bytes;
     bool vbo_capacity_uncertain;
     int32_t matrix_mode;
+    bool matrix_changed_since_push[2]; /* MODELVIEW, PROJECTION; one flag per stack. */
     mc_client_modelview projection_stack[SOURCE_MATRIX_DEPTH];
     size_t projection_depth;
 } mc_client_source_state;

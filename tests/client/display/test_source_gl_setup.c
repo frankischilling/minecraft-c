@@ -128,6 +128,28 @@ static bool pixels_have_rgb(const mc_client_capture *capture, bool mixed) {
     return false;
 }
 
+static bool pixels_have_flat_pair(const mc_client_capture *capture, unsigned first_channel,
+                                  unsigned second_channel) {
+    bool saw_first = false, saw_second = false;
+    for (int row = 0; row < capture->height; ++row)
+        for (int column = 0; column < capture->width; ++column) {
+            const uint8_t *pixel =
+                capture->pixels + (size_t)row * capture->stride + (size_t)column * 4u;
+            if (pixel[0] == 0 && pixel[1] == 0 && pixel[2] == 0 && pixel[3] == 0)
+                continue;
+            const bool first = column < capture->width / 2;
+            const unsigned channel = first ? first_channel : second_channel;
+            for (unsigned component = 0; component < 3; ++component)
+                if (pixel[component] != (component == channel ? 255 : 0))
+                    return false;
+            if (pixel[3] != 255)
+                return false;
+            saw_first = saw_first || first;
+            saw_second = saw_second || !first;
+        }
+    return saw_first && saw_second;
+}
+
 int main(int argc, char **argv) {
     (void)argc;
     (void)argv;
@@ -366,9 +388,8 @@ int main(int argc, char **argv) {
     CHECK(pixels_have_rgb(&capture, false));
     mc_client_capture_free(&capture);
 
-    /* Real LG FLAT survives into a later source draw. Two independent decoded
-     * triangles can have different constant colors in one nw byte-buffer batch.
-     * No flat shader or provoking-vertex behavior is claimed for gradients. */
+    /* Real LG FLAT survives into a later source draw. Each independent
+     * triangle must use its own last vertex's color, including gradients. */
     uint8_t flat_bytes[8u * 32u] = {0};
     const float flat_positions[6][3] = {{4, 4, 0},   {28, 4, 0},  {4, 28, 0},
                                         {36, 36, 0}, {60, 36, 0}, {36, 60, 0}};
@@ -389,16 +410,7 @@ int main(int argc, char **argv) {
                                          GL_TRIANGLES, &error));
     CHECK(draws == before_flat + 1 && display->source.shade_flat);
     CHECK(mc_client_display_capture_rgba(display, &capture, &error));
-    bool saw_red = false, saw_green = false, saw_mixed = false;
-    for (int row = 0; row < capture.height; ++row)
-        for (int column = 0; column < capture.width; ++column) {
-            const uint8_t *pixel =
-                capture.pixels + (size_t)row * capture.stride + (size_t)column * 4u;
-            saw_red = saw_red || (pixel[0] > 240 && pixel[1] < 16 && pixel[2] < 16);
-            saw_green = saw_green || (pixel[1] > 240 && pixel[0] < 16 && pixel[2] < 16);
-            saw_mixed = saw_mixed || (pixel[0] > 16 && pixel[1] > 16);
-        }
-    CHECK(saw_red && saw_green && !saw_mixed);
+    CHECK(pixels_have_flat_pair(&capture, 0, 1));
     mc_client_capture_free(&capture);
 
     CHECK(mc_client_display_lists_retire(&range, &error));
@@ -407,8 +419,10 @@ int main(int argc, char **argv) {
     CHECK(mc_client_display_source_batch(lease, flat_bytes, flat_bytes, sizeof(flat_bytes), 6,
                                          GL_TRIANGLES, &error));
     CHECK(mc_client_display_lists_end(display, &error));
-    flat_bytes[32u + 20u] = 0;
-    flat_bytes[32u + 21u] = 255; /* A real gradient within primitive0. */
+    for (size_t vertex = 0; vertex < 6; ++vertex) {
+        memset(flat_bytes + vertex * 32u + 20u, 0, 3);
+        flat_bytes[vertex * 32u + 20u + (vertex + vertex / 3u) % 3u] = 255;
+    } /* RGB then GBR: last vertices are blue and red. */
     const int32_t gradient_list = list + 1;
     CHECK(mc_client_display_lists_begin(display, gradient_list, &error));
     CHECK(mc_client_display_source_batch(lease, flat_bytes, flat_bytes, sizeof(flat_bytes), 6,
@@ -416,23 +430,40 @@ int main(int argc, char **argv) {
     CHECK(mc_client_display_lists_end(display, &error));
     native_gl.Enable(UINT32_MAX); /* Rejected native admission must not drain a sticky GL error. */
     UNSUPPORTED(mc_client_display_source_batch(lease, flat_bytes, flat_bytes, sizeof(flat_bytes), 6,
-                                               GL_TRIANGLES, &error));
-    CHECK(draws == before_flat + 1 && display->source.shade_flat &&
+                                               GL_QUADS, &error));
+    CHECK(draws == before_flat + 1 && display->source.shade_flat && error.gl_error == 0 &&
           native_gl.GetError() == GL_INVALID_ENUM && native_gl.GetError() == GL_NO_ERROR);
+    CHECK(mc_client_display_loading_clear_color_depth(display, &error));
+    CHECK(mc_client_display_source_batch(lease, flat_bytes, flat_bytes, sizeof(flat_bytes), 6,
+                                         GL_TRIANGLES, &error));
+    CHECK(draws == before_flat + 2 && display->source.shade_flat);
+    CHECK(mc_client_display_capture_rgba(display, &capture, &error));
+    CHECK(pixels_have_flat_pair(&capture, 2, 0));
+    mc_client_capture_free(&capture);
+    CHECK(mc_client_display_loading_clear_color_depth(display, &error));
     CHECK(mc_client_display_lists_call(display, &list, 1, &error));
-    CHECK(draws == before_flat + 2 && display->source.shade_flat);
-    UNSUPPORTED(mc_client_display_lists_call(display, &gradient_list, 1, &error));
-    CHECK(draws == before_flat + 2 && display->source.shade_flat);
+    CHECK(draws == before_flat + 3 && display->source.shade_flat);
+    CHECK(mc_client_display_capture_rgba(display, &capture, &error));
+    CHECK(pixels_have_flat_pair(&capture, 0, 1));
+    mc_client_capture_free(&capture);
+    CHECK(mc_client_display_loading_clear_color_depth(display, &error));
+    CHECK(mc_client_display_lists_call(display, &gradient_list, 1, &error));
+    CHECK(draws == before_flat + 4 && display->source.shade_flat);
+    CHECK(mc_client_display_capture_rgba(display, &capture, &error));
+    CHECK(pixels_have_flat_pair(&capture, 2, 0));
+    mc_client_capture_free(&capture);
     UNSUPPORTED(mc_client_display_source_batch(lease, flat_bytes, flat_bytes, sizeof(flat_bytes), 6,
                                                GL_QUADS, &error));
-    CHECK(draws == before_flat + 2 && display->source.shade_flat);
-    flat_bytes[32u + 20u] = 255;
-    flat_bytes[32u + 21u] = 0;
+    CHECK(draws == before_flat + 4 && display->source.shade_flat);
+    for (size_t vertex = 0; vertex < 6; ++vertex) {
+        memset(flat_bytes + vertex * 32u + 20u, 0, 3);
+        flat_bytes[vertex * 32u + 20u + (vertex < 3 ? 0u : 1u)] = 255;
+    }
     flat_bytes[6u * 32u + 20u] = 255;
     flat_bytes[7u * 32u + 21u] = 255;
     CHECK(mc_client_display_source_batch(lease, flat_bytes, flat_bytes, sizeof(flat_bytes), 8,
                                          GL_TRIANGLES, &error));
-    CHECK(draws == before_flat + 3 && display->source.shade_flat);
+    CHECK(draws == before_flat + 5 && display->source.shade_flat);
     result = 0;
 cleanup:
     if (result != 0)

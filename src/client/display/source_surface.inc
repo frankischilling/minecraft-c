@@ -13,6 +13,91 @@ static bool source_fp_admit(const char *operation, mc_client_display_error *erro
                 "strict native FP control state required; prior GL effects retained", 0);
 }
 
+/* These profiles describe observed attribute conversion/commit effects, selected
+ * only from the actual core context's cached identity. They do not select
+ * shaders, lighting equations or reference framebuffer outputs. */
+static mc_client_source_attribute_profile source_attribute_profile_for(mc_client_display *display) {
+    mc_client_source_state *s = &display->source;
+    if (s->attribute_profile_generation != display->native_context_generation) {
+        s->attribute_profile = SOURCE_ATTRIBUTE_PROFILE_UNKNOWN;
+        if (strcmp(display->info.vendor, "NVIDIA Corporation") == 0 &&
+            strcmp(display->info.renderer, "NVIDIA GeForce RTX 3060/PCIe/SSE2") == 0 &&
+            strcmp(display->info.version, "3.3.0 NVIDIA 581.42") == 0)
+            s->attribute_profile = SOURCE_ATTRIBUTE_PROFILE_NVIDIA_581_42;
+        else if (strcmp(display->info.vendor, "Mesa") == 0 &&
+                 strcmp(display->info.renderer, "llvmpipe (LLVM 20.1.2, 256 bits)") == 0 &&
+                 strcmp(display->info.version, "4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4") ==
+                     0)
+            s->attribute_profile = SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8;
+        s->attribute_profile_generation = display->native_context_generation;
+    }
+    return s->attribute_profile;
+}
+
+#include "source_material_staging.h"
+
+/* Reached only after the batch admits a known profile and strict native FP.
+ * Each direct/list formula was observed for all 256 GL_BYTE input values. */
+static float source_attribute_normal(mc_client_source_attribute_profile profile, bool compiled,
+                                     uint8_t byte) {
+    const int value = byte < 128 ? byte : (int)byte - 256;
+    if (compiled)
+        return (float)(2 * value + 1) * (1.0f / 255.0f);
+    if (profile == SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8) {
+        const float normal = (float)value * (1.0f / 127.0f);
+        return normal < -1.0f ? -1.0f : normal;
+    }
+    /* The captured NVIDIA GL_BYTE array profile replicates each byte into a
+     * signed 16-bit normalized value. All 256 values were observed through
+     * gl_Normal feedback with GL_BYTE, stride 32 and client memory; this is
+     * distinct from immediate glNormal3b's conversion. */
+    int replicated = (int)byte * 257;
+    if (replicated >= 32768)
+        replicated -= 65536;
+    return (float)replicated / 32767.0f;
+}
+
+static float source_attribute_color(mc_client_source_attribute_profile profile, bool compiled,
+                                    uint8_t byte) {
+    /* All 256 unsigned-byte colors were captured as gl_Color for direct
+     * arrays and two compiled-list replays. The profiles reverse which path
+     * uses reciprocal multiplication; 126 values distinguish the rounding. */
+    const bool multiply = profile == SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8 ? !compiled : compiled;
+    return multiply ? (float)byte * (1.0f / 255.0f) : (float)byte / 255.0f;
+}
+
+static void source_attribute_batch_complete(mc_client_source_state *s,
+                                            mc_client_source_attribute_profile profile,
+                                            unsigned arrays, bool compiled, int32_t count,
+                                            const mc_client_source_gpu_vertex *vertices) {
+    const unsigned color_bit = 1u << MC_CLIENT_SOURCE_COLOR_ARRAY;
+    const unsigned normal_bit = 1u << MC_CLIENT_SOURCE_NORMAL_ARRAY;
+    /* Mesa list array draws retain the prior current attributes, including
+     * any explicit Color command replayed before this draw. NVIDIA adopts
+     * the final array attributes. Direct arrays remain unspecified here. */
+    const bool adopt = compiled && count > 0 && profile == SOURCE_ATTRIBUTE_PROFILE_NVIDIA_581_42;
+    if ((arrays & color_bit) != 0) {
+        if (adopt) {
+            memcpy(s->color, vertices[count - 1].color, sizeof(s->color));
+            s->color_known = true;
+            source_material_color(&s->fog, s->color, true);
+        } else if (!compiled) {
+            s->color_known = false;
+            source_material_color_unknown(&s->fog);
+            s->attribute_staging.color_known = false;
+        }
+    }
+    if ((arrays & normal_bit) != 0) {
+        if (adopt) {
+            memcpy(s->fog.normal, vertices[count - 1].normal, sizeof(s->fog.normal));
+            s->fog.normal_known = true;
+        } else if (!compiled) {
+            s->fog.normal_known = false;
+            s->attribute_staging.normal_known = false;
+        }
+    }
+}
+
 static void source_initialize(mc_client_display *display) {
     mc_client_source_state *s = &display->source;
     if (s->initialized)
@@ -30,6 +115,7 @@ static void source_initialize(mc_client_display *display) {
     s->modelview = identity;
     memcpy(s->projection, identity.column_major, sizeof(s->projection));
     s->matrix_mode = GL_MODELVIEW;
+    s->matrix_changed_since_push[0] = s->matrix_changed_since_push[1] = true;
     s->next_list_base = 1;
     source_lighting_initialize(s);
     source_material_initialize(&s->fog);
@@ -45,6 +131,7 @@ static bool source_enter(mc_client_display *display, const char *operation,
     if (!current(display, operation, error))
         return false;
     source_initialize(display);
+    (void)source_attribute_profile_for(display);
     ++display->source.active_calls;
     return true;
 }
@@ -73,7 +160,12 @@ static void source_matrix_copy(const mc_client_source_state *state, mc_client_mo
         *matrix = state->modelview;
 }
 
+static void source_matrix_changed(mc_client_source_state *state) {
+    state->matrix_changed_since_push[state->matrix_mode == GL_PROJECTION ? 1 : 0] = true;
+}
+
 static void source_matrix_store(mc_client_source_state *state, const mc_client_modelview *matrix) {
+    source_matrix_changed(state);
     if (state->matrix_mode == GL_PROJECTION)
         memcpy(state->projection, matrix->column_major, sizeof(state->projection));
     else
@@ -83,6 +175,7 @@ static void source_matrix_store(mc_client_source_state *state, const mc_client_m
 /* Called only after the existing reached FP admission. Copy through the real
  * matrix value type, never alias-cast projection's float-array storage. */
 static void source_matrix_translate(mc_client_source_state *state, float x, float y, float z) {
+    source_material_vertices(state);
     mc_client_modelview matrix;
     source_matrix_copy(state, &matrix);
     mc_client_source_translate(&matrix, x, y, z);
@@ -99,6 +192,7 @@ static bool source_matrix_push(mc_client_source_state *state, mc_client_display_
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source matrix push", "stack limit",
                     0);
     source_matrix_copy(state, &stack[(*depth)++]);
+    state->matrix_changed_since_push[state->matrix_mode == GL_PROJECTION ? 1 : 0] = false;
     return true;
 }
 
@@ -109,11 +203,26 @@ static bool source_matrix_pop(mc_client_source_state *state, mc_client_display_e
     if (*depth == 0)
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source matrix pop", "stack underflow",
                     0);
+    mc_client_modelview current_matrix;
+    source_matrix_copy(state, &current_matrix);
+    if (state->matrix_changed_since_push[state->matrix_mode == GL_PROJECTION ? 1 : 0]) {
+        /* Different numerical bytes prove Mesa's complete GLmatrix differs.
+         * Equal elements do not prove equal inverse/type/dirty metadata. The
+         * latter boundary is observable only with stored attributes pending. */
+        if (memcmp(&current_matrix, &stack[*depth - 1], sizeof(current_matrix)) != 0)
+            source_material_vertices(state);
+        else if (source_material_is_staged(state) &&
+                 (state->attribute_staging.flags & SOURCE_STAGE_STORED) != 0)
+            return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source matrix pop",
+                        "equal numerical matrices require unimplemented Mesa inverse/type metadata",
+                        0);
+    }
     source_matrix_store(state, &stack[--(*depth)]);
     return true;
 }
 
 static void source_matrix_scale(mc_client_source_state *state, double x, double y, double z) {
+    source_material_vertices(state);
     mc_client_modelview matrix;
     source_matrix_copy(state, &matrix);
     const float scale[3] = {_mm_cvtss_f32(_mm_cvtsd_ss(_mm_setzero_ps(), _mm_set_sd(x))),
@@ -379,14 +488,26 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
         (size_t)count > SOURCE_COMMAND_BYTES / sizeof(mc_client_source_gpu_vertex))
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source interleaved draw",
                     "unsupported mode/span/client vertex state", 0);
-    if (!s->lighting_enabled && (arrays & color_bit) == 0 && !s->color_known)
+    if (!source_material_profile_admit(display, false, "source material draw", error))
+        return false;
+    /* Only the embedded semantic attribute ledger is changed on this local
+     * candidate. GPU handles/locations remain owned by the live source. */
+    mc_client_source_state candidate = *s;
+    source_material_draw(&candidate);
+    if (!candidate.lighting_enabled && (arrays & color_bit) == 0 && !candidate.color_known)
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source current color",
                     "unspecified color after prior color-array draw", 0);
-    if (!source_lighting_admit(s, arrays, error))
+    if (!source_lighting_admit(&candidate, arrays, error))
         return false;
     if (s->texture_enabled && (arrays & uv_bit) == 0)
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source current texture coordinate",
                     "nonarray textured-coordinate path", 0);
+    const mc_client_source_attribute_profile attribute_profile =
+        source_attribute_profile_for(display);
+    if (count > 0 && (arrays & (color_bit | normal_bit)) != 0 &&
+        attribute_profile == SOURCE_ATTRIBUTE_PROFILE_UNKNOWN)
+        return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source attribute profile",
+                    "native implementation has no measured source array attribute profile", 0);
     if (!source_fp_admit("source native draw conversion FP", error))
         return false;
     GLint unit = 0;
@@ -400,7 +521,8 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
         return false;
     float normal_matrix[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
     float normal_scale = 1;
-    if (s->lighting_enabled && !source_normal_transform(s, normal_matrix, &normal_scale, error))
+    if (candidate.lighting_enabled &&
+        !source_normal_transform(&candidate, normal_matrix, &normal_scale, error))
         return false;
     const size_t allocation = (size_t)count * sizeof(mc_client_source_gpu_vertex);
     mc_client_source_gpu_vertex *vertices = allocation == 0 ? NULL : malloc(allocation);
@@ -416,39 +538,23 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
             vertices[i].uv[0] = vertices[i].uv[1] = 0;
         if ((arrays & color_bit) != 0)
             for (size_t channel = 0; channel < 4; ++channel)
-                vertices[i].color[channel] = compiled ? (float)raw[20 + channel] * (1.0f / 255.0f)
-                                                      : (float)raw[20 + channel] / 255.0f;
+                vertices[i].color[channel] =
+                    source_attribute_color(attribute_profile, compiled, raw[20 + channel]);
         else
-            memcpy(vertices[i].color, s->color, sizeof(s->color));
+            memcpy(vertices[i].color, candidate.color, sizeof(candidate.color));
         if ((arrays & normal_bit) != 0)
-            for (size_t component = 0; component < 3; ++component) {
-                /* The captured legacy GL_BYTE array profile replicates each
-                 * byte into a signed 16-bit normalized value. All 256 values
-                 * were observed through gl_Normal transform feedback with
-                 * type GL_BYTE, stride 32 and client memory. This is the
-                 * selected reference conversion, not glNormal3b's formula. */
-                const int byte = raw[24 + component];
-                if (compiled) {
-                    /* Compiled array commands use the immediate attribute
-                     * conversion. All 256 captured list normals equal
-                     * glNormal3b, including reciprocal-multiply rounding. */
-                    const int value = byte < 128 ? byte : byte - 256;
-                    vertices[i].normal[component] = (float)(2 * value + 1) * (1.0f / 255.0f);
-                } else {
-                    int value = byte * 257;
-                    if (value >= 32768)
-                        value -= 65536;
-                    vertices[i].normal[component] = (float)value / 32767.0f;
-                }
-            }
+            for (size_t component = 0; component < 3; ++component)
+                vertices[i].normal[component] =
+                    source_attribute_normal(attribute_profile, compiled, raw[24 + component]);
         else
-            memcpy(vertices[i].normal, s->fog.normal, sizeof(vertices[i].normal));
+            memcpy(vertices[i].normal, candidate.fog.normal, sizeof(vertices[i].normal));
     }
-    if (!source_lighting_numeric_admit(s, vertices, (size_t)count, normal_matrix, normal_scale,
-                                       error)) {
+    if (!source_lighting_numeric_admit(&candidate, vertices, (size_t)count, normal_matrix,
+                                       normal_scale, error)) {
         free(vertices);
         return false;
     }
+    source_material_publish(s, &candidate);
     bool ok = source_gpu_create(display, error);
     if (ok) {
         display->gl.UseProgram(s->program);
@@ -483,23 +589,7 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
         display->gl.ProvokingVertex(GL_LAST_VERTEX_CONVENTION);
         /* Preserve inherited blend/depth/viewport/scissor/cull/clear state. */
         display->gl.DrawArrays((GLenum)mode, 0, count);
-        if ((arrays & color_bit) != 0) {
-            if (compiled && count > 0) {
-                memcpy(s->color, vertices[count - 1].color, sizeof(s->color));
-                s->color_known = true;
-                source_material_color(&s->fog, s->color, true);
-            } else if (!compiled) {
-                s->color_known = false;
-                source_material_color_unknown(&s->fog);
-            }
-        }
-        if ((arrays & normal_bit) != 0) {
-            if (compiled && count > 0) {
-                memcpy(s->fog.normal, vertices[count - 1].normal, sizeof(s->fog.normal));
-                s->fog.normal_known = true;
-            } else if (!compiled)
-                s->fog.normal_known = false;
-        }
+        source_attribute_batch_complete(s, attribute_profile, arrays, compiled, count, vertices);
         ok = gl_check(display, "source interleaved draw", error);
         if (ok)
             display->frame_started = true;
@@ -560,6 +650,7 @@ bool mc_client_display_lists_generate(mc_client_display *display, int32_t count,
                     0);
     if (!source_enter(display, "source list range", error))
         return false;
+    source_material_vertices(&display->source);
     mc_client_source_state *s = &display->source;
     bool ok = false;
     if (count <= 0) {
@@ -628,6 +719,7 @@ bool mc_client_display_lists_begin(mc_client_display *display, int32_t id,
                                    mc_client_display_error *error) {
     if (!source_enter(display, "source glNewList", error))
         return false;
+    source_material_current(&display->source);
     bool ok = false;
     mc_client_display_list_range *range = NULL;
     mc_client_source_list *list = source_find_list(display, id, &range);
@@ -660,6 +752,7 @@ bool mc_client_display_lists_begin(mc_client_display *display, int32_t id,
 bool mc_client_display_lists_end(mc_client_display *display, mc_client_display_error *error) {
     if (!source_enter(display, "source glEndList", error))
         return false;
+    source_material_vertices(&display->source);
     bool ok = false;
     if (display->source.compiling == NULL) {
         fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glEndList",
@@ -696,9 +789,9 @@ bool mc_client_display_source_color(mc_client_display *display, float r, float g
         if (ok)
             memcpy(command->value.vector, color, sizeof(color));
     } else {
-        memcpy(display->source.color, color, sizeof(color));
-        display->source.color_known = true;
-        source_material_color(&display->source.fog, color, true);
+        ok = source_material_profile_admit(display, false, "source color", error);
+        if (ok)
+            source_material_stage_color(&display->source, color);
     }
     return source_leave(display, ok, error);
 }
@@ -752,6 +845,8 @@ bool mc_client_display_source_texture_enable(mc_client_display *display, bool en
                             fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source texture enable",
                                  "compiled enable path", 0),
                             error);
+    if (display->source.texture_enabled != enabled)
+        source_material_vertices(&display->source);
     display->source.texture_enabled = enabled;
     return source_leave(display, true, error);
 }
@@ -765,6 +860,8 @@ bool mc_client_display_source_alpha_test(mc_client_display *display, bool enable
                             fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source alpha test",
                                  "compiled alpha path", 0),
                             error);
+    if (display->source.alpha_test != enabled)
+        source_material_vertices(&display->source);
     display->source.alpha_test = enabled;
     return source_leave(display, true, error);
 }
@@ -779,6 +876,8 @@ bool mc_client_display_source_shade_model(mc_client_display *display, int32_t mo
                                  "only actual smooth/flat source modes are supported", 0),
                             error);
     /* The existing source shader already supplies smooth interpolation. */
+    if (display->source.shade_flat != (mode == GL_FLAT))
+        source_material_vertices(&display->source);
     display->source.shade_flat = mode == GL_FLAT;
     return source_leave(display, true, error);
 }
@@ -794,6 +893,8 @@ bool mc_client_display_source_clear_depth(mc_client_display *display, double dep
                             fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glClearDepth",
                                  "depth1 and actual function address required", 0),
                             error);
+    if (!source_material_clear_depth(display, error))
+        return source_leave(display, false, error);
     display->gl.ClearDepth(depth);
     return source_leave(display, true, error);
 }
@@ -808,6 +909,7 @@ bool mc_client_display_source_depth_test(mc_client_display *display, bool enable
                                  "source depth-test enable", "actual function address unavailable",
                                  0),
                             error);
+    source_material_core_integer(display, GL_DEPTH_TEST, enabled ? GL_TRUE : GL_FALSE);
     if (enabled)
         display->gl.Enable(GL_DEPTH_TEST);
     else
@@ -824,6 +926,7 @@ bool mc_client_display_source_depth_function(mc_client_display *display, int32_t
                             fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glDepthFunc",
                                  "LEQUAL and actual function address required", 0),
                             error);
+    source_material_core_integer(display, GL_DEPTH_FUNC, function);
     display->gl.DepthFunc((GLenum)function);
     return source_leave(display, true, error);
 }
@@ -841,6 +944,9 @@ bool mc_client_display_source_alpha_function(mc_client_display *display, int32_t
                             error);
     /* The existing alphaTest uniform gates that real fragment comparison.
      * No new program, uniform, floating arithmetic or GL error query occurs. */
+    if (!display->source.alpha_function_set)
+        source_material_vertices(&display->source);
+    display->source.alpha_function_set = true;
     return source_leave(display, true, error);
 }
 
@@ -853,6 +959,7 @@ bool mc_client_display_source_cull_face(mc_client_display *display, int32_t mode
                             fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glCullFace",
                                  "BACK and actual function address required", 0),
                             error);
+    source_material_core_integer(display, GL_CULL_FACE_MODE, mode);
     display->gl.CullFace((GLenum)mode);
     return source_leave(display, true, error);
 }
@@ -875,36 +982,32 @@ bool mc_client_display_source_load_identity(mc_client_display *display,
     if (!source_setting_enter(display, "source glLoadIdentity", error))
         return false;
     const mc_client_modelview identity = {{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}};
+    source_material_vertices(&display->source);
     source_matrix_store(&display->source, &identity);
     return source_leave(display, true, error);
 }
 
-bool mc_client_display_lists_call(mc_client_display *display, const int32_t *ids, size_t count,
-                                  mc_client_display_error *error) {
-    if (ids == NULL && count != 0)
-        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "source glCallLists",
-                    "null input span", 0);
-    if (!source_enter(display, "source glCallLists", error))
-        return false;
+static bool source_lists_execute(mc_client_display *display, const int32_t *ids, size_t count,
+                                 const char *operation, mc_client_display_error *error) {
     bool ok = true;
     if (display->source.compiling != NULL) {
-        ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glCallLists",
-                  "compiled/nested-call path", 0);
+        ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation, "compiled/nested-call path",
+                  0);
         goto done;
     }
     for (size_t i = 0; i < count && ok; ++i) {
         mc_client_source_list *list = source_find_list(display, ids[i], NULL);
         if (list == NULL || !list->defined) {
-            ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glCallLists",
+            ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation,
                       "undefined/deleted/unregistered name path", 0);
             break;
         }
         for (const mc_client_source_command *command = list->first; command != NULL && ok;
              command = command->next) {
             if (command->kind == SOURCE_COMMAND_COLOR) {
-                memcpy(display->source.color, command->value.vector, sizeof(display->source.color));
-                display->source.color_known = true;
-                source_material_color(&display->source.fog, display->source.color, true);
+                ok = source_material_profile_admit(display, false, "source list color", error);
+                if (ok)
+                    source_material_stage_color(&display->source, command->value.vector);
             } else if (command->kind == SOURCE_COMMAND_TRANSLATE) {
                 ok = source_fp_admit("source list matrix translation FP", error);
                 if (ok)
@@ -925,12 +1028,38 @@ bool mc_client_display_lists_call(mc_client_display *display, const int32_t *ids
                                           command->value.draw.mode, command->value.draw.arrays,
                                           true, error);
             } else {
-                ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glCallLists",
+                ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation,
                           "unrecognized native list command", 0);
             }
         }
     }
 done:
+    return ok;
+}
+
+bool mc_client_display_list_call(mc_client_display *display, int32_t id,
+                                 mc_client_display_error *error) {
+    if (!source_enter(display, "source glCallList", error))
+        return false;
+    /* Compiled calls remain explicitly unsupported; no singular/plural
+     * command is silently recorded as the other source operation. */
+    if (display->source.compiling == NULL) {
+        if (!source_material_profile_admit(display, false, "source glCallList", error))
+            return source_leave(display, false, error);
+        source_material_current(&display->source);
+    }
+    const bool ok = source_lists_execute(display, &id, 1, "source glCallList", error);
+    return source_leave(display, ok, error);
+}
+
+bool mc_client_display_lists_call(mc_client_display *display, const int32_t *ids, size_t count,
+                                  mc_client_display_error *error) {
+    if (ids == NULL && count != 0)
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "source glCallLists",
+                    "null input span", 0);
+    if (!source_enter(display, "source glCallLists", error))
+        return false;
+    const bool ok = source_lists_execute(display, ids, count, "source glCallLists", error);
     return source_leave(display, ok, error);
 }
 

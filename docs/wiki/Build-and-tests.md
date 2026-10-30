@@ -1,13 +1,16 @@
 # Build and tests
 
 The [vertex-lighting backend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md) now consumes source normals, materials,
-lights and the same matrix ledger. Windows device replay matches 58 profiles
-and 59 full RGBA8 frames exactly, with separate material and Tessellator state
-comparisons. Compiled-list attribute state and numerical admission have their
-own controls. All 15 selected MSVC Debug tests pass in 46.78 seconds; the
-loaded-World regression takes 12.99 seconds. Hosted qualification is pending.
-Entity/TileEntity rendering510
-and complete World frames remain unfinished.
+lights and the same matrix ledger. Separate NVIDIA and Mesa device captures
+each match all 58 profiles and 59 full RGBA8 frames exactly. Material sequences,
+compiled-list state, normal/color GPU inputs and numerical admission have their
+own controls. The selections pass 19 Windows MSVC Debug CTests in 47.10 seconds
+and 18 Linux Clang18 ASan/UBSan CTests in 34.23 seconds, without CTest failures or
+skips. Windows N replay compares all 35 rows; llvmpipe compares 30 and leaves
+five ARB occlusion rows explicitly uncredited. The loaded-World regression
+takes 14.08 seconds. Check the [hosted matrix](https://github.com/frankischilling/minecraft-c/actions/workflows/ci.yml)
+for the exact revision. Entity/TileEntity rendering510 and complete World
+frames remain unfinished.
 
 The [standard-lighting extension](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/standard-lighting.md)
 matches all 86 original state/parameter rows on Windows MSVC Debug. Three

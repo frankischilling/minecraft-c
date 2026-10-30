@@ -33,6 +33,13 @@ bool mc_client_display_source_color_material(mc_client_display *, int32_t face, 
 bool mc_client_display_source_material(mc_client_display *, int32_t face, int32_t pname,
                                        const void *storage, size_t remaining,
                                        mc_client_display_error *);
+/* Explicit source queries commit the measured attribute frontier. Capacity
+ * counts floats; only the selected property's actual width is written. */
+bool mc_client_display_source_material_get(mc_client_display *, int32_t face, int32_t pname,
+                                           float *values, size_t capacity,
+                                           mc_client_display_error *);
+bool mc_client_display_source_current_attribute(mc_client_display *, int32_t pname, float *values,
+                                                size_t capacity, mc_client_display_error *);
 bool mc_client_display_source_light_enable(mc_client_display *, unsigned int light, bool enabled,
                                            mc_client_display_error *);
 /* State-only legacy lighting operations on the canonical Display. The light

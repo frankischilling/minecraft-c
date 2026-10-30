@@ -59,8 +59,11 @@ bool mc_client_display_source_rotate(mc_client_display *display, float angle, fl
         return false;
     if (!source_fp_admit("source camera rotation FP", error))
         return source_leave(display, false, error);
+    /* Mesa25.2.8 matrix_rotate flushes before either numerical no-op. */
+    source_material_vertices(&display->source);
     if (angle == 0)
         return source_leave(display, true, error);
+    source_matrix_changed(&display->source);
     const double norm = sqrt((double)x * x + (double)y * y + (double)z * z);
     if (norm == 0)
         return source_leave(display, true, error);
@@ -111,6 +114,9 @@ bool mc_client_display_source_perspective(mc_client_display *display, float fov,
     matrix[11] = -1;
     matrix[14] =
         mc_client_source_product(mc_client_source_product(-2, near_plane), far_plane) / delta;
+    /* GLU reaches glMultMatrixf only after its early returns. The -1 at
+     * index11 makes this a nonidentity matrix in Mesa's matrix_mult test. */
+    source_material_vertices(&display->source);
     camera_matrix_multiply(&display->source, matrix);
     return source_leave(display, true, error);
 }

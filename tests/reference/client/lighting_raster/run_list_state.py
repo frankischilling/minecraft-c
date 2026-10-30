@@ -17,6 +17,7 @@ support = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(support)
 capture, digest, ensure, require_success = (
     support.capture, support.digest, support.ensure, support.require_success)
+from reference_profiles import load_references, select_reference
 
 LABELS = ("before_compile", "after_compile", "before_call", "after_call",
           "before_repeat", "after_repeat")
@@ -50,43 +51,48 @@ def main():
     parser.add_argument("--work-dir", type=Path, required=True)
     args = parser.parse_args()
     executable = args.executable.resolve(strict=True)
-    fixture = HERE / "list-state.json"
-    observed = HERE / "normal-list.json"
-    original = json.loads(fixture.read_text(encoding="utf-8"))
-    expected = original["rows"]
-    ensure(rows("\n".join(expected)) == expected, "complete captured list-state inventory")
-    ensure(all(re.fullmatch(r"[0-9a-f]{64}", original[key]) for key in
-               ("original_fixture_sha256", "original_capture_sha256")),
-           "original fixture and successful capture provenance")
-    ensure(digest(observed) == original["original_fixture_sha256"],
-           "unchanged complete original driver observations")
-    reference = json.loads(observed.read_text(encoding="utf-8"))
-    projected = []
-    for line in reference["rows"]:
-        if line.startswith("NORMAL_LIST_DECODE "):
-            cells = line.split()
-            ensure(len(cells) == 7 and words(cells[5], 9),
-                   "actual compiled feedback includes three whole normal vectors")
-            projected.append("NATIVE_LIST_NORMAL " + cells[1] + " " +
-                             ",".join(cells[5].split(",")[-3:]))
-        elif line.startswith("NORMAL_LIST_STATE "):
-            projected.append(line)
-    ensure(rows("\n".join(projected)) == expected,
-           "exact projection from observed feedback and current-state rows")
+    references, reference_paths, reference_hashes = load_references("list_state", None, None, rows)
+    for reference in references:
+        original = reference["fixture"]
+        ensure(all(re.fullmatch(r"[0-9a-f]{64}", original[key]) for key in
+                   ("original_fixture_sha256", "original_capture_sha256")),
+               "original fixture and successful capture provenance")
+        ensure(reference["observations_sha256"] == original["original_fixture_sha256"],
+               "unchanged complete original driver observations")
+        projected = []
+        for line in reference["observations"]["rows"]:
+            if line.startswith("NORMAL_LIST_DECODE "):
+                cells = line.split()
+                ensure(len(cells) == 7 and words(cells[5], 9),
+                       "actual compiled feedback includes three whole normal vectors")
+                components = cells[5].split(",")
+                ensure(components[:3] == components[3:6] == components[6:9],
+                       "all three original submitted normals match the constant authored bytes")
+                projected.append("NATIVE_LIST_NORMAL " + cells[1] + " " +
+                                 ",".join(cells[5].split(",")[-3:]))
+            elif line.startswith("NORMAL_LIST_STATE "):
+                projected.append(line)
+        ensure(rows("\n".join(projected)) == original["rows"],
+               "exact projection from observed feedback and current-state rows")
     args.work_dir.mkdir(parents=True, exist_ok=True)
     output = Path(tempfile.mkdtemp(prefix="lighting-list-state-", dir=args.work_dir)).resolve(strict=True)
-    inputs = [executable, fixture, observed, HERE / "run_list_state.py", SUPPORT]
+    inputs = [executable, *reference_paths, HERE / "run_list_state.py", SUPPORT]
     before = {str(path.resolve()): digest(path) for path in inputs}
-    report = {"status": "FAIL", "input_before_sha256": before,
-              "scope": original["scope"],
-              "original_fixture_sha256": original["original_fixture_sha256"],
-              "original_capture_sha256": original["original_capture_sha256"]}
+    ensure(all(before.get(path) == value for path, value in reference_hashes.items()),
+           "parsed original reference bytes match the initial input snapshot")
+    report = {"status": "FAIL", "input_before_sha256": before}
     try:
         receipt = capture([str(executable), "--list-state"], output, "native", 60,
                           os.environ.copy(), output)
         report["capture"] = receipt
         require_success(receipt, empty_stderr=True)
         text = (output / receipt["stdout_file"]).read_text(encoding="utf-8")
+        reference, context = select_reference(references, text)
+        original = reference["fixture"]
+        expected = original["rows"]
+        report.update(context, reference_profile=reference["profile"]["id"], scope=original["scope"],
+                      original_fixture_sha256=original["original_fixture_sha256"],
+                      original_capture_sha256=original["original_capture_sha256"])
         lines = text.splitlines()
         ensure(lines and re.fullmatch(r"Source lighting list state: 262 rows; [1-9][0-9]* checks",
                                      lines[-1]), "completed native controls and checked cleanup")

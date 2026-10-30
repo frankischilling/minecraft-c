@@ -14,10 +14,13 @@ bool mc_client_display_source_texture_bind(mc_client_display *display, mc_client
         ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glBindTexture",
                   "live generated texture and immediate source path required", 0);
     else {
-        display->gl.BindTexture(GL_TEXTURE_2D, id);
-        display->source.bound_texture = id;
-        display->source.bound_texture_generation = resource->generation;
-        display->source.texture_binding_known = true;
+        ok = source_material_texture_bind(resource, error);
+        if (ok) {
+            display->gl.BindTexture(GL_TEXTURE_2D, id);
+            display->source.bound_texture = id;
+            display->source.bound_texture_generation = resource->generation;
+            display->source.texture_binding_known = true;
+        }
     }
     return source_leave(display, ok, error);
 }
@@ -52,9 +55,12 @@ bool mc_client_display_source_texture_sub_image(mc_client_display *display, int3
             ok =
                 fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glTexSubImage2D unpack state",
                      "tightly packed client memory and disabled unpack PBO required", 0);
-        else
-            display->gl.TexSubImage2D(GL_TEXTURE_2D, level, x, y, width, height, GL_RGBA,
-                                      GL_UNSIGNED_BYTE, bytes);
+        else {
+            ok = source_material_texture_sub_image(display, level, x, y, width, height, error);
+            if (ok)
+                display->gl.TexSubImage2D(GL_TEXTURE_2D, level, x, y, width, height, GL_RGBA,
+                                          GL_UNSIGNED_BYTE, bytes);
+        }
     }
     return source_leave(display, ok, error);
 }

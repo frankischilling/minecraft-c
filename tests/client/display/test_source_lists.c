@@ -14,6 +14,17 @@ static GLenum GLAPIENTRY observe_error(void) {
     return native_get_error();
 }
 
+/* Observe the completed Color command without adding a query that would
+ * change Mesa's pending attributes during the subsequent stack controls. */
+static bool retained_color_setter(const mc_client_display *display, const float rgba[4]) {
+    const mc_client_source_state *s = &display->source;
+    if (source_material_is_staged(s))
+        return (s->attribute_staging.enabled & (UINT32_C(1) << SOURCE_STAGE_COLOR)) != 0 &&
+               s->attribute_staging.color_known &&
+               memcmp(s->attribute_staging.color, rgba, sizeof(s->color)) == 0;
+    return s->color_known && memcmp(s->color, rgba, sizeof(s->color)) == 0;
+}
+
 #define CHECK(condition)                                                                           \
     do {                                                                                           \
         ++checks;                                                                                  \
@@ -156,10 +167,10 @@ static bool matrix_controls(mc_client_display *display, mc_client_display_contex
     CHECK(mc_client_display_source_color(display, 0.25f, 0.5f, 0.75f, 1, error));
     CHECK(mc_client_display_source_pop(display, error));
     CHECK(mc_client_display_lists_end(display, error));
+    const float underflow_color[4] = {0.25f, 0.5f, 0.75f, 1};
     CHECK(!mc_client_display_lists_call(display, &underflow_id, 1, error) &&
           error->status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL && display->source.depth == 0 &&
-          display->source.color[0] == 0.25f && display->source.color[1] == 0.5f &&
-          display->source.color[2] == 0.75f && display->source.active_calls == 0);
+          retained_color_setter(display, underflow_color) && display->source.active_calls == 0);
     /* Native stack admission happens on replay; a preceding push remains when
      * later arithmetic rejects changed controls. No list or matrix rollback. */
     _mm_setcsr(0x9fc0u);
@@ -217,8 +228,9 @@ static bool matrix_controls(mc_client_display *display, mc_client_display_contex
           display->source.depth == 0 &&
           memcmp(&display->source.modelview, &before, sizeof(before)) == 0);
     CHECK(mc_client_display_lists_abort(display, limited_id, error));
+    const float white[4] = {1, 1, 1, 1};
     CHECK(mc_client_display_lists_call(display, &limited_id, 1, error) &&
-          display->source.color[0] == 1 && display->source.depth == 0);
+          retained_color_setter(display, white) && display->source.depth == 0);
     result = true;
 cleanup:
     _mm_setcsr(0x1f80u);

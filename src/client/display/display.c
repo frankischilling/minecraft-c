@@ -94,6 +94,10 @@ static mc_client_display *sdk_namespace;
 
 static bool source_generation_leased(const mc_client_display *, uint64_t);
 static void source_gpu_retire(mc_client_display *, bool *, mc_client_display_error *);
+static bool source_material_texture_bind(mc_client_texture_resource *, mc_client_display_error *);
+static bool source_material_texture_parameter(mc_client_texture_resource *, GLenum, GLint,
+                                              mc_client_display_error *);
+static void source_material_texture_image(mc_client_display *);
 
 static void text_copy(char *out, size_t capacity, const char *text) {
     if (capacity == 0)
@@ -762,8 +766,11 @@ bool mc_client_display_bind_texture(mc_client_texture_resource *resource,
     if (!resource_enter(resource, "bind owned texture", error))
         return false;
     mc_client_display *display = resource->display;
-    display->gl.BindTexture(GL_TEXTURE_2D, resource->id);
-    const bool ok = gl_check(display, "bind owned texture", error);
+    bool ok = source_material_texture_bind(resource, error);
+    if (ok) {
+        display->gl.BindTexture(GL_TEXTURE_2D, resource->id);
+        ok = gl_check(display, "bind owned texture", error);
+    }
     resource_leave(resource);
     return ok ? success(error) : false;
 }
@@ -784,6 +791,9 @@ bool mc_client_display_texture_parameter(mc_client_texture_resource *resource,
         value == GL_CLAMP)
         ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "legacy GL_CLAMP texture parameter",
                   "source legacy clamp requires a compatible texture sampling implementation", 0);
+    if (ok)
+        ok = source_material_texture_parameter(resource, names[(unsigned int)parameter], value,
+                                               error);
     if (ok) {
         display->gl.TexParameteri(GL_TEXTURE_2D, names[(unsigned int)parameter], value);
         ok = gl_check(display, "owned texture parameter", error);
@@ -836,6 +846,7 @@ bool mc_client_display_upload_existing_texture(mc_client_texture_resource *resou
             display->texture_bytes += bytes - slot->bytes;
             slot->bytes = bytes;
         }
+        source_material_texture_image(display);
         display->gl.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)image->width,
                                (GLsizei)image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->pixels);
         ok = gl_check(display, "upload owned texture", error);

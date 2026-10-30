@@ -17,6 +17,7 @@ support = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(support)
 capture, digest, ensure, require_success = (
     support.capture, support.digest, support.ensure, support.require_success)
+from reference_profiles import load_references, select_reference
 
 
 def words(value):
@@ -54,29 +55,32 @@ def main():
     parser.add_argument("--work-dir", type=Path, required=True)
     args = parser.parse_args()
     executable = args.executable.resolve(strict=True)
-    fixture = HERE / "array-normals.json"
-    observed = HERE / "normal-array.json"
-    original = json.loads(fixture.read_text(encoding="utf-8"))
-    expected = original["rows"]
-    ensure(rows("\n".join(expected)) == expected, "complete array-normal inventory")
-    ensure(original["original_fixture"] == observed.name and
-           re.fullmatch(r"[0-9a-f]{64}", original["original_fixture_sha256"]) and
-           digest(observed) == original["original_fixture_sha256"],
-           "unchanged complete original array observations")
-    reference = json.loads(observed.read_text(encoding="utf-8"))
-    ensure(projection(reference) == expected, "exact projection from actual original array TF")
+    references, reference_paths, reference_hashes = load_references("array_normals", None, None, rows)
+    for reference in references:
+        original = reference["fixture"]
+        ensure(original["original_fixture"] == reference["observations_path"].name and
+               original["original_fixture_sha256"] == reference["observations_sha256"],
+               "unchanged complete original array observations")
+        ensure(projection(reference["observations"]) == original["rows"],
+               "exact projection from actual original array TF")
     args.work_dir.mkdir(parents=True, exist_ok=True)
     output = Path(tempfile.mkdtemp(prefix="lighting-array-normals-", dir=args.work_dir)).resolve(strict=True)
-    inputs = [executable, fixture, observed, HERE / "run_array_normals.py", SUPPORT]
+    inputs = [executable, *reference_paths, HERE / "run_array_normals.py", SUPPORT]
     before = {str(path.resolve()): digest(path) for path in inputs}
-    report = {"status": "FAIL", "scope": original["scope"], "input_before_sha256": before,
-              "original_fixture_sha256": original["original_fixture_sha256"]}
+    ensure(all(before.get(path) == value for path, value in reference_hashes.items()),
+           "parsed original reference bytes match the initial input snapshot")
+    report = {"status": "FAIL", "input_before_sha256": before}
     try:
         receipt = capture([str(executable), "--array-normals"], output, "native", 60,
                           os.environ.copy(), output)
         report["capture"] = receipt
         require_success(receipt, empty_stderr=True)
         text = (output / receipt["stdout_file"]).read_text(encoding="utf-8")
+        reference, context = select_reference(references, text)
+        original = reference["fixture"]
+        expected = original["rows"]
+        report.update(context, reference_profile=reference["profile"]["id"], scope=original["scope"],
+                      original_fixture_sha256=original["original_fixture_sha256"])
         lines = text.splitlines()
         ensure(lines and re.fullmatch(r"Source lighting array normals: 256 rows; [1-9][0-9]* checks",
                                      lines[-1]), "completed actual native draws and checked cleanup")

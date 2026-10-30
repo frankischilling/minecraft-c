@@ -98,6 +98,8 @@ bool mc_client_display_list_batch(mc_client_display *, int32_t, size_t draw_inde
                                   mc_client_source_batch_view *);
 bool mc_client_display_list_pending_batch(mc_client_display *, int32_t, size_t draw_index,
                                           mc_client_source_batch_view *);
+/* Singular glCallList has its own reached current-attribute frontier. */
+bool mc_client_display_list_call(mc_client_display *, int32_t id, mc_client_display_error *);
 bool mc_client_display_lists_call(mc_client_display *, const int32_t *ids, size_t count,
                                   mc_client_display_error *);
 bool mc_client_display_lists_retire(mc_client_display_list_range **, mc_client_display_error *);

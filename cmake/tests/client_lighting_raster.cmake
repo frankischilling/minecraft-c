@@ -24,6 +24,12 @@ if(BUILD_TESTING AND TARGET mc_client_render_textures)
             --work-dir "${CMAKE_CURRENT_BINARY_DIR}/lighting-material")
         set_tests_properties(client.lighting_material PROPERTIES
             LABELS "public;integration;client;graphics;ownership;replay" TIMEOUT 60)
+        add_test(NAME client.lighting_material_sequences COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/lighting_raster/run_material_sequences.py"
+            --executable "$<TARGET_FILE:mc_test_lighting_raster>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/lighting-material-sequences")
+        set_tests_properties(client.lighting_material_sequences PROPERTIES
+            LABELS "public;integration;client;graphics;ownership;replay" TIMEOUT 180)
         add_test(NAME client.lighting_list_state COMMAND Python3::Interpreter -B
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/lighting_raster/run_list_state.py"
             --executable "$<TARGET_FILE:mc_test_lighting_raster>"
@@ -35,6 +41,12 @@ if(BUILD_TESTING AND TARGET mc_client_render_textures)
             --executable "$<TARGET_FILE:mc_test_lighting_raster>"
             --work-dir "${CMAKE_CURRENT_BINARY_DIR}/lighting-array-normals")
         set_tests_properties(client.lighting_array_normals PROPERTIES
+            LABELS "public;integration;client;graphics;ownership;replay" TIMEOUT 90)
+        add_test(NAME client.lighting_color_inputs COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/lighting_raster/run_color_inputs.py"
+            --executable "$<TARGET_FILE:mc_test_lighting_raster>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/lighting-color-inputs")
+        set_tests_properties(client.lighting_color_inputs PROPERTIES
             LABELS "public;integration;client;graphics;ownership;replay" TIMEOUT 90)
         add_test(NAME client.lighting_raster COMMAND Python3::Interpreter -B
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/lighting_raster/run_native.py"

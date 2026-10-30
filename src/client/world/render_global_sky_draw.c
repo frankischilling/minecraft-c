@@ -410,8 +410,7 @@ static bool celestial(mc_client_render_global_sky_call *c) {
                    c->state.star_brightness, 825))
             return false;
         c->state.star_list = c->owner->fields.y;
-        if (!gl(c, mc_client_display_lists_call(d, &c->state.star_list, 1, &c->failure.display),
-                832))
+        if (!gl(c, mc_client_display_list_call(d, c->state.star_list, &c->failure.display), 832))
             return false;
         c->state.stars_called = true;
     }
@@ -480,7 +479,7 @@ static bool body(mc_client_render_global_sky_call *c) {
         !color(c, rgb[0], rgb[1], rgb[2], 1, 162))
         return false;
     c->state.top_list = c->owner->fields.z;
-    if (!gl(c, mc_client_display_lists_call(d, &c->state.top_list, 1, &c->failure.display), 169))
+    if (!gl(c, mc_client_display_list_call(d, c->state.top_list, &c->failure.display), 169))
         return false;
     c->state.top_called = true;
     if (!gl(c, mc_client_display_source_fog_enable(d, false, &c->failure.display), 175) ||
@@ -517,7 +516,7 @@ static bool body(mc_client_render_global_sky_call *c) {
     if (!gl(c, mc_client_display_source_texture_enable(d, false, &c->failure.display), 916))
         return false;
     c->state.bottom_list = c->owner->fields.A;
-    if (!gl(c, mc_client_display_lists_call(d, &c->state.bottom_list, 1, &c->failure.display), 923))
+    if (!gl(c, mc_client_display_list_call(d, c->state.bottom_list, &c->failure.display), 923))
         return false;
     c->state.bottom_called = true;
     if (!gl(c, mc_client_display_source_texture_enable(d, true, &c->failure.display), 929) ||

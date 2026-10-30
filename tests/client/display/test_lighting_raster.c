@@ -97,7 +97,7 @@ static const uint8_t colors[6][4] = {{128, 64, 32, 255},  {32, 192, 64, 160},  {
 static void material(mc_client_display *display, int32_t face, int32_t parameter, float r, float g,
                      float b, float a) {
     const float values[4] = {r, g, b, a};
-    CHECK(mc_client_display_source_material(display, face, parameter, values, 4, &display_error));
+    CHECK(mc_client_display_source_material(display, face, parameter, values, 8, &display_error));
 }
 
 static void light(mc_client_display *display, unsigned int index, int32_t parameter, float r,
@@ -130,6 +130,32 @@ static mc_client_display *create(void) {
     CHECK(address != NULL);
     memcpy(&disable, &address, sizeof(disable));
     disable(GL_DITHER);
+    SDL_FunctionPointer string_address = SDL_GL_GetProcAddress("glGetString");
+    SDL_FunctionPointer integer_address = SDL_GL_GetProcAddress("glGetIntegerv");
+    mc_client_gl_get_string_fn get_string = NULL;
+    mc_client_gl_get_integer_fn get_integer = NULL;
+    _Static_assert(sizeof(get_string) == sizeof(string_address),
+                   "GL string pointer representation");
+    _Static_assert(sizeof(get_integer) == sizeof(integer_address),
+                   "GL query pointer representation");
+    CHECK(string_address != NULL && integer_address != NULL);
+    memcpy(&get_string, &string_address, sizeof(get_string));
+    memcpy(&get_integer, &integer_address, sizeof(get_integer));
+    const char *vendor = (const char *)get_string(GL_VENDOR);
+    const char *renderer = (const char *)get_string(GL_RENDERER);
+    const char *version = (const char *)get_string(GL_VERSION);
+    CHECK(vendor != NULL && renderer != NULL && version != NULL);
+    GLint dither = 0;
+    get_integer(GL_DITHER, &dither);
+    mc_client_framebuffer_info format;
+    CHECK(mc_client_display_framebuffer_info_get(display, &format, &display_error));
+    printf("RASTER_NATIVE_DRIVER vendor=%.160s | renderer=%.240s | version=%.160s\n", vendor,
+           renderer, version);
+    printf("RASTER_NATIVE_FORMAT rgba=%d,%d,%d,%d depth=%d stencil=%d sample_buffers=%d "
+           "samples=%d double_buffer=%u dither=%d\n",
+           format.red_bits, format.green_bits, format.blue_bits, format.alpha_bits,
+           format.depth_bits, format.stencil_bits, format.sample_buffers, format.samples,
+           format.double_buffer ? 1u : 0u, dither);
     return display;
 }
 
@@ -472,27 +498,50 @@ static void actual_quad(mc_client_display *display, const char *name, bool flat,
     pixels(display, name, 0);
 }
 
+static void queried_material_words(mc_client_display *display, int32_t face, int32_t parameter,
+                                   size_t count) {
+    static const float sentinel[8] = {-123, -456, -789, -321, -654, -987, -111, -222};
+    float values[8];
+    CHECK(count >= 1 && count <= 4);
+    memcpy(values, sentinel, sizeof(values));
+    CHECK(
+        mc_client_display_source_material_get(display, face, parameter, values, 8, &display_error));
+    CHECK(memcmp(values + count, sentinel + count, (8u - count) * sizeof(float)) == 0);
+    words(values, count);
+}
+
+static void queried_current_words(mc_client_display *display, int32_t parameter, size_t count) {
+    static const float sentinel[8] = {-123, -456, -789, -321, -654, -987, -111, -222};
+    float values[8];
+    CHECK(count >= 1 && count <= 4);
+    memcpy(values, sentinel, sizeof(values));
+    CHECK(
+        mc_client_display_source_current_attribute(display, parameter, values, 8, &display_error));
+    CHECK(memcmp(values + count, sentinel + count, (8u - count) * sizeof(float)) == 0);
+    words(values, count);
+}
+
 static void material_state(mc_client_display *display, const char *name) {
-    mc_client_source_fog_state state;
-    CHECK(mc_client_display_source_fog_inspect(display, &state));
+    /* Match the original getter order: each query can commit staged source
+     * attributes. A passive inspection is not a substitute for these calls. */
     printf("MATERIAL %s", name);
     for (size_t face = 0; face < 2; ++face) {
-        const mc_client_source_material_state *m = &state.materials[face];
-        CHECK(m->ambient_known && m->diffuse_known && m->specular_known && m->emission_known &&
-              m->shininess_known);
-        const float *parameters[4] = {m->ambient, m->diffuse, m->specular, m->emission};
+        static const int32_t parameters[4] = {GL_AMBIENT, GL_DIFFUSE, GL_SPECULAR, GL_EMISSION};
         for (size_t parameter = 0; parameter < 4; ++parameter) {
             putchar(' ');
-            words(parameters[parameter], 4);
+            queried_material_words(display, face == 0 ? GL_FRONT : GL_BACK, parameters[parameter],
+                                   4);
         }
     }
     putchar(' ');
-    words(&state.materials[0].shininess, 1);
+    queried_material_words(display, GL_FRONT, GL_SHININESS, 1);
     putchar(' ');
-    words(&state.materials[1].shininess, 1);
+    queried_material_words(display, GL_BACK, GL_SHININESS, 1);
+    putchar(' ');
+    queried_current_words(display, GL_CURRENT_COLOR, 4);
+    mc_client_source_fog_state state;
+    CHECK(mc_client_display_source_fog_inspect(display, &state));
     CHECK(state.current_color_known);
-    putchar(' ');
-    words(state.current_color, 4);
     printf(" %u %d %d\n", state.color_material ? 1u : 0u, state.material_face, state.material_mode);
 }
 
@@ -534,25 +583,105 @@ static void material_controls(mc_client_display *display) {
     material_state(display, "untracked_out_of_range_emission");
 }
 
+static void material_prefix_controls(mc_client_display *display, int prefix) {
+    /* No query or draw intervenes in these declared contiguous call groups. */
+    setup(display, false);
+    if (prefix >= 1) {
+        CHECK(mc_client_display_source_color_material(display, GL_FRONT_AND_BACK, GL_AMBIENT,
+                                                      &display_error));
+        CHECK(mc_client_display_source_color_material_enable(display, true, &display_error));
+    }
+    if (prefix >= 2)
+        CHECK(mc_client_display_source_color(display, .25f, .5f, .75f, .5f, &display_error));
+    if (prefix >= 3)
+        CHECK(mc_client_display_source_color_material(display, GL_FRONT_AND_BACK, GL_DIFFUSE,
+                                                      &display_error));
+    if (prefix >= 4)
+        CHECK(mc_client_display_source_color(display, .75f, .25f, .5f, .75f, &display_error));
+    if (prefix >= 5)
+        CHECK(mc_client_display_source_color_material(display, GL_FRONT_AND_BACK, GL_EMISSION,
+                                                      &display_error));
+    if (prefix >= 6)
+        CHECK(mc_client_display_source_color(display, .125f, .25f, .125f, 1, &display_error));
+    if (prefix >= 7)
+        CHECK(mc_client_display_source_color_material_enable(display, false, &display_error));
+    if (prefix >= 8)
+        CHECK(mc_client_display_source_color(display, .875f, .5f, .25f, .125f, &display_error));
+    char name[32];
+    CHECK(snprintf(name, sizeof(name), "after_prefix_%d", prefix) > 0);
+    material_state(display, name);
+}
+
 static void list_state(mc_client_display *display, const char *label) {
+    printf("NORMAL_LIST_STATE %s ", label);
+    queried_current_words(display, GL_CURRENT_NORMAL, 3);
+    putchar(' ');
+    queried_current_words(display, GL_CURRENT_COLOR, 4);
+    putchar(' ');
+    queried_material_words(display, GL_FRONT, GL_AMBIENT, 4);
+    putchar(' ');
+    queried_material_words(display, GL_FRONT, GL_DIFFUSE, 4);
+    putchar(' ');
+    queried_material_words(display, GL_BACK, GL_AMBIENT, 4);
+    putchar(' ');
+    queried_material_words(display, GL_BACK, GL_DIFFUSE, 4);
     mc_client_source_fog_state state;
     CHECK(mc_client_display_source_fog_inspect(display, &state));
     CHECK(state.normal_known && state.current_color_known);
     CHECK(state.materials[0].ambient_known && state.materials[0].diffuse_known &&
           state.materials[1].ambient_known && state.materials[1].diffuse_known);
-    printf("NORMAL_LIST_STATE %s ", label);
-    words(state.normal, 3);
-    putchar(' ');
-    words(state.current_color, 4);
-    putchar(' ');
-    words(state.materials[0].ambient, 4);
-    putchar(' ');
-    words(state.materials[0].diffuse, 4);
-    putchar(' ');
-    words(state.materials[1].ambient, 4);
-    putchar(' ');
-    words(state.materials[1].diffuse, 4);
     printf(" %u %d %d\n", state.color_material ? 1u : 0u, state.material_face, state.material_mode);
+}
+
+static void submitted_attribute(GLuint location, GLint components, float *out) {
+    /* Observe submitted vertices separately from the driver's persistent
+     * current attributes. Legacy list replay differs between those states. */
+#define LIST_OBSERVATION_PROC(type, name, symbol)                                                  \
+    type name = NULL;                                                                              \
+    do {                                                                                           \
+        SDL_FunctionPointer address = SDL_GL_GetProcAddress(symbol);                               \
+        _Static_assert(sizeof(name) == sizeof(address), "GL observation pointer representation");  \
+        CHECK(address != NULL);                                                                    \
+        memcpy(&name, &address, sizeof(name));                                                     \
+    } while (0)
+    LIST_OBSERVATION_PROC(mc_client_gl_get_integer_fn, get_integer, "glGetIntegerv");
+    LIST_OBSERVATION_PROC(mc_client_gl_get_error_fn, get_error, "glGetError");
+    LIST_OBSERVATION_PROC(PFNGLGETVERTEXATTRIBIVPROC, get_attribute, "glGetVertexAttribiv");
+    LIST_OBSERVATION_PROC(PFNGLGETVERTEXATTRIBPOINTERVPROC, get_pointer,
+                          "glGetVertexAttribPointerv");
+    LIST_OBSERVATION_PROC(PFNGLGETBUFFERPARAMETERIVPROC, get_buffer, "glGetBufferParameteriv");
+    LIST_OBSERVATION_PROC(PFNGLGETBUFFERSUBDATAPROC, read_buffer, "glGetBufferSubData");
+#undef LIST_OBSERVATION_PROC
+    CHECK((location == 3 && components == 3) || (location == 2 && components == 4));
+    CHECK(get_error() == GL_NO_ERROR);
+    GLint binding = 0, capacity = 0, enabled = 0, size = 0, type = 0, stride = 0, normalized = 0,
+          attribute_buffer = 0;
+    void *pointer = NULL;
+    get_integer(GL_ARRAY_BUFFER_BINDING, &binding);
+    get_buffer(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &capacity);
+    get_attribute(location, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &enabled);
+    get_attribute(location, GL_VERTEX_ATTRIB_ARRAY_SIZE, &size);
+    get_attribute(location, GL_VERTEX_ATTRIB_ARRAY_TYPE, &type);
+    get_attribute(location, GL_VERTEX_ATTRIB_ARRAY_STRIDE, &stride);
+    get_attribute(location, GL_VERTEX_ATTRIB_ARRAY_NORMALIZED, &normalized);
+    get_attribute(location, GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, &attribute_buffer);
+    get_pointer(location, GL_VERTEX_ATTRIB_ARRAY_POINTER, &pointer);
+    const size_t offset = (size_t)(uintptr_t)pointer;
+    CHECK(binding > 0 && capacity > 0 && capacity <= 4096 && enabled == GL_TRUE &&
+          size == components && type == GL_FLOAT && normalized == GL_FALSE &&
+          attribute_buffer == binding && stride >= components * (GLint)sizeof(float) &&
+          stride <= 4096 && offset <= 4096 &&
+          offset + 2u * (size_t)stride + (size_t)components * sizeof(float) <= (size_t)capacity);
+    uint8_t uploaded[4096];
+    read_buffer(GL_ARRAY_BUFFER, 0, (GLsizeiptr)capacity, uploaded);
+    CHECK(get_error() == GL_NO_ERROR);
+    for (size_t vertex = 0; vertex < 3; ++vertex)
+        memcpy(out + vertex * (size_t)components, uploaded + offset + vertex * (size_t)stride,
+               (size_t)components * sizeof(float));
+}
+
+static void submitted_list_normals(float out[9]) {
+    submitted_attribute(3, 3, out);
 }
 
 static void list_controls(mc_client_display *display, mc_client_display_context_lease **lease,
@@ -590,21 +719,27 @@ static void list_controls(mc_client_display *display, mc_client_display_context_
         CHECK(mc_client_display_source_array(display, MC_CLIENT_SOURCE_NORMAL_ARRAY, false,
                                              &display_error));
         CHECK(mc_client_display_source_normal(display, 123, 456, 789, &display_error));
-        CHECK(mc_client_display_lists_call(display, &id, 1, &display_error));
+        CHECK(mc_client_display_list_call(display, id, &display_error));
         mc_client_source_fog_state state;
         CHECK(mc_client_display_source_fog_inspect(display, &state) && state.normal_known);
+        float submitted[9];
+        submitted_list_normals(submitted);
+        CHECK(memcmp(submitted, submitted + 6, 3u * sizeof(float)) == 0 &&
+              memcmp(submitted + 3, submitted + 6, 3u * sizeof(float)) == 0);
         printf("NATIVE_LIST_NORMAL %d ", value);
-        words(state.normal, 3);
+        words(submitted + 6, 3);
         putchar('\n');
         const uint8_t second_poison = (uint8_t)((uint8_t)value ^ UINT8_C(0x55));
         for (size_t vertex = 0; vertex < 3; ++vertex)
             memset(bytes + vertex * 32 + 24, second_poison, 3);
         arrays(display, *lease, bytes, true, false, false);
         CHECK(mc_client_display_source_normal(display, -123, -456, -789, &display_error));
-        CHECK(mc_client_display_lists_call(display, &id, 1, &display_error));
+        CHECK(mc_client_display_list_call(display, id, &display_error));
         mc_client_source_fog_state repeated;
         CHECK(mc_client_display_source_fog_inspect(display, &repeated) && repeated.normal_known);
-        CHECK(memcmp(state.normal, repeated.normal, sizeof(state.normal)) == 0);
+        float repeated_submission[9];
+        submitted_list_normals(repeated_submission);
+        CHECK(memcmp(submitted, repeated_submission, sizeof(submitted)) == 0);
     }
     CHECK(geometry(bytes, false, false, false) == 3);
     for (size_t vertex = 0; vertex < 3; ++vertex)
@@ -632,12 +767,12 @@ static void list_controls(mc_client_display *display, mc_client_display_context_
     CHECK(mc_client_display_source_color(display, .125f, .25f, .5f, .875f, &display_error));
     CHECK(mc_client_display_source_normal(display, -.25f, .75f, .5f, &display_error));
     list_state(display, "before_call");
-    CHECK(mc_client_display_lists_call(display, &id, 1, &display_error));
+    CHECK(mc_client_display_list_call(display, id, &display_error));
     list_state(display, "after_call");
     CHECK(mc_client_display_source_color(display, .875f, .625f, .375f, .125f, &display_error));
     CHECK(mc_client_display_source_normal(display, .5f, .25f, -.75f, &display_error));
     list_state(display, "before_repeat");
-    CHECK(mc_client_display_lists_call(display, &id, 1, &display_error));
+    CHECK(mc_client_display_list_call(display, id, &display_error));
     list_state(display, "after_repeat");
 }
 
@@ -726,6 +861,63 @@ static void array_normal_controls(mc_client_display *display,
     }
 }
 
+static void color_input_controls(mc_client_display *display,
+                                 mc_client_display_context_lease **lease,
+                                 mc_client_display_list_range **range) {
+    setup(display, true);
+    CHECK(mc_client_display_source_color_material_enable(display, true, &display_error));
+    CHECK(mc_client_display_source_normal(display, .25f, -.5f, .75f, &display_error));
+    CHECK(mc_client_display_context_acquire(display, lease, &display_error));
+    int32_t id = 0;
+    CHECK(mc_client_display_lists_generate(display, 1, 8, range, &id, &display_error));
+    uint8_t bytes[192];
+    for (int value = 0; value < 256; ++value) {
+        CHECK(geometry(bytes, false, false, false) == 3);
+        for (size_t vertex = 0; vertex < 3; ++vertex) {
+            memset(bytes + vertex * 32 + 12, 0, 20);
+            memset(bytes + vertex * 32 + 20, value, 4);
+        }
+        arrays(display, *lease, bytes, false, true, false);
+        CHECK(mc_client_display_source_color(display, .75f, .5f, .25f, .625f, &display_error));
+        CHECK(mc_client_display_source_batch(*lease, bytes, bytes, 96, 3, GL_TRIANGLES,
+                                             &display_error));
+        float direct[12];
+        submitted_attribute(2, 4, direct);
+        printf("NATIVE_COLOR_INPUT %d direct ", value);
+        words(direct, 12);
+        putchar('\n');
+        /* Current color after a direct array draw is not an input oracle. */
+        CHECK(mc_client_display_source_color(display, .75f, .5f, .25f, .625f, &display_error));
+        uint8_t prepared[96];
+        memcpy(prepared, bytes, sizeof(prepared));
+        CHECK(mc_client_display_lists_begin(display, id, &display_error));
+        CHECK(mc_client_display_source_color(display, .25f, .5f, .75f, .375f, &display_error));
+        CHECK(mc_client_display_source_batch(*lease, bytes, bytes, 96, 3, GL_TRIANGLES,
+                                             &display_error));
+        CHECK(mc_client_display_lists_end(display, &display_error));
+        CHECK(memcmp(prepared, bytes, sizeof(prepared)) == 0);
+        for (size_t vertex = 0; vertex < 3; ++vertex)
+            memset(bytes + vertex * 32 + 20, value ^ 255, 4);
+        CHECK(mc_client_display_source_array(display, MC_CLIENT_SOURCE_COLOR_ARRAY, false,
+                                             &display_error));
+        CHECK(mc_client_display_source_color(display, .125f, .25f, .5f, .875f, &display_error));
+        CHECK(mc_client_display_list_call(display, id, &display_error));
+        float compiled[12];
+        submitted_attribute(2, 4, compiled);
+        printf("NATIVE_COLOR_INPUT %d list ", value);
+        words(compiled, 12);
+        putchar('\n');
+        for (size_t vertex = 0; vertex < 3; ++vertex)
+            memset(bytes + vertex * 32 + 20, value ^ 0x55, 4);
+        arrays(display, *lease, bytes, false, true, false);
+        CHECK(mc_client_display_source_color(display, .875f, .625f, .375f, .125f, &display_error));
+        CHECK(mc_client_display_list_call(display, id, &display_error));
+        float repeated[12];
+        submitted_attribute(2, 4, repeated);
+        CHECK(memcmp(compiled, repeated, sizeof(compiled)) == 0);
+    }
+}
+
 int main(int argc, char **argv) {
     CHECK(argc == 2);
     const unsigned int original_controls = _mm_getcsr();
@@ -733,8 +925,18 @@ int main(int argc, char **argv) {
     const bool materials = strcmp(argv[1], "--material") == 0;
     const bool lists = strcmp(argv[1], "--list-state") == 0;
     const bool array_normals = strcmp(argv[1], "--array-normals") == 0;
-    const int index = materials || lists || array_normals ? -1 : atoi(argv[1]);
-    CHECK(materials || lists || array_normals ||
+    const bool color_inputs = strcmp(argv[1], "--color-inputs") == 0;
+    const bool material_sequence = strcmp(argv[1], "--material-sequence") == 0;
+    static const char prefix_option[] = "--material-prefix=";
+    const size_t prefix_length = sizeof(prefix_option) - 1u;
+    const bool material_prefix = strncmp(argv[1], prefix_option, prefix_length) == 0;
+    CHECK(!material_prefix || (strlen(argv[1]) == prefix_length + 1u &&
+                               argv[1][prefix_length] >= '0' && argv[1][prefix_length] <= '8'));
+    const int prefix = material_prefix ? argv[1][prefix_length] - '0' : -1;
+    const int index = materials || lists || array_normals || color_inputs || material_prefix ? -1
+                      : material_sequence                                                    ? 32
+                                          : atoi(argv[1]);
+    CHECK(materials || lists || array_normals || color_inputs || material_prefix ||
           (index >= 0 && (size_t)index < sizeof(names) / sizeof(names[0])));
     mc_client_display *display = create();
     mc_client_display_context_lease *lease = NULL;
@@ -743,10 +945,14 @@ int main(int argc, char **argv) {
     mc_client_render_engine_classes *classes = NULL;
     if (materials) {
         material_controls(display);
+    } else if (material_prefix) {
+        material_prefix_controls(display, prefix);
     } else if (lists) {
         list_controls(display, &lease, &range);
     } else if (array_normals) {
         array_normal_controls(display, &lease);
+    } else if (color_inputs) {
+        color_input_controls(display, &lease, &range);
     } else {
         const char *name = names[index];
         if (index >= 56) {
@@ -863,14 +1069,14 @@ int main(int argc, char **argv) {
                     CHECK(mc_client_display_source_pop(display, &display_error));
                     CHECK(mc_client_display_lists_end(display, &display_error));
                     memset(bytes, 0, sizeof(bytes));
-                    CHECK(mc_client_display_lists_call(display, &id, 1, &display_error));
+                    CHECK(mc_client_display_list_call(display, id, &display_error));
                     pixels(display, name, 0);
                     CHECK(mc_client_display_source_clear(
                         display, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, &display_error));
                     CHECK(mc_client_display_source_load_identity(display, &display_error));
                     CHECK(mc_client_display_source_rotate(display, 90, 0, 0, 1, &display_error));
                     CHECK(mc_client_display_source_scale(display, .5, .5, 2, &display_error));
-                    CHECK(mc_client_display_lists_call(display, &id, 1, &display_error));
+                    CHECK(mc_client_display_list_call(display, id, &display_error));
                     pixels(display, name, 1);
                 } else {
                     CHECK(mc_client_display_source_batch(
@@ -881,6 +1087,8 @@ int main(int argc, char **argv) {
             }
         }
     }
+    if (material_sequence)
+        material_state(display, "after_contiguous_draw");
     CHECK(mc_client_display_lists_retire(&range, &display_error));
     CHECK(mc_client_display_context_release(&lease, &display_error));
     CHECK(mc_client_display_retire_texture(&texture_resource, &display_error));
@@ -890,10 +1098,16 @@ int main(int argc, char **argv) {
     _mm_setcsr(original_controls);
     if (materials)
         printf("Source lighting material: 16 rows; %u checks\n", checks);
+    else if (material_prefix)
+        printf("Source lighting material prefix: %d; %u checks\n", prefix, checks);
+    else if (material_sequence)
+        printf("Source lighting material sequence: 3 rows; %u checks\n", checks);
     else if (lists)
         printf("Source lighting list state: 262 rows; %u checks\n", checks);
     else if (array_normals)
         printf("Source lighting array normals: 256 rows; %u checks\n", checks);
+    else if (color_inputs)
+        printf("Source lighting color inputs: 512 rows; %u checks\n", checks);
     else
         printf("Source lighting raster: %s; %u checks\n", names[index], checks);
     return 0;

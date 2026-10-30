@@ -20,6 +20,7 @@ PARSER = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(PARSER)
 rows = PARSER.rows
 from capture import capture, digest, ensure, require_success
+from reference_profiles import load_references, select_reference
 
 
 def pixel_difference(actual, expected):
@@ -42,11 +43,11 @@ def main():
                         help="diagnose selected indices; default requires the entire captured inventory")
     args = parser.parse_args()
     executable = args.executable.resolve(strict=True)
-    cases = json.loads((HERE / "converted-inputs.json").read_text(encoding="utf-8"))["cases"]
-    fixture = json.loads((HERE / "converted-finite.json").read_text(encoding="utf-8"))
-    ensure(fixture["indices"] == list(range(len(cases))), "complete original fixture inventory required")
-    expected = fixture["rows"]
-    ensure(len(expected) == sum(case["frames"] * 3 for case in cases), "every captured pixel and state row")
+    case_path = HERE / "converted-inputs.json"
+    case_bytes = case_path.read_bytes()
+    cases = json.loads(case_bytes)["cases"]
+    references, reference_paths, reference_hashes = load_references("converted", cases, 3, rows)
+    reference_hashes[str(case_path.resolve())] = hashlib.sha256(case_bytes).hexdigest()
     indices = list(range(len(cases))) if args.profiles is None else args.profiles
     ensure(indices and len(indices) == len(set(indices)) and all(0 <= index < len(cases) for index in indices),
            "unique declared profile indices")
@@ -55,10 +56,12 @@ def main():
         offsets.append(offsets[-1] + case["frames"] * 3)
     args.work_dir.mkdir(parents=True, exist_ok=True)
     output = Path(tempfile.mkdtemp(prefix="lighting-raster-converted-", dir=args.work_dir)).resolve(strict=True)
-    inputs = [executable, HERE / "converted-finite.json", HERE / "converted-inputs.json", HERE / "source-pins.json",
+    inputs = [executable, *reference_paths, HERE / "converted-inputs.json", HERE / "source-pins.json",
               HERE / "run_converted.py", HERE / "capture_converted.py", HERE / "capture_reference.py", HERE.parent / "controller/capture.py",
               HERE.parent / "controller/classfile.py", HERE.parent / "render_global_sky/capture_prefix.py"]
     before = {str(path.resolve()): digest(path) for path in inputs}
+    ensure(all(before.get(path) == value for path, value in reference_hashes.items()),
+           "parsed original reference bytes match the initial input snapshot")
     report = {"status": "FAIL", "input_before_sha256": before, "profiles": [], "selected_indices": indices,
               "complete_inventory": indices == list(range(len(cases))),
               "scope": "Actual unchanged NW expanded vertex words plus exact lit RGBA8 pixels and separate state. "
@@ -67,8 +70,6 @@ def main():
         mismatches = 0
         for index in indices:
             case = cases[index]
-            original = expected[offsets[index]:offsets[index + 1]]
-            ensure(rows("\n".join(original), case) == original, "complete original profile rows")
             receipt = capture([str(executable), str(case["native_index"])], output, "native" + str(index), 30,
                               os.environ.copy(), output)
             profile = {"name": case["name"], "index": index, "capture": receipt}
@@ -78,6 +79,13 @@ def main():
             lines = text.splitlines()
             marker = r"Source lighting raster: " + re.escape(case["name"]) + r"; [1-9][0-9]* checks"
             ensure(lines and re.fullmatch(marker, lines[-1]), "normal fixture completion after checked cleanup")
+            reference, context = select_reference(references, text)
+            identity = reference["profile"]["id"]
+            ensure(report.setdefault("reference_profile", identity) == identity,
+                   "the captured driver remains the same for every profile")
+            profile.update(context, reference_profile=identity,
+                           reference_fixture_sha256=reference["sha256"])
+            original = reference["fixture"]["rows"][offsets[index]:offsets[index + 1]]
             actual = rows(text, case)
             difference = []
             for row_index, (native, legacy) in enumerate(zip(actual, original)):

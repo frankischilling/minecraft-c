@@ -1,5 +1,5 @@
 {
-  "scope": "256 native post-list current-normal values compared to the last vertex of actual original compiled-list transform feedback, plus six directly observed original current-normal/color/tracked-material states. No pixels or whole Minecraft frame.",
+  "scope": "256 actual submitted compiled-list GPU last-vertex normals from original transform feedback, plus six separately queried current-normal/color/material/selector rows. GPU inputs and persistent attributes remain separate observations.",
   "original_fixture_sha256": "208b08e027c8b31a7429a72e9f715a6a89bb62cd6dc2da499cb7eb3c80562ee2",
   "original_capture_sha256": "c9907d676cc014f08aa8f0b258d09124182d4c3d5feb855ee8277f6303903641",
   "projection": "For each NORMAL_LIST_DECODE row, take zero-based token 5 (compiled feedback), components 6..8. Six NORMAL_LIST_STATE rows remain verbatim. No numerical formula supplies expected bits.",

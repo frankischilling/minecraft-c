@@ -2,26 +2,36 @@
 
 ## Vertex lighting and normal qualification
 
-Fifteen selected Windows MSVC Debug CTests pass in 46.78 seconds, with zero
-failures or skips. Nine production/test targets build. Strict supported-device
-terrain replay retains all 35 original rows, source U retains all 86 state rows,
-and the loaded-World regression passes in 12.99 seconds with all 72 focus
-histories and unchanged save/resource bytes. The actual rebuilt executable also
-captures two normal menu frames from imported assets and exits cleanly, with
-an isolated game directory and no JVM/JAR runtime.
+Nineteen selected Windows MSVC Debug CTests pass in 47.10 seconds. Eighteen
+Linux Clang18 ASan/UBSan CTests pass in 34.23 seconds. Neither selection has
+CTest failures or skips. Eleven production/test targets build on each platform.
+Windows terrain replay retains all 35 original rows with zero uncredited rows.
+Mesa llvmpipe does not advertise the required ARB occlusion capability: its N
+replay compares 30 rows and explicitly leaves five rows uncredited. That
+unsupported profile supplies no N-entry or normal-return evidence.
 
-The [source renderer](client/lighting-raster.md) has three distinct Windows
+Source U retains all 86 state rows on both platforms. The Windows loaded-World
+regression passes in 14.08 seconds with all 72 focus histories and unchanged
+save/resource bytes. Its inspected back buffer shows authored grass terrain and
+Sky before the missing Entity/TileEntity child. The rebuilt executable also
+captures two normal menu frames and exits cleanly, using imported assets and an
+isolated APPDATA directory without a JVM/JAR runtime.
+
+The [source renderer](client/lighting-raster.md) has three distinct per-driver
 pixel cohorts: 38 initial profiles with 39 frames, 18 extended profiles with
 18 frames, and two actual NW converted-quad profiles with two frames. Replay
 compares every byte of each 64 by 64 RGBA8 frame and every separate state row
-exactly. Material tracking adds 16 exact rows. The CPU NW comparison adds 30
+exactly on both measured devices. Material tracking adds 16 exact rows per
+driver; nine independent prefixes and a complete unqueried draw add 12 rows.
+The CPU NW comparison adds 30
 original state/vertex rows, including nonfinite Java conversions and untouched
 duplicate normal words.
 
-The original NVIDIA driver probes distinguish direct-array normal conversion
-from compiled-list conversion for all 256 bytes. Native list-state replay uses
-the actual captured feedback values for all 256 last normals, plus six original
-current-normal/color/material rows. Expected bits are projected from observed
+The original driver probes distinguish direct-array normal conversion from
+compiled-list conversion: NVIDIA differs for all 256 bytes, Mesa for 254.
+Native list-state replay reads all 256 submitted GPU normals, plus six separate
+current-normal/color/material rows. Color replay compares 512 submitted rows
+and 6,144 components, with independently poisoned list storage. Expected bits are projected from observed
 data rather than calculated from the native formula. These probes do not supply
 World-frame or gameplay evidence. The [fixture guide](../tests/reference/client/lighting_raster/README.md)
 records reproduction, input hashes and the corrected scope of the historical
@@ -36,8 +46,9 @@ unsupported numerical ranges before submission, preserve unknown current
 normal state after direct-array drawing, and restore known state through actual
 setters. Borrowed System-output bindings are removed before their owner is
 released, including when a counted graphics owner survives resource retirement.
-Hosted qualification of this renderer extension is pending. The state-only
-results below retain their earlier source scope.
+The [hosted compiler matrix](https://github.com/frankischilling/minecraft-c/actions/workflows/ci.yml)
+must be checked for the exact revision. The state-only results below retain
+their earlier source scope.
 
 ## Standard lighting state qualification
 

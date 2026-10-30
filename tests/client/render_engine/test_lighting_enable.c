@@ -7,6 +7,7 @@
 #include "client/render_engine/lighting.h"
 #include "entity/classes/classes_internal.h"
 
+#include <SDL3/SDL.h>
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -436,11 +437,22 @@ static void lit_draw_and_normal_knowledge(fixture *f) {
     float nan;
     memcpy(&nan, &nan_bits, sizeof(nan));
     CHECK(mc_client_display_source_normal(f->display, nan, 0, 1, &error));
+    mc_client_source_fog_state before_rejection;
+    CHECK(mc_client_display_source_fog_inspect(f->display, &before_rejection));
     CHECK(!mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
     CHECK(error.status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL &&
           strcmp(error.operation, "source lighting numerical admission") == 0);
-    CHECK(mc_client_display_source_fog_inspect(f->display, &state) && state.normal_known &&
-          memcmp(state.normal, &nan, sizeof(nan)) == 0);
+    CHECK(mc_client_display_source_fog_inspect(f->display, &state) &&
+          state.normal_known == before_rejection.normal_known &&
+          memcmp(state.normal, before_rejection.normal, sizeof(state.normal)) == 0);
+    /* A refused draw leaves Mesa's submitted normal staged. Observe it at
+     * the actual source query frontier, without changing the rejected draw. */
+    float queried_normal[4] = {0, 0, 0, 17};
+    const float submitted_normal[3] = {nan, 0, 1};
+    CHECK(mc_client_display_source_current_attribute(f->display, GL_CURRENT_NORMAL, queried_normal,
+                                                     4, &error));
+    CHECK(memcmp(queried_normal, submitted_normal, sizeof(submitted_normal)) == 0 &&
+          queried_normal[3] == 17);
     CHECK(mc_client_display_source_normal(f->display, 1e30f, 0, 0, &error));
     CHECK(mc_client_display_source_normalize(f->display, true, &error));
     CHECK(!mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
@@ -503,6 +515,75 @@ static void lit_draw_and_normal_knowledge(fixture *f) {
     CHECK(mc_client_display_source_normal(f->display, 0, 0, 1, &error));
     CHECK(mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
     CHECK(mc_client_display_source_array(f->display, MC_CLIENT_SOURCE_VERTEX_ARRAY, false, &error));
+    CHECK(mc_client_display_context_release(&lease, &error) && lease == NULL);
+}
+
+static void matrix_pop_admission(fixture *f) {
+    mc_client_display_error error;
+    mc_client_display_context_lease *lease = NULL;
+    CHECK(mc_client_display_context_acquire(f->display, &lease, &error));
+    mc_client_gl_get_string_fn get_string = NULL;
+    SDL_FunctionPointer address = SDL_GL_GetProcAddress("glGetString");
+    _Static_assert(sizeof(get_string) == sizeof(address), "GL query pointer representation");
+    CHECK(address != NULL);
+    memcpy(&get_string, &address, sizeof(get_string));
+    const char *vendor = (const char *)get_string(GL_VENDOR);
+    CHECK(vendor != NULL &&
+          (strcmp(vendor, "Mesa") == 0 || strcmp(vendor, "NVIDIA Corporation") == 0));
+    const bool staged = strcmp(vendor, "Mesa") == 0;
+    CHECK(mc_client_display_source_matrix_mode(f->display, GL_MODELVIEW, &error));
+    CHECK(mc_client_display_source_load_identity(f->display, &error));
+    CHECK(mc_client_display_source_push(f->display, &error));
+    CHECK(mc_client_display_source_normal(f->display, 0.25f, 0.5f, 0.75f, &error));
+    float normal[4] = {0, 0, 0, 19};
+    CHECK(mc_client_display_source_current_attribute(f->display, GL_CURRENT_NORMAL, normal, 4,
+                                                     &error));
+    CHECK(normal[0] == 0.25f && normal[1] == 0.5f && normal[2] == 0.75f && normal[3] == 19);
+    /* An unchanged Push/Pop is admitted even with Mesa's STORED bit set. */
+    CHECK(mc_client_display_source_pop(f->display, &error));
+    CHECK(mc_client_display_source_load_identity(f->display, &error));
+    CHECK(mc_client_display_source_push(f->display, &error));
+    CHECK(mc_client_display_source_load_identity(f->display, &error));
+    CHECK(mc_client_display_source_normal(f->display, 0.75f, 0.5f, 0.25f, &error));
+    CHECK(mc_client_display_source_current_attribute(f->display, GL_CURRENT_NORMAL, normal, 4,
+                                                     &error));
+    CHECK(mc_client_display_source_color(f->display, 0.125f, 0.25f, 0.5f, 1, &error));
+    mc_client_source_fog_state before, after;
+    mc_client_source_draw_state color_before, color_after;
+    float projection_before[16], modelview_before[16], projection_after[16], modelview_after[16];
+    CHECK(mc_client_display_source_fog_inspect(f->display, &before));
+    CHECK(mc_client_display_source_draw_inspect(f->display, &color_before));
+    CHECK(
+        mc_client_display_camera_matrices_inspect(f->display, projection_before, modelview_before));
+    const bool popped = mc_client_display_source_pop(f->display, &error);
+    if (staged) {
+        /* Equal elements cannot establish equal legacy inverse/type metadata.
+         * Refusal preserves both the stack entry and pending attributes. */
+        CHECK(!popped && error.status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL &&
+              strcmp(error.operation, "source matrix pop") == 0);
+        CHECK(mc_client_display_source_fog_inspect(f->display, &after));
+        CHECK(mc_client_display_source_draw_inspect(f->display, &color_after));
+        CHECK(mc_client_display_camera_matrices_inspect(f->display, projection_after,
+                                                        modelview_after));
+        CHECK(before.normal_known == after.normal_known &&
+              memcmp(before.normal, after.normal, sizeof(before.normal)) == 0 &&
+              memcmp(before.materials, after.materials, sizeof(before.materials)) == 0 &&
+              memcmp(color_before.color, color_after.color, sizeof(color_before.color)) == 0 &&
+              color_before.color_known == color_after.color_known &&
+              memcmp(projection_before, projection_after, sizeof(projection_before)) == 0 &&
+              memcmp(modelview_before, modelview_after, sizeof(modelview_before)) == 0);
+        CHECK(mc_client_display_source_load_identity(f->display, &error));
+        float committed_color[5] = {0, 0, 0, 0, 23};
+        CHECK(mc_client_display_source_current_attribute(f->display, GL_CURRENT_COLOR,
+                                                         committed_color, 5, &error));
+        CHECK(committed_color[0] == 0.125f && committed_color[1] == 0.25f &&
+              committed_color[2] == 0.5f && committed_color[3] == 1 && committed_color[4] == 23);
+        CHECK(mc_client_display_source_pop(f->display, &error));
+    } else {
+        CHECK(popped);
+    }
+    CHECK(!mc_client_display_source_pop(f->display, &error) &&
+          error.status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL);
     CHECK(mc_client_display_context_release(&lease, &error) && lease == NULL);
 }
 
@@ -572,6 +653,7 @@ static void device_controls(void) {
           gl_error == GL_NO_ERROR);
     compiled_prefix(&f);
     lit_draw_and_normal_knowledge(&f);
+    matrix_pop_admission(&f);
     retire(&f);
     math_failure();
 }

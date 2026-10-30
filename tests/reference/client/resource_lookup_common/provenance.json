@@ -466,8 +466,8 @@
       "sha256": "93226a41c97403c4e3e61a23f633b553fc6c96c3058e44d362bf01409dfdaff9"
     },
     "docs/parity.md": {
-      "bytes": 116961,
-      "sha256": "27863b765054d56fd001ac41f6e6755e367efd9dc489214382ed90c1a98a81d8"
+      "bytes": 117038,
+      "sha256": "ab4919c3985326f928379d77f23958c92ae4ba6705eeb78f57dc5428c3268895"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -826,24 +826,24 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 289580,
-      "sha256": "715b9f51ece93666eb28f9186325eddc2fb8459f6c8792ba4b9dbd6919b076e1"
+      "bytes": 290327,
+      "sha256": "7a7baaeab98f4104ad471a64eabd0c4d11f807fba1b41337ec2d4035c441b507"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 18608,
       "sha256": "5b3ab7f7c125130bbf1d7c4507656d296a42aba512383ded664704eff98d0eca"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 35175,
-      "sha256": "e56ee437332740a0e5c1329d7f409b90179306d46b13ab61a720c140b88e0883"
+      "bytes": 35486,
+      "sha256": "fe4c04f595f94d3ae0c743744c6fcd9e22e3b02bc45cd890fec6a5eb9e190eb6"
     },
     "docs/wiki/History.md": {
       "bytes": 26029,
       "sha256": "3c215b221963d328333a1f5efa7c766b2ad1b8fb1fd7dd787501cec11cf46a66"
     },
     "docs/wiki/Home.md": {
-      "bytes": 8487,
-      "sha256": "73c29fe439512b161c84b592312772b74907bf95eb60a91bfcd2e700ef650ce1"
+      "bytes": 8497,
+      "sha256": "bfe10c0b0d901dd0a7bb765fb5d78596311ecdde2bd84bc139a44eb591a8350c"
     },
     "docs/wiki/Startup.md": {
       "bytes": 12087,
@@ -2570,8 +2570,8 @@
       "sha256": "5d9e1a804ac271a8493d04c8d958a53b23da68915633c45c980b2bdd7556f468"
     },
     "src/client/display/display.c": {
-      "bytes": 61236,
-      "sha256": "498dd8689b2c7d9d944c8ae7cda627f2714c93c5ccbe7d97cd3c08b40dc5d262"
+      "bytes": 61853,
+      "sha256": "e512b703a77a1267a0037d7dc3634b80a0a5c9df8600391511d4e6197f6fde07"
     },
     "src/client/display/display.h": {
       "bytes": 13767,
@@ -2590,8 +2590,8 @@
       "sha256": "d22f99400779cea30b3e19ffb9be16d15b66313e6ca7e648b993b00ecb6901d3"
     },
     "src/client/display/loading_projection.inc": {
-      "bytes": 2975,
-      "sha256": "0a958a5b7fdf8f08fcb12d76886e2d8e0669303422ecc7e200555e4df663b803"
+      "bytes": 4116,
+      "sha256": "e315606c07ca4c43a9128f246251c58d8c7a65c7333b55596ee01a6f76ff00ff"
     },
     "src/client/display/matrix_source.h": {
       "bytes": 1122,
@@ -2726,20 +2726,20 @@
       "sha256": "f5de2e5b95a7bde1a4b34fa0f4867f427a3bb42bdf8225cc85fbdcc66d0692ae"
     },
     "src/client/display/source_internal.h": {
-      "bytes": 5387,
-      "sha256": "ef19d25a36d18922c8ce429c049f4401639d96b4e54f728a934813250190ac42"
+      "bytes": 6338,
+      "sha256": "7231cc6565c7e9de440a8cfe32ec925a478a07f68d04438377fab4ad0a81594d"
     },
     "src/client/display/source_surface.h": {
-      "bytes": 9957,
-      "sha256": "829425a288b6c8e2272f907107184663c113e6e5e68fca6414887061ddced0bc"
+      "bytes": 10125,
+      "sha256": "2d8c95ac91f2152f8f65d99d5d61c3b3dad42d2f8597b73969cd76cc7b71b0d0"
     },
     "src/client/display/source_surface.inc": {
-      "bytes": 48243,
-      "sha256": "7d8a39bc67619549464bcc1473288407226a53777db4cd525d5d15c8b344f782"
+      "bytes": 55288,
+      "sha256": "6f2843dceef440f8cb0fcd978e18ed678792963497eceec482d55e7996dc9fe3"
     },
     "src/client/display/source_viewport.inc": {
-      "bytes": 804,
-      "sha256": "88280bc9a7f216c7a4326c46b51ea651c8add716d22d22ed68979d202504feda"
+      "bytes": 3343,
+      "sha256": "9789224479e72886f03a4e81566b791bf543da458ebc807536f876d10ebe6868"
     },
     "src/client/display/staged.h": {
       "bytes": 6053,
@@ -2750,8 +2750,8 @@
       "sha256": "a282a31619d6a632aaec9c97496d291dea68890edc471a31d5a03ce5bab7715e"
     },
     "src/client/display/startup_surface.inc": {
-      "bytes": 6166,
-      "sha256": "b86982e59f6c74557a7f9256314316b850106982bfc2cc25b215793640827c0e"
+      "bytes": 7540,
+      "sha256": "f89a8eec3957fcfa24c8c8950def6f3eb4aa36f47b792bda460293fed5485556"
     },
     "src/client/display/texture_leases.inc": {
       "bytes": 6599,
@@ -5330,8 +5330,8 @@
       "sha256": "9a5140f25e0f95893b95121a02128ae56cb954224a1424a3859e2771b04a0626"
     },
     "tests/client/display/test_source_gl_setup.c": {
-      "bytes": 24628,
-      "sha256": "5b70003297300d2ec0c54dd673b66e03c85fb34f33640c1903f3a3ebaed7e1ec"
+      "bytes": 26241,
+      "sha256": "511f8b000404321e52b906dd624fa031c240352b49a4882d522f617559be766f"
     },
     "tests/client/gui/main_menu_probe.c": {
       "bytes": 18471,
@@ -5454,8 +5454,8 @@
       "sha256": "2947ecf53aa4ca9d66f19bc4a6330be7c4037441725c1503873fe24979bb573a"
     },
     "tests/client/render_engine/test_source_fp.c": {
-      "bytes": 11180,
-      "sha256": "cad03cce91e61fd4aff0163f5d5220bbadca7b533dd1ef7da45065311a05df93"
+      "bytes": 11917,
+      "sha256": "4fdfebafdfb1194bd71a166bd434ff24bad5ecc9ead440e39eba0395e96bcbf0"
     },
     "tests/client/render_engine/test_source_resources.c": {
       "bytes": 12780,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 213179,
-      "sha256": "52f1521d128857b0436479be0466768f1edacf864badd69285824b08b3c1b4da"
+      "bytes": 214820,
+      "sha256": "c3050dd049196b3c8a1b2d58be009ff859431a52cb05844f0d653068bd5deb12"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 318954,
-      "sha256": "97597a3436c0d0208380ff1c1628964503a070236bac55189e66a87d68509e40"
+      "bytes": 319122,
+      "sha256": "814494295abd09a985726c4c1c1ccf86f73d090354960bb670c4fc7a6e6cd82c"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6571,7 +6571,7 @@
     },
     "tests/reference/client/render_engine/provenance.json": {
       "bytes": 3575,
-      "sha256": "7f0e0783130a98771b264aef4c633b411f8e5e6399cd48c8ab606ffd67569fcc"
+      "sha256": "7eba2852c955ebee1d8dba78047681194cdc42a871e9ba76c386de168623fde3"
     },
     "tests/reference/client/render_engine/source-pins.json": {
       "bytes": 19198,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 209185,
-      "sha256": "ba85065477133c1d92e4a1080921aa62ef7c58c252363dd7c3ecd954424f9289"
+      "bytes": 210826,
+      "sha256": "b60c06140e42c2c1df9c1998e586a2ef8a714a05a80f462ceee9d77c59173ca4"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9774,8 +9774,8 @@
       "sha256": "bb9ad86429c180843240dc237bdda8791e1a72beb8801d9e315383a82280437d"
     },
     "src/client/display/source_texture_update.inc": {
-      "bytes": 3422,
-      "sha256": "212721c7613acb948d8874a1cfc66ee76fd39af31f757f416e31c40bee9e3af3"
+      "bytes": 3662,
+      "sha256": "cb47585b105dc4bf31825a96cd2681ff4082ede7fba2e980cf1ad386641991d3"
     },
     "src/client/gui/source_screen_drawing.c": {
       "bytes": 7478,
@@ -9874,8 +9874,8 @@
       "sha256": "5d2aec398657d1105e5dbeb82d49d5b58f9ab22c97bd9014db72062c702d9e5b"
     },
     "src/client/display/source_world_list_surface.inc": {
-      "bytes": 1712,
-      "sha256": "d7d295a61cc4177ee26f6de4cd2cb31e0c21c80ede8c05543424014f7bf6a665"
+      "bytes": 2383,
+      "sha256": "610682740237465ff495b5f2e339aea2c77a81aac38e0754892922a2fcbe7f02"
     },
     "src/client/gui/source_screen_transitions.c": {
       "bytes": 28090,
@@ -10198,8 +10198,8 @@
       "sha256": "78e79c666fe0e9d5c0cba9afe222d4b433b249378e6fa0d1de838e3088d4df4d"
     },
     "src/client/world/source_chunk_renderer.c": {
-      "bytes": 16488,
-      "sha256": "11b716c4b98542c43ac79289af977259dff88c69543571ea98ba61745fe4c54a"
+      "bytes": 16483,
+      "sha256": "6ac6e3229f9a2a62b95dcb21407f07cb3686e493d09a074923d162ccfc84814c"
     },
     "src/client/world/source_chunk_renderer_internal.h": {
       "bytes": 2387,
@@ -10214,8 +10214,8 @@
       "sha256": "15f5d70977b7fd7c60452d537742bd7d441bc98d15c5f9b244de15dd767079fc"
     },
     "tests/client/display/test_source_lists.c": {
-      "bytes": 26996,
-      "sha256": "f32b13bf214117055c3313a99b8301179fecbadd77c89477089db1bfb7159a06"
+      "bytes": 27675,
+      "sha256": "b127d24aa0d06ac91e72f0a57633f125458d4d9c3612872137f0469827257067"
     },
     "tests/client/render_engine/test_image_buffer.c": {
       "bytes": 17961,
@@ -10838,8 +10838,8 @@
       "sha256": "677b47cd876d6038a191e97e2ae6befa090abc2d6cc511a45b4c77bf80130af5"
     },
     "src/client/display/world_frame_surface.inc": {
-      "bytes": 4193,
-      "sha256": "0f9d48d6b1c8a97562a5a8dd71f7a07f5e050d3850e1143ad1851e16ac285910"
+      "bytes": 6259,
+      "sha256": "f47e19d2d2777a94c8f5e60fbbd3a1ad3818d27fa80426c2c96f235684f3f105"
     },
     "src/client/gui/source_pause_drawing.c": {
       "bytes": 11033,
@@ -11070,8 +11070,8 @@
       "sha256": "823246476dd1faee8f41dff68d10c5edff5d4be5bbbba47cb1529bd62aeffb42"
     },
     "src/client/display/camera_surface.inc": {
-      "bytes": 5324,
-      "sha256": "2e424d17c674599acc5c29ee22955d8531c6a1d5fc10b81b28837809b6345a95"
+      "bytes": 5690,
+      "sha256": "d58c1c394bb9c41c22768fa0d1b255fcb42485c66a334684e482cc8d8bf72590"
     },
     "src/client/render_engine/ge_float.c": {
       "bytes": 4941,
@@ -11286,12 +11286,12 @@
       "sha256": "815dae21d51be8825ed35ab22d714bf74a5379eff04895716ed0df729039f942"
     },
     "src/client/display/fog_surface.h": {
-      "bytes": 5680,
-      "sha256": "f81be2b0c04da93ee6304e5be77747046facd288529a9961463f6986b7562a42"
+      "bytes": 6262,
+      "sha256": "8574e7bc548ff752b3deef8becfb6cda7bf2652d09b9d06abc1996ec7ca2764c"
     },
     "src/client/display/fog_surface.inc": {
-      "bytes": 21148,
-      "sha256": "b44aa53b86c564252c0c3fe9f7eff3dd72e82b89678b16fe756ab88c51d4c374"
+      "bytes": 28202,
+      "sha256": "d3638086b5dbbf6272644d5a4239a8c79d8001b24f76e417fdfe6c6bd28ae070"
     },
     "src/client/world/entity_renderer/renderer_fog_state.c": {
       "bytes": 18585,
@@ -11306,8 +11306,8 @@
       "sha256": "4d007a0c5660ccd6dabe0f46c26d8498507fb7e3274fac6a2cc3b632a0c16ade"
     },
     "src/client/world/render_global_sky_draw.c": {
-      "bytes": 30155,
-      "sha256": "969ba9e561316b9e53998ce31a91348861dfe967cc42b6c8ff5ea2721de2f516"
+      "bytes": 30124,
+      "sha256": "c30954e5e21952a4faf05ccb978907703b93a71548d89c7660944b06ba1164ed"
     },
     "src/client/world/render_global_sky_internal.h": {
       "bytes": 808,
@@ -12158,8 +12158,8 @@
       "sha256": "b5f2792906ee2ec863e013efbbbde542c110dec125c2ff76a1477c5841b9f342"
     },
     "scripts/development/report_terrain_tests.py": {
-      "bytes": 3850,
-      "sha256": "d80da021d87c59bafee08907e7abf94b52deec81623aa1318b16b2a6f39050be"
+      "bytes": 9311,
+      "sha256": "1d8b926a73ecc907d66084c9580c46150c9bb5a6e7940732b027a01f9b264155"
     },
     "tests/tools/client/test_submit_capability.py": {
       "bytes": 6390,
@@ -12178,8 +12178,8 @@
       "sha256": "38c77b611c4afd6d22f25dc5adc77ea218ba13d78eb8c5f3be4723000951f273"
     },
     "tests/client/render_engine/test_lighting_enable.c": {
-      "bytes": 34074,
-      "sha256": "09f0435b5ab18e9012bd9b97f8f812a967d59fdb42c2efb8a4872393a9a9cb32"
+      "bytes": 39393,
+      "sha256": "fcd23331b59e9b825fc1849fe9202abe64c9d78c50852043e5a64f1f4b000e22"
     },
     "tests/reference/client/lighting_enable/LightingObservation.java": {
       "bytes": 12465,
@@ -12210,12 +12210,12 @@
       "sha256": "edbfbcd1c17af7eccafcea70f1670a2c66e59247079769873d6c4db0995357b2"
     },
     "cmake/tests/client_lighting_raster.cmake": {
-      "bytes": 4123,
-      "sha256": "0a7ee8e54ec55f14d523e088be4a95d19877df002a230b994d1f2276dbb089e6"
+      "bytes": 5108,
+      "sha256": "c3e3a03848d7ea8059527a9275541e63904aefdd845d45412f09497bd7da455b"
     },
     "docs/client/lighting-raster.md": {
-      "bytes": 5951,
-      "sha256": "3a223810e2e4e86d2c4c78055382ea3d00364c103f86366af2f2f7a19af77d42"
+      "bytes": 12653,
+      "sha256": "1d6872605ce67fd8e44d24532335a598ef312762828bab3ff1d888c737ab49bc"
     },
     "src/client/display/source_lighting_draw.inc": {
       "bytes": 9764,
@@ -12234,8 +12234,8 @@
       "sha256": "00eec8d86c8edfd5f2c99b9c26ed1c561a42ef4549d1b3a734c8ae3a865e0867"
     },
     "tests/client/display/test_lighting_raster.c": {
-      "bytes": 53984,
-      "sha256": "be39e1863bbc7a0e04e2df84a68830190764524c07aca952c1e4380de14859ad"
+      "bytes": 66722,
+      "sha256": "195ca8c8e41b482f3b8695750a909e33cc86b6765a8c6d77785f9afb33dc51fd"
     },
     "tests/client/render_engine/test_nw_normals.c": {
       "bytes": 10068,
@@ -12262,8 +12262,8 @@
       "sha256": "f2e97431cdb3175d09187914493027d7df9017c18b7364a98891e81e7af7f848"
     },
     "tests/reference/client/lighting_raster/README.md": {
-      "bytes": 7177,
-      "sha256": "d85babd6e20159218ead25a9ae3c3c63b16139a127d87ffe609a27b9ce7cbe30"
+      "bytes": 15394,
+      "sha256": "a8d5fa5daf0a82c512194dd6c3ebcaae665999eb9db3d9d4408dbfad50e0daca"
     },
     "tests/reference/client/lighting_raster/RasterExtendedObservation.java": {
       "bytes": 8559,
@@ -12330,8 +12330,8 @@
       "sha256": "d3066de5866083bd9079ea3e209e56d851bea73040b9d72f2b32de9abdf69fdd"
     },
     "tests/reference/client/lighting_raster/list-state.json": {
-      "bytes": 16828,
-      "sha256": "1cb19f3a6147898282a2eafb38b12eba7827c3f5e9aa1420e157d3623c4133d7"
+      "bytes": 16819,
+      "sha256": "f331049d30b7beff47de5e510d50180ea09dd420457dcce1c25f8aaa40b632a6"
     },
     "tests/reference/client/lighting_raster/material.json": {
       "bytes": 6305,
@@ -12346,28 +12346,28 @@
       "sha256": "208b08e027c8b31a7429a72e9f715a6a89bb62cd6dc2da499cb7eb3c80562ee2"
     },
     "tests/reference/client/lighting_raster/run_array_normals.py": {
-      "bytes": 5682,
-      "sha256": "fc17c77546f1347dd6cbf6799ee812425ef373f22819149be5841aee5e06276f"
+      "bytes": 5989,
+      "sha256": "add4027c227f844d384c1a75d6ec4633bcb16f4eb830774a6cc6b1c22d287573"
     },
     "tests/reference/client/lighting_raster/run_converted.py": {
-      "bytes": 6421,
-      "sha256": "a269955b24c712820934f7bdb139127bf0c75b4fc8530090ecc8243e637adf8c"
+      "bytes": 6862,
+      "sha256": "1a8d465022d6186586de7ac8a4d7e340e89c45b1e5aff0450087eaa0c0b3c5cb"
     },
     "tests/reference/client/lighting_raster/run_extended.py": {
-      "bytes": 6410,
-      "sha256": "39ce70de4c057f106fde6eeea87c00d5894776954732127b090ba39dbdc37e68"
+      "bytes": 6852,
+      "sha256": "48878bb3fd4a2993e896ae4a3b905e5fde54e4039b1690a5aa57d0f5b86972ca"
     },
     "tests/reference/client/lighting_raster/run_list_state.py": {
-      "bytes": 5686,
-      "sha256": "594572efc01ed1ee00c81b934efca7b7c3a2a1ffeb87c1850ce875b1ca1cca67"
+      "bytes": 6298,
+      "sha256": "6e189e3becce894a1bbf1fb305fb28de9af497b531887da6d16099d7749e5859"
     },
     "tests/reference/client/lighting_raster/run_material.py": {
-      "bytes": 2713,
-      "sha256": "6c095aaa424f103e48e2b06726af34ab369007a385d2e34c254645d44ef8960d"
+      "bytes": 3047,
+      "sha256": "550e4889d06c20d0f2174fb3a68c33cf873efe4ba5b15eb0d92090c521ab5f3a"
     },
     "tests/reference/client/lighting_raster/run_native.py": {
-      "bytes": 6110,
-      "sha256": "3b1eef58d03899892394fed92d4a7763fc88e42a8df15830ae3d6cb4f97bdd0f"
+      "bytes": 6569,
+      "sha256": "0cc72d411eed309593c8e4e8c79b1adc300e9ce0d7dacd8a73af235d640677a3"
     },
     "tests/reference/client/lighting_raster/source-pins.json": {
       "bytes": 3189,
@@ -12400,6 +12400,122 @@
     "tests/reference/client/nw_normals/source-pins.json": {
       "bytes": 2742,
       "sha256": "c9d337cb36d581890da18be2e185815fd4d50c799a00468c678531495d6386d4"
+    },
+    "src/client/display/source_material_staging.h": {
+      "bytes": 18992,
+      "sha256": "95483ae5f5e1dc7408c72b4f3d4934ecc6855c789150dc633e748292f5280957"
+    },
+    "tests/reference/client/lighting_raster/ColorConversionObservation.java": {
+      "bytes": 16460,
+      "sha256": "68f39aed447b832217101c84af85f6a667e23e1206c322966ff0470789c93515"
+    },
+    "tests/reference/client/lighting_raster/ControlledPrecisionObservation.java": {
+      "bytes": 33305,
+      "sha256": "c3a0a7f222393c817266debd62627b8fda7418a4a3f42d354eced6806d636b98"
+    },
+    "tests/reference/client/lighting_raster/MaterialSequenceObservation.java": {
+      "bytes": 7464,
+      "sha256": "cd1b7558613ca2ffb6f6dcfefc7c9a4bfd01d179cb803f8c3c2d4ba94728a14b"
+    },
+    "tests/reference/client/lighting_raster/capture_color_conversion.py": {
+      "bytes": 12674,
+      "sha256": "b2962e16c1d9998410493a4f6a1390730ad9cb2972f9ac39d3241e4dc4d8f601"
+    },
+    "tests/reference/client/lighting_raster/capture_driver_precision.py": {
+      "bytes": 13447,
+      "sha256": "4eab499ef6a78a9e781d122321829387a34520c40b2cd384d9faca9f7e8133f7"
+    },
+    "tests/reference/client/lighting_raster/capture_material_sequence.py": {
+      "bytes": 17403,
+      "sha256": "53ac441804111c470c3104a212f6d7c3944fa323e2d949371890cb20261fb4b5"
+    },
+    "tests/reference/client/lighting_raster/capture_mesa.py": {
+      "bytes": 19604,
+      "sha256": "c2489641f2c92af26ecb19ee45f2cd3d38aaef799d7a6fc6787f7c33ad77c30d"
+    },
+    "tests/reference/client/lighting_raster/capture_mesa_attributes.py": {
+      "bytes": 15258,
+      "sha256": "6fd7c60d6a7b250bbad6726db42d54f8ad6dcc00a253456d358c3e45bc27cc5d"
+    },
+    "tests/reference/client/lighting_raster/color-conversion.json": {
+      "bytes": 667787,
+      "sha256": "3b8078d30bf57f77f8e5bda793e856c974f16d2972f18384e514b78005f2763c"
+    },
+    "tests/reference/client/lighting_raster/color-inputs.json": {
+      "bytes": 74420,
+      "sha256": "2336fd6c22febd29098bbe996301f237f7794cdcba10115af10fb52cd37a426b"
+    },
+    "tests/reference/client/lighting_raster/driver-precision-observations.json": {
+      "bytes": 27985,
+      "sha256": "d8b00935b296570e58e9c866c3124d94b63d901720e23c8e987cd8aa22269562"
+    },
+    "tests/reference/client/lighting_raster/material-sequences.json": {
+      "bytes": 37304,
+      "sha256": "a8ed58fee26019f2199a5470c08305a94e0376e5326330ed561c5d01f3399b29"
+    },
+    "tests/reference/client/lighting_raster/mesa/array-normals.json": {
+      "bytes": 29716,
+      "sha256": "8b49fb70f12fa48cb7f1a9684d0fe1c5a52572f1311fa29364b8ebb90eeab99f"
+    },
+    "tests/reference/client/lighting_raster/mesa/color-conversion.json": {
+      "bytes": 667809,
+      "sha256": "6d68ddb2efe75fd4df362bcaa95698e3389c4afe049fbb8f857317222c5e9ee4"
+    },
+    "tests/reference/client/lighting_raster/mesa/color-inputs.json": {
+      "bytes": 74420,
+      "sha256": "b0377aff260b0e21e43d9409bf7e611e4de97fdd5a78ff441f39cfedf2fb5f04"
+    },
+    "tests/reference/client/lighting_raster/mesa/converted-finite.json": {
+      "bytes": 66754,
+      "sha256": "13f26c9835c4e0c1df092a4191fa249bd6ae8466bd5dd39c4ba87c6558ef3e20"
+    },
+    "tests/reference/client/lighting_raster/mesa/extended-finite.json": {
+      "bytes": 592909,
+      "sha256": "67705ea370e01de1579f5d3aff20e5a618ba10470bb4a6f5de1cd208243d655c"
+    },
+    "tests/reference/client/lighting_raster/mesa/finite.json": {
+      "bytes": 1282271,
+      "sha256": "d1da0a52750e642982d8e421ac0dddf2f7ba3fff4d1366371d519ead0b2956f1"
+    },
+    "tests/reference/client/lighting_raster/mesa/list-state.json": {
+      "bytes": 16505,
+      "sha256": "8d6fd42709569040d143c9f41e312894c9c6c9d2dc8c87ba745e20814db1f169"
+    },
+    "tests/reference/client/lighting_raster/mesa/material-sequences.json": {
+      "bytes": 37304,
+      "sha256": "b07be867453451cccc0e35f67ce524bf990172223d173de494a7b078d132280d"
+    },
+    "tests/reference/client/lighting_raster/mesa/material.json": {
+      "bytes": 6465,
+      "sha256": "ffd4556a6a86a4a9e5ad1734c987303aa1aebfdc9df7a322d98ac930b80995c8"
+    },
+    "tests/reference/client/lighting_raster/mesa/normal-array.json": {
+      "bytes": 29731,
+      "sha256": "eada43efc50ebd83c77474e5ce33fe18de5c1ae923d1e5f8c7ec171d14be66a4"
+    },
+    "tests/reference/client/lighting_raster/mesa/normal-list.json": {
+      "bytes": 157767,
+      "sha256": "df20e275d2efc269670050f0b3890b3e96facf3e068bb5c87d5677c4f0861b88"
+    },
+    "tests/reference/client/lighting_raster/mesa/provenance.json": {
+      "bytes": 10678,
+      "sha256": "eba9e836829ee150d46699adbf90308ecb6b46b6a36a696934bb6f67bb705f63"
+    },
+    "tests/reference/client/lighting_raster/reference-profiles.json": {
+      "bytes": 6409,
+      "sha256": "e17d12014383cc47a37a0c8f1dbecbd0eb97d4257d28f04c64b2056ab3928b2b"
+    },
+    "tests/reference/client/lighting_raster/reference_profiles.py": {
+      "bytes": 4654,
+      "sha256": "c9fc42206f0210501e24c337da91623e0f2e61d10f4409775a1ff5f2288774e7"
+    },
+    "tests/reference/client/lighting_raster/run_color_inputs.py": {
+      "bytes": 6459,
+      "sha256": "372bef8a028084573394295648166cb88b1c2b8f0929952dbf0774736b639856"
+    },
+    "tests/reference/client/lighting_raster/run_material_sequences.py": {
+      "bytes": 7706,
+      "sha256": "84e367863df760ee43523bfa24d8a0b516f65f29142b12a9c3b320fb565bc00c"
     }
   },
   "self_metadata_excluded": true,

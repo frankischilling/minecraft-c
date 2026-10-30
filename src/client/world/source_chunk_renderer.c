@@ -138,7 +138,7 @@ bool mc_source_dk_call_bounds(mc_client_source_dk *o, mc_client_render_global_er
         return false;
     const int32_t id = mc_java_i32_add(o->fields.C, 2);
     o->source_pc = 6;
-    if (!mc_client_display_lists_call(o->owner->display, &id, 1, &e->display))
+    if (!mc_client_display_list_call(o->owner->display, id, &e->display))
         return fail(o, e,
                     e->display.status == MC_CLIENT_DISPLAY_BUSY ? MC_CLIENT_RENDER_GLOBAL_BUSY
                     : e->display.status == MC_CLIENT_DISPLAY_UNSUPPORTED_FP
