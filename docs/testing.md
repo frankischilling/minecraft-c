@@ -50,6 +50,12 @@ The [hosted compiler matrix](https://github.com/frankischilling/minecraft-c/acti
 must be checked for the exact revision. The state-only results below retain
 their earlier source scope.
 
+The separate TG CPU/device regressions pass two CTests on each platform:
+Windows in 0.85 seconds and Linux ASan/UBSan in 1.80 seconds. They match all
+78 CPU and 17 original device rows. Their native observers query current color
+in the original order, including after a failed-list prefix; query effects do
+not replace the matrix, cursor or source-failure assertions.
+
 ## Standard lighting state qualification
 
 The [standard-lighting owner](client/standard-lighting.md) passes three Windows

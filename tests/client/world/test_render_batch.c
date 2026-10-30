@@ -1,5 +1,7 @@
 #include "client/application_state.h"
 #include "client/display/camera_surface.h"
+#include "client/display/fog_surface.h"
+#include "client/display/gl_internal.h"
 #include "client/render_engine/internal.h"
 #include "client/render_engine/textures.h"
 #include "client/world/render_batch_internal.h"
@@ -58,7 +60,15 @@ static bool row(mc_client_render_global *n, mc_client_render_batch *b, const cha
     if (gl) {
         mc_client_source_draw_state color;
         float projection[16], modelview[16];
+        /* BatchObservation.row queries CURRENT_COLOR before MODELVIEW. This
+         * query is part of the original observation order, not a draw reset. */
+        float queried_color[5] = {0, 0, 0, 0, 19};
+        mc_client_display_error error;
+        CHECK(mc_client_display_source_current_attribute(n->display, GL_CURRENT_COLOR,
+                                                         queried_color, 5, &error));
         CHECK(mc_client_display_source_draw_inspect(n->display, &color) && color.color_known);
+        CHECK(memcmp(color.color, queried_color, sizeof(color.color)) == 0 &&
+              queried_color[4] == 19);
         CHECK(mc_client_display_camera_matrices_inspect(n->display, projection, modelview));
         for (size_t i = 0; i < 4; ++i)
             CHECK(printf(" %08" PRIx32, bits(color.color[i])) >= 0);
@@ -271,11 +281,19 @@ static bool device(mc_client_render_global *n, mc_client_source_dk *d) {
           strcmp(e.source_class, "tg") == 0 && strcmp(e.source_descriptor, "()V") == 0 &&
           e.status == MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY && e.native_policy);
     float projection[16], matrix[16];
-    mc_client_source_draw_state color;
     CHECK(mc_client_display_camera_matrices_inspect(n->display, projection, matrix) &&
-          matrix[12] == 3.25f && matrix[13] == -1.75f && matrix[14] == 1.875f &&
-          mc_client_display_source_draw_inspect(n->display, &color) && color.color_known &&
-          color.color[0] == .125f && color.color[3] == .75f);
+          matrix[12] == 3.25f && matrix[13] == -1.75f && matrix[14] == 1.875f);
+    /* Observe the completed setter only after the failed TG prefix. Mesa may
+     * retain this Color command pending; passive draw inspection cannot query it. */
+    float current_color[5] = {0, 0, 0, 0, 19};
+    const float expected_color[4] = {.125f, .25f, .5f, .75f};
+    CHECK(mc_client_display_source_current_attribute(n->display, GL_CURRENT_COLOR, current_color, 5,
+                                                     &de));
+    CHECK(memcmp(current_color, expected_color, sizeof(expected_color)) == 0 &&
+          current_color[4] == 19);
+    mc_client_source_draw_state color;
+    CHECK(mc_client_display_source_draw_inspect(n->display, &color) && color.color_known &&
+          memcmp(color.color, expected_color, sizeof(expected_color)) == 0);
     CHECK(mc_client_display_check_gl(n->display, "whole TG controls", &de));
     return true;
 }

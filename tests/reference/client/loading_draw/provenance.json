@@ -6822,8 +6822,8 @@
       "sha256": "406319e5bcfc8c41579155b0ccd1a28c0eb33815f78dd2bedb8d800b8b97349d"
     },
     "tests/client/world/test_render_batch.c": {
-      "bytes": 17618,
-      "sha256": "bf4d754536c2714c8e1726822098eea82a6514a753ca8553b9f55265523808fa"
+      "bytes": 18798,
+      "sha256": "db941de4ae9505b493f49f69b0d31c41135157af0cbd616e1e79bf2bdd38155c"
     },
     "tests/client/world/test_render_global_occlusion.c": {
       "bytes": 7353,

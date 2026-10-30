@@ -31,6 +31,11 @@ prepared modelview unchanged; the direct bounds-list translation uses exact
 binary fractions. They do not establish arbitrary native-driver matrix
 arithmetic equality.
 
+Each device observation queries current color before reading modelview, in the
+same order as `BatchObservation.row`. Native replay uses the explicit source
+getter at that point. Passive draw-state inspection alone would miss Mesa's
+pending Color commands. The getter preserves unused output-buffer words.
+
 Notably, auto-draw does not clear the source buffer. Its first draw flips and
 sets i=true; GL reads position..limit without advancing either. A later append
 overwrites the first cell, while a later draw reads only the remaining suffix.
@@ -55,11 +60,13 @@ buffer is an explicitly prepared input from real Ge.d, owned by the same arena.
 
 Additional native controls verify strict-FP refusal at configure31 only after
 h, clear and a/b/c stores. A terminal undefined-list control fails at TG78
-after a successful Push, TG translation and first committed list. It retains
+after a successful Push, TG translation and first defined list. It retains
 the transformed matrix, first-list color, flipped buffer, i=true and native
 matrix_pushed evidence, and records the nested append20 caller. It does not
 execute the source Pop or roll back those effects. Undefined GL names are an
 explicit native frontier; this is not relabeled as an original Java exception.
+Only after those failure-prefix checks does the diagnostic query the retained
+color. It checks all four components and then the committed passive ledger.
 Final graph/context disposal consumes native storage without crediting source
 cleanup. The new TG diagnostic source_pc/matrix_pushed fields are native arena
 overhead, rather than source fields or an unchanged source allocation charge.
