@@ -1,8 +1,10 @@
 #include "bootstrap.h"
 #include "../application_state.h"
 #include "../render_engine/image_download.h"
+#include "../render_engine/nw.h"
 #include "../render_engine/textures.h"
 #include "../startup/application_construction.h"
+#include "../startup/application_services.h"
 #include "../startup/application_startup_internal.h"
 #include "../startup/application_startup_menu.h"
 #include "mc/block/registry/runtime.h"
@@ -23,6 +25,9 @@ struct mc_client_bootstrap {
     mc_materials *materials;
     mc_resource_files *imported_files, *class_files;
     mc_client_render_engine_classes *graphics;
+    mc_java_system_output *nw_output;
+    mc_java_print_error nw_output_error;
+    mc_client_graphics_error nw_output_graphics;
     mc_math_classes *math;
     const mc_math_trig *trig;
     mc_math_class_error math_error;
@@ -364,6 +369,14 @@ mc_client_bootstrap_status mc_client_bootstrap_open(const mc_client_application_
         startup_failure(&context->startup_error);
         return MC_CLIENT_BOOTSTRAP_OWNER_FAILED;
     }
+    const mc_java_print_status output_status = mc_client_application_classes_output_service(
+        context->app->source_namespace, &context->nw_output, &context->nw_output_error);
+    if (output_status != MC_JAVA_PRINT_OK)
+        return owner_failure("Tessellator System-output association", (int)output_status);
+    if (!mc_client_nw_bind_system_output(context->graphics, context->nw_output,
+                                         &context->nw_output_graphics))
+        return owner_failure(text(context->nw_output_graphics.operation),
+                             (int)context->nw_output_graphics.status);
     return MC_CLIENT_BOOTSTRAP_OK;
 }
 
@@ -546,11 +559,20 @@ mc_client_bootstrap_status mc_client_bootstrap_close(mc_client_bootstrap **slot)
                     MC_CLIENT_FRUSTUM_OK, MC_CLIENT_FRUSTUM_BUSY, "Frustum namespace retirement");
     }
     if (context->graphics != NULL) {
+        /* A different counted graphics owner may outlive this bootstrap hold.
+         * Remove its borrowed System association before retiring our output. */
+        if (!mc_client_nw_bind_system_output(context->graphics, NULL, &context->nw_output_graphics))
+            return context->nw_output_graphics.status == MC_CLIENT_GRAPHICS_BUSY
+                       ? MC_CLIENT_BOOTSTRAP_BUSY
+                       : owner_failure("Tessellator System-output unbinding",
+                                       (int)context->nw_output_graphics.status);
         CLOSE_OWNER(mc_client_render_engine_classes_release(context->graphics),
                     MC_CLIENT_RENDER_ENGINE_OK, MC_CLIENT_RENDER_ENGINE_BUSY,
                     "RenderEngine namespace retirement");
         context->graphics = NULL;
     }
+    CLOSE_OWNER(mc_java_system_output_release(&context->nw_output, &context->nw_output_error),
+                MC_JAVA_PRINT_OK, MC_JAVA_PRINT_BUSY, "Tessellator System-output retirement");
     CLOSE_OWNER(mc_sound_manager_shared_retire(&constructor->sound_shared, NULL), MC_SOUND_OK,
                 MC_SOUND_BUSY, "shared SoundManager namespace retirement");
     CLOSE_OWNER(mc_sound_backend_retire(&constructor->sound_backend, NULL), MC_SOUND_BACKEND_OK,

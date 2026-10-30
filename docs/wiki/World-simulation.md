@@ -1,5 +1,10 @@
 # World simulation
 
+The same Display now handles [lit source geometry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md), including actual NW
+normal packing and compiled-list inheritance. Its finite raster qualification
+is separate from World simulation and the complete frame. Entity/TileEntity
+drawing510 remains the next reached rendering dependency.
+
 The [ordered client scheduler](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/ticking.md)
 now connects weather, spawning prefixes, provider maintenance, sky callbacks,
 time/autosave and scheduled drain in reached source order. Eleven original

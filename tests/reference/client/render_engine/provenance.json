@@ -22,8 +22,8 @@
       "sha256": "b4f850b175e4a1032a1812f78d7b2acf8e13277453401db249e76f49bc80eb66"
     },
     "src/client/render_engine/internal.h": {
-      "bytes": 4818,
-      "sha256": "97a53fca2f523a0cc64f87c25686f28a904dbddc13a16c11cd5d4c505101646f"
+      "bytes": 4905,
+      "sha256": "70fe12b516bef1c1578e53841c75ff7bdcc098fdd484d12e725bc56d292c53ab"
     },
     "src/client/render_engine/owner.c": {
       "bytes": 29233,

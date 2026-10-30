@@ -1,5 +1,44 @@
 # Test scope and reproduction
 
+## Vertex lighting and normal qualification
+
+Fifteen selected Windows MSVC Debug CTests pass in 46.78 seconds, with zero
+failures or skips. Nine production/test targets build. Strict supported-device
+terrain replay retains all 35 original rows, source U retains all 86 state rows,
+and the loaded-World regression passes in 12.99 seconds with all 72 focus
+histories and unchanged save/resource bytes. The actual rebuilt executable also
+captures two normal menu frames from imported assets and exits cleanly, with
+an isolated game directory and no JVM/JAR runtime.
+
+The [source renderer](client/lighting-raster.md) has three distinct Windows
+pixel cohorts: 38 initial profiles with 39 frames, 18 extended profiles with
+18 frames, and two actual NW converted-quad profiles with two frames. Replay
+compares every byte of each 64 by 64 RGBA8 frame and every separate state row
+exactly. Material tracking adds 16 exact rows. The CPU NW comparison adds 30
+original state/vertex rows, including nonfinite Java conversions and untouched
+duplicate normal words.
+
+The original NVIDIA driver probes distinguish direct-array normal conversion
+from compiled-list conversion for all 256 bytes. Native list-state replay uses
+the actual captured feedback values for all 256 last normals, plus six original
+current-normal/color/material rows. Expected bits are projected from observed
+data rather than calculated from the native formula. These probes do not supply
+World-frame or gameplay evidence. The [fixture guide](../tests/reference/client/lighting_raster/README.md)
+records reproduction, input hashes and the corrected scope of the historical
+empty-NW controls.
+Direct-array native observation also reads the actual bound GPU VBO through its
+queried attribute layout. All 256 values, three submitted vertices and 2,304
+normal components match the captured legacy inputs exactly. Neither decoder
+check supplies whole-frame evidence.
+
+Additional native controls require rejection of used nonfinite inputs and
+unsupported numerical ranges before submission, preserve unknown current
+normal state after direct-array drawing, and restore known state through actual
+setters. Borrowed System-output bindings are removed before their owner is
+released, including when a counted graphics owner survives resource retirement.
+Hosted qualification of this renderer extension is pending. The state-only
+results below retain their earlier source scope.
+
 ## Standard lighting state qualification
 
 The [standard-lighting owner](client/standard-lighting.md) passes three Windows
@@ -7,8 +46,10 @@ MSVC Debug CTests in 2.05 seconds, with zero failures or skips. Its replay match
 all 86 original state/parameter rows across five fresh profiles. The native CPU
 and device controls separately check first-child failure, buffer admission,
 strict FP handling, compilation rejection, sticky GL errors and MathHelper
-failure prefixes. The native lit-batch control requires the current explicit
-unsupported renderer result; it supplies no lighting pixels.
+failure prefixes. The native lit-batch control now requires successful source
+drawing, normal-knowledge invalidation/restoration and numerical admission.
+The separate [raster controls](../tests/reference/client/lighting_raster/README.md)
+compare lighting pixels and material state.
 
 The loaded-World test passes in 18.59 seconds and reaches `px.a(FJ)V:510` after
 U.b496 and the actual pooled eye getter504 return. It preserves saves/resources

@@ -8,8 +8,8 @@ has SHA-256 `6ffa6fb8004e06b1009e044efbbdb37c8770936f94d3d237e48a9744537d3fea`.
 Native Windows MSVC Debug replay matches all 86 rows exactly. The three focused
 lighting CTests pass in 2.05 seconds, with zero failures or skips. Hosted source
 0c0cc5a passes all four jobs and 1,520 tests; both Linux sanitizer profiles also
-match all 86 rows. These are state and parameter results; lit drawing
-remains an explicit unsupported profile.
+match all 86 rows. These are state and parameter results; lit drawing has its
+separate [raster controls](../lighting_raster/README.md).
 
 Five fresh JVM profiles cover:
 

@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 331903,
-      "sha256": "b57cba2682261c30936c2602e438820e16d827e550f8d4bfd13bda108c39c66c"
+      "bytes": 332041,
+      "sha256": "271e255f81918b8a7eb7e1da751fd22565656c7ffe7d71be29313d9864bab609"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -30,8 +30,8 @@
       "sha256": "c7e2191bf446d08265569f77b4ef8c21bed969109b9682834fa902bf7651e5d1"
     },
     "README.md": {
-      "bytes": 2799,
-      "sha256": "e865041c6c23c36c5b9fcf4dc2e1875e811ac1e00c57b1833602795274a48200"
+      "bytes": 2909,
+      "sha256": "dc5845092633b229c2054e0d552873b6a6135698257b5637beadf462662a8fc6"
     },
     "cmake/client_controllers.cmake": {
       "bytes": 1093,
@@ -466,8 +466,8 @@
       "sha256": "93226a41c97403c4e3e61a23f633b553fc6c96c3058e44d362bf01409dfdaff9"
     },
     "docs/parity.md": {
-      "bytes": 116052,
-      "sha256": "a7fa417c88b2325e25379938e5ef53e040c90d4e198b6226f5d5b7a1b6b60222"
+      "bytes": 116961,
+      "sha256": "27863b765054d56fd001ac41f6e6755e367efd9dc489214382ed90c1a98a81d8"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 33556,
-      "sha256": "18b0f707045c022bf45d2a037bd2181bb7311e39896f5e2be756edbab5431b69"
+      "bytes": 34072,
+      "sha256": "b31c961c9c4aca56c0279d91a57577f0313dd5a516d42e1fe3a443d904b4db14"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,36 +826,36 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 287008,
-      "sha256": "e417eb1e7a1d3d27de284a640f374cd487d53237def88f6ef2381a6755685805"
+      "bytes": 289580,
+      "sha256": "715b9f51ece93666eb28f9186325eddc2fb8459f6c8792ba4b9dbd6919b076e1"
     },
     "docs/wiki/Architecture.md": {
-      "bytes": 18184,
-      "sha256": "9dd54110ed2699d5149abb29279feb4f5dd3fea4f4f180ec853e6b503ed8753a"
+      "bytes": 18608,
+      "sha256": "5b3ab7f7c125130bbf1d7c4507656d296a42aba512383ded664704eff98d0eca"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 34504,
-      "sha256": "a96d3390cd8005d512e97917b08d86754aefb86e4ba1418a7201ffc989fa9a6d"
+      "bytes": 35175,
+      "sha256": "e56ee437332740a0e5c1329d7f409b90179306d46b13ab61a720c140b88e0883"
     },
     "docs/wiki/History.md": {
       "bytes": 26029,
       "sha256": "3c215b221963d328333a1f5efa7c766b2ad1b8fb1fd7dd787501cec11cf46a66"
     },
     "docs/wiki/Home.md": {
-      "bytes": 8111,
-      "sha256": "d8218a48d739000d9c95c5a0288fa9ce7ce62d508b607599f5e083be35b02909"
+      "bytes": 8487,
+      "sha256": "73c29fe439512b161c84b592312772b74907bf95eb60a91bfcd2e700ef650ce1"
     },
     "docs/wiki/Startup.md": {
-      "bytes": 11697,
-      "sha256": "563cd60673b0c5eadffcb5e7a05b2012d0336b2a1642b675aca331af85f33fe6"
+      "bytes": 12087,
+      "sha256": "7e187468e5918da4a30dbfb3d4234c39dfd1ee0d7b82a4c5dff12a16a83bd2e4"
     },
     "docs/wiki/Storage-and-reference.md": {
       "bytes": 7959,
       "sha256": "f38b25652fb9616f8011aa7942d38384f61b89096662a2bba59879271c46fe82"
     },
     "docs/wiki/World-simulation.md": {
-      "bytes": 17281,
-      "sha256": "b747f9d19ebf85d95f761aa28610c1811262829c51105497680b26389269d9a9"
+      "bytes": 17676,
+      "sha256": "b38e9e482609cb23fccb769cbca175d89386b15ffa687310f86c03847802b96d"
     },
     "docs/wiki/_Sidebar.md": {
       "bytes": 422,
@@ -2006,8 +2006,8 @@
       "sha256": "9578e0cc7995e343ef20fb20ba5176b0a88c63648ca9a719329a465acfd1231e"
     },
     "scripts/development/format_code.py": {
-      "bytes": 3270,
-      "sha256": "e05080d8319440f898f0fdd8a454a5849fa7649baea58a4f9c1eaf151e8d00fc"
+      "bytes": 3392,
+      "sha256": "a996039a9e318e6d8f583ec131ae6f97878fa54ad294dbd2661f11ea5b71b46a"
     },
     "scripts/reference/binaries/inspect_jars.py": {
       "bytes": 7826,
@@ -2586,8 +2586,8 @@
       "sha256": "0898f275df390472bb18f7f01cab729b2efb7468c479a7e05388214a01c54ab4"
     },
     "src/client/display/gl_internal.h": {
-      "bytes": 9141,
-      "sha256": "f3e1cb1e3811cc6d49b44442285a76bcc4e56417bd018c9944f0f671c2dbd690"
+      "bytes": 9242,
+      "sha256": "d22f99400779cea30b3e19ffb9be16d15b66313e6ca7e648b993b00ecb6901d3"
     },
     "src/client/display/loading_projection.inc": {
       "bytes": 2975,
@@ -2726,16 +2726,16 @@
       "sha256": "f5de2e5b95a7bde1a4b34fa0f4867f427a3bb42bdf8225cc85fbdcc66d0692ae"
     },
     "src/client/display/source_internal.h": {
-      "bytes": 4806,
-      "sha256": "c4576834269ccfc43d37368f9732388ad5e7a686998be9c2bb2fd65f8dfa6f6d"
+      "bytes": 5387,
+      "sha256": "ef19d25a36d18922c8ce429c049f4401639d96b4e54f728a934813250190ac42"
     },
     "src/client/display/source_surface.h": {
       "bytes": 9957,
       "sha256": "829425a288b6c8e2272f907107184663c113e6e5e68fca6414887061ddced0bc"
     },
     "src/client/display/source_surface.inc": {
-      "bytes": 47751,
-      "sha256": "8b940d126ece7e41b7b05fa6376ae8118daa19d5926abb50ccedb54efa34d2d0"
+      "bytes": 48243,
+      "sha256": "7d8a39bc67619549464bcc1473288407226a53777db4cd525d5d15c8b344f782"
     },
     "src/client/display/source_viewport.inc": {
       "bytes": 804,
@@ -3070,16 +3070,16 @@
       "sha256": "afea1fc77e43e745b354a231e4a6801406d69873fcca700bf50270a8b1c7814e"
     },
     "src/client/render_engine/internal.h": {
-      "bytes": 4818,
-      "sha256": "97a53fca2f523a0cc64f87c25686f28a904dbddc13a16c11cd5d4c505101646f"
+      "bytes": 4905,
+      "sha256": "70fe12b516bef1c1578e53841c75ff7bdcc098fdd484d12e725bc56d292c53ab"
     },
     "src/client/render_engine/nw.c": {
-      "bytes": 20317,
-      "sha256": "e12d1ea54f2614d3bed5e94e24bb6de1f30c1ae0720c7c2bc02ebe9ee8222c31"
+      "bytes": 24566,
+      "sha256": "b092378e8aea71332deaba26cff62df7deef3d2b387cb046538d2dfec55de6cc"
     },
     "src/client/render_engine/nw.h": {
-      "bytes": 3508,
-      "sha256": "23ffaa71101b39c4e2ff1f94dac94c280b96f7fc5adce3a282920b4222f09a7b"
+      "bytes": 4854,
+      "sha256": "297ac452d735158522a4f5012a5f7431151fb9747e7ad16994586c01006ccfd0"
     },
     "src/client/render_engine/nw_internal.h": {
       "bytes": 591,
@@ -3102,8 +3102,8 @@
       "sha256": "1616dfc38d95bc7f998fc2f528178df4bb836a1ad8e120d7ef1f5a878e2968b0"
     },
     "src/client/render_engine/source.h": {
-      "bytes": 2011,
-      "sha256": "2b4ae40519d74c58aec08420875915a93396e77438fef0cea6860e2b9c01f368"
+      "bytes": 2133,
+      "sha256": "e06d6a1aaaa5120f67f85d96789ded412bc7bafe5fa7c5dcf750bded7c460df2"
     },
     "src/client/render_engine/string_key.c": {
       "bytes": 1616,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 209346,
-      "sha256": "af5bac1bd379c0137f92b0500cdad0ac15703a765f70ca0dd3f30058589d225a"
+      "bytes": 213179,
+      "sha256": "07a641fe2f6d7197dc8e64f8472b6117382725a074137ae4dea6eadeada94d7a"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 317805,
-      "sha256": "7493e2c2849761a0671d38f6fd6982d2013e76b769c1958c05ea84a92b6ceb7d"
+      "bytes": 318954,
+      "sha256": "fc467300c53b7866b47a7eea355a1b6a1332d95d2f1c9ba5481a40321f396070"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6571,7 +6571,7 @@
     },
     "tests/reference/client/render_engine/provenance.json": {
       "bytes": 3575,
-      "sha256": "81f650846d32f13c29e07ee05c216c3b0a1d34227c6a86bbef7cbaa75bf45a09"
+      "sha256": "7f0e0783130a98771b264aef4c633b411f8e5e6399cd48c8ab606ffd67569fcc"
     },
     "tests/reference/client/render_engine/source-pins.json": {
       "bytes": 19198,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 205352,
-      "sha256": "14859d05c5938233430553532bfe43f56268b92a9d4dc8ff92ff30ace097bf71"
+      "bytes": 209185,
+      "sha256": "f6e4659f7d049944d28f5bd76ff4ee9ad50ed4e8962987382d4bf320b268a809"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9810,8 +9810,8 @@
       "sha256": "253914a08f69c1a13527e24bbe43c9faa40fba294aa4da8369469a6995291498"
     },
     "src/client/runtime/bootstrap.c": {
-      "bytes": 34521,
-      "sha256": "b969f923b92dac69ab32d10f5de2daa1cb75262f6988d6623e6fb16ffd44a9a6"
+      "bytes": 36081,
+      "sha256": "df53964968cb3c118d26f312307b36e1b1b6a6fc82624dd68ebb52456fe6556f"
     },
     "src/client/runtime/bootstrap.h": {
       "bytes": 2534,
@@ -10810,8 +10810,8 @@
       "sha256": "aeaf94c1de931037c94f616707f7e677b2f58627be582ab5c422dfbdd64207c2"
     },
     "docs/client/renderer-frames.md": {
-      "bytes": 13234,
-      "sha256": "49ebb18033d817c7ad3adf72c7007e4e8569d90db6b4e50644ba20332461703d"
+      "bytes": 13334,
+      "sha256": "df7175d0b6c274c2b575e9c1c42070905710bb5930bea591a0ec8653f0fe7672"
     },
     "docs/world/ticking.md": {
       "bytes": 3413,
@@ -11286,12 +11286,12 @@
       "sha256": "815dae21d51be8825ed35ab22d714bf74a5379eff04895716ed0df729039f942"
     },
     "src/client/display/fog_surface.h": {
-      "bytes": 4011,
-      "sha256": "8a4a9d425c0fcf4e3200eb5c00de8f16877525d308bd8ed7e38e915c29863927"
+      "bytes": 5680,
+      "sha256": "f81be2b0c04da93ee6304e5be77747046facd288529a9961463f6986b7562a42"
     },
     "src/client/display/fog_surface.inc": {
-      "bytes": 15310,
-      "sha256": "016fbddc7454336f6bc452dd0067329e4a400a44ed785ec6512878c8208dbf10"
+      "bytes": 21148,
+      "sha256": "b44aa53b86c564252c0c3fe9f7eff3dd72e82b89678b16fe756ab88c51d4c374"
     },
     "src/client/world/entity_renderer/renderer_fog_state.c": {
       "bytes": 18585,
@@ -12170,24 +12170,24 @@
       "sha256": "36512d45e39aa6e0f73218f50c75c84f0b3ca86b7ceb155081189529f1609751"
     },
     "docs/client/standard-lighting.md": {
-      "bytes": 4116,
-      "sha256": "3cbe99d071574af913446105a1002fdd5567ad578684e52c934629e5acf85f0d"
+      "bytes": 4080,
+      "sha256": "365c89802494317cef625a16fd8e75c5be2ee762043bc477b8d0120aa8d010d0"
     },
     "src/client/render_engine/lighting_enable.c": {
       "bytes": 12561,
       "sha256": "38c77b611c4afd6d22f25dc5adc77ea218ba13d78eb8c5f3be4723000951f273"
     },
     "tests/client/render_engine/test_lighting_enable.c": {
-      "bytes": 28168,
-      "sha256": "4229479bbf05673dce106e362ea0f6123c54d9a7129b070011ef0a5ee35f0c90"
+      "bytes": 34074,
+      "sha256": "09f0435b5ab18e9012bd9b97f8f812a967d59fdb42c2efb8a4872393a9a9cb32"
     },
     "tests/reference/client/lighting_enable/LightingObservation.java": {
       "bytes": 12465,
       "sha256": "f415f367b011ac2143db9322ba0e71a44f56ae26861bbe3d8b02a3f1e78fe1eb"
     },
     "tests/reference/client/lighting_enable/README.md": {
-      "bytes": 4546,
-      "sha256": "5bcee1fd1e2d908f590d78b3f073d3ae6d58cc0373479b5c12c4061f9a29a602"
+      "bytes": 4571,
+      "sha256": "086f3ce440bd781091b8fadddacf6a1b8113be491f8799b523166cedc8d32d46"
     },
     "tests/reference/client/lighting_enable/capture_reference.py": {
       "bytes": 11749,
@@ -12208,6 +12208,198 @@
     "tests/reference/client/lighting_enable/source-pins.json": {
       "bytes": 4761,
       "sha256": "edbfbcd1c17af7eccafcea70f1670a2c66e59247079769873d6c4db0995357b2"
+    },
+    "cmake/tests/client_lighting_raster.cmake": {
+      "bytes": 4123,
+      "sha256": "0a7ee8e54ec55f14d523e088be4a95d19877df002a230b994d1f2276dbb089e6"
+    },
+    "docs/client/lighting-raster.md": {
+      "bytes": 5951,
+      "sha256": "3a223810e2e4e86d2c4c78055382ea3d00364c103f86366af2f2f7a19af77d42"
+    },
+    "src/client/display/source_lighting_draw.inc": {
+      "bytes": 9764,
+      "sha256": "35220d33c3e6ead298528d4751645309bddcad31814865d26cc51d02786c17cc"
+    },
+    "src/client/display/source_lighting_numeric.h": {
+      "bytes": 24588,
+      "sha256": "a0027007906b508c158d8b7e09d2076ec4934f2e2559b5256164a3cc27269571"
+    },
+    "src/client/display/source_lighting_shader.h": {
+      "bytes": 4781,
+      "sha256": "3927e9a5865ca917faac9f7639ce0c4d63c5581003c49ef6605cea62da93cb9d"
+    },
+    "src/client/display/source_lighting_state.h": {
+      "bytes": 4530,
+      "sha256": "00eec8d86c8edfd5f2c99b9c26ed1c561a42ef4549d1b3a734c8ae3a865e0867"
+    },
+    "tests/client/display/test_lighting_raster.c": {
+      "bytes": 53984,
+      "sha256": "be39e1863bbc7a0e04e2df84a68830190764524c07aca952c1e4380de14859ad"
+    },
+    "tests/client/render_engine/test_nw_normals.c": {
+      "bytes": 10068,
+      "sha256": "79ed49b6c461c644529c0c892947dcef576da8f2b80f329a9767053a9618aa01"
+    },
+    "tests/reference/client/lighting_raster/ConvertedRasterObservation.java": {
+      "bytes": 4790,
+      "sha256": "759c6ba3a9fb8a344216ee2a99486bfa7b01f3155043ff188110b8f39fb5224f"
+    },
+    "tests/reference/client/lighting_raster/MaterialObservation.java": {
+      "bytes": 5872,
+      "sha256": "543fb3e37a2bc43a53fe74844fd2e72d36027be75fb5e178854185bad76c9360"
+    },
+    "tests/reference/client/lighting_raster/NormalConversionObservation.java": {
+      "bytes": 9348,
+      "sha256": "29119550401206028abe736735a25790074b5816b9cf50145dda498ed2db14f5"
+    },
+    "tests/reference/client/lighting_raster/NormalConversionReceiptObservation.java": {
+      "bytes": 10412,
+      "sha256": "85a90d50e98f90bc71fe1051420ea63bef02a34463acebd5373ab4b7db40e59c"
+    },
+    "tests/reference/client/lighting_raster/NormalListConversionReceiptObservation.java": {
+      "bytes": 17178,
+      "sha256": "f2e97431cdb3175d09187914493027d7df9017c18b7364a98891e81e7af7f848"
+    },
+    "tests/reference/client/lighting_raster/README.md": {
+      "bytes": 7177,
+      "sha256": "d85babd6e20159218ead25a9ae3c3c63b16139a127d87ffe609a27b9ce7cbe30"
+    },
+    "tests/reference/client/lighting_raster/RasterExtendedObservation.java": {
+      "bytes": 8559,
+      "sha256": "07739d3441c32a5d412409b1052fb2236bc2f8d01303df69c6e7a9bbfd76977a"
+    },
+    "tests/reference/client/lighting_raster/RasterObservation.java": {
+      "bytes": 16472,
+      "sha256": "511f4f8f0c51100e6fffb9e7b70ac4bf40b0f087546730e7f97c00fcb2593d85"
+    },
+    "tests/reference/client/lighting_raster/array-normals.json": {
+      "bytes": 29868,
+      "sha256": "8aafd5c52332cea15f0de8e4790e517d702f5439c7f9aa8148bb0a170634e70a"
+    },
+    "tests/reference/client/lighting_raster/capture_conversion.py": {
+      "bytes": 7205,
+      "sha256": "3847a97b0a0ef2ede674c6e2a8985e6f624dafc066ae2c9601bc8c961dd6b8c2"
+    },
+    "tests/reference/client/lighting_raster/capture_conversion_receipts.py": {
+      "bytes": 7917,
+      "sha256": "2085526b88ea039e664764cd7c4a74f2a725448aafd1f88474434150fe9c2fe5"
+    },
+    "tests/reference/client/lighting_raster/capture_converted.py": {
+      "bytes": 9559,
+      "sha256": "3d018c13e2f8f1d08cbfe4c6f96a43eab1d3dc374f32696620b9da1cf73a5f83"
+    },
+    "tests/reference/client/lighting_raster/capture_extended.py": {
+      "bytes": 9456,
+      "sha256": "08ae94bfe2ca7c62f4e055444c2c821d0c55daa2ef26063c6940985a9dff48c1"
+    },
+    "tests/reference/client/lighting_raster/capture_list_conversion_receipts.py": {
+      "bytes": 10659,
+      "sha256": "287b48c7487714727f6fea555aef792555fecf9e6e25af693342c1592371e32e"
+    },
+    "tests/reference/client/lighting_raster/capture_material.py": {
+      "bytes": 6803,
+      "sha256": "2e58bc7c5656ffcd9013d53cf4cf2766cad0942bdc11e7c6c6b4f7f9d8e41338"
+    },
+    "tests/reference/client/lighting_raster/capture_reference.py": {
+      "bytes": 9215,
+      "sha256": "2c3c51d2c632169521892d222ce991cba1b4819603c3b7d10f915494ea83f400"
+    },
+    "tests/reference/client/lighting_raster/converted-finite.json": {
+      "bytes": 66754,
+      "sha256": "f5de4d374070a8feeb665482caf545632bde6fbef6803a99ea32fb287244da55"
+    },
+    "tests/reference/client/lighting_raster/converted-inputs.json": {
+      "bytes": 235,
+      "sha256": "63b8f9ceb8d22cd7b1a47bbfc710a59a94e61fc55385b5d3ce26d3c38cf14720"
+    },
+    "tests/reference/client/lighting_raster/extended-finite.json": {
+      "bytes": 592909,
+      "sha256": "9be7b87b027376bfa7220dafb6b83ad83803830ca9dbe8dd563430a525e9b894"
+    },
+    "tests/reference/client/lighting_raster/extended-inputs.json": {
+      "bytes": 1748,
+      "sha256": "880a7af400f30d468c1441d54d72eb124b28a686d9adf77e23b28d3d682c79fd"
+    },
+    "tests/reference/client/lighting_raster/finite.json": {
+      "bytes": 1282271,
+      "sha256": "5cb2d7082847867b3e1ecf586d2e4b97b20a483c1689098004d819a3a70420a4"
+    },
+    "tests/reference/client/lighting_raster/inputs.json": {
+      "bytes": 2511,
+      "sha256": "d3066de5866083bd9079ea3e209e56d851bea73040b9d72f2b32de9abdf69fdd"
+    },
+    "tests/reference/client/lighting_raster/list-state.json": {
+      "bytes": 16828,
+      "sha256": "1cb19f3a6147898282a2eafb38b12eba7827c3f5e9aa1420e157d3623c4133d7"
+    },
+    "tests/reference/client/lighting_raster/material.json": {
+      "bytes": 6305,
+      "sha256": "2695c6ae20d24c4b0529fcab0d02998626f10282ffe97e27d55f5f13fbca2141"
+    },
+    "tests/reference/client/lighting_raster/normal-array.json": {
+      "bytes": 29381,
+      "sha256": "c28247b78fecca86eafb0de5ef18794ef973756de7b38e9ec7c08ffe46e44fbc"
+    },
+    "tests/reference/client/lighting_raster/normal-list.json": {
+      "bytes": 157745,
+      "sha256": "208b08e027c8b31a7429a72e9f715a6a89bb62cd6dc2da499cb7eb3c80562ee2"
+    },
+    "tests/reference/client/lighting_raster/run_array_normals.py": {
+      "bytes": 5682,
+      "sha256": "fc17c77546f1347dd6cbf6799ee812425ef373f22819149be5841aee5e06276f"
+    },
+    "tests/reference/client/lighting_raster/run_converted.py": {
+      "bytes": 6421,
+      "sha256": "a269955b24c712820934f7bdb139127bf0c75b4fc8530090ecc8243e637adf8c"
+    },
+    "tests/reference/client/lighting_raster/run_extended.py": {
+      "bytes": 6410,
+      "sha256": "39ce70de4c057f106fde6eeea87c00d5894776954732127b090ba39dbdc37e68"
+    },
+    "tests/reference/client/lighting_raster/run_list_state.py": {
+      "bytes": 5686,
+      "sha256": "594572efc01ed1ee00c81b934efca7b7c3a2a1ffeb87c1850ce875b1ca1cca67"
+    },
+    "tests/reference/client/lighting_raster/run_material.py": {
+      "bytes": 2713,
+      "sha256": "6c095aaa424f103e48e2b06726af34ab369007a385d2e34c254645d44ef8960d"
+    },
+    "tests/reference/client/lighting_raster/run_native.py": {
+      "bytes": 6110,
+      "sha256": "3b1eef58d03899892394fed92d4a7763fc88e42a8df15830ae3d6cb4f97bdd0f"
+    },
+    "tests/reference/client/lighting_raster/source-pins.json": {
+      "bytes": 3189,
+      "sha256": "dc15bb79fc41db793b45402d58c25d5f5c617fa133ea1784cad6155591ab92d3"
+    },
+    "tests/reference/client/nw_normals/NormalObservation.java": {
+      "bytes": 4878,
+      "sha256": "8c47accccca88f174592b88b0036546111df6ee7fe34dcb2541ef720cfcfca08"
+    },
+    "tests/reference/client/nw_normals/README.md": {
+      "bytes": 2202,
+      "sha256": "325db383d70ee59d063a7930af09dc5a3e53a454b04bb10c881fa9dafb242bda"
+    },
+    "tests/reference/client/nw_normals/capture_reference.py": {
+      "bytes": 7871,
+      "sha256": "954bd04805e34b761f106f1b07f82e6430ab84787e07b4aaf5f3a4758abd06b2"
+    },
+    "tests/reference/client/nw_normals/finite.json": {
+      "bytes": 1831,
+      "sha256": "6289dfcdc0f36236252d1428557953cd9889cdced9a64955d83da4622149ca2a"
+    },
+    "tests/reference/client/nw_normals/inputs.json": {
+      "bytes": 1291,
+      "sha256": "a6e3ebcf060c7ffaa78d0955b46b6da0641599497d4fb69d8587bfe03a4072a7"
+    },
+    "tests/reference/client/nw_normals/run_native.py": {
+      "bytes": 3548,
+      "sha256": "f6b77a78411595824f03752828e1c244464e08ca7db9669105a1273c42edcb65"
+    },
+    "tests/reference/client/nw_normals/source-pins.json": {
+      "bytes": 2742,
+      "sha256": "c9d337cb36d581890da18be2e185815fd4d50c799a00468c678531495d6386d4"
     }
   },
   "self_metadata_excluded": true,

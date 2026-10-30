@@ -1,5 +1,10 @@
 # Systems and subsystems
 
+The canonical Display program now supplies [source vertex lighting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md).
+It uses the existing matrix/light ledger, front/back materials and ColorMaterial
+state. Compiled lists retain their actual attribute effects. This closes the
+backend dependency while model/Entity dispatch and complete frames remain unfinished.
+
 The [LocalPlayer NBT path](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-nbt.md)
 dispatches through actual Entity, Living, Inventory and Player owners. Metadata
 saving holds the first selected Player; saved Info.Player attachment clears its

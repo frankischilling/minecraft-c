@@ -32,6 +32,7 @@ static void source_initialize(mc_client_display *display) {
     s->matrix_mode = GL_MODELVIEW;
     s->next_list_base = 1;
     source_lighting_initialize(s);
+    source_material_initialize(&s->fog);
     s->initialized = true;
 }
 
@@ -252,6 +253,10 @@ static mc_client_source_command *source_append(mc_client_display *display,
     return command;
 }
 
+#include "source_lighting_draw.inc"
+#include "source_lighting_numeric.h"
+#include "source_lighting_shader.h"
+
 static bool source_gpu_construct(mc_client_display *display, mc_client_display_error *error) {
     mc_client_source_state *s = &display->source;
     if (s->program != 0 && s->vao != 0 && s->vbo != 0)
@@ -262,29 +267,8 @@ static bool source_gpu_construct(mc_client_display *display, mc_client_display_e
         s->vbo != 0)
         return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "source GPU constructor",
                     "previous partial GPU constructor", 0);
-    static const char vertex[] =
-        "#version 330 core\nlayout(location=0) in vec3 position;\n"
-        "layout(location=1) in vec2 uv;layout(location=2) in vec4 color;\n"
-        "uniform mat4 projection;uniform mat4 modelview;uniform int fogDistance;\n"
-        "out vec2 texUV;out vec4 tint;out float fogCoordinate;\n"
-        "void main(){vec4 eye=modelview*vec4(position,1.0);gl_Position=projection*eye;"
-        "texUV=uv;tint=color;fogCoordinate=fogDistance==34139?length(eye.xyz):"
-        "(fogDistance==9474?eye.z:abs(eye.z));}\n";
-    static const char fragment[] =
-        "#version 330 core\nin vec2 texUV;in vec4 tint;in float fogCoordinate;\n"
-        "layout(location=0) out vec4 outputColor;\n"
-        "uniform sampler2D image;uniform int textured;uniform int alphaTest;\n"
-        "uniform int fogEnabled;uniform int fogMode;uniform vec4 fogColor;\n"
-        "uniform float fogDensity;uniform float fogStart;uniform float fogEnd;\n"
-        "void main(){vec4 value=tint;if(textured!=0)value*=texture(image,texUV);"
-        "if(alphaTest!=0 && value.a<=0.1)discard;"
-        "if(fogEnabled!=0){float f;"
-        "if(fogMode==9729)f=(fogEnd-fogCoordinate)/(fogEnd-fogStart);"
-        "else if(fogMode==2049){float d=fogDensity*fogCoordinate;f=exp(-d*d);}"
-        "else f=exp(-fogDensity*fogCoordinate);"
-        "value.rgb=mix(fogColor.rgb,value.rgb,clamp(f,0.0,1.0));}outputColor=value;}\n";
-    if (!shader(display, GL_VERTEX_SHADER, vertex, &s->vertex_shader, error) ||
-        !shader(display, GL_FRAGMENT_SHADER, fragment, &s->fragment_shader, error))
+    if (!shader(display, GL_VERTEX_SHADER, source_vertex_shader, &s->vertex_shader, error) ||
+        !shader(display, GL_FRAGMENT_SHADER, source_fragment_shader, &s->fragment_shader, error))
         return false;
     s->program = display->gl.CreateProgram();
     if (!gl_check(display, "create source GPU program", error))
@@ -329,6 +313,8 @@ static bool source_gpu_construct(mc_client_display *display, mc_client_display_e
         s->fog_end_uniform < 0)
         return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "source GPU fog uniforms", "missing uniform",
                     0);
+    if (!source_lighting_uniforms(display, error))
+        return false;
     display->gl.Uniform1i(image, 0);
     display->gl.GenVertexArrays(1, &s->vao);
     display->gl.GenBuffers(1, &s->vbo);
@@ -348,6 +334,9 @@ static bool source_gpu_construct(mc_client_display *display, mc_client_display_e
     display->gl.EnableVertexAttribArray(2);
     display->gl.VertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride,
                                     (const void *)offsetof(mc_client_source_gpu_vertex, color));
+    display->gl.EnableVertexAttribArray(3);
+    display->gl.VertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, stride,
+                                    (const void *)offsetof(mc_client_source_gpu_vertex, normal));
     return gl_check(display, "source GPU vertex layout", error);
 }
 
@@ -372,47 +361,29 @@ static bool source_gpu_create(mc_client_display *display, mc_client_display_erro
 }
 
 static bool source_execute_batch(mc_client_display *display, const uint8_t *data, size_t bytes,
-                                 int32_t count, int32_t mode, unsigned arrays,
+                                 int32_t count, int32_t mode, unsigned arrays, bool compiled,
                                  mc_client_display_error *error) {
     mc_client_source_state *s = &display->source;
     const unsigned vertex_bit = 1u << MC_CLIENT_SOURCE_VERTEX_ARRAY;
     const unsigned uv_bit = 1u << MC_CLIENT_SOURCE_UV_ARRAY;
     const unsigned color_bit = 1u << MC_CLIENT_SOURCE_COLOR_ARRAY;
+    const unsigned normal_bit = 1u << MC_CLIENT_SOURCE_NORMAL_ARRAY;
     if (s->vbo_capacity_uncertain)
         return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "source VBO capacity",
                     "prior upload allocation is uncertain", 0);
     /* source_enter initialized the actual projection/modelview defaults.
      * Camera matrix calls replace that same ledger; drawing does not require
      * the unrelated loading-screen projection method to have run first. */
-    if (s->lighting_enabled)
-        return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source shading state",
-                    "enabled lighting requires its renderer", 0);
     if (count < 0 || (mode != GL_TRIANGLES && mode != GL_TRIANGLE_FAN) ||
         (arrays & vertex_bit) == 0 || (size_t)count > bytes / 32u ||
         (size_t)count > SOURCE_COMMAND_BYTES / sizeof(mc_client_source_gpu_vertex))
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source interleaved draw",
                     "unsupported mode/span/client vertex state", 0);
-    if ((arrays & color_bit) == 0 && !s->color_known)
+    if (!s->lighting_enabled && (arrays & color_bit) == 0 && !s->color_known)
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source current color",
                     "unspecified color after prior color-array draw", 0);
-    /* nw has already expanded its default quads before sending mode4. The
-     * selected bridge admits only decoded GL_TRIANGLES above, so each complete
-     * group of three is one actual primitive. Smooth interpolation is exactly
-     * constant for that primitive when all its RGBA bytes agree; independent
-     * triangles may have different colors. Incomplete trailing vertices create
-     * no primitive and do not require a flat interpolation shader. */
-    if (s->shade_flat && (arrays & color_bit) != 0 && mode == GL_TRIANGLES)
-        for (size_t first = 0; first + 2u < (size_t)count; first += 3u)
-            for (size_t i = first + 1u; i < first + 3u; ++i)
-                if (memcmp(data + first * 32u + 20, data + i * 32u + 20, 4) != 0)
-                    return fail(
-                        error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source GL_FLAT vertex colors",
-                        "varying-color flat source primitive requires its shader profile", 0);
-    if (s->shade_flat && (arrays & color_bit) != 0 && mode == GL_TRIANGLE_FAN)
-        for (size_t i = 1; i < (size_t)count; ++i)
-            if (memcmp(data + 20, data + i * 32u + 20, 4) != 0)
-                return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source GL_FLAT fan colors",
-                            "varying-color flat source fan requires its shader profile", 0);
+    if (!source_lighting_admit(s, arrays, error))
+        return false;
     if (s->texture_enabled && (arrays & uv_bit) == 0)
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source current texture coordinate",
                     "nonarray textured-coordinate path", 0);
@@ -426,6 +397,10 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source active texture unit",
                     "nondefault unit path", 0);
     if (!source_fp_admit("source native draw conversion FP after texture query", error))
+        return false;
+    float normal_matrix[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+    float normal_scale = 1;
+    if (s->lighting_enabled && !source_normal_transform(s, normal_matrix, &normal_scale, error))
         return false;
     const size_t allocation = (size_t)count * sizeof(mc_client_source_gpu_vertex);
     mc_client_source_gpu_vertex *vertices = allocation == 0 ? NULL : malloc(allocation);
@@ -441,9 +416,38 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
             vertices[i].uv[0] = vertices[i].uv[1] = 0;
         if ((arrays & color_bit) != 0)
             for (size_t channel = 0; channel < 4; ++channel)
-                vertices[i].color[channel] = (float)raw[20 + channel] / 255.0f;
+                vertices[i].color[channel] = compiled ? (float)raw[20 + channel] * (1.0f / 255.0f)
+                                                      : (float)raw[20 + channel] / 255.0f;
         else
             memcpy(vertices[i].color, s->color, sizeof(s->color));
+        if ((arrays & normal_bit) != 0)
+            for (size_t component = 0; component < 3; ++component) {
+                /* The captured legacy GL_BYTE array profile replicates each
+                 * byte into a signed 16-bit normalized value. All 256 values
+                 * were observed through gl_Normal transform feedback with
+                 * type GL_BYTE, stride 32 and client memory. This is the
+                 * selected reference conversion, not glNormal3b's formula. */
+                const int byte = raw[24 + component];
+                if (compiled) {
+                    /* Compiled array commands use the immediate attribute
+                     * conversion. All 256 captured list normals equal
+                     * glNormal3b, including reciprocal-multiply rounding. */
+                    const int value = byte < 128 ? byte : byte - 256;
+                    vertices[i].normal[component] = (float)(2 * value + 1) * (1.0f / 255.0f);
+                } else {
+                    int value = byte * 257;
+                    if (value >= 32768)
+                        value -= 65536;
+                    vertices[i].normal[component] = (float)value / 32767.0f;
+                }
+            }
+        else
+            memcpy(vertices[i].normal, s->fog.normal, sizeof(vertices[i].normal));
+    }
+    if (!source_lighting_numeric_admit(s, vertices, (size_t)count, normal_matrix, normal_scale,
+                                       error)) {
+        free(vertices);
+        return false;
     }
     bool ok = source_gpu_create(display, error);
     if (ok) {
@@ -475,10 +479,27 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
         display->gl.Uniform1f(s->fog_density_uniform, s->fog.density);
         display->gl.Uniform1f(s->fog_start_uniform, s->fog.start);
         display->gl.Uniform1f(s->fog_end_uniform, s->fog.end);
+        source_lighting_upload(display, normal_matrix, normal_scale);
+        display->gl.ProvokingVertex(GL_LAST_VERTEX_CONVENTION);
         /* Preserve inherited blend/depth/viewport/scissor/cull/clear state. */
         display->gl.DrawArrays((GLenum)mode, 0, count);
-        if ((arrays & color_bit) != 0)
-            s->color_known = false;
+        if ((arrays & color_bit) != 0) {
+            if (compiled && count > 0) {
+                memcpy(s->color, vertices[count - 1].color, sizeof(s->color));
+                s->color_known = true;
+                source_material_color(&s->fog, s->color, true);
+            } else if (!compiled) {
+                s->color_known = false;
+                source_material_color_unknown(&s->fog);
+            }
+        }
+        if ((arrays & normal_bit) != 0) {
+            if (compiled && count > 0) {
+                memcpy(s->fog.normal, vertices[count - 1].normal, sizeof(s->fog.normal));
+                s->fog.normal_known = true;
+            } else if (!compiled)
+                s->fog.normal_known = false;
+        }
         ok = gl_check(display, "source interleaved draw", error);
         if (ok)
             display->frame_started = true;
@@ -526,7 +547,7 @@ bool mc_client_display_source_batch(mc_client_display_context_lease *lease, cons
                 memcpy(command->value.draw.bytes, bytes, needed);
         }
     } else {
-        ok = source_execute_batch(display, bytes, size, count, mode, s->arrays, error);
+        ok = source_execute_batch(display, bytes, size, count, mode, s->arrays, false, error);
     }
     return source_leave(display, ok, error);
 }
@@ -677,6 +698,7 @@ bool mc_client_display_source_color(mc_client_display *display, float r, float g
     } else {
         memcpy(display->source.color, color, sizeof(color));
         display->source.color_known = true;
+        source_material_color(&display->source.fog, color, true);
     }
     return source_leave(display, ok, error);
 }
@@ -882,6 +904,7 @@ bool mc_client_display_lists_call(mc_client_display *display, const int32_t *ids
             if (command->kind == SOURCE_COMMAND_COLOR) {
                 memcpy(display->source.color, command->value.vector, sizeof(display->source.color));
                 display->source.color_known = true;
+                source_material_color(&display->source.fog, display->source.color, true);
             } else if (command->kind == SOURCE_COMMAND_TRANSLATE) {
                 ok = source_fp_admit("source list matrix translation FP", error);
                 if (ok)
@@ -900,7 +923,7 @@ bool mc_client_display_lists_call(mc_client_display *display, const int32_t *ids
                 ok = source_execute_batch(display, command->value.draw.bytes,
                                           command->value.draw.size, command->value.draw.count,
                                           command->value.draw.mode, command->value.draw.arrays,
-                                          error);
+                                          true, error);
             } else {
                 ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glCallLists",
                           "unrecognized native list command", 0);

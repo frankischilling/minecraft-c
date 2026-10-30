@@ -2,6 +2,7 @@
 #define MC_CLIENT_DISPLAY_SOURCE_INTERNAL_H
 #include "fog_surface.h"
 #include "matrix_source.h"
+#include "source_lighting_state.h"
 #include "source_surface.h"
 #include <string.h>
 
@@ -67,7 +68,7 @@ struct mc_client_display_texture_lease {
 };
 
 typedef struct mc_client_source_gpu_vertex {
-    float position[3], uv[2], color[4];
+    float position[3], uv[2], color[4], normal[3];
 } mc_client_source_gpu_vertex;
 
 typedef struct mc_client_source_state {
@@ -76,7 +77,7 @@ typedef struct mc_client_source_state {
     bool lighting_enabled, fog_enabled;
     mc_client_source_fog_state fog;
     uint64_t fog_capability_generation;
-    bool shade_flat; /* Source GL_FLAT admits constant color within each decoded primitive. */
+    bool shade_flat;
     unsigned arrays, pointers;
     const void *array_buffers[4];
     uint64_t array_contexts[4];
@@ -99,6 +100,14 @@ typedef struct mc_client_source_state {
     int projection_uniform, modelview_uniform, textured_uniform, alpha_uniform;
     int fog_enabled_uniform, fog_mode_uniform, fog_distance_uniform;
     int fog_color_uniform, fog_density_uniform, fog_start_uniform, fog_end_uniform;
+    int lighting_uniform, normal_matrix_uniform, normalize_uniform, rescale_uniform;
+    int normal_scale_uniform, lights_uniform, global_ambient_uniform;
+    int local_viewer_uniform, two_side_uniform, separate_specular_uniform;
+    int color_material_uniform, material_face_uniform, material_mode_uniform;
+    int light_position_uniform[2], light_ambient_uniform[2], light_diffuse_uniform[2];
+    int light_specular_uniform[2], material_ambient_uniform[2], material_diffuse_uniform[2];
+    int material_specular_uniform[2], material_emission_uniform[2], material_shininess_uniform[2];
+    int flat_uniform;
     size_t vbo_bytes;
     bool vbo_capacity_uncertain;
     int32_t matrix_mode;

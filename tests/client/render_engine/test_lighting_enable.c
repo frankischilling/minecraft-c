@@ -403,7 +403,7 @@ static void compiled_prefix(fixture *f) {
     CHECK(mc_client_display_lists_retire(&range, &error) && range == NULL);
 }
 
-static void lit_draw_rejected(fixture *f) {
+static void lit_draw_and_normal_knowledge(fixture *f) {
     mc_client_lighting_error lighting;
     CHECK(mc_client_lighting_enable(f->graphics, f->entities, f->math, f->display, caller,
                                     &lighting));
@@ -419,10 +419,89 @@ static void lit_draw_rejected(fixture *f) {
     CHECK(mc_client_display_context_acquire(f->display, &lease, &error));
     CHECK(mc_client_display_source_pointer(lease, MC_CLIENT_SOURCE_VERTEX_ARRAY, bytes, 0, &error));
     CHECK(mc_client_display_source_array(f->display, MC_CLIENT_SOURCE_VERTEX_ARRAY, true, &error));
+    CHECK(mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
+    CHECK(
+        mc_client_display_source_pointer(lease, MC_CLIENT_SOURCE_NORMAL_ARRAY, bytes, 24, &error));
+    CHECK(mc_client_display_source_array(f->display, MC_CLIENT_SOURCE_NORMAL_ARRAY, true, &error));
+    CHECK(mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
+    mc_client_source_fog_state state;
+    CHECK(mc_client_display_source_fog_inspect(f->display, &state) && !state.normal_known);
+    CHECK(mc_client_display_source_array(f->display, MC_CLIENT_SOURCE_NORMAL_ARRAY, false, &error));
     CHECK(!mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
     CHECK(error.status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL && error.operation != NULL &&
-          strcmp(error.operation, "source shading state") == 0 &&
-          strcmp(error.detail, "enabled lighting requires its renderer") == 0);
+          strcmp(error.operation, "source current normal") == 0);
+    CHECK(mc_client_display_source_normal(f->display, 0, 0, 1, &error));
+    CHECK(mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
+    uint32_t nan_bits = UINT32_C(0x7fc12345);
+    float nan;
+    memcpy(&nan, &nan_bits, sizeof(nan));
+    CHECK(mc_client_display_source_normal(f->display, nan, 0, 1, &error));
+    CHECK(!mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
+    CHECK(error.status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL &&
+          strcmp(error.operation, "source lighting numerical admission") == 0);
+    CHECK(mc_client_display_source_fog_inspect(f->display, &state) && state.normal_known &&
+          memcmp(state.normal, &nan, sizeof(nan)) == 0);
+    CHECK(mc_client_display_source_normal(f->display, 1e30f, 0, 0, &error));
+    CHECK(mc_client_display_source_normalize(f->display, true, &error));
+    CHECK(!mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
+    CHECK(error.status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL &&
+          strcmp(error.operation, "source lighting numerical admission") == 0);
+    CHECK(mc_client_display_source_normal(f->display, 0, 0, 1, &error));
+    CHECK(mc_client_display_source_normalize(f->display, false, &error));
+    float values[4] = {nan, 0, 0, 1};
+    CHECK(mc_client_display_source_material(f->display, GL_BACK, GL_EMISSION, values, 4, &error));
+    CHECK(mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
+    CHECK(mc_client_display_source_light_model_i(f->display, GL_LIGHT_MODEL_TWO_SIDE, 1, &error));
+    CHECK(!mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
+    CHECK(error.status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL &&
+          strcmp(error.operation, "source lighting numerical admission") == 0);
+    CHECK(mc_client_display_source_light_model_i(f->display, GL_LIGHT_MODEL_TWO_SIDE, 0, &error));
+    values[0] = 0;
+    CHECK(mc_client_display_source_material(f->display, GL_BACK, GL_EMISSION, values, 4, &error));
+    values[0] = nan;
+    CHECK(mc_client_display_source_light_parameter(f->display, 1, GL_DIFFUSE, values, 4, &error));
+    CHECK(mc_client_display_source_light_enable(f->display, 1, false, &error));
+    CHECK(mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
+    CHECK(mc_client_display_source_light_enable(f->display, 1, true, &error));
+    CHECK(!mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
+    CHECK(error.status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL &&
+          strcmp(error.operation, "source lighting numerical admission") == 0);
+    values[0] = 0;
+    CHECK(mc_client_display_source_light_parameter(f->display, 1, GL_DIFFUSE, values, 4, &error));
+    values[0] = 128;
+    CHECK(mc_client_display_source_material(f->display, GL_FRONT_AND_BACK, GL_SHININESS, values, 4,
+                                            &error));
+    CHECK(mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
+    CHECK(mc_client_display_source_matrix_mode(f->display, GL_MODELVIEW, &error));
+    CHECK(mc_client_display_source_load_identity(f->display, &error));
+    const float cancellation_light[4] = {1, 1e-23f, 0, 1};
+    CHECK(mc_client_display_source_light_parameter(f->display, 0, GL_POSITION, cancellation_light,
+                                                   4, &error));
+    CHECK(!mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
+    CHECK(error.status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL &&
+          strcmp(error.operation, "source lighting numerical admission") == 0);
+    CHECK(mc_client_display_source_fog_inspect(f->display, &state) && state.normal_known);
+    CHECK(memcmp(bytes->data, positions[0], sizeof(positions[0])) == 0 &&
+          memcmp(bytes->data + 32, positions[1], sizeof(positions[1])) == 0);
+    const float opposite_light[4] = {0, 1e-23f, -1, 0};
+    const float white[4] = {1, 1, 1, 1};
+    CHECK(mc_client_display_source_light_parameter(f->display, 0, GL_POSITION, opposite_light, 4,
+                                                   &error));
+    CHECK(mc_client_display_source_light_parameter(f->display, 0, GL_SPECULAR, white, 4, &error));
+    CHECK(mc_client_display_source_material(f->display, GL_FRONT_AND_BACK, GL_SPECULAR, white, 4,
+                                            &error));
+    values[0] = 1;
+    CHECK(mc_client_display_source_material(f->display, GL_FRONT_AND_BACK, GL_SHININESS, values, 4,
+                                            &error));
+    CHECK(mc_client_display_source_normal(f->display, 0, 1, -1, &error));
+    CHECK(!mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
+    CHECK(error.status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL &&
+          strcmp(error.operation, "source lighting numerical admission") == 0);
+    const float forward_light[4] = {0, 0, 1, 0};
+    CHECK(mc_client_display_source_light_parameter(f->display, 0, GL_POSITION, forward_light, 4,
+                                                   &error));
+    CHECK(mc_client_display_source_normal(f->display, 0, 0, 1, &error));
+    CHECK(mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
     CHECK(mc_client_display_source_array(f->display, MC_CLIENT_SOURCE_VERTEX_ARRAY, false, &error));
     CHECK(mc_client_display_context_release(&lease, &error) && lease == NULL);
 }
@@ -492,7 +571,7 @@ static void device_controls(void) {
     CHECK(mc_client_display_source_get_error(f.display, &gl_error, &display_error) &&
           gl_error == GL_NO_ERROR);
     compiled_prefix(&f);
-    lit_draw_rejected(&f);
+    lit_draw_and_normal_knowledge(&f);
     retire(&f);
     math_failure();
 }

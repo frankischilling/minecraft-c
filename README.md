@@ -18,7 +18,9 @@ World ticks reach concrete Mob construction. World drawing now completes fog,
 sky, camera, ChunkRenderer culling and dirty-chunk selection. Real cache/list
 compilation now emits standard Block geometry through the actual
 [RenderBlocks path](docs/client/render-blocks.md). Terrain submission now draws
-standard Blocks, followed by standard lighting setup. Specialized Block shapes,
+standard Blocks, followed by standard lighting setup. The source renderer now
+supports [vertex lighting and normal/material state](docs/client/lighting-raster.md).
+Specialized Block shapes,
 Entity drawing and the remaining frame remain unfinished. A separate
 [generated-world inspection](docs/client/world-renderer.md) remains available.
 

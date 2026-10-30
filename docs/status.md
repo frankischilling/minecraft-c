@@ -1,16 +1,24 @@
 # Development status
 
-The [standard-lighting extension](client/standard-lighting.md) completes U.b496
-and the captured camera's eye-position getter504. The loaded Windows World frame
-now reaches Entity/TileEntity rendering510. All 86 original lighting state and
-parameter rows match exactly; three focused MSVC CTests pass in 2.05 seconds.
-The loaded-World test passes in 18.59 seconds, preserving saves/resources and
-all 72 original focus histories. Its inspected back buffer shows authored grass
-terrain and Sky without HUD. Lit geometry and repeated interactive frames remain
-unfinished. Hosted [lighting checkpoint 0c0cc5a](https://github.com/frankischilling/minecraft-c/actions/runs/40968986848)
-passes all four jobs and 1,520 tests (Windows 484/GCC 518/Clang 518), with zero
-failures/skips and no dropped preceding names. The terrain checkpoint
-described below predates this extension.
+The source renderer now implements [vertex lighting, normals and materials](client/lighting-raster.md)
+on the canonical OpenGL 3.3 Display program. Its Windows raster controls compare
+58 profiles and 59 complete RGBA8 frames, with exact state comparisons alongside
+pixels. These include actual converted NW geometry, specular/two-sided lighting,
+texture/fog and flat/smooth shading. Compiled-list attribute state and numerical
+admission have separate controls. All 15 selected MSVC Debug tests pass in
+46.78 seconds, including the 12.99-second loaded-World regression. Hosted
+qualification of this extension is pending.
+
+The World frame completes U.b496 and camera eye positioning504, then reaches
+unfinished Entity/TileEntity rendering510. The existing 86-row lighting-state
+comparison remains exact. A rebuilt native client captures two normal menu
+frames and exits cleanly. The loaded-World regression preserves saves/resources
+and all 72 original focus histories, with authored grass terrain and Sky visible
+without HUD. Repeated interactive frames remain unfinished.
+
+The preceding [checkpoint c45d113](https://github.com/frankischilling/minecraft-c/actions/runs/40970697724)
+passes all four hosted jobs and 1,520 tests, with no failures, skips or dropped
+preceding names. That checkpoint predates the new lighting backend.
 
 The native C client is pre-playable. Its default path uses the constructed
 source App, initialized menu and genuine [World-selection screen](client/world-selection.md).
@@ -30,12 +38,11 @@ drawing, ChunkRenderer culling and [dirty-chunk selection](client/chunk-compilat
 The same ChunkCache, RenderBlocks and NW now compile standard Block sections
 into source display lists. Current frame source invokes real
 [terrain submission](client/terrain-submission.md) at `px.a(FJ)V:486`.
-A normal N return continues through FLAT shading493 to the explicit `u.b()`
-lighting-enable dependency at496. The specified Windows MSVC Debug submission
-profiles now pass; hosted qualification is pending. Specialized Block shapes and TileEntity rendering remain
-missing descendants.
-Direct unpaused
-checks on that graph select an actual Biome spawn entry and reach the concrete
+A normal N return continues through FLAT shading493, standard lighting496 and camera eye
+positioning504 to Entity/TileEntity rendering510. The Windows and hosted
+terrain-submission profiles retain their separately documented qualification.
+Specialized Block shapes and TileEntity rendering remain missing descendants.
+Direct unpaused checks on that graph select an actual Biome spawn entry and reach the concrete
 Mob constructor at `cq.a:773` after gathering 289 candidate Chunks.
 The same READY renderer completes [picking](client/picking.md) through
 `px.a(F):452`. Existing-World ticks invoke it at `k:33`; the admitted provider
@@ -46,7 +53,7 @@ gameplay actions still require further implementation.
 Dynamic terrain rendering and gameplay remain unfinished. Explicit flags retain the
 diagnostic title and fixed-camera World inspection.
 
-## Current integration
+## Preceding terrain-submission qualification
 
 The [terrain-submission increment](client/terrain-submission.md) implements the
 whole N outer/subset paths, recenter/JO sorting, TG list replay and ARB query

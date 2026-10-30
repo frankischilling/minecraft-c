@@ -189,6 +189,95 @@ bool mc_client_nw_color_float(mc_client_tessellator *o, float r, float g, float 
     return leave(o, true, e);
 }
 
+bool mc_client_nw_bind_system_output(mc_client_render_engine_classes *c,
+                                     mc_java_system_output *system, mc_client_graphics_error *e) {
+    if (e == NULL)
+        return false;
+    *e = (mc_client_graphics_error){0};
+    if (c == NULL || (system != NULL && c->resource_retirement_started)) {
+        mc_client_graphics_fail(
+            e, c == NULL ? MC_CLIENT_GRAPHICS_INVALID_ARGUMENT : MC_CLIENT_GRAPHICS_INVALID_PHASE,
+            "native nw System.out association owner", (mc_client_graphics_site){0}, true);
+        return false;
+    }
+    if (c->active_source_calls != 0 || c->active_resource_calls != 0 ||
+        c->nw.phase == MC_CLIENT_RENDER_ENGINE_CONSTRUCTING) {
+        mc_client_graphics_fail(e, MC_CLIENT_GRAPHICS_BUSY,
+                                "native nw System.out association active namespace",
+                                (mc_client_graphics_site){0}, true);
+        return false;
+    }
+    c->nw_system_output = system;
+    return true;
+}
+
+static bool normal_print_failed(mc_client_graphics_error *e, int32_t pc) {
+    mc_client_graphics_fail(e,
+                            e->print.status == MC_JAVA_PRINT_BUSY ? MC_CLIENT_GRAPHICS_BUSY
+                                                                  : MC_CLIENT_GRAPHICS_PRINT_FAILED,
+                            e->print.operation, site("b", "(FFF)V", pc), true);
+    return false;
+}
+
+static bool normal_diagnostic(mc_client_tessellator *o, mc_client_graphics_error *e) {
+    if (o->classes->nw_system_output == NULL) {
+        mc_client_graphics_fail(e, MC_CLIENT_GRAPHICS_UNIMPLEMENTED_DEPENDENCY,
+                                "nw actual System.out namespace association",
+                                site("b", "(FFF)V", 7), true);
+        return false;
+    }
+    mc_java_print_stream *stream = NULL;
+    if (mc_java_system_output_get(o->classes->nw_system_output, &stream, &e->print) !=
+        MC_JAVA_PRINT_OK)
+        return normal_print_failed(e, 7);
+    if (stream == NULL) {
+        mc_client_graphics_fail(e, MC_CLIENT_GRAPHICS_NULL_REFERENCE,
+                                "nw actual null PrintStream receiver", site("b", "(FFF)V", 12),
+                                false);
+        return false;
+    }
+    static const uint16_t units[] = {'B', 'u', 't', '.', '.'};
+    const mc_java_properties_string_view text = {units, sizeof(units) / sizeof(units[0])};
+    bool ok = mc_java_print_stream_println(stream, &text, &e->print) == MC_JAVA_PRINT_OK;
+    if (!ok)
+        (void)normal_print_failed(e, 12);
+    if (mc_java_print_stream_release(&stream, &e->cleanup_print) != MC_JAVA_PRINT_OK) {
+        e->cleanup_failed = true;
+        if (ok) {
+            mc_client_graphics_fail(e, MC_CLIENT_GRAPHICS_PRINT_FAILED,
+                                    "nw println captured receiver release", site("b", "(FFF)V", 12),
+                                    true);
+            ok = false;
+        }
+    }
+    return ok;
+}
+
+bool mc_client_nw_normal(mc_client_tessellator *o, float x, float y, float z,
+                         mc_client_graphics_error *e) {
+    if (!enter(o, e))
+        return false;
+    if (!o->fields.w && !normal_diagnostic(o, e))
+        return leave(o, false, e);
+    o->fields.n = true;
+    o->last_store_pc = 17;
+    if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
+        mc_client_graphics_fail(e, MC_CLIENT_GRAPHICS_UNSUPPORTED_FP,
+                                "nw normal floating environment", site("b", "(FFF)V", 23), true);
+        return leave(o, false, e);
+    }
+    const float scaled_x = _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(x), _mm_set_ss(128.0f)));
+    const int32_t ix = (int32_t)mc_java_i8_narrow(mc_java_float_to_i32(scaled_x));
+    const float scaled_y = _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(y), _mm_set_ss(127.0f)));
+    const int32_t iy = (int32_t)mc_java_i8_narrow(mc_java_float_to_i32(scaled_y));
+    const float scaled_z = _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(z), _mm_set_ss(127.0f)));
+    const int32_t iz = (int32_t)mc_java_i8_narrow(mc_java_float_to_i32(scaled_z));
+    const uint32_t packed = (uint32_t)ix | ((uint32_t)iy << 8u) | ((uint32_t)iz << 16u);
+    memcpy(&o->fields.v, &packed, sizeof(packed));
+    o->last_store_pc = 59;
+    return leave(o, true, e);
+}
+
 bool mc_client_nw_rgb(mc_client_tessellator *o, int32_t rgb, mc_client_graphics_error *e) {
     const uint32_t bits = (uint32_t)rgb;
     return mc_client_nw_color(o, (int32_t)((bits >> 16u) & 255u), (int32_t)((bits >> 8u) & 255u),

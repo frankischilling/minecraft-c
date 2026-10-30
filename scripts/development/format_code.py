@@ -56,6 +56,8 @@ def main():
         return 77
     root = Path(__file__).resolve().parents[2]
     fragments = {"src/storage/nbt/stream_support.inc",
+                 "src/client/display/source_surface.inc",
+                 "src/client/display/source_lighting_draw.inc",
                  "src/storage/nbt/stream_owner.inc",
                  "src/client/display/source_world_list_surface.inc",
                  "src/client/display/world_frame_surface.inc",

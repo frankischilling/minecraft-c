@@ -93,6 +93,7 @@ struct mc_client_render_engine_classes {
     bool resource_retirement_started;
     mc_client_graphics_cause ge_failure;
     mc_client_nw_namespace nw;
+    mc_java_system_output *nw_system_output; /* Borrowed canonical runtime service. */
     mc_client_graphics_limits limits;
     size_t active_source_calls, font_lease_count, command_range_count;
     size_t scene_lease_count; /* Native RenderGlobal consumers, not a ge/nw source field. */

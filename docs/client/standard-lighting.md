@@ -59,9 +59,9 @@ failures/skips and no dropped preceding names. GCC and Clang run the 86-row
 lighting replay and device controls under sanitizers. Hosted Windows runs the
 CPU control; the local Windows device evidence above remains separate.
 
-Lit geometry remains an explicit unsupported draw profile. Normal decoding,
-material inheritance, lighting rasterization, Entities, particles and the later
-frame tail need implementation and their own evidence. The completed prefix
-leaves lighting enabled; native cleanup does not reset it. A later frame can
-therefore reach the missing lit draw while replaying sky lists. The finite
-state comparisons do not establish lit pixels or repeated interactive frames.
+Lit geometry now uses the canonical [vertex-lighting backend](lighting-raster.md),
+with separate normal, material, raster and compiled-list observations. The
+86-row U capture above retains its state-only scope. The completed prefix
+leaves lighting enabled; native cleanup does not reset it. Entities, particles
+and the later frame tail remain unfinished. These finite comparisons do not
+establish repeated interactive frames.

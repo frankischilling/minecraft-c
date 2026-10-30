@@ -1,11 +1,20 @@
 # Build and tests
 
+The [vertex-lighting backend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md) now consumes source normals, materials,
+lights and the same matrix ledger. Windows device replay matches 58 profiles
+and 59 full RGBA8 frames exactly, with separate material and Tessellator state
+comparisons. Compiled-list attribute state and numerical admission have their
+own controls. All 15 selected MSVC Debug tests pass in 46.78 seconds; the
+loaded-World regression takes 12.99 seconds. Hosted qualification is pending.
+Entity/TileEntity rendering510
+and complete World frames remain unfinished.
+
 The [standard-lighting extension](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/standard-lighting.md)
 matches all 86 original state/parameter rows on Windows MSVC Debug. Three
 focused lighting tests pass in 2.05 seconds. The loaded-World test passes in
 18.59 seconds, preserves all 72 focus histories and saves/resources, and reaches
 Entity/TileEntity rendering at PX510 after lighting and eye-position return.
-Lit pixels and repeated interactive frames remain unfinished. Hosted
+The state capture does not qualify pixels; repeated interactive frames remain unfinished. Hosted
 [lighting source 0c0cc5a](https://github.com/frankischilling/minecraft-c/actions/runs/40968986848)
 passes all four jobs and 1,520 tests: Windows 484/GCC 518/Clang 518, with zero
 failures/skips and no dropped names from the preceding terrain checkpoint.

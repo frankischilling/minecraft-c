@@ -798,8 +798,8 @@
       "sha256": "0898f275df390472bb18f7f01cab729b2efb7468c479a7e05388214a01c54ab4"
     },
     "src/client/display/gl_internal.h": {
-      "bytes": 9141,
-      "sha256": "f3e1cb1e3811cc6d49b44442285a76bcc4e56417bd018c9944f0f671c2dbd690"
+      "bytes": 9242,
+      "sha256": "d22f99400779cea30b3e19ffb9be16d15b66313e6ca7e648b993b00ecb6901d3"
     },
     "src/client/display/loading_projection.inc": {
       "bytes": 2975,
@@ -938,16 +938,16 @@
       "sha256": "f5de2e5b95a7bde1a4b34fa0f4867f427a3bb42bdf8225cc85fbdcc66d0692ae"
     },
     "src/client/display/source_internal.h": {
-      "bytes": 4806,
-      "sha256": "c4576834269ccfc43d37368f9732388ad5e7a686998be9c2bb2fd65f8dfa6f6d"
+      "bytes": 5387,
+      "sha256": "ef19d25a36d18922c8ce429c049f4401639d96b4e54f728a934813250190ac42"
     },
     "src/client/display/source_surface.h": {
       "bytes": 9957,
       "sha256": "829425a288b6c8e2272f907107184663c113e6e5e68fca6414887061ddced0bc"
     },
     "src/client/display/source_surface.inc": {
-      "bytes": 47751,
-      "sha256": "8b940d126ece7e41b7b05fa6376ae8118daa19d5926abb50ccedb54efa34d2d0"
+      "bytes": 48243,
+      "sha256": "7d8a39bc67619549464bcc1473288407226a53777db4cd525d5d15c8b344f782"
     },
     "src/client/display/source_viewport.inc": {
       "bytes": 804,
@@ -1138,12 +1138,12 @@
       "sha256": "55ddeeebabf71f84b412c08a767f3b8a140c20a0fed065f2c34cbd0e5ff47c4b"
     },
     "src/client/render_engine/internal.h": {
-      "bytes": 4818,
-      "sha256": "97a53fca2f523a0cc64f87c25686f28a904dbddc13a16c11cd5d4c505101646f"
+      "bytes": 4905,
+      "sha256": "70fe12b516bef1c1578e53841c75ff7bdcc098fdd484d12e725bc56d292c53ab"
     },
     "src/client/render_engine/nw.h": {
-      "bytes": 3508,
-      "sha256": "23ffaa71101b39c4e2ff1f94dac94c280b96f7fc5adce3a282920b4222f09a7b"
+      "bytes": 4854,
+      "sha256": "297ac452d735158522a4f5012a5f7431151fb9747e7ad16994586c01006ccfd0"
     },
     "src/client/render_engine/nw_internal.h": {
       "bytes": 591,
@@ -1154,8 +1154,8 @@
       "sha256": "92c946757eabaa1001c0955be65072e4dc4ab9e8875d76acef4f44a49c665061"
     },
     "src/client/render_engine/source.h": {
-      "bytes": 2011,
-      "sha256": "2b4ae40519d74c58aec08420875915a93396e77438fef0cea6860e2b9c01f368"
+      "bytes": 2133,
+      "sha256": "e06d6a1aaaa5120f67f85d96789ded412bc7bafe5fa7c5dcf750bded7c460df2"
     },
     "src/client/render_engine/texture_calls_internal.h": {
       "bytes": 2396,
@@ -2342,8 +2342,8 @@
       "sha256": "253914a08f69c1a13527e24bbe43c9faa40fba294aa4da8369469a6995291498"
     },
     "src/client/runtime/bootstrap.c": {
-      "bytes": 34521,
-      "sha256": "b969f923b92dac69ab32d10f5de2daa1cb75262f6988d6623e6fb16ffd44a9a6"
+      "bytes": 36081,
+      "sha256": "df53964968cb3c118d26f312307b36e1b1b6a6fc82624dd68ebb52456fe6556f"
     },
     "src/client/runtime/bootstrap.h": {
       "bytes": 2534,
@@ -3630,12 +3630,12 @@
       "sha256": "815dae21d51be8825ed35ab22d714bf74a5379eff04895716ed0df729039f942"
     },
     "src/client/display/fog_surface.h": {
-      "bytes": 4011,
-      "sha256": "8a4a9d425c0fcf4e3200eb5c00de8f16877525d308bd8ed7e38e915c29863927"
+      "bytes": 5680,
+      "sha256": "f81be2b0c04da93ee6304e5be77747046facd288529a9961463f6986b7562a42"
     },
     "src/client/display/fog_surface.inc": {
-      "bytes": 15310,
-      "sha256": "016fbddc7454336f6bc452dd0067329e4a400a44ed785ec6512878c8208dbf10"
+      "bytes": 21148,
+      "sha256": "b44aa53b86c564252c0c3fe9f7eff3dd72e82b89678b16fe756ab88c51d4c374"
     },
     "src/client/world/entity_renderer/renderer_fog_state.c": {
       "bytes": 18585,
@@ -4150,8 +4150,8 @@
       "sha256": "38c77b611c4afd6d22f25dc5adc77ea218ba13d78eb8c5f3be4723000951f273"
     },
     "tests/client/render_engine/test_lighting_enable.c": {
-      "bytes": 28168,
-      "sha256": "4229479bbf05673dce106e362ea0f6123c54d9a7129b070011ef0a5ee35f0c90"
+      "bytes": 34074,
+      "sha256": "09f0435b5ab18e9012bd9b97f8f812a967d59fdb42c2efb8a4872393a9a9cb32"
     },
     "tests/reference/client/lighting_enable/capture_reference.py": {
       "bytes": 11749,
@@ -4160,6 +4160,94 @@
     "tests/reference/client/lighting_enable/run_native.py": {
       "bytes": 4221,
       "sha256": "bbe568f0e947521d2a76165a95b12f5a0b4b64379e65f1dbb829855fd5b2e358"
+    },
+    "cmake/tests/client_lighting_raster.cmake": {
+      "bytes": 4123,
+      "sha256": "0a7ee8e54ec55f14d523e088be4a95d19877df002a230b994d1f2276dbb089e6"
+    },
+    "src/client/display/source_lighting_draw.inc": {
+      "bytes": 9764,
+      "sha256": "35220d33c3e6ead298528d4751645309bddcad31814865d26cc51d02786c17cc"
+    },
+    "src/client/display/source_lighting_numeric.h": {
+      "bytes": 24588,
+      "sha256": "a0027007906b508c158d8b7e09d2076ec4934f2e2559b5256164a3cc27269571"
+    },
+    "src/client/display/source_lighting_shader.h": {
+      "bytes": 4781,
+      "sha256": "3927e9a5865ca917faac9f7639ce0c4d63c5581003c49ef6605cea62da93cb9d"
+    },
+    "src/client/display/source_lighting_state.h": {
+      "bytes": 4530,
+      "sha256": "00eec8d86c8edfd5f2c99b9c26ed1c561a42ef4549d1b3a734c8ae3a865e0867"
+    },
+    "tests/client/display/test_lighting_raster.c": {
+      "bytes": 53984,
+      "sha256": "be39e1863bbc7a0e04e2df84a68830190764524c07aca952c1e4380de14859ad"
+    },
+    "tests/client/render_engine/test_nw_normals.c": {
+      "bytes": 10068,
+      "sha256": "79ed49b6c461c644529c0c892947dcef576da8f2b80f329a9767053a9618aa01"
+    },
+    "tests/reference/client/lighting_raster/capture_conversion.py": {
+      "bytes": 7205,
+      "sha256": "3847a97b0a0ef2ede674c6e2a8985e6f624dafc066ae2c9601bc8c961dd6b8c2"
+    },
+    "tests/reference/client/lighting_raster/capture_conversion_receipts.py": {
+      "bytes": 7917,
+      "sha256": "2085526b88ea039e664764cd7c4a74f2a725448aafd1f88474434150fe9c2fe5"
+    },
+    "tests/reference/client/lighting_raster/capture_converted.py": {
+      "bytes": 9559,
+      "sha256": "3d018c13e2f8f1d08cbfe4c6f96a43eab1d3dc374f32696620b9da1cf73a5f83"
+    },
+    "tests/reference/client/lighting_raster/capture_extended.py": {
+      "bytes": 9456,
+      "sha256": "08ae94bfe2ca7c62f4e055444c2c821d0c55daa2ef26063c6940985a9dff48c1"
+    },
+    "tests/reference/client/lighting_raster/capture_list_conversion_receipts.py": {
+      "bytes": 10659,
+      "sha256": "287b48c7487714727f6fea555aef792555fecf9e6e25af693342c1592371e32e"
+    },
+    "tests/reference/client/lighting_raster/capture_material.py": {
+      "bytes": 6803,
+      "sha256": "2e58bc7c5656ffcd9013d53cf4cf2766cad0942bdc11e7c6c6b4f7f9d8e41338"
+    },
+    "tests/reference/client/lighting_raster/capture_reference.py": {
+      "bytes": 9215,
+      "sha256": "2c3c51d2c632169521892d222ce991cba1b4819603c3b7d10f915494ea83f400"
+    },
+    "tests/reference/client/lighting_raster/run_array_normals.py": {
+      "bytes": 5682,
+      "sha256": "fc17c77546f1347dd6cbf6799ee812425ef373f22819149be5841aee5e06276f"
+    },
+    "tests/reference/client/lighting_raster/run_converted.py": {
+      "bytes": 6421,
+      "sha256": "a269955b24c712820934f7bdb139127bf0c75b4fc8530090ecc8243e637adf8c"
+    },
+    "tests/reference/client/lighting_raster/run_extended.py": {
+      "bytes": 6410,
+      "sha256": "39ce70de4c057f106fde6eeea87c00d5894776954732127b090ba39dbdc37e68"
+    },
+    "tests/reference/client/lighting_raster/run_list_state.py": {
+      "bytes": 5686,
+      "sha256": "594572efc01ed1ee00c81b934efca7b7c3a2a1ffeb87c1850ce875b1ca1cca67"
+    },
+    "tests/reference/client/lighting_raster/run_material.py": {
+      "bytes": 2713,
+      "sha256": "6c095aaa424f103e48e2b06726af34ab369007a385d2e34c254645d44ef8960d"
+    },
+    "tests/reference/client/lighting_raster/run_native.py": {
+      "bytes": 6110,
+      "sha256": "3b1eef58d03899892394fed92d4a7763fc88e42a8df15830ae3d6cb4f97bdd0f"
+    },
+    "tests/reference/client/nw_normals/capture_reference.py": {
+      "bytes": 7871,
+      "sha256": "954bd04805e34b761f106f1b07f82e6430ab84787e07b4aaf5f3a4758abd06b2"
+    },
+    "tests/reference/client/nw_normals/run_native.py": {
+      "bytes": 3548,
+      "sha256": "f6b77a78411595824f03752828e1c244464e08ca7db9669105a1273c42edcb65"
     }
   },
   "authorities": {

@@ -7,8 +7,9 @@ fog, Sky, camera, culling and standard Block list compilation. A normal N return
 continues through FLAT493, [standard lighting](standard-lighting.md)496 and the
 captured camera's eye position504 to Entity/TileEntity rendering510.
 The specified Windows MSVC Debug state profiles and both hosted Linux sanitizer
-replays pass. Specialized Block shapes, lit geometry, HUD composition and a
-playable frame remain unfinished.
+replays pass. The [vertex-lighting backend](lighting-raster.md) now handles
+source normals, materials and flat/smooth lighting. Specialized Block shapes,
+HUD composition and a playable frame remain unfinished.
 
 ## Focused mouse input
 

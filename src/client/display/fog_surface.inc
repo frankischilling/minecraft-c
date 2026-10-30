@@ -1,6 +1,7 @@
 /* Included by the canonical Display translation unit. The source fog state
  * feeds its own draw program; no scene entry, clear, swap or GL error query. */
 #include "fog_surface.h"
+#include "source_lighting_state.h"
 
 bool mc_client_display_source_fog_inspect(const mc_client_display *display,
                                           mc_client_source_fog_state *out) {
@@ -34,6 +35,23 @@ bool mc_client_display_source_normal(mc_client_display *display, float x, float 
     display->source.fog.normal[0] = x;
     display->source.fog.normal[1] = y;
     display->source.fog.normal[2] = z;
+    display->source.fog.normal_known = true;
+    return source_leave(display, true, error);
+}
+
+bool mc_client_display_source_normalize(mc_client_display *display, bool enabled,
+                                        mc_client_display_error *error) {
+    if (!source_setting_enter(display, "source normal normalization enable", error))
+        return false;
+    display->source.fog.normalize_enabled = enabled;
+    return source_leave(display, true, error);
+}
+
+bool mc_client_display_source_rescale_normal(mc_client_display *display, bool enabled,
+                                             mc_client_display_error *error) {
+    if (!source_setting_enter(display, "source normal rescaling enable", error))
+        return false;
+    display->source.fog.rescale_normal_enabled = enabled;
     return source_leave(display, true, error);
 }
 
@@ -138,6 +156,9 @@ bool mc_client_display_source_color_material_enable(mc_client_display *display, 
     if (!source_setting_enter(display, "source color material enable", error))
         return false;
     display->source.fog.color_material = enabled;
+    if (enabled)
+        source_material_color(&display->source.fog, display->source.color,
+                              display->source.color_known);
     return source_leave(display, true, error);
 }
 
@@ -154,6 +175,75 @@ bool mc_client_display_source_color_material(mc_client_display *display, int32_t
                             error);
     display->source.fog.material_face = face;
     display->source.fog.material_mode = mode;
+    source_material_color(&display->source.fog, display->source.color, display->source.color_known);
+    return source_leave(display, true, error);
+}
+
+static void source_material_assign(mc_client_source_fog_state *state, size_t side, int32_t pname,
+                                   const float values[4]) {
+    if (source_material_property_tracked(state, side, pname))
+        return;
+    mc_client_source_material_state *material = &state->materials[side];
+    if (pname == GL_AMBIENT)
+        source_material_color_property(material->ambient, &material->ambient_known, values, true);
+    else if (pname == GL_DIFFUSE)
+        source_material_color_property(material->diffuse, &material->diffuse_known, values, true);
+    else if (pname == GL_SPECULAR)
+        source_material_color_property(material->specular, &material->specular_known, values, true);
+    else if (pname == GL_EMISSION)
+        source_material_color_property(material->emission, &material->emission_known, values, true);
+    else if (pname == GL_SHININESS) {
+        memcpy(&material->shininess, values, sizeof(material->shininess));
+        material->shininess_known = true;
+    } else if (pname == GL_COLOR_INDEXES) {
+        memcpy(material->color_indexes, values, sizeof(material->color_indexes));
+        material->color_indexes_known = true;
+    }
+}
+
+bool mc_client_display_source_material(mc_client_display *display, int32_t face, int32_t pname,
+                                       const void *storage, size_t remaining,
+                                       mc_client_display_error *error) {
+    const char *operation = "source material parameter";
+    if (!source_setting_enter(display, operation, error))
+        return false;
+    if (storage == NULL)
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, operation,
+                                 "null remaining FloatBuffer storage", 0),
+                            error);
+    if (remaining < 4)
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_BUFFER_TOO_SMALL, operation,
+                                 "FloatBuffer requires at least four remaining floats", 0),
+                            error);
+    if ((face != GL_FRONT && face != GL_BACK && face != GL_FRONT_AND_BACK) ||
+        (pname != GL_AMBIENT && pname != GL_DIFFUSE && pname != GL_SPECULAR &&
+         pname != GL_EMISSION && pname != GL_AMBIENT_AND_DIFFUSE && pname != GL_SHININESS &&
+         pname != GL_COLOR_INDEXES))
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation,
+                                 "unimplemented source material face or parameter", 0),
+                            error);
+    float values[4];
+    memcpy(values, storage, sizeof(values));
+    if (pname == GL_SHININESS) {
+        if (!source_fp_admit("source material shininess validation FP", error))
+            return source_leave(display, false, error);
+        if (!(values[0] >= 0 && values[0] <= 128))
+            return source_leave(display,
+                                fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation,
+                                     "source shininess outside the supported range0..128", 0),
+                                error);
+    }
+    for (size_t side = 0; side < 2; ++side)
+        if (face == GL_FRONT_AND_BACK || face == (side == 0 ? GL_FRONT : GL_BACK)) {
+            if (pname == GL_AMBIENT_AND_DIFFUSE) {
+                source_material_assign(&display->source.fog, side, GL_AMBIENT, values);
+                source_material_assign(&display->source.fog, side, GL_DIFFUSE, values);
+            } else
+                source_material_assign(&display->source.fog, side, pname, values);
+        }
     return source_leave(display, true, error);
 }
 
@@ -252,6 +342,26 @@ bool mc_client_display_source_light_model(mc_client_display *display, int32_t pn
     float values[4];
     memcpy(values, storage, sizeof(values));
     memcpy(display->source.fog.light_model_ambient, values, sizeof(values));
+    return source_leave(display, true, error);
+}
+
+bool mc_client_display_source_light_model_i(mc_client_display *display, int32_t pname,
+                                            int32_t value, mc_client_display_error *error) {
+    const char *operation = "source integer light model parameter";
+    if (!source_setting_enter(display, operation, error))
+        return false;
+    if (pname == GL_LIGHT_MODEL_LOCAL_VIEWER)
+        display->source.fog.light_model_local_viewer = value != 0;
+    else if (pname == GL_LIGHT_MODEL_TWO_SIDE)
+        display->source.fog.light_model_two_side = value != 0;
+    else if (pname == GL_LIGHT_MODEL_COLOR_CONTROL &&
+             (value == GL_SINGLE_COLOR || value == GL_SEPARATE_SPECULAR_COLOR))
+        display->source.fog.light_model_color_control = value;
+    else
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation,
+                                 "unimplemented source light model parameter or value", 0),
+                            error);
     return source_leave(display, true, error);
 }
 

@@ -97,6 +97,7 @@ typedef void(GLAPIENTRY *mc_client_gl_cull_face_fn)(GLenum mode);
     X(PFNGLBUFFERSUBDATAPROC, BufferSubData, "glBufferSubData")                                    \
     X(PFNGLENABLEVERTEXATTRIBARRAYPROC, EnableVertexAttribArray, "glEnableVertexAttribArray")      \
     X(PFNGLVERTEXATTRIBPOINTERPROC, VertexAttribPointer, "glVertexAttribPointer")                  \
+    X(PFNGLPROVOKINGVERTEXPROC, ProvokingVertex, "glProvokingVertex")                              \
     X(mc_client_gl_draw_arrays_fn, DrawArrays, "glDrawArrays")                                     \
     X(mc_client_gl_read_buffer_fn, ReadBuffer, "glReadBuffer")                                     \
     X(mc_client_gl_read_pixels_fn, ReadPixels, "glReadPixels")                                     \

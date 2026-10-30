@@ -1,6 +1,7 @@
 #ifndef MC_CLIENT_RENDER_ENGINE_NW_H
 #define MC_CLIENT_RENDER_ENGINE_NW_H
 #include "ge.h"
+#include "mc/core/java/print_stream.h"
 
 typedef struct mc_client_tessellator mc_client_tessellator;
 
@@ -58,6 +59,23 @@ bool mc_client_nw_color(mc_client_tessellator *, int32_t red, int32_t green, int
  * before the integer color guard/stores. It does not require an open batch. */
 bool mc_client_nw_color_float(mc_client_tessellator *, float red, float green, float blue,
                               mc_client_graphics_error *);
+/* Native-only exclusive association with this class namespace's SAME canonical
+ * System service. No source active use, field read, stream replacement, output
+ * or retain occurs. NULL removes the association. Caller owns that System
+ * occurrence through the complete RenderEngine-class lifetime, or removes the
+ * association before releasing it. Rebinding does not release the old service.
+ * Inactive resource retirement permits NULL disassociation, but no new binding. */
+bool mc_client_nw_bind_system_output(mc_client_render_engine_classes *, mc_java_system_output *,
+                                     mc_client_graphics_error *);
+/* Actual nw.b(FFF)V: diagnostic before n17 outside a batch, then X*128f and
+ * Y/Z*127f with Java f2i/i2b and sign-extended OR into v59. The vertex method
+ * preserves the source's untouched normal words in duplicated quad vertices.
+ * Outside-begin reads the associated System.out at7 and calls its captured
+ * receiver at12; a missing association remains a dependency before n17.
+ * A null actual field throws at12. Complete PrintStream and cleanup causes
+ * remain in the graphics error, without resetting prior source effects. */
+bool mc_client_nw_normal(mc_client_tessellator *, float x, float y, float z,
+                         mc_client_graphics_error *);
 bool mc_client_nw_rgb(mc_client_tessellator *, int32_t packed_rgb, mc_client_graphics_error *);
 bool mc_client_nw_vertex(mc_client_tessellator *, double x, double y, double z,
                          mc_client_graphics_error *);
