@@ -35,6 +35,7 @@
 #include "mc/world/runtime/blocks.h"
 #include "platform/time/millis.h"
 #include "world/runtime/runtime_internal.h"
+#include "world/runtime/source_construction_internal.h"
 
 #include <SDL3/SDL.h>
 #include <inttypes.h>
@@ -765,12 +766,35 @@ static int loaded_admission_attempt(fixture *f, mc_world_storage_status expected
     client_application *app = f->app;
     mc_world_runtime *world = app->active_world;
     mc_entity *player = app->h;
-    unsigned char *app_before = malloc(sizeof(*app)), *world_before = malloc(sizeof(*world)),
-                  *player_before = malloc(sizeof(*player));
-    CHECK(app_before != NULL && world_before != NULL && player_before != NULL);
-    memcpy(app_before, app, sizeof(*app));
-    memcpy(world_before, world, sizeof(*world));
-    memcpy(player_before, player, sizeof(*player));
+    mc_world_source_state handler;
+    mc_world_source_chunk_loader_state loader;
+    mc_world_saved_data_source_state saved_data;
+    CHECK(world->source_construction != NULL &&
+          mc_world_store_source_inspect(world->fields.w, &handler) &&
+          mc_world_source_chunk_loader_inspect(world->source_construction->loader, &loader) &&
+          mc_world_saved_data_source_inspect(world->fields.z, &saved_data));
+
+    struct owner_copy {
+        const void *owner;
+        size_t bytes;
+        unsigned char *before;
+    } copies[] = {{app, sizeof(*app), NULL},
+                  {world, sizeof(*world), NULL},
+                  {player, sizeof(*player), NULL},
+                  {world->source_construction, sizeof(*world->source_construction), NULL},
+                  {handler.failure, sizeof(*handler.failure), NULL},
+                  {handler.cleanup, sizeof(*handler.cleanup), NULL},
+                  {loader.failure, sizeof(*loader.failure), NULL},
+                  {loader.cleanup, sizeof(*loader.cleanup), NULL},
+                  {saved_data.failure, sizeof(*saved_data.failure), NULL},
+                  {saved_data.cleanup, sizeof(*saved_data.cleanup), NULL}};
+
+    for (size_t i = 0; i < sizeof(copies) / sizeof(copies[0]); ++i) {
+        CHECK(copies[i].owner != NULL);
+        copies[i].before = malloc(copies[i].bytes);
+        CHECK(copies[i].before != NULL);
+        memcpy(copies[i].before, copies[i].owner, copies[i].bytes);
+    }
     mc_world_terminal_inventory inventory = {.entities = 101,
                                              .tile_entities = 102,
                                              .entity_occurrences = 103,
@@ -780,21 +804,22 @@ static int loaded_admission_attempt(fixture *f, mc_world_storage_status expected
     unsigned char sentinel[sizeof(inventory)];
     memcpy(sentinel, &inventory, sizeof(inventory));
     mc_world_storage_error error = {0};
-    CHECK(mc_client_screen_transitions_terminal_admit(app->screen_transitions, NULL, &inventory,
-                                                      &error) == expected &&
-          error.status == expected);
-    CHECK(memcmp(app_before, app, sizeof(*app)) == 0 &&
-          memcmp(world_before, world, sizeof(*world)) == 0 &&
-          memcmp(player_before, player, sizeof(*player)) == 0);
+    const mc_world_storage_status admitted = mc_client_screen_transitions_terminal_admit(
+        app->screen_transitions, NULL, &inventory, &error);
+    if (admitted != expected)
+        fprintf(stderr, "Terminal admission got%d expected%d: %s\n", (int)admitted, (int)expected,
+                error.operation == NULL ? "none" : error.operation);
+    CHECK(admitted == expected && error.status == expected);
+    for (size_t i = 0; i < sizeof(copies) / sizeof(copies[0]); ++i)
+        CHECK(memcmp(copies[i].before, copies[i].owner, copies[i].bytes) == 0);
     if (expected != MC_WORLD_STORAGE_OK)
         CHECK(memcmp(sentinel, &inventory, sizeof(inventory)) == 0);
     if (operation != NULL)
         CHECK(error.operation != NULL && strcmp(error.operation, operation) == 0);
     if (expected == MC_WORLD_STORAGE_OK && success != NULL)
         *success = inventory;
-    free(app_before);
-    free(world_before);
-    free(player_before);
+    for (size_t i = 0; i < sizeof(copies) / sizeof(copies[0]); ++i)
+        free(copies[i].before);
     return 0;
 }
 
@@ -812,6 +837,49 @@ static int loaded_terminal_admission_controls(fixture *f) {
                                    "screen terminal admission prepared selected-load scope",
                                    NULL) == 0);
     CHECK(mc_client_menu_loop_terminal_prepare(f->loop));
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "World terminal unexplained direct World binding", NULL) == 0);
+
+    /* Four derived Handler occurrences: actual Load, World sidecar, HC and ld
+     * slots. Retaining ld itself adds no fifth Handler occurrence. */
+    mc_world_source_state handler;
+    CHECK(mc_world_store_source_inspect(load.handler, &handler) && handler.holds == 4);
+    CHECK(mc_world_store_source_retain(load.handler, NULL) == MC_WORLD_SOURCE_OK &&
+          mc_world_store_source_inspect(load.handler, &handler) && handler.holds == 5);
+    mc_world_store *extra_handler = load.handler;
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "Store terminal source external Handler occurrence", NULL) == 0);
+    CHECK(mc_world_store_source_release(&extra_handler, NULL) == MC_WORLD_SOURCE_OK &&
+          extra_handler == NULL);
+    mc_world_source_chunk_loader *owned_loader = mc_world_runtime_source_loader(world);
+    CHECK(owned_loader != NULL &&
+          mc_world_source_chunk_loader_retain(owned_loader, NULL) == MC_WORLD_SOURCE_OK &&
+          mc_world_store_source_inspect(load.handler, &handler) && handler.holds == 4);
+    mc_world_source_chunk_loader *extra_loader_hold = owned_loader;
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "World terminal external loader occurrence", NULL) == 0);
+    CHECK(mc_world_source_chunk_loader_release(&extra_loader_hold, NULL) == MC_WORLD_SOURCE_OK &&
+          extra_loader_hold == NULL);
+    mc_world_saved_data *extra_saved_data = NULL;
+    CHECK(mc_world_saved_data_source_allocate(MC_WORLD_INFO_CLIENT, NULL, &extra_saved_data,
+                                              NULL) == MC_WORLD_STORAGE_OK &&
+          mc_world_saved_data_source_construct(extra_saved_data, load.handler, NULL) ==
+              MC_WORLD_STORAGE_OK &&
+          mc_world_store_source_inspect(load.handler, &handler) && handler.holds == 5);
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "Store terminal source external Handler occurrence", NULL) == 0);
+    CHECK(mc_world_saved_data_retire(&extra_saved_data, NULL) == MC_WORLD_STORAGE_OK &&
+          extra_saved_data == NULL);
+    mc_world_source_chunk_loader *extra_loader = NULL;
+    CHECK(mc_world_source_chunk_loader_allocate(load.handler,
+                                                mc_world_store_source_regions(load.handler),
+                                                &extra_loader, NULL) == MC_WORLD_SOURCE_OK &&
+          mc_world_store_source_inspect(load.handler, &handler) && handler.holds == 5);
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "Store terminal source external Handler occurrence", NULL) == 0);
+    CHECK(mc_world_source_chunk_loader_retire(&extra_loader, NULL) == MC_WORLD_SOURCE_OK &&
+          extra_loader == NULL && mc_world_store_source_inspect(load.handler, &handler) &&
+          handler.holds == 4);
     CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
                                    "World terminal unexplained direct World binding", NULL) == 0);
 

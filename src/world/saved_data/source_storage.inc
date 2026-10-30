@@ -324,6 +324,72 @@ mc_world_saved_data_source_construct(mc_world_saved_data *owner, mc_world_store 
     return saved_source_result(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
+mc_world_storage_status mc_world_saved_data_terminal_store_slot(const mc_world_saved_data *owner,
+                                                                mc_world_store *const **out,
+                                                                mc_world_storage_error *error) {
+    if (owner == NULL || out == NULL)
+        return saved_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                           "SavedData terminal owner/output");
+    const saved_source *s = owner->source;
+    if (s == NULL || !owner->class_bound || owner->side != MC_WORLD_INFO_CLIENT ||
+        s->state.side != MC_WORLD_INFO_CLIENT)
+        return saved_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "SavedData terminal canonical client HC scope");
+    if (s->state.active)
+        return saved_error(error, MC_WORLD_STORAGE_BUSY, "SavedData terminal active HC");
+    if (s->state.phase != MC_WORLD_SAVED_DATA_SOURCE_READY || !s->state.constructor_returned ||
+        !s->state.load_returned || !s->state.b_stored || !s->state.c_stored || !s->state.d_stored ||
+        !s->state.a_stored || !s->state.map_cleared || s->state.source_b != &owner->named_cache ||
+        s->state.source_c != &owner->ordered_list || s->state.source_d != &owner->id_map ||
+        s->state.document != s->document || owner->storage.path != NULL)
+        return saved_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "SavedData terminal completed HC fields");
+    if (s->state.source_a != NULL) {
+        mc_world_source_state store;
+        if (!mc_world_store_source_inspect(s->state.source_a, &store) || store.active ||
+            store.phase == MC_WORLD_SOURCE_CONSTRUCTING || store.phase == MC_WORLD_SOURCE_RETIRING)
+            return saved_error(error, MC_WORLD_STORAGE_BUSY, "SavedData terminal active Store");
+    }
+    if (s->state.file != NULL) {
+        mc_java_file_state file;
+        if (mc_java_file_read_state(s->state.file, &file, NULL) != MC_JAVA_FILE_OK)
+            return saved_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "SavedData terminal actual File owner");
+        if (file.active || file.phase == MC_JAVA_FILE_CONSTRUCTING ||
+            file.phase == MC_JAVA_FILE_RETIRING)
+            return saved_error(error, MC_WORLD_STORAGE_BUSY, "SavedData terminal active File");
+    }
+    if (s->state.stream != NULL) {
+        mc_java_file_stream_state stream;
+        if (mc_java_file_stream_read_state(s->state.stream, &stream, NULL) != MC_JAVA_FILE_OK)
+            return saved_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "SavedData terminal actual FileInputStream owner");
+        if (stream.active || stream.phase == MC_JAVA_FILE_CONSTRUCTING ||
+            stream.phase == MC_JAVA_FILE_RETIRING)
+            return saved_error(error, MC_WORLD_STORAGE_BUSY,
+                               "SavedData terminal active FileInputStream");
+    }
+    if (s->state.reader != NULL) {
+        mc_nbt_stream_state reader;
+        if (mc_nbt_stream_state_read(s->state.reader, &reader, NULL) != MC_NBT_OK)
+            return saved_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "SavedData terminal actual DataInput owner");
+        if (reader.active || reader.phase == MC_NBT_STREAM_CONSTRUCTING ||
+            reader.phase == MC_NBT_STREAM_PARSING || reader.phase == MC_NBT_STREAM_RETIRING)
+            return saved_error(error, MC_WORLD_STORAGE_BUSY, "SavedData terminal active DataInput");
+        /* This HC creates its input from this known typed FileInputStream.
+         * A RAW/failed child may not have published Filter.in. Never cast the
+         * untyped input context into a guessed concrete owner. */
+        if (reader.source_in != NULL && reader.source_in != s->state.stream)
+            return saved_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "SavedData terminal borrowed input identity");
+    }
+    /* A completed HC can retain caught/failed child diagnostics. No child
+     * READY or source-close outcome is manufactured by this passive view. */
+    *out = &s->state.source_a;
+    return saved_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
 bool mc_world_saved_data_source_inspect(const mc_world_saved_data *owner,
                                         mc_world_saved_data_source_state *out) {
     if (owner == NULL || owner->source == NULL || out == NULL || owner->source->state.active)

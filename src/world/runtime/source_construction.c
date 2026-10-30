@@ -1,6 +1,7 @@
 #include "construction_internal.h"
 #include "runtime_internal.h"
 #include "source_construction_internal.h"
+#include "source_terminal_internal.h"
 
 #include <stdlib.h>
 
@@ -160,6 +161,85 @@ mc_world_storage_status mc_world_runtime_source_prepare_free(mc_world_runtime *w
 void mc_world_runtime_source_free(mc_world_runtime *world) {
     free(world->source_construction);
     world->source_construction = NULL;
+}
+
+mc_world_storage_status mc_world_runtime_terminal_source_inspect(const mc_world_runtime *world,
+                                                                 mc_world_terminal_source_view *out,
+                                                                 mc_world_storage_error *error) {
+    if (world == NULL || out == NULL)
+        return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                      "World terminal source inspection arguments");
+    if (world->active_calls != 0 || world->local_leases != 0)
+        return result(error, MC_WORLD_STORAGE_BUSY, "World terminal source call or lease active");
+    const mc_world_runtime_source_construction *source = world->source_construction;
+    if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
+        world->construction.phase != MC_WORLD_RUNTIME_READY ||
+        world->construction.entry != MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE ||
+        world->classes == NULL || world->classes->side != MC_WORLD_INFO_CLIENT ||
+        world->classes->profile == NULL ||
+        world->options.random_profile != world->classes->profile ||
+        !world->construction.contexts_bound || !world->construction.cache_registered ||
+        world->construction.failed_call_pc != 0 || source == NULL || source->retiring ||
+        source->store == NULL || source->pending_saved_data != NULL ||
+        !source->saved_data_published || !source->metadata_called || !source->metadata_returned ||
+        source->retention.status != MC_WORLD_SOURCE_OK ||
+        source->metadata.status != MC_WORLD_SOURCE_OK ||
+        source->saved_data_failure.status != MC_WORLD_STORAGE_OK ||
+        source->loader_failure.status != MC_WORLD_SOURCE_OK || source->loader == NULL ||
+        world->fields.z == NULL || world->fields.x == NULL || world->fields.t == NULL ||
+        world->fields.v == NULL || world->fields.s != source->loaded_info_was_null ||
+        world->fields.w != source->store || world->options.store != source->store ||
+        world->loader.store != source->store || !mc_world_store_is_source(source->store))
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World terminal intact selected source construction");
+
+    mc_world_source_state store;
+    if (!mc_world_store_source_inspect(source->store, &store))
+        return result(error, MC_WORLD_STORAGE_BUSY, "World terminal source Store active");
+    if (store.phase != MC_WORLD_SOURCE_READY || store.holds == 0 || store.classes == NULL ||
+        !store.mx_returned || !store.fm_returned)
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World terminal source Store construction provenance");
+    mc_world_source_class_state classes;
+    if (!mc_world_store_source_classes_inspect(store.classes, &classes))
+        return result(error, MC_WORLD_STORAGE_BUSY, "World terminal source Store classes active");
+    if (classes.phase != MC_WORLD_SOURCE_READY || classes.holds == 0 || classes.handlers == 0 ||
+        classes.files == NULL || classes.logging == NULL ||
+        mc_world_store_source_files(source->store) != classes.files)
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World terminal source Store class provenance");
+
+    mc_world_store *const *hc_store;
+    mc_world_storage_status status =
+        mc_world_saved_data_terminal_store_slot(world->fields.z, &hc_store, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    mc_world_terminal_loader_view loader;
+    status = mc_world_source_chunk_loader_terminal_inspect(source->loader, &loader, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    if (loader.holds == 0 || hc_store == NULL || loader.store_slot == NULL ||
+        loader.regions_slot == NULL || *hc_store != source->store ||
+        *loader.store_slot != source->store)
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World terminal actual source owning Store slots");
+    if (loader.holds != 1)
+        return result(error, MC_WORLD_STORAGE_BUSY, "World terminal external loader occurrence");
+    mc_world_source_regions *regions = mc_world_store_source_regions(source->store);
+    if (regions == NULL || *loader.regions_slot != regions)
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World terminal actual source shared regions identity");
+    mc_world_source_regions_state region_state;
+    if (!mc_world_source_regions_inspect(regions, &region_state) || region_state.retiring)
+        return result(error, MC_WORLD_STORAGE_BUSY, "World terminal source shared regions active");
+    if (region_state.holds == 0 || region_state.files != classes.files)
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World terminal source shared File namespace provenance");
+
+    *out = (mc_world_terminal_source_view){
+        .store_slots = {&source->store, hc_store, loader.store_slot},
+        .loader_slot = &source->loader};
+    return result(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
 bool mc_world_runtime_source_construction_inspect(const mc_world_runtime *world,

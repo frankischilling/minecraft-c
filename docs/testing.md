@@ -1,5 +1,35 @@
 # Test scope and reproduction
 
+## Selected Handler and Store admission controls
+
+All 39 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+The selection passes 48 Windows CTests in 69.44 seconds and 46 Linux tests in
+98.83 seconds, without failures, skips or source-input changes. Retained raw
+CTest output has no sanitizer findings. All 1,607 C/header/fragment inputs pass
+clang-format18.1.3.
+
+The [World terminal inventory](world/terminal-retirement.md) now passes 1,047
+native checks per host. Real extra empty cache registration, reservation and
+generic stored-entry lease controls refuse without mutation, then admit after
+the actual blocker ends. Generic inactive storage remains owned until its
+separate checked retirement.
+
+The PRIMARY and OLD_ONLY source-World controls qualify exact World/HC/loader slot identity and
+four derived Handler occurrences, real extra Handler and loader holds, balanced
+positive retries and unchanged owner/error snapshots. Eight RAW allocations and
+six existing failed-construction Worlds preserve their refused outputs. The
+fixture does not newly exercise direct-metadata or copy entries.
+
+The real loaded Windows terminal profile additionally refuses a direct Handler
+retain, a selected-loader retain that leaves Handler holds unchanged, an
+independent source SavedData manager and a second real loader. It then completes
+admission and checked cleanup with all 72 focus histories and prior save/asset
+bytes preserved. This resource-dependent profile remains local Windows
+qualification; it is not registered in the hosted test inventory. Active
+reentry and an independent compression occurrence are not newly executed.
+Complete Format/App/shared-service admission and normal shutdown adoption remain
+unfinished; passive checks cannot guarantee future descriptor-close success.
+
 ## Client terminal admission and dispatcher controls
 
 All 38 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.

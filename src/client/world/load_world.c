@@ -2,6 +2,7 @@
 #include "load_world_terminal_internal.h"
 
 #include "../../world/runtime/chunk_provider_internal.h"
+#include "../../world/runtime/source_terminal_internal.h"
 #include "../../world/runtime/terminal_inventory_internal.h"
 #include "../../world/storage/objects_internal.h"
 #include "../application_state.h"
@@ -1255,6 +1256,20 @@ mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
     if (input.native_holds != input_holds)
         return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
                                          "Load terminal external Input occurrence");
+
+    mc_world_terminal_source_view source;
+    mc_world_storage_status source_status =
+        mc_world_runtime_terminal_source_inspect(call->state.world, &source, error);
+    if (source_status != MC_WORLD_STORAGE_OK)
+        return source_status;
+    const mc_world_terminal_store_anchor stores[] = {{&call->state.handler},
+                                                     {source.store_slots[0]},
+                                                     {source.store_slots[1]},
+                                                     {source.store_slots[2]}};
+    source_status = mc_world_store_terminal_source_admit(call->state.handler, stores,
+                                                         sizeof(stores) / sizeof(stores[0]), error);
+    if (source_status != MC_WORLD_STORAGE_OK)
+        return source_status;
 
     const mc_world_terminal_entity_anchor entities[] = {
         {&call->state.player}, {&call->h_occurrence}, {&app->view_occurrence}};

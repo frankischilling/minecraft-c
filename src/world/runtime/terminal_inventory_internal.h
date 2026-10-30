@@ -1,6 +1,7 @@
 #ifndef MC_WORLD_RUNTIME_TERMINAL_INVENTORY_INTERNAL_H
 #define MC_WORLD_RUNTIME_TERMINAL_INVENTORY_INTERNAL_H
 
+#include "mc/world/cache/cache.h"
 #include "mc/world/runtime/entities.h"
 #include "mc/world/runtime/tile_entities/tile_entities.h"
 
@@ -50,6 +51,11 @@ mc_world_storage_status mc_world_runtime_entity_containers_validate(mc_world_run
 
 /* Store and Chunk hooks validate their canonical storage before visiting.
  * Nonempty Chunk slices require the genuine mc_entity_release finalizer. */
+mc_world_storage_status mc_world_store_terminal_validate(const mc_world_store *,
+                                                         const mc_world_runtime *,
+                                                         const mc_chunk_cache *,
+                                                         mc_chunk_state *const *owned_fallback,
+                                                         mc_world_storage_error *);
 mc_world_storage_status mc_world_store_terminal_visit_chunks(mc_world_store *,
                                                              const mc_world_runtime *,
                                                              mc_world_terminal_chunk_visitor,

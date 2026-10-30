@@ -311,7 +311,11 @@ static mc_world_storage_status scope(terminal_collector *c, mc_world_storage_err
         world->classes->entities->profile != world->classes->profile || world->fields.w == NULL)
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World terminal READY CLIENT GAME namespace scope");
-    mc_world_storage_status status = mc_world_runtime_entity_containers_validate(world, error);
+    mc_world_storage_status status = mc_world_store_terminal_validate(
+        world->fields.w, world, world->options.cache, &world->acquisition.fallback, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    status = mc_world_runtime_entity_containers_validate(world, error);
     if (status != MC_WORLD_STORAGE_OK)
         return status;
     if (world->world_accesses.count != 0)

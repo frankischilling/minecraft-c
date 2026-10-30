@@ -1,14 +1,15 @@
 # Development status
 
-The [client terminal primitives](client/terminal-retirement.md) now end the
-actual startup dispatcher consumer and retire existing LL/TH owners while the
-World stays live. Passive admission then checks the selected load's actual
-Player/World anchors and outside controller, effects and Input holds. A genuine
-loaded Windows profile completes that sequence and checked cleanup with saves,
-assets and all 72 focus histories preserved. All 38 selected targets build on
-both hosts; 47 Windows tests pass in 66.85 seconds and 45 sanitized Linux tests
-pass in 107.02 seconds. Handler/service admission, partial loads, old-World
-deferral and normal shutdown/N44/N80 adoption remain unfinished.
+The [client terminal admission](client/terminal-retirement.md) now counts actual
+Handler, World, SavedData and loader slots, with separate loader/input lifetime
+checks and a full Store registration/work preflight. Real outside holds,
+reservations and generic-entry leases refuse before destructive cleanup. All
+39 selected targets build on both hosts; 48 Windows tests pass in 69.44 seconds
+and 46 sanitized Linux tests pass in 98.83 seconds. The loaded Windows terminal
+profile preserves its saves, assets and 72 original focus histories through
+checked dispatcher retirement, admission and cleanup. Complete Format/App/
+shared-service admission, partial loads, old-World deferral and normal
+shutdown/N44/N80 adoption remain unfinished.
 
 The [RenderManager CPU frame](client/render-manager-frame.md) now has Windows
 MSVC Debug and Linux Clang18 ASan/UBSan comparisons against 432 unchanged-original
@@ -18,14 +19,15 @@ Bed orientations, real World/Math failures and checked owner retirement. These
 methods are not yet adopted by live RenderGlobal traversal. Final shutdown and
 deferred World ownership remain prerequisites for that integration.
 
-The latest [hosted checkpoint dd1aa18](https://github.com/frankischilling/minecraft-c/actions/runs/41071675275)
+The latest recorded [hosted checkpoint 97705a6](https://github.com/frankischilling/minecraft-c/actions/runs/41077768119)
 passes all four jobs and 1,566 tests: Windows 494, GCC 536 and Clang 536, with
 zero failures, skips or dropped preceding test names. It includes the canonical
 [TileEntityRenderer CPU owner](client/tile-entity-renderer.md) and RenderManager
-frame extension, terminal preparation and lower World inventory. It predates
-the client anchor/dispatcher extension above. Windows restores the preceding
-116,129,316-byte cache and records 1,080 hits, 332 misses and no cache or compile
-errors. Its build takes 168 seconds;
+frame extension, World inventory and selected client-anchor/dispatcher methods.
+It predates the source Handler/Store extension above. The resource-dependent
+menu loop compiles but is not executed by that hosted inventory. Windows restores
+the preceding 138,975,461-byte cache and records 1,359 hits, 53 misses and no cache
+or compile errors. Its build takes 182 seconds;
 the changed workloads do not establish a controlled whole-workflow speedup.
 
 The source renderer implements [vertex lighting, normals and materials](client/lighting-raster.md)

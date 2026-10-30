@@ -1,4 +1,4 @@
-# Terminal retirement prefix
+# Native client terminal retirement
 
 The native terminal prefix ends source admission and releases selected local
 call and renderer occurrences while keeping the application and World graphs
@@ -107,7 +107,17 @@ All identity and external-hold checks precede any destructive Load cleanup.
 Failure preserves inventory output, source outcomes, cleanup receipts and the
 live owners. Admission caches no permission. Failed or partial loads, changed
 controllers and partially consumed tails remain outside this first scope.
-Handler/format/service and App destruction authority remains separate.
+The selected source Handler audit then counts the actual Load, World sidecar,
+SavedData `source_a` and loader `store` slots. It separately checks the loader's
+single owning occurrence and its retained input prefix. Store-wide admission
+rejects unknown cache registrations, reservations and unfinished work on every
+entry, including generic stored data. These checks run before effects, Player,
+App slots or World containers are consumed. The [World contract](../world/terminal-retirement.md)
+records the complete scope and the borrowed compression-buffer proof.
+
+This source join requires a completed client LOAD_OR_CREATE World. Raw, failed,
+direct-metadata and copy entries remain outside that first scope. Complete
+Format, App and shared-service destruction authority remains separate.
 
 ## Source World clear has a different body
 
@@ -151,8 +161,8 @@ real World root. Global retirement can consume earlier admitted slots before a
 later refusal; callers retain the same native handles and dependency graph.
 
 Preparation alone performs none of that dispatcher retirement. Even after the
-selected-load World audit succeeds, external handler, format and other service
-roots still need outer admission. The ordinary menu path needs a retained old-World queue so
+selected-load Handler and World audits succeed, Format and other service roots
+still need outer admission. The ordinary menu path needs a retained old-World queue so
 source reference changes do not destroy a graph still held by those roots.
 The full-retire APIs remain explicitly destructive; they are not an outer
 external-root admission check.
@@ -164,10 +174,10 @@ gameplay lifetime parity remain unfinished.
 
 ## Qualified native scope
 
-All 38 selected targets build on Windows MSVC Debug and Linux Clang18 with
-ASan/UBSan. The selected CTests pass 47 Windows cases in 66.85 seconds and 45
-Linux cases in 107.02 seconds, with source inputs unchanged and no sanitizer
-findings. All 1,606 C/header/fragment inputs pass clang-format18.1.3.
+All 39 selected targets build on Windows MSVC Debug and Linux Clang18 with
+ASan/UBSan. The selected CTests pass 48 Windows cases in 69.44 seconds and 46
+Linux cases in 98.83 seconds, with source inputs unchanged and no sanitizer
+findings. All 1,607 C/header/fragment inputs pass clang-format18.1.3.
 
 The RenderGlobal CPU test passes 28 checks on both hosts. The Windows device
 test passes 28,892 checks, including the sticky terminal policy, real callback
@@ -191,6 +201,13 @@ cleanup. Its wrapper preserves all pre-existing save and asset bytes and
 checks all 72 original focus histories for each of the ordinary and terminal
 loaded profiles. Existing native UI modes retain their prior path.
 
+The same loaded profile now refuses direct Handler and selected-loader retains,
+an independent source SavedData manager and a second real loader. Both hosts'
+source-World fixture separately proves the actual four Handler slots, the
+loader's independent hold count, positive retries and preserved diagnostics.
+Store topology controls include a valid extra empty registration, a reservation
+and a generic stored-entry lease. Each actual blocker ends through its own API.
+
 Both hosts separately exercise passive controller/effect inspection, genuine
 RAW and failed-construction owners, nonempty particle refusal, and passive LL
 absence, cold, READY, quota-failed and consumed associations. Foreign Registry
@@ -198,4 +215,6 @@ and WorldClasses lookups preserve output and owners. The new lookup's active
 reentry and inactive RETIRING paths remain unexecuted; no private guard writes
 create those cases. Controller/effect inspector reentry also remains unexecuted.
 Bootstrap retirement of a present or partially retiring LL,
-two-App lifetime ownership and full handler/service admission remain unqualified.
+two-App lifetime ownership and complete Format/App/shared-service admission remain
+unqualified. Independent compression holds and source-owner active reentry are
+not newly executed. Later OS close failures still require checked retries.

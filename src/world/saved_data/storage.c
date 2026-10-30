@@ -1,6 +1,8 @@
 #include "mc/world/saved_data/storage.h"
 #include "mc/world/saved_data/source_storage.h"
 
+#include "../runtime/source_terminal_internal.h"
+
 #include "files.h"
 #include "mc/core/java/java.h"
 #include "mc/core/text/mutf8.h"

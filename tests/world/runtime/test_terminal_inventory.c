@@ -27,7 +27,7 @@ typedef struct terminal_snapshot {
     mc_world_provider *second_provider;
     mc_world_provider_fields second_provider_fields;
     mc_world_provider_state second_provider_state;
-    size_t pending_history, store_chunks;
+    size_t pending_history, store_chunks, store_reservations;
 } terminal_snapshot;
 
 static bool terminal_piece_save(terminal_snapshot *s, const void *identity, size_t bytes) {
@@ -139,6 +139,7 @@ static bool terminal_snapshot_take(fixture *f, mc_entity *entity, terminal_snaps
           terminal_piece_save(s, pending->keys, pending->capacity * sizeof(*pending->keys)));
     s->pending_history = mc_java_int_set_size(pending->history);
     s->store_chunks = mc_world_store_chunk_count(f->stores[0]);
+    s->store_reservations = mc_world_store_reservation_count(f->stores[0]);
     if (f->chunks[0] != NULL) {
         mc_world_chunk *c = f->chunks[0];
         mc_chunk_data *data = f->states[0]->data;
@@ -223,6 +224,7 @@ static bool terminal_snapshot_same(fixture *f, const terminal_snapshot *s) {
            state.setup_pc == p->setup_pc &&
            state.direct_allocation_bytes == p->direct_allocation_bytes &&
            mc_world_store_chunk_count(f->stores[0]) == s->store_chunks &&
+           mc_world_store_reservation_count(f->stores[0]) == s->store_reservations &&
            mc_java_int_set_size(f->providers[0].pending->history) == s->pending_history;
 }
 
@@ -276,6 +278,35 @@ static bool terminal_busy_reason(fixture *f, mc_entity *observed, const char *op
                                     NULL, operation);
 }
 
+/* Keep the original real Store metadata, with one additional public admission
+ * slot for a reservation or generic owner beside the selected GAME Chunk. */
+static bool terminal_open_store(fixture *f, const char *root) {
+    bool ok = false;
+    char path[8192];
+    uint8_t map[256];
+    const uint16_t title[] = {'P', 'u', 'b', 'l', 'i', 's', 'h'};
+    const int n = snprintf(path, sizeof(path), "%s/world0", root);
+    CHECK(n > 0 && (size_t)n < sizeof(path));
+    for (size_t i = 0; i < COUNT(map); ++i)
+        map[i] = (uint8_t)i;
+    mc_world_store_options options = {.session_token = 137,
+                                      .block_map = map,
+                                      .block_map_length = sizeof(map),
+                                      .limits = mc_world_store_default_limits()};
+    options.limits.max_loaded_chunks = 2;
+    CHECK(mc_world_store_open(path, f->regions, &options, &f->stores[0], NULL) ==
+          MC_WORLD_STORAGE_OK);
+    const mc_level_info info = {.seed = 23,
+                                .spawn_y = 64,
+                                .time = 0,
+                                .level_name = {title, COUNT(title)},
+                                .version = 19132};
+    CHECK(mc_world_store_save_info(f->stores[0], &info, 123, NULL) == MC_WORLD_STORAGE_OK);
+    ok = true;
+cleanup:
+    return ok;
+}
+
 static bool terminal_open(fixture *f, const char *root) {
     bool ok = false;
     const uint16_t title[] = {'I', 'n', 'v', 'e', 'n', 't', 'o', 'r', 'y'};
@@ -303,7 +334,7 @@ static bool terminal_open(fixture *f, const char *root) {
           mc_world_runtime_classes_bind_entities(f->classes[0], f->entity_classes[0]) ==
               MC_ENTITY_OK &&
           mc_registry_classes_initialize_blocks(f->registry[0], NULL) == MC_REGISTRY_OK &&
-          r->opens == 3 && r->closes == 1 && !r->bad && open_store(f, 0, root));
+          r->opens == 3 && r->closes == 1 && !r->bad && terminal_open_store(f, root));
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
     limits.max_provider_chunks = 1;
     limits.max_scheduled_entries = 0;
@@ -339,6 +370,116 @@ static bool terminal_load_chunk(fixture *f) {
         CHECK(mc_world_chunk_slice_at(f->chunks[0]->m, i, &f->slices[0][i]) == MC_WORLD_STORAGE_OK);
     ok = true;
 cleanup:
+    return ok;
+}
+
+/* The normal attempt snapshots the selected graph and output sentinel. Also
+ * preserve the actual extra caller-owned descriptor/backing or decoded owner. */
+static bool terminal_store_extra_attempt(fixture *f, const mc_chunk_cache *cache,
+                                         const mc_chunk_state *generic,
+                                         mc_world_storage_status expected,
+                                         mc_world_terminal_inventory *inventory) {
+    bool ok = false;
+    terminal_snapshot extra = {0};
+    if (cache != NULL) {
+        CHECK(terminal_piece_save(&extra, cache, sizeof(*cache)) &&
+              terminal_piece_save(&extra, cache->entries,
+                                  cache->capacity * sizeof(*cache->entries)) &&
+              terminal_piece_save(&extra, cache->insertions,
+                                  cache->insertion_capacity * sizeof(*cache->insertions)));
+    }
+    if (generic != NULL) {
+        const mc_chunk_data *data = generic->data;
+        CHECK(data != NULL && terminal_piece_save(&extra, generic, sizeof(*generic)) &&
+              terminal_piece_save(&extra, data, sizeof(*data)) &&
+              terminal_piece_save(&extra, data->blocks, MC_CHUNK_BLOCKS) &&
+              terminal_piece_save(&extra, data->metadata, MC_CHUNK_NIBBLE_BYTES) &&
+              terminal_piece_save(&extra, data->skylight, MC_CHUNK_NIBBLE_BYTES) &&
+              terminal_piece_save(&extra, data->block_light, MC_CHUNK_NIBBLE_BYTES) &&
+              terminal_piece_save(&extra, data->heightmap, MC_CHUNK_HEIGHTMAP_BYTES));
+    }
+    CHECK(terminal_attempt(f, NULL, NULL, expected, false, false, false, inventory));
+    for (size_t i = 0; i < extra.count; ++i)
+        CHECK(memcmp(extra.pieces[i].identity, extra.pieces[i].before, extra.pieces[i].bytes) == 0);
+    ok = true;
+cleanup:
+    terminal_snapshot_drop(&extra);
+    return ok;
+}
+
+static bool terminal_store_topology_controls(fixture *f) {
+    bool ok = false, registered = false, generic_leased = false;
+    mc_chunk_cache cache = {0};
+    mc_chunk_cache_entry entries[2] = {0};
+    mc_chunk_state *insertions[2] = {0};
+    mc_world_store_reservation *reservation = NULL;
+    mc_chunk_state *generic = NULL;
+    mc_world_terminal_inventory inventory;
+    CHECK(f->states[0] != NULL && f->chunks[0] != NULL && f->chunks[0]->d == f->worlds[0] &&
+          mc_world_store_chunk_count(f->stores[0]) == 1 &&
+          mc_world_store_reservation_count(f->stores[0]) == 0);
+
+    /* A real, valid EMPTY registration is still a second cache namespace. */
+    CHECK(mc_chunk_cache_init(&cache, entries, COUNT(entries), insertions, COUNT(insertions)) &&
+          mc_chunk_cache_validate(&cache) && cache.count == 0 && cache.insertion_count == 0);
+    CHECK(mc_world_store_register_cache(f->stores[0], &cache, NULL, NULL) == MC_WORLD_STORAGE_OK);
+    registered = true;
+    CHECK(terminal_store_extra_attempt(f, &cache, NULL, MC_WORLD_STORAGE_BUSY, NULL) &&
+          mc_chunk_cache_validate(&cache) && cache.count == 0 && cache.insertion_count == 0);
+    CHECK(mc_world_store_unregister_cache(f->stores[0], &cache, NULL) == MC_WORLD_STORAGE_OK);
+    registered = false;
+    CHECK(terminal_attempt(f, NULL, NULL, MC_WORLD_STORAGE_OK, false, false, false, &inventory) &&
+          inventory.entities == 0 && inventory.tile_entities == 0 &&
+          inventory.expected_world_bindings == 1);
+
+    CHECK(mc_world_store_reserve_chunk(f->stores[0], 0, &reservation, NULL) ==
+              MC_WORLD_STORAGE_OK &&
+          reservation != NULL && mc_world_store_reservation_count(f->stores[0]) == 1 &&
+          mc_world_store_chunk_count(f->stores[0]) == 1);
+    CHECK(terminal_store_extra_attempt(f, NULL, NULL, MC_WORLD_STORAGE_BUSY, NULL) &&
+          mc_world_store_reservation_count(f->stores[0]) == 1);
+    CHECK(mc_world_store_cancel_reservation(f->stores[0], reservation, NULL) ==
+          MC_WORLD_STORAGE_OK);
+    reservation = NULL;
+    CHECK(mc_world_store_reservation_count(f->stores[0]) == 0 &&
+          terminal_attempt(f, NULL, NULL, MC_WORLD_STORAGE_OK, false, false, false, &inventory) &&
+          inventory.entities == 0 && inventory.expected_world_bindings == 1);
+
+    /* Decode the existing authored empty NBT through the generic storage API;
+     * this is a second actual owner, without a runtime Chunk/World binding. */
+    CHECK(mc_world_store_load_chunk(f->stores[0], 0, 0, 0, &generic, NULL) == MC_WORLD_STORAGE_OK &&
+          generic != NULL && generic != f->states[0] && !generic->active &&
+          mc_world_store_owns_chunk(f->stores[0], generic) &&
+          mc_world_store_chunk_object(f->stores[0], generic) == NULL &&
+          mc_world_store_chunk_count(f->stores[0]) == 2);
+    CHECK(mc_world_store_lease_chunk(f->stores[0], generic, NULL) == MC_WORLD_STORAGE_OK);
+    generic_leased = true;
+    CHECK(terminal_store_extra_attempt(f, NULL, generic, MC_WORLD_STORAGE_BUSY, NULL));
+    CHECK(mc_world_store_release_chunk(f->stores[0], generic, NULL) == MC_WORLD_STORAGE_OK);
+    generic_leased = false;
+    CHECK(terminal_store_extra_attempt(f, NULL, generic, MC_WORLD_STORAGE_OK, &inventory) &&
+          mc_world_store_owns_chunk(f->stores[0], generic) &&
+          mc_world_store_chunk_count(f->stores[0]) == 2 && inventory.entities == 0 &&
+          inventory.expected_world_bindings == 1);
+    CHECK(mc_world_store_retire_chunk(f->stores[0], generic, NULL) == MC_WORLD_STORAGE_OK);
+    generic = NULL;
+    CHECK(mc_world_store_chunk_count(f->stores[0]) == 1 &&
+          terminal_attempt(f, NULL, NULL, MC_WORLD_STORAGE_OK, false, false, false, &inventory) &&
+          f->chunks[0]->d == f->worlds[0] && f->states[0]->active);
+    ok = true;
+cleanup:
+    if (generic_leased &&
+        mc_world_store_release_chunk(f->stores[0], generic, NULL) != MC_WORLD_STORAGE_OK)
+        ok = false;
+    if (generic != NULL &&
+        mc_world_store_retire_chunk(f->stores[0], generic, NULL) != MC_WORLD_STORAGE_OK)
+        ok = false;
+    if (reservation != NULL &&
+        mc_world_store_cancel_reservation(f->stores[0], reservation, NULL) != MC_WORLD_STORAGE_OK)
+        ok = false;
+    if (registered &&
+        mc_world_store_unregister_cache(f->stores[0], &cache, NULL) != MC_WORLD_STORAGE_OK)
+        ok = false;
     return ok;
 }
 
@@ -623,6 +764,7 @@ int main(int argc, char **argv) {
           terminal_attempt(f, NULL, NULL, MC_WORLD_STORAGE_INVALID_ARGUMENT, false, true, false,
                            NULL));
     CHECK(terminal_load_chunk(f));
+    CHECK(terminal_store_topology_controls(f));
     const mc_world_terminal_limits defaults = mc_world_runtime_terminal_default_limits();
     CHECK(defaults.max_entries > 0 && defaults.max_bytes > 0);
     mc_world_terminal_limits limits = defaults;

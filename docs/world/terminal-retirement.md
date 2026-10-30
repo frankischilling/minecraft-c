@@ -34,6 +34,49 @@ addresses of actual owned Entity and World slots in its intact successful-load
 scope. Mirrors, borrowed fields and guessed hold allowances are not anchors.
 Failed/partial load support and the complete outer coordinator remain unfinished.
 
+## Store registrations and unfinished work
+
+Admission validates the complete Store registration, reservation and Chunk
+chains before selected-World traversal. It permits only the actual World cache
+and the address of that World's acquisition fallback slot. Another valid empty
+cache registration still returns BUSY; it is not cleared or treated as owned.
+Any reservation, entry lease, coordinator lease, open save or unfinished import
+also returns BUSY, including work on generic stored entries.
+
+Every actual runtime Chunk must name the selected World. A coherent inactive
+generic stored entry with no runtime header can remain if it has no unfinished
+work. Its unrelated decoded storage does not become a World Entity owner.
+Final Store release keeps its existing stricter requirement that registrations
+and containers have actually ended; this preflight does not perform that work.
+
+## Selected source Handler owners
+
+The client adapter additionally inspects the intact source World and counts
+four actual Handler slots: the Load allocation, the World construction sidecar,
+the source SavedData manager's `source_a`, and the source Chunk loader's `store`.
+World `w`, options and callback transport fields are borrowed aliases. A direct
+Handler retain, independent SavedData manager or second loader adds an
+unexplained Handler occurrence and refuses admission.
+
+Retaining the same loader increases only that loader's holds. The World source
+inspector therefore checks its actual single loader-owner slot separately.
+SavedData has no retain counter to invent. Raw, failed and incomplete source
+Worlds remain unsupported by this selected-entry join.
+
+The owner hooks inspect real File, stream, DataInput, compression and inflater
+states without source calls or diagnostic mutation. The loader's DataInput
+port borrows its compression owner; it contributes no second compression hold.
+That owner must have its one actual loader occurrence before the borrowed
+record bytes can later be freed. A completed RAM input is not falsely reported
+as source-closed. File-backed Handler prefixes require their completed native
+ownership and source-close state in this scope.
+
+Safe independent File, Info and document retains are not extra World roots.
+Shared File, logging, regions and class namespaces are kept live rather than
+closed by this audit. Later native descriptor close can still fail; checked
+cleanup retains its retry contract. Format and complete App/service admission
+remain separate work.
+
 ## Static Piston roots
 
 The class-owned Piston Entity List supplies its real owning occurrences. A
@@ -67,7 +110,10 @@ and Entity retains, Chunk and Class-query leases, TileEntity Map and `c/G`
 occurrences, a static Piston reference and a second real World. Each admission
 attempt checks retained snapshots for mutation and preserves inventory output
 on refusal. A separately retained, unlisted TileEntity exercises the all-Tiles
-proof. Cleanup uses checked native operations and discards static references
+proof. Valid extra empty cache registration, reservation and generic-entry lease
+controls cover the full Store preflight, with positive retries after actual
+unregister/cancel/release operations. The test passes 1,047 native checks on each
+qualified host. Cleanup uses checked native operations and discards static references
 only after all TileEntity owners end.
 
 The test's voxel and `World.L` branch values are declared source inputs. Its
@@ -77,7 +123,8 @@ the graph pass. The test has no original-runtime equality claim.
 
 The [client terminal prefix](../client/terminal-retirement.md) now has explicit
 selected-load controller/effect/Input checks and actual dispatcher consumer
-ending with passive LL discovery and checked LL/TH retirement. Full service
-admission remains unfinished. World admission alone does not authorize
+ending with passive LL discovery and checked LL/TH retirement, plus the actual
+source Handler and loader inventory described above. Full service admission
+remains unfinished. World admission alone does not authorize
 SaveHandler or App destruction. Normal shutdown, deferred old-World ownership
 and live N44/N80 adoption remain unfinished.

@@ -1,5 +1,6 @@
 #include "mc/world/storage/source_chunk_loader.h"
 #include "../../block/registry/runtime_internal.h"
+#include "../runtime/source_terminal_internal.h"
 #include "mc/world/dimension/world_provider.h"
 #include "mc/world/runtime/runtime.h"
 #include "source_game_stage.h"
@@ -316,6 +317,107 @@ bool mc_world_source_chunk_loader_inspect(const mc_world_source_chunk_loader *l,
     out->failure = &l->failure;
     out->cleanup = &l->cleanup;
     return true;
+}
+
+static mc_world_storage_status terminal_loader_file(const mc_java_file *file,
+                                                    mc_world_storage_error *error) {
+    if (file == NULL)
+        return MC_WORLD_STORAGE_OK;
+    mc_java_file_state state;
+    if (mc_java_file_read_state(file, &state, NULL) != MC_JAVA_FILE_OK)
+        return storage_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "ld terminal actual File owner");
+    if (state.active || state.phase == MC_JAVA_FILE_CONSTRUCTING ||
+        state.phase == MC_JAVA_FILE_RETIRING)
+        return storage_result(error, MC_WORLD_STORAGE_BUSY, "ld terminal active File");
+    return MC_WORLD_STORAGE_OK;
+}
+
+static mc_world_storage_status terminal_loader_inflater(const mc_raw_inflater *inflater,
+                                                        mc_world_storage_error *error) {
+    if (inflater == NULL)
+        return MC_WORLD_STORAGE_OK;
+    mc_raw_inflater_state state;
+    if (mc_raw_inflater_state_read(inflater, &state, NULL) != MC_RAW_INFLATER_OK)
+        return storage_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "ld terminal actual Inflater owner");
+    if (state.active || state.phase == MC_RAW_INFLATER_RETIRING)
+        return storage_result(error, MC_WORLD_STORAGE_BUSY, "ld terminal active Inflater");
+    return MC_WORLD_STORAGE_OK;
+}
+
+mc_world_storage_status
+mc_world_source_chunk_loader_terminal_inspect(const mc_world_source_chunk_loader *l,
+                                              mc_world_terminal_loader_view *out,
+                                              mc_world_storage_error *error) {
+    if (l == NULL || out == NULL)
+        return storage_result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "ld terminal owner/output");
+    if (l->state.active || l->state.retiring)
+        return storage_result(error, MC_WORLD_STORAGE_BUSY, "ld terminal active/retiring owner");
+    if (l->state.phase != MC_WORLD_SOURCE_READY || l->state.holds == 0 || l->state.store == NULL ||
+        l->state.regions == NULL)
+        return storage_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "ld terminal READY canonical owner scope");
+    mc_world_source_state store;
+    if (!mc_world_store_source_inspect(l->state.store, &store) || store.active ||
+        store.phase == MC_WORLD_SOURCE_CONSTRUCTING || store.phase == MC_WORLD_SOURCE_RETIRING)
+        return storage_result(error, MC_WORLD_STORAGE_BUSY, "ld terminal active Store");
+    if (mc_world_store_source_regions(l->state.store) != l->state.regions)
+        return storage_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "ld terminal actual Store/regions association");
+    mc_world_source_regions_state regions;
+    if (!mc_world_source_regions_inspect(l->state.regions, &regions) || regions.active ||
+        regions.retiring)
+        return storage_result(error, MC_WORLD_STORAGE_BUSY, "ld terminal active regions owner");
+    mc_world_storage_status status = terminal_loader_file(l->state.source_a, error);
+    if (status == MC_WORLD_STORAGE_OK)
+        status = terminal_loader_file(l->state.pending_file, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    if (l->reader != NULL) {
+        mc_nbt_stream_state reader;
+        if (mc_nbt_stream_state_read(l->reader, &reader, NULL) != MC_NBT_OK)
+            return storage_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                  "ld terminal actual DataInput owner");
+        if (reader.active || reader.phase == MC_NBT_STREAM_CONSTRUCTING ||
+            reader.phase == MC_NBT_STREAM_PARSING || reader.phase == MC_NBT_STREAM_RETIRING)
+            return storage_result(error, MC_WORLD_STORAGE_BUSY, "ld terminal active DataInput");
+        if (reader.source_in != NULL && reader.source_in != l->compression)
+            return storage_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                  "ld terminal borrowed input identity");
+    }
+    if (l->compression != NULL) {
+        mc_gzip_state gzip;
+        if (mc_gzip_input_state_read(l->compression, &gzip, NULL) != MC_GZIP_OK)
+            return storage_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                  "ld terminal actual compression owner");
+        if (gzip.active || gzip.retiring || gzip.phase == MC_GZIP_CONSTRUCTING ||
+            gzip.phase == MC_GZIP_RETIRING)
+            return storage_result(error, MC_WORLD_STORAGE_BUSY, "ld terminal active compression");
+        /* Allocate supplies l->compression's sole owning occurrence. The
+         * DataInput byte-port merely borrows it; it adds NO second GZIP hold.
+         * clear_input must destroy this memory borrower before record bytes.
+         * A separate occurrence cannot be admitted by guessing an allowance. */
+        if (gzip.holds != 1)
+            return storage_result(error, MC_WORLD_STORAGE_BUSY,
+                                  "ld terminal independent compression occurrence");
+        if (l->record == NULL || gzip.source_in != NULL || gzip.pending_input != NULL ||
+            ((gzip.source_memory != NULL || gzip.source_memory_length != 0) &&
+             (gzip.source_memory != l->record->bytes ||
+              gzip.source_memory_length != l->record->length)))
+            return storage_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                  "ld terminal actual borrowed compressed record");
+        status = terminal_loader_inflater(gzip.source_inf, error);
+        if (status == MC_WORLD_STORAGE_OK)
+            status = terminal_loader_inflater(gzip.pending_inflater, error);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
+    }
+    /* Parsed documents and failed constructor children may remain owned.
+     * Their reference counts are not invented World roots or exemptions.
+     * Store admission separately inventories its shared classes/regions. */
+    *out = (mc_world_terminal_loader_view){&l->state.store, &l->state.regions, l->state.holds};
+    return storage_result(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
 static mc_world_storage_status compression_failure(mc_world_source_chunk_loader *l,

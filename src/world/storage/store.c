@@ -1,6 +1,7 @@
 #include "mc/world/storage/store.h"
 
 #include "../chunk/object_internal.h"
+#include "../runtime/source_terminal_internal.h"
 #include "../runtime/terminal_inventory_internal.h"
 #include "chunk_build_internal.h"
 #include "files.h"
@@ -1968,6 +1969,91 @@ static mc_world_storage_status store_free_admit(const mc_world_store *store,
     return MC_WORLD_STORAGE_OK;
 }
 
+mc_world_storage_status mc_world_store_terminal_validate(const mc_world_store *store,
+                                                         const mc_world_runtime *world,
+                                                         const mc_chunk_cache *owned_cache,
+                                                         mc_chunk_state *const *owned_fallback,
+                                                         mc_world_storage_error *error) {
+    if (store == NULL || world == NULL || owned_cache == NULL || owned_fallback == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                           "Store terminal validation arguments");
+    if (store->source != NULL) {
+        const mc_world_store_source *source = store->source;
+        if (source->classes == NULL || source->state.holds == 0 || source->classes->holds == 0 ||
+            source->classes->handlers == 0)
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal source ownership metadata");
+        const mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
+    if (store->chunk_count > store->limits.max_loaded_chunks ||
+        store->reservation_count > store->limits.max_loaded_chunks - store->chunk_count ||
+        store->cache_count > MC_WORLD_STORE_MAX_REGISTERED_CACHES)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal ownership counts");
+
+    size_t registrations = 0, owned_registrations = 0;
+    bool foreign_registration = false;
+    for (const store_cache *entry = store->caches; entry != NULL; entry = entry->next) {
+        if (registrations == store->cache_count ||
+            !store_cache_valid(entry->cache, entry->fallback))
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal registered cache metadata");
+        ++registrations;
+        if (entry->cache == owned_cache) {
+            if (entry->fallback != owned_fallback || ++owned_registrations != 1)
+                return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                   "Store terminal owned cache registration identity");
+        } else
+            foreign_registration = true;
+    }
+    if (registrations != store->cache_count || owned_registrations != 1)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal registered cache count");
+
+    size_t reservations = 0;
+    for (const mc_world_store_reservation *entry = store->reservations; entry != NULL;
+         entry = entry->next) {
+        if (reservations == store->reservation_count || entry->entry == NULL)
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal reservation ownership metadata");
+        ++reservations;
+    }
+    if (reservations != store->reservation_count)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal reservation count");
+
+    size_t chunks = 0;
+    const store_chunk *last = NULL;
+    bool busy = foreign_registration || reservations != 0;
+    for (const store_chunk *entry = store->chunks; entry != NULL; entry = entry->next) {
+        if (chunks == store->chunk_count || !store_chunk_owner_valid(entry))
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal Chunk ownership metadata");
+        ++chunks;
+        last = entry;
+        busy = busy || entry->leases != 0 || entry->coordinator_lease || entry->game_save_open ||
+               (entry->imports_started && entry->phase != MC_WORLD_STORE_GAME_COMMITTED);
+        const mc_world_chunk *chunk = store_runtime_chunk(entry);
+        if (chunk != NULL) {
+            mc_world_chunk_fields fields;
+            if (mc_world_chunk_fields_get(chunk, &fields) != MC_WORLD_STORAGE_OK ||
+                fields.d != world)
+                return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                   "Store terminal actual Chunk World identity");
+        } else
+            busy = busy || store_chunk_state(entry)->active;
+    }
+    if (chunks != store->chunk_count || last != store->last_chunk)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal Chunk chain metadata");
+    if (busy)
+        return store_error(error, MC_WORLD_STORAGE_BUSY,
+                           "Store terminal outside ownership or work");
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
 mc_world_storage_status mc_world_store_free_checked(mc_world_store **owner,
                                                     mc_world_storage_error *error) {
     if (owner != NULL && *owner != NULL && (*owner)->source != NULL)
@@ -2078,6 +2164,196 @@ mc_world_storage_status mc_world_store_terminal_visit_chunks(mc_world_store *sto
                 return status;
         }
     }
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+static mc_world_storage_status store_terminal_source_file(const mc_java_file *file,
+                                                          const mc_java_files *files,
+                                                          mc_world_storage_error *error) {
+    mc_java_file_state state;
+    if (file == NULL || mc_java_file_namespace(file) != files ||
+        mc_java_file_read_state(file, &state, NULL) != MC_JAVA_FILE_OK)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal source File provenance");
+    if (state.active || state.phase == MC_JAVA_FILE_CONSTRUCTING ||
+        state.phase == MC_JAVA_FILE_RETIRING)
+        return store_error(error, MC_WORLD_STORAGE_BUSY, "Store terminal source active File");
+    if (state.phase != MC_JAVA_FILE_READY || state.holds == 0 || state.path == NULL ||
+        state.has_failed_array)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal source incomplete File child");
+    /* Independent counted Files remain valid owners. This does not authorize
+     * final File/namespace closure or impose a guessed File hold allowance. */
+    return MC_WORLD_STORAGE_OK;
+}
+
+static mc_world_storage_status store_terminal_source_input(const mc_world_store_source *source,
+                                                           mc_world_storage_error *error) {
+    const mc_world_source_input_state *input = source->input;
+    if (input == NULL)
+        return MC_WORLD_STORAGE_OK; /* Actual prefix already cleared by its owner. */
+    if (input->candidate != NULL)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal source pending input File");
+    mc_world_storage_status status =
+        store_terminal_source_file(input->file, source->classes->files, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    if (input->stream != NULL) {
+        mc_java_file_stream_state stream;
+        if (mc_java_file_stream_read_state(input->stream, &stream, NULL) != MC_JAVA_FILE_OK)
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal source FileInputStream owner");
+        if (stream.active || stream.phase == MC_JAVA_FILE_CONSTRUCTING ||
+            stream.phase == MC_JAVA_FILE_RETIRING)
+            return store_error(error, MC_WORLD_STORAGE_BUSY,
+                               "Store terminal source active FileInputStream");
+        if (stream.phase != MC_JAVA_FILE_READY || stream.holds == 0 || stream.native_open ||
+            !stream.source_close_reached || !stream.source_close_succeeded)
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal source unclosed FileInputStream");
+    }
+    mc_nbt_stream_state reader = {0};
+    if (input->reader != NULL) {
+        if (mc_nbt_stream_state_read(input->reader, &reader, NULL) != MC_NBT_OK)
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal source DataInput owner");
+        if (reader.active || reader.phase == MC_NBT_STREAM_CONSTRUCTING ||
+            reader.phase == MC_NBT_STREAM_PARSING || reader.phase == MC_NBT_STREAM_RETIRING)
+            return store_error(error, MC_WORLD_STORAGE_BUSY,
+                               "Store terminal source active DataInput");
+    }
+    if (input->gzip != NULL) {
+        mc_gzip_state gzip;
+        if (mc_gzip_input_state_read(input->gzip, &gzip, NULL) != MC_GZIP_OK)
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal source GZIP owner");
+        if (gzip.active || gzip.retiring || gzip.phase == MC_GZIP_CONSTRUCTING ||
+            gzip.phase == MC_GZIP_RETIRING)
+            return store_error(error, MC_WORLD_STORAGE_BUSY, "Store terminal source active GZIP");
+        if (gzip.phase != MC_GZIP_READY || gzip.holds == 0 || !gzip.source_closed ||
+            !gzip.super_closed || gzip.source_in != input->stream || input->stream == NULL ||
+            gzip.pending_input != NULL || gzip.pending_inflater != NULL || gzip.source_inf == NULL)
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal source incomplete GZIP child");
+        mc_raw_inflater_state inflater;
+        if (mc_raw_inflater_state_read(gzip.source_inf, &inflater, NULL) != MC_RAW_INFLATER_OK)
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal source Inflater owner");
+        if (inflater.active || inflater.phase == MC_RAW_INFLATER_RETIRING)
+            return store_error(error, MC_WORLD_STORAGE_BUSY,
+                               "Store terminal source active Inflater");
+        if (inflater.phase != MC_RAW_INFLATER_READY || inflater.armed)
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal source unclosed Inflater");
+    }
+    if (!input->source_returned || input->info != NULL || input->document != NULL)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal source incomplete input prefix");
+    if (input->call == MC_WORLD_SOURCE_INPUT_SESSION) {
+        if (!input->input_constructed || !input->token_read || !input->token_matches ||
+            !input->closed || input->reader == NULL || input->stream == NULL ||
+            input->gzip != NULL || input->data != NULL || reader.phase != MC_NBT_STREAM_READY ||
+            reader.source_in != input->stream)
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal source incomplete session input");
+    } else if (input->call == MC_WORLD_SOURCE_INPUT_METADATA) {
+        if (!input->output_transferred ||
+            (input->exists &&
+             (!input->input_constructed || !input->parsed || !input->closed ||
+              input->reader == NULL || input->gzip == NULL || input->stream == NULL ||
+              input->data == NULL || reader.phase != MC_NBT_STREAM_COMPLETE ||
+              reader.source_in != input->gzip)) ||
+            (!input->exists && (input->reader != NULL || input->gzip != NULL ||
+                                input->stream != NULL || input->data != NULL)))
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal source incomplete metadata input");
+    } else {
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal source input call identity");
+    }
+    /* Only compare the reader's untyped context with the actual typed child
+     * above. Independent Info/Data/document occurrences are not Handler holds. */
+    return MC_WORLD_STORAGE_OK;
+}
+
+mc_world_storage_status
+mc_world_store_terminal_source_admit(const mc_world_store *store,
+                                     const mc_world_terminal_store_anchor *anchors, size_t count,
+                                     mc_world_storage_error *error) {
+    if (store == NULL || anchors == NULL || count == 0)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                           "Store terminal source owning slots");
+    if (count > 16)
+        return store_error(error, MC_WORLD_STORAGE_LIMIT, "Store terminal source anchor bound");
+    for (size_t i = 0; i < count; ++i) {
+        if (anchors[i].slot == NULL || *anchors[i].slot != store)
+            return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                               "Store terminal source owning slot identity");
+        for (size_t j = 0; j < i; ++j)
+            if (anchors[i].slot == anchors[j].slot)
+                return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                   "Store terminal source repeated owning slot");
+    }
+    const mc_world_store_source *source = store->source;
+    if (source == NULL || source->classes == NULL)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal source Handler owner");
+    const mc_world_source_state *state = &source->state;
+    const mc_world_store_source_classes *classes = source->classes;
+    if (state->active || classes->active || state->phase == MC_WORLD_SOURCE_CONSTRUCTING ||
+        state->phase == MC_WORLD_SOURCE_RETIRING ||
+        classes->phase == MC_WORLD_SOURCE_CONSTRUCTING ||
+        classes->phase == MC_WORLD_SOURCE_RETIRING)
+        return store_error(error, MC_WORLD_STORAGE_BUSY, "Store terminal source active Handler");
+    if (state->phase != MC_WORLD_SOURCE_READY || classes->phase != MC_WORLD_SOURCE_READY ||
+        classes->holds == 0 || classes->handlers == 0 || classes->holds < classes->handlers ||
+        classes->files == NULL || classes->logging == NULL)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal source Handler class provenance");
+    if (state->holds > count)
+        return store_error(error, MC_WORLD_STORAGE_BUSY,
+                           "Store terminal source external Handler occurrence");
+    if (state->holds < count)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal source Handler occurrence deficit");
+    if (!state->e_stored || !state->session_entered || !state->session_file_stored ||
+        !state->output_stored || !state->write_returned || !state->close_returned ||
+        !state->d_returned || !state->fm_returned || !state->mx_returned ||
+        state->pending_file != NULL || source->data_file != NULL || source->data_name != NULL)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal source incomplete Handler prefix");
+    const mc_java_file *files[] = {state->source_b, state->source_c, state->source_d,
+                                   state->session_file};
+    for (size_t i = 0; i < sizeof(files) / sizeof(*files); ++i) {
+        mc_world_storage_status status =
+            store_terminal_source_file(files[i], classes->files, error);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
+    }
+    mc_java_file_output_state fos;
+    mc_java_data_output_state dos;
+    if (!mc_java_file_output_inspect(state->pending_fos, &fos) ||
+        !mc_java_data_output_inspect(state->pending_dos, &dos))
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal source session output owners");
+    if (fos.active || dos.active || fos.phase == MC_JAVA_OUTPUT_CONSTRUCTING ||
+        dos.phase == MC_JAVA_OUTPUT_CONSTRUCTING || fos.phase == MC_JAVA_OUTPUT_RETIRING ||
+        dos.phase == MC_JAVA_OUTPUT_RETIRING)
+        return store_error(error, MC_WORLD_STORAGE_BUSY,
+                           "Store terminal source active session output");
+    if (fos.phase != MC_JAVA_OUTPUT_READY || dos.phase != MC_JAVA_OUTPUT_READY || fos.holds == 0 ||
+        dos.holds == 0 || fos.native_open || !fos.source_closed || !fos.source_close_reached ||
+        !fos.source_close_succeeded || !dos.closed || fos.pending_close_lock != NULL ||
+        dos.pending_close_lock != NULL || fos.argument != state->session_file ||
+        fos.descriptor_parent != state->pending_fos || dos.out != state->pending_fos)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal source incomplete session output");
+    mc_world_storage_status status = store_terminal_source_input(source, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    /* No shared File/logging/region namespace is closed, retained or activated.
+     * This admission is neither a reservation nor a cached cleanup permit. */
     return store_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
 

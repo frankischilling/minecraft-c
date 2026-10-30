@@ -1,5 +1,7 @@
 /* Canonical client LOAD_OR_CREATE with real source File/HC/fm/ld owners. */
 #include "../../../src/world/runtime/runtime_internal.h"
+#include "../../../src/world/runtime/source_construction_internal.h"
+#include "../../../src/world/runtime/source_terminal_internal.h"
 #include "mc/world/dimension/world_provider.h"
 #include "mc/world/runtime/queries.h"
 #include "mc/world/runtime/source_construction.h"
@@ -64,6 +66,183 @@ static mc_world_info_name *text(const char *ascii) {
     return status == MC_WORLD_INFO_OK ? out : NULL;
 }
 
+typedef struct terminal_snapshot {
+    unsigned char world[sizeof(mc_world_runtime)];
+    unsigned char sidecar[sizeof(mc_world_runtime_source_construction)];
+    bool has_sidecar, has_hc, has_loader;
+    mc_world_source_state handler;
+    mc_world_source_class_state classes;
+    mc_world_source_regions_state regions;
+    mc_world_saved_data_source_state hc;
+    mc_world_source_chunk_loader_state loader;
+    mc_world_source_error handler_failure, handler_cleanup, class_failure, class_cleanup;
+    mc_world_source_region_error region_failure, region_cleanup;
+    mc_world_saved_data_source_error hc_failure, hc_cleanup;
+    mc_world_source_chunk_error loader_failure, loader_cleanup;
+} terminal_snapshot;
+
+static int terminal_capture(const fixture *f, const mc_world_runtime *world,
+                            const mc_world_store *store, terminal_snapshot *out) {
+    memcpy(out->world, world, sizeof(out->world));
+    CHECK(mc_world_store_source_inspect(store, &out->handler));
+    CHECK(mc_world_store_source_classes_inspect(f->handlers, &out->classes));
+    CHECK(mc_world_source_regions_inspect(f->regions, &out->regions));
+    memcpy(&out->handler_failure, out->handler.failure, sizeof(out->handler_failure));
+    memcpy(&out->handler_cleanup, out->handler.cleanup, sizeof(out->handler_cleanup));
+    memcpy(&out->class_failure, out->classes.failure, sizeof(out->class_failure));
+    memcpy(&out->class_cleanup, out->classes.cleanup, sizeof(out->class_cleanup));
+    memcpy(&out->region_failure, out->regions.failure, sizeof(out->region_failure));
+    memcpy(&out->region_cleanup, out->regions.cleanup, sizeof(out->region_cleanup));
+    const mc_world_runtime_source_construction *source = world->source_construction;
+    if (source != NULL) {
+        out->has_sidecar = true;
+        memcpy(out->sidecar, source, sizeof(out->sidecar));
+        const mc_world_saved_data *hc =
+            source->saved_data_published ? world->fields.z : source->pending_saved_data;
+        if (hc != NULL) {
+            out->has_hc = true;
+            CHECK(mc_world_saved_data_source_inspect(hc, &out->hc));
+            memcpy(&out->hc_failure, out->hc.failure, sizeof(out->hc_failure));
+            memcpy(&out->hc_cleanup, out->hc.cleanup, sizeof(out->hc_cleanup));
+        }
+        if (source->loader != NULL) {
+            out->has_loader = true;
+            CHECK(mc_world_source_chunk_loader_inspect(source->loader, &out->loader));
+            memcpy(&out->loader_failure, out->loader.failure, sizeof(out->loader_failure));
+            memcpy(&out->loader_cleanup, out->loader.cleanup, sizeof(out->loader_cleanup));
+        }
+    }
+    return 0;
+}
+
+static int terminal_attempt(const fixture *f, mc_world_runtime *world,
+                            mc_world_store *const *caller_store_slot,
+                            mc_world_storage_status world_status,
+                            mc_world_storage_status store_status) {
+    /* Large retained causes and raw canonical-owner bytes belong on the heap.
+     * None of these snapshots is passed as a replacement source owner. */
+    terminal_snapshot *before = calloc(1, sizeof(*before)), *after = calloc(1, sizeof(*after));
+    CHECK(before != NULL && after != NULL);
+    mc_world_store *store = *caller_store_slot;
+    CHECK(terminal_capture(f, world, store, before) == 0);
+    mc_world_terminal_source_view view;
+    memset(&view, 0xa5, sizeof(view));
+    unsigned char sentinel[sizeof(view)];
+    memcpy(sentinel, &view, sizeof(sentinel));
+    mc_world_storage_error error = {0};
+    CHECK(mc_world_runtime_terminal_source_inspect(world, &view, &error) == world_status &&
+          error.status == world_status);
+    if (world_status == MC_WORLD_STORAGE_OK) {
+        const mc_world_runtime_source_construction *source = world->source_construction;
+        CHECK(view.store_slots[0] == &source->store && view.loader_slot == &source->loader &&
+              *view.loader_slot == source->loader && error.operation == NULL);
+        mc_world_store *const *hc_store = NULL;
+        mc_world_terminal_loader_view loader;
+        CHECK(mc_world_saved_data_terminal_store_slot(world->fields.z, &hc_store, NULL) ==
+                  MC_WORLD_STORAGE_OK &&
+              mc_world_source_chunk_loader_terminal_inspect(source->loader, &loader, NULL) ==
+                  MC_WORLD_STORAGE_OK &&
+              view.store_slots[1] == hc_store && view.store_slots[2] == loader.store_slot &&
+              loader.holds == 1 && *loader.regions_slot == f->regions);
+        mc_world_terminal_store_anchor anchors[4] = {{caller_store_slot}};
+        for (size_t i = 0; i < 3; ++i) {
+            CHECK(view.store_slots[i] != NULL && *view.store_slots[i] == store &&
+                  view.store_slots[i] != caller_store_slot);
+            for (size_t j = 0; j < i; ++j)
+                CHECK(view.store_slots[i] != view.store_slots[j]);
+            anchors[i + 1].slot = view.store_slots[i];
+        }
+        CHECK(mc_world_store_terminal_source_admit(store, anchors, 4, &error) == store_status &&
+              error.status == store_status);
+        if (store_status == MC_WORLD_STORAGE_OK)
+            CHECK(before->handler.holds == sizeof(anchors) / sizeof(anchors[0]) &&
+                  error.operation == NULL);
+        else
+            CHECK(store_status == MC_WORLD_STORAGE_BUSY &&
+                  before->handler.holds == sizeof(anchors) / sizeof(anchors[0]) + 1 &&
+                  error.operation != NULL &&
+                  strcmp(error.operation, "Store terminal source external Handler occurrence") ==
+                      0);
+        view = (mc_world_terminal_source_view){0};
+        CHECK(mc_world_runtime_terminal_source_inspect(world, &view, NULL) == MC_WORLD_STORAGE_OK &&
+              view.store_slots[0] == &source->store && view.store_slots[1] == hc_store &&
+              view.store_slots[2] == loader.store_slot && view.loader_slot == &source->loader);
+    } else {
+        CHECK(memcmp(sentinel, &view, sizeof(view)) == 0);
+        CHECK(mc_world_runtime_terminal_source_inspect(world, &view, NULL) == world_status &&
+              memcmp(sentinel, &view, sizeof(view)) == 0);
+    }
+    CHECK(*caller_store_slot == store && terminal_capture(f, world, store, after) == 0);
+    CHECK(memcmp(before->world, after->world, sizeof(before->world)) == 0 &&
+          before->has_sidecar == after->has_sidecar && before->has_hc == after->has_hc &&
+          before->has_loader == after->has_loader);
+    if (before->has_sidecar)
+        CHECK(memcmp(before->sidecar, after->sidecar, sizeof(before->sidecar)) == 0);
+    /* These three getters copy their actual stored state, not reconstructed
+     * aggregate views. Diagnostic objects are copied separately below. */
+    CHECK(memcmp(&before->handler, &after->handler, sizeof(before->handler)) == 0);
+    if (before->has_hc)
+        CHECK(memcmp(&before->hc, &after->hc, sizeof(before->hc)) == 0);
+    if (before->has_loader)
+        CHECK(memcmp(&before->loader, &after->loader, sizeof(before->loader)) == 0);
+    const mc_world_source_class_state *a = &before->classes, *b = &after->classes;
+    CHECK(a->phase == b->phase && a->holds == b->holds && a->handlers == b->handlers &&
+          a->literal_allocations == b->literal_allocations && a->active == b->active &&
+          a->last_store_pc == b->last_store_pc && a->files == b->files &&
+          a->logging == b->logging && a->source_a == b->source_a &&
+          a->pending_logger == b->pending_logger && a->minecraft == b->minecraft &&
+          a->players == b->players && a->data == b->data && a->session_lock == b->session_lock &&
+          a->failure == b->failure && a->cleanup == b->cleanup);
+    const mc_world_source_regions_state *ra = &before->regions, *rb = &after->regions;
+    CHECK(ra->holds == rb->holds && ra->entries == rb->entries && ra->active == rb->active &&
+          ra->activated == rb->activated && ra->retiring == rb->retiring &&
+          ra->files == rb->files && ra->pending_directory == rb->pending_directory &&
+          ra->pending_file == rb->pending_file &&
+          ra->pending_random_access == rb->pending_random_access && ra->failure == rb->failure &&
+          ra->cleanup == rb->cleanup);
+    CHECK(
+        memcmp(&before->handler_failure, &after->handler_failure,
+               sizeof(before->handler_failure)) == 0 &&
+        memcmp(&before->handler_cleanup, &after->handler_cleanup,
+               sizeof(before->handler_cleanup)) == 0 &&
+        memcmp(&before->class_failure, &after->class_failure, sizeof(before->class_failure)) == 0 &&
+        memcmp(&before->class_cleanup, &after->class_cleanup, sizeof(before->class_cleanup)) == 0 &&
+        memcmp(&before->region_failure, &after->region_failure, sizeof(before->region_failure)) ==
+            0 &&
+        memcmp(&before->region_cleanup, &after->region_cleanup, sizeof(before->region_cleanup)) ==
+            0 &&
+        memcmp(&before->hc_failure, &after->hc_failure, sizeof(before->hc_failure)) == 0 &&
+        memcmp(&before->hc_cleanup, &after->hc_cleanup, sizeof(before->hc_cleanup)) == 0 &&
+        memcmp(&before->loader_failure, &after->loader_failure, sizeof(before->loader_failure)) ==
+            0 &&
+        memcmp(&before->loader_cleanup, &after->loader_cleanup, sizeof(before->loader_cleanup)) ==
+            0);
+    free(before);
+    free(after);
+    return 0;
+}
+
+static int terminal_controls(fixture *f, mc_world_runtime *world, mc_world_store **store_slot) {
+    CHECK(terminal_attempt(f, world, store_slot, MC_WORLD_STORAGE_OK, MC_WORLD_STORAGE_OK) == 0);
+    mc_world_store *extra_store = *store_slot;
+    CHECK(mc_world_store_source_retain(extra_store, &f->source) == MC_WORLD_SOURCE_OK);
+    CHECK(terminal_attempt(f, world, store_slot, MC_WORLD_STORAGE_OK, MC_WORLD_STORAGE_BUSY) == 0);
+    CHECK(mc_world_store_source_release(&extra_store, &f->source) == MC_WORLD_SOURCE_OK &&
+          extra_store == NULL);
+    CHECK(terminal_attempt(f, world, store_slot, MC_WORLD_STORAGE_OK, MC_WORLD_STORAGE_OK) == 0);
+    mc_world_source_chunk_loader *extra_loader = world->source_construction->loader;
+    CHECK(mc_world_source_chunk_loader_retain(extra_loader, &f->source) == MC_WORLD_SOURCE_OK);
+    mc_world_source_state handler;
+    mc_world_source_chunk_loader_state loader;
+    CHECK(mc_world_store_source_inspect(*store_slot, &handler) && handler.holds == 4 &&
+          mc_world_source_chunk_loader_inspect(extra_loader, &loader) && loader.holds == 2);
+    CHECK(terminal_attempt(f, world, store_slot, MC_WORLD_STORAGE_BUSY, MC_WORLD_STORAGE_OK) == 0);
+    CHECK(mc_world_source_chunk_loader_release(&extra_loader, &f->source) == MC_WORLD_SOURCE_OK &&
+          extra_loader == NULL);
+    CHECK(terminal_attempt(f, world, store_slot, MC_WORLD_STORAGE_OK, MC_WORLD_STORAGE_OK) == 0);
+    return 0;
+}
+
 static int test_case(fixture *f, const char *folder, scenario selected_case) {
     mc_world_store *store = NULL;
     mc_world_runtime *world = NULL;
@@ -82,6 +261,8 @@ static int test_case(fixture *f, const char *folder, scenario selected_case) {
                                           &limits, &world, &f->error) == MC_WORLD_STORAGE_OK);
     mc_world_runtime_source_construction_state source;
     CHECK(!mc_world_runtime_source_construction_inspect(world, &source));
+    CHECK(terminal_attempt(f, world, &store, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           MC_WORLD_STORAGE_OK) == 0);
     const mc_world_runtime_world_arguments args = {.store = store, .name = f->display, .seed = 777};
     mc_world_source_regions_state region_before, region_after;
     CHECK(mc_world_source_regions_inspect(f->regions, &region_before));
@@ -176,7 +357,7 @@ static int test_case(fixture *f, const char *folder, scenario selected_case) {
                           mc_world_store_source_inspect(store, &handler) &&
                           ld.phase == MC_WORLD_SOURCE_READY && ld.store == store &&
                           ld.source_a == handler.source_b && ld.regions == f->regions &&
-                          handler.holds >= 4);
+                          handler.holds == 4);
                     CHECK(mc_world_saved_data_count(fields.z) ==
                           (selected_case == PRIMARY ? 2u : 0u));
                     if (selected_case == PRIMARY) {
@@ -222,6 +403,11 @@ static int test_case(fixture *f, const char *folder, scenario selected_case) {
           source.metadata_returned == retained.metadata_returned);
     CHECK(mc_world_store_source_inspect(store, &after_retry) &&
           after_retry.holds == before_retry.holds && after_retry.source_e == before_retry.source_e);
+    if (state.phase == MC_WORLD_RUNTIME_READY)
+        CHECK(terminal_controls(f, world, &store) == 0);
+    else
+        CHECK(terminal_attempt(f, world, &store, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               MC_WORLD_STORAGE_OK) == 0);
     if (selected_case == PRIMARY) {
         /* The copied region has a real zlib record with a non-Compound root.
          * Query acquisition must keep the exact retained ld/as failure, with
