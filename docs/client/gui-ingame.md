@@ -81,7 +81,8 @@ call is at506; the ordinary no-screen renderer returns709. These clock values
 are real native samples, not cross-process clock-identity comparisons.
 
 The focused loaded profile requires a complete frame return. A separate fresh
-profile continues the ordinary loop until its next unpaused tick reaches the
+profile verifies real SDL/SDK focus after a hide/show cycle, preserving its
+Component and source-grab fields, then continues the ordinary loop until its next unpaused tick reaches the
 [Mob spawn continuation](../entity/mob-construction.md), checking that no completed
 draw guard or stale HUD receipt
 blocks it. That profile uses the normal terminal coordinator to end dispatcher

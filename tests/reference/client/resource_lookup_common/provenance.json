@@ -226,8 +226,8 @@
       "sha256": "a977dc991d9183cb2b7f2d8d73350650135e5aec1257c155a33951fa234761d0"
     },
     "docs/client/gui-ingame.md": {
-      "bytes": 7922,
-      "sha256": "c4c450c9493cc28c1d865952ee04bd357906ffc2167aa51900d0d4a5fc1ffb29"
+      "bytes": 8029,
+      "sha256": "1f22e83f2c6919c973733baa89e75219637f6c88b8a6763051f76f2bf923bcb9"
     },
     "docs/client/gui-main-menu.md": {
       "bytes": 7746,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 47184,
-      "sha256": "eaab493cc90decc29675a05b5fa45b9c6a968ef238aa126c1d49c5442329b11b"
+      "bytes": 47530,
+      "sha256": "5fe79cfd2480c93b1c200e2ea8da6935c7f0a747080bc8bf50e4b8155adabd0f"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,24 +826,24 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 317688,
-      "sha256": "87c9681a169e2b106b983f90c0f775146679deebf7aa4709e5a85a30c57cc97a"
+      "bytes": 318948,
+      "sha256": "c24cd19fcefdda9db8eae90dceccaea69bb6355bb7ad9d46832a4ac00bde2136"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 22424,
       "sha256": "bf9debb7d384c1d7a4a36472b0e84424b58952b1313f8fad0547bd5a57babf9f"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 45829,
-      "sha256": "7f6fab673199474f11d55f5ef3b23dfb54357ddf4f6d7fcff62753b6f2293afe"
+      "bytes": 45934,
+      "sha256": "7b1d2e285d9801c0781671cb1306745d82f8e82f2dccd65754099e2c82efa3f3"
     },
     "docs/wiki/History.md": {
       "bytes": 26966,
       "sha256": "60c2185a29fa34238087d0be8cd967f0216e400129206c71b00d3864b4402542"
     },
     "docs/wiki/Home.md": {
-      "bytes": 12602,
-      "sha256": "e31e028ba502709d282fe613a69b64aa674686e2c01065e27e1121465f948769"
+      "bytes": 12707,
+      "sha256": "7f614dd0de1b3262fb9e63746e54e9f7bca9bcf265443c822ef84d2851758c55"
     },
     "docs/wiki/Startup.md": {
       "bytes": 12289,
@@ -6407,7 +6407,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 235159,
-      "sha256": "a182063eaa0eba057d08021abec07f591b95a32765d333d13e0f7b29832b188f"
+      "sha256": "fd9a3c110353b3588f48aab85d48121092d1b1176f5322d64b4e1325fe16d48e"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6471,7 +6471,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 334920,
-      "sha256": "61556dede09f460f6c066f597196f9e2fa4ab242a41fe21a5e35193f965707bc"
+      "sha256": "8ccc3a80b992726386f0aefee6f0197384ff1c022ae96059176bdd1b097fec54"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6603,7 +6603,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 231165,
-      "sha256": "9260db8d4a85d8f0a7b22cf3c6b59c69f1c24fba425e9b25174a2499fb81669b"
+      "sha256": "49cdb5a1f95129dcc5810c4a56c21f784d1332a684c91416e3a6c5922bd58356"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9926,8 +9926,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 111076,
-      "sha256": "8df0179c798613f943023c1bc431df0fab2056fc505c9d8978cd20b7b58e73a9"
+      "bytes": 113583,
+      "sha256": "2aaf197ec917e550852fdd32f3b1e74269a4e21b10a5119db01118edccb02906"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -9958,8 +9958,8 @@
       "sha256": "5337d15e53e776798d0a4f394e74432da7a578951b72f5c761439accb811786b"
     },
     "tests/tools/client/test_world_selection_loop.py": {
-      "bytes": 10706,
-      "sha256": "ad12bdd5ca6e2b82f308d14b7edf20b50b841f28e079add79cab791b7e74c423"
+      "bytes": 10961,
+      "sha256": "fd87739594f7222071574ffec9995a19dca0c17a428f86b38cdaba9a08281033"
     },
     "tests/tools/platform/test_date_format_reference.py": {
       "bytes": 4341,
@@ -13154,8 +13154,8 @@
       "sha256": "f60e2466c08dd4a1e7723b1e31d1d0e3824923fecdae5a68c2f359d88ff4f36c"
     },
     "docs/entity/mob-construction.md": {
-      "bytes": 5467,
-      "sha256": "7dfee586795238f80f83a926d578f5300652634ad4c794b0c8bedcbf4d0f9829"
+      "bytes": 5572,
+      "sha256": "45f2cf506bbb9f08bf84e0faf9ef18cd404931edee13edabba74a615c1638d40"
     },
     "include/mc/entity/mob/construction.h": {
       "bytes": 3683,
@@ -13178,8 +13178,8 @@
       "sha256": "544ec641a95bb434657faf09410b61e10f03e77ec4e929f127b11240692405a7"
     },
     "tests/entity/test_mob_construction.c": {
-      "bytes": 40410,
-      "sha256": "10b56399d14e47673a6742d3f2025c3365d2f8f1fce5c7eaf3d0081cec3c62c3"
+      "bytes": 40404,
+      "sha256": "f4c3014c0499fa47b90743350b0e1697e47ac501412458a98b2f03e0d95d93d3"
     },
     "tests/reference/entity/mob_construction/ConstructorJson.java": {
       "bytes": 1571,

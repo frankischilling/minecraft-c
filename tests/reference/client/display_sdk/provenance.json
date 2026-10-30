@@ -2474,8 +2474,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 111076,
-      "sha256": "8df0179c798613f943023c1bc431df0fab2056fc505c9d8978cd20b7b58e73a9"
+      "bytes": 113583,
+      "sha256": "2aaf197ec917e550852fdd32f3b1e74269a4e21b10a5119db01118edccb02906"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -2490,8 +2490,8 @@
       "sha256": "5337d15e53e776798d0a4f394e74432da7a578951b72f5c761439accb811786b"
     },
     "tests/tools/client/test_world_selection_loop.py": {
-      "bytes": 10706,
-      "sha256": "ad12bdd5ca6e2b82f308d14b7edf20b50b841f28e079add79cab791b7e74c423"
+      "bytes": 10961,
+      "sha256": "fd87739594f7222071574ffec9995a19dca0c17a428f86b38cdaba9a08281033"
     },
     "tests/tools/platform/test_date_format_reference.py": {
       "bytes": 4341,
@@ -4758,8 +4758,8 @@
       "sha256": "544ec641a95bb434657faf09410b61e10f03e77ec4e929f127b11240692405a7"
     },
     "tests/entity/test_mob_construction.c": {
-      "bytes": 40410,
-      "sha256": "10b56399d14e47673a6742d3f2025c3365d2f8f1fce5c7eaf3d0081cec3c62c3"
+      "bytes": 40404,
+      "sha256": "f4c3014c0499fa47b90743350b0e1697e47ac501412458a98b2f03e0d95d93d3"
     },
     "tests/reference/entity/mob_construction/capture_reference.py": {
       "bytes": 6453,

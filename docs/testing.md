@@ -3,7 +3,7 @@
 ## Hostile Mob constructors and the spawn continuation
 
 All 67 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan. All 76
-Windows tests pass in 103.62 seconds and all 72 Linux tests in 133.60 seconds, without
+Windows tests pass in 89.99 seconds and all 72 Linux tests in 118.22 seconds, without
 failures, skips or sanitizer findings. All 2,365 source, helper, build and reference
 inputs remain unchanged through both builds and tests; formatting checks 1,658 files.
 
@@ -15,8 +15,9 @@ The unchanged-original package executes 15 constructors per ordinary/JDI VM, ver
 closure. Final JDI observations cover Slime sizes 1, 2 and 4; fresh native
 declared-clock controls cover all three sizes independently.
 
-The fresh focused Windows loop selects a Creeper (`gb`), completes its constructor and pose, and
-reaches spawn eligibility at `cq.a:820`.
+Fresh focused Windows profiles continue from the returning frame into the actual
+Mob spawn prefix. The five admitted hostile classes complete construction, yaw and
+pose before eligibility at `cq.a:820`; other constructors remain at `cq.a:773`.
 
 The native World fixture separately exercises all five constructors, the eleventh World
 Random call for yaw, exact pose/bounds, no publication or lease changes, and an
@@ -29,6 +30,23 @@ Cold and previously failed Item initialization, retained RAW Skeleton Stacks, im
 failure causes, all-five early allocation/Math failures and early Creeper/Slime watcher
 failures have separate native controls. These results do not close spawning, arbitrary
 initialization, Mob AI, rendering or gameplay.
+
+The hosted GCC build exposed a C17 test declaration issue: converting the mutable
+two-dimensional input array to a const-qualified array pointer requires later C
+qualification rules. The helper declaration now matches its caller. Strict GCC13
+syntax checks pass with the existing warning flags; the runtime and assertions
+are unchanged. Both complete native cohorts above were refreshed after the fix.
+
+A refreshed Windows run also exposed an external-focus precondition in the visible
+repeated profile. A real forced hide reproduced the documented null-Canvas
+`vy.b:4` failure through `Minecraft.i:16`; SDL and SDK both reported inactive, and
+the Component was already null. The focused fixture now hides/shows its own window,
+waits for actual SDL/SDK focus, and verifies Component and source-grab preservation
+before ordinary source continuation. Three isolated repeats pass. It rechecks
+physical focus before subsequent frames. Source `N`, PX timing and Canvas fields
+are never assigned by this control. General Canvas integration and ordinary
+focus-loss ungrab remain unfinished; initial hidden-window saving retains its
+separate `oz.a:22` frontier.
 
 ## GuiIngame and a returning loaded frame
 

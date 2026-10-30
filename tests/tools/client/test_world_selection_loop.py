@@ -171,6 +171,8 @@ def main():
                 if observed != expected:
                     raise RuntimeError("Actual SDK focus segment differs from 72 original PX histories")
             if mode == "repeat":
+                if "WORLD_FOCUS hidden-inactive=1 restored-active=1 component-preserved=1 source-grab-preserved=1" not in result.stdout:
+                    raise RuntimeError("Focused repeat fixture did not restore actual focus without source mutation")
                 receipt = re.search(
                     r"^WORLD_FRAME first-returned=1 next-unpaused-tick=fd.l80 child=cq.a(773|820) "
                     r"mob=([a-z]+) constructed=([01]) positioned=([01]) completed-draws-retired=1 "

@@ -77,7 +77,7 @@ spawning, a complete World tick, original Entity drawing or playable gameplay.
 ## Qualified native and original comparisons
 
 All 67 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan. All 76
-Windows tests pass in 103.62 seconds and all 72 Linux tests in 133.60 seconds, without
+Windows tests pass in 89.99 seconds and all 72 Linux tests in 118.22 seconds, without
 failures, skips or sanitizer findings. All 2,365 source, helper, build and reference
 inputs remain unchanged through both builds and tests; formatting checks 1,658 files.
 
@@ -89,5 +89,6 @@ The unchanged-original package executes 15 constructors per ordinary/JDI VM, ver
 closure. Final JDI observations cover Slime sizes 1, 2 and 4; fresh native
 declared-clock controls cover all three sizes independently.
 
-The fresh focused Windows loop selects a Creeper (`gb`), completes its constructor and pose, and
-reaches spawn eligibility at `cq.a:820`.
+Fresh focused Windows profiles continue from the returning frame into the actual
+Mob spawn prefix. The five admitted hostile classes complete construction, yaw and
+pose before eligibility at `cq.a:820`; other constructors remain at `cq.a:773`.

@@ -15,6 +15,7 @@
 #include "client/gui/source_world_list.h"
 #include "client/gui/source_world_selection_drawing.h"
 #include "client/gui/source_world_selection_internal.h"
+#include "client/input/mouse_helper.h"
 #include "client/render/tile_entity_renderer/internal.h"
 #include "client/runtime/gameplay_input.h"
 #include "client/runtime/menu_loop.h"
@@ -137,6 +138,28 @@ static int ticks(fixture *f, uint64_t count) {
         CHECK(frame(f) == 0);
     CHECK(f->state.ticks >= target);
     return 0;
+}
+
+static int display_focus(fixture *f, bool expected) {
+    SDL_Window *window = mc_client_display_window(f->app->display);
+    if (expected)
+        CHECK(SDL_ShowWindow(window) && SDL_RaiseWindow(window));
+    const uint64_t deadline = SDL_GetTicks() + 1500;
+    do {
+        SDL_PumpEvents();
+        bool active;
+        mc_client_sdk_update_error update;
+        CHECK(mc_client_sdk_display_active(mc_client_display_update_owner(f->app->display), &active,
+                                           &update) == MC_CLIENT_SDK_UPDATE_OK);
+        if (active == expected && (SDL_GetKeyboardFocus() == window) == expected)
+            return 0;
+        if (expected)
+            CHECK(SDL_RaiseWindow(window));
+        SDL_Delay(1);
+    } while (SDL_GetTicks() < deadline);
+    fprintf(stderr, "Focused repeat fixture could not establish actual display focus=%d\n",
+            expected);
+    return 1;
 }
 
 static int transfer(fixture *f) {
@@ -1657,9 +1680,30 @@ int main(int argc, char **argv) {
             CHECK(capture(&f, prefix_path) == 0);
             free(prefix_path);
             if (repeat_load) {
+                mc_client_source_vy *mouse_owner = f.app->C;
+                mc_client_mouse_helper_state mouse_before, mouse_after;
+                mc_client_sdk_input_state input_before, input_after;
+                CHECK(mc_client_mouse_helper_inspect(mouse_owner, &mouse_before) &&
+                      mc_client_sdk_input_inspect(mc_client_display_inputs(f.app->display),
+                                                  &input_before));
+                const bool source_grab = f.app->N;
+                /* This profile qualifies focused continuation. Exercise real
+                 * focus loss/recovery in the transport before entering source
+                 * work; source grab, Canvas and PX timing fields stay untouched. */
+                CHECK(SDL_HideWindow(mc_client_display_window(f.app->display)) &&
+                      display_focus(&f, false) == 0 && display_focus(&f, true) == 0);
+                CHECK(f.app->C == mouse_owner &&
+                      mc_client_mouse_helper_inspect(mouse_owner, &mouse_after) &&
+                      mc_client_sdk_input_inspect(mc_client_display_inputs(f.app->display),
+                                                  &input_after) &&
+                      mouse_after.source_c == mouse_before.source_c && f.app->N == source_grab &&
+                      input_before.grabbed == input_after.grabbed);
+                puts("WORLD_FOCUS hidden-inactive=1 restored-active=1 component-preserved=1 "
+                     "source-grab-preserved=1");
                 const uint64_t repeat_deadline = SDL_GetTicks() + 3000;
                 bool next_failed = false;
                 while (!next_failed && SDL_GetTicks() < repeat_deadline) {
+                    CHECK(display_focus(&f, true) == 0);
                     next_failed = !mc_client_menu_loop_frame(f.loop);
                     CHECK(mc_client_menu_loop_inspect(f.loop, &f.state));
                     SDL_Delay(1);

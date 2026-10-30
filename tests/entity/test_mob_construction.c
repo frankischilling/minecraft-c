@@ -442,7 +442,7 @@ static void replay(const uint64_t values[5], bool slime) {
     }
 }
 
-static bool success_cases(fixture *f, const uint64_t inputs[15][5]) {
+static bool success_cases(fixture *f, uint64_t inputs[15][5]) {
     double warm;
     CHECK(mc_java_math_random(f->profile, &warm) == MC_JAVA_RANDOM_PROFILE_OK);
     const mc_item_stack *skeleton = NULL;

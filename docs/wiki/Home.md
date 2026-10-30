@@ -2,12 +2,12 @@
 
 The five default hostile [Mob
 constructors](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-construction.md)
-now execute on actual Entity/Living owners before the World spawn yaw and pose. The
-fresh focused Windows loop selects a Creeper (`gb`), completes its constructor and pose, and reaches
-spawn eligibility at `cq.a:820`.
+now execute on actual Entity/Living owners before the World spawn yaw and pose. Fresh focused Windows profiles continue from the returning frame into the actual
+Mob spawn prefix. The five admitted hostile classes complete construction, yaw and
+pose before eligibility at `cq.a:820`; other constructors remain at `cq.a:773`.
 
 All 67 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan. All 76
-Windows tests pass in 103.62 seconds and all 72 Linux tests in 133.60 seconds, without
+Windows tests pass in 89.99 seconds and all 72 Linux tests in 118.22 seconds, without
 failures, skips or sanitizer findings. All 2,365 source, helper, build and reference
 inputs remain unchanged through both builds and tests; formatting checks 1,658 files.
 

@@ -5,11 +5,12 @@ run on genuine Entity/Living owners, including early watcher hooks, Slime size/R
 behavior and Skeleton's retained static bow initializer. The World spawn path follows
 returned construction with fresh World Random yaw and the actual pose body.
 
-The fresh focused Windows loop selects a Creeper (`gb`), completes its constructor and pose, and
-reaches spawn eligibility at `cq.a:820`.
+Fresh focused Windows profiles continue from the returning frame into the actual
+Mob spawn prefix. The five admitted hostile classes complete construction, yaw and
+pose before eligibility at `cq.a:820`; other constructors remain at `cq.a:773`.
 
 All 67 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan. All 76
-Windows tests pass in 103.62 seconds and all 72 Linux tests in 133.60 seconds, without
+Windows tests pass in 89.99 seconds and all 72 Linux tests in 118.22 seconds, without
 failures, skips or sanitizer findings. All 2,365 source, helper, build and reference
 inputs remain unchanged through both builds and tests; formatting checks 1,658 files.
 
@@ -25,6 +26,10 @@ The client remains pre-playable. Spawn eligibility/publication, remaining Mob
 constructors, ordinary World ticking, Entity drawing and gameplay actions remain
 unfinished. Hidden inactivity still reaches its genuine incremental save dependency at
 `oz.a:22`.
+
+The followup corrects a C17 test declaration and establishes actual window focus
+for the focused repeated-frame fixture. The documented null-Canvas ungrab path
+remains unfinished; this fixture change supplies no runtime Canvas replacement.
 
 ## Preceding GuiIngame checkpoint
 
