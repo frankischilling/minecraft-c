@@ -214,6 +214,16 @@ mc_client_world_load_classes_retire(mc_client_world_load_classes **slot) {
     return MC_CLIENT_WORLD_LOAD_OK;
 }
 
+mc_client_world_load_status
+mc_client_world_load_classes_terminal_end(mc_client_world_load_classes *classes) {
+    if (classes == NULL)
+        return MC_CLIENT_WORLD_LOAD_ARGUMENT;
+    if (classes->active)
+        return MC_CLIENT_WORLD_LOAD_BUSY;
+    classes->retiring = true;
+    return MC_CLIENT_WORLD_LOAD_OK;
+}
+
 static bool loading(mc_client_world_load_call *call, mc_client_loading_screen *receiver,
                     mc_player_string *text, bool start, const char *method, const char *descriptor,
                     int pc, mc_client_loading_error *error) {
@@ -1027,17 +1037,11 @@ static void world_cleanup_cause(mc_client_world_load_call *call) {
     }
 }
 
-mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_call **slot) {
-    if (slot == NULL)
-        return MC_CLIENT_WORLD_LOAD_ARGUMENT;
-    mc_client_world_load_call *call = *slot;
-    if (call == NULL)
-        return MC_CLIENT_WORLD_LOAD_OK;
-    if (call->state.active || call->classes->active)
-        return MC_CLIENT_WORLD_LOAD_BUSY;
-    call->state.retiring = true;
-    call->state.active = call->classes->active = true;
-    call->cleanup = (mc_client_world_load_error){0};
+/* Exact existing cleanup prefix shared by full retirement and the new native
+ * terminal preparation. Both active guards belong to the admitted caller.
+ * Every successful slot consumption is final; failure clears the guards via
+ * cleanup_fail and preserves every remaining occurrence. */
+static mc_client_world_load_status cleanup_prefix(mc_client_world_load_call *call) {
     client_application *app = call->classes->app;
     if (call->prepare != NULL) {
         if (mc_client_world_prepare_retire(&call->prepare) != MC_CLIENT_WORLD_PREPARE_OK) {
@@ -1081,19 +1085,68 @@ mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_cal
         call->render_state = (mc_client_render_global_world_state){0};
     }
     if (call->render_world_owned) {
-        if (mc_client_render_global_world_detach(call->render_owner, &call->render_cleanup) !=
-            MC_CLIENT_RENDER_GLOBAL_OK) {
+        const mc_client_render_global_status detached =
+            call->state.terminal_prepare_selected
+                ? mc_client_render_global_terminal_detach(call->render_owner, &call->render_cleanup)
+                : mc_client_render_global_world_detach(call->render_owner, &call->render_cleanup);
+        if (detached != MC_CLIENT_RENDER_GLOBAL_OK) {
             call->cleanup.render_global = &call->render_cleanup;
             return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
                                 "actual renderer World native detachment");
         }
         call->render_world_owned = false;
+        if (call->state.terminal_prepare_selected)
+            call->render_owner = NULL; /* This terminal N source view has ended. */
     }
     if (call->world_slot_owned && app->t != NULL &&
         mc_client_entity_renderer_pick_detach(app->t, &call->pick_cleanup) != MC_CLIENT_PICK_OK) {
         call->cleanup.picking = &call->pick_cleanup;
         return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
                             "actual EntityRenderer picking native detachment");
+    }
+    return MC_CLIENT_WORLD_LOAD_OK;
+}
+
+mc_client_world_load_status mc_client_world_load_terminal_prepare(mc_client_world_load_call *call) {
+    if (call == NULL)
+        return MC_CLIENT_WORLD_LOAD_ARGUMENT;
+    if (call->state.active || call->classes->active)
+        return MC_CLIENT_WORLD_LOAD_BUSY;
+    if (call->state.retiring && !call->state.terminal_prepare_selected)
+        return MC_CLIENT_WORLD_LOAD_BUSY;
+    const mc_client_world_load_status admission =
+        mc_client_world_load_classes_terminal_end(call->classes);
+    if (admission != MC_CLIENT_WORLD_LOAD_OK)
+        return admission;
+    call->state.retiring = call->state.terminal_prepare_selected = true;
+    if (call->state.terminal_prepared)
+        return MC_CLIENT_WORLD_LOAD_OK;
+    call->state.active = call->classes->active = true;
+    call->cleanup = (mc_client_world_load_error){0};
+    if (cleanup_prefix(call) != MC_CLIENT_WORLD_LOAD_OK)
+        return call->cleanup.status;
+    call->state.terminal_prepared = true;
+    call->state.active = call->classes->active = false;
+    return MC_CLIENT_WORLD_LOAD_OK;
+}
+
+mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_call **slot) {
+    if (slot == NULL)
+        return MC_CLIENT_WORLD_LOAD_ARGUMENT;
+    mc_client_world_load_call *call = *slot;
+    if (call == NULL)
+        return MC_CLIENT_WORLD_LOAD_OK;
+    if (call->state.active || call->classes->active)
+        return MC_CLIENT_WORLD_LOAD_BUSY;
+    call->state.retiring = true;
+    call->state.active = call->classes->active = true;
+    call->cleanup = (mc_client_world_load_error){0};
+    client_application *app = call->classes->app;
+    if (!call->state.terminal_prepared) {
+        if (cleanup_prefix(call) != MC_CLIENT_WORLD_LOAD_OK)
+            return call->cleanup.status;
+        if (call->state.terminal_prepare_selected)
+            call->state.terminal_prepared = true;
     }
     if (call->effects_held) {
         if (mc_client_effect_renderer_release(call->effects_owner) != MC_EFFECT_RENDERER_OK)

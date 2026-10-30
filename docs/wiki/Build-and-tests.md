@@ -1,5 +1,14 @@
 # Build and tests
 
+The [terminal prefix controls](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
+pass 41 Windows tests in 55.82 seconds and 39 Linux Clang18 ASan/UBSan tests in
+79.85 seconds. All 32 selected targets build on both hosts. Real callback
+failure and foreign WorldAccess membership exercise separate cleanup stages;
+TH fields, the other N and a constructed GAME World stay live. This is one App
+with two N owners, not a completed outer shutdown or two-App qualification.
+Four nonloading menu profiles qualify preparation separately from the existing
+loaded-World path. Normal shutdown and N44/N80 remain unadopted.
+
 The [RenderManager CPU frame](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-manager-frame.md)
 retains all 432 original rows on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
 Its ledger credits 2,738 exact columns and two declared failure projections;

@@ -624,6 +624,138 @@ static bool filename_is(const mc_client_save_selection *selection, const char *a
     return true;
 }
 
+/* Only the non-loading modes use this prefix. A prepared menu still owns its
+ * real screens/App/services; it has not admitted full loaded-World shutdown. */
+static int terminal_prepare_controls(fixture *f, mc_client_source_da *external) {
+    mc_client_menu_loop_state before;
+    mc_client_screen_transition_state transitions_before;
+    mc_client_screen_state retained_before, shown_before;
+    client_application *app = f->app;
+    mc_client_source_da *shown = app->r;
+    mc_client_display *display = app->display;
+    SDL_Window *window = mc_client_display_window(display);
+    mc_client_screen_transitions *transitions = app->screen_transitions;
+    mc_client_application_startup *startup = app->startup;
+    mc_client_render_engine *engine = app->render_engine;
+    mc_client_bitmap_font *font = app->font_renderer;
+    mc_client_loading_screen *loading = app->loading_screen;
+    mc_game_settings *settings = app->settings;
+    mc_sound_manager *sound = app->B;
+    mc_client_render_global *renderer = app->g;
+    mc_client_source_px *entity_renderer = app->t;
+    mc_client_singleplayer_controller *controller = app->controller;
+    mc_client_render_classes *models = app->render_classes;
+    mc_registry_classes *registry = app->registry;
+    mc_entity_classes *entities = app->entities;
+    mc_java_random_profile *profile = app->profile;
+    const mc_registry_resources *resources = mc_client_bootstrap_resources(f->bootstrap);
+    mc_resource_files *files = mc_client_bootstrap_class_files(f->bootstrap);
+    mc_math_classes *math = mc_client_bootstrap_math(f->bootstrap);
+    mc_client_render_engine_classes *graphics = mc_client_bootstrap_graphics(f->bootstrap);
+    const bool source_running = atomic_load(&app->J), source_paused = atomic_load(&app->o);
+    CHECK(display != NULL && window != NULL && shown != NULL && external != NULL &&
+          startup != NULL && engine != NULL && font != NULL && loading != NULL &&
+          settings != NULL && resources != NULL && files != NULL && math != NULL &&
+          graphics != NULL);
+    const SDL_WindowID window_id = SDL_GetWindowID(window);
+    int width, height;
+    CHECK(window_id != 0 && SDL_GetWindowSize(window, &width, &height) && width > 0 && height > 0);
+    CHECK(mc_client_menu_loop_inspect(f->loop, &before) && !before.terminal_prepare_selected &&
+          !before.terminal_prepared);
+    CHECK(mc_client_screen_transitions_inspect(transitions, &transitions_before) &&
+          !transitions_before.active && !transitions_before.retiring &&
+          !transitions_before.terminal_prepare_selected && !transitions_before.terminal_prepared);
+    CHECK(mc_client_screen_inspect(external, &retained_before, NULL) == MC_CLIENT_SCREEN_OK &&
+          retained_before.phase == MC_CLIENT_SCREEN_READY && retained_before.holds >= 2 &&
+          mc_client_screen_inspect(shown, &shown_before, NULL) == MC_CLIENT_SCREEN_OK &&
+          shown_before.phase == MC_CLIENT_SCREEN_READY);
+    mc_client_world_load_state load_before = {0};
+    mc_client_world_load_status source_failure = MC_CLIENT_WORLD_LOAD_OK;
+    int source_failure_pc = 0;
+    if (transitions_before.world_load != NULL) {
+        CHECK(mc_client_world_load_inspect(transitions_before.world_load, &load_before) &&
+              !load_before.active && !load_before.retiring && !load_before.source_returned &&
+              !load_before.terminal_prepare_selected && !load_before.terminal_prepared &&
+              load_before.needs_conversion && load_before.conversion_checked &&
+              !load_before.handler_opened && load_before.handler == NULL &&
+              load_before.world == NULL && load_before.player == NULL &&
+              load_before.input == NULL && load_before.failure != NULL &&
+              load_before.failure->status == MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED);
+        source_failure = load_before.failure->status;
+        source_failure_pc = load_before.failure->site.pc;
+    }
+    CHECK(!mc_client_menu_loop_terminal_prepare(NULL));
+    for (unsigned int attempt = 0; attempt < 2; ++attempt) {
+        CHECK(mc_client_menu_loop_terminal_prepare(f->loop));
+        mc_client_screen_transition_state prepared;
+        mc_client_screen_state retained, current;
+        CHECK(mc_client_menu_loop_inspect(f->loop, &f->state) &&
+              f->state.terminal_prepare_selected && f->state.terminal_prepared &&
+              f->state.failed == before.failed && f->state.running == before.running &&
+              f->state.source_class == before.source_class &&
+              f->state.source_method == before.source_method &&
+              f->state.source_pc == before.source_pc);
+        CHECK(mc_client_screen_transitions_inspect(transitions, &prepared) && !prepared.active &&
+              prepared.retiring && prepared.terminal_prepare_selected &&
+              prepared.terminal_prepared && prepared.screens == transitions_before.screens &&
+              prepared.calls == transitions_before.calls &&
+              prepared.initial_screen == transitions_before.initial_screen &&
+              prepared.slot_handed_off == transitions_before.slot_handed_off &&
+              prepared.world_load == transitions_before.world_load);
+        CHECK(mc_client_bootstrap_app(f->bootstrap) == app && f->app == app &&
+              app->native_lifetime_phase == MC_CLIENT_APPLICATION_LIFETIME_REGISTERED &&
+              app->constructor_phase == MC_CLIENT_APP_READY && app->startup == startup &&
+              app->screen_transitions == transitions && app->r == shown &&
+              app->display == display && app->render_engine == engine &&
+              app->font_renderer == font && app->loading_screen == loading &&
+              app->settings == settings && app->B == sound && app->g == renderer &&
+              app->t == entity_renderer && app->controller == controller &&
+              app->render_classes == models && app->registry == registry &&
+              app->entities == entities && app->profile == profile &&
+              mc_client_bootstrap_resources(f->bootstrap) == resources &&
+              mc_client_bootstrap_class_files(f->bootstrap) == files &&
+              mc_client_bootstrap_math(f->bootstrap) == math &&
+              mc_client_bootstrap_graphics(f->bootstrap) == graphics &&
+              atomic_load(&app->J) == source_running && atomic_load(&app->o) == source_paused &&
+              app->active_world == NULL && app->h == NULL && app->i == NULL);
+        CHECK(mc_client_display_window(display) == window && SDL_GetWindowID(window) == window_id &&
+              SDL_GetWindowSize(window, &width, &height) && width > 0 && height > 0);
+        CHECK(mc_client_screen_inspect(external, &retained, NULL) == MC_CLIENT_SCREEN_OK &&
+              retained.phase == retained_before.phase && retained.kind == retained_before.kind &&
+              retained.holds >= 2 &&
+              mc_client_screen_inspect(shown, &current, NULL) == MC_CLIENT_SCREEN_OK &&
+              current.phase == shown_before.phase && current.kind == shown_before.kind);
+        if (prepared.world_load != NULL) {
+            /* Inspect fresh after preparation; retired child views may expire.
+             * The failed conversion call itself and its source outcome remain. */
+            mc_client_world_load_state load;
+            CHECK(mc_client_world_load_inspect(prepared.world_load, &load) && !load.active &&
+                  load.retiring && load.terminal_prepare_selected && load.terminal_prepared &&
+                  !load.source_returned && load.needs_conversion && load.conversion_checked &&
+                  !load.handler_opened && !load.world_constructed && !load.world_published &&
+                  !load.player_published && !load.input_published && load.handler == NULL &&
+                  load.world == NULL && load.player == NULL && load.input == NULL &&
+                  load.app == app && load.folder == load_before.folder &&
+                  load.display == load_before.display && load.seed == load_before.seed &&
+                  load.gc_requests == load_before.gc_requests &&
+                  load.last_outer_pc == load_before.last_outer_pc &&
+                  load.last_change_pc == load_before.last_change_pc && load.failure != NULL &&
+                  load.failure->status == source_failure &&
+                  load.failure->site.pc == source_failure_pc && load.cleanup != NULL &&
+                  load.cleanup->status == MC_CLIENT_WORLD_LOAD_OK);
+        }
+        CHECK(!mc_client_menu_loop_frame(f->loop));
+        CHECK(mc_client_menu_loop_inspect(f->loop, &f->state) &&
+              f->state.terminal_prepare_selected && f->state.terminal_prepared &&
+              f->state.frames == before.frames && f->state.ticks == before.ticks &&
+              f->state.texture_ticks == before.texture_ticks &&
+              f->state.mouse_events == before.mouse_events &&
+              f->state.keyboard_events == before.keyboard_events &&
+              f->state.source_pc == before.source_pc);
+    }
+    return 0;
+}
+
 int main(int argc, char **argv) {
     CHECK(argc == 4 && (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
                         strcmp(argv[2], "large") == 0 || strcmp(argv[2], "double") == 0 ||
@@ -973,6 +1105,8 @@ int main(int argc, char **argv) {
            " mouse=%zu keyboard=%zu held-entry=1 row=1 cancel-same-parent=1 select-frontier=%d\n",
            argv[2], f.state.frames, f.state.ticks, f.state.mouse_events, f.state.keyboard_events,
            populated ? 1 : 0);
+    if (!loading_world)
+        CHECK(terminal_prepare_controls(&f, external) == 0);
     if (loading_world) {
         mc_world_runtime *world = f.app->active_world;
         mc_entity *player = f.app->h;

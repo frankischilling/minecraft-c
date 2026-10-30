@@ -85,6 +85,7 @@ typedef struct mc_client_world_load_error {
 
 typedef struct mc_client_world_load_state {
     bool active, retiring, source_returned;
+    bool terminal_prepare_selected, terminal_prepared; /* Native cleanup policy/progress only. */
     bool initial_detach_returned, conversion_checked, needs_conversion;
     bool handler_opened, world_constructed, world_published, player_published, input_published;
     bool initial_i_cleared, initial_h_cleared, initial_P_stored;
@@ -115,6 +116,12 @@ mc_client_world_load_classes_create(client_application *actual_completed_app,
                                     mc_client_world_load_classes **out);
 mc_client_world_load_status
 mc_client_world_load_classes_retire(mc_client_world_load_classes **slot);
+/* One-way native source-admission ending, without class/call release or source
+ * effects. NULL is ARGUMENT; an entered class is BUSY before mutation. Existing
+ * inactive calls keep the SAME App/GUI class dependencies and can prepare or
+ * retire. Repeated ending succeeds; later load_begin returns BUSY. */
+mc_client_world_load_status
+mc_client_world_load_classes_terminal_end(mc_client_world_load_classes *);
 
 /* Actual selected Minecraft.a(String,String,J), once. Arguments retain their
  * SAME nullable UTF16 Name identities, with no filesystem/text round trip.
@@ -133,6 +140,21 @@ mc_client_world_load_status mc_client_world_load_begin(mc_client_world_load_clas
 bool mc_client_world_load_inspect(const mc_client_world_load_call *,
                                   mc_client_world_load_state *out);
 
+/* One-way native terminal prefix, not source World clear/save or full retirement.
+ * End this call's real prepare/Loading/failure-receipt/N World-call occurrences,
+ * terminally detach this N while preserving the actual global TH.g, and detach
+ * picking. Latch call/class retirement and keep the full World/Player/Input/
+ * handler/effects/controller and App.h/i/f graph live. No Entity/Tile container,
+ * cache, provider or World retirement occurs. NULL is ARGUMENT; active is BUSY
+ * before mutation. Once selected, failure retains that policy and every remaining
+ * occurrence for retry; success sets terminal_prepared and repeated calls do no
+ * work. A previously entered legacy full retirement cannot be upgraded (BUSY).
+ * Consumed child diagnostic views expire; inspect fresh state after each attempt.
+ * The caller keeps App/Settings/Engine/Font/Display and all class services alive.
+ * Global dispatcher retirement and exact external-root admission are separate
+ * prerequisites before the caller deliberately starts full World retirement. */
+mc_client_world_load_status mc_client_world_load_terminal_prepare(mc_client_world_load_call *);
+
 /* Checked native cleanup without source save/unload or rollback. Drain actual
  * retained loading/terrain calls, detach owned renderer/particle World users
  * and end owned App.h/i/f occurrences and failed controller candidates before
@@ -140,7 +162,11 @@ bool mc_client_world_load_inspect(const mc_client_world_load_call *,
  * BUSY/error keeps
  * the call and every remaining slot; successful earlier consumption is final.
  * Keep App/controller/settings/Registry/Files/GUI dependencies alive throughout
- * retries. Native GC requests are advisory counters, not JVM execution. */
+ * retries. When terminal_prepare was selected first, reuse its sticky preserve-
+ * TH prefix; otherwise retain the legacy World-detach policy. This full API
+ * deliberately proceeds into destructive World cleanup and is not the new
+ * outer external-root admission gate. Native GC requests are advisory counters,
+ * not JVM execution. */
 mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_call **slot);
 
 #endif

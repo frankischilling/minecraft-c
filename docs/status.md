@@ -1,5 +1,13 @@
 # Development status
 
+Native terminal preparation now preserves shared RenderManager state while
+ending one RenderGlobal owner's local references. The scoped selection passes
+41 Windows tests and 39 sanitized Linux tests, including real callback-failure
+retry and four retained menu profiles. The prefix stops before World container,
+cache, provider and handler cleanup. The normal run path has not adopted it;
+exact external Entity, TileEntity and other World roots still need admission
+before final teardown or live dispatcher integration.
+
 The [RenderManager CPU frame](client/render-manager-frame.md) now has Windows
 MSVC Debug and Linux Clang18 ASan/UBSan comparisons against 432 unchanged-original
 rows. The ledger credits 2,738 exact columns, two explicit failure projections
@@ -8,12 +16,14 @@ Bed orientations, real World/Math failures and checked owner retirement. These
 methods are not yet adopted by live RenderGlobal traversal. Final shutdown and
 deferred World ownership remain prerequisites for that integration.
 
-The latest [hosted checkpoint b379613](https://github.com/frankischilling/minecraft-c/actions/runs/41011060882)
-passes all four jobs and 1,554 tests: Windows 490, GCC 532 and Clang 532, with
+The latest [hosted checkpoint c6b29f0](https://github.com/frankischilling/minecraft-c/actions/runs/41057568952)
+passes all four jobs and 1,563 tests: Windows 493, GCC 535 and Clang 535, with
 zero failures, skips or dropped preceding test names. It includes the canonical
-[TileEntityRenderer CPU owner](client/tile-entity-renderer.md) and predates the
-RenderManager frame extension. Windows compilation saved its first 80 MiB cache;
-warm hosted performance remains unmeasured.
+[TileEntityRenderer CPU owner](client/tile-entity-renderer.md) and RenderManager
+frame extension, and predates terminal preparation. Windows compilation restores
+the prior cache and records 921 hits, 489 misses and no cache or compile errors.
+Its build takes 182 seconds versus 215 previously; the changed workloads do not
+establish a controlled whole-workflow speedup.
 
 The source renderer implements [vertex lighting, normals and materials](client/lighting-raster.md)
 on the canonical OpenGL 3.3 Display program. NVIDIA and Mesa controls each compare

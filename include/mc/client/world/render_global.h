@@ -159,6 +159,22 @@ mc_client_render_global_world_retire(mc_client_render_global_world_call **);
 mc_client_render_global_status
 mc_client_render_global_world_detach(mc_client_render_global *, mc_client_render_global_error *);
 
+/* One-way native terminal preparation for this N, before shared dispatcher or
+ * World teardown. The same call/hold/callback gates apply as world_detach.
+ * Once admitted, N becomes RETIRING and its source views and admission end.
+ * End only its actual WorldAccess/DK/CV/World/manager occurrences; preserve
+ * every global TH field and TH's independent World occurrence, even when the
+ * World pointer equals one formerly stored by this N. Another App can have
+ * stored that same World later. No World container/cache/provider/handler or
+ * App/Engine/Font/Settings cleanup occurs here. The containing owner must keep
+ * the full World graphs and dependencies alive until their separate terminal
+ * admission succeeds. This is not a source World change or ordinary menu clear.
+ * BUSY/error preserves all remaining slots for retry. The preserve-TH policy
+ * stays latched for later world_detach/owner-retirement retries. An earlier
+ * legacy world_detach cannot be upgraded to this policy and returns BUSY. */
+mc_client_render_global_status
+mc_client_render_global_terminal_detach(mc_client_render_global *, mc_client_render_global_error *);
+
 /* Owners/classes and returned views require exclusive serialized native use.
  * Device calls run on the Display thread. Cold CPU calls need no Display.
  * Inspected arena/source references expire on subsequent owner mutation;

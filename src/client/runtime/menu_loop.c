@@ -752,15 +752,7 @@ bool mc_client_menu_loop_inspect(const mc_client_menu_loop *loop, mc_client_menu
     return true;
 }
 
-bool mc_client_menu_loop_retire(mc_client_menu_loop **slot) {
-    if (slot == NULL)
-        return false;
-    mc_client_menu_loop *loop = *slot;
-    if (loop == NULL)
-        return true;
-    if (loop->active)
-        return false;
-    loop->retiring = true;
+static bool retire_calls(mc_client_menu_loop *loop) {
     if (!mc_client_world_tick_cleanup(&loop->world_tick))
         return false;
     if (!mc_client_gameplay_input_retire(&loop->gameplay))
@@ -814,11 +806,44 @@ bool mc_client_menu_loop_retire(mc_client_menu_loop **slot) {
         mc_client_entity_renderer_pick_detach(loop->app->t, &loop->pick_cleanup) !=
             MC_CLIENT_PICK_OK)
         return false;
-    if (mc_client_screen_event_retire(&loop->events) != MC_CLIENT_SCREEN_OK ||
-        mc_client_source_pause_draw_retire(&loop->pause_draw) != MC_CLIENT_SCREEN_OK ||
-        mc_client_source_world_selection_draw_retire(&loop->world_draw) != MC_CLIENT_SCREEN_OK ||
-        mc_client_screen_transitions_retire(&loop->transitions, &loop->screen) !=
-            MC_CLIENT_SCREEN_OK)
+    return mc_client_screen_event_retire(&loop->events) == MC_CLIENT_SCREEN_OK &&
+           mc_client_source_pause_draw_retire(&loop->pause_draw) == MC_CLIENT_SCREEN_OK &&
+           mc_client_source_world_selection_draw_retire(&loop->world_draw) == MC_CLIENT_SCREEN_OK;
+}
+
+bool mc_client_menu_loop_terminal_prepare(mc_client_menu_loop *loop) {
+    if (loop == NULL || loop->active || (loop->retiring && !loop->state.terminal_prepare_selected))
+        return false;
+    loop->retiring = true;
+    loop->state.terminal_prepare_selected = true;
+    if (loop->state.terminal_prepared)
+        return true;
+    if (!retire_calls(loop) ||
+        (loop->transitions != NULL && mc_client_screen_transitions_terminal_prepare(
+                                          loop->transitions, &loop->screen) != MC_CLIENT_SCREEN_OK))
+        return false;
+    loop->state.terminal_prepared = true;
+    return true;
+}
+
+bool mc_client_menu_loop_retire(mc_client_menu_loop **slot) {
+    if (slot == NULL)
+        return false;
+    mc_client_menu_loop *loop = *slot;
+    if (loop == NULL)
+        return true;
+    if (loop->active)
+        return false;
+    if (loop->state.terminal_prepare_selected) {
+        if (!mc_client_menu_loop_terminal_prepare(loop))
+            return false;
+    } else {
+        loop->retiring = true;
+        if (!retire_calls(loop))
+            return false;
+    }
+    if (mc_client_screen_transitions_retire(&loop->transitions, &loop->screen) !=
+        MC_CLIENT_SCREEN_OK)
         return false;
     mc_gui_main_menu_free(loop->renderer);
     mc_client_assets_free(loop->assets);

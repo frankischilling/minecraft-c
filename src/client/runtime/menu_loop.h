@@ -9,6 +9,7 @@ typedef struct mc_client_menu_loop_state {
     uint64_t frames, ticks, texture_ticks, account_checks_omitted;
     size_t font_measurements, mouse_events, keyboard_events;
     bool failed, running;
+    bool terminal_prepare_selected, terminal_prepared; /* Native cleanup progress only. */
     const char *operation, *source_class, *source_method;
     int64_t source_pc; /* Source unsigned PCs and native -1 both retain their value. */
     /* Borrowed child diagnostics remain live until this loop retires. Gameplay
@@ -40,6 +41,15 @@ typedef struct mc_client_menu_loop_state {
 bool mc_client_menu_loop_create(mc_client_bootstrap *, mc_client_menu_loop **);
 bool mc_client_menu_loop_frame(mc_client_menu_loop *);
 bool mc_client_menu_loop_inspect(const mc_client_menu_loop *, mc_client_menu_loop_state *);
+/* End this loop's source admission and drain its owned call/World-load prefix,
+ * retaining screens, App, full Worlds/Players/Inputs/handlers and all services.
+ * This one-way operation performs no World container/cache/provider teardown
+ * and does not end shared TH/LL classes. Repeated calls retry the same slots;
+ * success means only this prefix completed. Before complete retire, the outer
+ * owner must separately end dispatcher admissions/captures and admit every
+ * World graph. Do not use this as source World clearing or resume frames after
+ * the first attempt. NULL/active or previously entered legacy retire refuses. */
+bool mc_client_menu_loop_terminal_prepare(mc_client_menu_loop *);
 void mc_client_menu_loop_free(mc_client_menu_loop *);
 /* Retryable native retirement preserves the same slot and graph on refusal. */
 bool mc_client_menu_loop_retire(mc_client_menu_loop **);

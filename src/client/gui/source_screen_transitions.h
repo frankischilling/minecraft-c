@@ -13,6 +13,7 @@ typedef struct mc_client_screen_transition_state {
     const mc_client_source_da *initial_screen;
     const mc_client_screen_error *failure;
     const mc_client_world_load_call *world_load; /* Actual last retained invocation, borrowed. */
+    bool terminal_prepare_selected, terminal_prepared; /* Native one-way prefix only. */
 } mc_client_screen_transition_state;
 
 /* Native ownership for actual synchronous screen calls on one genuine App.
@@ -52,6 +53,19 @@ bool mc_client_screen_transitions_inspect(const mc_client_screen_transitions *,
  * its retained source-call prefixes has ended. No source operation runs. */
 mc_client_screen_classes *
 mc_client_screen_transitions_classes(const mc_client_screen_transitions *);
+/* Native one-way admission/prefix ending before outer dispatcher retirement.
+ * Reject active entry, latch this transition graph and its actual World-load
+ * class admission, and terminal_prepare every retained load. Keep all nodes,
+ * screens, controller, App borrows and full World/Player/Input/handler graphs.
+ * No complete load/World retirement, global dispatcher action or source call.
+ * NULL receiver/error is INVALID_ARGUMENT. Failures retain the same graph and
+ * remaining rights for idempotent retry. A legacy retire already entered cannot
+ * be upgraded (BUSY). Child cleanup views expire when consumed; inspect each
+ * retained load afresh after a preparation attempt. Source failure is unchanged.
+ * Success does not authorize destructive World cleanup by itself. */
+mc_client_screen_status
+mc_client_screen_transitions_terminal_prepare(mc_client_screen_transitions *,
+                                              mc_client_screen_error *);
 /* Native terminal cleanup, with no source close/save/r rollback. External
  * descendants or active calls preserve the whole remaining dependency graph. */
 mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_transitions **,

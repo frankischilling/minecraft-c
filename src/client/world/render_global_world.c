@@ -529,11 +529,16 @@ mc_client_render_global_world_retire(mc_client_render_global_world_call **slot) 
     return MC_CLIENT_RENDER_GLOBAL_OK;
 }
 
-mc_client_render_global_status
-mc_client_render_global_world_detach(mc_client_render_global *o, mc_client_render_global_error *e) {
+static mc_client_render_global_status world_detach(mc_client_render_global *o,
+                                                   mc_client_render_global_error *e,
+                                                   bool preserve_manager_world) {
     if (o == NULL || e == NULL)
         return MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT;
     memset(e, 0, sizeof(*e));
+    if (preserve_manager_world && o->world_retiring && !o->terminal_preserve_manager_world)
+        return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_BUSY,
+                                            "RenderGlobal legacy World detach already entered",
+                                            NULL, NULL, NULL, 0, true);
     if (o->active || o->holds != 1 || o->world_call != NULL || o->sky_call != NULL ||
         o->cull_call != NULL || o->update_call != NULL || o->submit_call != NULL)
         return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_BUSY,
@@ -545,12 +550,16 @@ mc_client_render_global_world_detach(mc_client_render_global *o, mc_client_rende
         return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_BUSY,
                                             "RenderGlobal active callback retirement admission",
                                             NULL, NULL, NULL, 0, true);
+    if (preserve_manager_world) {
+        o->terminal_preserve_manager_world = true;
+        o->phase = MC_CLIENT_RENDER_GLOBAL_RETIRING;
+    }
     o->world_retiring = true;
     if (o->access != NULL &&
         mc_render_global_access_detach_all(o->access, e) != MC_CLIENT_RENDER_GLOBAL_OK)
         return e->status;
     if (o->manager_world_occurrence != NULL) {
-        if (o->world_manager != NULL &&
+        if (!o->terminal_preserve_manager_world && o->world_manager != NULL &&
             mc_client_render_manager_detach_world(o->world_manager, o->manager_world_occurrence,
                                                   &e->manager) != MC_CLIENT_MANAGER_OK)
             return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_BUSY,
@@ -559,7 +568,7 @@ mc_client_render_global_world_detach(mc_client_render_global *o, mc_client_rende
         o->manager_world_occurrence = NULL;
     }
     for (mc_client_source_dk *chunk = o->chunk_owners; chunk != NULL; chunk = chunk->next) {
-        if (o->world_manager != NULL && chunk->world_held &&
+        if (!o->terminal_preserve_manager_world && o->world_manager != NULL && chunk->world_held &&
             mc_client_render_manager_detach_world(o->world_manager, chunk->fields.a, &e->manager) !=
                 MC_CLIENT_MANAGER_OK)
             return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_BUSY,
@@ -570,7 +579,7 @@ mc_client_render_global_world_detach(mc_client_render_global *o, mc_client_rende
     }
     for (mc_render_global_cv *cv = o->cv_owners; cv != NULL; cv = cv->next) {
         if (cv->world != NULL) {
-            if (o->world_manager != NULL &&
+            if (!o->terminal_preserve_manager_world && o->world_manager != NULL &&
                 mc_client_render_manager_detach_world(o->world_manager, cv->world, &e->manager) !=
                     MC_CLIENT_MANAGER_OK)
                 return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_BUSY,
@@ -582,7 +591,7 @@ mc_client_render_global_world_detach(mc_client_render_global *o, mc_client_rende
         }
     }
     if (o->world_occurrence != NULL) {
-        if (o->world_manager != NULL &&
+        if (!o->terminal_preserve_manager_world && o->world_manager != NULL &&
             mc_client_render_manager_detach_world(o->world_manager, o->world_occurrence,
                                                   &e->manager) != MC_CLIENT_MANAGER_OK)
             return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_BUSY,
@@ -596,4 +605,15 @@ mc_client_render_global_world_detach(mc_client_render_global *o, mc_client_rende
         return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_BUSY, e->manager.operation,
                                             NULL, NULL, NULL, 0, true);
     return MC_CLIENT_RENDER_GLOBAL_OK;
+}
+
+mc_client_render_global_status
+mc_client_render_global_world_detach(mc_client_render_global *o, mc_client_render_global_error *e) {
+    return world_detach(o, e, false);
+}
+
+mc_client_render_global_status
+mc_client_render_global_terminal_detach(mc_client_render_global *o,
+                                        mc_client_render_global_error *e) {
+    return world_detach(o, e, true);
 }

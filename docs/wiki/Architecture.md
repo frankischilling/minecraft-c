@@ -1,5 +1,12 @@
 # Systems and subsystems
 
+The [terminal preparation prefix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
+ends one RenderGlobal owner's local rights while preserving shared TH fields
+and the full World graph. Its policy survives checked cleanup retries. The
+Load/Screen/menu prefix remains separate from destructive World retirement;
+exact external-root admission and the outer dispatcher coordinator still need
+implementation before live frame adoption.
+
 The [RenderManager CPU frame](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-manager-frame.md)
 preserves five ordered reference stores, the real Living sleeping query, reached
 Math/World/Bed calls and ordered camera interpolation. It retains actual World,

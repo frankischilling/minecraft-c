@@ -1,5 +1,31 @@
 # Test scope and reproduction
 
+## Terminal preparation controls
+
+Native terminal preparation ends the selected loop and renderer admissions
+without destroying their retained World graphs or clearing shared RenderManager
+fields. All 32 selected targets build on Windows MSVC Debug and Linux Clang18
+ASan/UBSan. The selection passes 41 Windows CTests in 55.82 seconds and 39 Linux
+CTests in 79.85 seconds, with no failures or skips. The retained Linux logs have
+no sanitizer findings. Local Linux enables the same startup CPU test option as
+the hosted workflow; imported default-directory device tests remain separate.
+
+CPU admission controls pass 28 assertions on each platform. The Windows device
+test passes 28,892 assertions, including its existing geometry loops. It uses
+two RenderGlobal owners on one actual App and a constructed GAME World. A real
+retained callback failure and a foreign WorldAccess membership refuse different
+cleanup stages. Legacy retries preserve the selected policy, shared TH fields,
+the other renderer and the World's provider/cache/storage state through final
+local renderer release. These controls do not establish two-App shutdown.
+
+Four non-loading menu profiles exercise preparation, repeat calls, frame
+refusal and retained screen/service ownership. Existing successful loaded-World
+modes retain their original cleanup path; their 13.15-second test still enforces
+the 72 focus histories and save/resource preservation. The rebuilt client also
+completes two menu frames and three ticks with all 413 imported assets unchanged.
+The new prefix is not adopted in normal shutdown or N44/N80. Dispatcher admission
+ending and exact external-root checks remain prerequisites for that integration.
+
 ## RenderManager frame qualification
 
 The [RenderManager CPU frame](client/render-manager-frame.md) retains all 432

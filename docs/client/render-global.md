@@ -101,6 +101,23 @@ callbacks before revocation. Terminal coordination detaches WorldAccess users
 and retires DK/CV references before their dependencies die. It does not replay
 World attachment or invent source disposal calls.
 
+`mc_client_render_global_terminal_detach` adds a one-way native preparation
+policy. Once admitted, it marks N RETIRING and closes source attachment,
+marking, culling and retain admission. It ends only N's local WorldAccess,
+DK/CV, World and Manager occurrences. Every TH field and TH's independent
+World occurrence survives, even when TH.g equals N's former World pointer.
+The policy remains selected through BUSY failures and legacy detach or
+owner-retire retries. A legacy detach already entered cannot upgrade to this
+policy.
+
+The qualified device control uses two N owners of one genuine App. A real
+captured callback failure and foreign WorldAccess membership force separate
+cleanup refusals before final N retirement. TH.g, the other N and the READY
+GAME World/provider/cache/Store remain live. This control does not establish
+a two-App graph or authorize World destruction. The Load/Screen/menu prefix,
+qualified checks and remaining external-root and dispatcher work are described
+in [terminal retirement](terminal-retirement.md).
+
 ## Chunk-update counter
 
 The shared `dk` class initializes its actual `D` from the same `nw` singleton,

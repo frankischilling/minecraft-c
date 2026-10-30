@@ -9,11 +9,31 @@ int mc_render_world_startup_fixture_main(int argc, char **argv);
 #include "client/render_engine/internal.h"
 #include "client/world/render_global_access.h"
 #include "client/world/source_chunk_renderer_internal.h"
+#include "mc/client/world/frustum_culling.h"
 #include "mc/world/dimension/world_provider.h"
 #include "mc/world/runtime/presentation.h"
 #include "mc/world/runtime/world_access.h"
 #include "world/runtime/construction_internal.h"
 #include "world/runtime/runtime_internal.h"
+#include "world/runtime/world_access_internal.h"
+
+static int terminal_admission_closed(mc_client_render_global *owner,
+                                     mc_client_render_global_error *error) {
+    CHECK(owner->phase == MC_CLIENT_RENDER_GLOBAL_RETIRING && owner->world_retiring &&
+          owner->terminal_preserve_manager_world && owner->holds == 1);
+    CHECK(mc_client_render_global_retain(owner, error) == MC_CLIENT_RENDER_GLOBAL_BUSY &&
+          owner->holds == 1);
+    mc_client_render_global_world_call *call = NULL;
+    CHECK(mc_client_render_global_world_begin(owner, NULL, &call) == MC_CLIENT_RENDER_GLOBAL_BUSY &&
+          call == NULL && owner->world_call == NULL);
+    mc_client_culling_call *cull = NULL;
+    mc_client_culling_error culling = {0};
+    CHECK(mc_client_render_global_cull_begin(owner, NULL, 0.0f, &cull, &culling) ==
+              MC_CLIENT_FRUSTUM_BUSY &&
+          cull == NULL && owner->cull_call == NULL);
+    CHECK(mc_render_global_mark_cell(owner, 0, 64, 0, error) == MC_CLIENT_RENDER_GLOBAL_BUSY);
+    return 0;
+}
 
 static int raw_world_admission(void) {
     mc_client_render_engine_classes *classes = NULL;
@@ -36,6 +56,37 @@ static int raw_world_admission(void) {
           phase == MC_CLIENT_RENDER_ENGINE_RAW && tessellator == NULL && updates == 0);
     CHECK(mc_client_render_global_world_retire(&call) == MC_CLIENT_RENDER_GLOBAL_OK &&
           call == NULL);
+    CHECK(mc_client_render_global_terminal_detach(NULL, error) ==
+          MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT);
+    CHECK(mc_client_render_global_terminal_detach(owner, NULL) ==
+              MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT &&
+          owner->phase == MC_CLIENT_RENDER_GLOBAL_RAW && !owner->world_retiring &&
+          !owner->terminal_preserve_manager_world);
+    mc_client_render_global *external = owner;
+    CHECK(mc_client_render_global_retain(external, error) == MC_CLIENT_RENDER_GLOBAL_OK);
+    CHECK(mc_client_render_global_terminal_detach(owner, error) == MC_CLIENT_RENDER_GLOBAL_BUSY &&
+          owner->phase == MC_CLIENT_RENDER_GLOBAL_RAW && !owner->world_retiring &&
+          !owner->terminal_preserve_manager_world);
+    CHECK(mc_client_render_global_release(&external, error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+          external == NULL);
+    CHECK(mc_client_render_global_terminal_detach(owner, error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+          owner->fields.k == NULL && owner->fields.u == NULL && owner->access == NULL &&
+          owner->world_occurrence == NULL && owner->manager_world_occurrence == NULL &&
+          owner->world_manager == NULL);
+    CHECK(terminal_admission_closed(owner, error) == 0);
+    CHECK(mc_client_render_global_terminal_detach(owner, error) == MC_CLIENT_RENDER_GLOBAL_OK);
+    CHECK(mc_client_render_global_world_detach(owner, error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+          owner->terminal_preserve_manager_world);
+    CHECK(mc_client_render_global_retire(&owner, error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+          owner == NULL);
+    /* A genuinely entered legacy detach cannot later acquire the preserve-TH
+     * policy, even on a real RAW owner with no World or device dependencies. */
+    CHECK(mc_client_render_global_allocate(classes, NULL, &owner, error) ==
+          MC_CLIENT_RENDER_GLOBAL_OK);
+    CHECK(mc_client_render_global_world_detach(owner, error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+          owner->world_retiring && !owner->terminal_preserve_manager_world);
+    CHECK(mc_client_render_global_terminal_detach(owner, error) == MC_CLIENT_RENDER_GLOBAL_BUSY &&
+          owner->world_retiring && !owner->terminal_preserve_manager_world);
     CHECK(mc_client_render_global_retire(&owner, error) == MC_CLIENT_RENDER_GLOBAL_OK &&
           owner == NULL);
     CHECK(mc_client_render_engine_classes_release(classes) == MC_CLIENT_RENDER_ENGINE_OK);
@@ -188,6 +239,9 @@ static int attach(mc_client_render_global *owner, mc_world_runtime *world, int32
     mc_client_render_global *original = owner;
     CHECK(mc_client_render_global_retire(&original, error) == MC_CLIENT_RENDER_GLOBAL_BUSY &&
           original == owner && !owner->world_retiring);
+    CHECK(mc_client_render_global_terminal_detach(owner, error) == MC_CLIENT_RENDER_GLOBAL_BUSY &&
+          owner->phase == MC_CLIENT_RENDER_GLOBAL_READY && !owner->world_retiring &&
+          !owner->terminal_preserve_manager_world && owner->world_call == call);
     CHECK(mc_client_render_global_world_retire(&call) == MC_CLIENT_RENDER_GLOBAL_OK &&
           call == NULL);
     mc_client_render_global_state actual;
@@ -253,6 +307,207 @@ static int quota_prefix(fixture *runtime, client_application *app, mc_world_runt
     return 0;
 }
 
+typedef struct terminal_graph_snapshot {
+    mc_world_runtime_fields world_fields;
+    mc_client_render_global_fields other_fields;
+    const mc_chunk_acquire_context *acquisition;
+    mc_chunk_cache cache;
+    mc_chunk_pending pending;
+    const void *store_info;
+    size_t stored_chunks;
+    mc_world_regions_usage regions;
+    int64_t token;
+} terminal_graph_snapshot;
+
+static int terminal_graph_capture(render_world_fixture *world, mc_client_render_global *other,
+                                  terminal_graph_snapshot *snapshot) {
+    snapshot->acquisition = mc_world_runtime_acquisition(world->world);
+    CHECK(snapshot->acquisition != NULL && snapshot->acquisition->cache != NULL &&
+          snapshot->acquisition->pending != NULL);
+    /* Copy actual canonical subobjects, including their existing padding, for
+     * unchanged-byte checks. WorldAccess membership counts are in their own
+     * List storage and are checked separately below. */
+    memcpy(&snapshot->world_fields, &world->world->fields, sizeof(snapshot->world_fields));
+    memcpy(&snapshot->other_fields, &other->fields, sizeof(snapshot->other_fields));
+    memcpy(&snapshot->cache, snapshot->acquisition->cache, sizeof(snapshot->cache));
+    memcpy(&snapshot->pending, snapshot->acquisition->pending, sizeof(snapshot->pending));
+    snapshot->store_info = mc_world_store_info(world->store);
+    snapshot->stored_chunks = mc_world_store_chunk_count(world->store);
+    snapshot->regions = mc_world_regions_get_usage(world->regions);
+    CHECK(mc_world_store_session_token_get(world->store, &snapshot->token) == MC_WORLD_STORAGE_OK);
+    CHECK(snapshot->stored_chunks == 0 && snapshot->cache.count == 0 &&
+          snapshot->pending.count == 0);
+    return 0;
+}
+
+static int terminal_graph_same(render_world_fixture *world, mc_client_render_global *other,
+                               const terminal_graph_snapshot *snapshot) {
+    mc_world_runtime_construction construction;
+    CHECK(mc_world_runtime_construction_get(world->world, &construction) == MC_WORLD_STORAGE_OK &&
+          construction.phase == MC_WORLD_RUNTIME_READY && construction.contexts_bound &&
+          construction.cache_registered &&
+          mc_world_provider_world(world->dimension) == world->world);
+    CHECK(memcmp(&world->world->fields, &snapshot->world_fields, sizeof(snapshot->world_fields)) ==
+              0 &&
+          mc_world_runtime_acquisition(world->world) == snapshot->acquisition &&
+          memcmp(snapshot->acquisition->cache, &snapshot->cache, sizeof(snapshot->cache)) == 0 &&
+          memcmp(snapshot->acquisition->pending, &snapshot->pending, sizeof(snapshot->pending)) ==
+              0);
+    const mc_world_regions_usage regions = mc_world_regions_get_usage(world->regions);
+    int64_t token = 0;
+    CHECK(mc_world_store_info(world->store) == snapshot->store_info &&
+          mc_world_store_chunk_count(world->store) == snapshot->stored_chunks &&
+          regions.count == snapshot->regions.count && regions.bytes == snapshot->regions.bytes &&
+          mc_world_store_session_token_get(world->store, &token) == MC_WORLD_STORAGE_OK &&
+          token == snapshot->token);
+    CHECK(other->phase == MC_CLIENT_RENDER_GLOBAL_READY && !other->world_retiring &&
+          memcmp(&other->fields, &snapshot->other_fields, sizeof(snapshot->other_fields)) == 0 &&
+          other->fields.k == world->world && other->fields.u->c == world->world &&
+          other->fields.o[0]->fields.a == world->world && other->fields.o[0]->world_held &&
+          other->world_occurrence == world->world &&
+          other->manager_world_occurrence == world->world);
+    return 0;
+}
+
+static int terminal_manager_same(mc_client_render_manager_classes *classes,
+                                 const mc_client_manager_state *before, size_t ended_holds) {
+    mc_client_manager_state after;
+    CHECK(mc_client_render_manager_inspect(classes, &after) &&
+          after.phase == MC_CLIENT_MANAGER_READY && after.source_views_available &&
+          after.a == before->a && after.candidate == before->candidate &&
+          after.native_consumers == before->native_consumers &&
+          after.manager_holds + ended_holds == before->manager_holds && after.entries == 28 &&
+          after.completed_bw_stores == 28);
+    const mc_client_manager_fields *a = &before->fields, *b = &after.fields;
+    CHECK(a->o == b->o && a->p == b->p && a->e == b->e && a->f == b->f && a->g == b->g &&
+          a->h == b->h && a->k == b->k && memcmp(&a->i, &b->i, sizeof(a->i)) == 0 &&
+          memcmp(&a->j, &b->j, sizeof(a->j)) == 0 && memcmp(&a->l, &b->l, sizeof(a->l)) == 0 &&
+          memcmp(&a->m, &b->m, sizeof(a->m)) == 0 && memcmp(&a->n, &b->n, sizeof(a->n)) == 0 &&
+          memcmp(&before->b, &after.b, sizeof(after.b)) == 0 &&
+          memcmp(&before->c, &after.c, sizeof(after.c)) == 0 &&
+          memcmp(&before->d, &after.d, sizeof(after.d)) == 0);
+    return 0;
+}
+
+static int terminal_preserves_manager(mc_client_render_global **slot,
+                                      mc_client_render_global *other, render_world_fixture *world,
+                                      mc_client_render_manager_classes *classes) {
+    /* Native quiesce seam only, using two genuine N owners of ONE actual App.
+     * This does not qualify a two-App or full Load/Screen terminal coordinator. */
+    mc_client_render_global *owner = *slot;
+    mc_client_render_global_error *error = calloc(1, sizeof(*error));
+    CHECK(error != NULL && world->world->fields.u->count == 2);
+    mc_client_render_manager *manager = NULL;
+    CHECK(mc_client_render_manager_static_get(classes, &manager, &error->manager) ==
+              MC_CLIENT_MANAGER_OK &&
+          manager != NULL && owner->world_manager == manager && other->world_manager == manager &&
+          owner->manager_world_occurrence == world->world);
+    /* A later genuine source TH bind stores the SAME pointer. Equality with
+     * N's earlier captured publication is insufficient terminal authority. */
+    CHECK(mc_client_render_manager_change_world(manager, world->world, &error->manager) ==
+          MC_CLIENT_MANAGER_OK);
+    mc_client_manager_consumer consumer = {0};
+    CHECK(mc_client_render_manager_consumer_attach(classes, &consumer, &error->manager) ==
+          MC_CLIENT_MANAGER_OK);
+    mc_client_manager_state before;
+    CHECK(mc_client_render_manager_inspect(classes, &before) && before.fields.g == world->world &&
+          before.native_consumers != 0 && consumer.attached && consumer.classes == classes);
+    mc_client_render_manager_classes *retirement_slot = classes;
+    CHECK(mc_client_render_manager_classes_retire(&retirement_slot, &error->manager) ==
+              MC_CLIENT_MANAGER_BUSY &&
+          retirement_slot == classes);
+
+    mc_world_access *identity = world->world->world_accesses.entries[1];
+    CHECK(identity != NULL && identity != world->world->world_accesses.entries[0] &&
+          mc_world_runtime_add_world_access(world->world, identity, NULL) == MC_WORLD_STORAGE_OK);
+    const uint64_t foreign = world->world->world_accesses.identities[2];
+    mc_world_storage_error child_error = {0};
+    mc_world_access_failure original = {0}, captured = {0};
+    /* Actual registered receiver and real callback body, as a direct callee
+     * control. No replacement callback or successful World caller is supplied. */
+    CHECK(mc_world_access_call_sound(identity, world->world, NULL, 0, 64, 0, 1, 1, &child_error,
+                                     &original) == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          original.receiver == identity && original.render_global != NULL &&
+          original.render_global->status == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE &&
+          original.render_global->source_pc == 30 &&
+          mc_world_access_failure_retain(&original, &captured) == MC_WORLD_STORAGE_OK);
+    mc_render_global_access_state access;
+    CHECK(mc_render_global_access_inspect(owner->access, &access) && access.registrations == 1 &&
+          access.active_callbacks == 0 && access.retained_failures == 1 &&
+          access.failure == original.render_global);
+    terminal_graph_snapshot graph;
+    CHECK(terminal_graph_capture(world, other, &graph) == 0);
+    mc_client_render_global *external = owner;
+    CHECK(mc_client_render_global_retain(external, error) == MC_CLIENT_RENDER_GLOBAL_OK);
+    CHECK(mc_client_render_global_terminal_detach(owner, error) == MC_CLIENT_RENDER_GLOBAL_BUSY &&
+          !owner->world_retiring && !owner->terminal_preserve_manager_world &&
+          owner->phase == MC_CLIENT_RENDER_GLOBAL_READY && world->world->fields.u->count == 3);
+    CHECK(terminal_manager_same(classes, &before, 0) == 0 &&
+          terminal_graph_same(world, other, &graph) == 0);
+    CHECK(mc_client_render_global_release(&external, error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+          external == NULL);
+
+    /* Captured real failure refuses cleanup AFTER terminal admission latches.
+     * Both legacy retry paths must retain that policy and every remaining right. */
+    CHECK(mc_client_render_global_terminal_detach(owner, error) == MC_CLIENT_RENDER_GLOBAL_BUSY &&
+          owner->world_occurrence == world->world &&
+          owner->manager_world_occurrence == world->world && owner->world_manager == manager &&
+          owner->fields.k == world->world && owner->fields.u->c == world->world &&
+          world->world->fields.u->count == 3);
+    CHECK(terminal_admission_closed(owner, error) == 0);
+    CHECK(mc_client_render_global_world_detach(owner, error) == MC_CLIENT_RENDER_GLOBAL_BUSY &&
+          owner->terminal_preserve_manager_world);
+    CHECK(mc_client_render_global_retire(slot, error) == MC_CLIENT_RENDER_GLOBAL_BUSY &&
+          *slot == owner);
+    CHECK(captured.render_global == original.render_global &&
+          captured.render_global->source_pc == 30);
+    CHECK(terminal_manager_same(classes, &before, 0) == 0 &&
+          terminal_graph_same(world, other, &graph) == 0);
+    mc_world_access_failure_release(&captured);
+    /* The legacy owner-retire entry now consumes the remaining local World
+     * rights itself. The real foreign membership stops only final bridge free. */
+    CHECK(mc_client_render_global_retire(slot, error) == MC_CLIENT_RENDER_GLOBAL_BUSY &&
+          *slot == owner && owner->terminal_preserve_manager_world &&
+          owner->phase == MC_CLIENT_RENDER_GLOBAL_RETIRING && owner->world_occurrence == NULL &&
+          owner->manager_world_occurrence == NULL && owner->world_manager == NULL &&
+          owner->fields.k == NULL && owner->fields.u->c == NULL);
+    for (mc_client_source_dk *chunk = owner->chunk_owners; chunk != NULL; chunk = chunk->next)
+        CHECK(!chunk->world_held && chunk->fields.a == NULL &&
+              chunk->phase == MC_CLIENT_RENDER_GLOBAL_RETIRING);
+    CHECK(world->world->fields.u->count == 2 &&
+          world->world->world_accesses.entries[1] == identity &&
+          world->world->world_accesses.identities[1] == foreign);
+    CHECK(terminal_manager_same(classes, &before, 1) == 0 &&
+          terminal_graph_same(world, other, &graph) == 0);
+    CHECK(terminal_admission_closed(owner, error) == 0);
+    CHECK(mc_client_render_global_world_detach(owner, error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+          owner->terminal_preserve_manager_world);
+    CHECK(mc_client_render_global_terminal_detach(owner, error) == MC_CLIENT_RENDER_GLOBAL_OK);
+    CHECK(mc_client_render_global_retire(slot, error) == MC_CLIENT_RENDER_GLOBAL_BUSY &&
+          *slot == owner && original.render_global->source_pc == 30);
+    CHECK(terminal_manager_same(classes, &before, 1) == 0 &&
+          terminal_graph_same(world, other, &graph) == 0);
+    bool removed = false;
+    CHECK(mc_world_runtime_remove_world_access(world->world, identity, &removed, NULL) ==
+              MC_WORLD_STORAGE_OK &&
+          removed && world->world->fields.u->count == 1);
+    CHECK(mc_client_render_global_retire(slot, error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+          *slot == NULL);
+    CHECK(terminal_manager_same(classes, &before, 1) == 0 &&
+          terminal_graph_same(world, other, &graph) == 0);
+    CHECK(consumer.attached && consumer.classes == classes);
+    CHECK(mc_client_render_manager_consumer_detach(&consumer, &error->manager) ==
+              MC_CLIENT_MANAGER_OK &&
+          !consumer.attached && consumer.classes == NULL);
+    mc_client_manager_state after;
+    CHECK(mc_client_render_manager_inspect(classes, &after) && after.fields.g == world->world &&
+          after.native_consumers + 1 == before.native_consumers);
+    printf("Terminal N quiesce: one actual App, same-World TH preserved; other "
+           "N/World/provider/cache/storage live\n");
+    free(error);
+    return 0;
+}
+
 static int lifetime(mc_client_render_global **slot, mc_world_runtime *world) {
     mc_client_render_global *owner = *slot, *external = owner;
     mc_client_render_global_error *error = calloc(1, sizeof(*error));
@@ -284,6 +539,8 @@ static int lifetime(mc_client_render_global **slot, mc_world_runtime *world) {
     CHECK(mc_client_render_global_world_detach(owner, error) == MC_CLIENT_RENDER_GLOBAL_OK &&
           world->fields.u->count == 1 && world->world_accesses.entries[0] == identity &&
           world->world_accesses.identities[0] == foreign && owner->fields.k == NULL);
+    CHECK(mc_client_render_global_terminal_detach(owner, error) == MC_CLIENT_RENDER_GLOBAL_BUSY &&
+          owner->world_retiring && !owner->terminal_preserve_manager_world);
     CHECK(mc_client_render_global_retire(slot, error) == MC_CLIENT_RENDER_GLOBAL_BUSY &&
           *slot == owner && owner->access != NULL && original.render_global->source_pc == 30);
     CHECK(mc_world_runtime_retire_entity_containers(world, NULL) == MC_WORLD_STORAGE_OK &&
@@ -359,7 +616,7 @@ static int world_device(const char *resources, const char *assets, const char *w
           after == before);
     printf("Actual n/DK arena bytes: H3 after repeat=%zu H0=%zu; sizeof(DK)=%zu\n", small_bytes,
            large_bytes, sizeof(mc_client_source_dk));
-    CHECK(mc_client_render_global_retire(&large, error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+    CHECK(terminal_preserves_manager(&large, owner, &world, attempt->manager_classes) == 0 &&
           large == NULL);
     CHECK(distance(app, 3) == 0 &&
           quota_prefix(&runtime, app, world.world, constructor_allocations) == 0);

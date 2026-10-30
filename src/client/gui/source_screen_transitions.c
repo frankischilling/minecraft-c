@@ -32,6 +32,7 @@ struct mc_client_screen_transitions {
     screen_node *nodes;
     size_t node_count, screens, calls;
     bool active, retiring, slot_handed_off;
+    bool terminal_prepare_selected, terminal_prepared;
     mc_client_singleplayer_controller *controller;
     mc_client_world_load_classes *world_classes;
     mc_client_world_load_call *last_load;
@@ -539,15 +540,70 @@ bool mc_client_screen_transitions_inspect(const mc_client_screen_transitions *r,
                                           mc_client_screen_transition_state *out) {
     if (r == NULL || out == NULL)
         return false;
-    *out = (mc_client_screen_transition_state){r->active,   r->retiring, r->slot_handed_off,
-                                               r->screens,  r->calls,    r->initial,
-                                               &r->failure, r->last_load};
+    *out = (mc_client_screen_transition_state){.active = r->active,
+                                               .retiring = r->retiring,
+                                               .slot_handed_off = r->slot_handed_off,
+                                               .screens = r->screens,
+                                               .calls = r->calls,
+                                               .initial_screen = r->initial,
+                                               .failure = &r->failure,
+                                               .world_load = r->last_load,
+                                               .terminal_prepare_selected =
+                                                   r->terminal_prepare_selected,
+                                               .terminal_prepared = r->terminal_prepared};
     return true;
 }
 
 mc_client_screen_classes *
 mc_client_screen_transitions_classes(const mc_client_screen_transitions *r) {
     return r == NULL ? NULL : r->classes;
+}
+
+mc_client_screen_status
+mc_client_screen_transitions_terminal_prepare(mc_client_screen_transitions *r,
+                                              mc_client_screen_error *e) {
+    if (e == NULL)
+        return MC_CLIENT_SCREEN_INVALID_ARGUMENT;
+    *e = (mc_client_screen_error){0};
+    if (r == NULL)
+        return mc_screen_fail(e, MC_CLIENT_SCREEN_INVALID_ARGUMENT,
+                              "native screen terminal preparation receiver", NULL, NULL, NULL, 0);
+    if (r->active)
+        return mc_screen_fail(e, MC_CLIENT_SCREEN_BUSY, "active native screen terminal preparation",
+                              NULL, NULL, NULL, 0);
+    if (r->retiring && !r->terminal_prepare_selected)
+        return mc_screen_fail(e, MC_CLIENT_SCREEN_BUSY, "legacy screen retirement already entered",
+                              NULL, NULL, NULL, 0);
+    if (r->world_classes != NULL) {
+        const mc_client_world_load_status ended =
+            mc_client_world_load_classes_terminal_end(r->world_classes);
+        if (ended != MC_CLIENT_WORLD_LOAD_OK)
+            return mc_screen_fail(e, world_status(ended),
+                                  "World-load class terminal admission ending", NULL, NULL, NULL,
+                                  0);
+    }
+    r->retiring = r->terminal_prepare_selected = true;
+    if (r->terminal_prepared)
+        return MC_CLIENT_SCREEN_OK;
+    r->active = true;
+    for (screen_node *n = r->nodes; n != NULL; n = n->next) {
+        if (n->load == NULL)
+            continue;
+        const mc_client_world_load_status prepared = mc_client_world_load_terminal_prepare(n->load);
+        if (prepared != MC_CLIENT_WORLD_LOAD_OK) {
+            mc_client_world_load_state state;
+            const char *operation = "retained World-load terminal preparation";
+            if (mc_client_world_load_inspect(n->load, &state) && state.cleanup != NULL &&
+                state.cleanup->status != MC_CLIENT_WORLD_LOAD_OK &&
+                state.cleanup->operation != NULL)
+                operation = state.cleanup->operation;
+            r->active = false;
+            return mc_screen_fail(e, world_status(prepared), operation, NULL, NULL, NULL, 0);
+        }
+    }
+    r->terminal_prepared = true;
+    r->active = false;
+    return MC_CLIENT_SCREEN_OK;
 }
 
 mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_transitions **slot,

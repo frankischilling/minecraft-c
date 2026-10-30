@@ -70,12 +70,13 @@ struct mc_client_render_global {
     struct mc_client_render_global_update_call *update_call;
     struct mc_client_render_global_submit_call *submit_call;
     mc_world_runtime *world_occurrence;         /* Independent occurrence backing actual k. */
-    mc_world_runtime *manager_world_occurrence; /* Captured TH publication cleanup right. */
+    mc_world_runtime *manager_world_occurrence; /* Independent World hold for legacy TH cleanup. */
     mc_client_render_manager *world_manager;
     mc_render_global_cv *cv_owners;
     mc_client_source_dk *chunk_owners;
     size_t o_length, n_length, t_length;
     bool world_retiring;
+    bool terminal_preserve_manager_world; /* Latched across every terminal retry. */
 };
 
 mc_client_render_global_status

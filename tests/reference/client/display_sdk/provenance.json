@@ -254,8 +254,8 @@
       "sha256": "7741a4d72cc501c4f77bac247e60a6987416ebc3a54826364d2bb061c0cb2d30"
     },
     "include/mc/client/world/render_global.h": {
-      "bytes": 8511,
-      "sha256": "db3bb19943d48227d8a3a7631597ddc5b6bf545b18a55a4cdc563b719ab0ae60"
+      "bytes": 9657,
+      "sha256": "0687047dedadc01e07992fcada9bc9255c36b0153dab35339c7d6f7f65c9cfe1"
     },
     "include/mc/core/java/float_format.h": {
       "bytes": 2174,
@@ -1522,8 +1522,8 @@
       "sha256": "e17720111da4631764e2ae1ca256b98f2840a16165946b787a14c7b7a78e1966"
     },
     "src/client/world/render_global_internal.h": {
-      "bytes": 5112,
-      "sha256": "e6ccdafa3a50816ea563ce577adc5e4fe95bd8660408b0ac2ef0a3839c2b621e"
+      "bytes": 5204,
+      "sha256": "ab7ce0ece97ec5877d717281099d3825cd52d544379d26552bcc64156af3ccdb"
     },
     "src/client/world/render_global_owner.c": {
       "bytes": 9577,
@@ -2350,12 +2350,12 @@
       "sha256": "d822200c474ebc43042e49b2ecabe83d703ad0ff1b2119627b1f0871ddd79df8"
     },
     "src/client/runtime/menu_loop.c": {
-      "bytes": 43358,
-      "sha256": "f4dab5f2716b2bbed83a07cc8b85bc6e493d9e7065a0b1d4af64bf78df3ce36f"
+      "bytes": 44263,
+      "sha256": "66ba8f3defc3f8889f07e182a8e2066b59ec3f0f67fce519b12ac789352c1119"
     },
     "src/client/runtime/menu_loop.h": {
-      "bytes": 2611,
-      "sha256": "dbbe001e24bb29445cbd985a2f8f096fdb5a5152fb89dc1f116d64000862649c"
+      "bytes": 3403,
+      "sha256": "ed6df58b056c255be7449fdef61a4183d3d0d869ffefd2a059048035c969ea23"
     },
     "src/client/texture_packs/image_io.h": {
       "bytes": 482,
@@ -2422,12 +2422,12 @@
       "sha256": "610682740237465ff495b5f2e339aea2c77a81aac38e0754892922a2fcbe7f02"
     },
     "src/client/gui/source_screen_transitions.c": {
-      "bytes": 28090,
-      "sha256": "e3a099d23628206b730ce3efadc075775dc17f89162edcd8b0abfcd309d7972d"
+      "bytes": 31007,
+      "sha256": "2fb0b70d858b3b27e71fd70ea35e2cdb591ef3845f25d821a0d317ef6f25ded8"
     },
     "src/client/gui/source_screen_transitions.h": {
-      "bytes": 3916,
-      "sha256": "e70031a6c16cb9edbb73a364eede8e4c916490fdafc013ae7aafcbc35705d970"
+      "bytes": 4963,
+      "sha256": "211ecc762de3ba9850fb7e49617adcb7d8d83fb24ab1d70111f614bd7f73cf44"
     },
     "src/client/gui/source_world_list.c": {
       "bytes": 7402,
@@ -2474,8 +2474,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 58542,
-      "sha256": "caf7db7a24e5c87d790e3033fe7591735123c6bfa1ca63c77683102f33199079"
+      "bytes": 67632,
+      "sha256": "d93a4ce2f31c4e7031409789db6f038b74b1c520a31cdd11fab1cb4eb00a1f57"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -2550,12 +2550,12 @@
       "sha256": "7aca6fcbd8139daeac6da779a0c3cacc49d46cb6738167287c5b0e4d68686b5e"
     },
     "src/client/world/load_world.c": {
-      "bytes": 60971,
-      "sha256": "4cac8d19b02b042477383d795892cee9c0e53cedd2fd9364a4e0f6b93ec46824"
+      "bytes": 63420,
+      "sha256": "61991d54aff4aaa9395df78d5f8f36c2f844fa1af9b908f4f002dbfbde2dedef"
     },
     "src/client/world/load_world.h": {
-      "bytes": 7551,
-      "sha256": "36c3f394f6f6ec1704052e85324f9928c30c439c55dd1cb54c5b7be99092502d"
+      "bytes": 9477,
+      "sha256": "eb1ed69d466689f54f951f0bb890859cb4e8952303009c09bdd4209a5a919d2a"
     },
     "src/client/world/prepare_world.c": {
       "bytes": 19048,
@@ -2754,8 +2754,8 @@
       "sha256": "438f7bfb7cddc97374ba94c5f089860192fa2b33bd9091cb1703496895682b22"
     },
     "src/client/world/render_global_world.c": {
-      "bytes": 28752,
-      "sha256": "78e79c666fe0e9d5c0cba9afe222d4b433b249378e6fa0d1de838e3088d4df4d"
+      "bytes": 29891,
+      "sha256": "ddcb32c116ad4a93f8bf63c5e472f23dcfcae15f531ff937d6aa722afcce8ef6"
     },
     "src/client/world/source_chunk_renderer.c": {
       "bytes": 16483,
@@ -2798,8 +2798,8 @@
       "sha256": "2f0f43290482ef618088cfd2d7b56ca29673235c0ef4825f419b1b86068f45c9"
     },
     "tests/client/world/test_render_global_world.c": {
-      "bytes": 23389,
-      "sha256": "0b56b87e8486c810545546b5e791fdb32e7ecaa537bbb668df20f5fe31191ce8"
+      "bytes": 39883,
+      "sha256": "34859be1da1e9bd9b0cd70bf0cba457e1cb8cd31fcf81e8ecdac63ce62113b65"
     },
     "tests/entity/player/test_appearance.c": {
       "bytes": 9415,
