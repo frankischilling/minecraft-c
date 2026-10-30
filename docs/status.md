@@ -1,5 +1,32 @@
 # Development status
 
+The client now executes both [rain and snow draw passes](client/precipitation.md)
+through the canonical World queries, biome array, Random, NW and Display.
+Weather alpha testing uses its actual 0.01 reference and restores 0.1 afterward.
+The loaded dry frame returns from precipitation, executes the next fog setup
+and reaches the missing cloud draw at PX963. Clouds, hand/HUD composition,
+complete Entity drawing, repeated frames and gameplay remain unfinished.
+
+The new original fixture compares 100 dry/null-camera prefix outcomes and Random
+values. Native graphics controls cover both precipitation types, both radii,
+dry biomes, texture-lookup ownership, failure cleanup and alpha-threshold pixels.
+These finite checks do not establish original rendered-weather equality.
+
+All 46 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 55 Windows tests pass in 74.43 seconds and all 51 Linux tests in 112.59 seconds,
+without failures, skips or sanitizer findings. Each host passes 677 precipitation
+checks. All 2,319 C/helper/build inputs stay unchanged; formatting checks 1,634 files.
+The loaded Windows suite preserves saves/resources and all 72 input histories.
+
+The preceding [published particle checkpoint](https://github.com/frankischilling/minecraft-c/actions/runs/41120338107)
+passes all four hosted jobs: Windows 498, GCC 540 and Clang 540 tests, 1,578 total.
+Its Windows cache records 1,125 hits and 300 misses; configure/build/test steps take
+81/193/345 seconds. The earlier queued start was runner waiting time. This does
+not establish a workload-controlled speedup. Hosted qualification of the weather
+increment remains pending.
+
+## Preceding particle checkpoint
+
 The [particle draw entries](client/particle-rendering.md) execute on the actual
 EffectRenderer captured by the World frame. The initial loaded frame returns
 from empty lit particles518, disables lighting521, sets fog527, computes five

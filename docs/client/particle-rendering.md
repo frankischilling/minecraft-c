@@ -122,7 +122,9 @@ execute the following source sequence:
 | 805 | The nonfancy branch invokes its actual translucent submission here. |
 | 809 through822 | Restore depth writes, enable culling and disable blending. |
 | 825 through930 | Evaluate zoom, Player, a fresh App Hit and water in order. A qualifying ordinary selection reaches the damage/placement overlay at897 before the outline at921. |
-| 932 | Invoke the World weather draw. This child remains an explicit dependency. |
+| 932 | Invoke [precipitation drawing](precipitation.md) using a fresh App World and camera. |
+| 938 through957 | Disable fog, execute a fresh fog setup and enable fog. |
+| 963 | Invoke the captured N's cloud draw. This child remains an explicit dependency. |
 
 Fog calls at306,324,449,527,646 have distinct retained calls and snapshots.
 The completed N510 receipt retires before a later N invocation, leaving its

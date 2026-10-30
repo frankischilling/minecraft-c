@@ -5,27 +5,10 @@ The target is a graphical single-player/multiplayer client and a dedicated
 headless server, reproducing the original behavior with locally selected
 usernames and no account authentication.
 
-There is no playable C client or server yet. Shared libraries cover numerical
-and text compatibility, NBT/compression, and terrain-generation components.
-Tests, reference tools and a local resource importer support development.
-The [parity matrix](docs/parity.md) records verified scenarios and outstanding work.
-The default client runs the constructed source App and its
-[menus](docs/client/menu-runtime.md), including real save-list selection and
-Cancel. Existing-save loading reaches World and Player/input publication;
-renderer attachment, picking, gameplay input and
-[focused mouse look](docs/client/renderer-frames.md) run. Pause entry and ordered
-World ticks reach concrete Mob construction. World drawing now completes fog,
-sky, camera, ChunkRenderer culling and dirty-chunk selection. Real cache/list
-compilation now emits standard Block geometry through the actual
-[RenderBlocks path](docs/client/render-blocks.md). Terrain submission now draws
-standard Blocks, followed by standard lighting setup. The source renderer now
-supports [vertex lighting and normal/material state](docs/client/lighting-raster.md).
-The [RenderGlobal Entity pass](docs/client/render-global-entities.md) now runs
-its real delay, dispatcher bindings and visibility predicates. The initial
-frame continues through [particles](docs/client/particle-rendering.md) and
-translucent terrain to weather drawing. Specialized Block shapes, Entity draws,
-other particle classes and complete frames remain unfinished. A separate
-[generated-world inspection](docs/client/world-renderer.md) remains available.
+Development currently focuses on the single-player client. Menus, existing-save
+loading, player input and parts of world rendering run, but the client is not
+playable yet. See [current status](docs/status.md) for progress and limitations,
+and the [parity matrix](docs/parity.md) for verified behavior.
 
 ## Build
 

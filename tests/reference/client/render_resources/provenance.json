@@ -686,8 +686,8 @@
       "sha256": "bc51a3138712cc30378200588d48f766210b58e3cd967a3e609255ac496bc7b6"
     },
     "src/client/display/query_names.inc": {
-      "bytes": 18029,
-      "sha256": "f5218432c8f96c721eaddc51a20ae630a4c86d94db06859976a11f02238c0d89"
+      "bytes": 18155,
+      "sha256": "bd861702c957b1ab2e67ef37c69021d20df1d6fce4747bee8d36fa9cfce70fa2"
     },
     "src/client/display/sdk_controllers.c": {
       "bytes": 11434,
@@ -758,16 +758,16 @@
       "sha256": "52167761c818678b56ed3d2a6282830c362633fbf83f8fef5213ab54de29b8af"
     },
     "src/client/display/source_internal.h": {
-      "bytes": 6338,
-      "sha256": "7231cc6565c7e9de440a8cfe32ec925a478a07f68d04438377fab4ad0a81594d"
+      "bytes": 6398,
+      "sha256": "2a78e52977a7f59f460d65443bdbcbc5baa1849a215d0b1b609a56958ac94393"
     },
     "src/client/display/source_surface.h": {
-      "bytes": 10125,
-      "sha256": "2d8c95ac91f2152f8f65d99d5d61c3b3dad42d2f8597b73969cd76cc7b71b0d0"
+      "bytes": 10181,
+      "sha256": "75ae4077bee8a74cc5c102af4309826148cd44709ad2db64effe21c5a7b14aa1"
     },
     "src/client/display/source_surface.inc": {
-      "bytes": 55288,
-      "sha256": "6f2843dceef440f8cb0fcd978e18ed678792963497eceec482d55e7996dc9fe3"
+      "bytes": 55910,
+      "sha256": "2b8897de8b5d920731daa216890d878231cd980297ceedbe6287c899a66dc4e0"
     },
     "src/client/display/source_viewport.inc": {
       "bytes": 3343,
@@ -1414,8 +1414,8 @@
       "sha256": "68c9dc8d104559a0c5dce47d2a86a0848297821fbea82f0c2f627eb3470273af"
     },
     "tests/client/display/test_source_gl_setup.c": {
-      "bytes": 26241,
-      "sha256": "511f8b000404321e52b906dd624fa031c240352b49a4882d522f617559be766f"
+      "bytes": 26937,
+      "sha256": "934dd076645617cb07daaf3b62dd70ced25b3cc67eb2169c2fd6d5aa837289a5"
     },
     "tests/client/gui/test_gui_ingame.c": {
       "bytes": 29003,
@@ -2154,8 +2154,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 103953,
-      "sha256": "6f93446d6624e0d99f48879030c16633c8e19fababd9cf53b29c8dd8ee95d737"
+      "bytes": 104426,
+      "sha256": "db7d409ef2d68358f2a466208ba1d6890e0d69981c479f9225a3d0bc6d60028e"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -2842,8 +2842,8 @@
       "sha256": "0741be5277ba267b9188d9ba94b627b4b7b74825f74bc1b2d3f979be7debd7f6"
     },
     "cmake/client_renderer_rain.cmake": {
-      "bytes": 959,
-      "sha256": "c753ae749a8c8340d9dd71bc7637f212b6f3451e3917919d4b1d0d1beb53fbce"
+      "bytes": 2075,
+      "sha256": "dc391668ba1d84f7c3f0b0e04abd8de4c5f21fe07cc81c5d212f6c6f2397e076"
     },
     "cmake/client_renderer_tick.cmake": {
       "bytes": 1095,
@@ -3126,8 +3126,8 @@
       "sha256": "f332863a8dbdac177226c5e86a8f34a317a47c774d24fc813488c07b496b02a8"
     },
     "include/mc/client/world/world_frame.h": {
-      "bytes": 8075,
-      "sha256": "d76c0988290534496c5028093b0d8aeec236d2fdcbef265db450ecb8e224db08"
+      "bytes": 8380,
+      "sha256": "26a72bd8d9b2af6760187c82bcfa3b637a4413263f74ab1f8451053755695d8a"
     },
     "include/mc/entity/movement/turn.h": {
       "bytes": 1588,
@@ -3182,8 +3182,8 @@
       "sha256": "baa5fdacd446c1edd4c66b1b2506d4ac804755e0538cdb82431b1e82f6955489"
     },
     "src/client/world/entity_renderer/world_frame.c": {
-      "bytes": 59219,
-      "sha256": "03353b8fc70f888653fd1fb4c03fa6a4984ed93c82ea1ea5c70a5df1fc2c4b1d"
+      "bytes": 60366,
+      "sha256": "527ece4decca954f718fba5b6d8869a83cc68952715238e17806e39d02c44bcb"
     },
     "src/entity/player/mouse_filter.c": {
       "bytes": 1627,
@@ -3982,8 +3982,8 @@
       "sha256": "72d0e755fa5d149075d9363e49977914d0a5b5a2e647ac56c7afcaeb30582ea6"
     },
     "src/client/display/source_lighting_shader.h": {
-      "bytes": 4781,
-      "sha256": "3927e9a5865ca917faac9f7639ce0c4d63c5581003c49ef6605cea62da93cb9d"
+      "bytes": 4830,
+      "sha256": "285b3ee7b536dc83e62e3206a36272dad0a211acf952720edab7f9cd7ea45e80"
     },
     "src/client/display/source_lighting_state.h": {
       "bytes": 4530,
@@ -4350,8 +4350,8 @@
       "sha256": "0d7669cd32004f742c86177577ce8b9223e15665e3c2c05d7b7d9b5d842e38aa"
     },
     "src/client/world/entity_renderer/world_frame_after_particles.inc": {
-      "bytes": 27383,
-      "sha256": "683f8255d9b61c6fd0b5ae081569b6362326bdabe9ff0b6beed2fac00b5dab1b"
+      "bytes": 29526,
+      "sha256": "312caadcaea14d2d9264c8c28383fbef4619d43ea2ed3159a1e6005b7e612ea2"
     },
     "src/entity/particles/origin.c": {
       "bytes": 1518,
@@ -4372,6 +4372,42 @@
     "tests/reference/client/particle_draw/run.py": {
       "bytes": 16412,
       "sha256": "ce6c36cf032e996833ccb12c7ab6ec41e7304a7468a1a6e5e6424cded78af37c"
+    },
+    "include/mc/client/world/precipitation.h": {
+      "bytes": 3039,
+      "sha256": "1196bfc5ec0240681d03517aa5edbddea6fc804f73ca8725f9104e6570a5ddcb"
+    },
+    "src/client/world/entity_renderer/precipitation.c": {
+      "bytes": 26360,
+      "sha256": "cbf6dd57013eaabf4648bae20e605f948290caa267921ae3bd9a33b9ec614019"
+    },
+    "src/client/world/entity_renderer/precipitation_internal.h": {
+      "bytes": 541,
+      "sha256": "005cfe71d7b1f27274dc5f7a7a34a5c950e49390410c97538e6bf64d59b7c6a9"
+    },
+    "tests/client/world/test_precipitation.c": {
+      "bytes": 15151,
+      "sha256": "b4acc00df52a53104ba0bd7677b1011f9ff1168fa7bc9462cea6b437cedc76b2"
+    },
+    "tests/reference/client/precipitation/PrecipitationObservation.java": {
+      "bytes": 3395,
+      "sha256": "8aa0b2860f5de5edb088a39d9e771e0e9ccb2ad7d209d2e8db1293de89d26e73"
+    },
+    "tests/reference/client/precipitation/capture_reference.py": {
+      "bytes": 4019,
+      "sha256": "cdd11cbc71609263028968e104147ce95152ea8b77fdf1e2ebd22a7cf8adda68"
+    },
+    "tests/reference/client/precipitation/finite.json": {
+      "bytes": 4803,
+      "sha256": "d0d0816903f7d3a53d444c3ee530d3dc88fba1747430716872a4ba888909dc80"
+    },
+    "tests/reference/client/precipitation/source-pins.json": {
+      "bytes": 40035,
+      "sha256": "616d81e10dc5fd3c3613591070b22bac536df5b0dc645126b5dc9517abac3049"
+    },
+    "tests/tools/client/test_precipitation.py": {
+      "bytes": 2600,
+      "sha256": "3b6451daf4b08cc079d335ff48d55e59087c0fe2257fb7319e1fb45b2bc87901"
     }
   },
   "source_suppliers": {

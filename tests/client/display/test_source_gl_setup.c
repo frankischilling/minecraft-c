@@ -287,6 +287,16 @@ int main(int argc, char **argv) {
           display->source.shade_flat);
     CHECK(mc_client_display_source_shade_model(display, GL_SMOOTH, &error) &&
           !display->source.shade_flat);
+    /* Finite GREATER references clamp independently of the source draw. */
+    static const float references[] = {-1.0f, 0.0f, 0.01f, 0.1f, 2.0f};
+    static const float clamped[] = {0.0f, 0.0f, 0.01f, 0.1f, 1.0f};
+    for (size_t i = 0; i < sizeof references / sizeof(*references); ++i) {
+        CHECK(mc_client_display_source_alpha_function(display, GL_GREATER, references[i], &error));
+        mc_client_source_draw_state alpha;
+        CHECK(mc_client_display_source_draw_inspect(display, &alpha) && alpha.alpha_function_set &&
+              alpha.alpha_reference == clamped[i]);
+    }
+    CHECK(mc_client_display_source_alpha_function(display, GL_GREATER, alpha_reference(), &error));
     /* Invalid profiles/function admission cannot publish a new state. */
     memcpy(snapshot, &display->source, sizeof(snapshot));
     const unsigned before_dispatch = dispatch_count;
@@ -295,7 +305,7 @@ int main(int argc, char **argv) {
     UNSUPPORTED(mc_client_display_source_depth_function(display, GL_LESS, &error));
     UNSUPPORTED(
         mc_client_display_source_alpha_function(display, GL_LESS, alpha_reference(), &error));
-    UNSUPPORTED(mc_client_display_source_alpha_function(display, GL_GREATER, 0.0f, &error));
+    UNSUPPORTED(mc_client_display_source_alpha_function(display, GL_GREATER, INFINITY, &error));
     UNSUPPORTED(mc_client_display_source_cull_face(display, GL_FRONT, &error));
     UNSUPPORTED(mc_client_display_source_matrix_mode(display, GL_TEXTURE, &error));
     display->gl.ClearDepth = NULL;

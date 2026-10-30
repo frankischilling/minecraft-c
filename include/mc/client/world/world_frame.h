@@ -5,6 +5,7 @@
 #include "mc/client/world/frustum.h"
 #include "mc/client/world/frustum_culling.h"
 #include "mc/client/world/picking.h"
+#include "mc/client/world/precipitation.h"
 #include "mc/client/world/render_global_entities.h"
 #include "mc/client/world/render_global_sky.h"
 #include "mc/client/world/render_global_submit.h"
@@ -50,6 +51,7 @@ typedef struct mc_client_world_frame_error {
     const mc_client_render_global_error *submission;
     const mc_client_render_global_error *entities;
     const mc_effect_draw_error *particles;
+    const mc_client_precipitation_error *precipitation;
     const mc_client_texture_lookup_error *texture;
     const mc_client_graphics_error *lighting;
     const mc_client_lighting_error *lighting_enable;
@@ -89,6 +91,7 @@ typedef struct mc_client_world_frame_state {
     bool selection_zoom_read, selection_player_read, selection_player, selection_hit_read;
     bool selection_hit_present, selection_water_read, selection_water;
     bool selection_alpha_disabled, selection_current_returned;
+    bool precipitation_returned, weather_fog_disabled, cloud_fog_returned, cloud_fog_enabled;
     int32_t terrain_count;
     int32_t translucent_count;
     size_t update_calls;
@@ -125,6 +128,8 @@ typedef struct mc_client_world_frame_state {
     const mc_client_renderer_fog_state_view *draw_fog, *particle_fog, *translucent_fog;
     const mc_entity_hit_result *selection_hit;
     const mc_item_stack *selection_stack;
+    const mc_client_precipitation_state *precipitation;
+    const mc_client_renderer_fog_state_view *cloud_fog;
 } mc_client_world_frame_state;
 
 /* Actual px.a(FJ) World draw entry, invoked from px.b's World branch. Uses the

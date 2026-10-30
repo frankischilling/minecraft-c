@@ -1,5 +1,27 @@
 # Test scope and reproduction
 
+## Precipitation and World-frame continuation
+
+The [weather increment](client/precipitation.md#qualification) builds 46 selected
+production/test targets on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 55 Windows tests pass in 74.43 seconds and all 51 Linux tests in 112.59 seconds,
+with zero failures, skips or sanitizer findings. All 2,319 C/helper/build inputs
+remain unchanged during both builds and tests; clang-format18 checks 1,634 files.
+
+`client.precipitation` passes 677 checks per host. Its 100 unchanged-original
+dry/null-camera rows compare outcome and subsequent Random state, including NaN
+branch behavior. Separate native graphics cases exercise snow/rain/dry biomes,
+both radii, actual World brightness/surface queries, texture ownership, reached
+null-Random failure and cleanup. Native pixel checks distinguish alpha reference
+0.01 from 0.1. These controls do not compare original rendered precipitation.
+
+The Windows selection suite preserves save/resource bytes and all 72 original
+input histories. Its loaded frame returns from weather, executes fog951 and
+reaches clouds963. The inspected capture shows terrain and Sky without HUD.
+Clouds, full Entity drawing, hand/HUD composition and gameplay remain unfinished.
+The source and native [fixture contract](../tests/reference/client/precipitation/README.md)
+records how to reproduce each scope.
+
 ## Particle drawing and World-frame continuation
 
 All 45 selected targets build on Windows MSVC Debug and Linux Clang18

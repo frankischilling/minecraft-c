@@ -352,5 +352,7 @@ bool mc_client_display_source_draw_inspect(const mc_client_display *display,
     out->alpha_test = display->source.alpha_test;
     out->shade_flat = display->source.shade_flat;
     out->lighting_enabled = display->source.lighting_enabled;
+    out->alpha_function_set = display->source.alpha_function_set;
+    out->alpha_reference = display->source.alpha_reference;
     return true;
 }

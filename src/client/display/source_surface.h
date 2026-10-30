@@ -23,6 +23,8 @@ typedef enum mc_client_source_array {
 typedef struct mc_client_source_draw_state {
     float color[4];
     bool color_known, texture_enabled, alpha_test, shade_flat, lighting_enabled;
+    bool alpha_function_set;
+    float alpha_reference;
 } mc_client_source_draw_state;
 
 /* Passive source state used by the draw program. No GL query or initialization. */

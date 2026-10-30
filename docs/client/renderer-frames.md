@@ -9,7 +9,8 @@ captured camera's eye position504 to the actual captured RenderGlobal at510.
 Its initial [Entity pass](render-global-entities.md) consumes the constructor's
 I2 delay and returns17 with I1. PX then calls the actual EffectRenderer at518
 and535, performs two further fog calls and submits translucent terrain. The
-loaded profile reaches the weather child at932. See the
+loaded profile returns from [precipitation drawing](precipitation.md), executes
+the next fog setup and reaches the cloud child at963. See the
 [particle continuation](particle-rendering.md) for ordering and retained views.
 Later N calls use actual LL/TH frame bindings, Entity Lists and
 visibility predicates; reached Entity/TileEntity draws remain unfinished.

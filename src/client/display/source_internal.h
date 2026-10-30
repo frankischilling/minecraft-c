@@ -97,6 +97,7 @@ typedef struct mc_client_source_state {
     mc_client_source_attribute_profile attribute_profile;
     mc_client_source_attribute_staging attribute_staging;
     bool shade_flat, alpha_function_set;
+    float alpha_reference;
     unsigned arrays, pointers;
     const void *array_buffers[4];
     uint64_t array_contexts[4];
@@ -116,7 +117,8 @@ typedef struct mc_client_source_state {
     uint32_t vertex_shader, fragment_shader, program, vao, vbo;
     unsigned gpu_phase;
     mc_client_display_error gpu_failure;
-    int projection_uniform, modelview_uniform, textured_uniform, alpha_uniform;
+    int projection_uniform, modelview_uniform, textured_uniform, alpha_uniform,
+        alpha_reference_uniform;
     int fog_enabled_uniform, fog_mode_uniform, fog_distance_uniform;
     int fog_color_uniform, fog_density_uniform, fog_start_uniform, fog_end_uniform;
     int lighting_uniform, normal_matrix_uniform, normalize_uniform, rescale_uniform;

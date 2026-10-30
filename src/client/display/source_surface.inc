@@ -404,6 +404,7 @@ static bool source_gpu_construct(mc_client_display *display, mc_client_display_e
     s->modelview_uniform = display->gl.GetUniformLocation(s->program, "modelview");
     s->textured_uniform = display->gl.GetUniformLocation(s->program, "textured");
     s->alpha_uniform = display->gl.GetUniformLocation(s->program, "alphaTest");
+    s->alpha_reference_uniform = display->gl.GetUniformLocation(s->program, "alphaReference");
     s->fog_enabled_uniform = display->gl.GetUniformLocation(s->program, "fogEnabled");
     s->fog_mode_uniform = display->gl.GetUniformLocation(s->program, "fogMode");
     s->fog_distance_uniform = display->gl.GetUniformLocation(s->program, "fogDistance");
@@ -415,7 +416,7 @@ static bool source_gpu_construct(mc_client_display *display, mc_client_display_e
     if (!gl_check(display, "source GPU uniforms", error))
         return false;
     if (s->projection_uniform < 0 || s->modelview_uniform < 0 || s->textured_uniform < 0 ||
-        s->alpha_uniform < 0 || image < 0)
+        s->alpha_uniform < 0 || s->alpha_reference_uniform < 0 || image < 0)
         return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "source GPU uniforms", "missing uniform", 0);
     if (s->fog_enabled_uniform < 0 || s->fog_mode_uniform < 0 || s->fog_distance_uniform < 0 ||
         s->fog_color_uniform < 0 || s->fog_density_uniform < 0 || s->fog_start_uniform < 0 ||
@@ -578,6 +579,8 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
         display->gl.UniformMatrix4fv(s->modelview_uniform, 1, GL_FALSE, s->modelview.column_major);
         display->gl.Uniform1i(s->textured_uniform, s->texture_enabled ? 1 : 0);
         display->gl.Uniform1i(s->alpha_uniform, s->alpha_test ? 1 : 0);
+        display->gl.Uniform1f(s->alpha_reference_uniform,
+                              s->alpha_function_set ? s->alpha_reference : 0.1f);
         display->gl.Uniform1i(s->fog_enabled_uniform, s->fog_enabled ? 1 : 0);
         display->gl.Uniform1i(s->fog_mode_uniform, s->fog.mode);
         display->gl.Uniform1i(s->fog_distance_uniform, s->fog.distance_mode);
@@ -937,16 +940,20 @@ bool mc_client_display_source_alpha_function(mc_client_display *display, int32_t
         return false;
     uint32_t bits;
     memcpy(&bits, &reference, sizeof(bits));
-    if (function != GL_GREATER || bits != UINT32_C(0x3dcccccd))
+    if (function != GL_GREATER || (bits & UINT32_C(0x7fffffff)) >= UINT32_C(0x7f800000))
         return source_leave(display,
                             fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glAlphaFunc",
-                                 "only actual GREATER/float0.1 shader profile is supported", 0),
+                                 "finite GREATER alpha reference required", 0),
                             error);
-    /* The existing alphaTest uniform gates that real fragment comparison.
-     * No new program, uniform, floating arithmetic or GL error query occurs. */
+    /* GL clamps the reference at the state store, before fragment comparison.
+     * No program initialization, source draw or GL error query occurs here. */
     if (!display->source.alpha_function_set)
         source_material_vertices(&display->source);
     display->source.alpha_function_set = true;
+    const uint32_t magnitude = bits & UINT32_C(0x7fffffff);
+    display->source.alpha_reference = (bits & UINT32_C(0x80000000)) != 0 && magnitude != 0 ? 0.0f
+                                      : magnitude > UINT32_C(0x3f800000)                   ? 1.0f
+                                                                         : reference;
     return source_leave(display, true, error);
 }
 

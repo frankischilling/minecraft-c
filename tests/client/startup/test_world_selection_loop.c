@@ -50,7 +50,7 @@
 
 static unsigned int checks;
 
-enum { loaded_world_frame_frontier = 932 };
+enum { loaded_world_frame_frontier = 963 };
 
 #define CHECK(condition)                                                                           \
     do {                                                                                           \
@@ -1476,8 +1476,8 @@ int main(int argc, char **argv) {
                   frame->entities->ll == NULL && frame->entities->th == NULL &&
                   frame->failure->entities == NULL &&
                   frame->failure->site.pc == loaded_world_frame_frontier &&
-                  strcmp(frame->failure->child.class_name, "px") == 0 &&
-                  strcmp(frame->failure->child.method, "c") == 0 &&
+                  strcmp(frame->failure->child.class_name, "n") == 0 &&
+                  strcmp(frame->failure->child.method, "b") == 0 &&
                   strcmp(frame->failure->child.descriptor, "(F)V") == 0);
             CHECK(frame->effects_captured && frame->effects == f.app->effect_renderer &&
                   frame->camera == load.player && frame->render_global == f.app->g &&
@@ -1528,6 +1528,12 @@ int main(int argc, char **argv) {
                   !frame->selection_water_read && !frame->selection_alpha_disabled &&
                   !frame->selection_current_returned && frame->selection_hit == NULL &&
                   frame->selection_stack == NULL);
+            CHECK(frame->precipitation_returned && frame->precipitation != NULL &&
+                  frame->precipitation->returned && frame->precipitation->source_pc == 18 &&
+                  frame->precipitation->strength_read && !frame->precipitation->camera_captured &&
+                  frame->weather_fog_disabled && frame->cloud_fog_returned &&
+                  frame->cloud_fog_enabled && frame->cloud_fog != NULL &&
+                  frame->cloud_fog->returned);
             const bool replay_expected = frame->fancy_graphics && frame->translucent_count > 0;
             CHECK(frame->translucent_replay_returned == replay_expected);
             if (replay_expected) {

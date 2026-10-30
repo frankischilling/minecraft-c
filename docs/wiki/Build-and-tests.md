@@ -1,5 +1,18 @@
 # Build and tests
 
+The [precipitation selection](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/precipitation.md#qualification)
+builds 46 targets on Windows MSVC Debug and Linux Clang18 ASan/UBSan. All 55 Windows
+tests pass in 74.43 seconds and all 51 Linux tests in 112.59 seconds, without
+failures, skips or sanitizer findings. Each host passes 677 weather checks and
+compares 100 original dry/null-camera prefixes. Native snow/rain rendering,
+cleanup and alpha pixels have separate scope from original weather equality.
+All 2,319 C/helper/build inputs remain unchanged. The loaded Windows suite keeps
+saves/resources and 72 focus histories intact, then reaches clouds963.
+
+The preceding [published particle checkpoint](https://github.com/frankischilling/minecraft-c/actions/runs/41120338107)
+passes all four hosted jobs and 1,578 tests. Hosted weather qualification remains
+pending. The following particle results describe that preceding increment.
+
 The [particle selection](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md#qualification)
 builds all 45 targets on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
 All 54 Windows tests pass in 79.27 seconds and all 50 Linux tests in 103.43

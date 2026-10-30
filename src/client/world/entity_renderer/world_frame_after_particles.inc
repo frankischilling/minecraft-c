@@ -434,9 +434,45 @@ static bool after_particles_body(mc_client_world_frame_call *call, mc_math_class
             }
         }
     }
-    call->failure.child = (mc_client_graphics_site){"px", "c", "(F)V", 0};
+    const mc_client_precipitation_status weather = entity_renderer_precipitation_entered(
+        owner, math, call->state.partial, &call->precipitation, &call->precipitation_error);
+    if (call->precipitation != NULL) {
+        (void)mc_client_entity_renderer_precipitation_inspect(call->precipitation,
+                                                              &call->precipitation_state);
+        call->state.precipitation = &call->precipitation_state;
+    }
+    if (weather != MC_CLIENT_PRECIPITATION_OK) {
+        const mc_client_precipitation_error *error = call->precipitation == NULL
+                                                         ? &call->precipitation_error
+                                                         : call->precipitation_state.failure;
+        call->failure.precipitation = error;
+        call->failure.child =
+            (mc_client_graphics_site){"px", "c", "(F)V", (int32_t)error->source_pc};
+        return outer_fail(call,
+                          weather == MC_CLIENT_PRECIPITATION_SOURCE_NULL
+                              ? MC_CLIENT_WORLD_FRAME_SOURCE_NULL
+                          : weather == MC_CLIENT_PRECIPITATION_UNSUPPORTED_FP
+                              ? MC_CLIENT_WORLD_FRAME_UNSUPPORTED_FP
+                              : MC_CLIENT_WORLD_FRAME_CHILD_FAILED,
+                          error->operation, 932, error->native_policy);
+    }
+    call->state.precipitation_returned = true;
+    if (!display_result(
+            call, mc_client_display_source_fog_enable(display, false, &call->failure.display), 938))
+        return false;
+    call->state.weather_fog_disabled = true;
+    /* The m942 read has no child invocation or side effect on either branch. */
+    if (!fog_setup_body(call, 5, 0, 951) ||
+        !display_result(
+            call, mc_client_display_source_fog_enable(display, true, &call->failure.display), 957))
+        return false;
+    call->state.cloud_fog_enabled = true;
+    if (call->state.render_global == NULL)
+        return outer_fail(call, MC_CLIENT_WORLD_FRAME_SOURCE_NULL,
+                          "actual captured clouds RenderGlobal receiver", 963, false);
+    call->failure.child = (mc_client_graphics_site){"n", "b", "(F)V", 0};
     return outer_fail(call, MC_CLIENT_WORLD_FRAME_DEPENDENCY,
-                      "actual World weather draw child is not connected", 932, true);
+                      "actual clouds draw child is not connected", 963, true);
 }
 
 static bool particles_body(mc_client_world_frame_call *call, mc_math_classes *math) {
