@@ -310,7 +310,7 @@ mc_client_frustum_status mc_client_render_global_cull_begin(mc_client_render_glo
          !attachment.source_returned);
     if (n->active || n->phase == MC_CLIENT_RENDER_GLOBAL_RETIRING || blocked_attachment ||
         n->sky_call != NULL || n->cull_call != NULL || n->update_call != NULL ||
-        n->submit_call != NULL ||
+        n->submit_call != NULL || n->entities_call != NULL ||
         (frustum != NULL && (frustum->state.active || !frustum->state.constructed)))
         return result(e, MC_CLIENT_FRUSTUM_BUSY, "N cull active/failed native owner", NULL, NULL,
                       NULL, 0, true);

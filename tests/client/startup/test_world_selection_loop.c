@@ -1,6 +1,7 @@
 /* Genuine native bootstrap/menu composition with authored SDL transport events. */
 #include "../world/test_load_world_foreign_loading.h"
 #include "../world/test_refresh_entity.h"
+#include "../world/test_render_global_entities.h"
 #include "../world/test_renderer_focus.h"
 #include "client/application_state.h"
 #include "client/display/sdk_input.h"
@@ -14,6 +15,7 @@
 #include "client/gui/source_world_list.h"
 #include "client/gui/source_world_selection_drawing.h"
 #include "client/gui/source_world_selection_internal.h"
+#include "client/render/tile_entity_renderer/internal.h"
 #include "client/runtime/gameplay_input.h"
 #include "client/runtime/menu_loop.h"
 #include "client/runtime/world_tick.h"
@@ -665,6 +667,11 @@ static int terminal_prepare_controls(fixture *f, mc_client_source_da *external) 
           startup != NULL && engine != NULL && font != NULL && loading != NULL &&
           settings != NULL && resources != NULL && files != NULL && math != NULL &&
           graphics != NULL);
+    mc_client_tile_renderer_classes *absent_tiles = NULL;
+    CHECK(mc_client_tile_entity_renderer_classes_existing(app->render_classes, app->registry,
+                                                          app->world_classes, &absent_tiles,
+                                                          NULL) == MC_CLIENT_TILE_RENDERER_OK &&
+          absent_tiles == NULL);
     const SDL_WindowID window_id = SDL_GetWindowID(window);
     int width, height;
     CHECK(window_id != 0 && SDL_GetWindowSize(window, &width, &height) && width > 0 && height > 0);
@@ -817,6 +824,9 @@ static int loaded_admission_attempt(fixture *f, mc_world_storage_status expected
         CHECK(memcmp(copies[i].before, copies[i].owner, copies[i].bytes) == 0);
     if (expected != MC_WORLD_STORAGE_OK)
         CHECK(memcmp(sentinel, &inventory, sizeof(inventory)) == 0);
+    if (operation != NULL && (error.operation == NULL || strcmp(error.operation, operation) != 0))
+        fprintf(stderr, "Terminal admission operation %s expected %s\n",
+                error.operation == NULL ? "none" : error.operation, operation);
     if (operation != NULL)
         CHECK(error.operation != NULL && strcmp(error.operation, operation) == 0);
     if (expected == MC_WORLD_STORAGE_OK && success != NULL)
@@ -850,17 +860,25 @@ static int loaded_terminal_admission_controls(fixture *f) {
     CHECK(mc_client_menu_loop_inspect(f->loop, &source) && source.failed &&
           source.source_class != NULL && strcmp(source.source_class, "px") == 0 &&
           source.source_method != NULL && strcmp(source.source_method, "a") == 0 &&
-          source.source_pc == 510 && !source.terminal_tail_entered);
+          source.source_pc == 518 && !source.terminal_tail_entered);
     CHECK(mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
           transitions.world_load != NULL &&
           mc_client_world_load_inspect(transitions.world_load, &load) && load.source_returned &&
           load.world == world && load.player == player && load.input != NULL);
+    mc_client_tile_renderer_classes *present_tiles = NULL;
+    mc_client_tile_renderer_state tiles_state;
+    CHECK(mc_client_tile_entity_renderer_classes_existing(app->render_classes, app->registry,
+                                                          app->world_classes, &present_tiles,
+                                                          NULL) == MC_CLIENT_TILE_RENDERER_OK &&
+          present_tiles != NULL && mc_client_tile_renderer_inspect(present_tiles, &tiles_state) &&
+          tiles_state.source_views_available && tiles_state.fields.f == world &&
+          tiles_state.fields.g == player && tiles_state.native_consumers == 0);
     CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                    "screen terminal admission prepared selected-load scope",
                                    NULL) == 0);
     CHECK(mc_client_menu_loop_terminal_prepare(f->loop));
     CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
-                                   "World terminal unexplained direct World binding", NULL) == 0);
+                                   "World terminal external Entity or TileEntity hold", NULL) == 0);
 
     /* Four derived Handler occurrences: actual Load, World sidecar, HC and ld
      * slots. Retaining ld itself adds no fifth Handler occurrence. */
@@ -903,7 +921,7 @@ static int loaded_terminal_admission_controls(fixture *f) {
           extra_loader == NULL && mc_world_store_source_inspect(load.handler, &handler) &&
           handler.holds == 4);
     CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
-                                   "World terminal unexplained direct World binding", NULL) == 0);
+                                   "World terminal external Entity or TileEntity hold", NULL) == 0);
 
     CHECK(mc_movement_input_retain(load.input, NULL) == MC_MOVEMENT_INPUT_OK);
     mc_movement_input *extra_input = load.input;
@@ -921,10 +939,6 @@ static int loaded_terminal_admission_controls(fixture *f) {
     CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
                                    "Load terminal external effect occurrence", NULL) == 0);
     CHECK(mc_client_effect_renderer_release(app->effect_renderer) == MC_EFFECT_RENDERER_OK);
-    CHECK(mc_entity_retain(player) == MC_ENTITY_OK);
-    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
-                                   "World terminal external Entity or TileEntity hold", NULL) == 0);
-    mc_entity_release(player); /* End only the actual extra test occurrence. */
 
     /* One App plus a genuine independent native consumer, not a second App. */
     mc_client_manager_consumer foreign = {0};
@@ -963,6 +977,12 @@ static int loaded_terminal_admission_controls(fixture *f) {
           app->active_world == world && app->h == player && app->i == player &&
           world->construction.phase == MC_WORLD_RUNTIME_READY &&
           !world->entity_containers_retired && !world->tile_entity_containers_retired);
+    /* Dispatcher-owned Player occurrences have ended. An independent actual
+     * retain must now be the sole reason selected-load admission refuses. */
+    CHECK(mc_entity_retain(player) == MC_ENTITY_OK);
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "World terminal external Entity or TileEntity hold", NULL) == 0);
+    mc_entity_release(player); /* End only the actual extra test occurrence. */
     mc_world_terminal_inventory inventory;
     CHECK(mc_world_runtime_terminal_admit(world, NULL, &inventory, NULL) == MC_WORLD_STORAGE_BUSY);
     CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_OK, NULL, &inventory) == 0 &&
@@ -992,7 +1012,7 @@ static int normal_terminal_retirement_controls(fixture *f, mc_client_source_da *
     } else {
         CHECK(source.failed && source.source_class != NULL &&
               strcmp(source.source_class, "px") == 0 && source.source_method != NULL &&
-              strcmp(source.source_method, "a") == 0 && source.source_pc == 510 &&
+              strcmp(source.source_method, "a") == 0 && source.source_pc == 518 &&
               controller != NULL);
     }
     CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
@@ -1409,7 +1429,7 @@ int main(int argc, char **argv) {
                                                &display_active,
                                                &update) == MC_CLIENT_SDK_UPDATE_OK);
             CHECK(strcmp(f.state.source_class, "px") == 0 &&
-                  strcmp(f.state.source_method, "a") == 0 && f.state.source_pc == 510 &&
+                  strcmp(f.state.source_method, "a") == 0 && f.state.source_pc == 518 &&
                   f.state.world_frame != NULL && f.state.world_frame->picking_returned &&
                   f.state.world_frame->viewport_set && f.state.world_frame->fog_blend_computed &&
                   f.state.world_frame->fog_returned && f.state.world_frame->camera_returned &&
@@ -1420,7 +1440,7 @@ int main(int argc, char **argv) {
                   f.state.world_frame->frustum_constructed &&
                   f.state.world_frame->frustum_recentered && f.state.world_frame->culling_returned);
             const mc_client_world_frame_state *frame = f.state.world_frame;
-            CHECK(frame->source_pc == 510 && frame->update_calls >= 1 && frame->updates_returned &&
+            CHECK(frame->source_pc == 518 && frame->update_calls >= 1 && frame->updates_returned &&
                   frame->draw_fog_returned && frame->terrain_texture_bound &&
                   frame->lighting_disabled && frame->update != NULL && !frame->update->active &&
                   frame->update->returned && frame->update->failure == NULL &&
@@ -1439,10 +1459,17 @@ int main(int argc, char **argv) {
                   frame->lighting_enabled && frame->eye_position_returned &&
                   frame->entity_eye != NULL && frame->standard_lighting != NULL &&
                   frame->failure->lighting_enable == NULL && frame->failure->view == NULL &&
-                  frame->failure->site.pc == 510 &&
-                  strcmp(frame->failure->child.class_name, "n") == 0 &&
-                  strcmp(frame->failure->child.method, "a") == 0 &&
-                  strcmp(frame->failure->child.descriptor, "(Lbt;Lyn;F)V") == 0);
+                  frame->entities_returned && frame->entities != NULL && !frame->entities->active &&
+                  frame->entities->returned && frame->entities->delayed &&
+                  frame->entities->source_pc == 17 && frame->entities->initial_delay == 2 &&
+                  frame->entities->remaining_delay == 1 &&
+                  frame->entities->owner == frame->render_global &&
+                  frame->entities->eye == frame->entity_eye && frame->entities->frustum != NULL &&
+                  frame->entities->ll == NULL && frame->entities->th == NULL &&
+                  frame->failure->entities == NULL && frame->failure->site.pc == 518 &&
+                  strcmp(frame->failure->child.class_name, "dn") == 0 &&
+                  strcmp(frame->failure->child.method, "b") == 0 &&
+                  strcmp(frame->failure->child.descriptor, "(Lsn;F)V") == 0);
             /* Source updates finish and retire their borrowed cache/call views.
              * The following submission may recenter those SAME DKs, which
              * invalidates their earlier geometry until a later source update. */
@@ -1494,6 +1521,9 @@ int main(int argc, char **argv) {
                   after_pick.cursor > before_pick.cursor);
             CHECK(mc_client_entity_renderer_pick_retire(&pick) == MC_CLIENT_PICK_OK &&
                   pick == NULL);
+            if (terminal_admission)
+                CHECK(mc_test_render_global_entities(f.app,
+                                                     mc_client_bootstrap_math(f.bootstrap)) == 0);
             printf("WORLD_LOAD ready=1 terrain=289 stored-marker=57 player=1 input=1 "
                    "renderer=1 effects=1 publication=1 view=1 returned=130 picker=452 "
                    "input=1073 paused-tick=1328 frame-frontier=%s.%s:%" PRId64 "\n",

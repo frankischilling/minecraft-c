@@ -199,8 +199,10 @@ coordinator before tail entry and keep their remaining graph for diagnosis;
 there is no unsupported-to-legacy fallback. Low-level explicit legacy APIs
 retain their separate contracts. This is bounded normal shutdown adoption,
 not complete Format/App/service external-root admission or source shutdown.
-RenderGlobal's delay and LL/TH frame invokes at N44/N80, deferred old Worlds,
-full World frames and gameplay lifetime parity remain unfinished.
+[RenderGlobal's Entity pass](render-global-entities.md) now adopts its actual
+delay and LL/TH frame invokes at N44/N80. N owns distinct consumer records;
+terminal detachment ends only those records before dispatcher retirement.
+Deferred old Worlds, full World frames and gameplay lifetime parity remain unfinished.
 
 ## Qualified native scope
 

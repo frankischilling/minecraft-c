@@ -600,6 +600,8 @@ add_library(mc_simulation STATIC
     src/entity/player/nbt.c
     src/entity/player/spawn.c
     src/entity/position.c
+    src/entity/render_distance.c
+    src/entity/living/sleeping.c
     src/entity/player/pushout.c
     src/entity/player/eligibility.c
     src/entity/player/atan2.c
@@ -669,6 +671,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/presentation.c
     src/world/runtime/world_access.c
     src/world/runtime/entity_publication.c
+    src/world/runtime/render_entities.c
     src/world/chunk/entity_remove.c
     src/world/runtime/entity_tick.c
     src/world/runtime/entity_tick_chunks.c
@@ -5510,6 +5513,8 @@ include(cmake/world_sky.cmake)
 include(cmake/client_sky_frame.cmake)
 include(cmake/client_controller_interpolation.cmake)
 include(cmake/world_client_tick_state.cmake)
+include(cmake/tests/entity_render_distance.cmake)
+include(cmake/tests/world_render_entities.cmake)
 if(MC_BUILD_CLIENT)
     target_sources(mc_client_entity_renderer PRIVATE src/client/world/entity_renderer/picking.c)
     target_link_libraries(mc_client_entity_renderer PRIVATE mc_client_singleplayer_controller)

@@ -143,6 +143,13 @@ mc_client_manager_status mc_client_render_manager_classes_bind(mc_client_render_
                                                                const mc_client_manager_options *,
                                                                mc_client_render_manager_classes **,
                                                                mc_client_manager_error *);
+/* Passive lookup of the actual associated namespace, preserving its immutable
+ * options. Absence returns NULL; cold/failed/inactive retiring owners remain
+ * discoverable. No source initialization, retain or diagnostic mutation runs.
+ * Output is disjoint and changes only on success; error is optional. */
+mc_client_manager_status mc_client_render_manager_classes_existing(
+    const mc_client_render_classes *, const mc_registry_classes *, const mc_java_random_profile *,
+    mc_client_render_manager_classes **nullable_out, mc_client_manager_error *);
 mc_client_manager_status
 mc_client_render_manager_consumer_attach(mc_client_render_manager_classes *,
                                          mc_client_manager_consumer *, mc_client_manager_error *);

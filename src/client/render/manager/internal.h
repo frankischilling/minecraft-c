@@ -151,4 +151,11 @@ void manager_frame_invalidate(mc_client_render_manager *);
 bool manager_frame_terminal_admit(mc_client_render_manager *, mc_client_manager_error *);
 bool manager_frame_retire(mc_client_render_manager *, mc_client_manager_error *);
 void manager_frame_destroy(mc_client_render_manager *);
+
+/* One reached N putstatic into the SAME already-active TH class. Raw scalar
+ * store only: no interpolation, FP admission, class use or frame operation.
+ * Caller owns the class graph/consumer and records its own N source PC. */
+mc_client_manager_status mc_client_render_manager_origin_store(mc_client_render_manager_classes *,
+                                                               unsigned int axis, double value,
+                                                               mc_client_manager_error *);
 #endif

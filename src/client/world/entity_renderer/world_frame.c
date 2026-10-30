@@ -16,6 +16,7 @@
 #include "renderer_fog_internal.h"
 #include "renderer_fog_state_internal.h"
 #ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+#include "../../startup/application_startup_internal.h"
 #include "../render_global_internal.h"
 #include "../render_global_sky_internal.h"
 #endif
@@ -63,6 +64,11 @@ struct mc_client_world_frame_call {
     mc_client_render_global_submit_call *submission;
     mc_client_render_global_submit_state submission_state;
     mc_client_render_global_error submission_error, submission_cleanup;
+    mc_client_render_global *render_global_occurrence;
+    mc_client_render_global_error render_global_error, render_global_cleanup;
+    mc_client_render_global_entities_call *entities;
+    mc_client_render_global_entities_state entities_state;
+    mc_client_render_global_error entities_error, entities_cleanup;
     mc_client_render_engine *terrain_engine;
     mc_client_texture_lookup_error terrain_texture_error, terrain_texture_cleanup;
     mc_client_graphics_error lighting_error;
@@ -206,6 +212,53 @@ static bool fog_setup_body(mc_client_world_frame_call *call, unsigned int index,
 }
 
 #ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+static bool entities_body(mc_client_world_frame_call *call, mc_math_classes *math) {
+    if (call->state.render_global == NULL)
+        return outer_fail(call, MC_CLIENT_WORLD_FRAME_SOURCE_NULL,
+                          "actual captured Entity rendering receiver", 510, false);
+    client_application *app = call->state.app;
+    const mc_client_render_global_entities_services services = {
+        .models = call->state.owner->services.models,
+        .world_classes = app->world_classes,
+        .profile = app->profile,
+        .registry = app->registry,
+        .manager_classes = app->startup == NULL ? NULL : app->startup->manager_classes,
+        .math = math};
+    const mc_client_render_global_status status = mc_client_render_global_entities_begin(
+        call->state.render_global, call->entity_eye, call->culler, call->state.partial, &services,
+        &call->entities, &call->entities_error);
+    if (call->entities != NULL) {
+        (void)mc_client_render_global_entities_inspect(call->entities, &call->entities_state);
+        call->state.entities = &call->entities_state;
+    }
+    if (status != MC_CLIENT_RENDER_GLOBAL_OK) {
+        call->failure.entities =
+            call->entities == NULL ? &call->entities_error : call->entities_state.failure;
+        call->failure.status = status == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE
+                                   ? MC_CLIENT_WORLD_FRAME_SOURCE_NULL
+                               : status == MC_CLIENT_RENDER_GLOBAL_UNSUPPORTED_FP
+                                   ? MC_CLIENT_WORLD_FRAME_UNSUPPORTED_FP
+                               : status == MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY
+                                   ? MC_CLIENT_WORLD_FRAME_DEPENDENCY
+                                   : MC_CLIENT_WORLD_FRAME_CHILD_FAILED;
+        call->failure.operation = call->entities_error.operation;
+        call->failure.native_policy = call->entities_error.native_policy;
+        call->failure.site = (mc_client_graphics_site){
+            call->entities_error.source_class, call->entities_error.source_method,
+            call->entities_error.source_descriptor, (int32_t)call->entities_error.source_pc};
+        call->failure.child = call->entities_error.child;
+        call->state.source_pc = 510;
+        return false;
+    }
+    call->state.entities_returned = true;
+    if (call->state.effects == NULL)
+        return outer_fail(call, MC_CLIENT_WORLD_FRAME_SOURCE_NULL,
+                          "actual captured EffectRenderer receiver", 518, false);
+    call->failure.child = (mc_client_graphics_site){"dn", "b", "(Lsn;F)V", 0};
+    return outer_fail(call, MC_CLIENT_WORLD_FRAME_DEPENDENCY,
+                      "actual captured EffectRenderer render child is not connected", 518, true);
+}
+
 static void sky_views_expired(mc_client_world_frame_call *call) {
     call->sky_state.sky_vector = NULL;
     call->sky_state.sunrise = NULL;
@@ -488,9 +541,7 @@ static bool culling_body(mc_client_world_frame_call *call, mc_math_classes *math
     call->eye_classes = call->state.camera->classes;
     call->state.entity_eye = call->entity_eye;
     call->state.eye_position_returned = true;
-    call->failure.child = (mc_client_graphics_site){"n", "a", "(Lbt;Lyn;F)V", 0};
-    return outer_fail(call, MC_CLIENT_WORLD_FRAME_DEPENDENCY,
-                      "actual Entity and TileEntity rendering child is not connected", 510, true);
+    return entities_body(call, math);
 }
 #endif
 
@@ -558,6 +609,17 @@ static bool body(mc_client_world_frame_call *call, mc_math_classes *math) {
     if (app == NULL)
         return false;
     call->state.render_global = app->g;
+#ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+    if (call->state.render_global != NULL) {
+        if (mc_client_render_global_retain(call->state.render_global, &call->render_global_error) !=
+            MC_CLIENT_RENDER_GLOBAL_OK) {
+            call->failure.entities = &call->render_global_error;
+            return outer_fail(call, MC_CLIENT_WORLD_FRAME_NATIVE_FAILED,
+                              "World-frame captured N occurrence", 57, true);
+        }
+        call->render_global_occurrence = call->state.render_global;
+    }
+#endif
     app = app_at(call, 63, "a", "(FJ)V");
     if (app == NULL)
         return false;
@@ -795,6 +857,19 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
     if (call->state.active || call->state.owner->active)
         return result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame active retirement");
 #ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+    const bool entities_retained = call->entities != NULL;
+    if (mc_client_render_global_entities_retire(&call->entities, &call->entities_cleanup) !=
+        MC_CLIENT_RENDER_GLOBAL_OK) {
+        if (call->entities != NULL)
+            (void)mc_client_render_global_entities_inspect(call->entities, &call->entities_state);
+        result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame Entity rendering retirement");
+        if (error != NULL)
+            error->entities = &call->entities_cleanup;
+        return MC_CLIENT_WORLD_FRAME_BUSY;
+    }
+    call->state.entities = NULL;
+    if (entities_retained)
+        call->failure.entities = NULL; /* The actual child's borrowed failure view ended. */
     if (call->entity_eye != NULL) {
         const mc_entity_status released =
             mc_entity_vector_release(call->eye_classes, call->entity_eye);
@@ -901,6 +976,17 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
     }
     call->state.fog = NULL;
     call->failure.fog = NULL;
+#ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+    if (mc_client_render_global_release(&call->render_global_occurrence,
+                                        &call->render_global_cleanup) !=
+        MC_CLIENT_RENDER_GLOBAL_OK) {
+        result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame captured N retirement");
+        if (error != NULL)
+            error->entities = &call->render_global_cleanup;
+        return MC_CLIENT_WORLD_FRAME_BUSY;
+    }
+    call->state.render_global = NULL;
+#endif
     if (call->camera_held) {
         mc_entity_release(call->state.camera);
         call->camera_held = false;

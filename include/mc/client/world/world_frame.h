@@ -4,6 +4,7 @@
 #include "mc/client/world/frustum.h"
 #include "mc/client/world/frustum_culling.h"
 #include "mc/client/world/picking.h"
+#include "mc/client/world/render_global_entities.h"
 #include "mc/client/world/render_global_sky.h"
 #include "mc/client/world/render_global_submit.h"
 #include "mc/client/world/render_global_update.h"
@@ -43,6 +44,7 @@ typedef struct mc_client_world_frame_error {
     const mc_client_culling_error *culling;
     const mc_client_render_global_error *update;
     const mc_client_render_global_error *submission;
+    const mc_client_render_global_error *entities;
     const mc_client_texture_lookup_error *texture;
     const mc_client_graphics_error *lighting;
     const mc_client_lighting_error *lighting_enable;
@@ -64,7 +66,7 @@ typedef struct mc_client_world_frame_state {
     bool ambient_occlusion_read, ambient_occlusion, smooth_shade_set;
     bool frustum_constructed, frustum_recentered, culling_returned;
     bool updates_returned, draw_fog_returned, terrain_texture_bound, lighting_disabled;
-    bool terrain_returned, lighting_enabled, eye_position_returned;
+    bool terrain_returned, lighting_enabled, eye_position_returned, entities_returned;
     int32_t terrain_count;
     size_t update_calls;
     int64_t last_clock, deadline_remaining;
@@ -91,6 +93,7 @@ typedef struct mc_client_world_frame_state {
     const mc_client_culling_state *culling;
     const mc_client_render_global_update_state *update;
     const mc_client_render_global_submit_state *submission;
+    const mc_client_render_global_entities_state *entities;
     const mc_client_lighting_error *standard_lighting;
     const mc_entity_vector *entity_eye;
     const mc_client_renderer_fog_state_view *draw_fog;
@@ -101,8 +104,11 @@ typedef struct mc_client_world_frame_state {
  * invokes the separate inspection renderer. It retains reached source/GL
  * effects and exact child failures. Actual h(F) supplies World sky/fog colors,
  * canonical PX RGB stores and GL clear color before the reached buffer clear
- * and camera invoke. The canonical frustum then extracts those matrices;
- * reached fog-state/sky/terrain/HUD descendants remain explicit.
+ * and camera invoke. The canonical frustum then extracts those matrices. The
+ * actual N captured at57 has its own native occurrence through cleanup; later
+ * culling/update calls still read fresh App.g. Entity rendering receives that
+ * captured N, the actual pooled eye and the actual SR. A delayed N return
+ * continues to the reached EffectRenderer child rather than completing PX.
  *
  * App and its complete graph stay live/exclusive on the video thread through
  * retirement. Out starts NULL; an allocated terminal call is returned even on

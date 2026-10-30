@@ -5,7 +5,11 @@ screen. Its World-frame source calls real
 [terrain submission](terrain-submission.md) at `px.a(FJ)V:486` after colors,
 fog, Sky, camera, culling and standard Block list compilation. A normal N return
 continues through FLAT493, [standard lighting](standard-lighting.md)496 and the
-captured camera's eye position504 to Entity/TileEntity rendering510.
+captured camera's eye position504 to the actual captured RenderGlobal at510.
+Its initial [Entity pass](render-global-entities.md) consumes the constructor's
+I2 delay and returns17 with I1. PX then reaches the explicit EffectRenderer
+child at518. Later N calls use actual LL/TH frame bindings, Entity Lists and
+visibility predicates; reached Entity/TileEntity draws remain unfinished.
 The specified Windows MSVC Debug state profiles and both hosted Linux sanitizer
 replays pass. The [vertex-lighting backend](lighting-raster.md) now handles
 source normals, materials and flat/smooth lighting. Specialized Block shapes,

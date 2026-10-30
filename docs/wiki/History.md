@@ -1,5 +1,11 @@
 # History
 
+The [RenderGlobal Entity extension](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) adds the actual delay, dispatcher
+bindings and visibility traversal. Its native controls exercise real N
+construction/rebuild and exact consumer cleanup. The initial frame frontier
+advances to particle rendering518. Reached draw children and full frames remain
+unfinished; original composed N equality is not credited.
+
 This page preserves the former Home and navigation as historical checkpoint
 records. Their counts and unfinished-work statements describe earlier revisions
 and are not current status. Use [Home](Home), [World simulation](World-simulation)

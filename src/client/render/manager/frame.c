@@ -6,6 +6,7 @@
 #include "../../gui/bitmap_font.h"
 #include "../interpolation_internal.h"
 #include "mc/client/settings/construction.h"
+#include "mc/entity/living/sleeping.h"
 #include "mc/world/runtime/blocks.h"
 
 #include <stdlib.h>
@@ -216,46 +217,30 @@ static bool capture_font(mc_client_render_manager *m, mc_client_bitmap_font *val
 }
 
 static bool sleeping_dispatch(mc_entity *living, bool *sleeping, mc_client_manager_error *e) {
-    if (living == NULL)
-        return frame_fail(e, MC_CLIENT_MANAGER_NULL_REFERENCE, "actual null Living.N receiver", 29,
-                          false);
-    mc_entity_class_literal_view view;
-    e->entity_status = mc_entity_class_literal_inspect(living->class_literal, &view);
-    if (e->entity_status != MC_ENTITY_OK)
-        return frame_fail(e, MC_CLIENT_MANAGER_ENTITY_FAILED, "TH actual Living.N dispatch", 29,
-                          true);
-    if (view.kind == MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) {
-        if (mc_player_is_sleeping(living, sleeping, &e->player) == MC_PLAYER_OK)
+    mc_entity_sleeping_error child;
+    const mc_entity_sleeping_status status = mc_entity_living_is_sleeping(living, sleeping, &child);
+    e->entity_status = child.entity;
+    switch (status) {
+        case MC_ENTITY_SLEEPING_OK:
+            e->player = child.player;
             return true;
-        return frame_fail(e, MC_CLIENT_MANAGER_PLAYER_FAILED, "actual GS.N sleeping field", 29,
-                          true);
-    }
-    /* Untouched archive: LS.N()Z Code2=42ca1f85243342bd41983ab86f2235408
-     * fa46ded7466d4525196f66b9dbb5f3e returns false. GS.N Code5 is the sole
-     * override among every original Living subclass; native DC inherits it.
-     * Query-only GS and future overrides are not fabricated as LS bodies. */
-    switch (view.kind) {
-        case MC_ENTITY_CLASS_KIND_LIVING_ENTITY:
-        case MC_ENTITY_CLASS_KIND_MONSTER:
-        case MC_ENTITY_CLASS_KIND_CREEPER:
-        case MC_ENTITY_CLASS_KIND_SKELETON:
-        case MC_ENTITY_CLASS_KIND_SPIDER:
-        case MC_ENTITY_CLASS_KIND_GIANT:
-        case MC_ENTITY_CLASS_KIND_ZOMBIE:
-        case MC_ENTITY_CLASS_KIND_SLIME:
-        case MC_ENTITY_CLASS_KIND_GHAST:
-        case MC_ENTITY_CLASS_KIND_PIG_ZOMBIE:
-        case MC_ENTITY_CLASS_KIND_PIG:
-        case MC_ENTITY_CLASS_KIND_SHEEP:
-        case MC_ENTITY_CLASS_KIND_COW:
-        case MC_ENTITY_CLASS_KIND_CHICKEN:
-        case MC_ENTITY_CLASS_KIND_SQUID:
-        case MC_ENTITY_CLASS_KIND_WOLF:
-            *sleeping = false;
-            return true;
-        default:
+        case MC_ENTITY_SLEEPING_SOURCE_NULL:
+            return frame_fail(e, MC_CLIENT_MANAGER_NULL_REFERENCE, "actual null Living.N receiver",
+                              29, false);
+        case MC_ENTITY_SLEEPING_ENTITY_FAILED:
+            return frame_fail(e, MC_CLIENT_MANAGER_ENTITY_FAILED, "TH actual Living.N dispatch", 29,
+                              true);
+        case MC_ENTITY_SLEEPING_PLAYER_FAILED:
+            e->player = child.player;
+            return frame_fail(e, MC_CLIENT_MANAGER_PLAYER_FAILED, "actual GS.N sleeping field", 29,
+                              true);
+        case MC_ENTITY_SLEEPING_UNIMPLEMENTED_DEPENDENCY:
             return frame_fail(e, MC_CLIENT_MANAGER_UNIMPLEMENTED_DEPENDENCY,
                               "actual Living.N override requires its concrete owner", 29, true);
+        case MC_ENTITY_SLEEPING_INVALID_ARGUMENT:
+        default:
+            return frame_fail(e, MC_CLIENT_MANAGER_INVALID_ARGUMENT,
+                              "TH actual Living.N dispatch output", 29, true);
     }
 }
 

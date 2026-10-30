@@ -63,6 +63,7 @@ def main():
                  "src/client/display/world_frame_surface.inc",
                  "src/client/display/camera_surface.inc",
                  "src/client/display/fog_surface.inc",
+                 "src/client/world/render_global_entities/body.inc",
                  "src/client/settings/source_input.inc",
                  "src/world/saved_data/source_storage.inc",
                  "src/world/storage/source_game_stage.inc"}

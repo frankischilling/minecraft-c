@@ -1,5 +1,11 @@
 # minecraft-c
 
+The [RenderGlobal Entity pass](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) now runs its actual delay, LL/TH frame
+bindings and visibility predicates with checked ownership. The initial loaded
+frame reaches the particle-render dependency at PX518. Entity draws,
+rendered-TileEntity row ownership and playable frames remain unfinished;
+composed original/native N parity remains unverified.
+
 The [normal terminal coordinator](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
 now connects menu-run shutdown to actual prefix ending, checked LL/TH retirement,
 complete retained-load classification and fresh selected-World admission. Early
@@ -10,7 +16,7 @@ tests pass in 68.21 seconds and 46 sanitized Linux tests pass in 98.26 seconds.
 Seven Windows selection profiles preserve saves/assets and both successful
 loaded modes retain all 72 focus histories. Authored partial Player NBT refuses
 the coordinator with its acquired World intact. Complete Format/App/service
-admission, partial-load shutdown, deferred old Worlds and N44/N80 frame adoption
+admission, partial-load shutdown, deferred old Worlds and complete frame drawing
 remain unfinished. There is no original shutdown equivalence claim.
 
 The [source lighting renderer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md)

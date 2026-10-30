@@ -1224,7 +1224,7 @@ static mc_world_storage_status terminal_empty_app(const client_application *app,
          * allocation, not an entered operation or a World occurrence. */
         if (renderer->active || renderer->world_call != NULL || renderer->sky_call != NULL ||
             renderer->cull_call != NULL || renderer->update_call != NULL ||
-            renderer->submit_call != NULL)
+            renderer->submit_call != NULL || renderer->entities_call != NULL)
             return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
                                              "Load terminal empty App RenderGlobal call");
         if (renderer->fields.k != NULL || renderer->world_occurrence != NULL ||

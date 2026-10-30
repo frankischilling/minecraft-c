@@ -1,5 +1,21 @@
 # Development status
 
+The [RenderGlobal Entity pass](client/render-global-entities.md) now executes
+its real I delay, LL/TH frame bindings, six origin stores and live Entity
+visibility predicates. It owns actual dispatcher consumer records and reached
+World leases. The initial loaded frame consumes I2 to I1 and advances from
+N510 to the explicit particle-render child at PX518. Reached Entity draws and
+nonempty rendered-TileEntity rows remain missing dependencies. Native controls
+are separate from composed original/native parity, which remains unverified.
+
+All 42 selected production/test targets build on Windows MSVC Debug and Linux
+Clang18 ASan/UBSan. All 51 Windows CTests pass in 70.85 seconds and all 48 Linux
+cases pass in 105.25 seconds, with no failures, skips or sanitizer findings.
+All 2,300 C/helper/build inputs remain unchanged through builds and tests.
+Formatting passes 1,621 C/header/fragment files. Native distance/List tests pass
+193/95 checks per host; the Windows composed N control passes 34 checks.
+Both successful loaded modes preserve saves/resources and all 72 focus histories.
+
 Normal menu-run shutdown now uses the [terminal coordinator](client/terminal-retirement.md):
 actual call preparation, checked LL/TH retirement, complete retained-load
 classification and fresh selected-World admission precede destructive cleanup.
@@ -8,10 +24,10 @@ close expires getters. Explicit no-storage proof includes genuine conversion
 failures. Tail progress preserves checked retries after World consumption;
 native cleanup diagnostics leave the original source failure intact. Complete
 Format/App/shared-service admission, partial loads, deferred old Worlds and
-N44/N80 frame adoption remain unfinished.
+full Entity drawing remain unfinished.
 
-All 40 selected targets build on Windows MSVC Debug and Linux Clang18
-ASan/UBSan. The current selection passes 49 Windows tests in 68.21 seconds and
+The preceding normal-coordinator qualification built all 40 selected targets
+on Windows MSVC Debug and Linux Clang18 ASan/UBSan. That selection passed 49 Windows tests in 68.21 seconds and
 46 Linux tests in 98.26 seconds, with no failures, skips, sanitizer findings or
 C/helper/build input changes. Seven Windows World-selection profiles preserve
 saves/assets; both successful loaded modes still match all 72 focus histories.
@@ -21,20 +37,20 @@ The [RenderManager CPU frame](client/render-manager-frame.md) now has Windows
 MSVC Debug and Linux Clang18 ASan/UBSan comparisons against 432 unchanged-original
 rows. The ledger credits 2,738 exact columns, two explicit failure projections
 and 136 unqualified columns. Separate native controls cover all four sleeping
-Bed orientations, real World/Math failures and checked owner retirement. These
-methods are not yet adopted by live RenderGlobal traversal. N-owned consumer
-integration and deferred World ownership remain prerequisites for that integration.
+Bed orientations, real World/Math failures and checked owner retirement. The
+actual N44/N80 calls now adopt these methods with distinct N-owned consumer
+records. Deferred old-World ownership remains unfinished.
 
-The latest recorded [hosted checkpoint 692a33f](https://github.com/frankischilling/minecraft-c/actions/runs/41090526491)
+The preceding [hosted checkpoint 8655936](https://github.com/frankischilling/minecraft-c/actions/runs/41097021294)
 passes all four jobs and 1,566 tests: Windows 494, GCC 536 and Clang 536, with
 zero failures, skips or dropped preceding test names. It includes the canonical
 [TileEntityRenderer CPU owner](client/tile-entity-renderer.md) and RenderManager
 frame extension, World inventory and selected client-anchor/dispatcher methods,
-plus the source Handler and Store preflight. It predates normal coordinator
-adoption above. The resource-dependent
+plus the source Handler and Store preflight. It includes normal coordinator
+adoption, and predates the Entity-pass change above. The resource-dependent
 menu loop compiles but is not executed by that hosted inventory. Windows restores
-the preceding 142,797,406-byte cache and records 1,398 hits, 14 misses and no cache
-or compile errors. Its build takes 153 seconds and the whole run takes 515 seconds;
+the preceding 143,959,892-byte cache and records 1,405 hits, seven misses and no cache
+or compile errors. Its build takes 177 seconds and the whole run takes 637 seconds;
 the changed workloads do not establish a controlled whole-workflow speedup.
 
 The source renderer implements [vertex lighting, normals and materials](client/lighting-raster.md)
@@ -43,9 +59,9 @@ on the canonical OpenGL 3.3 Display program. NVIDIA and Mesa controls each compa
 geometry, specular/two-sided lighting, texture/fog and flat/smooth shading.
 Compiled-list attribute state and numerical admission have separate controls.
 
-The World frame completes U.b496 and camera eye positioning504, then reaches
-unfinished Entity/TileEntity rendering510. The existing 86-row lighting-state
-comparison remains exact. A rebuilt native client captures two normal menu
+The World frame completes U.b496 and camera eye positioning504, then calls N510.
+The initial delayed N return now reaches the unfinished particle render at518.
+The existing 86-row lighting-state comparison remains exact. A rebuilt native client captures two normal menu
 frames and exits cleanly. The loaded-World regression preserves saves/resources
 and all 72 original focus histories, with authored grass terrain and Sky visible
 without HUD. Repeated interactive frames remain unfinished.
@@ -69,8 +85,8 @@ The same ChunkCache, RenderBlocks and NW now compile standard Block sections
 into source display lists. Current frame source invokes real
 [terrain submission](client/terrain-submission.md) at `px.a(FJ)V:486`.
 A normal N return continues through FLAT shading493, standard lighting496 and camera eye
-positioning504 to Entity/TileEntity rendering510. The Windows and hosted
-terrain-submission profiles retain their separately documented qualification.
+positioning504 to N510; the initial delayed Entity pass returns before PX518.
+The Windows and hosted terrain-submission profiles retain their separately documented qualification.
 Specialized Block shapes and TileEntity rendering remain missing descendants.
 Direct unpaused checks on that graph select an actual Biome spawn entry and reach the concrete
 Mob constructor at `cq.a:773` after gathering 289 candidate Chunks.

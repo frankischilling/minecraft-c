@@ -27,6 +27,34 @@ mc_client_tile_renderer_status tile_renderer_fail(mc_client_tile_renderer_error 
     return status;
 }
 
+mc_client_tile_renderer_status
+mc_client_tile_renderer_origin_store(mc_client_tile_renderer_classes *c, unsigned int axis,
+                                     double value, mc_client_tile_renderer_error *error) {
+    mc_client_tile_renderer_error e;
+    tile_renderer_error_init(&e);
+    if (c == NULL || axis > 2) {
+        tile_renderer_fail(&e, MC_CLIENT_TILE_RENDERER_INVALID_ARGUMENT,
+                           "LL native scalar origin arguments", NULL, NULL, NULL, -1, true);
+    } else if (c->active || (c->a != NULL && c->a->active) ||
+               (c->candidate != NULL && c->candidate->active)) {
+        tile_renderer_fail(&e, MC_CLIENT_TILE_RENDERER_BUSY, "LL scalar origin active owner", NULL,
+                           NULL, NULL, -1, true);
+    } else if (c->phase != MC_CLIENT_TILE_RENDERER_READY || c->models == NULL ||
+               c->models->ll != c || c->models->ll_retired) {
+        tile_renderer_fail(&e, MC_CLIENT_TILE_RENDERER_INVALID_PHASE, "LL scalar origin live class",
+                           NULL, NULL, NULL, -1, true);
+    } else if (axis == 0) {
+        c->b = value;
+    } else if (axis == 1) {
+        c->c = value;
+    } else {
+        c->d = value;
+    }
+    if (error != NULL)
+        *error = e;
+    return e.status;
+}
+
 mc_client_tile_renderer_options mc_client_tile_renderer_default_options(void) {
     return (mc_client_tile_renderer_options){1048576u, 1048576u};
 }

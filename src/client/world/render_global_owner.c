@@ -130,11 +130,20 @@ mc_client_render_global_release(mc_client_render_global **slot,
         *slot = NULL;
         goto done;
     }
+    if (o->entities_call != NULL) {
+        mc_render_global_fail(&e, MC_CLIENT_RENDER_GLOBAL_BUSY,
+                              "native RenderGlobal entities call still retained", NULL, 0, true);
+        goto retained;
+    }
     if (mc_client_render_global_world_detach(o, &e) != MC_CLIENT_RENDER_GLOBAL_OK)
+        goto retained;
+    /* Final cleanup is one-way even when a consumer remains busy. No new
+     * call or retained occurrence may enter between checked retries. */
+    o->phase = MC_CLIENT_RENDER_GLOBAL_RETIRING;
+    if (mc_render_global_entities_end_consumers(o, &e) != MC_CLIENT_RENDER_GLOBAL_OK)
         goto retained;
     if (mc_render_global_access_retire(&o->access, &e) != MC_CLIENT_RENDER_GLOBAL_OK)
         goto retained;
-    o->phase = MC_CLIENT_RENDER_GLOBAL_RETIRING;
     o->active = true;
     if (!mc_client_display_query_names_retire(&o->queries, &e.cleanup_display)) {
         mc_render_global_fail(&e,

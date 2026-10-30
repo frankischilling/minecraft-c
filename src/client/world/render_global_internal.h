@@ -6,6 +6,7 @@
 #include "../render_engine/ge.h"
 #include "../render_engine/nw.h"
 #include "mc/client/render/manager/manager.h"
+#include "mc/client/render/tile_entity_renderer/tile_entity_renderer.h"
 #include "mc/client/sound/sound.h"
 #include "mc/client/world/render_global.h"
 #include "mc/core/java/java.h"
@@ -38,6 +39,9 @@ struct mc_client_render_global_error {
     mc_math_class_error math;
     const mc_client_image_download_error *image_download;
     const mc_client_image_buffer_error *image_buffer;
+    const mc_client_tile_renderer_error *tile_renderer;
+    const struct mc_entity_render_distance_error *render_distance;
+    const struct mc_client_culling_error *entity_culling;
 };
 
 struct mc_client_render_batch {
@@ -69,6 +73,11 @@ struct mc_client_render_global {
     struct mc_client_culling_call *cull_call;
     struct mc_client_render_global_update_call *update_call;
     struct mc_client_render_global_submit_call *submit_call;
+    struct mc_client_render_global_entities_call *entities_call;
+    mc_client_tile_renderer_consumer tile_consumer;
+    mc_client_manager_consumer entity_manager_consumer;
+    mc_client_tile_renderer_error tile_consumer_cleanup;
+    mc_client_manager_error entity_manager_cleanup;
     mc_world_runtime *world_occurrence;         /* Independent occurrence backing actual k. */
     mc_world_runtime *manager_world_occurrence; /* Independent World hold for legacy TH cleanup. */
     mc_client_render_manager *world_manager;
@@ -98,6 +107,10 @@ mc_client_render_global_status mc_render_global_fail(mc_client_render_global_err
 bool mc_render_global_graphics(mc_client_render_global *, unsigned int enclosing_pc);
 bool mc_render_global_display(mc_client_render_global *, unsigned int source_pc);
 bool mc_render_global_fp(mc_client_render_global *, const char *method, unsigned int pc);
+/* Caller has ended source admission and proved actual N quiescence. May run
+ * inside its native cleanup guard; never used for an ordinary World change. */
+mc_client_render_global_status
+mc_render_global_entities_end_consumers(mc_client_render_global *, mc_client_render_global_error *);
 bool mc_render_global_stars(mc_client_render_global *);
 bool mc_render_global_sky(mc_client_render_global *);
 bool mc_render_batch_construct(mc_client_render_global *, mc_client_render_batch *,

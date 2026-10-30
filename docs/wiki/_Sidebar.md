@@ -1,5 +1,6 @@
 - [Home](Home)
 - [Client startup](Startup)
+- [RenderGlobal Entity pass](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md)
 - [World simulation](World-simulation)
 - [Systems and subsystems](Architecture)
 - [Build and tests](Build-and-tests)

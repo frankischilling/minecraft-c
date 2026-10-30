@@ -1,5 +1,18 @@
 # Build and tests
 
+The current Entity-pass selection builds all 42 targets on Windows MSVC Debug
+and Clang18 ASan/UBSan. All 51 Windows and 48 Linux CTests pass in 70.85/105.25
+seconds, with no failures, skips or sanitizer findings. Native distance/List
+checks pass 193/95 per host; local Windows N composition passes 34 checks.
+The retained original TH/LL comparisons keep their separate limits. Hosted
+menu executables compile, while their resource-dependent tests stay local.
+
+The [RenderGlobal controls](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) use a genuine loaded native App and a
+second SOURCE-constructed N. They cover real constructor/rebuild delays,
+nondefault FTZ on a delay call, null World after both binds, nonempty Player
+traversal and exact consumer cleanup. Original LL/TH comparisons retain their
+separate scope; no composed original N or full-frame equality is claimed.
+
 The [normal terminal coordinator](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
 now connects menu-run shutdown to actual prefix ending, checked LL/TH retirement,
 complete retained-load classification and fresh selected-World admission. Early
@@ -10,7 +23,7 @@ tests pass in 68.21 seconds and 46 sanitized Linux tests pass in 98.26 seconds.
 Seven Windows selection profiles preserve saves/assets and both successful
 loaded modes retain all 72 focus histories. Authored partial Player NBT refuses
 the coordinator with its acquired World intact. Complete Format/App/service
-admission, partial-load shutdown, deferred old Worlds and N44/N80 frame adoption
+admission, partial-load shutdown, deferred old Worlds and complete frame drawing
 remain unfinished. There is no original shutdown equivalence claim.
 
 The [terminal prefix controls](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
@@ -20,7 +33,7 @@ failure and foreign WorldAccess membership exercise separate cleanup stages;
 TH fields, the other N and a constructed GAME World stay live. This is one App
 with two N owners, not a completed outer shutdown or two-App qualification.
 Those recorded controls predate the normal coordinator qualification above.
-N44/N80 frame adoption and deferred old Worlds remain unfinished.
+Those current N calls are adopted; deferred old Worlds and draw children remain unfinished.
 
 The [RenderManager CPU frame](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-manager-frame.md)
 retains all 432 original rows on Windows MSVC Debug and Linux Clang18 ASan/UBSan.

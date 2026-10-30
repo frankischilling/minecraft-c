@@ -20,8 +20,9 @@ compilation now emits standard Block geometry through the actual
 [RenderBlocks path](docs/client/render-blocks.md). Terrain submission now draws
 standard Blocks, followed by standard lighting setup. The source renderer now
 supports [vertex lighting and normal/material state](docs/client/lighting-raster.md).
-Specialized Block shapes,
-Entity drawing and the remaining frame remain unfinished. A separate
+The [RenderGlobal Entity pass](docs/client/render-global-entities.md) now runs
+its real delay, dispatcher bindings and visibility predicates. Specialized
+Block shapes, Entity drawing, particles and the remaining frame remain unfinished. A separate
 [generated-world inspection](docs/client/world-renderer.md) remains available.
 
 ## Build

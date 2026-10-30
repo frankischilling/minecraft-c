@@ -1,6 +1,39 @@
 # Test scope and reproduction
 
-## Normal menu-run terminal coordinator
+## RenderGlobal Entity-pass controls
+
+All 42 selected production/test targets build on Windows MSVC Debug and Linux
+Clang18 ASan/UBSan. All 51 Windows CTests pass in 70.85 seconds and all 48 Linux
+cases pass in 105.25 seconds, with no failures, skips or sanitizer findings.
+All 2,300 C/helper/build inputs remain unchanged through builds and tests.
+Formatting passes 1,621 C/header/fragment files. Native distance/List tests pass
+193/95 checks per host; the Windows composed N control passes 34 checks.
+Both successful loaded modes preserve saves/resources and all 72 focus histories.
+
+The [Entity-pass contract](client/render-global-entities.md) separates native
+composition coverage from original method comparisons. The local Windows loaded-App
+control uses a second genuine SOURCE-constructed N. Two null-argument calls
+consume constructor I2; the first also supplies nondefault FTZ controls and
+must return17 before reading services or FP state. The next invocation binds
+actual LL and TH, clears counters, stores six origins and reaches null World249.
+A real World attachment rebuild sets I2 again. After its two actual delay calls,
+a nonempty ordinary Player List traverses the actual distance/frustum/camera
+predicates and returns569. Expected frustum/camera counts follow actual culler
+results; the control never forces visibility or substitutes an empty list.
+
+The retained call blocks N terminal detachment. After call retirement, N ends
+only its own LL/TH consumer records while real foreign records and startup's
+TH record remain attached. The normal outer coordinator subsequently exercises
+LL-present cleanup. Independent Player-retain refusal is checked after both
+dispatchers have ended their own Player occurrences, so the existing binding
+cannot mask that control. All preceding focus, terrain, save and resource checks
+remain in the same profile. The normal loaded frame now stops at PX518 after
+its captured N returns17 with I1; no full frame or composed original N equality
+is claimed. The private genuine-original null-App constructor capture ends at
+N constructor190 before any returned N or delay invocation and earns no such
+comparison credit.
+
+## Preceding normal menu-run terminal coordinator
 
 All 40 selected targets build on Windows MSVC Debug and Linux Clang18
 ASan/UBSan. All 49 Windows CTests pass in 68.21 seconds; all 46 Linux cases pass

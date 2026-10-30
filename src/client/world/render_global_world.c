@@ -449,7 +449,7 @@ mc_client_render_global_world_begin(mc_client_render_global *o, mc_world_runtime
         return MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT;
     if (o->active || o->world_retiring || o->world_call != NULL || o->sky_call != NULL ||
         o->cull_call != NULL || o->update_call != NULL || o->submit_call != NULL ||
-        o->phase != MC_CLIENT_RENDER_GLOBAL_READY)
+        o->entities_call != NULL || o->phase != MC_CLIENT_RENDER_GLOBAL_READY)
         return MC_CLIENT_RENDER_GLOBAL_BUSY;
     if (world != NULL) {
         mc_world_runtime_construction construction;
@@ -540,7 +540,8 @@ static mc_client_render_global_status world_detach(mc_client_render_global *o,
                                             "RenderGlobal legacy World detach already entered",
                                             NULL, NULL, NULL, 0, true);
     if (o->active || o->holds != 1 || o->world_call != NULL || o->sky_call != NULL ||
-        o->cull_call != NULL || o->update_call != NULL || o->submit_call != NULL)
+        o->cull_call != NULL || o->update_call != NULL || o->submit_call != NULL ||
+        o->entities_call != NULL)
         return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_BUSY,
                                             "RenderGlobal World terminal admission", NULL, NULL,
                                             NULL, 0, true);
@@ -555,6 +556,11 @@ static mc_client_render_global_status world_detach(mc_client_render_global *o,
         o->phase = MC_CLIENT_RENDER_GLOBAL_RETIRING;
     }
     o->world_retiring = true;
+    if (preserve_manager_world) {
+        const mc_client_render_global_status ended = mc_render_global_entities_end_consumers(o, e);
+        if (ended != MC_CLIENT_RENDER_GLOBAL_OK)
+            return ended;
+    }
     if (o->access != NULL &&
         mc_render_global_access_detach_all(o->access, e) != MC_CLIENT_RENDER_GLOBAL_OK)
         return e->status;

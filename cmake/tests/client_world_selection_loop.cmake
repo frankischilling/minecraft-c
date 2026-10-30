@@ -1,6 +1,7 @@
 if(BUILD_TESTING AND TARGET mc_client_runtime)
     add_executable(mc_test_world_selection_loop tests/client/startup/test_world_selection_loop.c
-        tests/client/world/test_load_world_foreign_loading.c)
+        tests/client/world/test_load_world_foreign_loading.c
+        tests/client/world/test_render_global_entities.c)
     target_include_directories(mc_test_world_selection_loop PRIVATE src src/platform/time)
     target_link_libraries(mc_test_world_selection_loop PRIVATE mc_client_runtime
         mc_client_saves mc_build_options)

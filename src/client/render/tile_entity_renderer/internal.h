@@ -143,4 +143,11 @@ bool tile_renderer_world_terminal_admit(mc_client_tile_renderer_dispatcher *,
 bool tile_renderer_world_retire(mc_client_tile_renderer_dispatcher *,
                                 mc_client_tile_renderer_error *);
 
+/* One reached N putstatic into the SAME already-active LL class. No FP check,
+ * interpolation, class initialization or frame rebind; caller owns the graph
+ * and records its own N source PC. */
+mc_client_tile_renderer_status
+mc_client_tile_renderer_origin_store(mc_client_tile_renderer_classes *, unsigned int axis,
+                                     double value, mc_client_tile_renderer_error *);
+
 #endif

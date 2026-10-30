@@ -238,7 +238,7 @@ mc_client_render_global_submit_begin(mc_client_render_global *n, mc_entity *came
                          (!mc_client_render_global_world_inspect(n->world_call, &attachment) ||
                           attachment.active || !attachment.source_returned);
     if (n->active || n->world_retiring || blocked || n->sky_call != NULL || n->cull_call != NULL ||
-        n->update_call != NULL || n->submit_call != NULL ||
+        n->update_call != NULL || n->submit_call != NULL || n->entities_call != NULL ||
         n->phase == MC_CLIENT_RENDER_GLOBAL_CONSTRUCTING ||
         n->phase == MC_CLIENT_RENDER_GLOBAL_RETIRING)
         return mc_render_global_source_fail(error, MC_CLIENT_RENDER_GLOBAL_BUSY,

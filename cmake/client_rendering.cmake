@@ -15,6 +15,7 @@ target_link_libraries(mc_client_entity_renderer PUBLIC
 
 add_library(mc_client_render_manager_cpu STATIC
     src/client/render/manager/owner.c
+    src/client/render/manager/existing.c
     src/client/render/manager/map.c
     src/client/render/manager/models.c
     src/client/render/manager/renderers.c

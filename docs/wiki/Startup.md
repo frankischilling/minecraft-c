@@ -1,9 +1,10 @@
 # Client startup
 
-The [lighting backend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md) now supports source lit geometry. A rebuilt native
-client captures two normal menu frames and exits cleanly. The loaded-World
-regression preserves saves/resources and all 72 focus histories; its frame still
-reaches unfinished Entity/TileEntity drawing510.
+The [RenderGlobal Entity entry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) now consumes its actual constructor I2
+delay after terrain, lighting and eye positioning. The loaded-World frame then
+reaches the unfinished particle renderer at PX518. Native N controls separately
+exercise both dispatcher binds and real Player traversal. A playable session
+and composed original/native N comparison remain unfinished.
 
 The default native executable runs the constructed source App and initialized
 main menu. Explicit diagnostic flags retain the separate title and fixed-camera

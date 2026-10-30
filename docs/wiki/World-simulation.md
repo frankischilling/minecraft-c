@@ -1,5 +1,10 @@
 # World simulation
 
+The [Entity render traversal](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) reads actual ordinary/weather Lists and
+uses the same Entity's distance, frustum, camera/sleeping and Chunk-presence
+predicates. Native World leases protect retained List storage. Reached Entity
+draws and nonempty RenderGlobal TileEntity rows remain explicit dependencies.
+
 The [normal terminal coordinator](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
 now connects menu-run shutdown to actual prefix ending, checked LL/TH retirement,
 complete retained-load classification and fresh selected-World admission. Early
@@ -10,13 +15,13 @@ tests pass in 68.21 seconds and 46 sanitized Linux tests pass in 98.26 seconds.
 Seven Windows selection profiles preserve saves/assets and both successful
 loaded modes retain all 72 focus histories. Authored partial Player NBT refuses
 the coordinator with its acquired World intact. Complete Format/App/service
-admission, partial-load shutdown, deferred old Worlds and N44/N80 frame adoption
+admission, partial-load shutdown, deferred old Worlds and complete frame drawing
 remain unfinished. There is no original shutdown equivalence claim.
 
 The same Display now handles [lit source geometry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md), including actual NW
 normal packing and compiled-list inheritance. Its finite raster qualification
 is separate from World simulation and the complete frame. Entity/TileEntity
-drawing510 remains the next reached rendering dependency.
+drawing remains unfinished; the initial delayed N return reaches particles518.
 
 The [ordered client scheduler](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/ticking.md)
 now connects weather, spawning prefixes, provider maintenance, sky callbacks,

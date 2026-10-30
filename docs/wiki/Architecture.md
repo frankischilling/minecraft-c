@@ -1,5 +1,11 @@
 # Systems and subsystems
 
+The [RenderGlobal Entity call](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) holds each reached dispatcher receiver,
+current Entity and actual World List lease until checked retirement. N owns
+separate LL/TH consumer records across ordinary World changes; terminal cleanup
+ends only those records. The traversal preserves live Lists, fresh fields and
+source predicate order, with explicit missing draw children.
+
 The [normal terminal coordinator](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
 now connects menu-run shutdown to actual prefix ending, checked LL/TH retirement,
 complete retained-load classification and fresh selected-World admission. Early
@@ -10,7 +16,7 @@ tests pass in 68.21 seconds and 46 sanitized Linux tests pass in 98.26 seconds.
 Seven Windows selection profiles preserve saves/assets and both successful
 loaded modes retain all 72 focus histories. Authored partial Player NBT refuses
 the coordinator with its acquired World intact. Complete Format/App/service
-admission, partial-load shutdown, deferred old Worlds and N44/N80 frame adoption
+admission, partial-load shutdown, deferred old Worlds and complete frame drawing
 remain unfinished. There is no original shutdown equivalence claim.
 
 The [terminal preparation prefix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
@@ -19,7 +25,7 @@ and the full World graph. Its policy survives checked cleanup retries. The
 Load/Screen/menu prefix remains separate from destructive World retirement;
 the normal coordinator now composes the selected storage admission and
 checked dispatcher retirement. Full service admission and deferred old Worlds
-still limit live dispatcher-frame adoption.
+still limit deferred old-World ownership.
 
 The [RenderManager CPU frame](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-manager-frame.md)
 preserves five ordered reference stores, the real Living sleeping query, reached
@@ -27,7 +33,7 @@ Math/World/Bed calls and ordered camera interpolation. It retains actual World,
 Living, Engine, Font and Settings owners and releases captures with checked
 terminal retries. Ordinary menu World clearing leaves source-reachable captures
 alive. Normal shutdown now uses the bounded coordinator; deferred World
-ownership and exact N consumer integration remain before live frame adoption.
+ownership remains unfinished; current N integration now ends exact consumers.
 
 The [TileEntityRenderer CPU owner](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/tile-entity-renderer.md)
 now constructs the real Sign, MobSpawner and Piston renderers. It shares

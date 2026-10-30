@@ -1,5 +1,11 @@
 # Storage and original references
 
+The [original N constructor prerequisite](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md#app-prerequisite-and-current-world-frame-boundary)
+requires the actual App startup and CX publication. A genuine null-App N fails
+at constructor190 before returning; a constructor-only App with null S instead
+fails at193. The retained negative capture earns no N delay or composed parity
+credit. Current N composition controls are native-only.
+
 [LocalPlayer NBT and World metadata](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-nbt.md)
 use the actual Player/Inventory owners. Full detailed World saving selects only
 the first live Player occurrence; a completed saved Info.Player load clears that

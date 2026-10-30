@@ -96,12 +96,10 @@ compares all 96 method rows literally, with separate credit limits for runtime
 Class, constructor and unconstructed Random/Watcher children. Those channels
 do not establish equivalence to the original Pig's constructed state.
 
-These CPU bodies do not yet complete RenderGlobal's Entity/TileEntity pass.
-The [RenderManager CPU frame body](render-manager-frame.md) is implemented,
-with its scoped awake/null comparisons and native-only sleeping/lifetime
-controls passing on Windows MSVC Debug and Linux Clang18 ASan/UBSan. The actual
-`I=2` delay, live World-list traversal, distance/frustum predicates, renderer
-draw bodies and later World-frame work
-remain separate dependencies. Adopting the LL/TH owners in the complete frame
-and application retirement path also remains unfinished. Full World frames
-and gameplay remain unfinished.
+The [RenderGlobal Entity pass](render-global-entities.md) now adopts actual
+LL44 followed by the [RenderManager CPU frame body](render-manager-frame.md)
+at TH80, with distinct N-owned consumer records. Its real I2 delay, live World
+Lists and visibility predicates execute. The component fixtures keep their
+separate comparison scope; they do not establish composed original N parity.
+Reached Entity draws, nonempty rendered-TileEntity row ownership, deferred old
+Worlds, later World-frame work and gameplay remain unfinished.

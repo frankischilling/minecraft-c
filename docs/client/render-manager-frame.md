@@ -182,7 +182,9 @@ region, permits its intentional content change and records the eight-byte
 session lock. Native cleanup does not claim an original source reset or
 resource constructor completion.
 
-Integrating these owners into RenderGlobal's `I=2` delay, Entity/TileEntity list
-traversal, eligibility checks, renderer dispatch/draw
-and the full application retirement path remains unfinished. CPU frame
+The [RenderGlobal Entity pass](render-global-entities.md) now invokes this
+actual TH body at N80 after LL44. Distinct N consumer records survive ordinary
+World changes and end during N terminal cleanup. Actual delay, List traversal
+and visibility predicates run; reached Entity/TileEntity draws, deferred old
+Worlds and full application lifetime parity remain unfinished. CPU frame
 binding does not establish complete World-frame or gameplay parity.

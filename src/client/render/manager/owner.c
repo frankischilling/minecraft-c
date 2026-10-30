@@ -24,6 +24,34 @@ mc_client_manager_status manager_fail(mc_client_manager_error *e, mc_client_mana
     return status;
 }
 
+mc_client_manager_status mc_client_render_manager_origin_store(mc_client_render_manager_classes *c,
+                                                               unsigned int axis, double value,
+                                                               mc_client_manager_error *error) {
+    mc_client_manager_error e;
+    manager_error_init(&e);
+    if (c == NULL || axis > 2) {
+        manager_fail(&e, MC_CLIENT_MANAGER_INVALID_ARGUMENT, "TH native scalar origin arguments",
+                     NULL, NULL, NULL, -1, true);
+    } else if (c->active || (c->a != NULL && c->a->active) ||
+               (c->candidate != NULL && c->candidate->active)) {
+        manager_fail(&e, MC_CLIENT_MANAGER_BUSY, "TH scalar origin active owner", NULL, NULL, NULL,
+                     -1, true);
+    } else if (c->phase != MC_CLIENT_MANAGER_READY || c->models == NULL || c->models->th != c ||
+               c->models->th_retired) {
+        manager_fail(&e, MC_CLIENT_MANAGER_INVALID_PHASE, "TH scalar origin live class", NULL, NULL,
+                     NULL, -1, true);
+    } else if (axis == 0) {
+        c->b = value;
+    } else if (axis == 1) {
+        c->c = value;
+    } else {
+        c->d = value;
+    }
+    if (error != NULL)
+        *error = e;
+    return e.status;
+}
+
 mc_client_manager_options mc_client_render_manager_default_options(void) {
     return (mc_client_manager_options){2u * 1048576u, 2u * 1048576u, 128};
 }
