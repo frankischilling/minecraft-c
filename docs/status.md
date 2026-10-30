@@ -1,13 +1,14 @@
 # Development status
 
-Passive [World terminal admission](world/terminal-retirement.md) now counts
-actual Entity, TileEntity, Provider and static Piston owners without changing
-the live graph. Its 834 native checks pass on Windows and sanitized Linux.
-All 35 selected targets build on both hosts; 44 Windows tests pass in 57.53
-seconds and 42 Linux tests pass in 105.80 seconds. The client prefix preserves
-shared RenderManager state and stops before World destruction. Its actual
-client anchors, remaining service roots and dispatcher retirement still need
-integration before normal shutdown or N44/N80 adoption.
+The [client terminal primitives](client/terminal-retirement.md) now end the
+actual startup dispatcher consumer and retire existing LL/TH owners while the
+World stays live. Passive admission then checks the selected load's actual
+Player/World anchors and outside controller, effects and Input holds. A genuine
+loaded Windows profile completes that sequence and checked cleanup with saves,
+assets and all 72 focus histories preserved. All 38 selected targets build on
+both hosts; 47 Windows tests pass in 66.85 seconds and 45 sanitized Linux tests
+pass in 107.02 seconds. Handler/service admission, partial loads, old-World
+deferral and normal shutdown/N44/N80 adoption remain unfinished.
 
 The [RenderManager CPU frame](client/render-manager-frame.md) now has Windows
 MSVC Debug and Linux Clang18 ASan/UBSan comparisons against 432 unchanged-original
@@ -17,13 +18,14 @@ Bed orientations, real World/Math failures and checked owner retirement. These
 methods are not yet adopted by live RenderGlobal traversal. Final shutdown and
 deferred World ownership remain prerequisites for that integration.
 
-The latest [hosted checkpoint 2c125ff](https://github.com/frankischilling/minecraft-c/actions/runs/41062696601)
-passes all four jobs and 1,563 tests: Windows 493, GCC 535 and Clang 535, with
+The latest [hosted checkpoint dd1aa18](https://github.com/frankischilling/minecraft-c/actions/runs/41071675275)
+passes all four jobs and 1,566 tests: Windows 494, GCC 536 and Clang 536, with
 zero failures, skips or dropped preceding test names. It includes the canonical
 [TileEntityRenderer CPU owner](client/tile-entity-renderer.md) and RenderManager
-frame extension and terminal preparation. It predates the lower World admission
-checks above. Windows restores the preceding 111,135,428-byte cache and records
-1,340 hits, 70 misses and no cache or compile errors. Its build takes 178 seconds;
+frame extension, terminal preparation and lower World inventory. It predates
+the client anchor/dispatcher extension above. Windows restores the preceding
+116,129,316-byte cache and records 1,080 hits, 332 misses and no cache or compile
+errors. Its build takes 168 seconds;
 the changed workloads do not establish a controlled whole-workflow speedup.
 
 The source renderer implements [vertex lighting, normals and materials](client/lighting-raster.md)

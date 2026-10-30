@@ -43,6 +43,67 @@ static uint64_t dbits(double value) {
     return result;
 }
 
+static bool terminal_case(mc_client_singleplayer_controller *c,
+                          mc_singleplayer_controller_status expected,
+                          mc_singleplayer_controller_error *error) {
+    mc_client_singleplayer_controller saved;
+    mc_entity_classes saved_classes;
+    memcpy(&saved, c, sizeof(saved));
+    memcpy(&saved_classes, c->classes, sizeof(saved_classes));
+    mc_entity saved_candidate;
+    mc_local_player_state saved_player;
+    mc_entity *candidate = c->fields.failed_player;
+    if (candidate != NULL) {
+        CHECK(candidate->local_player != NULL);
+        memcpy(&saved_candidate, candidate, sizeof(saved_candidate));
+        memcpy(&saved_player, candidate->local_player, sizeof(saved_player));
+    }
+    mc_singleplayer_controller_terminal_view view, sentinel;
+    memset(&view, 0xa5, sizeof(view));
+    memcpy(&sentinel, &view, sizeof(sentinel));
+    memset(error, 0xa5, sizeof(*error));
+    CHECK(mc_client_singleplayer_controller_terminal_inspect(c, &view, error) == expected &&
+          error->status == expected && error->site.class_name == NULL &&
+          error->player.site.class_name == NULL && error->entity.status == MC_ENTITY_OK);
+    if (expected == MC_SINGLEPLAYER_CONTROLLER_OK) {
+        CHECK(view.app == c->fields.a && view.classes == c->classes && view.profile == c->profile &&
+              view.holds == c->fields.native_holds &&
+              view.failed_player_slot == &c->fields.failed_player &&
+              *view.failed_player_slot == candidate && error->operation == NULL);
+    } else
+        CHECK(memcmp(&sentinel, &view, sizeof(view)) == 0);
+    if (expected == MC_SINGLEPLAYER_CONTROLLER_OK)
+        view = (mc_singleplayer_controller_terminal_view){0};
+    memcpy(&sentinel, &view, sizeof(sentinel));
+    CHECK(mc_client_singleplayer_controller_terminal_inspect(c, &view, NULL) == expected);
+    if (expected == MC_SINGLEPLAYER_CONTROLLER_OK)
+        CHECK(view.app == c->fields.a && view.classes == c->classes && view.profile == c->profile &&
+              view.holds == c->fields.native_holds &&
+              view.failed_player_slot == &c->fields.failed_player &&
+              *view.failed_player_slot == candidate);
+    else
+        CHECK(memcmp(&sentinel, &view, sizeof(view)) == 0);
+    CHECK(mc_client_singleplayer_controller_terminal_inspect(c, NULL, error) ==
+              MC_SINGLEPLAYER_CONTROLLER_INVALID_ARGUMENT &&
+          error->status == MC_SINGLEPLAYER_CONTROLLER_INVALID_ARGUMENT);
+    memcpy(&sentinel, &view, sizeof(sentinel));
+    CHECK(mc_client_singleplayer_controller_terminal_inspect(NULL, &view, error) ==
+              MC_SINGLEPLAYER_CONTROLLER_INVALID_ARGUMENT &&
+          error->status == MC_SINGLEPLAYER_CONTROLLER_INVALID_ARGUMENT &&
+          memcmp(&sentinel, &view, sizeof(view)) == 0);
+    CHECK(mc_client_singleplayer_controller_terminal_inspect(NULL, &view, NULL) ==
+              MC_SINGLEPLAYER_CONTROLLER_INVALID_ARGUMENT &&
+          memcmp(&sentinel, &view, sizeof(view)) == 0);
+    CHECK(mc_client_singleplayer_controller_terminal_inspect(c, NULL, NULL) ==
+          MC_SINGLEPLAYER_CONTROLLER_INVALID_ARGUMENT);
+    CHECK(memcmp(&saved, c, sizeof(saved)) == 0 &&
+          memcmp(&saved_classes, c->classes, sizeof(saved_classes)) == 0);
+    if (candidate != NULL)
+        CHECK(memcmp(&saved_candidate, candidate, sizeof(saved_candidate)) == 0 &&
+              memcmp(&saved_player, candidate->local_player, sizeof(saved_player)) == 0);
+    return true;
+}
+
 static bool controller_case(fixture *f, client_application *app, bool null_app) {
     mc_client_singleplayer_controller *c = NULL;
     mc_singleplayer_controller_error *error = calloc(1, sizeof(*error));
@@ -57,6 +118,7 @@ static bool controller_case(fixture *f, client_application *app, bool null_app) 
     mc_singleplayer_controller_snapshot view;
     CHECK(mc_client_singleplayer_controller_read(c, &view) &&
           view.phase == MC_SINGLEPLAYER_CONTROLLER_RAW && view.a == NULL && view.c == 0);
+    CHECK(terminal_case(c, MC_SINGLEPLAYER_CONTROLLER_INVALID_PHASE, error));
     CHECK(mc_client_singleplayer_controller_change_world(c, NULL, error) ==
           MC_SINGLEPLAYER_CONTROLLER_INVALID_PHASE);
     CHECK(mc_client_singleplayer_controller_construct(c, null_app ? NULL : app, error) ==
@@ -69,6 +131,7 @@ static bool controller_case(fixture *f, client_application *app, bool null_app) 
           !view.b && view.c == -1 && view.d == -1 && view.e == -1 && bits(view.f) == 0 &&
           bits(view.g) == 0 && bits(view.h) == 0 && view.i == 0 && view.base_constructor_pc == 14 &&
           view.constructor_pc == 40);
+    CHECK(terminal_case(c, MC_SINGLEPLAYER_CONTROLLER_OK, error));
     printf("CTRLCTOR %d %d %d %d %d %d %08" PRIx32 " %08" PRIx32 " %08" PRIx32 " %d\n",
            null_app ? 1 : 0, view.a == (null_app ? NULL : app), view.b, view.c, view.d, view.e,
            bits(view.f), bits(view.g), bits(view.h), view.i);
@@ -87,6 +150,7 @@ static bool controller_case(fixture *f, client_application *app, bool null_app) 
               changed.i == view.i && !changed.entered && changed.failed_player == NULL);
     }
     CHECK(mc_client_singleplayer_controller_retain(c) == MC_SINGLEPLAYER_CONTROLLER_OK);
+    CHECK(c->fields.native_holds == 2 && terminal_case(c, MC_SINGLEPLAYER_CONTROLLER_OK, error));
     CHECK(mc_client_singleplayer_controller_free(&c, error) == MC_SINGLEPLAYER_CONTROLLER_BUSY &&
           c != NULL);
     CHECK(mc_client_singleplayer_controller_release(c) == MC_SINGLEPLAYER_CONTROLLER_OK);
@@ -157,6 +221,7 @@ static bool create_case(fixture *f, client_application *app, int scenario) {
         } else
             CHECK(status == MC_SINGLEPLAYER_CONTROLLER_NULL_REFERENCE &&
                   c->fields.failed_player->phase == MC_ENTITY_RAW);
+        CHECK(terminal_case(c, MC_SINGLEPLAYER_CONTROLLER_OK, error));
         CHECK(mc_client_singleplayer_controller_create_player(c, NULL, NULL, &p, NULL) ==
                   MC_SINGLEPLAYER_CONTROLLER_BUSY &&
               p == NULL);
@@ -169,6 +234,7 @@ static bool create_case(fixture *f, client_application *app, int scenario) {
         CHECK(mc_client_singleplayer_controller_clear_failed_player(c, error) ==
                   MC_SINGLEPLAYER_CONTROLLER_OK &&
               c->fields.failed_player == NULL && kept->holds == 1);
+        CHECK(terminal_case(c, MC_SINGLEPLAYER_CONTROLLER_OK, error));
         mc_entity_release(kept);
     }
     printf("CTRLNEW %d %d %s %s %d %d %d %d %d %016" PRIx64 " %016" PRIx64 " %016" PRIx64

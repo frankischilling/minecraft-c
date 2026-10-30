@@ -1,13 +1,18 @@
 #include "load_world.h"
+#include "load_world_terminal_internal.h"
 
 #include "../../world/runtime/chunk_provider_internal.h"
+#include "../../world/runtime/terminal_inventory_internal.h"
 #include "../../world/storage/objects_internal.h"
 #include "../application_state.h"
+#include "../controller/singleplayer_internal.h"
 #include "../gui/loading_screen.h"
 #include "../particles/application.h"
+#include "../particles/effect_renderer_internal.h"
 #include "../startup/application_owner_internal.h"
 #include "../startup/application_startup_internal.h"
 #include "../startup/application_startup_menu.h"
+#include "../startup/application_startup_rendering.h"
 #include "../view_slot.h"
 #include "mc/client/controller/singleplayer.h"
 #include "mc/client/input/movement_input.h"
@@ -1128,6 +1133,136 @@ mc_client_world_load_status mc_client_world_load_terminal_prepare(mc_client_worl
     call->state.terminal_prepared = true;
     call->state.active = call->classes->active = false;
     return MC_CLIENT_WORLD_LOAD_OK;
+}
+
+static mc_world_storage_status terminal_admission_result(mc_world_storage_error *error,
+                                                         mc_world_storage_status status,
+                                                         const char *operation) {
+    if (error != NULL)
+        *error = (mc_world_storage_error){status, operation, 0};
+    return status;
+}
+
+mc_world_storage_status
+mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
+                                    mc_client_singleplayer_controller *const *controller_owner,
+                                    const mc_world_terminal_limits *limits,
+                                    mc_world_terminal_inventory *out,
+                                    mc_world_storage_error *error) {
+    if (call == NULL || controller_owner == NULL || out == NULL)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                         "Load terminal actual owner slots and output required");
+    const mc_client_world_load_classes *classes = call->classes;
+    if (classes == NULL || classes->app == NULL)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal live class/App provenance");
+    client_application *app = classes->app;
+    if (call->state.active || classes->active || (app->startup != NULL && app->startup->active))
+        return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
+                                         "Load terminal owner operation entered");
+    if (!classes->retiring || classes->calls != 1 || !call->state.terminal_prepare_selected ||
+        !call->state.terminal_prepared || !call->state.source_returned ||
+        call->failure.status != MC_CLIENT_WORLD_LOAD_OK || call->state.app != app ||
+        call->state.world == NULL || call->state.player == NULL || call->state.input == NULL ||
+        call->state.handler == NULL || call->world_retired || call->cache_retired ||
+        call->failed_controller != NULL || call->failed_candidate != NULL ||
+        call->state.failed_player != NULL || call->prepare != NULL ||
+        call->pending_loading != NULL || call->render_call != NULL || call->render_world_owned)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal intact fully published prepared scope");
+    if (app->startup == NULL || app->startup->app != app || app->startup->rendering == NULL ||
+        app->effect_renderer_constructing || app->startup->rendering->active)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
+                                         "Load terminal live inactive startup/rendering owners");
+    if (call->h_occurrence != call->state.player || call->i_occurrence != call->state.player ||
+        app->h != call->h_occurrence || app->i != call->i_occurrence ||
+        app->view_occurrence != call->i_occurrence || !call->world_slot_owned ||
+        app->active_world != call->state.world || !call->effects_world_owned ||
+        !call->effects_held || call->effects_owner == NULL ||
+        app->effect_renderer != call->effects_owner ||
+        app->effect_renderer_retained != call->effects_owner ||
+        app->startup->rendering->particle != call->effects_owner)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
+                                         "Load terminal actual App/Player/World slots changed");
+    mc_world_runtime_fields fields;
+    if (mc_world_runtime_fields_get(call->state.world, &fields) != MC_WORLD_STORAGE_OK ||
+        fields.w != call->state.handler ||
+        mc_world_runtime_random_profile(call->state.world) != app->profile)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal actual World/handler/profile provenance");
+
+    mc_client_singleplayer_controller *controller = *controller_owner;
+    if (controller == NULL || app->controller != controller || call->controller_count == 0 ||
+        call->controller_count > sizeof(call->controllers) / sizeof(call->controllers[0]))
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal actual transition controller owner");
+    size_t controller_holds = 1; /* The genuine transition-owned slot. */
+    for (size_t i = 0; i < call->controller_count; ++i) {
+        if (call->controllers[i] != controller)
+            return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                             "Load terminal multiple captured controllers");
+        ++controller_holds; /* Each real captured owning slot, not App's alias. */
+    }
+    mc_singleplayer_controller_terminal_view controller_view;
+    mc_singleplayer_controller_error controller_error;
+    const mc_singleplayer_controller_status controller_status =
+        mc_client_singleplayer_controller_terminal_inspect(controller, &controller_view,
+                                                           &controller_error);
+    if (controller_status != MC_SINGLEPLAYER_CONTROLLER_OK)
+        return terminal_admission_result(error,
+                                         controller_status == MC_SINGLEPLAYER_CONTROLLER_BUSY
+                                             ? MC_WORLD_STORAGE_BUSY
+                                             : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         controller_error.operation);
+    if (controller_view.app != app || controller_view.classes != app->entities ||
+        controller_view.profile != app->profile || *controller_view.failed_player_slot != NULL)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal controller namespace/candidate provenance");
+    if (controller_view.holds != controller_holds)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
+                                         "Load terminal external controller occurrence");
+
+    mc_effect_renderer_terminal_view effects_view;
+    mc_effect_renderer_error effects_error;
+    const mc_effect_renderer_status effects_status = mc_client_effect_renderer_terminal_inspect(
+        call->effects_owner, &effects_view, &effects_error);
+    if (effects_status != MC_EFFECT_RENDERER_OK)
+        return terminal_admission_result(error,
+                                         effects_status == MC_EFFECT_RENDERER_BUSY
+                                             ? MC_WORLD_STORAGE_BUSY
+                                             : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         effects_error.operation);
+    if (effects_view.classes != app->entities || effects_view.render_engine != app->render_engine ||
+        *effects_view.world_slot != call->state.world)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal effect namespace/Engine/World provenance");
+    const size_t effects_holds = 1u + (call->effects_held ? 1u : 0u);
+    if (effects_view.holds != effects_holds)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
+                                         "Load terminal external effect occurrence");
+
+    mc_local_player_snapshot player;
+    mc_movement_input_state input;
+    if (mc_local_player_get_snapshot(call->state.player, &player) != MC_ENTITY_OK ||
+        player.minecraft != app || player.input != call->state.input ||
+        !mc_movement_input_read_state(call->state.input, &input) ||
+        input.kind != MC_MOVEMENT_INPUT_FROM_OPTIONS || input.settings != app->settings)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal actual Player/Input/Settings provenance");
+    size_t input_holds = 1; /* The Load's allocated Input slot. */
+    if (player.input != NULL)
+        ++input_holds; /* The SAME Player's actual dc.a owning field, counted once. */
+    if (input.native_holds != input_holds)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
+                                         "Load terminal external Input occurrence");
+
+    const mc_world_terminal_entity_anchor entities[] = {
+        {&call->state.player}, {&call->h_occurrence}, {&app->view_occurrence}};
+    const mc_world_terminal_world_anchor worlds[] = {{&app->active_world},
+                                                     {effects_view.world_slot}};
+    const mc_world_terminal_anchors anchors = {entities, sizeof(entities) / sizeof(entities[0]),
+                                               worlds, sizeof(worlds) / sizeof(worlds[0])};
+    return mc_world_runtime_terminal_admit_owned(call->state.world, &anchors, limits, out, error);
 }
 
 mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_call **slot) {

@@ -1,5 +1,7 @@
 #include "bootstrap.h"
 #include "../application_state.h"
+#include "../gui/source_screen_transitions.h"
+#include "../render/tile_entity_renderer/internal.h"
 #include "../render_engine/image_download.h"
 #include "../render_engine/nw.h"
 #include "../render_engine/textures.h"
@@ -43,6 +45,8 @@ struct mc_client_bootstrap {
     client_application *app;
     mc_client_application_startup *startup;
     mc_client_render_manager_classes *manager;
+    mc_client_tile_renderer_classes *tile_renderer;
+    mc_client_tile_renderer_error tile_retirement;
     mc_client_application_construction_error construction_error;
     mc_client_startup_error startup_error;
     mc_client_statistics_owner_error session_error;
@@ -381,6 +385,57 @@ mc_client_bootstrap_status mc_client_bootstrap_open(const mc_client_application_
 }
 
 #undef OPEN_OWNER
+
+mc_client_bootstrap_status mc_client_bootstrap_terminal_dispatchers(mc_client_bootstrap *context) {
+    if (context == NULL || context->app == NULL || context->startup == NULL)
+        return MC_CLIENT_BOOTSTRAP_INVALID_ARGUMENT;
+    if (context->retiring || context->startup->active)
+        return MC_CLIENT_BOOTSTRAP_BUSY;
+    mc_client_screen_transition_state transitions;
+    if (!mc_client_screen_transitions_inspect(context->app->screen_transitions, &transitions) ||
+        transitions.active || !transitions.terminal_prepare_selected ||
+        !transitions.terminal_prepared)
+        return MC_CLIENT_BOOTSTRAP_BUSY;
+    mc_client_tile_renderer_classes *existing = NULL;
+    const mc_client_tile_renderer_status found = mc_client_tile_entity_renderer_classes_existing(
+        context->constructor.render_classes, context->constructor.registry, context->world_classes,
+        &existing, &context->tile_retirement);
+    if (found != MC_CLIENT_TILE_RENDERER_OK)
+        return found == MC_CLIENT_TILE_RENDERER_BUSY
+                   ? MC_CLIENT_BOOTSTRAP_BUSY
+                   : owner_failure("existing TileEntityRenderer terminal lookup", (int)found);
+    if (context->tile_renderer != NULL && context->tile_renderer != existing)
+        return owner_failure("captured TileEntityRenderer association changed",
+                             (int)MC_CLIENT_TILE_RENDERER_INVALID_PHASE);
+    context->tile_renderer = existing; /* Actual existing class, never active use. */
+    const mc_client_startup_status ended = application_startup_terminal_end_manager_consumer(
+        context->startup, &context->startup_error);
+    if (ended != MC_CLIENT_STARTUP_OK)
+        return ended == MC_CLIENT_STARTUP_BUSY
+                   ? MC_CLIENT_BOOTSTRAP_BUSY
+                   : owner_failure("startup actual dispatcher consumer ending", (int)ended);
+    if (context->tile_renderer != NULL) {
+        const mc_client_tile_renderer_status retired = mc_client_tile_renderer_classes_retire(
+            &context->tile_renderer, &context->tile_retirement);
+        if (retired != MC_CLIENT_TILE_RENDERER_OK)
+            return retired == MC_CLIENT_TILE_RENDERER_BUSY
+                       ? MC_CLIENT_BOOTSTRAP_BUSY
+                       : owner_failure("terminal existing TileEntityRenderer retirement",
+                                       (int)retired);
+    }
+    if (context->manager != NULL) {
+        mc_client_manager_status retired = mc_client_render_manager_retire_hands(
+            context->manager, &context->startup_error.manager);
+        if (retired == MC_CLIENT_MANAGER_OK)
+            retired = mc_client_render_manager_classes_retire(&context->manager,
+                                                              &context->startup_error.manager);
+        if (retired != MC_CLIENT_MANAGER_OK)
+            return retired == MC_CLIENT_MANAGER_BUSY
+                       ? MC_CLIENT_BOOTSTRAP_BUSY
+                       : owner_failure("terminal RenderManager retirement", (int)retired);
+    }
+    return MC_CLIENT_BOOTSTRAP_OK;
+}
 
 static mc_client_bootstrap_status close_startup(mc_client_bootstrap *context) {
     if (context->startup == NULL)

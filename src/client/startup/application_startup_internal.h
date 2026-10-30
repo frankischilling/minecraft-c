@@ -39,6 +39,9 @@ struct mc_client_application_startup {
     mc_client_render_manager_classes *manager_classes;
     mc_client_render_manager *manager_capture;
     mc_client_manager_consumer manager_consumer;
+    /* Native one-way early consumer ending, separate from source startup and
+     * destructive full retirement. No App/World/resource slot is consumed. */
+    bool terminal_manager_consumer_selected, terminal_manager_consumer_ended;
     mc_client_held_item *manager_hand_candidate;
     bool manager_f_stored;
     int32_t last_manager_pc;
@@ -73,6 +76,15 @@ mc_client_startup_status application_startup_fail(mc_client_startup_error *,
                                                   mc_client_startup_status, const char *,
                                                   const char *, const char *, const char *,
                                                   unsigned int);
+/* Outer terminal caller has already ended its actual menu/Load/N source
+ * admission. Reject active owners and an entered legacy full retirement before
+ * selecting this policy. Consume only this startup's real TH consumer and end
+ * its borrowed capture/classes aliases; keep the complete World, transition,
+ * App and resource graphs alive. Repeated success is a no-op. Error/output is
+ * optional and disjoint from live owners. No global dispatcher retirement. */
+mc_client_startup_status
+application_startup_terminal_end_manager_consumer(mc_client_application_startup *,
+                                                  mc_client_startup_error *caller_error);
 mc_client_startup_status application_startup_manager(mc_client_application_startup *);
 mc_client_startup_status application_startup_entity_renderer(mc_client_application_startup *);
 mc_client_startup_status application_startup_colors(mc_client_application_startup *);

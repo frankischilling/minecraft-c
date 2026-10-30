@@ -19,6 +19,81 @@ static mc_client_startup_status cleanup_failure(mc_client_application_startup *s
     return status;
 }
 
+static mc_client_startup_status manager_consumer_end_failure(mc_client_startup_error *out,
+                                                             mc_client_startup_status status,
+                                                             const char *operation) {
+    if (out != NULL)
+        (void)application_startup_fail(out, status, operation, NULL, NULL, NULL, 0);
+    return status;
+}
+
+/* The admitted caller owns startup's active guard. Both legacy full cleanup
+ * and the earlier native prefix consume this SAME record, never a count guess. */
+static mc_client_startup_status manager_consumer_end_entered(mc_client_application_startup *startup,
+                                                             mc_client_startup_error *error) {
+    if (mc_client_render_manager_consumer_detach(&startup->manager_consumer, &error->manager) !=
+        MC_CLIENT_MANAGER_OK)
+        return application_startup_fail(error, MC_CLIENT_STARTUP_BUSY,
+                                        "startup actual manager consumer detach", NULL, NULL, NULL,
+                                        0);
+    startup->manager_capture = NULL;
+    startup->manager_classes = NULL;
+    return MC_CLIENT_STARTUP_OK;
+}
+
+mc_client_startup_status
+application_startup_terminal_end_manager_consumer(mc_client_application_startup *startup,
+                                                  mc_client_startup_error *caller_error) {
+    if (caller_error != NULL)
+        *caller_error = (mc_client_startup_error){0};
+    if (startup == NULL)
+        return manager_consumer_end_failure(caller_error, MC_CLIENT_STARTUP_INVALID_ARGUMENT,
+                                            "startup terminal consumer receiver");
+    if (startup->active || startup->app == NULL || startup->app->startup != startup)
+        return manager_consumer_end_failure(caller_error, MC_CLIENT_STARTUP_BUSY,
+                                            "startup terminal consumer active/live App borrow");
+    if (startup->phase == MC_CLIENT_STARTUP_RETIRING &&
+        !startup->terminal_manager_consumer_selected)
+        return manager_consumer_end_failure(caller_error, MC_CLIENT_STARTUP_BUSY,
+                                            "startup legacy retirement already entered");
+    if (startup->terminal_manager_consumer_ended) {
+        if (startup->manager_consumer.attached || startup->manager_consumer.classes != NULL ||
+            startup->manager_classes != NULL || startup->manager_capture != NULL)
+            return manager_consumer_end_failure(caller_error, MC_CLIENT_STARTUP_INVALID_PHASE,
+                                                "startup ended manager consumer changed");
+        return MC_CLIENT_STARTUP_OK;
+    }
+    const mc_client_manager_consumer *consumer = &startup->manager_consumer;
+    if ((consumer->attached &&
+         (consumer->classes == NULL || consumer->classes != startup->manager_classes)) ||
+        (!consumer->attached && consumer->classes != NULL) ||
+        (startup->manager_classes == NULL && startup->manager_capture != NULL))
+        return manager_consumer_end_failure(caller_error, MC_CLIENT_STARTUP_INVALID_PHASE,
+                                            "startup actual manager consumer association");
+    if (startup->manager_classes != NULL) {
+        mc_client_manager_state state;
+        if (!mc_client_render_manager_inspect(startup->manager_classes, &state))
+            return manager_consumer_end_failure(caller_error, MC_CLIENT_STARTUP_BUSY,
+                                                "startup actual manager consumer owner active");
+        if (startup->manager_capture != NULL &&
+            (!state.source_views_available || state.a != startup->manager_capture))
+            return manager_consumer_end_failure(caller_error, MC_CLIENT_STARTUP_INVALID_PHASE,
+                                                "startup actual captured manager identity changed");
+    }
+    startup->phase = MC_CLIENT_STARTUP_RETIRING;
+    startup->terminal_manager_consumer_selected = true;
+    startup->active = true;
+    startup->retirement = (mc_client_startup_error){0};
+    const mc_client_startup_status status =
+        manager_consumer_end_entered(startup, &startup->retirement);
+    if (status == MC_CLIENT_STARTUP_OK)
+        startup->terminal_manager_consumer_ended = true;
+    startup->active = false;
+    if (caller_error != NULL)
+        *caller_error = startup->retirement;
+    return status;
+}
+
 mc_client_startup_status mc_client_application_startup_retire(mc_client_application_startup **slot,
                                                               mc_client_startup_error *out) {
     mc_client_startup_error error = {0};
@@ -87,12 +162,9 @@ mc_client_startup_status mc_client_application_startup_retire(mc_client_applicat
                                "startup actual xi worker/File/Session retirement", out);
     /* End this actual App's source admission BEFORE any global F dependency
      * can block sj/Engine/App. No counted App<->TH ownership cycle exists. */
-    if (mc_client_render_manager_consumer_detach(
-            &startup->manager_consumer, &startup->retirement.manager) != MC_CLIENT_MANAGER_OK)
+    if (manager_consumer_end_entered(startup, &startup->retirement) != MC_CLIENT_STARTUP_OK)
         return cleanup_failure(startup, MC_CLIENT_STARTUP_BUSY,
                                "startup actual manager consumer detach", out);
-    startup->manager_capture = NULL;
-    startup->manager_classes = NULL;
     const mc_client_entity_renderer_status local_hand = mc_client_held_item_retire(
         &startup->manager_hand_candidate, &startup->retirement.entity_renderer);
     if (local_hand != MC_CLIENT_ENTITY_RENDERER_OK)

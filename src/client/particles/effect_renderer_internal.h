@@ -21,4 +21,25 @@ struct mc_client_effect_renderer {
     bool entered;
 };
 
+typedef struct mc_effect_renderer_terminal_view {
+    mc_entity_classes *classes;
+    mc_client_render_engine *render_engine;
+    mc_world_runtime *const *world_slot;
+    size_t holds;
+} mc_effect_renderer_terminal_view;
+
+/* Passive native inspection of this exact READY owner and its four distinct
+ * empty Lists. Retained capacities are permitted; a nonempty List is refused
+ * with UNSUPPORTED_PARTICLE without clearing any occurrence. No hold allowance
+ * is inferred. The returned slot is the actual owning World field, including
+ * when NULL. Keep r live and exclusive; the view expires on its next mutation
+ * or retirement. No source/class work, retain/release, cleanup or diagnostic-
+ * owner mutation occurs. out is required and error is optional; both must be
+ * live and disjoint from each other and r. Failure preserves *out. Entered
+ * owners are BUSY; partial construction and other non-READY phases are refused. */
+mc_effect_renderer_status
+mc_client_effect_renderer_terminal_inspect(const mc_client_effect_renderer *r,
+                                           mc_effect_renderer_terminal_view *out,
+                                           mc_effect_renderer_error *error);
+
 #endif

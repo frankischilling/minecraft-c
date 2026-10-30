@@ -323,6 +323,61 @@ bool mc_client_effect_renderer_read(const mc_client_effect_renderer *r,
     return true;
 }
 
+mc_effect_renderer_status
+mc_client_effect_renderer_terminal_inspect(const mc_client_effect_renderer *r,
+                                           mc_effect_renderer_terminal_view *out,
+                                           mc_effect_renderer_error *error) {
+    mc_effect_renderer_error e = fresh();
+    if (r == NULL || out == NULL)
+        fail(&e, MC_EFFECT_RENDERER_INVALID_ARGUMENT,
+             "EffectRenderer terminal inspection arguments", NULL, NULL, 0);
+    else if (r->entered)
+        fail(&e, MC_EFFECT_RENDERER_BUSY, "EffectRenderer terminal inspection entered", NULL, NULL,
+             0);
+    else if (r->phase != MC_EFFECT_RENDERER_READY)
+        fail(&e, MC_EFFECT_RENDERER_INVALID_PHASE, "EffectRenderer terminal inspection READY phase",
+             NULL, NULL, 0);
+    else if (r->classes == NULL || r->classes->source != MC_ENTITY_CLIENT || r->holds == 0 ||
+             r->layers == NULL || r->random == NULL || r->random_candidate != NULL)
+        fail(&e, MC_EFFECT_RENDERER_INVALID_PHASE,
+             "EffectRenderer terminal inspection native ownership", NULL, NULL, 0);
+    else {
+        for (size_t i = 0; i < 4; ++i) {
+            const mc_effect_particle_list *list = r->layers[i];
+            e.layer = i;
+            if (list == NULL || list->size > list->capacity ||
+                list->capacity > SIZE_MAX / sizeof(*list->elements) ||
+                (list->capacity == 0) != (list->elements == NULL)) {
+                fail(&e, MC_EFFECT_RENDERER_INVALID_PHASE,
+                     "EffectRenderer terminal inspection List storage", NULL, NULL, 0);
+                break;
+            }
+            for (size_t j = 0; j < i; ++j)
+                if (list == r->layers[j] ||
+                    (list->elements != NULL && list->elements == r->layers[j]->elements)) {
+                    fail(&e, MC_EFFECT_RENDERER_INVALID_PHASE,
+                         "EffectRenderer terminal inspection distinct Lists", NULL, NULL, 0);
+                    break;
+                }
+            if (e.status != MC_EFFECT_RENDERER_OK)
+                break;
+            if (list->size != 0) {
+                fail(&e, MC_EFFECT_RENDERER_UNSUPPORTED_PARTICLE,
+                     "EffectRenderer terminal inspection requires empty Lists", NULL, NULL, 0);
+                break;
+            }
+        }
+        if (e.status == MC_EFFECT_RENDERER_OK) {
+            *out = (mc_effect_renderer_terminal_view){.classes = r->classes,
+                                                      .render_engine = r->render_engine,
+                                                      .world_slot = &r->world,
+                                                      .holds = r->holds};
+            e = fresh();
+        }
+    }
+    return publish(&e, error);
+}
+
 mc_effect_renderer_status mc_client_effect_renderer_retire_world(mc_client_effect_renderer *r,
                                                                  mc_world_runtime *expected,
                                                                  mc_effect_renderer_error *error) {

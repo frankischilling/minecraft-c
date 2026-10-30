@@ -199,6 +199,32 @@ bool mc_client_singleplayer_controller_read(const mc_client_singleplayer_control
 }
 
 mc_singleplayer_controller_status
+mc_client_singleplayer_controller_terminal_inspect(const mc_client_singleplayer_controller *c,
+                                                   mc_singleplayer_controller_terminal_view *out,
+                                                   mc_singleplayer_controller_error *error) {
+    if (c == NULL || out == NULL)
+        return simple_result(error, MC_SINGLEPLAYER_CONTROLLER_INVALID_ARGUMENT,
+                             "single-player controller terminal inspection arguments");
+    if (c->fields.entered)
+        return simple_result(error, MC_SINGLEPLAYER_CONTROLLER_BUSY,
+                             "single-player controller terminal inspection entered");
+    if (c->fields.phase != MC_SINGLEPLAYER_CONTROLLER_READY)
+        return simple_result(error, MC_SINGLEPLAYER_CONTROLLER_INVALID_PHASE,
+                             "single-player controller terminal inspection READY phase");
+    if (c->classes == NULL || c->profile == NULL || c->classes->source != MC_ENTITY_CLIENT ||
+        c->classes->profile != c->profile || c->fields.native_holds == 0)
+        return simple_result(error, MC_SINGLEPLAYER_CONTROLLER_INVALID_PHASE,
+                             "single-player controller terminal inspection native ownership");
+    *out =
+        (mc_singleplayer_controller_terminal_view){.app = c->fields.a,
+                                                   .classes = c->classes,
+                                                   .profile = c->profile,
+                                                   .failed_player_slot = &c->fields.failed_player,
+                                                   .holds = c->fields.native_holds};
+    return simple_result(error, MC_SINGLEPLAYER_CONTROLLER_OK, NULL);
+}
+
+mc_singleplayer_controller_status
 mc_client_singleplayer_controller_change_world(mc_client_singleplayer_controller *c,
                                                mc_world_runtime *world,
                                                mc_singleplayer_controller_error *out) {

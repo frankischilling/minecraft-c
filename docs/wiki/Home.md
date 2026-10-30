@@ -1,11 +1,14 @@
 # minecraft-c
 
-The passive [World terminal inventory](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/terminal-retirement.md) counts actual Entity, TileEntity,
-Provider and static Piston owners without changing the live graph. Its 834
-native controls pass on Windows and sanitized Linux. The broader selection
-passes 44 Windows tests and 42 Linux tests; all 35 targets build on both hosts.
-Client anchors, other service roots and dispatcher retirement still need
-integration before normal shutdown and live frame adoption.
+The [client terminal primitives](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
+now check actual selected-load Player/World anchors and outside controller,
+effects and Input holds. They end the startup's real consumer and retire
+existing LL/TH owners with the full World still live. A loaded Windows
+profile completes that sequence and checked cleanup with saves, assets and
+all 72 focus histories preserved. All 38 targets build on both hosts;
+47 Windows and 45 sanitized Linux tests pass. Partial loads, full handler/
+service admission, old-World deferral and normal runtime adoption remain
+unfinished.
 
 The [source lighting renderer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md)
 and [TileEntityRenderer CPU bodies](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/tile-entity-renderer.md)

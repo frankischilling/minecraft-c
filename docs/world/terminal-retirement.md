@@ -28,10 +28,11 @@ or TileEntity contributes one direct World binding, regardless of its hold
 count. The actual provider `a` contributes one more. Excess holds or unexplained
 World bindings return BUSY. Inconsistent ownership metadata refuses admission.
 
-The public function grants no exemptions for client owners. A private adapter
-can supply typed addresses of actual owned Entity and World slots. Mirrors,
-borrowed fields and guessed hold allowances are not anchors. That client
-adapter and the complete outer coordinator remain unfinished.
+The public function grants no exemptions for client owners. The private
+[selected-load adapter](../client/terminal-retirement.md) supplies typed
+addresses of actual owned Entity and World slots in its intact successful-load
+scope. Mirrors, borrowed fields and guessed hold allowances are not anchors.
+Failed/partial load support and the complete outer coordinator remain unfinished.
 
 ## Static Piston roots
 
@@ -74,8 +75,9 @@ Piston List append is a native ownership control, not an original push or tick
 comparison. No native phase, hold count or readiness marker is assigned to make
 the graph pass. The test has no original-runtime equality claim.
 
-The [client terminal prefix](../client/terminal-retirement.md) still needs its
-actual owner adapter, effect/controller/service admission, dispatcher consumer
-release and passive LL/TH retirement. World admission alone does not authorize
+The [client terminal prefix](../client/terminal-retirement.md) now has explicit
+selected-load controller/effect/Input checks and actual dispatcher consumer
+ending with passive LL discovery and checked LL/TH retirement. Full service
+admission remains unfinished. World admission alone does not authorize
 SaveHandler or App destruction. Normal shutdown, deferred old-World ownership
 and live N44/N80 adoption remain unfinished.

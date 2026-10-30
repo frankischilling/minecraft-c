@@ -101,6 +101,16 @@ struct mc_client_tile_renderer_classes {
     mc_client_tile_renderer_error failure, retirement;
 };
 
+/* Passive exact-provenance lookup for outer terminal ownership. All expected
+ * owners are required/live. Absence (including a consumed association) yields
+ * NULL without creating/binding/initializing anything. Existing cold, failed
+ * and inactive RETIRING owners remain discoverable for checked retirement.
+ * Active owners refuse; output changes only on success. No native hold added. */
+mc_client_tile_renderer_status mc_client_tile_entity_renderer_classes_existing(
+    const mc_client_render_classes *models, const mc_registry_classes *expected_registry,
+    const mc_world_runtime_classes *expected_world_classes,
+    mc_client_tile_renderer_classes **nullable_out, mc_client_tile_renderer_error *error);
+
 void tile_renderer_error_init(mc_client_tile_renderer_error *);
 mc_client_tile_renderer_status tile_renderer_fail(mc_client_tile_renderer_error *,
                                                   mc_client_tile_renderer_status, const char *,

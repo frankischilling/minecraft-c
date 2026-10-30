@@ -3,6 +3,7 @@
 #include "../startup/application_startup_internal.h"
 #include "../startup/application_startup_menu.h"
 #include "../world/load_world.h"
+#include "../world/load_world_terminal_internal.h"
 #include "display_screen.h"
 #include "mc/client/controller/singleplayer.h"
 #include "mc/client/statistics/writer.h"
@@ -10,6 +11,7 @@
 #include "mc/statistics/registry/registry.h"
 #include "mc/world/runtime/construction.h"
 #include "source_pause_screen_internal.h"
+#include "source_screen_transitions_terminal_internal.h"
 #include "source_world_list.h"
 #include "source_world_selection_internal.h"
 
@@ -604,6 +606,48 @@ mc_client_screen_transitions_terminal_prepare(mc_client_screen_transitions *r,
     r->terminal_prepared = true;
     r->active = false;
     return MC_CLIENT_SCREEN_OK;
+}
+
+mc_world_storage_status mc_client_screen_transitions_terminal_admit(
+    const mc_client_screen_transitions *r, const mc_world_terminal_limits *limits,
+    mc_world_terminal_inventory *out, mc_world_storage_error *error) {
+    mc_world_storage_status status = MC_WORLD_STORAGE_OK;
+    const char *operation = NULL;
+    if (r == NULL || out == NULL) {
+        status = MC_WORLD_STORAGE_INVALID_ARGUMENT;
+        operation = "screen terminal admission owner and output required";
+    } else if (r->active) {
+        status = MC_WORLD_STORAGE_BUSY;
+        operation = "screen terminal admission operation entered";
+    } else if (!r->terminal_prepared || !r->terminal_prepare_selected || !r->retiring ||
+               r->world_classes == NULL || r->last_load == NULL || r->controller == NULL) {
+        status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        operation = "screen terminal admission prepared selected-load scope";
+    } else {
+        size_t loads = 0, nodes = 0;
+        for (const screen_node *n = r->nodes; n != NULL; n = n->next) {
+            if (++nodes > r->node_count) {
+                status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+                operation = "screen terminal admission node ledger";
+                break;
+            }
+            if (n->load != NULL && (++loads != 1 || n->load != r->last_load)) {
+                status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+                operation = "screen terminal admission one actual retained load";
+                break;
+            }
+        }
+        if (status == MC_WORLD_STORAGE_OK && (loads != 1 || nodes != r->node_count)) {
+            status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+            operation = "screen terminal admission complete retained node ledger";
+        }
+        if (status == MC_WORLD_STORAGE_OK)
+            return mc_client_world_load_terminal_admit(r->last_load, &r->controller, limits, out,
+                                                       error);
+    }
+    if (error != NULL)
+        *error = (mc_world_storage_error){status, operation, 0};
+    return status;
 }
 
 mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_transitions **slot,

@@ -39,6 +39,16 @@ mc_client_bootstrap_status mc_client_bootstrap_open(const mc_client_application_
  * All borrowed getters expire at the first close attempt. */
 mc_client_bootstrap_status mc_client_bootstrap_close(mc_client_bootstrap **slot);
 
+/* Explicit native dispatcher retirement after the caller's actual menu/Load/N
+ * terminal prefix. Keep the complete App/World/Player/services graph exclusive
+ * and live. End only this startup's real consumer, passively discover existing
+ * LL, then retire LL and TH (including RA) through their checked owners. BUSY
+ * retains each remaining owner for retry; successful earlier consumption is
+ * final and borrowed source views expire. No World container/cache/provider or
+ * handler cleanup occurs. Success alone is not World/App destruction authority.
+ * Normal close does not implicitly select this policy. */
+mc_client_bootstrap_status mc_client_bootstrap_terminal_dispatchers(mc_client_bootstrap *);
+
 client_application *mc_client_bootstrap_app(mc_client_bootstrap *);
 const mc_registry_resources *mc_client_bootstrap_resources(const mc_client_bootstrap *);
 mc_resource_files *mc_client_bootstrap_class_files(const mc_client_bootstrap *);

@@ -10,6 +10,7 @@
 #include "client/gui/source_pause_screen.h"
 #include "client/gui/source_screen_initialize_internal.h"
 #include "client/gui/source_screen_transitions.h"
+#include "client/gui/source_screen_transitions_terminal_internal.h"
 #include "client/gui/source_world_list.h"
 #include "client/gui/source_world_selection_drawing.h"
 #include "client/gui/source_world_selection_internal.h"
@@ -17,10 +18,12 @@
 #include "client/runtime/menu_loop.h"
 #include "client/runtime/world_tick.h"
 #include "client/startup/application_startup.h"
+#include "client/startup/application_startup_internal.h"
 #include "client/world/load_world.h"
 #include "client/world/prepare_world.h"
 #include "client/world/render_global_internal.h"
 #include "client/world/source_chunk_compile_internal.h"
+#include "entity/entity_internal.h"
 #include "mc/client/controller/singleplayer.h"
 #include "mc/client/input/movement_input.h"
 #include "mc/client/particles/effect_renderer.h"
@@ -31,6 +34,7 @@
 #include "mc/entity/player/player.h"
 #include "mc/world/runtime/blocks.h"
 #include "platform/time/millis.h"
+#include "world/runtime/runtime_internal.h"
 
 #include <SDL3/SDL.h>
 #include <inttypes.h>
@@ -756,12 +760,114 @@ static int terminal_prepare_controls(fixture *f, mc_client_source_da *external) 
     return 0;
 }
 
+static int loaded_admission_attempt(fixture *f, mc_world_storage_status expected,
+                                    const char *operation, mc_world_terminal_inventory *success) {
+    client_application *app = f->app;
+    mc_world_runtime *world = app->active_world;
+    mc_entity *player = app->h;
+    unsigned char *app_before = malloc(sizeof(*app)), *world_before = malloc(sizeof(*world)),
+                  *player_before = malloc(sizeof(*player));
+    CHECK(app_before != NULL && world_before != NULL && player_before != NULL);
+    memcpy(app_before, app, sizeof(*app));
+    memcpy(world_before, world, sizeof(*world));
+    memcpy(player_before, player, sizeof(*player));
+    mc_world_terminal_inventory inventory = {.entities = 101,
+                                             .tile_entities = 102,
+                                             .entity_occurrences = 103,
+                                             .tile_entity_occurrences = 104,
+                                             .expected_world_bindings = 105,
+                                             .piston_discard_required = true};
+    unsigned char sentinel[sizeof(inventory)];
+    memcpy(sentinel, &inventory, sizeof(inventory));
+    mc_world_storage_error error = {0};
+    CHECK(mc_client_screen_transitions_terminal_admit(app->screen_transitions, NULL, &inventory,
+                                                      &error) == expected &&
+          error.status == expected);
+    CHECK(memcmp(app_before, app, sizeof(*app)) == 0 &&
+          memcmp(world_before, world, sizeof(*world)) == 0 &&
+          memcmp(player_before, player, sizeof(*player)) == 0);
+    if (expected != MC_WORLD_STORAGE_OK)
+        CHECK(memcmp(sentinel, &inventory, sizeof(inventory)) == 0);
+    if (operation != NULL)
+        CHECK(error.operation != NULL && strcmp(error.operation, operation) == 0);
+    if (expected == MC_WORLD_STORAGE_OK && success != NULL)
+        *success = inventory;
+    free(app_before);
+    free(world_before);
+    free(player_before);
+    return 0;
+}
+
+static int loaded_terminal_admission_controls(fixture *f) {
+    client_application *app = f->app;
+    mc_world_runtime *world = app->active_world;
+    mc_entity *player = app->h;
+    mc_client_screen_transition_state transitions;
+    mc_client_world_load_state load;
+    CHECK(mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
+          transitions.world_load != NULL &&
+          mc_client_world_load_inspect(transitions.world_load, &load) && load.source_returned &&
+          load.world == world && load.player == player && load.input != NULL);
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                   "screen terminal admission prepared selected-load scope",
+                                   NULL) == 0);
+    CHECK(mc_client_menu_loop_terminal_prepare(f->loop));
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "World terminal unexplained direct World binding", NULL) == 0);
+
+    CHECK(mc_movement_input_retain(load.input, NULL) == MC_MOVEMENT_INPUT_OK);
+    mc_movement_input *extra_input = load.input;
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "Load terminal external Input occurrence", NULL) == 0);
+    CHECK(mc_movement_input_retire(&extra_input, NULL) == MC_MOVEMENT_INPUT_OK &&
+          extra_input == NULL);
+    CHECK(mc_client_singleplayer_controller_retain(app->controller) ==
+          MC_SINGLEPLAYER_CONTROLLER_OK);
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "Load terminal external controller occurrence", NULL) == 0);
+    CHECK(mc_client_singleplayer_controller_release(app->controller) ==
+          MC_SINGLEPLAYER_CONTROLLER_OK);
+    CHECK(mc_client_effect_renderer_retain(app->effect_renderer) == MC_EFFECT_RENDERER_OK);
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "Load terminal external effect occurrence", NULL) == 0);
+    CHECK(mc_client_effect_renderer_release(app->effect_renderer) == MC_EFFECT_RENDERER_OK);
+    CHECK(mc_entity_retain(player) == MC_ENTITY_OK);
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "World terminal external Entity or TileEntity hold", NULL) == 0);
+    mc_entity_release(player); /* End only the actual extra test occurrence. */
+
+    /* One App plus a genuine independent native consumer, not a second App. */
+    mc_client_manager_consumer foreign = {0};
+    CHECK(mc_client_render_manager_consumer_attach(app->startup->manager_classes, &foreign, NULL) ==
+          MC_CLIENT_MANAGER_OK);
+    CHECK(mc_client_bootstrap_terminal_dispatchers(f->bootstrap) == MC_CLIENT_BOOTSTRAP_BUSY &&
+          foreign.attached && app->active_world == world && app->h == player && app->i == player &&
+          world->construction.phase == MC_WORLD_RUNTIME_READY &&
+          !world->entity_containers_retired && !world->tile_entity_containers_retired);
+    CHECK(mc_client_render_manager_consumer_detach(&foreign, NULL) == MC_CLIENT_MANAGER_OK);
+    CHECK(mc_client_bootstrap_terminal_dispatchers(f->bootstrap) == MC_CLIENT_BOOTSTRAP_OK &&
+          mc_client_bootstrap_terminal_dispatchers(f->bootstrap) == MC_CLIENT_BOOTSTRAP_OK &&
+          app->active_world == world && app->h == player && app->i == player &&
+          world->construction.phase == MC_WORLD_RUNTIME_READY &&
+          !world->entity_containers_retired && !world->tile_entity_containers_retired);
+    mc_world_terminal_inventory inventory;
+    CHECK(mc_world_runtime_terminal_admit(world, NULL, &inventory, NULL) == MC_WORLD_STORAGE_BUSY);
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_OK, NULL, &inventory) == 0 &&
+          inventory.entities == 1 && inventory.entity_occurrences == player->holds &&
+          inventory.tile_entities == 0 && inventory.tile_entity_occurrences == 0 &&
+          inventory.expected_world_bindings == 4 && !inventory.piston_discard_required);
+    return 0;
+}
+
 int main(int argc, char **argv) {
     CHECK(argc == 4 && (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
                         strcmp(argv[2], "large") == 0 || strcmp(argv[2], "double") == 0 ||
-                        strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0));
+                        strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
+                        strcmp(argv[2], "load-terminal") == 0));
     const bool double_click = strcmp(argv[2], "double") == 0;
-    const bool loading_world = strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0;
+    const bool terminal_admission = strcmp(argv[2], "load-terminal") == 0;
+    const bool loading_world =
+        strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 || terminal_admission;
     const bool populated = strcmp(argv[2], "populated") == 0 || double_click || loading_world;
     const bool large = strcmp(argv[2], "large") == 0;
     fixture f = {0};
@@ -1107,7 +1213,9 @@ int main(int argc, char **argv) {
            populated ? 1 : 0);
     if (!loading_world)
         CHECK(terminal_prepare_controls(&f, external) == 0);
-    if (loading_world) {
+    if (terminal_admission)
+        CHECK(loaded_terminal_admission_controls(&f) == 0);
+    if (loading_world && !terminal_admission) {
         mc_world_runtime *world = f.app->active_world;
         mc_entity *player = f.app->h;
         mc_client_render_global *renderer = f.app->g;

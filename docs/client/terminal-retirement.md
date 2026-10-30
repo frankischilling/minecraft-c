@@ -3,8 +3,9 @@
 The native terminal prefix ends source admission and releases selected local
 call and renderer occurrences while keeping the application and World graphs
 live. It is one way: a prepared owner cannot resume frames or source loading.
-Successful preparation does not authorize World destruction. The outer
-dispatcher and World-root coordinator remain unfinished.
+Successful preparation does not authorize World destruction. Explicit native
+dispatcher retirement and first-scope client World admission now follow it;
+normal shutdown and the complete outer destruction coordinator remain unfinished.
 
 The prefix is available through
 [RenderGlobal](../../include/mc/client/world/render_global.h),
@@ -82,6 +83,32 @@ no further work. Failure preserves remaining occurrences for retry. An
 already-entered legacy full retirement cannot be upgraded to preparation.
 The caller keeps the complete dependency graph alive through all retries.
 
+## Client admission uses actual owning slots
+
+The transition owner's passive terminal admission supports one intact,
+successfully published selected load after its real preparation prefix. It
+passes the addresses of `state.player`, the load's separate `h_occurrence` and
+App's owning `view_occurrence` to the lower World audit. The load's
+`i_occurrence` is checked as a mirror and never counted again. Only App's
+`active_world` and the effect owner's actual World slot add direct World anchors.
+
+Controller accounting uses the transition's real base-owner slot and every
+actual captured controller slot in that load. The current App controller is
+only an alias. Effects accounting similarly requires the App-retained owner
+and the load's actual capture, with matching namespace, Engine and World and
+four empty particle Lists. Neither inspector creates or clears anything.
+
+Input has a separate gate: its actual holds must match the Load allocation and
+the one Player's owning `dc.a` field. Player aliases do not multiply that Input
+occurrence. An outside Input hold can borrow Settings without adding a World
+binding, so the lower World count alone cannot detect it.
+
+All identity and external-hold checks precede any destructive Load cleanup.
+Failure preserves inventory output, source outcomes, cleanup receipts and the
+live owners. Admission caches no permission. Failed or partial loads, changed
+controllers and partially consumed tails remain outside this first scope.
+Handler/format/service and App destruction authority remains separate.
+
 ## Source World clear has a different body
 
 The original Minecraft World-change method clears the view at PC16 and stores World
@@ -100,31 +127,47 @@ disposal. An advisory GC request cannot replace native ownership accounting.
 
 ## Destruction and runtime adoption remain separate
 
-The lower [World admission](../world/terminal-retirement.md) now counts exact
-Entity, TileEntity, Provider and static Piston owners in its stated client GAME
-scope without releasing them. The outer owner still needs its actual client
-anchors and admission of the remaining dependencies. It must end its actual
-consumer records and retire any existing LL/TH associations with their Display and resource dependencies
-live. LL cleanup must look up the existing association passively, then retire it
-without initializing a new singleton merely to tear it down. A retained
-Piston CV or dispatcher occurrence remains a real World root.
+The lower [World admission](../world/terminal-retirement.md) counts exact
+Entity, TileEntity, Provider and static Piston owners without releasing them.
+The selected-load adapter supplies the client anchors described above.
 
-Preparation alone performs none of that global admission or dispatcher
-retirement. The ordinary menu path also needs a retained old-World queue so
+`mc_client_bootstrap_terminal_dispatchers` requires the actual completed
+transition prefix and keeps App, Display, Engine, Font, Settings and the full
+World graph live. It passively captures an existing LL association using the
+exact Models, Registry and WorldClasses identities. Absence returns null;
+cleanup neither binds nor initializes LL. Cold and failed associations remain
+discoverable, and the lookup retains the same inactive retiring owner for retry.
+
+The startup helper ends only its actual TH consumer record and the borrowed
+aliases backed by that record. It latches a one-way native policy. Completed
+repeats avoid consumed global handles; an earlier destructive startup retirement
+cannot be upgraded. No App-owned LL consumer exists in the current runtime, so
+none is manufactured or detached.
+
+The outer primitive then retires existing LL, followed by actual TH hands and
+TH classes, through their checked owners. Every foreign or active refusal keeps
+the remaining graph for retry. A retained Piston CV or dispatcher remains a
+real World root. Global retirement can consume earlier admitted slots before a
+later refusal; callers retain the same native handles and dependency graph.
+
+Preparation alone performs none of that dispatcher retirement. Even after the
+selected-load World audit succeeds, external handler, format and other service
+roots still need outer admission. The ordinary menu path needs a retained old-World queue so
 source reference changes do not destroy a graph still held by those roots.
 The full-retire APIs remain explicitly destructive; they are not an outer
 external-root admission check.
 
-The normal menu-run shutdown path has not adopted the new coordinator.
+The normal menu-run shutdown path has not adopted these explicit primitives.
 RenderGlobal's delay and LL/TH frame invokes at N44/N80 also remain separate
 integration work. Full World frames, ordinary menu World replacement and
 gameplay lifetime parity remain unfinished.
 
 ## Qualified native scope
 
-All 32 selected targets build on Windows MSVC Debug and Linux Clang18 with
-ASan/UBSan. The selected CTests pass 41 Windows cases in 55.82 seconds and 39
-Linux cases in 79.85 seconds, with source inputs unchanged.
+All 38 selected targets build on Windows MSVC Debug and Linux Clang18 with
+ASan/UBSan. The selected CTests pass 47 Windows cases in 66.85 seconds and 45
+Linux cases in 107.02 seconds, with source inputs unchanged and no sanitizer
+findings. All 1,606 C/header/fragment inputs pass clang-format18.1.3.
 
 The RenderGlobal CPU test passes 28 checks on both hosts. The Windows device
 test passes 28,892 checks, including the sticky terminal policy, real callback
@@ -132,7 +175,27 @@ receipt, foreign membership and final-retire controls described above. Four
 nonloading menu-loop modes pass preparation, repeat and source-frame refusal
 checks while retaining their actual App, screen and service owners.
 
-The existing READY loaded-World modes pass in 13.15 seconds through their
-unchanged path. Those runs do not qualify the new Load/Screen/menu prefix on
-a fully loaded World. The real GAME World device control and the nonloading
-menu controls retain their separate scopes.
+The Windows menu test now includes a separate real loaded-World terminal
+profile. It completes the actual menu/Load/N prefix while preserving World,
+Player and services, then refuses real extra Input, controller, effects and
+Player holds. A genuine separate native TH consumer blocks dispatcher
+retirement after the startup's own record ends. Releasing that caller-owned
+record permits checked TH hand/class retirement while the same World stays
+READY. LL is absent in this current runtime profile; it is not created during
+cleanup.
+
+The public no-anchor World audit still refuses that client graph. Admission
+through the actual transition/Load owners succeeds with its three Player
+anchors and two direct World anchors. The test then completes checked full
+cleanup. Its wrapper preserves all pre-existing save and asset bytes and
+checks all 72 original focus histories for each of the ordinary and terminal
+loaded profiles. Existing native UI modes retain their prior path.
+
+Both hosts separately exercise passive controller/effect inspection, genuine
+RAW and failed-construction owners, nonempty particle refusal, and passive LL
+absence, cold, READY, quota-failed and consumed associations. Foreign Registry
+and WorldClasses lookups preserve output and owners. The new lookup's active
+reentry and inactive RETIRING paths remain unexecuted; no private guard writes
+create those cases. Controller/effect inspector reentry also remains unexecuted.
+Bootstrap retirement of a present or partially retiring LL,
+two-App lifetime ownership and full handler/service admission remain unqualified.

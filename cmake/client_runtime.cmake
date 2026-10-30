@@ -8,7 +8,7 @@ if(TARGET mc_client_application_startup AND TARGET mc_client_source_screen_drawi
     target_link_libraries(mc_client_runtime PUBLIC mc_client_application_startup
         mc_client_source_screen_drawing mc_client_source_screen_events mc_client_texture_effects
         mc_sound_backend mc_resources mc_c_atomics
-        PRIVATE mc_platform_time mc_build_options)
+        PRIVATE mc_client_tile_renderer_cpu mc_platform_time mc_build_options)
     target_link_libraries(minecraft-client PRIVATE mc_client_runtime)
     target_compile_definitions(minecraft-client PRIVATE MC_CLIENT_SOURCE_MENU_RUNTIME=1)
     if(CMAKE_CXX_COMPILER_LOADED)

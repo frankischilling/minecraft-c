@@ -1,5 +1,29 @@
 # Test scope and reproduction
 
+## Client terminal admission and dispatcher controls
+
+All 38 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+The selection passes 47 Windows CTests in 66.85 seconds and 45 Linux tests in
+107.02 seconds, without failures, skips or source-input changes. Complete
+retained CTest output has no sanitizer findings. All 1,606 C/header/fragment
+files pass clang-format18.1.3.
+
+The [terminal primitives](client/terminal-retirement.md) have a real loaded
+Windows menu profile: actual prefix completion, outside Input/controller/effect/
+Player refusals, a separate native TH consumer blocking retirement, checked
+dispatcher retirement with the World still READY, exact client-anchor admission
+and full checked cleanup. The wrapper checks original focus histories and
+preserves pre-existing saves and assets for both loaded modes. This is one App
+and a real separate native consumer; LL is absent in this profile.
+
+Both platforms also qualify passive controller/effect owning-slot inspection
+and existing-LL lookup for actual absent, cold, READY, quota-failed and consumed
+associations, with foreign Registry/WorldClasses refusals. Active lookup reentry,
+inactive RETIRING lookup, present/partial LL bootstrap retirement and two-App
+shutdown remain unexecuted, as does controller/effect inspector reentry.
+Normal runtime adoption and full service/handler
+admission remain separate work.
+
 ## World terminal admission controls
 
 The passive [World inventory](world/terminal-retirement.md) passes 834 native
@@ -14,7 +38,7 @@ All 35 selected targets build on both platforms. The regression selection passes
 failures or skips and with source inputs unchanged. It includes the existing
 renderer/menu selection, World Entity publication and Piston tick. Retained
 Linux output has no sanitizer findings. All 1,604 project C/header/fragment files
-pass clang-format18.1.3. Client-owned anchors and the outer shutdown coordinator
+pass clang-format18.1.3. Failed/partial client anchors and the complete outer shutdown coordinator
 remain unfinished.
 
 ## Terminal preparation controls

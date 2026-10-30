@@ -31,6 +31,43 @@ mc_client_tile_renderer_options mc_client_tile_renderer_default_options(void) {
     return (mc_client_tile_renderer_options){1048576u, 1048576u};
 }
 
+mc_client_tile_renderer_status mc_client_tile_entity_renderer_classes_existing(
+    const mc_client_render_classes *models, const mc_registry_classes *expected_registry,
+    const mc_world_runtime_classes *expected_world_classes,
+    mc_client_tile_renderer_classes **nullable_out, mc_client_tile_renderer_error *error) {
+    mc_client_tile_renderer_error e;
+    tile_renderer_error_init(&e);
+    if (models == NULL || expected_registry == NULL || expected_world_classes == NULL ||
+        nullable_out == NULL || expected_world_classes->registry != expected_registry ||
+        expected_world_classes->side != MC_WORLD_INFO_CLIENT ||
+        expected_world_classes->entities == NULL ||
+        expected_world_classes->entities != models->entities ||
+        expected_world_classes->profile != models->profile) {
+        tile_renderer_fail(&e, MC_CLIENT_TILE_RENDERER_INVALID_ARGUMENT,
+                           "LL passive existing association provenance", NULL, NULL, NULL, -1,
+                           true);
+    } else if (models->ll == NULL) {
+        *nullable_out = NULL;
+    } else {
+        mc_client_tile_renderer_classes *c = models->ll;
+        if (models->ll_retired || c->models != models ||
+            c->world_classes != expected_world_classes || c->profile != models->profile ||
+            c->tile_classes == NULL || c->tile_classes != expected_world_classes->tile_entities) {
+            tile_renderer_fail(&e, MC_CLIENT_TILE_RENDERER_INVALID_ARGUMENT,
+                               "LL passive existing owner association", NULL, NULL, NULL, -1, true);
+        } else if (c->active || c->phase == MC_CLIENT_TILE_RENDERER_CONSTRUCTING ||
+                   (c->candidate != NULL && c->candidate->active)) {
+            tile_renderer_fail(&e, MC_CLIENT_TILE_RENDERER_BUSY, "LL passive existing owner active",
+                               NULL, NULL, NULL, -1, true);
+        } else {
+            *nullable_out = c;
+        }
+    }
+    if (error != NULL)
+        *error = e;
+    return e.status;
+}
+
 void *tile_renderer_allocate(mc_client_tile_renderer_classes *c, size_t bytes, const char *source,
                              const char *method, const char *descriptor, int32_t pc,
                              mc_client_tile_renderer_error *e) {
