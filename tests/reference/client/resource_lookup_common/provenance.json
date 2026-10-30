@@ -10810,8 +10810,8 @@
       "sha256": "aeaf94c1de931037c94f616707f7e677b2f58627be582ab5c422dfbdd64207c2"
     },
     "docs/client/renderer-frames.md": {
-      "bytes": 14431,
-      "sha256": "1ab3a9a2fa8f8beacfcb605bbe2688f420a33e81cd0d129b1c8dbc7d1adedd67"
+      "bytes": 14456,
+      "sha256": "ca045b7aa344514ade2267d4b36d60b5cedc6ec3dcef77ada650d9b0e97c640d"
     },
     "docs/world/ticking.md": {
       "bytes": 3413,
@@ -12994,16 +12994,16 @@
       "sha256": "d4d61a5c030239ba773b4292bdc6b43c648e895ab71ec927e0c95c04ce62f2a4"
     },
     "docs/client/clouds.md": {
-      "bytes": 5633,
-      "sha256": "a6fa67254abc2125e499ec832a68d76a9236b8fbdc6c4c2bc84de9a1142fca88"
+      "bytes": 5712,
+      "sha256": "f08866143507c478051b562e83f3f29852f663ee01074d4d03607eb43eb21f3a"
     },
     "docs/client/first-person-hand.md": {
-      "bytes": 5231,
-      "sha256": "ab512dc1b663a36a0987f68fe95b19d3b3a3898cf64aee9c10135a8f985d490f"
+      "bytes": 5287,
+      "sha256": "38c7ee15b23bb931df27773818d8d8d99da22fb750443b92f7e93ed8734d12e4"
     },
     "docs/client/precipitation.md": {
-      "bytes": 6347,
-      "sha256": "9ae536511b66faf5a070d092c007912fb571652df06dbf48b355d897a62be6cf"
+      "bytes": 6415,
+      "sha256": "5d47048310dde15e30bb83741f0cd60dd7933a09fa2a58c940c7ea87c81bfb70"
     },
     "include/mc/client/render/model_draw.h": {
       "bytes": 1134,

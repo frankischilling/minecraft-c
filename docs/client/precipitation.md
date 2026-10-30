@@ -3,8 +3,9 @@
 The default World frame invokes `px.c(F)V` after selection and translucent
 terrain. Its dry return now continues through fog disable, another fog setup,
 fog enable and the captured RenderGlobal's cloud draw at `px.a(FJ)V:963`.
-[Cloud drawing](clouds.md) now returns, followed by fog setup and depth clear;
-the next missing child is hand drawing at997. This does not complete a gameplay frame.
+[Cloud drawing](clouds.md) now returns, followed by fog setup, depth clear,
+[hand drawing](first-person-hand.md) and [GuiIngame](gui-ingame.md). The focused
+loaded frame returns; the next unpaused tick still reaches Mob construction.
 
 The [precipitation API](../../include/mc/client/world/precipitation.h) and
 [implementation](../../src/client/world/entity_renderer/precipitation.c) execute

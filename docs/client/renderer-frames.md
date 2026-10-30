@@ -22,7 +22,7 @@ visibility predicates; reached Entity/TileEntity draws remain unfinished.
 The specified Windows MSVC Debug state profiles and both hosted Linux sanitizer
 replays pass. The [vertex-lighting backend](lighting-raster.md) now handles
 source normals, materials and flat/smooth lighting. Specialized Block shapes,
-HUD composition and a playable frame remain unfinished.
+nonempty HUD items, full Entity drawing and playable gameplay remain unfinished.
 
 ## Focused mouse input
 

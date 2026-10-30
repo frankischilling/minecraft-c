@@ -4,8 +4,9 @@ The default World frame now invokes both cloud modes through the actual
 RenderGlobal captured earlier in the frame. After clouds return, it disables
 fog, performs another fog setup and clears depth before the first-person hand
 call at `px.a(FJ)V:997`. The [empty hand and dry overlays](first-person-hand.md)
-now return, allowing World drawing to return1013 before the parent's delay/HUD
-segment383. Complete frames and interactive gameplay remain unfinished.
+now return, allowing World drawing to return1013. Its parent then composes
+[GuiIngame](gui-ingame.md) and returns the focused loaded frame. The next
+unpaused tick reaches Mob construction; interactive gameplay remains unfinished.
 
 ## Source methods
 
