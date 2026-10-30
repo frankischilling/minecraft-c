@@ -410,8 +410,8 @@
       "sha256": "92c369c867f422806331d3a2efa27defcf7b3908c57c6f1c36e586d130476b62"
     },
     "include/mc/client/gui/gui_ingame.h": {
-      "bytes": 10576,
-      "sha256": "700f845665a0914702f4bec1e5095ba4246d53b1d9ce8652db8b5c295a14c21c"
+      "bytes": 10634,
+      "sha256": "97e4e156ee5f8e53f998788dfc81e8f3768ec38ae5341bc699ec56f0ab53c35d"
     },
     "include/mc/client/render_engine/render_engine.h": {
       "bytes": 9278,

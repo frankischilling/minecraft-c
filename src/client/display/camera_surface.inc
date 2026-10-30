@@ -104,6 +104,44 @@ bool mc_client_display_source_rotate(mc_client_display *display, float angle, fl
     return source_leave(display, true, error);
 }
 
+bool mc_client_display_source_ortho(mc_client_display *display, double left, double right,
+                                    double bottom, double top, double near_plane, double far_plane,
+                                    mc_client_display_error *error) {
+    if (!source_setting_enter(display, "source orthographic projection", error))
+        return false;
+    if (!source_fp_admit("source orthographic projection FP", error))
+        return source_leave(display, false, error);
+    if (!isfinite(left) || !isfinite(right) || !isfinite(bottom) || !isfinite(top) ||
+        !isfinite(near_plane) || !isfinite(far_plane) || left == right || bottom == top ||
+        near_plane == far_plane)
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL,
+                                 "source orthographic projection",
+                                 "unqualified degenerate or nonfinite GL profile", 0),
+                            error);
+    const double dx = right - left, dy = top - bottom, dz = far_plane - near_plane;
+    const float matrix[16] = {camera_narrow(2.0 / dx),
+                              0,
+                              0,
+                              0,
+                              0,
+                              camera_narrow(2.0 / dy),
+                              0,
+                              0,
+                              0,
+                              0,
+                              camera_narrow(-2.0 / dz),
+                              0,
+                              camera_narrow(-(right + left) / dx),
+                              camera_narrow(-(top + bottom) / dy),
+                              camera_narrow(-(far_plane + near_plane) / dz),
+                              1};
+    source_material_vertices(&display->source);
+    source_matrix_changed(&display->source);
+    camera_matrix_multiply(&display->source, matrix);
+    return source_leave(display, true, error);
+}
+
 bool mc_client_display_source_perspective(mc_client_display *display, float fov, float aspect,
                                           float near_plane, float far_plane,
                                           mc_client_display_error *error) {

@@ -1,0 +1,3698 @@
+{
+  "methods": {
+    "uq public uq(net.minecraft.client.Minecraft);": [
+      {
+        "pc": 1,
+        "operation": "Method ub.\"<init>\":()V"
+      },
+      {
+        "pc": 9,
+        "operation": "Method java/util/ArrayList.\"<init>\":()V"
+      },
+      {
+        "pc": 12,
+        "operation": "Field e:Ljava/util/List;"
+      },
+      {
+        "pc": 20,
+        "operation": "Method java/util/Random.\"<init>\":()V"
+      },
+      {
+        "pc": 23,
+        "operation": "Field f:Ljava/util/Random;"
+      },
+      {
+        "pc": 28,
+        "operation": "Field a:Ljava/lang/String;"
+      },
+      {
+        "pc": 33,
+        "operation": "Field h:I"
+      },
+      {
+        "pc": 39,
+        "operation": "Field i:Ljava/lang/String;"
+      },
+      {
+        "pc": 44,
+        "operation": "Field j:I"
+      },
+      {
+        "pc": 49,
+        "operation": "Field l:Z"
+      },
+      {
+        "pc": 54,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 59,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      }
+    ],
+    "uq public void a(float, boolean, int, int);": [
+      {
+        "pc": 5,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 8,
+        "operation": "Field net/minecraft/client/Minecraft.z:Lkv;"
+      },
+      {
+        "pc": 12,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 15,
+        "operation": "Field net/minecraft/client/Minecraft.d:I"
+      },
+      {
+        "pc": 19,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 22,
+        "operation": "Field net/minecraft/client/Minecraft.e:I"
+      },
+      {
+        "pc": 25,
+        "operation": "Method qq.\"<init>\":(Lkv;II)V"
+      },
+      {
+        "pc": 32,
+        "operation": "Method qq.a:()I"
+      },
+      {
+        "pc": 39,
+        "operation": "Method qq.b:()I"
+      },
+      {
+        "pc": 45,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 48,
+        "operation": "Field net/minecraft/client/Minecraft.q:Lsj;"
+      },
+      {
+        "pc": 54,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 57,
+        "operation": "Field net/minecraft/client/Minecraft.t:Lpx;"
+      },
+      {
+        "pc": 60,
+        "operation": "Method px.b:()V"
+      },
+      {
+        "pc": 66,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 69,
+        "operation": "Method net/minecraft/client/Minecraft.u:()Z"
+      },
+      {
+        "pc": 77,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 80,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 84,
+        "operation": "Method dc.a:(F)F"
+      },
+      {
+        "pc": 91,
+        "operation": "Method a:(FII)V"
+      },
+      {
+        "pc": 95,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 98,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 101,
+        "operation": "Field dc.c:Lix;"
+      },
+      {
+        "pc": 105,
+        "operation": "Method ix.d:(I)Liz;"
+      },
+      {
+        "pc": 111,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 114,
+        "operation": "Field net/minecraft/client/Minecraft.z:Lkv;"
+      },
+      {
+        "pc": 117,
+        "operation": "Field kv.A:Z"
+      },
+      {
+        "pc": 130,
+        "operation": "Field iz.c:I"
+      },
+      {
+        "pc": 133,
+        "operation": "Field uu.bb:Luu;"
+      },
+      {
+        "pc": 136,
+        "operation": "Field uu.bn:I"
+      },
+      {
+        "pc": 147,
+        "operation": "Method a:(II)V"
+      },
+      {
+        "pc": 151,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 154,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 157,
+        "operation": "Field dc.C:F"
+      },
+      {
+        "pc": 161,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 164,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 167,
+        "operation": "Field dc.B:F"
+      },
+      {
+        "pc": 171,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 174,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 177,
+        "operation": "Field dc.C:F"
+      },
+      {
+        "pc": 200,
+        "operation": "Method b:(FII)V"
+      },
+      {
+        "pc": 207,
+        "operation": "Method org/lwjgl/opengl/GL11.glColor4f:(FFFF)V"
+      },
+      {
+        "pc": 214,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 217,
+        "operation": "Field net/minecraft/client/Minecraft.p:Lji;"
+      },
+      {
+        "pc": 222,
+        "operation": "Method ji.b:(Ljava/lang/String;)I"
+      },
+      {
+        "pc": 225,
+        "operation": "Method org/lwjgl/opengl/GL11.glBindTexture:(II)V"
+      },
+      {
+        "pc": 229,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 232,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 235,
+        "operation": "Field dc.c:Lix;"
+      },
+      {
+        "pc": 243,
+        "operation": "Field k:F"
+      },
+      {
+        "pc": 266,
+        "operation": "Method b:(IIIIII)V"
+      },
+      {
+        "pc": 281,
+        "operation": "Field ix.c:I"
+      },
+      {
+        "pc": 302,
+        "operation": "Method b:(IIIIII)V"
+      },
+      {
+        "pc": 309,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 312,
+        "operation": "Field net/minecraft/client/Minecraft.p:Lji;"
+      },
+      {
+        "pc": 317,
+        "operation": "Method ji.b:(Ljava/lang/String;)I"
+      },
+      {
+        "pc": 320,
+        "operation": "Method org/lwjgl/opengl/GL11.glBindTexture:(II)V"
+      },
+      {
+        "pc": 326,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 335,
+        "operation": "Method org/lwjgl/opengl/GL11.glBlendFunc:(II)V"
+      },
+      {
+        "pc": 359,
+        "operation": "Method b:(IIIIII)V"
+      },
+      {
+        "pc": 365,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 369,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 372,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 375,
+        "operation": "Field dc.by:I"
+      },
+      {
+        "pc": 394,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 397,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 400,
+        "operation": "Field dc.by:I"
+      },
+      {
+        "pc": 412,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 415,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 418,
+        "operation": "Field dc.Y:I"
+      },
+      {
+        "pc": 424,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 427,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 430,
+        "operation": "Field dc.Z:I"
+      },
+      {
+        "pc": 436,
+        "operation": "Field f:Ljava/util/Random;"
+      },
+      {
+        "pc": 440,
+        "operation": "Field h:I"
+      },
+      {
+        "pc": 447,
+        "operation": "Method java/util/Random.setSeed:(J)V"
+      },
+      {
+        "pc": 451,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 454,
+        "operation": "Field net/minecraft/client/Minecraft.c:Lob;"
+      },
+      {
+        "pc": 457,
+        "operation": "Method ob.d:()Z"
+      },
+      {
+        "pc": 464,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 467,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 470,
+        "operation": "Method dc.s:()I"
+      },
+      {
+        "pc": 539,
+        "operation": "Method b:(IIIIII)V"
+      },
+      {
+        "pc": 566,
+        "operation": "Method b:(IIIIII)V"
+      },
+      {
+        "pc": 593,
+        "operation": "Method b:(IIIIII)V"
+      },
+      {
+        "pc": 631,
+        "operation": "Field f:Ljava/util/Random;"
+      },
+      {
+        "pc": 635,
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 659,
+        "operation": "Method b:(IIIIII)V"
+      },
+      {
+        "pc": 690,
+        "operation": "Method b:(IIIIII)V"
+      },
+      {
+        "pc": 716,
+        "operation": "Method b:(IIIIII)V"
+      },
+      {
+        "pc": 742,
+        "operation": "Method b:(IIIIII)V"
+      },
+      {
+        "pc": 768,
+        "operation": "Method b:(IIIIII)V"
+      },
+      {
+        "pc": 778,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 781,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 784,
+        "operation": "Field ln.g:Lln;"
+      },
+      {
+        "pc": 787,
+        "operation": "Method dc.a:(Lln;)Z"
+      },
+      {
+        "pc": 794,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 797,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 800,
+        "operation": "Field dc.bz:I"
+      },
+      {
+        "pc": 814,
+        "operation": "Method java/lang/Math.ceil:(D)D"
+      },
+      {
+        "pc": 821,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 824,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 827,
+        "operation": "Field dc.bz:I"
+      },
+      {
+        "pc": 839,
+        "operation": "Method java/lang/Math.ceil:(D)D"
+      },
+      {
+        "pc": 898,
+        "operation": "Method b:(IIIIII)V"
+      },
+      {
+        "pc": 934,
+        "operation": "Method b:(IIIIII)V"
+      },
+      {
+        "pc": 946,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 951,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 954,
+        "operation": "Method org/lwjgl/opengl/GL11.glPushMatrix:()V"
+      },
+      {
+        "pc": 962,
+        "operation": "Method org/lwjgl/opengl/GL11.glRotatef:(FFFF)V"
+      },
+      {
+        "pc": 965,
+        "operation": "Method u.b:()V"
+      },
+      {
+        "pc": 968,
+        "operation": "Method org/lwjgl/opengl/GL11.glPopMatrix:()V"
+      },
+      {
+        "pc": 1015,
+        "operation": "Method a:(IIIF)V"
+      },
+      {
+        "pc": 1024,
+        "operation": "Method u.a:()V"
+      },
+      {
+        "pc": 1029,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 1033,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 1036,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 1039,
+        "operation": "Method dc.P:()I"
+      },
+      {
+        "pc": 1048,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 1054,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 1058,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 1061,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 1064,
+        "operation": "Method dc.P:()I"
+      },
+      {
+        "pc": 1120,
+        "operation": "Method a:(IIIII)V"
+      },
+      {
+        "pc": 1126,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 1132,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 1136,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 1139,
+        "operation": "Field net/minecraft/client/Minecraft.z:Lkv;"
+      },
+      {
+        "pc": 1142,
+        "operation": "Field kv.B:Z"
+      },
+      {
+        "pc": 1148,
+        "operation": "Method org/lwjgl/opengl/GL11.glPushMatrix:()V"
+      },
+      {
+        "pc": 1151,
+        "operation": "Field net/minecraft/client/Minecraft.H:J"
+      },
+      {
+        "pc": 1163,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      },
+      {
+        "pc": 1172,
+        "operation": "Method java/lang/StringBuilder.\"<init>\":()V"
+      },
+      {
+        "pc": 1177,
+        "operation": "Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1181,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 1184,
+        "operation": "Field net/minecraft/client/Minecraft.K:Ljava/lang/String;"
+      },
+      {
+        "pc": 1187,
+        "operation": "Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1192,
+        "operation": "Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1195,
+        "operation": "Method java/lang/StringBuilder.toString:()Ljava/lang/String;"
+      },
+      {
+        "pc": 1202,
+        "operation": "Method sj.a:(Ljava/lang/String;III)V"
+      },
+      {
+        "pc": 1208,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 1211,
+        "operation": "Method net/minecraft/client/Minecraft.o:()Ljava/lang/String;"
+      },
+      {
+        "pc": 1219,
+        "operation": "Method sj.a:(Ljava/lang/String;III)V"
+      },
+      {
+        "pc": 1225,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 1228,
+        "operation": "Method net/minecraft/client/Minecraft.p:()Ljava/lang/String;"
+      },
+      {
+        "pc": 1236,
+        "operation": "Method sj.a:(Ljava/lang/String;III)V"
+      },
+      {
+        "pc": 1242,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 1245,
+        "operation": "Method net/minecraft/client/Minecraft.r:()Ljava/lang/String;"
+      },
+      {
+        "pc": 1253,
+        "operation": "Method sj.a:(Ljava/lang/String;III)V"
+      },
+      {
+        "pc": 1259,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 1262,
+        "operation": "Method net/minecraft/client/Minecraft.q:()Ljava/lang/String;"
+      },
+      {
+        "pc": 1270,
+        "operation": "Method sj.a:(Ljava/lang/String;III)V"
+      },
+      {
+        "pc": 1273,
+        "operation": "Method java/lang/Runtime.getRuntime:()Ljava/lang/Runtime;"
+      },
+      {
+        "pc": 1276,
+        "operation": "Method java/lang/Runtime.maxMemory:()J"
+      },
+      {
+        "pc": 1281,
+        "operation": "Method java/lang/Runtime.getRuntime:()Ljava/lang/Runtime;"
+      },
+      {
+        "pc": 1284,
+        "operation": "Method java/lang/Runtime.totalMemory:()J"
+      },
+      {
+        "pc": 1289,
+        "operation": "Method java/lang/Runtime.getRuntime:()Ljava/lang/Runtime;"
+      },
+      {
+        "pc": 1292,
+        "operation": "Method java/lang/Runtime.freeMemory:()J"
+      },
+      {
+        "pc": 1308,
+        "operation": "Method java/lang/StringBuilder.\"<init>\":()V"
+      },
+      {
+        "pc": 1313,
+        "operation": "Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1325,
+        "operation": "Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1330,
+        "operation": "Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1343,
+        "operation": "Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1348,
+        "operation": "Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1361,
+        "operation": "Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1366,
+        "operation": "Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1369,
+        "operation": "Method java/lang/StringBuilder.toString:()Ljava/lang/String;"
+      },
+      {
+        "pc": 1385,
+        "operation": "Method sj.a:(Ljava/lang/String;)I"
+      },
+      {
+        "pc": 1394,
+        "operation": "Method b:(Lsj;Ljava/lang/String;III)V"
+      },
+      {
+        "pc": 1401,
+        "operation": "Method java/lang/StringBuilder.\"<init>\":()V"
+      },
+      {
+        "pc": 1406,
+        "operation": "Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1418,
+        "operation": "Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1423,
+        "operation": "Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1436,
+        "operation": "Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1441,
+        "operation": "Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1444,
+        "operation": "Method java/lang/StringBuilder.toString:()Ljava/lang/String;"
+      },
+      {
+        "pc": 1460,
+        "operation": "Method sj.a:(Ljava/lang/String;)I"
+      },
+      {
+        "pc": 1470,
+        "operation": "Method b:(Lsj;Ljava/lang/String;III)V"
+      },
+      {
+        "pc": 1480,
+        "operation": "Method java/lang/StringBuilder.\"<init>\":()V"
+      },
+      {
+        "pc": 1485,
+        "operation": "Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1489,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 1492,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 1495,
+        "operation": "Field dc.aM:D"
+      },
+      {
+        "pc": 1498,
+        "operation": "Method java/lang/StringBuilder.append:(D)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1501,
+        "operation": "Method java/lang/StringBuilder.toString:()Ljava/lang/String;"
+      },
+      {
+        "pc": 1509,
+        "operation": "Method b:(Lsj;Ljava/lang/String;III)V"
+      },
+      {
+        "pc": 1519,
+        "operation": "Method java/lang/StringBuilder.\"<init>\":()V"
+      },
+      {
+        "pc": 1524,
+        "operation": "Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1528,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 1531,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 1534,
+        "operation": "Field dc.aN:D"
+      },
+      {
+        "pc": 1537,
+        "operation": "Method java/lang/StringBuilder.append:(D)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1540,
+        "operation": "Method java/lang/StringBuilder.toString:()Ljava/lang/String;"
+      },
+      {
+        "pc": 1548,
+        "operation": "Method b:(Lsj;Ljava/lang/String;III)V"
+      },
+      {
+        "pc": 1558,
+        "operation": "Method java/lang/StringBuilder.\"<init>\":()V"
+      },
+      {
+        "pc": 1563,
+        "operation": "Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1567,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 1570,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 1573,
+        "operation": "Field dc.aO:D"
+      },
+      {
+        "pc": 1576,
+        "operation": "Method java/lang/StringBuilder.append:(D)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1579,
+        "operation": "Method java/lang/StringBuilder.toString:()Ljava/lang/String;"
+      },
+      {
+        "pc": 1587,
+        "operation": "Method b:(Lsj;Ljava/lang/String;III)V"
+      },
+      {
+        "pc": 1597,
+        "operation": "Method java/lang/StringBuilder.\"<init>\":()V"
+      },
+      {
+        "pc": 1602,
+        "operation": "Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1606,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 1609,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 1612,
+        "operation": "Field dc.aS:F"
+      },
+      {
+        "pc": 1626,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 1631,
+        "operation": "Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 1634,
+        "operation": "Method java/lang/StringBuilder.toString:()Ljava/lang/String;"
+      },
+      {
+        "pc": 1642,
+        "operation": "Method b:(Lsj;Ljava/lang/String;III)V"
+      },
+      {
+        "pc": 1645,
+        "operation": "Method org/lwjgl/opengl/GL11.glPopMatrix:()V"
+      },
+      {
+        "pc": 1649,
+        "operation": "Field j:I"
+      },
+      {
+        "pc": 1656,
+        "operation": "Field j:I"
+      },
+      {
+        "pc": 1693,
+        "operation": "Method org/lwjgl/opengl/GL11.glPushMatrix:()V"
+      },
+      {
+        "pc": 1708,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      },
+      {
+        "pc": 1714,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 1723,
+        "operation": "Method org/lwjgl/opengl/GL11.glBlendFunc:(II)V"
+      },
+      {
+        "pc": 1731,
+        "operation": "Field l:Z"
+      },
+      {
+        "pc": 1746,
+        "operation": "Method java/awt/Color.HSBtoRGB:(FFF)I"
+      },
+      {
+        "pc": 1757,
+        "operation": "Field i:Ljava/lang/String;"
+      },
+      {
+        "pc": 1763,
+        "operation": "Field i:Ljava/lang/String;"
+      },
+      {
+        "pc": 1766,
+        "operation": "Method sj.a:(Ljava/lang/String;)I"
+      },
+      {
+        "pc": 1782,
+        "operation": "Method sj.b:(Ljava/lang/String;III)V"
+      },
+      {
+        "pc": 1788,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 1791,
+        "operation": "Method org/lwjgl/opengl/GL11.glPopMatrix:()V"
+      },
+      {
+        "pc": 1802,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 1805,
+        "operation": "Field net/minecraft/client/Minecraft.r:Lda;"
+      },
+      {
+        "pc": 1824,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 1833,
+        "operation": "Method org/lwjgl/opengl/GL11.glBlendFunc:(II)V"
+      },
+      {
+        "pc": 1839,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 1842,
+        "operation": "Method org/lwjgl/opengl/GL11.glPushMatrix:()V"
+      },
+      {
+        "pc": 1853,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      },
+      {
+        "pc": 1862,
+        "operation": "Field e:Ljava/util/List;"
+      },
+      {
+        "pc": 1865,
+        "operation": "InterfaceMethod java/util/List.size:()I"
+      },
+      {
+        "pc": 1881,
+        "operation": "Field e:Ljava/util/List;"
+      },
+      {
+        "pc": 1886,
+        "operation": "InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;"
+      },
+      {
+        "pc": 1894,
+        "operation": "Field sw.b:I"
+      },
+      {
+        "pc": 1909,
+        "operation": "Field e:Ljava/util/List;"
+      },
+      {
+        "pc": 1914,
+        "operation": "InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;"
+      },
+      {
+        "pc": 1922,
+        "operation": "Field sw.b:I"
+      },
+      {
+        "pc": 2009,
+        "operation": "Field e:Ljava/util/List;"
+      },
+      {
+        "pc": 2014,
+        "operation": "InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;"
+      },
+      {
+        "pc": 2022,
+        "operation": "Field sw.a:Ljava/lang/String;"
+      },
+      {
+        "pc": 2052,
+        "operation": "Method a:(IIIII)V"
+      },
+      {
+        "pc": 2058,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 2077,
+        "operation": "Method sj.a:(Ljava/lang/String;III)V"
+      },
+      {
+        "pc": 2086,
+        "operation": "Method org/lwjgl/opengl/GL11.glPopMatrix:()V"
+      },
+      {
+        "pc": 2092,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 2098,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      }
+    ],
+    "uq private void a(int, int);": [
+      {
+        "pc": 3,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 7,
+        "operation": "Method org/lwjgl/opengl/GL11.glDepthMask:(Z)V"
+      },
+      {
+        "pc": 16,
+        "operation": "Method org/lwjgl/opengl/GL11.glBlendFunc:(II)V"
+      },
+      {
+        "pc": 23,
+        "operation": "Method org/lwjgl/opengl/GL11.glColor4f:(FFFF)V"
+      },
+      {
+        "pc": 29,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 36,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 39,
+        "operation": "Field net/minecraft/client/Minecraft.p:Lji;"
+      },
+      {
+        "pc": 44,
+        "operation": "Method ji.b:(Ljava/lang/String;)I"
+      },
+      {
+        "pc": 47,
+        "operation": "Method org/lwjgl/opengl/GL11.glBindTexture:(II)V"
+      },
+      {
+        "pc": 50,
+        "operation": "Field nw.a:Lnw;"
+      },
+      {
+        "pc": 55,
+        "operation": "Method nw.b:()V"
+      },
+      {
+        "pc": 67,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 80,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 92,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 103,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 107,
+        "operation": "Method nw.a:()V"
+      },
+      {
+        "pc": 111,
+        "operation": "Method org/lwjgl/opengl/GL11.glDepthMask:(Z)V"
+      },
+      {
+        "pc": 117,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 123,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 130,
+        "operation": "Method org/lwjgl/opengl/GL11.glColor4f:(FFFF)V"
+      }
+    ],
+    "uq private void a(float, int, int);": [
+      {
+        "pc": 22,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 28,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 39,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 45,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 49,
+        "operation": "Method org/lwjgl/opengl/GL11.glDepthMask:(Z)V"
+      },
+      {
+        "pc": 56,
+        "operation": "Method org/lwjgl/opengl/GL11.glBlendFunc:(II)V"
+      },
+      {
+        "pc": 60,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 64,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 68,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 72,
+        "operation": "Method org/lwjgl/opengl/GL11.glColor4f:(FFFF)V"
+      },
+      {
+        "pc": 79,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 82,
+        "operation": "Field net/minecraft/client/Minecraft.p:Lji;"
+      },
+      {
+        "pc": 87,
+        "operation": "Method ji.b:(Ljava/lang/String;)I"
+      },
+      {
+        "pc": 90,
+        "operation": "Method org/lwjgl/opengl/GL11.glBindTexture:(II)V"
+      },
+      {
+        "pc": 93,
+        "operation": "Field nw.a:Lnw;"
+      },
+      {
+        "pc": 100,
+        "operation": "Method nw.b:()V"
+      },
+      {
+        "pc": 113,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 127,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 140,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 152,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 157,
+        "operation": "Method nw.a:()V"
+      },
+      {
+        "pc": 161,
+        "operation": "Method org/lwjgl/opengl/GL11.glDepthMask:(Z)V"
+      },
+      {
+        "pc": 167,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 174,
+        "operation": "Method org/lwjgl/opengl/GL11.glColor4f:(FFFF)V"
+      },
+      {
+        "pc": 183,
+        "operation": "Method org/lwjgl/opengl/GL11.glBlendFunc:(II)V"
+      }
+    ],
+    "uq private void b(float, int, int);": [
+      {
+        "pc": 25,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 31,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 35,
+        "operation": "Method org/lwjgl/opengl/GL11.glDepthMask:(Z)V"
+      },
+      {
+        "pc": 44,
+        "operation": "Method org/lwjgl/opengl/GL11.glBlendFunc:(II)V"
+      },
+      {
+        "pc": 51,
+        "operation": "Method org/lwjgl/opengl/GL11.glColor4f:(FFFF)V"
+      },
+      {
+        "pc": 58,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 61,
+        "operation": "Field net/minecraft/client/Minecraft.p:Lji;"
+      },
+      {
+        "pc": 66,
+        "operation": "Method ji.b:(Ljava/lang/String;)I"
+      },
+      {
+        "pc": 69,
+        "operation": "Method org/lwjgl/opengl/GL11.glBindTexture:(II)V"
+      },
+      {
+        "pc": 72,
+        "operation": "Field uu.bf:Lak;"
+      },
+      {
+        "pc": 75,
+        "operation": "Field ak.bm:I"
+      },
+      {
+        "pc": 87,
+        "operation": "Field uu.bf:Lak;"
+      },
+      {
+        "pc": 90,
+        "operation": "Field ak.bm:I"
+      },
+      {
+        "pc": 102,
+        "operation": "Field uu.bf:Lak;"
+      },
+      {
+        "pc": 105,
+        "operation": "Field ak.bm:I"
+      },
+      {
+        "pc": 119,
+        "operation": "Field uu.bf:Lak;"
+      },
+      {
+        "pc": 122,
+        "operation": "Field ak.bm:I"
+      },
+      {
+        "pc": 136,
+        "operation": "Field nw.a:Lnw;"
+      },
+      {
+        "pc": 143,
+        "operation": "Method nw.b:()V"
+      },
+      {
+        "pc": 160,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 178,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 195,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 211,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 216,
+        "operation": "Method nw.a:()V"
+      },
+      {
+        "pc": 220,
+        "operation": "Method org/lwjgl/opengl/GL11.glDepthMask:(Z)V"
+      },
+      {
+        "pc": 226,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 232,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 239,
+        "operation": "Method org/lwjgl/opengl/GL11.glColor4f:(FFFF)V"
+      }
+    ],
+    "uq private void a(int, int, int, float);": [
+      {
+        "pc": 1,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 4,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 7,
+        "operation": "Field dc.c:Lix;"
+      },
+      {
+        "pc": 10,
+        "operation": "Field ix.a:[Liz;"
+      },
+      {
+        "pc": 25,
+        "operation": "Field iz.b:I"
+      },
+      {
+        "pc": 41,
+        "operation": "Method org/lwjgl/opengl/GL11.glPushMatrix:()V"
+      },
+      {
+        "pc": 64,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      },
+      {
+        "pc": 78,
+        "operation": "Method org/lwjgl/opengl/GL11.glScalef:(FFF)V"
+      },
+      {
+        "pc": 94,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      },
+      {
+        "pc": 97,
+        "operation": "Field d:Lbb;"
+      },
+      {
+        "pc": 101,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 104,
+        "operation": "Field net/minecraft/client/Minecraft.q:Lsj;"
+      },
+      {
+        "pc": 108,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 111,
+        "operation": "Field net/minecraft/client/Minecraft.p:Lji;"
+      },
+      {
+        "pc": 118,
+        "operation": "Method bb.a:(Lsj;Lji;Liz;II)V"
+      },
+      {
+        "pc": 128,
+        "operation": "Method org/lwjgl/opengl/GL11.glPopMatrix:()V"
+      },
+      {
+        "pc": 131,
+        "operation": "Field d:Lbb;"
+      },
+      {
+        "pc": 135,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 138,
+        "operation": "Field net/minecraft/client/Minecraft.q:Lsj;"
+      },
+      {
+        "pc": 142,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 145,
+        "operation": "Field net/minecraft/client/Minecraft.p:Lji;"
+      },
+      {
+        "pc": 152,
+        "operation": "Method bb.b:(Lsj;Lji;Liz;II)V"
+      }
+    ],
+    "uq public void a();": [
+      {
+        "pc": 1,
+        "operation": "Field j:I"
+      },
+      {
+        "pc": 9,
+        "operation": "Field j:I"
+      },
+      {
+        "pc": 14,
+        "operation": "Field j:I"
+      },
+      {
+        "pc": 19,
+        "operation": "Field h:I"
+      },
+      {
+        "pc": 24,
+        "operation": "Field h:I"
+      },
+      {
+        "pc": 31,
+        "operation": "Field e:Ljava/util/List;"
+      },
+      {
+        "pc": 34,
+        "operation": "InterfaceMethod java/util/List.size:()I"
+      },
+      {
+        "pc": 43,
+        "operation": "Field e:Ljava/util/List;"
+      },
+      {
+        "pc": 47,
+        "operation": "InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;"
+      },
+      {
+        "pc": 56,
+        "operation": "Field sw.b:I"
+      },
+      {
+        "pc": 61,
+        "operation": "Field sw.b:I"
+      }
+    ],
+    "uq public void b();": [
+      {
+        "pc": 1,
+        "operation": "Field e:Ljava/util/List;"
+      },
+      {
+        "pc": 4,
+        "operation": "InterfaceMethod java/util/List.clear:()V"
+      }
+    ],
+    "uq public void a(java.lang.String);": [
+      {
+        "pc": 1,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 4,
+        "operation": "Field net/minecraft/client/Minecraft.q:Lsj;"
+      },
+      {
+        "pc": 8,
+        "operation": "Method sj.a:(Ljava/lang/String;)I"
+      },
+      {
+        "pc": 21,
+        "operation": "Method java/lang/String.length:()I"
+      },
+      {
+        "pc": 28,
+        "operation": "Field g:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 31,
+        "operation": "Field net/minecraft/client/Minecraft.q:Lsj;"
+      },
+      {
+        "pc": 39,
+        "operation": "Method java/lang/String.substring:(II)Ljava/lang/String;"
+      },
+      {
+        "pc": 42,
+        "operation": "Method sj.a:(Ljava/lang/String;)I"
+      },
+      {
+        "pc": 61,
+        "operation": "Method java/lang/String.substring:(II)Ljava/lang/String;"
+      },
+      {
+        "pc": 64,
+        "operation": "Method a:(Ljava/lang/String;)V"
+      },
+      {
+        "pc": 69,
+        "operation": "Method java/lang/String.substring:(I)Ljava/lang/String;"
+      },
+      {
+        "pc": 77,
+        "operation": "Field e:Ljava/util/List;"
+      },
+      {
+        "pc": 86,
+        "operation": "Method sw.\"<init>\":(Ljava/lang/String;)V"
+      },
+      {
+        "pc": 89,
+        "operation": "InterfaceMethod java/util/List.add:(ILjava/lang/Object;)V"
+      },
+      {
+        "pc": 95,
+        "operation": "Field e:Ljava/util/List;"
+      },
+      {
+        "pc": 98,
+        "operation": "InterfaceMethod java/util/List.size:()I"
+      },
+      {
+        "pc": 109,
+        "operation": "Field e:Ljava/util/List;"
+      },
+      {
+        "pc": 113,
+        "operation": "Field e:Ljava/util/List;"
+      },
+      {
+        "pc": 116,
+        "operation": "InterfaceMethod java/util/List.size:()I"
+      },
+      {
+        "pc": 123,
+        "operation": "InterfaceMethod java/util/List.remove:(I)Ljava/lang/Object;"
+      }
+    ],
+    "uq public void b(java.lang.String);": [
+      {
+        "pc": 5,
+        "operation": "Method java/lang/StringBuilder.\"<init>\":()V"
+      },
+      {
+        "pc": 10,
+        "operation": "Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 14,
+        "operation": "Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      },
+      {
+        "pc": 17,
+        "operation": "Method java/lang/StringBuilder.toString:()Ljava/lang/String;"
+      },
+      {
+        "pc": 20,
+        "operation": "Field i:Ljava/lang/String;"
+      },
+      {
+        "pc": 26,
+        "operation": "Field j:I"
+      },
+      {
+        "pc": 31,
+        "operation": "Field l:Z"
+      }
+    ],
+    "uq public void c(java.lang.String);": [
+      {
+        "pc": 0,
+        "operation": "Method nh.a:()Lnh;"
+      },
+      {
+        "pc": 6,
+        "operation": "Method nh.a:(Ljava/lang/String;)Ljava/lang/String;"
+      },
+      {
+        "pc": 12,
+        "operation": "Method a:(Ljava/lang/String;)V"
+      }
+    ],
+    "uq static {};": [
+      {
+        "pc": 4,
+        "operation": "Method bb.\"<init>\":()V"
+      },
+      {
+        "pc": 7,
+        "operation": "Field d:Lbb;"
+      }
+    ],
+    "ub public ub();": [
+      {
+        "pc": 1,
+        "operation": "Method java/lang/Object.\"<init>\":()V"
+      },
+      {
+        "pc": 6,
+        "operation": "Field k:F"
+      }
+    ],
+    "ub protected void a(int, int, int, int);": [
+      {
+        "pc": 24,
+        "operation": "Method a:(IIIII)V"
+      }
+    ],
+    "ub protected void b(int, int, int, int);": [
+      {
+        "pc": 24,
+        "operation": "Method a:(IIIII)V"
+      }
+    ],
+    "ub protected void a(int, int, int, int, int);": [
+      {
+        "pc": 86,
+        "operation": "Field nw.a:Lnw;"
+      },
+      {
+        "pc": 94,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 100,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 109,
+        "operation": "Method org/lwjgl/opengl/GL11.glBlendFunc:(II)V"
+      },
+      {
+        "pc": 120,
+        "operation": "Method org/lwjgl/opengl/GL11.glColor4f:(FFFF)V"
+      },
+      {
+        "pc": 125,
+        "operation": "Method nw.b:()V"
+      },
+      {
+        "pc": 136,
+        "operation": "Method nw.a:(DDD)V"
+      },
+      {
+        "pc": 147,
+        "operation": "Method nw.a:(DDD)V"
+      },
+      {
+        "pc": 157,
+        "operation": "Method nw.a:(DDD)V"
+      },
+      {
+        "pc": 167,
+        "operation": "Method nw.a:(DDD)V"
+      },
+      {
+        "pc": 172,
+        "operation": "Method nw.a:()V"
+      },
+      {
+        "pc": 178,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 184,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      }
+    ],
+    "ub protected void a(int, int, int, int, int, int);": [
+      {
+        "pc": 117,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 123,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 129,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 138,
+        "operation": "Method org/lwjgl/opengl/GL11.glBlendFunc:(II)V"
+      },
+      {
+        "pc": 144,
+        "operation": "Method org/lwjgl/opengl/GL11.glShadeModel:(I)V"
+      },
+      {
+        "pc": 147,
+        "operation": "Field nw.a:Lnw;"
+      },
+      {
+        "pc": 154,
+        "operation": "Method nw.b:()V"
+      },
+      {
+        "pc": 167,
+        "operation": "Method nw.a:(FFFF)V"
+      },
+      {
+        "pc": 177,
+        "operation": "Method nw.a:(DDD)V"
+      },
+      {
+        "pc": 187,
+        "operation": "Method nw.a:(DDD)V"
+      },
+      {
+        "pc": 200,
+        "operation": "Method nw.a:(FFFF)V"
+      },
+      {
+        "pc": 211,
+        "operation": "Method nw.a:(DDD)V"
+      },
+      {
+        "pc": 222,
+        "operation": "Method nw.a:(DDD)V"
+      },
+      {
+        "pc": 227,
+        "operation": "Method nw.a:()V"
+      },
+      {
+        "pc": 233,
+        "operation": "Method org/lwjgl/opengl/GL11.glShadeModel:(I)V"
+      },
+      {
+        "pc": 239,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 245,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 251,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      }
+    ],
+    "ub public void a(sj, java.lang.String, int, int, int);": [
+      {
+        "pc": 5,
+        "operation": "Method sj.a:(Ljava/lang/String;)I"
+      },
+      {
+        "pc": 15,
+        "operation": "Method sj.a:(Ljava/lang/String;III)V"
+      }
+    ],
+    "ub public void b(sj, java.lang.String, int, int, int);": [
+      {
+        "pc": 7,
+        "operation": "Method sj.a:(Ljava/lang/String;III)V"
+      }
+    ],
+    "ub public void b(int, int, int, int, int, int);": [
+      {
+        "pc": 8,
+        "operation": "Field nw.a:Lnw;"
+      },
+      {
+        "pc": 15,
+        "operation": "Method nw.b:()V"
+      },
+      {
+        "pc": 30,
+        "operation": "Field k:F"
+      },
+      {
+        "pc": 52,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 68,
+        "operation": "Field k:F"
+      },
+      {
+        "pc": 91,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 106,
+        "operation": "Field k:F"
+      },
+      {
+        "pc": 128,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 142,
+        "operation": "Field k:F"
+      },
+      {
+        "pc": 163,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 168,
+        "operation": "Method nw.a:()V"
+      }
+    ],
+    "qq public qq(kv, int, int);": [
+      {
+        "pc": 1,
+        "operation": "Method java/lang/Object.\"<init>\":()V"
+      },
+      {
+        "pc": 6,
+        "operation": "Field d:I"
+      },
+      {
+        "pc": 11,
+        "operation": "Field e:I"
+      },
+      {
+        "pc": 16,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 20,
+        "operation": "Field kv.I:I"
+      },
+      {
+        "pc": 36,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 45,
+        "operation": "Field d:I"
+      },
+      {
+        "pc": 49,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 62,
+        "operation": "Field e:I"
+      },
+      {
+        "pc": 66,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 80,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 85,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 93,
+        "operation": "Field d:I"
+      },
+      {
+        "pc": 98,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 103,
+        "operation": "Field a:D"
+      },
+      {
+        "pc": 108,
+        "operation": "Field e:I"
+      },
+      {
+        "pc": 113,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 118,
+        "operation": "Field b:D"
+      },
+      {
+        "pc": 123,
+        "operation": "Field a:D"
+      },
+      {
+        "pc": 126,
+        "operation": "Method java/lang/Math.ceil:(D)D"
+      },
+      {
+        "pc": 130,
+        "operation": "Field d:I"
+      },
+      {
+        "pc": 135,
+        "operation": "Field b:D"
+      },
+      {
+        "pc": 138,
+        "operation": "Method java/lang/Math.ceil:(D)D"
+      },
+      {
+        "pc": 142,
+        "operation": "Field e:I"
+      }
+    ],
+    "qq public int a();": [
+      {
+        "pc": 1,
+        "operation": "Field d:I"
+      }
+    ],
+    "qq public int b();": [
+      {
+        "pc": 1,
+        "operation": "Field e:I"
+      }
+    ],
+    "px public void b();": [
+      {
+        "pc": 5,
+        "operation": "Field j:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 8,
+        "operation": "Field net/minecraft/client/Minecraft.z:Lkv;"
+      },
+      {
+        "pc": 12,
+        "operation": "Field j:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 15,
+        "operation": "Field net/minecraft/client/Minecraft.d:I"
+      },
+      {
+        "pc": 19,
+        "operation": "Field j:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 22,
+        "operation": "Field net/minecraft/client/Minecraft.e:I"
+      },
+      {
+        "pc": 25,
+        "operation": "Method qq.\"<init>\":(Lkv;II)V"
+      },
+      {
+        "pc": 32,
+        "operation": "Method org/lwjgl/opengl/GL11.glClear:(I)V"
+      },
+      {
+        "pc": 38,
+        "operation": "Method org/lwjgl/opengl/GL11.glMatrixMode:(I)V"
+      },
+      {
+        "pc": 41,
+        "operation": "Method org/lwjgl/opengl/GL11.glLoadIdentity:()V"
+      },
+      {
+        "pc": 46,
+        "operation": "Field qq.a:D"
+      },
+      {
+        "pc": 50,
+        "operation": "Field qq.b:D"
+      },
+      {
+        "pc": 60,
+        "operation": "Method org/lwjgl/opengl/GL11.glOrtho:(DDDDDD)V"
+      },
+      {
+        "pc": 66,
+        "operation": "Method org/lwjgl/opengl/GL11.glMatrixMode:(I)V"
+      },
+      {
+        "pc": 69,
+        "operation": "Method org/lwjgl/opengl/GL11.glLoadIdentity:()V"
+      },
+      {
+        "pc": 76,
+        "operation": "Method org/lwjgl/opengl/GL11.glTranslatef:(FFF)V"
+      }
+    ],
+    "ob public ob(net.minecraft.client.Minecraft);": [
+      {
+        "pc": 1,
+        "operation": "Method java/lang/Object.\"<init>\":()V"
+      },
+      {
+        "pc": 6,
+        "operation": "Field b:Z"
+      },
+      {
+        "pc": 11,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      }
+    ],
+    "ob public void a(int, int, int, int);": [
+      {
+        "pc": 1,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 4,
+        "operation": "Field net/minecraft/client/Minecraft.f:Lfd;"
+      },
+      {
+        "pc": 8,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 11,
+        "operation": "Field net/minecraft/client/Minecraft.h:Ldc;"
+      },
+      {
+        "pc": 19,
+        "operation": "Method fd.a:(Lgs;IIII)V"
+      },
+      {
+        "pc": 28,
+        "operation": "Method b:(IIII)Z"
+      }
+    ],
+    "ob public boolean b(int, int, int, int);": [
+      {
+        "pc": 1,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 4,
+        "operation": "Field net/minecraft/client/Minecraft.f:Lfd;"
+      },
+      {
+        "pc": 9,
+        "operation": "Field uu.m:[Luu;"
+      },
+      {
+        "pc": 17,
+        "operation": "Method fd.a:(III)I"
+      },
+      {
+        "pc": 33,
+        "operation": "Field uu.bn:I"
+      },
+      {
+        "pc": 41,
+        "operation": "Method fd.e:(III)I"
+      },
+      {
+        "pc": 49,
+        "operation": "Method fd.e:(IIIII)V"
+      },
+      {
+        "pc": 57,
+        "operation": "Method fd.e:(III)I"
+      },
+      {
+        "pc": 68,
+        "operation": "Method fd.f:(IIII)Z"
+      },
+      {
+        "pc": 92,
+        "operation": "Method uu.c:(Lfd;IIII)V"
+      }
+    ],
+    "ob public boolean a(gs, fd, iz);": [
+      {
+        "pc": 1,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 9,
+        "operation": "Method iz.a:(Lfd;Lgs;)Liz;"
+      },
+      {
+        "pc": 27,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 36,
+        "operation": "Field gs.c:Lix;"
+      },
+      {
+        "pc": 39,
+        "operation": "Field ix.a:[Liz;"
+      },
+      {
+        "pc": 43,
+        "operation": "Field gs.c:Lix;"
+      },
+      {
+        "pc": 46,
+        "operation": "Field ix.c:I"
+      },
+      {
+        "pc": 54,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 61,
+        "operation": "Field gs.c:Lix;"
+      },
+      {
+        "pc": 64,
+        "operation": "Field ix.a:[Liz;"
+      },
+      {
+        "pc": 68,
+        "operation": "Field gs.c:Lix;"
+      },
+      {
+        "pc": 71,
+        "operation": "Field ix.c:I"
+      }
+    ],
+    "ob public boolean a(gs, fd, iz, int, int, int, int);": [
+      {
+        "pc": 7,
+        "operation": "Method fd.a:(III)I"
+      },
+      {
+        "pc": 17,
+        "operation": "Field uu.m:[Luu;"
+      },
+      {
+        "pc": 31,
+        "operation": "Method uu.a:(Lfd;IIILgs;)Z"
+      },
+      {
+        "pc": 56,
+        "operation": "Method iz.a:(Lgs;Lfd;IIII)Z"
+      }
+    ],
+    "ob public gs b(fd);": [
+      {
+        "pc": 5,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 10,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 13,
+        "operation": "Field net/minecraft/client/Minecraft.k:Lgr;"
+      },
+      {
+        "pc": 17,
+        "operation": "Field fd.t:Lxa;"
+      },
+      {
+        "pc": 20,
+        "operation": "Field xa.g:I"
+      },
+      {
+        "pc": 23,
+        "operation": "Method dc.\"<init>\":(Lnet/minecraft/client/Minecraft;Lfd;Lgr;I)V"
+      }
+    ],
+    "ob public void a(gs, sn);": [
+      {
+        "pc": 2,
+        "operation": "Method gs.c:(Lsn;)V"
+      }
+    ],
+    "ob public void b(gs, sn);": [
+      {
+        "pc": 2,
+        "operation": "Method gs.d:(Lsn;)V"
+      }
+    ],
+    "ob public iz a(int, int, int, boolean, gs);": [
+      {
+        "pc": 2,
+        "operation": "Field gs.e:Ldw;"
+      },
+      {
+        "pc": 11,
+        "operation": "Method dw.a:(IIZLgs;)Liz;"
+      }
+    ],
+    "ob public void a(int, gs);": [
+      {
+        "pc": 1,
+        "operation": "Field gs.e:Ldw;"
+      },
+      {
+        "pc": 5,
+        "operation": "Method dw.a:(Lgs;)V"
+      },
+      {
+        "pc": 10,
+        "operation": "Field gs.d:Ldw;"
+      },
+      {
+        "pc": 13,
+        "operation": "Field gs.e:Ldw;"
+      }
+    ],
+    "ix public ix(gs);": [
+      {
+        "pc": 1,
+        "operation": "Method java/lang/Object.\"<init>\":()V"
+      },
+      {
+        "pc": 10,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 18,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 23,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 28,
+        "operation": "Field e:Z"
+      },
+      {
+        "pc": 33,
+        "operation": "Field d:Lgs;"
+      }
+    ],
+    "ix public iz b();": [
+      {
+        "pc": 1,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 10,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 17,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 21,
+        "operation": "Field c:I"
+      }
+    ],
+    "ix private int f(int);": [
+      {
+        "pc": 4,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 12,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 21,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 26,
+        "operation": "Field iz.c:I"
+      }
+    ],
+    "ix private int d(iz);": [
+      {
+        "pc": 4,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 12,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 21,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 26,
+        "operation": "Field iz.c:I"
+      },
+      {
+        "pc": 30,
+        "operation": "Field iz.c:I"
+      },
+      {
+        "pc": 37,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 42,
+        "operation": "Method iz.d:()Z"
+      },
+      {
+        "pc": 49,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 54,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 58,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 63,
+        "operation": "Method iz.c:()I"
+      },
+      {
+        "pc": 70,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 75,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 79,
+        "operation": "Method d:()I"
+      },
+      {
+        "pc": 86,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 91,
+        "operation": "Method iz.f:()Z"
+      },
+      {
+        "pc": 98,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 103,
+        "operation": "Method iz.i:()I"
+      },
+      {
+        "pc": 107,
+        "operation": "Method iz.i:()I"
+      }
+    ],
+    "ix private int j();": [
+      {
+        "pc": 4,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 12,
+        "operation": "Field a:[Liz;"
+      }
+    ],
+    "ix public void a(int, boolean);": [
+      {
+        "pc": 2,
+        "operation": "Method f:(I)I"
+      },
+      {
+        "pc": 18,
+        "operation": "Field c:I"
+      }
+    ],
+    "ix public void b(int);": [
+      {
+        "pc": 14,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 19,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 23,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 31,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 37,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 44,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 54,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 60,
+        "operation": "Field c:I"
+      }
+    ],
+    "ix private int e(iz);": [
+      {
+        "pc": 1,
+        "operation": "Field iz.c:I"
+      },
+      {
+        "pc": 6,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 12,
+        "operation": "Method d:(Liz;)I"
+      },
+      {
+        "pc": 23,
+        "operation": "Method j:()I"
+      },
+      {
+        "pc": 36,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 46,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 58,
+        "operation": "Method iz.i:()I"
+      },
+      {
+        "pc": 61,
+        "operation": "Method iz.\"<init>\":(III)V"
+      },
+      {
+        "pc": 71,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 77,
+        "operation": "Method iz.c:()I"
+      },
+      {
+        "pc": 81,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 87,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 95,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 101,
+        "operation": "Method iz.c:()I"
+      },
+      {
+        "pc": 105,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 111,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 120,
+        "operation": "Method d:()I"
+      },
+      {
+        "pc": 124,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 130,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 138,
+        "operation": "Method d:()I"
+      },
+      {
+        "pc": 142,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 148,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 167,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 174,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 180,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 184,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 191,
+        "operation": "Field iz.b:I"
+      }
+    ],
+    "ix public void e();": [
+      {
+        "pc": 4,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 12,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 21,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 27,
+        "operation": "Field d:Lgs;"
+      },
+      {
+        "pc": 30,
+        "operation": "Field gs.aI:Lfd;"
+      },
+      {
+        "pc": 34,
+        "operation": "Field d:Lgs;"
+      },
+      {
+        "pc": 39,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 51,
+        "operation": "Method iz.a:(Lfd;Lsn;IZ)V"
+      }
+    ],
+    "ix public boolean c(int);": [
+      {
+        "pc": 2,
+        "operation": "Method f:(I)I"
+      },
+      {
+        "pc": 13,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 19,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 25,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 32,
+        "operation": "Field a:[Liz;"
+      }
+    ],
+    "ix public boolean a(iz);": [
+      {
+        "pc": 1,
+        "operation": "Method iz.g:()Z"
+      },
+      {
+        "pc": 8,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 15,
+        "operation": "Method e:(Liz;)I"
+      },
+      {
+        "pc": 18,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 22,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 29,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 37,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 51,
+        "operation": "Method j:()I"
+      },
+      {
+        "pc": 60,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 65,
+        "operation": "Method iz.b:(Liz;)Liz;"
+      },
+      {
+        "pc": 70,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 76,
+        "operation": "Field iz.b:I"
+      },
+      {
+        "pc": 81,
+        "operation": "Field iz.a:I"
+      }
+    ],
+    "ix public iz a(int, int);": [
+      {
+        "pc": 1,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 7,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 15,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 21,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 36,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 59,
+        "operation": "Method iz.a:(I)Liz;"
+      },
+      {
+        "pc": 67,
+        "operation": "Field iz.a:I"
+      }
+    ],
+    "ix public void a(int, iz);": [
+      {
+        "pc": 1,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 17,
+        "operation": "Field b:[Liz;"
+      }
+    ],
+    "ix public float a(uu);": [
+      {
+        "pc": 3,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 7,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 16,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 20,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 25,
+        "operation": "Method iz.a:(Luu;)F"
+      }
+    ],
+    "ix public sp a(sp);": [
+      {
+        "pc": 4,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 12,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 24,
+        "operation": "Method nu.\"<init>\":()V"
+      },
+      {
+        "pc": 33,
+        "operation": "Method nu.a:(Ljava/lang/String;B)V"
+      },
+      {
+        "pc": 37,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 43,
+        "operation": "Method iz.a:(Lnu;)Lnu;"
+      },
+      {
+        "pc": 49,
+        "operation": "Method sp.a:(Lij;)V"
+      },
+      {
+        "pc": 62,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 70,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 82,
+        "operation": "Method nu.\"<init>\":()V"
+      },
+      {
+        "pc": 94,
+        "operation": "Method nu.a:(Ljava/lang/String;B)V"
+      },
+      {
+        "pc": 98,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 104,
+        "operation": "Method iz.a:(Lnu;)Lnu;"
+      },
+      {
+        "pc": 110,
+        "operation": "Method sp.a:(Lij;)V"
+      }
+    ],
+    "ix public void b(sp);": [
+      {
+        "pc": 6,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 14,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 21,
+        "operation": "Method sp.c:()I"
+      },
+      {
+        "pc": 29,
+        "operation": "Method sp.a:(I)Lij;"
+      },
+      {
+        "pc": 39,
+        "operation": "Method nu.c:(Ljava/lang/String;)B"
+      },
+      {
+        "pc": 53,
+        "operation": "Method iz.\"<init>\":(Lnu;)V"
+      },
+      {
+        "pc": 60,
+        "operation": "Method iz.a:()Lgm;"
+      },
+      {
+        "pc": 74,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 82,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 100,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 111,
+        "operation": "Field b:[Liz;"
+      }
+    ],
+    "ix public int a();": [
+      {
+        "pc": 1,
+        "operation": "Field a:[Liz;"
+      }
+    ],
+    "ix public iz f_(int);": [
+      {
+        "pc": 1,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 17,
+        "operation": "Field b:[Liz;"
+      }
+    ],
+    "ix public int a(sn);": [
+      {
+        "pc": 2,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 5,
+        "operation": "Method f_:(I)Liz;"
+      },
+      {
+        "pc": 15,
+        "operation": "Method iz.a:(Lsn;)I"
+      }
+    ],
+    "ix public boolean b(uu);": [
+      {
+        "pc": 1,
+        "operation": "Field uu.bA:Lln;"
+      },
+      {
+        "pc": 4,
+        "operation": "Method ln.i:()Z"
+      },
+      {
+        "pc": 14,
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 17,
+        "operation": "Method f_:(I)Liz;"
+      },
+      {
+        "pc": 27,
+        "operation": "Method iz.b:(Luu;)Z"
+      }
+    ],
+    "ix public iz d(int);": [
+      {
+        "pc": 1,
+        "operation": "Field b:[Liz;"
+      }
+    ],
+    "ix public int f();": [
+      {
+        "pc": 12,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 20,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 30,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 36,
+        "operation": "Method iz.a:()Lgm;"
+      },
+      {
+        "pc": 46,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 52,
+        "operation": "Method iz.j:()I"
+      },
+      {
+        "pc": 58,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 64,
+        "operation": "Method iz.h:()I"
+      },
+      {
+        "pc": 87,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 93,
+        "operation": "Method iz.a:()Lgm;"
+      },
+      {
+        "pc": 99,
+        "operation": "Field wa.bl:I"
+      }
+    ],
+    "ix public void e(int);": [
+      {
+        "pc": 4,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 12,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 21,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 26,
+        "operation": "Method iz.a:()Lgm;"
+      },
+      {
+        "pc": 36,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 43,
+        "operation": "Field d:Lgs;"
+      },
+      {
+        "pc": 46,
+        "operation": "Method iz.a:(ILsn;)V"
+      },
+      {
+        "pc": 50,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 55,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 62,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 68,
+        "operation": "Field d:Lgs;"
+      },
+      {
+        "pc": 71,
+        "operation": "Method iz.a:(Lgs;)V"
+      },
+      {
+        "pc": 75,
+        "operation": "Field b:[Liz;"
+      }
+    ],
+    "ix public void g();": [
+      {
+        "pc": 4,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 12,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 21,
+        "operation": "Field d:Lgs;"
+      },
+      {
+        "pc": 25,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 31,
+        "operation": "Method gs.a:(Liz;Z)V"
+      },
+      {
+        "pc": 35,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 51,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 59,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 68,
+        "operation": "Field d:Lgs;"
+      },
+      {
+        "pc": 72,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 78,
+        "operation": "Method gs.a:(Liz;Z)V"
+      },
+      {
+        "pc": 82,
+        "operation": "Field b:[Liz;"
+      }
+    ],
+    "ix public void y_();": [
+      {
+        "pc": 2,
+        "operation": "Field e:Z"
+      }
+    ],
+    "ix public void b(iz);": [
+      {
+        "pc": 2,
+        "operation": "Field f:Liz;"
+      },
+      {
+        "pc": 6,
+        "operation": "Field d:Lgs;"
+      },
+      {
+        "pc": 10,
+        "operation": "Method gs.b:(Liz;)V"
+      }
+    ],
+    "ix public iz i();": [
+      {
+        "pc": 1,
+        "operation": "Field f:Liz;"
+      }
+    ],
+    "ix public boolean a_(gs);": [
+      {
+        "pc": 1,
+        "operation": "Field d:Lgs;"
+      },
+      {
+        "pc": 4,
+        "operation": "Field gs.be:Z"
+      },
+      {
+        "pc": 14,
+        "operation": "Field d:Lgs;"
+      },
+      {
+        "pc": 17,
+        "operation": "Method gs.g:(Lsn;)D"
+      }
+    ],
+    "ix public boolean c(iz);": [
+      {
+        "pc": 4,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 12,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 21,
+        "operation": "Field b:[Liz;"
+      },
+      {
+        "pc": 27,
+        "operation": "Method iz.c:(Liz;)Z"
+      },
+      {
+        "pc": 45,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 53,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 62,
+        "operation": "Field a:[Liz;"
+      },
+      {
+        "pc": 68,
+        "operation": "Method iz.c:(Liz;)Z"
+      }
+    ],
+    "u public u();": [
+      {
+        "pc": 1,
+        "operation": "Method java/lang/Object.\"<init>\":()V"
+      }
+    ],
+    "u public static void a();": [
+      {
+        "pc": 3,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 9,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 15,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 21,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      }
+    ],
+    "u public static void b();": [
+      {
+        "pc": 3,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 9,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 15,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 21,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 30,
+        "operation": "Method org/lwjgl/opengl/GL11.glColorMaterial:(II)V"
+      },
+      {
+        "pc": 48,
+        "operation": "Method bt.b:(DDD)Lbt;"
+      },
+      {
+        "pc": 51,
+        "operation": "Method bt.c:()Lbt;"
+      },
+      {
+        "pc": 62,
+        "operation": "Field bt.a:D"
+      },
+      {
+        "pc": 66,
+        "operation": "Field bt.b:D"
+      },
+      {
+        "pc": 70,
+        "operation": "Field bt.c:D"
+      },
+      {
+        "pc": 74,
+        "operation": "Method a:(DDDD)Ljava/nio/FloatBuffer;"
+      },
+      {
+        "pc": 77,
+        "operation": "Method org/lwjgl/opengl/GL11.glLight:(IILjava/nio/FloatBuffer;)V"
+      },
+      {
+        "pc": 90,
+        "operation": "Method a:(FFFF)Ljava/nio/FloatBuffer;"
+      },
+      {
+        "pc": 93,
+        "operation": "Method org/lwjgl/opengl/GL11.glLight:(IILjava/nio/FloatBuffer;)V"
+      },
+      {
+        "pc": 106,
+        "operation": "Method a:(FFFF)Ljava/nio/FloatBuffer;"
+      },
+      {
+        "pc": 109,
+        "operation": "Method org/lwjgl/opengl/GL11.glLight:(IILjava/nio/FloatBuffer;)V"
+      },
+      {
+        "pc": 122,
+        "operation": "Method a:(FFFF)Ljava/nio/FloatBuffer;"
+      },
+      {
+        "pc": 125,
+        "operation": "Method org/lwjgl/opengl/GL11.glLight:(IILjava/nio/FloatBuffer;)V"
+      },
+      {
+        "pc": 135,
+        "operation": "Method bt.b:(DDD)Lbt;"
+      },
+      {
+        "pc": 138,
+        "operation": "Method bt.c:()Lbt;"
+      },
+      {
+        "pc": 149,
+        "operation": "Field bt.a:D"
+      },
+      {
+        "pc": 153,
+        "operation": "Field bt.b:D"
+      },
+      {
+        "pc": 157,
+        "operation": "Field bt.c:D"
+      },
+      {
+        "pc": 161,
+        "operation": "Method a:(DDDD)Ljava/nio/FloatBuffer;"
+      },
+      {
+        "pc": 164,
+        "operation": "Method org/lwjgl/opengl/GL11.glLight:(IILjava/nio/FloatBuffer;)V"
+      },
+      {
+        "pc": 177,
+        "operation": "Method a:(FFFF)Ljava/nio/FloatBuffer;"
+      },
+      {
+        "pc": 180,
+        "operation": "Method org/lwjgl/opengl/GL11.glLight:(IILjava/nio/FloatBuffer;)V"
+      },
+      {
+        "pc": 193,
+        "operation": "Method a:(FFFF)Ljava/nio/FloatBuffer;"
+      },
+      {
+        "pc": 196,
+        "operation": "Method org/lwjgl/opengl/GL11.glLight:(IILjava/nio/FloatBuffer;)V"
+      },
+      {
+        "pc": 209,
+        "operation": "Method a:(FFFF)Ljava/nio/FloatBuffer;"
+      },
+      {
+        "pc": 212,
+        "operation": "Method org/lwjgl/opengl/GL11.glLight:(IILjava/nio/FloatBuffer;)V"
+      },
+      {
+        "pc": 218,
+        "operation": "Method org/lwjgl/opengl/GL11.glShadeModel:(I)V"
+      },
+      {
+        "pc": 228,
+        "operation": "Method a:(FFFF)Ljava/nio/FloatBuffer;"
+      },
+      {
+        "pc": 231,
+        "operation": "Method org/lwjgl/opengl/GL11.glLightModel:(ILjava/nio/FloatBuffer;)V"
+      }
+    ],
+    "u private static java.nio.FloatBuffer a(double, double, double, double);": [
+      {
+        "pc": 10,
+        "operation": "Method a:(FFFF)Ljava/nio/FloatBuffer;"
+      }
+    ],
+    "u private static java.nio.FloatBuffer a(float, float, float, float);": [
+      {
+        "pc": 0,
+        "operation": "Field a:Ljava/nio/FloatBuffer;"
+      },
+      {
+        "pc": 3,
+        "operation": "Method java/nio/FloatBuffer.clear:()Ljava/nio/Buffer;"
+      },
+      {
+        "pc": 7,
+        "operation": "Field a:Ljava/nio/FloatBuffer;"
+      },
+      {
+        "pc": 11,
+        "operation": "Method java/nio/FloatBuffer.put:(F)Ljava/nio/FloatBuffer;"
+      },
+      {
+        "pc": 15,
+        "operation": "Method java/nio/FloatBuffer.put:(F)Ljava/nio/FloatBuffer;"
+      },
+      {
+        "pc": 19,
+        "operation": "Method java/nio/FloatBuffer.put:(F)Ljava/nio/FloatBuffer;"
+      },
+      {
+        "pc": 23,
+        "operation": "Method java/nio/FloatBuffer.put:(F)Ljava/nio/FloatBuffer;"
+      },
+      {
+        "pc": 27,
+        "operation": "Field a:Ljava/nio/FloatBuffer;"
+      },
+      {
+        "pc": 30,
+        "operation": "Method java/nio/FloatBuffer.flip:()Ljava/nio/Buffer;"
+      },
+      {
+        "pc": 34,
+        "operation": "Field a:Ljava/nio/FloatBuffer;"
+      }
+    ],
+    "u static {};": [
+      {
+        "pc": 2,
+        "operation": "Method ge.e:(I)Ljava/nio/FloatBuffer;"
+      },
+      {
+        "pc": 5,
+        "operation": "Field a:Ljava/nio/FloatBuffer;"
+      }
+    ],
+    "net/minecraft/client/Minecraft public static boolean u();": [
+      {
+        "pc": 0,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 6,
+        "operation": "Field a:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 9,
+        "operation": "Field z:Lkv;"
+      },
+      {
+        "pc": 12,
+        "operation": "Field kv.j:Z"
+      }
+    ],
+    "dc public int s();": [
+      {
+        "pc": 1,
+        "operation": "Field c:Lix;"
+      },
+      {
+        "pc": 4,
+        "operation": "Method ix.f:()I"
+      }
+    ],
+    "gs public int P();": [
+      {
+        "pc": 1,
+        "operation": "Field a:I"
+      }
+    ],
+    "sn public boolean a(ln);": [
+      {
+        "pc": 1,
+        "operation": "Field aN:D"
+      },
+      {
+        "pc": 5,
+        "operation": "Method w:()F"
+      },
+      {
+        "pc": 12,
+        "operation": "Field aM:D"
+      },
+      {
+        "pc": 15,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 21,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 25,
+        "operation": "Method in.d:(F)I"
+      },
+      {
+        "pc": 31,
+        "operation": "Field aO:D"
+      },
+      {
+        "pc": 34,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 40,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 49,
+        "operation": "Method fd.a:(III)I"
+      },
+      {
+        "pc": 59,
+        "operation": "Field uu.m:[Luu;"
+      },
+      {
+        "pc": 65,
+        "operation": "Field uu.bA:Lln;"
+      },
+      {
+        "pc": 73,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 82,
+        "operation": "Method fd.e:(III)I"
+      },
+      {
+        "pc": 85,
+        "operation": "Method rp.d:(I)F"
+      }
+    ],
+    "sn public float a(float);": [
+      {
+        "pc": 1,
+        "operation": "Field aM:D"
+      },
+      {
+        "pc": 4,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 9,
+        "operation": "Field aW:Leq;"
+      },
+      {
+        "pc": 12,
+        "operation": "Field eq.e:D"
+      },
+      {
+        "pc": 16,
+        "operation": "Field aW:Leq;"
+      },
+      {
+        "pc": 19,
+        "operation": "Field eq.b:D"
+      },
+      {
+        "pc": 29,
+        "operation": "Field aN:D"
+      },
+      {
+        "pc": 33,
+        "operation": "Field bf:F"
+      },
+      {
+        "pc": 40,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 46,
+        "operation": "Field aO:D"
+      },
+      {
+        "pc": 49,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 55,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 59,
+        "operation": "Field aW:Leq;"
+      },
+      {
+        "pc": 62,
+        "operation": "Field eq.a:D"
+      },
+      {
+        "pc": 65,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 69,
+        "operation": "Field aW:Leq;"
+      },
+      {
+        "pc": 72,
+        "operation": "Field eq.b:D"
+      },
+      {
+        "pc": 75,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 79,
+        "operation": "Field aW:Leq;"
+      },
+      {
+        "pc": 82,
+        "operation": "Field eq.c:D"
+      },
+      {
+        "pc": 85,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 89,
+        "operation": "Field aW:Leq;"
+      },
+      {
+        "pc": 92,
+        "operation": "Field eq.d:D"
+      },
+      {
+        "pc": 95,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 99,
+        "operation": "Field aW:Leq;"
+      },
+      {
+        "pc": 102,
+        "operation": "Field eq.e:D"
+      },
+      {
+        "pc": 105,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 109,
+        "operation": "Field aW:Leq;"
+      },
+      {
+        "pc": 112,
+        "operation": "Field eq.f:D"
+      },
+      {
+        "pc": 115,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 118,
+        "operation": "Method fd.a:(IIIIII)Z"
+      },
+      {
+        "pc": 125,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 133,
+        "operation": "Method fd.c:(III)F"
+      },
+      {
+        "pc": 141,
+        "operation": "Field bE:F"
+      },
+      {
+        "pc": 149,
+        "operation": "Field bE:F"
+      },
+      {
+        "pc": 158,
+        "operation": "Field bE:F"
+      }
+    ],
+    "fd public boolean a(int, int, int, int, int, int);": [
+      {
+        "pc": 69,
+        "operation": "Method f:(II)Z"
+      }
+    ],
+    "fd public float c(int, int, int);": [
+      {
+        "pc": 1,
+        "operation": "Field t:Lxa;"
+      },
+      {
+        "pc": 4,
+        "operation": "Field xa.f:[F"
+      },
+      {
+        "pc": 11,
+        "operation": "Method n:(III)I"
+      }
+    ],
+    "fd public void k();": [
+      {
+        "pc": 2,
+        "operation": "Method a:(F)I"
+      },
+      {
+        "pc": 8,
+        "operation": "Field f:I"
+      },
+      {
+        "pc": 16,
+        "operation": "Field f:I"
+      }
+    ],
+    "bt public static bt b(double, double, double);": [
+      {
+        "pc": 0,
+        "operation": "Field e:I"
+      },
+      {
+        "pc": 3,
+        "operation": "Field d:Ljava/util/List;"
+      },
+      {
+        "pc": 6,
+        "operation": "InterfaceMethod java/util/List.size:()I"
+      },
+      {
+        "pc": 14,
+        "operation": "Field d:Ljava/util/List;"
+      },
+      {
+        "pc": 20,
+        "operation": "Method a:(DDD)Lbt;"
+      },
+      {
+        "pc": 23,
+        "operation": "InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z"
+      },
+      {
+        "pc": 29,
+        "operation": "Field d:Ljava/util/List;"
+      },
+      {
+        "pc": 32,
+        "operation": "Field e:I"
+      },
+      {
+        "pc": 38,
+        "operation": "Field e:I"
+      },
+      {
+        "pc": 41,
+        "operation": "InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;"
+      },
+      {
+        "pc": 53,
+        "operation": "Method e:(DDD)Lbt;"
+      }
+    ],
+    "bt public bt c();": [
+      {
+        "pc": 1,
+        "operation": "Field a:D"
+      },
+      {
+        "pc": 5,
+        "operation": "Field a:D"
+      },
+      {
+        "pc": 10,
+        "operation": "Field b:D"
+      },
+      {
+        "pc": 14,
+        "operation": "Field b:D"
+      },
+      {
+        "pc": 20,
+        "operation": "Field c:D"
+      },
+      {
+        "pc": 24,
+        "operation": "Field c:D"
+      },
+      {
+        "pc": 29,
+        "operation": "Method in.a:(D)F"
+      },
+      {
+        "pc": 45,
+        "operation": "Method b:(DDD)Lbt;"
+      },
+      {
+        "pc": 50,
+        "operation": "Field a:D"
+      },
+      {
+        "pc": 56,
+        "operation": "Field b:D"
+      },
+      {
+        "pc": 62,
+        "operation": "Field c:D"
+      },
+      {
+        "pc": 67,
+        "operation": "Method b:(DDD)Lbt;"
+      }
+    ]
+  }
+}

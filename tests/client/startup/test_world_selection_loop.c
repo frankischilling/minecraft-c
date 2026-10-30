@@ -27,6 +27,7 @@
 #include "client/world/source_chunk_compile_internal.h"
 #include "entity/entity_internal.h"
 #include "mc/client/controller/singleplayer.h"
+#include "mc/client/gui/gui_ingame_draw.h"
 #include "mc/client/input/movement_input.h"
 #include "mc/client/particles/effect_renderer.h"
 #include "mc/client/world/chunk_cache.h"
@@ -51,7 +52,26 @@
 
 static unsigned int checks;
 
-enum { loaded_world_frame_frontier = 383 };
+static bool loaded_draw_reached(const mc_client_menu_loop_state *source) {
+    if (source->world_draws != 1 || source->hud_draws != 1 || !source->render_clock_stored)
+        return false;
+    if (!source->failed)
+        return source->render_returned;
+    return source->source_class != NULL && strcmp(source->source_class, "oz") == 0 &&
+           source->source_method != NULL && strcmp(source->source_method, "a") == 0 &&
+           source->source_pc == 22;
+}
+
+static bool unpaused_spawn_reached(const mc_client_menu_loop_state *source) {
+    return source->failed && source->source_class != NULL &&
+           strcmp(source->source_class, "fd") == 0 && source->source_method != NULL &&
+           strcmp(source->source_method, "l") == 0 && source->source_pc == 80 &&
+           source->world_draws >= 1 && source->hud_draws >= 1 && source->world_tick != NULL &&
+           source->world_tick->failed && source->world_tick->renderer_returned &&
+           source->world_tick->entities_returned &&
+           source->world_tick->scheduler_error.child == MC_WORLD_TICK_CHILD_SPAWNING &&
+           source->world_tick->scheduler_error.child_bytecode == 773;
+}
 
 #define CHECK(condition)                                                                           \
     do {                                                                                           \
@@ -861,10 +881,8 @@ static int loaded_terminal_admission_controls(fixture *f) {
     mc_client_screen_transition_state transitions;
     mc_client_world_load_state load;
     mc_client_menu_loop_state source;
-    CHECK(mc_client_menu_loop_inspect(f->loop, &source) && source.failed &&
-          source.source_class != NULL && strcmp(source.source_class, "px") == 0 &&
-          source.source_method != NULL && strcmp(source.source_method, "b") == 0 &&
-          source.source_pc == loaded_world_frame_frontier && !source.terminal_tail_entered);
+    CHECK(mc_client_menu_loop_inspect(f->loop, &source) && loaded_draw_reached(&source) &&
+          !source.terminal_tail_entered);
     CHECK(mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
           transitions.world_load != NULL &&
           mc_client_world_load_inspect(transitions.world_load, &load) && load.source_returned &&
@@ -1014,10 +1032,8 @@ static int normal_terminal_retirement_controls(fixture *f, mc_client_source_da *
                   MC_WORLD_STORAGE_OK &&
               scope == MC_CLIENT_TERMINAL_EMPTY_STORAGE && error.status == MC_WORLD_STORAGE_OK);
     } else {
-        CHECK(source.failed && source.source_class != NULL &&
-              strcmp(source.source_class, "px") == 0 && source.source_method != NULL &&
-              strcmp(source.source_method, "b") == 0 &&
-              source.source_pc == loaded_world_frame_frontier && controller != NULL);
+        CHECK((loaded_draw_reached(&source) || unpaused_spawn_reached(&source)) &&
+              controller != NULL);
     }
     CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
           terminal_source_diagnostic_same(f, &source) == 0 && f->state.terminal_prepare_selected &&
@@ -1208,16 +1224,18 @@ static int partial_world_terminal_controls(fixture *f, mc_client_source_da **ext
 }
 
 int main(int argc, char **argv) {
-    CHECK(argc == 4 &&
-          (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
-           strcmp(argv[2], "large") == 0 || strcmp(argv[2], "double") == 0 ||
-           strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
-           strcmp(argv[2], "load-terminal") == 0 || strcmp(argv[2], "load-partial") == 0));
+    CHECK(argc == 4 && (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
+                        strcmp(argv[2], "large") == 0 || strcmp(argv[2], "double") == 0 ||
+                        strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
+                        strcmp(argv[2], "load-terminal") == 0 ||
+                        strcmp(argv[2], "load-partial") == 0 || strcmp(argv[2], "repeat") == 0));
     const bool double_click = strcmp(argv[2], "double") == 0;
     const bool terminal_admission = strcmp(argv[2], "load-terminal") == 0;
     const bool partial_load = strcmp(argv[2], "load-partial") == 0;
-    const bool loading_world =
-        strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 || terminal_admission;
+    const bool repeat_load = strcmp(argv[2], "repeat") == 0;
+    const bool focused_load = strcmp(argv[2], "load") == 0 || repeat_load;
+    const bool loading_world = strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
+                               terminal_admission || repeat_load;
     const bool populated =
         strcmp(argv[2], "populated") == 0 || double_click || loading_world || partial_load;
     const bool large = strcmp(argv[2], "large") == 0;
@@ -1228,9 +1246,11 @@ int main(int argc, char **argv) {
                                                    .username = "Selection control",
                                                    .width = 854,
                                                    .height = 480,
-                                                   .hidden = true};
+                                                   .hidden = !focused_load};
     CHECK(mc_client_bootstrap_open(&options, &f.bootstrap) == MC_CLIENT_BOOTSTRAP_OK);
     f.app = mc_client_bootstrap_app(f.bootstrap);
+    if (focused_load)
+        CHECK(SDL_RaiseWindow(mc_client_display_window(f.app->display)));
     CHECK(f.app != NULL && f.app->constructor_phase == MC_CLIENT_APP_READY && f.app->r != NULL &&
           f.app->r->kind == MC_CLIENT_SCREEN_MAIN_MENU);
     CHECK(f.app->active_world == NULL && f.app->h == NULL && f.app->i == NULL &&
@@ -1318,14 +1338,16 @@ int main(int argc, char **argv) {
             CHECK(push_button(&f, &next->base, 1, true) == 0 &&
                   push_button(&f, &next->base, 1, false) == 0 && transfer(&f) == 0);
         }
-        bool stopped = false;
+        bool stopped = false, loaded_frame = false;
         const uint64_t select_deadline = SDL_GetTicks() + 3000;
-        while (!stopped && SDL_GetTicks() < select_deadline) {
+        while (!stopped && !loaded_frame && SDL_GetTicks() < select_deadline) {
             stopped = !mc_client_menu_loop_frame(f.loop);
             CHECK(mc_client_menu_loop_inspect(f.loop, &f.state));
+            loaded_frame = loading_world && loaded_draw_reached(&f.state);
             SDL_Delay(1);
         }
-        CHECK(stopped && f.state.failed && f.state.source_class != NULL);
+        CHECK((stopped && f.state.failed && f.state.source_class != NULL) ||
+              (loaded_frame && !f.state.failed));
         mc_client_screen_transition_state transitions;
         mc_client_world_load_state load;
         CHECK(mc_client_screen_transitions_inspect(f.app->screen_transitions, &transitions) &&
@@ -1432,12 +1454,13 @@ int main(int argc, char **argv) {
             CHECK(mc_client_sdk_display_active(mc_client_display_update_owner(f.app->display),
                                                &display_active,
                                                &update) == MC_CLIENT_SDK_UPDATE_OK);
-            if (f.state.source_pc != loaded_world_frame_frontier)
+            if (!loaded_frame)
                 fprintf(stderr, "Loaded World frame reached %s.%s:%" PRId64 "\n",
                         f.state.source_class, f.state.source_method, f.state.source_pc);
-            CHECK(strcmp(f.state.source_class, "px") == 0 &&
-                  strcmp(f.state.source_method, "b") == 0 &&
-                  f.state.source_pc == loaded_world_frame_frontier && f.state.world_frame != NULL &&
+            mc_client_entity_renderer_state renderer;
+            CHECK(mc_client_entity_renderer_inspect(f.app->t, &renderer));
+            CHECK(loaded_frame && loaded_draw_reached(&f.state) && f.state.render_clock_stored &&
+                  f.state.render_clock == renderer.fields.I && f.state.world_frame != NULL &&
                   f.state.world_frame->picking_returned && f.state.world_frame->viewport_set &&
                   f.state.world_frame->fog_blend_computed && f.state.world_frame->fog_returned &&
                   f.state.world_frame->camera_returned && f.state.world_frame->frustum_returned &&
@@ -1446,6 +1469,14 @@ int main(int argc, char **argv) {
                   f.state.world_frame->terrain_fog_returned &&
                   f.state.world_frame->frustum_constructed &&
                   f.state.world_frame->frustum_recentered && f.state.world_frame->culling_returned);
+            if (focused_load)
+                CHECK(display_active && !f.state.failed && f.state.render_returned);
+            CHECK(f.state.hud != NULL && f.state.hud->returned && f.state.hud->source_pc == 2101 &&
+                  f.state.hud->projection_returned && f.state.hud->hotbar_returned &&
+                  f.state.hud->crosshair_returned && f.state.hud->stats_returned &&
+                  f.state.hud->slots_returned && f.state.hud->empty_slots == 9 &&
+                  f.state.hud->chat_returned && f.state.hud->owner == NULL &&
+                  f.state.hud->failure == NULL && f.state.hud->cleanup == NULL);
             const mc_client_world_frame_state *frame = f.state.world_frame;
             CHECK(frame->source_pc == 1013 && frame->returned && frame->update_calls >= 1 &&
                   frame->updates_returned && frame->draw_fog_returned &&
@@ -1595,6 +1626,26 @@ int main(int argc, char **argv) {
             memcpy(prefix_path + prefix_length, prefix_suffix, sizeof(prefix_suffix));
             CHECK(capture(&f, prefix_path) == 0);
             free(prefix_path);
+            if (repeat_load) {
+                const uint64_t repeat_deadline = SDL_GetTicks() + 3000;
+                bool next_failed = false;
+                while (!next_failed && SDL_GetTicks() < repeat_deadline) {
+                    next_failed = !mc_client_menu_loop_frame(f.loop);
+                    CHECK(mc_client_menu_loop_inspect(f.loop, &f.state));
+                    SDL_Delay(1);
+                }
+                if (next_failed &&
+                    (f.state.source_class == NULL || strcmp(f.state.source_class, "fd") != 0))
+                    fprintf(stderr, "Next loaded frame %s.%s:%" PRId64 " %s\n",
+                            f.state.source_class, f.state.source_method, f.state.source_pc,
+                            f.state.operation);
+                CHECK(next_failed && unpaused_spawn_reached(&f.state) &&
+                      f.state.world_frame == NULL && f.state.hud == NULL);
+                puts("WORLD_FRAME first-returned=1 next-unpaused-tick=fd.l80 child=cq.a773 "
+                     "completed-draws-retired=1 stale-hud-cleared=1");
+            }
+            if (repeat_load)
+                goto loaded_draw_controls_done;
             if (!display_active)
                 CHECK(f.app->r != NULL && f.app->r->kind == MC_CLIENT_SCREEN_PAUSE);
             CHECK(f.state.gameplay_input != NULL && f.state.gameplay_input->returned &&
@@ -1628,8 +1679,10 @@ int main(int argc, char **argv) {
                                                      mc_client_bootstrap_math(f.bootstrap)) == 0);
             printf("WORLD_LOAD ready=1 terrain=289 stored-marker=57 player=1 input=1 "
                    "renderer=1 effects=1 publication=1 view=1 returned=130 picker=452 "
-                   "input=1073 paused-tick=1328 frame-frontier=%s.%s:%" PRId64 "\n",
-                   f.state.source_class, f.state.source_method, f.state.source_pc);
+                   "input=1073 paused-tick=1328 world-frame=1013 hud=2101 frame-returned=%d\n",
+                   f.state.render_returned ? 1 : 0);
+        loaded_draw_controls_done:;
+
         } else {
             CHECK(load.needs_conversion && !load.handler_opened && load.world == NULL &&
                   load.player == NULL && !load.world_published);
@@ -1680,7 +1733,7 @@ int main(int argc, char **argv) {
         CHECK(terminal_prepare_controls(&f, external) == 0);
     if (terminal_admission)
         CHECK(loaded_terminal_admission_controls(&f) == 0);
-    if (loading_world && !terminal_admission) {
+    if (loading_world && !terminal_admission && !repeat_load) {
         mc_world_runtime *world = f.app->active_world;
         mc_entity *player = f.app->h;
         mc_client_render_global *renderer = f.app->g;
@@ -1708,8 +1761,8 @@ int main(int argc, char **argv) {
               f.app->active_world == world && f.app->h == player && f.app->i == player);
         CHECK(mc_client_effect_renderer_release(effects) == MC_EFFECT_RENDERER_OK);
     }
-    if (!loading_world || terminal_admission) {
-        CHECK(normal_terminal_retirement_controls(&f, &external, terminal_admission) == 0);
+    if (!loading_world || terminal_admission || repeat_load) {
+        CHECK(normal_terminal_retirement_controls(&f, &external, loading_world) == 0);
     } else {
         CHECK(!mc_client_menu_loop_retire(&f.loop) && f.loop != NULL && external != NULL);
         CHECK(mc_client_bootstrap_app(f.bootstrap) == f.app &&

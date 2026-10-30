@@ -1,5 +1,21 @@
 # Build and tests
 
+The [GuiIngame fixture](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/gui-ingame.md)
+records 26 complete original calls, including vignette and successful in-height
+brightness. Native controls compare source state, Random, matrices and final
+NW payloads, then inspect authored HUD pixels and nonblack blend results.
+The visible loaded Windows profile requires a complete frame return. A fresh
+repeated-loop profile reaches the unpaused Mob constructor and retires the
+graph through the normal coordinator. Hidden inactivity preserves its actual
+pause-screen save failure. Whole-frame and original pixel parity remain unverified.
+
+All 55 selected targets build on Windows MSVC Debug and Linux Clang18
+ASan/UBSan. All 64 Windows tests pass in 84.40 seconds and all 60 Linux tests
+in 124.25 seconds, with no failures, skips or sanitizer findings. All 2,349
+C/helper/build inputs remain unchanged. The 26 paired state/Random/payload
+rows and matrix words match exactly. Authored pixel and nonblack blend controls
+pass on both hosts; the native HUD PNG bytes are identical.
+
 The [first-person hand](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/first-person-hand.md)
 builds all 53 selected targets on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
 All 62 Windows tests pass in 79.72 seconds and all 58 Linux tests in 120.12

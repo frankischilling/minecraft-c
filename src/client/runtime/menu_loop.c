@@ -7,6 +7,7 @@
 #include "../display/sdk_update.h"
 #include "../display/source_surface.h"
 #include "../display/staged.h"
+#include "../display/world_frame_surface.h"
 #include "../gui/source_pause_drawing.h"
 #include "../gui/source_screen_drawing.h"
 #include "../gui/source_screen_events.h"
@@ -22,6 +23,7 @@
 #include "mc/client/controller/render_interpolation.h"
 #include "mc/client/controller/singleplayer_tick.h"
 #include "mc/client/gui/gui_ingame.h"
+#include "mc/client/gui/gui_ingame_draw.h"
 #include "mc/client/sound/sound_manager.h"
 #include "mc/client/statistics/writer.h"
 #include "mc/client/world/picking.h"
@@ -59,6 +61,9 @@ struct mc_client_menu_loop {
     mc_client_world_frame_call *world_frame;
     mc_client_world_frame_state world_frame_state;
     mc_client_world_frame_error world_frame_error, world_frame_cleanup;
+    mc_client_gui_ingame_draw_call *hud;
+    mc_client_gui_ingame_draw_state hud_state;
+    mc_client_gui_ingame_draw_error hud_error, hud_cleanup;
     mc_singleplayer_tick_call *controller_tick;
     mc_singleplayer_tick_state controller_state;
     mc_singleplayer_tick_error controller_failure, controller_cleanup;
@@ -415,7 +420,8 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
     mc_gui_mouse_position mouse;
     if (!mc_scaled_resolution_map_mouse(&projection, app->d, app->e, x, y, &mouse))
         return stop(loop, "actual frame mouse arithmetic", "px", "b", 270);
-    if (app->active_world != NULL) {
+    const bool world_branch = app->active_world != NULL;
+    if (world_branch) {
         const int32_t target = settings.values.performance_mode == 1   ? 120
                                : settings.values.performance_mode == 2 ? 40
                                                                        : 200;
@@ -433,31 +439,92 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
             return stop(loop, loop->world_frame_error.operation,
                         loop->world_frame_error.site.class_name,
                         loop->world_frame_error.site.method, loop->world_frame_error.site.pc);
-        /* A returned World draw retains its call until parent retirement.
-         * The following delay/HUD work still needs its own source body. */
-        return stop(loop, "actual post-World frame delay/HUD composition dependency", "px", "b",
-                    383);
-    }
-    /* Place the no-World overlay bridge before the source delay/I clock. The
-     * screen bridge begins again at its later depth clear before FU geometry.
-     * Both qq values have the same immutable Settings and physical dimensions;
-     * no separately constructed source qq identity is claimed here. */
-    if (!mc_client_display_begin(app->display, projection.width_exact, projection.height_exact,
-                                 &loop->display))
-        return stop(loop, "PX no-World overlay GL3.3 bridge", "px", "b", 550);
-    if (settings.values.performance_mode == 2) {
-        int64_t sample;
-        if (!render_nanoseconds(loop, &sample, 578))
+        ++loop->state.world_draws;
+        /* Actual fresh i390 after returning World drawing; the target local
+         * still comes from before that child, as in the source. */
+        client_application *current = px->fields.j;
+        if (current == NULL || !mc_game_settings_read_state(current->settings, &settings))
+            return stop(loop, "actual post-World Settings receiver", "px", "b",
+                        current == NULL ? 387 : 390);
+        if (settings.values.performance_mode == 2) {
+            int64_t sample;
+            if (!render_nanoseconds(loop, &sample, 408))
+                return false;
+            const int64_t deadline_value = mc_java_i64_add(px->fields.I, 1000000000 / target);
+            const int64_t delay = mc_java_i64_sub(deadline_value, sample) / 1000000;
+            if (delay > 0 && delay < 500)
+                SDL_Delay((uint32_t)delay);
+        }
+        if (!render_nanoseconds(loop, &px->fields.I, 450))
             return false;
-        int64_t delay = mc_java_i64_sub(mc_java_i64_add(px->fields.I, 25000000), sample) / 1000000;
-        if (delay < 0)
-            delay = mc_java_i64_add(delay, 10);
-        if (delay > 0 && delay < 500)
-            SDL_Delay((uint32_t)delay);
+        loop->state.render_clock_stored = true;
+        loop->state.render_clock = px->fields.I;
+        current = px->fields.j;
+        if (current == NULL || !mc_game_settings_read_state(current->settings, &settings))
+            return stop(loop, "actual HUD hide-GUI Settings receiver", "px", "b",
+                        current == NULL ? 460 : 463);
+        bool draw_hud = !settings.values.hide_gui;
+        if (!draw_hud) {
+            current = px->fields.j;
+            if (current == NULL)
+                return stop(loop, "actual HUD screen App receiver", "px", "b", 473);
+            draw_hud = current->r != NULL;
+        }
+        if (draw_hud) {
+            current = px->fields.j;
+            if (current == NULL)
+                return stop(loop, "actual GuiIngame App receiver", "px", "b", 483);
+            mc_client_source_uq *receiver = current->v;
+            current = px->fields.j;
+            if (current == NULL)
+                return stop(loop, "actual HUD screen argument App receiver", "px", "b", 491);
+            const bool screen_present = current->r != NULL;
+            if (receiver == NULL)
+                return stop(loop, "actual GuiIngame null receiver", "px", "b", 506);
+            const mc_client_gui_ingame_draw_status drawn = mc_client_gui_ingame_draw_begin(
+                receiver, loop->graphics, loop->math, app->display, partial, screen_present,
+                mouse.x, mouse.y, &loop->hud, &loop->hud_error);
+            if (loop->hud != NULL) {
+                (void)mc_client_gui_ingame_draw_inspect(loop->hud, &loop->hud_state);
+                loop->state.hud = &loop->hud_state;
+            }
+            if (drawn != MC_CLIENT_GUI_INGAME_DRAW_OK) {
+                const mc_client_gui_ingame_draw_error *e =
+                    loop->hud == NULL ? &loop->hud_error : loop->hud_state.failure;
+                return stop(loop, e->operation, e->site.class_name, e->site.method, e->site.pc);
+            }
+            ++loop->state.hud_draws;
+            if (mc_client_gui_ingame_draw_retire(&loop->hud, &loop->hud_cleanup) !=
+                MC_CLIENT_GUI_INGAME_DRAW_OK)
+                return stop(loop, "completed GuiIngame native retirement", "px", "b", 506);
+            loop->hud_state.owner = NULL;
+            loop->hud_state.failure = loop->hud_state.cleanup = NULL;
+        }
+    } else {
+        /* Place the no-World overlay bridge before the source delay/I clock. The
+         * screen bridge begins again at its later depth clear before FU geometry.
+         * Both qq values have the same immutable Settings and physical dimensions;
+         * no separately constructed source qq identity is claimed here. */
+        if (!mc_client_display_begin(app->display, projection.width_exact, projection.height_exact,
+                                     &loop->display))
+            return stop(loop, "PX no-World overlay GL3.3 bridge", "px", "b", 550);
+        if (settings.values.performance_mode == 2) {
+            int64_t sample;
+            if (!render_nanoseconds(loop, &sample, 578))
+                return false;
+            int64_t delay =
+                mc_java_i64_sub(mc_java_i64_add(px->fields.I, 25000000), sample) / 1000000;
+            if (delay < 0)
+                delay = mc_java_i64_add(delay, 10);
+            if (delay > 0 && delay < 500)
+                SDL_Delay((uint32_t)delay);
+        }
+        if (!render_nanoseconds(loop, &px->fields.I, 635))
+            return false;
     }
-    if (!render_nanoseconds(loop, &px->fields.I, 635))
-        return false;
     if (app->r != NULL) {
+        if (world_branch && !mc_client_display_source_clear(app->display, 256, &loop->display))
+            return stop(loop, loop->display.operation, "px", "b", 654);
         mc_client_screen_state drawn;
         if (!screen_state(loop, &drawn))
             return false;
@@ -494,6 +561,7 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
                 return screen_failure(loop);
         }
     }
+    loop->state.render_returned = true;
     return true;
 }
 
@@ -577,6 +645,21 @@ bool mc_client_menu_loop_create(mc_client_bootstrap *bootstrap, mc_client_menu_l
 static bool frame_body(mc_client_menu_loop *loop) {
     if (loop == NULL || loop->state.failed || !loop->state.running)
         return false;
+    /* Completed frame receipts stay inspectable through that frame. Drain
+     * their native occurrences before the next source pool reset or tick. */
+    if (loop->hud != NULL && loop->hud_state.returned) {
+        if (mc_client_gui_ingame_draw_retire(&loop->hud, &loop->hud_cleanup) !=
+            MC_CLIENT_GUI_INGAME_DRAW_OK)
+            return run_stop(loop, "completed HUD native retirement", 0);
+    }
+    loop->state.hud = NULL;
+    if (loop->world_frame != NULL && loop->world_frame_state.returned) {
+        if (mc_client_entity_renderer_world_frame_retire(
+                &loop->world_frame, &loop->world_frame_cleanup) != MC_CLIENT_WORLD_FRAME_OK)
+            return run_stop(loop, "completed World draw native retirement", 0);
+        loop->state.world_frame = NULL;
+    }
+    loop->state.render_clock_stored = loop->state.render_returned = false;
     client_application *app = loop->app;
     if (!atomic_load(&app->J)) {
         loop->state.running = false;
@@ -758,6 +841,10 @@ bool mc_client_menu_loop_inspect(const mc_client_menu_loop *loop, mc_client_menu
 }
 
 static bool retire_calls(mc_client_menu_loop *loop) {
+    if (mc_client_gui_ingame_draw_retire(&loop->hud, &loop->hud_cleanup) !=
+        MC_CLIENT_GUI_INGAME_DRAW_OK)
+        return false;
+    loop->state.hud = NULL;
     if (!mc_client_world_tick_cleanup(&loop->world_tick))
         return false;
     if (!mc_client_gameplay_input_retire(&loop->gameplay))

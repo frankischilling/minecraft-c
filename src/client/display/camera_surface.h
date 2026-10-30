@@ -13,6 +13,9 @@ bool mc_client_display_source_scale(mc_client_display *, double, double, double,
                                     mc_client_display_error *);
 bool mc_client_display_source_perspective(mc_client_display *, float, float, float, float,
                                           mc_client_display_error *);
+bool mc_client_display_source_ortho(mc_client_display *, double left, double right, double bottom,
+                                    double top, double near_plane, double far_plane,
+                                    mc_client_display_error *);
 /* Passive native ledger snapshot for tests and later frustum composition.
  * No GL query, context switch, FP arithmetic or source call is implied. */
 bool mc_client_display_camera_matrices_inspect(const mc_client_display *, float projection[16],

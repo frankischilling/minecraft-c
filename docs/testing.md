@@ -1,5 +1,47 @@
 # Test scope and reproduction
 
+## GuiIngame and a returning loaded frame
+
+All 55 selected production/test targets build on Windows MSVC Debug and Linux
+Clang18 ASan/UBSan. All 64 Windows tests pass in 84.40 seconds and all 60 Linux
+tests in 124.25 seconds, without failures, skips or sanitizer findings. All
+2,349 C/helper/build inputs remain unchanged through both builds and tests;
+formatting checks 1,652 files. These are finite selected cohorts, separate
+from hosted whole-suite validation.
+
+The [HUD contract](client/gui-ingame.md) runs the actual UQ entry, PX overlay
+projection, SN brightness paths, vignette, UB/NW widgets, health/Random effects,
+lighting, nine empty slots and empty chat. The
+[unchanged-original fixture](../tests/reference/client/gui_ingame_draw/README.md)
+records 26 complete calls, including two successful in-height light queries.
+Source modes, stack depths, matrices, Random and final NW payloads are compared
+with the actual native owners. Native pixel controls use authored textures;
+the reference authored-pixel receipts remain separately preserved observations.
+
+All 26 state/Random rows and all 26 final payload hashes match exactly, and all
+matrix words are bit-exact. Two additional light receipts match the real
+in-height bounds query, brightness and sky subtraction. Native controls pass
+1,742 assertions on Windows and 1,743 on Linux; the assertion count includes
+bounded teardown retries. Both native images contain 3,521 green hotbar pixels,
+270 red heart pixels and 60 white crosshair pixels, and share the same PNG hash.
+The two nonblack blend controls return exact RGB (38,51,38) and (204,153,102).
+Their complete raw RGBA readbacks stay unchanged; the specified comparisons
+cover RGB only. Other expected controls include null/pending receivers, foreign
+lookups, mutation refusal and reached source-effect preservation.
+
+The Windows loaded selection now has one visible focused profile that requires
+a returning World draw and complete HUD/frame. Hidden profiles require the
+actual pause-screen save frontier after HUD return. A separate fresh visible
+profile continues until the unpaused Mob constructor dependency and checks
+completed drawing retirement, stale-HUD view clearing and normal coordinator
+shutdown. All copied-save and imported-resource preservation checks remain.
+The 72 original input histories still run in the existing loaded profiles.
+
+Nonempty hotbar items, populated-armor qualification, active overlays, sleep
+fading, debug/record/chat text, original pixels and complete gameplay remain
+unfinished or unverified. No matching shape or native authored screenshot is
+used as proof of original pixel or whole-frame equality.
+
 ## First-person hand and World-frame return
 
 The [hand contract](client/first-person-hand.md) covers the actual PX hand pass,

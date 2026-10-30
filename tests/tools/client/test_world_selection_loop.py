@@ -105,7 +105,7 @@ def main():
     parser.add_argument("--artifacts", type=Path, required=True)
     parser.add_argument("--mode", action="append",
                         choices=("empty", "populated", "large", "double", "load", "generate",
-                                 "load-terminal", "load-partial"))
+                                 "load-terminal", "load-partial", "repeat"))
     parser.add_argument("--timeout", type=float)
     args = parser.parse_args()
     if os.name != "nt":
@@ -116,7 +116,7 @@ def main():
     artifacts.mkdir(parents=True, exist_ok=True)
     resources_before = snapshot(assets)
     for mode in args.mode or ("empty", "populated", "large", "double", "load", "load-terminal",
-                             "load-partial"):
+                             "load-partial", "repeat"):
         with tempfile.TemporaryDirectory(prefix="mc-rq-loop-") as work:
             appdata = Path(work)
             game = appdata / ".minecraft"
@@ -126,12 +126,12 @@ def main():
             if mode == "large":
                 worlds = [(f"world{i:02d}", f"Scroll world {i:02d}", 1304000000000, 19132)
                           for i in range(16)]
-            elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial"):
+            elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial", "repeat"):
                 worlds = [
                     ("older", "Old world", 1303000000000, 19132),
                     ("bravo", "", 1304000000000, 19132),
                     ("alpha", "Alpha world", 1304000000000,
-                     19132 if mode in ("load", "generate", "load-terminal", "load-partial") else 0),
+                     19132 if mode in ("load", "generate", "load-terminal", "load-partial", "repeat") else 0),
                 ]
             else:
                 worlds = []
@@ -144,7 +144,7 @@ def main():
                                            partial=mode == "load-partial" and folder == "alpha"),
                                   mtime=0))
                 (directory / "preserve-chunk.dat").write_bytes(b"authored untouched chunk")
-            if mode in ("load", "generate", "load-terminal", "load-partial"):
+            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat"):
                 regions = saves / "alpha" / "region"
                 regions.mkdir()
                 saved_regions(regions, generate=mode == "generate")
@@ -169,8 +169,10 @@ def main():
                 observed = [line for line in result.stdout.splitlines() if line.startswith("FOCUS ")]
                 if observed != expected:
                     raise RuntimeError("Actual SDK focus segment differs from 72 original PX histories")
+            if mode == "repeat" and "WORLD_FRAME first-returned=1 next-unpaused-tick=fd.l80 child=cq.a773 completed-draws-retired=1 stale-hud-cleared=1" not in result.stdout:
+                raise RuntimeError("Real repeated frame did not expose the expected next source dependency")
             after = snapshot(saves)
-            if mode in ("load", "generate", "load-terminal", "load-partial"):
+            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat"):
                 if any(after.get(name) != digest for name, digest in before.items()):
                     raise RuntimeError("World loading changed pre-existing fixture bytes")
                 if not (saves / "alpha" / "session.lock").is_file():

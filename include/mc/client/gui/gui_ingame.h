@@ -150,7 +150,7 @@ mc_client_gui_ingame_status mc_client_gui_ingame_classes_inspect(mc_client_gui_i
  * this namespace's native monitor also rejects contention/reentry as BUSY.
  * Inspection is passive. Views expire on owner mutation/retirement, and no source
  * method beyond construction, b()V clear_messages and the reached a()V tick
- * is implemented here. */
+ * is implemented here. Drawing has a separate retained API in gui_ingame_draw.h. */
 mc_client_gui_ingame_status mc_client_gui_ingame_allocate(mc_client_gui_ingame_classes *,
                                                           const mc_client_gui_ingame_options *,
                                                           mc_client_source_uq **,

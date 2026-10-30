@@ -32,6 +32,7 @@ struct mc_client_source_uq {
     unsigned int last_pc, store_count;
     mc_client_gui_ingame_site stores[10];
     mc_client_gui_ingame_error failure;
+    struct mc_client_gui_ingame_draw_call *draw_call;
 };
 
 #endif

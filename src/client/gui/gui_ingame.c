@@ -354,7 +354,7 @@ mc_client_gui_ingame_status mc_client_gui_ingame_construct(mc_client_source_uq *
         fail(&e, MC_CLIENT_GUI_INGAME_INVALID_ARGUMENT, "GuiIngame native constructor receiver",
              NULL, 0);
     else if (lock(o->classes, &e)) {
-        if (o->classes->retiring || o->phase != MC_CLIENT_GUI_INGAME_RAW)
+        if (o->draw_call != NULL || o->classes->retiring || o->phase != MC_CLIENT_GUI_INGAME_RAW)
             fail(&e, MC_CLIENT_GUI_INGAME_INVALID_PHASE, "GuiIngame one-shot constructor admission",
                  NULL, 0);
         else {
@@ -375,7 +375,8 @@ mc_client_gui_ingame_status mc_client_gui_ingame_retain(mc_client_source_uq *o,
         fail(&e, MC_CLIENT_GUI_INGAME_INVALID_ARGUMENT, "GuiIngame native retain receiver", NULL,
              0);
     else if (lock(o->classes, &e)) {
-        if (o->classes->retiring || o->phase == MC_CLIENT_GUI_INGAME_RETIRING ||
+        if (o->draw_call != NULL || o->classes->retiring ||
+            o->phase == MC_CLIENT_GUI_INGAME_RETIRING ||
             o->phase == MC_CLIENT_GUI_INGAME_CONSTRUCTING)
             fail(&e, MC_CLIENT_GUI_INGAME_BUSY, "GuiIngame entered/retiring occurrence", NULL, 0);
         else if (o->holds == SIZE_MAX)
@@ -395,7 +396,8 @@ static mc_client_gui_ingame_status release(mc_client_source_uq **slot, bool stri
     else if (*slot != NULL && lock((*slot)->classes, &e)) {
         mc_client_source_uq *o = *slot;
         mc_client_gui_ingame_classes *c = o->classes;
-        if (o->phase == MC_CLIENT_GUI_INGAME_CONSTRUCTING || (strict && o->holds != 1)) {
+        if (o->draw_call != NULL || o->phase == MC_CLIENT_GUI_INGAME_CONSTRUCTING ||
+            (strict && o->holds != 1)) {
             fail(&e, MC_CLIENT_GUI_INGAME_BUSY, "GuiIngame active/external occurrence", NULL, 0);
             (void)mtx_unlock(&c->mutex);
         } else if (o->holds > 1) {
@@ -484,7 +486,7 @@ mc_client_gui_ingame_status mc_client_gui_ingame_clear_messages(mc_client_source
                                               : MC_CLIENT_GUI_INGAME_THREAD_FAILED,
                           "GuiIngame clear native class monitor", 0, true);
         } else {
-            if (o->classes->retiring ||
+            if (o->draw_call != NULL || o->classes->retiring ||
                 o->classes->phase == MC_CLIENT_GUI_INGAME_CLASS_INITIALIZING ||
                 o->phase == MC_CLIENT_GUI_INGAME_CONSTRUCTING ||
                 o->phase == MC_CLIENT_GUI_INGAME_RETIRING)
@@ -541,7 +543,8 @@ mc_client_gui_ingame_status mc_client_gui_ingame_tick(mc_client_source_uq *o,
                      "GuiIngame tick native class monitor", 0, true);
         return publish(&e, error);
     }
-    if (o->classes->retiring || o->classes->phase == MC_CLIENT_GUI_INGAME_CLASS_INITIALIZING ||
+    if (o->draw_call != NULL || o->classes->retiring ||
+        o->classes->phase == MC_CLIENT_GUI_INGAME_CLASS_INITIALIZING ||
         o->phase == MC_CLIENT_GUI_INGAME_CONSTRUCTING ||
         o->phase == MC_CLIENT_GUI_INGAME_RETIRING) {
         tick_failure(&e, MC_CLIENT_GUI_INGAME_BUSY, "GuiIngame tick native active/retiring owner",

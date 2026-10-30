@@ -512,9 +512,12 @@ bool mc_client_display_source_blend_function(mc_client_display *display, int32_t
                                              int32_t destination, mc_client_display_error *error) {
     if (!source_setting_enter(display, "source blend function", error))
         return false;
-    if (source != GL_SRC_ALPHA ||
-        (destination != GL_ONE_MINUS_SRC_ALPHA && destination != GL_ONE) ||
-        display->gl.BlendFunc == NULL)
+    const bool alpha =
+        source == GL_SRC_ALPHA && (destination == GL_ONE_MINUS_SRC_ALPHA || destination == GL_ONE);
+    const bool vignette = source == GL_ZERO && destination == GL_ONE_MINUS_SRC_COLOR;
+    const bool crosshair =
+        source == GL_ONE_MINUS_DST_COLOR && destination == GL_ONE_MINUS_SRC_COLOR;
+    if ((!alpha && !vignette && !crosshair) || display->gl.BlendFunc == NULL)
         return source_leave(display,
                             fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source blend function",
                                  "unimplemented blend pair or missing GL function", 0),

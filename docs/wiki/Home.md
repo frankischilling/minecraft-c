@@ -4,7 +4,9 @@ The [RenderGlobal Entity pass](https://github.com/frankischilling/minecraft-c/bl
 bindings and visibility predicates with checked ownership. The initial loaded
 frame executes both [particle draw entries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md), further fog setup, translucent terrain and the dry
 [precipitation return](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/precipitation.md), both [cloud modes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/clouds.md), and the [empty first-person hand](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/first-person-hand.md).
-World drawing returns at1013; its parent reaches delay/HUD383. Entity draws,
+World drawing returns at1013, then its parent composes the actual [GuiIngame](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/gui-ingame.md)
+and returns the focused loaded frame. The next unpaused tick reaches Mob construction.
+Entity draws,
 rendered-TileEntity row ownership and playable frames remain unfinished;
 composed original/native N parity remains unverified.
 

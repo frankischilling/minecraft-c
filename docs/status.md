@@ -1,5 +1,38 @@
 # Development status
 
+The [GuiIngame draw](client/gui-ingame.md) now composes the actual hotbar,
+crosshair, health and vignette over a loaded World. A focused Windows profile
+returns from the complete frame. A separate fresh profile continues into the
+next unpaused World tick, reaches concrete Mob construction at `cq.a:773`, and
+retires the graph through the normal terminal coordinator. The client remains
+pre-playable. Hidden-window inactivity follows the real pause screen to its
+missing incremental save at `oz.a:22`.
+
+All 55 selected targets build on Windows MSVC Debug and Linux Clang18
+ASan/UBSan. All 64 Windows tests pass in 84.40 seconds and all 60 Linux tests
+in 124.25 seconds, without failures, skips or sanitizer findings. All 2,349
+C/helper/build inputs remain unchanged through builds and tests; formatting
+checks 1,652 files.
+
+The unchanged-original HUD fixture has 26 complete calls covering fast/fancy
+graphics, two source dimensions, normal/low/blinking health, selected slots
+and both brightness bounds paths. Matrices, Random and final NW payloads are
+compared separately from authored native pixel controls. Original HUD pixels,
+whole-frame equality, populated armor and the unfinished optional HUD branches
+are outside that qualification.
+
+All 26 native HUD state, Random and final-payload rows match the original;
+matrices are bit-exact on both hosts. Native checks pass 1,742 assertions on
+Windows and 1,743 on Linux, including actual in-height brightness and the two
+nonblack blend results. Authored captures show a hotbar, crosshair and ten
+separate heart glyphs, with identical PNG bytes on the two native hosts.
+
+The [hand checkpoint's hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/41133193699)
+passes formatting, Windows, GCC and Clang jobs. Native archive caching and the
+bounded download retry remain enabled; no controlled hosted speedup is claimed.
+
+## Preceding hand checkpoint
+
 The [first-person hand](client/first-person-hand.md) now executes the real
 empty-slot arm and dry overlay bodies. The loaded Windows frame returns from
 World drawing at PX1013, then stops at its parent's delay/HUD segment,
