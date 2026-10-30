@@ -337,7 +337,7 @@ static inline bool source_lighting_numeric_admit(const mc_client_source_state *s
             }
         }
 
-        source_lighting_numeric_interval viewer[3] = {{0}, {0}, {1, 0}};
+        source_lighting_numeric_interval viewer[3] = {{0, 0}, {0, 0}, {1, 0}};
         bool viewer_ready = !fog->light_model_local_viewer;
         for (size_t side = 0; side < (fog->light_model_two_side ? 2u : 1u); ++side) {
             const mc_client_source_material_state *material = &fog->materials[side];

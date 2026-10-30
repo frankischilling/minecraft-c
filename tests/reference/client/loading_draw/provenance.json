@@ -6862,8 +6862,8 @@
       "sha256": "35220d33c3e6ead298528d4751645309bddcad31814865d26cc51d02786c17cc"
     },
     "src/client/display/source_lighting_numeric.h": {
-      "bytes": 24588,
-      "sha256": "a0027007906b508c158d8b7e09d2076ec4934f2e2559b5256164a3cc27269571"
+      "bytes": 24594,
+      "sha256": "72d0e755fa5d149075d9363e49977914d0a5b5a2e647ac56c7afcaeb30582ea6"
     },
     "src/client/display/source_lighting_shader.h": {
       "bytes": 4781,
