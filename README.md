@@ -21,8 +21,10 @@ compilation now emits standard Block geometry through the actual
 standard Blocks, followed by standard lighting setup. The source renderer now
 supports [vertex lighting and normal/material state](docs/client/lighting-raster.md).
 The [RenderGlobal Entity pass](docs/client/render-global-entities.md) now runs
-its real delay, dispatcher bindings and visibility predicates. Specialized
-Block shapes, Entity drawing, particles and the remaining frame remain unfinished. A separate
+its real delay, dispatcher bindings and visibility predicates. The initial
+frame continues through [particles](docs/client/particle-rendering.md) and
+translucent terrain to weather drawing. Specialized Block shapes, Entity draws,
+other particle classes and complete frames remain unfinished. A separate
 [generated-world inspection](docs/client/world-renderer.md) remains available.
 
 ## Build

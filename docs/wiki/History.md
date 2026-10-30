@@ -1,5 +1,12 @@
 # History
 
+The [particle continuation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md)
+connects actual DN draw methods, shared particle origins, two further fog calls
+and translucent terrain submission/replay. The loaded Windows prefix reaches
+weather932 while preserving its input, save and cleanup checks. Reached pickup
+draws still stop at their actual missing TH child. Complete frames remain
+unfinished.
+
 The [RenderGlobal Entity extension](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) adds the actual delay, dispatcher
 bindings and visibility traversal. Its native controls exercise real N
 construction/rebuild and exact consumer cleanup. The initial frame frontier

@@ -2,7 +2,7 @@
 
 The [RenderGlobal Entity pass](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) now runs its actual delay, LL/TH frame
 bindings and visibility predicates with checked ownership. The initial loaded
-frame reaches the particle-render dependency at PX518. Entity draws,
+frame executes both [particle draw entries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md), further fog setup and translucent terrain, then reaches weather932. Entity draws,
 rendered-TileEntity row ownership and playable frames remain unfinished;
 composed original/native N parity remains unverified.
 

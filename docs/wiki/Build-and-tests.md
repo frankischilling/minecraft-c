@@ -1,6 +1,16 @@
 # Build and tests
 
-The current Entity-pass selection builds all 42 targets on Windows MSVC Debug
+The [particle selection](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md#qualification)
+builds all 45 targets on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 54 Windows tests pass in 79.27 seconds and all 50 Linux tests in 103.43
+seconds, without failures, skips or sanitizer findings. Each host passes
+661 native draw checks and 44 shared-origin checks; Windows also executes
+the real-batch replay control. All 2,313 C/helper/build inputs stay unchanged.
+Seven Windows selection modes preserve saves/resources and both loaded modes
+retain 72 input histories. The terminal profile reaches exactly weather932.
+Original observations have separate finite scope and zero C comparison credit.
+
+At checkpoint 9fb0b27 the Entity-pass selection builds all 42 targets on Windows MSVC Debug
 and Clang18 ASan/UBSan. All 51 Windows and 48 Linux CTests pass in 70.85/105.25
 seconds, with no failures, skips or sanitizer findings. Native distance/List
 checks pass 193/95 per host; local Windows N composition passes 34 checks.

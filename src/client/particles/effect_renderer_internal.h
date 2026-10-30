@@ -19,6 +19,7 @@ struct mc_client_effect_renderer {
     mc_java_random *random, *random_candidate;
     size_t allocation_bytes, max_allocation_bytes, holds;
     bool entered;
+    struct mc_client_effect_draw_call *draw_call;
 };
 
 typedef struct mc_effect_renderer_terminal_view {

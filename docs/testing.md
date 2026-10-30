@@ -1,6 +1,33 @@
 # Test scope and reproduction
 
-## RenderGlobal Entity-pass controls
+## Particle drawing and World-frame continuation
+
+All 45 selected targets build on Windows MSVC Debug and Linux Clang18
+ASan/UBSan. The selection passes 54 Windows tests in 79.27 seconds and 50 Linux
+tests in 103.43 seconds, with no failures, skips or sanitizer findings. All
+2,313 C/helper/build inputs remain unchanged through the builds and tests.
+Formatting checks 1,630 files. The [draw contract](client/particle-rendering.md)
+records exact source order, retained lifetimes and the remaining children.
+
+Both hosts pass 661 native particle-draw checks and 44 origin checks. Windows
+also executes the genuine RenderGlobal device control, passing 16,775 checks
+with RAW/inactive/active replay coverage. That optional device test is built
+on Linux but is not registered in this local sanitized selection. Seven Windows
+World-selection modes preserve save/resource bytes; both loaded modes retain
+all 72 input histories. The terminal mode passes 1,165 checks and reaches
+weather932 after real particle, fog and translucent-terrain calls.
+
+The [original observer](../tests/reference/client/particle_draw/README.md)
+separately passes all three genuine-object CPU profiles, with 505 actual inputs
+unchanged. Its 124 logical rows and 30 complete exception stacks derive 40
+finite outcome projections. These are original observations with zero native
+comparison credit. The first private populated attempt failed in the observer's
+read-only Math reflection before any draw; it remains retained. Its reviewed
+successor adds the required `java.lang` module opening without changing game
+objects or source fields. Both the corrected private run and the public
+reproduction pass. Original negative N-constructor evidence remains unchanged.
+
+## Preceding RenderGlobal Entity-pass controls at 9fb0b27
 
 All 42 selected production/test targets build on Windows MSVC Debug and Linux
 Clang18 ASan/UBSan. All 51 Windows CTests pass in 70.85 seconds and all 48 Linux
@@ -27,8 +54,8 @@ TH record remain attached. The normal outer coordinator subsequently exercises
 LL-present cleanup. Independent Player-retain refusal is checked after both
 dispatchers have ended their own Player occurrences, so the existing binding
 cannot mask that control. All preceding focus, terrain, save and resource checks
-remain in the same profile. The normal loaded frame now stops at PX518 after
-its captured N returns17 with I1; no full frame or composed original N equality
+remain in the same profile. At that checkpoint the loaded frame stops at PX518
+after its captured N returns17 with I1; no full frame or composed original N equality
 is claimed. The private genuine-original null-App constructor capture ends at
 N constructor190 before any returned N or delay invocation and earns no such
 comparison credit.

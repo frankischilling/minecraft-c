@@ -167,9 +167,8 @@ static bool camera(mc_client_render_global_submit_call *c, double *x, double *y,
     return true;
 }
 
-static bool draw_all(mc_client_render_global_submit_call *c) {
+bool mc_terrain_replay(mc_client_render_global_submit_call *c) {
     mc_client_render_global *n = c->state.owner;
-    mc_terrain_pc(c, 484);
     if (!mc_terrain_push(c, "n", "a", "(ID)V"))
         return false;
     for (int32_t i = 0;; i = mc_java_i32_add(i, 1)) {
@@ -192,6 +191,11 @@ static bool draw_all(mc_client_render_global_submit_call *c) {
     mc_terrain_pc(c, 29);
     mc_terrain_pop(c);
     return true;
+}
+
+static bool draw_all(mc_client_render_global_submit_call *c) {
+    mc_terrain_pc(c, 484);
+    return mc_terrain_replay(c);
 }
 
 bool mc_terrain_subset(mc_client_render_global_submit_call *c, int32_t start, int32_t end,

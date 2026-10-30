@@ -2,7 +2,8 @@
 
 The [RenderGlobal Entity entry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) now consumes its actual constructor I2
 delay after terrain, lighting and eye positioning. The loaded-World frame then
-reaches the unfinished particle renderer at PX518. Native N controls separately
+executes particles and translucent terrain before reaching the unfinished weather
+renderer at PX932. Native N controls separately
 exercise both dispatcher binds and real Player traversal. A playable session
 and composed original/native N comparison remain unfinished.
 

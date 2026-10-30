@@ -41,6 +41,16 @@ typedef struct mc_client_render_global_submit_state {
 mc_client_render_global_status mc_client_render_global_submit_begin(
     mc_client_render_global *, mc_entity *nullable_camera, int32_t pass, double partial,
     mc_math_classes *, mc_client_render_global_submit_call **out, mc_client_render_global_error *);
+/* Actual n.a(ID)V over the SAME current T array and TG objects. The source
+ * body does not use pass/partial, select/reset batches, read a camera/App/World
+ * or activate Math. Only reached TG.a() bodies admit their actual dependencies
+ * and retain their buffer/GL effects. Success is return29; result is not a
+ * source int result for this void entry. Uses the same native N call gates,
+ * retained receipt, inspection/lifetime contract and checked retire below. */
+mc_client_render_global_status
+mc_client_render_global_replay_begin(mc_client_render_global *, int32_t pass, double partial,
+                                     mc_client_render_global_submit_call **out,
+                                     mc_client_render_global_error *);
 bool mc_client_render_global_submit_inspect(const mc_client_render_global_submit_call *,
                                             mc_client_render_global_submit_state *);
 mc_client_render_global_status

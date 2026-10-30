@@ -606,6 +606,7 @@ add_library(mc_simulation STATIC
     src/entity/player/eligibility.c
     src/entity/player/atan2.c
     src/entity/particles/pickup.c
+    src/entity/particles/origin.c
     src/entity/player/pickup.c
     src/client/particles/effect_renderer.c
     src/client/particles/application.c
@@ -5515,6 +5516,9 @@ include(cmake/client_controller_interpolation.cmake)
 include(cmake/world_client_tick_state.cmake)
 include(cmake/tests/entity_render_distance.cmake)
 include(cmake/tests/world_render_entities.cmake)
+include(cmake/tests/particle_origin.cmake)
+include(cmake/client_particle_rendering.cmake)
+include(cmake/tests/effect_renderer_draw.cmake)
 if(MC_BUILD_CLIENT)
     target_sources(mc_client_entity_renderer PRIVATE src/client/world/entity_renderer/picking.c)
     target_link_libraries(mc_client_entity_renderer PRIVATE mc_client_singleplayer_controller)

@@ -4,6 +4,7 @@
 #include "../registry/registry_internal.h"
 #include "mc/entity/classes/classes.h"
 #include "mc/entity/hit_result.h"
+#include "mc/entity/particles/origin.h"
 
 struct mc_minecart_shape_array;
 struct mc_entity_vector;
@@ -47,6 +48,7 @@ struct mc_entity_classes {
     mc_entity_limits limits;
     size_t allocated_bytes, live_entities, borrowers;
     mc_entity_class_phase entity_phase, bounds_phase, watcher_phase;
+    mc_particle_origin particle_origin; /* Actual XW.l/m/n; class aggregate defaults to +0. */
     int32_t next_id, bounds_cursor;
     mc_entity_bounds_pool *bounds_pool;
     struct mc_entity_bounds_object *bounds_objects;

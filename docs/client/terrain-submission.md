@@ -23,9 +23,17 @@ The World-frame caller invokes submission at `px.a(FJ)V:486`, passing its
 captured camera, pass0 and the float partial widened to double. A normal N
 return supplies the source integer result at896. PX discards it at489, sets
 FLAT shading at493 and calls [standard lighting](standard-lighting.md) at496.
-Lighting and the captured camera's eye-position getter504 now return; the frame
-reaches unfinished Entity/TileEntity rendering510. This contract does not
-establish a complete World frame or gameplay.
+Lighting and the captured camera's eye-position getter504 return before the
+Entity traversal510. Its initial delayed return allows both particle calls and
+translucent terrain to run before the missing weather child932. This contract
+does not establish a complete World frame or gameplay.
+
+The same retained-call API also exposes actual `n.a(ID)V` as
+`mc_client_render_global_replay_begin`. It visits the current T/TG batches and
+returns29 without selecting chunks, resetting batches, reading camera fields
+or activating Math. The existing subset call at484 and the World-frame call
+at786 enter this same body. Each retained replay must retire before a later
+same-N call; completed buffer, GL and source-field effects remain intact.
 
 The public [begin/inspect/retire API](../../include/mc/client/world/render_global_submit.h)
 keeps the source result separate from native status. Its implementation is in

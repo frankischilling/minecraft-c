@@ -7,8 +7,11 @@ fog, Sky, camera, culling and standard Block list compilation. A normal N return
 continues through FLAT493, [standard lighting](standard-lighting.md)496 and the
 captured camera's eye position504 to the actual captured RenderGlobal at510.
 Its initial [Entity pass](render-global-entities.md) consumes the constructor's
-I2 delay and returns17 with I1. PX then reaches the explicit EffectRenderer
-child at518. Later N calls use actual LL/TH frame bindings, Entity Lists and
+I2 delay and returns17 with I1. PX then calls the actual EffectRenderer at518
+and535, performs two further fog calls and submits translucent terrain. The
+loaded profile reaches the weather child at932. See the
+[particle continuation](particle-rendering.md) for ordering and retained views.
+Later N calls use actual LL/TH frame bindings, Entity Lists and
 visibility predicates; reached Entity/TileEntity draws remain unfinished.
 The specified Windows MSVC Debug state profiles and both hosted Linux sanitizer
 replays pass. The [vertex-lighting backend](lighting-raster.md) now handles
@@ -105,9 +108,11 @@ now completes for standard Block sections. The actual deadline controls further
 update calls. Draw fog449, terrain texture470/473 and standard lighting476 then
 run before real [N terrain submission](terrain-submission.md)486. The source
 connects its ordinary and occlusion paths with recenter/JO sorting and TG replay.
-After a normal N return it sets FLAT493 and reaches missing U.b496. The loaded
-Windows profile now reaches that actual frontier; hosted qualification is pending.
-Entities, particles, HUD and hand work remain later dependencies.
+After a normal N return it sets FLAT493, enables standard lighting496 and reads
+the actual camera eye504 before N510. An initial delayed Entity return allows
+the particle and translucent-terrain prefix to continue to weather932. Reached
+Entity/TileEntity draws, other particle classes, HUD and hand work remain
+unfinished.
 
 The performance deadline uses the source 200/120/40 target and Java long
 wrapping. Retained frames preserve completed fields, matrices, GL state and

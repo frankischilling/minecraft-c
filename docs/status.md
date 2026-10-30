@@ -1,14 +1,32 @@
 # Development status
 
-The [RenderGlobal Entity pass](client/render-global-entities.md) now executes
+The [particle draw entries](client/particle-rendering.md) execute on the actual
+EffectRenderer captured by the World frame. The initial loaded frame returns
+from empty lit particles518, disables lighting521, sets fog527, computes five
+orientation values and three shared particle origins in sprites535, then sets
+fog646 and submits translucent terrain. Its next missing child is weather932.
+The real live Lists determine these branches. Nonempty pickup particles retain
+their reached EM failures; complete Entity drawing and repeated frames remain
+unfinished.
+
+The particle selection builds all 45 targets on Windows MSVC Debug and Linux
+Clang18 ASan/UBSan. All 54 Windows tests pass in 79.27 seconds and all 50 Linux
+tests in 103.43 seconds, without failures, skips or sanitizer findings. Each
+host passes 661 native draw checks and 44 origin checks. Windows also passes
+the real-batch replay control. All 2,313 C/helper/build inputs remain unchanged;
+formatting checks 1,630 files. Three original CPU observation profiles provide
+40 outcome projections with zero native comparison credit. See the
+[qualification](testing.md#particle-drawing-and-world-frame-continuation).
+
+The preceding [RenderGlobal Entity pass](client/render-global-entities.md) executes
 its real I delay, LL/TH frame bindings, six origin stores and live Entity
 visibility predicates. It owns actual dispatcher consumer records and reached
 World leases. The initial loaded frame consumes I2 to I1 and advances from
-N510 to the explicit particle-render child at PX518. Reached Entity draws and
+N510 to the particle calls described above. Reached Entity draws and
 nonempty rendered-TileEntity rows remain missing dependencies. Native controls
 are separate from composed original/native parity, which remains unverified.
 
-All 42 selected production/test targets build on Windows MSVC Debug and Linux
+At checkpoint 9fb0b27, all 42 selected production/test targets build on Windows MSVC Debug and Linux
 Clang18 ASan/UBSan. All 51 Windows CTests pass in 70.85 seconds and all 48 Linux
 cases pass in 105.25 seconds, with no failures, skips or sanitizer findings.
 All 2,300 C/helper/build inputs remain unchanged through builds and tests.
@@ -60,7 +78,8 @@ geometry, specular/two-sided lighting, texture/fog and flat/smooth shading.
 Compiled-list attribute state and numerical admission have separate controls.
 
 The World frame completes U.b496 and camera eye positioning504, then calls N510.
-The initial delayed N return now reaches the unfinished particle render at518.
+The initial delayed N return now continues through particles and translucent
+terrain to the unfinished weather renderer at932.
 The existing 86-row lighting-state comparison remains exact. A rebuilt native client captures two normal menu
 frames and exits cleanly. The loaded-World regression preserves saves/resources
 and all 72 original focus histories, with authored grass terrain and Sky visible
@@ -85,7 +104,8 @@ The same ChunkCache, RenderBlocks and NW now compile standard Block sections
 into source display lists. Current frame source invokes real
 [terrain submission](client/terrain-submission.md) at `px.a(FJ)V:486`.
 A normal N return continues through FLAT shading493, standard lighting496 and camera eye
-positioning504 to N510; the initial delayed Entity pass returns before PX518.
+positioning504 to N510; the initial delayed Entity pass returns before the
+particle calls and translucent-terrain continuation.
 The Windows and hosted terrain-submission profiles retain their separately documented qualification.
 Specialized Block shapes and TileEntity rendering remain missing descendants.
 Direct unpaused checks on that graph select an actual Biome spawn entry and reach the concrete

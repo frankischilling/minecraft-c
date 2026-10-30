@@ -1,5 +1,13 @@
 # Storage and original references
 
+The [particle observer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/particle_draw/README.md)
+uses genuine unchanged-original objects and read-only state inspection. Three
+fresh JVM profiles produce 124 logical rows, 30 complete exception stacks and
+40 selected outcome projections with 505 actual inputs unchanged. Raw private
+fields, constructor entropy and process output stay outside the repository.
+The public finite projection has zero native comparison credit and does not
+qualify nonempty drawing or a complete frame.
+
 The [original N constructor prerequisite](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md#app-prerequisite-and-current-world-frame-boundary)
 requires the actual App startup and CX publication. A genuine null-App N fails
 at constructor190 before returning; a constructor-only App with null S instead

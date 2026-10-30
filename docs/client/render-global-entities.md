@@ -153,12 +153,14 @@ separate original LL/TH observations do not establish composed N parity.
 The enclosing PX World frame invokes its previously captured N at510 with the
 actual pooled eye BT and actual SR. On its initial I2 invocation, native N
 returns17 with I1 after all preceding terrain, lighting and eye work. PX then
-reaches its next explicit dependency at518, `dn.b(Lsn;F)V`; N510 is no longer
-the unconditional missing-child frontier. This advances a bounded failed
-World-frame prefix, not a complete rendered frame, gameplay loop or original
-composed-frame equality result.
+continues through both [particle methods](particle-rendering.md), two further
+fog calls and translucent terrain submission. The loaded profile reaches the
+weather child at PX932. N510 is checked-retired before later N entries; its
+scalar receipt remains while its borrowed owner, List and dispatcher views end.
+This remains a failed World-frame prefix. Complete frames, repeated gameplay
+and composed original/native equality remain unqualified.
 
-## Qualified native scope
+## Preceding native scope at 9fb0b27
 
 All 42 selected production/test targets build on Windows MSVC Debug and Linux
 Clang18 ASan/UBSan. The selection passes 51 Windows CTests in 70.85 seconds and 48

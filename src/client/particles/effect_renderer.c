@@ -38,7 +38,7 @@ static void *allocate(mc_client_effect_renderer *r, size_t bytes, mc_effect_rend
 static bool enter(mc_client_effect_renderer *r, mc_effect_renderer_error *e) {
     if (r == NULL)
         fail(e, MC_EFFECT_RENDERER_INVALID_ARGUMENT, "EffectRenderer receiver", NULL, NULL, 0);
-    else if (r->entered)
+    else if (r->entered || r->draw_call != NULL)
         fail(e, MC_EFFECT_RENDERER_BUSY, "EffectRenderer operation entered", NULL, NULL, 0);
     else if (r->phase != MC_EFFECT_RENDERER_READY)
         fail(e, MC_EFFECT_RENDERER_INVALID_PHASE, "EffectRenderer READY receiver", NULL, NULL, 0);
@@ -97,7 +97,7 @@ mc_client_effect_renderer_construct(mc_client_effect_renderer *r, mc_world_runti
     if (r == NULL)
         fail(&e, MC_EFFECT_RENDERER_INVALID_ARGUMENT, "EffectRenderer constructor receiver", NULL,
              NULL, 0);
-    else if (r->entered)
+    else if (r->entered || r->draw_call != NULL)
         fail(&e, MC_EFFECT_RENDERER_BUSY, "EffectRenderer constructor entered", NULL, NULL, 0);
     else if (r->phase != MC_EFFECT_RENDERER_RAW)
         fail(&e, MC_EFFECT_RENDERER_INVALID_PHASE, "EffectRenderer RAW receiver", NULL, NULL, 0);
@@ -331,7 +331,7 @@ mc_client_effect_renderer_terminal_inspect(const mc_client_effect_renderer *r,
     if (r == NULL || out == NULL)
         fail(&e, MC_EFFECT_RENDERER_INVALID_ARGUMENT,
              "EffectRenderer terminal inspection arguments", NULL, NULL, 0);
-    else if (r->entered)
+    else if (r->entered || r->draw_call != NULL)
         fail(&e, MC_EFFECT_RENDERER_BUSY, "EffectRenderer terminal inspection entered", NULL, NULL,
              0);
     else if (r->phase != MC_EFFECT_RENDERER_READY)
@@ -385,7 +385,7 @@ mc_effect_renderer_status mc_client_effect_renderer_retire_world(mc_client_effec
     if (r == NULL)
         fail(&e, MC_EFFECT_RENDERER_INVALID_ARGUMENT, "EffectRenderer native World owner", NULL,
              NULL, 0);
-    else if (r->entered || r->holds != 1)
+    else if (r->entered || r->draw_call != NULL || r->holds != 1)
         fail(&e, MC_EFFECT_RENDERER_BUSY, "EffectRenderer native World occurrence", NULL, NULL, 0);
     else if (r->world != expected)
         fail(&e, MC_EFFECT_RENDERER_INVALID_PHASE, "EffectRenderer expected World changed", NULL,
@@ -434,7 +434,7 @@ mc_effect_renderer_status mc_client_effect_renderer_free(mc_client_effect_render
     if (owner == NULL || *owner == NULL)
         return MC_EFFECT_RENDERER_OK;
     mc_client_effect_renderer *r = *owner;
-    if (r->entered || r->holds != 1)
+    if (r->entered || r->draw_call != NULL || r->holds != 1)
         return MC_EFFECT_RENDERER_BUSY;
     if (r->layers != NULL) {
         for (size_t i = 0; i < 4; ++i) {

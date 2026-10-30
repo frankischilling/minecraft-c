@@ -1,6 +1,7 @@
 #ifndef MC_CLIENT_WORLD_WORLD_FRAME_H
 #define MC_CLIENT_WORLD_WORLD_FRAME_H
 
+#include "mc/client/particles/render.h"
 #include "mc/client/world/frustum.h"
 #include "mc/client/world/frustum_culling.h"
 #include "mc/client/world/picking.h"
@@ -12,6 +13,9 @@
 #include "mc/client/world/renderer_fog.h"
 #include "mc/client/world/renderer_fog_state.h"
 #include "mc/core/math/classes.h"
+#include "mc/entity/hit_result.h"
+#include "mc/entity/movement/material.h"
+#include "mc/inventory/player_current.h"
 #include "nanotime.h"
 
 typedef struct mc_client_world_frame_call mc_client_world_frame_call;
@@ -45,6 +49,7 @@ typedef struct mc_client_world_frame_error {
     const mc_client_render_global_error *update;
     const mc_client_render_global_error *submission;
     const mc_client_render_global_error *entities;
+    const mc_effect_draw_error *particles;
     const mc_client_texture_lookup_error *texture;
     const mc_client_graphics_error *lighting;
     const mc_client_lighting_error *lighting_enable;
@@ -52,6 +57,12 @@ typedef struct mc_client_world_frame_error {
     mc_platform_nanotime_status clock;
     mc_client_display_error display;
     mc_entity_status entity;
+    mc_effect_renderer_status effects;
+    mc_entity_material_error material;
+    mc_registry_error registry;
+    mc_inventory_current_error inventory;
+    mc_entity_hit_error hit;
+    mc_item_stack_status stack;
     mc_client_frustum_error frustum;
 } mc_client_world_frame_error;
 
@@ -67,7 +78,19 @@ typedef struct mc_client_world_frame_state {
     bool frustum_constructed, frustum_recentered, culling_returned;
     bool updates_returned, draw_fog_returned, terrain_texture_bound, lighting_disabled;
     bool terrain_returned, lighting_enabled, eye_position_returned, entities_returned;
+    bool effects_captured, lit_particles_returned, particle_lighting_disabled;
+    bool particle_fog_returned, sprite_particles_returned;
+    bool first_hit_read, first_hit_present, first_water_read, first_water, first_player_read;
+    bool first_player, translucent_fog_returned, translucent_texture_bound;
+    bool fancy_graphics_read, fancy_graphics, translucent_ambient_read, translucent_ambient;
+    bool translucent_color_masked, translucent_returned, translucent_anaglyph_read;
+    bool translucent_anaglyph, translucent_color_restored, translucent_state_restored;
+    bool translucent_replay_returned;
+    bool selection_zoom_read, selection_player_read, selection_player, selection_hit_read;
+    bool selection_hit_present, selection_water_read, selection_water;
+    bool selection_alpha_disabled, selection_current_returned;
     int32_t terrain_count;
+    int32_t translucent_count;
     size_t update_calls;
     int64_t last_clock, deadline_remaining;
     int32_t post_camera_render_distance;
@@ -94,9 +117,14 @@ typedef struct mc_client_world_frame_state {
     const mc_client_render_global_update_state *update;
     const mc_client_render_global_submit_state *submission;
     const mc_client_render_global_entities_state *entities;
+    const mc_effect_draw_state *lit_particles, *sprite_particles;
+    const mc_client_render_global_submit_state *translucent_submission;
+    const mc_client_render_global_submit_state *translucent_replay;
     const mc_client_lighting_error *standard_lighting;
     const mc_entity_vector *entity_eye;
-    const mc_client_renderer_fog_state_view *draw_fog;
+    const mc_client_renderer_fog_state_view *draw_fog, *particle_fog, *translucent_fog;
+    const mc_entity_hit_result *selection_hit;
+    const mc_item_stack *selection_stack;
 } mc_client_world_frame_state;
 
 /* Actual px.a(FJ) World draw entry, invoked from px.b's World branch. Uses the
@@ -107,8 +135,12 @@ typedef struct mc_client_world_frame_state {
  * and camera invoke. The canonical frustum then extracts those matrices. The
  * actual N captured at57 has its own native occurrence through cleanup; later
  * culling/update calls still read fresh App.g. Entity rendering receives that
- * captured N, the actual pooled eye and the actual SR. A delayed N return
- * continues to the reached EffectRenderer child rather than completing PX.
+ * captured N, the actual pooled eye and the actual SR. The FX captured at66
+ * has an independent occurrence through both real DN draw entries. Completed
+ * native children retire before a later same-owner call, retaining scalar
+ * receipts and ending their borrowed views. A returning particle prefix
+ * continues through the actual predicates and translucent terrain calls to
+ * the next reached missing source child; it does not complete the PX frame.
  *
  * App and its complete graph stay live/exclusive on the video thread through
  * retirement. Out starts NULL; an allocated terminal call is returned even on

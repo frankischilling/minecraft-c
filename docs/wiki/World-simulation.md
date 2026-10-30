@@ -21,7 +21,9 @@ remain unfinished. There is no original shutdown equivalence claim.
 The same Display now handles [lit source geometry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md), including actual NW
 normal packing and compiled-list inheritance. Its finite raster qualification
 is separate from World simulation and the complete frame. Entity/TileEntity
-drawing remains unfinished; the initial delayed N return reaches particles518.
+drawing remains unfinished. The initial delayed N return now continues through
+[particles](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md)
+and translucent terrain to the weather child at932.
 
 The [ordered client scheduler](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/ticking.md)
 now connects weather, spawning prefixes, provider maintenance, sky callbacks,

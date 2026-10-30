@@ -41,6 +41,9 @@ bool mc_terrain_distance(mc_client_render_global_submit_call *, mc_client_source
                          float *);
 bool mc_terrain_subset(mc_client_render_global_submit_call *, int32_t start, int32_t end,
                        unsigned int caller_pc, int32_t *result);
+/* Push exactly the actual n.a(ID)V frame. An enclosing subset supplies its
+ * own caller484 before entering; the public replay entry has no extra frame. */
+bool mc_terrain_replay(mc_client_render_global_submit_call *);
 bool mc_terrain_occlusion(mc_client_render_global_submit_call *, int32_t *result);
 bool mc_terrain_poll(mc_client_render_global_submit_call *, int32_t start, int32_t end,
                      unsigned int caller_pc);

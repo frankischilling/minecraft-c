@@ -49,6 +49,9 @@
 #include <string.h>
 
 static unsigned int checks;
+
+enum { loaded_world_frame_frontier = 932 };
+
 #define CHECK(condition)                                                                           \
     do {                                                                                           \
         ++checks;                                                                                  \
@@ -860,7 +863,7 @@ static int loaded_terminal_admission_controls(fixture *f) {
     CHECK(mc_client_menu_loop_inspect(f->loop, &source) && source.failed &&
           source.source_class != NULL && strcmp(source.source_class, "px") == 0 &&
           source.source_method != NULL && strcmp(source.source_method, "a") == 0 &&
-          source.source_pc == 518 && !source.terminal_tail_entered);
+          source.source_pc == loaded_world_frame_frontier && !source.terminal_tail_entered);
     CHECK(mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
           transitions.world_load != NULL &&
           mc_client_world_load_inspect(transitions.world_load, &load) && load.source_returned &&
@@ -1012,8 +1015,8 @@ static int normal_terminal_retirement_controls(fixture *f, mc_client_source_da *
     } else {
         CHECK(source.failed && source.source_class != NULL &&
               strcmp(source.source_class, "px") == 0 && source.source_method != NULL &&
-              strcmp(source.source_method, "a") == 0 && source.source_pc == 518 &&
-              controller != NULL);
+              strcmp(source.source_method, "a") == 0 &&
+              source.source_pc == loaded_world_frame_frontier && controller != NULL);
     }
     CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
           terminal_source_diagnostic_same(f, &source) == 0 && f->state.terminal_prepare_selected &&
@@ -1428,24 +1431,28 @@ int main(int argc, char **argv) {
             CHECK(mc_client_sdk_display_active(mc_client_display_update_owner(f.app->display),
                                                &display_active,
                                                &update) == MC_CLIENT_SDK_UPDATE_OK);
+            if (f.state.source_pc != loaded_world_frame_frontier)
+                fprintf(stderr, "Loaded World frame reached %s.%s:%" PRId64 "\n",
+                        f.state.source_class, f.state.source_method, f.state.source_pc);
             CHECK(strcmp(f.state.source_class, "px") == 0 &&
-                  strcmp(f.state.source_method, "a") == 0 && f.state.source_pc == 518 &&
-                  f.state.world_frame != NULL && f.state.world_frame->picking_returned &&
-                  f.state.world_frame->viewport_set && f.state.world_frame->fog_blend_computed &&
-                  f.state.world_frame->fog_returned && f.state.world_frame->camera_returned &&
-                  f.state.world_frame->frustum_returned && f.state.world_frame->sky_fog_returned &&
-                  f.state.world_frame->sky_returned && f.state.world_frame->sky != NULL &&
-                  f.state.world_frame->sky->cleanup == NULL &&
+                  strcmp(f.state.source_method, "a") == 0 &&
+                  f.state.source_pc == loaded_world_frame_frontier && f.state.world_frame != NULL &&
+                  f.state.world_frame->picking_returned && f.state.world_frame->viewport_set &&
+                  f.state.world_frame->fog_blend_computed && f.state.world_frame->fog_returned &&
+                  f.state.world_frame->camera_returned && f.state.world_frame->frustum_returned &&
+                  f.state.world_frame->sky_fog_returned && f.state.world_frame->sky_returned &&
+                  f.state.world_frame->sky != NULL && f.state.world_frame->sky->cleanup == NULL &&
                   f.state.world_frame->terrain_fog_returned &&
                   f.state.world_frame->frustum_constructed &&
                   f.state.world_frame->frustum_recentered && f.state.world_frame->culling_returned);
             const mc_client_world_frame_state *frame = f.state.world_frame;
-            CHECK(frame->source_pc == 518 && frame->update_calls >= 1 && frame->updates_returned &&
-                  frame->draw_fog_returned && frame->terrain_texture_bound &&
-                  frame->lighting_disabled && frame->update != NULL && !frame->update->active &&
-                  frame->update->returned && frame->update->failure == NULL &&
-                  frame->failure->update == NULL && frame->update->compilation == NULL &&
-                  frame->update->near_chunks == NULL && frame->update->compile_order == NULL &&
+            CHECK(frame->source_pc == loaded_world_frame_frontier && frame->update_calls >= 1 &&
+                  frame->updates_returned && frame->draw_fog_returned &&
+                  frame->terrain_texture_bound && frame->lighting_disabled &&
+                  frame->update != NULL && !frame->update->active && frame->update->returned &&
+                  frame->update->failure == NULL && frame->failure->update == NULL &&
+                  frame->update->compilation == NULL && frame->update->near_chunks == NULL &&
+                  frame->update->compile_order == NULL &&
                   frame->update->compile_attempts == frame->update->completed_compiles &&
                   frame->terrain_returned && frame->submission != NULL &&
                   frame->submission->returned && frame->submission->source_pc == 896 &&
@@ -1462,14 +1469,86 @@ int main(int argc, char **argv) {
                   frame->entities_returned && frame->entities != NULL && !frame->entities->active &&
                   frame->entities->returned && frame->entities->delayed &&
                   frame->entities->source_pc == 17 && frame->entities->initial_delay == 2 &&
-                  frame->entities->remaining_delay == 1 &&
-                  frame->entities->owner == frame->render_global &&
-                  frame->entities->eye == frame->entity_eye && frame->entities->frustum != NULL &&
+                  frame->entities->remaining_delay == 1 && frame->entities->owner == NULL &&
+                  frame->entities->eye == NULL && frame->entities->frustum == NULL &&
+                  frame->entities->entities_list == NULL && frame->entities->current == NULL &&
+                  frame->entities->failure == NULL && frame->entities->cleanup == NULL &&
                   frame->entities->ll == NULL && frame->entities->th == NULL &&
-                  frame->failure->entities == NULL && frame->failure->site.pc == 518 &&
-                  strcmp(frame->failure->child.class_name, "dn") == 0 &&
-                  strcmp(frame->failure->child.method, "b") == 0 &&
-                  strcmp(frame->failure->child.descriptor, "(Lsn;F)V") == 0);
+                  frame->failure->entities == NULL &&
+                  frame->failure->site.pc == loaded_world_frame_frontier &&
+                  strcmp(frame->failure->child.class_name, "px") == 0 &&
+                  strcmp(frame->failure->child.method, "c") == 0 &&
+                  strcmp(frame->failure->child.descriptor, "(F)V") == 0);
+            CHECK(frame->effects_captured && frame->effects == f.app->effect_renderer &&
+                  frame->camera == load.player && frame->render_global == f.app->g &&
+                  frame->lit_particles_returned && frame->particle_lighting_disabled &&
+                  frame->particle_fog_returned && frame->particle_fog != NULL &&
+                  frame->particle_fog != frame->draw_fog && frame->sprite_particles_returned &&
+                  frame->lit_particles != NULL && frame->lit_particles->returned &&
+                  frame->lit_particles->lit && frame->lit_particles->empty &&
+                  frame->lit_particles->source_pc == 16 && frame->lit_particles->size_reads == 1 &&
+                  frame->lit_particles->visited == 0 &&
+                  frame->lit_particles->orientation_values == 0 &&
+                  frame->lit_particles->origins_stored == 0 && !frame->lit_particles->nw_captured &&
+                  frame->lit_particles->owner == NULL && frame->lit_particles->camera == NULL &&
+                  frame->lit_particles->current == NULL && frame->lit_particles->nw == NULL &&
+                  frame->lit_particles->failure == NULL && frame->lit_particles->cleanup == NULL &&
+                  frame->sprite_particles != NULL && frame->sprite_particles->returned &&
+                  !frame->sprite_particles->lit && frame->sprite_particles->empty &&
+                  frame->sprite_particles->source_pc == 311 &&
+                  frame->sprite_particles->orientation_values == 5 &&
+                  frame->sprite_particles->origins_stored == 3 &&
+                  frame->sprite_particles->size_reads == 3 &&
+                  frame->sprite_particles->visited == 0 && !frame->sprite_particles->nw_captured &&
+                  frame->sprite_particles->owner == NULL &&
+                  frame->sprite_particles->camera == NULL &&
+                  frame->sprite_particles->current == NULL && frame->sprite_particles->nw == NULL &&
+                  frame->sprite_particles->failure == NULL &&
+                  frame->sprite_particles->cleanup == NULL && frame->failure->particles == NULL &&
+                  frame->first_hit_read && frame->translucent_fog_returned &&
+                  frame->translucent_fog != NULL && frame->translucent_fog != frame->particle_fog &&
+                  frame->translucent_texture_bound && frame->fancy_graphics_read &&
+                  frame->translucent_returned && frame->translucent_submission != NULL &&
+                  frame->translucent_submission->returned &&
+                  frame->translucent_submission->source_pc == 896 &&
+                  frame->translucent_submission->pass == 1 &&
+                  frame->translucent_submission->result == frame->translucent_count &&
+                  frame->translucent_submission->dirty_polls == 10 &&
+                  frame->translucent_submission->frames == NULL &&
+                  frame->translucent_submission->rebuild == NULL &&
+                  frame->translucent_submission->owner == NULL &&
+                  frame->translucent_submission->camera == NULL &&
+                  frame->translucent_submission->batch_camera == NULL &&
+                  frame->translucent_submission->math == NULL &&
+                  frame->translucent_submission->failure == NULL &&
+                  frame->translucent_submission->cleanup == NULL &&
+                  frame->translucent_state_restored && frame->selection_zoom_read &&
+                  frame->selection_player_read && frame->selection_player &&
+                  frame->selection_hit_read && !frame->selection_hit_present &&
+                  !frame->selection_water_read && !frame->selection_alpha_disabled &&
+                  !frame->selection_current_returned && frame->selection_hit == NULL &&
+                  frame->selection_stack == NULL);
+            const bool replay_expected = frame->fancy_graphics && frame->translucent_count > 0;
+            CHECK(frame->translucent_replay_returned == replay_expected);
+            if (replay_expected) {
+                CHECK(frame->translucent_replay != NULL && frame->translucent_replay->returned &&
+                      frame->translucent_replay->source_pc == 29 &&
+                      frame->translucent_replay->pass == 1 &&
+                      frame->translucent_replay->dirty_polls == 0 &&
+                      frame->translucent_replay->subsets == 0 &&
+                      frame->translucent_replay->configured_batches == 0 &&
+                      frame->translucent_replay->selected_chunks == 0 &&
+                      frame->translucent_replay->owner == NULL &&
+                      frame->translucent_replay->camera == NULL &&
+                      frame->translucent_replay->batch_camera == NULL &&
+                      frame->translucent_replay->math == NULL &&
+                      frame->translucent_replay->frames == NULL &&
+                      frame->translucent_replay->rebuild == NULL &&
+                      frame->translucent_replay->failure == NULL &&
+                      frame->translucent_replay->cleanup == NULL);
+            } else {
+                CHECK(frame->translucent_replay == NULL);
+            }
             /* Source updates finish and retire their borrowed cache/call views.
              * The following submission may recenter those SAME DKs, which
              * invalidates their earlier geometry until a later source update. */

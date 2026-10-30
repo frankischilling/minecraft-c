@@ -96,8 +96,8 @@
       "sha256": "9620ada89023045b73fa69ff63d1faca83d7ac9bec1d98e2143d82cef856e0c4"
     },
     "src/entity/classes/classes_internal.h": {
-      "bytes": 2784,
-      "sha256": "773aa62824b5fd116b426294d96cdd5a8a992fed47c621bafd99eb7d62542f01"
+      "bytes": 2919,
+      "sha256": "abc354e77358ed2ee2b455bb4246b3110f9e65b5ab46debd47ed9568906b0028"
     },
     "src/entity/entity_internal.h": {
       "bytes": 3435,

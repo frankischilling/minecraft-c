@@ -101,6 +101,13 @@ The Display owns its ordered matrix ledger; RenderModels owns the checked
 static-frustum lifetime.
 Complete presentation remains unfinished.
 
+The [particle continuation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md)
+uses the same captured EffectRenderer and four live Lists. Completed child
+calls retire before later same-owner entries; scalar receipts survive while
+borrowed views end. The initial frame computes particle origins, submits and
+replays actual translucent terrain, then reaches weather932. A selected Hit
+would instead reach the actual damage/placement overlay before the outline.
+
 The [compilation owners](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md)
 retain the exact N, camera, World and Store Chunk occurrences. Near selection
 clears the original dirty List slots before compilation; a failed child keeps

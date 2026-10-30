@@ -10,8 +10,10 @@
 #include "../../render_engine/lighting.h"
 #include "../../view_slot.h"
 #include "internal.h"
+#include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
 #include "mc/entity/living/view.h"
+#include "mc/entity/player/player.h"
 #include "renderer_camera_internal.h"
 #include "renderer_fog_internal.h"
 #include "renderer_fog_state_internal.h"
@@ -46,10 +48,16 @@ struct mc_client_world_frame_call {
     mc_client_renderer_camera_call *camera_setup;
     mc_client_renderer_camera_state camera_state;
     mc_client_renderer_camera_error camera_error, camera_cleanup;
-    mc_client_renderer_fog_state_call *fog_setup[3];
-    mc_client_renderer_fog_state_view fog_setup_state[3];
-    mc_client_renderer_fog_state_error fog_setup_error[3], fog_setup_cleanup[3];
+    mc_client_renderer_fog_state_call *fog_setup[5];
+    mc_client_renderer_fog_state_view fog_setup_state[5];
+    mc_client_renderer_fog_state_error fog_setup_error[5], fog_setup_cleanup[5];
+    mc_client_effect_renderer *effects_occurrence;
 #ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+    mc_client_effect_draw_call *lit_particles, *sprite_particles;
+    mc_effect_draw_state lit_particles_state, sprite_particles_state;
+    mc_effect_draw_error lit_particles_error, lit_particles_cleanup;
+    mc_effect_draw_error sprite_particles_error, sprite_particles_cleanup;
+    mc_effect_draw_error particles_retirement_error;
     mc_client_render_global_sky_call *sky;
     mc_client_render_global_sky_state sky_state;
     mc_client_render_global_sky_error sky_error, sky_cleanup;
@@ -64,18 +72,33 @@ struct mc_client_world_frame_call {
     mc_client_render_global_submit_call *submission;
     mc_client_render_global_submit_state submission_state;
     mc_client_render_global_error submission_error, submission_cleanup;
+    mc_client_render_global_submit_call *translucent_submission;
+    mc_client_render_global_submit_state translucent_submission_state;
+    mc_client_render_global_error translucent_submission_error, translucent_submission_cleanup;
+    mc_client_render_global_submit_call *translucent_replay;
+    mc_client_render_global_submit_state translucent_replay_state;
+    mc_client_render_global_error translucent_replay_error, translucent_replay_cleanup;
+    mc_client_render_global_error translucent_retirement_error;
     mc_client_render_global *render_global_occurrence;
     mc_client_render_global_error render_global_error, render_global_cleanup;
     mc_client_render_global_entities_call *entities;
     mc_client_render_global_entities_state entities_state;
     mc_client_render_global_error entities_error, entities_cleanup;
+    mc_client_render_global_error entities_retirement_error;
     mc_client_render_engine *terrain_engine;
     mc_client_texture_lookup_error terrain_texture_error, terrain_texture_cleanup;
+    mc_client_render_engine *translucent_engine;
+    mc_client_texture_lookup_error translucent_texture_error, translucent_texture_cleanup;
+    bool terrain_lookup_owned, translucent_lookup_owned;
     mc_client_graphics_error lighting_error;
+    mc_client_graphics_error particle_lighting_error;
     mc_client_lighting_error lighting_enable_error;
     mc_entity_view_error eye_error;
     mc_entity_vector *entity_eye;
     mc_entity_classes *eye_classes;
+    mc_entity_hit_result *selection_hit;
+    mc_entity_hit_error selection_hit_cleanup;
+    mc_item_stack *selection_stack;
     mc_platform_nanotime update_clock;
 #endif
     bool owner_held, camera_held;
@@ -183,16 +206,24 @@ static bool fog_setup_body(mc_client_world_frame_call *call, unsigned int index,
             call->state.sky_fog = &call->fog_setup_state[index];
         else if (index == 1)
             call->state.terrain_fog = &call->fog_setup_state[index];
-        else
+        else if (index == 2)
             call->state.draw_fog = &call->fog_setup_state[index];
+        else if (index == 3)
+            call->state.particle_fog = &call->fog_setup_state[index];
+        else
+            call->state.translucent_fog = &call->fog_setup_state[index];
     }
     if (status == MC_CLIENT_RENDERER_FOG_STATE_OK) {
         if (index == 0)
             call->state.sky_fog_returned = true;
         else if (index == 1)
             call->state.terrain_fog_returned = true;
-        else
+        else if (index == 2)
             call->state.draw_fog_returned = true;
+        else if (index == 3)
+            call->state.particle_fog_returned = true;
+        else
+            call->state.translucent_fog_returned = true;
         return true;
     }
     const mc_client_renderer_fog_state_error *error = &call->fog_setup_error[index];
@@ -212,6 +243,8 @@ static bool fog_setup_body(mc_client_world_frame_call *call, unsigned int index,
 }
 
 #ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+#include "world_frame_after_particles.inc"
+
 static bool entities_body(mc_client_world_frame_call *call, mc_math_classes *math) {
     if (call->state.render_global == NULL)
         return outer_fail(call, MC_CLIENT_WORLD_FRAME_SOURCE_NULL,
@@ -251,12 +284,7 @@ static bool entities_body(mc_client_world_frame_call *call, mc_math_classes *mat
         return false;
     }
     call->state.entities_returned = true;
-    if (call->state.effects == NULL)
-        return outer_fail(call, MC_CLIENT_WORLD_FRAME_SOURCE_NULL,
-                          "actual captured EffectRenderer receiver", 518, false);
-    call->failure.child = (mc_client_graphics_site){"dn", "b", "(Lsn;F)V", 0};
-    return outer_fail(call, MC_CLIENT_WORLD_FRAME_DEPENDENCY,
-                      "actual captured EffectRenderer render child is not connected", 518, true);
+    return particles_body(call, math);
 }
 
 static void sky_views_expired(mc_client_world_frame_call *call) {
@@ -441,8 +469,12 @@ static bool culling_body(mc_client_world_frame_call *call, mc_math_classes *math
     static const uint16_t terrain[] = {'/', 't', 'e', 'r', 'r', 'a', 'i', 'n', '.', 'p', 'n', 'g'};
     mc_client_texture texture;
     const mc_texture_pack_text key = {terrain, sizeof terrain / sizeof(*terrain), false};
-    if (mc_client_render_engine_texture(engine, owner->services.display, NULL, key, &texture,
-                                        &call->terrain_texture_error) != MC_CLIENT_LOOKUP_OK) {
+    const bool terrain_lookup_pending = mc_client_texture_lookup_pending(engine);
+    const mc_client_texture_lookup_status terrain_lookup_status = mc_client_render_engine_texture(
+        engine, owner->services.display, NULL, key, &texture, &call->terrain_texture_error);
+    call->terrain_lookup_owned =
+        !terrain_lookup_pending && mc_client_texture_lookup_pending(engine);
+    if (terrain_lookup_status != MC_CLIENT_LOOKUP_OK) {
         call->failure.texture = &call->terrain_texture_error;
         call->failure.child = call->terrain_texture_error.site;
         return outer_fail(call, MC_CLIENT_WORLD_FRAME_CHILD_FAILED,
@@ -624,6 +656,14 @@ static bool body(mc_client_world_frame_call *call, mc_math_classes *math) {
     if (app == NULL)
         return false;
     call->state.effects = app->effect_renderer;
+    if (call->state.effects != NULL) {
+        call->failure.effects = mc_client_effect_renderer_retain(call->state.effects);
+        if (call->failure.effects != MC_EFFECT_RENDERER_OK)
+            return outer_fail(call, MC_CLIENT_WORLD_FRAME_NATIVE_FAILED,
+                              "World-frame captured EffectRenderer occurrence", 66, true);
+        call->effects_occurrence = call->state.effects;
+    }
+    call->state.effects_captured = true;
     if (call->state.camera == NULL)
         return outer_fail(call, MC_CLIENT_WORLD_FRAME_SOURCE_NULL,
                           "actual World-frame camera receiver", 70, false);
@@ -857,6 +897,39 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
     if (call->state.active || call->state.owner->active)
         return result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame active retirement");
 #ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+    const mc_effect_draw_error *particle_failure = call->sprite_particles_state.failure;
+    if (mc_client_effect_renderer_draw_retire(
+            &call->sprite_particles, &call->sprite_particles_cleanup) != MC_EFFECT_DRAW_OK) {
+        if (call->sprite_particles != NULL)
+            (void)mc_client_effect_renderer_draw_inspect(call->sprite_particles,
+                                                         &call->sprite_particles_state);
+        result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame sprite particle retirement");
+        if (error != NULL)
+            error->particles = &call->sprite_particles_cleanup;
+        return MC_CLIENT_WORLD_FRAME_BUSY;
+    }
+    if (call->failure.particles == particle_failure)
+        call->failure.particles = NULL;
+    particle_views_expired(&call->sprite_particles_state);
+    call->state.sprite_particles = NULL;
+    particle_failure = call->lit_particles_state.failure;
+    if (mc_client_effect_renderer_draw_retire(&call->lit_particles, &call->lit_particles_cleanup) !=
+        MC_EFFECT_DRAW_OK) {
+        if (call->lit_particles != NULL)
+            (void)mc_client_effect_renderer_draw_inspect(call->lit_particles,
+                                                         &call->lit_particles_state);
+        result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame lit particle retirement");
+        if (error != NULL)
+            error->particles = &call->lit_particles_cleanup;
+        return MC_CLIENT_WORLD_FRAME_BUSY;
+    }
+    if (call->failure.particles == particle_failure)
+        call->failure.particles = NULL;
+    particle_views_expired(&call->lit_particles_state);
+    call->state.lit_particles = NULL;
+    call->particles_retirement_error.texture = NULL;
+    call->particles_retirement_error.manager.font = NULL;
+    call->particles_retirement_error.manager.acquisition = NULL;
     const bool entities_retained = call->entities != NULL;
     if (mc_client_render_global_entities_retire(&call->entities, &call->entities_cleanup) !=
         MC_CLIENT_RENDER_GLOBAL_OK) {
@@ -868,8 +941,51 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
         return MC_CLIENT_WORLD_FRAME_BUSY;
     }
     call->state.entities = NULL;
+    entities_views_expired(call);
+    render_error_views_expired(&call->entities_retirement_error);
     if (entities_retained)
         call->failure.entities = NULL; /* The actual child's borrowed failure view ended. */
+    const mc_client_render_global_error *replay_failure = call->translucent_replay_state.failure;
+    if (mc_client_render_global_submit_retire(&call->translucent_replay,
+                                              &call->translucent_replay_cleanup) !=
+        MC_CLIENT_RENDER_GLOBAL_OK) {
+        if (call->translucent_replay != NULL)
+            (void)mc_client_render_global_submit_inspect(call->translucent_replay,
+                                                         &call->translucent_replay_state);
+        result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame translucent replay retirement");
+        if (error != NULL)
+            error->submission = &call->translucent_replay_cleanup;
+        return MC_CLIENT_WORLD_FRAME_BUSY;
+    }
+    if (call->failure.submission == replay_failure)
+        call->failure.submission = NULL;
+    submission_views_expired(&call->translucent_replay_state);
+    call->state.translucent_replay = NULL;
+    if (mc_client_render_global_submit_retire(&call->translucent_submission,
+                                              &call->translucent_submission_cleanup) !=
+        MC_CLIENT_RENDER_GLOBAL_OK) {
+        if (call->translucent_submission != NULL)
+            (void)mc_client_render_global_submit_inspect(call->translucent_submission,
+                                                         &call->translucent_submission_state);
+        return result(error, MC_CLIENT_WORLD_FRAME_BUSY,
+                      "World-frame translucent N submission retirement");
+    }
+    call->state.translucent_submission = NULL;
+    if (call->failure.submission == call->translucent_submission_state.failure)
+        call->failure.submission = NULL;
+    submission_views_expired(&call->translucent_submission_state);
+    render_error_views_expired(&call->translucent_retirement_error);
+    if (mc_entity_hit_result_release(&call->selection_hit, &call->selection_hit_cleanup) !=
+        MC_ENTITY_HIT_OK) {
+        result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame selection Hit retirement");
+        if (error != NULL)
+            error->hit = call->selection_hit_cleanup;
+        return MC_CLIENT_WORLD_FRAME_BUSY;
+    }
+    call->state.selection_hit = NULL;
+    mc_item_stack_release(call->selection_stack);
+    call->selection_stack = NULL;
+    call->state.selection_stack = NULL;
     if (call->entity_eye != NULL) {
         const mc_entity_status released =
             mc_entity_vector_release(call->eye_classes, call->entity_eye);
@@ -897,14 +1013,29 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
     call->state.update = NULL;
     call->failure.update = NULL;
     if (call->terrain_engine != NULL) {
-        if (mc_client_render_engine_retire_lookup(
+        if (call->terrain_lookup_owned &&
+            mc_client_render_engine_retire_lookup(
                 call->terrain_engine, &call->terrain_texture_cleanup) != MC_CLIENT_LOOKUP_OK)
             return result(error, MC_CLIENT_WORLD_FRAME_BUSY,
                           "World-frame terrain lookup retirement");
+        call->terrain_lookup_owned = false;
         if (mc_client_render_engine_release(call->terrain_engine) != MC_CLIENT_RENDER_ENGINE_OK)
             return result(error, MC_CLIENT_WORLD_FRAME_BUSY,
                           "World-frame terrain Engine retirement");
         call->terrain_engine = NULL;
+    }
+    if (call->translucent_engine != NULL) {
+        if (call->translucent_lookup_owned &&
+            mc_client_render_engine_retire_lookup(call->translucent_engine,
+                                                  &call->translucent_texture_cleanup) !=
+                MC_CLIENT_LOOKUP_OK)
+            return result(error, MC_CLIENT_WORLD_FRAME_BUSY,
+                          "World-frame translucent texture lookup retirement");
+        call->translucent_lookup_owned = false;
+        if (mc_client_render_engine_release(call->translucent_engine) != MC_CLIENT_RENDER_ENGINE_OK)
+            return result(error, MC_CLIENT_WORLD_FRAME_BUSY,
+                          "World-frame translucent Engine retirement");
+        call->translucent_engine = NULL;
     }
     if (mc_client_render_global_cull_retire(&call->culling, &call->culling_cleanup) !=
         MC_CLIENT_FRUSTUM_OK) {
@@ -933,7 +1064,7 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
     call->state.sky = NULL;
     call->failure.sky = NULL;
 #endif
-    for (unsigned int i = 0; i < 3; ++i) {
+    for (unsigned int i = 0; i < 5; ++i) {
         const mc_client_renderer_fog_state_error *failure = call->fog_setup_state[i].failure;
         if (mc_client_entity_renderer_fog_state_retire(&call->fog_setup[i],
                                                        &call->fog_setup_cleanup[i]) !=
@@ -947,8 +1078,12 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
             call->state.sky_fog = NULL;
         else if (i == 1)
             call->state.terrain_fog = NULL;
-        else
+        else if (i == 2)
             call->state.draw_fog = NULL;
+        else if (i == 3)
+            call->state.particle_fog = NULL;
+        else
+            call->state.translucent_fog = NULL;
         call->fog_setup_state[i].failure = NULL;
         if (call->failure.fog_setup == failure)
             call->failure.fog_setup = NULL;
@@ -976,6 +1111,19 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
     }
     call->state.fog = NULL;
     call->failure.fog = NULL;
+    if (call->effects_occurrence != NULL) {
+        const mc_effect_renderer_status released =
+            mc_client_effect_renderer_release(call->effects_occurrence);
+        if (released != MC_EFFECT_RENDERER_OK) {
+            result(error, MC_CLIENT_WORLD_FRAME_BUSY,
+                   "World-frame captured EffectRenderer retirement");
+            if (error != NULL)
+                error->effects = released;
+            return MC_CLIENT_WORLD_FRAME_BUSY;
+        }
+        call->effects_occurrence = NULL;
+        call->state.effects = NULL;
+    }
 #ifdef MC_SOURCE_HAS_RENDER_GLOBAL
     if (mc_client_render_global_release(&call->render_global_occurrence,
                                         &call->render_global_cleanup) !=

@@ -220,11 +220,10 @@ void mc_terrain_freeze_failure(mc_client_render_global_submit_call *c) {
         c->failure.child = c->frames[1];
 }
 
-mc_client_render_global_status
-mc_client_render_global_submit_begin(mc_client_render_global *n, mc_entity *camera, int32_t pass,
-                                     double partial, mc_math_classes *math,
-                                     mc_client_render_global_submit_call **out,
-                                     mc_client_render_global_error *error) {
+static mc_client_render_global_status begin(mc_client_render_global *n, mc_entity *camera,
+                                            int32_t pass, double partial, mc_math_classes *math,
+                                            bool replay, mc_client_render_global_submit_call **out,
+                                            mc_client_render_global_error *error) {
     mc_client_render_global_error local = {0};
     if (error == NULL)
         error = &local;
@@ -285,7 +284,11 @@ mc_client_render_global_submit_begin(mc_client_render_global *n, mc_entity *came
     n->submit_call = c;
     *out = c;
     c->state.active = n->active = true;
-    const bool ok = body(c);
+    const bool ok = replay ? mc_terrain_replay(c) : body(c);
+    if (ok && replay) {
+        c->state.returned = true;
+        c->failure.source_returned = true;
+    }
     if (!ok && c->failure.status == MC_CLIENT_RENDER_GLOBAL_OK)
         mc_terrain_fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
                         "N source child stopped without a failure", c->state.source_pc, true);
@@ -294,6 +297,21 @@ mc_client_render_global_submit_begin(mc_client_render_global *n, mc_entity *came
     c->state.active = n->active = false;
     *error = c->failure;
     return error->status;
+}
+
+mc_client_render_global_status
+mc_client_render_global_submit_begin(mc_client_render_global *n, mc_entity *camera, int32_t pass,
+                                     double partial, mc_math_classes *math,
+                                     mc_client_render_global_submit_call **out,
+                                     mc_client_render_global_error *error) {
+    return begin(n, camera, pass, partial, math, false, out, error);
+}
+
+mc_client_render_global_status
+mc_client_render_global_replay_begin(mc_client_render_global *n, int32_t pass, double partial,
+                                     mc_client_render_global_submit_call **out,
+                                     mc_client_render_global_error *error) {
+    return begin(n, NULL, pass, partial, NULL, true, out, error);
 }
 
 bool mc_client_render_global_submit_inspect(const mc_client_render_global_submit_call *c,

@@ -2,7 +2,8 @@
 
 The client implements the actual `em` pickup particle, its `xw`/`sn` constructors,
 the CPU `dn` effect manager, and the selected complete-App pickup notification.
-These owners do not draw particles or complete the game frontend.
+The [particle draw entries](particle-rendering.md) now run on these same owners.
+Reached Entity drawing and the complete game frontend remain unfinished.
 
 `mc_pickup_particle_allocate` creates a real RAW client-only Entity. Construction
 reads the picked actor's six position/velocity arguments before entering its
@@ -64,5 +65,5 @@ Observed constructor U/nanoTime inputs replay only through the private test
 binding; the game API accepts no seed, clock sample or supplied random output.
 
 Original nonnull-App pickup correspondence, actual RenderEngine construction,
-particle drawing, frame scheduling, full World/Entity updates and the playable
+complete particle drawing, frame scheduling, full World/Entity updates and the playable
 client remain unfinished. Finite CPU evidence does not establish those behaviors.
