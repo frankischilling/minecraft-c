@@ -1,6 +1,7 @@
 #include "object_state_internal.h"
 
 #include "../../entity/entity_internal.h"
+#include "../runtime/terminal_inventory_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
 
@@ -39,6 +40,42 @@ static bool list_valid(const mc_world_chunk_entity_list *list) {
            list->capacity <= SIZE_MAX / sizeof(*list->items) &&
            ((list->capacity == 0 && list->items == NULL) ||
             (list->capacity != 0 && list->items != NULL));
+}
+
+static mc_world_storage_status terminal_result(mc_world_storage_error *error,
+                                               mc_world_storage_status status,
+                                               const char *operation) {
+    if (error != NULL)
+        *error = (mc_world_storage_error){status, operation, 0};
+    return status;
+}
+
+mc_world_storage_status
+mc_world_chunk_terminal_visit_entities(const mc_world_chunk *chunk,
+                                       mc_world_terminal_entity_visitor visit, void *context,
+                                       mc_world_storage_error *error) {
+    if (chunk == NULL || visit == NULL)
+        return terminal_result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                               "Chunk terminal Entity visitor");
+    if (!mc_world_chunk_entities_validate(chunk))
+        return terminal_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Chunk terminal Entity ownership metadata");
+    /* Legacy structural validation permits any nonnull finalizer. The strict
+     * inventory reads only actual canonical Entity payloads; establish that
+     * provenance before dereferencing or forwarding any owning slot. */
+    if (chunk->release_entity != NULL && chunk->release_entity != mc_entity_release)
+        return terminal_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Chunk terminal canonical Entity finalizer");
+    for (size_t slice = 0; slice < CHUNK_ENTITY_SLICES; ++slice) {
+        const mc_world_chunk_entity_list *list = &chunk->entities[slice];
+        for (size_t occurrence = 0; occurrence < list->count; ++occurrence) {
+            const mc_world_storage_status status =
+                visit(context, &list->items[occurrence], list->items[occurrence], error);
+            if (status != MC_WORLD_STORAGE_OK)
+                return status;
+        }
+    }
+    return terminal_result(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
 static mc_world_storage_status hold_status(mc_entity_status status) {

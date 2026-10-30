@@ -93,6 +93,11 @@ The caller-owned numerical storage
 interface cannot infer the provenance of arbitrarily copied state. Borrowed
 concrete Chunk state must stay within its documented ownership contract.
 
+The passive [terminal admission](terminal-retirement.md) can first check exact
+native Entity, TileEntity, provider and static Piston roots in its stated client
+GAME scope. It leaves the complete live graph unchanged. Its private client
+anchor adapter and outer destruction coordinator remain unfinished.
+
 `mc_world_runtime_retire_entity_containers` is terminal native disposal, separate
 from source removal or unload. Its historical name now covers actual Entity and
 [TileEntity ownership](tile-entities.md). Admission first validates the complete World b/c/G

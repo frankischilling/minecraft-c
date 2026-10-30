@@ -586,8 +586,8 @@
       "sha256": "5a20cf55f40ed6f1b30dd6837ebe805321ad7bf909cd038cfe902800e81d0031"
     },
     "include/mc/world/runtime/entities.h": {
-      "bytes": 5111,
-      "sha256": "bb0517cf7861399a7af9da443369804d22224af5fa465fcf050073e88067df5c"
+      "bytes": 7122,
+      "sha256": "e7cbc1b19c1c9a3d80222976604e8731f19b3dea6d55bd473eb088fa15879011"
     },
     "include/mc/world/runtime/entity_errors.h": {
       "bytes": 2075,
@@ -3870,8 +3870,8 @@
       "sha256": "fed826a2e36dc16e765335a682932deebbcab0ebc90b91fa017f9872c43841ad"
     },
     "src/world/storage/store.c": {
-      "bytes": 101804,
-      "sha256": "bfc47ebfc1c3effa62844cb7bcb61984d4401dc818f6142658f9028b0a08c166"
+      "bytes": 104206,
+      "sha256": "1976f4118a62fd8f4d389e2f028640ed386e13c22c84f316a6034b134324297a"
     },
     "src/world/storage/store_source.inc": {
       "bytes": 39393,
@@ -4400,6 +4400,34 @@
     "tests/reference/client/render_manager_frame/run_sleeping.py": {
       "bytes": 12938,
       "sha256": "a5264f92fd61fde4ad7d19244595b9707d52606190567265179813706fe0f05e"
+    },
+    "include/mc/world/runtime/collision/class_entities.h": {
+      "bytes": 3402,
+      "sha256": "2eb7b5f1bbd8639d0abfd43745668c79b43e852df44a66309ff107b85e2bf312"
+    },
+    "src/world/runtime/terminal_inventory.c": {
+      "bytes": 20379,
+      "sha256": "99ae9162313e9162a51936b2d7746d93b310c31464c1bcf579515b97f34eb8f2"
+    },
+    "src/world/runtime/terminal_inventory_internal.h": {
+      "bytes": 5184,
+      "sha256": "137e32d5ac31b1334fec3746fc536b025bf0dd55ab35db156efe795136fa6726"
+    },
+    "src/world/runtime/tile_entities/piston_list_internal.h": {
+      "bytes": 2989,
+      "sha256": "b2263d72ee4e91c5d365b08239450aa927c6f75af615fb0380ca3856c4615b0d"
+    },
+    "src/world/runtime/tile_entities/tile_entities_internal.h": {
+      "bytes": 1112,
+      "sha256": "3bcab6a993a57b9fe614348e0691aa7a827de594b7a41b67f705307829ee0186"
+    },
+    "tests/tools/world/test_terminal_inventory.py": {
+      "bytes": 4107,
+      "sha256": "9e3b4f0f5f38d24360a92d772f194f5ad298557655fe95bd53d76aad928228ae"
+    },
+    "tests/world/runtime/test_terminal_inventory.c": {
+      "bytes": 40624,
+      "sha256": "f2845c56b2651d5fba19054dcfbe1591502e3c0dc664655d8bbc8566c3488459"
     }
   },
   "authorities": {

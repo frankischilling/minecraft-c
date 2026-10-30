@@ -1,5 +1,12 @@
 # Systems and subsystems
 
+The passive [World terminal inventory](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/terminal-retirement.md) counts actual Entity, TileEntity,
+Provider and static Piston owners without changing the live graph. Its 834
+native controls pass on Windows and sanitized Linux. The broader selection
+passes 44 Windows tests and 42 Linux tests; all 35 targets build on both hosts.
+Client anchors, other service roots and dispatcher retirement still need
+integration before normal shutdown and live frame adoption.
+
 The [terminal preparation prefix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
 ends one RenderGlobal owner's local rights while preserving shared TH fields
 and the full World graph. Its policy survives checked cleanup retries. The

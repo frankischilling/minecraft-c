@@ -1,5 +1,22 @@
 # Test scope and reproduction
 
+## World terminal admission controls
+
+The passive [World inventory](world/terminal-retirement.md) passes 834 native
+checks on Windows MSVC Debug and Linux Clang18 ASan/UBSan. The dedicated
+`world.terminal_inventory` runner retains complete stdout, stderr, source and
+executable hashes, plus the actual fresh Unicode World files. It enforces the
+single namespace's complete `16 achievements` then `151 recipes` bootstrap
+diagnostics and one result footer. There is no original-runtime equality claim.
+
+All 35 selected targets build on both platforms. The regression selection passes
+44 Windows CTests in 57.53 seconds and 42 Linux CTests in 105.80 seconds, without
+failures or skips and with source inputs unchanged. It includes the existing
+renderer/menu selection, World Entity publication and Piston tick. Retained
+Linux output has no sanitizer findings. All 1,604 project C/header/fragment files
+pass clang-format18.1.3. Client-owned anchors and the outer shutdown coordinator
+remain unfinished.
+
 ## Terminal preparation controls
 
 Native terminal preparation ends the selected loop and renderer admissions

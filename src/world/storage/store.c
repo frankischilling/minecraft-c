@@ -1,6 +1,7 @@
 #include "mc/world/storage/store.h"
 
 #include "../chunk/object_internal.h"
+#include "../runtime/terminal_inventory_internal.h"
 #include "chunk_build_internal.h"
 #include "files.h"
 #include "generated_internal.h"
@@ -2035,6 +2036,49 @@ void mc_world_store_entity_containers_release(mc_world_store *store,
                 mc_world_chunk_containers_release(chunk);
         }
     }
+}
+
+mc_world_storage_status mc_world_store_terminal_visit_chunks(mc_world_store *store,
+                                                             const mc_world_runtime *world,
+                                                             mc_world_terminal_chunk_visitor visit,
+                                                             void *context,
+                                                             mc_world_storage_error *error) {
+    if (visit == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                           "Store terminal Chunk visitor");
+    const mc_world_storage_status admitted =
+        mc_world_store_entity_containers_validate(store, world, error);
+    if (admitted != MC_WORLD_STORAGE_OK)
+        return admitted;
+    /* First scope has one World/handler graph. Refuse a mixed actual handler
+     * before visiting any child; source cache membership is not ownership. */
+    for (const store_chunk *entry = store->chunks; entry != NULL; entry = entry->next) {
+        const mc_world_chunk *chunk =
+            entry->kind == STORE_CHUNK_GENERATED ? entry->owner.generated : entry->loaded_binding;
+        if (chunk == NULL)
+            continue;
+        mc_world_chunk_fields fields;
+        if (mc_world_chunk_fields_get(chunk, &fields) != MC_WORLD_STORAGE_OK)
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal Chunk identity");
+        if (fields.d != NULL && fields.d != world)
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal mixed World ownership");
+    }
+    for (const store_chunk *entry = store->chunks; entry != NULL; entry = entry->next) {
+        const mc_world_chunk *chunk =
+            entry->kind == STORE_CHUNK_GENERATED ? entry->owner.generated : entry->loaded_binding;
+        if (chunk == NULL)
+            continue;
+        mc_world_chunk_fields fields;
+        (void)mc_world_chunk_fields_get(chunk, &fields); /* Same exclusive admitted identity. */
+        if (fields.d == world) {
+            const mc_world_storage_status status = visit(context, chunk, error);
+            if (status != MC_WORLD_STORAGE_OK)
+                return status;
+        }
+    }
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
 #include "source_game_stage.inc"

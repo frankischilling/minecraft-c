@@ -100,10 +100,11 @@ disposal. An advisory GC request cannot replace native ownership accounting.
 
 ## Destruction and runtime adoption remain separate
 
-Before destructive retirement, the outer owner still needs exact admission
-of external Entity, TileEntity and Provider roots, including the static
-Piston roots. It must end its actual consumer records and retire any existing
-LL/TH associations with their Display and resource dependencies
+The lower [World admission](../world/terminal-retirement.md) now counts exact
+Entity, TileEntity, Provider and static Piston owners in its stated client GAME
+scope without releasing them. The outer owner still needs its actual client
+anchors and admission of the remaining dependencies. It must end its actual
+consumer records and retire any existing LL/TH associations with their Display and resource dependencies
 live. LL cleanup must look up the existing association passively, then retire it
 without initializing a new singleton merely to tear it down. A retained
 Piston CV or dispatcher occurrence remains a real World root.

@@ -12,6 +12,7 @@
 #include "../construction_internal.h"
 #include "../mutation/mutation_internal.h"
 #include "../runtime_internal.h"
+#include "../terminal_inventory_internal.h"
 #include "../world_access_internal.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/entities.h"
@@ -159,6 +160,14 @@ static mc_registry_error live_empty_registry(void) {
     mc_tile_entity_error error;
     mc_tile_entity_error_init(&error);
     return error.registry;
+}
+
+static mc_world_storage_status tile_terminal_result(mc_world_storage_error *error,
+                                                    mc_world_storage_status status,
+                                                    const char *operation) {
+    if (error != NULL)
+        *error = (mc_world_storage_error){status, operation, 0};
+    return status;
 }
 
 static mc_tile_entity_status tile_entity_inventory_result(mc_live_tile_entity_error *error,
@@ -495,6 +504,27 @@ mc_tile_entity_piston_code_classes_held(const mc_tile_entity *tile_entity) {
         classes->parent->tile_entities != classes)
         return NULL;
     return classes->parent;
+}
+
+mc_world_storage_status mc_tile_entity_terminal_read(const mc_tile_entity *tile_entity,
+                                                     mc_tile_entity_terminal_view *out,
+                                                     mc_world_storage_error *error) {
+    mc_world_storage_error local = {0};
+    if (error == NULL)
+        error = &local;
+    (void)tile_terminal_result(error, MC_WORLD_STORAGE_OK, NULL);
+    if (tile_entity == NULL || out == NULL)
+        return tile_terminal_result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                    "terminal TileEntity view arguments");
+    const mc_tile_entity_classes *classes = tile_entity->classes;
+    if (tile_entity->holds == 0 || classes == NULL || classes->parent == NULL ||
+        classes->parent->tile_entities != classes || classes->live_tile_entities == 0)
+        return tile_terminal_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                    "terminal TileEntity canonical owner invariant");
+    /* RAW and failed instances own these same native occurrences. Neither
+     * source construction nor a READY-only getter is required to inspect them. */
+    *out = (mc_tile_entity_terminal_view){classes->parent, tile_entity->world, tile_entity->holds};
+    return MC_WORLD_STORAGE_OK;
 }
 
 static void tile_entity_slots_release(mc_item_stack **slots, size_t capacity) {
@@ -2080,6 +2110,40 @@ static bool piston_list_retire_valid(const mc_tile_entity_classes *classes) {
            classes->piston_allocation_bytes == 0;
 }
 
+mc_world_storage_status mc_tile_entity_piston_terminal_visit_entities(
+    const mc_world_runtime_classes *parent, mc_world_terminal_entity_visitor visitor, void *context,
+    mc_tile_entity_terminal_class_inventory *out, mc_world_storage_error *error) {
+    mc_world_storage_error local = {0};
+    if (error == NULL)
+        error = &local;
+    (void)tile_terminal_result(error, MC_WORLD_STORAGE_OK, NULL);
+    if (parent == NULL || visitor == NULL || out == NULL)
+        return tile_terminal_result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                    "terminal Piston class inventory arguments");
+    const mc_tile_entity_classes *classes = parent->tile_entities;
+    mc_tile_entity_terminal_class_inventory inventory = {0};
+    if (classes != NULL) {
+        if (classes->parent != parent || !piston_list_retire_valid(classes))
+            return tile_terminal_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                        "terminal Piston class owning List invariant");
+        inventory.live_tiles = classes->live_tile_entities;
+        inventory.piston_occurrences = classes->piston_count;
+        /* Only the typed ledger owns the Entity releases. Source items and
+         * iterator aliases do not add another static-m occurrence. */
+        for (size_t i = 0; i < classes->piston_count; ++i) {
+            const mc_world_storage_status status =
+                visitor(context, &classes->piston_entities[i], classes->piston_entities[i], error);
+            if (status != MC_WORLD_STORAGE_OK)
+                return status;
+        }
+    }
+    /* An absent static-m backing contributes no Entity occurrences; an existing
+     * namespace still reports its actual live Tile count. No class creation,
+     * active use or source List clear occurs here. */
+    *out = inventory;
+    return MC_WORLD_STORAGE_OK;
+}
+
 static bool piston_list_owner(mc_tile_entity *tile_entity, mc_tile_entity_classes **out,
                               mc_piston_list_error *error) {
     if (mc_tile_entity_piston_code_classes_held(tile_entity) == NULL) {
@@ -2701,6 +2765,32 @@ bool mc_live_tile_entities_lists_valid(const mc_world_runtime *world) {
     return world != NULL && live_list_valid(world, false) && live_list_valid(world, true);
 }
 
+mc_world_storage_status
+mc_live_tile_entities_terminal_visit_lists(const mc_world_runtime *world,
+                                           mc_world_terminal_tile_visitor visitor, void *context,
+                                           mc_world_storage_error *error) {
+    mc_world_storage_error local = {0};
+    if (error == NULL)
+        error = &local;
+    (void)tile_terminal_result(error, MC_WORLD_STORAGE_OK, NULL);
+    if (world == NULL || visitor == NULL)
+        return tile_terminal_result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                    "terminal TileEntity World List arguments");
+    if (!mc_live_tile_entities_lists_valid(world))
+        return tile_terminal_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                    "terminal TileEntity World List owning invariant");
+    for (size_t selected = 0; selected < 2; ++selected) {
+        const mc_tile_entity_list_ledger *ledger = &world->tile_entity_membership[selected];
+        for (size_t i = 0; i < ledger->count; ++i) {
+            const mc_world_storage_status status =
+                visitor(context, &ledger->holds[i], ledger->holds[i], error);
+            if (status != MC_WORLD_STORAGE_OK)
+                return status;
+        }
+    }
+    return MC_WORLD_STORAGE_OK;
+}
+
 static bool live_list_add(mc_world_runtime *world, bool deferred, mc_tile_entity *tile_entity,
                           mc_live_tile_entity_error *error) {
     mc_tile_entity_list_ledger *ledger = &world->tile_entity_membership[deferred ? 1u : 0u];
@@ -3220,6 +3310,43 @@ static bool live_owned_map_valid(const mc_world_chunk *chunk) {
         return false;
     return visited == map->size && expected == map->allocation_bytes &&
            expected <= chunk->allocation_bytes;
+}
+
+mc_world_storage_status
+mc_live_tile_entities_terminal_visit_owned_map(const mc_world_chunk *chunk,
+                                               mc_world_terminal_tile_visitor visitor,
+                                               void *context, mc_world_storage_error *error) {
+    mc_world_storage_error local = {0};
+    if (error == NULL)
+        error = &local;
+    (void)tile_terminal_result(error, MC_WORLD_STORAGE_OK, NULL);
+    if (chunk == NULL || visitor == NULL)
+        return tile_terminal_result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                    "terminal TileEntity Chunk Map arguments");
+    if (!live_owned_map_valid(chunk))
+        return tile_terminal_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                    "terminal TileEntity Chunk Map owning invariant");
+    const mc_tile_entity_map_backing *map = chunk->tile_entity_map.backing;
+    if (map == NULL)
+        return MC_WORLD_STORAGE_OK;
+    size_t visited = 0;
+    for (uint32_t bucket = 0; bucket < map->capacity; ++bucket)
+        for (const live_map_node *node = map->buckets[bucket]; node != NULL; node = node->next) {
+            if (visited == map->size)
+                return tile_terminal_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                            "terminal TileEntity Chunk Map chain extent");
+            const mc_world_storage_status status =
+                visitor(context, &node->value, node->value, error);
+            if (status != MC_WORLD_STORAGE_OK)
+                return status;
+            ++visited;
+        }
+    if (visited != map->size)
+        return tile_terminal_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                    "terminal TileEntity Chunk Map visited size");
+    /* Source chunk.l may be replaced. The embedded Map, validated above,
+     * still owns these exact node values and their eventual releases. */
+    return MC_WORLD_STORAGE_OK;
 }
 
 bool mc_live_tile_entities_owned_map_bytes(const mc_world_chunk *chunk, size_t *out) {

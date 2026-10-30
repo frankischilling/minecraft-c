@@ -59,6 +59,38 @@ mc_world_storage_status mc_world_runtime_entity_by_id(mc_world_runtime *world, i
 mc_world_storage_status mc_world_runtime_chunk_add_entity(mc_world_chunk *chunk, mc_entity *entity,
                                                           mc_world_entity_error *error);
 
+typedef struct mc_world_terminal_limits {
+    size_t max_entries, max_bytes; /* Native scratch only; zero keeps its literal value. */
+} mc_world_terminal_limits;
+
+typedef struct mc_world_terminal_inventory {
+    size_t entities, tile_entities, entity_occurrences, tile_entity_occurrences;
+    size_t expected_world_bindings;
+    bool piston_discard_required;
+} mc_world_terminal_inventory;
+
+mc_world_terminal_limits mc_world_runtime_terminal_default_limits(void);
+
+/* Additional, nonmutating admission before terminal World destruction. The
+ * first supported scope is one READY CLIENT GAME World, with canonical typed
+ * containers/provider and no active calls, leases, WorldAccess registrations
+ * or unsupported child-owner graph. Count every actual occurrence by identity,
+ * including duplicate Lists/maps/slices, and each distinct object's ONE World
+ * backedge. External Entity/Tile/Provider holds or unexplained direct World
+ * bindings refuse before any owner, source phase, container, cache or provider
+ * mutation. Separately bounded scratch allocations never charge source ledgers.
+ * No source/class use, source/user callback, I/O, retain/release or cleanup runs.
+ * NULL limits select defaults; error is optional. World and output are required.
+ * Output changes only on success. Owners/errors/output must be disjoint and
+ * the entire graph exclusive/live. Success reserves nothing: keep it unchanged
+ * through the actual cleanup/commit, and audit afresh after any mutation or
+ * checked cleanup refusal. This does not authorize SaveHandler or App teardown.
+ * Old retire_entity_containers retains its broader separate native contract. */
+mc_world_storage_status mc_world_runtime_terminal_admit(mc_world_runtime *world,
+                                                        const mc_world_terminal_limits *limits,
+                                                        mc_world_terminal_inventory *out,
+                                                        mc_world_storage_error *error);
+
 /* Explicit terminal native teardown, separate from game removal/save/unload.
  * First retire borrowed views/calls/leases. Admission validates the complete
  * typed World.b/D/d/c/G/R ledgers and every bound Chunk slice/embedded TileEntity Map

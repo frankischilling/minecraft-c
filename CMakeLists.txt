@@ -642,6 +642,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/activation.c
     src/world/runtime/registry.c
     src/world/runtime/construction.c
+    src/world/runtime/terminal_inventory.c
     src/world/runtime/dedicated/entity_index.c
     src/world/runtime/environment.c
     src/world/runtime/movement.c
@@ -2948,6 +2949,15 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_entity_publication tests/world/runtime/test_entity_publication.c)
     target_link_libraries(mc_test_world_entity_publication PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_terminal_inventory tests/world/runtime/test_terminal_inventory.c)
+    target_link_libraries(mc_test_world_terminal_inventory PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME world.terminal_inventory COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_terminal_inventory.py"
+        --executable "$<TARGET_FILE:mc_test_world_terminal_inventory>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-terminal-inventory-contracts")
+    set_tests_properties(world.terminal_inventory PROPERTIES
+        LABELS "public;integration;world;entity;ownership" TIMEOUT 90)
 
     add_executable(mc_test_world_player_publication
         tests/world/runtime/player_publication/test_publication.c)

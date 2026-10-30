@@ -18,6 +18,7 @@
 #include "mc/world/runtime/entities.h"
 #include "millis.h"
 #include "source_construction_internal.h"
+#include "terminal_inventory_internal.h"
 #include "world_access_internal.h"
 
 #include <limits.h>
@@ -1006,8 +1007,8 @@ static bool entity_retirement_other_collections_empty(const mc_world_runtime *wo
     return fields->P == NULL || fields->P->count == 0;
 }
 
-mc_world_storage_status mc_world_runtime_retire_entity_containers(mc_world_runtime *world,
-                                                                  mc_world_storage_error *error) {
+mc_world_storage_status mc_world_runtime_entity_containers_validate(mc_world_runtime *world,
+                                                                    mc_world_storage_error *error) {
     if (world == NULL || world->construction.mode != MC_WORLD_RUNTIME_GAME)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                       "World entity retirement arguments");
@@ -1040,6 +1041,16 @@ mc_world_storage_status mc_world_runtime_retire_entity_containers(mc_world_runti
         if (status != MC_WORLD_STORAGE_OK)
             return status;
     }
+    return result(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_runtime_retire_entity_containers(mc_world_runtime *world,
+                                                                  mc_world_storage_error *error) {
+    const mc_world_storage_status admitted =
+        mc_world_runtime_entity_containers_validate(world, error);
+    if (admitted != MC_WORLD_STORAGE_OK)
+        return admitted;
+    mc_world_store *store = world->fields.w;
     /* COMMIT: no allocation, callback, fallible admission or source gameplay
      * call may be introduced below. A later full-World/cache admission belongs
      * to a separate API; this operation must not clear then report BUSY.

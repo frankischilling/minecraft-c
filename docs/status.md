@@ -1,12 +1,13 @@
 # Development status
 
-Native terminal preparation now preserves shared RenderManager state while
-ending one RenderGlobal owner's local references. The scoped selection passes
-41 Windows tests and 39 sanitized Linux tests, including real callback-failure
-retry and four retained menu profiles. The prefix stops before World container,
-cache, provider and handler cleanup. The normal run path has not adopted it;
-exact external Entity, TileEntity and other World roots still need admission
-before final teardown or live dispatcher integration.
+Passive [World terminal admission](world/terminal-retirement.md) now counts
+actual Entity, TileEntity, Provider and static Piston owners without changing
+the live graph. Its 834 native checks pass on Windows and sanitized Linux.
+All 35 selected targets build on both hosts; 44 Windows tests pass in 57.53
+seconds and 42 Linux tests pass in 105.80 seconds. The client prefix preserves
+shared RenderManager state and stops before World destruction. Its actual
+client anchors, remaining service roots and dispatcher retirement still need
+integration before normal shutdown or N44/N80 adoption.
 
 The [RenderManager CPU frame](client/render-manager-frame.md) now has Windows
 MSVC Debug and Linux Clang18 ASan/UBSan comparisons against 432 unchanged-original
@@ -16,14 +17,14 @@ Bed orientations, real World/Math failures and checked owner retirement. These
 methods are not yet adopted by live RenderGlobal traversal. Final shutdown and
 deferred World ownership remain prerequisites for that integration.
 
-The latest [hosted checkpoint c6b29f0](https://github.com/frankischilling/minecraft-c/actions/runs/41057568952)
+The latest [hosted checkpoint 2c125ff](https://github.com/frankischilling/minecraft-c/actions/runs/41062696601)
 passes all four jobs and 1,563 tests: Windows 493, GCC 535 and Clang 535, with
 zero failures, skips or dropped preceding test names. It includes the canonical
 [TileEntityRenderer CPU owner](client/tile-entity-renderer.md) and RenderManager
-frame extension, and predates terminal preparation. Windows compilation restores
-the prior cache and records 921 hits, 489 misses and no cache or compile errors.
-Its build takes 182 seconds versus 215 previously; the changed workloads do not
-establish a controlled whole-workflow speedup.
+frame extension and terminal preparation. It predates the lower World admission
+checks above. Windows restores the preceding 111,135,428-byte cache and records
+1,340 hits, 70 misses and no cache or compile errors. Its build takes 178 seconds;
+the changed workloads do not establish a controlled whole-workflow speedup.
 
 The source renderer implements [vertex lighting, normals and materials](client/lighting-raster.md)
 on the canonical OpenGL 3.3 Display program. NVIDIA and Mesa controls each compare

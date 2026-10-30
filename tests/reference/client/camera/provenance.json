@@ -110,8 +110,8 @@
       "sha256": "90bfaf52e8ee171bc32a5cdd0d28f4d840335640ff3b69b5bc407a7ee6a60dd5"
     },
     "src/world/runtime/construction.c": {
-      "bytes": 51108,
-      "sha256": "436894af8e1d8a9989efc13129074cc22fe69444768a86ffd4b9dbbe472745a6"
+      "bytes": 51622,
+      "sha256": "4f2bfa523202678d61f4670bc0968c7aaffe5531e113afe88359f050a6e49881"
     },
     "tests/client/world/test_first_person.c": {
       "bytes": 19098,

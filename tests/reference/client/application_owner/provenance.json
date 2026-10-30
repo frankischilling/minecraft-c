@@ -258,8 +258,8 @@
       "sha256": "5a20cf55f40ed6f1b30dd6837ebe805321ad7bf909cd038cfe902800e81d0031"
     },
     "include/mc/world/runtime/entities.h": {
-      "bytes": 5111,
-      "sha256": "bb0517cf7861399a7af9da443369804d22224af5fa465fcf050073e88067df5c"
+      "bytes": 7122,
+      "sha256": "e7cbc1b19c1c9a3d80222976604e8731f19b3dea6d55bd473eb088fa15879011"
     },
     "include/mc/world/runtime/entity_errors.h": {
       "bytes": 2075,

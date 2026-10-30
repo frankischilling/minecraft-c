@@ -1,5 +1,12 @@
 # Build and tests
 
+The passive [World terminal inventory](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/terminal-retirement.md) counts actual Entity, TileEntity,
+Provider and static Piston owners without changing the live graph. Its 834
+native controls pass on Windows and sanitized Linux. The broader selection
+passes 44 Windows tests and 42 Linux tests; all 35 targets build on both hosts.
+Client anchors, other service roots and dispatcher retirement still need
+integration before normal shutdown and live frame adoption.
+
 The [terminal prefix controls](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
 pass 41 Windows tests in 55.82 seconds and 39 Linux Clang18 ASan/UBSan tests in
 79.85 seconds. All 32 selected targets build on both hosts. Real callback

@@ -2,8 +2,8 @@
   "scope": "Current authored real-owner loading draw/update/yield/retirement controls; native results are recorded separately for their exact tested snapshots.",
   "native_sources": {
     "CMakeLists.txt": {
-      "bytes": 332983,
-      "sha256": "1eb040cbad8e5f9c383aa648c9168d5beb052699fb9d8a36c88ceefa775be119"
+      "bytes": 333684,
+      "sha256": "3e7c6766c090c9a0d22d3110e97c32e751c9bf7c2d29157323c719def51d3737"
     },
     "cmake/client_controllers.cmake": {
       "bytes": 1093,
@@ -754,8 +754,8 @@
       "sha256": "4fb05b55497c6c6d90315c536754c23f0b9a869f376a0aff466b98257ef5b14a"
     },
     "include/mc/world/runtime/entities.h": {
-      "bytes": 5111,
-      "sha256": "bb0517cf7861399a7af9da443369804d22224af5fa465fcf050073e88067df5c"
+      "bytes": 7122,
+      "sha256": "e7cbc1b19c1c9a3d80222976604e8731f19b3dea6d55bd473eb088fa15879011"
     },
     "include/mc/world/runtime/entity_errors.h": {
       "bytes": 2075,
@@ -3030,8 +3030,8 @@
       "sha256": "b74d86fe1e214ba8f959d8293689b40aca5f11d72a92b045bc8fd8ba1cda1ba5"
     },
     "src/world/chunk/entities.c": {
-      "bytes": 10105,
-      "sha256": "0329a5e221e6670e7dccc061eb422ab24b39ca59164a72dc718a403c7da50e1d"
+      "bytes": 12115,
+      "sha256": "b43dcd5e334ed9d7e45aa4eeda05b77a1f8ffc1003cb3f9b9886946405259a07"
     },
     "src/world/chunk/entity_remove.c": {
       "bytes": 3886,
@@ -3174,8 +3174,8 @@
       "sha256": "a826dffa984e14ed7980607044b63e7b8461d5b6d016e87e8facef3ad253ec7c"
     },
     "src/world/runtime/construction.c": {
-      "bytes": 51108,
-      "sha256": "436894af8e1d8a9989efc13129074cc22fe69444768a86ffd4b9dbbe472745a6"
+      "bytes": 51622,
+      "sha256": "4f2bfa523202678d61f4670bc0968c7aaffe5531e113afe88359f050a6e49881"
     },
     "src/world/runtime/construction_internal.h": {
       "bytes": 1359,
@@ -3606,8 +3606,8 @@
       "sha256": "297356b9101ba22b1c870779d7e66dd492436b48e7d70e32b7287aab9b7ad5cc"
     },
     "src/world/runtime/tile_entities/tile_entities.c": {
-      "bytes": 256095,
-      "sha256": "f5bffb9e123129cbd1e7abe0cf9b4f1bade76f2ca70ed860f7c491584def8531"
+      "bytes": 262957,
+      "sha256": "cd03f806d7eada9a39db94046215ee86a0f144e3bc5fb86a3a29ad9ca358cb0c"
     },
     "src/world/runtime/tile_entities/tile_entities_internal.h": {
       "bytes": 1112,
@@ -3742,8 +3742,8 @@
       "sha256": "c893d4830456d23265164eeec268ab167fbb570120f485b0c981f3276a61c09a"
     },
     "src/world/storage/store.c": {
-      "bytes": 101804,
-      "sha256": "bfc47ebfc1c3effa62844cb7bcb61984d4401dc818f6142658f9028b0a08c166"
+      "bytes": 104206,
+      "sha256": "1976f4118a62fd8f4d389e2f028640ed386e13c22c84f316a6034b134324297a"
     },
     "src/world/storage/store_source.inc": {
       "bytes": 39393,
@@ -6960,6 +6960,18 @@
     "tests/client/settings/test_borrow.c": {
       "bytes": 13904,
       "sha256": "25c58f085145e129bcae5ba13fadb29eba767651082c05cc03b77fd42be24d0f"
+    },
+    "src/world/runtime/terminal_inventory.c": {
+      "bytes": 20379,
+      "sha256": "99ae9162313e9162a51936b2d7746d93b310c31464c1bcf579515b97f34eb8f2"
+    },
+    "src/world/runtime/terminal_inventory_internal.h": {
+      "bytes": 5184,
+      "sha256": "137e32d5ac31b1334fec3746fc536b025bf0dd55ab35db156efe795136fa6726"
+    },
+    "tests/world/runtime/test_terminal_inventory.c": {
+      "bytes": 40624,
+      "sha256": "f2845c56b2651d5fba19054dcfbe1591502e3c0dc664655d8bbc8566c3488459"
     }
   },
   "actual_source_method": {
