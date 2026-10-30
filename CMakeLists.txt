@@ -728,6 +728,8 @@ add_library(mc_simulation STATIC
     src/world/dimension/world_provider.c
     src/world/dimension/temperature.c
     src/entity/entity.c
+    src/entity/living/construction.c
+    src/entity/mob/construction.c
     src/entity/player/construction.c
     src/entity/player/input.c
     src/entity/player/session.c
@@ -1997,6 +1999,11 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_entity PRIVATE mc_simulation mc_c_atomics mc_build_options)
     add_test(NAME entity.construction COMMAND mc_test_entity)
     set_tests_properties(entity.construction PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_test_mob_construction tests/entity/test_mob_construction.c)
+    target_include_directories(mc_test_mob_construction PRIVATE src src/core/java)
+    target_link_libraries(mc_test_mob_construction PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_build_options)
 
     add_executable(mc_test_player_construction tests/entity/player/test_construction.c)
     target_link_libraries(mc_test_player_construction PRIVATE
@@ -3428,6 +3435,12 @@ if(BUILD_TESTING)
     target_link_libraries(mc_caves_geometry_probe PRIVATE mc_world mc_build_options)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+    add_test(NAME entity.mob_construction COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_mob_construction.py"
+        --executable "$<TARGET_FILE:mc_test_mob_construction>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/mob-construction-contracts")
+    set_tests_properties(entity.mob_construction PROPERTIES
+        LABELS "public;integration;entity;ownership" TIMEOUT 120)
     add_test(NAME entity.player_construction COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_player_construction.py"
         --executable "$<TARGET_FILE:mc_test_player_construction>"

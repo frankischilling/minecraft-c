@@ -84,8 +84,8 @@ samples, attaches its renderer and particles, inserts the real Player and
 publishes the view entity. Healthy null-screen/focus handling returns; the
 native selection tick executes gameplay input through 1073 and the admitted
 World/frame segment. Direct same-graph checks execute renderer/entity updates
-through weather and weighted Biome spawn selection before concrete Mob
-construction 773. Source focused mouse look and pause entry are connected.
+through weather and weighted Biome selection, then actual hostile construction/yaw/pose
+before eligibility at 820. Other constructors remain dependencies at 773. Source focused mouse look and pause entry are connected.
 World-frame rendering completes colors, fog state, canonical camera, actual
 Sky programs and W/SR/DK culling. The dirty-chunk selector now constructs the
 real EW cache and compiles standard Block geometry through the same CV, DK

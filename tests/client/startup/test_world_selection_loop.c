@@ -35,6 +35,7 @@
 #include "mc/client/world/picking.h"
 #include "mc/client/world/world_frame.h"
 #include "mc/core/java/java.h"
+#include "mc/entity/mob/construction.h"
 #include "mc/entity/player/player.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/loading/player.h"
@@ -51,6 +52,31 @@
 #include <string.h>
 
 static unsigned int checks;
+
+static bool spawn_dependency_reached(const mc_world_tick_state *state,
+                                     const mc_world_tick_error *error) {
+    mc_entity_class_literal_view selected;
+    if (state->spawn_class == NULL ||
+        mc_entity_class_literal_inspect(state->spawn_class, &selected) != MC_ENTITY_OK)
+        return false;
+    switch (selected.kind) {
+        case MC_ENTITY_CLASS_KIND_SPIDER:
+        case MC_ENTITY_CLASS_KIND_ZOMBIE:
+        case MC_ENTITY_CLASS_KIND_SKELETON:
+        case MC_ENTITY_CLASS_KIND_CREEPER:
+        case MC_ENTITY_CLASS_KIND_SLIME: {
+            mc_entity_snapshot entity;
+            return error->child_bytecode == 820 && state->spawn_constructed &&
+                   state->spawn_positioned && state->spawn_entity != NULL &&
+                   mc_entity_get_snapshot(state->spawn_entity, &entity) == MC_ENTITY_OK &&
+                   entity.phase == MC_ENTITY_READY && entity.class_literal == state->spawn_class &&
+                   entity.base.world == state->world;
+        }
+        default:
+            return error->child_bytecode == 773 && !state->spawn_constructed &&
+                   !state->spawn_positioned && state->spawn_entity == NULL;
+    }
+}
 
 static bool loaded_draw_reached(const mc_client_menu_loop_state *source) {
     if (source->world_draws != 1 || source->hud_draws != 1 || !source->render_clock_stored)
@@ -70,7 +96,8 @@ static bool unpaused_spawn_reached(const mc_client_menu_loop_state *source) {
            source->world_tick->failed && source->world_tick->renderer_returned &&
            source->world_tick->entities_returned &&
            source->world_tick->scheduler_error.child == MC_WORLD_TICK_CHILD_SPAWNING &&
-           source->world_tick->scheduler_error.child_bytecode == 773;
+           spawn_dependency_reached(&source->world_tick->scheduler_state,
+                                    &source->world_tick->scheduler_error);
 }
 
 #define CHECK(condition)                                                                           \
@@ -575,24 +602,27 @@ static int world_tick_controls(fixture *f) {
           call->renderer_state.interpolation_stores == 6 &&
           call->renderer_state.brightness_returned && call->renderer_state.held_item_returned &&
           call->renderer_state.rain_returned && call->renderer_state.rain->returned);
-    if (call->scheduler_error.child_bytecode != 773)
+    if (!spawn_dependency_reached(&call->scheduler_state, &call->scheduler_error))
         fprintf(stderr, "Spawn child=%u descendant=%u operation=%s\n",
                 call->scheduler_error.child_bytecode, call->scheduler_error.descendant_bytecode,
                 call->scheduler_error.operation);
-    CHECK(
-        call->scheduler_state.weather_returned && call->scheduler_state.spawn_chunk_count == 289 &&
-        call->scheduler_error.child == MC_WORLD_TICK_CHILD_SPAWNING &&
-        call->scheduler_error.child_bytecode == 773 && call->scheduler_state.spawn_class != NULL &&
-        call->scheduler_state.spawn_pick.entry != NULL &&
-        call->scheduler_state.spawn_candidates_visited > 0 &&
-        call->scheduler_state.spawn_random_calls >= 10 &&
-        call->scheduler_state.spawn_pick.total_weight > 0);
-    CHECK(mc_client_world_tick_cleanup(call) && call->failed && call->site.pc == 80);
+    CHECK(call->scheduler_state.weather_returned &&
+          call->scheduler_state.spawn_chunk_count == 289 &&
+          call->scheduler_error.child == MC_WORLD_TICK_CHILD_SPAWNING &&
+          spawn_dependency_reached(&call->scheduler_state, &call->scheduler_error) &&
+          call->scheduler_state.spawn_pick.entry != NULL &&
+          call->scheduler_state.spawn_candidates_visited > 0 &&
+          call->scheduler_state.spawn_random_calls >= 10 &&
+          call->scheduler_state.spawn_pick.total_weight > 0);
+    const unsigned int spawn_pc = call->scheduler_error.child_bytecode;
+    CHECK(mc_client_world_tick_cleanup(call) && call->failed && call->site.pc == 80 &&
+          call->scheduler_error.mob == NULL && call->scheduler_state.spawn_entity == NULL);
     atomic_store(&f->app->o, paused);
     f->app->ah = counter;
     free(call);
     printf("WORLD_TICK paused-refresh25=1 unpaused-renderer186=1 render-global=1 "
-           "entities=1 spawn-flags=1 weather=1 spawn-candidates=289 next=cq.a773\n");
+           "entities=1 spawn-flags=1 weather=1 spawn-candidates=289 next=cq.a%u\n",
+           spawn_pc);
     return 0;
 }
 
@@ -1641,8 +1671,15 @@ int main(int argc, char **argv) {
                             f.state.operation);
                 CHECK(next_failed && unpaused_spawn_reached(&f.state) &&
                       f.state.world_frame == NULL && f.state.hud == NULL);
-                puts("WORLD_FRAME first-returned=1 next-unpaused-tick=fd.l80 child=cq.a773 "
-                     "completed-draws-retired=1 stale-hud-cleared=1");
+                mc_entity_class_literal_view selected;
+                const mc_world_tick_state *spawn = &f.state.world_tick->scheduler_state;
+                CHECK(mc_entity_class_literal_inspect(spawn->spawn_class, &selected) ==
+                      MC_ENTITY_OK);
+                printf("WORLD_FRAME first-returned=1 next-unpaused-tick=fd.l80 child=cq.a%u "
+                       "mob=%s constructed=%d positioned=%d completed-draws-retired=1 "
+                       "stale-hud-cleared=1\n",
+                       f.state.world_tick->scheduler_error.child_bytecode, selected.client_name,
+                       spawn->spawn_constructed, spawn->spawn_positioned);
             }
             if (repeat_load)
                 goto loaded_draw_controls_done;

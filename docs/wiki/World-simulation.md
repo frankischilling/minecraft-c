@@ -1,5 +1,12 @@
 # World simulation
 
+The [hostile Mob constructor and spawn
+prefix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-construction.md)
+now covers all five default hostile classes, real watcher/Random behavior, retained
+Skeleton initialization, fresh World yaw and exact pose. Native World contracts retain
+each actual candidate until scheduler retirement. Spawn eligibility at 820, remaining
+concrete constructors at 773 and later World work remain unfinished.
+
 The [Entity render traversal](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) reads actual ordinary/weather Lists and
 uses the same Entity's distance, frustum, camera/sleeping and Chunk-presence
 predicates. Native World leases protect retained List storage. Reached Entity
@@ -31,8 +38,8 @@ time/autosave and scheduled drain in reached source order. Eleven original
 observations match native MSVC/GCC/Clang replays. Empty Player/candidate branches
 can return. The loaded Player path gathers 289 spawn candidates, selects the
 real weighted Biome entry and completes trial/support/distance gates before
-missing concrete Mob construction at `cq.a:773`. Mob construction, nonempty random
-Chunk work and complete ordinary World ticks remain unfinished.
+hostile construction/yaw/pose and the missing eligibility check at `cq.a:820`. Other
+Mob constructors, nonempty random Chunk work and complete ordinary ticks remain unfinished.
 
 The [World color services](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/colors.md)
 now supply actual raw temperature, virtual Biome sky, Dimension fog and cloud

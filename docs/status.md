@@ -1,5 +1,33 @@
 # Development status
 
+The five default Overworld hostile [Mob constructors](entity/mob-construction.md) now
+run on genuine Entity/Living owners, including early watcher hooks, Slime size/Random
+behavior and Skeleton's retained static bow initializer. The World spawn path follows
+returned construction with fresh World Random yaw and the actual pose body.
+
+The fresh focused Windows loop selects a Creeper (`gb`), completes its constructor and pose, and
+reaches spawn eligibility at `cq.a:820`.
+
+All 67 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan. All 76
+Windows tests pass in 103.62 seconds and all 72 Linux tests in 133.60 seconds, without
+failures, skips or sanitizer findings. All 2,365 source, helper, build and reference
+inputs remain unchanged through both builds and tests; formatting checks 1,658 files.
+
+Each host passes 578 dedicated constructor/ownership checks. The original comparison
+matches 3,552 independent field values and 81 separately labelled scalar replay checks.
+Actual native constructor entropy is qualified separately from independent JVM entropy.
+The unchanged-original package executes 15 constructors per ordinary/JDI VM, verifies
+258 checkpoints and 13 live method bodies, and pins the 182-class prepared registry
+closure. Final JDI observations cover Slime sizes 1, 2 and 4; fresh native
+declared-clock controls cover all three sizes independently.
+
+The client remains pre-playable. Spawn eligibility/publication, remaining Mob
+constructors, ordinary World ticking, Entity drawing and gameplay actions remain
+unfinished. Hidden inactivity still reaches its genuine incremental save dependency at
+`oz.a:22`.
+
+## Preceding GuiIngame checkpoint
+
 The [GuiIngame draw](client/gui-ingame.md) now composes the actual hotbar,
 crosshair, health and vignette over a loaded World. A focused Windows profile
 returns from the complete frame. A separate fresh profile continues into the
@@ -27,7 +55,7 @@ Windows and 1,743 on Linux, including actual in-height brightness and the two
 nonblack blend results. Authored captures show a hotbar, crosshair and ten
 separate heart glyphs, with identical PNG bytes on the two native hosts.
 
-The [hand checkpoint's hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/41133193699)
+The [HUD checkpoint's hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/41138227433)
 passes formatting, Windows, GCC and Clang jobs. Native archive caching and the
 bounded download retry remain enabled; no controlled hosted speedup is claimed.
 

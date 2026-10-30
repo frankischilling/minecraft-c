@@ -28,6 +28,8 @@ mc_world_storage_status mc_world_runtime_drain_scheduled(mc_world_runtime *, boo
                                                          mc_world_scheduled_drain_error *);
 
 typedef struct mc_world_tick_call mc_world_tick_call;
+typedef struct mc_mob_error mc_mob_error;
+typedef struct mc_entity mc_entity;
 
 typedef enum mc_world_tick_child {
     MC_WORLD_TICK_CHILD_NONE,
@@ -54,6 +56,7 @@ typedef struct mc_world_tick_error {
     const mc_world_scheduled_drain_error *scheduled;
     const mc_world_chunk_manager_error *biome;
     const mc_world_spawn_pick_error *spawning;
+    const mc_mob_error *mob;
     mc_world_access_failure world_access;
 } mc_world_tick_error;
 
@@ -66,6 +69,8 @@ typedef struct mc_world_tick_state {
     size_t spawn_candidates_visited, spawn_random_calls;
     mc_world_spawn_pick spawn_pick;
     const mc_entity_class_literal *spawn_class;
+    mc_entity *spawn_entity; /* Borrowed candidate occurrence owned by this call. */
+    bool spawn_constructed, spawn_positioned;
     int32_t spawn_initial_x, spawn_initial_y, spawn_initial_z;
     int32_t spawn_trial_x, spawn_trial_y, spawn_trial_z, spawn_group, spawn_attempt;
     int64_t next_time;
@@ -79,8 +84,11 @@ typedef struct mc_world_tick_state {
  * one concrete provider maintenance pass, sky callback loop, save/time stores,
  * whole scheduled drain and random-work candidate gathering run in source order.
  * Spawn support/material/nearest-player/distance gates and all3x4 trial loops
- * run before concrete Mob initialization/construction, which remains a reached
- * dependency. Sleeping wake transitions and nonempty random Chunk work remain
+ * run before selected Mob initialization/construction. The five default hostile
+ * constructors run on the same Entity classes/profile, followed by the fresh
+ * World Random yaw and actual position body. Their virtual spawn predicate is
+ * still a reached dependency; other concrete constructors remain dependencies.
+ * Sleeping wake transitions and nonempty random Chunk work remain
  * separate dependencies, never successful no-ops.
  * Both false spawn flags return before touching its shared candidate Set.
  *

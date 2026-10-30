@@ -1,11 +1,35 @@
 # minecraft-c
 
+The five default hostile [Mob
+constructors](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-construction.md)
+now execute on actual Entity/Living owners before the World spawn yaw and pose. The
+fresh focused Windows loop selects a Creeper (`gb`), completes its constructor and pose, and reaches
+spawn eligibility at `cq.a:820`.
+
+All 67 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan. All 76
+Windows tests pass in 103.62 seconds and all 72 Linux tests in 133.60 seconds, without
+failures, skips or sanitizer findings. All 2,365 source, helper, build and reference
+inputs remain unchanged through both builds and tests; formatting checks 1,658 files.
+
+Each host passes 578 dedicated constructor/ownership checks. The original comparison
+matches 3,552 independent field values and 81 separately labelled scalar replay checks.
+Actual native constructor entropy is qualified separately from independent JVM entropy.
+The unchanged-original package executes 15 constructors per ordinary/JDI VM, verifies
+258 checkpoints and 13 live method bodies, and pins the 182-class prepared registry
+closure. Final JDI observations cover Slime sizes 1, 2 and 4; fresh native
+declared-clock controls cover all three sizes independently.
+
+The client remains pre-playable; spawn eligibility, remaining constructors, ordinary
+World ticks, Entity drawing and gameplay remain unfinished.
+
+## Preceding rendering checkpoints
+
 The [RenderGlobal Entity pass](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) now runs its actual delay, LL/TH frame
 bindings and visibility predicates with checked ownership. The initial loaded
 frame executes both [particle draw entries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md), further fog setup, translucent terrain and the dry
 [precipitation return](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/precipitation.md), both [cloud modes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/clouds.md), and the [empty first-person hand](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/first-person-hand.md).
 World drawing returns at1013, then its parent composes the actual [GuiIngame](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/gui-ingame.md)
-and returns the focused loaded frame. The next unpaused tick reaches Mob construction.
+and returns the focused loaded frame. The next unpaused tick enters the Mob spawn prefix.
 Entity draws,
 rendered-TileEntity row ownership and playable frames remain unfinished;
 composed original/native N parity remains unverified.
@@ -43,7 +67,7 @@ null-screen handling and mouse focus also run. The native selection profile
 then executes gameplay input through `Minecraft.k:1073` and the admitted
 World/frame segment. Direct unpaused checks on that same graph execute renderer,
 held-item/entity ticking, weather and real Biome spawn selection before missing
-concrete Mob construction at `cq.a:773`. Focused mouse look and source pause
+spawn eligibility at `cq.a:820` for the five admitted hostile classes; other constructors remain at 773. Focused mouse look and source pause
 entry run. The hidden inactive frame opens OZ and completes colors, fog, camera,
 actual Sky drawing and W/SR/ChunkRenderer culling. It now enters the dirty-chunk
 selector, constructs the real ChunkCache and compiles standard Blocks through

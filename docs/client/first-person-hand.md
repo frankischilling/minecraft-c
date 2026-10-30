@@ -4,7 +4,7 @@ The normal empty hand now draws through the actual Player renderer, Biped model,
 ModelRenderer, NW and Display. A loaded dry World frame can return from
 `px.a(FJ)V` at 1013. Its parent now executes timing and
 [GuiIngame](gui-ingame.md), returning the focused loaded frame. The next unpaused
-tick reaches Mob construction. Complete Entity rendering, held items, wet/fire
+tick enters the [Mob spawn prefix](../entity/mob-construction.md). Complete Entity rendering, held items, wet/fire
 overlays and interactive gameplay remain unfinished.
 
 ## Source order

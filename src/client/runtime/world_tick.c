@@ -180,7 +180,9 @@ bool mc_client_world_tick_cleanup(mc_client_world_tick *call) {
     call->scheduler_error.scheduled = NULL;
     call->scheduler_error.biome = NULL;
     call->scheduler_error.spawning = NULL;
+    call->scheduler_error.mob = NULL;
     call->scheduler_state.spawn_class = NULL;
+    call->scheduler_state.spawn_entity = NULL;
     call->scheduler_state.spawn_pick.entry = NULL;
     call->scheduler_error.world_access = (mc_world_access_failure){0};
     mc_client_renderer_tick_error renderer;

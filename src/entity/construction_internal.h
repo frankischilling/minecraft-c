@@ -3,10 +3,11 @@
 
 #include "mc/entity/entity.h"
 
-/* Concrete callers are Item, FallingSand, Minecart, local Player and pickup particle only. This is
- * not a public generic-kind factory. Preserve args -> actual active use -> live count/budget ->
- * actual header object -> canonical literal/hold/publication. The concrete Minecart branch runs its
- * class initializer before the header; the two old branches retain Entity-only initialization. */
+/* Concrete callers are Item, FallingSand, Minecart, local Player, pickup
+ * particle and the five client hostile Mobs. This is not a public generic-kind
+ * factory. Preserve actual active use before live count/budget and header
+ * allocation. Mob callers perform their selected initializer first; Minecart's
+ * branch performs its own initializer here. No fabricated subtype is admitted. */
 mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_entity_class_kind kind,
                                               const char *operation, mc_entity **out,
                                               mc_entity_error *error);
@@ -20,8 +21,8 @@ mc_entity_status mc_entity_constructor_begin(mc_entity *entity, mc_entity_class_
                                              const char *profile_operation, mc_entity_error *error);
 
 /* Shared base body owns ID/bounds/Random/watcher/World binding/position/Byte0.
- * The concrete Item/Falling/Minecart and client particle b()V targets are verified empty returns.
- */
+ * Its early virtual b() dispatch reaches the real DC or selected Mob hook;
+ * Item/Falling/Minecart and client particle targets are verified empty returns. */
 mc_entity_status mc_entity_construct_base(mc_entity *entity, mc_world_runtime *world,
                                           mc_entity_error *error);
 
@@ -29,6 +30,8 @@ mc_entity_status mc_entity_construct_base(mc_entity *entity, mc_world_runtime *w
  * index16. Called only on the constructor-owned actual watcher. */
 mc_entity_status mc_entity_construct_watch_byte_zero(mc_entity *entity, int32_t index,
                                                      mc_entity_error *error);
+mc_entity_status mc_entity_construct_watch_byte(mc_entity *, int32_t index, int8_t value,
+                                                mc_entity_error *);
 
 /* Called only after successful begin, once per public concrete constructor.
  * Failure stores FAILED_CONSTRUCTION and preserves the entire supplied error.

@@ -394,12 +394,12 @@
       "sha256": "2dd90dc597040fa7cc4834943fdf788db29b063add11cdaf14cd77b56d8d64f8"
     },
     "src/entity/classes/classes_internal.h": {
-      "bytes": 2919,
-      "sha256": "abc354e77358ed2ee2b455bb4246b3110f9e65b5ab46debd47ed9568906b0028"
+      "bytes": 3191,
+      "sha256": "e72d29547863012cfde36ca7d0bafc65962c055f4d5040e805849b2576b8c1b7"
     },
     "src/entity/entity_internal.h": {
-      "bytes": 3435,
-      "sha256": "969794a224de4429ee447f5fa51462e14ac1e67ed4bbd660ae3b146dc85911de"
+      "bytes": 3574,
+      "sha256": "58fa32711315d79188d8e5a0d74b177506d400ad52be2536ff348fff3b3d887e"
     },
     "src/entity/player/player_internal.h": {
       "bytes": 1952,

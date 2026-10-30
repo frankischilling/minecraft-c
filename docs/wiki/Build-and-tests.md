@@ -1,5 +1,25 @@
 # Build and tests
 
+## Hostile Mob constructors
+
+All 67 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan. All 76
+Windows tests pass in 103.62 seconds and all 72 Linux tests in 133.60 seconds, without
+failures, skips or sanitizer findings. All 2,365 source, helper, build and reference
+inputs remain unchanged through both builds and tests; formatting checks 1,658 files.
+
+Each host passes 578 dedicated constructor/ownership checks. The original comparison
+matches 3,552 independent field values and 81 separately labelled scalar replay checks.
+Actual native constructor entropy is qualified separately from independent JVM entropy.
+The unchanged-original package executes 15 constructors per ordinary/JDI VM, verifies
+258 checkpoints and 13 live method bodies, and pins the 182-class prepared registry
+closure. Final JDI observations cover Slime sizes 1, 2 and 4; fresh native
+declared-clock controls cover all three sizes independently.
+
+The fresh focused Windows loop selects a Creeper (`gb`), completes its constructor and pose, and
+reaches spawn eligibility at `cq.a:820`.
+
+## GuiIngame checkpoint
+
 The [GuiIngame fixture](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/gui-ingame.md)
 records 26 complete original calls, including vignette and successful in-height
 brightness. Native controls compare source state, Random, matrices and final

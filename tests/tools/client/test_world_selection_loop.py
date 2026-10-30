@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import struct
 import subprocess
 import sys
@@ -169,8 +170,17 @@ def main():
                 observed = [line for line in result.stdout.splitlines() if line.startswith("FOCUS ")]
                 if observed != expected:
                     raise RuntimeError("Actual SDK focus segment differs from 72 original PX histories")
-            if mode == "repeat" and "WORLD_FRAME first-returned=1 next-unpaused-tick=fd.l80 child=cq.a773 completed-draws-retired=1 stale-hud-cleared=1" not in result.stdout:
-                raise RuntimeError("Real repeated frame did not expose the expected next source dependency")
+            if mode == "repeat":
+                receipt = re.search(
+                    r"^WORLD_FRAME first-returned=1 next-unpaused-tick=fd.l80 child=cq.a(773|820) "
+                    r"mob=([a-z]+) constructed=([01]) positioned=([01]) completed-draws-retired=1 "
+                    r"stale-hud-cleared=1$", result.stdout, re.MULTILINE)
+                if receipt is None:
+                    raise RuntimeError("Real repeated frame did not expose the expected source dependency")
+                implemented = receipt[2] in ("cn", "uz", "fr", "gb", "uw")
+                if tuple(receipt.group(i) for i in (1, 3, 4)) != (
+                        ("820", "1", "1") if implemented else ("773", "0", "0")):
+                    raise RuntimeError("Repeated frame skipped or misreported its selected Mob constructor")
             after = snapshot(saves)
             if mode in ("load", "generate", "load-terminal", "load-partial", "repeat"):
                 if any(after.get(name) != digest for name, digest in before.items()):

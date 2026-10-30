@@ -130,8 +130,12 @@ def main():
         need(text.splitlines() and re.fullmatch(r"World scheduler: [1-9][0-9]* checks", text.splitlines()[-1]),
              "native completion marker")
         need(projection(text) == expected, "native observations differ from original capture")
+        mob_rows = [line for line in text.splitlines() if line.startswith("MOB_SPAWN ")]
+        need(mob_rows == [f"MOB_SPAWN {name} yaw-positioned=1 next=820 world-random-calls=11"
+                          for name in ("cn", "uz", "fr", "gb", "uw")],
+             "native hostile constructor/yaw/position/retirement contracts")
         report.update(status="PASS", native=native.capture_report, observations=11,
-                      original_replay=args.client_jar is not None)
+                      native_hostile_spawn_contracts=5, original_replay=args.client_jar is not None)
     except BaseException as exc:
         report["error"] = {"type": type(exc).__name__, "message": str(exc)}
         raise

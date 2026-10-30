@@ -6,7 +6,7 @@ fog, performs another fog setup and clears depth before the first-person hand
 call at `px.a(FJ)V:997`. The [empty hand and dry overlays](first-person-hand.md)
 now return, allowing World drawing to return1013. Its parent then composes
 [GuiIngame](gui-ingame.md) and returns the focused loaded frame. The next
-unpaused tick reaches Mob construction; interactive gameplay remains unfinished.
+unpaused tick enters the [Mob spawn prefix](../entity/mob-construction.md); interactive gameplay remains unfinished.
 
 ## Source methods
 

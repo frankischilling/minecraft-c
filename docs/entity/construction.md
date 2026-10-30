@@ -10,6 +10,8 @@ records, the class-name save wrapper and the world-only NBT factory.
 
 The separate [Minecart module](minecart.md) adds its class initializer,
 World-only and positioned constructors, and real detector membership.
+The [hostile Mob module](mob-construction.md) adds the five default Overworld
+hostile constructors, early watcher hooks and Skeleton's static bow Stack.
 Native Minecart construction/publication/detector contracts pass on all three
 compiler profiles, including the [committed hosted checkpoint](../reference/minecart-construction.md#committed-and-hosted-checkpoint)
 at `39edf12`. A separate [Minecart constructor comparison](../reference/minecart-construction.md#constructor-observations-and-qualification)

@@ -58,8 +58,8 @@ The actual READY renderer also completes picking through `px.a(F):452`.
 Existing-World ticks invoke that body at `k:33`. The admitted provider branch,
 controller music tick, movement-key dispatch, hotbar and Settings input also
 run. Direct same-graph checks also execute renderer/equip and real entity
-updates, weather and actual weighted Biome spawn selection before the missing
-concrete Mob constructor at `cq.a:773`.
+updates, weather and actual weighted Biome selection. Five hostile constructors,
+fresh yaw and pose now complete before eligibility at 820; other constructors remain at 773.
 Frame sound, lighting, suffocation and controller interpolation are connected.
 Focused mouse look uses the actual SDK/CU/Player fields. Inactive pause entry
 constructs OZ; actual World drawing completes fog, camera, Sky and real

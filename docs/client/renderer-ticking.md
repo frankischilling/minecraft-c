@@ -52,7 +52,10 @@ Difficulty, lightning countdown and spawn flags use their canonical World cells.
 
 An unpaused segment executes renderer tick, RenderGlobal's wrapping counter
 and the existing World entity tick, then invokes the retained World scheduler
-at `k1260`. The loaded graph reaches the selected Mob constructor at `cq.a:773`. The entity tick receives the same Registry and MathHelper
+at `k1260`. The loaded graph enters the
+[Mob spawn continuation](../entity/mob-construction.md), reaching eligibility at 820
+for the five admitted hostile classes and construction at 773 for other classes.
+The entity tick receives the same Registry and MathHelper
 table and can invoke genuine Player input/action/travel descendants. Paused
 single-player segments skip those calls and return through 1328; the outer tick
 then performs the actual wall-clock App.P store.
@@ -67,10 +70,10 @@ remainder and clock state to advance.
 The native loaded-World profile now opens the source pause screen when inactive
 for more than 500 ms. Focused mouse look is connected. Both paths enter the
 [World frame](renderer-frames.md), completing colors, camera, fog state, sky
-and ChunkRenderer culling before missing compilation at `px.a:396`. Direct segment checks on the same graph
-separately exercise the paused refresh and unpaused renderer/entity/weather/
-spawn-selection sequence through the Mob constructor frontier. None of
-these component controls establish a rendered gameplay frame.
+and ChunkRenderer culling. The focused profile completes the admitted World draw and
+GuiIngame frame; fresh repetition enters the next unpaused Mob spawn prefix.
+Direct segment controls separately exercise paused refresh and the unpaused
+renderer/entity/weather/spawn sequence. Complete gameplay remains unfinished.
 
 ## Evidence
 

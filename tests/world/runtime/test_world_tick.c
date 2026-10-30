@@ -5,6 +5,7 @@
 #include "../../../src/world/info/tick_source_internal.h"
 #include "../../../src/world/info/weather_source_internal.h"
 #include "../../../src/world/runtime/entity_publication_internal.h"
+#include "mc/entity/mob/construction.h"
 #include "mc/entity/player/player.h"
 #include "mc/world/runtime/world_tick.h"
 #include <inttypes.h>
@@ -63,13 +64,14 @@ cleanup:
     return ok;
 }
 
-static bool spawn_seed(mc_world_runtime *world, int32_t *seed) {
+static bool spawn_seed(mc_world_runtime *world, int32_t category, const char *target,
+                       int32_t *seed) {
     mc_world_provider_fields dimension;
     const mc_biome *biome;
     if (mc_world_provider_fields_get(world->fields.t, &dimension) != MC_WORLD_PROVIDER_OK ||
         mc_world_chunk_manager_chunk(dimension.b, -3, -3, &biome, NULL) != MC_WORLD_PROVIDER_OK)
         return false;
-    const mc_biome_spawn_list *list = mc_biome_spawn_list_get(biome, 1);
+    const mc_biome_spawn_list *list = mc_biome_spawn_list_get(biome, category);
     for (int32_t candidate = 0; candidate < 1000000; ++candidate) {
         mc_java_random random;
         mc_java_random_seed(&random, candidate);
@@ -85,7 +87,7 @@ static bool spawn_seed(mc_world_runtime *world, int32_t *seed) {
             if (ticket < 0)
                 break;
         }
-        if (strcmp(mc_biome_entity_class_name(selected->a, MC_REGISTRY_CLIENT), "wh") != 0)
+        if (strcmp(mc_biome_entity_class_name(selected->a, MC_REGISTRY_CLIENT), target) != 0)
             continue;
         int32_t x, y, z, a, b;
         (void)mc_java_random_next_bounded(&random, 16, &x);
@@ -301,6 +303,7 @@ static bool tick_cases(fixture *f) {
     char *flat_path = NULL;
     mc_ws_file_bytes flat_before = {0}, flat_after = {0};
     mc_entity *player = NULL;
+    mc_entity *retained_mob = NULL;
     mc_world_entity_error publication;
     const mc_world_access_callbacks callbacks = {.sky_changed = changed};
     sky_control first = {.remove_self = true, .active = &call}, second = {0};
@@ -389,7 +392,7 @@ static bool tick_cases(fixture *f) {
     w->fields.N = false;
     w->fields.O = true;
     int32_t selected_seed = 0;
-    CHECK(flat_chunk(f) && spawn_seed(w, &selected_seed));
+    CHECK(flat_chunk(f) && spawn_seed(w, 1, "wh", &selected_seed));
     CHECK(mc_ws_path_join(mc_world_store_root(f->stores[0]), "region/r.-1.-1.mcr", &flat_path,
                           NULL) == MC_WORLD_STORAGE_OK &&
           mc_ws_read_file(flat_path, 1024u * 1024u, &flat_before, NULL) == MC_WORLD_STORAGE_OK);
@@ -424,6 +427,63 @@ static bool tick_cases(fixture *f) {
            state.spawn_trial_y, state.spawn_trial_z, state.spawn_random_calls, w->fields.r->state);
     CHECK(mc_world_runtime_tick_retire(&call, NULL) == MC_WORLD_STORAGE_OK &&
           w->active_calls == baseline_calls && w->persistent_bindings == baseline_bindings);
+    /* The same real saved Chunk and candidate Set now exercise all five actual
+     * default hostile constructors. The independent World Random oracle stops
+     * after the ten selection/trial draws and the fresh postconstructor yaw. */
+    static const char *const hostile_names[] = {"cn", "uz", "fr", "gb", "uw"};
+    w->fields.N = true;
+    w->fields.O = false;
+    for (size_t i = 0; i < COUNT(hostile_names); ++i) {
+        CHECK(spawn_seed(w, 0, hostile_names[i], &selected_seed));
+        mc_java_random oracle;
+        mc_java_random_seed(&oracle, selected_seed);
+        static const int32_t bounds[] = {50, 16, 128, 16, 6, 6, 1, 1, 6, 6};
+        int32_t ignored;
+        for (size_t j = 0; j < COUNT(bounds); ++j)
+            CHECK(mc_java_random_next_bounded(&oracle, bounds[j], &ignored));
+        const float expected_yaw = mc_java_random_next_float(&oracle) * 360.0f;
+        mc_java_random_reseed(w->fields.r, selected_seed);
+        CHECK(mc_world_runtime_tick_begin(w, &call, NULL) == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+              mc_world_runtime_tick_inspect(call, &state) && state.source_pc == 80 &&
+              state.weather_returned && !state.spawning_returned && !state.provider_returned &&
+              state.error->child_bytecode == 820 && state.error->native_policy &&
+              state.error->mob == NULL && state.spawn_constructed && state.spawn_positioned &&
+              state.spawn_entity != NULL && state.spawn_category == 0 &&
+              state.spawn_candidates_visited == 1 && state.spawn_random_calls == 11 &&
+              w->fields.r->state == oracle.state &&
+              w->persistent_bindings == baseline_bindings + 2 && w->entity_membership.count == 0 &&
+              w->player_membership.count == 1 && w->local_leases == 0);
+        mc_entity_snapshot entity;
+        mc_mob_state mob;
+        CHECK(mc_entity_get_snapshot(state.spawn_entity, &entity) == MC_ENTITY_OK &&
+              mc_mob_inspect(state.spawn_entity, &mob) && entity.phase == MC_ENTITY_READY &&
+              entity.class_literal == state.spawn_class && entity.base.world == w &&
+              mc_entity_class_literal_inspect(entity.class_literal, &selected_class) ==
+                  MC_ENTITY_OK &&
+              strcmp(selected_class.client_name, hostile_names[i]) == 0 &&
+              entity.base.x == (double)((float)state.spawn_trial_x + 0.5f) &&
+              entity.base.y == (double)state.spawn_trial_y + (double)entity.base.offset &&
+              entity.base.z == (double)((float)state.spawn_trial_z + 0.5f) &&
+              entity.base.x == entity.base.aJ && entity.base.x == entity.base.bl &&
+              entity.base.y == entity.base.aK && entity.base.y == entity.base.bm &&
+              entity.base.z == entity.base.aL && entity.base.z == entity.base.bn &&
+              entity.base.yaw == expected_yaw && entity.base.aT == 0.0f && entity.base.aU == 0.0f &&
+              entity.base.aV == 0.0f &&
+              entity.bounds->min_x == entity.base.x - (double)(entity.base.width / 2.0f) &&
+              entity.bounds->max_x == entity.base.x + (double)(entity.base.width / 2.0f) &&
+              entity.bounds->min_y == entity.base.y - (double)entity.base.offset &&
+              entity.bounds->max_y == entity.bounds->min_y + (double)entity.base.height);
+        CHECK(mc_entity_retain(state.spawn_entity) == MC_ENTITY_OK);
+        retained_mob = state.spawn_entity;
+        CHECK(mc_world_runtime_tick_retire(&call, NULL) == MC_WORLD_STORAGE_OK &&
+              w->persistent_bindings == baseline_bindings + 1 &&
+              mc_entity_get_snapshot(retained_mob, &entity) == MC_ENTITY_OK &&
+              entity.phase == MC_ENTITY_READY);
+        mc_entity_release(retained_mob);
+        retained_mob = NULL;
+        CHECK(w->persistent_bindings == baseline_bindings && w->active_calls == baseline_calls);
+        printf("MOB_SPAWN %s yaw-positioned=1 next=820 world-random-calls=11\n", hostile_names[i]);
+    }
     ok = true;
 cleanup:
     free(flat_path);
@@ -431,6 +491,7 @@ cleanup:
     mc_ws_free_file_bytes(&flat_after);
     (void)mc_world_runtime_tick_retire(&call, NULL);
     (void)mc_world_runtime_tick_retire(&earlier, NULL);
+    mc_entity_release(retained_mob);
     if (a != NULL)
         (void)mc_world_runtime_remove_world_access(w, a, &removed, NULL);
     if (b != NULL)

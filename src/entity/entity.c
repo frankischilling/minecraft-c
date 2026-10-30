@@ -4,6 +4,7 @@
 #include "entity_internal.h"
 #include "minecart/classes_internal.h"
 #include "minecart/entity_internal.h"
+#include "mob/internal.h"
 #include "particles/particle_internal.h"
 #include "player/player_internal.h"
 #include "position_internal.h"
@@ -164,6 +165,16 @@ mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_ent
             bytes = sizeof(mc_local_player_object);
             status = mc_entity_base_class_initialize(classes, error);
             break;
+        case MC_ENTITY_CLASS_KIND_SPIDER:
+        case MC_ENTITY_CLASS_KIND_ZOMBIE:
+        case MC_ENTITY_CLASS_KIND_SKELETON:
+        case MC_ENTITY_CLASS_KIND_CREEPER:
+        case MC_ENTITY_CLASS_KIND_SLIME:
+            if (classes->source != MC_ENTITY_CLIENT)
+                return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
+            bytes = sizeof(mc_mob_entity_object);
+            status = mc_entity_base_class_initialize(classes, error);
+            break;
         case MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE:
             if (classes->source != MC_ENTITY_CLIENT)
                 return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
@@ -196,6 +207,11 @@ mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_ent
         *object = (mc_local_player_object){0};
         entity = &object->entity;
         entity->local_player = &object->state;
+    } else if (mc_entity_is_mob_kind(kind)) {
+        mc_mob_entity_object *object = storage;
+        *object = (mc_mob_entity_object){0};
+        entity = &object->entity;
+        entity->mob = &object->state;
     } else if (kind == MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE) {
         mc_pickup_particle_object *object = storage;
         *object = (mc_pickup_particle_object){0};
@@ -283,6 +299,11 @@ static mc_entity_status make_watcher(mc_entity *entity, mc_entity_error *error) 
 
 mc_entity_status mc_entity_construct_watch_byte_zero(mc_entity *entity, int32_t index,
                                                      mc_entity_error *error) {
+    return mc_entity_construct_watch_byte(entity, index, 0, error);
+}
+
+mc_entity_status mc_entity_construct_watch_byte(mc_entity *entity, int32_t index, int8_t value,
+                                                mc_entity_error *error) {
     const mc_entity_type_entry *type = entity->classes->types->head;
     while (type != NULL && type->kind != 0)
         type = type->next;
@@ -292,9 +313,9 @@ mc_entity_status mc_entity_construct_watch_byte_zero(mc_entity *entity, int32_t 
         allocate(entity->classes, entity, sizeof(*record), error, "watcher registration", 144);
     if (record == NULL)
         return error->status;
-    /* ma/ht constructor store order. This is typed Byte0, not a new box. */
+    /* ma/ht constructor store order on the same typed Byte projection. */
     record->index = index;
-    record->byte_value = 0;
+    record->byte_value = value;
     record->type = type->value;
     record->dirty = true;
     mc_entity_watch_node *node =
@@ -394,10 +415,14 @@ mc_entity_status mc_entity_construct_base(mc_entity *entity, mc_world_runtime *w
     if (status != MC_ENTITY_OK)
         return status;
     entity->base_bytecode = 224;
-    /* Actual hl/ez, ju/gl, yl/pr and client xw b()V hooks are empty returns. The
-     * concrete dc owner dispatches to gs.b DURING this base constructor. */
+    /* Actual hl/ez, ju/gl, yl/pr and client xw hooks are empty. DC and concrete
+     * Mob hooks dispatch here, before any Living/subclass initialization. */
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
         status = mc_local_player_watcher_initialize(entity, error);
+        if (status != MC_ENTITY_OK)
+            return status;
+    } else if (mc_entity_has_mob(entity)) {
+        status = mc_mob_watcher_initialize(entity, error);
         if (status != MC_ENTITY_OK)
             return status;
     }
@@ -591,7 +616,8 @@ void mc_entity_release(mc_entity *entity) {
                              ? sizeof(mc_local_player_object)
                          : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE)
                              ? sizeof(mc_pickup_particle_object)
-                             : sizeof(*entity);
+                         : mc_entity_has_mob(entity) ? sizeof(mc_mob_entity_object)
+                                                     : sizeof(*entity);
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART))
         mc_minecart_entity_dispose(entity);
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))

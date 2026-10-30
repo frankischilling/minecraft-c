@@ -1,5 +1,35 @@
 # Test scope and reproduction
 
+## Hostile Mob constructors and the spawn continuation
+
+All 67 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan. All 76
+Windows tests pass in 103.62 seconds and all 72 Linux tests in 133.60 seconds, without
+failures, skips or sanitizer findings. All 2,365 source, helper, build and reference
+inputs remain unchanged through both builds and tests; formatting checks 1,658 files.
+
+Each host passes 578 dedicated constructor/ownership checks. The original comparison
+matches 3,552 independent field values and 81 separately labelled scalar replay checks.
+Actual native constructor entropy is qualified separately from independent JVM entropy.
+The unchanged-original package executes 15 constructors per ordinary/JDI VM, verifies
+258 checkpoints and 13 live method bodies, and pins the 182-class prepared registry
+closure. Final JDI observations cover Slime sizes 1, 2 and 4; fresh native
+declared-clock controls cover all three sizes independently.
+
+The fresh focused Windows loop selects a Creeper (`gb`), completes its constructor and pose, and
+reaches spawn eligibility at `cq.a:820`.
+
+The native World fixture separately exercises all five constructors, the eleventh World
+Random call for yaw, exact pose/bounds, no publication or lease changes, and an
+externally retained candidate surviving scheduler retirement. The eleven preceding
+original scheduler observations remain unchanged. Portable constructor tests use
+authored inputs. Local original comparison additionally supplies the private capture
+through `--observations`; it never rebinds a profile after World setup.
+
+Cold and previously failed Item initialization, retained RAW Skeleton Stacks, immutable
+failure causes, all-five early allocation/Math failures and early Creeper/Slime watcher
+failures have separate native controls. These results do not close spawning, arbitrary
+initialization, Mob AI, rendering or gameplay.
+
 ## GuiIngame and a returning loaded frame
 
 All 55 selected production/test targets build on Windows MSVC Debug and Linux

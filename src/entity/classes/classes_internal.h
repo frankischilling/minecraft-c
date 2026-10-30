@@ -12,6 +12,7 @@ struct mc_entity_vector_object;
 struct mc_entity_bounds;
 struct mc_entity_bounds_object;
 struct mc_entity_hit_kind_state;
+struct mc_mob_class_namespace;
 
 /* Actual class-owned production layouts, shared with the concrete constructors
  * and native invariant tests. No World/simulation operation belongs here. */
@@ -71,6 +72,10 @@ struct mc_entity_classes {
     uint16_t minecart_bytecode;
     mc_entity_error minecart_failure;
     struct mc_minecart_shape_array *minecart_j;
+    struct mc_mob_class_namespace *mobs;
+    /* Installed native terminal cleanup keeps this lower class library free
+     * of dependencies on upper Entity/Stack constructor implementations. */
+    void (*mob_dispose)(mc_entity_classes *);
 };
 
 /* Read-only admission for classes_release: NULL is INVALID_ARGUMENT and zero

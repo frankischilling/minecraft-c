@@ -3,8 +3,8 @@
 The loaded single-player client now composes terrain, Sky, clouds, the empty
 hand and GuiIngame in one returning frame. The focused Windows profile shows
 the actual imported hotbar, hearts and crosshair above the saved World. Its next
-unpaused World tick reaches the concrete Mob construction dependency in
-`cq.a:773`. This is a rendered frame, not a playable client.
+unpaused World tick enters the [Mob spawn continuation](../entity/mob-construction.md).
+The client remains pre-playable.
 
 ## Construction, clearing and ticks
 
@@ -82,7 +82,8 @@ are real native samples, not cross-process clock-identity comparisons.
 
 The focused loaded profile requires a complete frame return. A separate fresh
 profile continues the ordinary loop until its next unpaused tick reaches the
-spawn constructor, checking that no completed draw guard or stale HUD receipt
+[Mob spawn continuation](../entity/mob-construction.md), checking that no completed
+draw guard or stale HUD receipt
 blocks it. That profile uses the normal terminal coordinator to end dispatcher
 bindings and preserve retryable cleanup. The hidden-window profile follows
 actual inactivity into OZ, draws the HUD and reaches the unfinished incremental

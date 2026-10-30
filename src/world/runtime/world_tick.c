@@ -10,6 +10,7 @@
 #include "entity_tick_math_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
+#include "mc/entity/mob/construction.h"
 #include "mc/world/runtime/environment.h"
 #include "mc/world/runtime/saving/saving.h"
 #include "runtime_internal.h"
@@ -31,6 +32,7 @@ struct mc_world_tick_call {
     mc_world_scheduled_drain_error scheduled;
     mc_world_chunk_manager_error biome;
     mc_world_spawn_pick_error spawning;
+    mc_mob_error mob;
     bool world_held;
 };
 
@@ -477,6 +479,74 @@ static float spawn_fmul(float a, float b) {
     return _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(a), _mm_set_ss(b)));
 }
 
+static bool spawn_mob_failure(mc_world_tick_call *c) {
+    const mc_mob_error *error = &c->mob;
+    (void)spawn_error(c, 773, error->operation, error->native_policy, error->exception_class);
+    c->error.mob = error;
+    c->error.descendant_bytecode = error->site.pc < 0 ? 0 : (unsigned int)error->site.pc;
+    const mc_world_storage_status status =
+        error->status == MC_MOB_ALLOCATION ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+        : error->status == MC_MOB_LIMIT    ? MC_WORLD_STORAGE_LIMIT
+                                           : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+    c->spawning.status = status;
+    c->spawning.cause.status = status;
+    return fail(c, status, error->operation, error->native_policy);
+}
+
+static bool spawn_construct(mc_world_tick_call *c, mc_registry_classes *registry, float x, float y,
+                            float z) {
+    mc_entity_class_literal_view selected;
+    if (mc_entity_class_literal_inspect(c->state.spawn_class, &selected) != MC_ENTITY_OK)
+        return spawn_error(c, 773, "World spawn canonical Mob Class owner", true, NULL);
+    switch (selected.kind) {
+        case MC_ENTITY_CLASS_KIND_SPIDER:
+        case MC_ENTITY_CLASS_KIND_ZOMBIE:
+        case MC_ENTITY_CLASS_KIND_SKELETON:
+        case MC_ENTITY_CLASS_KIND_CREEPER:
+        case MC_ENTITY_CLASS_KIND_SLIME:
+            break;
+        default:
+            return spawn_error(c, 773, "World spawn concrete Mob class initialization/constructor",
+                               true, NULL);
+    }
+    /* This occurrence remains held through any reached child failure. It is
+     * not published to the World before the source spawn predicate returns. */
+    c->error.child_bytecode = 773;
+    if (mc_mob_allocate(c->state.world->classes->entities, registry, c->state.spawn_class,
+                        &c->state.spawn_entity, &c->mob) != MC_MOB_OK ||
+        mc_mob_construct(c->state.spawn_entity, c->state.world, &c->mob) != MC_MOB_OK)
+        return spawn_mob_failure(c);
+    c->state.spawn_constructed = true;
+    c->error.child_bytecode = 808;
+    mc_java_random *random = c->state.world->fields.r;
+    if (random == NULL)
+        return spawn_error(c, 808, "World spawn null Random receiver", false,
+                           "java/lang/NullPointerException");
+    const float draw = mc_java_random_next_float(random);
+    ++c->state.spawn_random_calls;
+    if (!fp(c, 813))
+        return false;
+    const float yaw = spawn_fmul(draw, 360.0f);
+    mc_entity *entity = c->state.spawn_entity;
+    c->error.child_bytecode = 815;
+    /* Exact inherited sn.c(DDDFF): only current yaw/pitch are assigned;
+     * previous yaw is unchanged and vertical offset is added before e(DDD). */
+    entity->base.x = wt_widen(x);
+    entity->base.aJ = entity->base.x;
+    entity->base.bl = entity->base.x;
+    entity->base.y = wt_add(wt_widen(y), wt_widen(entity->base.offset));
+    entity->base.aK = entity->base.y;
+    entity->base.bm = entity->base.y;
+    entity->base.z = wt_widen(z);
+    entity->base.aL = entity->base.z;
+    entity->base.bn = entity->base.z;
+    entity->base.yaw = yaw;
+    entity->base.aT = 0.0f;
+    mc_entity_source_position(entity, entity->base.x, entity->base.y, entity->base.z);
+    c->state.spawn_positioned = true;
+    return spawn_error(c, 820, "World spawn concrete Mob spawn eligibility", true, NULL);
+}
+
 static bool spawn_trials(mc_world_tick_call *c, int32_t category, const int32_t spawn[3],
                          int32_t initial_x, int32_t initial_y, int32_t initial_z) {
     for (int32_t group = 0; group < 3; ++group) {
@@ -530,8 +600,7 @@ static bool spawn_trials(mc_world_tick_call *c, int32_t category, const int32_t 
                 c->error.spawning = &c->spawning;
                 return spawn_error(c, 750, "World spawn canonical Mob Class binding", true, NULL);
             }
-            return spawn_error(c, 773, "World spawn concrete Mob class initialization/constructor",
-                               true, NULL);
+            return spawn_construct(c, registry, fx, fy, fz);
         }
     }
     return true;
@@ -894,6 +963,7 @@ mc_world_storage_status mc_world_runtime_tick_retire(mc_world_tick_call **slot,
     if (c->state.active)
         return rejected(cleanup, MC_WORLD_STORAGE_BUSY, "World tick call active");
     mc_world_access_failure_release(&c->error.world_access);
+    mc_entity_release(c->state.spawn_entity);
     if (c->world_held)
         mc_world_runtime_binding_release(c->state.world);
     free(c);

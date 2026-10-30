@@ -162,6 +162,8 @@ mc_entity_status mc_entity_classes_free(mc_entity_classes *classes) {
         classes->live_hit_calls != 0)
         return MC_ENTITY_BUSY;
     mc_minecart_class_dispose(classes);
+    if (classes->mob_dispose != NULL)
+        classes->mob_dispose(classes);
     mc_entity_registry_dispose(classes);
     if (classes->types != NULL) {
         mc_entity_type_entry *entry = classes->types->head;

@@ -15,7 +15,7 @@ depth clear enter the [first-person hand](first-person-hand.md) at997. Its
 empty-arm and dry-overlay bodies return, allowing World draw1013 before the
 parent's real timing and [GuiIngame draw](gui-ingame.md). The focused loaded
 profile now returns from the complete frame. Its next unpaused tick reaches
-Mob construction; hidden inactivity still reaches the pause save child. See the
+the [Mob spawn prefix](../entity/mob-construction.md); hidden inactivity still reaches the pause save child. See the
 [particle continuation](particle-rendering.md) for ordering and retained views.
 Later N calls use actual LL/TH frame bindings, Entity Lists and
 visibility predicates; reached Entity/TileEntity draws remain unfinished.
