@@ -8,7 +8,7 @@
 #include <string.h>
 
 /* Authored real owners and filesystem resources. No fake App/model/renderer,
- * replacement class, callback constructor or supplied constructor seed. UNRUN. */
+ * replacement class, callback constructor or supplied constructor seed. */
 _Static_assert(MC_ENTITY_CLASS_KIND_ARROW == 0 && MC_ENTITY_CLASS_KIND_BOAT == 23 &&
                    MC_ENTITY_CLASS_KIND_ENTITY == 24 &&
                    MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE == 28 && MC_ENTITY_CLASS_KIND_VV == 29 &&

@@ -1,5 +1,44 @@
 # Test scope and reproduction
 
+## RenderManager frame qualification
+
+The [RenderManager CPU frame](client/render-manager-frame.md) retains all 432
+rows from three fresh unchanged-original captures. Windows MSVC Debug and Linux
+Clang18 ASan/UBSan both compare 2,738 columns exactly, with one typed failure
+projection and one independently pinned source-PC projection. The remaining
+136 columns are explicitly unqualified. Native replay does not claim the
+original Pig constructor, instantiated actor Random/Math/Watcher state, Java
+Map architecture or reflected allocation counts.
+
+The two new CTests pass in 6.15 seconds on Windows and 77.08 seconds on Linux,
+including source/resource hashing. They cover all 24 awake interpolation cases,
+the null-Living store prefix, cold failed initialization and explicit numeric
+refusals. A separate native-only test records 15 sleeping/lifetime rows using
+real Math, World, ChunkCache, Player, Engine, Font and Settings owners. It covers
+all four Bed orientations, non-Bed angle preservation, reached Math and World
+failures, and checked retirement retry. Its 133,388 assertions include two full
+65,536-word scans of the failed Math initializer's published zero array.
+
+The sleeping controls have no original-runtime equality claim. Bed placement,
+actor construction, an isolated TH101 failure and the typed source Settings
+active-call preflight remain unqualified. The owned test World keeps all initial
+files; only its region file changes, and its session lock is recorded. Resources,
+executables and bound source inputs remain unchanged. These tests use no JVM or
+graphics context. Public authored resources are available for asset-free runs;
+local runs may select imported resources through CMake.
+
+The actual RenderGlobal delay, live traversal, draws and complete frames remain
+unfinished. Terminal and deferred World ownership must be integrated before
+adopting these dispatcher captures in that path.
+
+All 27 selected targets build on each platform. The broader selection passes
+35 Windows CTests in 53.07 seconds and 34 sanitized Linux CTests in 79.00
+seconds, with zero failures or skips. The Windows loaded-World test takes
+13.06 seconds, enforcing all 72 focus histories and save/resource preservation.
+Its inspected capture shows authored grass terrain and Sky without HUD. The
+rebuilt client also completes two normal menu frames and three ticks with
+all 413 imported assets unchanged and no JVM/JAR runtime.
+
 ## TileEntityRenderer CPU qualification
 
 The [canonical TileEntity dispatcher](client/tile-entity-renderer.md) matches
@@ -24,7 +63,7 @@ context. The broader regression selection includes its existing device scopes.
 The rebuilt Windows executable opens two normal menu frames with imported
 assets, an isolated APPDATA directory and no JVM/JAR runtime. These CPU methods
 are not yet connected to the complete RenderGlobal Entity/TileEntity pass.
-RenderManager frame binding, live traversal and renderer draws remain open
+Live traversal and renderer draws remain open
 dependencies; no complete World-frame or gameplay result is claimed.
 
 ### Windows compiler cache

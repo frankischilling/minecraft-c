@@ -26,8 +26,8 @@
       "sha256": "ba0d657f72c807d42d8a39a3229bd59c9198cd8287b4141316c01db820ee1436"
     },
     "include/mc/client/settings/game_settings.h": {
-      "bytes": 14222,
-      "sha256": "64f77f85ab6deed4ab51174044320aabe516f8176c84c801df251fd2ab47945b"
+      "bytes": 16136,
+      "sha256": "5f12e9606c5945dc891edb3f4ecf35d0e340f79c626c5bd4bc242e8b41176bea"
     },
     "include/mc/client/statistics/writer.h": {
       "bytes": 18579,

@@ -38,6 +38,15 @@ mc_world_storage_status mc_world_runtime_metadata_get(mc_world_runtime *runtime,
                                                       int32_t y, int32_t z, int32_t *out,
                                                       mc_world_storage_error *error);
 
+/* Same metadata read, retaining the complete reached acquisition cause without
+ * a second World/provider read. Like block_get_detailed, the required caller-
+ * owned diagnostic is initialized before admission; early/out-of-domain paths
+ * leave it OK/unreached. Keep large retained client diagnostics on the heap. */
+mc_world_storage_status
+mc_world_runtime_metadata_get_detailed(mc_world_runtime *, int32_t x, int32_t y, int32_t z,
+                                       int32_t *out, mc_world_storage_error *error,
+                                       mc_world_runtime_acquisition_error *acquisition);
+
 /* The original quiet metadata setter returns false outside the World domain
  * and true after an in-domain chunk call, including an equal-value write or
  * the actual blank chunk's no-op. The bool is an ordinary game result, separate

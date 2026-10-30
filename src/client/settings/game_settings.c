@@ -77,6 +77,7 @@ struct mc_game_settings {
     mc_key_binding *owned_bindings;
     retained_text *texts;
     size_t binding_owners;
+    size_t native_borrows;
     bool active;
     mc_sound_manager *sound_manager;
     bool sound_access, sound_saving;
@@ -256,7 +257,50 @@ bool mc_game_settings_read_state(const mc_game_settings *settings, mc_game_setti
     if (settings == NULL || out == NULL)
         return false;
     *out = settings->state;
+    out->native_borrows = settings->native_borrows;
     return true;
+}
+
+static mc_game_settings_status borrow_admit(const mc_game_settings *settings,
+                                            mc_game_settings_error *error) {
+    if (settings == NULL)
+        return result(error, MC_GAME_SETTINGS_INVALID_ARGUMENT, 0, "GameSettings borrow receiver");
+    if (settings->active)
+        return result(error, MC_GAME_SETTINGS_BUSY, 0, "GameSettings active borrow operation");
+    if (settings->source_mode && settings->source_phase != MC_GAME_SETTINGS_SOURCE_RAW &&
+        settings->source_phase != MC_GAME_SETTINGS_SOURCE_READY &&
+        settings->source_phase != MC_GAME_SETTINGS_SOURCE_FAILED)
+        return result(error, MC_GAME_SETTINGS_STATE_ERROR, 0, "GameSettings terminal borrow phase");
+    return MC_GAME_SETTINGS_OK;
+}
+
+mc_game_settings_status mc_game_settings_borrow(mc_game_settings *settings,
+                                                mc_game_settings_error *error) {
+    const mc_game_settings_status status = borrow_admit(settings, error);
+    if (status != MC_GAME_SETTINGS_OK)
+        return status;
+    if (settings->native_borrows == SIZE_MAX)
+        return result(error, MC_GAME_SETTINGS_LIMIT, 0, "GameSettings instance borrow bound");
+    ++settings->native_borrows;
+    return result(error, MC_GAME_SETTINGS_OK, 0, NULL);
+}
+
+mc_game_settings_status mc_game_settings_release_borrow(mc_game_settings **occurrence,
+                                                        mc_game_settings_error *error) {
+    if (occurrence == NULL)
+        return result(error, MC_GAME_SETTINGS_INVALID_ARGUMENT, 0, "GameSettings borrow slot");
+    if (*occurrence == NULL)
+        return result(error, MC_GAME_SETTINGS_OK, 0, NULL);
+    mc_game_settings *settings = *occurrence;
+    const mc_game_settings_status status = borrow_admit(settings, error);
+    if (status != MC_GAME_SETTINGS_OK)
+        return status;
+    if (settings->native_borrows == 0)
+        return result(error, MC_GAME_SETTINGS_INVALID_ARGUMENT, 0,
+                      "GameSettings release requires an instance borrow");
+    --settings->native_borrows;
+    *occurrence = NULL;
+    return result(error, MC_GAME_SETTINGS_OK, 0, NULL);
 }
 
 mc_game_settings_status mc_game_settings_attach_sound_manager(mc_game_settings *settings,
@@ -430,6 +474,8 @@ mc_game_settings_status mc_game_settings_retire(mc_game_settings **settings,
     if (*settings != NULL) {
         if ((*settings)->active)
             return result(error, MC_GAME_SETTINGS_BUSY, 0, "GameSettings active retirement");
+        if ((*settings)->native_borrows != 0)
+            return result(error, MC_GAME_SETTINGS_BUSY, 0, "GameSettings borrowed retirement");
         if ((*settings)->source_mode) {
             const mc_game_settings_status status = source_retire(*settings, error);
             if (status != MC_GAME_SETTINGS_OK)
@@ -2110,6 +2156,7 @@ bool mc_game_settings_source_inspect(const mc_game_settings *settings,
         .retirement = &settings->source_retirement,
         .load_report = &settings->source_load_report,
         .source_stores = settings->source_stores,
+        .native_borrows = settings->native_borrows,
         .stores = settings->source_store_pcs,
         .last_store_pc = settings->last_source_store,
         .last_load_pc = settings->last_load_pc,

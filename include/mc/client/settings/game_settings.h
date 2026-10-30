@@ -82,6 +82,7 @@ typedef struct mc_game_settings_state {
     void *minecraft;           /* borrowed x; never dereferenced by this owner */
     const char *options_path;  /* legacy native path; typed N is in source_inspect */
     const void *file_identity; /* actual typed File or legacy path identity, not Java address */
+    size_t native_borrows;     /* Diagnostic only, not a kv field or persisted value. */
 } mc_game_settings_state;
 
 typedef enum mc_game_settings_source_exception {
@@ -176,6 +177,30 @@ mc_game_settings_status mc_game_settings_create_file(
 bool mc_game_settings_read_state(const mc_game_settings *settings, mc_game_settings_state *out);
 bool mc_key_binding_read(const mc_key_binding *binding, mc_game_settings_text *name, int32_t *code);
 
+/* Counted native borrows of this SAME Settings instance. Neither operation
+ * allocates, copies a service/state owner, initializes a class, performs a
+ * source action, changes a source field, saves or frees anything. Counts start
+ * at zero. borrow(NULL) is INVALID_ARGUMENT; SIZE_MAX is LIMIT without change.
+ * Both operations return BUSY while this owner is active. Quiescent source
+ * RAW/READY/FAILED owners are valid. After the active gate, a source
+ * CONSTRUCTING/RETIRING phase rejects borrows/releases with STATE_ERROR,
+ * without reviving terminal ownership.
+ * release_borrow consumes one existing borrow and clears its slot on OK. A
+ * NULL slot is INVALID_ARGUMENT, NULL *slot is harmless, and a zero-count
+ * release is INVALID_ARGUMENT. Every failure preserves count and slot.
+ * There is no auto-final-free: the containing owner still explicitly retires
+ * Settings after all borrowers end. retire stays BUSY before ANY cleanup while
+ * a borrow exists. Hold the borrowed pointer until release, with exclusive
+ * synchronized owner access and disjoint slots/errors/views. This is an
+ * instance borrow, independent of the source Settings class-array lifetime.
+ * Source App.x remains borrowed: this API takes NO App hold. The actual App
+ * must outlive Settings and every borrower, as must its other borrowed services;
+ * outer retirement/detach must end captures before retiring those dependencies. */
+mc_game_settings_status mc_game_settings_borrow(mc_game_settings *settings,
+                                                mc_game_settings_error *error);
+mc_game_settings_status mc_game_settings_release_borrow(mc_game_settings **occurrence,
+                                                        mc_game_settings_error *error);
+
 /* Bind the actual Minecraft SoundManager field for option actions. This is a
  * borrowed owner, separate from the opaque Minecraft identity; a null Minecraft
  * still reaches its original dereference failure. Detach before retiring the
@@ -247,7 +272,8 @@ mc_game_settings_set_binding_code(mc_game_settings *settings, int32_t index, int
 /* Legacy path I/O retires its native streams before returning, separately from
  * source close. Typed source construction/load can retain unfinished real
  * reader/FIS/File/class prefixes; retirement releases those with guarded retry.
- * No implicit save/flush/source close. NULL *settings is harmless; BUSY/error
+ * No implicit save/flush/source close. Native instance borrows return BUSY
+ * before source or arena cleanup. NULL *settings is harmless; BUSY/error
  * preserves the still-owned object. See construction.h for the typed lifetime. */
 mc_game_settings_status mc_game_settings_retire(mc_game_settings **settings,
                                                 mc_game_settings_error *error);

@@ -1,7 +1,7 @@
 #include "internal.h"
 
-#include "../../../entity/player/tick_math_internal.h"
 #include "../../gui/bitmap_font.h"
+#include "../interpolation_internal.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -15,151 +15,33 @@ static bool frame_fail(mc_client_tile_renderer_error *e, mc_client_tile_renderer
     return false;
 }
 
-static bool frame_fp(mc_client_tile_renderer_error *e, int32_t pc) {
-    if ((_mm_getcsr() & 0xffc0u) == 0x1f80u)
+static bool frame_math_result(bool ok, const mc_client_interpolation_error *math,
+                              mc_client_tile_renderer_error *e) {
+    if (ok)
         return true;
-    return frame_fail(e, MC_CLIENT_TILE_RENDERER_UNSUPPORTED_FP,
-                      "LL frame strict floating environment", pc, true);
+    if (math->status == MC_CLIENT_INTERPOLATION_UNSUPPORTED_FP)
+        return frame_fail(e, MC_CLIENT_TILE_RENDERER_UNSUPPORTED_FP,
+                          "LL frame strict floating environment", math->pc, true);
+    return frame_fail(e, MC_CLIENT_TILE_RENDERER_UNSUPPORTED_NUMERIC,
+                      "LL frame unmeasured two-NaN signaling operand", math->pc, true);
 }
 
-/* Measured LL cases13/14 preserve the current operand's payload through SUB,
- * MUL and ADD; cases17..19 preserve/quiet the partial payload and widen it.
- * OpenJDK17u tag jdk-17.0.17+10, templateTable_x86.cpp fop2/dop2, keeps the
- * right source operand as SSE destination for ADD/MUL, left for SUB. Explicit
- * selection prevents a compiler commuting the intrinsic's NaN operands.
- * https://github.com/openjdk/jdk17u/blob/jdk-17.0.17%2B10/src/hotspot/cpu/x86/templateTable_x86.cpp
- * No Java/JDK body is copied here. Floating exception flags are not a value
- * parity claim; controls are checked and no MXCSR bit is repaired or reset. */
-static bool frame_float_nan_admit(float left, float right, int32_t pc,
-                                  mc_client_tile_renderer_error *e) {
-    uint32_t a, b;
-    memcpy(&a, &left, sizeof(a));
-    memcpy(&b, &right, sizeof(b));
-    if ((a & UINT32_C(0x7fffffff)) > UINT32_C(0x7f800000) &&
-        (b & UINT32_C(0x7fffffff)) > UINT32_C(0x7f800000) && ((a & b) & UINT32_C(0x00400000)) == 0)
-        return frame_fail(e, MC_CLIENT_TILE_RENDERER_UNSUPPORTED_NUMERIC,
-                          "LL frame unmeasured two-NaN signaling operand", pc, true);
-    return true;
-}
-
-static bool frame_double_nan_admit(double left, double right, int32_t pc,
-                                   mc_client_tile_renderer_error *e) {
-    uint64_t a, b;
-    memcpy(&a, &left, sizeof(a));
-    memcpy(&b, &right, sizeof(b));
-    if ((a & UINT64_C(0x7fffffffffffffff)) > UINT64_C(0x7ff0000000000000) &&
-        (b & UINT64_C(0x7fffffffffffffff)) > UINT64_C(0x7ff0000000000000) &&
-        ((a & b) & UINT64_C(0x0008000000000000)) == 0)
-        return frame_fail(e, MC_CLIENT_TILE_RENDERER_UNSUPPORTED_NUMERIC,
-                          "LL frame unmeasured two-NaN signaling operand", pc, true);
-    return true;
-}
-
-static bool frame_nan_float(float left, float right, bool prefer_right, float *out) {
-    uint32_t a, b;
-    memcpy(&a, &left, sizeof(a));
-    memcpy(&b, &right, sizeof(b));
-    const bool an = (a & UINT32_C(0x7fffffff)) > UINT32_C(0x7f800000);
-    const bool bn = (b & UINT32_C(0x7fffffff)) > UINT32_C(0x7f800000);
-    if (!an && !bn)
-        return false;
-    uint32_t result = (prefer_right ? (bn ? b : a) : (an ? a : b)) | UINT32_C(0x00400000);
-    memcpy(out, &result, sizeof(result));
-    return true;
-}
-
-static bool frame_nan_double(double left, double right, bool prefer_right, double *out) {
-    uint64_t a, b;
-    memcpy(&a, &left, sizeof(a));
-    memcpy(&b, &right, sizeof(b));
-    const bool an = (a & UINT64_C(0x7fffffffffffffff)) > UINT64_C(0x7ff0000000000000);
-    const bool bn = (b & UINT64_C(0x7fffffffffffffff)) > UINT64_C(0x7ff0000000000000);
-    if (!an && !bn)
-        return false;
-    uint64_t result = (prefer_right ? (bn ? b : a) : (an ? a : b)) | UINT64_C(0x0008000000000000);
-    memcpy(out, &result, sizeof(result));
-    return true;
-}
-
-static float frame_fsub(float a, float b) {
-    float result;
-    return frame_nan_float(a, b, false, &result) ? result : at_fsub(a, b);
-}
-
-static float frame_fmul(float a, float b) {
-    float result;
-    return frame_nan_float(a, b, true, &result) ? result : at_fmul(a, b);
-}
-
-static float frame_fadd(float a, float b) {
-    float result;
-    return frame_nan_float(a, b, true, &result) ? result : at_fadd(a, b);
-}
-
-static double frame_dsub(double a, double b) {
-    double result;
-    return frame_nan_double(a, b, false, &result) ? result : at_sub(a, b);
-}
-
-static double frame_dmul(double a, double b) {
-    double result;
-    return frame_nan_double(a, b, true, &result) ? result : at_mul(a, b);
-}
-
-static double frame_dadd(double a, double b) {
-    double result;
-    return frame_nan_double(a, b, true, &result) ? result : at_add(a, b);
-}
-
-static double frame_widen(float value) {
-    uint32_t bits;
-    memcpy(&bits, &value, sizeof(bits));
-    if ((bits & UINT32_C(0x7fffffff)) > UINT32_C(0x7f800000)) {
-        const uint64_t widened = ((uint64_t)(bits & UINT32_C(0x80000000)) << 32) |
-                                 UINT64_C(0x7ff8000000000000) |
-                                 ((uint64_t)(bits & UINT32_C(0x007fffff)) << 29);
-        double result;
-        memcpy(&result, &widened, sizeof(result));
-        return result;
-    }
-    return at_widen(value);
-}
-
-/* Each operation rounds at the actual JVM width, including endpoint partials,
- * subnormal values and intermediate overflow. No algebraic shortcut or FMA. */
 static bool interpolate_float(float previous, float current, float partial, int32_t sub_pc,
                               int32_t mul_pc, int32_t add_pc, float *out,
                               mc_client_tile_renderer_error *e) {
-    if (!frame_fp(e, sub_pc) || !frame_float_nan_admit(current, previous, sub_pc, e))
-        return false;
-    const float difference = frame_fsub(current, previous);
-    if (!frame_fp(e, mul_pc) || !frame_float_nan_admit(difference, partial, mul_pc, e))
-        return false;
-    const float scaled = frame_fmul(difference, partial);
-    if (!frame_fp(e, add_pc) || !frame_float_nan_admit(previous, scaled, add_pc, e))
-        return false;
-    const float value = frame_fadd(previous, scaled);
-    *out = value;
-    return true;
+    mc_client_interpolation_error math;
+    const bool ok =
+        mc_client_interpolate_float(previous, current, partial, sub_pc, mul_pc, add_pc, out, &math);
+    return frame_math_result(ok, &math, e);
 }
 
 static bool interpolate_double(double previous, double current, float partial, int32_t sub_pc,
                                int32_t widen_pc, int32_t mul_pc, int32_t add_pc, double *out,
                                mc_client_tile_renderer_error *e) {
-    if (!frame_fp(e, sub_pc) || !frame_double_nan_admit(current, previous, sub_pc, e))
-        return false;
-    const double difference = frame_dsub(current, previous);
-    if (!frame_fp(e, widen_pc))
-        return false;
-    const double widened = frame_widen(partial);
-    if (!frame_fp(e, mul_pc) || !frame_double_nan_admit(difference, widened, mul_pc, e))
-        return false;
-    const double scaled = frame_dmul(difference, widened);
-    if (!frame_fp(e, add_pc) || !frame_double_nan_admit(previous, scaled, add_pc, e))
-        return false;
-    const double value = frame_dadd(previous, scaled);
-    *out = value;
-    return true;
+    mc_client_interpolation_error math;
+    const bool ok = mc_client_interpolate_double(previous, current, partial, sub_pc, widen_pc,
+                                                 mul_pc, add_pc, out, &math);
+    return frame_math_result(ok, &math, e);
 }
 
 static bool ledger_failure(mc_client_tile_renderer_error *e) {

@@ -223,6 +223,7 @@ cleanup:
 static int test_metadata(mc_world_runtime *world, mc_world_store *store, mc_world_regions *regions,
                          const mc_chunk_provider_fields *provider, mc_chunk_state *chunks[4]) {
     int result = 1;
+    mc_world_runtime_acquisition_error *acquisition = calloc(1, sizeof(*acquisition));
     int32_t value = -999;
     int32_t ordered_size = -1, membership_size = -1;
     bool changed = true;
@@ -241,6 +242,7 @@ static int test_metadata(mc_world_runtime *world, mc_world_store *store, mc_worl
     const int32_t outside[][3] = {{32000000, 63, 0},  {-32000001, 63, 0}, {0, 63, 32000001},
                                   {0, 63, -32000001}, {128, -1, 128},     {128, 128, 128}};
     memcpy(before_blocks, chunk->data->blocks, sizeof(before_blocks));
+    CHECK(acquisition != NULL);
     CHECK(mc_world_runtime_classes_get(world->classes, &class_before) == MC_WORLD_STORAGE_OK);
     CHECK(mc_world_store_owns_chunk(store, chunk) && !chunk->dirty);
     CHECK(mc_world_runtime_metadata_get(world, -1, 10, -17, &value, &error) ==
@@ -249,6 +251,10 @@ static int test_metadata(mc_world_runtime *world, mc_world_store *store, mc_worl
     CHECK(mc_world_runtime_metadata_get(world, -1, 11, -17, &value, &error) ==
               MC_WORLD_STORAGE_OK &&
           value == 10 && !chunk->dirty);
+    CHECK(mc_world_runtime_metadata_get_detailed(world, -1, 10, -17, &value, &error, acquisition) ==
+              MC_WORLD_STORAGE_OK &&
+          value == 5 && acquisition->status == MC_CHUNK_ACQUIRE_OK && !chunk->dirty &&
+          provider->cache->count == 4 && provider->cache->insertion_count == 4);
     CHECK(mc_world_runtime_metadata_set_quiet(world, -1, 10, -17, INT32_MIN, &changed, &error) ==
               MC_WORLD_STORAGE_OK &&
           changed && chunk->dirty);
@@ -329,6 +335,18 @@ static int test_metadata(mc_world_runtime *world, mc_world_store *store, mc_worl
     CHECK(mc_world_runtime_metadata_get(world, 0, 63, -32000000, &value, &error) ==
               MC_WORLD_STORAGE_LIMIT &&
           value == -999);
+    CHECK(mc_world_runtime_metadata_get_detailed(world, 0, 63, -32000000, &value, &error,
+                                                 acquisition) == MC_WORLD_STORAGE_LIMIT &&
+          value == -999 && acquisition->status != MC_CHUNK_ACQUIRE_OK &&
+          provider->cache->count == 4 && provider->cache->insertion_count == 4 &&
+          provider->pending->count == 0);
+    /* Reusing the actual child output must discard an earlier reached failure
+     * on paths which make no provider call. These are native diagnostics only. */
+    CHECK(mc_world_runtime_metadata_get_detailed(world, 32000000, 0, 0, &value, &error,
+                                                 acquisition) == MC_WORLD_STORAGE_OK &&
+          value == 0 && acquisition->status == MC_CHUNK_ACQUIRE_OK &&
+          acquisition->cause.status == MC_WORLD_STORAGE_OK && acquisition->source_chunk == NULL);
+    value = -999;
     changed = true;
     CHECK(mc_world_runtime_metadata_set_quiet(world, 0, 63, -32000000, 3, &changed, &error) ==
               MC_WORLD_STORAGE_LIMIT &&
@@ -343,6 +361,12 @@ static int test_metadata(mc_world_runtime *world, mc_world_store *store, mc_worl
           value == -999);
     CHECK(mc_world_runtime_metadata_get(world, -1, 10, -17, NULL, &error) ==
           MC_WORLD_STORAGE_INVALID_ARGUMENT);
+    CHECK(mc_world_runtime_metadata_get_detailed(NULL, -1, 10, -17, &value, &error, acquisition) ==
+              MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+          value == -999 && acquisition->status == MC_CHUNK_ACQUIRE_OK);
+    CHECK(mc_world_runtime_metadata_get_detailed(world, -1, 10, -17, &value, &error, NULL) ==
+              MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+          value == -999);
     CHECK(mc_world_runtime_metadata_set_quiet(NULL, -1, 10, -17, 3, &changed, &error) ==
               MC_WORLD_STORAGE_INVALID_ARGUMENT &&
           !changed);
@@ -365,6 +389,7 @@ static int test_metadata(mc_world_runtime *world, mc_world_store *store, mc_worl
           memcmp(chunk->data->metadata, expected.metadata, MC_CHUNK_NIBBLE_BYTES) == 0);
     result = 0;
 cleanup:
+    free(acquisition);
     return result;
 }
 

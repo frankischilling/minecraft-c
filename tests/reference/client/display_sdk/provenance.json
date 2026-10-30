@@ -30,8 +30,8 @@
       "sha256": "83eb0a971b2379ca2ea0961f96cd05e502bf8ba2bc434aca6039d5724ba23b7b"
     },
     "cmake/client_rendering.cmake": {
-      "bytes": 2572,
-      "sha256": "7cbb0b93c0d732983cbd05a07b29c5761bb169022584d1b9c011022d96750470"
+      "bytes": 2641,
+      "sha256": "6ac4708d5ee0e3bfe98d7e238b2e635bdd35c92fd255dd2dc4d3c3112db8f906"
     },
     "cmake/client_settings_source_save.cmake": {
       "bytes": 230,
@@ -158,8 +158,8 @@
       "sha256": "cb3e8f634138187dd9f46c0bc72c63a1e29433750509d3880899ac2e4a901de5"
     },
     "include/mc/client/render/manager/manager.h": {
-      "bytes": 9427,
-      "sha256": "07dca0254555b8e2dc5e4b5ae958ecce37e28018cd74799504e20fa22ff9ae0a"
+      "bytes": 12273,
+      "sha256": "63755c55e45890de1dd79627ecde6b940f5627a0acf8897efd48773367e51457"
     },
     "include/mc/client/render/model.h": {
       "bytes": 4685,
@@ -174,16 +174,16 @@
       "sha256": "e0208525d40c27ab925eb24e5fce4787275af0ed3fdfde4fd02e3b3e0d1bbd4d"
     },
     "include/mc/client/settings/construction.h": {
-      "bytes": 6513,
-      "sha256": "7fa9fd66efe13e741374ba401df1b3a3d99ac77d481bba781417f263118668b9"
+      "bytes": 6603,
+      "sha256": "a55422da6a5b49ca82f583f4eefa27a7ee811b835b514d0e2252198a822b0f61"
     },
     "include/mc/client/settings/game_option.h": {
       "bytes": 7053,
       "sha256": "6dbd94aeb09dc0b4c91555fb4b92b854d33e85fc5ac4baff5dba13ce7ce1ebd3"
     },
     "include/mc/client/settings/game_settings.h": {
-      "bytes": 14222,
-      "sha256": "64f77f85ab6deed4ab51174044320aabe516f8176c84c801df251fd2ab47945b"
+      "bytes": 16136,
+      "sha256": "5f12e9606c5945dc891edb3f4ecf35d0e340f79c626c5bd4bc242e8b41176bea"
     },
     "include/mc/client/sound/backend.h": {
       "bytes": 6027,
@@ -570,8 +570,8 @@
       "sha256": "ae2437bb22228022bf1f3589941214b62500c23ca9f2b6ff3a2f62b4f88c3bf4"
     },
     "include/mc/world/runtime/blocks.h": {
-      "bytes": 7547,
-      "sha256": "96a9597e28858ca65f3b744f52fa66e341a437cbe48ba304f6b16d4d7e08bc59"
+      "bytes": 8156,
+      "sha256": "1db57a4234e102126f00adbbef6a1a5b8cc97348b27500a8c1a8f4af00d62848"
     },
     "include/mc/world/runtime/collision/boxes.h": {
       "bytes": 3060,
@@ -1062,8 +1062,8 @@
       "sha256": "4d86e1ef941ca0a86571856bcc315d623e091a7dd054479665a0af6cf8897c03"
     },
     "src/client/render/manager/internal.h": {
-      "bytes": 5358,
-      "sha256": "f8ccbc05a2d41e1e488b0acf534dc48fb114404bde6125578a6bb410df55eef2"
+      "bytes": 6693,
+      "sha256": "2d07808f8771a8f37461c09b0f2355df2a5b0d65d838aa0418d02bc675fbc269"
     },
     "src/client/render/manager/map.c": {
       "bytes": 3909,
@@ -1074,8 +1074,8 @@
       "sha256": "dcf721a9690ced2a31f038c34e85aaa08bc3b05a65d6c0bcc327be1834f08f50"
     },
     "src/client/render/manager/owner.c": {
-      "bytes": 17724,
-      "sha256": "d8a4e23bdf6842ea890b511a79e70b2151f6fa5268a2cc37026f972cbebd10a8"
+      "bytes": 18505,
+      "sha256": "733712dc2485f6c62cc6f94dca7e4d8b87110f784da9d3b26a1cacd85bbca754"
     },
     "src/client/render/manager/renderers.c": {
       "bytes": 13323,
@@ -1210,8 +1210,8 @@
       "sha256": "04250c23f22fba151654e1106a764d03cd5fdf5227504ca4fc7e828c9b1ea4da"
     },
     "src/client/settings/game_settings.c": {
-      "bytes": 103580,
-      "sha256": "4d8f6cd87602ff9ba29462b453ea42c939ae6dced18750b4d51dc0ea7dc801ce"
+      "bytes": 106007,
+      "sha256": "0d4bb5dbbb1a67229d7c96458bfa7a8fed402eca2577146ffe30b45e08e65dea"
     },
     "src/client/settings/labels.c": {
       "bytes": 15759,
@@ -2714,8 +2714,8 @@
       "sha256": "02892855a6184002eb7c7d9974d1366fecd10981f571c78dc58050a96865054c"
     },
     "src/client/render/manager/world.c": {
-      "bytes": 2586,
-      "sha256": "adf4caf2344d085ec8fc2c21f041df9ad4df58128526160f01abff21befbe1e7"
+      "bytes": 4094,
+      "sha256": "c3d96b3a9d2bba4f44e4b4ba5cc086091bb7c8d08bf3876ffb6bd1b5f6509ee2"
     },
     "src/client/render_engine/bounds_draw.c": {
       "bytes": 2819,
@@ -4298,8 +4298,8 @@
       "sha256": "2f449a496caacb2235f2177c8c827c4d4fbf8877e949536b3f57a4380021f540"
     },
     "src/client/render/tile_entity_renderer/frame.c": {
-      "bytes": 19384,
-      "sha256": "b15119a70a1593b8e25a156e35a1cf4bfe0144841f995827eaca0da0ffcafb02"
+      "bytes": 14504,
+      "sha256": "ca359c750335051a689296dc3065a4f1d81eca3c3b8111cec318442c0b1c3e30"
     },
     "src/client/render/tile_entity_renderer/internal.h": {
       "bytes": 6198,
@@ -4346,20 +4346,60 @@
       "sha256": "5b81c3e29f5f36e2e387154ee1f8914b78f54694990c73bc2bb858fb9b9845cb"
     },
     "tests/reference/client/tile_entity_renderer/run_frame.py": {
-      "bytes": 12448,
-      "sha256": "cba914484225421e052ac75c87ad18da908c7c6cb0ce86b09b05794d7927160a"
+      "bytes": 12514,
+      "sha256": "1f88a19dcc3a7d5c2f16b4b3aca1b301c293b85f6f2c14639b050a622727938d"
     },
     "tests/reference/client/tile_entity_renderer/run_native.py": {
-      "bytes": 13265,
-      "sha256": "379baa992b4f7c660d2c8c34f503e9130dc9d42f668c80283da85022747db955"
+      "bytes": 13331,
+      "sha256": "9d183501180290e795d5e473c0113b961aff445b974c0c71605d6951f5982cdb"
     },
     "tests/reference/client/tile_entity_renderer/run_world.py": {
-      "bytes": 18119,
-      "sha256": "e795253c4a9679ce67821d1afe04e6ff094956a9cd9de841a75dc3de1d42dae2"
+      "bytes": 18185,
+      "sha256": "ce3f7f9193af835a050a2db5f298c0ebd2ddbe029adbed14756b7bf9b6263ac7"
     },
     "tests/world/runtime/tile_entities/test_class_literals.c": {
       "bytes": 18051,
       "sha256": "8b31376524c6f5c7580698cc3aa84b7ef564a45d532f576c47a0ec3913c3e257"
+    },
+    "cmake/tests/client_render_manager_frame.cmake": {
+      "bytes": 2084,
+      "sha256": "f73a00de36671c9f69bf385c4d6497b644b967bcb556f9383e91bb49e46368ac"
+    },
+    "src/client/render/interpolation_internal.h": {
+      "bytes": 8617,
+      "sha256": "afbe52a5c2e467fbbbc2dd44553aa5895675b09f21560768dd3c9908d8e27752"
+    },
+    "src/client/render/manager/frame.c": {
+      "bytes": 24516,
+      "sha256": "89ce29da8131340c135ec6e10678a7a9faa13a8b1a84728e6ff513724a094abb"
+    },
+    "tests/client/render/test_manager.c": {
+      "bytes": 23507,
+      "sha256": "1bb83fcc04170b895e200a0f62c350170be6aaf0cc0541691d1b762b5d929d4a"
+    },
+    "tests/client/render/test_manager_frame.c": {
+      "bytes": 27972,
+      "sha256": "eb46568a00ed1d3c6f1aea29e44c500d747359ade68555deb39047ed8aa8d432"
+    },
+    "tests/client/render/test_manager_sleeping.c": {
+      "bytes": 28366,
+      "sha256": "e37b44e60e88588e08bdec276f562aa00ba2f0de11effd9940a3abda7c14e399"
+    },
+    "tests/client/settings/test_borrow.c": {
+      "bytes": 13904,
+      "sha256": "25c58f085145e129bcae5ba13fadb29eba767651082c05cc03b77fd42be24d0f"
+    },
+    "tests/reference/client/render_manager_frame/capture_reference.py": {
+      "bytes": 16804,
+      "sha256": "9ad8d1fccc0877f9b57670ff3ced992a37c750c9c8c123a910508fd167cf182c"
+    },
+    "tests/reference/client/render_manager_frame/run_native.py": {
+      "bytes": 26804,
+      "sha256": "cf70fd6dd0ea52358b0b9ef23883c66f892b0687eb3fe36dd5814693ad4b4aa7"
+    },
+    "tests/reference/client/render_manager_frame/run_sleeping.py": {
+      "bytes": 12938,
+      "sha256": "a5264f92fd61fde4ad7d19244595b9707d52606190567265179813706fe0f05e"
     }
   },
   "authorities": {

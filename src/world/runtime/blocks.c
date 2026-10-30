@@ -77,6 +77,15 @@ mc_world_storage_status mc_world_runtime_block_get(mc_world_runtime *runtime, in
     return block_get(runtime, x, y, z, out, error, NULL);
 }
 
+static void acquisition_reset(mc_world_runtime_acquisition_error *acquisition) {
+    static const mc_world_runtime_acquisition_error zero = {.status = MC_CHUNK_ACQUIRE_OK};
+    *acquisition = zero;
+    mc_live_tile_entities_error_init(&acquisition->tile_entity);
+    acquisition->registry = acquisition->tile_entity.registry;
+    mc_world_entity_load_error_init(&acquisition->load_entity);
+    mc_world_entity_batch_error_init(&acquisition->batch);
+}
+
 mc_world_storage_status
 mc_world_runtime_block_get_detailed(mc_world_runtime *runtime, int32_t x, int32_t y, int32_t z,
                                     int32_t *out, mc_world_storage_error *error,
@@ -84,18 +93,13 @@ mc_world_runtime_block_get_detailed(mc_world_runtime *runtime, int32_t x, int32_
     if (acquisition == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                       "World detailed block acquisition output");
-    static const mc_world_runtime_acquisition_error zero = {.status = MC_CHUNK_ACQUIRE_OK};
-    *acquisition = zero;
-    mc_live_tile_entities_error_init(&acquisition->tile_entity);
-    acquisition->registry = acquisition->tile_entity.registry;
-    mc_world_entity_load_error_init(&acquisition->load_entity);
-    mc_world_entity_batch_error_init(&acquisition->batch);
+    acquisition_reset(acquisition);
     return block_get(runtime, x, y, z, out, error, acquisition);
 }
 
-mc_world_storage_status mc_world_runtime_metadata_get(mc_world_runtime *runtime, int32_t x,
-                                                      int32_t y, int32_t z, int32_t *out,
-                                                      mc_world_storage_error *error) {
+static mc_world_storage_status metadata_get(mc_world_runtime *runtime, int32_t x, int32_t y,
+                                            int32_t z, int32_t *out, mc_world_storage_error *error,
+                                            mc_world_runtime_acquisition_error *acquisition) {
     if (runtime == NULL || out == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World metadata arguments");
     if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME ||
@@ -106,7 +110,9 @@ mc_world_storage_status mc_world_runtime_metadata_get(mc_world_runtime *runtime,
         return result(error, MC_WORLD_STORAGE_OK, NULL);
     }
     mc_chunk_state *chunk = NULL;
-    mc_world_storage_status status = acquire_chunk(runtime, x, z, &chunk, error);
+    mc_world_storage_status status =
+        acquisition == NULL ? acquire_chunk(runtime, x, z, &chunk, error)
+                            : acquire_chunk_detailed(runtime, x, z, &chunk, error, acquisition);
     if (status != MC_WORLD_STORAGE_OK)
         return status;
     if (chunk->blank) {
@@ -122,6 +128,23 @@ mc_world_storage_status mc_world_runtime_metadata_get(mc_world_runtime *runtime,
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World metadata payload");
     *out = metadata;
     return result(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_runtime_metadata_get(mc_world_runtime *runtime, int32_t x,
+                                                      int32_t y, int32_t z, int32_t *out,
+                                                      mc_world_storage_error *error) {
+    return metadata_get(runtime, x, y, z, out, error, NULL);
+}
+
+mc_world_storage_status
+mc_world_runtime_metadata_get_detailed(mc_world_runtime *runtime, int32_t x, int32_t y, int32_t z,
+                                       int32_t *out, mc_world_storage_error *error,
+                                       mc_world_runtime_acquisition_error *acquisition) {
+    if (acquisition == NULL)
+        return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                      "World detailed metadata acquisition output");
+    acquisition_reset(acquisition);
+    return metadata_get(runtime, x, y, z, out, error, acquisition);
 }
 
 mc_world_storage_status mc_world_runtime_metadata_set_quiet(mc_world_runtime *runtime, int32_t x,

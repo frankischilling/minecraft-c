@@ -1,5 +1,13 @@
 # Systems and subsystems
 
+The [RenderManager CPU frame](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-manager-frame.md)
+preserves five ordered reference stores, the real Living sleeping query, reached
+Math/World/Bed calls and ordered camera interpolation. It retains actual World,
+Living, Engine, Font and Settings owners and releases captures with checked
+terminal retries. Ordinary menu World clearing leaves source-reachable captures
+alive. Deferred World ownership and staged final shutdown must be integrated
+before the live RenderGlobal path adopts either dispatcher frame.
+
 The [TileEntityRenderer CPU owner](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/tile-entity-renderer.md)
 now constructs the real Sign, MobSpawner and Piston renderers. It shares
 canonical TileEntity Class identities and model geometry, preserves nullable

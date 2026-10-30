@@ -97,7 +97,11 @@ Class, constructor and unconstructed Random/Watcher children. Those channels
 do not establish equivalence to the original Pig's constructed state.
 
 These CPU bodies do not yet complete RenderGlobal's Entity/TileEntity pass.
-The actual `I=2` delay, RenderManager frame binding, live World-list traversal,
-distance/frustum predicates, renderer draw bodies and later World-frame work
-remain separate dependencies. No empty dispatcher or successful draw stub
-substitutes for them. Full World frames and gameplay remain unfinished.
+The [RenderManager CPU frame body](render-manager-frame.md) is implemented,
+with its scoped awake/null comparisons and native-only sleeping/lifetime
+controls passing on Windows MSVC Debug and Linux Clang18 ASan/UBSan. The actual
+`I=2` delay, live World-list traversal, distance/frustum predicates, renderer
+draw bodies and later World-frame work
+remain separate dependencies. Adopting the LL/TH owners in the complete frame
+and application retirement path also remains unfinished. Full World frames
+and gameplay remain unfinished.

@@ -3656,6 +3656,11 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_game_settings tests/client/settings/test_game_settings.c)
     target_link_libraries(mc_test_game_settings PRIVATE mc_game_settings mc_build_options)
+    add_executable(mc_test_game_settings_borrow tests/client/settings/test_borrow.c)
+    target_link_libraries(mc_test_game_settings_borrow PRIVATE mc_game_settings mc_build_options)
+    add_test(NAME client.game_settings_borrow COMMAND mc_test_game_settings_borrow)
+    set_tests_properties(client.game_settings_borrow PROPERTIES
+        LABELS "public;unit;client;ownership" TIMEOUT 60)
     add_test(NAME client.game_settings
         COMMAND "${Python3_EXECUTABLE}"
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_game_settings_file.py"
@@ -5406,6 +5411,7 @@ if(BUILD_TESTING)
     endif()
     if(MC_BUILD_CLIENT)
         include(cmake/tests/client_rendering.cmake)
+        include(cmake/tests/client_render_manager_frame.cmake)
         include(cmake/tests/client_tile_entity_renderer.cmake)
     endif()
 endif()

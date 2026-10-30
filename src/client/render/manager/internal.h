@@ -46,6 +46,22 @@ typedef struct manager_displaced_hand {
     mc_client_held_item *owner;
 } manager_displaced_hand;
 
+typedef struct manager_engine_occurrence {
+    struct manager_engine_occurrence *next;
+    mc_client_render_engine *value;
+} manager_engine_occurrence;
+
+typedef struct manager_font_occurrence {
+    struct manager_font_occurrence *next;
+    mc_client_bitmap_font *value;
+} manager_font_occurrence;
+
+typedef struct manager_settings_occurrence {
+    struct manager_settings_occurrence *next;
+    mc_game_settings *value;
+} manager_settings_occurrence;
+typedef struct manager_frame_diagnostics manager_frame_diagnostics;
+
 struct mc_client_managed_renderer {
     struct mc_client_render_manager *parent; /* Borrowed, not a counted cycle. */
     const char *source_class;
@@ -81,6 +97,13 @@ struct mc_client_render_manager {
     manager_displaced_hand *displaced;
     size_t displaced_count;
     mc_world_runtime *world_occurrence; /* Independent native hold backing actual g. */
+    mc_entity *living_occurrence;
+    manager_engine_occurrence *engines;
+    manager_font_occurrence *fonts;
+    manager_settings_occurrence *settings;
+    size_t retained_engines, retained_fonts, retained_settings;
+    int32_t last_frame_pc;
+    manager_frame_diagnostics *frame_diagnostics;
 };
 
 struct mc_client_render_manager_classes {
@@ -121,4 +144,11 @@ bool manager_renderer_construct(mc_client_managed_renderer *, manager_model *, m
 bool manager_renderer_retire(mc_client_managed_renderer **, mc_client_manager_error *);
 bool manager_construct(mc_client_render_manager *);
 bool manager_terminal_admit(mc_client_render_manager_classes *, mc_client_manager_error *);
+bool manager_world_store_entered(mc_client_render_manager *, mc_world_runtime *,
+                                 mc_client_manager_error *);
+bool manager_world_ledger_admit(const mc_client_render_manager *, mc_client_manager_error *);
+void manager_frame_invalidate(mc_client_render_manager *);
+bool manager_frame_terminal_admit(mc_client_render_manager *, mc_client_manager_error *);
+bool manager_frame_retire(mc_client_render_manager *, mc_client_manager_error *);
+void manager_frame_destroy(mc_client_render_manager *);
 #endif

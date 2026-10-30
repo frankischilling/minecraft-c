@@ -56,6 +56,7 @@ def bindings(executable, input_path):
              REPO / "include/mc/client/render/tile_entity_renderer/tile_entity_renderer.h",
              REPO / "src/client/render/model.c", REPO / "src/client/render/model_graph.c",
              REPO / "src/client/render/model_graph_internal.h", REPO / "src/client/render/model_graph_trace.inc",
+             REPO / "src/client/render/interpolation_internal.h",
              REPO / "src/entity/entity.c", REPO / "src/entity/entity_internal.h", REPO / "src/entity/player/construction.c",
              REPO / "src/entity/player/tick_math_internal.h", REPO / "src/core/java/random_profile_internal.h",
              REPO / "src/world/runtime/construction.c", REPO / "src/world/runtime/tile_entities/tile_entities.c"]

@@ -148,6 +148,7 @@ def bindings(executable):
              REPO / "include/mc/client/render/tile_entity_renderer/tile_entity_renderer.h",
              REPO / "include/mc/client/render/model.h", REPO / "src/client/render/model.c",
              REPO / "src/client/render/model_graph.c", REPO / "src/client/render/model_graph_internal.h",
+             REPO / "src/client/render/interpolation_internal.h",
              REPO / "src/client/render/model_graph_trace.inc",
              REPO / "include/mc/world/runtime/tile_entities/tile_entities.h",
              REPO / "src/world/runtime/tile_entities/tile_entities.c",

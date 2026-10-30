@@ -1,5 +1,18 @@
 # Build and tests
 
+The [RenderManager CPU frame](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-manager-frame.md)
+retains all 432 original rows on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+Its ledger credits 2,738 exact columns and two declared failure projections;
+136 columns remain unqualified. Two new native tests pass in 6.15 seconds on
+Windows and 77.08 seconds on Linux, including input hashing. Native sleeping
+and lifetime controls use real World, Math and service owners and record all
+15 expected rows. Sleeping behavior has no original-runtime equality claim.
+Pig construction, actor Random/Watcher state and Java reflection counts remain
+uncredited. The broader selection passes 35 Windows tests in 53.07 seconds and
+34 sanitized Linux tests in 79.00 seconds, with no failures or skips. All 27
+selected targets build on both hosts. Live RenderGlobal adoption, traversal
+and draws remain unfinished.
+
 The [TileEntityRenderer CPU comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/tile-entity-renderer.md)
 matches all 254 constructor/lookup, 251 null-World/failure and 96 frame-method
 rows on Windows MSVC Debug and Linux Clang18 ASan/UBSan. The broader selection

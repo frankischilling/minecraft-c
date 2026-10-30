@@ -77,6 +77,7 @@ typedef struct mc_game_settings_source_state {
     const mc_game_settings_source_error *failure, *retirement;
     const mc_game_settings_report *load_report;
     size_t source_stores;
+    size_t native_borrows; /* Actual instance count, diagnostic only; no source field. */
     const int32_t *stores;
     int32_t last_store_pc, last_load_pc;
     int32_t last_save_pc;

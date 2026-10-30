@@ -10,8 +10,8 @@
       "sha256": "b21cb904b7f982462963480de732ee5100748a287dd8ca45becfb4b8d3e5c750"
     },
     "include/mc/client/settings/game_settings.h": {
-      "bytes": 14222,
-      "sha256": "64f77f85ab6deed4ab51174044320aabe516f8176c84c801df251fd2ab47945b"
+      "bytes": 16136,
+      "sha256": "5f12e9606c5945dc891edb3f4ecf35d0e340f79c626c5bd4bc242e8b41176bea"
     },
     "include/mc/client/world/first_person.h": {
       "bytes": 5197,
@@ -42,8 +42,8 @@
       "sha256": "806977baa19465b3c49ff1ec9b8a05f5ad386f67292c09cbbf3222773c6d8725"
     },
     "include/mc/world/runtime/blocks.h": {
-      "bytes": 7547,
-      "sha256": "96a9597e28858ca65f3b744f52fa66e341a437cbe48ba304f6b16d4d7e08bc59"
+      "bytes": 8156,
+      "sha256": "1db57a4234e102126f00adbbef6a1a5b8cc97348b27500a8c1a8f4af00d62848"
     },
     "include/mc/world/runtime/construction.h": {
       "bytes": 11962,
@@ -54,8 +54,8 @@
       "sha256": "e5beff867ecaa268117a2854dd0b12bc9f5bf72c7f832cbc6d90d8304663e586"
     },
     "src/client/settings/game_settings.c": {
-      "bytes": 103580,
-      "sha256": "4d8f6cd87602ff9ba29462b453ea42c939ae6dced18750b4d51dc0ea7dc801ce"
+      "bytes": 106007,
+      "sha256": "0d4bb5dbbb1a67229d7c96458bfa7a8fed402eca2577146ffe30b45e08e65dea"
     },
     "src/client/world/first_person.c": {
       "bytes": 20028,
@@ -106,8 +106,8 @@
       "sha256": "0e36fba7cc38c03adeed6f1fa4d8257501d150e7d6855a12be48e35d2721f42c"
     },
     "src/world/runtime/blocks.c": {
-      "bytes": 8639,
-      "sha256": "ba0a473ecf060c4e0770f716896ffde25b0d48446e1fc34dfcf33ade692a96b2"
+      "bytes": 9803,
+      "sha256": "90bfaf52e8ee171bc32a5cdd0d28f4d840335640ff3b69b5bc407a7ee6a60dd5"
     },
     "src/world/runtime/construction.c": {
       "bytes": 51108,

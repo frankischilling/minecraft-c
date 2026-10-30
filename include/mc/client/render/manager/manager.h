@@ -2,7 +2,9 @@
 #define MC_CLIENT_RENDER_MANAGER_H
 #include "mc/block/registry/runtime.h"
 #include "mc/client/render/model.h"
+#include "mc/client/render_engine/render_engine.h"
 #include "mc/client/world/entity_renderer.h"
+#include "mc/core/math/classes.h"
 #include "mc/entity/player/player.h"
 
 typedef struct mc_client_bitmap_font mc_client_bitmap_font;
@@ -13,6 +15,8 @@ typedef struct mc_client_render_manager mc_client_render_manager;
 typedef struct mc_client_managed_renderer mc_client_managed_renderer;
 typedef struct mc_client_held_item mc_client_held_item;
 typedef struct mc_client_source_ra mc_client_source_ra;
+typedef struct mc_client_bitmap_font_error mc_client_bitmap_font_error;
+typedef struct mc_world_runtime_acquisition_error mc_world_runtime_acquisition_error;
 
 typedef enum mc_client_manager_status {
     MC_CLIENT_MANAGER_OK,
@@ -26,7 +30,17 @@ typedef enum mc_client_manager_status {
     MC_CLIENT_MANAGER_STRING_FAILED,
     MC_CLIENT_MANAGER_NULL_REFERENCE,
     MC_CLIENT_MANAGER_CLASS_ERRONEOUS,
-    MC_CLIENT_MANAGER_HAND_FAILED
+    MC_CLIENT_MANAGER_HAND_FAILED,
+    MC_CLIENT_MANAGER_WORLD_FAILED,
+    MC_CLIENT_MANAGER_MATH_FAILED,
+    MC_CLIENT_MANAGER_PLAYER_FAILED,
+    MC_CLIENT_MANAGER_ENTITY_FAILED,
+    MC_CLIENT_MANAGER_ENGINE_FAILED,
+    MC_CLIENT_MANAGER_FONT_FAILED,
+    MC_CLIENT_MANAGER_SETTINGS_FAILED,
+    MC_CLIENT_MANAGER_UNSUPPORTED_FP,
+    MC_CLIENT_MANAGER_UNSUPPORTED_NUMERIC,
+    MC_CLIENT_MANAGER_UNIMPLEMENTED_DEPENDENCY
 } mc_client_manager_status;
 
 typedef enum mc_client_manager_phase {
@@ -40,7 +54,7 @@ typedef enum mc_client_manager_phase {
 typedef struct mc_client_manager_error {
     mc_client_manager_status status, initial_status;
     const char *operation, *source_class, *source_method, *source_descriptor;
-    int32_t pc, th_pc, renderer_pc;
+    int32_t pc, th_pc, renderer_pc, frame_pc;
     bool native_policy;
     /* Registry's existing typed channel can mix source/native failures.
      * When true, registry is authoritative; native_policy is not an inferred
@@ -51,6 +65,18 @@ typedef struct mc_client_manager_error {
     mc_player_status string;
     /* Complete by-value child cause; all nested view lifetimes are audited. */
     mc_client_entity_renderer_error hand;
+    mc_world_storage_error world;
+    mc_math_class_error math;
+    mc_player_error player;
+    mc_entity_status entity_status;
+    mc_client_render_engine_status engine_status;
+    mc_game_settings_error settings;
+    int font_status; /* Actual private BitmapFont status. */
+    /* Complete large child diagnostics in this manager's quota-owned storage.
+     * Borrowed until its next mutating operation or retirement. Any source
+     * loader views also borrow the captured World through that interval. */
+    const mc_client_bitmap_font_error *font;
+    const mc_world_runtime_acquisition_error *acquisition;
 } mc_client_manager_error;
 
 typedef struct mc_client_manager_options {
@@ -81,6 +107,9 @@ typedef struct mc_client_manager_state {
     size_t manager_holds, displaced_hands;
     mc_client_held_item *hand_occurrence; /* Borrowed native occurrence; source F is fields.f. */
     int32_t last_put_pc, last_constructor_pc;
+    int32_t last_frame_pc;
+    size_t retained_engines, retained_fonts, retained_settings;
+    const mc_entity *living_occurrence;
     bool ds_ready, source_views_available;
     mc_player_string *const *ds_i;
     mc_client_manager_fields fields;
@@ -142,6 +171,22 @@ mc_client_manager_status mc_client_render_manager_change_world(mc_client_render_
 mc_client_manager_status mc_client_render_manager_detach_world(mc_client_render_manager *,
                                                                mc_world_runtime *,
                                                                mc_client_manager_error *);
+/* Complete th.a(fd,ji,sj,ls,kv,float), including virtual Living.N, real sleeping
+ * World/Bed/metadata reads and ordered arithmetic/stores. Ordinary failure
+ * preserves completed effects and leaves TH READY. Nonnull Worlds must be real
+ * GAME Worlds using this Registry/Entity/profile namespace. Nullable services
+ * are stored at their reached PCs; NULL Living fails at29 after all five stores.
+ * The caller holds the SAME Math namespace through the call; it is used only
+ * at reached sleeping floors, with no eager initialization or table copy.
+ * Distinct captured Engines, Fonts and Settings remain held until TH retirement;
+ * current Living and World occurrences end on replacement. Settings' source
+ * App.x stays borrowed: its real App must outlive every captured Settings owner.
+ * No App/class hold or automatic Settings final free is introduced. */
+mc_client_manager_status
+mc_client_render_manager_bind_frame(mc_client_render_manager *, mc_math_classes *borrowed_math,
+                                    mc_world_runtime *, mc_client_render_engine *,
+                                    mc_client_bitmap_font *, mc_entity *, mc_game_settings *, float,
+                                    mc_client_manager_error *);
 mc_client_manager_status mc_client_render_manager_entry(mc_client_render_manager *, size_t,
                                                         const mc_entity_class_literal **,
                                                         mc_client_managed_renderer **,
@@ -154,6 +199,9 @@ bool mc_client_managed_renderer_inspect(const mc_client_managed_renderer *,
                                         mc_client_managed_renderer_state *);
 /* CPU terminal body requires actual outer authority, zero consumers, no
  * external manager/renderer operations/holds, and no current/displaced hands.
+ * Captured Fonts and Settings are released before captured Engines, with
+ * both TH active guards held. Failed release preserves remaining occurrences
+ * for checked retry, including a Settings owner active during native cleanup.
  * No Source a/f=NULL store occurs. It clears only consumed native ownership.
  * ModelClasses final free is BUSY until this explicit association is consumed. */
 mc_client_manager_status

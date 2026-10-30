@@ -1,13 +1,25 @@
 # Development status
 
-The source renderer now implements [vertex lighting, normals and materials](client/lighting-raster.md)
-on the canonical OpenGL 3.3 Display program. Its Windows raster controls compare
-58 profiles and 59 complete RGBA8 frames, with exact state comparisons alongside
-pixels. These include actual converted NW geometry, specular/two-sided lighting,
-texture/fog and flat/smooth shading. Compiled-list attribute state and numerical
-admission have separate controls. All 15 selected MSVC Debug tests pass in
-46.78 seconds, including the 12.99-second loaded-World regression. Hosted
-qualification of this extension is pending.
+The [RenderManager CPU frame](client/render-manager-frame.md) now has Windows
+MSVC Debug and Linux Clang18 ASan/UBSan comparisons against 432 unchanged-original
+rows. The ledger credits 2,738 exact columns, two explicit failure projections
+and 136 unqualified columns. Separate native controls cover all four sleeping
+Bed orientations, real World/Math failures and checked owner retirement. These
+methods are not yet adopted by live RenderGlobal traversal. Final shutdown and
+deferred World ownership remain prerequisites for that integration.
+
+The latest [hosted checkpoint b379613](https://github.com/frankischilling/minecraft-c/actions/runs/41011060882)
+passes all four jobs and 1,554 tests: Windows 490, GCC 532 and Clang 532, with
+zero failures, skips or dropped preceding test names. It includes the canonical
+[TileEntityRenderer CPU owner](client/tile-entity-renderer.md) and predates the
+RenderManager frame extension. Windows compilation saved its first 80 MiB cache;
+warm hosted performance remains unmeasured.
+
+The source renderer implements [vertex lighting, normals and materials](client/lighting-raster.md)
+on the canonical OpenGL 3.3 Display program. NVIDIA and Mesa controls each compare
+58 profiles and 59 complete RGBA8 frames. They include actual converted NW
+geometry, specular/two-sided lighting, texture/fog and flat/smooth shading.
+Compiled-list attribute state and numerical admission have separate controls.
 
 The World frame completes U.b496 and camera eye positioning504, then reaches
 unfinished Entity/TileEntity rendering510. The existing 86-row lighting-state
@@ -15,10 +27,6 @@ comparison remains exact. A rebuilt native client captures two normal menu
 frames and exits cleanly. The loaded-World regression preserves saves/resources
 and all 72 original focus histories, with authored grass terrain and Sky visible
 without HUD. Repeated interactive frames remain unfinished.
-
-The preceding [checkpoint c45d113](https://github.com/frankischilling/minecraft-c/actions/runs/40970697724)
-passes all four hosted jobs and 1,520 tests, with no failures, skips or dropped
-preceding names. That checkpoint predates the new lighting backend.
 
 The native C client is pre-playable. Its default path uses the constructed
 source App, initialized menu and genuine [World-selection screen](client/world-selection.md).

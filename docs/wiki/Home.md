@@ -2,6 +2,7 @@
 
 The [source lighting renderer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md)
 and [TileEntityRenderer CPU bodies](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/tile-entity-renderer.md)
+alongside [RenderManager frame binding](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-manager-frame.md)
 pass their specified Windows and Linux comparisons. [Build and tests](Build-and-tests)
 records the pixel, constructor and operand limits. Full Entity/TileEntity
 traversal, drawing and playable frames remain unfinished.

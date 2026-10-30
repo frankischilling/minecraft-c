@@ -18,10 +18,12 @@ add_library(mc_client_render_manager_cpu STATIC
     src/client/render/manager/map.c
     src/client/render/manager/models.c
     src/client/render/manager/renderers.c
-    src/client/render/manager/constructor.c)
+    src/client/render/manager/constructor.c
+    src/client/render/manager/frame.c)
 target_include_directories(mc_client_render_manager_cpu PUBLIC include src src/platform/time)
 target_link_libraries(mc_client_render_manager_cpu PUBLIC
-    mc_client_notice mc_simulation mc_c_atomics PRIVATE mc_build_options)
+    mc_client_notice mc_simulation mc_c_atomics mc_client_source_resources
+    PRIVATE mc_build_options)
 
 add_library(mc_client_tile_renderer_cpu STATIC
     src/client/render/tile_entity_renderer/owner.c

@@ -7,7 +7,7 @@ _Static_assert(sizeof(mc_client_manager_error) <= 32768u,
 
 void manager_error_init(mc_client_manager_error *e) {
     memset(e, 0, sizeof(*e));
-    e->pc = e->th_pc = e->renderer_pc = -1;
+    e->pc = e->th_pc = e->renderer_pc = e->frame_pc = -1;
 }
 
 mc_client_manager_status manager_fail(mc_client_manager_error *e, mc_client_manager_status status,
@@ -228,6 +228,7 @@ mc_client_manager_status mc_client_render_manager_static_get(mc_client_render_ma
                 c->candidate->classes = c;
                 c->candidate->holds = 1;
                 c->candidate->last_put_pc = c->candidate->last_constructor_pc = -1;
+                c->candidate->last_frame_pc = -1;
                 if (manager_construct(c->candidate)) {
                     c->a = c->candidate; /* TH.<clinit> a7 after completed TH ctor730. */
                     c->phase = MC_CLIENT_MANAGER_READY;
@@ -260,8 +261,15 @@ bool mc_client_render_manager_inspect(const mc_client_render_manager_classes *c,
                                    .ds_ready = c->ds_ready,
                                    .last_put_pc = -1,
                                    .last_constructor_pc = -1,
+                                   .last_frame_pc = -1,
                                    .failure = &c->failure,
                                    .retirement = &c->retirement};
+    if (c->candidate != NULL) {
+        s->last_frame_pc = c->candidate->last_frame_pc;
+        s->retained_engines = c->candidate->retained_engines;
+        s->retained_fonts = c->candidate->retained_fonts;
+        s->retained_settings = c->candidate->retained_settings;
+    }
     if (c->phase != MC_CLIENT_MANAGER_RETIRING) {
         s->source_views_available = true;
         s->a = c->a;
@@ -277,6 +285,7 @@ bool mc_client_render_manager_inspect(const mc_client_render_manager_classes *c,
             s->manager_holds = m->holds;
             s->displaced_hands = m->displaced_count;
             s->hand_occurrence = m->hand;
+            s->living_occurrence = m->living_occurrence;
         }
     }
     return true;
@@ -340,6 +349,8 @@ bool manager_terminal_admit(mc_client_render_manager_classes *c, mc_client_manag
                 (r->holds != 1 || r->active || r->phase == MC_CLIENT_MODEL_CONSTRUCTING))
                 goto busy;
         }
+        if (!manager_frame_terminal_admit(m, e))
+            return false;
     }
     c->phase = MC_CLIENT_MANAGER_RETIRING;
     return true;
@@ -370,6 +381,11 @@ mc_client_render_manager_classes_retire(mc_client_render_manager_classes **slot,
                     NULL, NULL, NULL, -1, true);
                 goto retry;
             }
+            m->active = c->active = true;
+            const bool frame_retired = manager_frame_retire(m, &e);
+            m->active = c->active = false;
+            if (!frame_retired)
+                goto retry;
             for (size_t i = 0; i < m->allocated_renderers; ++i)
                 if (!manager_renderer_retire(&m->renderers[i], &e))
                     goto retry;
@@ -388,6 +404,7 @@ mc_client_render_manager_classes_retire(mc_client_render_manager_classes **slot,
             }
             /* Source views end with native storage; no Source o/a/f reset. */
             mc_world_runtime_binding_release(m->world_occurrence);
+            manager_frame_destroy(m);
             free(m);
             c->candidate = NULL;
         }
