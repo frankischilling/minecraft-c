@@ -11,6 +11,11 @@
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
 
+/* Older MSVC diagnoses this C17 flexible array as extension C4200. */
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4200)
+#endif
 typedef struct mc_path_mem {
     struct mc_path_mem *next;
     size_t bytes;
@@ -26,6 +31,9 @@ typedef struct mc_path_mem {
 
     unsigned char data[];
 } mc_path_mem;
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 _Static_assert(offsetof(mc_path_mem, data) == sizeof(mc_path_mem), "Path header extent");
 _Static_assert(offsetof(mc_path_mem, data) % 16u == 0, "preserve x64 Path payload alignment");

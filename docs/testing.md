@@ -16,7 +16,7 @@ returns, two callback failures, four source-null failures and four remaining
 drop/hurt prefixes. All thirteen native controls and six reference negatives
 pass. Constructor entropy remains independent.
 
-All 90 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+At `f510367`, all 90 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
 All 117 Windows tests pass in 220.67 seconds and all 112 Linux tests in
 264.30 seconds, without failures, skips or sanitizer findings. The same 2,508
 C, helper, build and reference inputs remain unchanged through both builds and tests.

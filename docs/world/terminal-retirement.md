@@ -136,7 +136,7 @@ attempt checks retained snapshots for mutation and preserves inventory output
 on refusal. A separately retained, unlisted TileEntity exercises the all-Tiles
 proof. Valid extra empty cache registration, reservation and generic-entry lease
 controls cover the full Store preflight, with positive retries after actual
-unregister/cancel/release operations. The test passes 1,047 native checks on each
+unregister/cancel/release operations. The test passes 1,193 native checks on each
 qualified host. Cleanup uses checked native operations and discards static references
 only after all TileEntity owners end.
 

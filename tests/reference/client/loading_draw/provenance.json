@@ -7514,8 +7514,8 @@
       "sha256": "0dea055fef2ed24eb3261f52bc7fcc32ac45ce84529b71fa46f370b41efce850"
     },
     "src/world/path/path_internal.h": {
-      "bytes": 4728,
-      "sha256": "06e6ddf88624c9bdaea3ee35c946c1c770e6e0fc5c304d9be6efa67a988f6491"
+      "bytes": 4920,
+      "sha256": "950e65b0475325dac8df3410f665bb52f6de6501f6ffa162139fffb8b677b074"
     },
     "src/world/path/point.c": {
       "bytes": 2766,
