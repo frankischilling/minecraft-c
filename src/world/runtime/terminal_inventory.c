@@ -546,7 +546,7 @@ static mc_world_storage_status mob_graph_needed(mc_world_runtime *world, bool *o
         (void)scan_mob(&scan, &world->collision_boxes.entries[i].entity,
                        world->collision_boxes.entries[i].entity, NULL);
     if (world->fields.w != NULL) {
-        const mc_world_storage_status status = mc_world_store_terminal_visit_chunks(
+        const mc_world_storage_status status = mc_world_store_entity_containers_visit_chunks(
             world->fields.w, world, scan_mob_chunk, &scan, error);
         if (status != MC_WORLD_STORAGE_OK)
             return status;

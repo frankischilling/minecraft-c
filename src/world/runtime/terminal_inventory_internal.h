@@ -62,6 +62,12 @@ void mc_world_runtime_terminal_mob_graph_release(mc_world_terminal_mob_graph **)
 
 /* Store and Chunk hooks validate their canonical storage before visiting.
  * Nonempty Chunk slices require the genuine mc_entity_release finalizer. */
+/* Container retirement visits only Chunks bound to this World. Unlike strict
+ * terminal admission, other Worlds in the same store remain separate owners. */
+mc_world_storage_status
+mc_world_store_entity_containers_visit_chunks(mc_world_store *, const mc_world_runtime *,
+                                              mc_world_terminal_chunk_visitor, void *,
+                                              mc_world_storage_error *);
 mc_world_storage_status mc_world_store_terminal_validate(const mc_world_store *,
                                                          const mc_world_runtime *,
                                                          const mc_chunk_cache *,

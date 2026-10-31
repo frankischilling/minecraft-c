@@ -3742,8 +3742,8 @@
       "sha256": "c893d4830456d23265164eeec268ab167fbb570120f485b0c981f3276a61c09a"
     },
     "src/world/storage/store.c": {
-      "bytes": 121127,
-      "sha256": "06879382b93799c1d1b6ecdb60dec7b72337a64de922ec10524a3a9d81b4d194"
+      "bytes": 121863,
+      "sha256": "9481c50a604dc501db27f98c717f2c6da1d3027dd5d7fb0316a8a3bdbaa9d8cf"
     },
     "src/world/storage/store_source.inc": {
       "bytes": 39393,
@@ -5106,8 +5106,8 @@
       "sha256": "6a246a96e2535c7f76b239dfa16b9eb9507f9ab1ce31b04e36d5337ea39fefcc"
     },
     "tests/world/runtime/test_chunk_provider_activation.c": {
-      "bytes": 49062,
-      "sha256": "fc2fa17b394d95c758aa52397aa6c72952e8a3c0ea834aa23888d255f13d935d"
+      "bytes": 49317,
+      "sha256": "055f566472d39cc14476cdce0705f76e9e726021203b0f6e48e957a976c8859a"
     },
     "tests/world/runtime/test_chunk_provider_generation.c": {
       "bytes": 45191,
@@ -6962,12 +6962,12 @@
       "sha256": "25c58f085145e129bcae5ba13fadb29eba767651082c05cc03b77fd42be24d0f"
     },
     "src/world/runtime/terminal_inventory.c": {
-      "bytes": 32807,
-      "sha256": "d7a46953018594c153266f2bfd6a73b8b9cd7898991d663ddcd33b3e52f7678e"
+      "bytes": 32816,
+      "sha256": "a34774252ab82cc5bff9631b3533f73b8df1d4d74c513ac153affdff78d8ae7f"
     },
     "src/world/runtime/terminal_inventory_internal.h": {
-      "bytes": 6474,
-      "sha256": "1f76a680545fd1ab67cc55de801d07d5fcbdee8282efc4ed30aa99ddef326144"
+      "bytes": 6907,
+      "sha256": "90196a7d9bd5f34669c936e29351ca47de8dd656e67bf611cad0c63cdb17da9f"
     },
     "tests/world/runtime/test_terminal_inventory.c": {
       "bytes": 51572,

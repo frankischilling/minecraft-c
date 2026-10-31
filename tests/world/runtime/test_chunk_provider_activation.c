@@ -858,10 +858,15 @@ static bool cleanup_fixture(fixture *f) {
     for (size_t i = 0; i < COUNT(f->worlds); ++i)
         if (f->worlds[i] != NULL && !drain_world(f, i))
             return false;
-    for (size_t i = 0; i < COUNT(f->worlds); ++i)
-        if (f->worlds[i] != NULL &&
-            mc_world_runtime_retire_entity_containers(f->worlds[i], NULL) != MC_WORLD_STORAGE_OK)
+    for (size_t i = 0; i < COUNT(f->worlds); ++i) {
+        mc_world_storage_error error = {0};
+        if (f->worlds[i] != NULL && mc_world_runtime_retire_entity_containers(
+                                        f->worlds[i], &error) != MC_WORLD_STORAGE_OK) {
+            fprintf(stderr, "World %zu container retirement refused: %s\n", i,
+                    error.operation == NULL ? "no operation" : error.operation);
             return false;
+        }
+    }
     for (size_t i = 0; i < COUNT(f->children); ++i) {
         if (f->children[i].state != NULL &&
             mc_world_store_retire_chunk(f->children[i].store, f->children[i].state, NULL) !=

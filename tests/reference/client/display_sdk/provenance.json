@@ -3870,8 +3870,8 @@
       "sha256": "fed826a2e36dc16e765335a682932deebbcab0ebc90b91fa017f9872c43841ad"
     },
     "src/world/storage/store.c": {
-      "bytes": 121127,
-      "sha256": "06879382b93799c1d1b6ecdb60dec7b72337a64de922ec10524a3a9d81b4d194"
+      "bytes": 121863,
+      "sha256": "9481c50a604dc501db27f98c717f2c6da1d3027dd5d7fb0316a8a3bdbaa9d8cf"
     },
     "src/world/storage/store_source.inc": {
       "bytes": 39393,
@@ -4406,12 +4406,12 @@
       "sha256": "2eb7b5f1bbd8639d0abfd43745668c79b43e852df44a66309ff107b85e2bf312"
     },
     "src/world/runtime/terminal_inventory.c": {
-      "bytes": 32807,
-      "sha256": "d7a46953018594c153266f2bfd6a73b8b9cd7898991d663ddcd33b3e52f7678e"
+      "bytes": 32816,
+      "sha256": "a34774252ab82cc5bff9631b3533f73b8df1d4d74c513ac153affdff78d8ae7f"
     },
     "src/world/runtime/terminal_inventory_internal.h": {
-      "bytes": 6474,
-      "sha256": "1f76a680545fd1ab67cc55de801d07d5fcbdee8282efc4ed30aa99ddef326144"
+      "bytes": 6907,
+      "sha256": "90196a7d9bd5f34669c936e29351ca47de8dd656e67bf611cad0c63cdb17da9f"
     },
     "src/world/runtime/tile_entities/piston_list_internal.h": {
       "bytes": 2989,
