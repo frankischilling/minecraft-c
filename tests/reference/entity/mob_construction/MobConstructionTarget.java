@@ -12,6 +12,7 @@ public final class MobConstructionTarget {
     public static sn result;
     public static fd world;
     private static Object skeletonStack;
+    private static Object sheepColors;
     private static final IdentityHashMap<Object,Integer> identities=new IdentityHashMap<>();
     private static Object get(Object receiver,Class<?> owner,String name) throws Exception {
         Field f=owner.getDeclaredField(name);f.setAccessible(true);return f.get(receiver);
@@ -48,6 +49,16 @@ public final class MobConstructionTarget {
         for(int key:keys){ma record=(ma)entries.get(key);rows.add(ConstructorJson.map("index",record.a(),"type",record.c(),"value",record.b(),"dirty",get(record,ma.class,"d")));}
         return ConstructorJson.map("size",entries.size(),"dirty",get(watcher,ud.class,"c"),"records",rows);
     }
+    private static Map<String,Object> sheepColors() throws Exception {
+        float[][] colors=dl.a;List<Object> rows=new ArrayList<>();
+        IdentityHashMap<float[],Boolean> distinct=new IdentityHashMap<>();
+        for(float[] row:colors) {
+            List<Object> values=new ArrayList<>();
+            for(float value:row)values.add(ConstructorJson.map("F",String.format(Locale.ROOT,"%08x",Float.floatToRawIntBits(value))));
+            rows.add(ConstructorJson.map("identity",ref(row),"length",row.length,"values",values));distinct.put(row,true);
+        }
+        return ConstructorJson.map("identity",ref(colors),"length",colors.length,"distinct_rows",distinct.size(),"rows",rows);
+    }
     private static void bindOrigins(Path jar) throws Exception {
         for(String name:Files.readAllLines(Path.of(System.getProperty("mob.probe.classes")))) {
             Class<?> type=Class.forName(name,false,MobConstructionTarget.class.getClassLoader());
@@ -62,11 +73,12 @@ public final class MobConstructionTarget {
         new gr("MobSetup",""); // Actual Session prepares the ordinary uu-before-gm registry order.
         Class<?> holder=Class.forName("java.lang.Math$RandomNumberGeneratorHolder",true,null);
         Random math=(Random)get(null,holder,"randomNumberGenerator");
-        String[] names={"cn","uz","fr","gb","uw"};
+        String[] names={"cn","uz","fr","gb","uw","wh","dl","bx","ww","gi","xt"};
         try(PrintWriter out=new PrintWriter(Files.newBufferedWriter(Path.of(args[0]),StandardCharsets.UTF_8))) {
             out.println(ConstructorJson.json(ConstructorJson.map("event","setup","world_class",world.getClass().getName(),"save_handler_class","wy","dimension_class",world.t.getClass().getName(),"prep_session_class","gr","registry_context","actual gr static initialization prepares uu before gm","entropy_policy","read-only actual ordinary Random; no seed/clock/ID modifications")));
-            for(int pass=0;pass<3;++pass)for(int kind=0;kind<names.length;++kind) {
-                int id=pass*5+kind;world.B=pass==1;fd argument=pass==2?null:world;
+            for(int id=0;id<33;++id) {
+                int pass=id<15?id/5:(id-15)/6,kind=id<15?id%5:5+(id-15)%6;
+                world.B=pass==1;fd argument=pass==2?null:world;
                 result=null;int counter=(Integer)get(null,sn.class,"a");long before=seed(math);
                 Random oracle=new Random(before^0x5deece66dL);List<String> draws=new ArrayList<>();
                 for(int i=0;i<4;++i)draws.add(String.format(Locale.ROOT,"%016x",Double.doubleToRawLongBits(oracle.nextDouble())));
@@ -80,6 +92,7 @@ public final class MobConstructionTarget {
                     "math_seed_before",String.format(Locale.ROOT,"%012x",before),"math_seed_after",seedHex(math),"draws",draws,
                     "fields",fields(result),"bounds",fields(result.aW),"watcher",watcher(result.ad()),"private_random",random(result.bs));
                 if(kind==2){Object stack=get(null,fr.class,"a");if(skeletonStack==null)skeletonStack=stack;row.put("skeleton_stack",fields(stack));row.put("skeleton_stack_alias",((fr)result).r_()==stack);row.put("skeleton_stack_same",skeletonStack==stack);}
+                if(names[kind].equals("dl")){Object colors=dl.a;if(sheepColors==null)sheepColors=colors;row.put("sheep_colors",sheepColors());row.put("sheep_colors_same",sheepColors==colors);}
                 out.println(ConstructorJson.json(row));out.flush();System.out.println("CASE "+id+" "+names[kind]);
             }
             if(out.checkError())throw new IOException("observation output");

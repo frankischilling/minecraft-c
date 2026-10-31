@@ -1,4 +1,4 @@
-"""Capture real hostile constructors normally and through a read-only JDI observer."""
+"""Capture real Overworld Mob constructors normally and through a read-only JDI observer."""
 import argparse
 import hashlib
 import importlib.util
@@ -27,7 +27,7 @@ def digest(path):
 
 
 def ndjson(path):
-    require(path.stat().st_size < 2097152, 'bounded observations')
+    require(path.stat().st_size < 4194304, 'bounded observations')
     return [json.loads(line) for line in path.read_text().splitlines()]
 
 

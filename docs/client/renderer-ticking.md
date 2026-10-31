@@ -53,8 +53,10 @@ Difficulty, lightning countdown and spawn flags use their canonical World cells.
 An unpaused segment executes renderer tick, RenderGlobal's wrapping counter
 and the existing World entity tick, then invokes the retained World scheduler
 at `k1260`. The loaded graph enters the
-[Mob spawn continuation](../entity/mob-construction.md), reaching eligibility at 820
-for the five admitted hostile classes and construction at 773 for other classes.
+[Mob spawn continuation](../entity/mob-spawning.md), which now executes all eleven
+default constructors and predicates. A focused loaded profile passes spawning
+and reaches random Chunk work at `fd.l:195`, child `fd.n:207`. A selected Spider
+jockey instead retains its real Skeleton publication at the unfinished mount.
 The entity tick receives the same Registry and MathHelper
 table and can invoke genuine Player input/action/travel descendants. Paused
 single-player segments skip those calls and return through 1328; the outer tick

@@ -1,6 +1,7 @@
 #include "terminal_inventory_internal.h"
 
 #include "../../entity/entity_internal.h"
+#include "../../entity/mob/internal.h"
 #include "construction_internal.h"
 #include "mc/world/dimension/world_provider.h"
 #include "runtime_internal.h"
@@ -166,6 +167,14 @@ static mc_world_storage_status collect_entity(void *context, const void *slot, m
         if (value->particle != NULL || value->base.aG != NULL || value->base.aH != NULL)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal unqualified Entity child or relationship graph");
+        /* The constructed Mob graph has no path, target or LS attacker owner.
+         * Those future source relationships must gain their real native hold
+         * accounting before terminal inventory can admit a nonnull graph. */
+        if (value->mob != NULL &&
+            (value->mob->creature_path != NULL || value->mob->creature_target != NULL ||
+             value->mob->living.private_b != NULL))
+            return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                          "World terminal unqualified Mob child or target graph");
         if (value->base.world != NULL && value->base.world != c->world)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal Entity bound outside admitted World");

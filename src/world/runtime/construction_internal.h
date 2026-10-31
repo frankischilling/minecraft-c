@@ -4,8 +4,12 @@
 #include "mc/core/java/int_set.h"
 #include "mc/world/runtime/lighting.h"
 
+typedef struct mc_world_chunk_candidate {
+    int32_t x, z, hash;
+} mc_world_chunk_candidate;
+
 struct mc_world_active_chunks {
-    void *entries;
+    mc_world_chunk_candidate *entries;
     size_t count, capacity;
     mc_java_int_set *order;
     uint32_t version;
@@ -29,7 +33,7 @@ struct mc_world_runtime_classes {
     struct mc_entity_classes *entities;
     struct mc_tile_entity_classes *tile_entities;
     int32_t enqueue_depth;
-    size_t live_worlds;
+    size_t live_worlds, native_borrows;
     bool initialized;
     mc_world_light_type light_types[2];
     const mc_world_light_type *light_statics[2];

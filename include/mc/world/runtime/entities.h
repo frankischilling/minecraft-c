@@ -25,7 +25,7 @@ mc_entity_status mc_world_runtime_classes_bind_entities(mc_world_runtime_classes
  * World.b before invoking the concrete WorldAccess hook. Duplicates own separate
  * native holds. It does not change Entity.world or precheck source membership.
  *
- * This runtime publishes actual Item, FallingSand, Minecart and LocalPlayer owners.
+ * This runtime publishes actual Item, FallingSand, Minecart, LocalPlayer and Mob owners.
  * A real LocalPlayer bypasses presence, appends lowercase World.d, updates J
  * through fd.y, then enters the same Chunk/b/WorldAccess sequence. It retains
  * d/J even when a later getter, Chunk operation or callback fails. The live WorldAccess
@@ -80,6 +80,10 @@ mc_world_terminal_limits mc_world_runtime_terminal_default_limits(void);
  * bindings refuse before any owner, source phase, container, cache or provider
  * mutation. Separately bounded scratch allocations never charge source ledgers.
  * No source/class use, source/user callback, I/O, retain/release or cleanup runs.
+ * The genuine constructor-owned active Chunk coordinate Set may be nonempty;
+ * its descriptor, keys and traversal membership are validated without a source
+ * clear. Its records own no World/Chunk/Entity occurrences and survive until
+ * final native free alongside C/E/F.
  * NULL limits select defaults; error is optional. World and output are required.
  * Output changes only on success. Owners/errors/output must be disjoint and
  * the entire graph exclusive/live. Success reserves nothing: keep it unchanged

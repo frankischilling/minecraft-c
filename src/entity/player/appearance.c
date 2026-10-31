@@ -21,7 +21,18 @@ mc_player_status mc_entity_update_cloak(mc_entity *entity, mc_player_error *erro
     if (!player && !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART) &&
-        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE))
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE) &&
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SPIDER) &&
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ZOMBIE) &&
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SKELETON) &&
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_CREEPER) &&
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SLIME) &&
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PIG) &&
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SHEEP) &&
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_COW) &&
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_CHICKEN) &&
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_WOLF) &&
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SQUID))
         return mc_player_fail(error, MC_PLAYER_INVALID_ARGUMENT,
                               "appearance unsupported concrete Entity descendant", NULL, NULL, NULL,
                               0);

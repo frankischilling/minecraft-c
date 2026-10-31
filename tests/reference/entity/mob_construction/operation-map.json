@@ -24799,6 +24799,3263 @@
         "pc": 3674,
         "operation": "Method jl.b:()V"
       }
-    ]
+    ],
+    "wh public wh(fd);": [
+      {
+        "pc": 2,
+        "operation": "Method bg.\"<init>\":(Lfd;)V"
+      },
+      {
+        "pc": 8,
+        "operation": "Field O:Ljava/lang/String;"
+      },
+      {
+        "pc": 16,
+        "operation": "Method b:(FF)V"
+      }
+    ],
+    "wh protected void b();": [
+      {
+        "pc": 1,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 7,
+        "operation": "Method java/lang/Byte.valueOf:(B)Ljava/lang/Byte;"
+      },
+      {
+        "pc": 10,
+        "operation": "Method ud.a:(ILjava/lang/Object;)V"
+      }
+    ],
+    "wh public void b(nu);": [
+      {
+        "pc": 2,
+        "operation": "Method bg.b:(Lnu;)V"
+      },
+      {
+        "pc": 9,
+        "operation": "Method v:()Z"
+      },
+      {
+        "pc": 12,
+        "operation": "Method nu.a:(Ljava/lang/String;Z)V"
+      }
+    ],
+    "wh public void a(nu);": [
+      {
+        "pc": 2,
+        "operation": "Method bg.a:(Lnu;)V"
+      },
+      {
+        "pc": 9,
+        "operation": "Method nu.m:(Ljava/lang/String;)Z"
+      },
+      {
+        "pc": 12,
+        "operation": "Method a:(Z)V"
+      }
+    ],
+    "wh protected java.lang.String g();": [],
+    "wh protected java.lang.String j_();": [],
+    "wh protected java.lang.String i();": [],
+    "wh public boolean a(gs);": [
+      {
+        "pc": 1,
+        "operation": "Method v:()Z"
+      },
+      {
+        "pc": 8,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 11,
+        "operation": "Field fd.B:Z"
+      },
+      {
+        "pc": 18,
+        "operation": "Field aG:Lsn;"
+      },
+      {
+        "pc": 25,
+        "operation": "Field aG:Lsn;"
+      },
+      {
+        "pc": 34,
+        "operation": "Method gs.i:(Lsn;)V"
+      }
+    ],
+    "wh protected int j();": [
+      {
+        "pc": 1,
+        "operation": "Field bv:I"
+      },
+      {
+        "pc": 7,
+        "operation": "Field gm.ap:Lgm;"
+      },
+      {
+        "pc": 10,
+        "operation": "Field gm.bf:I"
+      },
+      {
+        "pc": 14,
+        "operation": "Field gm.ao:Lgm;"
+      },
+      {
+        "pc": 17,
+        "operation": "Field gm.bf:I"
+      }
+    ],
+    "wh public boolean v();": [
+      {
+        "pc": 1,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 6,
+        "operation": "Method ud.a:(I)B"
+      }
+    ],
+    "wh public void a(boolean);": [
+      {
+        "pc": 5,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 11,
+        "operation": "Method java/lang/Byte.valueOf:(B)Ljava/lang/Byte;"
+      },
+      {
+        "pc": 14,
+        "operation": "Method ud.b:(ILjava/lang/Object;)V"
+      },
+      {
+        "pc": 21,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 27,
+        "operation": "Method java/lang/Byte.valueOf:(B)Ljava/lang/Byte;"
+      },
+      {
+        "pc": 30,
+        "operation": "Method ud.b:(ILjava/lang/Object;)V"
+      }
+    ],
+    "wh public void a(c);": [
+      {
+        "pc": 1,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 4,
+        "operation": "Field fd.B:Z"
+      },
+      {
+        "pc": 16,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 19,
+        "operation": "Method ya.\"<init>\":(Lfd;)V"
+      },
+      {
+        "pc": 25,
+        "operation": "Field aM:D"
+      },
+      {
+        "pc": 29,
+        "operation": "Field aN:D"
+      },
+      {
+        "pc": 33,
+        "operation": "Field aO:D"
+      },
+      {
+        "pc": 37,
+        "operation": "Field aS:F"
+      },
+      {
+        "pc": 41,
+        "operation": "Field aT:F"
+      },
+      {
+        "pc": 44,
+        "operation": "Method ya.c:(DDDFF)V"
+      },
+      {
+        "pc": 48,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 52,
+        "operation": "Method fd.b:(Lsn;)Z"
+      },
+      {
+        "pc": 57,
+        "operation": "Method K:()V"
+      }
+    ],
+    "wh protected void b(float);": [
+      {
+        "pc": 2,
+        "operation": "Method bg.b:(F)V"
+      },
+      {
+        "pc": 13,
+        "operation": "Field aG:Lsn;"
+      },
+      {
+        "pc": 23,
+        "operation": "Field aG:Lsn;"
+      },
+      {
+        "pc": 29,
+        "operation": "Field ep.u:Lny;"
+      },
+      {
+        "pc": 32,
+        "operation": "Method gs.a:(Lvr;)V"
+      }
+    ],
+    "dl public dl(fd);": [
+      {
+        "pc": 2,
+        "operation": "Method bg.\"<init>\":(Lfd;)V"
+      },
+      {
+        "pc": 8,
+        "operation": "Field O:Ljava/lang/String;"
+      },
+      {
+        "pc": 16,
+        "operation": "Method b:(FF)V"
+      }
+    ],
+    "dl protected void b();": [
+      {
+        "pc": 1,
+        "operation": "Method bg.b:()V"
+      },
+      {
+        "pc": 5,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 15,
+        "operation": "Method java/lang/Byte.\"<init>\":(B)V"
+      },
+      {
+        "pc": 18,
+        "operation": "Method ud.a:(ILjava/lang/Object;)V"
+      }
+    ],
+    "dl public boolean a(sn, int);": [
+      {
+        "pc": 3,
+        "operation": "Method bg.a:(Lsn;I)Z"
+      }
+    ],
+    "dl protected void q();": [
+      {
+        "pc": 1,
+        "operation": "Method s:()Z"
+      },
+      {
+        "pc": 12,
+        "operation": "Field uu.ac:Luu;"
+      },
+      {
+        "pc": 15,
+        "operation": "Field uu.bn:I"
+      },
+      {
+        "pc": 20,
+        "operation": "Method r:()I"
+      },
+      {
+        "pc": 23,
+        "operation": "Method iz.\"<init>\":(III)V"
+      },
+      {
+        "pc": 27,
+        "operation": "Method a:(Liz;F)Lhl;"
+      }
+    ],
+    "dl protected int j();": [
+      {
+        "pc": 0,
+        "operation": "Field uu.ac:Luu;"
+      },
+      {
+        "pc": 3,
+        "operation": "Field uu.bn:I"
+      }
+    ],
+    "dl public boolean a(gs);": [
+      {
+        "pc": 1,
+        "operation": "Field gs.c:Lix;"
+      },
+      {
+        "pc": 4,
+        "operation": "Method ix.b:()Liz;"
+      },
+      {
+        "pc": 13,
+        "operation": "Field iz.c:I"
+      },
+      {
+        "pc": 16,
+        "operation": "Field gm.bc:Lbl;"
+      },
+      {
+        "pc": 19,
+        "operation": "Field bl.bf:I"
+      },
+      {
+        "pc": 26,
+        "operation": "Method s:()Z"
+      },
+      {
+        "pc": 33,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 36,
+        "operation": "Field fd.B:Z"
+      },
+      {
+        "pc": 44,
+        "operation": "Method a:(Z)V"
+      },
+      {
+        "pc": 49,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 53,
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 72,
+        "operation": "Field uu.ac:Luu;"
+      },
+      {
+        "pc": 75,
+        "operation": "Field uu.bn:I"
+      },
+      {
+        "pc": 80,
+        "operation": "Method r:()I"
+      },
+      {
+        "pc": 83,
+        "operation": "Method iz.\"<init>\":(III)V"
+      },
+      {
+        "pc": 87,
+        "operation": "Method a:(Liz;F)Lhl;"
+      },
+      {
+        "pc": 95,
+        "operation": "Field hl.aQ:D"
+      },
+      {
+        "pc": 99,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 102,
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 110,
+        "operation": "Field hl.aQ:D"
+      },
+      {
+        "pc": 116,
+        "operation": "Field hl.aP:D"
+      },
+      {
+        "pc": 120,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 123,
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 127,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 130,
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 139,
+        "operation": "Field hl.aP:D"
+      },
+      {
+        "pc": 145,
+        "operation": "Field hl.aR:D"
+      },
+      {
+        "pc": 149,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 152,
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 156,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 159,
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 168,
+        "operation": "Field hl.aR:D"
+      },
+      {
+        "pc": 180,
+        "operation": "Method iz.a:(ILsn;)V"
+      }
+    ],
+    "dl public void b(nu);": [
+      {
+        "pc": 2,
+        "operation": "Method bg.b:(Lnu;)V"
+      },
+      {
+        "pc": 9,
+        "operation": "Method s:()Z"
+      },
+      {
+        "pc": 12,
+        "operation": "Method nu.a:(Ljava/lang/String;Z)V"
+      },
+      {
+        "pc": 19,
+        "operation": "Method r:()I"
+      },
+      {
+        "pc": 23,
+        "operation": "Method nu.a:(Ljava/lang/String;B)V"
+      }
+    ],
+    "dl public void a(nu);": [
+      {
+        "pc": 2,
+        "operation": "Method bg.a:(Lnu;)V"
+      },
+      {
+        "pc": 9,
+        "operation": "Method nu.m:(Ljava/lang/String;)Z"
+      },
+      {
+        "pc": 12,
+        "operation": "Method a:(Z)V"
+      },
+      {
+        "pc": 19,
+        "operation": "Method nu.c:(Ljava/lang/String;)B"
+      },
+      {
+        "pc": 22,
+        "operation": "Method e_:(I)V"
+      }
+    ],
+    "dl protected java.lang.String g();": [],
+    "dl protected java.lang.String j_();": [],
+    "dl protected java.lang.String i();": [],
+    "dl public int r();": [
+      {
+        "pc": 1,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 6,
+        "operation": "Method ud.a:(I)B"
+      }
+    ],
+    "dl public void e_(int);": [
+      {
+        "pc": 1,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 6,
+        "operation": "Method ud.a:(I)B"
+      },
+      {
+        "pc": 11,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 27,
+        "operation": "Method java/lang/Byte.valueOf:(B)Ljava/lang/Byte;"
+      },
+      {
+        "pc": 30,
+        "operation": "Method ud.b:(ILjava/lang/Object;)V"
+      }
+    ],
+    "dl public boolean s();": [
+      {
+        "pc": 1,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 6,
+        "operation": "Method ud.a:(I)B"
+      }
+    ],
+    "dl public void a(boolean);": [
+      {
+        "pc": 1,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 6,
+        "operation": "Method ud.a:(I)B"
+      },
+      {
+        "pc": 15,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 25,
+        "operation": "Method java/lang/Byte.valueOf:(B)Ljava/lang/Byte;"
+      },
+      {
+        "pc": 28,
+        "operation": "Method ud.b:(ILjava/lang/Object;)V"
+      },
+      {
+        "pc": 35,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 45,
+        "operation": "Method java/lang/Byte.valueOf:(B)Ljava/lang/Byte;"
+      },
+      {
+        "pc": 48,
+        "operation": "Method ud.b:(ILjava/lang/Object;)V"
+      }
+    ],
+    "dl public static int a(java.util.Random);": [
+      {
+        "pc": 3,
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 46,
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      }
+    ],
+    "dl static {};": [
+      {
+        "pc": 2,
+        "operation": "allocate actual float[16][] outer array"
+      },
+      {
+        "pc": 8,
+        "operation": "allocate actual float[3] row 0"
+      },
+      {
+        "pc": 26,
+        "operation": "allocate actual float[3] row 1"
+      },
+      {
+        "pc": 47,
+        "operation": "allocate actual float[3] row 2"
+      },
+      {
+        "pc": 68,
+        "operation": "allocate actual float[3] row 3"
+      },
+      {
+        "pc": 89,
+        "operation": "allocate actual float[3] row 4"
+      },
+      {
+        "pc": 110,
+        "operation": "allocate actual float[3] row 5"
+      },
+      {
+        "pc": 132,
+        "operation": "allocate actual float[3] row 6"
+      },
+      {
+        "pc": 154,
+        "operation": "allocate actual float[3] row 7"
+      },
+      {
+        "pc": 176,
+        "operation": "allocate actual float[3] row 8"
+      },
+      {
+        "pc": 198,
+        "operation": "allocate actual float[3] row 9"
+      },
+      {
+        "pc": 220,
+        "operation": "allocate actual float[3] row 10"
+      },
+      {
+        "pc": 242,
+        "operation": "allocate actual float[3] row 11"
+      },
+      {
+        "pc": 264,
+        "operation": "allocate actual float[3] row 12"
+      },
+      {
+        "pc": 286,
+        "operation": "allocate actual float[3] row 13"
+      },
+      {
+        "pc": 308,
+        "operation": "allocate actual float[3] row 14"
+      },
+      {
+        "pc": 330,
+        "operation": "allocate actual float[3] row 15"
+      },
+      {
+        "pc": 348,
+        "operation": "Field a:[[F"
+      }
+    ],
+    "bx public bx(fd);": [
+      {
+        "pc": 2,
+        "operation": "Method bg.\"<init>\":(Lfd;)V"
+      },
+      {
+        "pc": 8,
+        "operation": "Field O:Ljava/lang/String;"
+      },
+      {
+        "pc": 16,
+        "operation": "Method b:(FF)V"
+      }
+    ],
+    "bx public void b(nu);": [
+      {
+        "pc": 2,
+        "operation": "Method bg.b:(Lnu;)V"
+      }
+    ],
+    "bx public void a(nu);": [
+      {
+        "pc": 2,
+        "operation": "Method bg.a:(Lnu;)V"
+      }
+    ],
+    "bx protected java.lang.String g();": [],
+    "bx protected java.lang.String j_();": [],
+    "bx protected java.lang.String i();": [],
+    "bx protected float k();": [],
+    "bx protected int j();": [
+      {
+        "pc": 0,
+        "operation": "Field gm.aD:Lgm;"
+      },
+      {
+        "pc": 3,
+        "operation": "Field gm.bf:I"
+      }
+    ],
+    "bx public boolean a(gs);": [
+      {
+        "pc": 1,
+        "operation": "Field gs.c:Lix;"
+      },
+      {
+        "pc": 4,
+        "operation": "Method ix.b:()Liz;"
+      },
+      {
+        "pc": 13,
+        "operation": "Field iz.c:I"
+      },
+      {
+        "pc": 16,
+        "operation": "Field gm.au:Lgm;"
+      },
+      {
+        "pc": 19,
+        "operation": "Field gm.bf:I"
+      },
+      {
+        "pc": 26,
+        "operation": "Field gs.c:Lix;"
+      },
+      {
+        "pc": 30,
+        "operation": "Field gs.c:Lix;"
+      },
+      {
+        "pc": 33,
+        "operation": "Field ix.c:I"
+      },
+      {
+        "pc": 40,
+        "operation": "Field gm.aE:Lgm;"
+      },
+      {
+        "pc": 43,
+        "operation": "Method iz.\"<init>\":(Lgm;)V"
+      },
+      {
+        "pc": 46,
+        "operation": "Method ix.a:(ILiz;)V"
+      }
+    ],
+    "ww public ww(fd);": [
+      {
+        "pc": 2,
+        "operation": "Method bg.\"<init>\":(Lfd;)V"
+      },
+      {
+        "pc": 7,
+        "operation": "Field a:Z"
+      },
+      {
+        "pc": 12,
+        "operation": "Field b:F"
+      },
+      {
+        "pc": 17,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 22,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 28,
+        "operation": "Field O:Ljava/lang/String;"
+      },
+      {
+        "pc": 36,
+        "operation": "Method b:(FF)V"
+      },
+      {
+        "pc": 41,
+        "operation": "Field Y:I"
+      },
+      {
+        "pc": 46,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 52,
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 59,
+        "operation": "Field i:I"
+      }
+    ],
+    "ww public void o();": [
+      {
+        "pc": 1,
+        "operation": "Method bg.o:()V"
+      },
+      {
+        "pc": 6,
+        "operation": "Field b:F"
+      },
+      {
+        "pc": 9,
+        "operation": "Field g:F"
+      },
+      {
+        "pc": 14,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 17,
+        "operation": "Field f:F"
+      },
+      {
+        "pc": 22,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 27,
+        "operation": "Field aX:Z"
+      },
+      {
+        "pc": 45,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 49,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 59,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 63,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 73,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 77,
+        "operation": "Field aX:Z"
+      },
+      {
+        "pc": 84,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 94,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 99,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 108,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 112,
+        "operation": "Field aX:Z"
+      },
+      {
+        "pc": 119,
+        "operation": "Field aQ:D"
+      },
+      {
+        "pc": 129,
+        "operation": "Field aQ:D"
+      },
+      {
+        "pc": 136,
+        "operation": "Field aQ:D"
+      },
+      {
+        "pc": 141,
+        "operation": "Field b:F"
+      },
+      {
+        "pc": 145,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 151,
+        "operation": "Field b:F"
+      },
+      {
+        "pc": 155,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 158,
+        "operation": "Field fd.B:Z"
+      },
+      {
+        "pc": 166,
+        "operation": "Field i:I"
+      },
+      {
+        "pc": 172,
+        "operation": "Field i:I"
+      },
+      {
+        "pc": 179,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 187,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 190,
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 194,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 197,
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 206,
+        "operation": "Method fd.a:(Lsn;Ljava/lang/String;FF)V"
+      },
+      {
+        "pc": 210,
+        "operation": "Field gm.aN:Lgm;"
+      },
+      {
+        "pc": 213,
+        "operation": "Field gm.bf:I"
+      },
+      {
+        "pc": 217,
+        "operation": "Method b:(II)Lhl;"
+      },
+      {
+        "pc": 223,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 229,
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 236,
+        "operation": "Field i:I"
+      }
+    ],
+    "ww protected void b(float);": [],
+    "ww public void b(nu);": [
+      {
+        "pc": 2,
+        "operation": "Method bg.b:(Lnu;)V"
+      }
+    ],
+    "ww public void a(nu);": [
+      {
+        "pc": 2,
+        "operation": "Method bg.a:(Lnu;)V"
+      }
+    ],
+    "ww protected java.lang.String g();": [],
+    "ww protected java.lang.String j_();": [],
+    "ww protected java.lang.String i();": [],
+    "ww protected int j();": [
+      {
+        "pc": 0,
+        "operation": "Field gm.J:Lgm;"
+      },
+      {
+        "pc": 3,
+        "operation": "Field gm.bf:I"
+      }
+    ],
+    "gi public gi(fd);": [
+      {
+        "pc": 2,
+        "operation": "Method bg.\"<init>\":(Lfd;)V"
+      },
+      {
+        "pc": 7,
+        "operation": "Field a:Z"
+      },
+      {
+        "pc": 13,
+        "operation": "Field O:Ljava/lang/String;"
+      },
+      {
+        "pc": 21,
+        "operation": "Method b:(FF)V"
+      },
+      {
+        "pc": 27,
+        "operation": "Field aB:F"
+      },
+      {
+        "pc": 33,
+        "operation": "Field Y:I"
+      }
+    ],
+    "gi protected void b();": [
+      {
+        "pc": 1,
+        "operation": "Method bg.b:()V"
+      },
+      {
+        "pc": 5,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 11,
+        "operation": "Method java/lang/Byte.valueOf:(B)Ljava/lang/Byte;"
+      },
+      {
+        "pc": 14,
+        "operation": "Method ud.a:(ILjava/lang/Object;)V"
+      },
+      {
+        "pc": 18,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 25,
+        "operation": "Method ud.a:(ILjava/lang/Object;)V"
+      },
+      {
+        "pc": 29,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 39,
+        "operation": "Field Y:I"
+      },
+      {
+        "pc": 42,
+        "operation": "Method java/lang/Integer.\"<init>\":(I)V"
+      },
+      {
+        "pc": 45,
+        "operation": "Method ud.a:(ILjava/lang/Object;)V"
+      }
+    ],
+    "gi protected boolean n();": [],
+    "gi public java.lang.String q_();": [
+      {
+        "pc": 1,
+        "operation": "Method D:()Z"
+      },
+      {
+        "pc": 11,
+        "operation": "Method C:()Z"
+      },
+      {
+        "pc": 21,
+        "operation": "Method bg.q_:()Ljava/lang/String;"
+      }
+    ],
+    "gi public void b(nu);": [
+      {
+        "pc": 2,
+        "operation": "Method bg.b:(Lnu;)V"
+      },
+      {
+        "pc": 9,
+        "operation": "Method C:()Z"
+      },
+      {
+        "pc": 12,
+        "operation": "Method nu.a:(Ljava/lang/String;Z)V"
+      },
+      {
+        "pc": 19,
+        "operation": "Method B:()Z"
+      },
+      {
+        "pc": 22,
+        "operation": "Method nu.a:(Ljava/lang/String;Z)V"
+      },
+      {
+        "pc": 26,
+        "operation": "Method A:()Ljava/lang/String;"
+      },
+      {
+        "pc": 37,
+        "operation": "Method nu.a:(Ljava/lang/String;Ljava/lang/String;)V"
+      },
+      {
+        "pc": 47,
+        "operation": "Method A:()Ljava/lang/String;"
+      },
+      {
+        "pc": 50,
+        "operation": "Method nu.a:(Ljava/lang/String;Ljava/lang/String;)V"
+      }
+    ],
+    "gi public void a(nu);": [
+      {
+        "pc": 2,
+        "operation": "Method bg.a:(Lnu;)V"
+      },
+      {
+        "pc": 9,
+        "operation": "Method nu.m:(Ljava/lang/String;)Z"
+      },
+      {
+        "pc": 12,
+        "operation": "Method c:(Z)V"
+      },
+      {
+        "pc": 19,
+        "operation": "Method nu.m:(Ljava/lang/String;)Z"
+      },
+      {
+        "pc": 22,
+        "operation": "Method b:(Z)V"
+      },
+      {
+        "pc": 28,
+        "operation": "Method nu.i:(Ljava/lang/String;)Ljava/lang/String;"
+      },
+      {
+        "pc": 33,
+        "operation": "Method java/lang/String.length:()I"
+      },
+      {
+        "pc": 41,
+        "operation": "Method a:(Ljava/lang/String;)V"
+      },
+      {
+        "pc": 46,
+        "operation": "Method d:(Z)V"
+      }
+    ],
+    "gi protected boolean u();": [
+      {
+        "pc": 1,
+        "operation": "Method D:()Z"
+      }
+    ],
+    "gi protected java.lang.String g();": [
+      {
+        "pc": 1,
+        "operation": "Method C:()Z"
+      },
+      {
+        "pc": 11,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 15,
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 22,
+        "operation": "Method D:()Z"
+      },
+      {
+        "pc": 29,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 34,
+        "operation": "Method ud.b:(I)I"
+      }
+    ],
+    "gi protected java.lang.String j_();": [],
+    "gi protected java.lang.String i();": [],
+    "gi protected float k();": [],
+    "gi protected int j();": [],
+    "gi protected void f_();": [
+      {
+        "pc": 1,
+        "operation": "Method bg.f_:()V"
+      },
+      {
+        "pc": 5,
+        "operation": "Field e:Z"
+      },
+      {
+        "pc": 12,
+        "operation": "Method F:()Z"
+      },
+      {
+        "pc": 19,
+        "operation": "Method D:()Z"
+      },
+      {
+        "pc": 26,
+        "operation": "Field aH:Lsn;"
+      },
+      {
+        "pc": 33,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 37,
+        "operation": "Method A:()Ljava/lang/String;"
+      },
+      {
+        "pc": 40,
+        "operation": "Method fd.a:(Ljava/lang/String;)Lgs;"
+      },
+      {
+        "pc": 50,
+        "operation": "Method gs.f:(Lsn;)F"
+      },
+      {
+        "pc": 64,
+        "operation": "Method c:(Lsn;F)V"
+      },
+      {
+        "pc": 71,
+        "operation": "Method ag:()Z"
+      },
+      {
+        "pc": 79,
+        "operation": "Method b:(Z)V"
+      },
+      {
+        "pc": 86,
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 93,
+        "operation": "Method F:()Z"
+      },
+      {
+        "pc": 100,
+        "operation": "Method D:()Z"
+      },
+      {
+        "pc": 107,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 110,
+        "operation": "Field fd.r:Ljava/util/Random;"
+      },
+      {
+        "pc": 115,
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 122,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 128,
+        "operation": "Field aM:D"
+      },
+      {
+        "pc": 132,
+        "operation": "Field aN:D"
+      },
+      {
+        "pc": 136,
+        "operation": "Field aO:D"
+      },
+      {
+        "pc": 140,
+        "operation": "Field aM:D"
+      },
+      {
+        "pc": 146,
+        "operation": "Field aN:D"
+      },
+      {
+        "pc": 152,
+        "operation": "Field aO:D"
+      },
+      {
+        "pc": 157,
+        "operation": "Method eq.b:(DDDDDD)Leq;"
+      },
+      {
+        "pc": 169,
+        "operation": "Method eq.b:(DDD)Leq;"
+      },
+      {
+        "pc": 172,
+        "operation": "Method fd.a:(Ljava/lang/Class;Leq;)Ljava/util/List;"
+      },
+      {
+        "pc": 177,
+        "operation": "InterfaceMethod java/util/List.isEmpty:()Z"
+      },
+      {
+        "pc": 188,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 191,
+        "operation": "Field fd.r:Ljava/util/Random;"
+      },
+      {
+        "pc": 195,
+        "operation": "InterfaceMethod java/util/List.size:()I"
+      },
+      {
+        "pc": 200,
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 203,
+        "operation": "InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;"
+      },
+      {
+        "pc": 211,
+        "operation": "Method c:(Lsn;)V"
+      },
+      {
+        "pc": 215,
+        "operation": "Method ag:()Z"
+      },
+      {
+        "pc": 223,
+        "operation": "Method b:(Z)V"
+      },
+      {
+        "pc": 227,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 230,
+        "operation": "Field fd.B:Z"
+      },
+      {
+        "pc": 237,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 243,
+        "operation": "Field Y:I"
+      },
+      {
+        "pc": 246,
+        "operation": "Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;"
+      },
+      {
+        "pc": 249,
+        "operation": "Method ud.b:(ILjava/lang/Object;)V"
+      }
+    ],
+    "gi public void o();": [
+      {
+        "pc": 1,
+        "operation": "Method bg.o:()V"
+      },
+      {
+        "pc": 6,
+        "operation": "Field a:Z"
+      },
+      {
+        "pc": 10,
+        "operation": "Method Y:()Z"
+      },
+      {
+        "pc": 17,
+        "operation": "Method F:()Z"
+      },
+      {
+        "pc": 24,
+        "operation": "Method C:()Z"
+      },
+      {
+        "pc": 31,
+        "operation": "Method Z:()Lsn;"
+      },
+      {
+        "pc": 48,
+        "operation": "Field gs.c:Lix;"
+      },
+      {
+        "pc": 51,
+        "operation": "Method ix.b:()Liz;"
+      },
+      {
+        "pc": 60,
+        "operation": "Method D:()Z"
+      },
+      {
+        "pc": 67,
+        "operation": "Field iz.c:I"
+      },
+      {
+        "pc": 70,
+        "operation": "Field gm.aV:Lgm;"
+      },
+      {
+        "pc": 73,
+        "operation": "Field gm.bf:I"
+      },
+      {
+        "pc": 81,
+        "operation": "Field a:Z"
+      },
+      {
+        "pc": 88,
+        "operation": "Method D:()Z"
+      },
+      {
+        "pc": 94,
+        "operation": "Field gm.c:[Lgm;"
+      },
+      {
+        "pc": 98,
+        "operation": "Field iz.c:I"
+      },
+      {
+        "pc": 109,
+        "operation": "Field gm.c:[Lgm;"
+      },
+      {
+        "pc": 113,
+        "operation": "Field iz.c:I"
+      },
+      {
+        "pc": 120,
+        "operation": "Method yw.m:()Z"
+      },
+      {
+        "pc": 123,
+        "operation": "Field a:Z"
+      },
+      {
+        "pc": 127,
+        "operation": "Field V:Z"
+      },
+      {
+        "pc": 134,
+        "operation": "Field f:Z"
+      },
+      {
+        "pc": 141,
+        "operation": "Field g:Z"
+      },
+      {
+        "pc": 148,
+        "operation": "Method F:()Z"
+      },
+      {
+        "pc": 155,
+        "operation": "Field aX:Z"
+      },
+      {
+        "pc": 163,
+        "operation": "Field g:Z"
+      },
+      {
+        "pc": 168,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 173,
+        "operation": "Field i:F"
+      },
+      {
+        "pc": 177,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 183,
+        "operation": "Method fd.a:(Lsn;B)V"
+      }
+    ],
+    "gi public void w_();": [
+      {
+        "pc": 1,
+        "operation": "Method bg.w_:()V"
+      },
+      {
+        "pc": 6,
+        "operation": "Field b:F"
+      },
+      {
+        "pc": 9,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 13,
+        "operation": "Field a:Z"
+      },
+      {
+        "pc": 21,
+        "operation": "Field b:F"
+      },
+      {
+        "pc": 26,
+        "operation": "Field b:F"
+      },
+      {
+        "pc": 34,
+        "operation": "Field b:F"
+      },
+      {
+        "pc": 42,
+        "operation": "Field b:F"
+      },
+      {
+        "pc": 47,
+        "operation": "Field b:F"
+      },
+      {
+        "pc": 55,
+        "operation": "Field b:F"
+      },
+      {
+        "pc": 59,
+        "operation": "Field a:Z"
+      },
+      {
+        "pc": 68,
+        "operation": "Field aC:I"
+      },
+      {
+        "pc": 72,
+        "operation": "Method af:()Z"
+      },
+      {
+        "pc": 80,
+        "operation": "Field f:Z"
+      },
+      {
+        "pc": 85,
+        "operation": "Field g:Z"
+      },
+      {
+        "pc": 90,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 95,
+        "operation": "Field i:F"
+      },
+      {
+        "pc": 102,
+        "operation": "Field f:Z"
+      },
+      {
+        "pc": 109,
+        "operation": "Field g:Z"
+      },
+      {
+        "pc": 116,
+        "operation": "Field g:Z"
+      },
+      {
+        "pc": 123,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 132,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 139,
+        "operation": "Method k:()F"
+      },
+      {
+        "pc": 143,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 146,
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 150,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 153,
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 162,
+        "operation": "Method fd.a:(Lsn;Ljava/lang/String;FF)V"
+      },
+      {
+        "pc": 167,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 170,
+        "operation": "Field i:F"
+      },
+      {
+        "pc": 175,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 181,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 185,
+        "operation": "Field i:F"
+      },
+      {
+        "pc": 195,
+        "operation": "Field f:Z"
+      },
+      {
+        "pc": 200,
+        "operation": "Field g:Z"
+      },
+      {
+        "pc": 205,
+        "operation": "Field i:F"
+      },
+      {
+        "pc": 210,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 214,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 224,
+        "operation": "Field aW:Leq;"
+      },
+      {
+        "pc": 227,
+        "operation": "Field eq.b:D"
+      },
+      {
+        "pc": 233,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 242,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 258,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 261,
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 269,
+        "operation": "Field bg:F"
+      },
+      {
+        "pc": 279,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 282,
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 290,
+        "operation": "Field bg:F"
+      },
+      {
+        "pc": 300,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 306,
+        "operation": "Field aM:D"
+      },
+      {
+        "pc": 319,
+        "operation": "Field aO:D"
+      },
+      {
+        "pc": 327,
+        "operation": "Field aP:D"
+      },
+      {
+        "pc": 331,
+        "operation": "Field aQ:D"
+      },
+      {
+        "pc": 335,
+        "operation": "Field aR:D"
+      },
+      {
+        "pc": 338,
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      }
+    ],
+    "gi public boolean v();": [
+      {
+        "pc": 1,
+        "operation": "Field f:Z"
+      }
+    ],
+    "gi public float b_(float);": [
+      {
+        "pc": 3,
+        "operation": "Field i:F"
+      },
+      {
+        "pc": 7,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 11,
+        "operation": "Field i:F"
+      }
+    ],
+    "gi public float a(float, float);": [
+      {
+        "pc": 1,
+        "operation": "Field i:F"
+      },
+      {
+        "pc": 5,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 9,
+        "operation": "Field i:F"
+      },
+      {
+        "pc": 45,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 55,
+        "operation": "Method in.a:(F)F"
+      }
+    ],
+    "gi public float c(float);": [
+      {
+        "pc": 1,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 5,
+        "operation": "Field b:F"
+      },
+      {
+        "pc": 9,
+        "operation": "Field c:F"
+      }
+    ],
+    "gi public float w();": [
+      {
+        "pc": 1,
+        "operation": "Field bh:F"
+      }
+    ],
+    "gi protected int x();": [
+      {
+        "pc": 1,
+        "operation": "Method B:()Z"
+      },
+      {
+        "pc": 11,
+        "operation": "Method bg.x:()I"
+      }
+    ],
+    "gi private void c(sn, float);": [
+      {
+        "pc": 1,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 8,
+        "operation": "Method fd.a:(Lsn;Lsn;F)Ldh;"
+      },
+      {
+        "pc": 24,
+        "operation": "Field sn.aM:D"
+      },
+      {
+        "pc": 27,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 35,
+        "operation": "Field sn.aO:D"
+      },
+      {
+        "pc": 38,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 46,
+        "operation": "Field sn.aW:Leq;"
+      },
+      {
+        "pc": 49,
+        "operation": "Field eq.b:D"
+      },
+      {
+        "pc": 52,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 103,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 120,
+        "operation": "Method fd.h:(III)Z"
+      },
+      {
+        "pc": 127,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 142,
+        "operation": "Method fd.h:(III)Z"
+      },
+      {
+        "pc": 149,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 166,
+        "operation": "Method fd.h:(III)Z"
+      },
+      {
+        "pc": 197,
+        "operation": "Field aS:F"
+      },
+      {
+        "pc": 201,
+        "operation": "Field aT:F"
+      },
+      {
+        "pc": 204,
+        "operation": "Method c:(DDDFF)V"
+      },
+      {
+        "pc": 225,
+        "operation": "Method a:(Ldh;)V"
+      }
+    ],
+    "gi protected boolean e_();": [
+      {
+        "pc": 1,
+        "operation": "Method B:()Z"
+      },
+      {
+        "pc": 8,
+        "operation": "Field g:Z"
+      }
+    ],
+    "gi public boolean a(sn, int);": [
+      {
+        "pc": 2,
+        "operation": "Method b:(Z)V"
+      },
+      {
+        "pc": 32,
+        "operation": "Method bg.a:(Lsn;I)Z"
+      },
+      {
+        "pc": 39,
+        "operation": "Method D:()Z"
+      },
+      {
+        "pc": 46,
+        "operation": "Method C:()Z"
+      },
+      {
+        "pc": 61,
+        "operation": "Method c:(Z)V"
+      },
+      {
+        "pc": 66,
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 80,
+        "operation": "Field sl.c:Lls;"
+      },
+      {
+        "pc": 90,
+        "operation": "Field sl.c:Lls;"
+      },
+      {
+        "pc": 102,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 108,
+        "operation": "Field aM:D"
+      },
+      {
+        "pc": 112,
+        "operation": "Field aN:D"
+      },
+      {
+        "pc": 116,
+        "operation": "Field aO:D"
+      },
+      {
+        "pc": 120,
+        "operation": "Field aM:D"
+      },
+      {
+        "pc": 126,
+        "operation": "Field aN:D"
+      },
+      {
+        "pc": 132,
+        "operation": "Field aO:D"
+      },
+      {
+        "pc": 137,
+        "operation": "Method eq.b:(DDDDDD)Leq;"
+      },
+      {
+        "pc": 149,
+        "operation": "Method eq.b:(DDD)Leq;"
+      },
+      {
+        "pc": 152,
+        "operation": "Method fd.a:(Ljava/lang/Class;Leq;)Ljava/util/List;"
+      },
+      {
+        "pc": 157,
+        "operation": "InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;"
+      },
+      {
+        "pc": 166,
+        "operation": "InterfaceMethod java/util/Iterator.hasNext:()Z"
+      },
+      {
+        "pc": 176,
+        "operation": "InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;"
+      },
+      {
+        "pc": 195,
+        "operation": "Method D:()Z"
+      },
+      {
+        "pc": 203,
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 212,
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 225,
+        "operation": "Method c:(Z)V"
+      },
+      {
+        "pc": 244,
+        "operation": "Method D:()Z"
+      },
+      {
+        "pc": 261,
+        "operation": "Field gs.l:Ljava/lang/String;"
+      },
+      {
+        "pc": 265,
+        "operation": "Method A:()Ljava/lang/String;"
+      },
+      {
+        "pc": 268,
+        "operation": "Method java/lang/String.equalsIgnoreCase:(Ljava/lang/String;)Z"
+      },
+      {
+        "pc": 278,
+        "operation": "Field d:Lsn;"
+      }
+    ],
+    "gi protected sn g_();": [
+      {
+        "pc": 1,
+        "operation": "Method C:()Z"
+      },
+      {
+        "pc": 8,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 15,
+        "operation": "Method fd.a:(Lsn;D)Lgs;"
+      }
+    ],
+    "gi protected void a(sn, float);": [
+      {
+        "pc": 14,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 19,
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 26,
+        "operation": "Field aX:Z"
+      },
+      {
+        "pc": 33,
+        "operation": "Field sn.aM:D"
+      },
+      {
+        "pc": 37,
+        "operation": "Field aM:D"
+      },
+      {
+        "pc": 43,
+        "operation": "Field sn.aO:D"
+      },
+      {
+        "pc": 47,
+        "operation": "Field aO:D"
+      },
+      {
+        "pc": 62,
+        "operation": "Method in.a:(D)F"
+      },
+      {
+        "pc": 82,
+        "operation": "Field aP:D"
+      },
+      {
+        "pc": 90,
+        "operation": "Field aP:D"
+      },
+      {
+        "pc": 109,
+        "operation": "Field aR:D"
+      },
+      {
+        "pc": 117,
+        "operation": "Field aR:D"
+      },
+      {
+        "pc": 124,
+        "operation": "Field aQ:D"
+      },
+      {
+        "pc": 140,
+        "operation": "Field sn.aW:Leq;"
+      },
+      {
+        "pc": 143,
+        "operation": "Field eq.e:D"
+      },
+      {
+        "pc": 147,
+        "operation": "Field aW:Leq;"
+      },
+      {
+        "pc": 150,
+        "operation": "Field eq.b:D"
+      },
+      {
+        "pc": 158,
+        "operation": "Field sn.aW:Leq;"
+      },
+      {
+        "pc": 161,
+        "operation": "Field eq.b:D"
+      },
+      {
+        "pc": 165,
+        "operation": "Field aW:Leq;"
+      },
+      {
+        "pc": 168,
+        "operation": "Field eq.e:D"
+      },
+      {
+        "pc": 178,
+        "operation": "Field ae:I"
+      },
+      {
+        "pc": 184,
+        "operation": "Method D:()Z"
+      },
+      {
+        "pc": 195,
+        "operation": "Method sn.a:(Lsn;I)Z"
+      }
+    ],
+    "gi public boolean a(gs);": [
+      {
+        "pc": 1,
+        "operation": "Field gs.c:Lix;"
+      },
+      {
+        "pc": 4,
+        "operation": "Method ix.b:()Liz;"
+      },
+      {
+        "pc": 9,
+        "operation": "Method D:()Z"
+      },
+      {
+        "pc": 20,
+        "operation": "Field iz.c:I"
+      },
+      {
+        "pc": 23,
+        "operation": "Field gm.aV:Lgm;"
+      },
+      {
+        "pc": 26,
+        "operation": "Field gm.bf:I"
+      },
+      {
+        "pc": 33,
+        "operation": "Method C:()Z"
+      },
+      {
+        "pc": 41,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 46,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 50,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 57,
+        "operation": "Field gs.c:Lix;"
+      },
+      {
+        "pc": 61,
+        "operation": "Field gs.c:Lix;"
+      },
+      {
+        "pc": 64,
+        "operation": "Field ix.c:I"
+      },
+      {
+        "pc": 68,
+        "operation": "Method ix.a:(ILiz;)V"
+      },
+      {
+        "pc": 72,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 75,
+        "operation": "Field fd.B:Z"
+      },
+      {
+        "pc": 82,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 86,
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 94,
+        "operation": "Method d:(Z)V"
+      },
+      {
+        "pc": 99,
+        "operation": "Method a:(Ldh;)V"
+      },
+      {
+        "pc": 104,
+        "operation": "Method b:(Z)V"
+      },
+      {
+        "pc": 110,
+        "operation": "Field Y:I"
+      },
+      {
+        "pc": 115,
+        "operation": "Field gs.l:Ljava/lang/String;"
+      },
+      {
+        "pc": 118,
+        "operation": "Method a:(Ljava/lang/String;)V"
+      },
+      {
+        "pc": 123,
+        "operation": "Method a:(Z)V"
+      },
+      {
+        "pc": 127,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 133,
+        "operation": "Method fd.a:(Lsn;B)V"
+      },
+      {
+        "pc": 141,
+        "operation": "Method a:(Z)V"
+      },
+      {
+        "pc": 145,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 151,
+        "operation": "Method fd.a:(Lsn;B)V"
+      },
+      {
+        "pc": 160,
+        "operation": "Field gm.c:[Lgm;"
+      },
+      {
+        "pc": 164,
+        "operation": "Field iz.c:I"
+      },
+      {
+        "pc": 174,
+        "operation": "Field gm.c:[Lgm;"
+      },
+      {
+        "pc": 178,
+        "operation": "Field iz.c:I"
+      },
+      {
+        "pc": 187,
+        "operation": "Method yw.m:()Z"
+      },
+      {
+        "pc": 194,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 199,
+        "operation": "Method ud.b:(I)I"
+      },
+      {
+        "pc": 209,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 214,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 218,
+        "operation": "Field iz.a:I"
+      },
+      {
+        "pc": 225,
+        "operation": "Field gs.c:Lix;"
+      },
+      {
+        "pc": 229,
+        "operation": "Field gs.c:Lix;"
+      },
+      {
+        "pc": 232,
+        "operation": "Field ix.c:I"
+      },
+      {
+        "pc": 236,
+        "operation": "Method ix.a:(ILiz;)V"
+      },
+      {
+        "pc": 240,
+        "operation": "Field gm.ao:Lgm;"
+      },
+      {
+        "pc": 246,
+        "operation": "Method yw.l:()I"
+      },
+      {
+        "pc": 249,
+        "operation": "Method c:(I)V"
+      },
+      {
+        "pc": 255,
+        "operation": "Field gs.l:Ljava/lang/String;"
+      },
+      {
+        "pc": 259,
+        "operation": "Method A:()Ljava/lang/String;"
+      },
+      {
+        "pc": 262,
+        "operation": "Method java/lang/String.equalsIgnoreCase:(Ljava/lang/String;)Z"
+      },
+      {
+        "pc": 269,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 272,
+        "operation": "Field fd.B:Z"
+      },
+      {
+        "pc": 280,
+        "operation": "Method B:()Z"
+      },
+      {
+        "pc": 291,
+        "operation": "Method b:(Z)V"
+      },
+      {
+        "pc": 296,
+        "operation": "Field az:Z"
+      },
+      {
+        "pc": 301,
+        "operation": "Method a:(Ldh;)V"
+      }
+    ],
+    "gi void a(boolean);": [
+      {
+        "pc": 19,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 22,
+        "operation": "Method java/util/Random.nextGaussian:()D"
+      },
+      {
+        "pc": 32,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 35,
+        "operation": "Method java/util/Random.nextGaussian:()D"
+      },
+      {
+        "pc": 45,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 48,
+        "operation": "Method java/util/Random.nextGaussian:()D"
+      },
+      {
+        "pc": 58,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 63,
+        "operation": "Field aM:D"
+      },
+      {
+        "pc": 67,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 70,
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 74,
+        "operation": "Field bg:F"
+      },
+      {
+        "pc": 83,
+        "operation": "Field bg:F"
+      },
+      {
+        "pc": 89,
+        "operation": "Field aN:D"
+      },
+      {
+        "pc": 97,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 100,
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 104,
+        "operation": "Field bh:F"
+      },
+      {
+        "pc": 111,
+        "operation": "Field aO:D"
+      },
+      {
+        "pc": 115,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 118,
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 122,
+        "operation": "Field bg:F"
+      },
+      {
+        "pc": 131,
+        "operation": "Field bg:F"
+      },
+      {
+        "pc": 142,
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      }
+    ],
+    "gi public void a(byte);": [
+      {
+        "pc": 8,
+        "operation": "Method a:(Z)V"
+      },
+      {
+        "pc": 22,
+        "operation": "Method a:(Z)V"
+      },
+      {
+        "pc": 36,
+        "operation": "Field g:Z"
+      },
+      {
+        "pc": 41,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 46,
+        "operation": "Field i:F"
+      },
+      {
+        "pc": 54,
+        "operation": "Method bg.a:(B)V"
+      }
+    ],
+    "gi public float z();": [
+      {
+        "pc": 1,
+        "operation": "Method C:()Z"
+      },
+      {
+        "pc": 11,
+        "operation": "Method D:()Z"
+      },
+      {
+        "pc": 22,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 27,
+        "operation": "Method ud.b:(I)I"
+      }
+    ],
+    "gi public int l();": [],
+    "gi public java.lang.String A();": [
+      {
+        "pc": 1,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 6,
+        "operation": "Method ud.c:(I)Ljava/lang/String;"
+      }
+    ],
+    "gi public void a(java.lang.String);": [
+      {
+        "pc": 1,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 7,
+        "operation": "Method ud.b:(ILjava/lang/Object;)V"
+      }
+    ],
+    "gi public boolean B();": [
+      {
+        "pc": 1,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 6,
+        "operation": "Method ud.a:(I)B"
+      }
+    ],
+    "gi public void b(boolean);": [
+      {
+        "pc": 1,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 6,
+        "operation": "Method ud.a:(I)B"
+      },
+      {
+        "pc": 15,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 24,
+        "operation": "Method java/lang/Byte.valueOf:(B)Ljava/lang/Byte;"
+      },
+      {
+        "pc": 27,
+        "operation": "Method ud.b:(ILjava/lang/Object;)V"
+      },
+      {
+        "pc": 34,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 44,
+        "operation": "Method java/lang/Byte.valueOf:(B)Ljava/lang/Byte;"
+      },
+      {
+        "pc": 47,
+        "operation": "Method ud.b:(ILjava/lang/Object;)V"
+      }
+    ],
+    "gi public boolean C();": [
+      {
+        "pc": 1,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 6,
+        "operation": "Method ud.a:(I)B"
+      }
+    ],
+    "gi public void c(boolean);": [
+      {
+        "pc": 1,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 6,
+        "operation": "Method ud.a:(I)B"
+      },
+      {
+        "pc": 15,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 24,
+        "operation": "Method java/lang/Byte.valueOf:(B)Ljava/lang/Byte;"
+      },
+      {
+        "pc": 27,
+        "operation": "Method ud.b:(ILjava/lang/Object;)V"
+      },
+      {
+        "pc": 34,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 44,
+        "operation": "Method java/lang/Byte.valueOf:(B)Ljava/lang/Byte;"
+      },
+      {
+        "pc": 47,
+        "operation": "Method ud.b:(ILjava/lang/Object;)V"
+      }
+    ],
+    "gi public boolean D();": [
+      {
+        "pc": 1,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 6,
+        "operation": "Method ud.a:(I)B"
+      }
+    ],
+    "gi public void d(boolean);": [
+      {
+        "pc": 1,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 6,
+        "operation": "Method ud.a:(I)B"
+      },
+      {
+        "pc": 15,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 24,
+        "operation": "Method java/lang/Byte.valueOf:(B)Ljava/lang/Byte;"
+      },
+      {
+        "pc": 27,
+        "operation": "Method ud.b:(ILjava/lang/Object;)V"
+      },
+      {
+        "pc": 34,
+        "operation": "Field bD:Lud;"
+      },
+      {
+        "pc": 44,
+        "operation": "Method java/lang/Byte.valueOf:(B)Ljava/lang/Byte;"
+      },
+      {
+        "pc": 47,
+        "operation": "Method ud.b:(ILjava/lang/Object;)V"
+      }
+    ],
+    "xt public xt(fd);": [
+      {
+        "pc": 2,
+        "operation": "Method ar.\"<init>\":(Lfd;)V"
+      },
+      {
+        "pc": 7,
+        "operation": "Field a:F"
+      },
+      {
+        "pc": 12,
+        "operation": "Field b:F"
+      },
+      {
+        "pc": 17,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 22,
+        "operation": "Field f:F"
+      },
+      {
+        "pc": 27,
+        "operation": "Field g:F"
+      },
+      {
+        "pc": 32,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 37,
+        "operation": "Field i:F"
+      },
+      {
+        "pc": 42,
+        "operation": "Field j:F"
+      },
+      {
+        "pc": 47,
+        "operation": "Field k:F"
+      },
+      {
+        "pc": 52,
+        "operation": "Field l:F"
+      },
+      {
+        "pc": 57,
+        "operation": "Field m:F"
+      },
+      {
+        "pc": 62,
+        "operation": "Field n:F"
+      },
+      {
+        "pc": 67,
+        "operation": "Field o:F"
+      },
+      {
+        "pc": 72,
+        "operation": "Field p:F"
+      },
+      {
+        "pc": 78,
+        "operation": "Field O:Ljava/lang/String;"
+      },
+      {
+        "pc": 86,
+        "operation": "Method b:(FF)V"
+      },
+      {
+        "pc": 92,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 95,
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 104,
+        "operation": "Field l:F"
+      }
+    ],
+    "xt public void b(nu);": [
+      {
+        "pc": 2,
+        "operation": "Method ar.b:(Lnu;)V"
+      }
+    ],
+    "xt public void a(nu);": [
+      {
+        "pc": 2,
+        "operation": "Method ar.a:(Lnu;)V"
+      }
+    ],
+    "xt protected java.lang.String g();": [],
+    "xt protected java.lang.String j_();": [],
+    "xt protected java.lang.String i();": [],
+    "xt protected float k();": [],
+    "xt protected int j();": [],
+    "xt protected void q();": [
+      {
+        "pc": 1,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 5,
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 23,
+        "operation": "Field gm.aU:Lgm;"
+      },
+      {
+        "pc": 28,
+        "operation": "Method iz.\"<init>\":(Lgm;II)V"
+      },
+      {
+        "pc": 32,
+        "operation": "Method a:(Liz;F)Lhl;"
+      }
+    ],
+    "xt public boolean a(gs);": [],
+    "xt public boolean ag();": [
+      {
+        "pc": 1,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 5,
+        "operation": "Field aW:Leq;"
+      },
+      {
+        "pc": 13,
+        "operation": "Method eq.b:(DDD)Leq;"
+      },
+      {
+        "pc": 16,
+        "operation": "Field ln.g:Lln;"
+      },
+      {
+        "pc": 20,
+        "operation": "Method fd.a:(Leq;Lln;Lsn;)Z"
+      }
+    ],
+    "xt public void o();": [
+      {
+        "pc": 1,
+        "operation": "Method ar.o:()V"
+      },
+      {
+        "pc": 6,
+        "operation": "Field a:F"
+      },
+      {
+        "pc": 9,
+        "operation": "Field b:F"
+      },
+      {
+        "pc": 14,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 17,
+        "operation": "Field f:F"
+      },
+      {
+        "pc": 22,
+        "operation": "Field g:F"
+      },
+      {
+        "pc": 25,
+        "operation": "Field h:F"
+      },
+      {
+        "pc": 30,
+        "operation": "Field i:F"
+      },
+      {
+        "pc": 33,
+        "operation": "Field j:F"
+      },
+      {
+        "pc": 38,
+        "operation": "Field g:F"
+      },
+      {
+        "pc": 42,
+        "operation": "Field l:F"
+      },
+      {
+        "pc": 46,
+        "operation": "Field g:F"
+      },
+      {
+        "pc": 50,
+        "operation": "Field g:F"
+      },
+      {
+        "pc": 61,
+        "operation": "Field g:F"
+      },
+      {
+        "pc": 67,
+        "operation": "Field g:F"
+      },
+      {
+        "pc": 71,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 76,
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 85,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 88,
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 97,
+        "operation": "Field l:F"
+      },
+      {
+        "pc": 101,
+        "operation": "Method ag:()Z"
+      },
+      {
+        "pc": 108,
+        "operation": "Field g:F"
+      },
+      {
+        "pc": 118,
+        "operation": "Field g:F"
+      },
+      {
+        "pc": 132,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 141,
+        "operation": "Field i:F"
+      },
+      {
+        "pc": 155,
+        "operation": "Field k:F"
+      },
+      {
+        "pc": 160,
+        "operation": "Field m:F"
+      },
+      {
+        "pc": 168,
+        "operation": "Field m:F"
+      },
+      {
+        "pc": 174,
+        "operation": "Field m:F"
+      },
+      {
+        "pc": 182,
+        "operation": "Field i:F"
+      },
+      {
+        "pc": 187,
+        "operation": "Field k:F"
+      },
+      {
+        "pc": 193,
+        "operation": "Field k:F"
+      },
+      {
+        "pc": 198,
+        "operation": "Field m:F"
+      },
+      {
+        "pc": 204,
+        "operation": "Field m:F"
+      },
+      {
+        "pc": 208,
+        "operation": "Field V:Z"
+      },
+      {
+        "pc": 216,
+        "operation": "Field n:F"
+      },
+      {
+        "pc": 220,
+        "operation": "Field k:F"
+      },
+      {
+        "pc": 225,
+        "operation": "Field aP:D"
+      },
+      {
+        "pc": 230,
+        "operation": "Field o:F"
+      },
+      {
+        "pc": 234,
+        "operation": "Field k:F"
+      },
+      {
+        "pc": 239,
+        "operation": "Field aQ:D"
+      },
+      {
+        "pc": 244,
+        "operation": "Field p:F"
+      },
+      {
+        "pc": 248,
+        "operation": "Field k:F"
+      },
+      {
+        "pc": 253,
+        "operation": "Field aR:D"
+      },
+      {
+        "pc": 257,
+        "operation": "Field aP:D"
+      },
+      {
+        "pc": 261,
+        "operation": "Field aP:D"
+      },
+      {
+        "pc": 266,
+        "operation": "Field aR:D"
+      },
+      {
+        "pc": 270,
+        "operation": "Field aR:D"
+      },
+      {
+        "pc": 275,
+        "operation": "Method in.a:(D)F"
+      },
+      {
+        "pc": 281,
+        "operation": "Field H:F"
+      },
+      {
+        "pc": 285,
+        "operation": "Field aP:D"
+      },
+      {
+        "pc": 289,
+        "operation": "Field aR:D"
+      },
+      {
+        "pc": 292,
+        "operation": "Method java/lang/Math.atan2:(DD)D"
+      },
+      {
+        "pc": 304,
+        "operation": "Field H:F"
+      },
+      {
+        "pc": 312,
+        "operation": "Field H:F"
+      },
+      {
+        "pc": 317,
+        "operation": "Field H:F"
+      },
+      {
+        "pc": 320,
+        "operation": "Field aS:F"
+      },
+      {
+        "pc": 325,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 331,
+        "operation": "Field m:F"
+      },
+      {
+        "pc": 339,
+        "operation": "Field c:F"
+      },
+      {
+        "pc": 344,
+        "operation": "Field a:F"
+      },
+      {
+        "pc": 350,
+        "operation": "Field aQ:D"
+      },
+      {
+        "pc": 353,
+        "operation": "Method java/lang/Math.atan2:(DD)D"
+      },
+      {
+        "pc": 365,
+        "operation": "Field a:F"
+      },
+      {
+        "pc": 373,
+        "operation": "Field a:F"
+      },
+      {
+        "pc": 381,
+        "operation": "Field g:F"
+      },
+      {
+        "pc": 384,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 387,
+        "operation": "Method in.e:(F)F"
+      },
+      {
+        "pc": 396,
+        "operation": "Field i:F"
+      },
+      {
+        "pc": 400,
+        "operation": "Field V:Z"
+      },
+      {
+        "pc": 408,
+        "operation": "Field aP:D"
+      },
+      {
+        "pc": 413,
+        "operation": "Field aQ:D"
+      },
+      {
+        "pc": 420,
+        "operation": "Field aQ:D"
+      },
+      {
+        "pc": 425,
+        "operation": "Field aQ:D"
+      },
+      {
+        "pc": 432,
+        "operation": "Field aQ:D"
+      },
+      {
+        "pc": 437,
+        "operation": "Field aR:D"
+      },
+      {
+        "pc": 442,
+        "operation": "Field a:F"
+      },
+      {
+        "pc": 449,
+        "operation": "Field a:F"
+      },
+      {
+        "pc": 460,
+        "operation": "Field a:F"
+      }
+    ],
+    "xt public void a_(float, float);": [
+      {
+        "pc": 2,
+        "operation": "Field aP:D"
+      },
+      {
+        "pc": 6,
+        "operation": "Field aQ:D"
+      },
+      {
+        "pc": 10,
+        "operation": "Field aR:D"
+      },
+      {
+        "pc": 13,
+        "operation": "Method b:(DDD)V"
+      }
+    ],
+    "xt protected void f_();": [
+      {
+        "pc": 1,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 6,
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 13,
+        "operation": "Field bx:Z"
+      },
+      {
+        "pc": 20,
+        "operation": "Field n:F"
+      },
+      {
+        "pc": 29,
+        "operation": "Field o:F"
+      },
+      {
+        "pc": 38,
+        "operation": "Field p:F"
+      },
+      {
+        "pc": 47,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 50,
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 61,
+        "operation": "Method in.b:(F)F"
+      },
+      {
+        "pc": 67,
+        "operation": "Field n:F"
+      },
+      {
+        "pc": 74,
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 77,
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 84,
+        "operation": "Field o:F"
+      },
+      {
+        "pc": 89,
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 95,
+        "operation": "Field p:F"
+      },
+      {
+        "pc": 99,
+        "operation": "Method X:()V"
+      }
+    ],
+    "bg public bg(fd);": [
+      {
+        "pc": 2,
+        "operation": "Method ii.\"<init>\":(Lfd;)V"
+      }
+    ],
+    "bg protected float a(int, int, int);": [
+      {
+        "pc": 1,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 9,
+        "operation": "Method fd.a:(III)I"
+      },
+      {
+        "pc": 12,
+        "operation": "Field uu.v:Lwp;"
+      },
+      {
+        "pc": 15,
+        "operation": "Field wp.bn:I"
+      },
+      {
+        "pc": 25,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 31,
+        "operation": "Method fd.c:(III)F"
+      }
+    ],
+    "bg public void b(nu);": [
+      {
+        "pc": 2,
+        "operation": "Method ii.b:(Lnu;)V"
+      }
+    ],
+    "bg public void a(nu);": [
+      {
+        "pc": 2,
+        "operation": "Method ii.a:(Lnu;)V"
+      }
+    ],
+    "bg public boolean d();": [
+      {
+        "pc": 1,
+        "operation": "Field aM:D"
+      },
+      {
+        "pc": 4,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 9,
+        "operation": "Field aW:Leq;"
+      },
+      {
+        "pc": 12,
+        "operation": "Field eq.b:D"
+      },
+      {
+        "pc": 15,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 20,
+        "operation": "Field aO:D"
+      },
+      {
+        "pc": 23,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 28,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 36,
+        "operation": "Method fd.a:(III)I"
+      },
+      {
+        "pc": 39,
+        "operation": "Field uu.v:Lwp;"
+      },
+      {
+        "pc": 42,
+        "operation": "Field wp.bn:I"
+      },
+      {
+        "pc": 49,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 55,
+        "operation": "Method fd.m:(III)I"
+      },
+      {
+        "pc": 64,
+        "operation": "Method ii.d:()Z"
+      }
+    ],
+    "bg public int e();": [],
+    "ar public ar(fd);": [
+      {
+        "pc": 2,
+        "operation": "Method ii.\"<init>\":(Lfd;)V"
+      }
+    ],
+    "ar public boolean d_();": [],
+    "ar public void b(nu);": [
+      {
+        "pc": 2,
+        "operation": "Method ii.b:(Lnu;)V"
+      }
+    ],
+    "ar public void a(nu);": [
+      {
+        "pc": 2,
+        "operation": "Method ii.a:(Lnu;)V"
+      }
+    ],
+    "ar public boolean d();": [
+      {
+        "pc": 1,
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 5,
+        "operation": "Field aW:Leq;"
+      },
+      {
+        "pc": 8,
+        "operation": "Method fd.a:(Leq;)Z"
+      }
+    ],
+    "ar public int e();": []
   }
 }

@@ -54,29 +54,30 @@
 
 static unsigned int checks;
 
-static bool spawn_dependency_reached(const mc_world_tick_state *state,
+static bool world_dependency_reached(const mc_world_tick_state *state,
                                      const mc_world_tick_error *error) {
-    mc_entity_class_literal_view selected;
-    if (state->spawn_class == NULL ||
-        mc_entity_class_literal_inspect(state->spawn_class, &selected) != MC_ENTITY_OK)
+    mc_entity_snapshot entity;
+    mc_mob_state mob;
+    if (!state->first_constructor.captured || state->spawn_constructors == 0 ||
+        state->spawn_constructors != state->spawn_predicates ||
+        !state->spawn_eligibility_returned || !state->spawn_constructed ||
+        !state->spawn_positioned || state->spawn_entity == NULL ||
+        mc_entity_get_snapshot(state->spawn_entity, &entity) != MC_ENTITY_OK ||
+        !mc_mob_inspect(state->spawn_entity, &mob) || entity.phase != MC_ENTITY_READY ||
+        entity.base.world != state->world || !error->native_policy)
         return false;
-    switch (selected.kind) {
-        case MC_ENTITY_CLASS_KIND_SPIDER:
-        case MC_ENTITY_CLASS_KIND_ZOMBIE:
-        case MC_ENTITY_CLASS_KIND_SKELETON:
-        case MC_ENTITY_CLASS_KIND_CREEPER:
-        case MC_ENTITY_CLASS_KIND_SLIME: {
-            mc_entity_snapshot entity;
-            return error->child_bytecode == 820 && state->spawn_constructed &&
-                   state->spawn_positioned && state->spawn_entity != NULL &&
-                   mc_entity_get_snapshot(state->spawn_entity, &entity) == MC_ENTITY_OK &&
-                   entity.phase == MC_ENTITY_READY && entity.class_literal == state->spawn_class &&
-                   entity.base.world == state->world;
-        }
-        default:
-            return error->child_bytecode == 773 && !state->spawn_constructed &&
-                   !state->spawn_positioned && state->spawn_entity == NULL;
+    if (state->source_pc == 195) {
+        return state->spawning_returned && state->provider_returned && state->time_stored &&
+               state->scheduled_returned && state->random_chunk_count == 361 &&
+               error->child == MC_WORLD_TICK_CHILD_RANDOM && error->child_bytecode == 207;
     }
+    mc_entity_snapshot jockey;
+    return state->source_pc == 80 && error->child == MC_WORLD_TICK_CHILD_SPAWNING &&
+           error->child_bytecode == 845 && state->spawn_postspawn_pc == 56 &&
+           state->spawn_eligible && state->spawn_publication_returned &&
+           mob.kind == MC_ENTITY_CLASS_KIND_SPIDER && state->spawn_jockey != NULL &&
+           mc_entity_get_snapshot(state->spawn_jockey, &jockey) == MC_ENTITY_OK &&
+           jockey.phase == MC_ENTITY_READY && jockey.base.world == state->world;
 }
 
 static bool loaded_draw_reached(const mc_client_menu_loop_state *source) {
@@ -89,15 +90,13 @@ static bool loaded_draw_reached(const mc_client_menu_loop_state *source) {
            source->source_pc == 22;
 }
 
-static bool unpaused_spawn_reached(const mc_client_menu_loop_state *source) {
+static bool unpaused_world_reached(const mc_client_menu_loop_state *source) {
     return source->failed && source->source_class != NULL &&
            strcmp(source->source_class, "fd") == 0 && source->source_method != NULL &&
-           strcmp(source->source_method, "l") == 0 && source->source_pc == 80 &&
-           source->world_draws >= 1 && source->hud_draws >= 1 && source->world_tick != NULL &&
-           source->world_tick->failed && source->world_tick->renderer_returned &&
-           source->world_tick->entities_returned &&
-           source->world_tick->scheduler_error.child == MC_WORLD_TICK_CHILD_SPAWNING &&
-           spawn_dependency_reached(&source->world_tick->scheduler_state,
+           strcmp(source->source_method, "l") == 0 && source->world_draws >= 1 &&
+           source->hud_draws >= 1 && source->world_tick != NULL && source->world_tick->failed &&
+           source->world_tick->renderer_returned && source->world_tick->entities_returned &&
+           world_dependency_reached(&source->world_tick->scheduler_state,
                                     &source->world_tick->scheduler_error);
 }
 
@@ -608,7 +607,7 @@ static int world_tick_controls(fixture *f) {
     memset(call, 0, sizeof(*call));
     const bool returned =
         mc_client_world_tick_run(f->app, mc_client_bootstrap_math(f->bootstrap), call);
-    if (!returned && call->site.pc != 80) {
+    if (!returned && call->site.pc != 195 && call->site.pc != 80) {
         fprintf(stderr, "World segment reached %s.%s:%d: %s; renderer=%d entities=%d\n",
                 call->site.class_name, call->site.method, call->site.pc, call->operation,
                 call->renderer_returned, call->entities_returned);
@@ -618,34 +617,33 @@ static int world_tick_controls(fixture *f) {
                     (int)call->entities.child, call->entities.operation);
     }
     CHECK(!returned && call->failed && strcmp(call->site.class_name, "fd") == 0 &&
-          call->site.pc == 80 && call->counter_stored && !call->counter_reset &&
-          call->difficulty_stored && call->renderer_returned && call->render_global_returned &&
-          call->entities_returned && call->spawn_flags_stored &&
-          call->renderer_state.source_returned && call->renderer_state.source_pc == 186 &&
-          call->renderer_state.interpolation_stores == 6 &&
+          call->counter_stored && !call->counter_reset && call->difficulty_stored &&
+          call->renderer_returned && call->render_global_returned && call->entities_returned &&
+          call->spawn_flags_stored && call->renderer_state.source_returned &&
+          call->renderer_state.source_pc == 186 && call->renderer_state.interpolation_stores == 6 &&
           call->renderer_state.brightness_returned && call->renderer_state.held_item_returned &&
           call->renderer_state.rain_returned && call->renderer_state.rain->returned);
-    if (!spawn_dependency_reached(&call->scheduler_state, &call->scheduler_error))
+    if (!world_dependency_reached(&call->scheduler_state, &call->scheduler_error))
         fprintf(stderr, "Spawn child=%u descendant=%u operation=%s\n",
                 call->scheduler_error.child_bytecode, call->scheduler_error.descendant_bytecode,
                 call->scheduler_error.operation);
     CHECK(call->scheduler_state.weather_returned &&
           call->scheduler_state.spawn_chunk_count == 289 &&
-          call->scheduler_error.child == MC_WORLD_TICK_CHILD_SPAWNING &&
-          spawn_dependency_reached(&call->scheduler_state, &call->scheduler_error) &&
+          world_dependency_reached(&call->scheduler_state, &call->scheduler_error) &&
           call->scheduler_state.spawn_pick.entry != NULL &&
           call->scheduler_state.spawn_candidates_visited > 0 &&
           call->scheduler_state.spawn_random_calls >= 10 &&
           call->scheduler_state.spawn_pick.total_weight > 0);
     const unsigned int spawn_pc = call->scheduler_error.child_bytecode;
-    CHECK(mc_client_world_tick_cleanup(call) && call->failed && call->site.pc == 80 &&
-          call->scheduler_error.mob == NULL && call->scheduler_state.spawn_entity == NULL);
+    const unsigned int world_pc = call->scheduler_state.source_pc;
+    CHECK(mc_client_world_tick_cleanup(call) && call->failed && call->scheduler_error.mob == NULL &&
+          call->scheduler_state.spawn_entity == NULL);
     atomic_store(&f->app->o, paused);
     f->app->ah = counter;
     free(call);
     printf("WORLD_TICK paused-refresh25=1 unpaused-renderer186=1 render-global=1 "
-           "entities=1 spawn-flags=1 weather=1 spawn-candidates=289 next=cq.a%u\n",
-           spawn_pc);
+           "entities=1 spawn-flags=1 weather=1 spawn-candidates=289 next=fd.l%u child=%u\n",
+           world_pc, spawn_pc);
     return 0;
 }
 
@@ -1085,7 +1083,7 @@ static int normal_terminal_retirement_controls(fixture *f, mc_client_source_da *
                   MC_WORLD_STORAGE_OK &&
               scope == MC_CLIENT_TERMINAL_EMPTY_STORAGE && error.status == MC_WORLD_STORAGE_OK);
     } else {
-        CHECK((loaded_draw_reached(&source) || unpaused_spawn_reached(&source)) &&
+        CHECK((loaded_draw_reached(&source) || unpaused_world_reached(&source)) &&
               controller != NULL);
     }
     CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
@@ -1713,17 +1711,20 @@ int main(int argc, char **argv) {
                     fprintf(stderr, "Next loaded frame %s.%s:%" PRId64 " %s\n",
                             f.state.source_class, f.state.source_method, f.state.source_pc,
                             f.state.operation);
-                CHECK(next_failed && unpaused_spawn_reached(&f.state) &&
+                CHECK(next_failed && unpaused_world_reached(&f.state) &&
                       f.state.world_frame == NULL && f.state.hud == NULL);
                 mc_entity_class_literal_view selected;
                 const mc_world_tick_state *spawn = &f.state.world_tick->scheduler_state;
-                CHECK(mc_entity_class_literal_inspect(spawn->spawn_class, &selected) ==
-                      MC_ENTITY_OK);
-                printf("WORLD_FRAME first-returned=1 next-unpaused-tick=fd.l80 child=cq.a%u "
-                       "mob=%s constructed=%d positioned=%d completed-draws-retired=1 "
-                       "stale-hud-cleared=1\n",
-                       f.state.world_tick->scheduler_error.child_bytecode, selected.client_name,
-                       spawn->spawn_constructed, spawn->spawn_positioned);
+                CHECK(mc_entity_class_literal_inspect(spawn->first_constructor.class_literal,
+                                                      &selected) == MC_ENTITY_OK);
+                printf(
+                    "WORLD_FRAME first-returned=1 next-unpaused-tick=fd.l%u child=%u "
+                    "helper=%u mob=%s constructors=%zu predicates=%zu rejected=%zu published=%zu "
+                    "completed-draws-retired=1 "
+                    "stale-hud-cleared=1\n",
+                    spawn->source_pc, f.state.world_tick->scheduler_error.child_bytecode,
+                    spawn->spawn_postspawn_pc, selected.client_name, spawn->spawn_constructors,
+                    spawn->spawn_predicates, spawn->spawn_rejections, spawn->spawn_publications);
             }
             if (repeat_load)
                 goto loaded_draw_controls_done;
@@ -1737,7 +1738,6 @@ int main(int argc, char **argv) {
             CHECK(mc_test_renderer_focus(f.app) == 0);
             CHECK(gameplay_controls(&f) == 0);
             CHECK(mc_test_world_refresh_entity(f.app) == 0);
-            CHECK(world_tick_controls(&f) == 0);
             mc_entity_vector_snapshot before_pick, after_pick;
             CHECK(mc_entity_vector_get_snapshot(f.app->entities, &before_pick) == MC_ENTITY_OK);
             mc_client_entity_renderer_pick_call *pick = NULL;
@@ -1758,6 +1758,12 @@ int main(int argc, char **argv) {
             if (terminal_admission)
                 CHECK(mc_test_render_global_entities(f.app,
                                                      mc_client_bootstrap_math(f.bootstrap)) == 0);
+            /* These component controls above use their declared Player-only
+             * graph. The separate unpaused control now publishes real Mobs;
+             * the dedicated terminal-admission profile keeps its one-Player
+             * input, while load/repeat qualify the populated continuation. */
+            if (!terminal_admission)
+                CHECK(world_tick_controls(&f) == 0);
             printf("WORLD_LOAD ready=1 terrain=289 stored-marker=57 player=1 input=1 "
                    "renderer=1 effects=1 publication=1 view=1 returned=130 picker=452 "
                    "input=1073 paused-tick=1328 world-frame=1013 hud=2101 frame-returned=%d\n",

@@ -107,7 +107,7 @@ static bool body(client_application *app, mc_math_classes *math, mc_client_world
             return stop(call, call->fields.operation, 1253);
         call->spawn_flags_stored = true;
         const mc_world_storage_status status = mc_world_runtime_tick_begin(
-            app->active_world, &call->scheduler, &call->scheduler_error);
+            app->active_world, math, &call->scheduler, &call->scheduler_error);
         if (call->scheduler != NULL) {
             (void)mc_world_runtime_tick_inspect(call->scheduler, &call->scheduler_state);
             call->scheduler_error = *call->scheduler_state.error;
@@ -175,14 +175,20 @@ bool mc_client_world_tick_cleanup(mc_client_world_tick *call) {
         return false;
     call->scheduler_state.error = &call->scheduler_error;
     call->scheduler_state.world = NULL;
+    call->scheduler_state.math = NULL;
     call->scheduler_error.weather = NULL;
     call->scheduler_error.lifecycle = NULL;
     call->scheduler_error.scheduled = NULL;
     call->scheduler_error.biome = NULL;
     call->scheduler_error.spawning = NULL;
     call->scheduler_error.mob = NULL;
+    call->scheduler_error.eligibility = NULL;
+    call->scheduler_error.publication = NULL;
+    call->scheduler_state.eligibility = NULL;
     call->scheduler_state.spawn_class = NULL;
+    call->scheduler_state.first_constructor.class_literal = NULL;
     call->scheduler_state.spawn_entity = NULL;
+    call->scheduler_state.spawn_jockey = NULL;
     call->scheduler_state.spawn_pick.entry = NULL;
     call->scheduler_error.world_access = (mc_world_access_failure){0};
     mc_client_renderer_tick_error renderer;

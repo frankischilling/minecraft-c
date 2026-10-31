@@ -1,5 +1,38 @@
 # Development status
 
+The client now implements all eleven default [Mob constructors](entity/mob-construction.md)
+and their [spawn predicates](entity/mob-spawning.md). Rejected attempts continue the
+source loop. Successful attempts publish real Mob owners and execute postspawn work.
+A focused loaded Windows profile passes spawning and reaches random Chunk work at
+`fd.l:195`, child `fd.n:207`; native terminal cleanup preserves and releases its
+nonempty coordinate Set. A selected Spider jockey instead reaches its unfinished
+mount after real Skeleton construction and publication.
+
+Single-player remains pre-playable. Random Chunk work, Mob AI/ticking/drawing,
+sleeping wake transitions, ambience and gameplay actions remain unfinished.
+Focus-loss Canvas integration and the hidden pause-screen save path remain open.
+
+## Qualified default-Mob continuation
+
+All 68 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 77 Windows tests pass in 105.78 seconds and all 73 Linux tests in
+141.36 seconds, without failures, skips or sanitizer findings. All 2,387 C,
+helper, build and reference inputs remain unchanged through both builds and tests.
+Formatting checks 1,665 files; source bindings cover 7,766 entries and 3,324 files.
+
+Each host passes 1,667 constructor checks over 33 actual constructors, with 8,244
+independent original field comparisons and 165 separately labelled scalar checks.
+Spawning adds 6,451 checks over 115 genuine predicates and 18 Chunk Random leaves;
+136 selected predicate/Chunk/thunder rows match the original exactly. Original
+constructor capture checks 25 live methods and 561 checkpoints. Predicate capture
+checks 19 live methods and 2,138 checkpoints. Independent JVM/native constructor
+entropy is not equated.
+
+## Preceding hostile-constructor checkpoint
+
+Published source `71aedbd` passed all four hosted CI jobs. The following local
+results describe that checkpoint before the passive/spawn additions.
+
 The five default Overworld hostile [Mob constructors](entity/mob-construction.md) now
 run on genuine Entity/Living owners, including early watcher hooks, Slime size/Random
 behavior and Skeleton's retained static bow initializer. The World spawn path follows

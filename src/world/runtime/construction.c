@@ -35,6 +35,34 @@ static mc_world_storage_status result(mc_world_storage_error *error, mc_world_st
     return status;
 }
 
+/* Native terminal admission of the constructor-owned coordinate Set. Entries
+ * own no World/Chunk/Entity references. Keep their source contents and order
+ * until final native free, just as for the concrete C/E/F owners. */
+static bool active_chunks_owned_valid(const mc_world_runtime *world) {
+    const mc_world_active_chunks *set = world->active_chunks;
+    if (world->fields.P != set)
+        return false;
+    if (set == NULL)
+        return true; /* Constructor has not reached P229. */
+    if (set->count > set->capacity || set->capacity > 65536 ||
+        ((set->capacity == 0) != (set->entries == NULL)) ||
+        mc_java_int_set_size(set->order) != set->count)
+        return false;
+    for (size_t i = 0; i < set->count; ++i) {
+        const mc_world_chunk_candidate *entry = &set->entries[i];
+        const uint32_t hash = (entry->x < 0 ? UINT32_C(0x80000000) : 0) |
+                              (((uint32_t)entry->x & UINT32_C(0x7fff)) << 16) |
+                              (entry->z < 0 ? UINT32_C(0x8000) : 0) |
+                              ((uint32_t)entry->z & UINT32_C(0x7fff));
+        if ((uint32_t)entry->hash != hash || !mc_java_int_set_contains(set->order, entry->hash))
+            return false;
+        for (size_t j = 0; j < i; ++j)
+            if (set->entries[j].hash == entry->hash)
+                return false;
+    }
+    return true;
+}
+
 mc_world_runtime_construction_limits mc_world_runtime_default_construction_limits(void) {
     return (mc_world_runtime_construction_limits){
         .max_direct_allocation_bytes = 16u * 1024u * 1024u,
@@ -78,7 +106,7 @@ mc_world_storage_status mc_world_runtime_classes_free(mc_world_runtime_classes *
                                                       mc_world_storage_error *error) {
     if (classes == NULL)
         return result(error, MC_WORLD_STORAGE_OK, NULL);
-    if (classes->live_worlds != 0)
+    if (classes->live_worlds != 0 || classes->native_borrows != 0)
         return result(error, MC_WORLD_STORAGE_BUSY, "World class has live instances");
     if (classes->registry != NULL) {
         mc_registry_error cause;
@@ -847,6 +875,9 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
                                                    mc_world_storage_error *error) {
     if (runtime->construction.contexts_bound || runtime->construction.cache_registered)
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World context retirement");
+    if (!active_chunks_owned_valid(runtime))
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World active Chunk Set ownership metadata");
     if (!mc_world_runtime_entity_list_valid(runtime) ||
         (!mc_world_runtime_player_list_retirement_valid(runtime) ||
          !mc_world_runtime_weather_list_retirement_valid(runtime)))
@@ -969,8 +1000,9 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
     /* E/F remain owned and inspectable until final native free, like C.
      * A failed E insertion can leave a legitimate F-only prefix; retirement
      * neither repairs that state nor executes/discards its game work here. */
-    if (f->P != NULL && f->P->count != 0)
-        return result(error, MC_WORLD_STORAGE_BUSY, "World active chunk set nonempty");
+    if (!active_chunks_owned_valid(runtime))
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World active Chunk Set ownership metadata");
     if (runtime->construction.contexts_bound || runtime->construction.cache_registered) {
         if (!mc_chunk_cache_validate(runtime->options.cache) ||
             !mc_chunk_pending_validate(runtime->options.pending))
@@ -997,14 +1029,13 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
     return result(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
-static bool entity_retirement_other_collections_empty(const mc_world_runtime *world) {
-    const mc_world_runtime_fields *fields = &world->fields;
-    /* C/E/F are already concrete typed owners retained until final native free.
-     * b/D/d/c/G/R/K/u are admitted separately. Never reinterpret entries of these remaining
-     * finite void* lists, clear their counts, or discard a nonempty active set. */
+static bool entity_retirement_other_collections_valid(const mc_world_runtime *world) {
+    /* C/E/F/P are concrete typed owners retained until final native free.
+     * b/D/d/c/G/R/K/u are admitted separately. No source clear or gameplay
+     * callback is performed during this passive ownership check. */
     if (!mc_world_runtime_weather_list_retirement_valid(world))
         return false;
-    return fields->P == NULL || fields->P->count == 0;
+    return active_chunks_owned_valid(world);
 }
 
 mc_world_storage_status mc_world_runtime_entity_containers_validate(mc_world_runtime *world,
@@ -1031,7 +1062,7 @@ mc_world_storage_status mc_world_runtime_entity_containers_validate(mc_world_run
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "WorldAccess retirement ownership metadata");
     if (!mc_world_runtime_player_list_retirement_valid(world) ||
-        !entity_retirement_other_collections_empty(world))
+        !entity_retirement_other_collections_valid(world))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World entity retirement untyped collections");
     mc_world_store *store = world->fields.w;

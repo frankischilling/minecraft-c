@@ -5,6 +5,7 @@
 #include "entity/mob/internal.h"
 #include "entity/player/player_internal.h"
 #include "mc/block/registry/runtime.h"
+#include "mc/entity/appearance.h"
 #include "mc/entity/mob/construction.h"
 #include "mc/resources/files/files.h"
 #include "mc/statistics/registry/registry.h"
@@ -26,10 +27,20 @@ static mc_math_trig trig;
             return false;                                                                          \
         }                                                                                          \
     } while (0)
-static const mc_entity_class_kind kinds[5] = {
-    MC_ENTITY_CLASS_KIND_SPIDER, MC_ENTITY_CLASS_KIND_ZOMBIE, MC_ENTITY_CLASS_KIND_SKELETON,
-    MC_ENTITY_CLASS_KIND_CREEPER, MC_ENTITY_CLASS_KIND_SLIME};
-static const char *const names[5] = {"cn", "uz", "fr", "gb", "uw"};
+
+enum { MOB_CASES = 33, MOB_KINDS = 11 };
+
+typedef struct scalar_input {
+    uint64_t word[5];
+} scalar_input;
+
+static const mc_entity_class_kind kinds[MOB_KINDS] = {
+    MC_ENTITY_CLASS_KIND_SPIDER,  MC_ENTITY_CLASS_KIND_ZOMBIE, MC_ENTITY_CLASS_KIND_SKELETON,
+    MC_ENTITY_CLASS_KIND_CREEPER, MC_ENTITY_CLASS_KIND_SLIME,  MC_ENTITY_CLASS_KIND_PIG,
+    MC_ENTITY_CLASS_KIND_SHEEP,   MC_ENTITY_CLASS_KIND_COW,    MC_ENTITY_CLASS_KIND_CHICKEN,
+    MC_ENTITY_CLASS_KIND_WOLF,    MC_ENTITY_CLASS_KIND_SQUID};
+static const char *const names[MOB_KINDS] = {"cn", "uz", "fr", "gb", "uw", "wh",
+                                             "dl", "bx", "ww", "gi", "xt"};
 
 static uint32_t fbits(float v) {
     uint32_t b;
@@ -312,6 +323,9 @@ static void emit_fields(mc_entity *entity, const mc_mob_state *value) {
         emit_r("ii.a", state.creature_path);
         emit_r("ii.d", state.creature_target);
         emit_z("ii.e", state.creature_attacking);
+    }
+    if (state.kind == MC_ENTITY_CLASS_KIND_SPIDER || state.kind == MC_ENTITY_CLASS_KIND_ZOMBIE ||
+        state.kind == MC_ENTITY_CLASS_KIND_SKELETON || state.kind == MC_ENTITY_CLASS_KIND_CREEPER) {
         emit_i("gz.c", state.monster_damage);
     }
     if (state.kind == MC_ENTITY_CLASS_KIND_CREEPER) {
@@ -322,6 +336,40 @@ static void emit_fields(mc_entity *entity, const mc_mob_state *value) {
         emit_f("uw.a", state.slime_a);
         emit_f("uw.b", state.slime_b);
         emit_i("uw.c", state.slime_jump_delay);
+    }
+    if (state.kind == MC_ENTITY_CLASS_KIND_CHICKEN) {
+        emit_z("ww.a", state.chicken.a);
+        emit_f("ww.b", state.chicken.b);
+        emit_f("ww.c", state.chicken.c);
+        emit_f("ww.f", state.chicken.f);
+        emit_f("ww.g", state.chicken.g);
+        emit_f("ww.h", state.chicken.h);
+        emit_i("ww.i", state.chicken.i);
+    }
+    if (state.kind == MC_ENTITY_CLASS_KIND_WOLF) {
+        emit_z("gi.a", state.wolf.a);
+        emit_f("gi.b", state.wolf.b);
+        emit_f("gi.c", state.wolf.c);
+        emit_z("gi.f", state.wolf.f);
+        emit_z("gi.g", state.wolf.g);
+        emit_f("gi.h", state.wolf.h);
+        emit_f("gi.i", state.wolf.i);
+    }
+    if (state.kind == MC_ENTITY_CLASS_KIND_SQUID) {
+        emit_f("xt.a", state.squid.a);
+        emit_f("xt.b", state.squid.b);
+        emit_f("xt.c", state.squid.c);
+        emit_f("xt.f", state.squid.f);
+        emit_f("xt.g", state.squid.g);
+        emit_f("xt.h", state.squid.h);
+        emit_f("xt.i", state.squid.i);
+        emit_f("xt.j", state.squid.j);
+        emit_f("xt.k", state.squid.k);
+        emit_f("xt.l", state.squid.l);
+        emit_f("xt.m", state.squid.m);
+        emit_f("xt.n", state.squid.n);
+        emit_f("xt.o", state.squid.o);
+        emit_f("xt.p", state.squid.p);
     }
 }
 
@@ -334,7 +382,7 @@ static FILE *open_file(const char *path, const char *mode) {
 #endif
 }
 
-static bool read_inputs(const char *path, uint64_t values[15][5]) {
+static bool read_inputs(const char *path, scalar_input *values) {
     FILE *file = open_file(path, "rb");
     CHECK(file != NULL);
     size_t count = 0, digits = 0, bytes = 0;
@@ -353,12 +401,12 @@ static bool read_inputs(const char *path, uint64_t values[15][5]) {
         }
         if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
             if (digits) {
-                if (count == 75 || digits != (count % 5 == 4 ? 12u : 16u) ||
+                if (count == MOB_CASES * 5u || digits != (count % 5 == 4 ? 12u : 16u) ||
                     (count % 5 != 4 && word >= UINT64_C(0x3ff0000000000000))) {
                     valid = false;
                     break;
                 }
-                values[count / 5][count % 5] = word;
+                values[count / 5].word[count % 5] = word;
                 ++count;
                 digits = 0;
                 word = 0;
@@ -377,16 +425,16 @@ static bool read_inputs(const char *path, uint64_t values[15][5]) {
         ++digits;
     }
     if (digits) {
-        if (count == 75 || digits != (count % 5 == 4 ? 12u : 16u) ||
+        if (count == MOB_CASES * 5u || digits != (count % 5 == 4 ? 12u : 16u) ||
             (count % 5 != 4 && word >= UINT64_C(0x3ff0000000000000)))
             valid = false;
         else {
-            values[count / 5][count % 5] = word;
+            values[count / 5].word[count % 5] = word;
             ++count;
         }
     }
     CHECK(fclose(file) == 0);
-    CHECK(valid && count == 75);
+    CHECK(valid && count == MOB_CASES * 5u);
     return true;
 }
 
@@ -398,17 +446,29 @@ static bool emit_watcher(const mc_entity *entity) {
     for (int32_t index = 0; index < 32; ++index)
         for (const mc_entity_watch_node *n = entity->watcher->map->head; n; n = n->next)
             if (n->key == index) {
-                CHECK(n->record && n->record->index == index && n->record->type == 0);
-                fprintf(output, "%s{\"index\":%d,\"type\":%d,\"value\":%d,\"dirty\":%s}",
-                        seen++ ? "," : "", index, n->record->type, (int)n->record->byte_value,
-                        n->record->dirty ? "true" : "false");
+                CHECK(n->record && n->record->index == index &&
+                      (n->record->type == 0 || n->record->type == 2 || n->record->type == 4));
+                fprintf(output, "%s{\"index\":%d,\"type\":%d,\"value\":", seen++ ? "," : "", index,
+                        n->record->type);
+                if (n->record->type == 4) {
+                    mc_player_string_view text;
+                    CHECK(mc_player_string_read(n->record->string_value, &text));
+                    fputs("{\"utf16\":[", output);
+                    for (size_t j = 0; j < text.length; ++j)
+                        fprintf(output, "%s%u", j ? "," : "", (unsigned int)text.units[j]);
+                    fputs("]}", output);
+                } else
+                    fprintf(output, "%d",
+                            n->record->type == 0 ? (int)n->record->byte_value
+                                                 : n->record->integer_value);
+                fprintf(output, ",\"dirty\":%s}", n->record->dirty ? "true" : "false");
             }
     CHECK(seen == entity->watcher->map->size);
     fputs("]}", output);
     return true;
 }
 
-static void replay(const uint64_t values[5], bool slime) {
+static void replay(const uint64_t values[5], mc_entity_class_kind kind) {
     double d[4];
     for (size_t i = 0; i < 4; ++i)
         memcpy(&d[i], &values[i], sizeof(d[i]));
@@ -417,7 +477,7 @@ static void replay(const uint64_t values[5], bool slime) {
     emit_f("ls.G", mc_local_player_g_from_draw(d[1]));
     emit_f("ls.F", mc_local_player_f_from_draw(d[2]));
     emit_f("sn.aS", mc_local_player_yaw_from_draw(d[3]));
-    if (slime) {
+    if (kind == MC_ENTITY_CLASS_KIND_SLIME) {
         mc_java_random random = {.state = values[4]};
         int32_t choice, delay;
         if (!mc_java_random_next_bounded(&random, 3, &choice) ||
@@ -440,15 +500,34 @@ static void replay(const uint64_t values[5], bool slime) {
         emit_bounds(&b);
         fputc('}', output);
     }
+    if (kind == MC_ENTITY_CLASS_KIND_CHICKEN || kind == MC_ENTITY_CLASS_KIND_SQUID) {
+        mc_java_random random = {.state = values[4]};
+        if (kind == MC_ENTITY_CLASS_KIND_CHICKEN) {
+            int32_t eggs;
+            if (!mc_java_random_next_bounded(&random, 6000, &eggs))
+                exit(3);
+            emit_i("ww.i", eggs + 6000);
+        } else {
+            const float draw = mc_java_random_next_float(&random);
+            volatile float denominator = draw + 1.0f;
+            volatile float reciprocal = 1.0f / denominator;
+            volatile float rate = reciprocal * .2f;
+            emit_f("xt.l", rate);
+        }
+        key("private_seed_after");
+        fprintf(output, "\"%012" PRIx64 "\"", random.state);
+    }
 }
 
-static bool success_cases(fixture *f, uint64_t inputs[15][5]) {
+static bool success_cases(fixture *f, const scalar_input *inputs) {
     double warm;
     CHECK(mc_java_math_random(f->profile, &warm) == MC_JAVA_RANDOM_PROFILE_OK);
     const mc_item_stack *skeleton = NULL;
-    const mc_player_string *textures[5] = {0};
-    for (unsigned int index = 0; index < 15; ++index) {
-        const unsigned int which = index % 5, pass = index / 5;
+    const mc_mob_sheep_colors *sheep = NULL;
+    const mc_player_string *textures[MOB_KINDS] = {0};
+    for (unsigned int index = 0; index < MOB_CASES; ++index) {
+        const unsigned int which = index < 15 ? index % 5u : 5u + (index - 15u) % 6u;
+        const unsigned int pass = index < 15 ? index / 5u : (index - 15u) / 6u;
         f->world->fields.B = pass == 1;
         mc_entity_class_snapshot before, after;
         CHECK(mc_entity_classes_get_snapshot(f->entities, &before) == MC_ENTITY_OK);
@@ -504,7 +583,7 @@ static bool success_cases(fixture *f, uint64_t inputs[15][5]) {
                 ",\"private_random\":{\"seed48\":\"%012" PRIx64 "\",\"gaussian\":\"%016" PRIx64
                 "\",\"cached\":false},\"formula_replay\":{",
                 entity->random->state, dbits(entity->random->next_next_gaussian));
-        replay(inputs[index], which == 4);
+        replay(inputs[index].word, kinds[which]);
         fputc('}', output);
         if (which == 2) {
             mc_mob_class_state cl;
@@ -521,7 +600,38 @@ static bool success_cases(fixture *f, uint64_t inputs[15][5]) {
                     "\"skeleton_stack_alias\":true,\"skeleton_stack_same\":true",
                     stack.count, stack.animation, stack.id, stack.damage);
         }
+        if (kinds[which] == MC_ENTITY_CLASS_KIND_SHEEP) {
+            mc_mob_class_state cl;
+            CHECK(mc_mob_classes_inspect(f->entities, &cl) &&
+                  cl.sheep_phase == MC_ENTITY_CLASS_READY && cl.sheep_pc == 351 && cl.sheep_a &&
+                  cl.sheep_a->length == 16 && cl.sheep_rows_published == 16 &&
+                  !cl.sheep_candidate && !cl.sheep_row_candidate);
+            if (!sheep)
+                sheep = cl.sheep_a;
+            CHECK(sheep == cl.sheep_a);
+            fputs(",\"sheep_colors\":[", output);
+            for (size_t row = 0; row < 16; ++row) {
+                CHECK(cl.sheep_a->rows[row] && cl.sheep_a->rows[row]->length == 3);
+                for (size_t previous = 0; previous < row; ++previous)
+                    CHECK(cl.sheep_a->rows[previous] != cl.sheep_a->rows[row]);
+                fprintf(output, "%s[", row ? "," : "");
+                for (size_t component = 0; component < 3; ++component)
+                    fprintf(output, "%s{\"F\":\"%08" PRIx32 "\"}", component ? "," : "",
+                            fbits(cl.sheep_a->rows[row]->values[component]));
+                fputc(']', output);
+            }
+            fputs("],\"sheep_colors_alias\":true", output);
+        }
         fputs("}\n", output);
+        const mc_java_random own_before = *entity->random;
+        const void *skin_before = entity->base.client_only.bA,
+                   *cloak_before = entity->base.client_only.bB;
+        mc_player_error appearance;
+        CHECK(mc_entity_update_cloak(entity, &appearance) == MC_PLAYER_OK &&
+              mc_test_java_random_equal(entity->random, &own_before) &&
+              entity->base.client_only.bA == skin_before &&
+              entity->base.client_only.bB == cloak_before &&
+              atomic_load(&f->profile->math->state) == oracle.state);
         CHECK(mc_entity_retain(entity) == MC_ENTITY_OK);
         mc_entity *held = entity;
         CHECK(mc_mob_retire(&held, &error) == MC_MOB_BUSY && held == entity);
@@ -533,7 +643,7 @@ static bool success_cases(fixture *f, uint64_t inputs[15][5]) {
 }
 
 static bool quota_controls(fixture *f) {
-    for (size_t which = 0; which < 5; ++which) {
+    for (size_t which = 0; which < MOB_KINDS; ++which) {
         const mc_entity_class_literal *literal = NULL;
         mc_entity *entity = NULL;
         mc_mob_error error;
@@ -555,27 +665,48 @@ static bool quota_controls(fixture *f) {
         CHECK(mc_mob_construct(entity, NULL, &error) == MC_MOB_PHASE);
         CHECK(mc_mob_retire(&entity, &error) == MC_MOB_OK && !entity);
     }
-    const mc_entity_class_kind hooks[] = {MC_ENTITY_CLASS_KIND_CREEPER, MC_ENTITY_CLASS_KIND_SLIME};
-    for (size_t which = 0; which < 2; ++which) {
+
+    const struct {
+        mc_entity_class_kind kind;
+        unsigned int prefix_pc;
+        int32_t invocation_pc;
+        size_t prior_records;
+    } hooks[] = {{MC_ENTITY_CLASS_KIND_CREEPER, 1, 14, 0},
+                 {MC_ENTITY_CLASS_KIND_SLIME, 1, 18, 0},
+                 {MC_ENTITY_CLASS_KIND_PIG, 0, 10, 0},
+                 {MC_ENTITY_CLASS_KIND_SHEEP, 1, 18, 0},
+                 {MC_ENTITY_CLASS_KIND_WOLF, 25, 45, 2}};
+
+    for (size_t which = 0; which < sizeof(hooks) / sizeof(hooks[0]); ++which) {
         const mc_entity_class_literal *literal = NULL;
         mc_entity *entity = NULL;
         mc_mob_error error;
-        CHECK(mc_entity_class_literal_get(f->entities, hooks[which], &literal) == MC_ENTITY_OK);
+        CHECK(mc_entity_class_literal_get(f->entities, hooks[which].kind, &literal) ==
+              MC_ENTITY_OK);
         CHECK(mc_mob_allocate(f->entities, f->registry, literal, &entity, &error) == MC_MOB_OK);
         const size_t saved = f->entities->limits.max_allocation_bytes;
         const size_t base = sizeof(mc_entity_bounds) + sizeof(mc_java_random) +
                             sizeof(mc_entity_watcher) + sizeof(mc_entity_watch_map) +
                             sizeof(mc_entity_watch_record) + sizeof(mc_entity_watch_node);
         const uint64_t math = atomic_load(&f->profile->math->state);
-        f->entities->limits.max_allocation_bytes = f->entities->allocated_bytes + base;
+        const size_t prior_records = hooks[which].prior_records;
+        f->entities->limits.max_allocation_bytes =
+            f->entities->allocated_bytes + base +
+            prior_records * (sizeof(mc_entity_watch_record) + sizeof(mc_entity_watch_node));
         const mc_mob_status status = mc_mob_construct(entity, NULL, &error);
         f->entities->limits.max_allocation_bytes = saved;
         mc_mob_state state;
         CHECK(status != MC_MOB_OK && mc_mob_inspect(entity, &state));
         CHECK(state.phase == MC_ENTITY_FAILED_CONSTRUCTION && entity->base_bytecode == 224 &&
-              state.living_pc == 0 && state.watcher_hook_pc != 0);
-        CHECK(entity->watcher && entity->watcher->map->size == 1 && !state.watcher_16_present &&
-              !state.watcher_17_present);
+              state.living_pc == 0 && state.watcher_hook_pc == hooks[which].prefix_pc &&
+              error.site.pc == hooks[which].invocation_pc && !strcmp(error.site.method, "b") &&
+              !strcmp(error.site.descriptor, "()V"));
+        CHECK(entity->watcher && entity->watcher->map->size == 1 + prior_records &&
+              !state.watcher_18_present);
+        CHECK(prior_records ? state.watcher_16_present && state.watcher_17_present &&
+                                  state.watcher_17_type == 4 &&
+                                  state.watcher_17_string == mc_player_empty_literal()
+                            : !state.watcher_16_present && !state.watcher_17_present);
         CHECK(atomic_load(&f->profile->math->state) == math);
         CHECK(mc_mob_retire(&entity, &error) == MC_MOB_OK && !entity);
     }
@@ -599,7 +730,7 @@ static bool math_failures(fixture *f) {
     CHECK(mc_java_random_profile_create(sizeof(*profile), &profile) == MC_JAVA_RANDOM_PROFILE_OK);
     CHECK(mc_entity_classes_create(MC_ENTITY_CLIENT, profile, NULL, &classes) == MC_ENTITY_OK);
     CHECK(registry_new(f, profile, &registry, true));
-    for (size_t which = 0; which < 5; ++which) {
+    for (size_t which = 0; which < MOB_KINDS; ++which) {
         const mc_entity_class_literal *literal = NULL;
         mc_entity *entity = NULL;
         mc_mob_error error;
@@ -612,6 +743,9 @@ static bool math_failures(fixture *f) {
               fbits(state.living.aj) == 0 && !entity->base.aF);
         CHECK(entity->base_bytecode == 231 && entity->watcher && entity->random && !profile->math &&
               atomic_load(&profile->holder_phase) == MC_JAVA_RANDOM_HOLDER_FAILED);
+        if (kinds[which] == MC_ENTITY_CLASS_KIND_WOLF)
+            CHECK(state.watcher_18_present && state.watcher_18_type == 2 &&
+                  state.watcher_18_integer == 0 && state.living.Y == 0);
         CHECK(mc_mob_retire(&entity, &error) == MC_MOB_OK && !entity);
     }
     CHECK(mc_registry_classes_free(registry, NULL) == MC_REGISTRY_OK);
@@ -823,10 +957,125 @@ static bool controlled_slimes(void) {
     return true;
 }
 
+static bool passive_rng_controls(void) {
+    const mc_entity_class_kind selected[] = {MC_ENTITY_CLASS_KIND_CHICKEN,
+                                             MC_ENTITY_CLASS_KIND_SQUID};
+    for (size_t which = 0; which < sizeof(selected) / sizeof(selected[0]); ++which) {
+        const uint64_t u1 = UINT64_C(8682522807148012) * UINT64_C(1181783497276652981),
+                       u2 = u1 * UINT64_C(1181783497276652981);
+        const mc_java_random_constructor_input declared[] = {{u1, INT64_C(-9223372036854775807)},
+                                                             {u2, INT64_C(987654321)}};
+        mc_java_random_profile *profile = NULL;
+        mc_entity_classes *classes = NULL;
+        mc_entity *entity = NULL;
+        mc_mob_error error;
+        CHECK(mc_java_random_profile_create(SIZE_MAX, &profile) == MC_JAVA_RANDOM_PROFILE_OK &&
+              mc_java_random_profile_bind_constructor_inputs(profile, declared, 2) ==
+                  MC_JAVA_RANDOM_PROFILE_OK);
+        CHECK(mc_entity_classes_create(MC_ENTITY_CLIENT, profile, NULL, &classes) == MC_ENTITY_OK);
+        const mc_entity_class_literal *literal = NULL;
+        CHECK(mc_entity_class_literal_get(classes, selected[which], &literal) == MC_ENTITY_OK);
+        CHECK(mc_mob_allocate(classes, NULL, literal, &entity, &error) == MC_MOB_OK);
+        mc_java_random own, math;
+        mc_java_random_finish_default(u1, declared[0].nanotime, &own);
+        mc_java_random_finish_default(u2, declared[1].nanotime, &math);
+        for (size_t i = 0; i < 4; ++i)
+            (void)mc_java_random_next_double(&math);
+        int32_t eggs = 0;
+        float rate = 0;
+        if (selected[which] == MC_ENTITY_CLASS_KIND_CHICKEN)
+            CHECK(mc_java_random_next_bounded(&own, 6000, &eggs));
+        else {
+            volatile float denominator = mc_java_random_next_float(&own) + 1.0f;
+            volatile float reciprocal = 1.0f / denominator;
+            rate = reciprocal * .2f;
+        }
+        CHECK(mc_mob_construct(entity, NULL, &error) == MC_MOB_OK);
+        mc_mob_state state;
+        CHECK(mc_mob_inspect(entity, &state) && mc_test_java_random_equal(entity->random, &own) &&
+              atomic_load(&profile->math->state) == math.state);
+        CHECK(selected[which] == MC_ENTITY_CLASS_KIND_CHICKEN
+                  ? state.chicken.i == eggs + 6000
+                  : fbits(state.squid.l) == fbits(rate));
+        CHECK(mc_java_random_profile_constructor_inputs_complete(profile) ==
+              MC_JAVA_RANDOM_PROFILE_OK);
+        CHECK(mc_mob_retire(&entity, &error) == MC_MOB_OK &&
+              mc_entity_classes_free(classes) == MC_ENTITY_OK);
+        mc_java_random_profile_free(profile);
+    }
+    return true;
+}
+
+static bool sheep_controls(fixture *f) {
+    mc_mob_class_state shared;
+    CHECK(mc_mob_classes_inspect(f->entities, &shared) && shared.skeleton_a && shared.sheep_a &&
+          shared.allocation_bytes == sizeof(mc_mob_class_namespace) + shared.skeleton_stack_bytes +
+                                         shared.sheep_array_bytes);
+    const size_t prefixes[] = {0, 1, 7, 15};
+    for (size_t test = 0; test < sizeof(prefixes) / sizeof(prefixes[0]); ++test) {
+        mc_entity_classes *classes = NULL;
+        mc_entity *entity = NULL;
+        mc_mob_error error;
+        CHECK(mc_entity_classes_create(MC_ENTITY_CLIENT, f->profile, NULL, &classes) ==
+              MC_ENTITY_OK);
+        const mc_entity_class_literal *literal = NULL;
+        CHECK(mc_entity_class_literal_get(classes, MC_ENTITY_CLASS_KIND_SHEEP, &literal) ==
+              MC_ENTITY_OK);
+        classes->limits.max_allocation_bytes =
+            classes->allocated_bytes + sizeof(mc_mob_class_namespace) +
+            sizeof(mc_mob_sheep_colors) + prefixes[test] * sizeof(mc_mob_sheep_color_row);
+        const uint64_t u = atomic_load(&f->profile->uniquifier),
+                       math = atomic_load(&f->profile->math->state);
+        CHECK(mc_mob_allocate(classes, NULL, literal, &entity, &error) == MC_MOB_LIMIT && !entity);
+        mc_mob_class_state state;
+        CHECK(mc_mob_classes_inspect(classes, &state) &&
+              state.sheep_phase == MC_ENTITY_CLASS_FAILED && !state.sheep_a &&
+              state.sheep_candidate && state.sheep_candidate->length == 16 &&
+              state.sheep_rows_published == prefixes[test]);
+        for (size_t row = 0; row < 16; ++row) {
+            CHECK((state.sheep_candidate->rows[row] != NULL) == (row < prefixes[test]));
+            if (row < prefixes[test])
+                CHECK(state.sheep_candidate->rows[row]->length == 3 &&
+                      memcmp(state.sheep_candidate->rows[row]->values,
+                             shared.sheep_a->rows[row]->values,
+                             sizeof(state.sheep_candidate->rows[row]->values)) == 0);
+        }
+        const mc_mob_sheep_colors *outer = state.sheep_candidate;
+        const size_t bytes = classes->allocated_bytes;
+        const mc_mob_error failure = *state.sheep_failure;
+        classes->limits.max_allocation_bytes = SIZE_MAX;
+        CHECK(mc_mob_allocate(classes, NULL, literal, &entity, &error) == MC_MOB_CLASS_ERRONEOUS &&
+              !entity);
+        CHECK(mc_mob_classes_inspect(classes, &state) && state.sheep_candidate == outer &&
+              state.sheep_failure->site.pc == failure.site.pc &&
+              state.sheep_failure->status == failure.status &&
+              state.sheep_rows_published == prefixes[test] && classes->allocated_bytes == bytes &&
+              classes->next_id == 0 && atomic_load(&f->profile->uniquifier) == u &&
+              atomic_load(&f->profile->math->state) == math);
+        CHECK(mc_entity_classes_free(classes) == MC_ENTITY_OK);
+    }
+    mc_entity_classes *classes = NULL;
+    mc_entity *entity = NULL;
+    mc_mob_error error;
+    CHECK(mc_entity_classes_create(MC_ENTITY_CLIENT, f->profile, NULL, &classes) == MC_ENTITY_OK);
+    const mc_entity_class_literal *literal = NULL;
+    CHECK(mc_entity_class_literal_get(classes, MC_ENTITY_CLASS_KIND_SHEEP, &literal) ==
+          MC_ENTITY_OK);
+    classes->limits.max_allocation_bytes = classes->allocated_bytes;
+    CHECK(mc_mob_allocate(classes, NULL, literal, &entity, &error) != MC_MOB_OK && !entity);
+    mc_mob_class_state state;
+    CHECK(mc_mob_classes_inspect(classes, &state) && state.sheep_phase == MC_ENTITY_CLASS_COLD);
+    classes->limits.max_allocation_bytes = SIZE_MAX;
+    CHECK(mc_mob_allocate(classes, NULL, literal, &entity, &error) == MC_MOB_OK && entity);
+    CHECK(mc_mob_retire(&entity, &error) == MC_MOB_OK &&
+          mc_entity_classes_free(classes) == MC_ENTITY_OK);
+    return true;
+}
+
 int main(int argc, char **argv) {
     if (argc != 5 || !mc_math_trig_init(&trig))
         return 2;
-    uint64_t inputs[15][5];
+    scalar_input inputs[MOB_CASES];
     if (!read_inputs(argv[3], inputs))
         return 2;
     output = open_file(argv[4], "wb");
@@ -834,11 +1083,12 @@ int main(int argc, char **argv) {
         return 2;
     fixture f = {0};
     if (!setup(&f, argv[1], argv[2]) || !success_cases(&f, inputs) || !quota_controls(&f) ||
-        !math_failures(&f) || !skeleton_controls(&f) || !controlled_slimes() || !teardown(&f))
+        !math_failures(&f) || !skeleton_controls(&f) || !controlled_slimes() ||
+        !passive_rng_controls() || !sheep_controls(&f) || !teardown(&f))
         return 1;
     if (fclose(output) != 0)
         return 1;
-    printf("Mob construction: %u checks; 15 actual constructors and owned failure prefixes\n",
+    printf("Mob construction: %u checks; 33 actual constructors and owned failure prefixes\n",
            checks);
     return 0;
 }

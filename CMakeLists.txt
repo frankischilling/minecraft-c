@@ -739,7 +739,7 @@ add_library(mc_simulation STATIC
     src/entity/minecart/nbt.c
     src/entity/minecart/storage.c)
 target_include_directories(mc_simulation PRIVATE src/platform/time)
-target_link_libraries(mc_simulation PUBLIC mc_persistence mc_java_files mc_world_saved_data mc_item mc_registry mc_inventory mc_movement_input
+target_link_libraries(mc_simulation PUBLIC mc_persistence mc_java_files mc_world_saved_data mc_item mc_registry mc_inventory mc_movement_input mc_math_classes
     PRIVATE mc_client_notice mc_client_game_directory mc_platform_time mc_platform_text Threads::Threads mc_build_options)
 
 add_library(mc_client_first_person STATIC src/client/world/first_person.c)
@@ -5519,6 +5519,7 @@ include(cmake/entity_mouse_filter.cmake)
 include(cmake/client_pause_screen.cmake)
 include(cmake/client_world_frame.cmake)
 include(cmake/world_tick.cmake)
+include(cmake/mob_spawning.cmake)
 include(cmake/client_sky_color.cmake)
 include(cmake/world_colors.cmake)
 include(cmake/client_renderer_camera.cmake)

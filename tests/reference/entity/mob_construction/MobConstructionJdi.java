@@ -71,12 +71,25 @@ public final class MobConstructionJdi {
             ObjectReference node=(ObjectReference)start;
             while(node!=null) {
                 ObjectReference record=(ObjectReference)node.getValue(node.referenceType().fieldByName("value")); ObjectReference box=object(record,"ma","c");
-                rows.add(ConstructorJson.map("index",value(field(record,"ma","b")),"type",value(field(record,"ma","a")),"value",value(box.getValue(box.referenceType().fieldByName("value"))),"dirty",value(field(record,"ma","d"))));
+                Object watched;
+                if(box instanceof StringReference) {StringBuilder text=new StringBuilder();for(int unit:stringUnits((StringReference)box))text.append((char)unit);watched=text.toString();}
+                else watched=value(box.getValue(box.referenceType().fieldByName("value")));
+                rows.add(ConstructorJson.map("index",value(field(record,"ma","b")),"type",value(field(record,"ma","a")),"value",watched,"dirty",value(field(record,"ma","d"))));
                 node=(ObjectReference)node.getValue(node.referenceType().fieldByName("next"));
             }
         }
         rows.sort(Comparator.comparingInt(row->(Integer)row.get("index")));
         return ConstructorJson.map("size",value(field(map,"java.util.HashMap","size")),"dirty",value(field(reference,"ud","c")),"records",rows);
+    }
+    private Map<String,Object> sheepColors() {
+        ArrayReference colors=(ArrayReference)stat("dl","a");if(colors==null)return null;
+        List<Object> rows=new ArrayList<>();Set<Long> distinct=new HashSet<>();
+        for(Value found:colors.getValues()) {
+            ArrayReference row=(ArrayReference)found;List<Object> values=new ArrayList<>();
+            for(Value item:row.getValues())values.add(value(item));
+            rows.add(ConstructorJson.map("identity",value(row),"length",row.length(),"values",values));distinct.add(row.uniqueID());
+        }
+        return ConstructorJson.map("identity",value(colors),"length",colors.length(),"distinct_rows",distinct.size(),"rows",rows);
     }
     private Map<String,Object> snapshot(ObjectReference receiver,String event,Location location) {
         ObjectReference random=object(receiver,"sn","bs");
@@ -84,7 +97,7 @@ public final class MobConstructionJdi {
         return ConstructorJson.map("record",records++,"event",event,"case",active(),"location",ConstructorJson.map("class",location.declaringType().name(),"method",location.method().name(),"descriptor",location.method().signature(),"pc",location.codeIndex()),
             "self",value(receiver),"fields",fields(receiver),"bounds",fields(object(receiver,"sn","aW")),"watcher",watcher(object(receiver,"sn","bD")),
             "entity_counter",value(stat("sn","a")),"math_seed48",math==null?null:String.format(Locale.ROOT,"%012x",atomic(object(math,"java.util.Random","seed"))),
-            "private_random_seed",random==null?null:String.format(Locale.ROOT,"%012x",atomic(object(random,"java.util.Random","seed"))));
+            "private_random_seed",random==null?null:String.format(Locale.ROOT,"%012x",atomic(object(random,"java.util.Random","seed"))),"sheep_colors",location.declaringType().name().equals("dl")&&location.method().name().equals("<clinit>")?sheepColors():null);
     }
     private void breakpoint(ReferenceType type,String name,String descriptor,long... pcs) throws Exception {
         List<Method> found=type.methodsByName(name,descriptor); if(found.size()!=1) throw new IllegalStateException("method "+type.name()+"."+name);
@@ -108,11 +121,19 @@ public final class MobConstructionJdi {
             case "fr":breakpoint(type,"<init>","(Lfd;)V",5,11);break;
             case "gb":breakpoint(type,"<init>","(Lfd;)V",5,11);breakpoint(type,"b","()V",0,30);break;
             case "uw":breakpoint(type,"<init>","(Lfd;)V",5,27,48,53);breakpoint(type,"b","()V",0,21);breakpoint(type,"e","(I)V",0,18,39,55);break;
+            case "bg":breakpoint(type,"<init>","(Lfd;)V",5);break;
+            case "ar":breakpoint(type,"<init>","(Lfd;)V",5);break;
+            case "wh":breakpoint(type,"<init>","(Lfd;)V",5,19);breakpoint(type,"b","()V",0,13);break;
+            case "dl":breakpoint(type,"<init>","(Lfd;)V",5,19);breakpoint(type,"b","()V",0,4,21);breakpoint(type,"<clinit>","()V",0,348,351);break;
+            case "bx":breakpoint(type,"<init>","(Lfd;)V",5,19);break;
+            case "ww":breakpoint(type,"<init>","(Lfd;)V",5,55,62);break;
+            case "gi":breakpoint(type,"<init>","(Lfd;)V",5,36);breakpoint(type,"b","()V",0,17,28,48);break;
+            case "xt":breakpoint(type,"<init>","(Lfd;)V",5,98,107);break;
             default:throw new IllegalStateException(type.name());
         }
     }
     private void run() throws Exception {
-        for(String name:new String[]{"MobConstructionTarget","sn","ls","ii","gz","cn","uz","fr","gb","uw"}) {
+        for(String name:new String[]{"MobConstructionTarget","sn","ls","ii","gz","cn","uz","fr","gb","uw","bg","ar","wh","dl","bx","ww","gi","xt"}) {
             ClassPrepareRequest request=vm.eventRequestManager().createClassPrepareRequest();request.addClassFilter(name);request.setSuspendPolicy(EventRequest.SUSPEND_ALL);request.enable();
             ReferenceType existing=type(name);if(existing!=null)install(existing);
         }

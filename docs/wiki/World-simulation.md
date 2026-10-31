@@ -1,11 +1,13 @@
 # World simulation
 
-The [hostile Mob constructor and spawn
-prefix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-construction.md)
-now covers all five default hostile classes, real watcher/Random behavior, retained
-Skeleton initialization, fresh World yaw and exact pose. Native World contracts retain
-each actual candidate until scheduler retirement. Spawn eligibility at 820, remaining
-concrete constructors at 773 and later World work remain unfinished.
+All eleven default [Mob constructors](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-construction.md)
+and [spawn predicates](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-spawning.md)
+now execute on actual Entity/Living owners. Rejected attempts continue; successful
+attempts publish real Mobs and perform postspawn work. A focused loaded Windows
+profile passes spawning and reaches random Chunk work at `fd.l:195`, child
+`fd.n:207`. A selected Spider jockey reaches its unfinished mount after actual
+Skeleton construction and publication. Native cleanup preserves the nonempty
+active coordinate Set until final free.
 
 The [Entity render traversal](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) reads actual ordinary/weather Lists and
 uses the same Entity's distance, frustum, camera/sleeping and Chunk-presence
@@ -38,8 +40,9 @@ time/autosave and scheduled drain in reached source order. Eleven original
 observations match native MSVC/GCC/Clang replays. Empty Player/candidate branches
 can return. The loaded Player path gathers 289 spawn candidates, selects the
 real weighted Biome entry and completes trial/support/distance gates before
-hostile construction/yaw/pose and the missing eligibility check at `cq.a:820`. Other
-Mob constructors, nonempty random Chunk work and complete ordinary ticks remain unfinished.
+all eleven constructors, yaw, pose, predicates, publication and postspawn work.
+The focused loaded profile reaches random Chunk work at `fd.l:195`/`fd.n:207`.
+Mob AI/ticking/NBT/drawing and complete ordinary ticks remain unfinished.
 
 The [World color services](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/colors.md)
 now supply actual raw temperature, virtual Biome sky, Dimension fog and cloud

@@ -9,6 +9,8 @@
 struct mc_entity_watch_record {
     int32_t index, type;
     int8_t byte_value;
+    int32_t integer_value;
+    const struct mc_player_string *string_value;
     bool dirty;
 };
 
@@ -56,7 +58,7 @@ struct mc_entity {
     struct mc_local_player_state *local_player;
     /* Actual xw/em subobjects of a pickup-particle allocation, else NULL. */
     struct mc_particle_state *particle;
-    /* Actual embedded LS/II/GZ/leaf storage of a concrete client Mob. */
+    /* Actual embedded LS/II/GZ/BG/AR/leaf storage of a concrete client Mob. */
     struct mc_mob_entity_state *mob;
 };
 

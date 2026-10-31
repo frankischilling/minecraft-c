@@ -3,8 +3,10 @@
 
 #include "mc/entity/entity.h"
 
+struct mc_player_string;
+
 /* Concrete callers are Item, FallingSand, Minecart, local Player, pickup
- * particle and the five client hostile Mobs. This is not a public generic-kind
+ * particle and the eleven client Overworld Mobs. This is not a public generic-kind
  * factory. Preserve actual active use before live count/budget and header
  * allocation. Mob callers perform their selected initializer first; Minecart's
  * branch performs its own initializer here. No fabricated subtype is admitted. */
@@ -26,12 +28,19 @@ mc_entity_status mc_entity_constructor_begin(mc_entity *entity, mc_entity_class_
 mc_entity_status mc_entity_construct_base(mc_entity *entity, mc_world_runtime *world,
                                           mc_entity_error *error);
 
-/* Exact typed Byte registration used by base index0 and the real gs.b hook
- * index16. Called only on the constructor-owned actual watcher. */
+/* Exact typed Byte registration used by base index0 and the real Player/Mob
+ * early hooks. Called only on the constructor-owned actual watcher. */
 mc_entity_status mc_entity_construct_watch_byte_zero(mc_entity *entity, int32_t index,
                                                      mc_entity_error *error);
 mc_entity_status mc_entity_construct_watch_byte(mc_entity *, int32_t index, int8_t value,
                                                 mc_entity_error *);
+/* Reached GI.b registrations use the existing actual source String identity
+ * and an Integer value. String lifetime remains with its source owner/literal. */
+mc_entity_status mc_entity_construct_watch_string(mc_entity *, int32_t index,
+                                                  const struct mc_player_string *,
+                                                  mc_entity_error *);
+mc_entity_status mc_entity_construct_watch_integer(mc_entity *, int32_t index, int32_t value,
+                                                   mc_entity_error *);
 
 /* Called only after successful begin, once per public concrete constructor.
  * Failure stores FAILED_CONSTRUCTION and preserves the entire supplied error.

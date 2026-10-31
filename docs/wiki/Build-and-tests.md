@@ -1,23 +1,26 @@
 # Build and tests
 
-## Hostile Mob constructors
+## Default Mob spawning
 
-All 67 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan. All 76
-Windows tests pass in 89.99 seconds and all 72 Linux tests in 118.22 seconds, without
-failures, skips or sanitizer findings. All 2,365 source, helper, build and reference
-inputs remain unchanged through both builds and tests; formatting checks 1,658 files.
+All 68 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 77 Windows tests pass in 105.78 seconds and all 73 Linux tests in
+141.36 seconds, without failures, skips or sanitizer findings. All 2,387 C,
+helper, build and reference inputs remain unchanged through both builds and tests.
+Formatting checks 1,665 files; source bindings cover 7,766 entries and 3,324 files.
 
-Each host passes 578 dedicated constructor/ownership checks. The original comparison
-matches 3,552 independent field values and 81 separately labelled scalar replay checks.
-Actual native constructor entropy is qualified separately from independent JVM entropy.
-The unchanged-original package executes 15 constructors per ordinary/JDI VM, verifies
-258 checkpoints and 13 live method bodies, and pins the 182-class prepared registry
-closure. Final JDI observations cover Slime sizes 1, 2 and 4; fresh native
-declared-clock controls cover all three sizes independently.
+Each host passes 1,667 constructor checks over 33 actual constructors, with 8,244
+independent original field comparisons and 165 separately labelled scalar checks.
+Spawning adds 6,451 checks over 115 genuine predicates and 18 Chunk Random leaves;
+136 selected predicate/Chunk/thunder rows match the original exactly. Original
+constructor capture checks 25 live methods and 561 checkpoints. Predicate capture
+checks 19 live methods and 2,138 checkpoints. Independent JVM/native constructor
+entropy is not equated.
 
-Fresh focused Windows profiles continue from the returning frame into the actual
-Mob spawn prefix. The five admitted hostile classes complete construction, yaw and
-pose before eligibility at `cq.a:820`; other constructors remain at `cq.a:773`.
+The World tests separately check false continuation, group counts, cumulative
+totals, Sheep colors and real Skeleton publication before the missing mount.
+The focused loaded profile reaches `fd.l:195`/`fd.n:207` and uses the normal
+terminal coordinator. Source-only cases and entropy boundaries are documented
+in [Mob spawning](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-spawning.md).
 
 ## GuiIngame checkpoint
 

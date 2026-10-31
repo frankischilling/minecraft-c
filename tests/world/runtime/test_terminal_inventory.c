@@ -28,6 +28,8 @@ typedef struct terminal_snapshot {
     mc_world_provider_fields second_provider_fields;
     mc_world_provider_state second_provider_state;
     size_t pending_history, store_chunks, store_reservations;
+    int32_t active_order[1024];
+    size_t active_count;
 } terminal_snapshot;
 
 static bool terminal_piece_save(terminal_snapshot *s, const void *identity, size_t bytes) {
@@ -92,6 +94,13 @@ static bool terminal_snapshot_take(fixture *f, mc_entity *entity, terminal_snaps
           terminal_piece_save(s, f->entity_classes[0], sizeof(*f->entity_classes[0])) &&
           terminal_piece_save(s, f->registry[0], sizeof(*f->registry[0])) &&
           terminal_piece_save(s, f->profile, sizeof(*f->profile)));
+    const mc_world_active_chunks *active = w->active_chunks;
+    CHECK(active != NULL && active->capacity <= COUNT(s->active_order) &&
+          terminal_piece_save(s, active, sizeof(*active)) &&
+          terminal_piece_save(s, active->entries, active->capacity * sizeof(*active->entries)) &&
+          (active->order == NULL ||
+           mc_java_int_set_copy_order(active->order, s->active_order, COUNT(s->active_order),
+                                      &s->active_count) == MC_JAVA_INT_SET_OK));
     const mc_world_entity_list_ledger *ledgers[] = {&w->entity_membership, &w->entity_deferral,
                                                     &w->player_membership, &w->weather_membership,
                                                     &w->nearby_entities};
@@ -203,6 +212,13 @@ static bool terminal_snapshot_same(fixture *f, const terminal_snapshot *s) {
     for (size_t i = 0; i < s->count; ++i)
         if (memcmp(s->pieces[i].identity, s->pieces[i].before, s->pieces[i].bytes) != 0)
             return false;
+    int32_t order[1024];
+    size_t count = 0;
+    if ((f->worlds[0]->active_chunks->order != NULL &&
+         mc_java_int_set_copy_order(f->worlds[0]->active_chunks->order, order, COUNT(order),
+                                    &count) != MC_JAVA_INT_SET_OK) ||
+        count != s->active_count || memcmp(order, s->active_order, count * sizeof(*order)) != 0)
+        return false;
     mc_tile_entity_piston_class_snapshot tile_class;
     if (mc_tile_entity_piston_class_get_snapshot(f->classes[0], &tile_class) != MC_TILE_ENTITY_OK ||
         !terminal_tile_class_same(&s->tile_class, &tile_class) ||
@@ -276,6 +292,48 @@ static bool terminal_attempt(fixture *f, mc_entity *observed,
 static bool terminal_busy_reason(fixture *f, mc_entity *observed, const char *operation) {
     return terminal_attempt_checked(f, observed, NULL, MC_WORLD_STORAGE_BUSY, false, false, false,
                                     NULL, operation);
+}
+
+static bool terminal_active_chunks(fixture *f) {
+    bool ok = false;
+    mc_world_runtime *world = f->worlds[0];
+    mc_world_active_chunks *set = world->active_chunks;
+    CHECK(set != NULL && world->fields.P == set && set->count == 0 && set->capacity == 0 &&
+          set->entries == NULL && set->order == NULL);
+    set->entries = calloc(2, sizeof(*set->entries));
+    CHECK(set->entries != NULL && mc_java_int_set_create(NULL, &set->order) == MC_JAVA_INT_SET_OK);
+    set->capacity = 2;
+    set->entries[0] = (mc_world_chunk_candidate){0, 0, 0};
+    set->entries[1] = (mc_world_chunk_candidate){1, 0, 65536};
+    bool added;
+    CHECK(mc_java_int_set_add(set->order, 0, &added) == MC_JAVA_INT_SET_OK && added &&
+          mc_java_int_set_add(set->order, 65536, &added) == MC_JAVA_INT_SET_OK && added);
+    set->count = 2;
+    set->version = 2;
+    CHECK(terminal_attempt(f, NULL, NULL, MC_WORLD_STORAGE_OK, false, false, false, NULL));
+    /* Independent authored malformed inputs must refuse without changing
+     * either the source coordinates or the actual traversal owner. */
+    set->count = 1;
+    CHECK(terminal_attempt(f, NULL, NULL, MC_WORLD_STORAGE_UNSUPPORTED_STATE, false, false, false,
+                           NULL));
+    set->count = 2;
+    set->entries[1].hash = 7;
+    CHECK(terminal_attempt(f, NULL, NULL, MC_WORLD_STORAGE_UNSUPPORTED_STATE, false, false, false,
+                           NULL));
+    set->entries[1] = set->entries[0];
+    CHECK(terminal_attempt(f, NULL, NULL, MC_WORLD_STORAGE_UNSUPPORTED_STATE, false, false, false,
+                           NULL));
+    set->entries[1] = (mc_world_chunk_candidate){1, 0, 65536};
+    mc_world_active_chunks foreign = {0};
+    world->fields.P = &foreign;
+    CHECK(terminal_attempt(f, NULL, NULL, MC_WORLD_STORAGE_UNSUPPORTED_STATE, false, false, false,
+                           NULL));
+    world->fields.P = set;
+    CHECK(terminal_attempt(f, NULL, NULL, MC_WORLD_STORAGE_OK, false, false, false, NULL) &&
+          set->count == 2 && set->version == 2 && mc_java_int_set_size(set->order) == 2);
+    ok = true;
+cleanup:
+    return ok;
 }
 
 /* Keep the original real Store metadata, with one additional public admission
@@ -759,6 +817,7 @@ int main(int argc, char **argv) {
           inventory.entities == 0 && inventory.tile_entities == 0 &&
           inventory.entity_occurrences == 0 && inventory.tile_entity_occurrences == 0 &&
           inventory.expected_world_bindings == 1 && !inventory.piston_discard_required);
+    CHECK(terminal_active_chunks(f));
     CHECK(terminal_attempt(f, NULL, NULL, MC_WORLD_STORAGE_INVALID_ARGUMENT, true, false, false,
                            NULL) &&
           terminal_attempt(f, NULL, NULL, MC_WORLD_STORAGE_INVALID_ARGUMENT, false, true, false,

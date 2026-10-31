@@ -170,6 +170,12 @@ mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_ent
         case MC_ENTITY_CLASS_KIND_SKELETON:
         case MC_ENTITY_CLASS_KIND_CREEPER:
         case MC_ENTITY_CLASS_KIND_SLIME:
+        case MC_ENTITY_CLASS_KIND_PIG:
+        case MC_ENTITY_CLASS_KIND_SHEEP:
+        case MC_ENTITY_CLASS_KIND_COW:
+        case MC_ENTITY_CLASS_KIND_CHICKEN:
+        case MC_ENTITY_CLASS_KIND_WOLF:
+        case MC_ENTITY_CLASS_KIND_SQUID:
             if (classes->source != MC_ENTITY_CLIENT)
                 return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
             bytes = sizeof(mc_mob_entity_object);
@@ -302,20 +308,25 @@ mc_entity_status mc_entity_construct_watch_byte_zero(mc_entity *entity, int32_t 
     return mc_entity_construct_watch_byte(entity, index, 0, error);
 }
 
-mc_entity_status mc_entity_construct_watch_byte(mc_entity *entity, int32_t index, int8_t value,
-                                                mc_entity_error *error) {
+static mc_entity_status construct_watch(mc_entity *entity, int32_t index, int32_t kind,
+                                        int8_t byte_value, int32_t integer_value,
+                                        const struct mc_player_string *string_value,
+                                        mc_entity_error *error) {
     const mc_entity_type_entry *type = entity->classes->types->head;
-    while (type != NULL && type->kind != 0)
+    while (type != NULL && type->kind != kind)
         type = type->next;
-    if (type == NULL || type->value != 0 || (index == 0 && entity->watcher->map->size != 0))
+    if (type == NULL || type->value != kind || (index == 0 && entity->watcher->map->size != 0))
         return mc_entity_error_set(error, MC_ENTITY_STATE_ERROR, "watcher registration", 7);
     mc_entity_watch_record *record =
         allocate(entity->classes, entity, sizeof(*record), error, "watcher registration", 144);
     if (record == NULL)
         return error->status;
-    /* ma/ht constructor store order on the same typed Byte projection. */
+    /* ma/ht constructor store order on the concrete typed value projection. */
+    *record = (mc_entity_watch_record){0};
     record->index = index;
-    record->byte_value = value;
+    record->byte_value = byte_value;
+    record->integer_value = integer_value;
+    record->string_value = string_value;
     record->type = type->value;
     record->dirty = true;
     mc_entity_watch_node *node =
@@ -329,6 +340,22 @@ mc_entity_status mc_entity_construct_watch_byte(mc_entity *entity, int32_t index
     entity->watcher->map->head = node;
     ++entity->watcher->map->size;
     return MC_ENTITY_OK;
+}
+
+mc_entity_status mc_entity_construct_watch_byte(mc_entity *entity, int32_t index, int8_t value,
+                                                mc_entity_error *error) {
+    return construct_watch(entity, index, 0, value, 0, NULL, error);
+}
+
+mc_entity_status mc_entity_construct_watch_string(mc_entity *entity, int32_t index,
+                                                  const struct mc_player_string *value,
+                                                  mc_entity_error *error) {
+    return construct_watch(entity, index, 4, 0, 0, value, error);
+}
+
+mc_entity_status mc_entity_construct_watch_integer(mc_entity *entity, int32_t index, int32_t value,
+                                                   mc_entity_error *error) {
+    return construct_watch(entity, index, 2, 0, value, NULL, error);
 }
 
 mc_entity_status mc_entity_construct_base(mc_entity *entity, mc_world_runtime *world,

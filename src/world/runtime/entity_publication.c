@@ -6,6 +6,7 @@
 #include "mc/world/runtime/players.h"
 
 #include "../../entity/entity_internal.h"
+#include "../../entity/mob/internal.h"
 #include "../chunk/object_internal.h"
 #include "../storage/objects_internal.h"
 #include "chunk_provider_internal.h"
@@ -538,7 +539,7 @@ static bool enter_entity(mc_world_runtime *world, mc_entity *entity, mc_world_en
     if (entity != NULL && !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART) &&
-        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) && !mc_entity_has_mob(entity))
         return entity_fail(frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World concrete Entity type");
     mc_world_storage_error cause = {0};
     if (mc_world_runtime_call_enter(world, &cause) != MC_WORLD_STORAGE_OK)

@@ -185,6 +185,9 @@ const mc_nbt_tag *mc_world_info_source(const mc_world_info *info);
  * Any live allocated Info is accepted; null receiver/output preserves out.
  * No snapshot, allocation, clock, normalization or other field read occurs. */
 mc_world_info_status mc_world_info_time_get(const mc_world_info *info, int64_t *out);
+/* Actual client ei.b()J: current seed only, including RAW/FAILED prefixes.
+ * No READY gate, fallback, allocation or unrelated metadata read. */
+mc_world_info_status mc_world_info_seed_get(const mc_world_info *info, int64_t *out);
 
 /* Actual client ei.k/j/l/g direct field reads. No READY gate, allocation,
  * snapshots, clock, retained output hold or unrelated field access. name may

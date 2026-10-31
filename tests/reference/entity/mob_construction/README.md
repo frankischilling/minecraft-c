@@ -1,8 +1,9 @@
-# Original hostile Mob constructors
+# Original Overworld Mob constructors
 
 This CPU-only reference package executes unchanged original client constructors
-for Spider `cn`, Zombie `uz`, Skeleton `fr`, Creeper `gb` and Slime `uw`.
-It runs 15 constructors in an ordinary VM and another 15 under a read-only JDI
+for Spider `cn`, Zombie `uz`, Skeleton `fr`, Creeper `gb`, Slime `uw`, Pig `wh`,
+Sheep `dl`, Cow `bx`, Chicken `ww`, Wolf `gi` and Squid `xt`.
+It runs 33 constructors in an ordinary VM and another 33 under a read-only JDI
 observer. Java is reference tooling; no Java game implementation is provided.
 
 ```sh
@@ -32,7 +33,8 @@ The original cold Skeleton-first attempt was preserved privately in capture
 null Item receiver in `iz.<init>`, yielding ExceptionInInitializerError.
 Successful prepared-context results do not establish arbitrary cold-init order.
 
-Each pass constructs the five classes in the order cn, uz, fr, gb, uw:
+Cases 0 through 14 retain the three hostile passes in cn, uz, fr, gb, uw order.
+Cases 15 through 32 append three passive passes in wh, dl, bx, ww, gi, xt order:
 
 | Pass | Constructor World argument | Actual World.B |
 | --- | --- | --- |
@@ -47,7 +49,7 @@ Its authored `activeCase` field admits observer events; the observer watches
 that field but never modifies it. The actual shared Math holder is initialized
 once before the active cases, read without reseeding and allowed to continue.
 
-The exact 182-class original initialization closure is pinned and checked in
+The exact 190-class original initialization closure is pinned and checked in
 both VMs, including the genuine registry preparation. Runtime class resources
 and code-source origins are checked for every pinned class. Minecraft/PX,
 LWJGL and sound bootstrap remain excluded.
@@ -80,6 +82,19 @@ using float .6 times size, sets health size squared and updates actual bounds
 through the real position call. These are constructor effects, not observer
 field preparation.
 
+The five land animals follow BG -> II -> LS; Squid follows AR -> II -> LS.
+Their leaf size calls change width and height without repairing the earlier
+bounds. Chicken sets health 4 and draws its egg timer through nextInt(6000)+6000.
+Squid sets fourteen own floats to zero, then computes its phase speed with one
+private nextFloat and the original float add, division and multiplication.
+
+Pig and Sheep register Byte16=0. Wolf registers Byte16=0, String17="" and
+Integer18 from the still-zero Living health field. The actual inherited base
+hook runs before Living health 10 and Wolf health 8. Sheep's class initializer
+allocates a distinct float[3] for each of 16 colors and publishes the outer
+array only at putstatic348. The observer checks its null prefix and completed
+publication; ordinary rows retain all colors and static/row identity checks.
+
 `source-pins.json` includes complete SN method identities, including
 `sn.c(DDDFF)V`. `operation-map.json` includes its field/call map for the later
 World spawn-position continuation. That pose method is not invoked by this
@@ -97,7 +112,8 @@ records all four actual Stack fields and its real static/getter aliases.
 JDI records constructor and watcher checkpoints, including the actual private
 Random state immediately after its sn store, base watcher completion, all four
 Math poststores, completed Living and concrete constructor state, and Slime's
-two private draws and size-helper mutations. It verifies 13 live source method
+two private draws and size-helper mutations, Chicken and Squid postdraw states,
+Wolf's typed hook prefixes and Sheep's initializer publication. It verifies 25 live source method
 bodies. It never writes a target field, invokes a target method, changes a clock,
 replaces a Random or rewrites a class.
 
@@ -114,7 +130,8 @@ combined with the normal Random constructor transform, must produce the actual
 post-store private seed. These U/nano values are actual observations, not values
 recovered from the private seed. Slime's actual nextInt outcomes, draw counts
 and poststates are independently replayed from that observed seed, including
-the rejection rule. Other constructors consume no private draws.
+the rejection rule. Chicken's bounded egg draw and Squid's 24-bit float draw
+are replayed separately; the other constructors consume no private draws.
 
 Clock-event requests are enabled only during active Mob constructors. They do
 not capture the earlier World/registry default-Random prefix, and do not license
@@ -126,8 +143,8 @@ rules. Matching two independent native constructors is not original parity.
 
 Each run writes:
 
-* `normal/observations.ndjson`: setup plus 15 ordinary original constructor rows.
-* `debugger/target-observations.ndjson`: setup plus 15 independently observed rows.
+* `normal/observations.ndjson`: setup plus 33 ordinary original constructor rows.
+* `debugger/target-observations.ndjson`: setup plus 33 independently observed rows.
 * `debugger/checkpoints.ndjson`: live Code pins, actual checkpoints and U/nano
   return records, in observed order.
 * `observations.json`: `normal_rows`, `debugger_rows`, `entropy_profiles`,
@@ -143,6 +160,10 @@ and optional `skeleton_stack` are separate records. Entropy profiles retain
 actual U/nano words, before/after private seeds, nextInt outcomes/counts and
 four Math draw words. They preserve actual generated values without claiming
 independent constructors happened to share them.
+
+The original 15 case IDs and nextInt profile fields remain stable. Passive case
+IDs start at 15. Squid's profile adds `next_float_words` and
+`next_float_draw_counts`; these are empty arrays for every other constructor.
 
 This finite reference covers successful prepared-context client constructors
 and observed prefixes. Slime size coverage depends on the actual ordinary

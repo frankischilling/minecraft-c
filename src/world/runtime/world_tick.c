@@ -11,6 +11,8 @@
 #include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
 #include "mc/entity/mob/construction.h"
+#include "mc/entity/mob/spawning.h"
+#include "mc/world/runtime/entities.h"
 #include "mc/world/runtime/environment.h"
 #include "mc/world/runtime/saving/saving.h"
 #include "runtime_internal.h"
@@ -20,9 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct candidate {
-    int32_t x, z, hash;
-} candidate;
+typedef mc_world_chunk_candidate candidate;
 
 struct mc_world_tick_call {
     mc_world_tick_state state;
@@ -33,7 +33,11 @@ struct mc_world_tick_call {
     mc_world_chunk_manager_error biome;
     mc_world_spawn_pick_error spawning;
     mc_mob_error mob;
+    mc_mob_spawn_state eligibility;
+    mc_mob_spawn_error eligibility_error;
+    mc_world_entity_error publication;
     bool world_held;
+    bool math_held;
 };
 
 static mc_world_storage_status rejected(mc_world_tick_error *e, mc_world_storage_status status,
@@ -78,6 +82,20 @@ static bool fp(mc_world_tick_call *c, unsigned int pc) {
     return (_mm_getcsr() & 0xffc0u) == 0x1f80u ||
            fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World tick reached strict FP admission",
                 true);
+}
+
+static bool floor_admit(mc_world_tick_call *c, unsigned int pc) {
+    c->error.child_bytecode = pc;
+    if (mc_math_classes_ensure(c->state.math, &c->error.math) != MC_MATH_CLASS_OK) {
+        c->error.descendant_bytecode =
+            c->error.math.source_pc < 0 ? 0 : (unsigned int)c->error.math.source_pc;
+        return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World tick MathHelper active use",
+                    true);
+    }
+    if (mc_math_classes_table(c->state.math) != c->state.world->classes->trig)
+        return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                    "World tick actual MathHelper table binding", true);
+    return fp(c, pc);
 }
 
 /* Read only the reached List metadata/occurrence. Nonnull values are proved
@@ -217,7 +235,7 @@ static bool candidates(mc_world_tick_call *c, mc_world_active_chunks *set, bool 
             return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World tick null Player position",
                         false);
         }
-        if (!fp(c, spawning ? 56 : 45))
+        if (!floor_admit(c, spawning ? 56 : 45))
             return false;
         const int32_t x = mc_math_floor_double(wt_div(player->base.x, 16.0));
         const int32_t z = mc_math_floor_double(wt_div(player->base.z, 16.0));
@@ -479,9 +497,9 @@ static float spawn_fmul(float a, float b) {
     return _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(a), _mm_set_ss(b)));
 }
 
-static bool spawn_mob_failure(mc_world_tick_call *c) {
+static bool spawn_mob_failure(mc_world_tick_call *c, unsigned int pc) {
     const mc_mob_error *error = &c->mob;
-    (void)spawn_error(c, 773, error->operation, error->native_policy, error->exception_class);
+    (void)spawn_error(c, pc, error->operation, error->native_policy, error->exception_class);
     c->error.mob = error;
     c->error.descendant_bytecode = error->site.pc < 0 ? 0 : (unsigned int)error->site.pc;
     const mc_world_storage_status status =
@@ -493,44 +511,8 @@ static bool spawn_mob_failure(mc_world_tick_call *c) {
     return fail(c, status, error->operation, error->native_policy);
 }
 
-static bool spawn_construct(mc_world_tick_call *c, mc_registry_classes *registry, float x, float y,
-                            float z) {
-    mc_entity_class_literal_view selected;
-    if (mc_entity_class_literal_inspect(c->state.spawn_class, &selected) != MC_ENTITY_OK)
-        return spawn_error(c, 773, "World spawn canonical Mob Class owner", true, NULL);
-    switch (selected.kind) {
-        case MC_ENTITY_CLASS_KIND_SPIDER:
-        case MC_ENTITY_CLASS_KIND_ZOMBIE:
-        case MC_ENTITY_CLASS_KIND_SKELETON:
-        case MC_ENTITY_CLASS_KIND_CREEPER:
-        case MC_ENTITY_CLASS_KIND_SLIME:
-            break;
-        default:
-            return spawn_error(c, 773, "World spawn concrete Mob class initialization/constructor",
-                               true, NULL);
-    }
-    /* This occurrence remains held through any reached child failure. It is
-     * not published to the World before the source spawn predicate returns. */
-    c->error.child_bytecode = 773;
-    if (mc_mob_allocate(c->state.world->classes->entities, registry, c->state.spawn_class,
-                        &c->state.spawn_entity, &c->mob) != MC_MOB_OK ||
-        mc_mob_construct(c->state.spawn_entity, c->state.world, &c->mob) != MC_MOB_OK)
-        return spawn_mob_failure(c);
-    c->state.spawn_constructed = true;
-    c->error.child_bytecode = 808;
-    mc_java_random *random = c->state.world->fields.r;
-    if (random == NULL)
-        return spawn_error(c, 808, "World spawn null Random receiver", false,
-                           "java/lang/NullPointerException");
-    const float draw = mc_java_random_next_float(random);
-    ++c->state.spawn_random_calls;
-    if (!fp(c, 813))
-        return false;
-    const float yaw = spawn_fmul(draw, 360.0f);
-    mc_entity *entity = c->state.spawn_entity;
-    c->error.child_bytecode = 815;
-    /* Exact inherited sn.c(DDDFF): only current yaw/pitch are assigned;
-     * previous yaw is unchanged and vertical offset is added before e(DDD). */
+static void spawn_pose(mc_entity *entity, float x, float y, float z, float yaw) {
+    /* Exact inherited sn.c(DDDFF), including the explicit e(DDD) call. */
     entity->base.x = wt_widen(x);
     entity->base.aJ = entity->base.x;
     entity->base.bl = entity->base.x;
@@ -543,12 +525,169 @@ static bool spawn_construct(mc_world_tick_call *c, mc_registry_classes *registry
     entity->base.yaw = yaw;
     entity->base.aT = 0.0f;
     mc_entity_source_position(entity, entity->base.x, entity->base.y, entity->base.z);
+}
+
+static bool spawn_construct(mc_world_tick_call *c, mc_registry_classes *registry, float x, float y,
+                            float z) {
+    mc_entity_class_literal_view selected;
+    if (mc_entity_class_literal_inspect(c->state.spawn_class, &selected) != MC_ENTITY_OK)
+        return spawn_error(c, 773, "World spawn canonical Mob Class owner", true, NULL);
+    if (!c->state.first_constructor.captured) {
+        mc_world_spawn_constructor_trace *trace = &c->state.first_constructor;
+        *trace = (mc_world_spawn_constructor_trace){
+            .captured = true,
+            .class_literal = c->state.spawn_class,
+            .category = c->state.spawn_category,
+            .chunk_x = c->state.spawn_chunk_x,
+            .chunk_z = c->state.spawn_chunk_z,
+            .initial_x = c->state.spawn_initial_x,
+            .initial_y = c->state.spawn_initial_y,
+            .initial_z = c->state.spawn_initial_z,
+            .trial_x = c->state.spawn_trial_x,
+            .trial_y = c->state.spawn_trial_y,
+            .trial_z = c->state.spawn_trial_z,
+            .group = c->state.spawn_group,
+            .attempt = c->state.spawn_attempt,
+            .total_weight = c->state.spawn_pick.total_weight,
+            .ticket = c->state.spawn_pick.ticket,
+            .chunk_count = c->state.spawn_chunk_count,
+            .candidates_visited = c->state.spawn_candidates_visited,
+            .random_calls = c->state.spawn_random_calls};
+        mc_java_random *random = c->state.world->fields.r;
+        if (random != NULL) {
+            trace->random_present = true;
+            trace->random = *random;
+        }
+    }
+    switch (selected.kind) {
+        case MC_ENTITY_CLASS_KIND_SPIDER:
+        case MC_ENTITY_CLASS_KIND_ZOMBIE:
+        case MC_ENTITY_CLASS_KIND_SKELETON:
+        case MC_ENTITY_CLASS_KIND_CREEPER:
+        case MC_ENTITY_CLASS_KIND_SLIME:
+        case MC_ENTITY_CLASS_KIND_PIG:
+        case MC_ENTITY_CLASS_KIND_SHEEP:
+        case MC_ENTITY_CLASS_KIND_COW:
+        case MC_ENTITY_CLASS_KIND_CHICKEN:
+        case MC_ENTITY_CLASS_KIND_WOLF:
+        case MC_ENTITY_CLASS_KIND_SQUID:
+            break;
+        default:
+            return spawn_error(c, 773, "World spawn concrete Mob class initialization/constructor",
+                               true, NULL);
+    }
+    /* This occurrence remains held through any reached child failure. It is
+     * not published to the World before the source spawn predicate returns. */
+    mc_entity_release(c->state.spawn_entity);
+    c->state.spawn_entity = NULL;
+    c->state.spawn_constructed = c->state.spawn_positioned = false;
+    c->state.spawn_eligibility_returned = c->state.spawn_eligible = false;
+    c->state.spawn_publication_returned = c->state.spawn_published = false;
+    c->state.spawn_postspawn_returned = false;
+    c->state.eligibility = NULL;
+    c->error.child_bytecode = 773;
+    if (mc_mob_allocate(c->state.world->classes->entities, registry, c->state.spawn_class,
+                        &c->state.spawn_entity, &c->mob) != MC_MOB_OK ||
+        mc_mob_construct(c->state.spawn_entity, c->state.world, &c->mob) != MC_MOB_OK)
+        return spawn_mob_failure(c, 773);
+    c->state.spawn_constructed = true;
+    ++c->state.spawn_constructors;
+    c->error.child_bytecode = 808;
+    mc_java_random *random = c->state.world->fields.r;
+    if (random == NULL)
+        return spawn_error(c, 808, "World spawn null Random receiver", false,
+                           "java/lang/NullPointerException");
+    const float draw = mc_java_random_next_float(random);
+    ++c->state.spawn_random_calls;
+    if (!fp(c, 813))
+        return false;
+    const float yaw = spawn_fmul(draw, 360.0f);
+    c->error.child_bytecode = 815;
+    /* Exact inherited sn.c(DDDFF): only current yaw/pitch are assigned;
+     * previous yaw is unchanged and vertical offset is added before e(DDD). */
+    spawn_pose(c->state.spawn_entity, x, y, z, yaw);
     c->state.spawn_positioned = true;
-    return spawn_error(c, 820, "World spawn concrete Mob spawn eligibility", true, NULL);
+    return true;
+}
+
+static bool spawn_publish(mc_world_tick_call *c, mc_entity *entity, unsigned int pc,
+                          unsigned int helper_pc, bool *published) {
+    c->error.child_bytecode = pc;
+    c->error.descendant_bytecode = helper_pc;
+    if (mc_world_runtime_insert_entity(c->state.world, entity, published, &c->publication) ==
+        MC_WORLD_STORAGE_OK) {
+        if (*published)
+            ++c->state.spawn_publications;
+        return true;
+    }
+    c->error.publication = &c->publication;
+    return cause(c, c->publication.cause);
+}
+
+static bool spawn_postspawn(mc_world_tick_call *c, mc_registry_classes *registry, float x, float y,
+                            float z) {
+    mc_entity *entity = c->state.spawn_entity;
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SPIDER)) {
+        int32_t draw;
+        c->state.spawn_postspawn_pc = 13;
+        if (!spawn_draw(c, 100, 845, 13, &draw))
+            return false;
+        if (draw == 0) {
+            const mc_entity_class_literal *skeleton = NULL;
+            c->state.spawn_postspawn_pc = 24;
+            c->error.child_bytecode = 845;
+            c->error.descendant_bytecode = 24;
+            if (mc_entity_class_literal_get(c->state.world->classes->entities,
+                                            MC_ENTITY_CLASS_KIND_SKELETON,
+                                            &skeleton) != MC_ENTITY_OK)
+                return spawn_error(c, 845, "World spawn Skeleton canonical Class", true, NULL);
+            if (mc_mob_allocate(c->state.world->classes->entities, registry, skeleton,
+                                &c->state.spawn_jockey, &c->mob) != MC_MOB_OK ||
+                mc_mob_construct(c->state.spawn_jockey, c->state.world, &c->mob) != MC_MOB_OK)
+                return spawn_mob_failure(c, 845);
+            if (!fp(c, 845))
+                return false;
+            c->state.spawn_postspawn_pc = 43;
+            spawn_pose(c->state.spawn_jockey, x, y, z, entity->base.yaw);
+            bool published;
+            c->state.spawn_postspawn_pc = 49;
+            if (!spawn_publish(c, c->state.spawn_jockey, 845, 49, &published))
+                return false;
+            c->state.spawn_postspawn_pc = 56;
+            c->error.descendant_bytecode = 56;
+            return spawn_error(c, 845, "World spawn Skeleton mount source body", true, NULL);
+        }
+    }
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SHEEP)) {
+        int32_t draw, color;
+        c->state.spawn_postspawn_pc = 77;
+        if (!spawn_draw(c, 100, 845, 77, &draw))
+            return false;
+        if (draw < 5)
+            color = 15;
+        else if (draw < 10)
+            color = 7;
+        else if (draw < 15)
+            color = 8;
+        else if (draw < 18)
+            color = 12;
+        else {
+            if (!spawn_draw(c, 500, 845, 77, &draw))
+                return false;
+            color = draw == 0 ? 6 : 0;
+        }
+        c->state.spawn_postspawn_pc = 80;
+        if (mc_mob_sheep_set_color(entity, color, &c->mob) != MC_MOB_OK)
+            return spawn_mob_failure(c, 845);
+    }
+    c->state.spawn_postspawn_pc = 83;
+    c->state.spawn_postspawn_returned = true;
+    return true;
 }
 
 static bool spawn_trials(mc_world_tick_call *c, int32_t category, const int32_t spawn[3],
                          int32_t initial_x, int32_t initial_y, int32_t initial_z) {
+    c->state.spawn_group_successes = 0; /* CQ520 is outside all three groups. */
     for (int32_t group = 0; group < 3; ++group) {
         c->state.spawn_group = group;
         int32_t x = initial_x, y = initial_y, z = initial_z;
@@ -600,7 +739,39 @@ static bool spawn_trials(mc_world_tick_call *c, int32_t category, const int32_t 
                 c->error.spawning = &c->spawning;
                 return spawn_error(c, 750, "World spawn canonical Mob Class binding", true, NULL);
             }
-            return spawn_construct(c, registry, fx, fy, fz);
+            if (!spawn_construct(c, registry, fx, fy, fz))
+                return false;
+            c->error.child_bytecode = 820;
+            bool eligible;
+            c->state.eligibility = &c->eligibility;
+            if (mc_mob_spawn_eligible(c->state.spawn_entity, c->state.math, c->state.world->classes,
+                                      &eligible, &c->eligibility,
+                                      &c->eligibility_error) != MC_WORLD_STORAGE_OK) {
+                const mc_mob_spawn_error *error = &c->eligibility_error;
+                c->error.eligibility = error;
+                c->error.descendant_bytecode =
+                    error->site.pc < 0 ? 0 : (unsigned int)error->site.pc;
+                c->error.exception_class = error->exception_class;
+                return fail(c, error->status, error->operation, error->native_policy);
+            }
+            c->state.spawn_eligibility_returned = true;
+            c->state.spawn_eligible = eligible;
+            ++c->state.spawn_predicates;
+            if (eligible) {
+                c->state.spawn_group_successes = mc_java_i32_add(c->state.spawn_group_successes, 1);
+                if (!spawn_publish(c, c->state.spawn_entity, 832, 0, &c->state.spawn_published))
+                    return false;
+                c->state.spawn_publication_returned = true;
+                if (!spawn_postspawn(c, registry, fx, fy, fz))
+                    return false;
+                const int32_t limit =
+                    mc_entity_is_kind(c->state.spawn_entity, MC_ENTITY_CLASS_KIND_WOLF) ? 8 : 4;
+                if (c->state.spawn_group_successes >= limit)
+                    return true; /* CQ858 bypasses total += groupSuccesses at864. */
+            } else
+                ++c->state.spawn_rejections;
+            c->state.spawn_total =
+                mc_java_i32_add(c->state.spawn_total, c->state.spawn_group_successes);
         }
     }
     return true;
@@ -911,7 +1082,8 @@ static bool scheduler(mc_world_tick_call *c) {
     return true;
 }
 
-mc_world_storage_status mc_world_runtime_tick_begin(mc_world_runtime *w, mc_world_tick_call **out,
+mc_world_storage_status mc_world_runtime_tick_begin(mc_world_runtime *w, mc_math_classes *math,
+                                                    mc_world_tick_call **out,
                                                     mc_world_tick_error *admission) {
     if (w == NULL || out == NULL || *out != NULL)
         return rejected(admission, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World tick arguments");
@@ -931,6 +1103,14 @@ mc_world_storage_status mc_world_runtime_tick_begin(mc_world_runtime *w, mc_worl
         free(c);
         return rejected(admission, error.status, error.operation);
     }
+    if (math != NULL && mc_math_classes_retain(math, &c->error.math) != MC_MATH_CLASS_OK) {
+        mc_world_runtime_call_leave(w);
+        free(c);
+        return rejected(admission, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                        "World tick MathHelper namespace hold");
+    }
+    c->state.math = math;
+    c->math_held = math != NULL;
     (void)mc_world_runtime_binding_retain(w);
     c->world_held = true;
     c->state.world = w;
@@ -962,8 +1142,21 @@ mc_world_storage_status mc_world_runtime_tick_retire(mc_world_tick_call **slot,
         return rejected(cleanup, MC_WORLD_STORAGE_OK, NULL);
     if (c->state.active)
         return rejected(cleanup, MC_WORLD_STORAGE_BUSY, "World tick call active");
+    if (c->math_held) {
+        mc_math_classes *math = c->state.math;
+        const mc_math_class_status status = mc_math_classes_release(&math, NULL);
+        if (status != MC_MATH_CLASS_OK)
+            return rejected(cleanup,
+                            status == MC_MATH_CLASS_BUSY ? MC_WORLD_STORAGE_BUSY
+                                                         : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                            "World tick MathHelper namespace retirement");
+        c->math_held = false;
+        c->state.math = NULL;
+    }
     mc_world_access_failure_release(&c->error.world_access);
+    mc_world_access_failure_release(&c->publication.world_access_failure);
     mc_entity_release(c->state.spawn_entity);
+    mc_entity_release(c->state.spawn_jockey);
     if (c->world_held)
         mc_world_runtime_binding_release(c->state.world);
     free(c);

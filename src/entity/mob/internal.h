@@ -10,7 +10,11 @@ typedef struct mc_mob_entity_state {
     bool creature_attacking;
     int32_t monster_damage, creeper_a, creeper_b, slime_jump_delay;
     float slime_a, slime_b;
+    mc_mob_chicken_fields chicken;
+    mc_mob_wolf_fields wolf;
+    mc_mob_squid_fields squid;
     unsigned int living_pc, creature_pc, monster_pc, constructor_pc, watcher_hook_pc;
+    unsigned int animal_pc, water_creature_pc;
     mc_mob_error failure;
 } mc_mob_entity_state;
 
@@ -25,6 +29,12 @@ typedef struct mc_mob_class_namespace {
     mc_item_stack *skeleton_a, *skeleton_candidate;
     size_t skeleton_stack_bytes;
     mc_mob_error failure;
+    mc_entity_class_phase sheep_phase;
+    unsigned int sheep_pc;
+    mc_mob_sheep_colors *sheep_a, *sheep_candidate;
+    mc_mob_sheep_color_row *sheep_row_candidate;
+    size_t sheep_rows_published, sheep_array_bytes;
+    mc_mob_error sheep_failure;
 } mc_mob_class_namespace;
 
 bool mc_entity_is_mob_kind(mc_entity_class_kind);

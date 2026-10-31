@@ -51,7 +51,7 @@ def main():
     spec.loader.exec_module(support)
     args.work_dir.mkdir(parents=True, exist_ok=True)
     output = Path(tempfile.mkdtemp(prefix="tick-", dir=args.work_dir.resolve()))
-    report = {"status": "FAIL", "scope": "client fd.l empty-Player branches, fd.a(Z) drain, cq.a(ZZ) candidate prefix; no aggregate mob/random Chunk closure"}
+    report = {"status": "FAIL", "scope": "11 unchanged-client scheduler prefixes; native authored-Chunk CQ false/true loops, publication/group/color/jockey contracts; later random Chunk body remains a dependency"}
     inputs = [args.native.resolve(), Path(__file__).resolve(), support_path,
               HERE / "observations.json"]
     env = os.environ.copy()
@@ -130,12 +130,24 @@ def main():
         need(text.splitlines() and re.fullmatch(r"World scheduler: [1-9][0-9]* checks", text.splitlines()[-1]),
              "native completion marker")
         need(projection(text) == expected, "native observations differ from original capture")
-        mob_rows = [line for line in text.splitlines() if line.startswith("MOB_SPAWN ")]
-        need(mob_rows == [f"MOB_SPAWN {name} yaw-positioned=1 next=820 world-random-calls=11"
-                          for name in ("cn", "uz", "fr", "gb", "uw")],
-             "native hostile constructor/yaw/position/retirement contracts")
+        mob_rows = [line for line in text.splitlines() if line.startswith("MOB_LOOP ")]
+        need(len(mob_rows) == 9, "native completed spawning contract inventory")
+        for index, name in ((0, "wh"), (6, "uz"), (7, "dl")):
+            row = re.fullmatch(
+                rf"MOB_LOOP publish {name} completed=1 group=4 membership=4 total=([0-9]+) random-checked=1",
+                mob_rows[index])
+            need(row is not None and int(row[1]) >= 6,
+                 "real group/publication/cumulative/World Random contract: " + name)
+        for index, name in enumerate(("cn", "uz", "fr", "gb", "uw"), 1):
+            row = re.fullmatch(
+                rf"MOB_LOOP reject {name} completed=1 constructors=([0-9]+) yaw-checked=1 random-checked=1",
+                mob_rows[index])
+            need(row is not None and int(row[1]) > 1,
+                 "real rejected-predicate continuation contract: " + name)
+        need(mob_rows[8] == "MOB_LOOP jockey cn next=cq845:56 published=2 skeleton=fr random-checked=1",
+             "actual Skeleton publication before missing mount body")
         report.update(status="PASS", native=native.capture_report, observations=11,
-                      native_hostile_spawn_contracts=5, original_replay=args.client_jar is not None)
+                      native_completed_spawn_contracts=9, original_replay=args.client_jar is not None)
     except BaseException as exc:
         report["error"] = {"type": type(exc).__name__, "message": str(exc)}
         raise

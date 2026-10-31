@@ -13,4 +13,5 @@
 - [History](History)
 - [Parity matrix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md)
 - [Source repository](https://github.com/frankischilling/minecraft-c)
-- [Hostile Mob construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-construction.md)
+- [Mob spawning](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-spawning.md)
+- [Mob construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-construction.md)

@@ -1,5 +1,45 @@
 # Test scope and reproduction
 
+## Default Mob spawning
+
+All 68 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 77 Windows tests pass in 105.78 seconds and all 73 Linux tests in
+141.36 seconds, without failures, skips or sanitizer findings. All 2,387 C,
+helper, build and reference inputs remain unchanged through both builds and tests.
+Formatting checks 1,665 files; source bindings cover 7,766 entries and 3,324 files.
+
+Each host passes 1,667 constructor checks over 33 actual constructors, with 8,244
+independent original field comparisons and 165 separately labelled scalar checks.
+Spawning adds 6,451 checks over 115 genuine predicates and 18 Chunk Random leaves;
+136 selected predicate/Chunk/thunder rows match the original exactly. Original
+constructor capture checks 25 live methods and 561 checkpoints. Predicate capture
+checks 19 live methods and 2,138 checkpoints. Independent JVM/native constructor
+entropy is not equated.
+
+The constructor reference now runs 33 actual calls per ordinary/read-only JDI VM,
+covering all eleven default kinds with local, remote and null Worlds. The current
+capture checks 25 live method bodies, 561 checkpoints and the actual 190-class
+initialization closure. Captured private entropy and Math formula checks remain
+separate from independent native constructor execution. The original spawn
+predicate package and its native comparison are described in
+[Mob spawning](entity/mob-spawning.md).
+
+The World scheduler retains eleven preceding original prefix observations.
+Additional authored native controls exercise returning rejected attempts, actual
+publication, the per-Chunk group counter, cumulative totals, Sheep color and
+Skeleton publication before the missing Spider jockey mount. Real stored terrain
+supplies the World methods; no successful query callback is substituted.
+
+Focused loaded-window controls require the completed default predicates before
+random Chunk work or the genuine jockey mount. Native terminal controls retain
+nonempty active coordinates and reject malformed count/hash/duplicate/foreign
+Set inputs without mutating the input graph.
+
+## Preceding hostile-constructor checkpoint
+
+The following results describe published source `71aedbd`, before the passive
+constructors and spawn predicates were added. All four hosted jobs pass there.
+
 ## Hostile Mob constructors and the spawn continuation
 
 All 67 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan. All 76
