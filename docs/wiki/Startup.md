@@ -1,22 +1,36 @@
 # Client startup
 
-The loaded Windows repeat now returns four World/HUD frames through the actual
-[Sheep renderer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md),
-including unsheared fur and `Settings.j=true` terrain shadows. One frame takes
-the real RenderGlobal delay and one traverses without drawing; the next two
-draw the Sheep with first compilation and reuse. They record twelve compiled
-parts and zero on reuse, 72 compiled faces, 288 source vertices and 18 shadow
-quads. Source returns include `Minecraft.k:1328`, N569, PX1013 and HUD2101;
-checked cleanup succeeds. A playable session and whole-frame original/native
-equality remain unfinished.
+The loaded Windows profiles now draw [Sheep, Pig, Cow and Chicken](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md)
+through actual source owners. Three separate Pig/Cow/Chicken profiles each
+return four later World/HUD frames: N delay, an undrawn traversal, then first
+compilation and reuse. Pig compiles six parts, Cow nine and Chicken eight;
+reuse compiles none. Their shadow totals are 18, 18 and two quads. Source returns
+include `Minecraft.k:1328`, N569, PX1013 and HUD2101, followed by checked cleanup.
+The preceding Sheep profile retains twelve compiled parts, 72 faces, 288 source
+vertices and 18 shadow quads across its two actual draws.
 
-The focused draw comparison passes 666 native checks and 70,341 selected
-graph/state checks on each host, including 147 ordered direct queries, twelve
-lists, 72 face buffers and six comparator negatives. Linux ordinary/read-only
-JDI evidence stays separate from the audited Windows ordinary NVIDIA GL
-supplement. Neither establishes original/native pixels or live GL call order.
-Separate legacy-clamp controls pass 46,802 checks and 3,872 exact matching-SDK
-samples per host. Earlier startup and hosted metrics below keep their own scope.
+The focused four-animal comparison passes 3,350 native and 206,656 typed checks
+per host, with 316 ordered direct queries, 35 lists, 210 faces, eight shadows,
+18 String calls and ten comparator negatives. Linux ordinary/read-only JDI
+and the separately audited Windows ordinary NVIDIA GL supplement have distinct
+scopes. The latter requires 36 inputs, four helpers and 45 artifacts. There is
+no original/native pixel, full GL-order or whole-frame equality claim. Prepared
+matrices alone allow four float ULP and opposite-zero numeric equality.
+
+These loaded controls use existing-player inventory statistics and Entity-empty
+saved Chunks as declared inputs. That scope does not qualify fresh-player
+tutorial completion. Player pose and World Random are not forced; ordinary
+subsequent ticks run. Active VU notices, Canvas/focus, nonempty items, save transport
+and seven remaining default Mob renderers, including Skeleton's Bow, keep the
+client pre-playable. Separate legacy-clamp controls retain 46,802 checks and
+3,872 exact matching-SDK samples per host. The completed broad local cohort
+builds 93 targets per host and passes 121 Windows/115 Linux tests without
+failures, skips or sanitizer findings. All twenty fresh original-comparison
+wrappers pass, and all four build/test phases preserve 2,559 inputs.
+[Build and tests](Build-and-tests#current-local-qualification) records timings,
+formatting and the final current-input audit. Earlier startup and hosted results
+below keep their published-commit scope; current hosted records are separate in
+[Draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
 
 The default native executable runs the constructed source App and initialized
 main menu. Explicit diagnostic flags retain the separate title and fixed-camera
@@ -74,9 +88,9 @@ loaded path completes 361 random Chunk coordinates and 28,880 Block samples,
 returns from `fd.l:198`, then completes the random display call at `fd.q:134`
 with all 1,000 samples and 6,000 World Random draws. EffectRenderer ticking
 returns; a repeated focused profile completes the actual Mob's Living/Creature
-path and movement work and returns from `Minecraft.k:1328`. The actual Sheep
-draw now returns through N569, the World frame and HUD. Other renderer families
-retain reached dependencies. A separate declared-paused
+path and movement work and returns from `Minecraft.k:1328`. The actual Sheep, Pig, Cow and Chicken
+draws now return through N569, the World frame and HUD. Seven other default
+renderer families retain reached dependencies. A separate declared-paused
 lighting control preserves the source batch of 499 real queue records.
 Frame sound, lighting, suffocation and controller interpolation are connected.
 Focused mouse look uses the actual SDK/CU/Player fields. Inactive pause entry

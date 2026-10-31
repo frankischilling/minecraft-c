@@ -1,19 +1,42 @@
 # History
 
-The current [Sheep drawing checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md)
-advances the earlier N516 renderer boundary through actual fur, terrain shadow
-and list reuse. Each host passes 666 native checks, 70,341 selected graph/state
-checks, 147 ordered queries, twelve lists, 72 face buffers and six comparator
-negatives. Linux ordinary/JDI evidence stays separate from the audited Windows
-ordinary NVIDIA GL supplement; no original/native pixels, live GL order or
-whole-frame equality is claimed. Legacy-clamp SDK controls separately pass
-46,802 checks and 3,872 exact samples per host.
+The current [Sheep/Pig/Cow/Chicken checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md) extends the earlier
+Sheep closure with real Pig saddle lookup predicates, Cow virtual pose and
+Chicken sine/flap rendering. Each host passes 3,350 native checks and 206,656
+typed comparisons, with 316 ordered queries, 35 lists, 210 faces, eight shadows,
+18 direct String calls and ten comparator negatives. The current Source capture
+retains eight calls, seven uploads, 35 lists and 218 batches from unchanged
+methods; raw constructor contexts remain independent.
 
-The finite Windows repeat returns four World/HUD frames: one delay, one undrawn
-traversal and two Sheep draws. It records twelve compiled parts and zero on
-reuse, 72 faces, 288 source vertices and 18 shadow quads, returning through
-`Minecraft.k:1328`, N569, PX1013 and HUD2101 before checked cleanup. Earlier continuation
-and commit metrics below retain their historical scope.
+Three separate Windows loaded profiles for Pig, Cow and Chicken each return
+four frames: delay, undrawn traversal, first draw and reuse. They compile
+six/nine/eight parts and emit 18/18/two shadow quads, returning through
+`Minecraft.k:1328`, N569, PX1013 and HUD2101 before checked cleanup. The existing
+inventory statistic is a declared input. These are native integration results;
+original/native pixels, full live GL order and whole-frame equality are not
+qualified. The completed local cohort builds all 93 targets on both hosts and
+passes 121 Windows and 115 Linux tests without failures, skips or sanitizer
+findings. CTest takes 322.57/355.14 seconds; test phases including post-run hash
+audits take 322.95/385.96 seconds. All four phases preserve the same 2,559 inputs.
+Twenty fresh original-comparison wrappers pass, ten per host; current hashes
+cover 5,510 distinct paths. Formatting checks 1,746 files, and six current
+binding tables cover 8,251 entries across 3,502 files without changing their
+historical metadata. Hosted results retain their own published-commit scope in
+[Draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
+
+The preceding Sheep checkpoint advanced the earlier N516 dependency through
+fur, terrain shadow and list reuse. It retains 666 native checks, 70,341 typed
+comparisons, 147 queries, twelve lists, 72 faces and six comparator negatives per
+host. Its four-frame repeat includes twelve parts on first compilation, zero
+on reuse, 72 faces, 288 source vertices and 18 shadow quads. The frozen Sheep
+package is unchanged. Linux ordinary/JDI and Windows ordinary NVIDIA GL scopes
+remain separate for both checkpoints.
+
+The clamp-registration test repair at `dbd1a83` changes no production code and
+[passes all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/41196374086). Its original failed expectation and failed
+parent run remain preserved. Separate SDK controls retain 46,802 checks and
+3,872 exact samples per host. Historical commit metrics below keep their own
+source scopes.
 
 The [particle continuation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md)
 connected actual DN draw methods, shared particle origins, two further fog calls

@@ -18,6 +18,18 @@ do not postpone original comparisons until a whole milestone is built. Independe
 research can proceed in parallel, but shared interfaces, builds, Git operations
 and integration need explicit ownership.
 
+The current priority is playable single-player before server work. Four default
+Mob draw paths now have finite original comparisons and loaded-client
+continuations: Sheep, Pig, Cow and Chicken. Complete the seven remaining
+default families, including Skeleton's actual held Bow, then close the active
+tutorial/achievement notice and genuine Canvas focus/resize paths. Live Mob
+NBT/factory round trips, the SourceStore region-write transport and actual
+save/detach/reload remain separate persistence dependencies. Ordinary click/use,
+progressive mining, carried-item drawing, pickup and placement must form a
+working interaction loop. Existing movement, look and time bodies remain part
+of that real loop. The detailed current evidence and remaining limits are in
+[development status](status.md) and [Mob drawing](client/mob-drawing.md).
+
 The raw NBT and modified UTF increment is integrated, as is bounded gzip/zlib,
 with [both-side evidence](reference/compression.md). Read-only original region
 inspection passes [exact-source original comparisons](reference/region.md) on

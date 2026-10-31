@@ -358,6 +358,7 @@ typedef struct fixture {
     mc_client_menu_loop *loop;
     mc_client_menu_loop_state state;
     uintptr_t repeat_sheep_identity; /* Borrowed identity; World/Chunk own the live Entity. */
+    uintptr_t animal_identity; /* Independent animals profile; same real publication ownership. */
 } fixture;
 
 /* This continuation uses an existing-player statistic read by the genuine
@@ -2036,21 +2037,441 @@ static int partial_world_terminal_controls(fixture *f, mc_client_source_da **ext
     return 0;
 }
 
+/* Three independent loaded invocations keep every declared actor observable
+ * in the existing first-Entity receipt. They add no production tracing. */
+typedef struct animal_profile {
+    const char *mode, *name, *source_class, *renderer_class, *model_class;
+    mc_entity_class_kind kind;
+    unsigned int constructor_pc, model_pc;
+    size_t rendered_parts, graph_parts;
+} animal_profile;
+
+static const animal_profile animal_profiles[] = {
+    {"animals-pig", "pig", "wh", "me", "eh", MC_ENTITY_CLASS_KIND_PIG, 19, 67, 6, 12},
+    {"animals-cow", "cow", "bx", "va", "hh", MC_ENTITY_CLASS_KIND_COW, 19, 40, 9, 9},
+    {"animals-chicken", "chicken", "ww", "ip", "td", MC_ENTITY_CLASS_KIND_CHICKEN, 62, 85, 8, 8}};
+
+static const animal_profile *animal_profile_get(const char *mode) {
+    for (size_t i = 0; i < sizeof(animal_profiles) / sizeof(*animal_profiles); ++i)
+        if (!strcmp(mode, animal_profiles[i].mode))
+            return &animal_profiles[i];
+    return NULL;
+}
+
+static int animal_input(fixture *f, const animal_profile *profile) {
+    mc_world_runtime *world = f->app->active_world;
+    mc_entity *player = f->app->i;
+    CHECK(world != NULL && player == f->app->h && f->app->r == NULL && !f->state.failed &&
+          f->state.render_returned && f->state.world_frame != NULL &&
+          f->state.world_frame->returned && f->animal_identity == 0 &&
+          mc_entity_is_kind(player, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
+          player->base.world == world && player->classes == world->classes->entities &&
+          world->fields.r != NULL);
+
+    struct animal_input_work {
+        mc_entity_view_error view;
+        mc_mob_error constructor;
+        mc_world_light_error height;
+        mc_world_entity_error publication;
+    } *work = calloc(1, sizeof(*work));
+
+    CHECK(work != NULL);
+    const double player_x = player->base.x, player_y = player->base.y, player_z = player->base.z;
+    const float player_yaw = player->base.yaw, player_pitch = player->base.aT;
+    const mc_java_random world_random = *world->fields.r;
+    mc_entity_vector *eye = NULL, *look = NULL;
+    CHECK(mc_entity_living_position(player, 1.0f, &eye, &work->view) == MC_ENTITY_VIEW_OK &&
+          mc_entity_living_look_current(player, mc_client_bootstrap_math(f->bootstrap), &look,
+                                        &work->view) == MC_ENTITY_VIEW_OK &&
+          eye != NULL && look != NULL && look->y > -.25 && look->y < .25);
+    const double x = eye->x + look->x * 6.0, z = eye->z + look->z * 6.0;
+    CHECK(mc_entity_vector_release(player->classes, look) == MC_ENTITY_OK &&
+          mc_entity_vector_release(player->classes, eye) == MC_ENTITY_OK);
+    const int32_t block_x = mc_math_floor_double(x), block_z = mc_math_floor_double(z);
+    int32_t height = 0, air = -1;
+    mc_world_storage_error error;
+    CHECK(mc_world_runtime_height(world, block_x, block_z, &height, &work->height) ==
+              MC_WORLD_STORAGE_OK &&
+          height == 64 &&
+          mc_world_runtime_block_get(world, block_x, height, block_z, &air, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          air == 0 &&
+          mc_world_runtime_block_get(world, block_x, height + 1, block_z, &air, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          air == 0);
+    const mc_entity_class_literal *literal = NULL;
+    mc_entity *animal = NULL;
+    CHECK(mc_entity_class_literal_get(player->classes, profile->kind, &literal) == MC_ENTITY_OK &&
+          mc_mob_allocate(player->classes, f->app->registry, literal, &animal,
+                          &work->constructor) == MC_MOB_OK &&
+          animal != NULL && mc_mob_construct(animal, world, &work->constructor) == MC_MOB_OK &&
+          animal->phase == MC_ENTITY_READY && animal->classes == player->classes &&
+          animal->class_literal == literal && animal->base.world == world &&
+          animal->bounds != NULL);
+    CHECK(mc_entity_set_position(animal, x, (double)height, z) == MC_ENTITY_OK &&
+          animal->base.x == x && animal->base.y == (double)height && animal->base.z == z &&
+          animal->bounds->min_y == (double)height &&
+          animal->bounds->max_y > animal->bounds->min_y && animal->bounds->min_x < x &&
+          animal->bounds->max_x > x && animal->bounds->min_z < z && animal->bounds->max_z > z);
+    const size_t before = world->entity_membership.count;
+    CHECK(before == 1); /* Entity-empty save plus the actual published Player. */
+    bool inserted = false;
+    CHECK(mc_world_runtime_insert_entity(world, animal, &inserted, &work->publication) ==
+              MC_WORLD_STORAGE_OK &&
+          inserted && animal->base.bF && world->fields.b == world->entity_membership.list &&
+          world->fields.b->count == before + 1 && world->entity_membership.count == before + 1 &&
+          world->fields.b->items[before] == animal &&
+          world->entity_membership.entries[before] == animal);
+    mc_chunk_state *chunk_state = NULL;
+    CHECK(mc_world_runtime_get(world, animal->base.bG, animal->base.bI, &chunk_state) ==
+              MC_CHUNK_ACQUIRE_OK &&
+          chunk_state != NULL && !chunk_state->blank);
+    mc_world_chunk *chunk = mc_world_store_chunk_object(world->fields.w, chunk_state);
+    mc_world_chunk_fields chunk_fields;
+    const mc_world_chunk_entity_list *slice = NULL;
+    size_t count = 0, occurrences = 0;
+    CHECK(chunk != NULL && mc_world_chunk_fields_get(chunk, &chunk_fields) == MC_WORLD_STORAGE_OK &&
+          chunk_fields.d == world && chunk_fields.j == animal->base.bG &&
+          chunk_fields.k == animal->base.bI && chunk_fields.q && animal->base.bH == 4 &&
+          mc_world_chunk_slice_at(chunk_fields.m, (size_t)animal->base.bH, &slice) ==
+              MC_WORLD_STORAGE_OK &&
+          mc_world_chunk_entity_count(slice, &count) == MC_WORLD_STORAGE_OK);
+    for (size_t index = 0; index < count; ++index) {
+        mc_entity *entry = NULL;
+        CHECK(mc_world_chunk_entity_at(slice, index, &entry) == MC_WORLD_STORAGE_OK);
+        if (entry == animal)
+            ++occurrences;
+    }
+    CHECK(occurrences == 1 && animal->holds >= 3 && player->base.x == player_x &&
+          player->base.y == player_y && player->base.z == player_z &&
+          player->base.yaw == player_yaw && player->base.aT == player_pitch &&
+          mc_test_java_random_equal(&world_random, world->fields.r));
+    f->animal_identity = (uintptr_t)animal;
+    const size_t holds = animal->holds;
+    mc_entity_release(animal); /* End only this genuine constructor occurrence. */
+    animal = NULL;
+    mc_entity *published = world->entity_membership.entries[before];
+    CHECK((uintptr_t)published == f->animal_identity && published->holds == holds - 1 &&
+          published->base.world == world && mc_entity_is_kind(published, profile->kind));
+    free(work);
+    printf("WORLD_ANIMAL_ENTITY profile=%s input=native-constructed pose=actual-player-look "
+           "distance=6 world-and-chunk=1 same-world-and-classes=1 constructor-returned=1 "
+           "constructor-hold-released=1 player-unchanged=1 world-random-unchanged=1\n",
+           profile->name);
+    return 0;
+}
+
+static mc_entity *animal_live(const fixture *f) {
+    mc_world_runtime *world = f->app->active_world;
+    if (world == NULL || world->fields.b != world->entity_membership.list ||
+        world->fields.b->count != world->entity_membership.count)
+        return NULL;
+    for (size_t i = 0; i < world->entity_membership.count; ++i) {
+        mc_entity *entity = world->entity_membership.entries[i];
+        if (world->fields.b->items[i] != entity)
+            return NULL;
+        if ((uintptr_t)entity == f->animal_identity)
+            return entity;
+    }
+    return NULL;
+}
+
+static int animal_model_graph(fixture *f, const animal_profile *profile,
+                              repeat_render_control *control, bool compiled) {
+    mc_entity *animal = animal_live(f);
+    CHECK(animal != NULL && animal->phase == MC_ENTITY_READY && animal->bounds != NULL &&
+          animal->base.world == f->app->active_world && animal->classes == f->app->entities &&
+          mc_entity_is_kind(animal, profile->kind) && !animal->base.be && animal->base.bF);
+    mc_mob_state mob;
+    CHECK(mc_mob_inspect(animal, &mob) && mob.kind == profile->kind &&
+          mob.constructor_pc == profile->constructor_pc);
+    if (profile->kind == MC_ENTITY_CLASS_KIND_PIG)
+        CHECK(mob.watcher_16_present && mob.watcher_16_type == 0 && (mob.watcher_16 & 1) == 0);
+    mc_client_manager_state manager;
+    CHECK(mc_client_render_manager_inspect(f->app->startup->manager_classes, &manager) &&
+          manager.phase == MC_CLIENT_MANAGER_READY && manager.a != NULL &&
+          client_renderer_roster(f->app, (mc_client_render_manager *)manager.a, &manager));
+    mc_client_managed_renderer *renderer = NULL;
+    for (size_t i = 0; i < manager.entries; ++i) {
+        const mc_entity_class_literal *key = NULL;
+        mc_client_managed_renderer *owner = NULL;
+        CHECK(mc_client_render_manager_entry((mc_client_render_manager *)manager.a, i, &key, &owner,
+                                             NULL) == MC_CLIENT_MANAGER_OK);
+        if (key == animal->class_literal)
+            renderer = owner;
+    }
+    mc_client_managed_renderer_state state;
+    CHECK(renderer != NULL && mc_client_managed_renderer_inspect(renderer, &state) &&
+          state.phase == MC_CLIENT_MODEL_READY && state.identity == renderer &&
+          state.manager == manager.a && state.source_class != NULL &&
+          !strcmp(state.source_class, profile->renderer_class) &&
+          state.primary == renderer->primary && state.secondary == renderer->secondary &&
+          renderer->primary != NULL && renderer->primary->phase == MC_CLIENT_MODEL_READY &&
+          !strcmp(renderer->primary->source_class, profile->model_class));
+    if (profile->kind == MC_ENTITY_CLASS_KIND_PIG)
+        CHECK(renderer->secondary != NULL && renderer->secondary != renderer->primary &&
+              renderer->secondary->phase == MC_CLIENT_MODEL_READY &&
+              !strcmp(renderer->secondary->source_class, "eh"));
+    else
+        CHECK(renderer->secondary == NULL);
+    if (control->renderer == 0) {
+        control->renderer = (uintptr_t)renderer;
+        control->primary = (uintptr_t)renderer->primary;
+        control->secondary = (uintptr_t)renderer->secondary;
+    }
+    CHECK(control->renderer == (uintptr_t)renderer &&
+          control->primary == (uintptr_t)renderer->primary &&
+          control->secondary == (uintptr_t)renderer->secondary);
+    manager_model *model = renderer->primary;
+    mc_client_model_part *parts[12] = {0};
+    if (profile->kind == MC_ENTITY_CLASS_KIND_CHICKEN) {
+        mc_client_model_part *selected[] = {model->fields.a, model->fields.g, model->fields.h,
+                                            model->fields.b, model->fields.c, model->fields.d,
+                                            model->fields.e, model->fields.f};
+        memcpy(parts, selected, sizeof(selected));
+    } else {
+        mc_client_model_part *selected[] = {model->fields.d, model->fields.e, model->fields.f,
+                                            model->fields.g, model->fields.h, model->fields.i};
+        memcpy(parts, selected, sizeof(selected));
+        if (profile->kind == MC_ENTITY_CLASS_KIND_COW) {
+            parts[6] = model->fields.b;
+            parts[7] = model->fields.c;
+            parts[8] = model->fields.a;
+        } else {
+            model = renderer->secondary;
+            mc_client_model_part *secondary[] = {model->fields.d, model->fields.e, model->fields.f,
+                                                 model->fields.g, model->fields.h, model->fields.i};
+            memcpy(parts + 6, secondary, sizeof(secondary));
+        }
+    }
+    for (size_t i = 0; i < profile->graph_parts; ++i) {
+        mc_client_model_part *part = parts[i];
+        const bool rendered = compiled && i < profile->rendered_parts;
+        CHECK(part != NULL && part->h && !part->i && part->n == rendered);
+        if (control->parts[i] == 0)
+            control->parts[i] = (uintptr_t)part;
+        CHECK(control->parts[i] == (uintptr_t)part);
+        for (size_t j = 0; j < i; ++j)
+            CHECK(control->parts[j] != (uintptr_t)part);
+        if (rendered) {
+            mc_client_source_list_state list;
+            CHECK(part->o > 0 && mc_client_display_list_inspect(f->app->display, part->o, &list) &&
+                  list.defined && !list.building && list.draws == 6 && list.vertices == 36);
+            for (size_t face = 0; face < 6; ++face) {
+                mc_client_source_batch_view batch;
+                CHECK(mc_client_display_list_batch(f->app->display, part->o, face, &batch) &&
+                      batch.mode == 4 && batch.vertices == 6 && batch.byte_count == 192);
+            }
+            if (control->lists[i] == 0)
+                control->lists[i] = part->o;
+            CHECK(control->lists[i] == part->o);
+            for (size_t j = 0; j < i; ++j)
+                CHECK(control->lists[j] != part->o);
+        } else {
+            CHECK(part->o == 0);
+        }
+    }
+    if (compiled)
+        CHECK(manager.fields.g == f->app->active_world && manager.living_occurrence == f->app->i &&
+              manager.fields.k == f->app->settings && animal->base.bt > 0);
+    return 0;
+}
+
+static int animal_returned_frame(fixture *f, const animal_profile *profile,
+                                 repeat_render_control *control) {
+    const mc_client_menu_loop_state *source = &f->state;
+    const mc_client_world_frame_state *frame = source->world_frame;
+    const mc_client_gui_ingame_draw_state *hud = source->hud;
+    CHECK(!source->failed && source->running && source->render_returned &&
+          source->render_clock_stored && source->world_draws > 0 &&
+          source->world_draws == source->hud_draws && frame != NULL && !frame->active &&
+          frame->returned && frame->source_pc == 1013 && frame->app == f->app &&
+          frame->world == f->app->active_world && frame->owner == f->app->t &&
+          frame->camera == f->app->i && frame->render_global == f->app->g &&
+          frame->failure != NULL && frame->failure->status == MC_CLIENT_WORLD_FRAME_OK &&
+          frame->failure->entities == NULL && frame->failure->hand == NULL);
+    CHECK(frame->picking_returned && frame->viewport_set && frame->fog_returned &&
+          frame->camera_returned && frame->frustum_returned && frame->sky_returned &&
+          frame->updates_returned && frame->terrain_returned && frame->lighting_enabled &&
+          frame->eye_position_returned && frame->entities_returned &&
+          frame->lit_particles_returned && frame->sprite_particles_returned &&
+          frame->translucent_returned && frame->translucent_state_restored &&
+          frame->precipitation_returned && frame->clouds_returned && frame->hand_returned &&
+          frame->hand != NULL && frame->hand->returned && frame->hand->source_pc == 163 &&
+          frame->hand->held_returned && frame->hand->overlays_returned &&
+          frame->tail_anaglyph_read && !frame->tail_anaglyph);
+    CHECK(hud != NULL && !hud->active && hud->returned && hud->source_pc == 2101 &&
+          hud->projection_returned && hud->hotbar_returned && hud->crosshair_returned &&
+          hud->stats_returned && hud->slots_returned && hud->empty_slots == 9 &&
+          hud->chat_returned && hud->owner == NULL && hud->failure == NULL && hud->cleanup == NULL);
+    const mc_client_render_global_entities_state *entities = frame->entities;
+    CHECK(entities != NULL && !entities->active && entities->returned && !entities->retiring &&
+          entities->draw == NULL && entities->owner == NULL && entities->current == NULL &&
+          entities->entities_list == NULL && entities->eye == NULL && entities->frustum == NULL &&
+          entities->ll == NULL && entities->th == NULL && entities->failure == NULL &&
+          entities->cleanup == NULL);
+    ++control->frames;
+    if (entities->delayed) {
+        CHECK(entities->source_pc == 17 && entities->draws_attempted == 0 &&
+              !entities->first_entity_draw.valid && !control->compiled);
+        ++control->delayed_frames;
+        return 0;
+    }
+    CHECK(
+        entities->source_pc == 569 && entities->ll_returned && entities->th_returned &&
+        entities->counters_cleared && entities->origins_stored && entities->origins_written == 6 &&
+        entities->entities_visited == f->app->active_world->entity_membership.count &&
+        entities->entities_visited >= 2 && entities->distance_checks == entities->entities_visited);
+    mc_entity *animal = animal_live(f);
+    if (entities->draws_attempted == 0) {
+        CHECK(animal != NULL && animal->base.bt == 0 && !control->compiled &&
+              f->app->active_world->entity_membership.count == 2 &&
+              entities->entities_visited == 2 && entities->distance_checks == 2 &&
+              entities->frustum_checks == 2 && entities->camera_skips == 1 &&
+              entities->presence_checks == 0 && entities->draws_returned == 0 &&
+              entities->draws_retired == 0 && entities->entity_draws_returned == 0 &&
+              entities->weather_draws_returned == 0 && !entities->first_entity_draw.valid &&
+              !entities->last_draw.valid && entities->model_parts_compiled == 0 &&
+              entities->model_faces == 0 && entities->model_vertices == 0 &&
+              entities->shadow_quads == 0 && f->app->r == NULL && !atomic_load(&f->app->o));
+        CHECK(animal_model_graph(f, profile, control, false) == 0);
+        ++control->undrawn_frames;
+        return 0;
+    }
+    CHECK(entities->presence_checks >= 1 && entities->draws_attempted == entities->draws_returned &&
+          entities->draws_returned == entities->draws_retired &&
+          entities->entity_draws_returned > 0);
+    const mc_client_render_global_draw_receipt *draw = &entities->first_entity_draw;
+    CHECK(animal != NULL && repeat_world_work(source) && draw->valid && draw->returned &&
+          draw->retired && !draw->post_only && draw->n_invoke_pc == 516 &&
+          draw->th_source_pc == 115 && draw->living_source_pc == 769 &&
+          draw->post_draw_source_pc == 100 && draw->actor_identity == f->animal_identity &&
+          draw->actor_class_identity == (uintptr_t)animal->class_literal &&
+          draw->actor_kind == (int32_t)profile->kind && draw->actor_class_name != NULL &&
+          !strcmp(draw->actor_class_name, profile->source_class) &&
+          draw->renderer_identity == control->renderer && draw->renderer_class_name != NULL &&
+          !strcmp(draw->renderer_class_name, profile->renderer_class) && draw->primary_returned &&
+          draw->post_draw_returned && draw->primary_event_returned);
+    CHECK(draw->primary_model.identity == control->primary &&
+          draw->primary_model.class_name != NULL &&
+          !strcmp(draw->primary_model.class_name, profile->model_class) &&
+          draw->primary_model.returned && draw->primary_model.source_pc == profile->model_pc &&
+          draw->primary_model.part_calls == profile->rendered_parts &&
+          draw->primary_model.part_returns == profile->rendered_parts &&
+          draw->secondary_model.identity == 0 && !draw->secondary_model.returned);
+    for (size_t i = 0; i < 4; ++i)
+        CHECK(draw->pass_attempted[i] && !draw->pass_result[i] && !draw->pass_render_returned[i]);
+    CHECK(draw->shadow_quads > 0 && draw->shadow_vertices == draw->shadow_quads * 4 &&
+          draw->shadow_block_queries > 0 && draw->shadow_light_queries > 0 &&
+          draw->shadow_normal_queries >= draw->shadow_quads &&
+          draw->shadow_brightness_queries >= draw->shadow_quads);
+    if (!control->compiled) {
+        CHECK(draw->model_parts_compiled == profile->rendered_parts &&
+              draw->primary_model.compiled_parts == profile->rendered_parts &&
+              draw->model_faces == profile->rendered_parts * 6 &&
+              draw->model_vertices == profile->rendered_parts * 24);
+        control->compile_parts = draw->model_parts_compiled;
+        control->compile_faces = draw->model_faces;
+        control->compile_vertices = draw->model_vertices;
+        control->compiled = true;
+    } else {
+        CHECK(draw->model_parts_compiled == 0 && draw->primary_model.compiled_parts == 0 &&
+              draw->model_faces == 0 && draw->model_vertices == 0);
+        control->reuse_parts = draw->model_parts_compiled;
+        control->reused = true;
+    }
+    CHECK(animal_model_graph(f, profile, control, true) == 0);
+    ++control->entity_frames;
+    control->shadow_quads += draw->shadow_quads;
+    return 0;
+}
+
+static int animal_controls(fixture *f, const animal_profile *profile, const char *capture_path) {
+    CHECK(repeat_statistics_controls(f, false) == 0 && f->app->r == NULL &&
+          !atomic_load(&f->app->o) && display_focus(f, true) == 0);
+    printf("WORLD_ANIMAL_PROFILE profile=%s scopes=independent-loaded "
+           "statistics-input=pre-bootstrap-unsent-file open-inventory=1 "
+           "canonical=ep.f notice-inactive=1 native-integration-only=1\n",
+           profile->name);
+    CHECK(animal_input(f, profile) == 0);
+    SDL_Delay(100); /* The real Timer decides the number of source ticks. */
+    repeat_render_control control = {0};
+    CHECK(animal_model_graph(f, profile, &control, false) == 0);
+    const uint64_t ticks_before = f->state.world_tick_returns;
+    const uint64_t draws_before = f->state.world_draws;
+    const uint64_t started = SDL_GetTicks(), deadline = started + 60000;
+    while (!control.reused && control.frames < 8 && SDL_GetTicks() < deadline) {
+        CHECK(display_focus(f, true) == 0);
+        const bool returned = mc_client_menu_loop_frame(f->loop);
+        CHECK(mc_client_menu_loop_inspect(f->loop, &f->state));
+        if (!returned)
+            fprintf(stderr, "Animal %s retained %s.%s:%" PRId64 " %s\n", profile->name,
+                    f->state.source_class == NULL ? "native" : f->state.source_class,
+                    f->state.source_method == NULL ? "frame" : f->state.source_method,
+                    f->state.source_pc, f->state.operation == NULL ? "none" : f->state.operation);
+        CHECK(returned && animal_returned_frame(f, profile, &control) == 0);
+        if (!control.reused)
+            SDL_Delay(100);
+    }
+    if (!control.reused) {
+        mc_entity *animal = animal_live(f);
+        fprintf(stderr,
+                "Animal %s deadline elapsed-seconds=%" PRIu64
+                " limit-seconds=60 frames=%zu delayed=%zu undrawn=%zu entity-frames=%zu "
+                "paused=%d screen=%d actor-ticks=%d\n",
+                profile->name, (SDL_GetTicks() - started) / UINT64_C(1000), control.frames,
+                control.delayed_frames, control.undrawn_frames, control.entity_frames,
+                (int)atomic_load(&f->app->o), f->app->r == NULL ? -1 : (int)f->app->r->kind,
+                animal == NULL ? -1 : animal->base.bt);
+    }
+    CHECK(control.compiled && control.reused && control.entity_frames >= 2 && control.frames >= 2 &&
+          control.frames <= 8 &&
+          control.frames ==
+              control.entity_frames + control.delayed_frames + control.undrawn_frames &&
+          f->state.world_tick_returns > ticks_before &&
+          f->state.world_draws == draws_before + control.frames &&
+          repeat_statistics_controls(f, false) == 0);
+    printf(
+        "WORLD_ANIMAL_FRAME profile=%s frames=%zu entity-frames=%zu delayed-frames=%zu "
+        "undrawn-frames=%zu source=px.a:1013 entities=n.a:569 hud=uq.a:2101 "
+        "mob=%s renderer=%s primary=%s exact-declared-actor=1 "
+        "renderer-map=29 constructor-owners=28 local-player-alias=gs same-world-and-classes=1 "
+        "compiled-parts=%zu reused-parts=%zu compiled-faces=%zu compiled-vertices=%zu "
+        "part-lists=%zu unused-secondary-parts=%zu part-source-vertices=24 part-list-vertices=36 "
+        "stable-list-ids=1 shadow-quads=%zu checked-draw-retirement=1 copied-receipts=1 "
+        "tick-return=1328 scheduler=198 completed-random-calls=%" PRIu64
+        " completed-chunks=%zu completed-samples=%" PRIu64 " display-calls=%" PRIu64
+        " display-samples=%" PRIu64 " display-random=%" PRIu64 "\n",
+        profile->name, control.frames, control.entity_frames, control.delayed_frames,
+        control.undrawn_frames, profile->source_class, profile->renderer_class,
+        profile->model_class, control.compile_parts, control.reuse_parts, control.compile_faces,
+        control.compile_vertices, profile->rendered_parts,
+        profile->graph_parts - profile->rendered_parts, control.shadow_quads,
+        f->state.random_chunk_calls, f->state.last_random_chunk_count,
+        f->state.random_chunk_samples, f->state.random_display_calls,
+        f->state.random_display_samples, f->state.random_display_random_calls);
+    CHECK(capture(f, capture_path) == 0);
+    return 0;
+}
+
 int main(int argc, char **argv) {
-    CHECK(argc == 4 &&
-          (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
-           strcmp(argv[2], "large") == 0 || strcmp(argv[2], "double") == 0 ||
-           strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
-           strcmp(argv[2], "load-terminal") == 0 || strcmp(argv[2], "load-partial") == 0 ||
-           strcmp(argv[2], "repeat") == 0 || strcmp(argv[2], "load-light") == 0));
+    CHECK(argc == 4 && (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
+                        strcmp(argv[2], "large") == 0 || strcmp(argv[2], "double") == 0 ||
+                        strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
+                        strcmp(argv[2], "load-terminal") == 0 ||
+                        strcmp(argv[2], "load-partial") == 0 || strcmp(argv[2], "repeat") == 0 ||
+                        strcmp(argv[2], "load-light") == 0 || animal_profile_get(argv[2]) != NULL));
+    const animal_profile *animal = animal_profile_get(argv[2]);
+    const bool animals_load = animal != NULL;
     const bool double_click = strcmp(argv[2], "double") == 0;
     const bool terminal_admission = strcmp(argv[2], "load-terminal") == 0;
     const bool partial_load = strcmp(argv[2], "load-partial") == 0;
     const bool repeat_load = strcmp(argv[2], "repeat") == 0;
     const bool light_control = strcmp(argv[2], "load-light") == 0;
-    const bool focused_load = strcmp(argv[2], "load") == 0 || repeat_load || light_control;
+    const bool focused_load =
+        strcmp(argv[2], "load") == 0 || repeat_load || light_control || animals_load;
     const bool loading_world = strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
-                               terminal_admission || repeat_load || light_control;
+                               terminal_admission || repeat_load || light_control || animals_load;
     const bool populated =
         strcmp(argv[2], "populated") == 0 || double_click || loading_world || partial_load;
     const bool large = strcmp(argv[2], "large") == 0;
@@ -2064,7 +2485,7 @@ int main(int argc, char **argv) {
                                                    .hidden = !focused_load};
     CHECK(mc_client_bootstrap_open(&options, &f.bootstrap) == MC_CLIENT_BOOTSTRAP_OK);
     f.app = mc_client_bootstrap_app(f.bootstrap);
-    if (repeat_load)
+    if (repeat_load || animals_load)
         CHECK(repeat_statistics_controls(&f, true) == 0);
     if (focused_load)
         CHECK(SDL_RaiseWindow(mc_client_display_window(f.app->display)));
@@ -2447,6 +2868,10 @@ int main(int argc, char **argv) {
                 CHECK(light_batch_controls(&f) == 0);
                 goto loaded_draw_controls_done;
             }
+            if (animals_load) {
+                CHECK(animal_controls(&f, animal, argv[3]) == 0);
+                goto loaded_draw_controls_done;
+            }
             if (repeat_load) {
                 CHECK(repeat_statistics_controls(&f, false) == 0);
                 puts("WORLD_REPEAT profile=existing-inventory-player "
@@ -2646,7 +3071,7 @@ int main(int argc, char **argv) {
         CHECK(terminal_prepare_controls(&f, external) == 0);
     if (terminal_admission)
         CHECK(loaded_terminal_admission_controls(&f) == 0);
-    if (loading_world && !terminal_admission && !repeat_load && !light_control) {
+    if (loading_world && !terminal_admission && !repeat_load && !light_control && !animals_load) {
         mc_world_runtime *world = f.app->active_world;
         mc_entity *player = f.app->h;
         mc_client_render_global *renderer = f.app->g;
@@ -2674,7 +3099,7 @@ int main(int argc, char **argv) {
               f.app->active_world == world && f.app->h == player && f.app->i == player);
         CHECK(mc_client_effect_renderer_release(effects) == MC_EFFECT_RENDERER_OK);
     }
-    if (!loading_world || terminal_admission || repeat_load || light_control) {
+    if (!loading_world || terminal_admission || repeat_load || light_control || animals_load) {
         CHECK(normal_terminal_retirement_controls(&f, &external, loading_world) == 0);
     } else {
         CHECK(!mc_client_menu_loop_retire(&f.loop) && f.loop != NULL && external != NULL);

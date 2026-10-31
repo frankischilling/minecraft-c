@@ -62,8 +62,8 @@ an existing-save load publishes the World, Player and movement input, attaches
 the renderer and completes picking. Its healthy no-screen path now executes
 [gameplay input](gameplay-input.md) through1073 and the admitted
 [World/frame segment](renderer-ticking.md). The current finite loaded profile
-also returns through World scheduling, terrain and the qualified Sheep draw;
-other gameplay and rendering branches remain unfinished.
+also returns through World scheduling, terrain and qualified Sheep, Pig, Cow
+and Chicken drawing; other gameplay and rendering branches remain unfinished.
 Create, Rename and Delete retain the precise
 [unfinished prefixes](world-selection.md#transitions-and-lifetime).
 Fullscreen, source F2 screenshots, debug timing, connection screens and several
@@ -82,7 +82,7 @@ paused entry flags, drains 500 actual records as 499 then 1, and checks saved
 BlockLight, queue identity, World time, Random state and normal WorldAccess
 callbacks. It does not qualify pause-screen transitions.
 
-The focused repeat now proves two actual [Sheep draws](mob-drawing.md) across
+The focused Sheep repeat proves two actual [Sheep draws](mob-drawing.md) across
 four returned World/HUD frames, after Mob path following and the real
 `Minecraft.k:1328` tick. The former retained TH call at `n.a:516` is a historical
 stop. N now checks each returned TH child's retirement before continuing at
@@ -102,15 +102,35 @@ a Sheep draw. The following two prove all twelve stable part/list identities,
 checked terminal cleanup. Display lists separately contain 36 NW-expanded
 vertices per part, compared with 24 source vertex calls per part.
 
-This repeat declares an existing Player whose genuinely loaded statistics
+The separate `animals` mode uses three independent loaded invocations, one
+Pig, Cow or Chicken in each. Every profile constructs its real actor after a
+returned load frame, positions it from the actual Player look and publishes it
+through the ordinary World and Chunk APIs. No saved proxy, container edit or
+constructor entropy selection is used. Each passes four later World/HUD
+frames: an N delay, an unticked traversal without a draw, then first compilation
+and reuse of the exact actor. The observed part counts are six, nine and eight;
+shadow totals are 18, 18 and 2 quads. All three return through the real
+`Minecraft.k:1328`, World draw 1013 and HUD 2101, with stable part/list identities
+and checked terminal cleanup. The declared input leaves Player pose and World
+Random unchanged; normal later ticks keep their actual random effects.
+
+Both renderer controls declare an existing Player whose genuinely loaded
+statistics
 already contain the inventory achievement. A Player without that entry can
 reach the unfinished active tutorial-notice draw at `vu.a:108` before the Mob
 draw. Serialized Mob loading is not qualified by the Entity-empty saves.
 The RenderManager retains its original 28 renderer owners; hand lookup adds
 the actual LocalPlayer key sharing the Player renderer, producing exactly 29
-Map entries. Other Mob renderers and nonempty TileEntity rows remain reached
-dependencies. The direct original/native drawing comparison has the separate
-prepared-context and device limits described in [Sheep drawing](mob-drawing.md).
+Map entries. Seven other default Mob renderer families, including Skeleton's
+mandatory held Bow, and nonempty TileEntity rows remain reached dependencies.
+The direct [four-animal comparison](mob-drawing.md#four-animal-observations-and-current-qualification)
+has separate prepared-context and device limits. Both focused native pairs
+pass, with the separately audited ordinary NVIDIA supplement on Windows.
+The 93-target broad cohort builds on both hosts and passes 121 Windows and
+115 Linux tests without failures, skips or sanitizer findings. Hosted results
+are reported separately for the published commit. These loaded
+profiles do not qualify the fresh-player tutorial, Canvas ungrab, nonempty
+items or live Mob save/reload.
 
 Account authentication is excluded by the development specification. At
 `Minecraft.k`11, tick6000 would start `kp`, whose `run()` builds the account-session
@@ -129,7 +149,8 @@ establish the original `Minecraft.d()` shutdown sequence.
 
 The full `Minecraft.run`, `Minecraft.k`, EntityRenderer/PX rendering and shutdown
 methods are not qualified as complete original equivalents. The returned
-Sheep fixture is finite native composition evidence. Other Entity and
+Sheep and animal fixtures are finite native composition evidence. Other
+Entity and
 TileEntity rendering, nondefault frame branches, remaining menus and gameplay
 actions still require implementation or qualification. It does not establish
 a playable client or whole-frame original/native parity.

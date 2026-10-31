@@ -7,9 +7,10 @@ World/Bed branch, and publishes the five interpolated camera fields in source
 order. The awake/null comparison and native-only sleeping/lifetime controls
 pass on Windows MSVC Debug and Linux Clang18 with ASan/UBSan at the recorded
 frame-binding checkpoint. RenderGlobal now uses this binding at N80 and calls
-the retained TH draw body at N329/516. The qualified [Sheep drawing path](mob-drawing.md)
-returns through GV/XY, the real MW/EA models and the enabled BW terrain shadow.
-Other renderer families and nonempty TileEntity draw rows remain unfinished.
+the retained TH draw body at N329/516. The qualified [Mob drawing paths](mob-drawing.md)
+return through the real Sheep, Pig, Cow and Chicken renderers/models and the
+enabled BW terrain shadow. Seven default Mob families and nonempty TileEntity
+draw rows remain unfinished.
 
 The entry requires the genuinely completed TH singleton. Its constructor owns
 all 28 renderers and their actual BW model/RenderBlocks children and manager
@@ -193,9 +194,12 @@ and visibility predicates run before the reached draw calls.
 
 ## Drawing on the bound manager
 
-The separate [Sheep drawing entry](mob-drawing.md) executes `TH.a(SN,F)`,
+The separate [Mob drawing entry](mob-drawing.md) executes `TH.a(SN,F)`,
 including interpolation, actual Entity brightness, GL color and Class-keyed
 renderer lookup. GV/XY renders the existing MW primary and EA fur models;
+ME/EH renders Pig, VA/HH renders Cow, and IP/TD renders Chicken. Pig's four
+saddle lookups precede its predicates; Cow's inherited render selects HH pose
+once; Chicken computes its actual flap animation before TD pose/render.
 BW postdraw uses the actual enabled Settings flag and current TH World. Entity
 brightness reads the actor's World independently. Neither body substitutes the
 other World operand or a copied Player representation.
@@ -212,6 +216,11 @@ return PCs and compile/shadow counts after child views expire. The loaded
 Windows repeat uses those receipts to prove first compilation and reuse of
 one declared Sheep across returned World/HUD frames. The direct Sheep fixture
 has its own original graph/list/query comparison and device qualifications.
+Three separate loaded animal invocations prove first compilation/reuse of
+one actual Pig, Cow or Chicken per App/World scope. The eight-call direct
+fixture pairs their graphs and animation with unchanged-original observations,
+including a final Sheep revisit. The native loaded controls use the declared
+existing-player statistic and retain their separate integration scope.
 CPU frame binding, that finite drawing comparison and the native loaded
 continuation retain separate scopes; they do not establish complete original
 World-frame or gameplay parity. Other renderer families, TileEntity drawing,

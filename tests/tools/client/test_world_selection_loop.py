@@ -14,6 +14,13 @@ lets the actual Timer choose the next ticks. Natural spawning need not supply
 a visible Mob within a deadline.
 Part receipts retain the 24 original TZ vertex calls per cube. The ordinary
 NW.b=true expansion records 36 triangle vertices in each six-face Display list.
+The optional animals mode runs three independent loaded invocations, one real
+Pig, Cow or Chicken per invocation. Each uses the same declared saved-player
+statistic and genuine native constructor/position/publication input, then
+requires first compilation and reuse in full World/HUD frames with real ticks.
+The existing N first-Entity receipt can identify each actor without adding a
+production trace or obscuring a middle actor in a three-animal traversal.
+This is native integration evidence; it makes no original whole-frame claim.
 Other profiles retain fresh statistics. With an absent inventory entry, the
 real tutorial can reach the still-missing active notice draw at vu.a108 before
 Mob rendering. That fresh-player route is outside the repeat renderer proof.
@@ -136,6 +143,59 @@ def snapshot(root):
             for path in root.rglob("*") if path.is_file()}
 
 
+ANIMAL_PROFILES = {
+    "animals-pig": ("pig", "wh", "me", "eh", 6, 6),
+    "animals-cow": ("cow", "bx", "va", "hh", 9, 0),
+    "animals-chicken": ("chicken", "ww", "ip", "td", 8, 0),
+}
+
+
+def animal_receipts(mode, stdout):
+    name, source, renderer, model, parts, unused = ANIMAL_PROFILES[mode]
+    rows = stdout.splitlines()
+    declaration = (f"WORLD_ANIMAL_PROFILE profile={name} scopes=independent-loaded "
+                   "statistics-input=pre-bootstrap-unsent-file open-inventory=1 "
+                   "canonical=ep.f notice-inactive=1 native-integration-only=1")
+    entity_input = (f"WORLD_ANIMAL_ENTITY profile={name} input=native-constructed "
+                    "pose=actual-player-look distance=6 world-and-chunk=1 "
+                    "same-world-and-classes=1 constructor-returned=1 "
+                    "constructor-hold-released=1 player-unchanged=1 world-random-unchanged=1")
+    if rows.count(declaration) != 1 or rows.count(entity_input) != 1:
+        raise RuntimeError(f"{name} did not prove its declared saved-player and actual Entity input")
+    frames = [row for row in rows if row.startswith("WORLD_ANIMAL_FRAME ")]
+    if len(frames) != 1:
+        raise RuntimeError(f"{name} must expose one exact returned-frame receipt")
+    receipt = re.fullmatch(
+        rf"WORLD_ANIMAL_FRAME profile={name} frames=(?P<frames>[0-9]+) "
+        r"entity-frames=(?P<entity_frames>[0-9]+) delayed-frames=(?P<delayed>[0-9]+) "
+        r"undrawn-frames=(?P<undrawn>[0-9]+) source=px\.a:1013 entities=n\.a:569 hud=uq\.a:2101 "
+        rf"mob={source} renderer={renderer} primary={model} exact-declared-actor=1 "
+        r"renderer-map=29 constructor-owners=28 local-player-alias=gs same-world-and-classes=1 "
+        rf"compiled-parts={parts} reused-parts=0 compiled-faces={parts * 6} "
+        rf"compiled-vertices={parts * 24} part-lists={parts} unused-secondary-parts={unused} "
+        r"part-source-vertices=24 part-list-vertices=36 stable-list-ids=1 "
+        r"shadow-quads=(?P<shadows>[0-9]+) checked-draw-retirement=1 copied-receipts=1 "
+        r"tick-return=1328 scheduler=198 completed-random-calls=(?P<calls>[0-9]+) "
+        r"completed-chunks=361 completed-samples=(?P<samples>[0-9]+) "
+        r"display-calls=(?P<displays>[0-9]+) display-samples=(?P<display_samples>[0-9]+) "
+        r"display-random=(?P<draws>[0-9]+)", frames[0])
+    if receipt is None:
+        raise RuntimeError(f"{name} did not prove its exact canonical renderer/model and returned frames")
+    values = {key: int(value) for key, value in receipt.groupdict().items()}
+    if (not 2 <= values["entity_frames"] <= values["frames"] <= 8 or
+            values["frames"] != values["entity_frames"] + values["delayed"] + values["undrawn"] or
+            values["shadows"] < values["entity_frames"] or values["calls"] < 1 or
+            values["samples"] != values["calls"] * 28880 or
+            values["displays"] != values["calls"] or
+            values["display_samples"] != values["displays"] * 1000 or
+            values["draws"] != values["displays"] * 6000):
+        raise RuntimeError(f"{name} returned frames lack complete real tick/random/display work")
+    cleanup = [row for row in rows if row.startswith(f"WORLD_SELECTION mode={mode} cleanup=")]
+    if len(cleanup) != 1 or re.fullmatch(
+            rf"WORLD_SELECTION mode={mode} cleanup=1 checks=[1-9][0-9]*", cleanup[0]) is None:
+        raise RuntimeError(f"{name} did not complete checked native retirement")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--executable", type=Path, required=True)
@@ -143,7 +203,7 @@ def main():
     parser.add_argument("--artifacts", type=Path, required=True)
     parser.add_argument("--mode", action="append",
                         choices=("empty", "populated", "large", "double", "load", "generate",
-                                 "load-terminal", "load-partial", "repeat", "load-light"))
+                                 "load-terminal", "load-partial", "repeat", "load-light", "animals"))
     parser.add_argument("--timeout", type=float)
     args = parser.parse_args()
     if os.name != "nt":
@@ -153,12 +213,16 @@ def main():
     artifacts = args.artifacts.resolve()
     artifacts.mkdir(parents=True, exist_ok=True)
     resources_before = snapshot(assets)
-    for mode in args.mode or ("empty", "populated", "large", "double", "load", "load-terminal",
-                             "load-partial", "repeat", "load-light"):
+    requested = args.mode or ("empty", "populated", "large", "double", "load", "load-terminal",
+                              "load-partial", "repeat", "load-light")
+    modes = [expanded for mode in requested
+             for expanded in (ANIMAL_PROFILES if mode == "animals" else (mode,))]
+    for mode in modes:
+        animal = mode in ANIMAL_PROFILES
         with tempfile.TemporaryDirectory(prefix="mc-rq-loop-") as work:
             appdata = Path(work)
             game = appdata / ".minecraft"
-            if mode == "repeat":
+            if mode == "repeat" or animal:
                 repeat_statistics(game, assets)
             saves = game / "saves"
             saves.mkdir(parents=True)
@@ -166,12 +230,12 @@ def main():
             if mode == "large":
                 worlds = [(f"world{i:02d}", f"Scroll world {i:02d}", 1304000000000, 19132)
                           for i in range(16)]
-            elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial", "repeat", "load-light"):
+            elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal:
                 worlds = [
                     ("older", "Old world", 1303000000000, 19132),
                     ("bravo", "", 1304000000000, 19132),
                     ("alpha", "Alpha world", 1304000000000,
-                     19132 if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") else 0),
+                     19132 if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal else 0),
                 ]
             else:
                 worlds = []
@@ -184,7 +248,7 @@ def main():
                                            partial=mode == "load-partial" and folder == "alpha"),
                                   mtime=0))
                 (directory / "preserve-chunk.dat").write_bytes(b"authored untouched chunk")
-            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light"):
+            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal:
                 regions = saves / "alpha" / "region"
                 regions.mkdir()
                 saved_regions(regions, generate=mode == "generate")
@@ -195,7 +259,7 @@ def main():
             result = subprocess.run([str(executable), str(assets), mode, str(capture)],
                                     env=environment,
                                     timeout=args.timeout if args.timeout is not None else
-                                    (600 if mode == "generate" else 110), check=False,
+                                    (600 if mode == "generate" else 240 if animal else 110), check=False,
                                     capture_output=True, text=True)
             print(result.stdout, end="")
             print(result.stderr, end="", file=sys.stderr)
@@ -209,6 +273,8 @@ def main():
                 observed = [line for line in result.stdout.splitlines() if line.startswith("FOCUS ")]
                 if observed != expected:
                     raise RuntimeError("Actual SDK focus segment differs from 72 original PX histories")
+            if animal:
+                animal_receipts(mode, result.stdout)
             if mode == "repeat":
                 declaration = ("WORLD_REPEAT profile=existing-inventory-player "
                                "statistics-input=pre-bootstrap-unsent-file open-inventory=1 "
@@ -264,7 +330,7 @@ def main():
                 if observed != [expected]:
                     raise RuntimeError("Declared paused caller did not retain the real 499-record light batch")
             after = snapshot(saves)
-            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light"):
+            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal:
                 if any(after.get(name) != digest for name, digest in before.items()):
                     raise RuntimeError("World loading changed pre-existing fixture bytes")
                 if not (saves / "alpha" / "session.lock").is_file():
@@ -280,6 +346,10 @@ def main():
                 raise RuntimeError("The genuine native default game directory was not used")
     if snapshot(assets) != resources_before:
         raise RuntimeError("World-selection loop modified imported source resources")
+    if "animals" in requested:
+        print("Native animals: three independent loaded scopes, real Pig/Cow/Chicken "
+              "constructor/publication, full tick/World/HUD compile and reuse, "
+              "copied actor receipts and checked cleanup passed; no original-frame parity credit")
     print("World-selection loop: original-receiver input, held entry, rows, Cancel, "
           "large-list scrollbar drag, real-clock double-click failure order, "
           "World-load frontier, captures, save preservation and cleanup passed")

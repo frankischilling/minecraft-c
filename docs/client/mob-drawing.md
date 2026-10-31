@@ -1,10 +1,11 @@
-# Sheep drawing
+# Sheep, Pig, Cow and Chicken drawing
 
-The client executes the canonical Sheep renderer through the existing TH,
-XY/GV, MW/EA/NN, PS and NW owners. It includes the unsheared fur pass and the
-ordinary `Settings.j=true` terrain shadow. Other renderer families and several
-nondefault branches still stop at their reached dependencies. This finite
-closure does not establish playability or whole-frame original/native equality.
+The client executes the canonical Sheep, Pig, Cow and Chicken renderers through
+the existing TH/GV, model, PS and NW owners. The finite closure includes Sheep's
+unsheared fur, Pig's actual saddle texture calls, Cow's horn pose, Chicken's
+flap animation and the ordinary `Settings.j=true` terrain shadow. Seven other
+default Mob families and several nondefault branches remain unfinished. These
+results do not establish playability or whole-frame original/native equality.
 
 ## Entry and source work
 
@@ -31,6 +32,22 @@ batches and 288 vertices. A later call reuses those same lists and consumes no
 additional BT normal vectors. No generic substitute model or copied Player
 storage is used.
 
+The added families use the same constructed renderer Map and model graph:
+
+| Actor | Renderer and model | Qualified ordinary work |
+| --- | --- | --- |
+| Pig | ME, primary EH and distinct saddle EH | Six primary parts; all four saddle lookups/binds execute even when the saddle flag is false. The six unused saddle parts remain uncompiled. |
+| Cow | VA, HH | Nine parts in inherited-six, horn, horn, udder order. NN render virtually selects HH pose once; its seven NN stores precede four horn copies, with four actual Math calls. |
+| Chicken | IP, TD | Eight parts, negative head pitch and opposite wing roll. IP reads the actual mutable flap fields before its sine call at 36; changed partial values `.375` and `.625` exercise that calculation. |
+
+Pig reads its actual watcher Byte 16 only for pass 0, after that pass's saddle
+lookup. Cow and Chicken inherit the genuine false pass body. Their KO Entity
+event is empty. Chicken receives its subtype flap value rather than generic
+age; Cow preserves the special superclass call and nested virtual pose rather
+than posing twice. No alternate geometry or supplied animation result is used.
+The implementation lives in [the animal hooks](../../src/client/render/living_draw/animals.c)
+and [the model runtime](../../src/client/render/model_runtime/common.c).
+
 BW postdraw reads the actual Settings, TH camera distance and current World.
 Its shadow uses the current Block bounds, the normal-render predicate rather
 than the opaque predicate, real light/brightness queries and the actual NW
@@ -53,7 +70,11 @@ The draw owner adopts those occurrences after installing its ledger, without
 a retain-after-return window. An adoption failure leaves the unconsumed slot
 available for checked cleanup. Query receipts record actual direct attempts,
 arguments, results and typed failures; they do not invent nested calls from
-the World implementation.
+the World implementation. Separate bounded texture receipts record actual direct
+Engine calls, key identities and copied UTF16 units, source lookup/bind sites,
+returned texture IDs and failures. Four Pig saddle calls are observed directly;
+they are not inferred from a final cache entry. Longer valid keys retain their
+actual length and a marked partial copy without changing lookup behavior.
 
 The call adopts only its own new pending texture lookup and exact pending
 list definition. Foreign prefixes stay owned by their actual caller. Checked
@@ -71,7 +92,7 @@ renderer/model families remain reached boundaries. Arbitrary malformed model
 graphs and all exceptional cleanup refusals are not qualified by the finite
 Sheep observations.
 
-## Original observations and native comparison
+## Earlier Sheep observations and native comparison
 
 The frozen [original package](../../tests/reference/client/mob_draw/README.md)
 uses the unchanged client archive and a real LWJGL2 Display. It prepares a RAW
@@ -82,7 +103,8 @@ retain 240 initialized original classes, 173 live Code bodies, 48,564 balanced
 source entries/returns and 986 GL entries/returns. Constructor entropy remains
 independent and is never replayed into execution.
 
-Each native host passes 666 checks. The original comparison passes 70,341 selected
+At the Sheep checkpoint, each native host passes 666 checks. The original
+comparison passes 70,341 selected
 graph/state checks. It expands 1,160 selected objects across each of six
 before/after phases, preserving classes, aliases and temporal identities. It
 pairs twelve list definitions, all 72 face buffers, three 432-word shadow
@@ -126,6 +148,80 @@ foreign canonical-Class admission and a shadow ceiling after the real primary
 and fur draws. The latter preserves the unfinished NW/depth/blend prefix
 through retirement. Exceptional cleanup refusal remains dynamically untested.
 
+## Four-animal observations and current qualification
+
+The new [animal renderer package](../../tests/reference/client/mob_draw_animals/README.md)
+uses unchanged original methods and the same finite design in a separate
+capture. The frozen Sheep package and its failed and successful receipts remain
+unchanged. Eight calls cover Sheep first, Pig first/reuse, Cow first/reuse,
+Chicken first/reuse with changed partial, then Sheep revisit. Constructors
+consume independent raw Random/Math contexts; no captured entropy is injected
+into either execution.
+
+The current original capture passes its ordinary/read-only JDI audit with
+242 initialized archive classes and 191 live Code bodies. Its eleven captured
+helper/input files have fixed LF bytes. It records eight draw calls, seven
+actual texture uploads, 35 compiled model lists and 218 batches. The selected
+App is a prepared RAW KQ; genuine World, camera, Settings, Engine, cached
+terrain and authored textures bound the result. Complete original startup,
+camera and World-frame behavior are outside this fixture.
+
+The focused native runs pass on both Windows and Linux. Each has 1,556 main
+checks plus five fresh component processes with 452, 328, 344, 339 and 331
+checks: 3,350 native checks per host. Both original comparisons pass 206,656
+typed comparisons, 17,012 expanded graph records and 5,107 identity pairs. They pair
+316 direct World/Block query receipts, 35 lists and 210 model faces, 2,688 shadow
+words and 18 direct String texture calls. Eight animation returns, ten model
+operations and ten meaningful negative controls have separate checks. Classes,
+aliases, list reuse and the six uncompiled Pig saddle parts remain actual
+observations. The native [fixture](../../tests/client/render/test_animal_draw.c)
+and [comparison driver](../../tests/tools/client/test_animal_draw.py) keep those
+channels separate from raw constructor fields and device-specific GL state.
+
+The Windows ordinary original NVIDIA supplement passes its audit of 36 inputs,
+four captured helpers and 45 artifacts. It supplies matching-device ordinary
+GL evidence, with no Windows JDI credit. The Windows native pair passes with
+that supplement, including four rejected manifest corruptions. Its strict
+default Mesa-normal comparison still fails and remains preserved evidence.
+Both hosts retain unchanged input hashes; the Linux focused run has no
+sanitizer findings. The final broad cohort also passes, as recorded below.
+Hosted results retain their separately reported scope for the published commit.
+
+The five component processes check real empty KO events, a Cow null horn,
+Cow/Chicken bridge casts and a reached Chicken Math limit. They compare actual
+model/PS snapshots before and after checked retirement, including surviving NN
+pose stores and KO flags. These are native controls checked against original
+Code, not paired original Throwable outcomes. A returned NN superclass pose
+does not credit a later failed HH pose; earlier fields, null cells and failed
+Math state remain visible after retirement. These stronger assertions change
+no production drawing body.
+
+All selected scalar/geometry comparisons remain exact. Only prepared view and
+projection matrices allow four float ULP and numeric equality of opposite
+signed zeros, with raw signs retained. The measured maximum absolute error is
+`1.1920928955078125e-7`. Native visible model/shadow and reuse readbacks remain
+independent controls, without original/native pixel equality or native live
+GL invocation-order credit.
+
+## Broad validation
+
+All 93 selected targets build on Windows MSVC and Linux Clang. The same
+2,559 C, helper, build and reference inputs remain unchanged across both build
+and test phases. The test selection has no failures, skips or sanitizer
+findings:
+
+| Host | Tests | CTest seconds | Test phase including hash audit |
+| --- | ---: | ---: | ---: |
+| Windows | 121 | 322.57 | 322.95 seconds |
+| Linux | 115 | 355.14 | 385.96 seconds |
+
+Twenty fresh native/original comparison wrapper runs pass, ten per host.
+An independent current-input audit verifies 5,510 distinct paths. Formatting
+checks 1,746 files; current source bindings cover 8,251 entries across 3,502
+files, with historical bindings unchanged. These checks retain each fixture's
+stated source, device and prepared-input limits. Hosted results are reported
+separately for the published commit in the [testing record](../testing.md).
+
 ## Legacy clamp sampling
 
 The shadow texture's actual `%clamp%` lookup performs cold upload and stores
@@ -157,7 +253,8 @@ and static diagnostic names, so inspection never dereferences retired child
 objects. The first ordinary-Entity receipt and last successful receipt survive
 a later failed draw.
 
-The Windows development repeat passes 1,714 checks and proves two actual Sheep
+The earlier Windows Sheep development repeat passes 1,714 checks and proves
+two actual Sheep
 draws across four returned World/HUD frames. One frame takes the real N delay;
 one traverses both rows but draws neither before the Sheep's first simulation
 tick. Neither earns Sheep draw credit. The next two frames prove first
@@ -167,5 +264,28 @@ triangle batches with 36 NW-expanded vertices, separately from its 24 source
 vertex calls. Source returns include TH115, GV769, BW100, N569, PX1013 and
 HUD2101. Ten full random/display passes cover 288,800 random Block samples and
 10,000 display samples; checked terminal cleanup succeeds. The finite caller
-uses real elapsed time and changes no Timer, culling, Player or random state.
-Nonempty TileEntity draw rows remain an explicit dependency.
+uses real elapsed time, keeps constructor entropy raw and changes no Timer,
+culling or Player fields. Its publication input leaves World Random unchanged;
+later source ticks retain their actual random consumption.
+
+Three additional Windows `animals` profiles each use an independent loaded
+App/World and one genuinely constructed Pig, Cow or Chicken published after
+the first returned load frame. Each passes four later World/HUD frames: one
+N delay, one traversal that culls the unticked actor, then that exact actor's
+first and reused draw. Pig compiles six parts, Cow nine and Chicken eight;
+their observed shadow totals are 18, 18 and 2 quads respectively. The Pig's six
+separate saddle parts stay uncompiled. Copied receipts identify the actual
+canonical renderer/model and checked TH retirement; live graph inspection
+proves stable part/list identities. Real returns include `Minecraft.k:1328`,
+World draw 1013 and HUD 2101, followed by checked terminal cleanup in every
+profile. The constructor/publication input changes neither Player pose nor
+World Random, and normal subsequent ticks remain enabled.
+
+These loaded controls preserve the existing-player inventory-achievement
+precondition and Entity-empty saved Chunks. They qualify native integration,
+not fresh-player tutorial completion, serialized Mob loading, natural spawning
+within a deadline or original/native full-frame equality. Spider, Wolf,
+Creeper, Skeleton, Zombie, Slime and Squid drawing remain outside this closure;
+Skeleton's real held Bow is a mandatory dependency. Active tutorial notices,
+Canvas/focus transitions, nonempty items, save transport and nonempty TileEntity
+draw rows still prevent a playable-client claim.

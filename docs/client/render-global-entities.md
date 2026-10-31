@@ -3,9 +3,9 @@
 The native entry follows the complete 570-byte client
 `n.a(Lbt;Lyn;F)V` control flow. It implements the delay, dispatcher frame
 bindings, counter and origin stores, and the reached Entity predicates. An
-admitted path can return at PC 17 or PC 569. Visible Sheep now execute the
-[actual TH/GV/XY renderer, MW/EA models and terrain shadow](mob-drawing.md).
-Other renderer families and nonempty TileEntity draw rows retain explicit
+admitted path can return at PC 17 or PC 569. Visible Sheep, Pig, Cow and
+Chicken now execute their [actual TH/GV renderer/model and terrain-shadow paths](mob-drawing.md).
+Seven other default Mob families and nonempty TileEntity draw rows retain explicit
 dependencies. These finite results do not establish playability or composed
 original/native frame equality.
 
@@ -97,8 +97,11 @@ when a reached floor operation needs its namespace; floating admission is
 likewise deferred to reached arithmetic.
 
 At 329 or 516, `th.a(Lsn;F)V` enters the actual retained draw owner. The
-qualified Sheep path executes primary MW geometry, all four XY pass predicates,
-the distinct EA fur model and the ordinary `Settings.j=true` BW shadow. Each
+qualified Sheep path executes primary MW geometry, all four XY pass predicates
+and the distinct EA fur model. Pig uses the real EH model and executes four
+saddle lookups even when unsaddled; Cow renders its nine HH parts after one
+virtual pose; Chicken renders eight TD parts with actual IP flap arithmetic.
+All four include the ordinary `Settings.j=true` BW shadow. Each
 returned child completes checked native retirement before N continues at 332
 or 519. A failed child stays retained under N; cleanup drains that same child
 before releasing its enclosing receivers. It never replays the failed draw.
@@ -177,7 +180,8 @@ child PX932 is historical. N510 is checked-retired before later N entries; its
 copied scalar receipts remain while borrowed owner, List and dispatcher views
 end.
 
-The current loaded Windows repeat proves two draws of one declared genuine
+The established loaded Windows Sheep repeat proves two draws of one declared
+genuine
 Sheep across four returned World/HUD frames. One frame consumes the actual N
 delay; another visits both Entity rows but culls the unticked Sheep. Neither
 counts as a Sheep draw. The following two frames prove first compilation and
@@ -187,7 +191,22 @@ The fixture starts with Entity-empty saved Chunks, publishes its Sheep through
 the ordinary constructor/position/World APIs and leaves constructor entropy
 and the Timer untouched. This is finite native integration evidence, separate
 from the original drawing comparison and from whole-frame original parity.
-See [Sheep drawing](mob-drawing.md) for the retained-call and device scopes.
+The separate Windows `animals` mode passes one independent loaded invocation
+for each of Pig, Cow and Chicken. Each retains the same delay/unticked-traversal
+prefix, then proves two exact returned actor draws across four World/HUD
+frames, first compilation and reuse, real tick 1328 and checked cleanup. Their
+six, nine and eight compiled parts and 18, 18 and 2 shadow quads come from the
+copied receipts and live canonical graphs. The publication input leaves Player
+pose and World Random unchanged; subsequent ticks remain real.
+
+See [Mob drawing](mob-drawing.md) for the retained-call and device scopes. The
+new direct comparisons pass on both native hosts, with the audited ordinary
+NVIDIA supplement on Windows. The 93-target broad cohort builds on both hosts
+and passes 121 Windows and 115 Linux tests without failures, skips or sanitizer
+findings. Hosted results retain their separate published-commit scope. These
+prepared native loaded controls do not
+qualify original composed-N/frame equality, fresh-player notices, serialized
+Mob loading or the remaining seven default renderer families.
 
 ## Preceding native scope at 9fb0b27
 

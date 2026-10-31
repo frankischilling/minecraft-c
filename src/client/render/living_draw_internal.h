@@ -117,6 +117,24 @@ typedef struct mc_client_living_draw_caught {
     mc_client_living_draw_detail detail;
 } mc_client_living_draw_caught;
 
+#define MC_CLIENT_LIVING_DRAW_TEXTURE_CALLS 8u
+#define MC_CLIENT_LIVING_DRAW_TEXTURE_KEY_UNITS 64u
+
+/* Passive values from actual direct JI lookup/bind calls. Identities cannot
+ * be dereferenced; the copied key does not borrow a source String buffer.
+ * Skin download/fallback has its existing distinct child diagnostics. */
+typedef struct mc_client_living_draw_texture_call {
+    uintptr_t engine_identity, key_identity;
+    mc_client_graphics_site caller, lookup_site, bind_site, failure_site;
+    size_t key_length, key_stored;
+    uint16_t key_units[MC_CLIENT_LIVING_DRAW_TEXTURE_KEY_UNITS];
+    int32_t texture_id;
+    bool key_null, key_copied, attempted, lookup_entered, lookup_returned;
+    bool bind_attempted, bind_returned, returned, failed;
+    bool native_policy, source_exception;
+    const char *exception_class;
+} mc_client_living_draw_texture_call;
+
 typedef struct mc_client_living_draw_state {
     bool returned, primary_event_returned, primary_render_returned;
     bool pass_attempted[4], pass_result[4], pass_render_returned[4];
@@ -129,6 +147,10 @@ typedef struct mc_client_living_draw_state {
     size_t shadow_brightness_queries, shadow_quads, shadow_vertices;
     uintptr_t shadow_world_identity, last_quad_world_identity;
     mc_client_model_runtime_state primary_event, primary_render, pass_render[4];
+    size_t texture_call_count;
+    mc_client_living_draw_texture_call texture_calls[MC_CLIENT_LIVING_DRAW_TEXTURE_CALLS];
+    bool flap_arguments_read, flap_math_returned;
+    float flap_first, flap_second;
 } mc_client_living_draw_state;
 
 typedef struct mc_client_living_draw_error {

@@ -1,29 +1,51 @@
 # Systems and subsystems
 
-The [Sheep draw owner](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md)
-executes the actual TH lookup, XY/GV primary and fur passes, MW/EA/NN models,
-PS lists and BW terrain shadow. One retained call owns each reached actor,
-renderer, namespace and World/Engine/String/Settings/App occurrence. The App
-has a distinct render-borrow count, checked before constructor retirement
-changes its phase. Foreign texture lookups and list definitions keep their
-original owners; checked retirement never repairs GL/NW state or replays calls.
+The [four-animal draw owner](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md) executes actual TH lookup,
+GV primary/pass work, PS lists and BW shadows for Sheep, Pig, Cow and Chicken.
+Sheep uses XY/MW/EA/NN; Pig ME/EH retains four real saddle lookups despite its
+false saddle predicate; Cow VA/HH virtually poses once through HH/NN before
+rendering nine parts; Chicken IP/TD uses the actual interpolated sine/flap pose
+and eight-part order. Native aggregate model work is paired to the actual Source
+model identity and once-entry counts. Global cross-entered invocation order is
+not recorded natively.
+
+One retained call owns each reached actor, renderer, namespace and
+World/Engine/String/Settings/App occurrence. The App has a distinct render-borrow
+count checked before constructor retirement changes its phase. Foreign texture
+lookups and list definitions keep their original owners. Checked retirement
+replays no source work and preserves reached GL/NW and actual model/PS fields.
+Fresh KO, null-horn, wrong-bridge and bounded cold-Math controls prove their
+finite prefixes; these are Code-qualified native controls, not additional
+original runtime outcome pairs.
 
 RenderGlobal enters this child at 329/516, retires a successful child before
-continuing at 332/519, and retains a failed child until checked cleanup. Scalar
-receipts survive child retirement. The finite loaded repeat returns four
-World/HUD frames: one delay, one undrawn traversal and two Sheep draws, with
-twelve compiled parts then zero on reuse, 72 faces, 288 source vertices and 18
+continuing at 332/519 and retains a failed child until checked cleanup. Scalar
+receipts survive retirement. Separate loaded Pig/Cow/Chicken profiles each
+return four World/HUD frames with one delay, one undrawn traversal and first/reuse
+draws. They compile six/nine/eight parts, then none on reuse, with 18/18/two
 shadow quads. `Minecraft.k:1328`, N569, PX1013 and HUD2101 return before cleanup.
+Existing-player statistics are declared inputs; no Player or Random forcing is
+credited as implementation.
+
+The focused draw comparison passes 3,350 native checks and 206,656 typed checks
+per host, with 316 direct queries, 35 lists, 210 faces, 18 direct String calls,
+eight animation returns, ten model-work records and ten comparator negatives.
+Linux ordinary/JDI evidence and the Windows ordinary NVIDIA GL supplement remain
+separate; the latter audits 36 inputs, four helpers and 45 artifacts. No pixel,
+live GL-order or whole-frame original equality follows.
 
 The Display retains logical `GL_CLAMP` per actual texture slot and generation.
-Qualified nearest and linear filter pairs use their distinct edge/border
-semantics; unsupported mixed/mipmap combinations refuse at sampling. Compiled
-geometry reads current material state. Same-device legacy SDK controls pass
-46,802 checks and 3,872 exact samples per host. The draw itself passes 666 native
-and 70,341 selected graph/state checks per host, including 147 ordered queries,
-twelve lists, 72 face buffers and six comparator negatives. Linux ordinary/JDI
-evidence and the audited Windows ordinary NVIDIA GL supplement stay separate;
-there is no original/native pixel, live GL-order or whole-frame equality claim.
+Qualified nearest and linear pairs use distinct edge/border semantics;
+unsupported mixed/mipmap combinations refuse at sampling. Compiled geometry
+reads current material state. Same-device legacy SDK controls retain 46,802
+checks and 3,872 exact samples per host. Prepared draw matrices alone allow four
+float ULP and opposite-zero numeric equality; the strict default Mesa/NVIDIA
+normal mismatch is preserved. The completed local cohort builds 93 targets on
+each host and passes 121 Windows/115 Linux tests without failures, skips or
+sanitizer findings. Its 2,559 inputs stay unchanged through all four phases;
+all twenty original-comparison wrappers pass. [Build and tests](Build-and-tests#current-local-qualification)
+records timings and the current 5,510-path audit. Hosted results remain separate
+and tied to published commits in [Draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
 
 The [random display call](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/random-display.md)
 owns its actual World and one distinct default Random through inspection and
@@ -37,8 +59,8 @@ The [RenderGlobal Entity call](https://github.com/frankischilling/minecraft-c/bl
 current Entity and actual World List lease until checked retirement. N owns
 separate LL/TH consumer records across ordinary World changes; terminal cleanup
 ends only those records. The traversal preserves live Lists, fresh fields and
-source predicate order. Sheep drawing returns; other renderer families and
-nonempty TileEntity rows retain explicit draw dependencies.
+source predicate order. Sheep, Pig, Cow and Chicken drawing returns; the seven remaining default
+renderer families and nonempty TileEntity rows retain explicit dependencies.
 
 The [normal terminal coordinator](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
 now connects menu-run shutdown to actual prefix ending, checked LL/TH retirement,
@@ -81,8 +103,8 @@ TileEntity draws remain unfinished.
 The canonical Display program now supplies [source vertex lighting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md).
 It uses the existing matrix/light ledger, front/back materials and ColorMaterial
 state. Compiled lists retain their actual attribute effects. This closes the
-backend dependency used by the current Sheep model/Entity draw. Other renderer
-families and whole-frame original equality remain unfinished.
+backend dependency used by the four qualified animal model/Entity draws. The
+remaining families and whole-frame original equality remain unfinished.
 
 The [LocalPlayer NBT path](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-nbt.md)
 dispatches through actual Entity, Living, Inventory and Player owners. Metadata

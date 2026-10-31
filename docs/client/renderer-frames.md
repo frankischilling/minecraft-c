@@ -9,15 +9,21 @@ captured RenderGlobal at510. The initial [Entity pass](render-global-entities.md
 consumes the constructor's I2 delay and returns17 with I1.
 
 Later N calls execute the actual LL/TH frame bindings, live Entity Lists and
-visibility predicates. A visible Sheep now returns through the retained
-[TH/GV/XY, MW/EA and BW shadow path](mob-drawing.md). N checks child retirement
+visibility predicates. Visible Sheep, Pig, Cow and Chicken now return through
+their retained [TH/GV renderer/model and BW shadow paths](mob-drawing.md). N checks child retirement
 before continuing at 332 or 519. PX then completes both particle calls,
 translucent terrain, precipitation, clouds and the empty first-person hand.
 World draw1013 precedes the parent's real timing and [GuiIngame draw](gui-ingame.md).
 The loaded Windows repeat proves two actual Sheep draws across four returned
 World/HUD frames, with first compilation, reuse, real ticking through
 `Minecraft.k:1328` and checked terminal cleanup. Its declared native Sheep and
-existing-player statistics bound that result.
+existing-player statistics bound that result. The separate Windows `animals`
+mode passes three independent loaded scopes, each with one genuinely
+constructed and published Pig, Cow or Chicken. Each has four returned
+World/HUD frames, including two actual first/reused actor draws, real tick
+1328 and checked cleanup. The observed model parts are six, nine and eight;
+their shadow totals are 18, 18 and 2 quads. Caller inputs preserve Player pose
+and World Random; subsequent source ticks consume their ordinary random work.
 
 The [vertex-lighting backend](lighting-raster.md) handles source normals,
 materials and flat/smooth lighting. Other Mob renderer families, nonempty
@@ -73,8 +79,8 @@ Native window dimensions do not replace the absent source Canvas.
 
 The OZ draw entry uses the existing GL3.3 GUI kernels, executes background
 drawing, advances the save-pass counter, and invokes actual incremental World
-saving before its saving label/title/Buttons. The returned Sheep fixture has
-no screen; it does not qualify the active pause saving and drawing path as
+saving before its saving label/title/Buttons. The returned Sheep and animal fixtures have
+no screen; they do not qualify the active pause saving and drawing path as
 part of that frame. The
 [pause fixture](../../tests/reference/client/pause_screen/README.md) compares
 68 constructor/init/tick rows; live loaded-graph controls cover Escape, existing
@@ -119,7 +125,8 @@ run before real [N terrain submission](terrain-submission.md)486. The source
 connects its ordinary and occlusion paths with recenter/JO sorting and TG replay.
 After a normal N return it sets FLAT493, enables standard lighting496 and reads
 the actual camera eye504 before N510. Both the initial delay and qualified
-Sheep draw can return from this N call. Successful TH children at N329/516
+Sheep, Pig, Cow and Chicken draws can return from this N call. Successful TH
+children at N329/516
 retire before N resumes at332/519. Copied scalar identities, return PCs and
 model/shadow counts survive that cleanup; borrowed child pointers do not.
 The admitted path continues through both particle methods, translucent
@@ -233,7 +240,8 @@ skips; hosted qualification was pending for that checkpoint. The seven-profile
 original N cohort excluded issued-query N execution, including a 17-entry case.
 Those results retain their original scopes.
 
-The current [Sheep drawing fixture](mob-drawing.md) separately passes 666 native
+At the earlier [Sheep drawing checkpoint](mob-drawing.md#earlier-sheep-observations-and-native-comparison),
+the fixture passes 666 native
 checks on each host and 70,341 selected original comparisons, including 147
 ordered direct World/Block query receipts. Linux ordinary/read-only JDI
 observations supply the graph, list and query reference. Windows uses a
@@ -242,10 +250,31 @@ state; it earns no Windows JDI credit. These finite state/geometry comparisons
 and visible native readbacks do not establish original/native whole-frame
 pixel equality.
 
-The loaded continuation uses the same live Sheep, canonical renderer, distinct
+The earlier loaded continuation uses the same live Sheep, canonical renderer, distinct
 MW/EA models and twelve PS/list identities across its first and reused draw.
 One preceding frame takes N's delay and another completes traversal without
 a Sheep draw before its first simulation tick. Neither counts as a rendered
-Sheep. Other renderer families, nonempty TileEntity drawing and extended play
-remain unfinished or unqualified. The separate diagnostic World renderer
-remains outside the default source path.
+Sheep. The new [four-animal fixture](../../tests/reference/client/mob_draw_animals/README.md)
+adds eight unchanged-original calls across Sheep, Pig, Cow and Chicken with
+independent constructor contexts. Both native pairs pass the finite
+graph, geometry, identity, query, texture and animation checks described in
+[Mob drawing](mob-drawing.md#four-animal-observations-and-current-qualification).
+The actual ordinary Windows NVIDIA supplement is separately audited and
+admits that host's device-specific normal state; the strict Mesa-normal
+comparison remains failed evidence. The 93-target broad cohort builds on both
+hosts and passes 121 Windows and 115 Linux tests without failures, skips or
+sanitizer findings. Hosted results are reported separately for the published
+commit. Fresh component controls inspect actual model/PS
+prefixes and KO flags after retirement. They are checked against original Code,
+with no paired original Throwable credit, and change no production drawing.
+
+The loaded animal profiles prove the same actual actor, canonical ME/VA/IP
+renderer, EH/HH/TD model and part/list identities across compilation and reuse.
+Pig's distinct unused saddle model stays uncompiled. Existing-player statistics
+and native constructor/publication inputs bound the result; Entity-empty saves
+do not qualify Mob NBT loading. Seven other default families, including the
+mandatory Skeleton Bow, nonempty TileEntity drawing, active tutorial notices,
+Canvas/focus, nonempty items, saving and extended play remain unfinished or
+unqualified. The separate diagnostic World renderer remains outside the
+default source path. No whole-frame original/native equality or playable
+client claim follows from these finite results.

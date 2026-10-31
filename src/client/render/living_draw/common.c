@@ -191,8 +191,10 @@ static void lookup_failure(ld_frame *f, const mc_client_texture_lookup_error *v)
     }
 }
 
-bool ld_texture_engine(ld_frame *f, mc_client_render_engine *engine, const mc_player_string *name,
-                       mc_client_graphics_site lookup_site, mc_client_graphics_site bind_site) {
+static bool texture_engine(ld_frame *f, mc_client_render_engine *engine,
+                           const mc_player_string *name, mc_client_graphics_site lookup_site,
+                           mc_client_graphics_site bind_site,
+                           mc_client_living_draw_texture_call *receipt) {
     mc_client_living_draw_error *e = f->error;
     if (!engine_capture(f, engine))
         return false;
@@ -202,9 +204,11 @@ bool ld_texture_engine(ld_frame *f, mc_client_render_engine *engine, const mc_pl
                                       !nonnull};
     const bool pending = engine != NULL && mc_client_texture_lookup_pending(engine);
     ld_at(f, lookup_site.class_name, lookup_site.method, lookup_site.descriptor, lookup_site.pc);
+    receipt->attempted = true;
     if (engine == NULL)
         return ld_null(f, "Living draw null texture Engine receiver");
     mc_client_texture texture;
+    receipt->lookup_entered = true;
     const mc_client_texture_lookup_status status = mc_client_render_engine_texture(
         engine, f->scope->model.display, NULL, key, &texture, &e->detail.lookup);
     if (status != MC_CLIENT_LOOKUP_OK) {
@@ -216,12 +220,57 @@ bool ld_texture_engine(ld_frame *f, mc_client_render_engine *engine, const mc_pl
         lookup_failure(f, &e->detail.lookup);
         return ld_fail(f, MC_CLIENT_LIVING_DRAW_CHILD_FAILED, e->detail.lookup.operation);
     }
+    receipt->lookup_returned = true;
+    receipt->texture_id = (int32_t)texture;
     ld_at(f, bind_site.class_name, bind_site.method, bind_site.descriptor, bind_site.pc);
+    receipt->bind_attempted = true;
     /* Actual JI.b(I) returns4 before any GL/Display access for a negative ID. */
-    if ((int32_t)texture < 0)
+    if ((int32_t)texture < 0) {
+        receipt->bind_returned = true;
         return true;
-    return ld_display(
+    }
+    receipt->bind_returned = ld_display(
         f, mc_client_display_source_bind_id(f->scope->model.display, texture, &e->detail.display));
+    return receipt->bind_returned;
+}
+
+bool ld_texture_engine(ld_frame *f, mc_client_render_engine *engine, const mc_player_string *name,
+                       mc_client_graphics_site caller, mc_client_graphics_site lookup_site,
+                       mc_client_graphics_site bind_site) {
+    mc_client_living_draw_error *e = f->error;
+    if (e->state.texture_call_count == MC_CLIENT_LIVING_DRAW_TEXTURE_CALLS)
+        return ld_fail(f, MC_CLIENT_LIVING_DRAW_LIMIT,
+                       "Living draw actual texture receipt ceiling");
+    mc_client_living_draw_texture_call *receipt =
+        &e->state.texture_calls[e->state.texture_call_count++];
+    *receipt = (mc_client_living_draw_texture_call){.engine_identity = (uintptr_t)engine,
+                                                    .key_identity = (uintptr_t)name,
+                                                    .caller = caller,
+                                                    .lookup_site = lookup_site,
+                                                    .bind_site = bind_site,
+                                                    .failure_site = {.pc = -1},
+                                                    .key_null = name == NULL};
+    mc_player_string_view text;
+    if (mc_player_string_read(name, &text)) {
+        receipt->key_length = text.length;
+        receipt->key_stored = text.length < MC_CLIENT_LIVING_DRAW_TEXTURE_KEY_UNITS
+                                  ? text.length
+                                  : MC_CLIENT_LIVING_DRAW_TEXTURE_KEY_UNITS;
+        receipt->key_copied = receipt->key_stored == text.length;
+        if (receipt->key_stored != 0)
+            memcpy(receipt->key_units, text.units,
+                   receipt->key_stored * sizeof(*receipt->key_units));
+    }
+    const bool ok = texture_engine(f, engine, name, lookup_site, bind_site, receipt);
+    receipt->returned = ok;
+    receipt->failed = !ok;
+    if (!ok) {
+        receipt->native_policy = e->native_policy;
+        receipt->source_exception = e->source_exception;
+        receipt->exception_class = e->exception_class;
+        receipt->failure_site = e->child.class_name == NULL ? e->site : e->child;
+    }
+    return ok;
 }
 
 bool ld_texture(ld_frame *f, const mc_player_string *name, int32_t caller_pc) {
@@ -233,7 +282,8 @@ bool ld_texture(ld_frame *f, const mc_player_string *name, int32_t caller_pc) {
     mc_client_render_manager *m = ld_manager(f, 4);
     if (m == NULL)
         return false;
-    if (!ld_texture_engine(f, m->fields.e, name, ld_site("bw", "a", "(Ljava/lang/String;)V", 11),
+    if (!ld_texture_engine(f, m->fields.e, name, caller,
+                           ld_site("bw", "a", "(Ljava/lang/String;)V", 11),
                            ld_site("bw", "a", "(Ljava/lang/String;)V", 14)))
         return false;
     e->site = caller;

@@ -1,29 +1,55 @@
 # Storage and original references
 
-The [Sheep draw observations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/mob_draw/README.md)
-retain three actual texture misses/hits, first compilation, reuse and the BW
-shadow component from the unchanged archive and real LWJGL2 context. Linux
-ordinary and read-only JDI runs retain 240 initialized classes and 173 live Code
-bodies. Each native host passes 666 checks and 70,341 selected graph/state
-comparisons, preserving classes, aliases and temporal identities across six
-phases. Twelve lists, all 72 face buffers, three shadow buffers and 147 ordered
-direct queries are paired; six comparator corruptions must fail.
+The [four-animal draw observations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/mob_draw_animals/README.md) retain eight actual calls from
+the unchanged archive: Sheep first, Pig first/reuse, Cow first/reuse, Chicken
+first/reuse at changed partial and Sheep revisit. The current ordinary/read-only
+JDI capture pins 242 initialized classes and 191 live Code bodies, with eleven
+fixed-LF input/helper files, seven texture uploads, 35 lists and 218 complete
+batches. Raw Entity/Random/Math constructor contexts are retained independently.
+No captured entropy is rebound into execution.
 
-The audited Windows ordinary NVIDIA GL supplement is separate from that full
-Linux evidence. It requires the matching actual device/driver, all 36 inputs,
-four byte-identical captured helpers and exactly 21 pinned artifacts, including
-the consumed raw transport, before parsing it. Four manifest omission/hash
-negatives must fail. It supplies only the device-specific GL baseline; model,
-list and query authority remains the Linux ordinary/JDI capture. Raw captures
-are preserved. Prepared matrices alone allow four float ULP and numeric equality
-of opposite signed zeros. Native pixels, live GL order and whole-frame original
+Each native host passes 3,350 checks and 206,656 selected typed comparisons,
+including 17,012 expanded graph records and 5,107 actual identity pairs. The
+comparison preserves classes, aliases and cross-family temporal continuity,
+316 ordered direct queries, 35 lists, all 210 face buffers, eight shadow buffers
+with 2,688 words and 18 direct String texture routes. Eight actual animation
+returns, ten model-work records and ten comparator negatives are checked.
+Pig's unused saddle model stays uncompiled despite four lookups per draw.
+
+The audited Windows ordinary NVIDIA GL supplement is separate from the full
+Linux evidence. Before parsing raw transport it requires the matching actual
+device/driver, 36 inputs, four byte-identical helpers and exactly 45 artifacts.
+Four manifest omission/hash negatives must fail. It supplies only the
+matching-device GL baseline; model/list/query authority remains the Linux
+ordinary/JDI capture. The strict default Windows-to-Mesa normal mismatch stays
+failed evidence. Prepared matrices alone allow four float ULP and opposite-zero
+numeric equality. Original/native pixels, native live GL order and whole-frame
 equality remain outside this comparison.
 
-Separate legacy-clamp SDK controls pass 46,802 checks and 3,872 exact samples per
-host. The [drawing contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md)
-also records the native loaded repeat: four returned World/HUD frames, two
-Sheep draws, first compilation/reuse and checked cleanup. These native frame
-results are distinct from the prepared original renderer observations.
+Five fresh native component processes check seven finite outcomes: three KO
+empty hooks, a null-horn pose with the actual model/PS prefix preserved through
+retirement, two casts before push and a captured bounded-Math failure. These
+are Code-qualified controls, not added original runtime outcome pairs. The
+[earlier Sheep package](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/mob_draw/README.md)
+and its three calls remain unchanged: 666 native checks, 70,341 typed checks,
+twelve lists, 72 faces, 147 queries and six comparator negatives per host.
+
+Separate legacy-clamp controls retain 46,802 checks and 3,872 exact same-device
+SDK samples per host. The [drawing contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md) also records three loaded
+Windows Pig/Cow/Chicken profiles, each with four returned frames, two actual
+draws, first/reuse list identities and checked cleanup. Existing-player
+statistics are declared inputs. These native integration results are distinct
+from the prepared original observations.
+
+The completed broad local cohort builds 93 targets per host and passes all 121
+Windows/115 Linux tests without failures, skips or sanitizer findings. All twenty
+fresh original-comparison wrappers pass, ten per host. Their final current-input
+audit checks 5,510 distinct paths. The same 2,559 C/helper/build/reference inputs
+remain unchanged through both builds and both test phases. Formatting checks
+1,746 files; six current binding tables cover 8,251 entries and 3,502 files,
+with historical metadata unchanged. [Build and tests](Build-and-tests#current-local-qualification)
+records the CTest and complete phase timings. Hosted results remain tied to
+published commits in [Draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
 
 The [random display observer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/world/random_display/README.md)
 executes twelve World profiles and 99 direct Block profiles through all

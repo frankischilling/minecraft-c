@@ -1,5 +1,26 @@
 # Build and tests
 
+## Current local qualification
+
+All 93 selected targets build on Windows MSVC Debug and Linux Clang18
+ASan/UBSan. All 121 Windows tests and 115 Linux tests pass, without failures,
+skips or sanitizer findings.
+
+| Host | CTest time | Test phase including post-run hash audit |
+| --- | ---: | ---: |
+| Windows MSVC Debug | 322.57 seconds | 322.95 seconds |
+| Linux Clang18 ASan/UBSan | 355.14 seconds | 385.96 seconds |
+
+The same 2,559 C/helper/build/reference inputs remain unchanged through both
+builds and both test phases. All twenty fresh original-comparison wrappers pass,
+ten per host; the final current-input audit covers 5,510 distinct paths.
+Formatting checks 1,746 files. All six current source-binding tables cover
+8,251 entries and 3,502 files, with their historical metadata unchanged.
+
+Hosted results are recorded separately for each published commit in
+[Draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52). This local cohort does not supply a hosted result or
+qualify a playable client, original/native pixels or whole-frame equality.
+
 ## Integration qualification
 
 At `a303b86`, all 92 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
@@ -15,37 +36,66 @@ It replaces an obsolete GL_CLAMP failure expectation with actual successful
 upload, logical/physical sampler, image ownership and cleanup checks. The
 other five failure cases and four original trace rows remain unchanged.
 The direct test and both Python controller modes reproduce the old failure,
-then pass on Windows and Linux with unchanged inputs. Hosted qualification
-is checked again for the repaired commit; the failed parent run is preserved.
+then pass on Windows and Linux with unchanged inputs. At `dbd1a83`, [all four hosted jobs pass](https://github.com/frankischilling/minecraft-c/actions/runs/41196374086) for the repaired
+commit. The failed parent run is preserved. This precedes the four-animal
+increment. Its hosted result remains tied to that published commit; the
+current local cohort is recorded above.
 
 
-## Sheep drawing and loaded-frame continuation
+## Sheep, Pig, Cow and Chicken drawing
 
-The [Sheep drawing checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md)
-passes 666 native checks and 70,341 selected original graph/state checks on each
-host. The comparison includes 147 ordered direct World/Block queries, twelve
-list definitions, all 72 face buffers, three shadow buffers and six comparator
-negatives. The actual unsheared fur and `Settings.j=true` shadow routes return.
+The [Sheep, Pig, Cow and Chicken drawing checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md)
+returns through the actual TH/GV, model, PS and NW owners. It includes unsheared
+Sheep fur, Pig's false saddle predicate after all four saddle texture lookups,
+Cow's virtual pose and nine-part model, Chicken's sine/flap pose and all four
+terrain shadows. The remaining seven default renderer families, including
+Skeleton's real held Bow, are unfinished.
 
-Linux compares to the full ordinary/read-only JDI capture. Windows uses that
-same graph/list/query authority plus a separately audited ordinary NVIDIA GL
-supplement on the matching device/driver. Its complete 36-input, four-helper and
-21-artifact inventories are checked before the raw transport is read; four
-manifest omission/hash negatives must fail. There is no Windows JDI claim.
-Only prepared view/projection matrices allow four float ULP and numeric equality
-of opposite signed zeros, with raw bits retained. Original/native pixels, live
-GL invocation order and whole-frame equality remain unqualified.
+Focused Windows and Linux comparisons each pass 3,350 native checks, comprising
+1,556 main checks and 452/328/344/339/331 checks in five fresh component
+processes. The paired draw comparison passes 206,656 typed checks, 17,012
+expanded graph records and 5,107 identity pairs. It covers 316 ordered direct
+queries, 35 lists, 210 model faces, eight shadows with 2,688 words, 18 direct
+String texture calls, eight animation returns, ten model-work records and ten
+comparator negatives. Constructor entropy stays independent.
 
-The finite Windows loaded repeat passes 1,714 checks and returns four World/HUD
-frames: one N delay, one undrawn traversal and two Sheep draws. First compilation
-defines twelve parts and reuse defines none; the draws record 72 compiled faces,
-288 source vertices and 18 shadow quads. Returns include `Minecraft.k:1328`,
-N569, PX1013 and HUD2101, followed by checked cleanup.
+Linux uses the full ordinary/read-only JDI capture. Windows uses its graph,
+list and query authority plus a separately audited same-device ordinary NVIDIA
+GL supplement: 36 inputs, four helpers, 45 artifacts and four manifest
+negatives. The strict Windows-to-Mesa current-normal mismatch remains failed
+evidence. Only prepared matrices allow four float ULP and numeric equality of
+opposite signed zeros. Original/native pixels, live GL call order and whole-frame
+equality remain unqualified.
 
-Separate legacy-clamp controls pass 46,802 checks per host, including 3,872 exact
-samples against each host's matching legacy SDK and five dynamic list replays.
-These are focused results; broad build/test and hosted counts below retain
-their earlier source checkpoints.
+The [unchanged-original package](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/mob_draw_animals/README.md) retains eleven fixed-LF input/helper
+files, 242 initialized archive classes and 191 live Code bodies. Its eight
+calls record seven texture uploads, 35 compiled lists and 218 complete batches.
+The seven fresh native component records run in five separate processes. KO
+empty hooks, the null-horn HH prefix, VA/IP casts before push and a captured
+cold Math owner with a 4,096-byte limit have exact checked cleanup. Model/PS snapshots preserve
+the null-horn pose through retirement; the failed Math owner stays failed. These
+Code-qualified native controls are distinct from the eight original draw pairs.
+
+Three separate loaded Windows profiles publish a genuine Pig, Cow or Chicken
+through the ordinary Entity APIs. Each returns four later World/HUD frames:
+one delay, one traversal that leaves the unticked actor undrawn, then first
+compilation and reuse of that exact actor. Pig compiles six parts, Cow nine and
+Chicken eight; reuse compiles none. Their shadow totals are 18, 18 and two quads.
+Returns include `Minecraft.k:1328`, `N569`, `PX1013` and `HUD2101`, followed
+by checked cleanup. The existing-player inventory statistic is a declared input;
+Player pose and World Random are not forced, and ordinary subsequent ticks run.
+These controls do not qualify fresh-player tutorial completion or serialized
+Mob loading.
+
+The earlier Sheep checkpoint remains 666 native checks and 70,341 typed
+comparisons per host: 147 queries, twelve lists, 72 faces and six comparator
+negatives. Its separate package/captures are unchanged. Its loaded repeat
+records twelve compiled parts then none on reuse, 72 faces, 288 source vertices
+and 18 shadow quads across two actual draws and four returned frames.
+
+Legacy-clamp controls retain 46,802 checks per host, including 3,872 exact
+matching-SDK samples and five dynamic list replays. The completed broad local
+cohort is recorded above; hosted qualification has its separate commit scope.
 
 ## Preceding client paths and Creature following
 

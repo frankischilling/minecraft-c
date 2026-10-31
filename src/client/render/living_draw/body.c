@@ -70,7 +70,8 @@ static bool body_try(ld_frame *f, double x, double y, double z, float partial) {
                                                           &e->detail.display)))
         return false;
     gv(f, 147);
-    s->age = at_fadd((float)f->actor->base.bt, partial);
+    if (!ld_age(f, partial, &s->age))
+        return false;
     if (!rotate_actor(f, s->age, s->body_yaw, partial))
         return false;
     s->scale = .0625f;
@@ -124,7 +125,7 @@ static bool body_try(ld_frame *f, double x, double y, double z, float partial) {
             return false;
         s->pass_attempted[(size_t)pass] = true;
         bool selected;
-        if (!ld_sheep_pass(f, pass, partial, &selected))
+        if (!ld_pass(f, pass, partial, &selected))
             return false;
         s->pass_result[(size_t)pass] = selected;
         if (!selected)
@@ -238,10 +239,24 @@ bool mc_client_living_draw_entered(mc_client_draw_scope *scope, mc_client_manage
     ld_frame f = {scope, r, actor, e};
     if (scope == NULL || r == NULL)
         return ld_fail(&f, MC_CLIENT_LIVING_DRAW_ARGUMENT, "Living draw native scope/renderer");
-    if (strcmp(r->source_class, "xy") != 0) {
+    const bool cow = strcmp(r->source_class, "va") == 0;
+    const bool chicken = strcmp(r->source_class, "ip") == 0;
+    if (strcmp(r->source_class, "xy") != 0 && strcmp(r->source_class, "me") != 0 && !cow &&
+        !chicken) {
         ld_at(&f, r->source_class, "a", "(Lsn;DDDFF)V", 0);
         return ld_fail(&f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED,
                        "Living actual concrete renderer body");
+    }
+    if (cow || chicken) {
+        ld_at(&f, r->source_class, "a", "(Lsn;DDDFF)V", 2);
+        if (actor != NULL && !mc_entity_is_kind(actor, cow ? MC_ENTITY_CLASS_KIND_COW
+                                                           : MC_ENTITY_CLASS_KIND_CHICKEN)) {
+            e->throwable = MC_CLIENT_LIVING_DRAW_EXCEPTION;
+            e->source_exception = true;
+            e->exception_class = "java/lang/ClassCastException";
+            return ld_fail(&f, MC_CLIENT_LIVING_DRAW_SOURCE_EXCEPTION,
+                           "Living actual concrete renderer checkcast");
+        }
     }
     gv(&f, 0);
     if (!ld_display(&f, mc_client_display_source_push(scope->model.display, &e->detail.display)))

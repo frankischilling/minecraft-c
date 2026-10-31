@@ -14,9 +14,27 @@ bool model_runtime_admit(mc_client_managed_renderer *, manager_model *, mc_clien
 bool model_runtime_quadruped(const manager_model *);
 bool model_runtime_fp(mc_client_model_runtime_error *);
 bool model_runtime_math(const mc_client_model_runtime_context *, mc_client_model_runtime_error *);
+bool model_runtime_call_push(mc_client_model_runtime_error *);
+void model_runtime_call_pop(mc_client_model_runtime_error *);
+bool model_runtime_pose_body(manager_model *, const float[6],
+                             const mc_client_model_runtime_context *,
+                             mc_client_model_runtime_error *);
+bool model_runtime_draw_part(mc_client_managed_renderer *, mc_client_model_part *, float,
+                             const mc_client_model_runtime_context *,
+                             mc_client_model_runtime_error *);
 bool model_runtime_nn_pose(manager_model *, const float[6], const mc_client_model_runtime_context *,
                            mc_client_model_runtime_error *);
 bool model_runtime_nn_render(mc_client_managed_renderer *, manager_model *, const float[6],
+                             const mc_client_model_runtime_context *,
+                             mc_client_model_runtime_error *);
+bool model_runtime_hh_pose(manager_model *, const float[6], const mc_client_model_runtime_context *,
+                           mc_client_model_runtime_error *);
+bool model_runtime_hh_render(mc_client_managed_renderer *, manager_model *, const float[6],
+                             const mc_client_model_runtime_context *,
+                             mc_client_model_runtime_error *);
+bool model_runtime_td_pose(manager_model *, const float[6], const mc_client_model_runtime_context *,
+                           mc_client_model_runtime_error *);
+bool model_runtime_td_render(mc_client_managed_renderer *, manager_model *, const float[6],
                              const mc_client_model_runtime_context *,
                              mc_client_model_runtime_error *);
 

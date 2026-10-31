@@ -7,38 +7,58 @@ Shared environment, action, movement and travel work uses real World queries;
 sight uses the existing World ray tracer. Finite returning and failure-prefix
 scenarios are qualified independently of original constructor entropy.
 
-The focused Windows profile loads a saved World, then constructs and
-publishes a Sheep through the ordinary Entity APIs before further frames.
-Its continuation completes random Chunk work over 361
-coordinates and 28,880 samples, then all 1,000 random-display samples and 6,000
-World Random draws. Repeated execution now completes the actual Mob
-Living/Creature path and movement work through `fd.a(Entity,boolean):121`, then
-returns from `Minecraft.k:1328`. The actual Sheep renderer now returns through
-`n.a:569`, the World frame and HUD, including fur, terrain shadow and list reuse.
-Terminal cleanup releases genuine Path aliases, target cycles and Piston-only roots.
-A selected Spider jockey retains its separate unfinished mount.
+The [Sheep, Pig, Cow and Chicken drawing checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md)
+returns through the actual TH/GV, model, PS and NW owners. It includes unsheared
+Sheep fur, Pig's false saddle predicate after all four saddle texture lookups,
+Cow's virtual pose and nine-part model, Chicken's sine/flap pose and all four
+terrain shadows. The remaining seven default renderer families, including
+Skeleton's real held Bow, are unfinished.
 
-Single-player remains pre-playable. Mob combat, storage and remaining renderers,
-further Block overrides, concrete display particles, sleeping wake transitions
-and gameplay actions remain unfinished. Active achievement and tutorial notices
-also retain an unfinished draw child. Focus-loss Canvas integration and the
-hidden pause-screen save path remain open.
+Focused Windows and Linux comparisons each pass 3,350 native checks, comprising
+1,556 main checks and 452/328/344/339/331 checks in five fresh component
+processes. The paired draw comparison passes 206,656 typed checks, 17,012
+expanded graph records and 5,107 identity pairs. It covers 316 ordered direct
+queries, 35 lists, 210 model faces, eight shadows with 2,688 words, 18 direct
+String texture calls, eight animation returns, ten model-work records and ten
+comparator negatives. Constructor entropy stays independent.
 
-The [Sheep renderer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md)
-uses the same constructed actor, World and TH renderer graph. Its unsheared fur
-pass and `Settings.j=true` terrain shadow return. Each native host passes 666
-checks and 70,341 selected original graph/state checks, including 147 ordered
-direct queries, twelve lists, 72 face buffers and six comparator negatives.
-Linux ordinary/read-only JDI evidence and the audited Windows ordinary NVIDIA
-GL supplement have separate scopes; neither establishes original/native pixels,
-live GL call order or whole-frame equality.
+Linux uses the full ordinary/read-only JDI capture. Windows uses its graph,
+list and query authority plus a separately audited same-device ordinary NVIDIA
+GL supplement: 36 inputs, four helpers, 45 artifacts and four manifest
+negatives. The strict Windows-to-Mesa current-normal mismatch remains failed
+evidence. Only prepared matrices allow four float ULP and numeric equality of
+opposite signed zeros. Original/native pixels, live GL call order and whole-frame
+equality remain unqualified.
 
-The finite loaded repeat returns four World/HUD frames: one N delay, one
-undrawn traversal and two Sheep draws. It records twelve compiled parts on the
-first draw and zero on reuse, 72 compiled faces, 288 source vertices and 18
-shadow quads. `Minecraft.k:1328`, N569, PX1013 and HUD2101 return before checked
-cleanup. Separate legacy-clamp controls pass 46,802 checks and 3,872 exact
-matching-SDK samples per host.
+Three separate loaded Windows profiles publish a genuine Pig, Cow or Chicken
+through the ordinary Entity APIs. Each returns four later World/HUD frames:
+one delay, one traversal that leaves the unticked actor undrawn, then first
+compilation and reuse of that exact actor. Pig compiles six parts, Cow nine and
+Chicken eight; reuse compiles none. Their shadow totals are 18, 18 and two quads.
+Returns include `Minecraft.k:1328`, `N569`, `PX1013` and `HUD2101`, followed
+by checked cleanup. The existing-player inventory statistic is a declared input;
+Player pose and World Random are not forced, and ordinary subsequent ticks run.
+These controls do not qualify fresh-player tutorial completion or serialized
+Mob loading.
+
+Single-player remains pre-playable. Spider, Wolf, Creeper, Skeleton, Zombie,
+Slime and Squid rendering remain unfinished; Skeleton's held Bow is mandatory.
+Active VU achievement/tutorial notices, Canvas/focus transitions, nonempty items,
+save transport, health/combat, further Block overrides and nonempty TileEntity
+draws still need implementation and verification.
+
+The actual simulation continuation completes 361 random Chunk coordinates and
+28,880 Block samples, then 1,000 random-display samples and 6,000 World Random
+draws. Living/Creature movement returns before rendering; terminal cleanup
+releases actual Path aliases, target cycles and Piston-only roots. A selected
+Spider jockey retains its unfinished mount. Separate legacy-clamp controls
+retain 46,802 checks and 3,872 exact matching-SDK samples per host. The completed
+broad local cohort builds 93 targets on each host and passes 121 Windows/115
+Linux tests without failures, skips or sanitizer findings. All four phases
+preserve 2,559 inputs; twenty fresh original-comparison wrappers pass, ten per
+host, and the current audit covers 5,510 distinct paths. [Build and tests](Build-and-tests#current-local-qualification)
+records CTest versus audited phase timings, formatting and current bindings.
+Hosted results retain their separate published-commit scope in [Draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
 
 The preceding path checkpoint retains its own results below.
 
@@ -83,8 +103,9 @@ It replaces an obsolete GL_CLAMP failure expectation with actual successful
 upload, logical/physical sampler, image ownership and cleanup checks. The
 other five failure cases and four original trace rows remain unchanged.
 The direct test and both Python controller modes reproduce the old failure,
-then pass on Windows and Linux with unchanged inputs. Hosted qualification
-is checked again for the repaired commit; the failed parent run is preserved.
+then pass on Windows and Linux with unchanged inputs. At `dbd1a83`, [all four hosted jobs pass](https://github.com/frankischilling/minecraft-c/actions/runs/41196374086) for the repaired
+commit. The failed parent run remains preserved. That result predates the
+four-animal increment.
 
 
 ## Preceding random Chunk checkpoint
@@ -133,9 +154,9 @@ Store shutdown with that malformed source field remains unsupported.
 
 The [Entity render traversal](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) reads actual ordinary/weather Lists and
 uses the same Entity's distance, frustum, camera/sleeping and Chunk-presence
-predicates. Native World leases protect retained List storage. The current Sheep
-draw returns; other renderer families and nonempty RenderGlobal TileEntity rows
-retain explicit dependencies.
+predicates. Native World leases protect retained List storage. Current Sheep,
+Pig, Cow and Chicken draws return; the seven remaining default families and
+nonempty RenderGlobal TileEntity rows retain explicit dependencies.
 
 The [normal terminal coordinator](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
 now connects menu-run shutdown to actual prefix ending, checked LL/TH retirement,
@@ -152,8 +173,8 @@ remain unfinished. There is no original shutdown equivalence claim.
 
 The same Display now handles [lit source geometry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md), including actual NW
 normal packing and compiled-list inheritance. Its finite raster qualification
-is separate from World simulation and the complete frame. The current Sheep draw
-uses it; other renderer families and TileEntity drawing remain unfinished. The
+is separate from World simulation and the complete frame. The four current
+animal draws use it; remaining families and TileEntity drawing are unfinished. The
 earlier delayed N return continued through
 [particles](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md)
 and translucent terrain to the weather child at932.

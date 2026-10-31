@@ -231,6 +231,7 @@ bool ld_shadow(ld_frame *f, double x, double y, double z, float alpha, float par
         return false;
     mc_client_render_engine *engine = texture_manager->fields.e;
     if (!ld_texture_engine(f, engine, ld_shadow_literal(), ld_site("bw", "c", "(Lsn;DDDFF)V", 30),
+                           ld_site("bw", "c", "(Lsn;DDDFF)V", 30),
                            ld_site("bw", "c", "(Lsn;DDDFF)V", 33)))
         return false;
     ld_at(f, "bw", "b", "()Lfd;", 4);

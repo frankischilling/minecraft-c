@@ -34,10 +34,14 @@ bool ld_capture(ld_frame *, bool);
 mc_client_render_manager *ld_manager(ld_frame *, int32_t dereference_pc);
 bool ld_texture(ld_frame *, const mc_player_string *, int32_t caller_pc);
 bool ld_texture_engine(ld_frame *, mc_client_render_engine *, const mc_player_string *,
-                       mc_client_graphics_site lookup_site, mc_client_graphics_site bind_site);
+                       mc_client_graphics_site caller, mc_client_graphics_site lookup_site,
+                       mc_client_graphics_site bind_site);
 bool ld_skin(ld_frame *);
 bool ld_brightness(ld_frame *, float, float *);
 bool ld_sheep_pass(ld_frame *, int32_t, float, bool *);
+bool ld_pig_pass(ld_frame *, int32_t, float, bool *);
+bool ld_age(ld_frame *, float, float *);
+bool ld_pass(ld_frame *, int32_t, float, bool *);
 bool ld_shadow(ld_frame *, double, double, double, float, float);
 void ld_registry_classify(ld_frame *, mc_registry_classes *, const mc_registry_error *);
 void ld_access_classify(ld_frame *, const mc_world_access_failure *);

@@ -321,6 +321,19 @@ bool mc_entity_render_sheep_color(mc_entity *p, int32_t *out, mc_entity_render_e
     return true;
 }
 
+bool mc_entity_render_pig_saddled(mc_entity *p, bool *out, mc_entity_render_error *e) {
+    if (!start(p, out, e, "wh", "v", "()Z"))
+        return false;
+    if (!mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_PIG))
+        return fail(e, MC_ENTITY_STATE_ERROR, "Entity render actual Pig receiver");
+    int8_t value;
+    if (!watch(p, 16, 6, &value, e))
+        return false;
+    *out = ((int32_t)value & 1) != 0;
+    e->site.pc = 19;
+    return true;
+}
+
 static mc_entity_render_query *query_begin(mc_entity_render_error *e, mc_world_runtime *world,
                                            const char *method, const char *descriptor,
                                            int32_t caller_pc, const int32_t *args, size_t nargs,
