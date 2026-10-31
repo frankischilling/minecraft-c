@@ -995,7 +995,7 @@ static int mob_model_work(mob_fixture *f, unsigned int index, const char *phase,
                                        : 6u;
     CHECK(work->pose_stores == stores && work->math_calls == math && work->part_calls == parts &&
           work->part_returns == parts);
-    CHECK(work->cosine_calls == (spider || !slime && !squid ? 4u : 0u) &&
+    CHECK(work->cosine_calls == (spider || (!slime && !squid) ? 4u : 0u) &&
           work->sine_calls == (spider ? 4u : 0u) && work->absolute_calls == (spider ? 4u : 0u));
     if (squid)
         CHECK(work->part_array == work->model->array_b && work->array_length == 8 &&

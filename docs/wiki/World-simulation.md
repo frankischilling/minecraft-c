@@ -50,6 +50,15 @@ authentication is the sole approved gameplay exclusion.
 
 [Build and tests](Build-and-tests#current-local-qualification) records current validation.
 
+The full local selection is recorded at `c88e648` in [Build and tests](Build-and-tests#current-local-qualification). A subsequent
+test-only GCC repair makes the existing cosine-count assertion's `&&` grouping
+explicit within `||`, preserving C precedence and every expected count. GCC13
+with the actual target flags rejects the original and accepts the correction.
+Rebuilt Windows and Clang18 creature comparisons each retain 3,722 native checks,
+366,155 selected original checks and twelve rejected comparator corruptions.
+Production and build configuration are unchanged; hosted results keep their
+separate commit scope in [draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
+
 The preceding path checkpoint retains its own results below.
 
 Focused Windows MSVC Debug and Linux Clang18 ASan/UBSan runs pass the actual

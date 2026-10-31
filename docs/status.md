@@ -58,6 +58,15 @@ entries across 3,550 files while preserving historical metadata.
 All thirteen original-comparison suites pass freshly on each host. The final
 current-input audit verifies 26 wrappers and 4,614 resolved paths, merging
 Windows separators and `/mnt/c` aliases of the same file.
+The full local selection above was recorded at `c88e648`. A subsequent
+test-only GCC repair makes the existing cosine-count assertion's `&&` grouping
+explicit within `||`, preserving C precedence and every expected count. GCC13
+with the actual target flags rejects the original and accepts the correction.
+Rebuilt Windows and Clang18 creature comparisons each retain 3,722 native checks,
+366,155 selected original checks and twelve rejected comparator corruptions.
+Production and build configuration are unchanged; hosted results keep their
+separate commit scope in [draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
+
 The preceding animal and hosted results below retain their published-commit scope.
 
 The preceding four-animal focused comparison passes on Windows and Linux:

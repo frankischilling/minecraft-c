@@ -304,6 +304,15 @@ All thirteen original-comparison suites pass freshly on each host. An
 independent audit checks 26 wrappers against 4,614 resolved current paths,
 including the retained Sheep, animal, Path, Mob and World evidence.
 
+The full local selection above was recorded at `c88e648`. A subsequent
+test-only GCC repair makes the existing cosine-count assertion's `&&` grouping
+explicit within `||`, preserving C precedence and every expected count. GCC13
+with the actual target flags rejects the original and accepts the correction.
+Rebuilt Windows and Clang18 creature comparisons each retain 3,722 native checks,
+366,155 selected original checks and twelve rejected comparator corruptions.
+Production and build configuration are unchanged; hosted results keep their
+separate commit scope in [draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
+
 ## Published four-animal broad validation
 
 All 93 selected targets build on Windows MSVC and Linux Clang. The same

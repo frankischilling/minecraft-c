@@ -5102,8 +5102,8 @@
       "sha256": "7b2afc68a55c94cd2b558b003c24109d73b09fbf1568aa4ce01234bfc1ca5c86"
     },
     "tests/client/render/test_creature_draw.c": {
-      "bytes": 82146,
-      "sha256": "915ed8e589d60bd26e8e2a14171703aa01a9b6b37805af2437a73ae2efde67ce"
+      "bytes": 82148,
+      "sha256": "ec37b104c50d30d4d24724406e7daf7771d30a0bd19581c9fc95201175eb7756"
     },
     "tests/entity/test_creeper_attack.c": {
       "bytes": 13931,

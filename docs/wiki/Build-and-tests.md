@@ -2,7 +2,7 @@
 
 ## Current local qualification
 
-All 98 selected targets build on Windows MSVC Debug and Linux
+At `c88e648`, all 98 selected targets build on Windows MSVC Debug and Linux
 Clang18 ASan/UBSan. All 129 Windows and 122 Linux tests pass without
 failures, skips or sanitizer findings. CTest takes 457.67/460.55 seconds;
 complete test phases including following input audits take 458.08/501.85 seconds.
@@ -14,6 +14,15 @@ and `/mnt/c` aliases of the same file. Formatting checks 1,757 C files.
 Six current binding tables pass with historical metadata preserved. Hosted
 results keep their exact published-commit scope in
 [Draft PR52](https://github.com/frankischilling/minecraft-c/pull/52).
+
+The full local selection above was recorded at `c88e648`. A subsequent
+test-only GCC repair makes the existing cosine-count assertion's `&&` grouping
+explicit within `||`, preserving C precedence and every expected count. GCC13
+with the actual target flags rejects the original and accepts the correction.
+Rebuilt Windows and Clang18 creature comparisons each retain 3,722 native checks,
+366,155 selected original checks and twelve rejected comparator corruptions.
+Production and build configuration are unchanged; hosted results keep their
+separate commit scope in [draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
 
 The client now draws eight default Mob kinds: Sheep, Pig, Cow, Chicken,
 Spider, Slime, Squid and Creeper. [Mob drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md) uses the actual TH/GV, concrete

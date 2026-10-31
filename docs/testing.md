@@ -13,6 +13,15 @@ Thirteen original-comparison suites pass freshly on each host; the independent
 final audit verifies all 26 wrappers and 4,614 resolved current paths. Windows
 separator variants and `/mnt/c` aliases share one resolved-file entry.
 
+The full local selection above was recorded at `c88e648`. A subsequent
+test-only GCC repair makes the existing cosine-count assertion's `&&` grouping
+explicit within `||`, preserving C precedence and every expected count. GCC13
+with the actual target flags rejects the original and accepts the correction.
+Rebuilt Windows and Clang18 creature comparisons each retain 3,722 native checks,
+366,155 selected original checks and twelve rejected comparator corruptions.
+Production and build configuration are unchanged; hosted results keep their
+separate commit scope in [draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
+
 `client.creature_draw` uses genuine Spider, Slime, Squid and Creeper owners.
 Windows and Linux each pass 3,722 native checks and 366,155 selected original
 graph/state comparisons over thirteen draws, including 341 queries, 42 lists,
