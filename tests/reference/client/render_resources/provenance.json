@@ -4822,8 +4822,8 @@
       "sha256": "6ff2cdb9b217afe224f54ff503640b4f376c94407c4bb1d78546dc90935deb2d"
     },
     "tests/entity/test_mob_tick.c": {
-      "bytes": 78192,
-      "sha256": "528d47674bffa542c0f10479cf8224ced358153d8f3d473934af0fbb48c3b531"
+      "bytes": 78210,
+      "sha256": "7af1ad7264b08bdc87a56916718f9e04e338a4c63ab2a5b6e6c46110217c6aaf"
     },
     "tests/reference/entity/mob_tick/capture_reference.py": {
       "bytes": 6377,

@@ -978,6 +978,7 @@ static bool raw_field(mob_fixture *f, const tick_operand *v) {
     }
 #undef INPUT_FIELD
     CHECK(false);
+    return false;
 }
 
 static bool secondary_prepare(mob_fixture *f, const tick_operand *v) {
