@@ -243,21 +243,28 @@ mc_entity_status mc_mob_tick_cleanup(mc_entity *p, mc_mob_tick_error *out) {
         error->status = MC_ENTITY_BUSY;
         error->native_policy = true;
         error->operation = "Mob cleanup while source tick entered";
-    } else if (p->mob->pending_ray != NULL) {
+    } else if (p->mob->pending_ray != NULL || p->mob->pending_path != NULL) {
         error->state.cleanup_pending = true;
         error->status = mc_entity_retain(p);
         if (error->status != MC_ENTITY_OK) {
             error->native_policy = true;
             error->operation = "Mob cleanup local lifetime hold";
         } else {
-            struct mc_mob_ray_pending *pending = p->mob->pending_ray;
-            error->site = pending->caller;
-            if (drain(p, pending, error)) {
-                p->mob->pending_ray = NULL;
-                free(pending);
-                error->state.cleanup_pending = false;
-                mc_entity_release(p); /* The transferred failed-tick occurrence. */
+            bool drained = true;
+            if (p->mob->pending_ray != NULL) {
+                struct mc_mob_ray_pending *pending = p->mob->pending_ray;
+                error->site = pending->caller;
+                drained = drain(p, pending, error);
+                if (drained) {
+                    p->mob->pending_ray = NULL;
+                    free(pending);
+                    mc_entity_release(p); /* The transferred failed-tick occurrence. */
+                }
             }
+            if (drained)
+                (void)mt_path_cleanup_entered(p, error);
+            error->state.cleanup_pending =
+                p->mob->pending_ray != NULL || p->mob->pending_path != NULL;
             mc_entity_release(p); /* This cleanup's independent local occurrence. */
         }
     }

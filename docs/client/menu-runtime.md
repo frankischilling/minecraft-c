@@ -73,6 +73,27 @@ The FPS path reads and resets the real `dk.b` counter. First use initializes its
 same-namespace Tessellator reference and zero field; it does not fabricate a
 completed chunk renderer or a constant reported update count.
 
+The frame's `Minecraft.run:262` call now lets the existing World light body
+execute its source batch of at most 499 records. A zero native work allowance
+previously stopped as soon as real queued work reached propagation. The
+separate `load-light` control returns from two frames with explicitly prepared
+paused entry flags, drains 500 actual records as 499 then 1, and checks saved
+BlockLight, queue identity, World time, Random state and normal WorldAccess
+callbacks. It does not qualify pause-screen transitions.
+
+The focused repeated profile completes Mob path following and returns from
+`Minecraft.k:1328`, then retains the actual pending Mob render at `n.a:516`.
+Its saved Entity lists are empty. After the first returned loaded frame, a
+declared native input constructs and publishes a genuine Sheep in the Player's
+view through the ordinary constructor, position and World APIs. Constructor
+entropy remains raw; the next frames use the normal Timer and World ticks.
+It declares an existing Player whose loaded statistics already contain the
+inventory achievement. A Player without that entry can reach the unfinished
+active tutorial-notice draw at `vu.a:108` before the Mob draw.
+The RenderManager's original 28 renderer owners remain; hand lookup also adds
+the real LocalPlayer cache key, producing 29 Map entries. The pending Mob uses
+its existing canonical renderer entry. No placeholder draw completes that call.
+
 Account authentication is excluded by the development specification. At
 `Minecraft.k`11, tick6000 would start `kp`, whose `run()` builds the account-session
 URL at11..50, requests it at53..65 and updates license status `H` at77 after a400

@@ -135,8 +135,11 @@ World Entity pass dispatches the implemented body. The client also connects
 the World scheduler, random Chunk work and
 [random display updates](world/random-display.md). The
 [Mob active tick continuation](entity/mob-active-tick.md) uses genuine Living
-fields and production sight rays. Mob paths, combat, further simulation bodies
-and gameplay remain unfinished.
+fields and production sight rays. [Pathfinding](world/pathfinding.md) uses the
+same neutral ChunkCache as rendering, a retained World call and a stable Point
+arena owned by shared-cursor Paths. Mobs hold real Path occurrences; those Paths
+keep no World, Entity or Chunk backedge. Combat, Mob drawing, further simulation
+bodies and gameplay remain unfinished.
 
 The water effect has a CPU animation body on its existing constructor-owned
 float/RGBA arrays and shared Math profile. Normal startup registers all nine

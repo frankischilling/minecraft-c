@@ -22,6 +22,7 @@ typedef struct mc_mob_tick_scope {
     const mc_entity_tick_limits *environment_limits;
     const mc_player_action_context *action_context;
     const mc_player_action_limits *action_limits;
+    const mc_world_path_limits *path_limits;
     size_t work, max_work;
     bool hold_transferred;
 } mc_mob_tick_scope;
@@ -53,6 +54,14 @@ bool mt_particle(mc_mob_tick_scope *, const char *, double, double, double, doub
 bool mt_look(mc_mob_tick_scope *, mc_entity *, float, float);
 bool mt_eye(mc_mob_tick_scope *, mc_entity *, float *);
 bool mt_visible(mc_mob_tick_scope *, mc_entity *, bool *);
+bool mt_path_request(mc_mob_tick_scope *, mc_world_runtime *, mc_entity *target, bool to_entity,
+                     int32_t x, int32_t y, int32_t z, float range, unsigned int store_pc);
+bool mt_path_get(mc_mob_tick_scope *, mc_path **);
+bool mt_path_store(mc_mob_tick_scope *, mc_path *);
+bool mt_path_present(mc_mob_tick_scope *, bool *);
+bool mt_path_failed(mc_mob_tick_scope *, const mc_path_error *, const char *);
+bool mt_follow_path(mc_mob_tick_scope *, int32_t foot_y, bool water, bool lava);
+bool mt_path_cleanup_entered(mc_entity *, mc_mob_tick_error *);
 bool mt_watch_byte(mc_mob_tick_scope *, int32_t, int8_t *);
 bool mt_watch_byte_set(mc_mob_tick_scope *, int32_t, int8_t);
 bool mt_watch_int_set(mc_mob_tick_scope *, int32_t, int32_t);

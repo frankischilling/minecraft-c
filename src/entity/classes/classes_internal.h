@@ -48,6 +48,7 @@ struct mc_entity_classes {
     mc_java_random_profile *profile;
     mc_entity_limits limits;
     size_t allocated_bytes, live_entities, borrowers;
+    size_t live_path_arenas;
     mc_entity_class_phase entity_phase, bounds_phase, watcher_phase;
     mc_particle_origin particle_origin; /* Actual XW.l/m/n; class aggregate defaults to +0. */
     int32_t next_id, bounds_cursor;

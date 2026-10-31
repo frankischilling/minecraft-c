@@ -27,6 +27,7 @@ mc_entity_status mc_mob_tick(mc_entity *p, mc_registry_classes *registry, mc_mat
                            .environment_limits = limits == NULL ? NULL : &limits->environment,
                            .action_context = &context,
                            .action_limits = limits == NULL ? NULL : &limits->action,
+                           .path_limits = limits == NULL ? NULL : &limits->path,
                            .max_work =
                                limits == NULL ? MC_MOB_TICK_DEFAULT_WORK : limits->max_work};
     bool held = false, registry_held = false, math_held = false, active = false;
@@ -37,9 +38,9 @@ mc_entity_status mc_mob_tick(mc_entity *p, mc_registry_classes *registry, mc_mat
         mt_fail(&s, MC_ENTITY_INVALID_PHASE, "Mob tick READY owner");
     else if (p->mob->tick_active)
         mt_fail(&s, MC_ENTITY_BUSY, "Mob tick already entered");
-    else if (p->mob->pending_ray != NULL) {
+    else if (p->mob->pending_ray != NULL || p->mob->pending_path != NULL) {
         e->state.cleanup_pending = true;
-        mt_fail(&s, MC_ENTITY_BUSY, "Mob pending native ray cleanup");
+        mt_fail(&s, MC_ENTITY_BUSY, "Mob pending native child cleanup");
     } else {
         e->state.kind = p->class_literal->kind;
         const mc_entity_status status = mc_entity_retain(p);

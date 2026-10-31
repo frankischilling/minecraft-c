@@ -119,16 +119,51 @@ static bool acquire(mc_client_chunk_cache *c, int32_t x, int32_t z,
     return true;
 }
 
-mc_client_chunk_cache_status mc_client_chunk_cache_create(mc_world_runtime *world, int32_t x0,
-                                                          int32_t y0, int32_t z0, int32_t x1,
-                                                          int32_t y1, int32_t z1,
-                                                          mc_client_chunk_cache **out,
-                                                          mc_client_chunk_cache_error *error) {
+mc_client_chunk_cache_limits mc_client_chunk_cache_default_limits(void) {
+    return (mc_client_chunk_cache_limits){1048576u, SIZE_MAX, SIZE_MAX};
+}
+
+static void *cache_allocate(mc_client_chunk_cache *c, size_t count, size_t width) {
+    if (width != 0 && count > SIZE_MAX / width) {
+        fail(&c->failure, MC_CLIENT_CHUNK_CACHE_LIMIT, "ew native array byte overflow", 55, true);
+        return NULL;
+    }
+    const size_t bytes = count * width;
+    if (c->state.native_bytes > c->limits.max_native_bytes ||
+        bytes > c->limits.max_native_bytes - c->state.native_bytes ||
+        c->state.native_allocations == c->limits.max_allocations) {
+        fail(&c->failure, MC_CLIENT_CHUNK_CACHE_LIMIT, "ew native array allocation bound", 55,
+             true);
+        return NULL;
+    }
+    void *value = calloc(count, width);
+    if (value == NULL) {
+        fail(&c->failure, MC_CLIENT_CHUNK_CACHE_ALLOCATION_FAILED,
+             "ew native rectangular array allocation", 55, true);
+        return NULL;
+    }
+    c->state.native_bytes += bytes;
+    c->state.native_peak_bytes = c->state.native_bytes;
+    ++c->state.native_allocations;
+    return value;
+}
+
+mc_client_chunk_cache_status mc_client_chunk_cache_create_with_limits(
+    mc_world_runtime *world, int32_t x0, int32_t y0, int32_t z0, int32_t x1, int32_t y1, int32_t z1,
+    const mc_client_chunk_cache_limits *limits, mc_client_chunk_cache **out,
+    mc_client_chunk_cache_error *error) {
     (void)y0;
     (void)y1;
     mc_client_chunk_cache_error e = empty_error("<init>", "(Lfd;IIIIII)V");
     if (out == NULL || *out != NULL) {
         fail(&e, MC_CLIENT_CHUNK_CACHE_INVALID_ARGUMENT, "ew native output slot", 0, true);
+        return copy_error(error, &e);
+    }
+    const mc_client_chunk_cache_limits admitted =
+        limits == NULL ? mc_client_chunk_cache_default_limits() : *limits;
+    if (admitted.max_native_bytes < sizeof(mc_client_chunk_cache) ||
+        admitted.max_allocations == 0) {
+        fail(&e, MC_CLIENT_CHUNK_CACHE_LIMIT, "ew native owner allocation bound", 0, true);
         return copy_error(error, &e);
     }
     mc_client_chunk_cache *c = calloc(1, sizeof(*c));
@@ -140,6 +175,9 @@ mc_client_chunk_cache_status mc_client_chunk_cache_create(mc_world_runtime *worl
     c->state.failure = &c->failure;
     c->state.cleanup = &c->cleanup;
     c->state.active = true;
+    c->limits = admitted;
+    c->state.native_bytes = c->state.native_peak_bytes = sizeof(*c);
+    c->state.native_allocations = 1;
     *out = c;
     if (world != NULL && !mc_world_runtime_binding_retain(world)) {
         c->failure.storage = *mc_world_runtime_last_error(world);
@@ -163,7 +201,8 @@ mc_client_chunk_cache_status mc_client_chunk_cache_create(mc_world_runtime *worl
         goto done;
     }
     const size_t rows = (size_t)c->state.rows, columns = (size_t)c->state.columns;
-    if (rows > 1048576u || columns > 1048576u || (columns != 0 && rows > 1048576u / columns)) {
+    if (rows > admitted.max_cells || columns > admitted.max_cells ||
+        (columns != 0 && rows > admitted.max_cells / columns)) {
         fail(&c->failure, MC_CLIENT_CHUNK_CACHE_LIMIT,
              "ew native rectangular array allocation bound", 55, true);
         goto done;
@@ -171,15 +210,17 @@ mc_client_chunk_cache_status mc_client_chunk_cache_create(mc_world_runtime *worl
     c->cell_count = rows * columns;
     /* Native coalesced backing and row handles reproduce distinct source
      * arrays/NULL cells, without claiming Java per-object allocation timing. */
-    c->rows = calloc(rows == 0 ? 1 : rows, sizeof(*c->rows));
-    c->cells =
-        calloc(c->cell_count == 0 ? (rows == 0 ? 1 : rows) : c->cell_count, sizeof(*c->cells));
-    c->occurrences = calloc(c->cell_count == 0 ? 1 : c->cell_count, sizeof(*c->occurrences));
-    if (c->rows == NULL || c->cells == NULL || c->occurrences == NULL) {
-        fail(&c->failure, MC_CLIENT_CHUNK_CACHE_ALLOCATION_FAILED,
-             "ew native rectangular array allocation", 55, true);
+    c->rows = cache_allocate(c, rows == 0 ? 1 : rows, sizeof(*c->rows));
+    if (c->rows == NULL)
         goto done;
-    }
+    c->cells = cache_allocate(c, c->cell_count == 0 ? (rows == 0 ? 1 : rows) : c->cell_count,
+                              sizeof(*c->cells));
+    if (c->cells == NULL)
+        goto done;
+    c->occurrences =
+        cache_allocate(c, c->cell_count == 0 ? 1 : c->cell_count, sizeof(*c->occurrences));
+    if (c->occurrences == NULL)
+        goto done;
     for (size_t x = 0; x < rows; ++x)
         c->rows[x] = c->cells + x * (columns == 0 ? 1 : columns);
     c->state.c = (mc_chunk_state *const *const *)c->rows;
@@ -201,6 +242,15 @@ done:
         c->state.source_pc = c->failure.bytecode;
     c->state.active = false;
     return copy_error(error, &c->failure);
+}
+
+mc_client_chunk_cache_status mc_client_chunk_cache_create(mc_world_runtime *world, int32_t x0,
+                                                          int32_t y0, int32_t z0, int32_t x1,
+                                                          int32_t y1, int32_t z1,
+                                                          mc_client_chunk_cache **out,
+                                                          mc_client_chunk_cache_error *error) {
+    return mc_client_chunk_cache_create_with_limits(world, x0, y0, z0, x1, y1, z1, NULL, out,
+                                                    error);
 }
 
 bool mc_client_chunk_cache_inspect(const mc_client_chunk_cache *c,

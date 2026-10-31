@@ -31,6 +31,7 @@ typedef struct mc_entity_class_snapshot {
     int32_t next_id, bounds_pool_cursor;
     const void *bounds_pool_identity, *watcher_types_identity;
     size_t watcher_type_count, live_entities, allocation_bytes;
+    size_t live_path_arenas;
 } mc_entity_class_snapshot;
 
 /* The first 24 native literal selectors retain jc/ga registration order;
@@ -113,7 +114,7 @@ mc_entity_status mc_entity_classes_free(mc_entity_classes *classes);
  * between different owners. The diagnostic view has no runtime String owner.
  * Hold classes (or its counted application binding) throughout every borrowed
  * literal/view use. Free is BUSY while borrowers, live Entities or native
- * pooled or standalone bounds holds remain.
+ * pooled or standalone bounds holds, or Path arenas remain.
  * Failure preserves out; arguments/outputs and owners must be disjoint. */
 mc_entity_status mc_entity_class_literal_get(const mc_entity_classes *classes,
                                              mc_entity_class_kind kind,

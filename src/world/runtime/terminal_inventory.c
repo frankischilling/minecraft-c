@@ -15,7 +15,9 @@ typedef enum terminal_record_kind {
     TERMINAL_ENTITY = 1,
     TERMINAL_TILE,
     TERMINAL_SLOT,
-    TERMINAL_CHUNK
+    TERMINAL_CHUNK,
+    TERMINAL_PATH,
+    TERMINAL_PATH_ARENA
 } terminal_record_kind;
 
 typedef struct terminal_record {
@@ -199,15 +201,12 @@ static mc_world_storage_status collect_entity(void *context, const void *slot, m
         if (value->particle != NULL || value->base.aG != NULL || value->base.aH != NULL)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal unqualified Entity child or relationship graph");
-        /* Targets now have concrete native owning cells. Paths still require
-         * their own represented owner before a nonnull graph can retire. */
-        if (value->mob != NULL && value->mob->creature_path != NULL)
-            return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                          "World terminal unqualified Mob path graph");
         if (value->mob != NULL && value->mob->tick_active)
             return result(error, MC_WORLD_STORAGE_BUSY, "World terminal Mob tick still entered");
         if (value->mob != NULL && value->mob->pending_ray != NULL)
             return result(error, MC_WORLD_STORAGE_BUSY, "World terminal Mob ray cleanup pending");
+        if (value->mob != NULL && value->mob->pending_path != NULL)
+            return result(error, MC_WORLD_STORAGE_BUSY, "World terminal Mob path cleanup pending");
         if (value->base.world != NULL && value->base.world != c->world)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal Entity bound outside admitted World");
@@ -229,6 +228,51 @@ static mc_world_storage_status collect_entity(void *context, const void *slot, m
                                          : status;
 }
 
+static mc_world_storage_status collect_path(terminal_collector *c, const void *slot, mc_path *path,
+                                            mc_world_storage_error *error) {
+    mc_world_storage_status status = owning_slot(c, slot, error);
+    if (status != MC_WORLD_STORAGE_OK || path == NULL)
+        return status;
+    terminal_record *entry;
+    bool created;
+    status = record(c, path, TERMINAL_PATH, &entry, &created, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    if (created) {
+        mc_path_state state;
+        if (!mc_path_inspect(path, &state) || state.classes != c->world->classes->entities ||
+            state.arena_identity == NULL || state.arena_holds == 0)
+            return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                          "World terminal canonical Path arena owner");
+        entry->holds = state.holds;
+        status = increment(&c->inventory.paths, error);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
+        terminal_record *arena;
+        bool arena_created;
+        status =
+            record(c, state.arena_identity, TERMINAL_PATH_ARENA, &arena, &arena_created, error);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
+        if (arena_created) {
+            arena->holds = state.arena_holds;
+            status = increment(&c->inventory.path_arenas, error);
+            if (status != MC_WORLD_STORAGE_OK)
+                return status;
+        } else if (arena->holds != state.arena_holds)
+            return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                          "World terminal Path arena hold metadata");
+        status = increment(&arena->occurrences, error);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
+        /* Adding the arena record may have grown the identity table. */
+        entry = find(c->records, c->capacity, path, TERMINAL_PATH);
+    }
+    status = increment(&entry->occurrences, error);
+    return status == MC_WORLD_STORAGE_OK ? increment(&c->inventory.path_occurrences, error)
+                                         : status;
+}
+
 static mc_world_storage_status collect_entity_references(terminal_collector *c,
                                                          mc_world_storage_error *error) {
     /* Appending new identities keeps this traversal linear and avoids native
@@ -247,14 +291,22 @@ static mc_world_storage_status collect_entity_references(terminal_collector *c,
         if (status != MC_WORLD_STORAGE_OK)
             return status;
         if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SLIME)) {
-            if (entity->mob->creature_target != NULL || entity->mob->creature_target_hold != NULL)
+            if (entity->mob->creature_target != NULL || entity->mob->creature_target_hold != NULL ||
+                entity->mob->creature_path != NULL || entity->mob->creature_path_hold != NULL)
                 return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                              "World terminal Slime has no Creature target field");
+                              "World terminal Slime has no Creature reference fields");
             continue;
         }
         if (mc_mob_creature_target_get(entity, &value, &child) != MC_ENTITY_OK)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, child.operation);
         status = collect_entity(c, &entity->mob->creature_target_hold, value, error);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
+        mc_path *path;
+        mc_path_error path_error;
+        if (mc_mob_path_get(entity, &path, &path_error) != MC_ENTITY_OK)
+            return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, path_error.operation);
+        status = collect_path(c, &entity->mob->creature_path_hold, path, error);
         if (status != MC_WORLD_STORAGE_OK)
             return status;
     }
@@ -457,14 +509,18 @@ static mc_world_storage_status audit(terminal_collector *c,
     for (size_t i = 0; i < c->capacity; ++i) {
         const terminal_record *entry = &c->records[i];
         if (entry->identity == NULL ||
-            (entry->kind != TERMINAL_ENTITY && entry->kind != TERMINAL_TILE))
+            (entry->kind != TERMINAL_ENTITY && entry->kind != TERMINAL_TILE &&
+             entry->kind != TERMINAL_PATH && entry->kind != TERMINAL_PATH_ARENA))
             continue;
         if (entry->holds < entry->occurrences)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal owned occurrences exceed actual holds");
         if (entry->holds != entry->occurrences)
             return result(error, MC_WORLD_STORAGE_BUSY,
-                          "World terminal external Entity or TileEntity hold");
+                          entry->kind == TERMINAL_PATH ? "World terminal external Path hold"
+                          : entry->kind == TERMINAL_PATH_ARENA
+                              ? "World terminal external Path arena hold"
+                              : "World terminal external Entity or TileEntity hold");
     }
     if (c->world->persistent_bindings < c->inventory.expected_world_bindings)
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -521,7 +577,7 @@ static mc_world_storage_status scan_mob(void *context, const void *slot, mc_enti
     mob_graph_scan *scan = context;
     if (entity != NULL && entity->mob != NULL &&
         (entity->mob->tick_active || entity->mob->pending_ray != NULL ||
-         entity->mob->creature_path != NULL || entity->mob->living.private_b != NULL ||
+         entity->mob->pending_path != NULL || entity->mob->living.private_b != NULL ||
          entity->mob->creature_target != NULL || entity->mob->look_target_hold != NULL ||
          entity->mob->creature_target_hold != NULL))
         scan->needed = true;
@@ -614,6 +670,14 @@ mc_world_storage_status mc_world_runtime_terminal_mob_graph_prepare(
     }
     if (status == MC_WORLD_STORAGE_OK)
         status = collect_entity_references(c, error);
+    for (size_t i = 0; status == MC_WORLD_STORAGE_OK && i < c->capacity; ++i) {
+        const terminal_record *entry = &c->records[i];
+        if (entry->identity != NULL &&
+            (entry->kind == TERMINAL_PATH || entry->kind == TERMINAL_PATH_ARENA) &&
+            entry->holds < entry->occurrences)
+            status = result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                            "World terminal Path holds below owned occurrences");
+    }
     for (size_t i = 0; status == MC_WORLD_STORAGE_OK && i < c->entity_count; ++i) {
         mc_entity *entity = c->entities[i];
         const terminal_record *entry = find(c->records, c->capacity, entity, TERMINAL_ENTITY);

@@ -5,7 +5,9 @@ Creeper (`gb`), Slime (`uw`), Pig (`wh`), Sheep (`dl`), Cow (`bx`), Chicken (`ww
 Wolf (`gi`) and Squid (`xt`) constructors. These cover the eleven default Mob
 kinds. The public contract is
 [`mc/entity/mob/construction.h`](../../include/mc/entity/mob/construction.h).
-Nether Mob constructors, Mob paths, combat and drawing remain unfinished.
+Nether Mob constructors, combat and drawing remain unfinished.
+[Client paths and following](../world/pathfinding.md) have their own finite
+implementation and comparison scope.
 
 Each Mob has its own native allocation containing the real Entity and Living
 fields. It shares the existing application's Entity classes and Random profile;

@@ -1,6 +1,34 @@
 # Build and tests
 
-## Client Mob active ticks
+## Client paths and Creature following
+
+Focused Windows MSVC Debug and Linux Clang18 ASan/UBSan runs pass the actual
+World path wrappers, shared ChunkCache, PathFinder and shared-cursor Path.
+Each host passes 16,995 native checks over 64 paired scenarios: 143,871 typed
+graph/state checks, six separate failed-Path constructor checks, 12,464 ordered
+query attempts and 87,246 query words. Seven corrupted comparisons are rejected.
+Eight native ceilings and actual shared-Path/outliving-World controls pass.
+
+Mob following adds four full returns to the previous source-prefix cohort.
+Each host passes 113,936 native checks, 19,832 typed field checks, 14,558
+identity relations and all 72 events over 62 scenarios. The split is 52 full
+returns, two callback failures, four source-null failures and four remaining
+drop/hurt prefixes. All thirteen native controls and six reference negatives
+pass. Constructor entropy remains independent.
+
+All 90 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 117 Windows tests pass in 220.67 seconds and all 112 Linux tests in
+264.30 seconds, without failures, skips or sanitizer findings. The same 2,508
+C, helper, build and reference inputs remain unchanged through both builds and tests.
+All eight original-comparison suites pass on each host. Formatting checks 1,722
+files; source bindings cover 8,107 entries across 3,450 current files.
+
+Detailed source order,
+ownership and limits are in [client pathfinding](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/pathfinding.md) and
+[Mob active ticks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-active-tick.md). These scoped results do not
+establish a playable client.
+
+## Preceding client Mob active tick checkpoint
 
 All 87 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
 All 111 Windows tests pass in 185.60 seconds and all 107 Linux tests in

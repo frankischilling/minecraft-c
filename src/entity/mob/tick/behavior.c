@@ -229,15 +229,15 @@ static bool wander(mc_mob_tick_scope *s) {
         static const unsigned int pcs[] = {33, 57, 81};
         static const unsigned int floor_pcs[] = {42, 66, 90};
         for (size_t a = 0; a < 3; ++a) {
+            const double value = a == 0   ? s->entity->base.x
+                                 : a == 1 ? s->entity->base.y
+                                          : s->entity->base.z;
             mt_at(s, "ii", "E", "()V", pcs[a]);
             if (!mt_int(s, a == 1 ? 7 : 13, &n))
                 return false;
             mt_at(s, "ii", "E", "()V", floor_pcs[a]);
             if (!mt_math(s) || !mt_fp(s))
                 return false;
-            const double value = a == 0   ? s->entity->base.x
-                                 : a == 1 ? s->entity->base.y
-                                          : s->entity->base.z;
             xyz[a] = mc_math_floor_double(at_sub(at_add(value, (double)n), a == 1 ? 3.0 : 6.0));
         }
         float current;
@@ -263,10 +263,9 @@ static bool wander(mc_mob_tick_scope *s) {
             .z = selected[2],
             .range = 10.0f};
         mt_at(s, "ii", "E", "()V", 153);
-        if (captured == NULL)
-            return mt_null(s, "Creature coordinate path null captured World receiver");
-        s->error->child_site = (mc_mob_site){"fd", "a", "(Lsn;IIIF)Ldh;", 0};
-        return mt_fail(s, MC_ENTITY_STATE_ERROR, "Creature actual World coordinate path child");
+        if (!mt_path_request(s, captured, NULL, false, selected[0], selected[1], selected[2], 10.0f,
+                             156))
+            return false;
     }
     mt_at(s, "ii", "E", "()V", 159);
     return true;
@@ -285,10 +284,7 @@ static bool target_path(mc_mob_tick_scope *s, unsigned int target_pc, unsigned i
         .target_identity = target == NULL ? 0 : (uintptr_t)target,
         .range = 16.0f};
     mt_at(s, "ii", "f_", "()V", invoke_pc);
-    if (captured == NULL)
-        return mt_null(s, "Creature target path null captured World receiver");
-    s->error->child_site = (mc_mob_site){"fd", "a", "(Lsn;Lsn;F)Ldh;", 0};
-    return mt_fail(s, MC_ENTITY_STATE_ERROR, "Creature actual World target path child");
+    return mt_path_request(s, captured, target, true, 0, 0, 0, 16.0f, invoke_pc + 3u);
 }
 
 static bool seek(mc_mob_tick_scope *s, mc_entity **out) {
@@ -353,7 +349,8 @@ bool mt_creature(mc_mob_tick_scope *s) {
         if (!stored || !mt_target_get(s, true, &target))
             return false;
         if (target != NULL) {
-            return target_path(s, 40, 44);
+            if (!target_path(s, 40, 44))
+                return false;
         }
     } else {
         mt_at(s, "ii", "f_", "()V", 57);
@@ -414,20 +411,32 @@ bool mt_creature(mc_mob_tick_scope *s) {
             return false;
     }
     if (!m->creature_attacking && target != NULL) {
-        if (m->creature_path != NULL) {
+        mc_path *path = NULL;
+        mt_at(s, "ii", "f_", "()V", 127);
+        if (!mt_path_get(s, &path))
+            return false;
+        bool request = path == NULL;
+        if (path != NULL) {
             int32_t n;
             mt_at(s, "ii", "f_", "()V", 139);
             if (!mt_int(s, 20, &n))
                 return false;
-            if (n != 0)
-                goto after_wander;
+            request = n == 0;
         }
-        return target_path(s, 152, 156);
+        if (request) {
+            if (!target_path(s, 152, 156))
+                return false;
+            goto after_wander;
+        }
     }
     if (!m->creature_attacking) {
         int32_t n = 1;
         bool request = false;
-        if (m->creature_path == NULL) {
+        mc_path *path = NULL;
+        mt_at(s, "ii", "f_", "()V", 173);
+        if (!mt_path_get(s, &path))
+            return false;
+        if (path == NULL) {
             mt_at(s, "ii", "f_", "()V", 185);
             if (!mt_int(s, 80, &n))
                 return false;
@@ -446,10 +455,14 @@ after_wander:
     mt_at(s, "ii", "f_", "()V", 211);
     if (s->entity->bounds == NULL)
         return mt_null(s, "Creature null bounds minY receiver");
-    mt_at(s, "ii", "f_", "()V", 218);
-    if (!mt_math(s) || !mt_fp(s))
+    mt_at(s, "ii", "f_", "()V", 217);
+    if (!mt_fp(s))
         return false;
-    (void)mc_math_floor_double(at_add(s->entity->bounds->min_y, .5));
+    const double foot = at_add(s->entity->bounds->min_y, .5);
+    mt_at(s, "ii", "f_", "()V", 218);
+    if (!mt_math(s))
+        return false;
+    const int32_t foot_y = mc_math_floor_double(foot);
     bool water, lava;
     mt_at(s, "ii", "f_", "()V", 223);
     if (!mt_water(s, &water))
@@ -457,12 +470,19 @@ after_wander:
     mt_at(s, "ii", "f_", "()V", 228);
     if (!mt_lava(s, &lava))
         return false;
+    mt_at(s, "ii", "f_", "()V", 235);
     s->entity->base.aT = 0.0f;
-    if (m->creature_path == NULL) {
+    mc_path *path = NULL;
+    mt_at(s, "ii", "f_", "()V", 239);
+    if (!mt_path_get(s, &path))
+        return false;
+    if (path == NULL) {
         mt_at(s, "ii", "f_", "()V", 258);
         if (!mt_base_behavior(s))
             return false;
-        m->creature_path = NULL;
+        mt_at(s, "ii", "f_", "()V", 263);
+        if (!mt_path_store(s, NULL))
+            return false;
         mt_at(s, "ii", "f_", "()V", 266);
         return true;
     }
@@ -471,14 +491,16 @@ after_wander:
     if (!mt_int(s, 100, &n))
         return false;
     if (n == 0) {
+        mt_at(s, "ii", "f_", "()V", 258);
         if (!mt_base_behavior(s))
             return false;
-        m->creature_path = NULL;
+        mt_at(s, "ii", "f_", "()V", 263);
+        if (!mt_path_store(s, NULL))
+            return false;
         mt_at(s, "ii", "f_", "()V", 266);
         return true;
     }
-    mt_at(s, "ii", "f_", "()V", 272);
-    return mt_fail(s, MC_ENTITY_STATE_ERROR, "Creature actual retained path traversal child");
+    return mt_follow_path(s, foot_y, water, lava);
 }
 
 bool mc_mob_tick_behavior(mc_mob_tick_scope *s) {

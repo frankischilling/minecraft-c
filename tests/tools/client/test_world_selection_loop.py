@@ -1,4 +1,17 @@
-"""Exercise the genuine Windows source loop with isolated empty/populated saves."""
+"""Exercise the genuine Windows source loop with isolated empty/populated saves.
+
+The repeat profile declares an existing player whose saved openInventory
+achievement is already present. Its valid pre-bootstrap statistics file uses
+real imported GUIDs and the source checksum; the actual client loads it.
+After a fully returned loaded frame, repeat also declares one genuine native
+Sheep constructor/position/publication in the actual Player view. Its saved
+Chunks remain Entity-empty: serialized Mob loading is not qualified. The
+renderer check selects that exact published Sheep after real timed ticking;
+it does not require natural spawning to supply a visible Mob within a deadline.
+Other profiles retain fresh statistics. With an absent inventory entry, the
+real tutorial can reach the still-missing active notice draw at vu.a108 before
+Mob rendering. That fresh-player route is outside the repeat renderer proof.
+"""
 
 import argparse
 import gzip
@@ -94,6 +107,24 @@ def saved_regions(directory, generate):
         (directory / f"r.{x}.{z}.mcr").write_bytes(data)
 
 
+def repeat_statistics(game, assets):
+    # Saved player input, before construction: CJ reads this unsent file
+    # synchronously into the real xi Maps. No notice or runtime Map is edited.
+    mapping = assets / "jar" / "achievement" / "map.txt"
+    keys = [line.split(",", 1)[1] for line in mapping.read_text(encoding="ascii").splitlines()
+            if line.startswith("5242880,")]
+    if len(keys) != 1 or re.fullmatch(r"[0-9a-f]{1,32}", keys[0]) is None:
+        raise RuntimeError("Imported openInventory GUID is missing or ambiguous")
+    payload = ("local" + keys[0] + ",1,").encode("ascii")
+    # hf formats positive MD5 as unpadded lowercase BigInteger hexadecimal.
+    checksum = format(int.from_bytes(hashlib.md5(payload).digest(), "big"), "x")
+    stats = game / "stats"
+    stats.mkdir(parents=True)
+    (stats / "stats_selection control_unsent.dat").write_text(
+        json.dumps({"stats-change": [{"5242880": 1}], "checksum": checksum}) + "\n",
+        encoding="ascii", newline="\n")
+
+
 def snapshot(root):
     return {str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest()
             for path in root.rglob("*") if path.is_file()}
@@ -106,7 +137,7 @@ def main():
     parser.add_argument("--artifacts", type=Path, required=True)
     parser.add_argument("--mode", action="append",
                         choices=("empty", "populated", "large", "double", "load", "generate",
-                                 "load-terminal", "load-partial", "repeat"))
+                                 "load-terminal", "load-partial", "repeat", "load-light"))
     parser.add_argument("--timeout", type=float)
     args = parser.parse_args()
     if os.name != "nt":
@@ -117,22 +148,24 @@ def main():
     artifacts.mkdir(parents=True, exist_ok=True)
     resources_before = snapshot(assets)
     for mode in args.mode or ("empty", "populated", "large", "double", "load", "load-terminal",
-                             "load-partial", "repeat"):
+                             "load-partial", "repeat", "load-light"):
         with tempfile.TemporaryDirectory(prefix="mc-rq-loop-") as work:
             appdata = Path(work)
             game = appdata / ".minecraft"
+            if mode == "repeat":
+                repeat_statistics(game, assets)
             saves = game / "saves"
             saves.mkdir(parents=True)
             (saves / "preserve-me.bin").write_bytes(b"unrelated save-directory file\x00\xff")
             if mode == "large":
                 worlds = [(f"world{i:02d}", f"Scroll world {i:02d}", 1304000000000, 19132)
                           for i in range(16)]
-            elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial", "repeat"):
+            elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial", "repeat", "load-light"):
                 worlds = [
                     ("older", "Old world", 1303000000000, 19132),
                     ("bravo", "", 1304000000000, 19132),
                     ("alpha", "Alpha world", 1304000000000,
-                     19132 if mode in ("load", "generate", "load-terminal", "load-partial", "repeat") else 0),
+                     19132 if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") else 0),
                 ]
             else:
                 worlds = []
@@ -145,7 +178,7 @@ def main():
                                            partial=mode == "load-partial" and folder == "alpha"),
                                   mtime=0))
                 (directory / "preserve-chunk.dat").write_bytes(b"authored untouched chunk")
-            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat"):
+            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light"):
                 regions = saves / "alpha" / "region"
                 regions.mkdir()
                 saved_regions(regions, generate=mode == "generate")
@@ -171,44 +204,68 @@ def main():
                 if observed != expected:
                     raise RuntimeError("Actual SDK focus segment differs from 72 original PX histories")
             if mode == "repeat":
+                declaration = ("WORLD_REPEAT profile=existing-inventory-player "
+                               "statistics-input=pre-bootstrap-unsent-file open-inventory=1 "
+                               "canonical=ep.f notice-inactive=1")
+                if result.stdout.splitlines().count(declaration) != 1:
+                    raise RuntimeError("Repeat renderer profile did not prove its declared existing-player input")
+                entity_input = ("WORLD_REPEAT_ENTITY input=native-constructed-sheep "
+                                "pose=actual-player-look distance=6 world-and-chunk=1 "
+                                "same-world-and-classes=1 constructor-returned=1 "
+                                "constructor-hold-released=1 player-unchanged=1 "
+                                "world-random-unchanged=1")
+                if result.stdout.splitlines().count(entity_input) != 1:
+                    raise RuntimeError("Repeat profile did not prove its declared real Sheep input")
                 if "WORLD_FOCUS hidden-inactive=1 restored-active=1 component-preserved=1 source-grab-preserved=1" not in result.stdout:
                     raise RuntimeError("Focused repeat fixture did not restore actual focus without source mutation")
-                receipt = re.search(
-                    r"^WORLD_FRAME first-returned=1 next-unpaused-pc=(80|1216) scheduler=(0|80) "
-                    r"random=(0) chunks=(0) samples=(0) "
-                    r"helper=([0-9]+) mob=([a-z]+) constructors=([0-9]+) "
-                    r"predicates=([0-9]+) rejected=([0-9]+) published=([0-9]+) completed-draws-retired=1 "
-                    r"stale-hud-cleared=1 completed-random-calls=([0-9]+) "
-                    r"completed-chunks=([0-9]+) completed-samples=([0-9]+) "
-                    r"display-calls=([0-9]+) display-samples=([0-9]+) display-random=([0-9]+) "
-                    r"active=([a-z]+) active-tick=([0-9]+) active-source=([a-z]+) "
-                    r"active-method=([A-Za-z_]+) active-pc=(-?[0-9]+) environment=([0-9]+)$",
-                    result.stdout, re.MULTILINE)
-                if receipt is None:
-                    raise RuntimeError("Real repeated frame did not expose the expected source dependency")
-                prefix = tuple(int(receipt[i]) for i in range(1, 6))
-                if prefix == (1216, 0, 0, 0, 0):
-                    calls, chunks, samples, displays, display_samples, draws = (
-                        int(receipt[i]) for i in range(12, 18))
-                    if (calls < 1 or chunks != 361 or samples != calls * 28880 or
-                            displays != calls or display_samples != displays * 1000 or
-                            draws != displays * 6000 or receipt[18] not in
-                            ("cn", "uz", "fr", "gb", "uw", "wh", "dl", "bx", "ww", "gi", "xt") or
-                            int(receipt[19]) != 121 or receipt[20] != "ii" or
-                            (receipt[21], int(receipt[22])) not in
-                            (("E", 153), ("f_", 44), ("f_", 156)) or int(receipt[23]) != 1):
-                        raise RuntimeError("Active Mob tick did not follow complete random Chunk/display calls")
-                elif not (prefix == (80, 80, 0, 0, 0) and int(receipt[6]) == 56 and
-                          receipt[18] == "none" and int(receipt[19]) == 0 and
-                          receipt[20] == receipt[21] == "none" and int(receipt[22]) == -1 and
-                          int(receipt[23]) == 0):
-                    raise RuntimeError("Repeated frame did not reach the genuine active Mob tick or jockey mount")
-                if (receipt[7] not in ("none", "cn", "uz", "fr", "gb", "uw", "wh", "dl", "bx", "ww", "gi", "xt") or
-                        int(receipt[8]) != int(receipt[9]) or int(receipt[10]) > int(receipt[9]) or
-                        (receipt[7] == "none") != (int(receipt[8]) == 0)):
-                    raise RuntimeError("Repeated frame skipped or misreported its actual Mob predicates")
+                rows = [line for line in result.stdout.splitlines()
+                        if line.startswith("WORLD_FRAME ")]
+                if len(rows) != 1:
+                    raise RuntimeError("Repeated frame must expose one exact retained frontier")
+                receipt = re.fullmatch(
+                    r"WORLD_FRAME first-returned=1 frontier=mob-render source=n\.a:516 "
+                    r"frame-pc=510 retained-failure=1 pending=th\.a\(Lsn;F\)V "
+                    r"mob=(?P<mob>[a-z]+) renderer=(?P<renderer>[a-z]+) "
+                    r"renderer-map=29 constructor-owners=28 local-player-alias=gs "
+                    r"same-world=1 same-arguments=1 tick-return=1328 scheduler=198 "
+                    r"completed-random-calls=(?P<calls>[0-9]+) completed-chunks=361 "
+                    r"completed-samples=(?P<samples>[0-9]+) display-calls=(?P<displays>[0-9]+) "
+                    r"display-samples=(?P<display_samples>[0-9]+) "
+                    r"display-random=(?P<draws>[0-9]+) stale-hud-cleared=1", rows[0])
+                if receipt is not None:
+                    values = receipt.groupdict()
+                    renderers = {"cn": "yx", "uz": "v", "fr": "v", "gb": "m", "uw": "mj",
+                                 "wh": "me", "dl": "xy", "bx": "va", "ww": "ip", "gi": "we",
+                                 "xt": "es"}
+                    calls, samples, displays, display_samples, draws = (
+                        int(values[key]) for key in
+                        ("calls", "samples", "displays", "display_samples", "draws"))
+                    if (values["mob"] != "dl" or values["renderer"] != "xy" or
+                            renderers.get(values["mob"]) != values["renderer"] or calls < 1 or
+                            samples != calls * 28880 or displays != calls or
+                            display_samples != displays * 1000 or draws != displays * 6000):
+                        raise RuntimeError("Pending Mob render did not follow complete random/display calls")
+                else:
+                    # The genuine uncontrolled 1-in-100 Spider branch can stop
+                    # earlier at its still-missing mount child. It has a separate
+                    # exact receipt, not a substitute for a returning World tick.
+                    jockey = re.fullmatch(
+                        r"WORLD_FRAME first-returned=1 frontier=spider-jockey source=fd\.l:80 "
+                        r"helper=56 constructors=([0-9]+) predicates=([0-9]+) "
+                        r"retained-failure=1 stale-hud-cleared=1", rows[0])
+                    if jockey is None or int(jockey[1]) < 1 or jockey[1] != jockey[2]:
+                        raise RuntimeError("Repeated frame did not reach its exact Mob render or mount frontier")
+            if mode == "load-light":
+                expected = ("WORLD_LIGHT mode=load-light declared-paused-entries=2 completed-frames=2 "
+                            "queue=500,1,0 same-queue=1 oldest-survives=1 block-light=15,0,0 "
+                            "world-time-unchanged=1 world-random-unchanged=1 normal-world-access=1 "
+                            "source-batch=499")
+                observed = [line for line in result.stdout.splitlines()
+                            if line.startswith("WORLD_LIGHT ")]
+                if observed != [expected]:
+                    raise RuntimeError("Declared paused caller did not retain the real 499-record light batch")
             after = snapshot(saves)
-            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat"):
+            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light"):
                 if any(after.get(name) != digest for name, digest in before.items()):
                     raise RuntimeError("World loading changed pre-existing fixture bytes")
                 if not (saves / "alpha" / "session.lock").is_file():

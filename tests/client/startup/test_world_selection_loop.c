@@ -1,4 +1,5 @@
 /* Genuine native bootstrap/menu composition with authored SDL transport events. */
+#include "../../support/java_random.h"
 #include "../world/test_load_world_foreign_loading.h"
 #include "../world/test_refresh_entity.h"
 #include "../world/test_render_global_entities.h"
@@ -24,6 +25,7 @@
 #include "client/startup/application_startup_internal.h"
 #include "client/world/load_world.h"
 #include "client/world/prepare_world.h"
+#include "client/world/render_global_access.h"
 #include "client/world/render_global_internal.h"
 #include "client/world/source_chunk_compile_internal.h"
 #include "entity/entity_internal.h"
@@ -31,21 +33,26 @@
 #include "mc/client/gui/gui_ingame_draw.h"
 #include "mc/client/input/movement_input.h"
 #include "mc/client/particles/effect_renderer.h"
+#include "mc/client/statistics/writer.h"
 #include "mc/client/world/chunk_cache.h"
 #include "mc/client/world/held_item_draw.h"
 #include "mc/client/world/picking.h"
 #include "mc/client/world/world_frame.h"
 #include "mc/core/java/java.h"
+#include "mc/core/math/math.h"
+#include "mc/entity/living/view.h"
 #include "mc/entity/mob/construction.h"
 #include "mc/entity/player/player.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/loading/player.h"
+#include "mc/world/runtime/propagation.h"
 #include "mc/world/runtime/random_tick.h"
 #include "platform/time/millis.h"
 #include "world/runtime/chunk_provider_internal.h"
 #include "world/runtime/construction_internal.h"
 #include "world/runtime/runtime_internal.h"
 #include "world/runtime/source_construction_internal.h"
+#include "world/storage/objects_internal.h"
 
 #include <SDL3/SDL.h>
 #include <inttypes.h>
@@ -88,7 +95,8 @@ static bool world_dependency_reached(const mc_world_tick_state *state,
 }
 
 static bool loaded_draw_reached(const mc_client_menu_loop_state *source) {
-    if (source->world_draws != 1 || source->hud_draws != 1 || !source->render_clock_stored)
+    if (source->world_draws == 0 || source->hud_draws != source->world_draws ||
+        !source->render_clock_stored)
         return false;
     if (!source->failed)
         return source->render_returned;
@@ -97,87 +105,240 @@ static bool loaded_draw_reached(const mc_client_menu_loop_state *source) {
            source->source_pc == 22;
 }
 
-static mc_entity *active_mob_tick_receiver(const mc_client_menu_loop_state *source,
-                                           const client_application *app) {
-    const mc_client_world_tick *call = source->world_tick;
-    if (app == NULL || app->active_world == NULL || call == NULL || source->source_pc != 1216 ||
-        strcmp(source->source_class, "net/minecraft/client/Minecraft") ||
-        strcmp(source->source_method, "k") || call->entities_returned ||
-        !call->render_global_returned || call->scheduler != NULL)
+/* Passive inspection of the actual pending TH draw. The missing TH.a body
+ * has not selected a renderer; this checks its existing canonical Map entry. */
+static const char *mob_renderer_class(mc_entity_class_kind kind) {
+    switch (kind) {
+        case MC_ENTITY_CLASS_KIND_SPIDER:
+            return "yx";
+        case MC_ENTITY_CLASS_KIND_PIG:
+            return "me";
+        case MC_ENTITY_CLASS_KIND_SHEEP:
+            return "xy";
+        case MC_ENTITY_CLASS_KIND_COW:
+            return "va";
+        case MC_ENTITY_CLASS_KIND_WOLF:
+            return "we";
+        case MC_ENTITY_CLASS_KIND_CHICKEN:
+            return "ip";
+        case MC_ENTITY_CLASS_KIND_CREEPER:
+            return "m";
+        case MC_ENTITY_CLASS_KIND_SKELETON:
+        case MC_ENTITY_CLASS_KIND_ZOMBIE:
+            return "v";
+        case MC_ENTITY_CLASS_KIND_SLIME:
+            return "mj";
+        case MC_ENTITY_CLASS_KIND_SQUID:
+            return "es";
+        default:
+            return NULL;
+    }
+}
+
+/* The returned empty-hand draw has run RA.a's real TH superclass lookup:
+ * dc adds one canonical key at TH.a(Class)28 and shares the existing gs/DS
+ * owner. Its 28 constructor keys and distinct renderer owners remain intact. */
+static bool client_renderer_roster(const client_application *app,
+                                   const mc_client_render_global_entities_state *entities,
+                                   const mc_client_manager_state *manager) {
+    static const struct {
+        mc_entity_class_kind kind;
+        const char *renderer;
+    } constructed[] = {{MC_ENTITY_CLASS_KIND_SPIDER, "yx"},
+                       {MC_ENTITY_CLASS_KIND_PIG, "me"},
+                       {MC_ENTITY_CLASS_KIND_SHEEP, "xy"},
+                       {MC_ENTITY_CLASS_KIND_COW, "va"},
+                       {MC_ENTITY_CLASS_KIND_WOLF, "we"},
+                       {MC_ENTITY_CLASS_KIND_CHICKEN, "ip"},
+                       {MC_ENTITY_CLASS_KIND_CREEPER, "m"},
+                       {MC_ENTITY_CLASS_KIND_SKELETON, "v"},
+                       {MC_ENTITY_CLASS_KIND_ZOMBIE, "v"},
+                       {MC_ENTITY_CLASS_KIND_SLIME, "mj"},
+                       {MC_ENTITY_CLASS_KIND_PLAYER, "ds"},
+                       {MC_ENTITY_CLASS_KIND_GIANT, "yg"},
+                       {MC_ENTITY_CLASS_KIND_GHAST, "pq"},
+                       {MC_ENTITY_CLASS_KIND_SQUID, "es"},
+                       {MC_ENTITY_CLASS_KIND_LIVING_ENTITY, "gv"},
+                       {MC_ENTITY_CLASS_KIND_ENTITY, "mb"},
+                       {MC_ENTITY_CLASS_KIND_PAINTING, "dy"},
+                       {MC_ENTITY_CLASS_KIND_ARROW, "mc"},
+                       {MC_ENTITY_CLASS_KIND_SNOWBALL, "dg"},
+                       {MC_ENTITY_CLASS_KIND_VV, "dg"},
+                       {MC_ENTITY_CLASS_KIND_CF, "kl"},
+                       {MC_ENTITY_CLASS_KIND_ITEM, "bb"},
+                       {MC_ENTITY_CLASS_KIND_PRIMED_TNT, "on"},
+                       {MC_ENTITY_CLASS_KIND_FALLING_SAND, "gn"},
+                       {MC_ENTITY_CLASS_KIND_MINECART, "tb"},
+                       {MC_ENTITY_CLASS_KIND_BOAT, "fe"},
+                       {MC_ENTITY_CLASS_KIND_LX, "pl"},
+                       {MC_ENTITY_CLASS_KIND_C, "pi"}};
+
+    enum { constructor_count = sizeof(constructed) / sizeof(constructed[0]) };
+
+    _Static_assert(constructor_count == 28, "actual TH constructor roster");
+    mc_client_managed_renderer *owners[constructor_count] = {0};
+    mc_client_managed_renderer *player = NULL, *cached = NULL;
+    size_t cached_keys = 0;
+    if (manager->entries != constructor_count + 1 || manager->completed_bw_stores != 28 ||
+        manager->last_put_pc != 28 || !mc_entity_is_kind(app->h, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
+        return false;
+    for (size_t row = 0; row < manager->entries; ++row) {
+        const mc_entity_class_literal *key = NULL, *canonical = NULL;
+        mc_client_managed_renderer *renderer = NULL;
+        mc_entity_class_literal_view literal;
+        mc_client_managed_renderer_state state;
+        if (mc_client_render_manager_entry(entities->th, row, &key, &renderer, NULL) !=
+                MC_CLIENT_MANAGER_OK ||
+            mc_entity_class_literal_inspect(key, &literal) != MC_ENTITY_OK ||
+            literal.owner != app->entities || literal.source != MC_ENTITY_CLIENT ||
+            mc_entity_class_literal_get(app->entities, literal.kind, &canonical) != MC_ENTITY_OK ||
+            key != canonical || renderer == NULL ||
+            !mc_client_managed_renderer_inspect(renderer, &state) || state.identity == NULL ||
+            state.phase != MC_CLIENT_MODEL_READY || state.manager != entities->th ||
+            state.source_class == NULL)
+            return false;
+        if (literal.kind == MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) {
+            if (++cached_keys != 1 || key != app->h->class_literal ||
+                strcmp(state.source_class, "ds"))
+                return false;
+            cached = renderer;
+            continue;
+        }
+        size_t index = 0;
+        while (index < constructor_count && constructed[index].kind != literal.kind)
+            ++index;
+        if (index == constructor_count || owners[index] != NULL ||
+            strcmp(state.source_class, constructed[index].renderer))
+            return false;
+        for (size_t prior = 0; prior < constructor_count; ++prior)
+            if (owners[prior] == renderer)
+                return false;
+        owners[index] = renderer;
+        if (literal.kind == MC_ENTITY_CLASS_KIND_PLAYER)
+            player = renderer;
+    }
+    for (size_t index = 0; index < constructor_count; ++index)
+        if (owners[index] == NULL)
+            return false;
+    return cached_keys == 1 && cached != NULL && cached == player;
+}
+
+static mc_entity *pending_mob_render_receiver(const mc_client_menu_loop_state *source,
+                                              const client_application *app) {
+    const mc_client_world_frame_state *draw = source->world_frame;
+    if (app == NULL || app->active_world == NULL || source->source_class == NULL ||
+        strcmp(source->source_class, "n") || source->source_method == NULL ||
+        strcmp(source->source_method, "a") || source->source_pc != 516 || !source->failed ||
+        draw == NULL || draw->active || draw->returned || draw->source_pc != 510 ||
+        draw->app != app || draw->world != app->active_world || draw->owner != app->t ||
+        draw->render_global != app->g || draw->camera != app->i || !draw->terrain_returned ||
+        !draw->lighting_enabled || !draw->eye_position_returned || draw->entities_returned ||
+        draw->entity_eye == NULL || draw->culler == NULL || draw->failure == NULL ||
+        draw->failure->status != MC_CLIENT_WORLD_FRAME_DEPENDENCY ||
+        !draw->failure->native_policy || draw->failure->site.class_name == NULL ||
+        strcmp(draw->failure->site.class_name, "n") || draw->failure->site.method == NULL ||
+        strcmp(draw->failure->site.method, "a") || draw->failure->site.pc != 516 ||
+        source->hud != NULL)
         return NULL;
-    const mc_world_entity_tick_error *error = &call->entities;
-    if (error->status != MC_WORLD_STORAGE_UNSUPPORTED_STATE || error->source_class == NULL ||
-        strcmp(error->source_class, "fd") || error->source_method == NULL ||
-        strcmp(error->source_method, "a(Lsn;Z)V") || error->bytecode != 121 ||
-        error->update_bytecode != 121 || error->wrapper_bytecode != 3 ||
-        error->loop_bytecode != 274 || error->loaded_index <= 0 ||
-        error->child != MC_WORLD_ENTITY_TICK_CHILD_MOB || error->virtual_method == NULL ||
-        strcmp(error->virtual_method, "w_()V"))
+    const mc_client_render_global_entities_state *entities = draw->entities;
+    if (entities == NULL || entities->active || entities->returned || entities->retiring ||
+        entities->delayed || !entities->ll_returned || !entities->th_returned ||
+        entities->source_pc != 516 || entities->last_store_pc != 507 ||
+        !entities->counters_cleared || !entities->origins_stored ||
+        entities->origins_written != 6 || entities->owner != app->g ||
+        entities->eye != draw->entity_eye || entities->partial != draw->partial ||
+        entities->frustum == NULL || entities->th == NULL || entities->entities_visited == 0 ||
+        entities->distance_checks == 0 || entities->presence_checks == 0 || entities->index < 0 ||
+        entities->failure == NULL || entities->failure != draw->failure->entities)
         return NULL;
-    const mc_mob_tick_error *tick = &error->child_error.mob;
-    if (tick->status != MC_ENTITY_STATE_ERROR || !tick->native_policy || tick->source_exception ||
-        tick->state.returned || !tick->state.environment_returned || tick->state.action_returned ||
-        tick->state.behavior_returned || tick->site.class_name == NULL ||
-        strcmp(tick->site.class_name, "ii") || tick->site.method == NULL ||
-        tick->site.descriptor == NULL || strcmp(tick->site.descriptor, "()V") ||
-        tick->operation == NULL)
-        return NULL;
-    const bool coordinate_path =
-        !strcmp(tick->site.method, "E") && tick->site.pc == 153 &&
-        !strcmp(tick->operation, "Creature actual World coordinate path child");
-    const bool target_path =
-        !strcmp(tick->site.method, "f_") &&
-        ((tick->site.pc == 44 &&
-          !strcmp(tick->operation, "Creature actual World target path child")) ||
-         (tick->site.pc == 156 &&
-          !strcmp(tick->operation, "Creature actual repeated target path child")));
-    if (!coordinate_path && !target_path)
+    const mc_client_render_global_error *failure = entities->failure;
+    if (failure->status != MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY ||
+        !failure->native_policy || failure->source_class == NULL ||
+        strcmp(failure->source_class, "n") || failure->source_method == NULL ||
+        strcmp(failure->source_method, "a") || failure->source_descriptor == NULL ||
+        strcmp(failure->source_descriptor, "(Lbt;Lyn;F)V") || failure->source_pc != 516 ||
+        failure->child.class_name == NULL || strcmp(failure->child.class_name, "th") ||
+        failure->child.method == NULL || strcmp(failure->child.method, "a") ||
+        failure->child.descriptor == NULL || strcmp(failure->child.descriptor, "(Lsn;F)V") ||
+        failure->child.pc != 0)
         return NULL;
     const mc_world_runtime *world = app->active_world;
     const mc_world_entity_list_ledger *ledger = &world->entity_membership;
-    const size_t index = (size_t)error->loaded_index;
+    const size_t index = (size_t)entities->index;
     if (world->fields.b == NULL || world->fields.b != ledger->list ||
-        world->fields.b->count != ledger->count || index >= ledger->count ||
-        world->fields.b->items[index] != ledger->entries[index])
+        entities->entities_list != ledger->list || world->fields.b->count != ledger->count ||
+        index >= ledger->count || world->fields.b->items[index] != ledger->entries[index] ||
+        entities->current != ledger->entries[index])
         return NULL;
-    mc_entity *entity = ledger->entries[index];
+    mc_entity *entity = entities->current;
     mc_mob_state mob;
     if (entity == NULL || !mc_mob_inspect(entity, &mob) || entity->phase != MC_ENTITY_READY ||
         entity->classes != world->classes->entities || entity->base.world != world ||
-        tick->state.kind != mob.kind || entity->base.be || !entity->base.bF ||
-        entity->base.bl != entity->base.x || entity->base.bm != entity->base.y ||
-        entity->base.bn != entity->base.z || entity->base.aU != entity->base.yaw ||
-        entity->base.aV != entity->base.aT)
+        entity->base.be || !mc_entity_is_kind(entity, mob.kind))
         return NULL;
-    const mc_mob_tick_path_arguments *path = &tick->state.path;
-    if (!path->stored || path->receiver_identity != (uintptr_t)world ||
-        (coordinate_path && (path->kind != MC_MOB_TICK_PATH_COORDINATES || path->range != 10.0f)) ||
-        (target_path && (path->kind != MC_MOB_TICK_PATH_TARGET || path->range != 16.0f ||
-                         path->target_identity != (uintptr_t)mob.creature_target)))
+    const char *expected = mob_renderer_class(mob.kind);
+    mc_client_manager_state manager;
+    if (expected == NULL ||
+        !mc_client_render_manager_inspect(app->g->entity_manager_consumer.classes, &manager) ||
+        manager.phase != MC_CLIENT_MANAGER_READY || manager.a != entities->th ||
+        manager.fields.g != world || manager.living_occurrence != app->i ||
+        !client_renderer_roster(app, entities, &manager))
         return NULL;
-    return entity;
+    for (size_t row = 0; row < manager.entries; ++row) {
+        const mc_entity_class_literal *key = NULL;
+        mc_client_managed_renderer *renderer = NULL;
+        if (mc_client_render_manager_entry(entities->th, row, &key, &renderer, NULL) !=
+            MC_CLIENT_MANAGER_OK)
+            return NULL;
+        if (key != entity->class_literal)
+            continue;
+        mc_client_managed_renderer_state state;
+        return renderer != NULL && mc_client_managed_renderer_inspect(renderer, &state) &&
+                       state.identity == renderer && state.phase == MC_CLIENT_MODEL_READY &&
+                       state.manager == entities->th && state.source_class != NULL &&
+                       !strcmp(state.source_class, expected)
+                   ? entity
+                   : NULL;
+    }
+    return NULL;
 }
 
 static bool unpaused_world_reached(const mc_client_menu_loop_state *source,
                                    const client_application *app) {
     if (!source->failed || source->source_class == NULL || source->source_method == NULL ||
         source->world_draws < 1 || source->hud_draws < 1 || source->world_tick == NULL ||
-        !source->world_tick->failed || !source->world_tick->renderer_returned)
+        !source->world_tick->renderer_returned)
         return false;
-    if (source->source_pc == 1216)
-        return source->random_chunk_calls > 0 && source->last_random_chunk_count == 361 &&
+    const mc_client_world_tick *call = source->world_tick;
+    if (!strcmp(source->source_class, "n") && !strcmp(source->source_method, "a") &&
+        source->source_pc == 516) {
+        const mc_world_random_display_state *display = &call->ambience_state;
+        const mc_world_tick_state *scheduler = &call->scheduler_state;
+        /* Native child retirement has ended the random call views. These
+         * producer-owned scalar receipts were captured before that cleanup. */
+        return call->returned && !call->failed && call->site.pc == 1328 &&
+               call->render_global_returned && call->entities_returned && scheduler->returned &&
+               scheduler->source_pc == 198 && scheduler->weather_returned &&
+               scheduler->spawning_returned && scheduler->provider_returned &&
+               scheduler->time_stored && scheduler->scheduled_returned &&
+               scheduler->random_returned && scheduler->random_chunk_count == 361 &&
+               call->scheduler_error.status == MC_WORLD_STORAGE_OK && call->scheduler == NULL &&
+               scheduler->random == NULL && call->ambience == NULL &&
+               call->ambience_error.status == MC_WORLD_STORAGE_OK && display->returned &&
+               display->source_pc == 134 && display->samples_started == 1000 &&
+               display->samples_returned == 1000 && display->world_random_calls == 6000 &&
+               source->random_chunk_calls > 0 && source->last_random_chunk_count == 361 &&
                source->random_chunk_samples == source->random_chunk_calls * UINT64_C(28880) &&
                source->random_display_calls == source->random_chunk_calls &&
                source->random_display_samples == source->random_display_calls * UINT64_C(1000) &&
                source->random_display_random_calls ==
                    source->random_display_calls * UINT64_C(6000) &&
-               active_mob_tick_receiver(source, app) != NULL;
-    if (!source->world_tick->entities_returned ||
-        !world_dependency_reached(&source->world_tick->scheduler_state,
-                                  &source->world_tick->scheduler_error))
-        return false;
-    return strcmp(source->source_class, "fd") == 0 && strcmp(source->source_method, "l") == 0 &&
-           source->source_pc == 80;
+               pending_mob_render_receiver(source, app) != NULL;
+    }
+    return call->failed && call->entities_returned &&
+           world_dependency_reached(&call->scheduler_state, &call->scheduler_error) &&
+           strcmp(source->source_class, "fd") == 0 && strcmp(source->source_method, "l") == 0 &&
+           source->source_pc == 80 && source->world_frame == NULL && source->hud == NULL;
 }
 
 #define CHECK(condition)                                                                           \
@@ -195,7 +356,150 @@ typedef struct fixture {
     client_application *app;
     mc_client_menu_loop *loop;
     mc_client_menu_loop_state state;
+    uintptr_t repeat_sheep_identity; /* Borrowed identity; World/Chunk own the live Entity. */
 } fixture;
+
+/* This continuation uses an existing-player statistic read by the genuine
+ * pre-bootstrap CJ constructor. The fresh absent-entry tutorial has its own
+ * retained vu.a108 draw dependency and is not a Mob-rendering success. */
+static int repeat_statistics_controls(fixture *f, bool initial) {
+    mc_registry_achievement_view achievements;
+    CHECK(f->app->stats_writer != NULL && f->app->achievement_notice != NULL &&
+          mc_registry_classes_inspect_achievements(f->app->registry, &achievements, NULL) ==
+              MC_REGISTRY_OK &&
+          achievements.named != NULL && achievements.named[0] != NULL);
+    const mc_statistic *inventory = achievements.named[0]; /* Actual ep.f. */
+    const mc_statistic_fields *fields = mc_statistic_fields_get(inventory);
+    CHECK(fields != NULL && fields->e == 5242880 &&
+          mc_statistic_kind_get(inventory) == MC_STATISTIC_ACHIEVEMENT);
+    bool present = false;
+    int32_t value = 0;
+    CHECK(mc_client_stats_writer_contains(f->app->stats_writer, inventory, &present, NULL) ==
+              MC_CLIENT_STATS_OK &&
+          present &&
+          mc_client_stats_writer_value(f->app->stats_writer, inventory, &value, NULL) ==
+              MC_CLIENT_STATS_OK &&
+          value == 1);
+    if (initial) {
+        /* CJ loads the real unsent Map through xi.a(Map): its c store at7 sets
+         * dirty before applying the entries to both actual Maps. */
+        mc_client_stats_state state;
+        CHECK(mc_client_stats_writer_read_state(f->app->stats_writer, &state) &&
+              state.phase == MC_CLIENT_STATS_READY && state.total_count == 1 &&
+              state.unsent_count == 1 && state.dirty);
+    }
+    const mc_client_achievement_notice_fields *notice =
+        mc_client_achievement_notice_fields_get(f->app->achievement_notice);
+    CHECK(notice != NULL && notice->a == f->app && notice->f == NULL && notice->g == 0 &&
+          !notice->i && notice->d == NULL && notice->e == NULL);
+    return 0;
+}
+
+/* Declared native caller input after a completely returned loaded frame. The
+ * saved Chunks still contain no serialized Entities: Mob NBT loading remains
+ * a separate dependency. Construct/publish a real Sheep without selecting its
+ * private entropy, editing containers, or moving the actual camera/Player. */
+static int repeat_sheep_input(fixture *f) {
+    mc_world_runtime *world = f->app->active_world;
+    mc_entity *player = f->app->i;
+    CHECK(world != NULL && player == f->app->h && f->app->r == NULL && !f->state.failed &&
+          f->state.render_returned && f->state.world_frame != NULL &&
+          f->state.world_frame->returned && f->repeat_sheep_identity == 0 &&
+          mc_entity_is_kind(player, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
+          player->base.world == world && player->classes == world->classes->entities &&
+          world->fields.r != NULL);
+
+    struct sheep_input_work {
+        mc_entity_view_error view;
+        mc_mob_error constructor;
+        mc_world_light_error height;
+        mc_world_entity_error publication;
+    } *work = calloc(1, sizeof(*work));
+
+    CHECK(work != NULL);
+    const double player_x = player->base.x, player_y = player->base.y, player_z = player->base.z;
+    const float player_yaw = player->base.yaw, player_pitch = player->base.aT;
+    const mc_java_random world_random = *world->fields.r;
+    mc_entity_vector *eye = NULL, *look = NULL;
+    CHECK(mc_entity_living_position(player, 1.0f, &eye, &work->view) == MC_ENTITY_VIEW_OK &&
+          mc_entity_living_look_current(player, mc_client_bootstrap_math(f->bootstrap), &look,
+                                        &work->view) == MC_ENTITY_VIEW_OK &&
+          eye != NULL && look != NULL && look->y > -.25 && look->y < .25);
+    const double x = eye->x + look->x * 6.0, z = eye->z + look->z * 6.0;
+    CHECK(mc_entity_vector_release(player->classes, look) == MC_ENTITY_OK &&
+          mc_entity_vector_release(player->classes, eye) == MC_ENTITY_OK);
+    const int32_t block_x = mc_math_floor_double(x), block_z = mc_math_floor_double(z);
+    int32_t height = 0, air = -1;
+    mc_world_storage_error error;
+    CHECK(mc_world_runtime_height(world, block_x, block_z, &height, &work->height) ==
+              MC_WORLD_STORAGE_OK &&
+          height == 64 &&
+          mc_world_runtime_block_get(world, block_x, height, block_z, &air, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          air == 0 &&
+          mc_world_runtime_block_get(world, block_x, height + 1, block_z, &air, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          air == 0);
+    const mc_entity_class_literal *literal = NULL;
+    mc_entity *sheep = NULL;
+    CHECK(mc_entity_class_literal_get(player->classes, MC_ENTITY_CLASS_KIND_SHEEP, &literal) ==
+              MC_ENTITY_OK &&
+          mc_mob_allocate(player->classes, f->app->registry, literal, &sheep, &work->constructor) ==
+              MC_MOB_OK &&
+          sheep != NULL && mc_mob_construct(sheep, world, &work->constructor) == MC_MOB_OK &&
+          sheep->phase == MC_ENTITY_READY && sheep->classes == player->classes &&
+          sheep->class_literal == literal && sheep->base.world == world && sheep->bounds != NULL);
+    CHECK(mc_entity_set_position(sheep, x, (double)height, z) == MC_ENTITY_OK &&
+          sheep->base.x == x && sheep->base.y == (double)height && sheep->base.z == z &&
+          sheep->bounds->min_y == (double)height && sheep->bounds->max_y > sheep->bounds->min_y &&
+          sheep->bounds->min_x < x && sheep->bounds->max_x > x && sheep->bounds->min_z < z &&
+          sheep->bounds->max_z > z);
+    const size_t before = world->entity_membership.count;
+    bool inserted = false;
+    CHECK(mc_world_runtime_insert_entity(world, sheep, &inserted, &work->publication) ==
+              MC_WORLD_STORAGE_OK &&
+          inserted && sheep->base.bF && world->fields.b == world->entity_membership.list &&
+          world->fields.b->count == before + 1 && world->entity_membership.count == before + 1 &&
+          world->fields.b->items[before] == sheep &&
+          world->entity_membership.entries[before] == sheep);
+    mc_chunk_state *chunk_state = NULL;
+    CHECK(mc_world_runtime_get(world, sheep->base.bG, sheep->base.bI, &chunk_state) ==
+              MC_CHUNK_ACQUIRE_OK &&
+          chunk_state != NULL && !chunk_state->blank);
+    mc_world_chunk *chunk = mc_world_store_chunk_object(world->fields.w, chunk_state);
+    mc_world_chunk_fields chunk_fields;
+    const mc_world_chunk_entity_list *slice = NULL;
+    size_t count = 0, occurrences = 0;
+    CHECK(chunk != NULL && mc_world_chunk_fields_get(chunk, &chunk_fields) == MC_WORLD_STORAGE_OK &&
+          chunk_fields.d == world && chunk_fields.j == sheep->base.bG &&
+          chunk_fields.k == sheep->base.bI && chunk_fields.q && sheep->base.bH == 4 &&
+          mc_world_chunk_slice_at(chunk_fields.m, (size_t)sheep->base.bH, &slice) ==
+              MC_WORLD_STORAGE_OK &&
+          mc_world_chunk_entity_count(slice, &count) == MC_WORLD_STORAGE_OK);
+    for (size_t index = 0; index < count; ++index) {
+        mc_entity *entry = NULL;
+        CHECK(mc_world_chunk_entity_at(slice, index, &entry) == MC_WORLD_STORAGE_OK);
+        if (entry == sheep)
+            ++occurrences;
+    }
+    CHECK(occurrences == 1 && sheep->holds >= 3 && player->base.x == player_x &&
+          player->base.y == player_y && player->base.z == player_z &&
+          player->base.yaw == player_yaw && player->base.aT == player_pitch &&
+          mc_test_java_random_equal(&world_random, world->fields.r));
+    f->repeat_sheep_identity = (uintptr_t)sheep;
+    const size_t holds = sheep->holds;
+    mc_entity_release(sheep); /* End only this genuine constructor occurrence. */
+    sheep = NULL;
+    mc_entity *published = world->entity_membership.entries[before];
+    CHECK((uintptr_t)published == f->repeat_sheep_identity && published->holds == holds - 1 &&
+          published->base.world == world &&
+          mc_entity_is_kind(published, MC_ENTITY_CLASS_KIND_SHEEP));
+    free(work);
+    puts("WORLD_REPEAT_ENTITY input=native-constructed-sheep pose=actual-player-look "
+         "distance=6 world-and-chunk=1 same-world-and-classes=1 constructor-returned=1 "
+         "constructor-hold-released=1 player-unchanged=1 world-random-unchanged=1");
+    return 0;
+}
 
 static int frame(fixture *f) {
     const bool result = mc_client_menu_loop_frame(f->loop);
@@ -208,6 +512,119 @@ static int frame(fixture *f) {
                 f->state.operation == NULL ? "unknown operation" : f->state.operation);
     CHECK(result && !f->state.failed && f->state.running);
     SDL_Delay(1);
+    return 0;
+}
+
+/* Native caller-input control, separate from ordinary UI load/repeat. Each
+ * invocation starts after a completed frame with the declared pause flag. No
+ * failed frame is resumed and the actual frame tail recomputes that flag. */
+static int light_batch_controls(fixture *f) {
+    mc_world_runtime *world = f->app->active_world;
+    CHECK(world != NULL && f->app->r == NULL && !atomic_load(&f->app->o) && !f->state.failed &&
+          f->state.render_returned && f->state.world_frame != NULL &&
+          f->state.world_frame->returned && f->state.world_draws == 1 && f->state.hud_draws == 1 &&
+          f->app->g != NULL && f->app->g->fields.k == world && world->fields.r != NULL &&
+          world->fields.x != NULL && world->fields.u == world->world_accesses.list &&
+          world->world_accesses.count == 1 && world->fields.u->count == 1 &&
+          world->world_accesses.entries[0] != NULL &&
+          world->fields.u->items[0] == world->world_accesses.entries[0]);
+    mc_render_global_access_state access;
+    CHECK(mc_render_global_access_inspect(f->app->g->access, &access) &&
+          access.registrations == 1 && access.active_callbacks == 0 &&
+          access.retained_failures == 0);
+    mc_world_access *listener = world->world_accesses.entries[0];
+    const uint64_t listener_identity = world->world_accesses.identities[0];
+    mc_world_storage_error error;
+    mc_world_light_list_view list;
+    CHECK(mc_world_runtime_light_list_get(world, &list, &error) == MC_WORLD_STORAGE_OK &&
+          list.identity != NULL && list.count == 0 && world->fields.M == 0);
+    const mc_world_reference_list *queue = list.identity;
+    const mc_world_light_type *type = NULL;
+    CHECK(mc_world_runtime_light_type_get(world->classes, MC_LIGHT_BLOCK, &type, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          type != NULL);
+
+    struct light_work {
+        mc_world_light_operation_error operation;
+        mc_world_query_error query;
+        mc_world_light_error submit;
+    } *work = calloc(1, sizeof(*work));
+
+    CHECK(work != NULL);
+    int32_t block = -1, saved = -1;
+    CHECK(mc_world_runtime_block_get(world, 8, 59, 8, &block, &error) == MC_WORLD_STORAGE_OK &&
+          block == 1 &&
+          mc_world_runtime_saved_light(world, type, 8, 59, 8, &saved, &work->query) ==
+              MC_WORLD_STORAGE_OK &&
+          saved == 0);
+    CHECK(mc_world_runtime_saved_light_set(world, type, 8, 59, 8, 15, &work->operation) ==
+              MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_saved_light(world, type, 8, 59, 8, &saved, &work->query) ==
+              MC_WORLD_STORAGE_OK &&
+          saved == 15);
+    const mc_light_bounds bounds = {8, 59, 8, 8, 59, 8};
+    const mc_world_light_region *records[500] = {0};
+    for (size_t index = 0; index < 500; ++index) {
+        mc_light_submit_result submitted = MC_LIGHT_SUBMIT_INVALID;
+        CHECK(mc_world_runtime_light_submit(world, type, &bounds, false, &submitted,
+                                            &work->submit) == MC_WORLD_STORAGE_OK &&
+              submitted == MC_LIGHT_SUBMIT_APPENDED &&
+              mc_world_runtime_light_at(world, index, &records[index], &error) ==
+                  MC_WORLD_STORAGE_OK);
+        const mc_world_light_region_fields *fields =
+            mc_world_runtime_light_region_fields_get(records[index]);
+        CHECK(fields != NULL && fields->a == type && fields->bounds.min_x == 8 &&
+              fields->bounds.max_x == 8 && fields->bounds.min_y == 59 &&
+              fields->bounds.max_y == 59 && fields->bounds.min_z == 8 && fields->bounds.max_z == 8);
+        for (size_t earlier = 0; earlier < index; ++earlier)
+            CHECK(records[earlier] != records[index]);
+    }
+    CHECK(mc_world_runtime_light_list_get(world, &list, &error) == MC_WORLD_STORAGE_OK &&
+          list.identity == queue && list.count == 500);
+    int64_t time;
+    CHECK(mc_world_info_time_get(world->fields.x, &time) == MC_WORLD_INFO_OK);
+    mc_java_random *random_owner = world->fields.r;
+    const mc_java_random random = *random_owner;
+    const uint64_t chunk_calls = f->state.random_chunk_calls;
+    const uint64_t display_calls = f->state.random_display_calls;
+    const uint64_t draws = f->state.world_draws;
+    const uint64_t hud_draws = f->state.hud_draws;
+    for (size_t invocation = 0; invocation < 2; ++invocation) {
+        CHECK(f->app->r == NULL && !f->state.failed && f->state.render_returned &&
+              f->state.world_frame != NULL && f->state.world_frame->returned &&
+              !atomic_load(&f->app->o));
+        atomic_store(&f->app->o, true); /* Declared input of this independent paused invocation. */
+        CHECK(frame(f) == 0 && f->app->r == NULL && !atomic_load(&f->app->o));
+        CHECK(mc_world_runtime_light_list_get(world, &list, &error) == MC_WORLD_STORAGE_OK &&
+              list.identity == queue && list.count == (invocation == 0 ? 1u : 0u) &&
+              world->fields.M == 0);
+        if (invocation == 0) {
+            const mc_world_light_region *remaining = NULL;
+            CHECK(mc_world_runtime_light_at(world, 0, &remaining, &error) == MC_WORLD_STORAGE_OK &&
+                  remaining == records[0]);
+        }
+        int64_t after_time;
+        CHECK(mc_world_runtime_saved_light(world, type, 8, 59, 8, &saved, &work->query) ==
+                  MC_WORLD_STORAGE_OK &&
+              saved == 0 &&
+              mc_world_info_time_get(world->fields.x, &after_time) == MC_WORLD_INFO_OK &&
+              after_time == time && world->fields.r == random_owner &&
+              mc_test_java_random_equal(&random, random_owner) &&
+              f->state.random_chunk_calls == chunk_calls &&
+              f->state.random_display_calls == display_calls &&
+              f->state.world_draws == draws + invocation + 1 &&
+              f->state.hud_draws == hud_draws + invocation + 1 &&
+              world->fields.u == world->world_accesses.list && world->fields.u->count == 1 &&
+              world->world_accesses.count == 1 && world->world_accesses.entries[0] == listener &&
+              world->world_accesses.identities[0] == listener_identity &&
+              mc_render_global_access_inspect(f->app->g->access, &access) &&
+              access.registrations == 1 && access.active_callbacks == 0 &&
+              access.retained_failures == 0);
+    }
+    free(work);
+    puts("WORLD_LIGHT mode=load-light declared-paused-entries=2 completed-frames=2 "
+         "queue=500,1,0 same-queue=1 oldest-survives=1 block-light=15,0,0 "
+         "world-time-unchanged=1 world-random-unchanged=1 normal-world-access=1 source-batch=499");
     return 0;
 }
 
@@ -1376,18 +1793,20 @@ static int partial_world_terminal_controls(fixture *f, mc_client_source_da **ext
 }
 
 int main(int argc, char **argv) {
-    CHECK(argc == 4 && (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
-                        strcmp(argv[2], "large") == 0 || strcmp(argv[2], "double") == 0 ||
-                        strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
-                        strcmp(argv[2], "load-terminal") == 0 ||
-                        strcmp(argv[2], "load-partial") == 0 || strcmp(argv[2], "repeat") == 0));
+    CHECK(argc == 4 &&
+          (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
+           strcmp(argv[2], "large") == 0 || strcmp(argv[2], "double") == 0 ||
+           strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
+           strcmp(argv[2], "load-terminal") == 0 || strcmp(argv[2], "load-partial") == 0 ||
+           strcmp(argv[2], "repeat") == 0 || strcmp(argv[2], "load-light") == 0));
     const bool double_click = strcmp(argv[2], "double") == 0;
     const bool terminal_admission = strcmp(argv[2], "load-terminal") == 0;
     const bool partial_load = strcmp(argv[2], "load-partial") == 0;
     const bool repeat_load = strcmp(argv[2], "repeat") == 0;
-    const bool focused_load = strcmp(argv[2], "load") == 0 || repeat_load;
+    const bool light_control = strcmp(argv[2], "load-light") == 0;
+    const bool focused_load = strcmp(argv[2], "load") == 0 || repeat_load || light_control;
     const bool loading_world = strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
-                               terminal_admission || repeat_load;
+                               terminal_admission || repeat_load || light_control;
     const bool populated =
         strcmp(argv[2], "populated") == 0 || double_click || loading_world || partial_load;
     const bool large = strcmp(argv[2], "large") == 0;
@@ -1401,6 +1820,8 @@ int main(int argc, char **argv) {
                                                    .hidden = !focused_load};
     CHECK(mc_client_bootstrap_open(&options, &f.bootstrap) == MC_CLIENT_BOOTSTRAP_OK);
     f.app = mc_client_bootstrap_app(f.bootstrap);
+    if (repeat_load)
+        CHECK(repeat_statistics_controls(&f, true) == 0);
     if (focused_load)
         CHECK(SDL_RaiseWindow(mc_client_display_window(f.app->display)));
     CHECK(f.app != NULL && f.app->constructor_phase == MC_CLIENT_APP_READY && f.app->r != NULL &&
@@ -1778,7 +2199,15 @@ int main(int argc, char **argv) {
             memcpy(prefix_path + prefix_length, prefix_suffix, sizeof(prefix_suffix));
             CHECK(capture(&f, prefix_path) == 0);
             free(prefix_path);
+            if (light_control) {
+                CHECK(light_batch_controls(&f) == 0);
+                goto loaded_draw_controls_done;
+            }
             if (repeat_load) {
+                CHECK(repeat_statistics_controls(&f, false) == 0);
+                puts("WORLD_REPEAT profile=existing-inventory-player "
+                     "statistics-input=pre-bootstrap-unsent-file open-inventory=1 "
+                     "canonical=ep.f notice-inactive=1");
                 mc_client_source_vy *mouse_owner = f.app->C;
                 mc_client_mouse_helper_state mouse_before, mouse_after;
                 mc_client_sdk_input_state input_before, input_after;
@@ -1799,6 +2228,11 @@ int main(int argc, char **argv) {
                       input_before.grabbed == input_after.grabbed);
                 puts("WORLD_FOCUS hidden-inactive=1 restored-active=1 component-preserved=1 "
                      "source-grab-preserved=1");
+                CHECK(repeat_sheep_input(&f) == 0);
+                /* Real elapsed time lets the existing Timer schedule source
+                 * simulation before the guaranteed visible Entity reaches N.
+                 * No Timer field, tick callback or render branch is replaced. */
+                SDL_Delay(100);
                 const uint64_t repeat_deadline = SDL_GetTicks() + 3000;
                 bool next_failed = false;
                 while (!next_failed && SDL_GetTicks() < repeat_deadline) {
@@ -1829,54 +2263,43 @@ int main(int argc, char **argv) {
                                 (unsigned int)mob->state.behavior_returned);
                     }
                 }
-                CHECK(next_failed && unpaused_world_reached(&f.state, f.app) &&
-                      f.state.world_frame == NULL && f.state.hud == NULL);
-                mc_entity_class_literal_view selected = {0};
+                CHECK(next_failed && unpaused_world_reached(&f.state, f.app));
+                CHECK(repeat_statistics_controls(&f, false) == 0);
                 const mc_world_tick_state *spawn = &f.state.world_tick->scheduler_state;
-                if (spawn->first_constructor.captured)
-                    CHECK(mc_entity_class_literal_inspect(spawn->first_constructor.class_literal,
-                                                          &selected) == MC_ENTITY_OK);
-                else
-                    CHECK(spawn->spawn_constructors == 0 && spawn->spawn_predicates == 0);
-                const mc_world_random_tick_state *random = spawn->random;
-                mc_entity_class_literal_view active = {0};
-                mc_entity *active_entity = active_mob_tick_receiver(&f.state, f.app);
-                if (active_entity != NULL)
-                    CHECK(mc_entity_class_literal_inspect(active_entity->class_literal, &active) ==
-                          MC_ENTITY_OK);
-                printf(
-                    "WORLD_FRAME first-returned=1 next-unpaused-pc=%d scheduler=%u random=%u "
-                    "chunks=%zu samples=%zu "
-                    "helper=%u mob=%s constructors=%zu predicates=%zu rejected=%zu published=%zu "
-                    "completed-draws-retired=1 "
-                    "stale-hud-cleared=1 completed-random-calls=%" PRIu64
-                    " completed-chunks=%zu completed-samples=%" PRIu64 " display-calls=%" PRIu64
-                    " display-samples=%" PRIu64 " display-random=%" PRIu64
-                    " active=%s active-tick=%u active-source=%s active-method=%s active-pc=%d "
-                    "environment=%u\n",
-                    f.state.world_tick->site.pc, spawn->source_pc,
-                    random == NULL ? 0 : random->source_pc,
-                    random == NULL ? 0 : random->chunk_count,
-                    random == NULL ? 0 : random->samples_returned, spawn->spawn_postspawn_pc,
-                    selected.client_name == NULL ? "none" : selected.client_name,
-                    spawn->spawn_constructors, spawn->spawn_predicates, spawn->spawn_rejections,
-                    spawn->spawn_publications, f.state.random_chunk_calls,
-                    f.state.last_random_chunk_count, f.state.random_chunk_samples,
-                    f.state.random_display_calls, f.state.random_display_samples,
-                    f.state.random_display_random_calls,
-                    active.client_name == NULL ? "none" : active.client_name,
-                    active_entity == NULL ? 0u : f.state.world_tick->entities.update_bytecode,
-                    active_entity == NULL
-                        ? "none"
-                        : f.state.world_tick->entities.child_error.mob.site.class_name,
-                    active_entity == NULL
-                        ? "none"
-                        : f.state.world_tick->entities.child_error.mob.site.method,
-                    active_entity == NULL ? -1
-                                          : f.state.world_tick->entities.child_error.mob.site.pc,
-                    active_entity == NULL ? 0u
-                                          : (unsigned int)f.state.world_tick->entities.child_error
-                                                .mob.state.environment_returned);
+                mc_entity *pending = pending_mob_render_receiver(&f.state, f.app);
+                if (pending != NULL) {
+                    mc_entity_class_literal_view literal;
+                    mc_mob_state mob;
+                    CHECK(mc_entity_class_literal_inspect(pending->class_literal, &literal) ==
+                              MC_ENTITY_OK &&
+                          mc_mob_inspect(pending, &mob) &&
+                          (uintptr_t)pending == f.repeat_sheep_identity &&
+                          mob.kind == MC_ENTITY_CLASS_KIND_SHEEP && f.state.world_frame != NULL &&
+                          f.state.hud == NULL);
+                    printf("WORLD_FRAME first-returned=1 frontier=mob-render source=n.a:516 "
+                           "frame-pc=%u retained-failure=1 pending=th.a(Lsn;F)V "
+                           "mob=%s renderer=%s renderer-map=29 constructor-owners=28 "
+                           "local-player-alias=gs "
+                           "same-world=1 same-arguments=1 "
+                           "tick-return=%d scheduler=%u completed-random-calls=%" PRIu64
+                           " completed-chunks=%zu completed-samples=%" PRIu64
+                           " display-calls=%" PRIu64 " display-samples=%" PRIu64
+                           " display-random=%" PRIu64 " stale-hud-cleared=1\n",
+                           f.state.world_frame->source_pc, literal.client_name,
+                           mob_renderer_class(mob.kind), f.state.world_tick->site.pc,
+                           spawn->source_pc, f.state.random_chunk_calls,
+                           f.state.last_random_chunk_count, f.state.random_chunk_samples,
+                           f.state.random_display_calls, f.state.random_display_samples,
+                           f.state.random_display_random_calls);
+                } else {
+                    CHECK(f.state.world_frame == NULL && f.state.hud == NULL &&
+                          spawn->spawn_jockey != NULL);
+                    printf("WORLD_FRAME first-returned=1 frontier=spider-jockey source=fd.l:80 "
+                           "helper=%u constructors=%zu predicates=%zu retained-failure=1 "
+                           "stale-hud-cleared=1\n",
+                           spawn->spawn_postspawn_pc, spawn->spawn_constructors,
+                           spawn->spawn_predicates);
+                }
             }
             if (repeat_load)
                 goto loaded_draw_controls_done;
@@ -1972,7 +2395,7 @@ int main(int argc, char **argv) {
         CHECK(terminal_prepare_controls(&f, external) == 0);
     if (terminal_admission)
         CHECK(loaded_terminal_admission_controls(&f) == 0);
-    if (loading_world && !terminal_admission && !repeat_load) {
+    if (loading_world && !terminal_admission && !repeat_load && !light_control) {
         mc_world_runtime *world = f.app->active_world;
         mc_entity *player = f.app->h;
         mc_client_render_global *renderer = f.app->g;
@@ -2000,7 +2423,7 @@ int main(int argc, char **argv) {
               f.app->active_world == world && f.app->h == player && f.app->i == player);
         CHECK(mc_client_effect_renderer_release(effects) == MC_EFFECT_RENDERER_OK);
     }
-    if (!loading_world || terminal_admission || repeat_load) {
+    if (!loading_world || terminal_admission || repeat_load || light_control) {
         CHECK(normal_terminal_retirement_controls(&f, &external, loading_world) == 0);
     } else {
         CHECK(!mc_client_menu_loop_retire(&f.loop) && f.loop != NULL && external != NULL);

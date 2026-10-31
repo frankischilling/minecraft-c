@@ -3,6 +3,8 @@
 #include "mc/entity/player/player.h"
 #include "mc/item/registry/runtime.h"
 
+typedef struct mc_path mc_path;
+
 typedef enum mc_mob_status {
     MC_MOB_OK,
     MC_MOB_ARGUMENT,
@@ -80,7 +82,7 @@ typedef struct mc_mob_state {
     mc_entity_phase phase;
     mc_living_entity_fields living;
     /* Actual ii fields; no path or target is manufactured by construction. */
-    const void *creature_path;
+    const mc_path *creature_path;
     mc_entity *creature_target;
     bool creature_attacking;
     int32_t monster_damage, creeper_a, creeper_b, slime_jump_delay;

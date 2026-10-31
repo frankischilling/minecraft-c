@@ -37,7 +37,8 @@ receiver-specific body.
 
 Creature behavior preserves both conditional `nextInt(80)` calls. A wander
 request evaluates ten candidate triples and all reached weight queries. It
-retains the winning coordinates before the World path invocation. Wolf's hunt
+retains the winning coordinates before the actual [World path invocation](../world/pathfinding.md).
+Returned Paths are stored and followed through their shared cursors. Wolf's hunt
 uses the World Random and the actual Sheep-class result list. Sight uses the
 existing [World ray tracer](../../include/mc/world/runtime/raytrace.h), including its real pooled
 vector operands and reached block queries. A failed ray is never treated as a
@@ -49,18 +50,16 @@ These are reached dependencies, not successful empty implementations:
 
 | Source boundary | Pending work |
 |---|---|
-| `ii.E:153` | World coordinate path request, after all ten candidates and actual argument evaluation. |
-| `ii.f_:44/156` | World target path request with the evaluated target and range. |
-| `ii.f_:272` | Traversal of a nonnull path. |
 | `ii.f_:97/109` | Concrete attack or Creeper unseen-target behavior where selected. |
 | `ww.o:217` | Actual Item drop after egg sound and Egg static-field access. |
 | Living/Monster/Sheep/Wolf hurt entries | Damage and downstream combat, death or drop work. |
 | Selected Wolf children | Owner following, selected-Item interest and other reached behavior still requiring its own body. |
 | Selected movement children | Mounting, contact attack, Slime splitting and other unimplemented subtype effects. |
 
-The diagnostics retain the actual pending path coordinates or target/range,
-Egg item/count, and hurt source/amount. These values observe evaluated source
-operands. They do not provide a replacement path, drop, damage result or callback.
+The diagnostics retain actual evaluated path coordinates or target/range,
+Egg item/count, and hurt source/amount. Path results come from the complete
+entered World/PathFinder body; a failed search is not a returned null Path.
+Remaining drop and hurt boundaries preserve their evaluated operands.
 Constructor diagnostics remain unchanged by ticking.
 
 ## Native ownership
@@ -94,12 +93,19 @@ retries native cleanup without replaying source work. Pending cleanup blocks
 another tick and terminal World admission. The ordinary idle/reentry cleanup
 paths are tested; forced partial-retirement failure and retry remain unverified.
 
+Path calls use the same checked-cleanup rule. A successful source assignment
+owns the returned Path before the World call retires. Later cleanup failure
+does not repeat that assignment or search. Idle cleanup preserves a held Path's
+array, Points, cursor, holds and arena. Pending path cleanup blocks reentry and
+terminal admission independently of the source Path field.
+
 ## Reference controls
 
-The original package contains 62 authored scenarios across all eleven kinds:
-48 returning controls, two callback failures, four source-null failures and
-eight selected missing-child prefixes. Every original full final record remains
-available independently of a selected prefix. Prefix observations include
+The original package contains 62 authored scenarios across all eleven kinds.
+Native comparison now uses 52 complete final records, two callback failures,
+four source-null failures and four remaining drop/hurt prefixes. Four path
+scenarios use their retained original full final records instead of the earlier
+entry-prefix observations. Prefix observations include
 typed inherited and concrete fields, bounds, watchers, actual streams, pool
 cursors, secondary Entities, reference roles, arguments, source frames and events
 already emitted before that child. Later source effects are not copied into a
@@ -116,8 +122,11 @@ The public native test uses real Worlds with 25 stored Chunks, genuine
 constructors, ordinary Entity publication and production queries. Native-only
 controls cover callback holds/reentry, pending iteration limits, target aliases
 and cycles, Piston-only roots, terminal refusal/retry, and 16,384-node raw target
-chains through generic release and aliased replacement. These lifetime controls
-do not claim original Piston push or pathfinding parity.
+chains through generic release and aliased replacement. Target and Piston
+cycles also share a genuine returned Path. A two-Cow World loop verifies a
+shared cursor, source completion/clear, the other owner's reached array-index
+failure and cleanup without source repair. Piston push parity remains separate;
+direct Path behavior has its own original comparison.
 
 Build `mc_test_mob_tick`, then run `ctest -R '^entity.mob_tick$' --output-on-failure`
 from the configured build directory, adding `-C Debug` for the Windows
@@ -133,23 +142,17 @@ Source/null/callback failures, missing-child prefixes and native policy controls
 remain separate outcomes. This module does not establish complete Mob behavior,
 Entity drawing, the full World loop or a playable client.
 
-## Qualified native hosts
+## Focused native qualification
 
-All 87 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
-All 111 Windows tests pass in 185.60 seconds and all 107 Linux tests in
-221.09 seconds, without failures, skips or sanitizer findings. The same 2,473
-C, helper, build and reference inputs remain unchanged through both builds and tests.
-Formatting checks 1,702 files; source bindings cover 8,002 entries and 3,414
-current files.
+Windows MSVC Debug and Linux Clang18 ASan/UBSan each pass 113,936 Mob checks
+over 62 scenarios and thirteen native controls. Original comparisons verify
+19,832 typed field/state checks, 14,558 cross-phase reference relations and all
+72 events. Six deliberately wrong reference mutations are rejected. The four
+new full path scenarios retain their evaluated operands and sight-ray argument
+words. Constructor entropy remains independent and unnormalized.
 
-Each host passes 113,477 Mob checks over 62 scenarios and twelve native
-controls. Original comparisons verify 19,800 typed field and state checks,
-14,476 cross-phase reference identity relations, and all 72 events. It distinguishes
-48 full returns, two callback failures, four source-null failures and eight
-missing-child prefixes. Every selected child operand and twelve sight-ray
-argument words match. Six deliberately wrong reference mutations are rejected.
-Constructor entropy remains independent and unnormalized.
-
-The paired runs use ready Registry classes. Cold initializer failure
-classification remains unqualified. The default loaded client uses its actual
-application profile; no experiment seed or constructor replay is installed there.
+The paired runs use ready Registry classes. Cold initializer classification and
+exceptional pending-child partial-retirement failure/retry remain unqualified.
+The default loaded client uses its actual application profile; no experiment
+seed or constructor replay is installed there. Broader integration checks are
+recorded in [test scope](../testing.md).

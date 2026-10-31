@@ -4,6 +4,7 @@
 #include "../vector/vector_internal.h"
 #include "classes_internal.h"
 #include "memory_internal.h"
+#include "path_namespace_internal.h"
 
 #include <stdlib.h>
 
@@ -117,7 +118,8 @@ mc_entity_status mc_entity_classes_get_snapshot(const mc_entity_classes *classes
                                       .watcher_type_count =
                                           classes->types == NULL ? 0 : classes->types->size,
                                       .live_entities = classes->live_entities,
-                                      .allocation_bytes = classes->allocated_bytes};
+                                      .allocation_bytes = classes->allocated_bytes,
+                                      .live_path_arenas = classes->live_path_arenas};
     return MC_ENTITY_OK;
 }
 
@@ -159,7 +161,7 @@ mc_entity_status mc_entity_classes_free(mc_entity_classes *classes) {
         return MC_ENTITY_OK;
     if (classes->live_entities != 0 || classes->borrowers != 0 || classes->bounds_holds != 0 ||
         classes->vector_holds != 0 || classes->live_hit_results != 0 ||
-        classes->live_hit_calls != 0)
+        classes->live_hit_calls != 0 || classes->live_path_arenas != 0)
         return MC_ENTITY_BUSY;
     mc_minecart_class_dispose(classes);
     if (classes->mob_dispose != NULL)
@@ -179,6 +181,20 @@ mc_entity_status mc_entity_classes_free(mc_entity_classes *classes) {
     mc_entity_hit_kind_dispose(classes);
     free(classes);
     return MC_ENTITY_OK;
+}
+
+mc_entity_status mc_entity_path_arena_open(mc_entity_classes *classes, mc_entity_error *error) {
+    if (classes == NULL)
+        return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT,
+                                   "Path arena defining Entity namespace", 0);
+    if (classes->live_path_arenas == SIZE_MAX)
+        return mc_entity_error_set(error, MC_ENTITY_LIMIT, "Path arena native lifetime ceiling", 0);
+    ++classes->live_path_arenas;
+    return mc_entity_error_set(error, MC_ENTITY_OK, NULL, 0);
+}
+
+void mc_entity_path_arena_close(mc_entity_classes *classes) {
+    --classes->live_path_arenas;
 }
 
 mc_entity_status mc_entity_class_literal_get(const mc_entity_classes *classes,

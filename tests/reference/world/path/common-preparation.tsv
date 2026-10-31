@@ -1,0 +1,10 @@
+operation	owner	member	type	value
+field	sn	bg	F	profile.width_bits
+field	sn	bh	F	profile.height_bits
+invoke	sn	c	(DDDFF)V	profile.sx,profile.sy,profile.sz,30,0
+invoke	fd	b	(Lsn;)Z	actual_actor
+target_invoke	sn	c	(DDDFF)V	profile.tx,profile.ty,profile.tz,0,0
+target_invoke	fd	b	(Lsn;)Z	actual_target
+invoke	java.util.Random	setSeed	(J)V	actor:0,target:17,world:89
+invoke	eq	b	()V	once_before_call
+invoke	bt	b	()V	once_before_call

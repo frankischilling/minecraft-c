@@ -332,11 +332,13 @@ typedef struct mob_fixture {
     mc_world_access *observer;
     FILE *events;
     size_t event_count, sounds, particles, actor_holds, registry_holds, math_holds;
-    bool callback_bad, actor_owned, other_owned, native_only, terminal_committed;
+    bool callback_bad, actor_owned, other_owned, native_only, terminal_committed,
+        observer_registered;
     mc_java_random *owned_random;
     mc_world_runtime *owned_world;
     mc_entity_watcher *owned_watcher;
     mc_entity_bounds *owned_bounds;
+    mc_path *control_path_hold;
 } mob_fixture;
 
 static const char *const mob_names[] = {"cn", "uz", "fr", "gb", "uw", "wh",
@@ -364,11 +366,21 @@ static void emit_roles(const mob_fixture *f) {
     emit_role("actor.bounds", f->actor->bounds, "eq", &first_role);
     emit_role("actor.random", f->actor->random, "java.util.Random", &first_role);
     emit_role("actor.watcher", f->actor->watcher, "ud", &first_role);
+    if (!mc_entity_is_kind(f->actor, MC_ENTITY_CLASS_KIND_SLIME)) {
+        mc_path *path = NULL;
+        if (mc_mob_path_get(f->actor, &path, NULL) != MC_ENTITY_OK)
+            exit(3);
+        emit_role("actor.path", path, "dh", &first_role);
+    }
     if (f->other) {
         emit_role("secondary0", f->other, entity_reference_class(f->other), &first_role);
         emit_role("secondary0.bounds", f->other->bounds, "eq", &first_role);
         emit_role("secondary0.random", f->other->random, "java.util.Random", &first_role);
         emit_role("secondary0.watcher", f->other->watcher, "ud", &first_role);
+        mc_path *path = NULL;
+        if (mc_mob_path_get(f->other, &path, NULL) != MC_ENTITY_OK)
+            exit(3);
+        emit_role("secondary0.path", path, "dh", &first_role);
     }
     fputc('}', output);
 }
@@ -652,7 +664,15 @@ static bool observer_attach(mob_fixture *f) {
     CHECK(mc_world_access_create(&callbacks, f, &f->observer, NULL) == MC_WORLD_STORAGE_OK &&
           mc_world_runtime_add_world_access(f->base.world, f->observer, NULL) ==
               MC_WORLD_STORAGE_OK);
+    f->observer_registered = true;
     return true;
+}
+
+static bool same_path_point(const mc_path_point_state *a, const mc_path_point_state *b) {
+    return a->a == b->a && a->b == b->b && a->c == b->c && a->j == b->j && a->d == b->d &&
+           fbits(a->e) == fbits(b->e) && fbits(a->f) == fbits(b->f) && fbits(a->g) == fbits(b->g) &&
+           a->h == b->h && a->i == b->i && a->constructed == b->constructed &&
+           a->constructor_pc == b->constructor_pc;
 }
 
 static bool cleanup_checks(mob_fixture *f) {
@@ -666,6 +686,20 @@ static bool cleanup_checks(mob_fixture *f) {
     const mc_java_random *actual = f->actor->random ? f->actor->random : f->owned_random;
     CHECK(actual != NULL);
     const mc_java_random own = *actual, world = *f->base.world->fields.r;
+    mc_path *path = f->actor->mob->creature_path;
+    mc_path_state path_before = {0}, path_after = {0};
+    mc_path_point **path_array = NULL;
+    mc_path_point_state *points = NULL;
+    if (path) {
+        CHECK(mc_path_inspect(path, &path_before) && path_before.array_length > 0 &&
+              path_before.array_length <= SIZE_MAX / sizeof(*points));
+        path_array = malloc(path_before.array_length * sizeof(*path_array));
+        points = malloc(path_before.array_length * sizeof(*points));
+        CHECK(path_array && points);
+        memcpy(path_array, path_before.b, path_before.array_length * sizeof(*path_array));
+        for (size_t index = 0; index < path_before.array_length; ++index)
+            CHECK(mc_path_point_inspect(path, path_array[index], &points[index]));
+    }
     mc_mob_tick_error *saved = malloc(sizeof(*saved));
     mc_mob_tick_error *cleanup = calloc(1, sizeof(*cleanup));
     CHECK(saved != NULL && cleanup != NULL);
@@ -680,6 +714,27 @@ static bool cleanup_checks(mob_fixture *f) {
           f->base.registry->runtime_borrows == borrows &&
           f->base.entities->bounds_cursor == boxes && f->base.entities->vector_cursor == vectors &&
           f->base.world->active_calls == 0 && f->base.world->local_leases == 0);
+    if (path) {
+        CHECK(mc_path_inspect(path, &path_after) && path_after.a == path_before.a &&
+              path_after.c == path_before.c && path_after.b == path_before.b &&
+              path_after.array_length == path_before.array_length &&
+              path_after.holds == path_before.holds &&
+              path_after.arena_holds == path_before.arena_holds &&
+              path_after.arena_identity == path_before.arena_identity &&
+              path_after.arena_points == path_before.arena_points &&
+              path_after.arena_bytes == path_before.arena_bytes &&
+              path_after.classes == path_before.classes &&
+              path_after.constructed == path_before.constructed &&
+              path_after.constructor_pc == path_before.constructor_pc &&
+              !memcmp(path_array, path_after.b, path_after.array_length * sizeof(*path_array)));
+        for (size_t index = 0; index < path_before.array_length; ++index) {
+            mc_path_point_state after;
+            CHECK(mc_path_point_inspect(path, path_array[index], &after) &&
+                  same_path_point(&points[index], &after));
+        }
+    }
+    free(path_array);
+    free(points);
     free(cleanup);
     free(saved);
     return true;
@@ -744,6 +799,18 @@ static bool tick_call_context(mob_fixture *f, const mc_mob_tick_limits *limits,
             s->path.receiver_identity == (uintptr_t)f->base.world ? "true" : "false",
             f->other && s->path.target_identity == (uintptr_t)f->other ? "true" : "false",
             s->path.x, s->path.y, s->path.z, fbits(s->path.range));
+    mc_path_state path_state = {0};
+    mc_path *current_path = NULL;
+    if (!mc_entity_is_kind(f->actor, MC_ENTITY_CLASS_KIND_SLIME))
+        CHECK(mc_mob_path_get(f->actor, &current_path, NULL) == MC_ENTITY_OK);
+    if (current_path)
+        CHECK(mc_path_inspect(current_path, &path_state) && path_state.classes == f->base.entities);
+    fprintf(output,
+            ",\"path_execution\":{\"calls\":%zu,\"returned\":%s,\"stored\":%s,\"waypoints\":%zu,"
+            "\"advances\":%zu,\"present\":%s,\"length\":%d,\"cursor\":%d,\"holds\":%zu}",
+            s->path_calls, s->path_returned ? "true" : "false",
+            s->path_store_completed ? "true" : "false", s->path_waypoints, s->path_advances,
+            current_path ? "true" : "false", path_state.a, path_state.c, path_state.holds);
     const mc_entity_effect_error *damage =
         f->error->child == MC_MOB_TICK_CHILD_ENVIRONMENT ? &f->error->detail.environment.effect
         : f->error->child == MC_MOB_TICK_CHILD_EFFECT    ? &f->error->detail.effect
@@ -788,6 +855,10 @@ static bool tick_call_context(mob_fixture *f, const mc_mob_tick_limits *limits,
     }
     if (!f->native_only && f->input.id == 34)
         CHECK(s->drop.stored && s->drop.item_id == 344 && s->drop.count == 1);
+    if (!f->native_only && f->input.id >= 47 && f->input.id <= 50)
+        CHECK(s->path_calls == 1 && s->path_returned && s->path_store_completed &&
+              s->path_waypoints > 0 && current_path && path_state.holds == 1 &&
+              path_state.arena_holds == 1 && !s->cleanup_pending);
     if (!f->native_only && (f->input.id == 40 || f->input.id == 42 || f->input.id == 44))
         CHECK(damage && damage->damage_arguments_stored && damage->damage_source_identity == 0 &&
               damage->damage_amount == (f->input.id == 40   ? 1
@@ -816,11 +887,20 @@ static bool mob_teardown(mob_fixture *f) {
     if (f->owned_bounds)
         f->actor->bounds = f->owned_bounds;
     bool removed = false;
-    if (f->observer)
-        CHECK(mc_world_runtime_remove_world_access(f->base.world, f->observer, &removed, NULL) ==
-                  MC_WORLD_STORAGE_OK &&
-              removed && mc_world_access_free(f->observer, NULL) == MC_WORLD_STORAGE_OK);
+    if (f->observer) {
+        if (f->observer_registered) {
+            CHECK(mc_world_runtime_remove_world_access(f->base.world, f->observer, &removed,
+                                                       NULL) == MC_WORLD_STORAGE_OK &&
+                  removed);
+            f->observer_registered = false;
+        }
+        CHECK(mc_world_access_free(f->observer, NULL) == MC_WORLD_STORAGE_OK);
+    }
     f->observer = NULL;
+    if (f->control_path_hold) {
+        mc_path_release(f->control_path_hold);
+        f->control_path_hold = NULL;
+    }
     if (f->other_owned)
         mc_entity_release(f->other);
     if (f->actor_owned)
@@ -1076,8 +1156,35 @@ static mc_mob_tick_limits full_limits(void) {
                         .material = {.max_cell_work =
                                          MC_WORLD_MATERIAL_MOVEMENT_DEFAULT_CELL_WORK}},
         .action = {.max_loop_work = MC_PLAYER_ACTION_DEFAULT_LOOP_WORK},
-        .movement = {.max_loop_work = MC_ENTITY_MOVE_DEFAULT_LOOP_WORK}};
+        .movement = {.max_loop_work = MC_ENTITY_MOVE_DEFAULT_LOOP_WORK},
+        .path = mc_world_path_default_limits()};
     return limits;
+}
+
+static bool shared_control_path(mob_fixture *f, mc_path **out) {
+    CHECK(f->other && !*out);
+    mc_world_path_call *call = NULL;
+    CHECK(mc_world_runtime_path_to_coordinates_begin(f->base.world, f->actor, 12, 64, 8, 16.f,
+                                                     f->base.math, NULL,
+                                                     &call) == MC_WORLD_PATH_OK);
+    mc_world_path_call_state state;
+    CHECK(mc_world_path_call_inspect(call, &state) && state.source_returned && state.result &&
+          mc_mob_path_store(f->actor, state.result, NULL) == MC_ENTITY_OK &&
+          mc_mob_path_store(f->other, state.result, NULL) == MC_ENTITY_OK);
+    *out = state.result;
+    CHECK(mc_world_path_call_retire(&call) == MC_WORLD_PATH_OK && !call);
+    mc_path_state path;
+    CHECK(mc_path_inspect(*out, &path) && path.holds == 2 && path.arena_holds == 1 && path.a == 5 &&
+          path.c == 0 && path.classes == f->base.entities && f->base.world->local_leases == 0 &&
+          f->base.world->active_calls == 0);
+    return true;
+}
+
+static bool control_path_is(mc_path *path, int32_t cursor, size_t holds) {
+    mc_path_state state;
+    CHECK(mc_path_inspect(path, &state) && state.c == cursor && state.holds == holds &&
+          state.arena_holds == 1 && state.a == 5 && state.array_length == 5);
+    return true;
 }
 
 static bool target_controls(mob_fixture *f) {
@@ -1085,6 +1192,7 @@ static bool target_controls(mob_fixture *f) {
     CHECK(mc_world_runtime_remove_world_access(f->base.world, f->observer, &removed, NULL) ==
               MC_WORLD_STORAGE_OK &&
           removed);
+    f->observer_registered = false;
     CHECK(construct_mob(f, "dl", &f->other));
     f->other_owned = true;
     CHECK(mc_entity_set_position(f->other, 9.5, 64.5, 8.5) == MC_ENTITY_OK);
@@ -1093,6 +1201,9 @@ static bool target_controls(mob_fixture *f) {
     CHECK(mc_world_runtime_insert_entity(f->base.world, f->other, &inserted, &error) ==
               MC_WORLD_STORAGE_OK &&
           inserted);
+    mc_path *shared_path = NULL;
+    CHECK(shared_control_path(f, &shared_path) &&
+          mc_path_advance(shared_path, NULL) == MC_PATH_OK && control_path_is(shared_path, 1, 2));
     const size_t first_holds = f->actor->holds, other_holds = f->other->holds;
     CHECK(mc_mob_look_target_store(f->actor, f->other, NULL) == MC_ENTITY_OK &&
           mc_mob_creature_target_store(f->actor, f->other, NULL) == MC_ENTITY_OK &&
@@ -1103,7 +1214,9 @@ static bool target_controls(mob_fixture *f) {
           mc_mob_creature_target_get(f->actor, &target, NULL) == MC_ENTITY_OK &&
           target == f->other && f->actor->mob->living.private_b == f->other &&
           f->actor->mob->creature_target == f->other &&
-          f->other->mob->living.private_b == f->actor);
+          f->other->mob->living.private_b == f->actor &&
+          f->actor->mob->creature_path == shared_path &&
+          f->other->mob->creature_path == shared_path && control_path_is(shared_path, 1, 2));
     /* Repeated alias stores retain before release and must have zero net hold. */
     CHECK(mc_mob_look_target_store(f->actor, f->other, NULL) == MC_ENTITY_OK &&
           mc_mob_creature_target_store(f->actor, f->other, NULL) == MC_ENTITY_OK &&
@@ -1146,7 +1259,8 @@ static bool target_controls(mob_fixture *f) {
     f->actor_owned = f->other_owned = false;
     CHECK(mc_world_runtime_terminal_admit(f->base.world, NULL, &inventory, NULL) ==
               MC_WORLD_STORAGE_OK &&
-          inventory.entities == 2 && inventory.expected_world_bindings >= 2);
+          inventory.entities == 2 && inventory.expected_world_bindings >= 2 &&
+          inventory.paths == 1 && inventory.path_occurrences == 2 && inventory.path_arenas == 1);
     CHECK(mc_entity_retain(f->actor) == MC_ENTITY_OK &&
           mc_world_runtime_terminal_admit(f->base.world, NULL, &inventory, NULL) ==
               MC_WORLD_STORAGE_BUSY);
@@ -1157,10 +1271,11 @@ static bool target_controls(mob_fixture *f) {
         f->actor->mob->living.private_b == f->other && f->actor->mob->creature_target == f->other &&
         f->other->mob->living.private_b == f->actor &&
         mc_world_runtime_add_world_access(f->base.world, f->observer, NULL) == MC_WORLD_STORAGE_OK);
+    f->observer_registered = true;
     fprintf(output,
             "{\"event\":\"native_control\",\"case\":%u,\"scene\":\"target_alias_cycle\","
             "\"entities\":2,\"external_hold_retry\":true,\"retire_busy_unchanged\":true,\"source_"
-            "fields_preserved\":true}\n",
+            "fields_preserved\":true,\"paths\":1,\"path_occurrences\":2,\"shared_cursor\":1}\n",
             f->input.id);
     return true;
 }
@@ -1271,7 +1386,9 @@ static bool piston_root_controls(mob_fixture *f) {
     bool removed = false;
     CHECK(mc_world_runtime_remove_world_access(f->base.world, f->observer, &removed, NULL) ==
               MC_WORLD_STORAGE_OK &&
-          removed && mc_world_access_free(f->observer, NULL) == MC_WORLD_STORAGE_OK);
+          removed);
+    f->observer_registered = false;
+    CHECK(mc_world_access_free(f->observer, NULL) == MC_WORLD_STORAGE_OK);
     f->observer = NULL;
     CHECK(construct_mob(f, "dl", &f->other));
     f->other_owned = true;
@@ -1283,6 +1400,8 @@ static bool piston_root_controls(mob_fixture *f) {
           inserted && mc_mob_look_target_store(f->actor, f->other, NULL) == MC_ENTITY_OK &&
           mc_mob_creature_target_store(f->actor, f->other, NULL) == MC_ENTITY_OK &&
           mc_mob_look_target_store(f->other, f->actor, NULL) == MC_ENTITY_OK);
+    mc_path *shared_path = NULL;
+    CHECK(shared_control_path(f, &shared_path) && mc_path_advance(shared_path, NULL) == MC_PATH_OK);
     mc_world_entity_list_view view = {0};
     mc_world_nearby_error *query = calloc(1, sizeof(*query));
     mc_world_entity_tick_error *tick = calloc(1, sizeof(*tick));
@@ -1343,7 +1462,8 @@ static bool piston_root_controls(mob_fixture *f) {
               MC_WORLD_STORAGE_OK &&
           inventory.entities == 2 && inventory.entity_occurrences == 5 &&
           inventory.tile_entities == 0 && inventory.piston_discard_required &&
-          inventory.expected_world_bindings == bindings);
+          inventory.expected_world_bindings == bindings && inventory.paths == 1 &&
+          inventory.path_occurrences == 2 && inventory.path_arenas == 1);
     CHECK(mc_world_runtime_retire_entity_containers(f->base.world, &error) == MC_WORLD_STORAGE_OK &&
           f->base.world->construction.phase == MC_WORLD_RUNTIME_RETIRED && f->actor->holds == 1 &&
           f->other->holds == 1 && f->actor->mob->living.private_b == NULL &&
@@ -1351,12 +1471,17 @@ static bool piston_root_controls(mob_fixture *f) {
           mc_tile_entity_piston_class_get_snapshot(f->base.classes, &classes) ==
               MC_TILE_ENTITY_OK &&
           classes.list_count == 2);
+    CHECK(f->actor->mob->creature_path == shared_path &&
+          f->other->mob->creature_path == shared_path && control_path_is(shared_path, 1, 2));
     CHECK(mc_tile_entity_piston_class_discard_entities(f->base.classes, &error) ==
               MC_WORLD_STORAGE_OK &&
           mc_tile_entity_piston_class_get_snapshot(f->base.classes, &classes) ==
               MC_TILE_ENTITY_OK &&
           classes.list_count == 0 && classes.live_tile_entities == 0 &&
           f->base.world->persistent_bindings == 1);
+    mc_entity_class_snapshot retired;
+    CHECK(mc_entity_classes_get_snapshot(f->base.entities, &retired) == MC_ENTITY_OK &&
+          retired.live_path_arenas == 0);
     f->actor = f->other = NULL;
     f->terminal_committed = true;
     free(tick);
@@ -1364,7 +1489,8 @@ static bool piston_root_controls(mob_fixture *f) {
     fprintf(output,
             "{\"event\":\"native_control\",\"case\":%u,\"scene\":\"piston_only_target_cycle\","
             "\"actual_query_append\":true,\"actual_dead_removal\":true,\"external_retire_refused\":"
-            "true,\"joint_retire\":true,\"class_discard\":true}\n",
+            "true,\"joint_retire\":true,\"class_discard\":true,\"paths\":1,\"path_occurrences\":2,"
+            "\"shared_cursor\":1,\"arena_released\":true}\n",
             f->input.id);
     return true;
 }
@@ -1458,6 +1584,7 @@ static bool facing_limit_controls(mob_fixture *f) {
     CHECK(mc_world_runtime_remove_world_access(f->base.world, f->observer, &removed, NULL) ==
               MC_WORLD_STORAGE_OK &&
           removed);
+    f->observer_registered = false;
     const tick_operand operand = {.operation = "secondary",
                                   .owner = "bx",
                                   .member = "construct_publish",
@@ -1467,6 +1594,7 @@ static bool facing_limit_controls(mob_fixture *f) {
           mc_mob_look_target_store(f->actor, f->other, NULL) == MC_ENTITY_OK &&
           mc_world_runtime_add_world_access(f->base.world, f->observer, NULL) ==
               MC_WORLD_STORAGE_OK);
+    f->observer_registered = true;
     f->actor->base.yaw = 1000.f;
     f->actor->base.aT = 20.f;
     f->actor->mob->living.aC = 20;
@@ -1485,8 +1613,94 @@ static bool facing_limit_controls(mob_fixture *f) {
     return true;
 }
 
+static bool following_controls(mob_fixture *f) {
+    bool removed = false;
+    CHECK(mc_world_runtime_remove_world_access(f->base.world, f->observer, &removed, NULL) ==
+              MC_WORLD_STORAGE_OK &&
+          removed);
+    f->observer_registered = false;
+    const tick_operand secondary = {.operation = "secondary",
+                                    .owner = "bx",
+                                    .member = "construct_publish",
+                                    .type = "entity",
+                                    .value = "10.5,64.5,8.5,30,0"};
+    CHECK(secondary_prepare(f, &secondary));
+    mc_java_random_reseed(f->actor->random, 0);
+    mc_java_random_reseed(f->other->random, 0);
+    mc_path *shared = NULL;
+    CHECK(shared_control_path(f, &shared) && mc_path_retain(shared, NULL) == MC_PATH_OK);
+    f->control_path_hold = shared;
+    mc_world_entity_tick_error *world_error = calloc(1, sizeof(*world_error));
+    mc_mob_tick_error *second = calloc(1, sizeof(*second)), *cleanup = calloc(1, sizeof(*cleanup));
+    CHECK(world_error && second && cleanup);
+    const mc_mob_tick_limits limits = full_limits();
+    const mc_world_entity_tick_context context = {
+        .player = {.travel = {.code_registry = f->base.registry}},
+        .math = f->base.math,
+        .mob_limits = &limits};
+    CHECK(mc_entity_bounds_pool_reset(f->base.entities, NULL) == MC_ENTITY_OK &&
+          mc_entity_vector_pool_reset(f->base.entities, NULL) == MC_ENTITY_OK);
+    const mc_world_storage_status status =
+        mc_world_runtime_tick_entities(f->base.world, &context, NULL, world_error);
+    mc_path_state observed_path;
+    CHECK(mc_path_inspect(shared, &observed_path));
+    CHECK(status == MC_WORLD_STORAGE_OK);
+    CHECK(f->actor->base.bt == 1 && f->other->base.bt == 1);
+    CHECK(f->actor->mob->creature_path == shared && f->other->mob->creature_path == shared);
+    CHECK(control_path_is(shared, 4, 3));
+    CHECK(f->actor->random->state == UINT64_C(0x9b3970be8d41));
+    CHECK(f->other->random->state == UINT64_C(0x9b3970be8d41));
+    /* Declared caller pose input, outside either tick: place the first genuine
+     * actor at its goal. Its next actual following body finishes/clears at340.
+     * The second Mob still observes the same now-complete shared DH. */
+    CHECK(mc_entity_set_position(f->actor, 12.5, 64.5, 8.5) == MC_ENTITY_OK &&
+          mc_mob_tick(f->actor, f->base.registry, f->base.math, &limits, f->error) ==
+              MC_ENTITY_OK &&
+          f->error->state.returned && f->error->state.path_calls == 0 &&
+          f->error->state.path_advances == 1 && f->error->state.path_waypoints == 1 &&
+          f->error->state.creature_pc == 711 && !f->actor->mob->creature_path &&
+          f->other->mob->creature_path == shared && control_path_is(shared, 5, 2));
+    CHECK(mc_mob_tick(f->other, f->base.registry, f->base.math, &limits, second) ==
+              MC_ENTITY_STATE_ERROR &&
+          second->source_exception && !second->native_policy && second->exception_class &&
+          !strcmp(second->exception_class, "java/lang/ArrayIndexOutOfBoundsException") &&
+          second->site.class_name && !strcmp(second->site.class_name, "ii") &&
+          second->site.pc == 272 && second->child_site.class_name &&
+          !strcmp(second->child_site.class_name, "dh") && second->child_site.method &&
+          !strcmp(second->child_site.method, "a") && second->child_site.pc == 8 &&
+          !second->state.cleanup_pending && f->other->mob->creature_path == shared &&
+          control_path_is(shared, 5, 2));
+    const mc_entity_base_fields fields = f->other->base;
+    const mc_mob_entity_state mob = *f->other->mob;
+    const mc_java_random own = *f->other->random, world = *f->base.world->fields.r;
+    CHECK(mc_mob_tick_cleanup(f->other, cleanup) == MC_ENTITY_OK &&
+          !memcmp(&fields, &f->other->base, sizeof(fields)) &&
+          !memcmp(&mob, f->other->mob, sizeof(mob)) &&
+          mc_test_java_random_equal(&own, f->other->random) &&
+          mc_test_java_random_equal(&world, f->base.world->fields.r) &&
+          control_path_is(shared, 5, 2) && f->base.world->active_calls == 0 &&
+          f->base.world->local_leases == 0);
+    mc_path_release(shared);
+    f->control_path_hold = NULL;
+    CHECK(control_path_is(shared, 5, 1) &&
+          mc_world_runtime_add_world_access(f->base.world, f->observer, NULL) ==
+              MC_WORLD_STORAGE_OK);
+    f->observer_registered = true;
+    free(world_error);
+    free(second);
+    free(cleanup);
+    fprintf(output,
+            "{\"event\":\"native_control\",\"case\":%u,\"scene\":\"shared_path_following\","
+            "\"actual_World_loops\":1,\"actual_World_entity_ticks\":2,\"direct_following_ticks\":2,"
+            "\"shared_cursor_after_World\":4,\"finished_cursor\":5,"
+            "\"clear_after_actual_advance\":true,\"other_alias_source_index_failure\":true,"
+            "\"failed_prefix_cleanup_without_repair\":true}\n",
+            f->input.id);
+    return true;
+}
+
 static bool native_control(mob_fixture *f, size_t control) {
-    CHECK(control < 12);
+    CHECK(control < 13);
     if (control == 5)
         return target_controls(f);
     if (control == 6)
@@ -1501,6 +1715,8 @@ static bool native_control(mob_fixture *f, size_t control) {
         return missing_math_controls(f);
     if (control == 11)
         return facing_limit_controls(f);
+    if (control == 12)
+        return following_controls(f);
     mc_mob_tick_limits limits = full_limits();
     switch (control) {
         case 0:
@@ -1543,9 +1759,8 @@ static bool profile_returns(const tick_profile *p) {
         return false;
     /* Source call sites outside this finite native child closure. The optional
      * comparison pairs actual JDI invocation prefixes, not source full return. */
-    const char *const boundaries[] = {"egg",          "drowning",     "lava",          "pretarget",
-                                      "target_alias", "wander_first", "wander_second", "null_own",
-                                      "null_world",   "null_bounds",  "null_watcher"};
+    const char *const boundaries[] = {"egg",        "drowning",    "lava",        "null_own",
+                                      "null_world", "null_bounds", "null_watcher"};
     for (size_t i = 0; i < COUNT(boundaries); ++i)
         if (!strcmp(p->scene, boundaries[i]))
             return !strcmp(p->kind, "xt") && !strcmp(p->scene, "drowning");
@@ -1567,7 +1782,7 @@ int main(int argc, char **argv) {
     FILE *events = open_file(argv[4], "wb");
     if (!output || !events)
         return 2;
-    for (size_t index = 0; index < count + 12; ++index) {
+    for (size_t index = 0; index < count + 13; ++index) {
         mob_fixture *f = calloc(1, sizeof(*f));
         if (!f)
             return 2;

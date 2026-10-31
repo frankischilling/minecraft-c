@@ -179,9 +179,15 @@ bool mt_wolf_behavior(mc_mob_tick_scope *s) {
         return false;
     mc_mob_entity_state *m = s->entity->mob;
     bool tame;
-    mt_at(s, "gi", "f_", "()V", 19);
     bool owner_branch = false;
-    if (!m->creature_attacking && m->creature_path == NULL) {
+    bool present = false;
+    if (!m->creature_attacking) {
+        mt_at(s, "gi", "f_", "()V", 12);
+        if (!mt_path_present(s, &present))
+            return false;
+    }
+    if (!m->creature_attacking && !present) {
+        mt_at(s, "gi", "f_", "()V", 19);
         if (!flag(s, 4, &tame))
             return false;
         if (tame && s->entity->base.aH == NULL) {
@@ -225,7 +231,13 @@ bool mt_wolf_behavior(mc_mob_tick_scope *s) {
         mt_at(s, "gi", "f_", "()V", 86);
         if (!mt_target_get(s, true, &target))
             return false;
-        if (target == NULL && m->creature_path == NULL) {
+        if (target == NULL) {
+            mt_at(s, "gi", "f_", "()V", 93);
+            if (!mt_path_present(s, &present))
+                return false;
+        }
+        if (target == NULL && !present) {
+            mt_at(s, "gi", "f_", "()V", 100);
             if (!flag(s, 4, &tame))
                 return false;
             if (!tame && !hunt(s))
@@ -258,7 +270,13 @@ bool mt_wolf_action_tail(mc_mob_tick_scope *s) {
     mt_at(s, "gi", "o", "()V", 10);
     if (!mt_target_get(s, false, &look))
         return false;
-    if (look != NULL && m->creature_path == NULL) {
+    bool present = false;
+    if (look != NULL) {
+        mt_at(s, "gi", "o", "()V", 17);
+        if (!mt_path_present(s, &present))
+            return false;
+    }
+    if (look != NULL && !present) {
         bool angry;
         mt_at(s, "gi", "o", "()V", 24);
         if (!flag(s, 2, &angry))
@@ -269,8 +287,13 @@ bool mt_wolf_action_tail(mc_mob_tick_scope *s) {
                            "Wolf actual selected Player Item interest child");
         }
     }
-    if (!mt_fields(s)->V && m->wolf.f && !m->wolf.g && m->creature_path == NULL &&
-        s->entity->base.aX) {
+    if (!mt_fields(s)->V && m->wolf.f && !m->wolf.g) {
+        mt_at(s, "gi", "o", "()V", 148);
+        if (!mt_path_present(s, &present))
+            return false;
+    } else
+        present = true; /* Earlier source guards skip the remaining branch. */
+    if (!present && s->entity->base.aX) {
         m->wolf.g = true;
         m->wolf.h = 0.0f;
         m->wolf.i = 0.0f;

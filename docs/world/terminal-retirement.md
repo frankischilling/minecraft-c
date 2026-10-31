@@ -37,6 +37,27 @@ admission remain unfinished. The normal menu-run coordinator now uses this
 selected-load gate after its genuine prefix and dispatcher retirement; an
 independent passive classification proves when storage was never acquired.
 
+## Paths and Point arenas
+
+Each actual Creature Path hold contributes one occurrence. Aliased Mob fields
+share the same Path identity and cursor. A distinct Path contributes one arena
+occurrence, regardless of its own hold count. The audit checks exact Path and
+arena holds as well as their defining Entity namespace. Extra Path or arena
+owners refuse strict admission before mutation.
+
+Returned Paths have no World/Entity/Chunk backedge. The broader native container
+retirement operation preserves a surviving externally held Mob's Path and
+cursor. Final Mob destruction releases its Path occurrence; a separately held
+Path can outlive the World and keeps class retirement busy until its arena ends.
+Active Mob calls and pending path/ray cleanup refuse before the joint commit.
+Source target cycles are still pinned and cleared only after the World's
+terminal admission latch. Acyclic Path fields are not cleared to make an
+externally owned Mob pass retirement.
+
+The preliminary Mob scan uses the existing same-World Store traversal scope.
+Another World's Chunks in that Store remain independent owners. Actual closed
+Mob graph and strict whole-World audits retain their single-World restrictions.
+
 ## Store registrations and unfinished work
 
 Admission validates the complete Store registration, reservation and Chunk

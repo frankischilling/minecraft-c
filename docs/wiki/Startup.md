@@ -62,9 +62,10 @@ updates, weather and actual weighted Biome selection. All eleven default constru
 loaded path completes 361 random Chunk coordinates and 28,880 Block samples,
 returns from `fd.l:198`, then completes the random display call at `fd.q:134`
 with all 1,000 samples and 6,000 World Random draws. EffectRenderer ticking
-returns; a repeated focused profile enters the actual Mob's Living/Creature
-body and reaches its missing path request at `ii.E:153` or `ii.f_:44/156`,
-through `fd.a(Entity,boolean):121` at `Minecraft.k:1216`.
+returns; a repeated focused profile completes the actual Mob's Living/Creature
+path and movement work and returns from `Minecraft.k:1328`. The next reached
+dependency is the actual Mob renderer at `n.a:516`. A separate declared-paused
+lighting control preserves the source batch of 499 real queue records.
 Frame sound, lighting, suffocation and controller interpolation are connected.
 Focused mouse look uses the actual SDK/CU/Player fields. Inactive pause entry
 constructs OZ; actual World drawing completes fog, camera, Sky and real

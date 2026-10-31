@@ -751,7 +751,7 @@ static bool frame_body(mc_client_menu_loop *loop) {
         return run_stop(loop, loop->display.operation, 248);
     if (app->active_world != NULL) {
         bool more;
-        if (mc_world_runtime_light_drain(app->active_world, 0, &more, &loop->world_light) !=
+        if (mc_world_runtime_light_drain(app->active_world, SIZE_MAX, &more, &loop->world_light) !=
             MC_WORLD_STORAGE_OK)
             return run_stop(loop, loop->world_light.operation, 262);
     }

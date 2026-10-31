@@ -214,8 +214,8 @@ def compare_identity_transition(native_before, native_after, source_before, sour
     # even if the after-state recomputes the same logical role name.
     nb = reference_locations(native_before, label + "/native-before")
     na = reference_locations(native_after, label + "/native-after")
-    sb = reference_locations(source_before, label + "/source-before")
-    sa = reference_locations(source_after, label + "/source-after")
+    sb = reference_locations(path_roles(source_before), label + "/source-before")
+    sa = reference_locations(path_roles(source_after), label + "/source-after")
     need(set(nb) == set(sb) and set(na) == set(sa), f"complete cross-phase reference locations: {label}")
     count = 0
     for before in sorted(nb):
@@ -226,8 +226,27 @@ def compare_identity_transition(native_before, native_after, source_before, sour
     return count
 
 
-def source_state(state):
+def path_roles(state):
+    # The frozen source observer retained the actual DH class/identity in II.a.
+    # Naming that observed field adds a logical role, without adding a field,
+    # inventing Path contents, replacing an identity or changing evidence.
     result = dict(state)
+    roles = dict(state["reference_roles"])
+    owners = [("actor", state)] + [(f"secondary{i}", value)
+                                    for i, value in enumerate(state.get("secondary_entities", []))]
+    for name, value in owners:
+        actual = value["fields"].get("ii.a")
+        if actual is not None:
+            need(object_token(actual, name + "/actual-II.a")[0] == "dh", "actual observed Path class")
+            key = name + ".path"
+            need(key not in roles or roles[key] == actual, "Path role preserves the observed field identity")
+            roles[key] = actual
+    result["reference_roles"] = roles
+    return result
+
+
+def source_state(state):
+    result = path_roles(state)
     if result["own_seed"] == "-":
         result["own_seed"] = None  # Original text transport's nullable Random sentinel.
     result["fields"] = {key: scalar(value) for key, value in state["fields"].items()}
@@ -357,7 +376,10 @@ def compare_original(data, original, profiles, states, results, events):
              "unchanged original Mob/caller/publication identity")
         before, after, result = states[index]["before"], states[index]["after"], results[index]
         count += compare_states(before, row["before"], f"before{index}")
-        mode = modes[index]["comparison"]
+        # The frozen table described the prior native frontier. These four
+        # now enter real FD/FW/DH and compare the separately retained complete
+        # original final state; their old prefixes remain independent evidence.
+        mode = "full" if index in (47, 48, 49, 50) else modes[index]["comparison"]
         if mode == "prefix":
             prefix = choose_prefix(data["prefix_records"], index, modes[index])
             need(result["outcome"] == -1 and not result["returned"] and result["native_policy"] and
@@ -427,11 +449,26 @@ def compare_original(data, original, profiles, states, results, events):
         need(results[index]["ray_calls"] == 1 and results[index]["ray_returned"] and
              [results[index]["ray_start"], results[index]["ray_end"]] == values,
              "actual saved native World ray arguments and completed child receipt")
+    for index in (47, 48, 49, 50):
+        prefix = choose_prefix(data["prefix_records"], index, modes[index])
+        args, execution, path = prefix["arguments"], results[index]["path_execution"], results[index]["path"]
+        roles = prefix["state"]["reference_roles"]
+        need(execution["calls"] == 1 and execution["returned"] and execution["stored"] and
+             execution["waypoints"] > 0 and execution["present"] and execution["holds"] == 1 and
+             path["stored"] and path["receiver_is_world"] and args[0] == roles["actor"],
+             "actual path invocation returns, publishes and follows the same retained DH")
+        if index in (47, 48):
+            need(path["kind"] == 2 and path["target_is_secondary"] and args[1] == roles["secondary0"] and
+                 path["range"] == args[2], "same actual target/range operands through completed path child")
+        else:
+            need(path["kind"] == 1 and [path["x"], path["y"], path["z"], path["range"]] == args[1:],
+                 "same actual winning coordinate/range operands through completed path child")
     summary = {"profiles": len(original), "typed_state_comparisons": count,
         "reference_identity_relations": identity_count,
         **{key + "_profiles": len(value) for key, value in paired.items()}, "cases": paired,
         "events": sum(map(len, events.values())), "actual_ray_argument_words": 12, "child_argument_profiles": 8,
-        "scope": "Full-return and source/controlled-callback failures compare their actual complete states. Missing egg/hurt/path descendants compare the native failed after-state to actual suspended original invocation-entry fields, bounds, watchers, streams, pools, frames and events. Every actor/secondary object reference retains its class and is compared through complete logical roles, per-state aliases and before/after identity relations inside each actual process. JDI prefix continuity uses the same JDI VM's actual tick-entry state. Full original after-states/outcomes/events remain separate and are never normalized into native success or failure. Constructor entropy is independently observed before declared caller fields/setSeed inputs; absolute namespace-local Entity IDs are not equated. Controlled native callback IO pairs reached effects without Java Throwable equivalence."}
+        "completed_former_path_prefix_profiles": 4,
+        "scope": "Full-return and source/controlled-callback failures compare their actual complete states. The four former path prefixes now execute real FD/FW/DH and compare the original full final fields, streams, pools and events. Missing egg/hurt descendants compare their failed after-state to actual suspended invocation-entry data. Every actor/secondary object reference retains its class, logical roles, aliases and before/after identity relations. A DH role names the actual observed II.a class/identity; frozen source data contains no DH internals here, so its array/cursor graph inside Mob ticks is not claimed as paired evidence. Direct Path tests pair those bodies separately. JDI prefix continuity uses the same JDI VM tick-entry state. Constructor entropy remains independent; namespace-local Entity IDs are not equated. Controlled native callback IO pairs reached effects without Java Throwable equivalence."}
     return summary, source_after, selected
 
 
@@ -460,7 +497,11 @@ def read_native(path, profiles):
             reference_locations(phase, f"actual-native{index}/{phase['phase']}")
         need(before["fields"]["sn.aD"] == after["fields"]["sn.aD"] and
              before["math_seed"] == after["math_seed"], "active tick cannot recreate its Entity or consume shared Math")
-        need(role_model(before, "native-before")[0] == role_model(after, "native-after")[0],
+        for phase in (before, after):
+            need(path_roles(phase)["reference_roles"] == phase["reference_roles"],
+                 "native actual Path roles must be emitted from the genuine held field")
+        need({key: value for key, value in role_model(before, "native-before")[0].items() if not key.endswith(".path")} ==
+             {key: value for key, value in role_model(after, "native-after")[0].items() if not key.endswith(".path")},
              "actual actor, World, secondary, permanent bounds, Random and watcher identities remain stable through tick")
         need(before["loaded_entities"] >= 1 and before["players"] == 0 and before["cache_size"] == 25,
              "actual ordinary World publication and stored Chunk context")
@@ -492,7 +533,12 @@ def read_native(path, profiles):
         if profiles[index]["scene"] in ("peaceful_remote", "peaceful_ambient"):
             need(after["fields"]["sn.be"] is False, "remote guard or prior ambient failure prevents later removal")
     native_results = [row for row in controls if row["event"] == "native_control"]
-    need(len(native_results) == 12, "all twelve native ownership/null/limit/eye-height/deep-chain/Piston/class/Math/facing controls")
+    need(len(native_results) == 13, "all thirteen native ownership/null/limit/eye-height/deep-chain/Piston/class/Math/facing/following controls")
+    following = [row for row in native_results if row["scene"] == "shared_path_following"]
+    need(len(following) == 1 and following[0]["actual_World_loops"] == 1 and
+         following[0]["actual_World_entity_ticks"] == 2 and following[0]["finished_cursor"] == 5 and
+         following[0]["other_alias_source_index_failure"] and following[0]["failed_prefix_cleanup_without_repair"],
+         "real World/Mob following shares one cursor and preserves the finished-alias source failure")
     return states, results, controls
 
 
@@ -511,7 +557,7 @@ def main():
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(data)
     worlds = out / "worlds"
-    for index in range(len(profiles) + 12):
+    for index in range(len(profiles) + 13):
         authored_world(worlds / f"case{index}")
     executable = args.executable.resolve(strict=True)
     paths = {executable, Path(__file__).resolve(), Path(__file__).with_name("test_mob_construction.py"),

@@ -59,7 +59,7 @@ effects; they never turn truncation into success. No implicit bounds/vector
 pool reset occurs.
 
 FallingSand and Minecart active ticks, non-Item riding wrappers/statistics,
-Mob path/combat/drop children, other concrete active Entity descendants and the dedicated server override
+Mob combat/drop children, other concrete active Entity descendants and the dedicated server override
 remain explicit dependencies. The existing wrong-location Chunk diagnostic is
 also a reached dependency for extreme packed-key aliases. Ordinary finite
 client paths are qualified; no server gameplay, entire World loop, frontend
@@ -80,3 +80,10 @@ matrix: 62 original scenarios retain complete source results or selected
 missing-child prefixes. Its World dispatch uses the same actual Mob at121,
 with a tagged value error and evaluated path/drop/hurt arguments. Refer to the
 Mob contract for reference ownership, native cleanup and finite test limits.
+
+World dispatch also enters genuine Creature path following. The shared-cursor
+control updates two ordinary Cows through this same loop, preserves both actual
+Path occurrences, and reaches the original array-index exception when the
+remaining owner later follows a finished shared Path. It does not repair that
+failed source prefix. Direct Path bodies have a separate
+[64-scenario comparison](pathfinding.md).

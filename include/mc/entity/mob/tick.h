@@ -7,6 +7,7 @@
 #include "mc/entity/tick/environment.h"
 #include "mc/world/runtime/brightness.h"
 #include "mc/world/runtime/collision/class_entities.h"
+#include "mc/world/runtime/path.h"
 #include "mc/world/runtime/raytrace.h"
 #include "mc/world/storage/source_chunk_loader.h"
 
@@ -15,6 +16,7 @@ typedef struct mc_mob_tick_limits {
     mc_entity_tick_limits environment;
     mc_player_action_limits action;
     mc_entity_move_limits movement;
+    mc_world_path_limits path;
 } mc_mob_tick_limits;
 
 #define MC_MOB_TICK_DEFAULT_WORK ((size_t)1048576)
@@ -43,10 +45,12 @@ typedef struct mc_mob_tick_drop_arguments {
 typedef struct mc_mob_tick_state {
     bool returned, environment_returned, action_returned, behavior_returned;
     bool cleanup_pending, ray_returned, ray_arguments_stored;
+    bool path_returned, path_store_completed;
     double ray_start[3], ray_end[3];
     mc_entity_class_kind kind;
     /* Direct concrete-body calls; shared children retain separate diagnostics. */
     size_t work, concrete_random_calls, concrete_world_random_calls, particles, sounds, ray_calls;
+    size_t path_calls, path_waypoints, path_advances;
     unsigned int source_pc, living_pc, creature_pc, monster_pc, concrete_pc;
     mc_mob_tick_path_arguments path;
     mc_mob_tick_drop_arguments drop;
@@ -65,7 +69,8 @@ typedef enum mc_mob_tick_child {
     MC_MOB_TICK_CHILD_VECTOR,
     MC_MOB_TICK_CHILD_MATERIAL,
     MC_MOB_TICK_CHILD_EFFECT,
-    MC_MOB_TICK_CHILD_RAY
+    MC_MOB_TICK_CHILD_RAY,
+    MC_MOB_TICK_CHILD_PATH
 } mc_mob_tick_child;
 
 typedef struct mc_mob_tick_query_error {
@@ -93,6 +98,33 @@ typedef struct mc_mob_tick_ray_error {
     mc_entity_hit_error hit;
 } mc_mob_tick_ray_error;
 
+/* Complete value projection before the FD owner is retired. All pointer
+ * members in cause and nested acquisition.source_chunk are NULL; the presence
+ * bits select these copies. Receipt views still borrow their actual producers. */
+typedef enum mc_mob_tick_path_child {
+    MC_MOB_TICK_PATH_CHILD_NONE,
+    MC_MOB_TICK_PATH_CHILD_INVOCATION,
+    MC_MOB_TICK_PATH_CHILD_PATH,
+    MC_MOB_TICK_PATH_CHILD_GEOMETRY
+} mc_mob_tick_path_child;
+
+typedef struct mc_mob_tick_path_error {
+    mc_mob_tick_path_child kind;
+    mc_world_path_error cause;
+    bool has_world, has_entity, has_math, has_registry, has_cache, has_finder, has_source_chunk;
+    mc_world_storage_error world;
+    mc_entity_error entity;
+    mc_math_class_error math;
+    mc_registry_error registry;
+    mc_client_chunk_cache_error cache;
+    mc_path_error finder_path;
+    mc_registry_error finder_registry;
+    mc_client_chunk_cache_error finder_cache;
+    mc_world_source_chunk_error source_chunk;
+    mc_path_error path;
+    mc_entity_geometry_error geometry;
+} mc_mob_tick_path_error;
+
 typedef struct mc_mob_tick_error {
     mc_entity_status status;
     const char *operation, *exception_class;
@@ -104,6 +136,7 @@ typedef struct mc_mob_tick_error {
     mc_entity_error reference;
     mc_world_storage_error world;
     mc_mob_tick_ray_error cleanup_ray;
+    mc_mob_tick_path_error cleanup_path;
     mc_mob_tick_child child;
 
     union {
@@ -119,6 +152,7 @@ typedef struct mc_mob_tick_error {
         mc_entity_environment_error material;
         mc_entity_effect_error effect;
         mc_mob_tick_ray_error ray;
+        mc_mob_tick_path_error path;
     } detail;
 } mc_mob_tick_error;
 

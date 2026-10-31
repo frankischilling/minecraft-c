@@ -7,6 +7,8 @@ target_sources(mc_simulation PRIVATE
     src/entity/mob/tick/helpers.c
     src/entity/mob/tick/ray.c
     src/entity/mob/tick/behavior.c
+    src/entity/mob/tick/path.c
+    src/entity/mob/tick/path_follow.c
     src/entity/mob/tick/tick.c
     src/entity/mob/tick/living.c
     src/entity/mob/tick/slime_squid.c

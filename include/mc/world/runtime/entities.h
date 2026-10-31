@@ -67,6 +67,7 @@ typedef struct mc_world_terminal_inventory {
     size_t entities, tile_entities, entity_occurrences, tile_entity_occurrences;
     size_t expected_world_bindings;
     bool piston_discard_required;
+    size_t paths, path_occurrences, path_arenas;
 } mc_world_terminal_inventory;
 
 mc_world_terminal_limits mc_world_runtime_terminal_default_limits(void);
@@ -77,8 +78,10 @@ mc_world_terminal_limits mc_world_runtime_terminal_default_limits(void);
  * or unsupported child-owner graph. Count every actual occurrence by identity,
  * including duplicate Lists/maps/slices, and each distinct object's ONE World
  * backedge. Canonical Mob look and Creature target fields contribute their
- * actual owning occurrences, including aliases and cycles. Unimplemented path
- * owners and active Mob calls refuse. External Entity/Tile/Provider holds or unexplained direct
+ * actual owning occurrences, including aliases and cycles. Returned Paths and
+ * their Point arenas contribute their distinct identities and owning occurrences;
+ * active Mob calls or pending child cleanup refuse. External Entity/Tile/Path/arena/Provider
+ * holds or unexplained direct
  * World bindings refuse before any owner, source phase, container, cache or provider mutation.
  * Separately bounded scratch allocations never charge source ledgers. No source/class use,
  * source/user callback, I/O, retain/release or cleanup runs. The genuine constructor-owned active
