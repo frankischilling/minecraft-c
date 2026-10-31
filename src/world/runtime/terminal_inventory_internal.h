@@ -49,6 +49,17 @@ mc_world_storage_status mc_world_runtime_terminal_admit_owned(mc_world_runtime *
 mc_world_storage_status mc_world_runtime_entity_containers_validate(mc_world_runtime *,
                                                                     mc_world_storage_error *);
 
+typedef struct mc_world_terminal_mob_graph mc_world_terminal_mob_graph;
+/* After the complete structural preflight, collect actual target occurrences
+ * and pin the admitted closed field graph without source mutation. Nonnull
+ * fields owned outside that graph refuse. clear/release are infallible native
+ * commit steps; clear runs only after the World source-admission latch ends. */
+mc_world_storage_status mc_world_runtime_terminal_mob_graph_prepare(mc_world_runtime *,
+                                                                    mc_world_terminal_mob_graph **,
+                                                                    mc_world_storage_error *);
+void mc_world_runtime_terminal_mob_graph_clear(mc_world_terminal_mob_graph *);
+void mc_world_runtime_terminal_mob_graph_release(mc_world_terminal_mob_graph **);
+
 /* Store and Chunk hooks validate their canonical storage before visiting.
  * Nonempty Chunk slices require the genuine mc_entity_release finalizer. */
 mc_world_storage_status mc_world_store_terminal_validate(const mc_world_store *,

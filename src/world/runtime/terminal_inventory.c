@@ -2,12 +2,14 @@
 
 #include "../../entity/entity_internal.h"
 #include "../../entity/mob/internal.h"
+#include "../../entity/mob/references_internal.h"
 #include "construction_internal.h"
 #include "mc/world/dimension/world_provider.h"
 #include "runtime_internal.h"
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef enum terminal_record_kind {
     TERMINAL_ENTITY = 1,
@@ -28,6 +30,8 @@ typedef struct terminal_collector {
     mc_world_terminal_inventory inventory;
     terminal_record *records;
     size_t capacity, entries, bytes;
+    mc_entity **entities;
+    size_t entity_count, entity_capacity;
 } terminal_collector;
 
 static mc_world_storage_status result(mc_world_storage_error *error, mc_world_storage_status status,
@@ -79,10 +83,38 @@ static mc_world_storage_status grow(terminal_collector *c, mc_world_storage_erro
     for (size_t i = 0; i < c->capacity; ++i)
         if (c->records[i].identity != NULL)
             *find(records, capacity, c->records[i].identity, c->records[i].kind) = c->records[i];
+    const size_t old_bytes = c->capacity * sizeof(*c->records);
     free(c->records);
     c->records = records;
     c->capacity = capacity;
-    c->bytes = bytes;
+    c->bytes = c->bytes - old_bytes + bytes;
+    return MC_WORLD_STORAGE_OK;
+}
+
+static mc_world_storage_status queue_entity(terminal_collector *c, mc_entity *entity,
+                                            mc_world_storage_error *error) {
+    if (c->entity_count == c->entity_capacity) {
+        if (c->entity_capacity > SIZE_MAX / 2u)
+            return result(error, MC_WORLD_STORAGE_LIMIT, "World terminal Entity queue overflow");
+        const size_t capacity = c->entity_capacity == 0 ? 16u : c->entity_capacity * 2u;
+        if (capacity > SIZE_MAX / sizeof(*c->entities))
+            return result(error, MC_WORLD_STORAGE_LIMIT, "World terminal Entity queue span");
+        const size_t bytes = capacity * sizeof(*c->entities);
+        if (c->bytes > c->limits.max_bytes || bytes > c->limits.max_bytes - c->bytes)
+            return result(error, MC_WORLD_STORAGE_LIMIT,
+                          "World terminal Entity queue peak byte bound");
+        mc_entity **entities = malloc(bytes);
+        if (entities == NULL)
+            return result(error, MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                          "World terminal Entity queue allocation");
+        if (c->entity_count != 0)
+            memcpy(entities, c->entities, c->entity_count * sizeof(*entities));
+        c->bytes = c->bytes - c->entity_capacity * sizeof(*c->entities) + bytes;
+        free(c->entities);
+        c->entities = entities;
+        c->entity_capacity = capacity;
+    }
+    c->entities[c->entity_count++] = entity;
     return MC_WORLD_STORAGE_OK;
 }
 
@@ -167,14 +199,15 @@ static mc_world_storage_status collect_entity(void *context, const void *slot, m
         if (value->particle != NULL || value->base.aG != NULL || value->base.aH != NULL)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal unqualified Entity child or relationship graph");
-        /* The constructed Mob graph has no path, target or LS attacker owner.
-         * Those future source relationships must gain their real native hold
-         * accounting before terminal inventory can admit a nonnull graph. */
-        if (value->mob != NULL &&
-            (value->mob->creature_path != NULL || value->mob->creature_target != NULL ||
-             value->mob->living.private_b != NULL))
+        /* Targets now have concrete native owning cells. Paths still require
+         * their own represented owner before a nonnull graph can retire. */
+        if (value->mob != NULL && value->mob->creature_path != NULL)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                          "World terminal unqualified Mob child or target graph");
+                          "World terminal unqualified Mob path graph");
+        if (value->mob != NULL && value->mob->tick_active)
+            return result(error, MC_WORLD_STORAGE_BUSY, "World terminal Mob tick still entered");
+        if (value->mob != NULL && value->mob->pending_ray != NULL)
+            return result(error, MC_WORLD_STORAGE_BUSY, "World terminal Mob ray cleanup pending");
         if (value->base.world != NULL && value->base.world != c->world)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal Entity bound outside admitted World");
@@ -187,10 +220,45 @@ static mc_world_storage_status collect_entity(void *context, const void *slot, m
             if (status != MC_WORLD_STORAGE_OK)
                 return status;
         }
+        status = queue_entity(c, value, error);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
     }
     status = increment(&entry->occurrences, error);
     return status == MC_WORLD_STORAGE_OK ? increment(&c->inventory.entity_occurrences, error)
                                          : status;
+}
+
+static mc_world_storage_status collect_entity_references(terminal_collector *c,
+                                                         mc_world_storage_error *error) {
+    /* Appending new identities keeps this traversal linear and avoids native
+     * recursion for aliases and cycles. Hash-table growth cannot move queued
+     * Entity identities or the actual owning slots supplied to collect_entity. */
+    for (size_t i = 0; i < c->entity_count; ++i) {
+        mc_entity *entity = c->entities[i];
+        if (entity->mob == NULL)
+            continue;
+        mc_entity *value;
+        mc_entity_error child;
+        if (mc_mob_look_target_get(entity, &value, &child) != MC_ENTITY_OK)
+            return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, child.operation);
+        mc_world_storage_status status =
+            collect_entity(c, &entity->mob->look_target_hold, value, error);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
+        if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SLIME)) {
+            if (entity->mob->creature_target != NULL || entity->mob->creature_target_hold != NULL)
+                return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "World terminal Slime has no Creature target field");
+            continue;
+        }
+        if (mc_mob_creature_target_get(entity, &value, &child) != MC_ENTITY_OK)
+            return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, child.operation);
+        status = collect_entity(c, &entity->mob->creature_target_hold, value, error);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
+    }
+    return MC_WORLD_STORAGE_OK;
 }
 
 static mc_world_storage_status collect_tile(void *context, const void *slot, mc_tile_entity *value,
@@ -383,6 +451,9 @@ static mc_world_storage_status audit(terminal_collector *c,
                           "World terminal unaccounted class TileEntity owner");
         c->inventory.piston_discard_required = true;
     }
+    status = collect_entity_references(c, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
     for (size_t i = 0; i < c->capacity; ++i) {
         const terminal_record *entry = &c->records[i];
         if (entry->identity == NULL ||
@@ -421,6 +492,7 @@ mc_world_storage_status mc_world_runtime_terminal_admit_owned(
         if (status == MC_WORLD_STORAGE_OK)
             *out = collector.inventory;
         free(collector.records);
+        free(collector.entities);
     }
     if (error != NULL)
         *error = child;
@@ -432,4 +504,164 @@ mc_world_storage_status mc_world_runtime_terminal_admit(mc_world_runtime *world,
                                                         mc_world_terminal_inventory *out,
                                                         mc_world_storage_error *error) {
     return mc_world_runtime_terminal_admit_owned(world, NULL, limits, out, error);
+}
+
+struct mc_world_terminal_mob_graph {
+    terminal_collector collector;
+};
+
+typedef struct mob_graph_scan {
+    bool needed;
+} mob_graph_scan;
+
+static mc_world_storage_status scan_mob(void *context, const void *slot, mc_entity *entity,
+                                        mc_world_storage_error *error) {
+    (void)slot;
+    (void)error;
+    mob_graph_scan *scan = context;
+    if (entity != NULL && entity->mob != NULL &&
+        (entity->mob->tick_active || entity->mob->pending_ray != NULL ||
+         entity->mob->creature_path != NULL || entity->mob->living.private_b != NULL ||
+         entity->mob->creature_target != NULL || entity->mob->look_target_hold != NULL ||
+         entity->mob->creature_target_hold != NULL))
+        scan->needed = true;
+    return MC_WORLD_STORAGE_OK;
+}
+
+static mc_world_storage_status scan_mob_chunk(void *context, const mc_world_chunk *chunk,
+                                              mc_world_storage_error *error) {
+    return mc_world_chunk_terminal_visit_entities(chunk, scan_mob, context, error);
+}
+
+static mc_world_storage_status mob_graph_needed(mc_world_runtime *world, bool *out,
+                                                mc_world_storage_error *error) {
+    mob_graph_scan scan = {0};
+    const mc_world_entity_list_ledger *lists[] = {
+        &world->entity_membership, &world->entity_deferral, &world->player_membership,
+        &world->weather_membership, &world->nearby_entities};
+    for (size_t list = 0; list < sizeof(lists) / sizeof(lists[0]); ++list)
+        for (size_t i = 0; i < lists[list]->count; ++i)
+            (void)scan_mob(&scan, &lists[list]->entries[i], lists[list]->entries[i], NULL);
+    for (size_t i = 0; i < world->collision_boxes.count; ++i)
+        (void)scan_mob(&scan, &world->collision_boxes.entries[i].entity,
+                       world->collision_boxes.entries[i].entity, NULL);
+    if (world->fields.w != NULL) {
+        const mc_world_storage_status status = mc_world_store_terminal_visit_chunks(
+            world->fields.w, world, scan_mob_chunk, &scan, error);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
+    }
+    mc_tile_entity_terminal_class_inventory classes = {0};
+    if (world->classes != NULL) {
+        const mc_world_storage_status status = mc_tile_entity_piston_terminal_visit_entities(
+            world->classes, scan_mob, &scan, &classes, error);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
+    }
+    *out = scan.needed;
+    return MC_WORLD_STORAGE_OK;
+}
+
+mc_world_storage_status mc_world_runtime_terminal_mob_graph_prepare(
+    mc_world_runtime *world, mc_world_terminal_mob_graph **out, mc_world_storage_error *error) {
+    if (world == NULL || out == NULL || *out != NULL)
+        return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World terminal Mob graph output");
+    bool needed;
+    mc_world_storage_status status = mob_graph_needed(world, &needed, error);
+    if (status != MC_WORLD_STORAGE_OK || !needed)
+        return status;
+    if (world->classes == NULL)
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World terminal Mob graph class namespace");
+    mc_world_terminal_mob_graph *graph = calloc(1, sizeof(*graph));
+    if (graph == NULL)
+        return result(error, MC_WORLD_STORAGE_ALLOCATION_FAILED, "World terminal Mob graph");
+    terminal_collector *c = &graph->collector;
+    c->world = world;
+    c->limits = mc_world_runtime_terminal_default_limits();
+    status = collect_world_lists(c, error);
+    if (status == MC_WORLD_STORAGE_OK && world->fields.w != NULL)
+        status =
+            mc_world_store_terminal_visit_chunks(world->fields.w, world, collect_chunk, c, error);
+    mc_tile_entity_terminal_class_inventory classes = {0};
+    if (status == MC_WORLD_STORAGE_OK)
+        status = mc_tile_entity_piston_terminal_visit_entities(world->classes, collect_entity, c,
+                                                               &classes, error);
+    if (status == MC_WORLD_STORAGE_OK && classes.piston_occurrences != 0 &&
+        world->classes->live_worlds != 1)
+        status = result(error, MC_WORLD_STORAGE_BUSY,
+                        "World terminal Piston Mob graph requires the sole live World");
+    if (status == MC_WORLD_STORAGE_OK && classes.piston_occurrences != 0 &&
+        classes.live_tiles != c->inventory.tile_entities)
+        status = result(error, MC_WORLD_STORAGE_BUSY,
+                        "World terminal unaccounted Piston Mob graph TileEntity owner");
+    if (status == MC_WORLD_STORAGE_OK && classes.piston_occurrences != 0) {
+        for (size_t i = 0; i < c->capacity; ++i) {
+            const terminal_record *entry = &c->records[i];
+            if (entry->identity == NULL || entry->kind != TERMINAL_TILE)
+                continue;
+            if (entry->holds < entry->occurrences) {
+                status = result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                "World terminal Piston Mob graph TileEntity occurrence holds");
+                break;
+            }
+            if (entry->holds != entry->occurrences) {
+                status = result(error, MC_WORLD_STORAGE_BUSY,
+                                "World terminal external Piston Mob graph TileEntity hold");
+                break;
+            }
+        }
+    }
+    if (status == MC_WORLD_STORAGE_OK)
+        status = collect_entity_references(c, error);
+    for (size_t i = 0; status == MC_WORLD_STORAGE_OK && i < c->entity_count; ++i) {
+        mc_entity *entity = c->entities[i];
+        const terminal_record *entry = find(c->records, c->capacity, entity, TERMINAL_ENTITY);
+        if (entry->holds < entry->occurrences)
+            status = result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                            "World terminal Entity reference holds below occurrences");
+        /* A surviving external owner may still inspect its source targets.
+         * Never clear those fields to make shutdown pass. Ordinary externally
+         * held leaf Entities retain the older container-retirement contract. */
+        else if (entry->holds != entry->occurrences && entity->mob != NULL &&
+                 (entity->mob->look_target_hold != NULL ||
+                  entity->mob->creature_target_hold != NULL))
+            status = result(error, MC_WORLD_STORAGE_BUSY,
+                            "World terminal external owner of Mob reference fields");
+        else if (entity->holds == SIZE_MAX)
+            status = result(error, MC_WORLD_STORAGE_LIMIT, "World terminal Mob graph pin ceiling");
+    }
+    if (status != MC_WORLD_STORAGE_OK) {
+        free(c->records);
+        free(c->entities);
+        free(graph);
+        return status;
+    }
+    /* All source/native validation has completed. These temporary occurrences
+     * keep target-only nodes and cycles alive until the caller's joint commit
+     * has consumed every source reference field and container root. */
+    for (size_t i = 0; i < c->entity_count; ++i)
+        (void)mc_entity_retain(c->entities[i]);
+    *out = graph;
+    return result(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+void mc_world_runtime_terminal_mob_graph_clear(mc_world_terminal_mob_graph *graph) {
+    if (graph == NULL)
+        return;
+    for (size_t i = 0; i < graph->collector.entity_count; ++i)
+        if (graph->collector.entities[i]->mob != NULL)
+            mc_mob_references_dispose(graph->collector.entities[i]);
+}
+
+void mc_world_runtime_terminal_mob_graph_release(mc_world_terminal_mob_graph **slot) {
+    mc_world_terminal_mob_graph *graph = *slot;
+    if (graph == NULL)
+        return;
+    for (size_t i = 0; i < graph->collector.entity_count; ++i)
+        mc_entity_release(graph->collector.entities[i]);
+    free(graph->collector.records);
+    free(graph->collector.entities);
+    free(graph);
+    *slot = NULL;
 }

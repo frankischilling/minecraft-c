@@ -181,7 +181,9 @@ def main():
                     r"stale-hud-cleared=1 completed-random-calls=([0-9]+) "
                     r"completed-chunks=([0-9]+) completed-samples=([0-9]+) "
                     r"display-calls=([0-9]+) display-samples=([0-9]+) display-random=([0-9]+) "
-                    r"active=([a-z]+) active-tick=([0-9]+)$", result.stdout, re.MULTILINE)
+                    r"active=([a-z]+) active-tick=([0-9]+) active-source=([a-z]+) "
+                    r"active-method=([A-Za-z_]+) active-pc=(-?[0-9]+) environment=([0-9]+)$",
+                    result.stdout, re.MULTILINE)
                 if receipt is None:
                     raise RuntimeError("Real repeated frame did not expose the expected source dependency")
                 prefix = tuple(int(receipt[i]) for i in range(1, 6))
@@ -192,10 +194,14 @@ def main():
                             displays != calls or display_samples != displays * 1000 or
                             draws != displays * 6000 or receipt[18] not in
                             ("cn", "uz", "fr", "gb", "uw", "wh", "dl", "bx", "ww", "gi", "xt") or
-                            int(receipt[19]) != 121):
+                            int(receipt[19]) != 121 or receipt[20] != "ii" or
+                            (receipt[21], int(receipt[22])) not in
+                            (("E", 153), ("f_", 44), ("f_", 156)) or int(receipt[23]) != 1):
                         raise RuntimeError("Active Mob tick did not follow complete random Chunk/display calls")
                 elif not (prefix == (80, 80, 0, 0, 0) and int(receipt[6]) == 56 and
-                          receipt[18] == "none" and int(receipt[19]) == 0):
+                          receipt[18] == "none" and int(receipt[19]) == 0 and
+                          receipt[20] == receipt[21] == "none" and int(receipt[22]) == -1 and
+                          int(receipt[23]) == 0):
                     raise RuntimeError("Repeated frame did not reach the genuine active Mob tick or jockey mount")
                 if (receipt[7] not in ("none", "cn", "uz", "fr", "gb", "uw", "wh", "dl", "bx", "ww", "gi", "xt") or
                         int(receipt[8]) != int(receipt[9]) or int(receipt[10]) > int(receipt[9]) or

@@ -18,7 +18,14 @@ bool mc_tick_fail(mc_entity_tick_error *e, mc_entity_status status, const char *
     e->status = status;
     e->operation = operation;
     e->bytecode = pc;
+    e->native_policy = !e->source_exception;
     return false;
+}
+
+bool mc_tick_null(mc_entity_tick_error *e, const char *operation, unsigned int pc) {
+    e->source_exception = true;
+    e->exception_class = "java/lang/NullPointerException";
+    return mc_tick_fail(e, MC_ENTITY_STATE_ERROR, operation, pc);
 }
 
 bool mc_tick_enter(mc_entity *entity, mc_entity_tick_error *e) {
@@ -40,11 +47,30 @@ bool mc_tick_fp(mc_entity_tick_error *e, unsigned int pc) {
 
 bool mc_tick_effect(mc_entity_tick_error *e, mc_entity_status status, const char *operation,
                     unsigned int pc) {
+    if (status != MC_ENTITY_OK &&
+        ((e->effect.status == status && e->effect.cause == MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE) ||
+         (e->environment.status == status &&
+          e->environment.cause == MC_ENTITY_ENVIRONMENT_NULL_REFERENCE))) {
+        e->source_exception = true;
+        e->exception_class = "java/lang/NullPointerException";
+    }
+    if (status != MC_ENTITY_OK && e->material.status == status && e->material.source_exception) {
+        e->source_exception = true;
+        e->exception_class = e->material.exception_class;
+    }
     return status == MC_ENTITY_OK || mc_tick_fail(e, status, operation, pc);
 }
 
 bool mc_tick_world(mc_entity_tick_error *e, mc_world_storage_status status, const char *operation,
                    unsigned int pc) {
+    const char *exception = NULL;
+    if (status != MC_WORLD_STORAGE_OK &&
+        (mc_world_access_failure_source_exception(&e->world.world_access_failure, &exception) ||
+         mc_world_access_failure_source_exception(&e->world.presentation.world_access_failure,
+                                                  &exception))) {
+        e->source_exception = true;
+        e->exception_class = exception;
+    }
     return status == MC_WORLD_STORAGE_OK ||
            mc_tick_fail(e,
                         status == MC_WORLD_STORAGE_LIMIT ? MC_ENTITY_LIMIT : MC_ENTITY_WORLD_FAILED,

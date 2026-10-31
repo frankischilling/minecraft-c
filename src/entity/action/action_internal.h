@@ -2,6 +2,8 @@
 #define MC_ENTITY_ACTION_INTERNAL_H
 #include "../../client/input/movement_input_internal.h"
 #include "../../world/runtime/runtime_internal.h"
+#include "../living/fields_internal.h"
+#include "../mob/internal.h"
 #include "../player/player_internal.h"
 #include "angle_internal.h"
 #include "atan_internal.h"

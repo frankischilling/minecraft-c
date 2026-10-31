@@ -7,6 +7,12 @@ typedef struct mc_mob_entity_state {
     mc_living_entity_fields living;
     const void *creature_path;
     mc_entity *creature_target;
+    /* Native owning occurrences for the source LS/II reference slots. */
+    mc_entity *look_target_hold, *creature_target_hold;
+    /* Intrusive native destruction queue; used only after the final hold ends. */
+    mc_entity *retirement_next;
+    struct mc_mob_ray_pending *pending_ray;
+    bool tick_active;
     bool creature_attacking;
     int32_t monster_damage, creeper_a, creeper_b, slime_jump_delay;
     float slime_a, slime_b;

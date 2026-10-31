@@ -6,6 +6,7 @@
 #include "../../world/runtime/construction_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../entity_internal.h"
+#include "../mob/internal.h"
 #include "mc/block/registry/step_sound.h"
 #include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
@@ -494,7 +495,8 @@ mc_entity_status mc_entity_move_in_context(mc_entity *entity, mc_registry_classe
         fail(&frame, MC_ENTITY_INVALID_PHASE, "Entity movement phase");
     else if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
              !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
-             !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
+             !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
+             !(mc_entity_has_mob(entity) && mc_entity_is_kind(entity, entity->class_literal->kind)))
         fail(&frame, MC_ENTITY_STATE_ERROR, "Entity movement concrete virtuals");
     else if ((_mm_getcsr() & 0xffc0u) != 0x1f80u)
         fail(&frame, MC_ENTITY_UNSUPPORTED_FP, "Entity movement FP admission");

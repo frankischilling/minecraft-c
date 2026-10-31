@@ -2,6 +2,7 @@
 #define MC_WORLD_RUNTIME_ENTITY_TICK_H
 
 #include "mc/entity/item/tick.h"
+#include "mc/entity/mob/tick.h"
 #include "mc/entity/player/tick.h"
 #include "mc/world/chunk/entity_errors.h"
 #include "mc/world/runtime/acquisition_error.h"
@@ -18,6 +19,8 @@ typedef struct mc_world_entity_tick_context {
      * reentry. It is not an association owner or a gameplay snapshot. */
     mc_entity *const *relationship_actors;
     size_t relationship_actor_count;
+    mc_math_classes *math;
+    const mc_mob_tick_limits *mob_limits;
 } mc_world_entity_tick_context;
 
 typedef struct mc_world_entity_tick_limits {
@@ -38,7 +41,8 @@ typedef enum mc_world_entity_tick_child {
     MC_WORLD_ENTITY_TICK_CHILD_ACQUISITION,
     MC_WORLD_ENTITY_TICK_CHILD_TILE_ENTITY,
     MC_WORLD_ENTITY_TICK_CHILD_PRESENTATION,
-    MC_WORLD_ENTITY_TICK_CHILD_REGISTRY
+    MC_WORLD_ENTITY_TICK_CHILD_REGISTRY,
+    MC_WORLD_ENTITY_TICK_CHILD_MOB
 } mc_world_entity_tick_child;
 
 typedef struct mc_world_entity_tick_error {
@@ -69,6 +73,7 @@ typedef struct mc_world_entity_tick_error {
         mc_live_tile_entity_error tile_entity;
         mc_world_mutation_error presentation;
         mc_registry_error registry;
+        mc_mob_tick_error mob;
     } child_error;
 
     mc_world_access_failure world_access_failure;
@@ -83,7 +88,7 @@ void mc_world_entity_tick_error_init(mc_world_entity_tick_error *);
  * owns private heap diagnostics; caller output is published only at return.
  * Passenger tail continuation retains all source caller lifetimes in a bounded
  * per-call hold ledger. Limits fail before pending work, never truncate success.
- * Server dedicated a(Entity,flag), unimplemented concrete tick/riding/mob bodies
+ * Server dedicated a(Entity,flag), unimplemented concrete tick/riding children
  * remain explicit reached dependencies. Read only the tagged failed child. */
 /* These three client fd.f/a/g entries require an actual CLIENT GAME World.
  * Other source owners fail native admission before source effects; this is

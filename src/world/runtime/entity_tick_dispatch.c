@@ -1,4 +1,22 @@
+#include "../../entity/mob/internal.h"
 #include "entity_tick_internal.h"
+
+static const char *mob_tick_class(mc_entity_class_kind kind) {
+    switch (kind) {
+        case MC_ENTITY_CLASS_KIND_SPIDER:
+        case MC_ENTITY_CLASS_KIND_ZOMBIE:
+        case MC_ENTITY_CLASS_KIND_SKELETON:
+            return "gz";
+        case MC_ENTITY_CLASS_KIND_CREEPER:
+            return "gb";
+        case MC_ENTITY_CLASS_KIND_SLIME:
+            return "uw";
+        case MC_ENTITY_CLASS_KIND_WOLF:
+            return "gi";
+        default:
+            return "ls";
+    }
+}
 
 bool wt_tick(wt_scope *s, mc_entity *p, unsigned int pc) {
     s->error.bytecode = pc;
@@ -22,6 +40,13 @@ bool wt_tick(wt_scope *s, mc_entity *p, unsigned int pc) {
         status = mc_item_entity_tick_in_context(
             p, s->context == NULL ? NULL : s->context->player.travel.code_registry,
             s->context == NULL ? NULL : s->context->item_limits, &s->error.child_error.item);
+    } else if (mc_entity_has_mob(p) && mc_entity_is_kind(p, p->class_literal->kind)) {
+        s->error.virtual_class = mob_tick_class(p->class_literal->kind);
+        s->error.child = MC_WORLD_ENTITY_TICK_CHILD_MOB;
+        status = mc_mob_tick(p, s->context == NULL ? NULL : s->context->player.travel.code_registry,
+                             s->context == NULL ? NULL : s->context->math,
+                             s->context == NULL ? NULL : s->context->mob_limits,
+                             &s->error.child_error.mob);
     } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_FALLING_SAND)) {
         s->error.virtual_class = "ju";
         return wt_fail(s, MC_WORLD_STORAGE_UNSUPPORTED_STATE,

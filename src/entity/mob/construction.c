@@ -815,7 +815,8 @@ mc_mob_status mc_mob_retire(mc_entity **slot, mc_mob_error *error) {
     mc_entity *entity = *slot;
     if (!mc_entity_has_mob(entity))
         return result(error, MC_MOB_ARGUMENT, "Mob terminal concrete occurrence");
-    if (entity->phase == MC_ENTITY_CONSTRUCTING || entity->holds != 1)
+    if (entity->phase == MC_ENTITY_CONSTRUCTING || entity->holds != 1 || entity->mob->tick_active ||
+        entity->mob->pending_ray != NULL)
         return result(error, MC_MOB_BUSY, "Mob active/external terminal occurrence");
     mc_entity_release(entity);
     *slot = NULL;

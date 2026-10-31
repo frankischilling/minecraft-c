@@ -33,7 +33,7 @@ typedef struct mc_entity_move_error {
 void mc_entity_move_error_init(mc_entity_move_error *error);
 mc_entity_move_error mc_entity_move_empty_error(void);
 
-/* Actual sn.b/lq.a(DDD)V for held READY canonical Item/Falling/LocalPlayer. Move
+/* Actual sn.b/lq.a(DDD)V for held READY canonical Item/Falling/LocalPlayer/Mob. Move
  * the same permanent bounds, retain real pooled copies and mutable collision
  * List views, and preserve every completed field/World/pool prefix on failure.
  * The caller keeps owners exclusive through synchronous descendants. Native

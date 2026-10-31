@@ -1,30 +1,39 @@
 # World simulation
 
-All eleven default [Mob constructors](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-construction.md)
-and [spawn predicates](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-spawning.md)
-now execute on actual Entity/Living owners. Rejected attempts continue; successful
-attempts publish real Mobs and perform postspawn work. A focused loaded Windows
-profile passes spawning and completes [random Chunk work](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/random-ticking.md):
-361 coordinates and 28,880 samples return at `fd.n:994` and `fd.l:198`. The following
-[random display call](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/random-display.md)
-returns at `fd.q:134` after 1,000 samples and 6,000 World Random draws, then
-EffectRenderer ticking returns. Repeated play reaches the next actual Mob's
-unfinished active tick at `Minecraft.k:1216`. A selected Spider jockey reaches its unfinished mount after actual
-Skeleton construction and publication. Native cleanup preserves the nonempty
-active coordinate Set until final free.
+The client constructs all eleven default [Mob kinds](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-construction.md),
+runs their [spawn predicates](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-spawning.md), and dispatches their actual
+[active tick chains](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-active-tick.md) through genuine Living fields.
+Shared environment, action, movement and travel work uses real World queries;
+sight uses the existing World ray tracer. Finite returning and failure-prefix
+scenarios are qualified independently of original constructor entropy.
 
-All 78 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
-All 93 Windows tests pass in 150.97 seconds and all 89 Linux tests in
-209.98 seconds, without failures, skips or sanitizer findings. The same 2,441
-C, helper, build and reference inputs remain unchanged through all four phases.
-Formatting checks 1,685 files; source bindings cover 7,909 entries and 3,381 files.
+The focused loaded Windows continuation completes random Chunk work over 361
+coordinates and 28,880 samples, then all 1,000 random-display samples and 6,000
+World Random draws. Repeated execution now enters a Mob's Living/Creature body
+and reaches a genuine path request at `ii.E:153` or `ii.f_:44/156`, through
+`Minecraft.k:1216` and `fd.a(Entity,boolean):121`. Terminal cleanup releases real
+target aliases/cycles and Piston-only roots without repairing the failed tick.
+A selected Spider jockey retains its separate unfinished mount.
 
-Each native host passes 72,124 random-display checks. All twelve World state
-rows, 99 direct Block state rows and 2,162 sound/particle events match the
-unchanged original exactly. Native controls also check the distinct default
-local Random, all 3,000 draws in a Redstone Torch profile, callback ownership,
-source failure prefixes and checked retirement. Concrete renderer particle
-construction and complete Mob ticks remain dependencies.
+Single-player remains pre-playable. Mob paths, combat, storage and drawing,
+further Block overrides, concrete display particles, sleeping wake transitions
+and gameplay actions remain unfinished. Focus-loss Canvas integration and the
+hidden pause-screen save path remain open.
+
+All 87 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 111 Windows tests pass in 185.60 seconds and all 107 Linux tests in
+221.09 seconds, without failures, skips or sanitizer findings. The same 2,473
+C, helper, build and reference inputs remain unchanged through both builds and tests.
+Formatting checks 1,702 files; source bindings cover 8,002 entries and 3,414
+current files.
+
+Each host passes 113,477 Mob checks over 62 scenarios and twelve native
+controls. Original comparisons verify 19,800 typed field and state checks,
+14,476 cross-phase reference identity relations, and all 72 events. It distinguishes
+48 full returns, two callback failures, four source-null failures and eight
+missing-child prefixes. Every selected child operand and twelve sight-ray
+argument words match. Six deliberately wrong reference mutations are rejected.
+Constructor entropy remains independent and unnormalized.
 
 ## Preceding random Chunk checkpoint
 

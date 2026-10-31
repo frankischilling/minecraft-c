@@ -1081,6 +1081,11 @@ mc_world_storage_status mc_world_runtime_retire_entity_containers(mc_world_runti
         mc_world_runtime_entity_containers_validate(world, error);
     if (admitted != MC_WORLD_STORAGE_OK)
         return admitted;
+    mc_world_terminal_mob_graph *mob_graph = NULL;
+    const mc_world_storage_status graph_status =
+        mc_world_runtime_terminal_mob_graph_prepare(world, &mob_graph, error);
+    if (graph_status != MC_WORLD_STORAGE_OK)
+        return graph_status;
     mc_world_store *store = world->fields.w;
     /* COMMIT: no allocation, callback, fallible admission or source gameplay
      * call may be introduced below. A later full-World/cache admission belongs
@@ -1091,6 +1096,7 @@ mc_world_storage_status mc_world_runtime_retire_entity_containers(mc_world_runti
     world->entity_containers_retired = true;
     world->tile_entity_containers_retired = true;
     world->construction.phase = MC_WORLD_RUNTIME_RETIRED;
+    mc_world_runtime_terminal_mob_graph_clear(mob_graph);
     if (store != NULL)
         mc_world_store_entity_containers_release(store, world);
     mc_world_runtime_entity_list_release(world);
@@ -1100,5 +1106,6 @@ mc_world_storage_status mc_world_runtime_retire_entity_containers(mc_world_runti
     mc_world_accesses_owned_release(world);
     mc_world_entity_index_free(world->dedicated.G);
     world->dedicated.G = NULL;
+    mc_world_runtime_terminal_mob_graph_release(&mob_graph);
     return result(error, MC_WORLD_STORAGE_OK, NULL);
 }

@@ -1,3 +1,4 @@
+#include "../minecart/entity_internal.h"
 #include "action_internal.h"
 
 bool mc_action_candidate(mc_entity *candidate, mc_entity *player, mc_player_action_error *e,
@@ -15,7 +16,8 @@ bool mc_action_collidable(mc_entity *candidate, bool *out, mc_player_action_erro
     e->push_bytecode = 0;
     if (candidate == NULL)
         return mc_action_fail(e, MC_ENTITY_STATE_ERROR, "Nearby i_ null receiver", 527);
-    if (mc_entity_is_kind(candidate, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
+    if (mc_entity_is_kind(candidate, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) ||
+        mc_entity_has_mob(candidate)) {
         *out = !candidate->base.be;
         return true;
     }
@@ -90,8 +92,25 @@ static bool cart_push(mc_entity *cart, mc_entity *player, mc_player_action_error
         return true;
     if (player == cart->base.aG)
         return true;
-    /* Actual argument is canonical dc, hence instanceof ls && !gs is false.
-     * The auto-mount block and its fields are genuinely not reached. */
+    if (mc_entity_has_mob(player)) {
+        e->push_bytecode = 35;
+        if (cart->minecart == NULL)
+            return mc_action_fail(e, MC_ENTITY_STATE_ERROR, "Minecart push actual own d storage",
+                                  35);
+        if (cart->minecart->fields.d == 0) {
+            e->push_bytecode = 49;
+            if (!mc_action_fp(e, 49))
+                return false;
+            const double speed = ac_add(ac_mul(cart->base.velocity_x, cart->base.velocity_x),
+                                        ac_mul(cart->base.velocity_z, cart->base.velocity_z));
+            /* DCMPL NaN takes the source IFLE skip. */
+            if (speed > 0.01 && cart->base.aG == NULL && player->base.aH == NULL) {
+                e->push_bytecode = 83;
+                return mc_action_fail(e, MC_ENTITY_STATE_ERROR,
+                                      "Minecart push actual Mob mount descendant", 83);
+            }
+        }
+    }
     e->push_bytecode = 94;
     if (!mc_action_fp(e, 94))
         return false;
@@ -128,7 +147,8 @@ bool mc_action_push(mc_entity *candidate, mc_entity *player, mc_player_action_er
         return cart_push(candidate, player, e);
     if (mc_entity_is_kind(candidate, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) ||
         mc_entity_is_kind(candidate, MC_ENTITY_CLASS_KIND_ITEM) ||
-        mc_entity_is_kind(candidate, MC_ENTITY_CLASS_KIND_FALLING_SAND))
+        mc_entity_is_kind(candidate, MC_ENTITY_CLASS_KIND_FALLING_SAND) ||
+        mc_entity_has_mob(candidate))
         return base_push(candidate, player, e);
     return mc_action_fail(e, MC_ENTITY_STATE_ERROR, "Nearby push unsupported actual descendant",
                           536);
@@ -159,6 +179,14 @@ bool mc_action_pickup(mc_entity *candidate, mc_entity *player, mc_registry_class
         mc_entity_is_kind(candidate, MC_ENTITY_CLASS_KIND_FALLING_SAND) ||
         mc_entity_is_kind(candidate, MC_ENTITY_CLASS_KIND_MINECART))
         return true; /* Real inherited sn.b(gs) return0. */
+    if (mc_entity_has_mob(candidate)) {
+        if (!mc_entity_is_kind(candidate, MC_ENTITY_CLASS_KIND_SLIME))
+            return true; /* Actual inherited SN.b(gs) literal return0. */
+        e->source_class = "uw";
+        e->source_method = "b(Lgs;)V";
+        e->pickup_bytecode = 1;
+        return mc_action_fail(e, MC_ENTITY_STATE_ERROR, "Slime actual Player contact attack", 1);
+    }
     return mc_action_fail(e, MC_ENTITY_STATE_ERROR, "Nearby pickup unsupported actual descendant",
                           1);
 }

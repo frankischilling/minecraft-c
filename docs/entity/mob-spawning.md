@@ -57,7 +57,7 @@ the actual World methods. Native qualification does not manufacture a second
 light-query failure, a provider with absent generator/loader, or arbitrary Blank
 Chunk coordinates when those concrete ownership seams do not exist.
 
-These predicates and publication branches do not establish Mob AI, Mob ticking,
+These predicates and publication branches do not establish complete Mob behavior,
 Entity drawing, a complete ordinary World tick or playable single-player.
 
 ## Qualified native controls

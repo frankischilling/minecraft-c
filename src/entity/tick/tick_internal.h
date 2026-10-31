@@ -3,6 +3,8 @@
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
 #include "../../world/runtime/runtime_internal.h"
+#include "../living/fields_internal.h"
+#include "../mob/internal.h"
 #include "../player/player_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
@@ -22,6 +24,7 @@ _Static_assert(FLT_RADIX == 2 && FLT_MANT_DIG == 24 && DBL_MANT_DIG == 53 && FLT
                "Entity tick requires binary32/binary64 evaluation");
 bool mc_tick_enter(mc_entity *, mc_entity_tick_error *);
 bool mc_tick_fail(mc_entity_tick_error *, mc_entity_status, const char *, unsigned int);
+bool mc_tick_null(mc_entity_tick_error *, const char *, unsigned int);
 bool mc_tick_fp(mc_entity_tick_error *, unsigned int);
 bool mc_tick_effect(mc_entity_tick_error *, mc_entity_status, const char *, unsigned int);
 bool mc_tick_world(mc_entity_tick_error *, mc_world_storage_status, const char *, unsigned int);
@@ -30,6 +33,12 @@ bool mc_tick_code(mc_entity *, mc_registry_classes *, mc_entity_tick_error *, un
 mc_entity_status mc_tick_finish(mc_entity_tick_error *, mc_entity_tick_error *);
 bool mc_tick_flag(mc_entity *, int32_t, bool, mc_entity_tick_error *);
 bool mc_tick_suffocating(mc_entity *, bool *, mc_entity_tick_error *);
+typedef struct mc_mob_tick_scope mc_mob_tick_scope;
+bool mc_tick_suffocating_entered(mc_entity *, bool *, mc_entity_tick_error *, mc_mob_tick_scope *);
+bool mc_tick_living_body_entered(mc_entity *, mc_registry_classes *, const mc_entity_tick_limits *,
+                                 mc_entity_tick_error *, mc_mob_tick_scope *);
+bool mc_tick_base_body_entered(mc_entity *, mc_registry_classes *, const mc_entity_tick_limits *,
+                               mc_entity_tick_error *);
 /* Held canonical Item caller only; no public Player admission is widened. */
 bool mc_tick_item_base_body(mc_entity *, mc_registry_classes *, const mc_entity_tick_limits *,
                             mc_entity_tick_error *);

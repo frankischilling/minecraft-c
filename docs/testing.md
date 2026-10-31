@@ -1,6 +1,32 @@
 # Test scope and reproduction
 
-## Client random display updates
+## Client Mob active ticks
+
+All 87 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 111 Windows tests pass in 185.60 seconds and all 107 Linux tests in
+221.09 seconds, without failures, skips or sanitizer findings. The same 2,473
+C, helper, build and reference inputs remain unchanged through both builds and tests.
+Formatting checks 1,702 files; source bindings cover 8,002 entries and 3,414
+current files.
+
+Each host passes 113,477 Mob checks over 62 scenarios and twelve native
+controls. Original comparisons verify 19,800 typed field and state checks,
+14,476 cross-phase reference identity relations, and all 72 events. It distinguishes
+48 full returns, two callback failures, four source-null failures and eight
+missing-child prefixes. Every selected child operand and twelve sight-ray
+argument words match. Six deliberately wrong reference mutations are rejected.
+Constructor entropy remains independent and unnormalized.
+
+The [Mob tick contract](entity/mob-active-tick.md) separates full results,
+genuine source failures, callback failures, missing-child prefixes and native
+policy controls. Source and native references retain actual classes, logical
+roles, aliases and identity continuity across each call; address values are
+not equated between processes. The lifetime controls include Piston-only target
+cycles and 16,384-node raw chains through generic release and aliased replacement.
+Exceptional pending-ray retirement failure/retry and cold Registry initializer
+classification remain unqualified. No whole-client or gameplay claim follows.
+
+## Preceding client random display checkpoint
 
 All 78 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
 All 93 Windows tests pass in 150.97 seconds and all 89 Linux tests in
@@ -133,7 +159,7 @@ through `--observations`; it never rebinds a profile after World setup.
 Cold and previously failed Item initialization, retained RAW Skeleton Stacks, immutable
 failure causes, all-five early allocation/Math failures and early Creeper/Slime watcher
 failures have separate native controls. These results do not close spawning, arbitrary
-initialization, Mob AI, rendering or gameplay.
+initialization, complete Mob behavior, rendering or gameplay.
 
 The hosted GCC build exposed a C17 test declaration issue: converting the mutable
 two-dimensional input array to a const-qualified array pointer requires later C

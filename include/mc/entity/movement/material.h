@@ -8,10 +8,13 @@ typedef struct mc_entity_material_error {
     unsigned int bytecode;
     mc_world_storage_error world;
     mc_registry_error registry;
+    bool native_policy, source_exception;
+    const char *exception_class;
 } mc_entity_material_error;
 
 /* Exact inherited sn/lq.a(Material) eye immersion with actual virtual w/t.
- * Admits held READY canonical Item, Falling, Minecart and client LocalPlayer;
+ * Admits held READY canonical Item, Falling, Minecart, client LocalPlayer and
+ * represented Mobs. Mob height is the live LS height*.85f, or GI height*.8f;
  * the first three inherit zero eye offset, LocalPlayer inherits gs.w=0.12f.
  * Unsupported concrete owners fail explicitly. This is not Player tick or
  * Living movement. Uses the same Entity's position and nullable World, actual

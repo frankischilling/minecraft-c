@@ -10,8 +10,9 @@ These are Entity updates. World time, block and weather simulation are separate.
 `mc_world_runtime_update_entity` exposes `fd.a(Entity,boolean)`. True requires the
 actual radius-32 region to be present before backups or ticks; false bypasses
 that guard and tick but still performs bookkeeping. The real canonical Player
-and Item bodies run through their production APIs. The outer World is separate
-from the Entity's nullable construction World.
+and Item bodies run through their production APIs; all eleven Mob kinds now use
+their actual [Living and concrete tick chains](../entity/mob-active-tick.md).
+The outer World is separate from the Entity's nullable construction World.
 
 The source index loops reread their current List at each size/get/remove call.
 Removal uses source Entity ID equality in the same class namespace, releases
@@ -49,7 +50,7 @@ Other World source owners fail native admission before source effects; this is
 not a Java exception. Actual SERVER-owner tests verify unchanged Entity/World
 state and earlier diagnostics.
 
-The context borrows the existing Registry/trig/Player policies. Empty real Lists
+The context borrows the existing Registry, actual Math owner and Player/Mob policies. Empty real Lists
 do not initialize these classes or require an irrelevant context. Each attempt
 owns fixed private heap diagnostics and publishes the caller's error only at
 return. Large failed children use a tagged union. Loop, passenger-call and
@@ -58,7 +59,7 @@ effects; they never turn truncation into success. No implicit bounds/vector
 pool reset occurs.
 
 FallingSand and Minecart active ticks, non-Item riding wrappers/statistics,
-other concrete active Entity descendants and the dedicated server override
+Mob path/combat/drop children, other concrete active Entity descendants and the dedicated server override
 remain explicit dependencies. The existing wrong-location Chunk diagnostic is
 also a reached dependency for extreme packed-key aliases. Ordinary finite
 client paths are qualified; no server gameplay, entire World loop, frontend
@@ -73,3 +74,9 @@ prefixes) and 17 removal/particle events. Seven riding states include actual
 FallingSand/Minecart mounts and NaN; seven TileEntity states include no-nearby,
 remote, delay reset, enabled NaN and null-World order. Native policy frontiers
 are reported separately from complete original executions.
+
+The Mob continuation is qualified separately from the earlier Player/Item
+matrix: 62 original scenarios retain complete source results or selected
+missing-child prefixes. Its World dispatch uses the same actual Mob at121,
+with a tagged value error and evaluated path/drop/hurt arguments. Refer to the
+Mob contract for reference ownership, native cleanup and finite test limits.

@@ -111,8 +111,27 @@ static mc_entity *active_mob_tick_receiver(const mc_client_menu_loop_state *sour
         strcmp(error->source_method, "a(Lsn;Z)V") || error->bytecode != 121 ||
         error->update_bytecode != 121 || error->wrapper_bytecode != 3 ||
         error->loop_bytecode != 274 || error->loaded_index <= 0 ||
-        error->child != MC_WORLD_ENTITY_TICK_CHILD_NONE || error->virtual_method == NULL ||
+        error->child != MC_WORLD_ENTITY_TICK_CHILD_MOB || error->virtual_method == NULL ||
         strcmp(error->virtual_method, "w_()V"))
+        return NULL;
+    const mc_mob_tick_error *tick = &error->child_error.mob;
+    if (tick->status != MC_ENTITY_STATE_ERROR || !tick->native_policy || tick->source_exception ||
+        tick->state.returned || !tick->state.environment_returned || tick->state.action_returned ||
+        tick->state.behavior_returned || tick->site.class_name == NULL ||
+        strcmp(tick->site.class_name, "ii") || tick->site.method == NULL ||
+        tick->site.descriptor == NULL || strcmp(tick->site.descriptor, "()V") ||
+        tick->operation == NULL)
+        return NULL;
+    const bool coordinate_path =
+        !strcmp(tick->site.method, "E") && tick->site.pc == 153 &&
+        !strcmp(tick->operation, "Creature actual World coordinate path child");
+    const bool target_path =
+        !strcmp(tick->site.method, "f_") &&
+        ((tick->site.pc == 44 &&
+          !strcmp(tick->operation, "Creature actual World target path child")) ||
+         (tick->site.pc == 156 &&
+          !strcmp(tick->operation, "Creature actual repeated target path child")));
+    if (!coordinate_path && !target_path)
         return NULL;
     const mc_world_runtime *world = app->active_world;
     const mc_world_entity_list_ledger *ledger = &world->entity_membership;
@@ -125,9 +144,16 @@ static mc_entity *active_mob_tick_receiver(const mc_client_menu_loop_state *sour
     mc_mob_state mob;
     if (entity == NULL || !mc_mob_inspect(entity, &mob) || entity->phase != MC_ENTITY_READY ||
         entity->classes != world->classes->entities || entity->base.world != world ||
-        entity->base.be || !entity->base.bF || entity->base.bl != entity->base.x ||
-        entity->base.bm != entity->base.y || entity->base.bn != entity->base.z ||
-        entity->base.aU != entity->base.yaw || entity->base.aV != entity->base.aT)
+        tick->state.kind != mob.kind || entity->base.be || !entity->base.bF ||
+        entity->base.bl != entity->base.x || entity->base.bm != entity->base.y ||
+        entity->base.bn != entity->base.z || entity->base.aU != entity->base.yaw ||
+        entity->base.aV != entity->base.aT)
+        return NULL;
+    const mc_mob_tick_path_arguments *path = &tick->state.path;
+    if (!path->stored || path->receiver_identity != (uintptr_t)world ||
+        (coordinate_path && (path->kind != MC_MOB_TICK_PATH_COORDINATES || path->range != 10.0f)) ||
+        (target_path && (path->kind != MC_MOB_TICK_PATH_TARGET || path->range != 16.0f ||
+                         path->target_identity != (uintptr_t)mob.creature_target)))
         return NULL;
     return entity;
 }
@@ -1781,10 +1807,28 @@ int main(int argc, char **argv) {
                     CHECK(mc_client_menu_loop_inspect(f.loop, &f.state));
                     SDL_Delay(1);
                 }
-                if (next_failed && !unpaused_world_reached(&f.state, f.app))
+                if (next_failed && !unpaused_world_reached(&f.state, f.app)) {
                     fprintf(stderr, "Next loaded frame %s.%s:%" PRId64 " %s\n",
                             f.state.source_class, f.state.source_method, f.state.source_pc,
                             f.state.operation);
+                    const mc_world_entity_tick_error *entity_error = &f.state.world_tick->entities;
+                    if (entity_error->child == MC_WORLD_ENTITY_TICK_CHILD_MOB) {
+                        const mc_mob_tick_error *mob = &entity_error->child_error.mob;
+                        fprintf(stderr,
+                                "Reached Mob %s.%s:%d child=%s.%s:%d status=%u %s "
+                                "environment=%u action=%u behavior=%u\n",
+                                mob->site.class_name == NULL ? "none" : mob->site.class_name,
+                                mob->site.method == NULL ? "none" : mob->site.method, mob->site.pc,
+                                mob->child_site.class_name == NULL ? "none"
+                                                                   : mob->child_site.class_name,
+                                mob->child_site.method == NULL ? "none" : mob->child_site.method,
+                                mob->child_site.pc, (unsigned int)mob->status,
+                                mob->operation == NULL ? "none" : mob->operation,
+                                (unsigned int)mob->state.environment_returned,
+                                (unsigned int)mob->state.action_returned,
+                                (unsigned int)mob->state.behavior_returned);
+                    }
+                }
                 CHECK(next_failed && unpaused_world_reached(&f.state, f.app) &&
                       f.state.world_frame == NULL && f.state.hud == NULL);
                 mc_entity_class_literal_view selected = {0};
@@ -1808,7 +1852,8 @@ int main(int argc, char **argv) {
                     "stale-hud-cleared=1 completed-random-calls=%" PRIu64
                     " completed-chunks=%zu completed-samples=%" PRIu64 " display-calls=%" PRIu64
                     " display-samples=%" PRIu64 " display-random=%" PRIu64
-                    " active=%s active-tick=%u\n",
+                    " active=%s active-tick=%u active-source=%s active-method=%s active-pc=%d "
+                    "environment=%u\n",
                     f.state.world_tick->site.pc, spawn->source_pc,
                     random == NULL ? 0 : random->source_pc,
                     random == NULL ? 0 : random->chunk_count,
@@ -1820,7 +1865,18 @@ int main(int argc, char **argv) {
                     f.state.random_display_calls, f.state.random_display_samples,
                     f.state.random_display_random_calls,
                     active.client_name == NULL ? "none" : active.client_name,
-                    active_entity == NULL ? 0u : f.state.world_tick->entities.update_bytecode);
+                    active_entity == NULL ? 0u : f.state.world_tick->entities.update_bytecode,
+                    active_entity == NULL
+                        ? "none"
+                        : f.state.world_tick->entities.child_error.mob.site.class_name,
+                    active_entity == NULL
+                        ? "none"
+                        : f.state.world_tick->entities.child_error.mob.site.method,
+                    active_entity == NULL ? -1
+                                          : f.state.world_tick->entities.child_error.mob.site.pc,
+                    active_entity == NULL ? 0u
+                                          : (unsigned int)f.state.world_tick->entities.child_error
+                                                .mob.state.environment_returned);
             }
             if (repeat_load)
                 goto loaded_draw_controls_done;

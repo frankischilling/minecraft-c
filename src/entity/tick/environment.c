@@ -1,3 +1,4 @@
+#include "../mob/tick/internal.h"
 #include "tick_internal.h"
 
 static void base_at(mc_entity_tick_error *e, unsigned int pc) {
@@ -16,7 +17,7 @@ static void living_at(mc_entity_tick_error *e, unsigned int pc) {
 
 static bool next_float(mc_entity *entity, float *out, mc_entity_tick_error *e, unsigned int pc) {
     if (entity->random == NULL)
-        return mc_tick_fail(e, MC_ENTITY_STATE_ERROR, "Tick null Entity Random", pc);
+        return mc_tick_null(e, "Tick null Entity Random", pc);
     *out = mc_java_random_next_float(entity->random);
     return true;
 }
@@ -38,7 +39,7 @@ static bool work(mc_entity_tick_error *e, unsigned int pc) {
 static bool remote(mc_entity *entity, bool *out, mc_entity_tick_error *e, unsigned int pc) {
     mc_world_runtime *world = entity->base.world;
     if (world == NULL)
-        return mc_tick_fail(e, MC_ENTITY_STATE_ERROR, "Tick null World B receiver", pc);
+        return mc_tick_null(e, "Tick null World B receiver", pc);
     *out = world->fields.B;
     return true;
 }
@@ -46,6 +47,8 @@ static bool remote(mc_entity *entity, bool *out, mc_entity_tick_error *e, unsign
 static bool particle(mc_world_runtime *world, const mc_registry_string *name, double x, double y,
                      double z, double vx, double vy, double vz, mc_entity_tick_error *e,
                      unsigned int pc) {
+    if (world == NULL)
+        return mc_tick_null(e, "Tick null World particle receiver", pc);
     return mc_tick_world(
         e, mc_world_runtime_particle(world, name, x, y, z, vx, vy, vz, &e->world.presentation),
         "Tick actual World particle", pc);
@@ -75,13 +78,15 @@ static bool splash(mc_entity *entity, mc_registry_classes *classes, mc_entity_ti
         return false;
     const float pitch = mc_tick_fadd(1.0f, mc_tick_fmul(mc_tick_fsub(first, second), .4f));
     base_at(e, 181);
+    if (sound_world == NULL)
+        return mc_tick_null(e, "Tick null World splash sound receiver", 181);
     if (!mc_tick_world(
             e, mc_world_runtime_entity_sound(sound_world, entity, name, volume, pitch, &e->world),
             "Tick actual splash sound", 181))
         return false;
     base_at(e, 188);
     if (entity->bounds == NULL)
-        return mc_tick_fail(e, MC_ENTITY_STATE_ERROR, "Tick splash null permanent bounds", 188);
+        return mc_tick_null(e, "Tick splash null permanent bounds", 188);
     if (!mc_tick_fp(e, 191))
         return false;
     const float floor_y = mc_tick_i2f(mc_math_floor_double(entity->bounds->min_y));
@@ -309,7 +314,7 @@ static bool death_particles(mc_entity *entity, mc_registry_classes *classes,
         static const unsigned int pcs[] = {374, 386, 399};
         for (size_t i = 0; i < 3; ++i) {
             if (entity->random == NULL)
-                return mc_tick_fail(e, MC_ENTITY_STATE_ERROR, "Death null Entity Random", pcs[i]);
+                return mc_tick_null(e, "Death null Entity Random", pcs[i]);
             velocity[i] = mc_tick_dmul(mc_java_random_next_gaussian(entity->random), .02);
         }
         mc_world_runtime *world = entity->base.world;
@@ -343,31 +348,164 @@ static bool death_particles(mc_entity *entity, mc_registry_classes *classes,
     return true;
 }
 
-static bool living_body(mc_entity *entity, mc_registry_classes *classes,
-                        const mc_entity_tick_limits *limits, mc_entity_tick_error *e) {
-    mc_living_entity_fields *fields = &entity->local_player->fields.living;
+static bool wolf_flag(mc_entity *entity, int32_t mask, bool *out, mc_entity_tick_error *e,
+                      unsigned int pc) {
+    int8_t value;
+    if (!mc_tick_effect(e, mc_entity_effect_watcher_byte(entity, 16, &value, &e->effect),
+                        "Wolf ambient actual typed flag", pc))
+        return false;
+    *out = ((int32_t)value & mask) != 0;
+    return true;
+}
+
+static bool wolf_health(mc_entity *entity, int32_t *out, mc_entity_tick_error *e) {
+    e->watcher_index = 18;
+    e->watcher_bytecode = 8;
+    if (entity->watcher == NULL || entity->watcher->map == NULL)
+        return mc_tick_null(e, "Wolf ambient null watcher Map", 34);
+    mc_entity_watch_map *map = entity->watcher->map;
+    mc_entity_watch_node *node = map->head;
+    size_t count = 0;
+    while (node != NULL) {
+        if (count++ == map->size)
+            return mc_tick_fail(e, MC_ENTITY_STATE_ERROR, "Wolf ambient watcher Map ownership", 34);
+        if (node->key == 18)
+            break;
+        node = node->next;
+    }
+    e->watcher_bytecode = 16;
+    const mc_entity_watch_record *record = node == NULL ? NULL : node->record;
+    if (record == NULL)
+        return mc_tick_null(e, "Wolf ambient null Integer record", 34);
+    e->watcher_bytecode = 19;
+    if (record->type != 2) {
+        if (record->type == 0 || record->type == 4) {
+            e->source_exception = true;
+            e->exception_class = "java/lang/ClassCastException";
+        }
+        return mc_tick_fail(e, MC_ENTITY_STATE_ERROR, "Wolf ambient actual Integer value", 34);
+    }
+    *out = record->integer_value;
+    return true;
+}
+
+static bool ambient(mc_entity *entity, mc_registry_classes *classes, mc_entity_tick_error *e) {
+    const char *text = NULL;
+    e->source_class = "ls";
+    e->source_method = "T()V";
+    e->ambient_bytecode = 1;
+    if (mc_entity_has_mob(entity)) {
+        if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SPIDER))
+            text = "mob.spider";
+        else if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ZOMBIE))
+            text = "mob.zombie";
+        else if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SKELETON))
+            text = "mob.skeleton";
+        else if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PIG))
+            text = "mob.pig";
+        else if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SHEEP))
+            text = "mob.sheep";
+        else if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_COW))
+            text = "mob.cow";
+        else if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_CHICKEN))
+            text = "mob.chicken";
+        else if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_WOLF)) {
+            bool angry;
+            e->source_class = "gi";
+            e->source_method = "g()Ljava/lang/String;";
+            if (!wolf_flag(entity, 2, &angry, e, 1))
+                return false;
+            if (angry)
+                text = "mob.wolf.growl";
+            else {
+                if (entity->random == NULL)
+                    return mc_tick_null(e, "Wolf ambient null Random", 15);
+                int32_t draw;
+                if (!mc_java_random_next_bounded(entity->random, 3, &draw))
+                    return mc_tick_fail(e, MC_ENTITY_STATE_ERROR, "Wolf ambient Random bound", 15);
+                if (draw != 0)
+                    text = "mob.wolf.bark";
+                else {
+                    bool tame;
+                    if (!wolf_flag(entity, 4, &tame, e, 22))
+                        return false;
+                    int32_t health = 0;
+                    if (tame && !wolf_health(entity, &health, e))
+                        return false;
+                    text = tame && health < 10 ? "mob.wolf.whine" : "mob.wolf.panting";
+                }
+            }
+        }
+    }
+    e->source_class = "ls";
+    e->source_method = "T()V";
+    if (text == NULL) {
+        e->ambient_bytecode = 42;
+        return true;
+    }
+    const mc_registry_string *name;
+    if (!literal(entity, classes, text, &name, e, 1))
+        return false;
+    e->ambient_bytecode = 10;
+    mc_world_runtime *const world = entity->base.world;
+    const float volume = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_COW) ||
+                                 mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_WOLF)
+                             ? .4f
+                             : 1.0f;
+    float first, second;
+    e->ambient_bytecode = 23;
+    if (!next_float(entity, &first, e, 23))
+        return false;
+    e->ambient_bytecode = 30;
+    if (!next_float(entity, &second, e, 30) || !mc_tick_fp(e, 33))
+        return false;
+    const float pitch = mc_tick_fadd(mc_tick_fmul(mc_tick_fsub(first, second), .2f), 1.0f);
+    e->ambient_bytecode = 39;
+    if (world == NULL)
+        return mc_tick_null(e, "Living ambient null World sound receiver", 39);
+    if (!mc_tick_world(e,
+                       mc_world_runtime_entity_sound(world, entity, name, volume, pitch, &e->world),
+                       "Living ambient actual World sound", 39))
+        return false;
+    e->ambient_bytecode = 42;
+    return true;
+}
+
+bool mc_tick_living_body_entered(mc_entity *entity, mc_registry_classes *classes,
+                                 const mc_entity_tick_limits *limits, mc_entity_tick_error *e,
+                                 mc_mob_tick_scope *scope) {
+    living_at(e, 0);
+    mc_living_entity_fields *fields = mc_entity_living_fields(entity);
+    if (fields == NULL)
+        return mc_tick_fail(e, MC_ENTITY_STATE_ERROR, "Living tick represented embedded fields", 0);
     fields->W = fields->X;
     living_at(e, 9);
     if (!base_body(entity, classes, limits, e))
         return false;
     living_at(e, 19);
     if (entity->random == NULL)
-        return mc_tick_fail(e, MC_ENTITY_STATE_ERROR, "Living tick null ambient Random", 19);
+        return mc_tick_null(e, "Living tick null ambient Random", 19);
     int32_t draw;
     if (!mc_java_random_next_bounded(entity->random, 1000, &draw))
         return mc_tick_fail(e, MC_ENTITY_STATE_ERROR, "Living tick actual Random.nextInt1000", 19);
     const int32_t old = fields->private_a;
     fields->private_a = mc_java_i32_add(old, 1);
     if (draw < old) {
-        fields->private_a = -80; /* Actual ls.e() literal80 and Java ineg. */
-        e->ambient_bytecode = 1; /* ls.T -> actual inherited g() null. */
-        /* ls.g() is a real null-return body on dc; T returns42 before World,
-         * sound arguments or any additional Random.nextFloat call. */
+        const bool creature = mc_entity_has_mob(entity) &&
+                              !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SPIDER) &&
+                              !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ZOMBIE) &&
+                              !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SKELETON) &&
+                              !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_CREEPER) &&
+                              !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SLIME);
+        fields->private_a = creature ? -120 : -80;
+        living_at(e, 46);
+        if (!ambient(entity, classes, e))
+            return false;
     }
     if (!entity->base.be && fields->Y > 0) {
         bool suffocating;
         living_at(e, 57);
-        if (!mc_tick_suffocating(entity, &suffocating, e))
+        if (!mc_tick_suffocating_entered(entity, &suffocating, e, scope))
             return false;
         if (suffocating) {
             living_at(e, 66);
@@ -400,8 +538,8 @@ static bool living_body(mc_entity *entity, mc_registry_classes *classes,
                             "Living tick actual eye immersion", 103))
             return false;
     }
-    /* The actual dc inherits ls.d_(), literal false. */
-    if (submerged) {
+    /* AR.d_ is true; the immersion query above still precedes that virtual. */
+    if (submerged && !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SQUID)) {
         entity->base.bz = mc_java_i32_sub(entity->base.bz, 1);
         if (entity->base.bz == -20) {
             entity->base.bz = 0;
@@ -450,7 +588,7 @@ static mc_entity_status run(mc_entity *entity, mc_registry_classes *classes,
         limits == NULL ? MC_ENTITY_TICK_DEFAULT_PARTICLE_WORK : limits->max_particle_work;
     if (mc_tick_enter(entity, &frame)) {
         if (living)
-            (void)living_body(entity, classes, limits, &frame);
+            (void)mc_tick_living_body_entered(entity, classes, limits, &frame, NULL);
         else
             (void)base_body(entity, classes, limits, &frame);
         mc_entity_release(entity);
@@ -478,4 +616,17 @@ bool mc_tick_item_base_body(mc_entity *entity, mc_registry_classes *classes,
     error->max_particle_work =
         limits == NULL ? MC_ENTITY_TICK_DEFAULT_PARTICLE_WORK : limits->max_particle_work;
     return base_body(entity, classes, limits, error);
+}
+
+bool mc_tick_base_body_entered(mc_entity *entity, mc_registry_classes *classes,
+                               const mc_entity_tick_limits *limits, mc_entity_tick_error *error) {
+    return base_body(entity, classes, limits, error);
+}
+
+bool mc_entity_mob_environment_entered(mc_mob_tick_scope *scope, mc_entity_tick_error *error) {
+    error->max_particle_work = scope->environment_limits == NULL
+                                   ? MC_ENTITY_TICK_DEFAULT_PARTICLE_WORK
+                                   : scope->environment_limits->max_particle_work;
+    return mc_tick_living_body_entered(scope->entity, scope->registry, scope->environment_limits,
+                                       error, scope);
 }

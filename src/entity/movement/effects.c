@@ -4,6 +4,7 @@
 #include "../../client/input/movement_input_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../entity_internal.h"
+#include "../mob/internal.h"
 #include "../player/player_internal.h"
 #include "../player/statistics_status_internal.h"
 #include "mc/core/java/java.h"
@@ -77,7 +78,8 @@ static bool enter(mc_entity *entity, mc_entity_effect_error *error) {
     }
     if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
-        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
+        !(mc_entity_has_mob(entity) && mc_entity_is_kind(entity, entity->class_literal->kind))) {
         fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
              "Entity effect unsupported canonical virtual", 0);
         return false;
@@ -335,13 +337,19 @@ static bool damage(mc_entity *, mc_registry_classes *, mc_entity *, int32_t, boo
 
 static bool fall(mc_entity *entity, mc_registry_classes *classes, float distance,
                  mc_entity_effect_error *error) {
-    if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
+    const bool player = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER);
+    const bool mob = mc_entity_has_mob(entity);
+    if (!player && !mob)
         return base_fall(entity, error);
-    error->source_class = "gs";
-    error->player_bytecode = 2;
-    if (!fp(error, "Player fall-distance comparison", 2))
-        return false;
-    if (distance >= 2.0f) {
+    if (mob && mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_CHICKEN))
+        return true; /* Actual WW.b(float) literal return0. */
+    error->source_class = player ? "gs" : "ls";
+    if (player) {
+        error->player_bytecode = 2;
+        if (!fp(error, "Player fall-distance comparison", 2))
+            return false;
+    }
+    if (player && distance >= 2.0f) {
         if (!statistic_get(entity, classes, 8, 7, error))
             return false;
         const double widened = _mm_cvtsd_f64(_mm_cvtss_sd(_mm_setzero_pd(), _mm_set_ss(distance)));
@@ -350,9 +358,12 @@ static bool fall(mc_entity *entity, mc_registry_classes *classes, float distance
             return false;
     }
     /* gs invokespecial25 -> ls invokespecial2 -> actual sn passenger virtual. */
-    error->player_bytecode = 25;
+    if (player)
+        error->player_bytecode = 25;
     error->living_bytecode = 2;
     if (!base_fall(entity, error))
+        return false;
+    if (!fp(error, "Living fall-distance arithmetic", 5))
         return false;
     error->living_bytecode = 10;
     const float reduced = _mm_cvtss_f32(_mm_sub_ss(_mm_set_ss(distance), _mm_set_ss(3.0f)));
@@ -436,6 +447,13 @@ static void attacked(mc_entity *entity) {
 }
 
 static bool dead(mc_entity *entity, mc_entity_effect_error *error) {
+    if (mc_entity_has_mob(entity) && mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SLIME)) {
+        error->source_class = "uw";
+        error->close_bytecode = 1;
+        fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
+             "Slime K actual splitting/publication body", 1);
+        return false;
+    }
     entity->base.be = true; /* sn.K/lq.J store2; no collection removal. */
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
         error->source_class = "gs";
@@ -481,6 +499,26 @@ static bool instance_of(mc_entity *source, mc_entity_classes *classes, mc_entity
 
 static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_entity *source,
                    int32_t amount, bool *out, mc_entity_effect_error *error) {
+    if (mc_entity_has_mob(entity)) {
+        const mc_entity_class_kind kind = entity->class_literal->kind;
+        error->damage_arguments_stored = true;
+        error->damage_source_identity = source == NULL ? 0 : (uintptr_t)source;
+        error->damage_amount = amount;
+        error->source_class =
+            kind == MC_ENTITY_CLASS_KIND_WOLF    ? "gi"
+            : kind == MC_ENTITY_CLASS_KIND_SHEEP ? "dl"
+            : kind == MC_ENTITY_CLASS_KIND_SPIDER || kind == MC_ENTITY_CLASS_KIND_ZOMBIE ||
+                    kind == MC_ENTITY_CLASS_KIND_SKELETON || kind == MC_ENTITY_CLASS_KIND_CREEPER
+                ? "gz"
+                : "ls";
+        error->damage_bytecode =
+            kind == MC_ENTITY_CLASS_KIND_WOLF                                     ? 2
+            : kind == MC_ENTITY_CLASS_KIND_SHEEP || error->source_class[0] == 'g' ? 3
+                                                                                  : 4;
+        fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
+             "Living damage actual concrete hurt body", error->damage_bytecode);
+        return false;
+    }
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
         mc_local_player_snapshot *fields = &entity->local_player->fields;
         error->source_class = "gs";
@@ -618,7 +656,10 @@ mc_entity_status mc_entity_effect_walks(mc_entity *entity, bool *out,
         fail(&frame, MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_EFFECT_CAUSE_OWNER,
              "Entity walking-effect output", 0);
     else if (enter(entity, &frame)) {
-        *out = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER);
+        *out =
+            mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) ||
+            (mc_entity_has_mob(entity) && !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SPIDER) &&
+             !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_WOLF));
         mc_entity_release(entity);
     }
     return finish(&frame, error);

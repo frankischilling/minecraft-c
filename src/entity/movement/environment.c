@@ -4,6 +4,7 @@
 #include "../../world/runtime/construction_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../entity_internal.h"
+#include "../mob/internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/math/math.h"
 
@@ -58,7 +59,8 @@ static bool enter(mc_entity *entity, bool output, mc_entity_environment_error *e
     if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART) &&
-        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
+        !(mc_entity_has_mob(entity) && mc_entity_is_kind(entity, entity->class_literal->kind)))
         return fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_ENVIRONMENT_UNSUPPORTED_VIRTUAL,
                     "Entity environment concrete virtual", 0);
     const mc_entity_status status = mc_entity_retain(entity);
@@ -226,9 +228,55 @@ mc_entity_status mc_entity_environment_stored_in_water(mc_entity *entity, bool *
     mc_entity_environment_error e;
     mc_entity_environment_error_init(&e);
     if (enter(entity, out != NULL, &e)) {
-        *out = entity->base.bx;
+        if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SQUID))
+            fail(&e, MC_ENTITY_STATE_ERROR, MC_ENTITY_ENVIRONMENT_NAMESPACE,
+                 "Squid ag requires its actual defining Registry context", 16);
+        else
+            *out = entity->base.bx;
         mc_entity_release(entity);
     }
+    if (e.status == MC_ENTITY_OK)
+        mc_entity_environment_error_init(&e);
+    return result(error, &e);
+}
+
+mc_entity_status mc_entity_environment_in_water(mc_entity *entity, mc_registry_classes *registry,
+                                                const mc_world_material_movement_limits *limits,
+                                                bool *out, mc_entity_environment_error *error) {
+    if (!mc_entity_has_mob(entity) || !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SQUID))
+        return mc_entity_environment_stored_in_water(entity, out, error);
+    mc_entity_environment_error e;
+    mc_entity_environment_error_init(&e);
+    bool completed = false, value = false;
+    if (enter(entity, out != NULL, &e)) {
+        e.source_class = "xt";
+        mc_world_runtime *const world = entity->base.world;
+        mc_entity_bounds *query = NULL;
+        if (entity->bounds == NULL)
+            fail(&e, MC_ENTITY_STATE_ERROR, MC_ENTITY_ENVIRONMENT_NULL_REFERENCE,
+                 "Squid ag null permanent bounds receiver", 13);
+        else if (floating(&e, 13) &&
+                 bounds_result(&e,
+                               mc_entity_bounds_expand(entity->classes, entity->bounds, 0.0,
+                                                       -0.6000000238418579, 0.0, &query, &e.bounds),
+                               13)) {
+            mc_material *water = NULL;
+            if (registry_result(
+                    &e, mc_registry_material_get(registry, MC_MATERIAL_g, &water, &e.registry),
+                    16) &&
+                namespace_ok(entity, world, registry, &e, 20))
+                completed =
+                    world_result(&e,
+                                 mc_world_runtime_material_accelerate(world, query, water, entity,
+                                                                      limits, &value, &e.material),
+                                 world, 20);
+        }
+        if (query != NULL)
+            mc_entity_bounds_release(entity->classes, query);
+        mc_entity_release(entity);
+    }
+    if (completed)
+        *out = value;
     if (e.status == MC_ENTITY_OK)
         mc_entity_environment_error_init(&e);
     return result(error, &e);

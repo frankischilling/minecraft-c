@@ -26,6 +26,8 @@ typedef struct mc_entity_tick_error {
     mc_world_movement_error world;
     mc_world_solid_support_error solid;
     mc_registry_error registry;
+    bool native_policy, source_exception;
+    const char *exception_class;
 } mc_entity_tick_error;
 
 void mc_entity_tick_error_init(mc_entity_tick_error *error);

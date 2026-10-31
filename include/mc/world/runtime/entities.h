@@ -76,20 +76,20 @@ mc_world_terminal_limits mc_world_runtime_terminal_default_limits(void);
  * containers/provider and no active calls, leases, WorldAccess registrations
  * or unsupported child-owner graph. Count every actual occurrence by identity,
  * including duplicate Lists/maps/slices, and each distinct object's ONE World
- * backedge. External Entity/Tile/Provider holds or unexplained direct World
- * bindings refuse before any owner, source phase, container, cache or provider
- * mutation. Separately bounded scratch allocations never charge source ledgers.
- * No source/class use, source/user callback, I/O, retain/release or cleanup runs.
- * The genuine constructor-owned active Chunk coordinate Set may be nonempty;
- * its descriptor, keys and traversal membership are validated without a source
- * clear. Its records own no World/Chunk/Entity occurrences and survive until
- * final native free alongside C/E/F.
- * NULL limits select defaults; error is optional. World and output are required.
- * Output changes only on success. Owners/errors/output must be disjoint and
- * the entire graph exclusive/live. Success reserves nothing: keep it unchanged
- * through the actual cleanup/commit, and audit afresh after any mutation or
- * checked cleanup refusal. This does not authorize SaveHandler or App teardown.
- * Old retire_entity_containers retains its broader separate native contract. */
+ * backedge. Canonical Mob look and Creature target fields contribute their
+ * actual owning occurrences, including aliases and cycles. Unimplemented path
+ * owners and active Mob calls refuse. External Entity/Tile/Provider holds or unexplained direct
+ * World bindings refuse before any owner, source phase, container, cache or provider mutation.
+ * Separately bounded scratch allocations never charge source ledgers. No source/class use,
+ * source/user callback, I/O, retain/release or cleanup runs. The genuine constructor-owned active
+ * Chunk coordinate Set may be nonempty; its descriptor, keys and traversal membership are validated
+ * without a source clear. Its records own no World/Chunk/Entity occurrences and survive until final
+ * native free alongside C/E/F. NULL limits select defaults; error is optional. World and output are
+ * required. Output changes only on success. Owners/errors/output must be disjoint and the entire
+ * graph exclusive/live. Success reserves nothing: keep it unchanged through the actual
+ * cleanup/commit, and audit afresh after any mutation or checked cleanup refusal. This does not
+ * authorize SaveHandler or App teardown. Old retire_entity_containers retains its broader separate
+ * native contract. */
 mc_world_storage_status mc_world_runtime_terminal_admit(mc_world_runtime *world,
                                                         const mc_world_terminal_limits *limits,
                                                         mc_world_terminal_inventory *out,
@@ -102,7 +102,10 @@ mc_world_storage_status mc_world_runtime_terminal_admit(mc_world_runtime *world,
  * every actual dedicated Entity-index occurrence. The latter owner is released
  * and subclass G becomes NULL without a source clear/removal callback.
  * Success terminates source operations and releases each actual occurrence;
- * it leaves gameplay q/membership/World bindings untouched. Retired containers
+ * it leaves gameplay q/membership/World bindings untouched. Admitted Mob target
+ * graphs are pinned before commit and consumed after source admission ends;
+ * an externally held Mob owning nonnull target fields refuses without clearing
+ * its fields. Retired containers
  * cannot serialize even when empty. Retire native cache/pending descriptors,
  * then World contexts and checked store owners; externally held Entities/TileEntities keep
  * final World.free BUSY until their real construction bindings are released.

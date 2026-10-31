@@ -133,8 +133,10 @@ six-neighbor push-out, movement, friction and aging on constructed Items. Its
 three isolated native/original profiles retain their own scope. The client
 World Entity pass dispatches the implemented body. The client also connects
 the World scheduler, random Chunk work and
-[random display updates](world/random-display.md). Actual Mob active ticks,
-further simulation bodies and gameplay remain unfinished.
+[random display updates](world/random-display.md). The
+[Mob active tick continuation](entity/mob-active-tick.md) uses genuine Living
+fields and production sight rays. Mob paths, combat, further simulation bodies
+and gameplay remain unfinished.
 
 The water effect has a CPU animation body on its existing constructor-owned
 float/RGBA arrays and shared Math profile. Normal startup registers all nine

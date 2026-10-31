@@ -87,6 +87,7 @@ static bool body(client_application *app, mc_math_classes *math, mc_client_world
         mc_world_entity_tick_context context = {0};
         context.player.travel.code_registry = app->registry;
         context.player.travel.trig = mc_math_classes_table(math);
+        context.math = math;
         if (mc_world_runtime_tick_entities(app->active_world, &context, NULL, &call->entities) !=
             MC_WORLD_STORAGE_OK)
             return stop(call, call->entities.operation, 1216);

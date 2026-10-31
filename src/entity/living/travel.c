@@ -4,11 +4,15 @@
 #include "../../block/registry/runtime_internal.h"
 #include "../../world/runtime/construction_internal.h"
 #include "../../world/runtime/runtime_internal.h"
+#include "../mob/internal.h"
+#include "../mob/tick/internal.h"
 #include "../player/player_internal.h"
 #include "../player/statistics_status_internal.h"
+#include "fields_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/math/math.h"
 #include "mc/world/runtime/blocks.h"
+#include "travel_internal.h"
 #include "travel_math_internal.h"
 #include <stdlib.h>
 #include <string.h>
@@ -18,6 +22,7 @@ typedef struct travel_scope {
     const mc_player_travel_context *context;
     mc_registry_classes *registry;
     bool registry_held;
+    mc_mob_tick_scope *mob;
 } travel_scope;
 
 void mc_player_travel_error_init(mc_player_travel_error *e) {
@@ -62,6 +67,17 @@ static mc_entity_status registry_status(mc_registry_status s) {
 static bool registry_result(mc_player_travel_error *e, mc_registry_status s) {
     return s == MC_REGISTRY_OK || fail(e, registry_status(s), MC_PLAYER_TRAVEL_REGISTRY,
                                        "Player travel actual code Registry");
+}
+
+static bool math_active(travel_scope *s, const char *method, const char *descriptor,
+                        unsigned int pc, mc_player_travel_error *e) {
+    if (s->mob == NULL)
+        return true;
+    mt_at(s->mob, strcmp(method, "a") == 0 ? "sn" : "ls", method, descriptor, pc);
+    if (mt_math(s->mob))
+        return true;
+    return fail(e, s->mob->error->status, MC_PLAYER_TRAVEL_NAMESPACE,
+                "Living travel actual Math active use");
 }
 
 static bool enter(travel_scope *s, mc_entity *entity, const mc_player_travel_context *context,
@@ -142,8 +158,14 @@ static bool registry_null(mc_player_travel_error *e, const char *operation) {
 
 static bool ladder(travel_scope *s, bool *out, mc_player_travel_error *e) {
     mc_entity *p = s->entity;
+    if (mc_entity_has_mob(p) && mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SPIDER)) {
+        *out = p->base.aY; /* Actual CN.p field1/return4. */
+        return true;
+    }
     e->ladder_bytecode = 4;
     if (!fp(e))
+        return false;
+    if (!math_active(s, "p", "()Z", 4, e))
         return false;
     const int32_t x = mc_math_floor_double(p->base.x);
     e->ladder_bytecode = 12;
@@ -177,6 +199,8 @@ static bool friction(travel_scope *s, unsigned getter, float *out, mc_player_tra
     mc_world_runtime *world = p->base.world;
     e->living_bytecode = second ? 382 : 283;
     if (!fp(e))
+        return false;
+    if (!math_active(s, "a_", "(FF)V", second ? 382u : 283u, e))
         return false;
     const int32_t x = mc_math_floor_double(p->base.x);
     e->living_bytecode = second ? 389 : 290;
@@ -216,9 +240,12 @@ static bool environment_result(mc_player_travel_error *e, mc_entity_status statu
 
 static bool accelerate(travel_scope *s, float strafe, float forward, float amount,
                        mc_player_travel_error *e) {
-    return environment_result(
-        e, mc_entity_environment_relative(s->entity, s->context == NULL ? NULL : s->context->trig,
-                                          strafe, forward, amount, &e->environment));
+    if (!math_active(s, "a", "(FFF)V", 7, e))
+        return false;
+    const mc_math_trig *trig = s->mob == NULL ? s->context == NULL ? NULL : s->context->trig
+                                              : mc_math_classes_table(s->mob->math);
+    return environment_result(e, mc_entity_environment_relative(s->entity, trig, strafe, forward,
+                                                                amount, &e->environment));
 }
 
 static bool move(travel_scope *s, mc_player_travel_error *e) {
@@ -253,10 +280,13 @@ static bool escape(travel_scope *s, double previous_y, unsigned pc, mc_player_tr
 
 static bool living(travel_scope *s, float strafe, float forward, mc_player_travel_error *e) {
     mc_entity *p = s->entity;
-    mc_living_entity_fields *state = &p->local_player->fields.living;
+    mc_living_entity_fields *state = mc_entity_living_fields(p);
     bool water;
     e->living_bytecode = 1;
-    if (!environment_result(e, mc_entity_environment_stored_in_water(p, &water, &e->environment)))
+    if (!environment_result(e, mc_entity_environment_in_water(
+                                   p, s->registry,
+                                   s->context == NULL ? NULL : s->context->material_limits, &water,
+                                   &e->environment)))
         return false;
     if (water) {
         const double previous_y = p->base.y;
@@ -594,4 +624,45 @@ mc_entity_status mc_player_movement_statistics(mc_entity *p, const mc_player_tra
                                                double x, double y, double z,
                                                mc_player_travel_error *e) {
     return invoke(p, c, MOVEMENT_STATISTICS, 0, 0, x, y, z, NULL, e);
+}
+
+bool mc_living_travel_entered(mc_entity *p, const mc_player_travel_context *context, float strafe,
+                              float forward, mc_player_travel_error *e) {
+    e->source_class = "ls";
+    e->source_method = "a_(FF)V";
+    if (mc_entity_living_fields(p) == NULL)
+        return fail(e, MC_ENTITY_STATE_ERROR, MC_PLAYER_TRAVEL_OWNER,
+                    "Living travel represented embedded fields");
+    travel_scope scope = {.entity = p,
+                          .context = context,
+                          .registry = context == NULL ? NULL : context->code_registry};
+    return living(&scope, strafe, forward, e);
+}
+
+bool mc_living_ladder_entered(mc_entity *p, const mc_player_travel_context *context, bool *out,
+                              mc_player_travel_error *e) {
+    e->source_class = "ls";
+    e->source_method = "p()Z";
+    travel_scope scope = {.entity = p,
+                          .context = context,
+                          .registry = context == NULL ? NULL : context->code_registry};
+    return ladder(&scope, out, e);
+}
+
+bool mc_living_jump_entered(mc_entity *p, mc_player_travel_error *e) {
+    e->source_class = "ls";
+    e->source_method = "R()V";
+    p->base.velocity_y = 0.41999998688697815; /* Actual LS.R putfield4. */
+    return true;
+}
+
+bool mc_living_travel_mob_entered(mc_mob_tick_scope *mob, float strafe, float forward,
+                                  mc_player_travel_error *e) {
+    e->source_class = "ls";
+    e->source_method = "a_(FF)V";
+    const mc_player_travel_context *context =
+        mob->action_context == NULL ? NULL : &mob->action_context->travel;
+    travel_scope scope = {
+        .entity = mob->entity, .context = context, .registry = mob->registry, .mob = mob};
+    return living(&scope, strafe, forward, e);
 }

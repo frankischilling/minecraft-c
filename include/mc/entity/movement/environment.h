@@ -35,11 +35,12 @@ mc_entity_environment_error mc_entity_environment_empty_error(void);
 
 /* Actual sn/lq water, lava, stored-in-water, clearance and relative-velocity
  * methods on genuinely held READY canonical Item/Falling/Minecart/LocalPlayer
- * owners. Water dispatches hl/ez's actual override (unmodified permanent
+ * and represented Mob owners. Water dispatches hl/ez's actual override (unmodified permanent
  * bounds) or inherited sn/lq (expand then contract, two pooled objects).
  * Lava expands once; clearance shifts once, queries the actual mutable
  * collision List, and tests liquid only after an empty List. Source methods
- * do not assign bx/bA: stored_in_water reads the real existing flag only.
+ * do not assign bx/bA. The contextful ag entry also admits Squid's distinct
+ * shrinking-bounds query; the inherited stored-only entry rejects that override.
  * No active Living/Player tick, movement integration or implicit pool reset.
  *
  * The actual code Registry is an explicit native namespace context, independent
@@ -73,6 +74,12 @@ mc_entity_status mc_entity_environment_lava(mc_entity *, mc_registry_classes *,
                                             mc_entity_environment_error *);
 mc_entity_status mc_entity_environment_stored_in_water(mc_entity *, bool *,
                                                        mc_entity_environment_error *);
+/* Actual ag virtual. Squid performs its own shrunken-bounds accelerating
+ * Material.g query; the other represented kinds inherit the cached bx read.
+ * The explicit Registry is the actual defining code namespace. */
+mc_entity_status mc_entity_environment_in_water(mc_entity *, mc_registry_classes *,
+                                                const mc_world_material_movement_limits *, bool *,
+                                                mc_entity_environment_error *);
 mc_entity_status mc_entity_environment_clearance(mc_entity *, double, double, double,
                                                  const mc_world_material_movement_limits *, bool *,
                                                  mc_entity_environment_error *);

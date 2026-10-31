@@ -8,11 +8,10 @@ static bool update(mc_entity *entity, int8_t value, mc_entity_tick_error *e) {
     e->watcher_index = 0;
     e->watcher_bytecode = 8;
     if (watcher == NULL)
-        return mc_tick_fail(e, MC_ENTITY_STATE_ERROR, "Flag setter null watcher receiver",
-                            e->flag_bytecode);
+        return mc_tick_null(e, "Flag setter null watcher receiver", e->flag_bytecode);
     mc_entity_watch_map *map = watcher->map;
     if (map == NULL)
-        return mc_tick_fail(e, MC_ENTITY_STATE_ERROR, "Watcher setter null Map receiver", 8);
+        return mc_tick_null(e, "Watcher setter null Map receiver", 8);
     mc_entity_watch_node *node = map->head;
     size_t count = 0;
     while (node != NULL) {
@@ -25,8 +24,7 @@ static bool update(mc_entity *entity, int8_t value, mc_entity_tick_error *e) {
     mc_entity_watch_record *record = node == NULL ? NULL : node->record;
     e->watcher_bytecode = 19;
     if (record == NULL)
-        return mc_tick_fail(e, MC_ENTITY_STATE_ERROR, "Watcher setter null record b() receiver",
-                            19);
+        return mc_tick_null(e, "Watcher setter null record b() receiver", 19);
     e->watcher_bytecode = 22;
     if (record->type != 0)
         return mc_tick_fail(e, MC_ENTITY_STATE_ERROR,

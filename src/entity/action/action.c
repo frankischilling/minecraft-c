@@ -1,3 +1,5 @@
+#include "../living/travel_internal.h"
+#include "../mob/tick/internal.h"
 #include "action_internal.h"
 
 #include <stdlib.h>
@@ -58,7 +60,7 @@ static bool collision_count(const mc_world_collision_list_view *view, size_t *ou
 }
 
 static bool interpolate(mc_entity *p, mc_player_action_error *e) {
-    mc_living_entity_fields *v = &p->local_player->fields.living;
+    mc_living_entity_fields *v = mc_entity_living_fields(p);
     if (v->an <= 0)
         return true;
     living_at(e, 19);
@@ -290,26 +292,34 @@ done:
 }
 
 static bool living_body(mc_entity *p, const mc_player_action_context *context,
-                        mc_player_action_error *e) {
-    mc_living_entity_fields *v = &p->local_player->fields.living;
+                        mc_player_action_error *e, mc_mob_tick_scope *scope) {
+    mc_living_entity_fields *v = mc_entity_living_fields(p);
     living_at(e, 1);
     if (!interpolate(p, e))
         return false;
     living_at(e, 311);
-    if (v->Y <= 0 || p->local_player->fields.player.u) {
+    if (v->Y <= 0 || (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
+                      p->local_player->fields.player.u)) {
         v->az = false;
         v->aw = 0.0f;
         v->ax = 0.0f;
         v->ay = 0.0f;
     } else if (!v->V) {
         living_at(e, 348);
-        if (!mc_action_input(p, e))
-            return false;
+        if (scope == NULL) {
+            if (!mc_action_input(p, e))
+                return false;
+        } else if (!mc_mob_tick_behavior(scope))
+            return false; /* The concrete scope retains its independent child. */
     }
     bool water, lava;
     living_at(e, 352);
-    if (!entity_status(e, mc_entity_environment_stored_in_water(p, &water, &e->environment),
-                       "Action actual cached-water virtual", 352))
+    if (!entity_status(
+            e,
+            mc_entity_environment_in_water(p, registry(context),
+                                           context == NULL ? NULL : context->travel.material_limits,
+                                           &water, &e->environment),
+            "Action actual cached-water virtual", 352))
         return false;
     living_at(e, 357);
     const mc_world_material_movement_limits *material =
@@ -327,8 +337,11 @@ static bool living_body(mc_entity *p, const mc_player_action_context *context,
         } else if (p->base.aX) {
             living_at(e, 414);
             e->child_kind = MC_PLAYER_ACTION_CHILD_TRAVEL;
-            if (!entity_status(e, mc_player_jump(p, travel_context(context), &e->travel),
-                               "Action actual Player jump virtual", 414))
+            if (scope == NULL) {
+                if (!entity_status(e, mc_player_jump(p, travel_context(context), &e->travel),
+                                   "Action actual Player jump virtual", 414))
+                    return false;
+            } else if (!mc_living_jump_entered(p, &e->travel))
                 return false;
             e->child_kind = MC_PLAYER_ACTION_CHILD_NONE;
         }
@@ -343,9 +356,31 @@ static bool living_body(mc_entity *p, const mc_player_action_context *context,
     v->ay = ac_fmul(v->ay, .9f);
     living_at(e, 459);
     e->child_kind = MC_PLAYER_ACTION_CHILD_TRAVEL;
-    if (!entity_status(e, mc_player_travel(p, travel_context(context), v->aw, v->ax, &e->travel),
-                       "Action actual Player travel virtual", 459))
-        return false;
+    if (scope == NULL) {
+        if (!entity_status(e,
+                           mc_player_travel(p, travel_context(context), v->aw, v->ax, &e->travel),
+                           "Action actual Player travel virtual", 459))
+            return false;
+    } else {
+        mc_player_travel_error_init(&e->travel);
+        if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SQUID)) {
+            e->travel.source_class = "xt";
+            e->travel.source_method = "a_(FF)V";
+            e->travel.living_bytecode = 13;
+            const mc_entity_status status = mc_entity_move_in_context(
+                p, registry(context), p->base.velocity_x, p->base.velocity_y, p->base.velocity_z,
+                context == NULL ? NULL : context->travel.movement_limits, &e->travel.movement);
+            if (!entity_status(e, status, "Squid actual move-current-velocity", 459)) {
+                e->travel.status = status;
+                e->travel.cause = MC_PLAYER_TRAVEL_MOVEMENT;
+                e->travel.operation = "Squid actual move-current-velocity";
+                return false;
+            }
+        } else if (!mc_living_travel_mob_entered(scope, v->aw, v->ax, &e->travel)) {
+            (void)entity_status(e, e->travel.status, "Action actual Living travel virtual", 459);
+            return false;
+        }
+    }
     e->child_kind = MC_PLAYER_ACTION_CHILD_NONE;
     return nearby(p, false, context, e);
 }
@@ -382,7 +417,7 @@ static bool player_body(mc_entity *p, const mc_player_action_context *context,
                               "Player action actual InventoryPlayer tick", 41);
     player->h = player->i;
     player_at(e, 53);
-    if (!living_body(p, context, e))
+    if (!living_body(p, context, e, NULL))
         return false;
     player_at(e, 64);
     if (!mc_action_fp(e, 64))
@@ -429,7 +464,7 @@ static mc_entity_status run(mc_entity *p, const mc_player_action_context *contex
         if (player)
             (void)player_body(p, context, frame);
         else
-            (void)living_body(p, context, frame);
+            (void)living_body(p, context, frame, NULL);
         mc_entity_release(p);
     }
     const mc_entity_status status = mc_action_finish(frame, out);
@@ -446,4 +481,10 @@ mc_entity_status mc_living_action_body(mc_entity *p, const mc_player_action_cont
                                        const mc_player_action_limits *l,
                                        mc_player_action_error *e) {
     return run(p, c, l, false, e);
+}
+
+bool mc_entity_mob_action_entered(mc_mob_tick_scope *scope, mc_player_action_error *error) {
+    error->max_loop_work = scope->action_limits == NULL ? MC_PLAYER_ACTION_DEFAULT_LOOP_WORK
+                                                        : scope->action_limits->max_loop_work;
+    return living_body(scope->entity, scope->action_context, error, scope);
 }

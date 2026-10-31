@@ -6,6 +6,7 @@
 #include "minecart/classes_internal.h"
 #include "minecart/entity_internal.h"
 #include "mob/internal.h"
+#include "mob/references_internal.h"
 #include "particles/particle_internal.h"
 #include "player/player_internal.h"
 #include "position_internal.h"
@@ -644,11 +645,7 @@ mc_entity_status mc_entity_retain(mc_entity *entity) {
     return MC_ENTITY_OK;
 }
 
-void mc_entity_release(mc_entity *entity) {
-    if (entity == NULL)
-        return;
-    if (--entity->holds != 0)
-        return;
+static void destroy_entity(mc_entity *entity) {
     mc_entity_classes *classes = entity->classes;
     const size_t bytes =
         mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART) ? sizeof(mc_minecart_entity_object)
@@ -667,6 +664,8 @@ void mc_entity_release(mc_entity *entity) {
         mc_pickup_particle_dispose(entity);
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_C))
         mc_lightning_dispose(entity);
+    if (mc_entity_has_mob(entity))
+        mc_mob_references_dispose(entity);
     mc_nbt_tree_free(entity->storage_source);
     mc_item_stack_release(entity->stack);
     mc_world_runtime_binding_release(entity->base.world);
@@ -685,6 +684,39 @@ void mc_entity_release(mc_entity *entity) {
     retire(classes, entity, entity->bounds, sizeof(*entity->bounds));
     --classes->live_entities;
     retire(classes, NULL, entity, bytes);
+}
+
+/* Native final destruction has no allocation, source callback or failure path.
+ * Queue dying Mob owners in their own native storage so releasing an arbitrarily
+ * deep target chain never recurses through one C destructor frame per Mob.
+ * Other Entity layouts and all live source reference fields are unchanged. */
+#if defined(_MSC_VER)
+static __declspec(thread) mc_entity *retiring_mobs;
+static __declspec(thread) bool draining_mobs;
+#else
+static _Thread_local mc_entity *retiring_mobs;
+static _Thread_local bool draining_mobs;
+#endif
+
+void mc_entity_release(mc_entity *entity) {
+    if (entity == NULL || --entity->holds != 0)
+        return;
+    if (!mc_entity_has_mob(entity)) {
+        destroy_entity(entity);
+        return;
+    }
+    entity->mob->retirement_next = retiring_mobs;
+    retiring_mobs = entity;
+    if (draining_mobs)
+        return;
+    draining_mobs = true;
+    while (retiring_mobs != NULL) {
+        mc_entity *next = retiring_mobs;
+        retiring_mobs = next->mob->retirement_next;
+        next->mob->retirement_next = NULL;
+        destroy_entity(next);
+    }
+    draining_mobs = false;
 }
 
 mc_entity_status mc_entity_get_snapshot(const mc_entity *entity, mc_entity_snapshot *out) {

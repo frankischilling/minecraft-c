@@ -38,6 +38,11 @@ typedef struct mc_entity_effect_error {
     mc_entity_error entity;
     mc_world_movement_error world;
     mc_player_statistic_error statistic_error;
+    /* Actual evaluated operands at a reached, unfinished Mob hurt body.
+     * The identity is comparison-only and owns no Entity occurrence. */
+    bool damage_arguments_stored;
+    uintptr_t damage_source_identity;
+    int32_t damage_amount;
 } mc_entity_effect_error;
 
 /* Full passive initialization without a returned diagnostic copy. NULL is a no-op. */
@@ -85,7 +90,7 @@ mc_entity_status mc_entity_effect_walks(mc_entity *entity, bool *out,
                                         mc_entity_effect_error *error);
 mc_entity_status mc_entity_effect_contact_portal(mc_entity *entity, mc_entity_effect_error *error);
 
-/* Caller supplies a real held READY canonical Item/Falling/LocalPlayer and exclusive
+/* Caller supplies a real held READY canonical Item/Falling/LocalPlayer/Mob and exclusive
  * access through synchronous reentry. Each call retains that same owner until
  * its final use; admission/hold failures precede source effects. These are
  * native lifetime/phase guards, not Java instructions. Outputs/errors are
@@ -101,6 +106,10 @@ mc_entity_status mc_entity_effect_contact_portal(mc_entity *entity, mc_entity_ef
  * unowned relationship. LocalPlayer sneaking is actual input.e && !Player.u;
  * walks is inherited true, and portal dispatch stores Player.z/A. Item/Falling
  * retain their actual literal false/empty overrides.
+ * Mobs use the actual Byte0 sneaking flag and inherited SN push/walking leaves;
+ * Spider and Wolf n return false. Chicken fall is its literal empty override;
+ * other represented Living falls enter LS without Player statistics. Reached
+ * concrete Mob damage and Slime splitting stop at explicit native dependencies.
  *
  * LocalPlayer fall executes gs->ls->sn in source order. A fall >=2 resolves
  * actual jl.n and computes the Java-rounded amount, then explicitly stops at

@@ -4,6 +4,7 @@
 #include "../../world/runtime/material_movement_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../entity_internal.h"
+#include "../mob/internal.h"
 
 #if !defined(_M_X64) && !defined(_M_AMD64) && !defined(__x86_64__)
 #error "Entity material movement requires x86-64/SSE2"
@@ -18,12 +19,20 @@ static mc_entity_status fail(mc_entity_material_error *e, mc_entity_status s, co
     e->status = s;
     e->operation = op;
     e->bytecode = pc;
+    e->native_policy = !e->source_exception;
     return s;
 }
 
 static bool registry_result(mc_entity_material_error *e, mc_registry_status s, unsigned pc) {
     if (s == MC_REGISTRY_OK)
         return true;
+    if (e->registry.active_initializer_class == NULL &&
+        (s == MC_REGISTRY_NULL_REFERENCE || s == MC_REGISTRY_INDEX_OUT_OF_RANGE)) {
+        e->source_exception = true;
+        e->exception_class = s == MC_REGISTRY_NULL_REFERENCE
+                                 ? "java/lang/NullPointerException"
+                                 : "java/lang/ArrayIndexOutOfBoundsException";
+    }
     fail(e,
          s == MC_REGISTRY_LIMIT               ? MC_ENTITY_LIMIT
          : s == MC_REGISTRY_ALLOCATION_FAILED ? MC_ENTITY_ALLOCATION_FAILED
@@ -51,7 +60,15 @@ static bool execute(mc_entity *entity, mc_material *m, bool *out, mc_entity_mate
         eye_offset = 0.0f;
     else if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
         eye_offset = 0.12f;
-    else {
+    else if (mc_entity_has_mob(entity) && mc_entity_is_kind(entity, entity->class_literal->kind)) {
+        if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
+            fail(e, MC_ENTITY_UNSUPPORTED_FP, "Living eye-height FP admission", 5);
+            return false;
+        }
+        eye_offset = _mm_cvtss_f32(_mm_mul_ss(
+            _mm_set_ss(entity->base.height),
+            _mm_set_ss(mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_WOLF) ? .8f : .85f)));
+    } else {
         fail(e, MC_ENTITY_STATE_ERROR, "Entity immersion unsupported eye-height dispatch", 5);
         return false;
     }
@@ -74,6 +91,10 @@ static bool execute(mc_entity *entity, mc_material *m, bool *out, mc_entity_mate
     block_held = block_world != NULL;
     int32_t id;
     if (mc_world_runtime_block_get(block_world, x, y, z, &id, &e->world) != MC_WORLD_STORAGE_OK) {
+        if (block_world == NULL) {
+            e->source_exception = true;
+            e->exception_class = "java/lang/NullPointerException";
+        }
         fail(e, MC_ENTITY_WORLD_FAILED, e->world.operation, 49);
         goto done;
     }
@@ -95,6 +116,8 @@ static bool execute(mc_entity *entity, mc_material *m, bool *out, mc_entity_mate
         goto done;
     const mc_block_fields *fields = mc_block_fields_get(b);
     if (fields == NULL) {
+        e->source_exception = true;
+        e->exception_class = "java/lang/NullPointerException";
         e->registry.status = MC_REGISTRY_NULL_REFERENCE;
         e->registry.message = "Entity immersion Block.bA receiver";
         fail(e, MC_ENTITY_STATE_ERROR, e->registry.message, 65);
@@ -121,6 +144,10 @@ static bool execute(mc_entity *entity, mc_material *m, bool *out, mc_entity_mate
     int32_t metadata;
     if (mc_world_runtime_metadata_get(metadata_world, x, y, z, &metadata, &e->world) !=
         MC_WORLD_STORAGE_OK) {
+        if (metadata_world == NULL) {
+            e->source_exception = true;
+            e->exception_class = "java/lang/NullPointerException";
+        }
         fail(e, MC_ENTITY_WORLD_FAILED, e->world.operation, 82);
         goto done;
     }
