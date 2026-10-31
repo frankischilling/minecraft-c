@@ -1,5 +1,6 @@
 #include "client/application_state.h"
 #include "client/render_engine/texture_lookup_internal.h"
+#include "client/world/entity_renderer/held_stack_guard_internal.h"
 #include "draw_internal.h"
 #include "entity/entity_internal.h"
 #include "mc/client/settings/construction.h"
@@ -137,13 +138,16 @@ mc_client_manager_status manager_draw_allocate(mc_client_render_manager *m,
     c->manager_hold = m;
     c->services = *services;
     c->limits = selected;
-    c->scope = (mc_client_draw_scope){
-        .owner = c,
-        .model = {services->math, services->graphics, classes->models->entities, services->display},
-        .application_classes = services->application_classes,
-        .max_work = selected.max_work,
-        .max_shadow_cells = selected.max_shadow_cells,
-        .max_shadow_quads = selected.max_shadow_quads};
+    c->scope = (mc_client_draw_scope){.owner = c,
+                                      .model = {.math = services->math,
+                                                .graphics = services->graphics,
+                                                .entities = classes->models->entities,
+                                                .display = services->display,
+                                                .native_scope = &c->scope},
+                                      .application_classes = services->application_classes,
+                                      .max_work = selected.max_work,
+                                      .max_shadow_cells = selected.max_shadow_cells,
+                                      .max_shadow_quads = selected.max_shadow_quads};
     c->bytes = c->peak_bytes = sizeof(*c);
     classes->bytes += sizeof(*c);
     c->state.receiver = m;
@@ -165,6 +169,29 @@ static bool scope_valid(mc_client_draw_scope *scope, mc_client_manager_error *e)
            owner_fail(e, MC_CLIENT_MANAGER_INVALID_PHASE, "Draw actual entered capture scope");
 }
 
+mc_held_stack_parent_error *mc_client_draw_held_workspace(mc_client_draw_scope *scope,
+                                                          mc_client_manager_error *e) {
+    if (!scope_valid(scope, e))
+        return NULL;
+    mc_client_render_manager_draw_call *c = scope->owner;
+    if (c->held_workspace != NULL) {
+        owner_fail(e, MC_CLIENT_MANAGER_BUSY, "Draw held Stack workspace already used");
+        return NULL;
+    }
+    c->held_workspace = manager_draw_allocate_bytes(c, sizeof(*c->held_workspace), e);
+    c->state.held = c->held_workspace;
+    return c->held_workspace;
+}
+
+bool mc_client_draw_work_step(mc_client_draw_scope *scope, mc_client_manager_error *e) {
+    if (!scope_valid(scope, e))
+        return false;
+    if (scope->work >= scope->max_work)
+        return owner_fail(e, MC_CLIENT_MANAGER_LIMIT, "Draw reached native work ceiling");
+    ++scope->work;
+    return true;
+}
+
 static const void *owner_identity(const manager_draw_owner *p) {
     switch (p->kind) {
         case MANAGER_DRAW_WORLD:
@@ -177,6 +204,10 @@ static const void *owner_identity(const manager_draw_owner *p) {
             return p->value.settings;
         case MANAGER_DRAW_APPLICATION:
             return p->value.application;
+        case MANAGER_DRAW_STACK:
+            return p->value.stack;
+        case MANAGER_DRAW_HAND:
+            return p->value.hand;
     }
     return NULL;
 }
@@ -222,6 +253,130 @@ static manager_draw_owner *owner_slot(mc_client_render_manager_draw_call *c,
 static void publish_owner(mc_client_render_manager_draw_call *c) {
     ++c->owner_count;
     c->state.owners = c->owner_count;
+}
+
+bool mc_client_draw_capture_stack(mc_client_draw_scope *scope, mc_item_stack *stack,
+                                  mc_client_manager_error *e) {
+    if (!scope_valid(scope, e))
+        return false;
+    if (stack == NULL || find_owner(scope->owner, MANAGER_DRAW_STACK, stack) != NULL)
+        return true;
+    manager_draw_owner *p = owner_slot(scope->owner, e);
+    if (p == NULL)
+        return false;
+    e->stack_status = mc_item_stack_retain(stack);
+    if (e->stack_status != MC_ITEM_STACK_OK)
+        return owner_fail(e,
+                          e->stack_status == MC_ITEM_STACK_LIMIT ? MC_CLIENT_MANAGER_LIMIT
+                                                                 : MC_CLIENT_MANAGER_STACK_FAILED,
+                          "Draw actual returned ItemStack occurrence");
+    p->kind = MANAGER_DRAW_STACK;
+    p->value.stack = stack;
+    publish_owner(scope->owner);
+    return true;
+}
+
+bool mc_client_draw_capture_hand(mc_client_draw_scope *scope, mc_client_render_manager *manager,
+                                 const mc_client_source_ra *source, mc_client_held_item **out,
+                                 mc_client_manager_error *e) {
+    if (!scope_valid(scope, e))
+        return false;
+    if (out == NULL || manager != scope->owner->manager_hold)
+        return owner_fail(e, MC_CLIENT_MANAGER_INVALID_ARGUMENT,
+                          "Draw actual captured TH.f owner/output");
+    *out = NULL;
+    if (source == NULL)
+        return true;
+    mc_client_held_item *hand = manager->hand;
+    if (mc_client_held_item_identity(hand) != source) {
+        hand = NULL;
+        size_t visited = 0;
+        for (manager_displaced_hand *p = manager->displaced; p != NULL; p = p->next) {
+            if (visited++ >= manager->displaced_count)
+                return owner_fail(e, MC_CLIENT_MANAGER_INVALID_PHASE,
+                                  "Draw actual displaced RA occurrence extent");
+            if (mc_client_held_item_identity(p->owner) == source) {
+                hand = p->owner;
+                break;
+            }
+        }
+    }
+    if (hand == NULL)
+        return owner_fail(e, MC_CLIENT_MANAGER_INVALID_PHASE,
+                          "Draw captured RA has no current or displaced native occurrence");
+    if (find_owner(scope->owner, MANAGER_DRAW_HAND, hand) == NULL) {
+        manager_draw_owner *p = owner_slot(scope->owner, e);
+        if (p == NULL)
+            return false;
+        const mc_client_entity_renderer_status status = mc_client_held_item_retain(hand, &e->hand);
+        if (status != MC_CLIENT_ENTITY_RENDERER_OK)
+            return owner_fail(e,
+                              status == MC_CLIENT_ENTITY_RENDERER_LIMIT ? MC_CLIENT_MANAGER_LIMIT
+                              : status == MC_CLIENT_ENTITY_RENDERER_BUSY
+                                  ? MC_CLIENT_MANAGER_BUSY
+                                  : MC_CLIENT_MANAGER_HAND_FAILED,
+                              "Draw actual captured RA occurrence hold");
+        p->kind = MANAGER_DRAW_HAND;
+        p->value.hand = hand;
+        publish_owner(scope->owner);
+    }
+    *out = hand;
+    return true;
+}
+
+static bool held_guard_failure(mc_client_entity_renderer_error *out,
+                               mc_client_entity_renderer_status status, const char *operation) {
+    if (out != NULL) {
+        mc_client_entity_renderer_error_init(out);
+        out->status = status;
+        out->operation = operation;
+        out->native_policy = true;
+    }
+    return false;
+}
+
+bool mc_client_draw_held_guard_begin(mc_client_draw_scope *scope, mc_client_held_item *hand,
+                                     const void *token, mc_client_entity_renderer_error *out) {
+    mc_client_manager_error error;
+    if (!scope_valid(scope, &error) || hand == NULL || token == NULL ||
+        find_owner(scope->owner, MANAGER_DRAW_HAND, hand) == NULL ||
+        token != scope->owner->held_workspace)
+        return held_guard_failure(out, MC_CLIENT_ENTITY_RENDERER_INVALID_ARGUMENT,
+                                  "Held Stack actual Parent/RA/charged workspace");
+    mc_client_render_manager_draw_call *c = scope->owner;
+    if (c->held_guard != NULL || c->held_guard_token != NULL)
+        return held_guard_failure(out, MC_CLIENT_ENTITY_RENDERER_BUSY,
+                                  "Held Stack Parent already owns an RA child");
+    if (entity_renderer_held_stack_guard_begin(hand, c, token, out) != MC_CLIENT_ENTITY_RENDERER_OK)
+        return false;
+    c->held_guard = hand;
+    c->held_guard_token = token;
+    return true;
+}
+
+bool mc_client_draw_held_guard_discharge(mc_client_draw_scope *scope, mc_client_held_item *hand,
+                                         const void *token, mc_client_entity_renderer_error *out) {
+    if (scope == NULL || scope->owner == NULL || &scope->owner->scope != scope)
+        return held_guard_failure(out, MC_CLIENT_ENTITY_RENDERER_INVALID_ARGUMENT,
+                                  "Held Stack actual retirement scope");
+    mc_client_render_manager_draw_call *c = scope->owner;
+    if (!c->retiring || c->executing || c->state.active || c->held_guard != hand ||
+        c->held_guard_token != token || hand == NULL || token == NULL)
+        return held_guard_failure(out, MC_CLIENT_ENTITY_RENDERER_BUSY,
+                                  "Held Stack Parent source/child retirement admission");
+    if (c->pending_list)
+        return held_guard_failure(out, MC_CLIENT_ENTITY_RENDERER_BUSY,
+                                  "Held Stack Parent still owns a model definition");
+    for (size_t i = 0; i < c->owner_count; ++i)
+        if (c->owners[i].pending_lookup != NULL)
+            return held_guard_failure(out, MC_CLIENT_ENTITY_RENDERER_BUSY,
+                                      "Held Stack Parent still owns a texture attempt");
+    if (entity_renderer_held_stack_guard_discharge(hand, c, token, out) !=
+        MC_CLIENT_ENTITY_RENDERER_OK)
+        return false;
+    c->held_guard = NULL;
+    c->held_guard_token = NULL;
+    return true;
 }
 
 bool mc_client_draw_capture_world(mc_client_draw_scope *scope, mc_world_runtime *world,
@@ -438,26 +593,37 @@ bool mc_client_draw_pending_lookup(mc_client_draw_scope *scope, mc_client_render
     return true;
 }
 
-bool mc_client_draw_pending_list(mc_client_draw_scope *scope,
+static bool capture_pending_list(mc_client_render_manager_draw_call *c,
                                  const mc_client_model_draw_error *part,
                                  mc_client_manager_error *e) {
-    if (!scope_valid(scope, e))
-        return false;
     if (part == NULL || !part->pending_list)
         return owner_fail(e, MC_CLIENT_MANAGER_INVALID_ARGUMENT, "Draw actual PS pending right");
+    /* A later owner-release refusal must not reacquire an already consumed
+     * native definition from the retained original failure value. */
+    if (!c->pending_list && c->retired_list_identity != 0 &&
+        c->retired_list_identity == part->pending_list_identity &&
+        c->owned_list == part->owned_list)
+        return true;
     const void *identity = NULL;
-    if (!mc_client_display_pending_list_identity(scope->model.display, part->owned_list, &identity))
+    if (!mc_client_display_pending_list_identity(c->scope.model.display, part->owned_list,
+                                                 &identity) ||
+        part->pending_list_identity == 0 || (uintptr_t)identity != part->pending_list_identity)
         return owner_fail(e, MC_CLIENT_MANAGER_INVALID_PHASE, "Draw actual pending list identity");
-    mc_client_render_manager_draw_call *c = scope->owner;
     if (c->pending_list &&
-        (c->owned_list != part->owned_list || c->list_display != scope->model.display ||
+        (c->owned_list != part->owned_list || c->list_display != c->scope.model.display ||
          c->list_identity != identity))
         return owner_fail(e, MC_CLIENT_MANAGER_BUSY, "Draw foreign pending list occurrence");
     c->pending_list = true;
     c->owned_list = part->owned_list;
-    c->list_display = scope->model.display;
+    c->list_display = c->scope.model.display;
     c->list_identity = identity;
     return true;
+}
+
+bool mc_client_draw_pending_list(mc_client_draw_scope *scope,
+                                 const mc_client_model_draw_error *part,
+                                 mc_client_manager_error *e) {
+    return scope_valid(scope, e) && capture_pending_list(scope->owner, part, e);
 }
 
 bool mc_client_draw_query_begin(mc_client_draw_scope *scope,
@@ -609,6 +775,31 @@ static bool capture_application(mc_client_render_manager_draw_call *c, client_ap
     return true;
 }
 
+bool mc_client_draw_capture_application(mc_client_draw_scope *scope, client_application *app,
+                                        mc_client_manager_error *e) {
+    if (!scope_valid(scope, e))
+        return false;
+    if (app == NULL)
+        return true;
+    mc_client_render_manager_draw_call *c = scope->owner;
+    mc_client_application_classes *classes = app->source_namespace;
+    if (classes == NULL)
+        return owner_fail(e, MC_CLIENT_MANAGER_INVALID_PHASE,
+                          "Draw actual RA App registered namespace");
+    if (c->application_classes_hold == NULL) {
+        const mc_client_application_owner_status status =
+            mc_client_application_classes_retain(classes);
+        if (status != MC_CLIENT_APPLICATION_OWNER_OK)
+            return owner_fail(e,
+                              status == MC_CLIENT_APPLICATION_OWNER_LIMIT
+                                  ? MC_CLIENT_MANAGER_LIMIT
+                                  : MC_CLIENT_MANAGER_INVALID_PHASE,
+                              "Draw actual RA App namespace occurrence");
+        c->application_classes_hold = classes;
+    }
+    return capture_application(c, app, e);
+}
+
 static bool debug_fail(mc_client_manager_error *e, mc_client_manager_status status,
                        const char *operation, int32_t pc, bool native) {
     (void)manager_fail(e, status, operation, "net/minecraft/client/Minecraft", "w", "()Z", pc,
@@ -738,11 +929,52 @@ static bool capture_entity_children(mc_client_render_manager_draw_call *c,
     return true;
 }
 
+bool mc_client_model_runtime_entity_adopt(const mc_client_model_runtime_context *context,
+                                          mc_entity_render_error *v, mc_client_manager_error *e) {
+    manager_error_init(e);
+    if (v == NULL || v->world_read_count > 2u || v->query_count > 2u ||
+        v->published_query_count > v->query_count)
+        return owner_fail(e, MC_CLIENT_MANAGER_INVALID_ARGUMENT,
+                          "Model actual Entity result extent");
+    /* Scalar leaves and actual pre-query NULL failures need no native owner
+     * service. In particular they must not lose their source precedence. */
+    if (v->query_count == 0 && v->world_reads[0] == NULL && v->world_reads[1] == NULL &&
+        v->selected_child != MC_ENTITY_RENDER_CHILD_AREA &&
+        v->selected_child != MC_ENTITY_RENDER_CHILD_BRIGHTNESS)
+        return true;
+    mc_client_draw_scope *scope = context == NULL ? NULL : context->native_scope;
+    if (!scope_valid(scope, e))
+        return false;
+    if (context != &scope->model)
+        return owner_fail(e, MC_CLIENT_MANAGER_INVALID_PHASE,
+                          "Model actual retained Entity capture context");
+    if (!capture_entity_children(scope->owner, v, e) || !mc_client_draw_entity_queries(scope, v, e))
+        return false;
+    for (size_t i = 0; i < 2; ++i)
+        if (v->world_reads[i] != NULL && !mc_client_draw_adopt_world(scope, &v->world_reads[i], e))
+            return false;
+    return true;
+}
+
 static bool capture_detail(mc_client_render_manager_draw_call *c, mc_client_living_draw_child kind,
                            mc_client_living_draw_detail *v, mc_client_manager_error *e) {
     switch (kind) {
         case MC_CLIENT_LIVING_DRAW_CHILD_ENTITY:
             return capture_entity_children(c, &v->entity, e);
+        case MC_CLIENT_LIVING_DRAW_CHILD_MODEL:
+            if (v->model.selected_child == MC_CLIENT_MODEL_RUNTIME_CHILD_ENTITY)
+                return capture_entity_children(c, &v->model.entity, e);
+            if (v->model.selected_child == MC_CLIENT_MODEL_RUNTIME_CHILD_PART &&
+                v->model.part.pending_list)
+                return capture_pending_list(c, &v->model.part, e);
+            return true;
+        case MC_CLIENT_LIVING_DRAW_CHILD_PART:
+            return !v->part.pending_list || capture_pending_list(c, &v->part, e);
+        case MC_CLIENT_LIVING_DRAW_CHILD_HELD:
+            if (v->held != c->held_workspace || v->held == NULL)
+                return owner_fail(e, MC_CLIENT_MANAGER_INVALID_PHASE,
+                                  "Draw actual charged held Stack diagnostic identity");
+            return capture_entity_children(c, &v->held->entity, e);
         case MC_CLIENT_LIVING_DRAW_CHILD_QUERY:
             return copy_source_chunk(c, &v->query.source_chunk, e);
         case MC_CLIENT_LIVING_DRAW_CHILD_BLOCK:
@@ -761,6 +993,8 @@ bool manager_draw_capture_children(mc_client_render_manager_draw_call *c,
         return owner_fail(e, MC_CLIENT_MANAGER_INVALID_ARGUMENT,
                           "Draw retained child capture owner");
     return capture_entity_children(c, &c->brightness, e) &&
+           (c->held_workspace == NULL ||
+            capture_entity_children(c, &c->held_workspace->entity, e)) &&
            capture_detail(c, c->living.selected_child, &c->living.detail, e) &&
            (!c->living.caught.active ||
             capture_detail(c, c->living.caught.selected_child, &c->living.caught.detail, e)) &&
@@ -794,14 +1028,25 @@ static mc_client_manager_status cleanup_failed(mc_client_render_manager_draw_cal
 static bool release_neutral_worlds(mc_client_render_manager_draw_call *c) {
     if (mc_entity_render_worlds_release(&c->brightness) != MC_ENTITY_OK)
         return false;
+    if (c->held_workspace != NULL &&
+        mc_entity_render_worlds_release(&c->held_workspace->entity) != MC_ENTITY_OK)
+        return false;
     mc_client_living_draw_error *leaves[] = {&c->living, &c->post};
     for (size_t i = 0; i < 2; ++i) {
         mc_client_living_draw_error *v = leaves[i];
         if (v->selected_child == MC_CLIENT_LIVING_DRAW_CHILD_ENTITY &&
             mc_entity_render_worlds_release(&v->detail.entity) != MC_ENTITY_OK)
             return false;
+        if (v->selected_child == MC_CLIENT_LIVING_DRAW_CHILD_MODEL &&
+            v->detail.model.selected_child == MC_CLIENT_MODEL_RUNTIME_CHILD_ENTITY &&
+            mc_entity_render_worlds_release(&v->detail.model.entity) != MC_ENTITY_OK)
+            return false;
         if (v->caught.active && v->caught.selected_child == MC_CLIENT_LIVING_DRAW_CHILD_ENTITY &&
             mc_entity_render_worlds_release(&v->caught.detail.entity) != MC_ENTITY_OK)
+            return false;
+        if (v->caught.active && v->caught.selected_child == MC_CLIENT_LIVING_DRAW_CHILD_MODEL &&
+            v->caught.detail.model.selected_child == MC_CLIENT_MODEL_RUNTIME_CHILD_ENTITY &&
+            mc_entity_render_worlds_release(&v->caught.detail.model.entity) != MC_ENTITY_OK)
             return false;
     }
     return true;
@@ -856,6 +1101,19 @@ static bool release_owner(mc_client_render_manager_draw_call *c, manager_draw_ow
                                   "Draw retained Minecraft render release");
             break;
         }
+        case MANAGER_DRAW_STACK:
+            mc_item_stack_release(p->value.stack);
+            p->value.stack = NULL;
+            break;
+        case MANAGER_DRAW_HAND:
+            if (mc_client_held_item_release(&p->value.hand, &e->hand) !=
+                MC_CLIENT_ENTITY_RENDERER_OK)
+                return owner_fail(e,
+                                  e->hand.status == MC_CLIENT_ENTITY_RENDERER_BUSY
+                                      ? MC_CLIENT_MANAGER_BUSY
+                                      : MC_CLIENT_MANAGER_HAND_FAILED,
+                                  "Draw actual retained RA occurrence release");
+            break;
         default:
             return owner_fail(e, MC_CLIENT_MANAGER_INVALID_PHASE,
                               "Draw owner ledger tag invariant");
@@ -909,6 +1167,7 @@ mc_client_render_manager_draw_retire(mc_client_render_manager_draw_call **slot,
                                       ? MC_CLIENT_MANAGER_BUSY
                                       : MC_CLIENT_MANAGER_MODEL_FAILED,
                                   "Draw native owned list abort", NULL, out);
+        c->retired_list_identity = (uintptr_t)c->list_identity;
         c->pending_list = false;
         c->list_identity = NULL;
         c->list_display = NULL;
@@ -936,6 +1195,17 @@ mc_client_render_manager_draw_retire(mc_client_render_manager_draw_call **slot,
             return cleanup_failed(c, MC_CLIENT_MANAGER_ENGINE_FAILED,
                                   "Draw lookup cleanup returned with owned prefix", NULL, out);
     }
+    if ((c->held_guard == NULL) != (c->held_guard_token == NULL))
+        return cleanup_failed(c, MC_CLIENT_MANAGER_INVALID_PHASE,
+                              "Draw retained RA guard identity invariant", NULL, out);
+    if (c->held_guard != NULL &&
+        !mc_client_draw_held_guard_discharge(&c->scope, c->held_guard, c->held_guard_token,
+                                             &c->owner_work.hand))
+        return cleanup_failed(c,
+                              c->owner_work.hand.status == MC_CLIENT_ENTITY_RENDERER_BUSY
+                                  ? MC_CLIENT_MANAGER_BUSY
+                                  : MC_CLIENT_MANAGER_HAND_FAILED,
+                              "Draw nested RA child guard retirement", &c->owner_work, out);
     while (c->owner_count != 0) {
         manager_draw_owner *p = &c->owners[c->owner_count - 1u];
         if (!release_owner(c, p, &c->owner_work))
@@ -982,6 +1252,8 @@ mc_client_render_manager_draw_retire(mc_client_render_manager_draw_call **slot,
     c->receipt_count = 0;
     mc_entity_release(c->actor_hold);
     c->actor_hold = NULL;
+    manager_draw_free_bytes(c, c->held_workspace, sizeof(*c->held_workspace));
+    c->held_workspace = NULL;
     manager_draw_free_bytes(c, c->queries, c->query_capacity * sizeof(*c->queries));
     c->queries = NULL;
     c->query_count = c->query_capacity = 0;

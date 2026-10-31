@@ -1,5 +1,7 @@
+#include "../../../item/stack/source_internal.h"
 #include "../../player/player_internal.h"
 #include "internal.h"
+#include "mc/item/registry/runtime.h"
 #include <string.h>
 
 static bool owner_player(mc_mob_tick_scope *s, const mc_player_string *name, mc_entity **out) {
@@ -263,6 +265,232 @@ bool mt_wolf_behavior(mc_mob_tick_scope *s) {
     return true;
 }
 
+/* Each helper consumes exactly the Source operands selected by GI.o. The
+ * enclosing real tick retains Registry/Math and the Wolf; this local owns its
+ * actual selected Player and returned nonnull Stack through all later uses. */
+static bool interest_registry(mc_mob_tick_scope *s, mc_registry_status status) {
+    if (status == MC_REGISTRY_OK)
+        return true;
+    const mc_entity_status entity_status = status == MC_REGISTRY_LIMIT ? MC_ENTITY_LIMIT
+                                           : status == MC_REGISTRY_ALLOCATION_FAILED
+                                               ? MC_ENTITY_ALLOCATION_FAILED
+                                           : status == MC_REGISTRY_BUSY ? MC_ENTITY_BUSY
+                                                                        : MC_ENTITY_STATE_ERROR;
+    (void)mt_fail(s, entity_status, "Wolf interest actual Item source operation");
+    mt_registry_classify(s, &s->error->registry);
+    if (s->error->registry.active_initializer_class != NULL)
+        s->error->child_site =
+            (mc_mob_site){s->error->registry.active_initializer_class, "<clinit>", "()V",
+                          s->error->registry.active_initializer_pc};
+    return false;
+}
+
+static bool interest_id(mc_mob_tick_scope *s, const mc_item_stack *stack, unsigned int pc,
+                        int32_t *out) {
+    mt_at(s, "gi", "o", "()V", pc);
+    s->error->child_site = (mc_mob_site){"gi", "o", "()V", (int32_t)pc};
+    const mc_item_stack_status status = mc_item_stack_source_id_get(stack, out);
+    if (status != MC_ITEM_STACK_OK) {
+        s->error->reference = (mc_entity_error){.status = MC_ENTITY_STATE_ERROR,
+                                                .operation = "Wolf interest actual Stack id field",
+                                                .item = status};
+        return mt_fail(s, MC_ENTITY_STATE_ERROR, "Wolf interest actual Stack id field");
+    }
+    mc_mob_tick_wolf_interest_state *r = &s->error->state.wolf_interest;
+    r->stack_ids[r->id_reads++] = *out;
+    return true;
+}
+
+static bool interest_tame(mc_mob_tick_scope *s, unsigned int pc, bool *out) {
+    mt_at(s, "gi", "o", "()V", pc);
+    s->error->child_site = (mc_mob_site){"gi", "D", "()Z", 6};
+    ++s->error->state.wolf_interest.tame_calls;
+    return flag(s, 4, out);
+}
+
+static bool player_interest(mc_mob_tick_scope *s, mc_entity *player) {
+    mc_mob_tick_wolf_interest_state *r = &s->error->state.wolf_interest;
+    r->entered = true;
+    r->player_identity = (uintptr_t)player;
+    bool held_player = false, held_stack = false, ok = false;
+    mc_item_stack *stack = NULL;
+    /* The Source instanceof/checkcast has already selected an actual gs.
+     * Only canonical dc storage is represented here; no fake Player view. */
+    mt_at(s, "gi", "o", "()V", 43);
+    if (!mc_entity_is_kind(player, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) ||
+        player->local_player == NULL)
+        return mt_fail(s, MC_ENTITY_STATE_ERROR, "Wolf interest concrete Player storage");
+    const mc_entity_status hold = mc_entity_retain(player);
+    if (hold != MC_ENTITY_OK) {
+        s->error->reference =
+            (mc_entity_error){.status = hold, .operation = "Wolf interest selected Player hold"};
+        return mt_fail(s, hold, "Wolf interest selected Player hold");
+    }
+    held_player = true;
+    mc_inventory_player *inventory = player->local_player->fields.player.c;
+    r->inventory_identity = (uintptr_t)inventory;
+    mt_at(s, "gi", "o", "()V", 51);
+    s->error->child_site = (mc_mob_site){"gi", "o", "()V", 51};
+    if (inventory == NULL) {
+        mt_null(s, "Wolf interest null Player Inventory receiver");
+        goto done;
+    }
+    s->error->child = MC_MOB_TICK_CHILD_INVENTORY;
+    const mc_item_stack *borrowed = NULL;
+    const mc_inventory_status current =
+        mc_inventory_player_current(inventory, &borrowed, &s->error->detail.inventory);
+    const mc_inventory_current_error *cause = &s->error->detail.inventory;
+    r->selected_read = cause->source_entered;
+    if (r->selected_read)
+        r->selected = cause->selected;
+    if (current != MC_INVENTORY_OK) {
+        s->error->child_site = (mc_mob_site){cause->site.class_name, cause->site.method,
+                                             cause->site.descriptor, cause->site.pc};
+        if (current == MC_INVENTORY_NULL_REFERENCE && !cause->native_policy)
+            mt_null(s, "Wolf interest actual Inventory current Stack child");
+        else
+            mt_fail(s,
+                    current == MC_INVENTORY_LIMIT               ? MC_ENTITY_LIMIT
+                    : current == MC_INVENTORY_ALLOCATION_FAILED ? MC_ENTITY_ALLOCATION_FAILED
+                    : current == MC_INVENTORY_BUSY              ? MC_ENTITY_BUSY
+                                                                : MC_ENTITY_STATE_ERROR,
+                    "Wolf interest actual Inventory current Stack child");
+        goto done;
+    }
+    r->inventory_returned = true;
+    r->stack_identity = (uintptr_t)borrowed;
+    r->stack_nonnull = borrowed != NULL;
+    s->error->child = MC_MOB_TICK_CHILD_NONE;
+    if (borrowed == NULL) {
+        ok = true; /* Actual null Stack branch55/56 ->126, no D/Item read. */
+        goto done;
+    }
+    stack = (mc_item_stack *)borrowed;
+    mt_at(s, "gi", "o", "()V", 55);
+    const mc_item_stack_status stack_hold = mc_item_stack_retain(stack);
+    if (stack_hold != MC_ITEM_STACK_OK) {
+        const mc_entity_status status =
+            stack_hold == MC_ITEM_STACK_LIMIT ? MC_ENTITY_LIMIT : MC_ENTITY_STATE_ERROR;
+        s->error->reference = (mc_entity_error){
+            .status = status, .operation = "Wolf interest captured Stack hold", .item = stack_hold};
+        mt_fail(s, status, "Wolf interest captured Stack hold");
+        goto done;
+    }
+    held_stack = true;
+    bool tame;
+    if (!interest_tame(s, 60, &tame))
+        goto done;
+    if (!tame) {
+        int32_t id;
+        if (!interest_id(s, stack, 67, &id))
+            goto done;
+        mt_at(s, "gi", "o", "()V", 70);
+        s->error->child = MC_MOB_TICK_CHILD_ITEM;
+        s->error->child_site = (mc_mob_site){"gi", "o", "()V", 70};
+        const mc_item *bone = NULL;
+        if (!interest_registry(
+                s, mc_registry_item_static_get(s->registry, "aV", &bone, &s->error->registry)))
+            goto done;
+        r->bone_identity = (uintptr_t)bone;
+        mt_at(s, "gi", "o", "()V", 73);
+        s->error->child_site.pc = 73;
+        int32_t bone_id;
+        if (!interest_registry(
+                s, mc_registry_item_source_id(s->registry, bone, &bone_id, &s->error->registry)))
+            goto done;
+        r->bone_id_read = true;
+        r->bone_id = bone_id;
+        s->error->child = MC_MOB_TICK_CHILD_NONE;
+        if (id == bone_id) {
+            s->entity->mob->wolf.a = true; /* Actual putfield81. */
+            mt_at(s, "gi", "o", "()V", 81);
+            ok = true;
+            goto done;
+        }
+    }
+    if (!interest_tame(s, 88, &tame))
+        goto done;
+    if (tame) {
+        const mc_registry_item_array *array = NULL;
+        const mc_item *item = NULL;
+        mt_at(s, "gi", "o", "()V", 94);
+        s->error->child = MC_MOB_TICK_CHILD_ITEM;
+        s->error->child_site = (mc_mob_site){"gi", "o", "()V", 94};
+        if (!interest_registry(s, mc_registry_item_c_get(s->registry, &array, &s->error->registry)))
+            goto done;
+        r->arrays[r->array_reads++] = (uintptr_t)array;
+        int32_t id;
+        if (!interest_id(s, stack, 98, &id))
+            goto done;
+        mt_at(s, "gi", "o", "()V", 101);
+        s->error->child_site.pc = 101;
+        if (!interest_registry(
+                s, mc_registry_item_c_at(s->registry, array, id, &item, &s->error->registry)))
+            goto done;
+        r->items[0] = (uintptr_t)item;
+        mt_at(s, "gi", "o", "()V", 102);
+        s->error->child_site.pc = 102;
+        bool is_food;
+        if (!interest_registry(
+                s, mc_registry_item_food_type(s->registry, item, &is_food, &s->error->registry)))
+            goto done;
+        r->food_type = is_food;
+        if (is_food) {
+            /* Actual second getstatic and fresh Stack id/aaload. Never reuse
+             * the earlier descriptor, index or Item as a getter substitute. */
+            mt_at(s, "gi", "o", "()V", 109);
+            s->error->child_site.pc = 109;
+            if (!interest_registry(
+                    s, mc_registry_item_c_get(s->registry, &array, &s->error->registry)))
+                goto done;
+            r->arrays[r->array_reads++] = (uintptr_t)array;
+            if (!interest_id(s, stack, 113, &id))
+                goto done;
+            mt_at(s, "gi", "o", "()V", 116);
+            s->error->child_site.pc = 116;
+            if (!interest_registry(
+                    s, mc_registry_item_c_at(s->registry, array, id, &item, &s->error->registry)))
+                goto done;
+            r->items[1] = (uintptr_t)item;
+            mt_at(s, "gi", "o", "()V", 117);
+            s->error->child_site.pc = 117;
+            if (!interest_registry(s, mc_registry_item_food_type(s->registry, item, &is_food,
+                                                                 &s->error->registry)))
+                goto done;
+            if (item != NULL && !is_food) {
+                mt_fail(s, MC_ENTITY_STATE_ERROR, "Wolf interest actual Food checkcast");
+                s->error->native_policy = false;
+                s->error->source_exception = true;
+                s->error->exception_class = "java/lang/ClassCastException";
+                goto done;
+            }
+            mt_at(s, "gi", "o", "()V", 120);
+            s->error->child_site.pc = 120;
+            bool preferred;
+            if (!interest_registry(s, mc_registry_item_food_wolf_preferred(
+                                          s->registry, item, &preferred, &s->error->registry)))
+                goto done;
+            r->food_returned = true;
+            s->entity->mob->wolf.a = preferred; /* Actual putfield123. */
+            mt_at(s, "gi", "o", "()V", 123);
+        }
+    }
+    s->error->child = MC_MOB_TICK_CHILD_NONE;
+    ok = true;
+done:
+    if (held_stack)
+        mc_item_stack_release(stack);
+    if (held_player)
+        mc_entity_release(player);
+    if (ok) {
+        r->returned = true;
+        r->interested = s->entity->mob->wolf.a;
+        s->error->child = MC_MOB_TICK_CHILD_NONE;
+        s->error->child_site = (mc_mob_site){0};
+    }
+    return ok;
+}
+
 bool mt_wolf_action_tail(mc_mob_tick_scope *s) {
     mc_mob_entity_state *m = s->entity->mob;
     m->wolf.a = false;
@@ -281,10 +509,25 @@ bool mt_wolf_action_tail(mc_mob_tick_scope *s) {
         mt_at(s, "gi", "o", "()V", 24);
         if (!flag(s, 2, &angry))
             return false;
-        if (!angry && mc_entity_is_kind(look, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
-            mt_at(s, "gi", "o", "()V", 51);
-            return mt_fail(s, MC_ENTITY_STATE_ERROR,
-                           "Wolf actual selected Player Item interest child");
+        if (!angry) {
+            /* Y10 and Z31 are distinct actual source reads. The intervening
+             * C24 predicate must complete before this Z field occurrence. */
+            mt_at(s, "gi", "o", "()V", 31);
+            if (!mt_target_get(s, false, &look))
+                return false;
+            bool is_player = false;
+            if (look != NULL) {
+                mt_at(s, "gi", "o", "()V", 36);
+                const mc_entity_class_literal *player_class = NULL;
+                if (mc_entity_class_literal_get(s->entity->classes, MC_ENTITY_CLASS_KIND_PLAYER,
+                                                &player_class) != MC_ENTITY_OK ||
+                    mc_entity_class_literal_is_assignable_from(player_class, look->class_literal,
+                                                               &is_player) != MC_ENTITY_OK)
+                    return mt_fail(s, MC_ENTITY_STATE_ERROR,
+                                   "Wolf interest actual Player instanceof Class identity");
+            }
+            if (is_player && !player_interest(s, look))
+                return false;
         }
     }
     if (!mt_fields(s)->V && m->wolf.f && !m->wolf.g) {

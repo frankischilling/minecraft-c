@@ -8,9 +8,10 @@ order. The awake/null comparison and native-only sleeping/lifetime controls
 pass on Windows MSVC Debug and Linux Clang18 with ASan/UBSan at the recorded
 frame-binding checkpoint. RenderGlobal now uses this binding at N80 and calls
 the retained TH draw body at N329/516. The qualified [Mob drawing paths](mob-drawing.md)
-return through the real Sheep, Pig, Cow and Chicken renderers/models and the
-enabled BW terrain shadow. Seven default Mob families and nonempty TileEntity
-draw rows remain unfinished.
+include all eleven default Overworld Mob renderer/model families, Skeleton's
+class-owned Bow through the actual RA, and the enabled BW terrain shadow.
+Nonempty TileEntity rows and unsupported rendering branches remain unfinished.
+Direct drawing results and returned loaded-frame results have separate scopes.
 
 The entry requires the genuinely completed TH singleton. Its constructor owns
 all 28 renderers and their actual BW model/RenderBlocks children and manager

@@ -43,6 +43,9 @@ mc_client_render_engine_status mc_client_render_engine_classes_allocate_context(
 bool mc_client_nw_active_use(mc_client_render_engine_classes *, mc_client_graphics_site caller,
                              mc_client_tessellator **out, mc_client_graphics_error *);
 bool mc_client_nw_inspect(const mc_client_render_engine_classes *, mc_client_nw_state *);
+/* Passive fields of the actual retained local receiver, independent of a
+ * later singleton field replacement. Caller keeps its class owner live. */
+bool mc_client_nw_fields_get(const mc_client_tessellator *, mc_client_nw_fields *);
 
 /* Actual methods on the genuine singleton. These preserve source stores and
  * per-call class holds. Caller keeps that real class context live/exclusive.

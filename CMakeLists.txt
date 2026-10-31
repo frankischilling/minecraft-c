@@ -434,6 +434,7 @@ add_library(mc_registry STATIC
     src/block/registry/bootstrap.c
     src/item/registry/registry.c
     src/item/registry/runtime.c
+    src/item/render/leaves.c
     src/item/registry/class_initializers.c
     src/item/registry/constructors.c
     src/item/registry/registration.c

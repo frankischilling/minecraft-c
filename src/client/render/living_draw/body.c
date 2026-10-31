@@ -113,7 +113,10 @@ static bool body_try(ld_frame *f, double x, double y, double z, float partial) {
                                                                &e->detail.display)))
             return false;
     }
-    /* Actual base held helper365 is return0; it does not query a held Stack. */
+    gv(f, 365);
+    if (strcmp(f->renderer->source_class, "v") == 0 && !ld_v_held(f, partial))
+        return false;
+    /* Other admitted renderers inherit the actual empty base held helper. */
     gv(f, 371);
     float brightness;
     if (!ld_brightness(f, partial, &brightness))
@@ -217,15 +220,32 @@ bool mc_client_living_draw_entered(mc_client_draw_scope *scope, mc_client_manage
     const bool cow = strcmp(r->source_class, "va") == 0;
     const bool chicken = strcmp(r->source_class, "ip") == 0;
     const bool squid = strcmp(r->source_class, "es") == 0;
+    const bool wolf = strcmp(r->source_class, "we") == 0;
+    const bool biped = strcmp(r->source_class, "v") == 0;
     const bool creature = strcmp(r->source_class, "yx") == 0 ||
                           strcmp(r->source_class, "mj") == 0 || strcmp(r->source_class, "m") == 0;
     if (strcmp(r->source_class, "xy") != 0 && strcmp(r->source_class, "me") != 0 && !cow &&
-        !chicken && !squid && !creature) {
+        !chicken && !squid && !creature && !wolf && !biped) {
         ld_at(&f, r->source_class, "a", "(Lsn;DDDFF)V", 0);
         return ld_fail(&f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED,
                        "Living actual concrete renderer body");
     }
-    if (cow || chicken || squid) {
+    if (wolf) {
+        ld_at(&f, "we", "a", "(Lsn;DDDFF)V", 2);
+        if (!ld_cast_actor(&f, MC_ENTITY_CLASS_KIND_WOLF, "Wolf renderer actual GI checkcast"))
+            return false;
+        e->parent = ld_site("we", "a", "(Lgi;DDDFF)V", 11);
+    } else if (biped) {
+        ld_at(&f, "gv", "a", "(Lsn;DDDFF)V", 2);
+        if (actor != NULL && mc_entity_living_fields(actor) == NULL) {
+            e->throwable = MC_CLIENT_LIVING_DRAW_EXCEPTION;
+            e->source_exception = true;
+            e->exception_class = "java/lang/ClassCastException";
+            return ld_fail(&f, MC_CLIENT_LIVING_DRAW_SOURCE_EXCEPTION,
+                           "Living renderer actual LS checkcast");
+        }
+        e->parent = ld_site("gv", "a", "(Lsn;DDDFF)V", 14);
+    } else if (cow || chicken || squid) {
         ld_at(&f, r->source_class, "a", "(Lsn;DDDFF)V", 2);
         if (actor != NULL && !mc_entity_is_kind(actor, cow       ? MC_ENTITY_CLASS_KIND_COW
                                                        : chicken ? MC_ENTITY_CLASS_KIND_CHICKEN

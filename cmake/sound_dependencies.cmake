@@ -39,7 +39,9 @@ function(mc_add_sound_dependencies)
     string(REPLACE "${old_page}" "${new_page}" framing "${framing}")
     set(ogg_compat_source "${ogg_binary}/mc-configured-source")
     file(MAKE_DIRECTORY "${ogg_compat_source}")
-    file(COPY "${ogg_source}/" DESTINATION "${ogg_compat_source}")
+    # Keep reviewed outputs stable when their generated content is unchanged.
+    file(COPY "${ogg_source}/" DESTINATION "${ogg_compat_source}"
+        REGEX "/src/framing\\.c$" EXCLUDE)
     file(CONFIGURE OUTPUT "${ogg_compat_source}/src/framing.c" CONTENT "${framing}"
         @ONLY NEWLINE_STYLE LF)
     add_subdirectory("${ogg_compat_source}" "${ogg_binary}/build" EXCLUDE_FROM_ALL)
@@ -71,7 +73,8 @@ function(mc_add_sound_dependencies)
         adapted "${adapted}")
     set(compat_source "${vorbis_binary}/mc-configured-source")
     file(MAKE_DIRECTORY "${compat_source}")
-    file(COPY "${vorbis_source}/" DESTINATION "${compat_source}")
+    file(COPY "${vorbis_source}/" DESTINATION "${compat_source}"
+        REGEX "/lib/(vorbisfile|psy|sharedbook|floor1)\\.c$" EXCLUDE)
     file(CONFIGURE OUTPUT "${compat_source}/CMakeLists.txt" CONTENT "${adapted}"
         @ONLY NEWLINE_STYLE LF)
 

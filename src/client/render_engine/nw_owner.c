@@ -158,6 +158,13 @@ bool mc_client_nw_inspect(const mc_client_render_engine_classes *c, mc_client_nw
     return true;
 }
 
+bool mc_client_nw_fields_get(const mc_client_tessellator *o, mc_client_nw_fields *out) {
+    if (o == NULL || out == NULL)
+        return false;
+    *out = o->fields;
+    return true;
+}
+
 void mc_client_nw_free_namespace(mc_client_render_engine_classes *c) {
     mc_client_tessellator *o = c->nw.a == NULL ? c->nw.candidate : c->nw.a;
     if (o != NULL) {

@@ -18,7 +18,8 @@ bool model_runtime_math(const mc_client_model_runtime_context *, mc_client_model
 typedef enum model_runtime_math_kind {
     MODEL_RUNTIME_COSINE,
     MODEL_RUNTIME_SINE,
-    MODEL_RUNTIME_ABSOLUTE
+    MODEL_RUNTIME_ABSOLUTE,
+    MODEL_RUNTIME_SQUARE_ROOT
 } model_runtime_math_kind;
 
 bool model_runtime_math_value(const mc_client_model_runtime_context *, model_runtime_math_kind,
@@ -67,4 +68,28 @@ bool model_runtime_il_render(mc_client_managed_renderer *, manager_model *, cons
                              const mc_client_model_runtime_context *,
                              mc_client_model_runtime_error *);
 
+bool model_runtime_biped(const manager_model *);
+bool model_runtime_fh_pose(manager_model *, const float[6], const mc_client_model_runtime_context *,
+                           mc_client_model_runtime_error *);
+bool model_runtime_fh_render(mc_client_managed_renderer *, manager_model *, const float[6],
+                             const mc_client_model_runtime_context *,
+                             mc_client_model_runtime_error *);
+bool model_runtime_ej_pose(manager_model *, const float[6], const mc_client_model_runtime_context *,
+                           mc_client_model_runtime_error *);
+bool model_runtime_o_pose(manager_model *, const float[6], const mc_client_model_runtime_context *,
+                          mc_client_model_runtime_error *);
+bool model_runtime_o_render(mc_client_managed_renderer *, manager_model *, const float[6],
+                            const mc_client_model_runtime_context *,
+                            mc_client_model_runtime_error *);
+bool model_runtime_o_event(manager_model *, mc_entity *, const float[3],
+                           const mc_client_model_runtime_context *,
+                           mc_client_model_runtime_error *);
+bool model_runtime_draw_part_rotated(mc_client_managed_renderer *, mc_client_model_part *, float,
+                                     const mc_client_model_runtime_context *,
+                                     mc_client_model_runtime_error *);
+bool model_runtime_attach_part(mc_client_managed_renderer *, mc_client_model_part *, float,
+                               const mc_client_model_runtime_context *,
+                               mc_client_model_runtime_error *);
+bool model_runtime_entity_finish(const mc_client_model_runtime_context *, bool,
+                                 mc_client_model_runtime_error *);
 #endif

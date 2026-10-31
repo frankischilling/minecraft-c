@@ -175,6 +175,10 @@ static bool compile(mc_client_model_part *part, mc_client_render_engine_classes 
     if (!gl(error, mc_client_display_lists_begin(display, part->o, &error->display), "d", 15))
         return false;
     error->pending_list = true;
+    const void *identity = NULL;
+    if (!mc_client_display_pending_list_identity(display, list, &identity))
+        return fail(error, "model actual pending definition identity", "ps", "d", 15, true);
+    error->pending_list_identity = (uintptr_t)identity;
     mc_client_tessellator *nw = NULL;
     if (!graphics(error,
                   mc_client_nw_active_use(graphics_owner,
@@ -190,6 +194,7 @@ static bool compile(mc_client_model_part *part, mc_client_render_engine_classes 
     if (!gl(error, mc_client_display_lists_end(display, &error->display), "d", 50))
         return false;
     error->pending_list = false;
+    error->pending_list_identity = 0;
     part->n = true; /* Actual store55, never at glNewList or a partial face. */
     error->compiled = true;
     return true;
@@ -247,6 +252,20 @@ static bool draw(mc_client_model_part *part, mc_client_render_engine_classes *gr
     return true;
 }
 
+static bool abort_owned(mc_client_display *display, mc_client_model_draw_error *error,
+                        mc_client_display_error *cleanup) {
+    const void *identity = NULL;
+    if (error->pending_list_identity == 0 ||
+        !mc_client_display_pending_list_identity(display, error->owned_list, &identity) ||
+        (uintptr_t)identity != error->pending_list_identity) {
+        memset(cleanup, 0, sizeof(*cleanup));
+        cleanup->status = MC_CLIENT_DISPLAY_BUSY;
+        cleanup->operation = "Model pending definition changed; foreign right preserved";
+        return false;
+    }
+    return mc_client_display_lists_abort(display, error->owned_list, cleanup);
+}
+
 bool mc_client_model_part_draw(mc_client_model_part *part,
                                mc_client_render_engine_classes *graphics_owner,
                                mc_entity_classes *entities, mc_client_display *display, float scale,
@@ -259,11 +278,149 @@ bool mc_client_model_part_draw(mc_client_model_part *part,
     const bool ok = draw(part, graphics_owner, entities, display, scale, error);
     if (error->pending_list) {
         mc_client_display_error cleanup;
-        if (mc_client_display_lists_abort(display, error->owned_list, &cleanup))
+        if (abort_owned(display, error, &cleanup)) {
             error->pending_list = false;
-        else
+            error->pending_list_identity = 0;
+        } else
             error->graphics.cleanup_display = cleanup;
     }
     error->returned = ok;
     return ok;
+}
+
+static void part_at(mc_client_model_draw_error *error, const char *method, unsigned int pc) {
+    error->site = (mc_client_graphics_site){"ps", method, "(F)V", (int32_t)pc};
+    error->source_pc = pc;
+}
+
+static bool other_gate(mc_client_model_part *part, mc_client_render_engine_classes *graphics_owner,
+                       mc_entity_classes *entities, mc_client_display *display, float scale,
+                       const char *method, bool *early, mc_client_model_draw_error *error) {
+    if (part == NULL)
+        return null_reference(error, "actual model part receiver", "ps", method, 1);
+    *early = part->i || !part->h;
+    if (*early) {
+        part_at(error, method, part->i ? 7u : 15u);
+        return true;
+    }
+    if (!part->n) {
+        error->caller = (mc_client_graphics_site){"ps", method, "(F)V", 25};
+        if (!compile(part, graphics_owner, entities, display, scale, error))
+            return false;
+        error->caller = (mc_client_graphics_site){.pc = -1};
+    }
+    return true;
+}
+
+static bool other_translate(mc_client_model_part *part, mc_client_display *display, float scale,
+                            const char *method, unsigned int arithmetic_pc, unsigned int call_pc,
+                            mc_client_model_draw_error *error) {
+    if (!fp(error, "ps", method, arithmetic_pc))
+        return false;
+    /* Separate Source fmul operations, evaluated X then Y then Z. */
+    const float x = at_fmul(part->a, scale);
+    const float y = at_fmul(part->b, scale);
+    const float z = at_fmul(part->c, scale);
+    return gl(error, mc_client_display_source_translate(display, x, y, z, &error->display), method,
+              call_pc);
+}
+
+static bool other_rotate(float value, unsigned int axis, mc_client_display *display,
+                         const char *method, unsigned int arithmetic_pc, unsigned int call_pc,
+                         mc_client_model_draw_error *error) {
+    if (!fp(error, "ps", method, arithmetic_pc))
+        return false;
+    const float angle = at_fmul(value, 57.295776f);
+    return gl(error,
+              mc_client_display_source_rotate(display, angle, axis == 0 ? 1.0f : 0.0f,
+                                              axis == 1 ? 1.0f : 0.0f, axis == 2 ? 1.0f : 0.0f,
+                                              &error->display),
+              method, call_pc);
+}
+
+static bool rotated(mc_client_model_part *part, mc_client_render_engine_classes *graphics_owner,
+                    mc_entity_classes *entities, mc_client_display *display, float scale,
+                    mc_client_model_draw_error *error) {
+    bool early = false;
+    if (!other_gate(part, graphics_owner, entities, display, scale, "b", &early, error))
+        return false;
+    if (early)
+        return true;
+    if (!gl(error, mc_client_display_source_push(display, &error->display), "b", 28) ||
+        !other_translate(part, display, scale, "b", 36, 49, error))
+        return false;
+    /* The tests and actual angle loads are distinct fresh reads. */
+    if (part->e != 0.0f && !other_rotate(part->e, 1, display, "b", 67, 71, error))
+        return false;
+    if (part->d != 0.0f && !other_rotate(part->d, 0, display, "b", 89, 93, error))
+        return false;
+    if (part->f != 0.0f && !other_rotate(part->f, 2, display, "b", 111, 115, error))
+        return false;
+    if (!gl(error, mc_client_display_list_call(display, part->o, &error->display), "b", 122) ||
+        !gl(error, mc_client_display_source_pop(display, &error->display), "b", 125))
+        return false;
+    part_at(error, "b", 128);
+    return true;
+}
+
+static bool attachment(mc_client_model_part *part, mc_client_render_engine_classes *graphics_owner,
+                       mc_entity_classes *entities, mc_client_display *display, float scale,
+                       mc_client_model_draw_error *error) {
+    bool early = false;
+    if (!other_gate(part, graphics_owner, entities, display, scale, "c", &early, error))
+        return false;
+    if (early)
+        return true;
+    if (part->d != 0.0f || part->e != 0.0f || part->f != 0.0f) {
+        if (!other_translate(part, display, scale, "c", 60, 73, error))
+            return false;
+        if (part->f != 0.0f && !other_rotate(part->f, 2, display, "c", 91, 95, error))
+            return false;
+        if (part->e != 0.0f && !other_rotate(part->e, 1, display, "c", 113, 117, error))
+            return false;
+        if (part->d != 0.0f && !other_rotate(part->d, 0, display, "c", 135, 139, error))
+            return false;
+    } else if (part->a != 0.0f || part->b != 0.0f || part->c != 0.0f) {
+        if (!other_translate(part, display, scale, "c", 177, 190, error))
+            return false;
+    }
+    part_at(error, "c", 193);
+    return true;
+}
+
+static bool other_finish(bool ok, mc_client_display *display, mc_client_model_draw_error *error) {
+    if (error->pending_list) {
+        mc_client_display_error cleanup;
+        if (abort_owned(display, error, &cleanup)) {
+            error->pending_list = false;
+            error->pending_list_identity = 0;
+        } else
+            error->graphics.cleanup_display = cleanup;
+    }
+    error->returned = ok;
+    return ok;
+}
+
+bool mc_client_model_part_draw_rotated(mc_client_model_part *part,
+                                       mc_client_render_engine_classes *graphics_owner,
+                                       mc_entity_classes *entities, mc_client_display *display,
+                                       float scale, mc_client_model_draw_error *error) {
+    if (error == NULL)
+        return false;
+    memset(error, 0, sizeof(*error));
+    error->caller.pc = -1;
+    return other_finish(rotated(part, graphics_owner, entities, display, scale, error), display,
+                        error);
+}
+
+bool mc_client_model_part_attach(mc_client_model_part *part,
+                                 mc_client_render_engine_classes *graphics_owner,
+                                 mc_entity_classes *entities, mc_client_display *display,
+                                 float scale, mc_client_model_draw_error *error) {
+    if (error == NULL)
+        return false;
+    memset(error, 0, sizeof(*error));
+    error->caller.pc = -1;
+    return other_finish(attachment(part, graphics_owner, entities, display, scale, error), display,
+                        error);
 }

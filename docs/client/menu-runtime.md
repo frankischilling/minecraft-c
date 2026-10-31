@@ -62,8 +62,9 @@ an existing-save load publishes the World, Player and movement input, attaches
 the renderer and completes picking. Its healthy no-screen path now executes
 [gameplay input](gameplay-input.md) through1073 and the admitted
 [World/frame segment](renderer-ticking.md). The current finite loaded profile
-also returns through World scheduling, terrain and qualified Sheep, Pig, Cow
-and Chicken drawing; other gameplay and rendering branches remain unfinished.
+also returns through World scheduling, terrain and the qualified Mob drawing
+profiles described below. All eleven default Mob drawing bodies exist, but
+real simulation can still stop a loaded frame before it returns.
 Create, Rename and Delete retain the precise
 [unfinished prefixes](world-selection.md#transitions-and-lifetime).
 Fullscreen, source F2 screenshots, debug timing, connection screens and several
@@ -114,23 +115,57 @@ shadow totals are 18, 18 and 2 quads. All three return through the real
 and checked terminal cleanup. The declared input leaves Player pose and World
 Random unchanged; normal later ticks keep their actual random effects.
 
-Both renderer controls declare an existing Player whose genuinely loaded
+The returned renderer controls declare an existing Player whose genuinely loaded
 statistics
 already contain the inventory achievement. A Player without that entry can
 reach the unfinished active tutorial-notice draw at `vu.a:108` before the Mob
 draw. Serialized Mob loading is not qualified by the Entity-empty saves.
 The RenderManager retains its original 28 renderer owners; hand lookup adds
 the actual LocalPlayer key sharing the Player renderer, producing exactly 29
-Map entries. Seven other default Mob renderer families, including Skeleton's
-mandatory held Bow, and nonempty TileEntity rows remain reached dependencies.
-The direct [four-animal comparison](mob-drawing.md#four-animal-observations-and-current-qualification)
-has separate prepared-context and device limits. Both focused native pairs
-pass, with the separately audited ordinary NVIDIA supplement on Windows.
-The 93-target broad cohort builds on both hosts and passes 121 Windows and
-115 Linux tests without failures, skips or sanitizer findings. Hosted results
-are reported separately for the published commit. These loaded
-profiles do not qualify the fresh-player tutorial, Canvas ungrab, nonempty
-items or live Mob save/reload.
+Map entries. Nonempty TileEntity rows and unsupported drawing branches remain
+explicit dependencies.
+
+The separate `creatures` mode passes four independent loaded scopes for
+Spider, Slime, Squid and Creeper. Each returns the same four-frame sequence,
+real simulation and checked cleanup. The later `remaining-wolf` profile also
+passes: eleven current parts compile once and retain their list identities
+through the second exact actor draw, followed by tick 1328, World 1013,
+N 569, HUD 2101 and checked terminal cleanup.
+
+The selected-Player Item-interest leaf now uses the actual Player and
+Inventory owners. The Windows development Wolf profile passes 5,333 checks over four
+returned frames, and the fresh registered test passes in 27.43 seconds. Its
+constructor, placement, Timer and random inputs are unchanged.
+
+The [Wolf leaf comparison](../../tests/reference/entity/wolf_interest/README.md)
+passes on both hosts: nine cases, three native failure controls, 531 C checks,
+122 selected values and 153 per-profile alias relations. Original LS.o runs
+with declared LS.V=true, while Native enters GI.o4..186 without the
+superclass. Only GI51..126 is paired. This earns no full-GI/default-tick,
+dynamic Item/GM-class, complete temporal-identity or Native before51-state
+credit; raw constructor streams remain independent.
+
+The preserved Zombie/Skeleton runs publish their real actors, then stop at
+II97 in GZ.a and FR.a. GZ's corrected genuine-Pig pair now passes on both hosts:
+605 native checks, 360 selected comparisons, seven returns, three Source NPE
+gates and two unreturned hurt61 prefixes. A later loaded Zombie run passes
+that earlier attack frontier, then fails at periodic-fire SN.U501. Damage
+completion and a returned loaded Zombie frame remain unqualified. Skeleton
+Arrow work remains unfinished.
+
+The first 101-target cohort remains failed evidence: Linux passed 125 tests;
+Windows passed 132 of 133 and stopped only at Wolf interest GI51. After the
+genuine fix, the current 102-target cohort passes all 134 Windows and 126
+Linux tests, with 2,665 unchanged C, helper, build and reference inputs.
+All 32 fresh original-comparison wrappers pass and the independent input
+audit checks 6,413 resolved paths. [Mob drawing](mob-drawing.md) and the
+[testing record](../testing.md) retain each comparison's finite scope.
+
+The old 2dab hosted and c88e648 broad records remain historical; no new
+hosted result is claimed. Loaded inputs still declare the inventory statistic
+and Entity-empty saved Chunks. They do not qualify fresh-player tutorials,
+Canvas ungrab, general nonempty items, combat or Mob save/reload. Additional
+NULL-World/fire work is outside this qualification.
 
 Account authentication is excluded by the development specification. At
 `Minecraft.k`11, tick6000 would start `kp`, whose `run()` builds the account-session
@@ -149,8 +184,8 @@ establish the original `Minecraft.d()` shutdown sequence.
 
 The full `Minecraft.run`, `Minecraft.k`, EntityRenderer/PX rendering and shutdown
 methods are not qualified as complete original equivalents. The returned
-Sheep and animal fixtures are finite native composition evidence. Other
-Entity and
-TileEntity rendering, nondefault frame branches, remaining menus and gameplay
+Sheep, animal, creature and Wolf fixtures are finite native composition
+evidence. The failed Zombie/Skeleton sessions remain distinct. Other Entity
+and TileEntity rendering, nondefault frame branches, remaining menus and gameplay
 actions still require implementation or qualification. It does not establish
 a playable client or whole-frame original/native parity.

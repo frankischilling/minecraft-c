@@ -141,7 +141,7 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, int32_t amou
     bool ordinary;
     return mc_tick_effect(
         e, mc_entity_effect_damage_in_context(entity, classes, NULL, amount, &ordinary, &e->effect),
-        "Tick actual Player damage virtual", pc);
+        "Tick actual Entity damage virtual", pc);
 }
 
 static bool lava_damage(mc_entity *entity, mc_registry_classes *classes, mc_entity_tick_error *e) {

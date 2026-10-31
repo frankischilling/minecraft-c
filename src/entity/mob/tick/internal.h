@@ -75,6 +75,10 @@ bool mt_living_w(mc_mob_tick_scope *);
 bool mt_concrete_w(mc_mob_tick_scope *);
 bool mt_concrete_o(mc_mob_tick_scope *);
 bool mt_creature(mc_mob_tick_scope *);
+bool mt_monster_attack(mc_mob_tick_scope *, mc_entity *target, float distance);
+mc_entity_status mt_monster_component(mc_entity *, mc_registry_classes *, mc_math_classes *,
+                                      const mc_mob_tick_limits *, mc_entity *target, float distance,
+                                      mc_mob_tick_error *);
 bool mt_creeper_attack(mc_mob_tick_scope *, mc_entity *unused_target, float distance);
 bool mt_creeper_unseen(mc_mob_tick_scope *, mc_entity *unused_target, float distance);
 mc_entity_status mt_creeper_component(mc_entity *, mc_registry_classes *, mc_math_classes *,
@@ -87,6 +91,15 @@ bool mt_despawn(mc_mob_tick_scope *);
 bool mt_base_behavior(mc_mob_tick_scope *);
 bool mt_wolf_tail(mc_mob_tick_scope *);
 bool mt_wolf_action_tail(mc_mob_tick_scope *);
+bool mt_wolf_tame_entered(mc_mob_tick_scope *, bool);
+/* Closed Source components using the real runner's admission/holds/cleanup.
+ * action_component executes only GI.o4..186 after the unexecuted superclass;
+ * tame_component executes the distinct actual GI.d(Z)V body. */
+mc_entity_status mt_wolf_action_component(mc_entity *, mc_registry_classes *, mc_math_classes *,
+                                          const mc_mob_tick_limits *, mc_mob_tick_error *);
+mc_entity_status mt_wolf_tame_component(mc_entity *, mc_registry_classes *, mc_math_classes *,
+                                        const mc_mob_tick_limits *, bool, mc_mob_tick_error *);
+
 bool mt_squid_action_tail(mc_mob_tick_scope *);
 bool mt_chicken_action_tail(mc_mob_tick_scope *);
 

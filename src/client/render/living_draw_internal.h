@@ -10,6 +10,7 @@
 #include "model_runtime_internal.h"
 
 typedef struct mc_client_render_manager_draw_call mc_client_render_manager_draw_call;
+typedef struct mc_held_stack_parent_error mc_held_stack_parent_error;
 
 typedef struct mc_client_draw_scope {
     mc_client_render_manager_draw_call *owner;
@@ -19,6 +20,13 @@ typedef struct mc_client_draw_scope {
     size_t shadow_cells, max_shadow_cells;
     size_t shadow_quads, max_shadow_quads;
 } mc_client_draw_scope;
+
+/* Fresh charged storage, retained at its stable address through RA guard
+ * discharge and all checked child retirement. A call cannot reuse it. */
+mc_held_stack_parent_error *mc_client_draw_held_workspace(mc_client_draw_scope *,
+                                                          mc_client_manager_error *);
+/* Reached native work accounting; no Source operation or eager path estimate. */
+bool mc_client_draw_work_step(mc_client_draw_scope *, mc_client_manager_error *);
 
 /* Native lifetime captures only; no source query, class initialization,
  * source store or replacement service. NULL captures are no-ops. */
@@ -36,6 +44,21 @@ bool mc_client_draw_capture_string(mc_client_draw_scope *, const mc_player_strin
                                    mc_client_manager_error *);
 bool mc_client_draw_capture_settings(mc_client_draw_scope *, mc_game_settings *,
                                      mc_client_manager_error *);
+bool mc_client_draw_capture_stack(mc_client_draw_scope *, mc_item_stack *,
+                                  mc_client_manager_error *);
+/* Resolve the captured TH.f identity through its genuine current/displaced
+ * RA occurrences. No Source field is reread or replaced. NULL remains NULL. */
+bool mc_client_draw_capture_hand(mc_client_draw_scope *, mc_client_render_manager *,
+                                 const mc_client_source_ra *, mc_client_held_item **,
+                                 mc_client_manager_error *);
+/* Actual already-loaded RA.a, not canonical Minecraft.a or Minecraft.w. */
+bool mc_client_draw_capture_application(mc_client_draw_scope *, client_application *,
+                                        mc_client_manager_error *);
+bool mc_client_draw_held_guard_begin(mc_client_draw_scope *, mc_client_held_item *, const void *,
+                                     mc_client_entity_renderer_error *);
+/* Checked Parent retirement only, after pending lookup/list rights ended. */
+bool mc_client_draw_held_guard_discharge(mc_client_draw_scope *, mc_client_held_item *,
+                                         const void *, mc_client_entity_renderer_error *);
 bool mc_client_draw_pending_lookup(mc_client_draw_scope *, mc_client_render_engine *,
                                    bool pending_on_entry, mc_client_manager_error *);
 bool mc_client_draw_pending_list(mc_client_draw_scope *, const mc_client_model_draw_error *,
@@ -85,7 +108,11 @@ typedef enum mc_client_living_draw_child {
     MC_CLIENT_LIVING_DRAW_CHILD_QUERY,
     MC_CLIENT_LIVING_DRAW_CHILD_BLOCK,
     MC_CLIENT_LIVING_DRAW_CHILD_BRIGHTNESS,
-    MC_CLIENT_LIVING_DRAW_CHILD_REGISTRY
+    MC_CLIENT_LIVING_DRAW_CHILD_REGISTRY,
+    MC_CLIENT_LIVING_DRAW_CHILD_HELD,
+    MC_CLIENT_LIVING_DRAW_CHILD_ITEM,
+    MC_CLIENT_LIVING_DRAW_CHILD_PART,
+    MC_CLIENT_LIVING_DRAW_CHILD_STACK
 } mc_client_living_draw_child;
 
 typedef struct mc_client_living_draw_block_error {
@@ -107,6 +134,10 @@ typedef union mc_client_living_draw_detail {
     mc_client_living_draw_block_error block;
     mc_world_brightness_error brightness;
     mc_registry_error registry;
+    mc_held_stack_parent_error *held;
+    mc_item_render_error item;
+    mc_client_model_draw_error part;
+    mc_item_stack_status stack;
 } mc_client_living_draw_detail;
 
 typedef struct mc_client_living_draw_caught {
@@ -134,6 +165,17 @@ typedef struct mc_client_living_draw_texture_call {
     bool native_policy, source_exception;
     const char *exception_class;
 } mc_client_living_draw_texture_call;
+
+/* Passive values from the actual V held child. These own no occurrence and
+ * never select a Source branch or replace current fields. */
+typedef struct mc_client_living_draw_held_state {
+    uintptr_t stack_identity, own_model_identity, arm_identity;
+    uintptr_t item_identity, manager_identity, hand_identity, hand_owner_identity;
+    int32_t first_id, id;
+    bool entered, stack_returned, attachment_attempted, attachment_returned;
+    bool first_id_read, id_read, full3d_attempted, full3d_returned, full3d;
+    bool child_attempted, child_source_entered, child_returned, returned;
+} mc_client_living_draw_held_state;
 
 typedef struct mc_client_living_draw_state {
     bool returned, primary_event_returned, primary_render_returned;
@@ -163,6 +205,7 @@ typedef struct mc_client_living_draw_state {
     float creeper_powered_age;
     int32_t slime_size, color;
     uintptr_t secondary_entry_identity, secondary_stored_identity;
+    mc_client_living_draw_held_state held;
 } mc_client_living_draw_state;
 
 typedef struct mc_client_living_draw_error {

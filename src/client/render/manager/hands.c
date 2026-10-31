@@ -74,6 +74,59 @@ done:
     return e.status;
 }
 
+/* Every traversal is bounded by the actual native list's declared extent.
+ * Reject a short, long, cyclic or empty-owner list before touching any RA. */
+static bool hands_extent(const mc_client_render_manager_classes *c,
+                         const mc_client_render_manager *m) {
+    if (m->displaced_count > c->options.maximum_displaced_hands ||
+        (m->hand != NULL && m->displaced_count == SIZE_MAX))
+        return false;
+    const manager_displaced_hand *p = m->displaced;
+    for (size_t i = 0; i < m->displaced_count; ++i) {
+        if (p == NULL || p->owner == NULL)
+            return false;
+        p = p->next;
+    }
+    return p == NULL;
+}
+
+/* Requires hands_extent. These are independent real ownership occurrences,
+ * including a current owner that also appears in an older displaced slot. */
+static size_t hand_occurrences(const mc_client_render_manager *m,
+                               const mc_client_held_item *owner) {
+    size_t count = m->hand == owner ? 1u : 0u;
+    const manager_displaced_hand *p = m->displaced;
+    for (size_t i = 0; i < m->displaced_count; ++i, p = p->next)
+        if (p->owner == owner)
+            ++count;
+    return count;
+}
+
+static bool hands_inactive(const mc_client_render_manager *m) {
+    if (m->hand != NULL &&
+        !mc_client_held_item_is_inactive_occurrences(m->hand, hand_occurrences(m, m->hand)))
+        return false;
+    const manager_displaced_hand *p = m->displaced;
+    for (size_t i = 0; i < m->displaced_count; ++i, p = p->next) {
+        bool seen = p->owner == m->hand;
+        const manager_displaced_hand *prior = m->displaced;
+        for (size_t j = 0; !seen && j < i; ++j, prior = prior->next)
+            seen = prior->owner == p->owner;
+        if (!seen &&
+            !mc_client_held_item_is_inactive_occurrences(p->owner, hand_occurrences(m, p->owner)))
+            return false;
+    }
+    return true;
+}
+
+static mc_client_entity_renderer_status hand_drop(mc_client_render_manager *m,
+                                                  mc_client_held_item **slot,
+                                                  mc_client_entity_renderer_error *e) {
+    if (*slot != NULL && hand_occurrences(m, *slot) > 1)
+        return mc_client_held_item_release(slot, e);
+    return mc_client_held_item_retire(slot, e);
+}
+
 mc_client_manager_status mc_client_render_manager_retire_hands(mc_client_render_manager_classes *c,
                                                                mc_client_manager_error *out) {
     mc_client_manager_error e;
@@ -85,18 +138,21 @@ mc_client_manager_status mc_client_render_manager_retire_hands(mc_client_render_
         mc_client_render_manager *m = c->candidate;
         if (m == NULL)
             goto done;
-        /* Gate EVERY actual external RA occurrence before any child cleanup.
-         * Per-App callers never enter this explicit outer terminal API. */
-        if (m->hand != NULL && !mc_client_held_item_is_final_inactive(m->hand))
+        if (!hands_extent(c, m)) {
+            manager_fail(&e, MC_CLIENT_MANAGER_INVALID_ARGUMENT,
+                         "actual displaced RA native extent", NULL, NULL, NULL, -1, true);
+            goto retained;
+        }
+        /* Count every remaining actual slot for each distinct RA before any
+         * cleanup. An extra external occurrence or active RA refuses all drops.
+         * A retry counts only slots not consumed by an earlier native attempt. */
+        if (!hands_inactive(m))
             goto busy;
-        for (manager_displaced_hand *p = m->displaced; p != NULL; p = p->next)
-            if (!mc_client_held_item_is_final_inactive(p->owner))
-                goto busy;
-        if (mc_client_held_item_retire(&m->hand, &e.hand) != MC_CLIENT_ENTITY_RENDERER_OK)
+        if (hand_drop(m, &m->hand, &e.hand) != MC_CLIENT_ENTITY_RENDERER_OK)
             goto retry;
-        while (m->displaced != NULL) {
+        while (m->displaced_count != 0) {
             manager_displaced_hand *p = m->displaced;
-            if (mc_client_held_item_retire(&p->owner, &e.hand) != MC_CLIENT_ENTITY_RENDERER_OK)
+            if (hand_drop(m, &p->owner, &e.hand) != MC_CLIENT_ENTITY_RENDERER_OK)
                 goto retry;
             m->displaced = p->next;
             --m->displaced_count;

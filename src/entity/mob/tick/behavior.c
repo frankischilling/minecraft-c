@@ -388,6 +388,10 @@ bool mt_creature(mc_mob_tick_scope *s) {
                     mt_at(s, "ii", "f_", "()V", 97);
                     if (!mt_creeper_attack(s, target, distance))
                         return false;
+                } else if (kind == MC_ENTITY_CLASS_KIND_ZOMBIE) {
+                    mt_at(s, "ii", "f_", "()V", 97);
+                    if (!mt_monster_attack(s, target, distance))
+                        return false;
                 } else if (declaring != NULL) {
                     mt_at(s, "ii", "f_", "()V", 97);
                     s->error->child_site = (mc_mob_site){declaring, "a", "(Lsn;F)V", 0};

@@ -375,6 +375,9 @@ bool ld_prescale(ld_frame *f, float partial) {
     } else if (strcmp(name, "m") == 0) {
         if (!creeper_prescale(f, partial))
             return false;
+    } else if (strcmp(name, "we") == 0) {
+        if (!ld_wolf_prescale(f, partial))
+            return false;
     } else if (strcmp(name, "es") == 0) {
         if (!bridge(f, "es", "(Lls;F)V", MC_ENTITY_CLASS_KIND_SQUID))
             return false;

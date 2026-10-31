@@ -1,4 +1,5 @@
 #include "mc/client/world/render_global_entities.h"
+#include "entity_renderer/held_stack_parent_internal.h"
 
 #include "../../entity/entity_internal.h"
 #include "../application_state.h"
@@ -203,6 +204,24 @@ static void draw_receipt(mc_client_render_global_entities_call *c,
         ++c->state.entity_draws_returned;
     if (state->living != NULL) {
         const mc_client_living_draw_state *living = state->living;
+        mc_client_render_global_held_receipt *held = &receipt.held;
+        const mc_client_living_draw_held_state *v = &living->held;
+        held->valid = v->entered;
+        held->stack_returned = v->stack_returned;
+        held->attachment_returned = v->attachment_returned;
+        held->full3d_returned = v->full3d_returned;
+        held->full3d = v->full3d;
+        held->child_attempted = v->child_attempted;
+        held->child_source_entered = v->child_source_entered;
+        held->child_returned = v->child_returned;
+        held->v_returned = v->returned;
+        held->stack_identity = v->stack_identity;
+        held->own_model_identity = v->own_model_identity;
+        held->arm_identity = v->arm_identity;
+        held->item_identity = v->item_identity;
+        held->manager_identity = v->manager_identity;
+        held->hand_identity = v->hand_identity;
+
         receipt.living_source_pc = living->source_pc;
         receipt.primary_event_returned = living->primary_event_returned;
         receipt.primary_model = model_snapshot(&living->primary_render);
@@ -216,6 +235,32 @@ static void draw_receipt(mc_client_render_global_entities_call *c,
                     receipt.secondary_model = model_snapshot(&living->pass_render[i]);
                 model_receipt(&receipt, &living->pass_render[i]);
             }
+        }
+    }
+    if (state->held != NULL) {
+        const mc_held_stack_parent_error *parent = state->held;
+        const mc_held_bow_error *geometry = &parent->geometry;
+        mc_client_render_global_held_receipt *held = &receipt.held;
+        held->parent_present = true;
+        held->parent_entered = parent->state.source_entered;
+        held->parent_returned = parent->state.source_returned;
+        held->parent_source_pc = parent->state.source_pc;
+        held->icon_returned = parent->state.icon_returned;
+        held->icon = parent->state.icon;
+        held->geometry_returned = parent->state.geometry_returned;
+        held->geometry_source_pc = geometry->state.source_pc;
+        held->begin_returns = geometry->state.begin_returns;
+        held->normal_returns = geometry->state.normal_returns;
+        held->vertex_returns = geometry->state.vertex_returns;
+        held->draw_returns = geometry->state.draw_returns;
+        for (size_t i = 0; i < 6; ++i) {
+            held->batch_attempted[i] = geometry->batches[i].attempted;
+            held->batch_returned[i] = geometry->batches[i].returned;
+            held->batch_captured[i] = geometry->batches[i].captured;
+            held->batch_words[i] = geometry->batches[i].word_count;
+            held->batch_raw_words[i] = geometry->batches[i].before.o;
+            held->batch_vertices[i] = geometry->batches[i].before.h;
+            held->batch_mode[i] = geometry->batches[i].before.r;
         }
     }
     if (state->post_draw != NULL) {

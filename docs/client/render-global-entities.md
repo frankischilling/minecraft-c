@@ -3,10 +3,10 @@
 The native entry follows the complete 570-byte client
 `n.a(Lbt;Lyn;F)V` control flow. It implements the delay, dispatcher frame
 bindings, counter and origin stores, and the reached Entity predicates. An
-admitted path can return at PC 17 or PC 569. Visible Sheep, Pig, Cow and
-Chicken now execute their [actual TH/GV renderer/model and terrain-shadow paths](mob-drawing.md).
-Seven other default Mob families and nonempty TileEntity draw rows retain explicit
-dependencies. These finite results do not establish playability or composed
+admitted path can return at PC 17 or PC 569. All eleven default Overworld Mob
+kinds have their [actual TH/GV renderer/model and terrain-shadow bodies](mob-drawing.md),
+including Wolf and Skeleton's real held Bow. Nonempty TileEntity rows and
+unsupported draw branches retain explicit dependencies. These finite results do not establish playability or composed
 original/native frame equality.
 
 The source authority is the client archive pinned in the
@@ -101,8 +101,11 @@ qualified Sheep path executes primary MW geometry, all four XY pass predicates
 and the distinct EA fur model. Pig uses the real EH model and executes four
 saddle lookups even when unsaddled; Cow renders its nine HH parts after one
 virtual pose; Chicken renders eight TD parts with actual IP flap arithmetic.
-All four include the ordinary `Settings.j=true` BW shadow. Each
-returned child completes checked native retirement before N continues at 332
+Spider, Slime, Squid and Creeper use their real subtype hooks and models.
+Wolf enters WE/O; Zombie and Skeleton enter V with EJ/LC, with the genuine
+FR.a Bow Stack continuing through PS.c and the captured TH.f RA. Ordinary
+supported paths include the `Settings.j=true` BW shadow. Each returned child
+completes checked native retirement before N continues at 332
 or 519. A failed child stays retained under N; cleanup drains that same child
 before releasing its enclosing receivers. It never replays the failed draw.
 
@@ -141,8 +144,11 @@ Before retiring a successful TH child, N copies its actor/Class and
 renderer/model identities, static class names, source return PCs, model and
 shadow counters. `first_entity_draw` records the first returned N516 child;
 `last_draw` records the last successful child. Each retired flag belongs to
-that receipt's own attempt. The identity integers are observations and cannot
-be dereferenced. They survive child retirement and later failed draws, while
+that receipt's own attempt. A held summary copies actual V/RA return flags,
+Stack/arm/hand identities and the six Bow batch word/vertex counts while the
+TH child is still retained. It copies no full error or raw backing buffer and
+does not establish complete GPU submission. The identity integers are
+observations and cannot be dereferenced. They survive child retirement and later failed draws, while
 borrowed call, owner, List and dispatcher views end with cleanup.
 
 N owns distinct LL and TH consumer records across calls and ordinary World
@@ -199,14 +205,19 @@ six, nine and eight compiled parts and 18, 18 and 2 shadow quads come from the
 copied receipts and live canonical graphs. The publication input leaves Player
 pose and World Random unchanged; subsequent ticks remain real.
 
-See [Mob drawing](mob-drawing.md) for the retained-call and device scopes. The
-new direct comparisons pass on both native hosts, with the audited ordinary
-NVIDIA supplement on Windows. The 93-target broad cohort builds on both hosts
-and passes 121 Windows and 115 Linux tests without failures, skips or sanitizer
-findings. Hosted results retain their separate published-commit scope. These
-prepared native loaded controls do not
-qualify original composed-N/frame equality, fresh-player notices, serialized
-Mob loading or the remaining seven default renderer families.
+The later four-creature loaded control returns the same finite sequence for
+Spider, Slime, Squid and Creeper. A separate loaded Wolf control proves eleven
+stable part/list identities and two actual actor draws across four returned
+World/HUD frames, with real tick 1328, World 1013, N 569, HUD 2101 and checked
+cleanup. The preserved Zombie and Skeleton runs stop in actual attack children
+at II97; they do not earn a complete frame because their direct drawing body
+can return.
+
+See [Mob drawing](mob-drawing.md) for the retained-call and device scopes and
+the current fourteen-call direct comparison. Earlier animal/creature broad
+cohorts and published hosted results keep their recorded commit scopes. These
+prepared native loaded controls do not qualify original composed-N/frame
+equality, fresh-player notices, live combat or serialized Mob loading.
 
 ## Preceding native scope at 9fb0b27
 

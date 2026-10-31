@@ -1,6 +1,7 @@
 #ifndef MC_CLIENT_RENDER_MODEL_RUNTIME_INTERNAL_H
 #define MC_CLIENT_RENDER_MODEL_RUNTIME_INTERNAL_H
 
+#include "entity/render/internal.h"
 #include "manager/internal.h"
 #include "mc/client/render/model_draw.h"
 #include <stdint.h>
@@ -10,6 +11,9 @@ typedef struct mc_client_model_runtime_context {
     mc_client_render_engine_classes *graphics;
     mc_entity_classes *entities;
     mc_client_display *display;
+    /* Native owner association only. Reached Entity children use this exact
+     * retained scope; empty/scalar model entries do not read it. */
+    struct mc_client_draw_scope *native_scope;
 } mc_client_model_runtime_context;
 
 typedef enum mc_client_model_runtime_status {
@@ -22,13 +26,18 @@ typedef enum mc_client_model_runtime_status {
     MC_CLIENT_MODEL_RUNTIME_MATH_FAILED,
     MC_CLIENT_MODEL_RUNTIME_PART_FAILED,
     MC_CLIENT_MODEL_RUNTIME_SOURCE_EXCEPTION,
-    MC_CLIENT_MODEL_RUNTIME_UNIMPLEMENTED
+    MC_CLIENT_MODEL_RUNTIME_UNIMPLEMENTED,
+    MC_CLIENT_MODEL_RUNTIME_CAPTURE_FAILED,
+    MC_CLIENT_MODEL_RUNTIME_ENTITY_FAILED,
+    MC_CLIENT_MODEL_RUNTIME_DISPLAY_FAILED
 } mc_client_model_runtime_status;
 
 typedef enum mc_client_model_runtime_child {
     MC_CLIENT_MODEL_RUNTIME_CHILD_NONE,
     MC_CLIENT_MODEL_RUNTIME_CHILD_MATH,
-    MC_CLIENT_MODEL_RUNTIME_CHILD_PART
+    MC_CLIENT_MODEL_RUNTIME_CHILD_PART,
+    MC_CLIENT_MODEL_RUNTIME_CHILD_ENTITY,
+    MC_CLIENT_MODEL_RUNTIME_CHILD_DISPLAY
 } mc_client_model_runtime_child;
 
 /* Borrowed identities belong to the parent's retained renderer graph. These
@@ -47,9 +56,16 @@ typedef struct mc_client_model_runtime_state {
      * override fails. These do not credit the selected pose/render return. */
     mc_client_graphics_site nn_pose_site, nn_render_site;
     bool nn_pose_returned, nn_render_returned;
-    /* Actual selected declarations: IN.b / IN.a / java.lang.Math.abs(F).
-     * math_calls includes all three; the JDK leaf never initializes IN. */
+    /* Actual declarations: IN.b / IN.a / IN.c / java.lang.Math.abs(F).
+     * math_calls includes all four; the JDK abs leaf never initializes IN. */
     unsigned int cosine_calls, sine_calls, absolute_calls;
+    unsigned int square_root_calls;
+    mc_client_graphics_site fh_pose_site, fh_render_site, ej_pose_site;
+    bool fh_pose_returned, fh_render_returned, ej_pose_returned;
+    /* Actual invocation attempts, including a caller-side NULL before PS entry. */
+    unsigned int part_a_calls, part_a_returns, part_b_calls, part_b_returns;
+    unsigned int part_c_calls, part_c_returns, entity_leaf_calls;
+    unsigned int pivot_calls, pivot_returns, pivot_stores;
     /* Borrowed actual WN.b array, never a fabricated array for named slots.
      * The role marks the most recently reached array operation. */
     const manager_part_array *part_array;
@@ -74,6 +90,10 @@ typedef struct mc_client_model_runtime_error {
     mc_client_model_runtime_child selected_child;
     mc_math_class_error math;
     mc_client_model_draw_error part;
+    mc_entity_render_error entity;
+    mc_client_display_error display;
+    /* Native adoption failure keeps the completed source child intact. */
+    mc_client_manager_error capture_failure;
     mc_client_model_runtime_state state;
     /* Active model call sites, outermost first. The supplied caller remains
      * separate; HH's maximum is HH.a10 -> NN.a10 -> HH.b10. */
@@ -84,6 +104,11 @@ typedef struct mc_client_model_runtime_error {
 } mc_client_model_runtime_error;
 
 void mc_client_model_runtime_error_init(mc_client_model_runtime_error *);
+
+/* Immediately discharge/capture each actual neutral Entity result before its
+ * storage is reused. This performs no Source call, store or initialization. */
+bool mc_client_model_runtime_entity_adopt(const mc_client_model_runtime_context *,
+                                          mc_entity_render_error *, mc_client_manager_error *);
 
 /* Entered synchronous closed model dispatch on the SAME manager_model allocation.
  * The parent holds/guards the complete manager/renderer graph and actual

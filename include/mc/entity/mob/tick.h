@@ -5,6 +5,7 @@
 #include "mc/entity/hit_result.h"
 #include "mc/entity/mob/construction.h"
 #include "mc/entity/tick/environment.h"
+#include "mc/inventory/player_current.h"
 #include "mc/world/runtime/brightness.h"
 #include "mc/world/runtime/collision/class_entities.h"
 #include "mc/world/runtime/path.h"
@@ -55,6 +56,23 @@ typedef struct mc_mob_tick_explosion_arguments {
     float radius;
 } mc_mob_tick_explosion_arguments;
 
+/* Passive receipts for actual GI.o selected-Player interest work. No identity
+ * owns an occurrence or may be dereferenced after its source graph retires. */
+typedef struct mc_mob_tick_wolf_interest_state {
+    bool entered, inventory_returned, stack_nonnull, returned, interested, selected_read;
+    uintptr_t player_identity, inventory_identity, stack_identity;
+    uintptr_t bone_identity, arrays[2], items[2];
+    int32_t selected, stack_ids[3], bone_id;
+    uint8_t id_reads, array_reads, tame_calls;
+    bool bone_id_read, food_type, food_returned;
+} mc_mob_tick_wolf_interest_state;
+
+typedef struct mc_mob_tick_wolf_tame_state {
+    bool entered, returned, value;
+    int8_t previous, next;
+    unsigned int setter_pc;
+} mc_mob_tick_wolf_tame_state;
+
 typedef struct mc_mob_tick_state {
     bool returned, environment_returned, action_returned, behavior_returned;
     bool cleanup_pending, ray_returned, ray_arguments_stored;
@@ -71,6 +89,8 @@ typedef struct mc_mob_tick_state {
      * invoke_reached credits the caller opcode, never an unentered FD body. */
     mc_mob_tick_attack_arguments attack;
     mc_mob_tick_explosion_arguments explosion;
+    mc_mob_tick_wolf_interest_state wolf_interest;
+    mc_mob_tick_wolf_tame_state wolf_tame;
 } mc_mob_tick_state;
 
 typedef enum mc_mob_tick_child {
@@ -87,7 +107,9 @@ typedef enum mc_mob_tick_child {
     MC_MOB_TICK_CHILD_MATERIAL,
     MC_MOB_TICK_CHILD_EFFECT,
     MC_MOB_TICK_CHILD_RAY,
-    MC_MOB_TICK_CHILD_PATH
+    MC_MOB_TICK_CHILD_PATH,
+    MC_MOB_TICK_CHILD_INVENTORY,
+    MC_MOB_TICK_CHILD_ITEM
 } mc_mob_tick_child;
 
 typedef struct mc_mob_tick_query_error {
@@ -170,6 +192,7 @@ typedef struct mc_mob_tick_error {
         mc_entity_effect_error effect;
         mc_mob_tick_ray_error ray;
         mc_mob_tick_path_error path;
+        mc_inventory_current_error inventory;
     } detail;
 } mc_mob_tick_error;
 

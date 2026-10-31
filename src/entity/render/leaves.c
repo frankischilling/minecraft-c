@@ -3,6 +3,7 @@
 #include "../entity_internal.h"
 #include "../living/fields_internal.h"
 #include "../mob/internal.h"
+#include "../player/player_internal.h"
 #include "../player/tick_math_internal.h"
 #include "internal.h"
 #include "mc/core/java/java.h"
@@ -17,7 +18,7 @@ void mc_entity_render_error_init(mc_entity_render_error *e) {
     if (e == NULL)
         return;
     *e = zero;
-    e->site.pc = e->child.pc = -1;
+    e->site.pc = e->child.pc = e->parent.pc = -1;
     e->watcher_index = -1;
     e->math.source_pc = -1;
     mc_world_movement_error_init(&e->area);
@@ -279,14 +280,14 @@ bool mc_entity_render_half_height(mc_entity *p, float *out, mc_entity_render_err
     return true;
 }
 
+static bool wolf_texture(mc_entity *, const mc_player_string **, mc_entity_render_error *);
+
 bool mc_entity_render_texture(mc_entity *p, const mc_player_string **out,
                               mc_entity_render_error *e) {
     if (!start(p, out, e, "ls", "q_", "()Ljava/lang/String;"))
         return false;
-    if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_WOLF)) {
-        e->site = site("gi", "q_", "()Ljava/lang/String;", 0);
-        return fail(e, MC_ENTITY_STATE_ERROR, "Entity render Wolf skin virtual child");
-    }
+    if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_WOLF))
+        return wolf_texture(p, out, e);
     mc_living_entity_fields *ls = mc_entity_living_fields(p);
     if (ls == NULL)
         return fail(e, MC_ENTITY_STATE_ERROR, "Entity render actual Living texture storage");
@@ -376,6 +377,307 @@ bool mc_entity_render_creeper_swell(mc_entity *p, float partial, float *out,
     const int32_t difference = mc_java_i32_sub(current, previous_again);
     *out = at_fdiv(at_fadd(first, at_fmul((float)difference, partial)), 28.0f);
     e->site.pc = 21;
+    return true;
+}
+
+static const uint16_t wolf_tame_units[] = {'/', 'm', 'o', 'b', '/', 'w', 'o', 'l', 'f',
+                                           '_', 't', 'a', 'm', 'e', '.', 'p', 'n', 'g'};
+static const uint16_t wolf_angry_units[] = {'/', 'm', 'o', 'b', '/', 'w', 'o', 'l', 'f', '_',
+                                            'a', 'n', 'g', 'r', 'y', '.', 'p', 'n', 'g'};
+static const mc_player_string wolf_tame_texture = {
+    SIZE_MAX, sizeof(wolf_tame_units) / sizeof(*wolf_tame_units), wolf_tame_units};
+static const mc_player_string wolf_angry_texture = {
+    SIZE_MAX, sizeof(wolf_angry_units) / sizeof(*wolf_angry_units), wolf_angry_units};
+
+/* Actual boxed Byte/Integer value distinctions in the existing typed map.
+ * The caller already selected the GI invocation at outer_pc. */
+static bool wolf_watch(mc_entity *p, int32_t key, int32_t type, int32_t outer_pc, int32_t *out,
+                       mc_entity_render_error *e) {
+    e->site.pc = outer_pc;
+    e->watcher_index = key;
+    if (p->watcher == NULL) {
+        e->child = (mc_entity_render_site){.pc = -1};
+        return exception(e, "java/lang/NullPointerException", "Wolf null watcher invoke receiver");
+    }
+    e->child = site("ud", type == 0 ? "a" : "b", type == 0 ? "(I)B" : "(I)I", 8);
+    e->watcher_pc = 8;
+    const mc_entity_watch_map *map = p->watcher->map;
+    if (map == NULL)
+        return exception(e, "java/lang/NullPointerException", "Wolf null watcher Map receiver");
+    size_t count = 0;
+    const mc_entity_watch_node *node = map->head;
+    for (; node != NULL; node = node->next) {
+        if (count++ >= map->size)
+            return fail(e, MC_ENTITY_STATE_ERROR, "Wolf watcher native Map ownership");
+        if (node->key == key)
+            break;
+    }
+    const mc_entity_watch_record *value = node == NULL ? NULL : node->record;
+    if (value == NULL) {
+        e->watcher_pc = 16;
+        e->child.pc = 16;
+        return exception(e, "java/lang/NullPointerException", "Wolf null watcher record receiver");
+    }
+    if (value->type != type) {
+        e->watcher_pc = 19;
+        e->child.pc = 19;
+        if (value->type == 4 && value->string_value == NULL) {
+            e->watcher_pc = 22;
+            e->child.pc = 22;
+            return exception(e, "java/lang/NullPointerException",
+                             "Wolf null watcher unbox receiver");
+        }
+        if (value->type == 0 || value->type == 2 || value->type == 4)
+            return exception(e, "java/lang/ClassCastException",
+                             "Wolf actual wrong boxed watcher value");
+        return fail(e, MC_ENTITY_STATE_ERROR, "Wolf watcher boxed value representation boundary");
+    }
+    *out = type == 0 ? (int32_t)value->byte_value : value->integer_value;
+    e->child = (mc_entity_render_site){.pc = -1};
+    return true;
+}
+
+static bool wolf_storage(mc_entity *p, mc_entity_render_error *e) {
+    return (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_WOLF) && mc_entity_has_mob(p)) ||
+           fail(e, MC_ENTITY_STATE_ERROR, "Wolf actual canonical concrete storage");
+}
+
+static bool wolf_flag(mc_entity *p, const char *method, int32_t mask, bool *out,
+                      mc_entity_render_error *e) {
+    e->site = site("gi", method, "()Z", 6);
+    int32_t flags;
+    if (!wolf_watch(p, 16, 0, 6, &flags, e))
+        return false;
+    *out = (flags & mask) != 0;
+    e->site.pc = 19;
+    return true;
+}
+
+static bool wolf_flag_entry(mc_entity *p, const char *method, int32_t mask, bool *out,
+                            mc_entity_render_error *e) {
+    return start(p, out, e, "gi", method, "()Z") && wolf_storage(p, e) &&
+           wolf_flag(p, method, mask, out, e);
+}
+
+bool mc_entity_render_wolf_sitting(mc_entity *p, bool *out, mc_entity_render_error *e) {
+    return wolf_flag_entry(p, "B", 1, out, e);
+}
+
+bool mc_entity_render_wolf_angry(mc_entity *p, bool *out, mc_entity_render_error *e) {
+    return wolf_flag_entry(p, "C", 2, out, e);
+}
+
+bool mc_entity_render_wolf_tame(mc_entity *p, bool *out, mc_entity_render_error *e) {
+    return wolf_flag_entry(p, "D", 4, out, e);
+}
+
+static bool wolf_texture(mc_entity *p, const mc_player_string **out, mc_entity_render_error *e) {
+    if (!wolf_storage(p, e))
+        return false;
+    e->parent = site("gi", "q_", "()Ljava/lang/String;", 1);
+    bool tame;
+    if (!wolf_flag(p, "D", 4, &tame, e))
+        return false;
+    if (tame) {
+        *out = &wolf_tame_texture;
+        e->site = site("gi", "q_", "()Ljava/lang/String;", 9);
+    } else {
+        e->parent.pc = 11;
+        bool angry;
+        if (!wolf_flag(p, "C", 2, &angry, e))
+            return false;
+        if (angry) {
+            *out = &wolf_angry_texture;
+            e->site = site("gi", "q_", "()Ljava/lang/String;", 19);
+        } else {
+            e->parent.pc = 21;
+            e->site = site("ls", "q_", "()Ljava/lang/String;", 1);
+            *out = p->mob->living.O; /* Actual inherited LS.O, not a new default literal. */
+            e->site = site("gi", "q_", "()Ljava/lang/String;", 24);
+        }
+    }
+    e->parent = (mc_entity_render_site){.pc = -1};
+    return true;
+}
+
+bool mc_entity_render_wolf_tail(mc_entity *p, float *out, mc_entity_render_error *e) {
+    if (!start(p, out, e, "gi", "z", "()F") || !wolf_storage(p, e))
+        return false;
+    e->parent = site("gi", "z", "()F", 1);
+    bool angry;
+    if (!wolf_flag(p, "C", 2, &angry, e))
+        return false;
+    if (angry) {
+        *out = 1.5393804f;
+        e->site = site("gi", "z", "()F", 9);
+    } else {
+        e->parent.pc = 11;
+        bool tame;
+        if (!wolf_flag(p, "D", 4, &tame, e))
+            return false;
+        if (!tame) {
+            *out = .62831855f;
+            e->site = site("gi", "z", "()F", 42);
+        } else {
+            e->parent = (mc_entity_render_site){.pc = -1};
+            e->site = site("gi", "z", "()F", 27);
+            int32_t health;
+            if (!wolf_watch(p, 18, 2, 27, &health, e))
+                return false;
+            const int32_t difference = mc_java_i32_sub(20, health);
+            e->site.pc = 31;
+            if (!floating(e))
+                return false;
+            *out = at_fmul(at_fsub(.55f, at_fmul((float)difference, .02f)), 3.1415927f);
+            e->site.pc = 39;
+        }
+    }
+    e->parent = (mc_entity_render_site){.pc = -1};
+    return true;
+}
+
+bool mc_entity_render_wolf_wet(mc_entity *p, bool *out, mc_entity_render_error *e) {
+    if (!start(p, out, e, "gi", "v", "()Z") || !wolf_storage(p, e))
+        return false;
+    e->site.pc = 1;
+    *out = p->mob->wolf.f;
+    e->site.pc = 4;
+    return true;
+}
+
+bool mc_entity_render_wolf_head(mc_entity *p, float partial, float *out,
+                                mc_entity_render_error *e) {
+    if (!start(p, out, e, "gi", "c", "(F)F") || !wolf_storage(p, e))
+        return false;
+    const float first = p->mob->wolf.c;
+    const float current = p->mob->wolf.b;
+    const float previous = p->mob->wolf.c;
+    e->site.pc = 12;
+    if (!floating(e))
+        return false;
+    *out = at_fmul(at_fmul(at_fadd(first, at_fmul(at_fsub(current, previous), partial)), .15f),
+                   3.1415927f);
+    e->site.pc = 22;
+    return true;
+}
+
+static bool wolf_sine(mc_math_classes *math, float argument, float *out, int32_t pc,
+                      mc_entity_render_error *e) {
+    e->site.pc = pc;
+    e->selected_child = MC_ENTITY_RENDER_CHILD_MATH;
+    e->child = site("in", "a", "(F)F", 0);
+    ++e->sine_calls;
+    if (math == NULL)
+        return fail(e, MC_ENTITY_STATE_ERROR, "Wolf reached actual Math namespace");
+    const mc_math_class_status status = mc_math_classes_ensure(math, &e->math);
+    if (status != MC_MATH_CLASS_OK) {
+        if (e->math.source_pc >= 0)
+            e->child = site("in", "<clinit>", "()V", e->math.source_pc);
+        return fail(e,
+                    status == MC_MATH_CLASS_LIMIT               ? MC_ENTITY_LIMIT
+                    : status == MC_MATH_CLASS_ALLOCATION_FAILED ? MC_ENTITY_ALLOCATION_FAILED
+                    : status == MC_MATH_CLASS_UNSUPPORTED_FP    ? MC_ENTITY_UNSUPPORTED_FP
+                                                                : MC_ENTITY_STATE_ERROR,
+                    "Wolf reached Math active use");
+    }
+    if (!floating(e))
+        return false;
+    *out = mc_math_sin(mc_math_classes_table(math), argument);
+    e->selected_child = MC_ENTITY_RENDER_CHILD_NONE;
+    e->child = (mc_entity_render_site){.pc = -1};
+    return true;
+}
+
+bool mc_entity_render_wolf_shake(mc_entity *p, mc_math_classes *math, float partial, float offset,
+                                 float *out, mc_entity_render_error *e) {
+    if (!start(p, out, e, "gi", "a", "(FF)F") || !wolf_storage(p, e))
+        return false;
+    const float first = p->mob->wolf.i;
+    const float current = p->mob->wolf.h;
+    const float previous = p->mob->wolf.i;
+    e->site.pc = 12;
+    if (!floating(e))
+        return false;
+    float v = at_fdiv(at_fadd(at_fadd(first, at_fmul(at_fsub(current, previous), partial)), offset),
+                      1.8f);
+    if (v < 0.0f)
+        v = 0.0f;
+    else if (v > 1.0f)
+        v = 1.0f;
+    float first_sine, second_sine;
+    if (!wolf_sine(math, at_fmul(v, 3.1415927f), &first_sine, 45, e) ||
+        !wolf_sine(math, at_fmul(at_fmul(v, 3.1415927f), 11.0f), &second_sine, 55, e))
+        return false;
+    *out = at_fmul(at_fmul(at_fmul(first_sine, second_sine), .15f), 3.1415927f);
+    e->site.pc = 65;
+    return true;
+}
+
+bool mc_entity_render_wolf_wet_scale(mc_entity *p, float partial, float *out,
+                                     mc_entity_render_error *e) {
+    if (!start(p, out, e, "gi", "b_", "(F)F") || !wolf_storage(p, e))
+        return false;
+    const float first = p->mob->wolf.i;
+    const float current = p->mob->wolf.h;
+    const float previous = p->mob->wolf.i;
+    e->site.pc = 14;
+    if (!floating(e))
+        return false;
+    *out = at_fadd(
+        .75f,
+        at_fmul(at_fdiv(at_fadd(first, at_fmul(at_fsub(current, previous), partial)), 2.0f), .25f));
+    e->site.pc = 24;
+    return true;
+}
+
+bool mc_entity_render_held_stack(mc_entity *p, mc_item_stack **out, mc_entity_render_error *e) {
+    if (!start(p, out, e, "ls", "r_", "()Liz;"))
+        return false;
+    if (!mc_entity_has_mob(p))
+        return fail(e, MC_ENTITY_STATE_ERROR, "Entity held Stack unsupported virtual declaration");
+    if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SKELETON)) {
+        e->site = site("fr", "r_", "()Liz;", 0);
+        mc_mob_class_namespace *n = p->classes->mobs;
+        if (n == NULL || n->skeleton_phase != MC_ENTITY_CLASS_READY)
+            return fail(e, MC_ENTITY_STATE_ERROR, "Skeleton actual initialized class Stack owner");
+        *out = n->skeleton_a;
+        e->site.pc = 3;
+    } else {
+        *out = NULL; /* Real inherited LS.r_ aconst_null0/areturn1. */
+        e->site.pc = 1;
+    }
+    return true;
+}
+
+bool mc_entity_render_item_icon(mc_entity *p, mc_registry_classes *classes, mc_item_stack *stack,
+                                int32_t *out, mc_entity_render_error *e) {
+    if (!start(p, out, e, "ls", "c", "(Liz;)I"))
+        return false;
+    if (!mc_entity_has_mob(p))
+        return fail(e, MC_ENTITY_STATE_ERROR, "Entity icon unsupported virtual declaration");
+    e->site.pc = 1;
+    if (stack == NULL)
+        return exception(e, "java/lang/NullPointerException",
+                         "Living icon null IZ invoke receiver");
+    e->selected_child = MC_ENTITY_RENDER_CHILD_ITEM;
+    if (!mc_item_stack_render_icon(classes, stack, out, &e->item)) {
+        e->child = site(e->item.site.class_name, e->item.site.method, e->item.site.descriptor,
+                        e->item.site.pc);
+        e->exception_class = e->item.exception_class;
+        e->source_exception = e->item.source_exception;
+        e->throwable =
+            e->item.throwable == MC_ITEM_RENDER_SOURCE_EXCEPTION ? MC_ENTITY_RENDER_SOURCE_EXCEPTION
+            : e->item.throwable == MC_ITEM_RENDER_SOURCE_ERROR   ? MC_ENTITY_RENDER_SOURCE_ERROR
+                                                                 : MC_ENTITY_RENDER_NO_THROWABLE;
+        return fail(e,
+                    e->item.status == MC_REGISTRY_LIMIT               ? MC_ENTITY_LIMIT
+                    : e->item.status == MC_REGISTRY_ALLOCATION_FAILED ? MC_ENTITY_ALLOCATION_FAILED
+                    : e->item.status == MC_REGISTRY_BUSY              ? MC_ENTITY_BUSY
+                                                                      : MC_ENTITY_STATE_ERROR,
+                    e->item.operation);
+    }
+    e->selected_child = MC_ENTITY_RENDER_CHILD_NONE;
+    e->site.pc = 4;
     return true;
 }
 

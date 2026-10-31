@@ -228,6 +228,20 @@ mc_item_stack_status mc_item_stack_native_bytes(const mc_item_stack *stack, size
     return MC_ITEM_STACK_OK;
 }
 
+mc_item_stack_status mc_item_stack_source_id_get(const mc_item_stack *stack, int32_t *out) {
+    if (stack == NULL || out == NULL)
+        return MC_ITEM_STACK_INVALID_ARGUMENT;
+    *out = stack->fields.id;
+    return MC_ITEM_STACK_OK;
+}
+
+mc_item_stack_status mc_item_stack_source_damage_get(const mc_item_stack *stack, int32_t *out) {
+    if (stack == NULL || out == NULL)
+        return MC_ITEM_STACK_INVALID_ARGUMENT;
+    *out = stack->fields.damage;
+    return MC_ITEM_STACK_OK;
+}
+
 mc_item_stack_status mc_item_stack_source_count_get(const mc_item_stack *stack, int32_t *out) {
     if (stack == NULL || out == NULL)
         return MC_ITEM_STACK_INVALID_ARGUMENT;

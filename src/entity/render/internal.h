@@ -1,5 +1,6 @@
 #ifndef MC_ENTITY_RENDER_INTERNAL_H
 #define MC_ENTITY_RENDER_INTERNAL_H
+#include "../../item/render/internal.h"
 #include "mc/core/math/classes.h"
 #include "mc/entity/player/player.h"
 #include "mc/world/runtime/brightness.h"
@@ -21,7 +22,8 @@ typedef enum mc_entity_render_child {
     MC_ENTITY_RENDER_CHILD_NONE,
     MC_ENTITY_RENDER_CHILD_MATH,
     MC_ENTITY_RENDER_CHILD_AREA,
-    MC_ENTITY_RENDER_CHILD_BRIGHTNESS
+    MC_ENTITY_RENDER_CHILD_BRIGHTNESS,
+    MC_ENTITY_RENDER_CHILD_ITEM
 } mc_entity_render_child;
 
 typedef enum mc_entity_render_query_kind {
@@ -48,13 +50,15 @@ typedef struct mc_entity_render_query {
 typedef struct mc_entity_render_error {
     mc_entity_status status;
     const char *operation, *exception_class;
-    mc_entity_render_site site, child;
+    mc_entity_render_site site, child, parent;
     bool native_policy, source_exception;
     mc_entity_render_throwable throwable;
     mc_entity_render_child selected_child;
     int32_t watcher_index;
     unsigned int watcher_pc;
     mc_math_class_error math;
+    mc_item_render_error item;
+    unsigned int sine_calls;
     mc_world_movement_error area;
     mc_world_brightness_error brightness;
     /* Fixed owned native World holds, acquired BEFORE each reached query.
@@ -92,4 +96,18 @@ bool mc_entity_render_pig_saddled(mc_entity *, bool *, mc_entity_render_error *)
 bool mc_entity_render_slime_size(mc_entity *, int32_t *, mc_entity_render_error *);
 bool mc_entity_render_creeper_powered(mc_entity *, bool *, mc_entity_render_error *);
 bool mc_entity_render_creeper_swell(mc_entity *, float partial, float *, mc_entity_render_error *);
+bool mc_entity_render_wolf_sitting(mc_entity *, bool *, mc_entity_render_error *);
+bool mc_entity_render_wolf_angry(mc_entity *, bool *, mc_entity_render_error *);
+bool mc_entity_render_wolf_tame(mc_entity *, bool *, mc_entity_render_error *);
+bool mc_entity_render_wolf_wet(mc_entity *, bool *, mc_entity_render_error *);
+bool mc_entity_render_wolf_tail(mc_entity *, float *, mc_entity_render_error *);
+bool mc_entity_render_wolf_head(mc_entity *, float partial, float *, mc_entity_render_error *);
+bool mc_entity_render_wolf_shake(mc_entity *, mc_math_classes *, float partial, float offset,
+                                 float *, mc_entity_render_error *);
+bool mc_entity_render_wolf_wet_scale(mc_entity *, float partial, float *, mc_entity_render_error *);
+/* Returned held Stack is borrowed from the genuine Entity class owner. The
+ * caller captures its independent occurrence before any effectful descendant. */
+bool mc_entity_render_held_stack(mc_entity *, mc_item_stack **, mc_entity_render_error *);
+bool mc_entity_render_item_icon(mc_entity *, mc_registry_classes *, mc_item_stack *, int32_t *,
+                                mc_entity_render_error *);
 #endif

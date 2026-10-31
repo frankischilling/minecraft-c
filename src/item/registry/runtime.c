@@ -141,3 +141,63 @@ mc_registry_status mc_registry_item_c_at(mc_registry_classes *classes,
         *error = classes->last_error;
     return status;
 }
+
+/* These three ordinary operations deliberately do not enter Item active use.
+ * The enclosing caller already evaluated its actual getstatic when reached. */
+static mc_registry_status source_item(mc_registry_classes *classes, const mc_item *item,
+                                      mc_registry_error *error) {
+    const mc_registry_status status = quiescent(classes, error);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    if (item->classes != classes || (unsigned int)item->kind >= (unsigned int)MC_ITEM_KIND_COUNT)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Item source storage provenance");
+    return MC_REGISTRY_OK;
+}
+
+static bool food_kind(mc_item_kind kind) {
+    return kind == MC_ITEM_FOOD || kind == MC_ITEM_SOUP || kind == MC_ITEM_COOKIE;
+}
+
+mc_registry_status mc_registry_item_source_id(mc_registry_classes *classes, const mc_item *item,
+                                              int32_t *out, mc_registry_error *error) {
+    if (out == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Item source id output");
+    if (item == NULL)
+        return result(error, MC_REGISTRY_NULL_REFERENCE, "actual GM.bf null receiver");
+    const mc_registry_status status = source_item(classes, item, error);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    *out = item->fields.bf;
+    return result(error, MC_REGISTRY_OK, NULL);
+}
+
+mc_registry_status mc_registry_item_food_type(mc_registry_classes *classes, const mc_item *item,
+                                              bool *out, mc_registry_error *error) {
+    if (out == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Item instanceof Food output");
+    if (item == NULL) {
+        *out = false;
+        return result(error, MC_REGISTRY_OK, NULL);
+    }
+    const mc_registry_status status = source_item(classes, item, error);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    *out = food_kind(item->kind);
+    return result(error, MC_REGISTRY_OK, NULL);
+}
+
+mc_registry_status mc_registry_item_food_wolf_preferred(mc_registry_classes *classes,
+                                                        const mc_item *item, bool *out,
+                                                        mc_registry_error *error) {
+    if (out == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Food.m output");
+    if (item == NULL)
+        return result(error, MC_REGISTRY_NULL_REFERENCE, "actual Food.m null receiver");
+    const mc_registry_status status = source_item(classes, item, error);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    if (!food_kind(item->kind))
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Food.m actual Food storage");
+    *out = item->yw.bk;                         /* Actual YW.m getfield1, inherited by BZ and QK. */
+    return result(error, MC_REGISTRY_OK, NULL); /* ireturn4. */
+}

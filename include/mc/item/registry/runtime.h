@@ -47,7 +47,25 @@ mc_registry_status mc_registry_item_base_icon(mc_registry_classes *classes, cons
                                               int32_t damage, int32_t *out,
                                               mc_registry_error *error);
 
-/* Every public operation requires a quiescent exclusive Registry and rejects
+/* Narrow reached source operations on actual Item storage. source_id is the
+ * GM.bf field access (not an invented Java getter). food_type is nullable
+ * instanceof YW, including its real BZ/QK subclasses. food_wolf_preferred is
+ * actual inherited YW.m()Z getfield1/return4. None initializes a class, reads
+ * another Item field, allocates or uses a phase/inspector facade. The caller
+ * holds this actual Registry throughout; a nonnull Item must belong to it.
+ * food_type(NULL) returns false without reading an Item or Registry. The m
+ * body requires a genuine Food receiver; a caller's checkcast owns any actual
+ * ClassCastException. Non-Food direct calls remain native argument failures.
+ * Nullable source_id/m receiver returns explicit NULL_REFERENCE; their Source
+ * invocation/field PC belongs to the caller. Out is preserved on failure. */
+mc_registry_status mc_registry_item_source_id(mc_registry_classes *, const mc_item *, int32_t *,
+                                              mc_registry_error *);
+mc_registry_status mc_registry_item_food_type(mc_registry_classes *, const mc_item *, bool *,
+                                              mc_registry_error *);
+mc_registry_status mc_registry_item_food_wolf_preferred(mc_registry_classes *, const mc_item *,
+                                                        bool *, mc_registry_error *);
+
+/* Except food_type(NULL) above, each operation requires a quiescent exclusive Registry and rejects
  * entered initialization with BUSY, including c_at. Existing admitted private
  * bootstrap recursion continues through its own APIs. No new hold is acquired;
  * common counted lifetime borrows are mc_registry_classes_retain/release from

@@ -1,11 +1,13 @@
 # Default Mob drawing
 
-The client executes the canonical Sheep, Pig, Cow, Chicken, Spider, Slime,
-Squid and Creeper renderers through the existing TH/GV, model, PS and NW owners.
-The finite closure includes their ordinary subtype poses and passes, first
-compilation and reuse, and the `Settings.j=true` terrain shadow. Wolf, Zombie,
-Skeleton with its real Bow, and several nondefault branches remain unfinished. These
-results do not establish playability or whole-frame original/native equality.
+The client has genuine drawing bodies for all eleven default Overworld Mob
+kinds: Sheep, Pig, Cow, Chicken, Spider, Slime, Squid, Creeper, Wolf, Zombie and
+Skeleton with its class-owned Bow Stack. They use the existing TH/GV, concrete
+renderer/model, PS and NW owners. The finite comparisons cover selected poses,
+passes, first compilation and reuse, and the `Settings.j=true` terrain shadow.
+Loaded Wolf frames also return; the preserved Zombie and Skeleton sessions
+stop in real simulation children. These results do not establish playability
+or whole-frame original/native equality.
 
 ## Entry and source work
 
@@ -87,8 +89,8 @@ zero; a null limits pointer selects defaults.
 GV catches only a known Java Exception from its actual protected range 76..740.
 That path stops at the missing `printStackTrace` child at 747. Native policy
 failures, Errors and unclassified throwables do not become caught success.
-Burning billboards, true debug labels, hurt/death/color overlays and other
-renderer/model families remain reached boundaries. Arbitrary malformed model
+Burning billboards, true debug labels, hurt/death/color overlays and unsupported
+renderer/model branches remain reached boundaries. Arbitrary malformed model
 graphs and all exceptional cleanup refusals are not qualified by the finite
 Sheep observations.
 
@@ -283,7 +285,119 @@ the real earlier stores. An unreturned explosion earns neither death139 nor
 attacking144 nor method-return credit. These finite four-frame profiles do
 not qualify the thirty-tick explosion path or general combat.
 
-## Creature and particle broad validation
+## Wolf, Zombie and Skeleton with its Bow
+
+The remaining default families now execute their real renderer and model
+bodies. [Wolf hooks](../../src/client/render/living_draw/wolf.c) read the actual
+GI watcher and wet fields, select the real skin and tail value, and enter O's
+event, pose and render. O draws eleven parts using five actual PS.b calls and
+six PS.a calls. Standing, sitting, angry, tame and wet inputs use their actual
+predicates and neutral Entity leaves. Reached brightness queries and Math
+owners retain the same lifetime
+and typed failure rules as the earlier families.
+
+Zombie and Skeleton use V with the actual EJ and LC biped models. Their
+inherited FH render selects the concrete pose and draws seven current named
+parts. PS.b preserves its distinct rotation order. PS.c compiles when needed
+and returns after the actual arm-attachment transforms; V owns the surrounding
+push/pop pair. The native ledger keeps displaced LC constructor allocations
+alive, but the comparison does not reconstruct or pair that hidden graph.
+
+[V's held body](../../src/client/render/living_draw/held.c) first calls the real
+Entity held-Stack method. Ordinary Zombie returns NULL through LS.r_, so V
+returns at its NULL-Stack branch. Skeleton returns the genuine FR.a
+class-owned Bow Stack. V attaches the real arm before its Item dispatch,
+then performs the reached id reads, array accesses and full-3D predicate
+before capturing the actual TH.f RA. RA reads the real icon, including the
+Stack's damage, and executes its texture and extrusion bodies with that Stack
+and its own App/Engine. Each returned Bow produces six observed external NW.g
+boundaries.
+
+The focused fourteen-call original/native comparison passes on both hosts:
+
+| Host | Native checks | Selected typed comparisons |
+| --- | ---: | ---: |
+| Linux | 35,040 | 357,680 |
+| Windows | 35,063 | 357,763 |
+
+Both pair 3,719 identities, 29,624 expanded records, 310 direct queries,
+25 compiled lists and 150 model faces. Five Skeleton calls contribute 30
+actual Bow boundaries and 15,840 raw backing words. The fixture also checks
+real event/living hooks, wet and watcher inputs, a false full-3D operand,
+alternate RA/App/Engine ownership, retained guards and rejected comparison
+corruptions. Raw constructor streams remain independent. The earlier
+seven-call Windows baseline remains a separate checkpoint: 17,729 native
+checks and 172,167 selected comparisons, including its nine known NVIDIA
+current-normal observations.
+
+The fourteen-call comparison is included in the local qualification below.
+Its selected Source observations do
+not pair complete actor fields, boxed watcher identities, displaced LC
+allocations, IY array contents or the entire Engine cache. Bow words are the
+actual six external raw boundaries, without submitted-buffer equality or
+coverage of every possible internal flush. Source pixels and live GL traces
+remain Source-only; native visible readbacks are independent controls. Only
+prepared matrices allow four float ULP or numeric equality of opposite signed
+zeros, with raw signs retained and maximum measured absolute difference
+`1.1920928955078125e-7`.
+
+The real Windows Wolf loaded profile returns four World/HUD frames: the N delay,
+an unticked undrawn traversal, then first compilation and reuse of the same
+declared actor. It proves eleven stable part/list identities, real tick 1328,
+World draw 1013, N return 569, HUD return 2101 and checked cleanup. After the
+selected-Player Item-interest leaf was connected, the development profile
+passes 5,333 checks with unchanged placement, Timer and random inputs. The
+fresh registered Wolf test also passes, in 27.43 seconds.
+
+The [Wolf interest pair](../../tests/reference/entity/wolf_interest/README.md)
+passes on both hosts: nine cases and three native failure controls, 531 C
+checks, 122 selected values and 153 alias relations within their respective
+profiles. It uses actual DC/IX Player/Inventory owners, selected Stacks and
+tame/bone/food predicates. The original LS.o executes under declared
+LS.V=true; Native enters GI.o4..186 without that superclass. The paired
+selection is GI51..126. Native range return186 earns no full GI method or
+tick credit. Dynamic Item/GM classes, a full temporal/cross-case identity graph,
+Native before51 state and before-first-Native-execution chronology are not
+claimed. Raw constructor entropy remains independent.
+
+The [Monster attack pair](../../tests/reference/entity/monster_attack/README.md)
+also passes on both hosts with the genuine Pig target: 605 native checks and
+360 selected comparisons over twelve cases. Seven return, three reach actual
+Source NPE gates, and two retain unreturned hurt61 prefixes. The latter earn
+no damage completion or GZ return. The authored packet records its later LF
+files and exact archived CRLF-to-LF provenance without relabelling the
+historical capture or allowing broader normalization.
+
+The original Zombie/Skeleton II97 failures remain preserved. A later Zombie
+run passes the earlier attack frontier, then stops at actual periodic-fire
+damage in SN.U501; no loaded Zombie return is credited. The first 101-target
+cohort also remains recorded: Linux passed 125 tests and Windows passed 132
+of 133, stopping only at Wolf interest GI51 rather than rendering. Its thirty
+passing comparison wrappers and 6,308-path audit precede the Wolf fix. The
+new local qualification supersedes that result without rewriting it.
+
+Native terminal hand cleanup counts actual current and displaced RA
+occurrences. A real P -> A -> P publication owns P twice and A once; its own
+aliases do not count as external holds. Genuine external holds and active
+guards refuse cleanup. The real IY lease partial-refusal control passes on
+both hosts, and retry counts only the slots that remain. Cleanup preserves
+Source TH.f and never resumes a draw or repairs a failed prefix.
+
+All 102 selected targets now build on Windows MSVC Debug and Linux Clang18
+ASan/UBSan. All 134 Windows and 126 Linux tests pass. The same 2,665 C, helper,
+build and reference inputs remain unchanged across both builds and tests. All
+32 fresh original-comparison wrappers pass, sixteen per host; an independent
+audit verifies 6,413 resolved current paths. The [testing record](../testing.md)
+separates build, CTest and complete phase times. Formatting passes for 1,774
+files, and six binding tables pass with historical metadata preserved.
+
+The hosted 1,635-test result at `2dab` and the c88e648 broad result below remain
+historical. No new hosted result is claimed here. Live combat/hurt, Skeleton
+Arrow work, Mob NBT, Source Region writes and other gameplay children still
+prevent a playable-client claim. Additional NULL-World/fire work is outside
+this qualification.
+
+## Earlier creature and particle broad validation
 
 All 98 selected targets build on Windows MSVC Debug and Linux Clang18
 ASan/UBSan. All 129 Windows tests and 122 Linux tests pass without failures,
@@ -311,7 +425,7 @@ with the actual target flags rejects the original and accepts the correction.
 Rebuilt Windows and Clang18 creature comparisons each retain 3,722 native checks,
 366,155 selected original checks and twelve rejected comparator corruptions.
 Production and build configuration are unchanged; hosted results keep their
-separate commit scope in [draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
+separate commit scope in the [testing record](../testing.md).
 
 ## Published four-animal broad validation
 
@@ -394,9 +508,9 @@ World Random, and normal subsequent ticks remain enabled.
 These four-animal loaded controls preserve the existing-player inventory-achievement
 precondition and Entity-empty saved Chunks. They qualify native integration,
 not fresh-player tutorial completion, serialized Mob loading, natural spawning
-within a deadline or original/native full-frame equality. The later four-creature
-focused checkpoint has the distinct scope recorded above. Wolf, Skeleton and
-Zombie drawing remain unfinished;
-Skeleton's real held Bow is a mandatory dependency. Active tutorial notices,
-Canvas/focus transitions, nonempty items, save transport and nonempty TileEntity
-draw rows still prevent a playable-client claim.
+within a deadline or original/native full-frame equality. The later
+four-creature and remaining-family checkpoints keep their distinct scopes
+above. Wolf now has its own returned loaded profile; the Zombie and Skeleton
+tick failures remain preserved. Active tutorial notices, Canvas/focus
+transitions, general nonempty items, combat, save transport and nonempty
+TileEntity draw rows still prevent a playable-client claim.

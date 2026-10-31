@@ -1,3 +1,4 @@
+#include "held_stack_guard_internal.h"
 #include "internal.h"
 #include <stdlib.h>
 
@@ -86,7 +87,8 @@ mc_client_held_item_construct(mc_client_held_item *o, client_application *app,
     if (o == NULL || o->source == NULL)
         entity_renderer_fail(&local, MC_CLIENT_ENTITY_RENDERER_INVALID_ARGUMENT,
                              "actual RA constructor receiver", NULL, -1, true);
-    else if (o->active || o->draw_call != NULL || o->source->phase != MC_CLIENT_ENTITY_RENDERER_RAW)
+    else if (o->active || o->draw_call != NULL || o->held_stack_token != NULL ||
+             o->source->phase != MC_CLIENT_ENTITY_RENDERER_RAW)
         entity_renderer_fail(&local,
                              o->active ? MC_CLIENT_ENTITY_RENDERER_BUSY
                                        : MC_CLIENT_ENTITY_RENDERER_INVALID_PHASE,
@@ -102,13 +104,75 @@ mc_client_held_item_construct(mc_client_held_item *o, client_application *app,
     return local.status;
 }
 
-bool mc_client_held_item_is_final_inactive(const mc_client_held_item *o) {
-    return o != NULL && !o->active && o->draw_call == NULL && o->holds == 1 &&
+bool mc_client_held_item_is_inactive_occurrences(const mc_client_held_item *o, size_t expected) {
+    return o != NULL && expected != 0 && o->source != NULL && !o->active && o->draw_call == NULL &&
+           o->held_stack_token == NULL && o->holds == expected &&
            o->source->phase != MC_CLIENT_ENTITY_RENDERER_CONSTRUCTING;
+}
+
+bool mc_client_held_item_is_final_inactive(const mc_client_held_item *o) {
+    return mc_client_held_item_is_inactive_occurrences(o, 1);
 }
 
 const mc_client_source_ra *mc_client_held_item_identity(const mc_client_held_item *o) {
     return o == NULL ? NULL : o->source;
+}
+
+mc_client_entity_renderer_status
+entity_renderer_held_stack_guard_begin(mc_client_held_item *o, const void *parent,
+                                       const void *token, mc_client_entity_renderer_error *out) {
+    mc_client_entity_renderer_error local;
+    mc_client_entity_renderer_error *e = out == NULL ? &local : out;
+    mc_client_entity_renderer_error_init(e);
+    if (o == NULL || o->source == NULL || parent == NULL || token == NULL)
+        return entity_renderer_fail(e, MC_CLIENT_ENTITY_RENDERER_INVALID_ARGUMENT,
+                                    "RA held Stack actual guard identities", NULL, -1, true);
+    if (o->active || o->draw_call != NULL || o->held_stack_parent != NULL ||
+        o->held_stack_token != NULL)
+        return entity_renderer_fail(e, MC_CLIENT_ENTITY_RENDERER_BUSY,
+                                    "RA held Stack distinct active child", NULL, -1, true);
+    if (o->source->phase != MC_CLIENT_ENTITY_RENDERER_READY || o->holds == 0)
+        return entity_renderer_fail(e, MC_CLIENT_ENTITY_RENDERER_INVALID_PHASE,
+                                    "RA held Stack genuine completed receiver", NULL, -1, true);
+    if (mc_client_held_item_retain(o, e) != MC_CLIENT_ENTITY_RENDERER_OK)
+        return e->status;
+    o->held_stack_parent = parent;
+    o->held_stack_token = token;
+    o->active = true;
+    return MC_CLIENT_ENTITY_RENDERER_OK;
+}
+
+mc_client_entity_renderer_status
+entity_renderer_held_stack_guard_discharge(mc_client_held_item *o, const void *parent,
+                                           const void *token,
+                                           mc_client_entity_renderer_error *out) {
+    mc_client_entity_renderer_error local;
+    mc_client_entity_renderer_error *e = out == NULL ? &local : out;
+    mc_client_entity_renderer_error_init(e);
+    if (o == NULL || parent == NULL || token == NULL || o->held_stack_parent != parent ||
+        o->held_stack_token != token)
+        return entity_renderer_fail(e, MC_CLIENT_ENTITY_RENDERER_INVALID_ARGUMENT,
+                                    "RA held Stack exact guard retirement identity", NULL, -1,
+                                    true);
+    if (!o->active || o->draw_call != NULL || o->holds <= 1 || o->source == NULL ||
+        o->source->phase != MC_CLIENT_ENTITY_RENDERER_READY)
+        return entity_renderer_fail(e, MC_CLIENT_ENTITY_RENDERER_BUSY,
+                                    "RA held Stack retained guard/receiver invariant", NULL, -1,
+                                    true);
+    /* The Parent still owns its independent HAND occurrence. This is a
+     * guaranteed nonfinal native drop after all fallible checks above. */
+    o->held_stack_parent = NULL;
+    o->held_stack_token = NULL;
+    o->active = false;
+    mc_client_held_item *occurrence = o;
+    const mc_client_entity_renderer_status status = mc_client_held_item_release(&occurrence, e);
+    if (status != MC_CLIENT_ENTITY_RENDERER_OK) {
+        /* A refused native drop preserves this guard's remaining rights. */
+        o->held_stack_parent = parent;
+        o->held_stack_token = token;
+        o->active = true;
+    }
+    return status;
 }
 
 mc_client_entity_renderer_status mc_client_held_item_retain(mc_client_held_item *o,
@@ -118,7 +182,7 @@ mc_client_entity_renderer_status mc_client_held_item_retain(mc_client_held_item 
     if (o == NULL)
         entity_renderer_fail(&e, MC_CLIENT_ENTITY_RENDERER_INVALID_ARGUMENT,
                              "actual RA occurrence receiver", NULL, -1, true);
-    else if (o->active || o->draw_call != NULL ||
+    else if (o->active || o->draw_call != NULL || o->held_stack_token != NULL ||
              o->source->phase == MC_CLIENT_ENTITY_RENDERER_CONSTRUCTING)
         entity_renderer_fail(&e, MC_CLIENT_ENTITY_RENDERER_BUSY, "actual RA active occurrence",
                              NULL, -1, true);
@@ -144,7 +208,7 @@ held_release(mc_client_held_item **slot, mc_client_entity_renderer_error *out, b
                              "actual RA occurrence slot", NULL, -1, true);
     } else if (*slot != NULL) {
         mc_client_held_item *o = *slot;
-        if (o->active || o->draw_call != NULL ||
+        if (o->active || o->draw_call != NULL || o->held_stack_token != NULL ||
             o->source->phase == MC_CLIENT_ENTITY_RENDERER_CONSTRUCTING ||
             (strict && o->holds != 1)) {
             entity_renderer_fail(&e, MC_CLIENT_ENTITY_RENDERER_BUSY,
@@ -202,7 +266,7 @@ mc_client_entity_renderer_status mc_client_held_item_retire(mc_client_held_item 
 }
 
 bool mc_client_held_item_inspect(const mc_client_held_item *o, mc_client_held_item_state *s) {
-    if (o == NULL || s == NULL || o->active)
+    if (o == NULL || s == NULL || o->active || o->held_stack_token != NULL)
         return false;
     const mc_client_source_ra *ra = o->source;
     const mc_client_source_iy *iy = ra->pending_iy;

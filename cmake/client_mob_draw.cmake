@@ -10,11 +10,18 @@ if(TARGET mc_client_entity_renderer)
         src/client/render/model_runtime/slime.c
         src/client/render/model_runtime/squid.c
         src/client/render/model_runtime/creeper.c
+        src/client/render/model_runtime/biped.c
+        src/client/render/model_runtime/zombie.c
+        src/client/render/model_runtime/wolf.c
+        src/client/world/entity_renderer/held_bow_geometry.c
+        src/client/world/entity_renderer/held_stack_parent.c
         src/client/render/living_draw/common.c
         src/client/render/living_draw/body.c
         src/client/render/living_draw/animals.c
         src/client/render/living_draw/creatures.c
         src/client/render/living_draw/sheep.c
+        src/client/render/living_draw/wolf.c
+        src/client/render/living_draw/held.c
         src/client/render/living_draw/shadow.c
         src/client/render/manager/draw.c
         src/client/render/manager/draw_owner.c)
@@ -22,7 +29,7 @@ if(TARGET mc_client_entity_renderer)
         mc_client_render_manager_cpu mc_math_classes)
     if(BUILD_TESTING AND TARGET mc_test_application_startup)
         get_target_property(_mc_mob_draw_links mc_test_application_startup LINK_LIBRARIES)
-        foreach(_mc_draw_kind IN ITEMS mob animal creature)
+        foreach(_mc_draw_kind IN ITEMS mob animal creature remaining_mob)
             set(_mc_draw_target "mc_test_${_mc_draw_kind}_draw")
             add_executable(${_mc_draw_target} "tests/client/render/test_${_mc_draw_kind}_draw.c")
             target_include_directories(${_mc_draw_target} PRIVATE src src/platform/time)

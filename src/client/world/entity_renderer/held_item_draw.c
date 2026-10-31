@@ -628,7 +628,7 @@ static mc_client_held_item_draw_status begin(mc_client_held_item *owner, mc_math
                                              mc_client_held_item_draw_error *error) {
     if (owner == NULL || owner->source == NULL || out == NULL || *out != NULL)
         return admission(error, MC_CLIENT_HELD_ITEM_DRAW_ARGUMENT, "held draw actual owner/output");
-    if (owner->draw_call != NULL || (owner->active != entered) ||
+    if (owner->draw_call != NULL || owner->held_stack_token != NULL || (owner->active != entered) ||
         owner->source->phase == MC_CLIENT_ENTITY_RENDERER_CONSTRUCTING ||
         owner->source->phase == MC_CLIENT_ENTITY_RENDERER_RETIRING)
         return admission(error, MC_CLIENT_HELD_ITEM_DRAW_BUSY, "held draw actual RA admission");

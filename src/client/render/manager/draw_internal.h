@@ -2,6 +2,7 @@
 #define MC_CLIENT_RENDER_MANAGER_DRAW_INTERNAL_H
 #include "../living_draw_internal.h"
 #include "client/display/source_surface.h"
+#include "client/world/entity_renderer/held_stack_parent_internal.h"
 #include "internal.h"
 #include "mc/client/render/manager/draw.h"
 #include "mc/world/storage/source_chunk_loader.h"
@@ -11,7 +12,9 @@ typedef enum manager_draw_owner_kind {
     MANAGER_DRAW_ENGINE,
     MANAGER_DRAW_STRING,
     MANAGER_DRAW_SETTINGS,
-    MANAGER_DRAW_APPLICATION
+    MANAGER_DRAW_APPLICATION,
+    MANAGER_DRAW_STACK,
+    MANAGER_DRAW_HAND
 } manager_draw_owner_kind;
 
 typedef struct manager_draw_owner {
@@ -23,6 +26,8 @@ typedef struct manager_draw_owner {
         const mc_player_string *string;
         mc_game_settings *settings;
         client_application *application;
+        mc_item_stack *stack;
+        mc_client_held_item *hand;
     } value;
 
     /* Exact private lookup-attempt identity, never a foreign pending attempt. */
@@ -44,6 +49,9 @@ struct mc_client_render_manager_draw_call {
     mc_math_classes *math_hold;
     mc_client_render_engine_classes *graphics_hold;
     mc_client_application_classes *application_classes_hold;
+    mc_client_held_item *held_guard;
+    const void *held_guard_token;
+    mc_held_stack_parent_error *held_workspace;
     mc_client_manager_draw_query *queries;
     size_t query_count, query_capacity;
     manager_draw_owner *owners;
@@ -54,6 +62,7 @@ struct mc_client_render_manager_draw_call {
     int32_t owned_list;
     mc_client_display *list_display;
     const void *list_identity;
+    uintptr_t retired_list_identity;
     mc_client_texture_lookup_error lookup_cleanup, first_lookup_cleanup;
     mc_client_display_error list_cleanup, first_list_cleanup;
     mc_client_application_owner_error application_error, application_cleanup,

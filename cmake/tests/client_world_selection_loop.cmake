@@ -44,6 +44,14 @@ if(BUILD_TESTING AND TARGET mc_client_runtime)
                 --mode creatures)
             set_tests_properties(client.world_selection_creatures PROPERTIES
                 LABELS "public;integration;client;input;graphics;entities;ownership" TIMEOUT 900)
+            add_test(NAME client.world_selection_wolf COMMAND Python3::Interpreter -B
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_world_selection_loop.py"
+                --executable "$<TARGET_FILE:mc_test_world_selection_loop>"
+                --assets "${MC_APPLICATION_STARTUP_IMPORTED_RESOURCES}"
+                --artifacts "${CMAKE_CURRENT_BINARY_DIR}/world-selection-wolf-captures"
+                --mode remaining-wolf)
+            set_tests_properties(client.world_selection_wolf PROPERTIES
+                LABELS "public;integration;client;input;graphics;entities;ownership" TIMEOUT 300)
         endif()
     endif()
 endif()

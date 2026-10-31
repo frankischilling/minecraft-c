@@ -7,7 +7,8 @@
 typedef enum mc_client_model_draw_throwable {
     MC_CLIENT_MODEL_DRAW_NO_THROWABLE,
     MC_CLIENT_MODEL_DRAW_SOURCE_EXCEPTION,
-    MC_CLIENT_MODEL_DRAW_UNCLASSIFIED_THROWABLE
+    MC_CLIENT_MODEL_DRAW_UNCLASSIFIED_THROWABLE,
+    MC_CLIENT_MODEL_DRAW_SOURCE_ERROR
 } mc_client_model_draw_throwable;
 
 typedef struct mc_client_model_draw_error {
@@ -15,12 +16,15 @@ typedef struct mc_client_model_draw_error {
     mc_client_graphics_site site, child;
     bool native_policy, returned, compiled, pending_list;
     int32_t owned_list;
+    uintptr_t pending_list_identity; /* Exact native definition right, no Source operand. */
     unsigned int faces, vertices, source_pc;
     mc_client_graphics_error graphics;
     mc_client_display_error display;
     mc_entity_vector_error vector;
     mc_client_model_draw_throwable throwable;
     const char *exception_class;
+    /* Active PS.b/c -> PS.d caller; no Source work or ownership. */
+    mc_client_graphics_site caller;
 } mc_client_model_draw_error;
 
 /* Actual ps.a(F), lazy ps.d(F) and tz.a(NW,F) for genuine box parts. The
@@ -30,4 +34,12 @@ typedef struct mc_client_model_draw_error {
 bool mc_client_model_part_draw(mc_client_model_part *, mc_client_render_engine_classes *,
                                mc_entity_classes *, mc_client_display *, float,
                                mc_client_model_draw_error *);
+/* Exact PS.b and PS.c, sharing the same lazy PS.d compiler/cleanup right.
+ * Hidden/shown returns admit no unrelated services. PS.c has no push/pop/list. */
+bool mc_client_model_part_draw_rotated(mc_client_model_part *, mc_client_render_engine_classes *,
+                                       mc_entity_classes *, mc_client_display *, float,
+                                       mc_client_model_draw_error *);
+bool mc_client_model_part_attach(mc_client_model_part *, mc_client_render_engine_classes *,
+                                 mc_entity_classes *, mc_client_display *, float,
+                                 mc_client_model_draw_error *);
 #endif

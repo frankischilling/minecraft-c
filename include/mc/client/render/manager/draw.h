@@ -4,6 +4,7 @@
 #include "mc/client/render/manager/manager.h"
 
 typedef struct mc_client_render_manager_draw_call mc_client_render_manager_draw_call;
+typedef struct mc_held_stack_parent_error mc_held_stack_parent_error;
 typedef struct mc_client_application_classes mc_client_application_classes;
 typedef struct mc_client_living_draw_error mc_client_living_draw_error;
 typedef struct mc_client_living_draw_state mc_client_living_draw_state;
@@ -73,6 +74,9 @@ typedef struct mc_client_manager_draw_state {
     const mc_client_managed_renderer *renderer;
     const void *renderer_identity;
     const mc_client_living_draw_state *living, *post_draw;
+    /* Actual charged one-use RA parent workspace; borrowed until checked
+     * retirement. N copies scalar observations before this view expires. */
+    const mc_held_stack_parent_error *held;
     const mc_client_manager_draw_error *failure, *cleanup;
 } mc_client_manager_draw_state;
 

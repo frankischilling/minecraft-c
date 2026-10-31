@@ -174,12 +174,19 @@ bool ld_model(ld_frame *f, bool ok) {
     mc_client_model_runtime_error *v = &e->detail.model;
     e->selected_child = MC_CLIENT_LIVING_DRAW_CHILD_MODEL;
     e->child = v->site;
+    if (v->status == MC_CLIENT_MODEL_RUNTIME_CAPTURE_FAILED) {
+        e->capture_failure = v->capture_failure;
+        return capture_failed(f);
+    }
     if (v->part.pending_list &&
         !mc_client_draw_pending_list(f->scope, &v->part, &e->capture_failure))
         return capture_failed(f);
     if (v->throwable == MC_CLIENT_MODEL_DRAW_SOURCE_EXCEPTION) {
         e->throwable = MC_CLIENT_LIVING_DRAW_EXCEPTION;
         e->source_exception = true;
+        e->exception_class = v->exception_class;
+    } else if (v->throwable == MC_CLIENT_MODEL_DRAW_SOURCE_ERROR) {
+        e->throwable = MC_CLIENT_LIVING_DRAW_ERROR;
         e->exception_class = v->exception_class;
     } else if (v->throwable == MC_CLIENT_MODEL_DRAW_UNCLASSIFIED_THROWABLE)
         e->throwable = MC_CLIENT_LIVING_DRAW_UNCLASSIFIED_THROWABLE;

@@ -30,6 +30,22 @@ typedef struct mc_client_render_global_model_receipt {
     bool returned;
 } mc_client_render_global_model_receipt;
 
+/* Value-only V/RA observations, copied while the real TH call is retained.
+ * No parent/error/buffer pointers escape successful checked retirement. */
+typedef struct mc_client_render_global_held_receipt {
+    bool valid, stack_returned, attachment_returned, full3d_returned, full3d;
+    bool child_attempted, child_source_entered, child_returned, v_returned;
+    uintptr_t stack_identity, own_model_identity, arm_identity, item_identity;
+    uintptr_t manager_identity, hand_identity;
+    bool parent_present, parent_entered, parent_returned, icon_returned, geometry_returned;
+    unsigned int parent_source_pc, geometry_source_pc;
+    int32_t icon;
+    size_t begin_returns, normal_returns, vertex_returns, draw_returns;
+    bool batch_attempted[6], batch_returned[6], batch_captured[6];
+    size_t batch_words[6];
+    int32_t batch_raw_words[6], batch_vertices[6], batch_mode[6];
+} mc_client_render_global_held_receipt;
+
 /* Copied observations from a returned TH call, taken while its real graph is
  * held. Identity integers cannot be dereferenced. Later failed draws preserve
  * these successful receipts; retirement is marked only for their own attempt. */
@@ -46,6 +62,7 @@ typedef struct mc_client_render_global_draw_receipt {
     size_t model_parts_compiled, model_faces, model_vertices;
     size_t shadow_quads, shadow_vertices, shadow_block_queries, shadow_light_queries;
     size_t shadow_normal_queries, shadow_brightness_queries;
+    mc_client_render_global_held_receipt held;
 } mc_client_render_global_draw_receipt;
 
 typedef struct mc_client_render_global_entities_state {

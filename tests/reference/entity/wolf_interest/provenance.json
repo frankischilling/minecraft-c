@@ -1,0 +1,127 @@
+{
+  "schema": 1,
+  "chronology": {
+    "public_paths_were_capture_start_inputs": false,
+    "scope": "Post-capture authored/reference export; no new capture or retroactive byte-identical capture-start claim",
+    "sole_text_transform": "CRLF to LF",
+    "changed_captured_export_files": 0
+  },
+  "captured_export_mapping": {
+    "ConstructorJson.java": {
+      "captured_path": "inputs-b/ConstructorJson.java",
+      "captured_sha256": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+      "export_sha256": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+      "transform": "CRLF_to_LF_only",
+      "changed": false
+    },
+    "MobTickTarget.java": {
+      "captured_path": "inputs-b/MobTickTarget.java",
+      "captured_sha256": "acd8a0c75bff1b7ec238d4aa9e703580e76d11694b2f6e77b067fae166c21c7a",
+      "export_sha256": "acd8a0c75bff1b7ec238d4aa9e703580e76d11694b2f6e77b067fae166c21c7a",
+      "transform": "CRLF_to_LF_only",
+      "changed": false
+    },
+    "preparation.tsv": {
+      "captured_path": "inputs-b/preparation.tsv",
+      "captured_sha256": "281ab70b9c50afd228c0a5653ea44de45d002ca69947b8557acb7f521e673cad",
+      "export_sha256": "281ab70b9c50afd228c0a5653ea44de45d002ca69947b8557acb7f521e673cad",
+      "transform": "CRLF_to_LF_only",
+      "changed": false
+    },
+    "profiles.tsv": {
+      "captured_path": "inputs-b/profiles.tsv",
+      "captured_sha256": "3396c108cc6a7d56b5679be367d6dc325308b680ba1c8faed3b139b9af0c3e08",
+      "export_sha256": "3396c108cc6a7d56b5679be367d6dc325308b680ba1c8faed3b139b9af0c3e08",
+      "transform": "CRLF_to_LF_only",
+      "changed": false
+    },
+    "protocol.md": {
+      "captured_path": "inputs-b/protocol.md",
+      "captured_sha256": "ad8eeb9ccbd54721977dc713565300aa66609765a7de6c3b3a3f59e4cdd1dbbf",
+      "export_sha256": "ad8eeb9ccbd54721977dc713565300aa66609765a7de6c3b3a3f59e4cdd1dbbf",
+      "transform": "CRLF_to_LF_only",
+      "changed": false
+    },
+    "WolfInterestJdi.java": {
+      "captured_path": "inputs-b/WolfInterestJdi.java",
+      "captured_sha256": "f0fd8f9e1e7f4feafbc07aa56879cae4e0bf73cc5928f727a6b762ee4788d488",
+      "export_sha256": "f0fd8f9e1e7f4feafbc07aa56879cae4e0bf73cc5928f727a6b762ee4788d488",
+      "transform": "CRLF_to_LF_only",
+      "changed": false
+    },
+    "WolfInterestTarget.java": {
+      "captured_path": "inputs-b/WolfInterestTarget.java",
+      "captured_sha256": "543495c9c13fadb8e1fbb98ddc4e7a9941ef467378a498f5bcdc80faac5ab7d7",
+      "export_sha256": "543495c9c13fadb8e1fbb98ddc4e7a9941ef467378a498f5bcdc80faac5ab7d7",
+      "transform": "CRLF_to_LF_only",
+      "changed": false
+    },
+    "source-pins.json": {
+      "captured_path": "attempt-b/authority.json",
+      "captured_sha256": "f268285aea364b0e9ac90b16db878a26fb2cc097a8f7d677016751d1e2f8d49f",
+      "export_sha256": "f268285aea364b0e9ac90b16db878a26fb2cc097a8f7d677016751d1e2f8d49f",
+      "transform": "CRLF_to_LF_only",
+      "changed": false
+    },
+    "compiled-helper-Code-pins.json": {
+      "captured_path": "attempt-b/helper-Code.json",
+      "captured_sha256": "86712a1a3bfe61f2d66b548f171cbae25e9465fb25c249982759db408f7ddebf",
+      "export_sha256": "86712a1a3bfe61f2d66b548f171cbae25e9465fb25c249982759db408f7ddebf",
+      "transform": "CRLF_to_LF_only",
+      "changed": false
+    }
+  },
+  "packet": {
+    "final_audit_sha256": "0608db848b9d9654640ebc038c06f5463bfadb4cc36a7e9baa1cbdd802a026e3",
+    "whole_packet_files": 76,
+    "analysis_b_sha256": "12e2864f2a4e5166b78b0c3eb9b484da3a453c7951016fb4ac5475f832c751c7",
+    "captures": {
+      "a": {
+        "receipt_sha256": "aff5d18d041b16f8f7f5088d4dc424027924ee9aac2ae09069db835e9e56ada9",
+        "current_inputs": 18,
+        "current_helpers": 5,
+        "capture_artifacts": 24
+      },
+      "b": {
+        "receipt_sha256": "c5ed3fdcc960fe24dc4ede6ae2f01bf1a2db1e84beb1b8dc3380318056e9b182",
+        "current_inputs": 18,
+        "current_helpers": 5,
+        "capture_artifacts": 24
+      }
+    },
+    "actual_runtime_counts": {
+      "class_bindings_per_VM": 747,
+      "initialized_per_VM": 192,
+      "archive_Code": 5709,
+      "live_Code_b": 1945
+    }
+  },
+  "compiled_helpers_b_sha256": {
+    "ConstructorJson.class": "1d49f80ca7097e808a497f3a861381a387f18208f6817852dcbf5eebc343fa5e",
+    "MobTickTarget$Observer.class": "8cbdbad7b6f82b13edf844d4ac96ae018d64dd048b49c9519bfae9ac1c257567",
+    "MobTickTarget.class": "0b588d2cf11921aa83abf9cb6604494eee621a78f010d8c2b384d921aa6b0532",
+    "WolfInterestJdi.class": "b234ab02206b4ebe496f16dd833ff22a10de610b53c5245b35aaa983dd9af567",
+    "WolfInterestTarget.class": "d75f820e7e85e96cda38d5332805220d99dad1141ccae42dc0dc56fd5690dab6"
+  },
+  "external_authored_helpers": {
+    "ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "MobTickTarget.java": "acd8a0c75bff1b7ec238d4aa9e703580e76d11694b2f6e77b067fae166c21c7a",
+    "MobTickJdi.java": "5b6e3647a4c6b7ad8bf1ae279534731fd7f4b32dca2f09954593fcfe53a79fc4"
+  },
+  "reference_files": {
+    "capture_reference.py": "416c4441b2d20d8eddb2f741de97fa4c5bff62f21d0637eb1b5c8f93cf65c5c5",
+    "classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+    "compiled-helper-Code-pins.json": "86712a1a3bfe61f2d66b548f171cbae25e9465fb25c249982759db408f7ddebf",
+    "ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "MobTickTarget.java": "acd8a0c75bff1b7ec238d4aa9e703580e76d11694b2f6e77b067fae166c21c7a",
+    "preparation.tsv": "281ab70b9c50afd228c0a5653ea44de45d002ca69947b8557acb7f521e673cad",
+    "profiles.tsv": "3396c108cc6a7d56b5679be367d6dc325308b680ba1c8faed3b139b9af0c3e08",
+    "protocol.md": "ad8eeb9ccbd54721977dc713565300aa66609765a7de6c3b3a3f59e4cdd1dbbf",
+    "README.md": "96c87bcac5d739419d8f09d262a96f7ce7f6861fe399624aa5ee29fe5447d5f4",
+    "runtime-class-Code-pins.json": "80d12034c056189942869e2e6ee59769a2bbd15dcd96809e0f25979e7c6d883b",
+    "source-pins.json": "f268285aea364b0e9ac90b16db878a26fb2cc097a8f7d677016751d1e2f8d49f",
+    "support.py": "2655a40eaddac4ac3e9f10e746ad451d9568f51ee1a3e8f4f7fde406a01eb568",
+    "WolfInterestJdi.java": "f0fd8f9e1e7f4feafbc07aa56879cae4e0bf73cc5928f727a6b762ee4788d488",
+    "WolfInterestTarget.java": "543495c9c13fadb8e1fbb98ddc4e7a9941ef467378a498f5bcdc80faac5ab7d7"
+  }
+}

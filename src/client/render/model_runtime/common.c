@@ -1,4 +1,5 @@
 #include "internal.h"
+#include "mc/core/math/strict.h"
 
 #include <string.h>
 
@@ -12,7 +13,10 @@ void mc_client_model_runtime_error_init(mc_client_model_runtime_error *error) {
     error->state.nn_pose_site.pc = error->state.nn_render_site.pc = -1;
     for (size_t i = 0; i < sizeof(error->ancestors) / sizeof(*error->ancestors); ++i)
         error->ancestors[i].pc = -1;
+    error->state.fh_pose_site.pc = error->state.fh_render_site.pc = error->state.ej_pose_site.pc =
+        -1;
     error->math.source_pc = -1;
+    mc_entity_render_error_init(&error->entity);
     error->state.array_index = error->state.array_length = -1;
 }
 
@@ -32,6 +36,13 @@ void model_runtime_at(mc_client_model_runtime_error *error, const char *cl, cons
         else if (strcmp(method, "a") == 0 && strcmp(descriptor, "(FFFFFF)V") == 0)
             error->state.nn_render_site = error->site;
     }
+    if (strcmp(cl, "fh") == 0) {
+        if (strcmp(method, "b") == 0)
+            error->state.fh_pose_site = error->site;
+        else if (strcmp(method, "a") == 0)
+            error->state.fh_render_site = error->site;
+    } else if (strcmp(cl, "ej") == 0 && strcmp(method, "b") == 0)
+        error->state.ej_pose_site = error->site;
 }
 
 bool model_runtime_fail(mc_client_model_runtime_error *error, mc_client_model_runtime_status status,
@@ -105,7 +116,8 @@ static bool supported(const manager_model *model) {
     return model_runtime_quadruped(model) || strcmp(model->source_class, "hh") == 0 ||
            strcmp(model->source_class, "td") == 0 || strcmp(model->source_class, "sc") == 0 ||
            strcmp(model->source_class, "no") == 0 || strcmp(model->source_class, "wn") == 0 ||
-           strcmp(model->source_class, "il") == 0;
+           strcmp(model->source_class, "il") == 0 || model_runtime_biped(model) ||
+           strcmp(model->source_class, "o") == 0;
 }
 
 bool model_runtime_fp(mc_client_model_runtime_error *error) {
@@ -114,15 +126,23 @@ bool model_runtime_fp(mc_client_model_runtime_error *error) {
                               "Model strict floating controls");
 }
 
-static bool math_enter(const mc_client_model_runtime_context *context, bool sine,
+static bool math_enter(const mc_client_model_runtime_context *context, model_runtime_math_kind kind,
                        mc_client_model_runtime_error *error) {
     ++error->state.math_calls;
+    const bool sine = kind == MODEL_RUNTIME_SINE;
+    const bool square_root = kind == MODEL_RUNTIME_SQUARE_ROOT;
     if (sine)
         ++error->state.sine_calls;
+    else if (square_root)
+        ++error->state.square_root_calls;
     else
         ++error->state.cosine_calls;
     error->selected_child = MC_CLIENT_MODEL_RUNTIME_CHILD_MATH;
-    error->child = (mc_client_graphics_site){"in", sine ? "a" : "b", "(F)F", -1};
+    error->child = (mc_client_graphics_site){"in",
+                                             sine          ? "a"
+                                             : square_root ? "c"
+                                                           : "b",
+                                             "(F)F", -1};
     if (context == NULL || context->math == NULL)
         return model_runtime_fail(error, MC_CLIENT_MODEL_RUNTIME_MATH_FAILED,
                                   "Model actual Math namespace");
@@ -146,7 +166,7 @@ static bool math_enter(const mc_client_model_runtime_context *context, bool sine
 
 bool model_runtime_math(const mc_client_model_runtime_context *context,
                         mc_client_model_runtime_error *error) {
-    return math_enter(context, false, error);
+    return math_enter(context, MODEL_RUNTIME_COSINE, error);
 }
 
 bool model_runtime_math_value(const mc_client_model_runtime_context *context,
@@ -167,10 +187,11 @@ bool model_runtime_math_value(const mc_client_model_runtime_context *context,
         return true;
     }
     const bool sine = kind == MODEL_RUNTIME_SINE;
-    if (!math_enter(context, sine, error))
+    if (!math_enter(context, kind, error))
         return false;
-    *out = sine ? mc_math_sin(mc_math_classes_table(context->math), value)
-                : mc_math_cos(mc_math_classes_table(context->math), value);
+    *out = kind == MODEL_RUNTIME_SQUARE_ROOT ? at_narrow(mc_math_strict_sqrt(at_widen(value)))
+           : sine ? mc_math_sin(mc_math_classes_table(context->math), value)
+                  : mc_math_cos(mc_math_classes_table(context->math), value);
     return true;
 }
 
@@ -215,6 +236,12 @@ bool model_runtime_pose_body(manager_model *model, const float values[6],
         ok = model_runtime_wn_pose(model, values, context, error);
     else if (strcmp(model->source_class, "il") == 0)
         ok = model_runtime_il_pose(model, values, context, error);
+    else if (strcmp(model->source_class, "o") == 0)
+        ok = model_runtime_o_pose(model, values, context, error);
+    else if (strcmp(model->source_class, "ej") == 0 || strcmp(model->source_class, "lc") == 0)
+        ok = model_runtime_ej_pose(model, values, context, error);
+    else if (strcmp(model->source_class, "fh") == 0)
+        ok = model_runtime_fh_pose(model, values, context, error);
     else if (model_runtime_quadruped(model))
         ok = model_runtime_nn_pose(model, values, context, error);
     else
@@ -228,6 +255,14 @@ static bool part_failed(mc_client_model_runtime_error *error, bool quadruped) {
     error->selected_child = MC_CLIENT_MODEL_RUNTIME_CHILD_PART;
     error->child = error->part.site;
     error->throwable = error->part.throwable;
+    if (error->part.throwable == MC_CLIENT_MODEL_DRAW_SOURCE_ERROR &&
+        error->part.exception_class != NULL) {
+        error->exception_class = error->part.exception_class;
+        model_runtime_fail(error, MC_CLIENT_MODEL_RUNTIME_PART_FAILED,
+                           "Model actual PS source Error");
+        error->native_policy = false;
+        return false;
+    }
     /* Only the producer's named classification may enter GV's Exception catch.
      * The complete producer, including an unfinished list, stays unchanged. */
     if (error->part.throwable == MC_CLIENT_MODEL_DRAW_SOURCE_EXCEPTION &&
@@ -255,6 +290,7 @@ bool model_runtime_draw_part(mc_client_managed_renderer *owner, mc_client_model_
     const bool quadruped = strcmp(error->site.class_name, "nn") == 0;
     error->state.part = part;
     ++error->state.part_calls;
+    ++error->state.part_a_calls;
     if (part == NULL)
         return model_runtime_null(error, quadruped ? "Quadruped null PS invocation receiver"
                                                    : "Model null PS invocation receiver");
@@ -271,7 +307,108 @@ bool model_runtime_draw_part(mc_client_managed_renderer *owner, mc_client_model_
     if (!ok)
         return part_failed(error, quadruped);
     ++error->state.part_returns;
+    ++error->state.part_a_returns;
     return true;
+}
+
+static bool other_part(mc_client_managed_renderer *owner, mc_client_model_part *part, float scale,
+                       bool attachment, const mc_client_model_runtime_context *context,
+                       mc_client_model_runtime_error *error) {
+    error->state.part = part;
+    ++error->state.part_calls;
+    if (attachment)
+        ++error->state.part_c_calls;
+    else
+        ++error->state.part_b_calls;
+    if (part == NULL)
+        return model_runtime_null(error, "Model null PS invocation receiver");
+    /* A hidden/disabled PS and a compiled attachment need no new Entity/NW
+     * service. Caller still holds the same genuine complete renderer graph. */
+    if (!part->i && part->h && !part->n && context != NULL && context->entities != NULL &&
+        context->entities != owner->parent->classes->models->entities)
+        return model_runtime_fail(error, MC_CLIENT_MODEL_RUNTIME_STATE,
+                                  "Model actual PS Entity namespace");
+    mc_client_render_engine_classes *graphics = context ? context->graphics : NULL;
+    mc_entity_classes *entities = context ? context->entities : NULL;
+    mc_client_display *display = context ? context->display : NULL;
+    const bool ok = attachment ? mc_client_model_part_attach(part, graphics, entities, display,
+                                                             scale, &error->part)
+                               : mc_client_model_part_draw_rotated(part, graphics, entities,
+                                                                   display, scale, &error->part);
+    error->state.faces += error->part.faces;
+    error->state.vertices += error->part.vertices;
+    if (error->part.compiled)
+        ++error->state.compiled_parts;
+    if (!ok)
+        return part_failed(error, false);
+    ++error->state.part_returns;
+    if (attachment)
+        ++error->state.part_c_returns;
+    else
+        ++error->state.part_b_returns;
+    return true;
+}
+
+bool model_runtime_draw_part_rotated(mc_client_managed_renderer *owner, mc_client_model_part *part,
+                                     float scale, const mc_client_model_runtime_context *context,
+                                     mc_client_model_runtime_error *error) {
+    return other_part(owner, part, scale, false, context, error);
+}
+
+bool model_runtime_attach_part(mc_client_managed_renderer *owner, mc_client_model_part *part,
+                               float scale, const mc_client_model_runtime_context *context,
+                               mc_client_model_runtime_error *error) {
+    return other_part(owner, part, scale, true, context, error);
+}
+
+bool model_runtime_entity_finish(const mc_client_model_runtime_context *context, bool ok,
+                                 mc_client_model_runtime_error *error) {
+    /* This is the concrete Root-owned native bridge, never a callback. Even
+     * failed/scalar children reach it before their owning error may be reused. */
+    const bool adopted =
+        mc_client_model_runtime_entity_adopt(context, &error->entity, &error->capture_failure);
+    ++error->state.entity_leaf_calls;
+    error->state.math_calls += error->entity.sine_calls;
+    error->state.sine_calls += error->entity.sine_calls;
+    if (ok && adopted) {
+        error->selected_child = MC_CLIENT_MODEL_RUNTIME_CHILD_NONE;
+        error->child = (mc_client_graphics_site){.pc = -1};
+        return true;
+    }
+    error->selected_child = MC_CLIENT_MODEL_RUNTIME_CHILD_ENTITY;
+    const mc_entity_render_site site = error->entity.site;
+    error->child =
+        (mc_client_graphics_site){site.class_name, site.method, site.descriptor, site.pc};
+    if (!adopted) {
+        /* Earlier Source causes/owning slots remain intact in entity. */
+        error->source_exception = false;
+        error->exception_class = NULL;
+        error->throwable = MC_CLIENT_MODEL_DRAW_NO_THROWABLE;
+        return model_runtime_fail(error, MC_CLIENT_MODEL_RUNTIME_CAPTURE_FAILED,
+                                  error->capture_failure.operation);
+    }
+    error->source_exception = error->entity.source_exception;
+    error->exception_class = error->entity.exception_class;
+    switch (error->entity.throwable) {
+        case MC_ENTITY_RENDER_SOURCE_EXCEPTION:
+            error->throwable = MC_CLIENT_MODEL_DRAW_SOURCE_EXCEPTION;
+            break;
+        case MC_ENTITY_RENDER_SOURCE_ERROR:
+            error->throwable = MC_CLIENT_MODEL_DRAW_SOURCE_ERROR;
+            break;
+        case MC_ENTITY_RENDER_UNCLASSIFIED_THROWABLE:
+            error->throwable = MC_CLIENT_MODEL_DRAW_UNCLASSIFIED_THROWABLE;
+            break;
+        default:
+            error->throwable = MC_CLIENT_MODEL_DRAW_NO_THROWABLE;
+            break;
+    }
+    model_runtime_fail(error,
+                       error->source_exception ? MC_CLIENT_MODEL_RUNTIME_SOURCE_EXCEPTION
+                                               : MC_CLIENT_MODEL_RUNTIME_ENTITY_FAILED,
+                       error->entity.operation);
+    error->native_policy = error->entity.native_policy;
+    return false;
 }
 
 bool mc_client_model_event_entered(mc_client_managed_renderer *owner, manager_model *model,
@@ -291,8 +428,14 @@ bool mc_client_model_event_entered(mc_client_managed_renderer *owner, manager_mo
         return false;
     if (!supported(model))
         return unsupported(model, "a", "(Lls;FFF)V", error);
-    (void)context;
-    /* All selected classes inherit the actual empty KO entity event. Neither
+    if (strcmp(model->source_class, "o") == 0) {
+        const float values[3] = {limb_swing, limb_amount, partial};
+        if (!model_runtime_o_event(model, actor, values, context, error))
+            return false;
+        error->state.event_returned = error->state.returned = true;
+        return true;
+    }
+    /* All other selected classes inherit the actual empty KO entity event. Neither
      * the actor, source KO fields nor any native service is read here. */
     model_runtime_at(error, "ko", "a", "(Lls;FFF)V", 0);
     error->state.event_returned = error->state.returned = true;
@@ -350,6 +493,10 @@ bool mc_client_model_render_entered(mc_client_managed_renderer *owner, manager_m
                         ? model_runtime_wn_render(owner, model, values, context, error)
                     : strcmp(model->source_class, "il") == 0
                         ? model_runtime_il_render(owner, model, values, context, error)
+                    : strcmp(model->source_class, "o") == 0
+                        ? model_runtime_o_render(owner, model, values, context, error)
+                    : model_runtime_biped(model)
+                        ? model_runtime_fh_render(owner, model, values, context, error)
                         : model_runtime_nn_render(owner, model, values, context, error);
     if (!ok)
         return false;

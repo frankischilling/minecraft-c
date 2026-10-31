@@ -1,6 +1,88 @@
 # Test scope and reproduction
 
-## Creature drawing, PB particles and Creeper components
+<a id="focused-mob-drawing-qualification-unpublished"></a>
+
+## Default Mob drawing and Wolf interest qualification
+
+All 102 selected targets build on Windows MSVC Debug and Linux Clang18
+ASan/UBSan. All 134 Windows and 126 Linux tests pass. The same 2,665 C, helper,
+build and reference inputs remain unchanged across both build and test phases.
+All 32 fresh original-comparison wrappers pass, sixteen per host. The
+independent current-input audit verifies 6,413 resolved paths, merging Windows
+separators and `/mnt/c` aliases of the same file. Formatting passes for 1,774
+files, and the six binding tables pass with historical metadata intact.
+
+A separate publication check reconfigured and rebuilt after the CMake
+CRLF-to-LF conversion. All 204 selected executables, 102 per host, remain
+byte-identical, with 1,792 runtime C/header/fragment/shader files unchanged.
+The original build, test and comparison receipts remain immutable.
+
+| Host | Build seconds | Tests | CTest seconds | Phase including hash audit |
+| --- | ---: | ---: | ---: | ---: |
+| Windows | 148.94 | 134 | 527.40 | 527.805 seconds |
+| Linux | 40.03 | 126 | 577.96 | 634.673 seconds |
+
+The [fourteen-call renderer pair](client/mob-drawing.md#wolf-zombie-and-skeleton-with-its-bow)
+retains 35,040 native checks and 357,680 selected typed comparisons on Linux;
+Windows retains 35,063 and 357,763. Both check 3,719 identities, 29,624 expanded
+records, 310 direct queries, 25 lists and 150 faces. Five genuine Skeleton
+draws contribute 30 external Bow boundaries and 15,840 raw backing words.
+Actual WE/O, V/EJ/LC, PS.b/c and the FR.a Stack/RA path use their genuine owners.
+Raw constructors, displaced LC allocations, complete actor fields, native live
+GL order, full GPU submission and original/native pixels remain unpaired.
+Only prepared matrices retain the recorded four-ULP/signed-zero allowance.
+
+The [Wolf interest pair](../tests/reference/entity/wolf_interest/README.md)
+passes freshly on both hosts: nine cases and three native failure controls,
+531 C checks, 122 selected values and 153 alias relations checked within
+their respective profiles. Five bare-mode comparator controls, ten Original
+comparator controls, three manifest controls, six build controls and two
+recorded-pin drift controls are rejected for their intended reasons.
+
+Original uses genuine DC/IX owners and runs actual LS.o with declared
+LS.V=true. Native enters only GI.o4..186; the selected pair is GI51..126.
+Source superclass work and full GI return remain separate observations.
+Native range return186 earns no superclass, full-method or tick credit.
+Dynamic Item/GM classes, complete temporal/cross-case identities and Native
+before51 state are not paired. The compiled-input companion binds the actual
+post-build/pre-paired-execution output; it makes no before-first-Native claim.
+The Source food-method receiver pairs the second Item-array read;
+first-element equality is a separate native alias control. Raw constructor
+entropy remains independent.
+
+The corrected [Monster attack pair](../tests/reference/entity/monster_attack/README.md)
+passes on both hosts with a genuine Pig target: 605 native checks and 360
+selected comparisons over twelve cases. Seven return, three reach actual
+Source NPE gates and two retain unreturned hurt61 prefixes. The latter earn
+no damage completion, enclosing-tick or loaded-Zombie return credit. The
+authored packet preserves the historical receipt and exact later
+archived-CRLF-to-LF source-file provenance, without general normalization.
+
+The Windows loaded Wolf development run passes 5,333 checks and four returned
+World/HUD frames; the fresh registered test passes in 27.43 seconds. Both
+retain first compilation/reuse, real tick 1328, World 1013, N 569, HUD 2101 and
+checked cleanup. Timer, placement and random inputs remain unchanged. The
+original Zombie/Skeleton II97 failures and the later Zombie periodic-fire
+SN.U501 failure remain preserved; no loaded Zombie return is claimed.
+
+Real P -> A -> P alias, external-hold and active-IY-lease partial-refusal/retry
+controls pass on both hosts. Fresh pinned-codec configure/build and init/clear
+controls also pass. The separate warm control retains all ten adapted files'
+bytes and mtimes without recompiling the five codec sources. These native
+ownership/build controls do not add game-parity credit.
+
+The first 101-target cohort remains failed evidence: all 125 Linux tests
+passed, while Windows passed 132 of 133 and stopped only at actual Wolf
+interest GI51, not its renderer. Its thirty passing original wrappers and
+6,308-path audit precede the fix. The new qualification does not rewrite that
+cohort. The 2dab hosted 1,635-test and c88e648 broad records remain historical;
+no new hosted result is claimed. Live combat/hurt, Skeleton Arrow work,
+Mob NBT/save/reload, Source Region writes and other gameplay remain unfinished.
+Additional NULL-World/fire work is outside this qualification.
+
+<a id="creature-drawing-pb-particles-and-creeper-components"></a>
+
+## Earlier creature drawing, PB particles and Creeper components
 
 All 98 selected targets build on Windows MSVC Debug and Linux Clang18
 ASan/UBSan. The registered selection passes all 129 Windows and 122 Linux tests,
@@ -20,7 +102,7 @@ with the actual target flags rejects the original and accepts the correction.
 Rebuilt Windows and Clang18 creature comparisons each retain 3,722 native checks,
 366,155 selected original checks and twelve rejected comparator corruptions.
 Production and build configuration are unchanged; hosted results keep their
-separate commit scope in [draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
+separate commit scope in [published checkpoint](https://github.com/frankischilling/minecraft-c/pull/52).
 
 `client.creature_draw` uses genuine Spider, Slime, Squid and Creeper owners.
 Windows and Linux each pass 3,722 native checks and 366,155 selected original

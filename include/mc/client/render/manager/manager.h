@@ -6,6 +6,7 @@
 #include "mc/client/world/entity_renderer.h"
 #include "mc/core/math/classes.h"
 #include "mc/entity/player/player.h"
+#include "mc/item/stack/stack.h"
 
 typedef struct mc_client_bitmap_font mc_client_bitmap_font;
 typedef struct mc_client_render_engine mc_client_render_engine;
@@ -40,7 +41,8 @@ typedef enum mc_client_manager_status {
     MC_CLIENT_MANAGER_SETTINGS_FAILED,
     MC_CLIENT_MANAGER_UNSUPPORTED_FP,
     MC_CLIENT_MANAGER_UNSUPPORTED_NUMERIC,
-    MC_CLIENT_MANAGER_UNIMPLEMENTED_DEPENDENCY
+    MC_CLIENT_MANAGER_UNIMPLEMENTED_DEPENDENCY,
+    MC_CLIENT_MANAGER_STACK_FAILED
 } mc_client_manager_status;
 
 typedef enum mc_client_manager_phase {
@@ -69,6 +71,7 @@ typedef struct mc_client_manager_error {
     mc_math_class_error math;
     mc_player_error player;
     mc_entity_status entity_status;
+    mc_item_stack_status stack_status;
     mc_client_render_engine_status engine_status;
     mc_game_settings_error settings;
     int font_status; /* Actual private BitmapFont status. */

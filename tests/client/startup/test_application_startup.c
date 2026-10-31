@@ -1,5 +1,6 @@
 #include "client/gui/loading_internal.h"
 #include "client/particles/effect_renderer_internal.h"
+#include "client/render/manager/internal.h"
 #include "client/startup/application_construction_internal.h"
 #include "client/startup/application_directory_classes.h"
 #include "client/startup/application_owner_internal.h"
@@ -9,6 +10,7 @@
 #include "client/startup/application_startup_internal.h"
 #include "client/startup/application_startup_rendering.h"
 #include "client/startup/application_startup_statistics.h"
+#include "client/world/entity_renderer/internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/resources/files/files.h"
 #ifdef MC_STARTUP_CONTROLLER_BOUNDARY
@@ -700,6 +702,9 @@ static int real_window_prefix(const char *resources, const char *imported_resour
               manager.fields.f != NULL && manager.fields.f != px.fields.c);
         mc_client_held_item_state global_hand;
         CHECK(mc_client_held_item_inspect(manager.hand_occurrence, &global_hand));
+        const mc_client_render_manager *hand_manager = manager.a;
+        mc_client_held_item *primary_hand = manager.hand_occurrence;
+        const mc_client_source_ra *primary_identity = global_hand.pending_ra;
         CHECK(global_hand.pending_ra == manager.fields.f && global_hand.ra_app == app &&
               global_hand.map_font == app->font_renderer &&
               global_hand.map_engine == app->render_engine &&
@@ -756,9 +761,6 @@ static int real_window_prefix(const char *resources, const char *imported_resour
               manager.fields.f == replacement_identity && manager.displaced_hands == 1);
         CHECK(mc_client_held_item_inspect(manager.hand_occurrence, &global_hand) &&
               global_hand.holds == 1);
-        mc_client_held_item *external_global = manager.hand_occurrence;
-        CHECK(mc_client_held_item_retain(external_global, &startup.error->entity_renderer) ==
-              MC_CLIENT_ENTITY_RENDERER_OK);
         mc_client_color_array_state map_array;
         mc_client_argb_image_state map_image;
         CHECK(mc_client_color_array_inspect(px.map_array, &map_array));
@@ -790,6 +792,30 @@ static int real_window_prefix(const char *resources, const char *imported_resour
         for (size_t at = 0; at < 16384u * 4u; ++at)
             CHECK(uploaded[at] == 0);
         free(uploaded);
+        /* Real P -> A -> P publication: two manager-owned P occurrences,
+         * one current and one displaced, with no extra fixture occurrence. */
+        mc_client_held_item *alternate_hand = manager.hand_occurrence;
+        CHECK(mc_client_held_item_is_inactive_occurrences(primary_hand, 1) &&
+              !mc_client_held_item_is_inactive_occurrences(primary_hand, 0) &&
+              !mc_client_held_item_is_inactive_occurrences(primary_hand, 2));
+        mc_client_held_item *back_to_primary = primary_hand;
+        CHECK(mc_client_held_item_retain(back_to_primary, &startup.error->entity_renderer) ==
+              MC_CLIENT_ENTITY_RENDERER_OK);
+        CHECK(mc_client_render_manager_publish_hand(global_manager, attempt->manager_capture,
+                                                    &back_to_primary, &startup.error->manager) ==
+                  MC_CLIENT_MANAGER_OK &&
+              back_to_primary == NULL);
+        CHECK(mc_client_render_manager_inspect(global_manager, &manager) &&
+              manager.hand_occurrence == primary_hand && manager.fields.f == primary_identity &&
+              manager.displaced_hands == 2);
+        CHECK(mc_client_held_item_is_inactive_occurrences(primary_hand, 2) &&
+              !mc_client_held_item_is_final_inactive(primary_hand) &&
+              mc_client_held_item_is_final_inactive(alternate_hand));
+        CHECK(mc_client_held_item_inspect(primary_hand, &global_hand) && global_hand.holds == 2);
+        mc_client_held_item *external_global = primary_hand;
+        CHECK(mc_client_held_item_retain(external_global, &startup.error->entity_renderer) ==
+              MC_CLIENT_ENTITY_RENDERER_OK);
+        CHECK(!mc_client_held_item_is_inactive_occurrences(primary_hand, 2));
         mc_client_source_px *external_px = app->t;
         CHECK(mc_client_entity_renderer_retain(external_px, &startup.error->entity_renderer) ==
               MC_CLIENT_ENTITY_RENDERER_OK);
@@ -812,18 +838,43 @@ static int real_window_prefix(const char *resources, const char *imported_resour
         CHECK(mc_client_render_manager_retire_hands(global_manager, &startup.error->manager) ==
               MC_CLIENT_MANAGER_BUSY);
         CHECK(mc_client_render_manager_inspect(global_manager, &manager) &&
-              manager.phase == MC_CLIENT_MANAGER_RETIRING && !manager.source_views_available);
+              manager.phase == MC_CLIENT_MANAGER_RETIRING && !manager.source_views_available &&
+              hand_manager->hand == primary_hand && hand_manager->displaced_count == 2 &&
+              hand_manager->fields.f == primary_identity);
+        CHECK(mc_client_held_item_inspect(primary_hand, &global_hand) && global_hand.holds == 3 &&
+              global_hand.ra_phase == MC_CLIENT_ENTITY_RENDERER_READY);
         mc_client_render_manager *rejected = NULL;
         CHECK(mc_client_render_manager_static_get(global_manager, &rejected,
                                                   &startup.error->manager) ==
                   MC_CLIENT_MANAGER_INVALID_PHASE &&
               rejected == NULL);
-        CHECK(mc_client_held_item_identity(external_global) == replacement_identity);
+        CHECK(mc_client_held_item_identity(external_global) == primary_identity);
         CHECK(app->font_renderer != NULL && app->render_engine != NULL &&
               app->display == state.display);
         CHECK(mc_client_held_item_release(&external_global, &startup.error->entity_renderer) ==
                   MC_CLIENT_ENTITY_RENDERER_OK &&
               external_global == NULL);
+        /* A real IY generation draw guard refuses A's final cleanup only
+         * after the nonfinal current P slot is consumed. No metadata is edited;
+         * retry must see remaining A1/P1, not the old P2/A1 roster. */
+        mc_client_font_lease *alternate_lease = replacement_identity->pending_iy->lease;
+        CHECK(
+            alternate_lease != NULL &&
+            mc_client_font_lease_begin(alternate_lease, &startup.error->entity_renderer.graphics));
+        CHECK(mc_client_render_manager_retire_hands(global_manager, &startup.error->manager) ==
+                  MC_CLIENT_MANAGER_HAND_FAILED &&
+              startup.error->manager.hand.status == MC_CLIENT_ENTITY_RENDERER_BUSY &&
+              startup.error->manager.hand.graphics.status == MC_CLIENT_GRAPHICS_BUSY);
+        CHECK(mc_client_render_manager_inspect(global_manager, &manager) &&
+              manager.phase == MC_CLIENT_MANAGER_RETIRING && !manager.source_views_available &&
+              hand_manager->hand == NULL && hand_manager->displaced_count == 2 &&
+              hand_manager->fields.f == primary_identity);
+        CHECK(mc_client_held_item_inspect(primary_hand, &global_hand) && global_hand.holds == 1 &&
+              global_hand.ra_phase == MC_CLIENT_ENTITY_RENDERER_READY);
+        CHECK(mc_client_held_item_is_final_inactive(primary_hand) &&
+              mc_client_held_item_is_final_inactive(alternate_hand));
+        CHECK(mc_client_font_lease_end(alternate_lease, &startup.error->entity_renderer.graphics));
+        CHECK(startup.error->manager.hand.graphics.status == MC_CLIENT_GRAPHICS_BUSY);
         /* Actual fixture/runtime authority ends global RA ownership with the
          * real Display/Settings/App still alive, then ends this TH namespace.
          * This is never called by the per-App retirement implementation. */

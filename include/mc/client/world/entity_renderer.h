@@ -199,6 +199,9 @@ mc_client_entity_renderer_status mc_client_held_item_release(mc_client_held_item
 mc_client_entity_renderer_status mc_client_held_item_retire(mc_client_held_item **,
                                                             mc_client_entity_renderer_error *);
 const mc_client_source_ra *mc_client_held_item_identity(const mc_client_held_item *);
+/* Passive native gate for a caller owning exactly this many actual slots.
+ * No child cleanup or Source mutation; zero expected occurrences is invalid. */
+bool mc_client_held_item_is_inactive_occurrences(const mc_client_held_item *, size_t expected);
 bool mc_client_held_item_is_final_inactive(const mc_client_held_item *);
 bool mc_client_held_item_inspect(const mc_client_held_item *, mc_client_held_item_state *);
 #endif

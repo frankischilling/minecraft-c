@@ -30,6 +30,12 @@ parts are checked through live ownership and copied N receipts. Unsupported
 simulation or presentation children remain failures; no source prefix is repaired.
 The creatures-slime and creatures-creeper selectors run their same prepared
 profiles alone.
+The optional remaining-mobs mode adds three independent real loaded sessions
+for Wolf, Zombie and Skeleton. Each keeps actual ticks and raw constructor
+entropy; unsupported attack/presentation work remains a retained failure.
+Copied N receipts include value-only V/RA work recorded before TH retirement,
+so Skeleton must prove six actual Bow batches on both compilation and reuse.
+No native full-frame result is asserted until those checks execute.
 Other profiles retain fresh statistics. With an absent inventory entry, the
 real tutorial can reach the still-missing active notice draw at vu.a108 before
 Mob rendering. That fresh-player route is outside the repeat renderer proof.
@@ -166,6 +172,67 @@ CREATURE_PROFILES = {
 }
 
 
+REMAINING_PROFILES = {
+    "remaining-wolf": ("wolf", "gi", "we", "o", 11, 0, "not-applicable"),
+    "remaining-zombie": ("zombie", "uz", "v", "ej", 7, 2, "not-applicable"),
+    "remaining-skeleton": ("skeleton", "fr", "v", "lc", 7, 2, "unpaired"),
+}
+
+
+def remaining_receipts(mode, stdout):
+    name, source, renderer, model, parts, unused, displaced = REMAINING_PROFILES[mode]
+    rows = stdout.splitlines()
+    declared = (f"WORLD_REMAINING_PROFILE profile={name} scopes=independent-loaded "
+                "statistics-input=pre-bootstrap-unsent-file open-inventory=1 "
+                "canonical=ep.f notice-inactive=1 native-integration-only=1")
+    entity = (f"WORLD_REMAINING_ENTITY profile={name} input=native-constructed "
+              "pose=actual-player-look distance=6 world-and-chunk=1 same-world-and-classes=1 "
+              "constructor-returned=1 constructor-hold-released=1 player-unchanged=1 "
+              "world-random-unchanged=1")
+    if rows.count(declared) != 1 or rows.count(entity) != 1:
+        raise RuntimeError(f"{name} missing genuine declared input")
+    frames = [r for r in rows if r.startswith("WORLD_REMAINING_FRAME ")]
+    if len(frames) != 1:
+        raise RuntimeError(f"{name} missing actual returned-frame receipt")
+    pairs = [word.split("=", 1) for word in frames[0].split()[1:]]
+    if any(len(pair) != 2 for pair in pairs) or len({k for k, _ in pairs}) != len(pairs):
+        raise RuntimeError("remaining frame transport keys")
+    values = dict(pairs)
+    exact = dict(profile=name, source="px.a:1013", entities="n.a:569", hud="uq.a:2101",
+                 mob=source, renderer=renderer, primary=model)
+    exact.update({"exact-declared-actor": "1", "compiled-parts": str(parts), "reused-parts": "0",
+                  "compiled-faces": str(parts * 6), "compiled-vertices": str(parts * 24),
+                  "part-lists": str(parts), "unused-primary-parts": str(unused),
+                  "unused-bw-parts": "9", "displaced-graph": displaced,
+                  "constructor-ledger-stable": "1", "stable-list-ids": "1",
+                  "bow-batches-per-frame": "6" if name == "skeleton" else "0",
+                  "bow-raw-words": "48,48,768,768,768,768" if name == "skeleton" else "none",
+                  "checked-draw-retirement": "1", "copied-receipts": "1",
+                  "tick-return": "1328", "scheduler": "198", "completed-chunks": "361"})
+    if any(values.get(key) != value for key, value in exact.items()):
+        raise RuntimeError(f"{name} exact graph/returned/Bow receipt")
+    keys = ("frames", "entity-frames", "delayed-frames", "undrawn-frames", "shadow-quads",
+            "bow-frames", "completed-random-calls", "completed-samples", "display-calls",
+            "display-samples", "display-random")
+    if set(values) != set(exact) | set(keys) or any(not values[k].isdigit() for k in keys):
+        raise RuntimeError("remaining frame numeric closure")
+    number = {k: int(values[k]) for k in keys}
+    if (not 2 <= number["entity-frames"] <= number["frames"] <= 8 or
+            number["frames"] != sum(number[k] for k in ("entity-frames", "delayed-frames", "undrawn-frames")) or
+            number["shadow-quads"] < number["entity-frames"] or
+            number["bow-frames"] != (number["entity-frames"] if name == "skeleton" else 0) or
+            number["completed-random-calls"] < 1 or
+            number["completed-samples"] != number["completed-random-calls"] * 28880 or
+            number["display-calls"] != number["completed-random-calls"] or
+            number["display-samples"] != number["display-calls"] * 1000 or
+            number["display-random"] != number["display-calls"] * 6000):
+        raise RuntimeError(f"{name} incomplete real timed World/display/Bow work")
+    cleanup = [r for r in rows if r.startswith(f"WORLD_SELECTION mode={mode} cleanup=")]
+    if len(cleanup) != 1 or re.fullmatch(
+            rf"WORLD_SELECTION mode={mode} cleanup=1 checks=[1-9][0-9]*", cleanup[0]) is None:
+        raise RuntimeError(f"{name} checked cleanup missing")
+
+
 def creature_receipts(mode, stdout):
     name, source, renderer, model, primary, secondary, unused, displaced, initial, after = CREATURE_PROFILES[mode]
     parts = primary + secondary
@@ -269,7 +336,8 @@ def main():
     parser.add_argument("--mode", action="append",
                         choices=("empty", "populated", "large", "double", "load", "generate",
                                  "load-terminal", "load-partial", "repeat", "load-light", "animals", "creatures",
-                                 "creatures-slime", "creatures-creeper"))
+                                 "creatures-slime", "creatures-creeper", "remaining-mobs",
+                                 "remaining-wolf", "remaining-zombie", "remaining-skeleton"))
     parser.add_argument("--timeout", type=float)
     args = parser.parse_args()
     if os.name != "nt":
@@ -283,14 +351,16 @@ def main():
                               "load-partial", "repeat", "load-light")
     modes = [expanded for mode in requested
              for expanded in (ANIMAL_PROFILES if mode == "animals" else
-                              CREATURE_PROFILES if mode == "creatures" else (mode,))]
+                              CREATURE_PROFILES if mode == "creatures" else
+                              REMAINING_PROFILES if mode == "remaining-mobs" else (mode,))]
     for mode in modes:
         animal = mode in ANIMAL_PROFILES
         creature = mode in CREATURE_PROFILES
+        remaining = mode in REMAINING_PROFILES
         with tempfile.TemporaryDirectory(prefix="mc-rq-loop-") as work:
             appdata = Path(work)
             game = appdata / ".minecraft"
-            if mode == "repeat" or animal or creature:
+            if mode == "repeat" or animal or creature or remaining:
                 repeat_statistics(game, assets)
             saves = game / "saves"
             saves.mkdir(parents=True)
@@ -298,12 +368,12 @@ def main():
             if mode == "large":
                 worlds = [(f"world{i:02d}", f"Scroll world {i:02d}", 1304000000000, 19132)
                           for i in range(16)]
-            elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature:
+            elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature or remaining:
                 worlds = [
                     ("older", "Old world", 1303000000000, 19132),
                     ("bravo", "", 1304000000000, 19132),
                     ("alpha", "Alpha world", 1304000000000,
-                     19132 if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature else 0),
+                     19132 if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature or remaining else 0),
                 ]
             else:
                 worlds = []
@@ -316,7 +386,7 @@ def main():
                                            partial=mode == "load-partial" and folder == "alpha"),
                                   mtime=0))
                 (directory / "preserve-chunk.dat").write_bytes(b"authored untouched chunk")
-            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature:
+            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature or remaining:
                 regions = saves / "alpha" / "region"
                 regions.mkdir()
                 saved_regions(regions, generate=mode == "generate")
@@ -327,7 +397,7 @@ def main():
             result = subprocess.run([str(executable), str(assets), mode, str(capture)],
                                     env=environment,
                                     timeout=args.timeout if args.timeout is not None else
-                                    (600 if mode == "generate" else 240 if animal or creature else 110), check=False,
+                                    (600 if mode == "generate" else 240 if animal or creature or remaining else 110), check=False,
                                     capture_output=True, text=True)
             print(result.stdout, end="")
             print(result.stderr, end="", file=sys.stderr)
@@ -345,6 +415,8 @@ def main():
                 animal_receipts(mode, result.stdout)
             if creature:
                 creature_receipts(mode, result.stdout)
+            if remaining:
+                remaining_receipts(mode, result.stdout)
             if mode == "repeat":
                 declaration = ("WORLD_REPEAT profile=existing-inventory-player "
                                "statistics-input=pre-bootstrap-unsent-file open-inventory=1 "
@@ -400,7 +472,7 @@ def main():
                 if observed != [expected]:
                     raise RuntimeError("Declared paused caller did not retain the real 499-record light batch")
             after = snapshot(saves)
-            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature:
+            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature or remaining:
                 if any(after.get(name) != digest for name, digest in before.items()):
                     raise RuntimeError("World loading changed pre-existing fixture bytes")
                 if not (saves / "alpha" / "session.lock").is_file():
@@ -425,6 +497,10 @@ def main():
               "constructor/publication, declared Slime size1, full tick/World/HUD compile and reuse, "
               "actual model roles and constructor ownership, copied actor receipts and checked cleanup passed; "
               "no original-frame parity credit")
+    if "remaining-mobs" in requested:
+        print("Native remaining Mobs: three independent real Wolf/Zombie/Skeleton loaded scopes, "
+              "full tick/World/HUD first compilation/reuse, actual V/RA/Bow receipts and checked "
+              "cleanup passed; no original whole-frame parity credit")
     print("World-selection loop: original-receiver input, held entry, rows, Cancel, "
           "large-list scrollbar drag, real-clock double-click failure order, "
           "World-load frontier, captures, save preservation and cleanup passed")

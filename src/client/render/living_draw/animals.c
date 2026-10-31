@@ -50,7 +50,8 @@ bool ld_pass(ld_frame *f, int32_t pass, float partial, bool *out) {
         return ld_creature_pass(f, pass, partial, out);
     if (strcmp(f->renderer->source_class, "va") != 0 &&
         strcmp(f->renderer->source_class, "ip") != 0 &&
-        strcmp(f->renderer->source_class, "es") != 0)
+        strcmp(f->renderer->source_class, "es") != 0 &&
+        strcmp(f->renderer->source_class, "we") != 0 && strcmp(f->renderer->source_class, "v") != 0)
         return ld_fail(f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED, "Living actual concrete pass body");
     /* VA and IP inherit this actual two-instruction GV body. */
     ld_at(f, "gv", "a", "(Lls;IF)Z", 0);
@@ -61,6 +62,8 @@ bool ld_pass(ld_frame *f, int32_t pass, float partial, bool *out) {
 
 bool ld_age(ld_frame *f, float partial, float *out) {
     mc_client_living_draw_error *e = f->error;
+    if (strcmp(f->renderer->source_class, "we") == 0)
+        return ld_wolf_age(f, partial, out);
     if (strcmp(f->renderer->source_class, "es") == 0)
         return ld_squid_age(f, partial, out);
     if (strcmp(f->renderer->source_class, "ip") != 0) {
@@ -69,7 +72,8 @@ bool ld_age(ld_frame *f, float partial, float *out) {
             strcmp(f->renderer->source_class, "va") != 0 &&
             strcmp(f->renderer->source_class, "yx") != 0 &&
             strcmp(f->renderer->source_class, "mj") != 0 &&
-            strcmp(f->renderer->source_class, "m") != 0)
+            strcmp(f->renderer->source_class, "m") != 0 &&
+            strcmp(f->renderer->source_class, "v") != 0)
             return ld_fail(f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED,
                            "Living actual concrete animation body");
         ld_at(f, "gv", "c", "(Lls;F)F", 1);

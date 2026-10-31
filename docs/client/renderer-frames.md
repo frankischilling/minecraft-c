@@ -261,10 +261,10 @@ graph, geometry, identity, query, texture and animation checks described in
 [Mob drawing](mob-drawing.md#four-animal-observations-and-current-qualification).
 The actual ordinary Windows NVIDIA supplement is separately audited and
 admits that host's device-specific normal state; the strict Mesa-normal
-comparison remains failed evidence. The 93-target broad cohort builds on both
-hosts and passes 121 Windows and 115 Linux tests without failures, skips or
-sanitizer findings. Hosted results are reported separately for the published
-commit. Fresh component controls inspect actual model/PS
+comparison remains failed evidence. That earlier 93-target broad cohort built
+on both hosts and passed 121 Windows and 115 Linux tests without failures,
+skips or sanitizer findings. The current qualification has its separate scope
+in [the testing record](../testing.md). Fresh component controls inspect actual model/PS
 prefixes and KO flags after retirement. They are checked against original Code,
 with no paired original Throwable credit, and change no production drawing.
 
@@ -272,9 +272,11 @@ The loaded animal profiles prove the same actual actor, canonical ME/VA/IP
 renderer, EH/HH/TD model and part/list identities across compilation and reuse.
 Pig's distinct unused saddle model stays uncompiled. Existing-player statistics
 and native constructor/publication inputs bound the result; Entity-empty saves
-do not qualify Mob NBT loading. Seven other default families, including the
-mandatory Skeleton Bow, nonempty TileEntity drawing, active tutorial notices,
-Canvas/focus, nonempty items, saving and extended play remain unfinished or
+do not qualify Mob NBT loading. The later direct comparisons cover all eleven
+default Mob families, including Skeleton's actual Bow; loaded Wolf also returns.
+The preserved Zombie and Skeleton sessions stop in actual simulation children.
+Nonempty TileEntity drawing, active tutorial notices, Canvas/focus, general
+nonempty items, combat, saving and extended play remain unfinished or
 unqualified. The separate diagnostic World renderer remains outside the
 default source path. No whole-frame original/native equality or playable
 client claim follows from these finite results.
