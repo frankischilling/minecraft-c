@@ -10,11 +10,16 @@ the client reaches ambience at `Minecraft.k:1311`. A selected Spider jockey reac
 Skeleton construction and publication. Native cleanup preserves the nonempty
 active coordinate Set until final free.
 
-All 75 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
-All 88 Windows tests pass in 136.24 seconds and all 84 Linux tests in
-176.83 seconds, without failures, skips or sanitizer findings. All 2,422 C,
+All 76 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 89 Windows tests pass in 130.56 seconds and all 85 Linux tests in
+172.59 seconds, without failures, skips or sanitizer findings. All 2,422 C,
 helper, build and reference inputs remain unchanged through both builds and tests.
 Formatting checks 1,679 files; source bindings cover 7,862 entries and 3,361 files.
+
+The selection includes World queries and the spring's returned client Grass
+tick. Its bright prepared cavity checks the exact three supplied Random draws,
+cleared immediate flag, complete arrays and unchanged World Random/profile.
+The server Grass dependency and genuine failed-tick prefixes remain separate.
 
 Each host passes 89,842 direct World random-tick checks. All 14 original frame
 rows, 14 rows of five array/identity hashes and 59 callbacks match exactly.

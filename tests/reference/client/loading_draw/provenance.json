@@ -5038,8 +5038,8 @@
       "sha256": "6b44898369c5cb8bb204ef2673bb57950503140f661f9e7ce07d560f38faea09"
     },
     "tests/world/runtime/population/lake_spring_contracts.h": {
-      "bytes": 57855,
-      "sha256": "c6f7f436372afd4a65a53b6c12b75f0919b41650aa813fce4512e47ab6a213ad"
+      "bytes": 59844,
+      "sha256": "30dccba2b2030ef143cf9cf6ef0d7c495ffe45432532e0a13c0cfd95849877ee"
     },
     "tests/world/runtime/population/named_data_probe.h": {
       "bytes": 16485,

@@ -995,8 +995,8 @@ static bool ls_springs(fixture *f, size_t side, mc_world_chunk *c, mc_world_runt
         ls_queues_free(&q);
         ls_queues_free(&after);
     }
-    /* Genuine post270 failures: concrete still-lava NULL Random13; genuinely
-     * unsupported grass tick entry; natural m[0] NULL tick receiver. */
+    /* Post270 dispatch: still-lava NULL Random13 and natural m[0] NULL remain
+     * failures. Client Grass returns through293; server Grass is unavailable. */
     for (unsigned int trial = 0; trial < 3; ++trial) {
         const int32_t target = trial == 0 ? lava : trial == 1 ? grass : 0;
         CHECK(mc_population_spring_feature_init(&spring, target) == MC_WORLD_STORAGE_OK);
@@ -1004,23 +1004,52 @@ static bool ls_springs(fixture *f, size_t side, mc_world_chunk *c, mc_world_runt
         ls_image_read(before, c);
         ls_random(&random, 75);
         expected = random;
+        const bool returned_grass = trial == 1 && side == 0;
+        if (returned_grass) {
+            /* This declared cavity has saved sky15 and World.f0 even above
+             * opaque stone. WP15 therefore skips nextInt4 and reaches the
+             * spread draws87/99/112. Seed75's cached-Gaussian prefix leaves
+             * 7beb63702f8a; draws2/1/0 select stone at(9,62,7), so no spread
+             * write occurs. Every supplied Random cache bit remains live. */
+            int32_t dx, dy, dz;
+            CHECK(w->fields.f == 0 && ls_nibble(before->data.skylight, ls_index(8, 65, 8)) == 15 &&
+                  ls_nibble(before->data.block_light, ls_index(8, 65, 8)) == 0 &&
+                  before->blocks[ls_index(8, 65, 8)] == stone &&
+                  before->blocks[ls_index(9, 62, 7)] == stone &&
+                  expected.state == UINT64_C(0x7beb63702f8a) &&
+                  mc_java_random_next_bounded(&expected, 3, &dx) && dx == 2 &&
+                  mc_java_random_next_bounded(&expected, 5, &dy) && dy == 1 &&
+                  mc_java_random_next_bounded(&expected, 3, &dz) && dz == 0 &&
+                  expected.state == UINT64_C(0x17a244699dcf));
+        }
         world_random = *w->fields.r;
         profile = ls_profile_read(f->profile);
         CHECK(ls_queues_read(w, &q));
         out = true;
         status =
             mc_population_spring_place(&spring, w, trial == 0 ? NULL : &random, 8, 64, 8, &out, &e);
-        CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && out &&
-              ls_failure(&e, w, side, false, 288) && w->fields.a && !w->fields.o &&
-              ls_spring_image(before, c, 8, target, -1, 0) &&
-              mc_test_java_random_equal(&random, &expected) &&
-              mc_test_java_random_equal(w->fields.r, &world_random) &&
-              ls_profile_same(f->profile, &profile) && same_cause(&e.cause, &e.mutation.cause));
+        if (returned_grass) {
+            CHECK(status == MC_WORLD_STORAGE_OK && out && ls_cleared(&e) && !w->fields.a &&
+                  !w->fields.o && c->data->blocks == before->data.blocks &&
+                  c->data->blocks_capacity == before->data.blocks_capacity &&
+                  ls_spring_image(before, c, 8, grass, -1, 0) &&
+                  mc_test_java_random_equal(&random, &expected) &&
+                  mc_test_java_random_equal(w->fields.r, &world_random) &&
+                  ls_profile_same(f->profile, &profile) && w->active_calls == 0 &&
+                  w->local_leases == 0 && w->classes->enqueue_depth == 0);
+        } else {
+            CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && out &&
+                  ls_failure(&e, w, side, false, 288) && w->fields.a && !w->fields.o &&
+                  ls_spring_image(before, c, 8, target, -1, 0) &&
+                  mc_test_java_random_equal(&random, &expected) &&
+                  mc_test_java_random_equal(w->fields.r, &world_random) &&
+                  ls_profile_same(f->profile, &profile) && same_cause(&e.cause, &e.mutation.cause));
+        }
         if (trial == 0)
             CHECK(e.mutation.hook_class != NULL &&
                   strcmp(e.mutation.hook_class, side == 0 ? "nx" : "is") == 0 &&
                   e.mutation.hook_bytecode == 13);
-        if (trial == 1)
+        if (trial == 1 && !returned_grass)
             CHECK(e.mutation.hook_class != NULL &&
                   strcmp(e.mutation.hook_class, side == 0 ? "wp" : "oj") == 0 &&
                   e.mutation.hook_bytecode == 0);
@@ -1028,6 +1057,8 @@ static bool ls_springs(fixture *f, size_t side, mc_world_chunk *c, mc_world_runt
             CHECK(e.mutation.hook_class == NULL && e.mutation.hook_bytecode == 0);
         CHECK(ls_queues_read(w, &after) && ls_scheduled_same(&q, &after) &&
               ls_sequence_delta(&q, &after, 0));
+        if (returned_grass)
+            CHECK(ls_lights_same(&q, &after));
         ls_queues_free(&q);
         ls_queues_free(&after);
     }

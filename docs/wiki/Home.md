@@ -15,8 +15,8 @@ predicates and publishes successful candidates. Random Chunk work completes
 client ticks, and weather can construct a genuine Lightning Entity. A selected
 Spider jockey retains its separate unfinished mount after Skeleton publication.
 
-All 75 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
-All 88 Windows tests and 84 Linux tests pass. Original comparisons cover
+All 76 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 89 Windows tests and 85 Linux tests pass. Original comparisons cover
 14 complete random-Chunk profiles, 18 direct Block profiles and finite Mob and
 Lightning constructor/predicate cases. Independent constructor entropy and
 whole-frame visual correspondence remain separate from those results.
