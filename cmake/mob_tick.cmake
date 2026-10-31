@@ -2,6 +2,7 @@ include_guard(GLOBAL)
 
 target_sources(mc_simulation PRIVATE
     src/entity/living/fields.c
+    src/entity/mob/damage.c
     src/entity/mob/references.c
     src/entity/mob/tick/common.c
     src/entity/mob/tick/helpers.c
@@ -19,6 +20,17 @@ target_sources(mc_simulation PRIVATE
     src/entity/mob/tick/wrappers.c)
 
 if(BUILD_TESTING)
+    add_executable(mc_test_zombie_null_damage tests/entity/test_zombie_null_damage.c)
+    target_include_directories(mc_test_zombie_null_damage PRIVATE src src/core/java)
+    target_link_libraries(mc_test_zombie_null_damage PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_math_classes mc_build_options)
+    add_test(NAME entity.zombie_null_damage COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_zombie_null_damage.py"
+        --executable $<TARGET_FILE:mc_test_zombie_null_damage>
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/zombie-null-damage-contracts")
+    set_tests_properties(entity.zombie_null_damage PROPERTIES
+        LABELS "public;integration;entity;ownership;replay" TIMEOUT 300)
+
     add_executable(mc_test_wolf_interest tests/entity/test_wolf_interest.c)
     target_include_directories(mc_test_wolf_interest PRIVATE src src/core/java)
     target_link_libraries(mc_test_wolf_interest PRIVATE

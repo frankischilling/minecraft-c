@@ -1,13 +1,26 @@
 # World simulation
 
+## Zombie environment damage
+
+Zombie damage with a NULL attacker now runs the actual health, hurt-resistance,
+random and World sound body. Windows and Linux each pass twelve focused
+profiles, including a real periodic-fire Mob tick. Fatal death/drop and damage
+with a nonnull attacker remain unfinished. A fresh loaded Windows profile
+passes four World/HUD frames, model reuse and checked cleanup. The new registered test still fails at focus release or hurt-overlay depth
+testing. Both failures remain retained separately.
+
+[Damage behavior and verification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/living-damage.md)
+records the finite comparisons and remaining gameplay work. Single-player
+remains pre-playable.
+
 The client constructs all eleven default Mob kinds and runs their spawn
 predicates and actual active-tick chains through genuine Living fields.
 Shared environment, action, movement and travel use real World queries; sight
 uses the World ray tracer. The loaded continuation completes 361 Chunk
 coordinates/28,880 samples, then 1,000 random-display samples/6,000 World draws.
 
-The client now draws eight default Mob kinds: Sheep, Pig, Cow, Chicken,
-Spider, Slime, Squid and Creeper. [Mob drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md) uses the actual TH/GV, concrete
+The client draws all eleven default Mob kinds, including Wolf, Zombie and
+Skeleton with its genuine Bow. [Mob drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md) uses the actual TH/GV, concrete
 renderer/model, PS and NW owners. Four independent loaded Windows sessions
 for Spider/Slime/Squid/Creeper each return four World/HUD frames: delay,
 unticked undrawn traversal, first draw and reuse, then checked cleanup.

@@ -4986,3 +4986,35 @@ TileEntity simulation and recovery beyond checked host errors remain unimplement
 No matched graphics/audio comparison, interactive rewrite play, extended session,
 four-way multiplayer matrix, state-drift or performance measurement has occurred.
 No performance target or additional platform support follows from these tests.
+
+## Zombie damage qualification
+
+Windows MSVC Debug and Linux Clang18 Debug with ASan/UBSan each pass the twelve
+Zombie damage profiles: 2,179 native checks, 3,544 selected original typed
+checks, 3,861 identity relations and 84 separate-process stream checks. Eight
+comparator, three original-manifest and four build-record corruptions are
+rejected per host. The original observations remain unchanged; these native
+runs compare with the retained original capture and do not rerun its JVM.
+
+The fresh Linux build also passes five affected CTests: damage, Mob ticks,
+Monster attack, Entity environment and movement. Its build uses Clang18 and
+sanitizer instrumentation; the recorded five-test run takes 65.30 seconds.
+The [damage guide](entity/living-damage.md) describes the returned outcomes,
+failure prefixes and remaining gameplay limits.
+
+The 103-target Windows build passes all 135 selected client regressions in
+421.71 seconds, without failures, disabled tests or skips. Build and test input
+maps stay identical. A separate later loaded-Zombie run passes 4,918 checks,
+four World/HUD frames and checked cleanup in 24.75 seconds. The earlier
+focus-release failure remains retained; the successful run changes no Timer,
+Player, placement or random inputs. The later CTest registration and prose
+updates do not change the qualified runtime bodies.
+
+The new `client.world_selection_zombie` registration is an unfinished graphical
+regression, not an additional passing test. The first post-registration run
+fails at focus release (`Minecraft.i:16`); a separate exclusive run reaches
+unsupported hurt-overlay depth testing (`n.a:516`, `glDepthFunc(GL_EQUAL)`).
+The damage CTest still passes. These failures remain recorded alongside the
+separate successful loaded run. No full 136-test pass or reliable loaded-Zombie
+regression is claimed. Completing Canvas/focus and the reached LivingEntity
+hurt-overlay body is required before this graphical case can pass reliably.

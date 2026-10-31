@@ -47,14 +47,25 @@ bool mc_tick_fp(mc_entity_tick_error *e, unsigned int pc) {
 
 bool mc_tick_effect(mc_entity_tick_error *e, mc_entity_status status, const char *operation,
                     unsigned int pc) {
-    if (status != MC_ENTITY_OK &&
-        ((e->effect.status == status && e->effect.cause == MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE) ||
-         (e->environment.status == status &&
-          e->environment.cause == MC_ENTITY_ENVIRONMENT_NULL_REFERENCE))) {
+    const bool damage_failure = status != MC_ENTITY_OK && e->effect.status == status &&
+                                e->effect.living_damage.entered &&
+                                !e->effect.living_damage.returned;
+    if (damage_failure) {
+        /* This selected value belongs to the actual damage invocation. Native
+         * limit/capture failures take precedence over borrowed Source causes. */
+        e->source_exception =
+            e->effect.living_damage.source_exception && !e->effect.living_damage.native_policy;
+        e->exception_class = e->source_exception ? e->effect.living_damage.exception_class : NULL;
+    } else if (status != MC_ENTITY_OK &&
+               ((e->effect.status == status &&
+                 e->effect.cause == MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE) ||
+                (e->environment.status == status &&
+                 e->environment.cause == MC_ENTITY_ENVIRONMENT_NULL_REFERENCE))) {
         e->source_exception = true;
         e->exception_class = "java/lang/NullPointerException";
     }
-    if (status != MC_ENTITY_OK && e->material.status == status && e->material.source_exception) {
+    if (status != MC_ENTITY_OK && !damage_failure && e->material.status == status &&
+        e->material.source_exception) {
         e->source_exception = true;
         e->exception_class = e->material.exception_class;
     }

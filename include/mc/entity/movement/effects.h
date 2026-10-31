@@ -15,12 +15,41 @@ typedef enum mc_entity_effect_cause {
     MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_WATCHER_VALUE,
     MC_ENTITY_EFFECT_CAUSE_FP,
     MC_ENTITY_EFFECT_CAUSE_WORLD,
-    MC_ENTITY_EFFECT_CAUSE_STATISTIC
+    MC_ENTITY_EFFECT_CAUSE_STATISTIC,
+    MC_ENTITY_EFFECT_CAUSE_RANDOM,
+    MC_ENTITY_EFFECT_CAUSE_REGISTRY
 } mc_entity_effect_cause;
+
+/* Value-only receipt of the actually entered Zombie NULL-source GZ/LS body.
+ * No identity here owns an occurrence or may be dereferenced after its graph
+ * retires. The existing Entity/Registry/World children retain the full causes.
+ * Exact Source exceptions are distinguished from native limits/frontiers. */
+typedef struct mc_entity_living_damage_state {
+    bool entered, living_returned, returned, result_stored, result, full_hit;
+    bool native_policy, source_exception;
+    const char *exception_class;
+    uint16_t wrapper_pc, living_pc, health_pc;
+
+    struct {
+        const char *class_name, *method, *descriptor;
+        uint16_t pc;
+    } child_site;
+
+    uint8_t shared_attempts, shared_calls, private_attempts, private_calls;
+    double shared_value;
+    float private_values[2];
+    bool status_returned, attacked_returned;
+    bool sound_arguments_stored, sound_returned, death_invoke_reached;
+    bool sound_world_captured, sound_name_returned, volume_returned;
+    uintptr_t sound_world_identity, sound_name_identity;
+    const char *sound_literal;
+    float volume, pitch;
+} mc_entity_living_damage_state;
 
 /* Passive reached-operation frames, independent of constructor diagnostics.
  * source_bytecode belongs to the requested effect; child fields name its
- * actual delegated source bodies. Successful calls return a fresh empty error.
+ * actual delegated source bodies. Successful calls return a fresh empty error,
+ * except the additive receipt of a genuinely entered Zombie NULL damage body.
  * STATE_ERROR with an explicit unsupported cause is an unfinished reached
  * descendant, never an empty successful virtual or a synthesized Java Object. */
 typedef struct mc_entity_effect_error {
@@ -43,6 +72,7 @@ typedef struct mc_entity_effect_error {
     bool damage_arguments_stored;
     uintptr_t damage_source_identity;
     int32_t damage_amount;
+    mc_entity_living_damage_state living_damage;
 } mc_entity_effect_error;
 
 /* Full passive initialization without a returned diagnostic copy. NULL is a no-op. */
@@ -109,7 +139,10 @@ mc_entity_status mc_entity_effect_contact_portal(mc_entity *entity, mc_entity_ef
  * Mobs use the actual Byte0 sneaking flag and inherited SN push/walking leaves;
  * Spider and Wolf n return false. Chicken fall is its literal empty override;
  * other represented Living falls enter LS without Player statistics. Reached
- * concrete Mob damage and Slime splitting stop at explicit native dependencies.
+ * canonical Zombie NULL-source damage executes its actual GZ/LS gates, health,
+ * direction and sound body. Other concrete Mob damage and Slime splitting
+ * stop at explicit native dependencies; fatal Zombie NULL damage stops at its
+ * actual death invocation after the reached death sound. No death is inferred.
  *
  * LocalPlayer fall executes gs->ls->sn in source order. A fall >=2 resolves
  * actual jl.n and computes the Java-rounded amount, then explicitly stops at
@@ -122,6 +155,9 @@ mc_entity_status mc_entity_effect_contact_portal(mc_entity *entity, mc_entity_ef
  * close invocation. These failures are not successful health/death substitutes.
  * Context arguments borrow the same actual Registry namespace independently
  * of nullable World; they are inspected only at reached code statics. Errors
- * may borrow the reached statistic identity while its Registry stays live. */
+ * may borrow the reached statistic identity while its Registry stays live.
+ * Zombie damage borrows the actual code String and exact WorldAccess producer
+ * receipt under this same held, exclusive graph contract. Its completed receipt
+ * remains available on ordinary true/false returns; it owns no extra resources. */
 
 #endif

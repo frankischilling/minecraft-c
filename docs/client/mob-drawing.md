@@ -370,7 +370,9 @@ historical capture or allowing broader normalization.
 
 The original Zombie/Skeleton II97 failures remain preserved. A later Zombie
 run passes the earlier attack frontier, then stops at actual periodic-fire
-damage in SN.U501; no loaded Zombie return is credited. The first 101-target
+damage in SN.U501; that run earns no loaded Zombie return. The later
+[Zombie damage qualification](../entity/living-damage.md) passes four loaded
+World/HUD frames and checked cleanup with the genuine damage body. The first 101-target
 cohort also remains recorded: Linux passed 125 tests and Windows passed 132
 of 133, stopping only at Wolf interest GI51 rather than rendering. Its thirty
 passing comparison wrappers and 6,308-path audit precede the Wolf fix. The
@@ -510,7 +512,7 @@ precondition and Entity-empty saved Chunks. They qualify native integration,
 not fresh-player tutorial completion, serialized Mob loading, natural spawning
 within a deadline or original/native full-frame equality. The later
 four-creature and remaining-family checkpoints keep their distinct scopes
-above. Wolf now has its own returned loaded profile; the Zombie and Skeleton
-tick failures remain preserved. Active tutorial notices, Canvas/focus
+above. Wolf and Zombie now have their own returned loaded profiles. The earlier
+Zombie and Skeleton tick failures remain preserved. Active tutorial notices, Canvas/focus
 transitions, general nonempty items, combat, save transport and nonempty
 TileEntity draw rows still prevent a playable-client claim.

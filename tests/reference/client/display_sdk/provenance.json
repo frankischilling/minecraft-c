@@ -2398,8 +2398,8 @@
       "sha256": "a2de1a7a93eeb45db5eef8ddfc9b1ceef1d75b321d1603e5dec205159fe749f5"
     },
     "cmake/tests/client_world_selection_loop.cmake": {
-      "bytes": 4049,
-      "sha256": "01472b5c8032566d4b6dc93069335901d27380bf7f961fbb6ee3c5c0e803585b"
+      "bytes": 4681,
+      "sha256": "e70a8e9809c1804c94de2f9768daf4174d2d9d98d9204428ed30320fc3693f43"
     },
     "cmake/tests/platform_date_format.cmake": {
       "bytes": 2244,
@@ -3102,8 +3102,8 @@
       "sha256": "2ae2f49320e8be6688d0ae2098ec1e34536c25c3304458e83532be737db2cfa9"
     },
     "include/mc/entity/movement/effects.h": {
-      "bytes": 7821,
-      "sha256": "57a12dc5748b6a518f157550783cae613ff81bfa3b2eeea3613fc70f40d18650"
+      "bytes": 9625,
+      "sha256": "d6c02556df621826c11940e00c5071ee3a4e89b16a6cd0938a911050ffdb28a9"
     },
     "include/mc/entity/movement/environment.h": {
       "bytes": 5179,
@@ -4942,8 +4942,8 @@
       "sha256": "3070af809a4bab55665783787d0119fb923dbb39ccfaea0996232ccb403ffeb3"
     },
     "cmake/mob_tick.cmake": {
-      "bytes": 3417,
-      "sha256": "471aa0662d7b559b2a23157cc28fa5a4a49e43181f6d592f97cce0f4e513f183"
+      "bytes": 4197,
+      "sha256": "8fdea803711cc1b8faec20e7150f04dee657205f065053e0a26f6a2943925cf2"
     },
     "include/mc/entity/mob/tick.h": {
       "bytes": 8538,
@@ -5448,6 +5448,30 @@
     "tests/tools/entity/test_wolf_interest.py": {
       "bytes": 11656,
       "sha256": "83fa124aab5972e55bb827ed95dbb5b1d239e16d18f55001b7a1024810a9768f"
+    },
+    "src/entity/mob/damage.c": {
+      "bytes": 14181,
+      "sha256": "3be9267765de3f166317d8c51bd88d6338fd214c5357f192526d2f66dfad264c"
+    },
+    "src/entity/mob/damage_internal.h": {
+      "bytes": 757,
+      "sha256": "4ecda5ff7d645262675d87bf215faa89cff5b224d08ab4cb7fff6eaf6b40de54"
+    },
+    "src/entity/movement/effects_internal.h": {
+      "bytes": 341,
+      "sha256": "d08df50f54a8b34f02c0849db6a94e8789372d5507d6eefc874f1084a0e1d8e6"
+    },
+    "tests/entity/test_zombie_null_damage.c": {
+      "bytes": 29202,
+      "sha256": "a8545ccb4152094eb028d790ce2d983fba3b4b30d7275e412f3e0e5130102b16"
+    },
+    "tests/entity/zombie_damage_transport.inc": {
+      "bytes": 10954,
+      "sha256": "8b74431da59af77684e59a2c9884d96764a3c752d47cea4f0ee78c7526c80128"
+    },
+    "tests/tools/entity/test_zombie_null_damage.py": {
+      "bytes": 58014,
+      "sha256": "503cf315d128941b42a4b562564a238cb873d5d6b478438f4a678c052d3d6ee7"
     }
   },
   "authorities": {

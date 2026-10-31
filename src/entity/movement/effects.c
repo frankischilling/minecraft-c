@@ -1,5 +1,8 @@
 #include "mc/entity/movement/effects.h"
 
+#include "../mob/damage_internal.h"
+#include "effects_internal.h"
+
 #include "../../block/registry/registry_internal.h"
 #include "../../client/input/movement_input_internal.h"
 #include "../../world/runtime/runtime_internal.h"
@@ -393,7 +396,7 @@ mc_entity_status mc_entity_effect_fall_in_context(mc_entity *entity, mc_registry
         (void)fall(entity, classes, distance, &frame);
         mc_entity_release(entity);
     }
-    if (frame.status == MC_ENTITY_OK)
+    if (frame.status == MC_ENTITY_OK && !frame.living_damage.entered)
         mc_entity_effect_error_init(&frame);
     return finish(&frame, error);
 }
@@ -433,7 +436,7 @@ mc_entity_status mc_entity_effect_fall_state_in_context(mc_entity *entity,
             frame.fall_bytecode = 31;
         mc_entity_release(entity);
     }
-    if (frame.status == MC_ENTITY_OK)
+    if (frame.status == MC_ENTITY_OK && !frame.living_damage.entered)
         mc_entity_effect_error_init(&frame);
     return finish(&frame, error);
 }
@@ -443,7 +446,7 @@ mc_entity_status mc_entity_effect_fall_state(mc_entity *entity, double displacem
     return mc_entity_effect_fall_state_in_context(entity, NULL, displacement, grounded, error);
 }
 
-static void attacked(mc_entity *entity) {
+void mc_entity_effect_attacked_entered(mc_entity *entity) {
     entity->base.bb = true; /* sn.ai/lq.af store2; inherited by Item/Falling. */
 }
 
@@ -473,7 +476,7 @@ mc_entity_status mc_entity_effect_attacked(mc_entity *entity, mc_entity_effect_e
     mc_entity_effect_error frame;
     mc_entity_effect_error_init(&frame);
     if (enter(entity, &frame)) {
-        attacked(entity);
+        mc_entity_effect_attacked_entered(entity);
         mc_entity_release(entity);
     }
     return finish(&frame, error);
@@ -500,6 +503,9 @@ static bool instance_of(mc_entity *source, mc_entity_classes *classes, mc_entity
 
 static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_entity *source,
                    int32_t amount, bool *out, mc_entity_effect_error *error) {
+    if (source == NULL && mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ZOMBIE) &&
+        entity->classes->source == MC_ENTITY_CLIENT)
+        return mc_mob_zombie_null_damage_entered(entity, classes, amount, out, error);
     if (mc_entity_has_mob(entity)) {
         const mc_entity_class_kind kind = entity->class_literal->kind;
         error->damage_arguments_stored = true;
@@ -591,7 +597,8 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_entity *s
              "Player damage actual Living hurt continuation", 158);
         return false;
     }
-    attacked(entity); /* Both actual damage bodies dispatch inherited ai/af at1. */
+    mc_entity_effect_attacked_entered(
+        entity); /* Both actual damage bodies dispatch inherited ai/af at1. */
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM)) {
         entity->item.f = mc_java_i32_sub(entity->item.f, amount); /* isub10/store11. */
         if (entity->item.f <= 0)
@@ -613,7 +620,7 @@ mc_entity_status mc_entity_effect_damage_in_context(mc_entity *entity, mc_regist
         (void)damage(entity, classes, source, amount, out, &frame);
         mc_entity_release(entity);
     }
-    if (frame.status == MC_ENTITY_OK)
+    if (frame.status == MC_ENTITY_OK && !frame.living_damage.entered)
         mc_entity_effect_error_init(&frame);
     return finish(&frame, error);
 }
@@ -639,7 +646,7 @@ mc_entity_status mc_entity_effect_fire_damage_in_context(mc_entity *entity,
         }
         mc_entity_release(entity);
     }
-    if (frame.status == MC_ENTITY_OK)
+    if (frame.status == MC_ENTITY_OK && !frame.living_damage.entered)
         mc_entity_effect_error_init(&frame);
     return finish(&frame, error);
 }

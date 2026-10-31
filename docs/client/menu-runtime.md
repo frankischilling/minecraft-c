@@ -150,8 +150,11 @@ II97 in GZ.a and FR.a. GZ's corrected genuine-Pig pair now passes on both hosts:
 605 native checks, 360 selected comparisons, seven returns, three Source NPE
 gates and two unreturned hurt61 prefixes. A later loaded Zombie run passes
 that earlier attack frontier, then fails at periodic-fire SN.U501. Damage
-completion and a returned loaded Zombie frame remain unqualified. Skeleton
-Arrow work remains unfinished.
+completion and a returned loaded Zombie frame were unqualified in that run.
+The later [Zombie damage qualification](../entity/living-damage.md) passes four
+loaded Windows World/HUD frames, model reuse and checked cleanup. The earlier
+focus-release failure remains recorded separately. Skeleton Arrow work remains
+unfinished.
 
 The first 101-target cohort remains failed evidence: Linux passed 125 tests;
 Windows passed 132 of 133 and stopped only at Wolf interest GI51. After the

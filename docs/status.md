@@ -7,6 +7,14 @@ Shared environment, action, movement and travel work uses real World queries;
 sight uses the existing World ray tracer. Finite returning and failure-prefix
 scenarios are qualified independently of original constructor entropy.
 
+[Zombie NULL-attacker damage](entity/living-damage.md) now executes the real
+LivingEntity health, hurt-resistance, random and sound body. Windows and Linux
+each pass twelve focused profiles and selected original comparisons. Fatal
+death/drop and nonnull-attacker damage remain unfinished. The fresh loaded
+Zombie profile passes four World/HUD frames, model reuse and checked cleanup.
+The new registered loaded test still fails at focus release or the unsupported
+hurt-overlay depth call; those failures remain retained separately.
+
 The focused Windows profiles load a saved World, then construct and
 publish a declared Sheep, Pig, Cow or Chicken through the ordinary Entity APIs
 before further frames. Each animal uses its own real loaded App/World scope.
