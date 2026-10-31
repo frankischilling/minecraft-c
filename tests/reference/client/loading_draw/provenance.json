@@ -3986,8 +3986,8 @@
       "sha256": "2fb272ba29f07e0ea244d3a2d592dcdeba0936b45a50e0988076ee7570c52960"
     },
     "tests/client/render_engine/test_textures.c": {
-      "bytes": 21208,
-      "sha256": "9e63b92602d15bbe770250d4456ed262750c2582300f840339c698028c1d44a8"
+      "bytes": 24349,
+      "sha256": "f3a1e9dd2b1fec2778af231132db884269b54da6b1ef69eff55958b0e423774e"
     },
     "tests/client/resources/test_assets.c": {
       "bytes": 58666,

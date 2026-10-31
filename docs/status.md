@@ -27,13 +27,22 @@ hidden pause-screen save path remain open.
 
 ## Integration qualification
 
-All 92 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+At `a303b86`, all 92 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
 All 119 Windows tests pass in 227.09 seconds and all 114 Linux tests in
 321.27 seconds, without failures, skips or sanitizer findings. The same 2,543
 C, helper, build and reference inputs remain unchanged through both builds and tests.
 All nine original-comparison suites pass on each host. Formatting checks 1,742
 files; six source-binding tables preserve their historical metadata. These scoped
 results do not establish playability or whole-frame original/native equality.
+
+The subsequent clamp-registration test repair changes no production code.
+It replaces an obsolete GL_CLAMP failure expectation with actual successful
+upload, logical/physical sampler, image ownership and cleanup checks. The
+other five failure cases and four original trace rows remain unchanged.
+The direct test and both Python controller modes reproduce the old failure,
+then pass on Windows and Linux with unchanged inputs. Hosted qualification
+is checked again for the repaired commit; the failed parent run is preserved.
+
 
 ## Sheep rendering and loaded-frame continuation
 

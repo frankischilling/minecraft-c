@@ -216,22 +216,68 @@ static bool failed_prefixes(mc_client_display *display) {
         mc_client_texture id = UINT32_C(0xdeadbeef);
         const mc_client_render_texture_status status =
             mc_client_render_engine_register_image(f.engine, display, &options, image, &id, &e);
-        const unsigned pcs[6] = {28, 39, 168, 178, 111, 460};
+        const unsigned pcs[6] = {28, 39, 168, 178, 0, 460};
         const mc_client_render_texture_status statuses[6] = {
-            MC_CLIENT_RENDER_TEXTURE_LIMIT,         MC_CLIENT_RENDER_TEXTURE_LIMIT,
-            MC_CLIENT_RENDER_TEXTURE_LIMIT,         MC_CLIENT_RENDER_TEXTURE_LIMIT,
-            MC_CLIENT_RENDER_TEXTURE_UNIMPLEMENTED, MC_CLIENT_RENDER_TEXTURE_UNIMPLEMENTED};
-        CHECK(status == statuses[scenario] && e.source_pc == pcs[scenario] && e.driver_generated &&
-              !e.image_published && id == UINT32_C(0xdeadbeef));
-        CHECK(e.source_ledger_appended == (scenario != 0) &&
-              e.base_uploaded == (scenario == 1 || scenario == 5));
-        CHECK(is_texture(e.generated_id) == (scenario == 0 ? GL_FALSE : GL_TRUE));
+            MC_CLIENT_RENDER_TEXTURE_LIMIT, MC_CLIENT_RENDER_TEXTURE_LIMIT,
+            MC_CLIENT_RENDER_TEXTURE_LIMIT, MC_CLIENT_RENDER_TEXTURE_LIMIT,
+            MC_CLIENT_RENDER_TEXTURE_OK,    MC_CLIENT_RENDER_TEXTURE_UNIMPLEMENTED};
         mc_client_argb_image_state held;
-        CHECK(mc_client_argb_image_inspect(image, &held) && held.native_holds == 1);
+        if (scenario == 4) {
+            /* Direct ji.a(BufferedImage), not the String lookup wrapper: the
+             * actual j input stays true through upload, publication and cleanup. */
+            CHECK(status == MC_CLIENT_RENDER_TEXTURE_OK && e.driver_generated &&
+                  e.source_ledger_appended && e.base_uploaded && e.image_published &&
+                  id == e.generated_id && id != UINT32_C(0xdeadbeef) && f.engine->fields.j &&
+                  !f.engine->fields.k && !f.classes->ji_a);
+            size_t ledger = 0, map = 0;
+            mc_client_argb_image *cached = NULL;
+            CHECK(mc_client_render_list_count(f.classes->b, &ledger) && ledger == 1 &&
+                  mc_client_render_map_count(f.engine->fields.d, &map) && map == 1 &&
+                  mc_client_render_engine_registered_image(f.engine, id, &cached) &&
+                  cached == image && mc_client_argb_image_inspect(image, &held) &&
+                  held.native_holds == 2);
+            mc_client_texture_source_state sampler;
+            CHECK(mc_client_display_texture_state_inspect(display, id, &sampler) &&
+                  sampler.generation != 0 && sampler.known && sampler.image_uploaded &&
+                  sampler.physical_known && sampler.min_filter == GL_NEAREST &&
+                  sampler.mag_filter == GL_NEAREST && sampler.wrap_s == GL_CLAMP &&
+                  sampler.wrap_t == GL_CLAMP && sampler.physical_wrap_s == GL_CLAMP_TO_EDGE &&
+                  sampler.physical_wrap_t == GL_CLAMP_TO_EDGE);
+            GLint wrap_s = 0, wrap_t = 0, min = 0, mag = 0;
+            get_parameter(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, &wrap_s);
+            get_parameter(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, &wrap_t);
+            get_parameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, &min);
+            get_parameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, &mag);
+            CHECK(wrap_s == GL_CLAMP_TO_EDGE && wrap_t == GL_CLAMP_TO_EDGE && min == GL_NEAREST &&
+                  mag == GL_NEAREST);
+            const uint8_t rgba[16] = {0x12, 0x34, 0x56, 0xff, 0xff, 0,    0, 0x80,
+                                      1,    2,    3,    0,    0,    0xff, 0, 0x40};
+            mc_client_direct_buffer_state transfer;
+            CHECK(readback(id, rgba, sizeof(rgba)) &&
+                  mc_client_direct_byte_buffer_inspect(f.engine->fields.f, &transfer) &&
+                  transfer.position == 0 && transfer.limit == sizeof(rgba) &&
+                  memcmp(transfer.storage, rgba, sizeof(rgba)) == 0 && f.engine->fields.j);
+            mc_client_render_engine_class_state resources;
+            CHECK(mc_client_render_engine_classes_inspect(f.classes, &resources) &&
+                  resources.native_resource_count == 1 && resources.active_resource_calls == 0 &&
+                  !resources.resource_retirement_started);
+        } else {
+            CHECK(status == statuses[scenario] && e.source_pc == pcs[scenario] &&
+                  e.driver_generated && !e.image_published && id == UINT32_C(0xdeadbeef));
+            CHECK(e.source_ledger_appended == (scenario != 0) &&
+                  e.base_uploaded == (scenario == 1 || scenario == 5));
+            CHECK(is_texture(e.generated_id) == (scenario == 0 ? GL_FALSE : GL_TRUE));
+            CHECK(mc_client_argb_image_inspect(image, &held) && held.native_holds == 1);
+        }
         CHECK(!mc_client_display_destroy(display, &e.display) &&
               e.display.status == MC_CLIENT_DISPLAY_BUSY);
         const mc_client_texture generated = e.generated_id;
         CHECK(finish(&f) && is_texture(generated) == GL_FALSE);
+        if (scenario == 4) {
+            mc_client_texture_source_state retired;
+            CHECK(!mc_client_display_texture_state_inspect(display, generated, &retired) &&
+                  mc_client_argb_image_inspect(image, &held) && held.native_holds == 1);
+        }
         mc_client_argb_image_release(image);
     }
     fixture f = {0};
