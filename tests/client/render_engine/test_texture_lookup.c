@@ -240,13 +240,22 @@ static int contracts(fixture *f) {
     live->active = false;
     CHECK(mc_client_render_engine_retire_lookup(o, f->error) == MC_CLIENT_LOOKUP_OK);
     CHECK(mc_client_render_engine_texture(o, f->display, NULL, text(clamp, COUNT(clamp)), &again,
-                                          f->error) == MC_CLIENT_LOOKUP_UNIMPLEMENTED);
-    CHECK(f->error->site.pc == 117 && f->error->texture.source_pc == 111 && o->fields.j &&
-          o->fields.k);
-    CHECK(mc_client_render_engine_retire_lookup(o, f->error) == MC_CLIENT_LOOKUP_OK);
+                                          f->error) == MC_CLIENT_LOOKUP_OK);
+    CHECK(!o->fields.j && o->fields.k && again != id);
+    mc_client_texture_source_state clamp_state;
+    CHECK(mc_client_display_texture_state_inspect(f->display, again, &clamp_state) &&
+          clamp_state.known && clamp_state.image_uploaded && clamp_state.physical_known &&
+          clamp_state.wrap_s == 10496 && clamp_state.wrap_t == 10496 &&
+          clamp_state.min_filter == 9729 && clamp_state.mag_filter == 9729 &&
+          clamp_state.physical_wrap_s == 33069 && clamp_state.physical_wrap_t == 33069);
+    const mc_client_texture clamp_id = again;
+    const size_t after_clamp = f->classes->b->count;
+    CHECK(mc_client_render_engine_texture(o, f->display, NULL, text(clamp, COUNT(clamp)), &again,
+                                          f->error) == MC_CLIENT_LOOKUP_OK &&
+          again == clamp_id && f->classes->b->count == after_clamp && !o->fields.j);
     CHECK(mc_client_render_engine_texture(o, f->display, NULL, text(background, COUNT(background)),
                                           &again, f->error) == MC_CLIENT_LOOKUP_OK &&
-          again == id && o->fields.j);
+          again == id && !o->fields.j);
     CHECK(o->fields.d->count == d_count);
 
     mc_client_render_engine *limited = NULL;

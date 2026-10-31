@@ -10,9 +10,9 @@ Singleplayer now opens the genuine [World-selection screen](world-selection.md).
 Focused Windows empty and populated save-list runs pass, including drawing,
 selection, same-parent Cancel, the World-load frontier and retained-screen
 cleanup. Sixteen-save scrolling and real double-click profiles also pass.
-Their captures were inspected. All 468 selected Windows CTests and formatting
-for 1,356 files pass; earlier local and hosted results retain their exact source
-scopes in the [testing record](../testing.md).
+Their captures were inspected. At the earlier menu checkpoint, all 468 selected
+Windows CTests and formatting for 1,356 files passed. Local and hosted results
+retain their exact source scopes in the [testing record](../testing.md).
 
 ## Launch and files
 
@@ -61,8 +61,9 @@ the actual App run flag. Select constructs the actual controller and enters the
 an existing-save load publishes the World, Player and movement input, attaches
 the renderer and completes picking. Its healthy no-screen path now executes
 [gameplay input](gameplay-input.md) through1073 and the admitted
-[World/frame segment](renderer-ticking.md). Whole World scheduling and terrain
-frames remain unfinished.
+[World/frame segment](renderer-ticking.md). The current finite loaded profile
+also returns through World scheduling, terrain and the qualified Sheep draw;
+other gameplay and rendering branches remain unfinished.
 Create, Rename and Delete retain the precise
 [unfinished prefixes](world-selection.md#transitions-and-lifetime).
 Fullscreen, source F2 screenshots, debug timing, connection screens and several
@@ -81,18 +82,35 @@ paused entry flags, drains 500 actual records as 499 then 1, and checks saved
 BlockLight, queue identity, World time, Random state and normal WorldAccess
 callbacks. It does not qualify pause-screen transitions.
 
-The focused repeated profile completes Mob path following and returns from
-`Minecraft.k:1328`, then retains the actual pending Mob render at `n.a:516`.
-Its saved Entity lists are empty. After the first returned loaded frame, a
-declared native input constructs and publishes a genuine Sheep in the Player's
-view through the ordinary constructor, position and World APIs. Constructor
-entropy remains raw; the next frames use the normal Timer and World ticks.
-It declares an existing Player whose loaded statistics already contain the
-inventory achievement. A Player without that entry can reach the unfinished
-active tutorial-notice draw at `vu.a:108` before the Mob draw.
-The RenderManager's original 28 renderer owners remain; hand lookup also adds
-the real LocalPlayer cache key, producing 29 Map entries. The pending Mob uses
-its existing canonical renderer entry. No placeholder draw completes that call.
+The focused repeat now proves two actual [Sheep draws](mob-drawing.md) across
+four returned World/HUD frames, after Mob path following and the real
+`Minecraft.k:1328` tick. The former retained TH call at `n.a:516` is a historical
+stop. N now checks each returned TH child's retirement before continuing at
+332 or 519. Copied scalar receipts prove the exact declared Sheep, canonical
+XY renderer, distinct MW/EA models, first compilation and reuse, and enabled
+terrain shadow. Their identity integers are never dereferenced after child
+retirement.
+
+The fixture's saved Entity lists are empty. After the first returned loaded
+frame, a declared native input constructs and publishes one genuine Sheep in
+the Player's view through ordinary constructor, position and World APIs.
+Constructor entropy remains raw. The next frames use real elapsed time, the
+normal Timer and World ticks. One frame consumes the N delay and another
+returns from traversal while the unticked Sheep is culled. Neither counts as
+a Sheep draw. The following two prove all twelve stable part/list identities,
+72 compiled faces and 288 source vertex calls, followed by list reuse and
+checked terminal cleanup. Display lists separately contain 36 NW-expanded
+vertices per part, compared with 24 source vertex calls per part.
+
+This repeat declares an existing Player whose genuinely loaded statistics
+already contain the inventory achievement. A Player without that entry can
+reach the unfinished active tutorial-notice draw at `vu.a:108` before the Mob
+draw. Serialized Mob loading is not qualified by the Entity-empty saves.
+The RenderManager retains its original 28 renderer owners; hand lookup adds
+the actual LocalPlayer key sharing the Player renderer, producing exactly 29
+Map entries. Other Mob renderers and nonempty TileEntity rows remain reached
+dependencies. The direct original/native drawing comparison has the separate
+prepared-context and device limits described in [Sheep drawing](mob-drawing.md).
 
 Account authentication is excluded by the development specification. At
 `Minecraft.k`11, tick6000 would start `kp`, whose `run()` builds the account-session
@@ -110,6 +128,8 @@ after a later screen is published. This cleanup does not
 establish the original `Minecraft.d()` shutdown sequence.
 
 The full `Minecraft.run`, `Minecraft.k`, EntityRenderer/PX rendering and shutdown
-methods are not qualified as complete original equivalents. World simulation,
-dynamic terrain rendering, remaining menus and gameplay actions still require
-integration. A rendered interactive menu does not establish a playable client.
+methods are not qualified as complete original equivalents. The returned
+Sheep fixture is finite native composition evidence. Other Entity and
+TileEntity rendering, nondefault frame branches, remaining menus and gameplay
+actions still require implementation or qualification. It does not establish
+a playable client or whole-frame original/native parity.

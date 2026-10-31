@@ -403,6 +403,8 @@ static bool source_gpu_construct(mc_client_display *display, mc_client_display_e
     s->projection_uniform = display->gl.GetUniformLocation(s->program, "projection");
     s->modelview_uniform = display->gl.GetUniformLocation(s->program, "modelview");
     s->textured_uniform = display->gl.GetUniformLocation(s->program, "textured");
+    s->clamp_s_uniform = display->gl.GetUniformLocation(s->program, "legacyClampS");
+    s->clamp_t_uniform = display->gl.GetUniformLocation(s->program, "legacyClampT");
     s->alpha_uniform = display->gl.GetUniformLocation(s->program, "alphaTest");
     s->alpha_reference_uniform = display->gl.GetUniformLocation(s->program, "alphaReference");
     s->fog_enabled_uniform = display->gl.GetUniformLocation(s->program, "fogEnabled");
@@ -416,7 +418,8 @@ static bool source_gpu_construct(mc_client_display *display, mc_client_display_e
     if (!gl_check(display, "source GPU uniforms", error))
         return false;
     if (s->projection_uniform < 0 || s->modelview_uniform < 0 || s->textured_uniform < 0 ||
-        s->alpha_uniform < 0 || s->alpha_reference_uniform < 0 || image < 0)
+        s->alpha_uniform < 0 || s->alpha_reference_uniform < 0 || image < 0 ||
+        s->clamp_s_uniform < 0 || s->clamp_t_uniform < 0)
         return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "source GPU uniforms", "missing uniform", 0);
     if (s->fog_enabled_uniform < 0 || s->fog_mode_uniform < 0 || s->fog_distance_uniform < 0 ||
         s->fog_color_uniform < 0 || s->fog_density_uniform < 0 || s->fog_start_uniform < 0 ||
@@ -518,6 +521,10 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
     if (unit != GL_TEXTURE0)
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source active texture unit",
                     "nondefault unit path", 0);
+    int clamp_s = 0, clamp_t = 0;
+    if (!source_texture_bound_sampling(display, s->texture_enabled && count > 0, &clamp_s, &clamp_t,
+                                       error))
+        return false;
     if (!source_fp_admit("source native draw conversion FP after texture query", error))
         return false;
     float normal_matrix[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
@@ -579,6 +586,8 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
         display->gl.UniformMatrix4fv(s->modelview_uniform, 1, GL_FALSE, s->modelview.column_major);
         display->gl.Uniform1i(s->textured_uniform, s->texture_enabled ? 1 : 0);
         display->gl.Uniform1i(s->alpha_uniform, s->alpha_test ? 1 : 0);
+        display->gl.Uniform1i(s->clamp_s_uniform, clamp_s);
+        display->gl.Uniform1i(s->clamp_t_uniform, clamp_t);
         display->gl.Uniform1f(s->alpha_reference_uniform,
                               s->alpha_function_set ? s->alpha_reference : 0.1f);
         display->gl.Uniform1i(s->fog_enabled_uniform, s->fog_enabled ? 1 : 0);
@@ -705,6 +714,18 @@ static mc_client_source_list *source_find_list(mc_client_display *display, int32
             return &range->lists[id - range->base];
         }
     return NULL;
+}
+
+bool mc_client_display_pending_list_identity(mc_client_display *display, int32_t id,
+                                             const void **out) {
+    if (display == NULL || out == NULL || display->source.active_calls != 0)
+        return false;
+    mc_client_source_list *list = source_find_list(display, id, NULL);
+    if (list == NULL || list != display->source.compiling || !list->building ||
+        list->pending == NULL)
+        return false;
+    *out = list->pending;
+    return true;
 }
 
 static void source_free_commands(mc_client_display_list_range *range,

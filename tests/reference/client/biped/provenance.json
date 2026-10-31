@@ -298,12 +298,12 @@
       "sha256": "3e98b97d04a0195f05f22aac84a1805d3ae9a84ca385a283ab2f039693f8eff1"
     },
     "src/client/application_state.h": {
-      "bytes": 8407,
-      "sha256": "b3b7027a8292dcc18fe909060ecbacdf3a1d724acf1706464044844771ee7503"
+      "bytes": 8505,
+      "sha256": "cbfd4c5bf8a45fbd3152f3bac9bf9688cf61950800579345bc993365da5d1cbd"
     },
     "src/client/display/display.h": {
-      "bytes": 13767,
-      "sha256": "433bddbf5b7a4dba37a3291c2297301eaa63c13f2fc4b56a909cf081bb4ab9d2"
+      "bytes": 14865,
+      "sha256": "77c0f538d95556faab313934d57e5d81ec75cc34898c009037435fb798ef2f12"
     },
     "src/client/gui/achievement_notice.c": {
       "bytes": 10746,
@@ -338,8 +338,8 @@
       "sha256": "1e8d7271832e8c742fbcc3c73f9d228aab4ac779c938d9570bdcbcb1413019e2"
     },
     "src/client/startup/application_owner.h": {
-      "bytes": 12742,
-      "sha256": "479e73496008f7ed8f76fec603a0e86c67585f34040a22f642fea8b2b26a6911"
+      "bytes": 13435,
+      "sha256": "eed995c4a51f9679e2b9bb16a3af85cc79cf75cc65dc1d63c33084bce29db67b"
     },
     "src/core/java/print_stream.c": {
       "bytes": 20421,
@@ -478,8 +478,8 @@
       "sha256": "a19bf1b6b1389d186cdd75966d9fa41754a4c5cb479be580c3c7da8ad54fff4a"
     },
     "src/client/startup/application_owner_internal.h": {
-      "bytes": 5146,
-      "sha256": "abb0a05df2581f8e5d2cbd36e436882225aad01356f9026e650cfe56517664d8"
+      "bytes": 5310,
+      "sha256": "a46cd8575839d00527ed2cf75fdf6c9b2e67429c096dd7c509a9c0505d8433ac"
     },
     "include/mc/world/runtime/world_access_error.h": {
       "bytes": 1925,

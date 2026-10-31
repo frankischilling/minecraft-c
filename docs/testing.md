@@ -1,6 +1,51 @@
 # Test scope and reproduction
 
-## Client paths and Creature following
+## Integration qualification
+
+All 92 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 119 Windows tests pass in 227.09 seconds and all 114 Linux tests in
+321.27 seconds, without failures, skips or sanitizer findings. The same 2,543
+C, helper, build and reference inputs remain unchanged through both builds and tests.
+All nine original-comparison suites pass on each host. Formatting checks 1,742
+files; six source-binding tables preserve their historical metadata. These scoped
+results do not establish playability or whole-frame original/native equality.
+
+## Sheep rendering and legacy clamp sampling
+
+`client.mob_draw` constructs actual RAW App/static inputs, Settings, GAME
+World, Sheep/Cow, Engine and TH owners. Three finite calls prove primary/fur
+compilation, reuse and separate true-fancy BW shadow work. Each native host
+passes 666 checks; paired runs compare 70,341 typed graph/state values, 6,960
+expanded objects, 147 direct queries, twelve lists and six comparator negatives.
+The [drawing contract](client/mob-drawing.md) separates full Linux ordinary/JDI
+evidence, the NVIDIA ordinary GL supplement, native raster checks and limits.
+
+```sh
+python tests/tools/client/test_mob_draw.py --executable /path/to/mc_test_mob_draw \
+  --work-dir /path/to/fresh-results \
+  --observations /path/to/audited-original-capture/observations.json
+```
+
+The optional original capture must pass its current input/helper audit.
+Windows NVIDIA comparison additionally supplies `--device-observations` with
+an audited matching-device ordinary capture. Without it, the strict comparison
+to Mesa retains its real current-normal mismatch. Bare CTest runs use authored
+inputs and independent native controls; they earn no implicit original credit.
+
+`client.legacy_clamp` passes 46,802 native checks per host, with 3,872 exact
+matching-device SDK samples, five dynamic list replays and three negative
+controls. The finite loaded repeat requires two copied Sheep draw receipts,
+full World/HUD returns, stable list identities, real simulation and cleanup.
+An exact delay or undrawn traversal consumes only its bounded frame budget.
+Source vertices and NW-expanded triangle vertices are counted separately.
+
+The selected regression command builds 92 targets and includes both new tests
+alongside the existing client, Path, Mob, World and ownership suites. Fresh
+original wrappers run nine suites per host. Formatting and current source
+bindings are checked after the final source freeze; historical capture inputs
+and nested provenance remain unchanged.
+
+## Preceding client paths and Creature following
 
 Focused Windows MSVC Debug and Linux Clang18 ASan/UBSan runs pass the actual
 World path wrappers, shared ChunkCache, PathFinder and shared-cursor Path.

@@ -16,6 +16,44 @@ static bool fail(mc_client_model_draw_error *error, const char *operation, const
     return false;
 }
 
+static bool null_reference(mc_client_model_draw_error *error, const char *operation, const char *cl,
+                           const char *method, unsigned int pc) {
+    error->throwable = MC_CLIENT_MODEL_DRAW_SOURCE_EXCEPTION;
+    error->exception_class = "java/lang/NullPointerException";
+    return fail(error, operation, cl, method, pc, false);
+}
+
+static void graphics_throwable(mc_client_model_draw_error *error) {
+    if (error->graphics.native_policy)
+        return;
+    const char *name;
+    switch (error->graphics.status) {
+        case MC_CLIENT_GRAPHICS_NULL_REFERENCE:
+            name = "java/lang/NullPointerException";
+            break;
+        case MC_CLIENT_GRAPHICS_SOURCE_ILLEGAL_ARGUMENT:
+            name = "java/lang/IllegalArgumentException";
+            break;
+        case MC_CLIENT_GRAPHICS_SOURCE_ILLEGAL_STATE:
+            name = "java/lang/IllegalStateException";
+            break;
+        case MC_CLIENT_GRAPHICS_ARRAY_INDEX:
+            name = "java/lang/ArrayIndexOutOfBoundsException";
+            break;
+        case MC_CLIENT_GRAPHICS_BUFFER_OVERFLOW:
+            name = "java/nio/BufferOverflowException";
+            break;
+        case MC_CLIENT_GRAPHICS_BUFFER_UNDERFLOW:
+            name = "java/nio/BufferUnderflowException";
+            break;
+        default:
+            error->throwable = MC_CLIENT_MODEL_DRAW_UNCLASSIFIED_THROWABLE;
+            return;
+    }
+    error->throwable = MC_CLIENT_MODEL_DRAW_SOURCE_EXCEPTION;
+    error->exception_class = name;
+}
+
 static bool fp(mc_client_model_draw_error *error, const char *cl, const char *method,
                unsigned int pc) {
     return (_mm_getcsr() & 0xffc0u) == 0x1f80u ||
@@ -31,6 +69,7 @@ static bool graphics(mc_client_model_draw_error *error, bool ok, const char *cl,
     if (ok)
         return true;
     error->child = error->graphics.site;
+    graphics_throwable(error);
     return fail(error, error->graphics.operation, cl, method, pc, error->graphics.native_policy);
 }
 
@@ -48,7 +87,7 @@ static bool quad(mc_client_model_quad *face, mc_client_tessellator *nw, mc_entit
     mc_entity_vector *vectors[4] = {0};
     bool ok = false;
     if (face == NULL || face->a == NULL) {
-        fail(error, "actual model face vertex array", "tz", "a", face == NULL ? 1u : 5u, false);
+        null_reference(error, "actual model face vertex array", "tz", "a", face == NULL ? 1u : 5u);
         goto done;
     }
     /* Genuine ps box construction gives four source vertices per face. The
@@ -56,7 +95,7 @@ static bool quad(mc_client_model_quad *face, mc_client_tessellator *nw, mc_entit
      * factory effects. Each lexical Vec3 hold ends after this child returns. */
     for (size_t i = 0; i < 2; ++i)
         if (face->a[i] == NULL || face->a[i]->a == NULL) {
-            fail(error, "actual model face position receiver", "tz", "a", 18, false);
+            null_reference(error, "actual model face position receiver", "tz", "a", 18);
             goto done;
         }
     if (!fp(error, "tz", "a", 18))
@@ -66,7 +105,7 @@ static bool quad(mc_client_model_quad *face, mc_client_tessellator *nw, mc_entit
               &vectors[0], 18, "a"))
         goto done;
     if (face->a[2] == NULL || face->a[2]->a == NULL) {
-        fail(error, "actual model face second position receiver", "tz", "a", 37, false);
+        null_reference(error, "actual model face second position receiver", "tz", "a", 37);
         goto done;
     }
     const mc_entity_vector *v2 = face->a[2]->a;
@@ -96,8 +135,8 @@ static bool quad(mc_client_model_quad *face, mc_client_tessellator *nw, mc_entit
     for (size_t i = 0; i < 4; ++i) {
         mc_client_model_vertex *vertex = face->a[i];
         if (vertex == NULL || vertex->a == NULL) {
-            fail(error, "actual model vertex position", "tz", "a", vertex == NULL ? 138u : 141u,
-                 false);
+            null_reference(error, "actual model vertex position", "tz", "a",
+                           vertex == NULL ? 138u : 141u);
             goto done;
         }
         if (!fp(error, "tz", "a", 144) ||
@@ -144,7 +183,7 @@ static bool compile(mc_client_model_part *part, mc_client_render_engine_classes 
                   "ps", "d", 18))
         return false;
     if (part->k == NULL)
-        return fail(error, "actual model face array", "ps", "d", 29, false);
+        return null_reference(error, "actual model face array", "ps", "d", 29);
     for (size_t i = 0; i < 6; ++i)
         if (!quad(part->k[i], nw, entities, display, scale, error))
             return false;
@@ -172,7 +211,7 @@ static bool draw(mc_client_model_part *part, mc_client_render_engine_classes *gr
                  mc_entity_classes *entities, mc_client_display *display, float scale,
                  mc_client_model_draw_error *error) {
     if (part == NULL)
-        return fail(error, "actual model part receiver", "ps", "a", 1, false);
+        return null_reference(error, "actual model part receiver", "ps", "a", 1);
     if (part->i || !part->h) {
         error->source_pc = part->i ? 7u : 15u;
         return true;

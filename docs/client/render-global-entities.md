@@ -3,9 +3,11 @@
 The native entry follows the complete 570-byte client
 `n.a(Lbt;Lyn;F)V` control flow. It implements the delay, dispatcher frame
 bindings, counter and origin stores, and the reached Entity predicates. An
-admitted path can return at PC17 or PC569. Reached Entity and TileEntity draw
-children still have explicit dependency boundaries; this is not a playable
-World renderer or a claim of composed original/native equality.
+admitted path can return at PC 17 or PC 569. Visible Sheep now execute the
+[actual TH/GV/XY renderer, MW/EA models and terrain shadow](mob-drawing.md).
+Other renderer families and nonempty TileEntity draw rows retain explicit
+dependencies. These finite results do not establish playability or composed
+original/native frame equality.
 
 The source authority is the client archive pinned in the
 [binary audit](../reference/binaries.md). All PCs below are instruction offsets
@@ -60,12 +62,12 @@ The remaining source sequence is:
 | PCs | Operation and retained effects |
 | --- | --- |
 | 249,257,262 | Invoke `fd.o()`, capture that actual ordinary Entity List, read its size and store J. A null N World fails at249 after all six origin stores. |
-| 274â€“335 | Reread the current World weather List and its size each iteration. Get the actual row at294; increment K at311 before its render-distance predicate317. A true predicate reaches TH draw329. |
-| 345â€“522 | Recheck the captured ordinary List's live size, get its row357 and evaluate render distance370. Unless the actual Entity bM flag bypasses it, invoke YN on that Entity's bounds at390. |
-| 404â€“436 | For the current camera Entity, GameSettings third-person mode or actual `Living.N()` sleeping dispatch determines whether it remains visible. An awake first-person camera is skipped. |
-| 444â€“491 | For a remaining visible Entity, floor Y and clamp it to0..127; capture the current N World at470, then floor X/Z and invoke actual `fd.i(III)Z` presence491. |
-| 507,516 | Increment K only after those ordinary-Entity predicates pass, then reach TH draw516. |
-| 534â€“560 | Iterate the actual N rendered-TileEntity List, obtaining LL at542 before the reached row access551 and LL draw560. |
+| 274 to 335 | Reread the current World weather List and its size each iteration. Get the actual row at294; increment K at311 before its render-distance predicate317. A true predicate invokes the retained TH child at 329; checked retirement precedes continuation at 332. |
+| 345 to 522 | Recheck the captured ordinary List's live size, get its row357 and evaluate render distance370. Unless the actual Entity bM flag bypasses it, invoke YN on that Entity's bounds at390. |
+| 404 to 436 | For the current camera Entity, GameSettings third-person mode or actual `Living.N()` sleeping dispatch determines whether it remains visible. An awake first-person camera is skipped. |
+| 444 to 491 | For a remaining visible Entity, floor Y and clamp it to0..127; capture the current N World at470, then floor X/Z and invoke actual `fd.i(III)Z` presence491. |
+| 507,516 | Increment K only after those ordinary-Entity predicates pass, then invoke the retained TH child at 516. Checked retirement precedes continuation at 519. |
+| 534 to 560 | Iterate the actual N rendered-TileEntity List, obtaining LL at542 before the reached row access551 and LL draw560. |
 | 569 | Return after every reached loop completes. |
 
 J is the captured ordinary List's initial size. K includes every visited
@@ -94,12 +96,19 @@ Sleeping dispatch uses the actual LivingEntity kind. Math is activated only
 when a reached floor operation needs its namespace; floating admission is
 likewise deferred to reached arithmetic.
 
-A reached `th.a(Lsn;F)V` at329 or516 returns an explicit unimplemented-child
-failure after capturing the real singleton receiver. Nonempty rendered
-TileEntity traversal stops at551 because ownership of the actual DK/JE row
-has not been implemented; it does not cast an untyped row or substitute the
-World TileEntity list. Malformed native extents and unsupported provenance
-also refuse explicitly. None of these paths reports source return569.
+At 329 or 516, `th.a(Lsn;F)V` enters the actual retained draw owner. The
+qualified Sheep path executes primary MW geometry, all four XY pass predicates,
+the distinct EA fur model and the ordinary `Settings.j=true` BW shadow. Each
+returned child completes checked native retirement before N continues at 332
+or 519. A failed child stays retained under N; cleanup drains that same child
+before releasing its enclosing receivers. It never replays the failed draw.
+
+Nonempty rendered TileEntity traversal still stops at 551 because ownership of
+the actual DK/JE row has not been implemented. It does not cast an untyped row
+or substitute the World TileEntity list. Unsupported renderer/model families,
+nondefault draw children, malformed native extents and unsupported provenance
+also refuse at their reached operations. Those failures do not report return
+569.
 
 ## Public API and lifetime
 
@@ -125,6 +134,14 @@ Output/error storage must be disjoint from all owners and from each other.
 Cleanup preserves a failing owned slot for retry rather than publishing a
 cached permission to finish later.
 
+Before retiring a successful TH child, N copies its actor/Class and
+renderer/model identities, static class names, source return PCs, model and
+shadow counters. `first_entity_draw` records the first returned N516 child;
+`last_draw` records the last successful child. Each retired flag belongs to
+that receipt's own attempt. The identity integers are observations and cannot
+be dereferenced. They survive child retirement and later failed draws, while
+borrowed call, owner, List and dispatcher views end with cleanup.
+
 N owns distinct LL and TH consumer records across calls and ordinary World
 changes. Call retirement releases the call's receiver occurrences, while
 one-way N terminal detachment or final owner retirement ends only that N's
@@ -132,7 +149,7 @@ consumer records. Startup and foreign consumer records remain attached, and
 ending a consumer does not overwrite TH/LL source World fields. Pending N
 calls block competing entries and terminal/final-owner cleanup.
 
-## App prerequisite and current World-frame boundary
+## App prerequisite and World-frame integration
 
 A genuine `new n(null, null)` cannot provide a successful original N for
 dispatcher tests: after its earlier constructor effects, it invokes
@@ -144,8 +161,8 @@ N construction/publication. That prerequisite includes the actual context,
 statistics, timer worker, resource graph and checked cleanup. Reflective S
 installation or a failed N reconstructed for later calls is not equivalent.
 
-Native loaded controls use the actual completed bootstrap App and a second
-SOURCE-constructed N. They exercise genuine I2 delay calls, the null-World249
+Earlier native loaded controls use the actual completed bootstrap App and a
+second SOURCE-constructed N. They exercise genuine I2 delay calls, the null-World249
 prefix, a real rebuild, nonempty Player traversal, actual frustum predicates
 and exact consumer retirement. These are native composition controls;
 separate original LL/TH observations do not establish composed N parity.
@@ -153,12 +170,24 @@ separate original LL/TH observations do not establish composed N parity.
 The enclosing PX World frame invokes its previously captured N at510 with the
 actual pooled eye BT and actual SR. On its initial I2 invocation, native N
 returns17 with I1 after all preceding terrain, lighting and eye work. PX then
-continues through both [particle methods](particle-rendering.md), two further
-fog calls and translucent terrain submission. The loaded profile reaches the
-weather child at PX932. N510 is checked-retired before later N entries; its
-scalar receipt remains while its borrowed owner, List and dispatcher views end.
-This remains a failed World-frame prefix. Complete frames, repeated gameplay
-and composed original/native equality remain unqualified.
+continues through both [particle methods](particle-rendering.md), further fog
+calls, translucent terrain, precipitation, clouds and the empty first-person
+hand, then returns from the World draw and HUD. The earlier stop at weather
+child PX932 is historical. N510 is checked-retired before later N entries; its
+copied scalar receipts remain while borrowed owner, List and dispatcher views
+end.
+
+The current loaded Windows repeat proves two draws of one declared genuine
+Sheep across four returned World/HUD frames. One frame consumes the actual N
+delay; another visits both Entity rows but culls the unticked Sheep. Neither
+counts as a Sheep draw. The following two frames prove first compilation and
+reuse, the same live renderer/model/list identities and terrain shadows, after
+real ticking through `Minecraft.k:1328`. Checked terminal cleanup completes.
+The fixture starts with Entity-empty saved Chunks, publishes its Sheep through
+the ordinary constructor/position/World APIs and leaves constructor entropy
+and the Timer untouched. This is finite native integration evidence, separate
+from the original drawing comparison and from whole-frame original parity.
+See [Sheep drawing](mob-drawing.md) for the retained-call and device scopes.
 
 ## Preceding native scope at 9fb0b27
 

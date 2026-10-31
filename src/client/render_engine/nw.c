@@ -189,6 +189,30 @@ bool mc_client_nw_color_float(mc_client_tessellator *o, float r, float g, float 
     return leave(o, true, e);
 }
 
+bool mc_client_nw_color_rgba_float(mc_client_tessellator *o, float r, float g, float b, float a,
+                                   mc_client_graphics_error *e) {
+    if (!enter(o, e))
+        return false;
+    if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
+        mc_client_graphics_fail(e, MC_CLIENT_GRAPHICS_UNSUPPORTED_FP,
+                                "nw float RGBA floating environment", site("a", "(FFFF)V", 4),
+                                true);
+        return leave(o, false, e);
+    }
+    /* Actual a(FFFF)4/5,9/10,14/15,20/21 before a(IIII)22. The callee's
+     * q gate must not bypass argument evaluation, including alpha. */
+    const float red = _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(r), _mm_set_ss(255.0f)));
+    const int32_t ir = mc_java_float_to_i32(red);
+    const float green = _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(g), _mm_set_ss(255.0f)));
+    const int32_t ig = mc_java_float_to_i32(green);
+    const float blue = _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(b), _mm_set_ss(255.0f)));
+    const int32_t ib = mc_java_float_to_i32(blue);
+    const float alpha = _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(a), _mm_set_ss(255.0f)));
+    const int32_t ia = mc_java_float_to_i32(alpha);
+    color(o, ir, ig, ib, ia);
+    return leave(o, true, e);
+}
+
 bool mc_client_nw_bind_system_output(mc_client_render_engine_classes *c,
                                      mc_java_system_output *system, mc_client_graphics_error *e) {
     if (e == NULL)

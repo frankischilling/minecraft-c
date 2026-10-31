@@ -1,28 +1,31 @@
 # Source frame input and World drawing
 
-The default client now executes focused mouse look and opens the source pause
-screen. Its World-frame source calls real
-[terrain submission](terrain-submission.md) at `px.a(FJ)V:486` after colors,
-fog, Sky, camera, culling and standard Block list compilation. A normal N return
-continues through FLAT493, [standard lighting](standard-lighting.md)496 and the
-captured camera's eye position504 to the actual captured RenderGlobal at510.
-Its initial [Entity pass](render-global-entities.md) consumes the constructor's
-I2 delay and returns17 with I1. PX then calls the actual EffectRenderer at518
-and535, performs two further fog calls and submits translucent terrain. The
-loaded profile returns from [precipitation drawing](precipitation.md), executes
-the next fog setup and draws [clouds](clouds.md). The following fog setup and
-depth clear enter the [first-person hand](first-person-hand.md) at997. Its
-empty-arm and dry-overlay bodies return, allowing World draw1013 before the
-parent's real timing and [GuiIngame draw](gui-ingame.md). The focused loaded
-profile now returns from the complete frame. Its next unpaused tick reaches
-the [Mob spawn prefix](../entity/mob-construction.md); hidden inactivity still reaches the pause save child. See the
-[particle continuation](particle-rendering.md) for ordering and retained views.
-Later N calls use actual LL/TH frame bindings, Entity Lists and
-visibility predicates; reached Entity/TileEntity draws remain unfinished.
-The specified Windows MSVC Debug state profiles and both hosted Linux sanitizer
-replays pass. The [vertex-lighting backend](lighting-raster.md) now handles
-source normals, materials and flat/smooth lighting. Specialized Block shapes,
-nonempty HUD items, full Entity drawing and playable gameplay remain unfinished.
+The default client executes focused mouse look and opens the source pause
+screen. Its World-frame path calls real [terrain submission](terrain-submission.md)
+at `px.a(FJ)V:486` after colors, fog, Sky, camera, culling and standard Block
+list compilation. A normal N return continues through FLAT493,
+[standard lighting](standard-lighting.md)496 and camera eye position504 to the
+captured RenderGlobal at510. The initial [Entity pass](render-global-entities.md)
+consumes the constructor's I2 delay and returns17 with I1.
+
+Later N calls execute the actual LL/TH frame bindings, live Entity Lists and
+visibility predicates. A visible Sheep now returns through the retained
+[TH/GV/XY, MW/EA and BW shadow path](mob-drawing.md). N checks child retirement
+before continuing at 332 or 519. PX then completes both particle calls,
+translucent terrain, precipitation, clouds and the empty first-person hand.
+World draw1013 precedes the parent's real timing and [GuiIngame draw](gui-ingame.md).
+The loaded Windows repeat proves two actual Sheep draws across four returned
+World/HUD frames, with first compilation, reuse, real ticking through
+`Minecraft.k:1328` and checked terminal cleanup. Its declared native Sheep and
+existing-player statistics bound that result.
+
+The [vertex-lighting backend](lighting-raster.md) handles source normals,
+materials and flat/smooth lighting. Other Mob renderer families, nonempty
+TileEntity draws, specialized Block shapes, other particle classes, nonempty
+HUD items and many gameplay actions retain explicit dependencies or narrower
+qualification. This native continuation does not establish a matched original
+frame or a playable client. See the [particle continuation](particle-rendering.md)
+for source ordering and retained views.
 
 ## Focused mouse input
 
@@ -70,9 +73,9 @@ Native window dimensions do not replace the absent source Canvas.
 
 The OZ draw entry uses the existing GL3.3 GUI kernels, executes background
 drawing, advances the save-pass counter, and invokes actual incremental World
-saving before its saving label/title/Buttons. The normal loaded-World frame
-currently stops earlier in World drawing. Pause drawing and saving are not
-qualified as part of that full frame. The
+saving before its saving label/title/Buttons. The returned Sheep fixture has
+no screen; it does not qualify the active pause saving and drawing path as
+part of that frame. The
 [pause fixture](../../tests/reference/client/pause_screen/README.md) compares
 68 constructor/init/tick rows; live loaded-graph controls cover Escape, existing
 screen admission, Back to game and key-release failure order.
@@ -115,10 +118,14 @@ update calls. Draw fog449, terrain texture470/473 and standard lighting476 then
 run before real [N terrain submission](terrain-submission.md)486. The source
 connects its ordinary and occlusion paths with recenter/JO sorting and TG replay.
 After a normal N return it sets FLAT493, enables standard lighting496 and reads
-the actual camera eye504 before N510. An initial delayed Entity return allows
-the particle and translucent-terrain prefix to continue to weather932. Reached
-Entity/TileEntity draws, other particle classes, HUD and hand work remain
-unfinished.
+the actual camera eye504 before N510. Both the initial delay and qualified
+Sheep draw can return from this N call. Successful TH children at N329/516
+retire before N resumes at332/519. Copied scalar identities, return PCs and
+model/shadow counts survive that cleanup; borrowed child pointers do not.
+The admitted path continues through both particle methods, translucent
+terrain, weather and clouds, the empty hand and the ordinary empty-slot HUD.
+Other renderer/model families, nonempty TileEntity rows, other particle
+classes and nonempty item routes remain separate dependencies.
 
 The performance deadline uses the source 200/120/40 target and Java long
 wrapping. Retained frames preserve completed fields, matrices, GL state and
@@ -197,7 +204,7 @@ matrix/plane bits, buffer cursors and box results. Its finite inputs do not
 establish arbitrary cross-driver matrix generation. Native tests also cover
 all 28 allocation boundaries, partial stores, FP refusal and namespace cleanup.
 
-New source fixtures separately cover 366 World/provider sky rows, 48 fog-state
+The preceding source fixtures separately cover 366 World/provider sky rows, 48 fog-state
 rows, 30 authored GPU pixels, eight SR/N/DK culling rows, four early N sky outcomes
 and 48 whole-sky post-call states. The Windows NV-present fog context matches all
 48 state rows exactly. NV-absent Linux contexts compare common original fields
@@ -217,13 +224,28 @@ At the previous qualified standard Block checkpoint, the loaded Windows graph
 entered [ChunkRenderer compilation](chunk-compilation.md) at396 after Sky, fog
 and culling, compiled standard Block lists and reached PX486. Its inspected
 854 by 480 back buffer showed the reached Sky passes without terrain or HUD.
-The current loaded-World Windows profile passes 704 checks in 12.69 seconds,
-retains all 72 original focus histories/resources/saves and reaches U.b496.
-Its inspected `load.png.world-prefix.png` shows real authored grass terrain and
-Sky without HUD. Eight focused submission CTests pass in 4.51 seconds, zero
-failures/skips; hosted qualification is pending. Neither these native captures
-nor finite body/state comparisons establish a matched original gameplay frame.
-The seven-profile original N cohort excludes issued-query N execution, including
-a 17-entry case. Specialized geometry, Entities, particles, HUD, hand composition and extended play
+At that historical terrain-submission checkpoint, the loaded Windows profile
+passed 704 checks in 12.69 seconds, retained all 72 original focus histories and
+preserved resources/saves while reaching U.b496. Its inspected
+`load.png.world-prefix.png` showed authored grass terrain and Sky without HUD.
+Eight focused submission CTests passed in 4.51 seconds with zero failures or
+skips; hosted qualification was pending for that checkpoint. The seven-profile
+original N cohort excluded issued-query N execution, including a 17-entry case.
+Those results retain their original scopes.
+
+The current [Sheep drawing fixture](mob-drawing.md) separately passes 666 native
+checks on each host and 70,341 selected original comparisons, including 147
+ordered direct World/Block query receipts. Linux ordinary/read-only JDI
+observations supply the graph, list and query reference. Windows uses a
+separately audited ordinary NVIDIA GL supplement for its device-specific normal
+state; it earns no Windows JDI credit. These finite state/geometry comparisons
+and visible native readbacks do not establish original/native whole-frame
+pixel equality.
+
+The loaded continuation uses the same live Sheep, canonical renderer, distinct
+MW/EA models and twelve PS/list identities across its first and reused draw.
+One preceding frame takes N's delay and another completes traversal without
+a Sheep draw before its first simulation tick. Neither counts as a rendered
+Sheep. Other renderer families, nonempty TileEntity drawing and extended play
 remain unfinished or unqualified. The separate diagnostic World renderer
 remains outside the default source path.

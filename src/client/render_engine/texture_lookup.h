@@ -69,7 +69,7 @@ mc_client_texture_lookup_options mc_client_texture_lookup_default_options(void);
  * Native pending prefix must be retired before another lookup/registration.
  * Return/cache IDs are raw numeric values, not owned resource occurrences.
  * Supported ordinary/default/selected-ZIP/missing/cache paths use actual bodies.
- * ## transform77, diagnostic221, GL_CLAMP/mipmap/other provider frontiers remain
+ * ## transform77, diagnostic221, mipmap/other provider frontiers remain
  * explicit. No source-finally, extra ID, d publication or rollback is supplied.
  * Error/output/slots are valid, aligned and disjoint from owners and each other.
  * Large writable error storage should be caller-heap-owned. Out stays unchanged

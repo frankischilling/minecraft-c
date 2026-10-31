@@ -1,17 +1,32 @@
 # History
 
-The [particle continuation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md)
-connects actual DN draw methods, shared particle origins, two further fog calls
-and translucent terrain submission/replay. The loaded Windows prefix reaches
-weather932 while preserving its input, save and cleanup checks. Reached pickup
-draws still stop at their actual missing TH child. Complete frames remain
-unfinished.
+The current [Sheep drawing checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md)
+advances the earlier N516 renderer boundary through actual fur, terrain shadow
+and list reuse. Each host passes 666 native checks, 70,341 selected graph/state
+checks, 147 ordered queries, twelve lists, 72 face buffers and six comparator
+negatives. Linux ordinary/JDI evidence stays separate from the audited Windows
+ordinary NVIDIA GL supplement; no original/native pixels, live GL order or
+whole-frame equality is claimed. Legacy-clamp SDK controls separately pass
+46,802 checks and 3,872 exact samples per host.
 
-The [RenderGlobal Entity extension](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) adds the actual delay, dispatcher
-bindings and visibility traversal. Its native controls exercise real N
+The finite Windows repeat returns four World/HUD frames: one delay, one undrawn
+traversal and two Sheep draws. It records twelve compiled parts and zero on
+reuse, 72 faces, 288 source vertices and 18 shadow quads, returning through
+`Minecraft.k:1328`, N569, PX1013 and HUD2101 before checked cleanup. Earlier continuation
+and commit metrics below retain their historical scope.
+
+The [particle continuation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md)
+connected actual DN draw methods, shared particle origins, two further fog calls
+and translucent terrain submission/replay. That loaded Windows prefix reached
+weather932 while preserving its input, save and cleanup checks. Reached pickup
+draws stopped at their actual missing TH child. Complete frames remained
+unfinished at that checkpoint.
+
+The [RenderGlobal Entity extension](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) added the actual delay, dispatcher
+bindings and visibility traversal. Its native controls exercised real N
 construction/rebuild and exact consumer cleanup. The initial frame frontier
-advances to particle rendering518. Reached draw children and full frames remain
-unfinished; original composed N equality is not credited.
+advanced to particle rendering518. Reached draw children and full frames remained
+unfinished at that checkpoint; original composed N equality was not credited.
 
 This page preserves the former Home and navigation as historical checkpoint
 records. Their counts and unfinished-work statements describe earlier revisions

@@ -1,11 +1,22 @@
 # Client startup
 
-The [RenderGlobal Entity entry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) now consumes its actual constructor I2
-delay after terrain, lighting and eye positioning. The loaded-World frame then
-executes particles and translucent terrain before reaching the unfinished weather
-renderer at PX932. Native N controls separately
-exercise both dispatcher binds and real Player traversal. A playable session
-and composed original/native N comparison remain unfinished.
+The loaded Windows repeat now returns four World/HUD frames through the actual
+[Sheep renderer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md),
+including unsheared fur and `Settings.j=true` terrain shadows. One frame takes
+the real RenderGlobal delay and one traverses without drawing; the next two
+draw the Sheep with first compilation and reuse. They record twelve compiled
+parts and zero on reuse, 72 compiled faces, 288 source vertices and 18 shadow
+quads. Source returns include `Minecraft.k:1328`, N569, PX1013 and HUD2101;
+checked cleanup succeeds. A playable session and whole-frame original/native
+equality remain unfinished.
+
+The focused draw comparison passes 666 native checks and 70,341 selected
+graph/state checks on each host, including 147 ordered direct queries, twelve
+lists, 72 face buffers and six comparator negatives. Linux ordinary/read-only
+JDI evidence stays separate from the audited Windows ordinary NVIDIA GL
+supplement. Neither establishes original/native pixels or live GL call order.
+Separate legacy-clamp controls pass 46,802 checks and 3,872 exact matching-SDK
+samples per host. Earlier startup and hosted metrics below keep their own scope.
 
 The default native executable runs the constructed source App and initialized
 main menu. Explicit diagnostic flags retain the separate title and fixed-camera
@@ -63,8 +74,9 @@ loaded path completes 361 random Chunk coordinates and 28,880 Block samples,
 returns from `fd.l:198`, then completes the random display call at `fd.q:134`
 with all 1,000 samples and 6,000 World Random draws. EffectRenderer ticking
 returns; a repeated focused profile completes the actual Mob's Living/Creature
-path and movement work and returns from `Minecraft.k:1328`. The next reached
-dependency is the actual Mob renderer at `n.a:516`. A separate declared-paused
+path and movement work and returns from `Minecraft.k:1328`. The actual Sheep
+draw now returns through N569, the World frame and HUD. Other renderer families
+retain reached dependencies. A separate declared-paused
 lighting control preserves the source batch of 499 real queue records.
 Frame sound, lighting, suffocation and controller interpolation are connected.
 Focused mouse look uses the actual SDK/CU/Player fields. Inactive pause entry
@@ -75,16 +87,16 @@ through the same RenderBlocks/Tessellator. Empty and standard Block sections
 complete. Current frame source invokes real
 [terrain submission](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terrain-submission.md)
 at `px.a(FJ)V:486`; standard lighting496 and camera eye positioning504 now return.
-The loaded Windows profile reaches Entity/TileEntity rendering510, passes in
-18.59 seconds and preserves all 72 focus histories/resources/saves. Its inspected
-back buffer shows authored grass terrain and Sky without HUD. Three focused
+The earlier loaded Windows profile reached Entity/TileEntity rendering510, passed
+in 18.59 seconds and preserved all 72 focus histories/resources/saves. Its inspected
+back buffer showed authored grass terrain and Sky without HUD. Three focused
 lighting tests pass in 2.05 seconds, zero failures/skips. Hosted source 0c0cc5a
 passes all four jobs and 1,520 tests; [Build and tests](Build-and-tests) records
 the distinct device scopes. Specialized Block shapes and TileEntity
 rendering remain unfinished. The whole `n.e()V` sky-change
 callback and shared U class active use are connected. See the
 [chunk-compilation contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md).
-Whole ordinary World ticks, terrain frames and gameplay actions remain unfinished.
+Unrestricted World simulation, rendering and gameplay actions remain unfinished.
 Version-zero conversion stops at 52.
 Create/Rename stop at `NEW162`/`NEW189`; Delete stops at preparation 21 without
 skipping its prefix. Complete World entry and gameplay remain unfinished. See the

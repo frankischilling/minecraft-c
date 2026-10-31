@@ -13,16 +13,34 @@ Its continuation completes random Chunk work over 361
 coordinates and 28,880 samples, then all 1,000 random-display samples and 6,000
 World Random draws. Repeated execution now completes the actual Mob
 Living/Creature path and movement work through `fd.a(Entity,boolean):121`, then
-returns from `Minecraft.k:1328`. Rendering reaches the actual Mob renderer
-invocation at `n.a:516`; that renderer body remains unfinished. Terminal
-cleanup releases genuine Path aliases, target cycles and Piston-only roots.
+returns from `Minecraft.k:1328`. The actual Sheep renderer now returns through
+`n.a:569`, the World frame and HUD, including fur, terrain shadow and list reuse.
+Terminal cleanup releases genuine Path aliases, target cycles and Piston-only roots.
 A selected Spider jockey retains its separate unfinished mount.
 
-Single-player remains pre-playable. Mob combat, storage and drawing,
+Single-player remains pre-playable. Mob combat, storage and remaining renderers,
 further Block overrides, concrete display particles, sleeping wake transitions
 and gameplay actions remain unfinished. Active achievement and tutorial notices
 also retain an unfinished draw child. Focus-loss Canvas integration and the
 hidden pause-screen save path remain open.
+
+The [Sheep renderer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md)
+uses the same constructed actor, World and TH renderer graph. Its unsheared fur
+pass and `Settings.j=true` terrain shadow return. Each native host passes 666
+checks and 70,341 selected original graph/state checks, including 147 ordered
+direct queries, twelve lists, 72 face buffers and six comparator negatives.
+Linux ordinary/read-only JDI evidence and the audited Windows ordinary NVIDIA
+GL supplement have separate scopes; neither establishes original/native pixels,
+live GL call order or whole-frame equality.
+
+The finite loaded repeat returns four World/HUD frames: one N delay, one
+undrawn traversal and two Sheep draws. It records twelve compiled parts on the
+first draw and zero on reuse, 72 compiled faces, 288 source vertices and 18
+shadow quads. `Minecraft.k:1328`, N569, PX1013 and HUD2101 return before checked
+cleanup. Separate legacy-clamp controls pass 46,802 checks and 3,872 exact
+matching-SDK samples per host.
+
+The preceding path checkpoint retains its own results below.
 
 Focused Windows MSVC Debug and Linux Clang18 ASan/UBSan runs pass the actual
 World path wrappers, shared ChunkCache, PathFinder and shared-cursor Path.
@@ -49,6 +67,16 @@ Detailed source order,
 ownership and limits are in [client pathfinding](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/pathfinding.md) and
 [Mob active ticks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-active-tick.md). These scoped results do not
 establish a playable client.
+
+## Integration qualification
+
+All 92 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 119 Windows tests pass in 227.09 seconds and all 114 Linux tests in
+321.27 seconds, without failures, skips or sanitizer findings. The same 2,543
+C, helper, build and reference inputs remain unchanged through both builds and tests.
+All nine original-comparison suites pass on each host. Formatting checks 1,742
+files; six source-binding tables preserve their historical metadata. These scoped
+results do not establish playability or whole-frame original/native equality.
 
 ## Preceding random Chunk checkpoint
 
@@ -96,8 +124,9 @@ Store shutdown with that malformed source field remains unsupported.
 
 The [Entity render traversal](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) reads actual ordinary/weather Lists and
 uses the same Entity's distance, frustum, camera/sleeping and Chunk-presence
-predicates. Native World leases protect retained List storage. Reached Entity
-draws and nonempty RenderGlobal TileEntity rows remain explicit dependencies.
+predicates. Native World leases protect retained List storage. The current Sheep
+draw returns; other renderer families and nonempty RenderGlobal TileEntity rows
+retain explicit dependencies.
 
 The [normal terminal coordinator](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
 now connects menu-run shutdown to actual prefix ending, checked LL/TH retirement,
@@ -114,8 +143,9 @@ remain unfinished. There is no original shutdown equivalence claim.
 
 The same Display now handles [lit source geometry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md), including actual NW
 normal packing and compiled-list inheritance. Its finite raster qualification
-is separate from World simulation and the complete frame. Entity/TileEntity
-drawing remains unfinished. The initial delayed N return now continues through
+is separate from World simulation and the complete frame. The current Sheep draw
+uses it; other renderer families and TileEntity drawing remain unfinished. The
+earlier delayed N return continued through
 [particles](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md)
 and translucent terrain to the weather child at932.
 

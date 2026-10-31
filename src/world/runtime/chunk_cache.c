@@ -1,3 +1,4 @@
+#include "block_normal_internal.h"
 #include "chunk_cache_internal.h"
 
 #include "../../block/registry/registry_internal.h"
@@ -718,50 +719,7 @@ mc_client_chunk_cache_status mc_client_chunk_cache_material(mc_client_chunk_cach
 }
 
 static bool normal_block(const mc_block *block) {
-    /* Complete client uu.d()Z dispatch: constant-false declaring bodies and
-     * their descendants, exact ys.b, otherwise inherited uu literal true. */
-    switch (block->kind) {
-        case MC_BLOCK_SLAB:
-            return block->subtype.ys.b;
-        case MC_BLOCK_SAPLING:
-        case MC_BLOCK_FLOWING_FLUID:
-        case MC_BLOCK_STILL_FLUID:
-        case MC_BLOCK_BED:
-        case MC_BLOCK_RAIL:
-        case MC_BLOCK_DETECTOR_RAIL:
-        case MC_BLOCK_PISTON_BASE:
-        case MC_BLOCK_COBWEB:
-        case MC_BLOCK_TALL_GRASS:
-        case MC_BLOCK_DEAD_BUSH:
-        case MC_BLOCK_PISTON_HEAD:
-        case MC_BLOCK_MOVING_PISTON:
-        case MC_BLOCK_FLOWER:
-        case MC_BLOCK_MUSHROOM:
-        case MC_BLOCK_TORCH:
-        case MC_BLOCK_FIRE:
-        case MC_BLOCK_STAIRS:
-        case MC_BLOCK_REDSTONE:
-        case MC_BLOCK_CROPS:
-        case MC_BLOCK_FARMLAND:
-        case MC_BLOCK_SIGN:
-        case MC_BLOCK_DOOR:
-        case MC_BLOCK_LADDER:
-        case MC_BLOCK_LEVER:
-        case MC_BLOCK_PRESSURE_PLATE:
-        case MC_BLOCK_REDSTONE_TORCH:
-        case MC_BLOCK_BUTTON:
-        case MC_BLOCK_SNOW_LAYER:
-        case MC_BLOCK_CACTUS:
-        case MC_BLOCK_SUGAR_CANE:
-        case MC_BLOCK_FENCE:
-        case MC_BLOCK_PORTAL:
-        case MC_BLOCK_CAKE:
-        case MC_BLOCK_REPEATER:
-        case MC_BLOCK_TRAPDOOR:
-            return false;
-        default:
-            return true;
-    }
+    return mc_world_source_block_normal(block);
 }
 
 static mc_client_chunk_cache_status predicate(mc_client_chunk_cache *c, int32_t x, int32_t y,

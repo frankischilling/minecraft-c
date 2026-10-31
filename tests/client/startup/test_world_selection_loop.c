@@ -17,6 +17,7 @@
 #include "client/gui/source_world_selection_drawing.h"
 #include "client/gui/source_world_selection_internal.h"
 #include "client/input/mouse_helper.h"
+#include "client/render/manager/internal.h"
 #include "client/render/tile_entity_renderer/internal.h"
 #include "client/runtime/gameplay_input.h"
 #include "client/runtime/menu_loop.h"
@@ -105,8 +106,8 @@ static bool loaded_draw_reached(const mc_client_menu_loop_state *source) {
            source->source_pc == 22;
 }
 
-/* Passive inspection of the actual pending TH draw. The missing TH.a body
- * has not selected a renderer; this checks its existing canonical Map entry. */
+/* Passive verification of an exact retained N/TH invocation and its canonical
+ * Map entry. Returning Sheep frames use copied receipts below instead. */
 static const char *mob_renderer_class(mc_entity_class_kind kind) {
     switch (kind) {
         case MC_ENTITY_CLASS_KIND_SPIDER:
@@ -139,7 +140,7 @@ static const char *mob_renderer_class(mc_entity_class_kind kind) {
  * dc adds one canonical key at TH.a(Class)28 and shares the existing gs/DS
  * owner. Its 28 constructor keys and distinct renderer owners remain intact. */
 static bool client_renderer_roster(const client_application *app,
-                                   const mc_client_render_global_entities_state *entities,
+                                   mc_client_render_manager *receiver,
                                    const mc_client_manager_state *manager) {
     static const struct {
         mc_entity_class_kind kind;
@@ -187,14 +188,14 @@ static bool client_renderer_roster(const client_application *app,
         mc_client_managed_renderer *renderer = NULL;
         mc_entity_class_literal_view literal;
         mc_client_managed_renderer_state state;
-        if (mc_client_render_manager_entry(entities->th, row, &key, &renderer, NULL) !=
+        if (mc_client_render_manager_entry(receiver, row, &key, &renderer, NULL) !=
                 MC_CLIENT_MANAGER_OK ||
             mc_entity_class_literal_inspect(key, &literal) != MC_ENTITY_OK ||
             literal.owner != app->entities || literal.source != MC_ENTITY_CLIENT ||
             mc_entity_class_literal_get(app->entities, literal.kind, &canonical) != MC_ENTITY_OK ||
             key != canonical || renderer == NULL ||
             !mc_client_managed_renderer_inspect(renderer, &state) || state.identity == NULL ||
-            state.phase != MC_CLIENT_MODEL_READY || state.manager != entities->th ||
+            state.phase != MC_CLIENT_MODEL_READY || state.manager != receiver ||
             state.source_class == NULL)
             return false;
         if (literal.kind == MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) {
@@ -282,7 +283,7 @@ static mc_entity *pending_mob_render_receiver(const mc_client_menu_loop_state *s
         !mc_client_render_manager_inspect(app->g->entity_manager_consumer.classes, &manager) ||
         manager.phase != MC_CLIENT_MANAGER_READY || manager.a != entities->th ||
         manager.fields.g != world || manager.living_occurrence != app->i ||
-        !client_renderer_roster(app, entities, &manager))
+        !client_renderer_roster(app, entities->th, &manager))
         return NULL;
     for (size_t row = 0; row < manager.entries; ++row) {
         const mc_entity_class_literal *key = NULL;
@@ -498,6 +499,249 @@ static int repeat_sheep_input(fixture *f) {
     puts("WORLD_REPEAT_ENTITY input=native-constructed-sheep pose=actual-player-look "
          "distance=6 world-and-chunk=1 same-world-and-classes=1 constructor-returned=1 "
          "constructor-hold-released=1 player-unchanged=1 world-random-unchanged=1");
+    return 0;
+}
+
+typedef struct repeat_render_control {
+    uintptr_t renderer, primary, secondary, parts[12];
+    int32_t lists[12];
+    size_t frames, entity_frames, delayed_frames, undrawn_frames;
+    size_t compile_parts, compile_faces, compile_vertices, reuse_parts;
+    size_t shadow_quads;
+    bool compiled, reused;
+} repeat_render_control;
+
+static mc_entity *repeat_live_sheep(const fixture *f) {
+    mc_world_runtime *world = f->app->active_world;
+    if (world == NULL || world->fields.b != world->entity_membership.list ||
+        world->fields.b->count != world->entity_membership.count)
+        return NULL;
+    for (size_t i = 0; i < world->entity_membership.count; ++i) {
+        mc_entity *entity = world->entity_membership.entries[i];
+        if (world->fields.b->items[i] != entity)
+            return NULL;
+        if ((uintptr_t)entity == f->repeat_sheep_identity)
+            return entity;
+    }
+    return NULL;
+}
+
+static int repeat_model_graph(fixture *f, repeat_render_control *control, bool compiled) {
+    mc_entity *sheep = repeat_live_sheep(f);
+    CHECK(sheep != NULL && sheep->phase == MC_ENTITY_READY && sheep->bounds != NULL &&
+          sheep->base.world == f->app->active_world && sheep->classes == f->app->entities &&
+          mc_entity_is_kind(sheep, MC_ENTITY_CLASS_KIND_SHEEP) && !sheep->base.be &&
+          sheep->base.bF);
+    mc_mob_state mob;
+    CHECK(mc_mob_inspect(sheep, &mob) && mob.kind == MC_ENTITY_CLASS_KIND_SHEEP &&
+          mob.constructor_pc == 19);
+    mc_client_manager_state manager;
+    CHECK(mc_client_render_manager_inspect(f->app->startup->manager_classes, &manager) &&
+          manager.phase == MC_CLIENT_MANAGER_READY && manager.a != NULL &&
+          client_renderer_roster(f->app, (mc_client_render_manager *)manager.a, &manager));
+    mc_client_managed_renderer *renderer = NULL;
+    for (size_t i = 0; i < manager.entries; ++i) {
+        const mc_entity_class_literal *key = NULL;
+        mc_client_managed_renderer *owner = NULL;
+        CHECK(mc_client_render_manager_entry((mc_client_render_manager *)manager.a, i, &key, &owner,
+                                             NULL) == MC_CLIENT_MANAGER_OK);
+        if (key == sheep->class_literal)
+            renderer = owner;
+    }
+    mc_client_managed_renderer_state state;
+    CHECK(renderer != NULL && mc_client_managed_renderer_inspect(renderer, &state) &&
+          state.phase == MC_CLIENT_MODEL_READY && state.identity == renderer &&
+          state.manager == manager.a && state.source_class != NULL &&
+          strcmp(state.source_class, "xy") == 0 && state.primary == renderer->primary &&
+          state.secondary == renderer->secondary && renderer->primary != NULL &&
+          renderer->secondary != NULL && renderer->primary != renderer->secondary);
+    manager_model *models[] = {renderer->primary, renderer->secondary};
+    CHECK(models[0]->phase == MC_CLIENT_MODEL_READY && !strcmp(models[0]->source_class, "mw") &&
+          models[1]->phase == MC_CLIENT_MODEL_READY && !strcmp(models[1]->source_class, "ea"));
+    if (control->renderer == 0) {
+        control->renderer = (uintptr_t)renderer;
+        control->primary = (uintptr_t)models[0];
+        control->secondary = (uintptr_t)models[1];
+    }
+    CHECK(control->renderer == (uintptr_t)renderer && control->primary == (uintptr_t)models[0] &&
+          control->secondary == (uintptr_t)models[1]);
+    for (size_t m = 0; m < 2; ++m) {
+        mc_client_model_part *parts[] = {models[m]->fields.d, models[m]->fields.e,
+                                         models[m]->fields.f, models[m]->fields.g,
+                                         models[m]->fields.h, models[m]->fields.i};
+        for (size_t i = 0; i < 6; ++i) {
+            const size_t index = m * 6u + i;
+            mc_client_model_part *part = parts[i];
+            CHECK(part != NULL && part->h && !part->i && part->n == compiled);
+            if (control->parts[index] == 0)
+                control->parts[index] = (uintptr_t)part;
+            CHECK(control->parts[index] == (uintptr_t)part);
+            for (size_t prior = 0; prior < index; ++prior)
+                CHECK(control->parts[prior] != (uintptr_t)part);
+            if (compiled) {
+                mc_client_source_list_state list;
+                CHECK(part->o > 0 &&
+                      mc_client_display_list_inspect(f->app->display, part->o, &list) &&
+                      list.defined && !list.building && list.draws == 6 && list.vertices == 36);
+                /* TZ supplies four vertices per face. Actual NW.b=true copies
+                 * two more and records six triangle vertices in each batch. */
+                for (size_t face = 0; face < 6; ++face) {
+                    mc_client_source_batch_view batch;
+                    CHECK(mc_client_display_list_batch(f->app->display, part->o, face, &batch) &&
+                          batch.mode == 4 && batch.vertices == 6 && batch.byte_count == 192);
+                }
+                if (control->lists[index] == 0)
+                    control->lists[index] = part->o;
+                CHECK(control->lists[index] == part->o);
+                for (size_t prior = 0; prior < index; ++prior)
+                    CHECK(control->lists[prior] != part->o);
+            } else {
+                CHECK(part->o == 0);
+            }
+        }
+    }
+    if (compiled) {
+        CHECK(manager.fields.g == f->app->active_world && manager.living_occurrence == f->app->i &&
+              manager.fields.k == f->app->settings && sheep->base.bt > 0);
+    }
+    return 0;
+}
+
+static bool repeat_world_work(const mc_client_menu_loop_state *source) {
+    const mc_client_world_tick *call = source->world_tick;
+    if (call == NULL)
+        return false;
+    const mc_world_tick_state *scheduler = &call->scheduler_state;
+    const mc_world_random_display_state *display = &call->ambience_state;
+    return call->returned && !call->failed && call->site.pc == 1328 && call->renderer_returned &&
+           call->render_global_returned && call->entities_returned && scheduler->returned &&
+           scheduler->source_pc == 198 && scheduler->weather_returned &&
+           scheduler->spawning_returned && scheduler->provider_returned && scheduler->time_stored &&
+           scheduler->scheduled_returned && scheduler->random_returned &&
+           scheduler->random_chunk_count == 361 &&
+           call->scheduler_error.status == MC_WORLD_STORAGE_OK && call->scheduler == NULL &&
+           scheduler->random == NULL && call->ambience == NULL &&
+           call->ambience_error.status == MC_WORLD_STORAGE_OK && display->returned &&
+           display->source_pc == 134 && display->samples_started == 1000 &&
+           display->samples_returned == 1000 && display->world_random_calls == 6000 &&
+           source->world_tick_returns > 0 && source->random_chunk_calls > 0 &&
+           source->last_random_chunk_count == 361 &&
+           source->random_chunk_samples == source->random_chunk_calls * UINT64_C(28880) &&
+           source->random_display_calls == source->random_chunk_calls &&
+           source->random_display_samples == source->random_display_calls * UINT64_C(1000) &&
+           source->random_display_random_calls == source->random_display_calls * UINT64_C(6000);
+}
+
+static int repeat_returned_frame(fixture *f, repeat_render_control *control) {
+    const mc_client_menu_loop_state *source = &f->state;
+    const mc_client_world_frame_state *frame = source->world_frame;
+    const mc_client_gui_ingame_draw_state *hud = source->hud;
+    CHECK(!source->failed && source->running && source->render_returned &&
+          source->render_clock_stored && source->world_draws > 0 &&
+          source->world_draws == source->hud_draws && frame != NULL && !frame->active &&
+          frame->returned && frame->source_pc == 1013 && frame->app == f->app &&
+          frame->world == f->app->active_world && frame->owner == f->app->t &&
+          frame->camera == f->app->i && frame->render_global == f->app->g &&
+          frame->failure != NULL && frame->failure->status == MC_CLIENT_WORLD_FRAME_OK &&
+          frame->failure->entities == NULL && frame->failure->hand == NULL);
+    CHECK(frame->picking_returned && frame->viewport_set && frame->fog_returned &&
+          frame->camera_returned && frame->frustum_returned && frame->sky_returned &&
+          frame->updates_returned && frame->terrain_returned && frame->lighting_enabled &&
+          frame->eye_position_returned && frame->entities_returned &&
+          frame->lit_particles_returned && frame->sprite_particles_returned &&
+          frame->translucent_returned && frame->translucent_state_restored &&
+          frame->precipitation_returned && frame->clouds_returned && frame->hand_returned &&
+          frame->hand != NULL && frame->hand->returned && frame->hand->source_pc == 163 &&
+          frame->hand->held_returned && frame->hand->overlays_returned &&
+          frame->tail_anaglyph_read && !frame->tail_anaglyph);
+    CHECK(hud != NULL && !hud->active && hud->returned && hud->source_pc == 2101 &&
+          hud->projection_returned && hud->hotbar_returned && hud->crosshair_returned &&
+          hud->stats_returned && hud->slots_returned && hud->empty_slots == 9 &&
+          hud->chat_returned && hud->owner == NULL && hud->failure == NULL && hud->cleanup == NULL);
+    const mc_client_render_global_entities_state *entities = frame->entities;
+    CHECK(entities != NULL && !entities->active && entities->returned && !entities->retiring &&
+          entities->draw == NULL && entities->owner == NULL && entities->current == NULL &&
+          entities->entities_list == NULL && entities->eye == NULL && entities->frustum == NULL &&
+          entities->ll == NULL && entities->th == NULL && entities->failure == NULL &&
+          entities->cleanup == NULL);
+    ++control->frames;
+    if (entities->delayed) {
+        CHECK(entities->source_pc == 17 && entities->draws_attempted == 0 &&
+              !entities->first_entity_draw.valid && !control->compiled);
+        ++control->delayed_frames;
+        return 0;
+    }
+    CHECK(
+        entities->source_pc == 569 && entities->ll_returned && entities->th_returned &&
+        entities->counters_cleared && entities->origins_stored && entities->origins_written == 6 &&
+        entities->entities_visited == f->app->active_world->entity_membership.count &&
+        entities->entities_visited >= 2 && entities->distance_checks == entities->entities_visited);
+    if (entities->draws_attempted == 0) {
+        /* The initial real traversal can cull the unticked Sheep at its zero
+         * interpolated pose. It consumes frame budget, never an Entity draw. */
+        mc_entity *sheep = repeat_live_sheep(f);
+        CHECK(sheep != NULL && sheep->base.bt == 0 && !control->compiled &&
+              f->app->active_world->entity_membership.count == 2 &&
+              entities->entities_visited == 2 && entities->distance_checks == 2 &&
+              entities->frustum_checks == 2 && entities->camera_skips == 1 &&
+              entities->presence_checks == 0 && entities->draws_returned == 0 &&
+              entities->draws_retired == 0 && entities->entity_draws_returned == 0 &&
+              entities->weather_draws_returned == 0 && !entities->first_entity_draw.valid &&
+              !entities->last_draw.valid && entities->model_parts_compiled == 0 &&
+              entities->model_faces == 0 && entities->model_vertices == 0 &&
+              entities->shadow_quads == 0 && f->app->r == NULL && !atomic_load(&f->app->o));
+        CHECK(repeat_model_graph(f, control, false) == 0);
+        ++control->undrawn_frames;
+        return 0;
+    }
+    CHECK(entities->presence_checks >= 1 && entities->draws_attempted == entities->draws_returned &&
+          entities->draws_returned == entities->draws_retired &&
+          entities->entity_draws_returned > 0);
+    const mc_client_render_global_draw_receipt *draw = &entities->first_entity_draw;
+    mc_entity *sheep = repeat_live_sheep(f);
+    CHECK(sheep != NULL && repeat_world_work(source) && draw->valid && draw->returned &&
+          draw->retired && !draw->post_only && draw->n_invoke_pc == 516 &&
+          draw->th_source_pc == 115 && draw->living_source_pc == 769 &&
+          draw->post_draw_source_pc == 100 && draw->actor_identity == f->repeat_sheep_identity &&
+          draw->actor_class_identity == (uintptr_t)sheep->class_literal &&
+          draw->actor_kind == MC_ENTITY_CLASS_KIND_SHEEP && draw->actor_class_name != NULL &&
+          !strcmp(draw->actor_class_name, "dl") && draw->renderer_identity == control->renderer &&
+          draw->renderer_class_name != NULL && !strcmp(draw->renderer_class_name, "xy") &&
+          draw->primary_returned && draw->post_draw_returned && draw->primary_event_returned);
+    CHECK(draw->primary_model.identity == control->primary &&
+          draw->primary_model.class_name != NULL && !strcmp(draw->primary_model.class_name, "mw") &&
+          draw->primary_model.returned && draw->primary_model.source_pc == 67 &&
+          draw->primary_model.part_calls == 6 && draw->primary_model.part_returns == 6 &&
+          draw->secondary_model.identity == control->secondary &&
+          draw->secondary_model.class_name != NULL &&
+          !strcmp(draw->secondary_model.class_name, "ea") && draw->secondary_model.returned &&
+          draw->secondary_model.source_pc == 67 && draw->secondary_model.part_calls == 6 &&
+          draw->secondary_model.part_returns == 6);
+    for (size_t i = 0; i < 4; ++i)
+        CHECK(draw->pass_attempted[i] && draw->pass_result[i] == (i == 0) &&
+              draw->pass_render_returned[i] == (i == 0));
+    CHECK(draw->shadow_quads > 0 && draw->shadow_vertices == draw->shadow_quads * 4 &&
+          draw->shadow_block_queries > 0 && draw->shadow_light_queries > 0 &&
+          draw->shadow_normal_queries >= draw->shadow_quads &&
+          draw->shadow_brightness_queries >= draw->shadow_quads);
+    if (!control->compiled) {
+        CHECK(draw->model_parts_compiled == 12 && draw->primary_model.compiled_parts == 6 &&
+              draw->secondary_model.compiled_parts == 6 && draw->model_faces == 72 &&
+              draw->model_vertices == 288);
+        control->compile_parts = draw->model_parts_compiled;
+        control->compile_faces = draw->model_faces;
+        control->compile_vertices = draw->model_vertices;
+        control->compiled = true;
+    } else {
+        CHECK(draw->model_parts_compiled == 0 && draw->primary_model.compiled_parts == 0 &&
+              draw->secondary_model.compiled_parts == 0 && draw->model_faces == 0 &&
+              draw->model_vertices == 0);
+        control->reuse_parts = draw->model_parts_compiled;
+        control->reused = true;
+    }
+    CHECK(repeat_model_graph(f, control, true) == 0);
+    ++control->entity_frames;
+    control->shadow_quads += draw->shadow_quads;
     return 0;
 }
 
@@ -2233,73 +2477,80 @@ int main(int argc, char **argv) {
                  * simulation before the guaranteed visible Entity reaches N.
                  * No Timer field, tick callback or render branch is replaced. */
                 SDL_Delay(100);
-                const uint64_t repeat_deadline = SDL_GetTicks() + 3000;
-                bool next_failed = false;
-                while (!next_failed && SDL_GetTicks() < repeat_deadline) {
+                repeat_render_control render_control = {0};
+                CHECK(repeat_model_graph(&f, &render_control, false) == 0);
+                const uint64_t tick_returns_before = f.state.world_tick_returns;
+                const uint64_t world_draws_before = f.state.world_draws;
+                const uint64_t repeat_started = SDL_GetTicks();
+                const uint64_t repeat_deadline = repeat_started + 60000;
+                while (!render_control.reused && render_control.frames < 8 &&
+                       SDL_GetTicks() < repeat_deadline) {
                     CHECK(display_focus(&f, true) == 0);
-                    next_failed = !mc_client_menu_loop_frame(f.loop);
+                    const bool returned = mc_client_menu_loop_frame(f.loop);
                     CHECK(mc_client_menu_loop_inspect(f.loop, &f.state));
-                    SDL_Delay(1);
+                    if (!returned)
+                        fprintf(stderr, "Repeated loaded frame retained %s.%s:%" PRId64 " %s\n",
+                                f.state.source_class == NULL ? "native" : f.state.source_class,
+                                f.state.source_method == NULL ? "frame" : f.state.source_method,
+                                f.state.source_pc,
+                                f.state.operation == NULL ? "none" : f.state.operation);
+                    CHECK(returned);
+                    CHECK(repeat_returned_frame(&f, &render_control) == 0);
+                    if (!render_control.reused)
+                        SDL_Delay(100); /* Actual Timer chooses ticks from real wall time. */
                 }
-                if (next_failed && !unpaused_world_reached(&f.state, f.app)) {
-                    fprintf(stderr, "Next loaded frame %s.%s:%" PRId64 " %s\n",
-                            f.state.source_class, f.state.source_method, f.state.source_pc,
-                            f.state.operation);
-                    const mc_world_entity_tick_error *entity_error = &f.state.world_tick->entities;
-                    if (entity_error->child == MC_WORLD_ENTITY_TICK_CHILD_MOB) {
-                        const mc_mob_tick_error *mob = &entity_error->child_error.mob;
-                        fprintf(stderr,
-                                "Reached Mob %s.%s:%d child=%s.%s:%d status=%u %s "
-                                "environment=%u action=%u behavior=%u\n",
-                                mob->site.class_name == NULL ? "none" : mob->site.class_name,
-                                mob->site.method == NULL ? "none" : mob->site.method, mob->site.pc,
-                                mob->child_site.class_name == NULL ? "none"
-                                                                   : mob->child_site.class_name,
-                                mob->child_site.method == NULL ? "none" : mob->child_site.method,
-                                mob->child_site.pc, (unsigned int)mob->status,
-                                mob->operation == NULL ? "none" : mob->operation,
-                                (unsigned int)mob->state.environment_returned,
-                                (unsigned int)mob->state.action_returned,
-                                (unsigned int)mob->state.behavior_returned);
-                    }
+                if (!render_control.reused) {
+                    mc_entity *sheep = repeat_live_sheep(&f);
+                    fprintf(
+                        stderr,
+                        "Repeated Sheep visibility deadline: elapsed-seconds=%" PRIu64
+                        " limit-seconds=60 "
+                        "frames=%zu delayed=%zu undrawn=%zu "
+                        "entity-frames=%zu paused=%d screen=%d player=(%.17g,%.17g,%.17g) "
+                        "player-prev=(%.17g,%.17g,%.17g) yaw=%.9g pitch=%.9g "
+                        "sheep-ticks=%d sheep=(%.17g,%.17g,%.17g) "
+                        "sheep-prev=(%.17g,%.17g,%.17g)\n",
+                        (SDL_GetTicks() - repeat_started) / UINT64_C(1000), render_control.frames,
+                        render_control.delayed_frames, render_control.undrawn_frames,
+                        render_control.entity_frames, (int)atomic_load(&f.app->o),
+                        f.app->r == NULL ? -1 : (int)f.app->r->kind, f.app->i->base.x,
+                        f.app->i->base.y, f.app->i->base.z, f.app->i->base.bl, f.app->i->base.bm,
+                        f.app->i->base.bn, (double)f.app->i->base.yaw, (double)f.app->i->base.aT,
+                        sheep == NULL ? -1 : sheep->base.bt, sheep == NULL ? 0.0 : sheep->base.x,
+                        sheep == NULL ? 0.0 : sheep->base.y, sheep == NULL ? 0.0 : sheep->base.z,
+                        sheep == NULL ? 0.0 : sheep->base.bl, sheep == NULL ? 0.0 : sheep->base.bm,
+                        sheep == NULL ? 0.0 : sheep->base.bn);
                 }
-                CHECK(next_failed && unpaused_world_reached(&f.state, f.app));
-                CHECK(repeat_statistics_controls(&f, false) == 0);
-                const mc_world_tick_state *spawn = &f.state.world_tick->scheduler_state;
-                mc_entity *pending = pending_mob_render_receiver(&f.state, f.app);
-                if (pending != NULL) {
-                    mc_entity_class_literal_view literal;
-                    mc_mob_state mob;
-                    CHECK(mc_entity_class_literal_inspect(pending->class_literal, &literal) ==
-                              MC_ENTITY_OK &&
-                          mc_mob_inspect(pending, &mob) &&
-                          (uintptr_t)pending == f.repeat_sheep_identity &&
-                          mob.kind == MC_ENTITY_CLASS_KIND_SHEEP && f.state.world_frame != NULL &&
-                          f.state.hud == NULL);
-                    printf("WORLD_FRAME first-returned=1 frontier=mob-render source=n.a:516 "
-                           "frame-pc=%u retained-failure=1 pending=th.a(Lsn;F)V "
-                           "mob=%s renderer=%s renderer-map=29 constructor-owners=28 "
-                           "local-player-alias=gs "
-                           "same-world=1 same-arguments=1 "
-                           "tick-return=%d scheduler=%u completed-random-calls=%" PRIu64
-                           " completed-chunks=%zu completed-samples=%" PRIu64
-                           " display-calls=%" PRIu64 " display-samples=%" PRIu64
-                           " display-random=%" PRIu64 " stale-hud-cleared=1\n",
-                           f.state.world_frame->source_pc, literal.client_name,
-                           mob_renderer_class(mob.kind), f.state.world_tick->site.pc,
-                           spawn->source_pc, f.state.random_chunk_calls,
-                           f.state.last_random_chunk_count, f.state.random_chunk_samples,
-                           f.state.random_display_calls, f.state.random_display_samples,
-                           f.state.random_display_random_calls);
-                } else {
-                    CHECK(f.state.world_frame == NULL && f.state.hud == NULL &&
-                          spawn->spawn_jockey != NULL);
-                    printf("WORLD_FRAME first-returned=1 frontier=spider-jockey source=fd.l:80 "
-                           "helper=%u constructors=%zu predicates=%zu retained-failure=1 "
-                           "stale-hud-cleared=1\n",
-                           spawn->spawn_postspawn_pc, spawn->spawn_constructors,
-                           spawn->spawn_predicates);
-                }
+                CHECK(render_control.compiled && render_control.reused &&
+                      render_control.entity_frames >= 2 && render_control.frames >= 2 &&
+                      render_control.frames <= 8 &&
+                      render_control.frames == render_control.entity_frames +
+                                                   render_control.delayed_frames +
+                                                   render_control.undrawn_frames &&
+                      f.state.world_tick_returns > tick_returns_before &&
+                      f.state.world_draws == world_draws_before + render_control.frames &&
+                      repeat_statistics_controls(&f, false) == 0);
+                printf("WORLD_FRAME first-returned=1 continuation=returned-sheep "
+                       "frames=%zu entity-frames=%zu delayed-frames=%zu undrawn-frames=%zu "
+                       "source=px.a:1013 entities=n.a:569 hud=uq.a:2101 "
+                       "mob=dl renderer=xy primary=mw secondary=ea exact-declared-actor=1 "
+                       "renderer-map=29 constructor-owners=28 local-player-alias=gs "
+                       "same-world-and-classes=1 compiled-parts=%zu reused-parts=%zu "
+                       "compiled-faces=%zu compiled-vertices=%zu part-lists=12 "
+                       "part-source-vertices=24 part-list-vertices=36 stable-list-ids=1 "
+                       "shadow-quads=%zu checked-draw-retirement=1 copied-receipts=1 "
+                       "tick-return=1328 scheduler=198 completed-random-calls=%" PRIu64
+                       " completed-chunks=%zu completed-samples=%" PRIu64 " display-calls=%" PRIu64
+                       " display-samples=%" PRIu64 " display-random=%" PRIu64 "\n",
+                       render_control.frames, render_control.entity_frames,
+                       render_control.delayed_frames, render_control.undrawn_frames,
+                       render_control.compile_parts, render_control.reuse_parts,
+                       render_control.compile_faces, render_control.compile_vertices,
+                       render_control.shadow_quads, f.state.random_chunk_calls,
+                       f.state.last_random_chunk_count, f.state.random_chunk_samples,
+                       f.state.random_display_calls, f.state.random_display_samples,
+                       f.state.random_display_random_calls);
+                CHECK(capture(&f, argv[3]) == 0);
             }
             if (repeat_load)
                 goto loaded_draw_controls_done;

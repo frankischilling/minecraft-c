@@ -104,6 +104,7 @@ struct mc_client_render_manager {
     size_t retained_engines, retained_fonts, retained_settings;
     int32_t last_frame_pc;
     manager_frame_diagnostics *frame_diagnostics;
+    struct mc_client_render_manager_draw_call *draw_call; /* One retained actual TH draw. */
 };
 
 struct mc_client_render_manager_classes {

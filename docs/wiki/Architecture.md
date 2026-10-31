@@ -1,5 +1,30 @@
 # Systems and subsystems
 
+The [Sheep draw owner](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md)
+executes the actual TH lookup, XY/GV primary and fur passes, MW/EA/NN models,
+PS lists and BW terrain shadow. One retained call owns each reached actor,
+renderer, namespace and World/Engine/String/Settings/App occurrence. The App
+has a distinct render-borrow count, checked before constructor retirement
+changes its phase. Foreign texture lookups and list definitions keep their
+original owners; checked retirement never repairs GL/NW state or replays calls.
+
+RenderGlobal enters this child at 329/516, retires a successful child before
+continuing at 332/519, and retains a failed child until checked cleanup. Scalar
+receipts survive child retirement. The finite loaded repeat returns four
+World/HUD frames: one delay, one undrawn traversal and two Sheep draws, with
+twelve compiled parts then zero on reuse, 72 faces, 288 source vertices and 18
+shadow quads. `Minecraft.k:1328`, N569, PX1013 and HUD2101 return before cleanup.
+
+The Display retains logical `GL_CLAMP` per actual texture slot and generation.
+Qualified nearest and linear filter pairs use their distinct edge/border
+semantics; unsupported mixed/mipmap combinations refuse at sampling. Compiled
+geometry reads current material state. Same-device legacy SDK controls pass
+46,802 checks and 3,872 exact samples per host. The draw itself passes 666 native
+and 70,341 selected graph/state checks per host, including 147 ordered queries,
+twelve lists, 72 face buffers and six comparator negatives. Linux ordinary/JDI
+evidence and the audited Windows ordinary NVIDIA GL supplement stay separate;
+there is no original/native pixel, live GL-order or whole-frame equality claim.
+
 The [random display call](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/random-display.md)
 owns its actual World and one distinct default Random through inspection and
 retirement. Each Block getter ends its own Chunk use before the selected
@@ -12,17 +37,19 @@ The [RenderGlobal Entity call](https://github.com/frankischilling/minecraft-c/bl
 current Entity and actual World List lease until checked retirement. N owns
 separate LL/TH consumer records across ordinary World changes; terminal cleanup
 ends only those records. The traversal preserves live Lists, fresh fields and
-source predicate order, with explicit missing draw children.
+source predicate order. Sheep drawing returns; other renderer families and
+nonempty TileEntity rows retain explicit draw dependencies.
 
 The [normal terminal coordinator](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
 now connects menu-run shutdown to actual prefix ending, checked LL/TH retirement,
 complete retained-load classification and fresh selected-World admission. Early
 bootstrap close keeps the same graph retryable while getters stay closed.
 Retained screens and newly retained controllers still block their checked
-cleanup after World consumption. All 40 targets build on both hosts; 49 Windows
-tests pass in 68.21 seconds and 46 sanitized Linux tests pass in 98.26 seconds.
-Seven Windows selection profiles preserve saves/assets and both successful
-loaded modes retain all 72 focus histories. Authored partial Player NBT refuses
+cleanup after World consumption. At the earlier coordinator checkpoint, all 40
+targets built on both hosts; 49 Windows tests passed in 68.21 seconds and 46
+sanitized Linux tests passed in 98.26 seconds. Seven Windows selection profiles
+preserved saves/assets and both successful loaded modes retained all 72 focus
+histories. Authored partial Player NBT refuses
 the coordinator with its acquired World intact. Complete Format/App/service
 admission, partial-load shutdown, deferred old Worlds and complete frame drawing
 remain unfinished. There is no original shutdown equivalence claim.
@@ -48,13 +75,14 @@ now constructs the real Sign, MobSpawner and Piston renderers. It shares
 canonical TileEntity Class identities and model geometry, preserves nullable
 lookup caching, and creates a fresh RenderBlocks object for each reached Piston
 World callback. Frame binding retains the actual owners and preserves ordered
-interpolation and failure prefixes. Full Entity/TileEntity traversal and draws
-remain unfinished.
+interpolation and failure prefixes. Other Entity renderer families and nonempty
+TileEntity draws remain unfinished.
 
 The canonical Display program now supplies [source vertex lighting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md).
 It uses the existing matrix/light ledger, front/back materials and ColorMaterial
 state. Compiled lists retain their actual attribute effects. This closes the
-backend dependency while model/Entity dispatch and complete frames remain unfinished.
+backend dependency used by the current Sheep model/Entity draw. Other renderer
+families and whole-frame original equality remain unfinished.
 
 The [LocalPlayer NBT path](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-nbt.md)
 dispatches through actual Entity, Living, Inventory and Player owners. Metadata
@@ -93,9 +121,11 @@ publishes the view entity. Healthy null-screen/focus handling returns; the
 native selection tick executes gameplay input through 1073 and the admitted
 World/frame segment. Direct same-graph checks execute renderer/entity updates
 through weather and weighted Biome selection, then actual default Mob construction/yaw/pose,
-predicates, publication and all 361 random Chunk coordinates before client
-ambience at `Minecraft.k:1311`. The retained random call owns its actual Chunk,
-Player, Lightning and callback receipts across failure. Source focused mouse
+predicates, publication and all 361 random Chunk coordinates. Client ambience
+then completes all 1,000 display samples and 6,000 World Random draws. The
+actual Mob Living/Creature work returns before `Minecraft.k:1328`. The retained
+random call owns its actual Chunk, Player, Lightning and callback receipts across
+failure. Source focused mouse
 look and pause entry are connected.
 World-frame rendering completes colors, fog state, canonical camera, actual
 Sky programs and W/SR/DK culling. The dirty-chunk selector now constructs the
@@ -104,8 +134,9 @@ list and NW. Current frame source invokes real
 [terrain submission](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terrain-submission.md)
 at `px.a(FJ)V:486`, using the same N/Ge/TG and ARB owners. Standard lighting496
 and camera eye positioning504 return before Entity/TileEntity rendering510.
-Windows lighting replay matches 86 original state rows. The loaded profile
-passes in 18.59 seconds and shows authored grass terrain and Sky without HUD.
+Windows lighting replay matches 86 original state rows. The earlier loaded
+profile passed in 18.59 seconds and showed authored grass terrain and Sky
+without HUD.
 Hosted source 0c0cc5a passes all four jobs and 1,520 tests. See
 [Build and tests](Build-and-tests) for native and device scopes.
 The Display owns its ordered matrix ledger; RenderModels owns the checked
@@ -115,8 +146,9 @@ Complete presentation remains unfinished.
 The [particle continuation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md)
 uses the same captured EffectRenderer and four live Lists. Completed child
 calls retire before later same-owner entries; scalar receipts survive while
-borrowed views end. The initial frame computes particle origins, submits and
-replays actual translucent terrain, then reaches weather932. A selected Hit
+borrowed views end. At that earlier checkpoint, the initial frame computed
+particle origins, submitted and replayed actual translucent terrain, then
+reached weather932. A selected Hit
 would instead reach the actual damage/placement overlay before the outline.
 
 The [compilation owners](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md)

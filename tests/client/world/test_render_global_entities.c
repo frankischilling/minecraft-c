@@ -75,7 +75,8 @@ int mc_test_render_global_entities(client_application *app, mc_math_classes *mat
                                                            app->profile,
                                                            app->registry,
                                                            app->startup->manager_classes,
-                                                           math};
+                                                           math,
+                                                           app->source_namespace};
     CHECK(services.manager_classes != NULL && app->startup->engine_classes != NULL &&
           mc_client_render_global_allocate(app->startup->engine_classes, NULL, &c->owner,
                                            &c->error) == MC_CLIENT_RENDER_GLOBAL_OK);

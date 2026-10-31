@@ -5,8 +5,11 @@ the existing Manager, World, Entity, Registry and resource owners. The body
 stores its frame references, dispatches `Living.N()`, handles the sleeping
 World/Bed branch, and publishes the five interpolated camera fields in source
 order. The awake/null comparison and native-only sleeping/lifetime controls
-pass on Windows MSVC Debug and Linux Clang18 with ASan/UBSan. RenderGlobal's
-Entity/TileEntity traversal and renderer draws remain unfinished.
+pass on Windows MSVC Debug and Linux Clang18 with ASan/UBSan at the recorded
+frame-binding checkpoint. RenderGlobal now uses this binding at N80 and calls
+the retained TH draw body at N329/516. The qualified [Sheep drawing path](mob-drawing.md)
+returns through GV/XY, the real MW/EA models and the enabled BW terrain shadow.
+Other renderer families and nonempty TileEntity draw rows remain unfinished.
 
 The entry requires the genuinely completed TH singleton. Its constructor owns
 all 28 renderers and their actual BW model/RenderBlocks children and manager
@@ -116,9 +119,10 @@ and null-Living paths do not require Math active use. The failed-Math native
 controls close their entire Manager/Model/Registry/Entity namespace before
 opening a separate ready-Math namespace.
 
-## Native comparisons and controls
+## Frame-binding comparison checkpoint
 
-The two new CTests pass on Windows in 6.15 seconds and Linux in 77.08 seconds,
+The recorded frame-binding checkpoint's two CTests pass on Windows in 6.15
+seconds and Linux in 77.08 seconds,
 including source hashing on the Linux mounted workspace. The frame comparison
 reports zero mismatches: 2,738 exact column comparisons, 136 explicitly
 unqualified columns, one typed-status comparison and one pinned-PC comparison.
@@ -139,8 +143,8 @@ where the schema permits, with explicit exclusions for the original Pig's
 runtime Class and constructor and for the differing `N()` declaring class.
 No expected output is supplied to the native executable.
 
-Original Pig construction, Entity IDs and instantiated actor Random, Math
-holder and Watcher state remain uncredited. Preservation of native absent
+These frame-binding comparisons leave original Pig construction, Entity IDs
+and instantiated actor Random, Math holder and Watcher state uncredited. Preservation of native absent
 children cannot qualify the original instantiated children. The 9,368
 reflected model-field slots and 880 reference arrays are original Java graph
 observations. A native typed-object snapshot checks its own graph stability;
@@ -182,9 +186,33 @@ region, permits its intentional content change and records the eight-byte
 session lock. Native cleanup does not claim an original source reset or
 resource constructor completion.
 
-The [RenderGlobal Entity pass](render-global-entities.md) now invokes this
-actual TH body at N80 after LL44. Distinct N consumer records survive ordinary
-World changes and end during N terminal cleanup. Actual delay, List traversal
-and visibility predicates run; reached Entity/TileEntity draws, deferred old
-Worlds and full application lifetime parity remain unfinished. CPU frame
-binding does not establish complete World-frame or gameplay parity.
+The [RenderGlobal Entity pass](render-global-entities.md) invokes this actual
+TH frame body at N80 after LL44. Distinct N consumer records survive ordinary
+World changes and end during N terminal cleanup. Its real delay, List traversal
+and visibility predicates run before the reached draw calls.
+
+## Drawing on the bound manager
+
+The separate [Sheep drawing entry](mob-drawing.md) executes `TH.a(SN,F)`,
+including interpolation, actual Entity brightness, GL color and Class-keyed
+renderer lookup. GV/XY renders the existing MW primary and EA fur models;
+BW postdraw uses the actual enabled Settings flag and current TH World. Entity
+brightness reads the actor's World independently. Neither body substitutes the
+other World operand or a copied Player representation.
+
+An admitted draw retains the actual singleton, actor and selected renderer,
+plus each reached service owner. A pending call blocks a second draw on that
+manager. Source/native failure preserves its completed stores and drawing
+effects. Checked retirement handles only that call's captured owners and
+pending texture/list rights; it does not resume drawing or repair GL state.
+
+At N329/516, a successful child retires before N continues at 332/519. Copied
+scalar receipts retain the actual actor/Class, renderer/model identities,
+return PCs and compile/shadow counts after child views expire. The loaded
+Windows repeat uses those receipts to prove first compilation and reuse of
+one declared Sheep across returned World/HUD frames. The direct Sheep fixture
+has its own original graph/list/query comparison and device qualifications.
+CPU frame binding, that finite drawing comparison and the native loaded
+continuation retain separate scopes; they do not establish complete original
+World-frame or gameplay parity. Other renderer families, TileEntity drawing,
+deferred old Worlds and full application lifetime parity remain unfinished.

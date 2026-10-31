@@ -303,7 +303,7 @@ static bool source_material_texture_parameter(mc_client_texture_resource *resour
             break;
         case GL_TEXTURE_WRAP_S:
         case GL_TEXTURE_WRAP_T:
-            valid = value == GL_REPEAT || value == GL_MIRRORED_REPEAT ||
+            valid = value == GL_CLAMP || value == GL_REPEAT || value == GL_MIRRORED_REPEAT ||
                     value == GL_CLAMP_TO_EDGE || value == GL_CLAMP_TO_BORDER ||
                     value == GL_MIRROR_CLAMP_TO_EDGE;
             extension_dependent =
@@ -320,6 +320,16 @@ static bool source_material_texture_parameter(mc_client_texture_resource *resour
     if (!resource->live || !resource->driver_generated)
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source texture parameter barrier",
                     "pending attributes require a live generated 2D texture", 0);
+    display_texture *slot = resource_slot(resource);
+    GLint *source_value = source_texture_parameter_field(&slot->source, pname);
+    if (source_value != NULL && (*source_value == GL_CLAMP || value == GL_CLAMP)) {
+        if (!slot->source.known)
+            return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source texture parameter barrier",
+                        "legacy source texture state is unknown after driver failure", 0);
+        if (*source_value != value)
+            source_material_vertices(s);
+        return true;
+    }
     typedef void(GLAPIENTRY * source_get_texture_parameter_fn)(GLenum, GLenum, GLint *);
     source_get_texture_parameter_fn get_parameter = NULL;
     SDL_FunctionPointer address = SDL_GL_GetProcAddress("glGetTexParameteriv");

@@ -104,6 +104,8 @@ mc_client_application_owner_status application_owner_fail(mc_client_application_
 mc_client_application_owner_status application_worker_hold(client_application *,
                                                            mc_client_application_owner_error *);
 void application_worker_release(client_application *);
+/* Native ownership only. RAW prepared callers retain their real static input;
+ * source a264 publication independently requires CONSTRUCTING and its namespace. */
 mc_client_application_owner_status application_static_hold(client_application *,
                                                            mc_client_application_owner_error *);
 void application_static_release(client_application *);

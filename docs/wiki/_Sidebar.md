@@ -1,6 +1,7 @@
 - [Home](Home)
 - [Client startup](Startup)
 - [RenderGlobal Entity pass](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md)
+- [Sheep drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md)
 - [Particle drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md)
 - [Rain and snow drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/precipitation.md)
 - [Cloud drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/clouds.md)

@@ -52,8 +52,9 @@ mc_client_render_texture_options mc_client_render_texture_default_options(void);
  * context holds. Display/native/source dependencies remain exclusive and live.
  *
  * The normal a/j/k=false constructor path is implemented. Reached four-level
- * mipmap processing remains an explicit dependency after level0; GL_CLAMP
- * stops at its first actual parameter operation. This does not implement
+ * mipmap processing remains an explicit dependency after level0. Legacy clamp
+ * keeps source state and admits coherent nearest/nearest or linear/linear
+ * level-zero RGBA sampling in the real Display. This does not implement
  * ik/String/ImageIO lookup, HTTP textures, effect registration or effect tick.
  * out is unchanged on failure. Error/storage/views must be disjoint. */
 mc_client_render_texture_status

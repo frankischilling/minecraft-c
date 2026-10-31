@@ -42,6 +42,9 @@ mc_client_application_constructor_retire(client_application **slot,
     if (app->view_occurrence != NULL)
         return application_constructor_error(out, MC_CLIENT_APP_BUSY, MC_CLIENT_APP_CHILD_NONE, -1,
                                              "actual view occurrence still attached");
+    if (mc_client_application_render_borrows_pending(app))
+        return application_constructor_error(out, MC_CLIENT_APP_BUSY, MC_CLIENT_APP_CHILD_NONE, -1,
+                                             "actual retained render still borrows App");
     if (mc_client_application_resource_thread_borrows_pending(app))
         return application_constructor_error(out, MC_CLIENT_APP_BUSY, MC_CLIENT_APP_CHILD_NONE, -1,
                                              "actual resource thread still borrows App");

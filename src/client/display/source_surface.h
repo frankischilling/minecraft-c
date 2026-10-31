@@ -96,6 +96,10 @@ typedef struct mc_client_source_batch_view {
  * GL or buffer-cursor work. Native abort leaves committed commands callable and
  * retains the pending prefix until range cleanup; it does not permit replay. */
 bool mc_client_display_list_inspect(mc_client_display *, int32_t, mc_client_source_list_state *);
+/* Passive exact current unfinished definition identity. Success alone writes
+ * out; no activation, GL, cursor or source/native ownership change occurs. */
+bool mc_client_display_pending_list_identity(mc_client_display *, int32_t, const void **out);
+
 bool mc_client_display_list_batch(mc_client_display *, int32_t, size_t draw_index,
                                   mc_client_source_batch_view *);
 bool mc_client_display_list_pending_batch(mc_client_display *, int32_t, size_t draw_index,

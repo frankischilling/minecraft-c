@@ -276,7 +276,8 @@ static bool entities_body(mc_client_world_frame_call *call, mc_math_classes *mat
         .profile = app->profile,
         .registry = app->registry,
         .manager_classes = app->startup == NULL ? NULL : app->startup->manager_classes,
-        .math = math};
+        .math = math,
+        .application_classes = app->source_namespace};
     const mc_client_render_global_status status = mc_client_render_global_entities_begin(
         call->state.render_global, call->entity_eye, call->culler, call->state.partial, &services,
         &call->entities, &call->entities_error);

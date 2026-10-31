@@ -6,8 +6,14 @@ real imported GUIDs and the source checksum; the actual client loads it.
 After a fully returned loaded frame, repeat also declares one genuine native
 Sheep constructor/position/publication in the actual Player view. Its saved
 Chunks remain Entity-empty: serialized Mob loading is not qualified. The
-renderer check selects that exact published Sheep after real timed ticking;
-it does not require natural spawning to supply a visible Mob within a deadline.
+renderer check selects that exact published Sheep in copied N receipts after
+real timed ticking, then requires returned World/HUD frames and genuine model
+compilation followed by reuse. Exact initial delayed/undrawn frames consume
+the observation budget without counting as Sheep draws. Real elapsed time
+lets the actual Timer choose the next ticks. Natural spawning need not supply
+a visible Mob within a deadline.
+Part receipts retain the 24 original TZ vertex calls per cube. The ordinary
+NW.b=true expansion records 36 triangle vertices in each six-face Display list.
 Other profiles retain fresh statistics. With an absent inventory entry, the
 real tutorial can reach the still-missing active notice draw at vu.a108 before
 Mob rendering. That fresh-player route is outside the repeat renderer proof.
@@ -221,40 +227,33 @@ def main():
                 rows = [line for line in result.stdout.splitlines()
                         if line.startswith("WORLD_FRAME ")]
                 if len(rows) != 1:
-                    raise RuntimeError("Repeated frame must expose one exact retained frontier")
+                    raise RuntimeError("Repeated frame must expose one exact returned Sheep receipt")
                 receipt = re.fullmatch(
-                    r"WORLD_FRAME first-returned=1 frontier=mob-render source=n\.a:516 "
-                    r"frame-pc=510 retained-failure=1 pending=th\.a\(Lsn;F\)V "
-                    r"mob=(?P<mob>[a-z]+) renderer=(?P<renderer>[a-z]+) "
+                    r"WORLD_FRAME first-returned=1 continuation=returned-sheep "
+                    r"frames=(?P<frames>[0-9]+) entity-frames=(?P<entity_frames>[0-9]+) "
+                    r"delayed-frames=(?P<delayed>[0-9]+) undrawn-frames=(?P<undrawn>[0-9]+) "
+                    r"source=px\.a:1013 entities=n\.a:569 hud=uq\.a:2101 "
+                    r"mob=dl renderer=xy primary=mw secondary=ea exact-declared-actor=1 "
                     r"renderer-map=29 constructor-owners=28 local-player-alias=gs "
-                    r"same-world=1 same-arguments=1 tick-return=1328 scheduler=198 "
+                    r"same-world-and-classes=1 compiled-parts=12 reused-parts=0 "
+                    r"compiled-faces=72 compiled-vertices=288 part-lists=12 part-source-vertices=24 part-list-vertices=36 stable-list-ids=1 "
+                    r"shadow-quads=(?P<shadows>[0-9]+) checked-draw-retirement=1 copied-receipts=1 "
+                    r"tick-return=1328 scheduler=198 "
                     r"completed-random-calls=(?P<calls>[0-9]+) completed-chunks=361 "
                     r"completed-samples=(?P<samples>[0-9]+) display-calls=(?P<displays>[0-9]+) "
                     r"display-samples=(?P<display_samples>[0-9]+) "
-                    r"display-random=(?P<draws>[0-9]+) stale-hud-cleared=1", rows[0])
-                if receipt is not None:
-                    values = receipt.groupdict()
-                    renderers = {"cn": "yx", "uz": "v", "fr": "v", "gb": "m", "uw": "mj",
-                                 "wh": "me", "dl": "xy", "bx": "va", "ww": "ip", "gi": "we",
-                                 "xt": "es"}
-                    calls, samples, displays, display_samples, draws = (
-                        int(values[key]) for key in
-                        ("calls", "samples", "displays", "display_samples", "draws"))
-                    if (values["mob"] != "dl" or values["renderer"] != "xy" or
-                            renderers.get(values["mob"]) != values["renderer"] or calls < 1 or
-                            samples != calls * 28880 or displays != calls or
-                            display_samples != displays * 1000 or draws != displays * 6000):
-                        raise RuntimeError("Pending Mob render did not follow complete random/display calls")
-                else:
-                    # The genuine uncontrolled 1-in-100 Spider branch can stop
-                    # earlier at its still-missing mount child. It has a separate
-                    # exact receipt, not a substitute for a returning World tick.
-                    jockey = re.fullmatch(
-                        r"WORLD_FRAME first-returned=1 frontier=spider-jockey source=fd\.l:80 "
-                        r"helper=56 constructors=([0-9]+) predicates=([0-9]+) "
-                        r"retained-failure=1 stale-hud-cleared=1", rows[0])
-                    if jockey is None or int(jockey[1]) < 1 or jockey[1] != jockey[2]:
-                        raise RuntimeError("Repeated frame did not reach its exact Mob render or mount frontier")
+                    r"display-random=(?P<draws>[0-9]+)", rows[0])
+                if receipt is None:
+                    raise RuntimeError("Repeated frame did not prove its exact returned Sheep/World/HUD path")
+                values = {key: int(value) for key, value in receipt.groupdict().items()}
+                if (not 2 <= values["entity_frames"] <= values["frames"] <= 8 or
+                        values["frames"] != values["entity_frames"] + values["delayed"] + values["undrawn"] or
+                        values["shadows"] < values["entity_frames"] or values["calls"] < 1 or
+                        values["samples"] != values["calls"] * 28880 or
+                        values["displays"] != values["calls"] or
+                        values["display_samples"] != values["displays"] * 1000 or
+                        values["draws"] != values["displays"] * 6000):
+                    raise RuntimeError("Returned Sheep frames did not follow complete real tick/random/display calls")
             if mode == "load-light":
                 expected = ("WORLD_LIGHT mode=load-light declared-paused-entries=2 completed-frames=2 "
                             "queue=500,1,0 same-queue=1 oldest-survives=1 block-light=15,0,0 "

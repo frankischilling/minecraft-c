@@ -1,5 +1,30 @@
 # Storage and original references
 
+The [Sheep draw observations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/mob_draw/README.md)
+retain three actual texture misses/hits, first compilation, reuse and the BW
+shadow component from the unchanged archive and real LWJGL2 context. Linux
+ordinary and read-only JDI runs retain 240 initialized classes and 173 live Code
+bodies. Each native host passes 666 checks and 70,341 selected graph/state
+comparisons, preserving classes, aliases and temporal identities across six
+phases. Twelve lists, all 72 face buffers, three shadow buffers and 147 ordered
+direct queries are paired; six comparator corruptions must fail.
+
+The audited Windows ordinary NVIDIA GL supplement is separate from that full
+Linux evidence. It requires the matching actual device/driver, all 36 inputs,
+four byte-identical captured helpers and exactly 21 pinned artifacts, including
+the consumed raw transport, before parsing it. Four manifest omission/hash
+negatives must fail. It supplies only the device-specific GL baseline; model,
+list and query authority remains the Linux ordinary/JDI capture. Raw captures
+are preserved. Prepared matrices alone allow four float ULP and numeric equality
+of opposite signed zeros. Native pixels, live GL order and whole-frame original
+equality remain outside this comparison.
+
+Separate legacy-clamp SDK controls pass 46,802 checks and 3,872 exact samples per
+host. The [drawing contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md)
+also records the native loaded repeat: four returned World/HUD frames, two
+Sheep draws, first compilation/reuse and checked cleanup. These native frame
+results are distinct from the prepared original renderer observations.
+
 The [random display observer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/world/random_display/README.md)
 executes twelve World profiles and 99 direct Block profiles through all
 eleven display declarations. Ordinary and read-only debugger records match

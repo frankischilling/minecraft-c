@@ -162,13 +162,38 @@ static bool draw_entity(mc_client_render_global_entities_call *c, unsigned int g
         mc_client_render_manager_retain(receiver, &c->manager) != MC_CLIENT_MANAGER_OK)
         return manager_failure(c, get_pc);
     c->draw_th = receiver;
+    c->draw_invoke_pc = invoke_pc;
+    c->state.source_pc = invoke_pc;
     if (receiver == NULL)
         return fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE, "actual N TH draw receiver",
                     invoke_pc, false);
-    fail(c, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
-         "actual TH Entity render child is not connected", invoke_pc, true);
-    c->failure.child = (mc_client_graphics_site){"th", "a", "(Lsn;F)V", 0};
-    return false;
+    const mc_client_manager_draw_services services = {.math = c->services.math,
+                                                      .graphics = c->state.owner->classes,
+                                                      .display = c->state.owner->display,
+                                                      .application_classes =
+                                                          c->services.application_classes};
+    ++c->state.draws_attempted;
+    const mc_client_manager_status status = mc_client_render_manager_draw_begin(
+        receiver, c->current, c->state.partial, &services, NULL, &c->draw, &c->draw_failure);
+    c->state.draw = c->draw;
+    if (status != MC_CLIENT_MANAGER_OK) {
+        fail(c, manager_status(status), c->draw_failure.operation, invoke_pc,
+             c->draw_failure.native_policy);
+        c->failure.manager_draw = &c->draw_failure;
+        c->failure.parent =
+            (mc_client_graphics_site){"n", "a", entities_descriptor, (int32_t)invoke_pc};
+        c->failure.child = c->draw_failure.site;
+        return false;
+    }
+    mc_client_manager_draw_state state = {0};
+    if (!mc_client_render_manager_draw_inspect(c->draw, &state) || !state.returned)
+        return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
+                    "N actual TH draw did not return its source body", invoke_pc, true);
+    draw_receipt(c, &state);
+    if (!retire_draw(c, &c->failure) || !release_draw_receiver(c, &c->failure))
+        return false;
+    c->state.source_pc = invoke_pc + 3u;
+    return true;
 }
 
 static bool weather(mc_client_render_global_entities_call *c) {
@@ -200,9 +225,10 @@ static bool weather(mc_client_render_global_entities_call *c) {
         bool visible;
         if (!entity_distance(c, 317, &visible))
             return false;
-        if (visible)
-            return draw_entity(c, 323, 329);
+        if (visible && !draw_entity(c, 323, 329))
+            return false;
         release_current(c);
+        c->state.source_pc = 332;
     }
 }
 
@@ -358,9 +384,11 @@ static bool entities(mc_client_render_global_entities_call *c) {
         if (visible) {
             c->state.owner->fields.K = mc_java_i32_add(c->state.owner->fields.K, 1);
             c->state.last_store_pc = 507;
-            return draw_entity(c, 510, 516);
+            if (!draw_entity(c, 510, 516))
+                return false;
         }
         release_current(c);
+        c->state.source_pc = 519;
     }
 }
 

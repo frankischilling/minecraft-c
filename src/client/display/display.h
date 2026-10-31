@@ -125,6 +125,21 @@ typedef enum mc_client_texture_parameter {
     MC_CLIENT_TEXTURE_WRAP_T
 } mc_client_texture_parameter;
 
+typedef struct mc_client_texture_source_state {
+    uint64_t generation;
+    int32_t min_filter, mag_filter, wrap_s, wrap_t;
+    bool known, image_uploaded, physical_known;
+    /* Derived core implementation values, never source glGetTexParameter data. */
+    int32_t physical_wrap_s, physical_wrap_t;
+} mc_client_texture_source_state;
+
+/* Passive exact-generation slot observation. No GL, activation or allocation.
+ * Source CLAMP remains10496, independently of the derived physical wrap. A
+ * retired/unregistered name fails without changing output. Raw external GL
+ * wrap/filter writes are outside this API's source parameter ownership. */
+bool mc_client_display_texture_state_inspect(const mc_client_display *, mc_client_texture,
+                                             mc_client_texture_source_state *);
+
 /* Ordered RenderEngine operations. These do not combine generation/upload,
  * restore bindings, or delete generated names on a later failure. Reserve a
  * real descriptor/Display-context hold BEFORE glGenTextures; the actual driver
@@ -138,8 +153,12 @@ typedef enum mc_client_texture_parameter {
  * Each resource keeps Display destruction BUSY until retirement. Bind and each
  * parameter are distinct actual GL operations. Parameters/upload require that
  * same resource to be bound on the current texture unit; they never bind it
- * implicitly or reset unpack/PBO state. GL_CLAMP is an explicit unsupported
- * core-context dependency. Upload admits canonical tightly packed RGBA unpack
+ * implicitly or reset unpack/PBO state. Source GL_CLAMP is retained exactly;
+ * borderless level-zero RGBA sampling admits coherent NEAREST/NEAREST or
+ * LINEAR/LINEAR. Legal temporary mixed/mipmap parameter stores succeed; an
+ * actual textured draw needing that unsupported clamp profile fails natively.
+ * Parameter calls during list compilation fail before any immediate effect.
+ * Upload admits canonical tightly packed RGBA unpack
  * state, conservatively reserves its raw-input budget before GL, and keeps a
  * failed upload's ID/accounting. These are native policies, not Java GL errors.
  *

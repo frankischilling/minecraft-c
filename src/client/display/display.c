@@ -28,6 +28,7 @@ typedef struct display_texture {
     GLuint id;
     size_t bytes;
     mc_client_texture_resource *resource;
+    mc_client_texture_source_state source;
 } display_texture;
 
 struct mc_client_texture_resource {
@@ -64,7 +65,7 @@ struct mc_client_display {
     mc_client_display_info info;
     GLuint vertex_shader, fragment_shader, program, vao, vbo;
     GLint textured, alpha_test, projection_scale;
-    GLint model_enabled, projection_matrix, modelview_matrix;
+    GLint model_enabled, projection_matrix, modelview_matrix, clamp_s, clamp_t;
     GLint max_texture_size;
     double exact_width, exact_height;
     display_texture textures[DISPLAY_TEXTURES];
@@ -165,6 +166,8 @@ static bool gl_check(mc_client_display *display, const char *operation,
     return true;
 }
 
+#include "source_texture_sampling.h"
+
 static bool current_internal(mc_client_display *display, const char *operation,
                              mc_client_display_error *error, bool cleanup) {
     if (display == NULL)
@@ -264,9 +267,9 @@ static bool renderer_create(mc_client_display *display, mc_client_display_error 
     static const char fragment_source[] =
         "#version 330 core\n"
         "in vec2 fragmentUV; in vec4 fragmentColor; layout(location=0) out vec4 outputColor;\n"
-        "uniform sampler2D guiTexture; uniform int textured; uniform int alphaTest;\n"
-        "void main(){vec4 value=fragmentColor;"
-        "if(textured!=0)value*=texture(guiTexture,fragmentUV);"
+        "uniform sampler2D guiTexture; uniform int textured; uniform int "
+        "alphaTest;\n" SOURCE_TEXTURE_SAMPLING_GLSL "void main(){vec4 value=fragmentColor;"
+        "if(textured!=0)value*=sourceTextureSample(guiTexture,fragmentUV);"
         "if(alphaTest!=0 && value.a<=0.1)discard;outputColor=value;}\n";
     if (!shader(display, GL_VERTEX_SHADER, vertex_source, &display->vertex_shader, error) ||
         !shader(display, GL_FRAGMENT_SHADER, fragment_source, &display->fragment_shader, error))
@@ -300,11 +303,14 @@ static bool renderer_create(mc_client_display *display, mc_client_display_error 
     display->projection_matrix =
         display->gl.GetUniformLocation(display->program, "projectionMatrix");
     display->modelview_matrix = display->gl.GetUniformLocation(display->program, "modelviewMatrix");
+    display->clamp_s = display->gl.GetUniformLocation(display->program, "legacyClampS");
+    display->clamp_t = display->gl.GetUniformLocation(display->program, "legacyClampT");
     if (!gl_check(display, "locate GUI uniforms", error))
         return false;
     if (sampler < 0 || display->textured < 0 || display->alpha_test < 0 ||
         display->projection_scale < 0 || display->model_enabled < 0 ||
-        display->projection_matrix < 0 || display->modelview_matrix < 0)
+        display->projection_matrix < 0 || display->modelview_matrix < 0 || display->clamp_s < 0 ||
+        display->clamp_t < 0)
         return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "locate GUI uniforms", "missing uniform", 0);
     display->gl.Uniform1i(sampler, 0);
     display->gl.GenVertexArrays(1, &display->vao);
@@ -657,7 +663,11 @@ bool mc_client_display_upload_texture(mc_client_display *display, const mc_image
         }
         return false;
     }
-    display->textures[display->texture_count++] = (display_texture){.id = texture, .bytes = bytes};
+    mc_client_texture_source_state source = source_texture_defaults(0);
+    source.min_filter = source.mag_filter = GL_NEAREST;
+    source.image_uploaded = true;
+    display->textures[display->texture_count++] =
+        (display_texture){.id = texture, .bytes = bytes, .source = source};
     display->texture_bytes += bytes;
     *out = texture;
     return success(error);
@@ -736,7 +746,8 @@ bool mc_client_display_generate_texture(mc_client_display *display,
     resource->active = true;
     resource->generation = ++display->source.next_texture_generation;
     const size_t index = display->texture_count++;
-    display->textures[index] = (display_texture){.resource = resource};
+    display->textures[index] = (display_texture){
+        .resource = resource, .source = source_texture_defaults(resource->generation)};
     ++display->texture_resource_count;
     ++display->texture_resource_calls;
     out->resource = resource;
@@ -786,17 +797,39 @@ bool mc_client_display_texture_parameter(mc_client_texture_resource *resource,
     const GLenum names[] = {GL_TEXTURE_MIN_FILTER, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_WRAP_S,
                             GL_TEXTURE_WRAP_T};
     mc_client_display *display = resource->display;
-    bool ok = resource_bound(resource, "owned texture parameter binding", error);
-    if (ok && (parameter == MC_CLIENT_TEXTURE_WRAP_S || parameter == MC_CLIENT_TEXTURE_WRAP_T) &&
-        value == GL_CLAMP)
-        ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "legacy GL_CLAMP texture parameter",
-                  "source legacy clamp requires a compatible texture sampling implementation", 0);
+    display_texture *slot = resource_slot(resource);
+    bool ok = display->source.compiling == NULL;
+    if (!ok)
+        fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "owned texture parameter compilation",
+             "compiled texture parameter commands are not implemented", 0);
+    if (ok)
+        ok = resource_bound(resource, "owned texture parameter binding", error);
     if (ok)
         ok = source_material_texture_parameter(resource, names[(unsigned int)parameter], value,
                                                error);
     if (ok) {
-        display->gl.TexParameteri(GL_TEXTURE_2D, names[(unsigned int)parameter], value);
+        mc_client_texture_source_state next = slot->source;
+        GLint *field = source_texture_parameter_field(&next, names[(unsigned int)parameter]);
+        *field = value;
+        const GLint physical =
+            parameter == MC_CLIENT_TEXTURE_WRAP_S || parameter == MC_CLIENT_TEXTURE_WRAP_T
+                ? source_texture_physical_wrap(&next, value)
+                : value;
+        display->gl.TexParameteri(GL_TEXTURE_2D, names[(unsigned int)parameter], physical);
         ok = gl_check(display, "owned texture parameter", error);
+        if (ok) {
+            slot->source = next;
+            if (parameter == MC_CLIENT_TEXTURE_WRAP_S)
+                slot->source.physical_wrap_s = physical;
+            if (parameter == MC_CLIENT_TEXTURE_WRAP_T)
+                slot->source.physical_wrap_t = physical;
+            ok = source_texture_reconcile_wrap(display, slot, error);
+        } else {
+            /* A prior error/callback can coexist with an effective driver
+             * store. Keep the generation but do not invent a known result. */
+            slot->source.known = false;
+            slot->source.physical_known = false;
+        }
     }
     resource_leave(resource);
     return ok ? success(error) : false;
@@ -850,6 +883,8 @@ bool mc_client_display_upload_existing_texture(mc_client_texture_resource *resou
         display->gl.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)image->width,
                                (GLsizei)image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->pixels);
         ok = gl_check(display, "upload owned texture", error);
+        if (ok)
+            slot->source.image_uploaded = true;
         if (ok && bytes < slot->bytes) {
             display->texture_bytes -= slot->bytes - bytes;
             slot->bytes = bytes;
@@ -1028,6 +1063,9 @@ static bool draw_quad(mc_client_display *display, mc_client_texture texture,
         triangles[i] = corners[indices[i]];
     if (!current(display, "draw GUI quad", error))
         return false;
+    int clamp_s = 0, clamp_t = 0;
+    if (texture != 0 && !source_texture_sampling(display, texture, &clamp_s, &clamp_t, error))
+        return false;
     display->gl.UseProgram(display->program);
     display->gl.BindVertexArray(display->vao);
     display->gl.BindBuffer(GL_ARRAY_BUFFER, display->vbo);
@@ -1040,6 +1078,8 @@ static bool draw_quad(mc_client_display *display, mc_client_texture texture,
                                      modelview->column_major);
     display->gl.Uniform1i(display->textured, texture != 0 ? 1 : 0);
     display->gl.Uniform1i(display->alpha_test, alpha_test ? 1 : 0);
+    display->gl.Uniform1i(display->clamp_s, clamp_s);
+    display->gl.Uniform1i(display->clamp_t, clamp_t);
     if (blend) {
         display->gl.Enable(GL_BLEND);
         display->gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

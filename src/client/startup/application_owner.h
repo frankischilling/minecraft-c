@@ -136,6 +136,7 @@ typedef struct mc_client_application_volatile_state {
     size_t native_effect_borrows;
     size_t native_resource_thread_borrows;
     size_t native_screen_borrows;
+    size_t native_render_borrows;
 } mc_client_application_volatile_state;
 
 /* Register the unique real App storage before any atomic access. The App may
@@ -154,6 +155,16 @@ mc_client_application_owner_status
 mc_client_application_lifetime_retire(client_application *, mc_client_application_owner_error *);
 bool mc_client_application_volatile_inspect(const client_application *,
                                             mc_client_application_volatile_state *);
+
+/* Actual retained render calls require registered live App storage. No source
+ * field, worker/effect/screen role or class active use is supplied. Release
+ * consumes its slot only on success and remains valid during native RETIRING;
+ * zero/invalid counts preserve it. All owner acquisition remains exclusive. */
+mc_client_application_owner_status
+mc_client_application_render_borrow(client_application *, mc_client_application_owner_error *);
+mc_client_application_owner_status
+mc_client_application_render_release(client_application **, mc_client_application_owner_error *);
+bool mc_client_application_render_borrows_pending(const client_application *);
 
 /* Native namespace borrows are NOT counted class ownership. Every actual
  * RAW/READY/FAILED App keeps one until RETIRING ends all source/worker use.

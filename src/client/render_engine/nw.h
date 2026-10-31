@@ -59,6 +59,10 @@ bool mc_client_nw_color(mc_client_tessellator *, int32_t red, int32_t green, int
  * before the integer color guard/stores. It does not require an open batch. */
 bool mc_client_nw_color_float(mc_client_tessellator *, float red, float green, float blue,
                               mc_client_graphics_error *);
+/* Actual nw.a(FFFF)V: four ordered binary32 *255f/Java f2i pairs, then the
+ * SAME integer RGBA body. Its color-disabled guard follows all conversions. */
+bool mc_client_nw_color_rgba_float(mc_client_tessellator *, float red, float green, float blue,
+                                   float alpha, mc_client_graphics_error *);
 /* Native-only exclusive association with this class namespace's SAME canonical
  * System service. No source active use, field read, stream replacement, output
  * or retain occurs. NULL removes the association. Caller owns that System

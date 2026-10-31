@@ -1,6 +1,44 @@
 # Build and tests
 
-## Client paths and Creature following
+## Integration qualification
+
+All 92 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 119 Windows tests pass in 227.09 seconds and all 114 Linux tests in
+321.27 seconds, without failures, skips or sanitizer findings. The same 2,543
+C, helper, build and reference inputs remain unchanged through both builds and tests.
+All nine original-comparison suites pass on each host. Formatting checks 1,742
+files; six source-binding tables preserve their historical metadata. These scoped
+results do not establish playability or whole-frame original/native equality.
+
+## Sheep drawing and loaded-frame continuation
+
+The [Sheep drawing checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md)
+passes 666 native checks and 70,341 selected original graph/state checks on each
+host. The comparison includes 147 ordered direct World/Block queries, twelve
+list definitions, all 72 face buffers, three shadow buffers and six comparator
+negatives. The actual unsheared fur and `Settings.j=true` shadow routes return.
+
+Linux compares to the full ordinary/read-only JDI capture. Windows uses that
+same graph/list/query authority plus a separately audited ordinary NVIDIA GL
+supplement on the matching device/driver. Its complete 36-input, four-helper and
+21-artifact inventories are checked before the raw transport is read; four
+manifest omission/hash negatives must fail. There is no Windows JDI claim.
+Only prepared view/projection matrices allow four float ULP and numeric equality
+of opposite signed zeros, with raw bits retained. Original/native pixels, live
+GL invocation order and whole-frame equality remain unqualified.
+
+The finite Windows loaded repeat passes 1,714 checks and returns four World/HUD
+frames: one N delay, one undrawn traversal and two Sheep draws. First compilation
+defines twelve parts and reuse defines none; the draws record 72 compiled faces,
+288 source vertices and 18 shadow quads. Returns include `Minecraft.k:1328`,
+N569, PX1013 and HUD2101, followed by checked cleanup.
+
+Separate legacy-clamp controls pass 46,802 checks per host, including 3,872 exact
+samples against each host's matching legacy SDK and five dynamic list replays.
+These are focused results; broad build/test and hosted counts below retain
+their earlier source checkpoints.
+
+## Preceding client paths and Creature following
 
 Focused Windows MSVC Debug and Linux Clang18 ASan/UBSan runs pass the actual
 World path wrappers, shared ChunkCache, PathFinder and shared-cursor Path.

@@ -1,6 +1,7 @@
 #ifndef MC_CLIENT_WORLD_RENDER_GLOBAL_ENTITIES_H
 #define MC_CLIENT_WORLD_RENDER_GLOBAL_ENTITIES_H
 
+#include "mc/client/render/manager/draw.h"
 #include "mc/client/render/manager/manager.h"
 #include "mc/client/render/tile_entity_renderer/tile_entity_renderer.h"
 #include "mc/client/world/frustum_culling.h"
@@ -19,7 +20,33 @@ typedef struct mc_client_render_global_entities_services {
     mc_registry_classes *registry;
     mc_client_render_manager_classes *manager_classes;
     mc_math_classes *math;
+    mc_client_application_classes *application_classes;
 } mc_client_render_global_entities_services;
+
+typedef struct mc_client_render_global_model_receipt {
+    uintptr_t identity;
+    const char *class_name; /* Static source-class diagnostic name. */
+    unsigned int source_pc, part_calls, part_returns, compiled_parts, faces, vertices;
+    bool returned;
+} mc_client_render_global_model_receipt;
+
+/* Copied observations from a returned TH call, taken while its real graph is
+ * held. Identity integers cannot be dereferenced. Later failed draws preserve
+ * these successful receipts; retirement is marked only for their own attempt. */
+typedef struct mc_client_render_global_draw_receipt {
+    bool valid, returned, retired, post_only, primary_returned, post_draw_returned;
+    bool primary_event_returned;
+    size_t attempt;
+    unsigned int n_invoke_pc, th_source_pc, living_source_pc, post_draw_source_pc;
+    uintptr_t actor_identity, actor_class_identity, renderer_identity;
+    int32_t actor_kind;
+    const char *actor_class_name, *renderer_class_name;
+    mc_client_render_global_model_receipt primary_model, secondary_model;
+    bool pass_attempted[4], pass_result[4], pass_render_returned[4];
+    size_t model_parts_compiled, model_faces, model_vertices;
+    size_t shadow_quads, shadow_vertices, shadow_block_queries, shadow_light_queries;
+    size_t shadow_normal_queries, shadow_brightness_queries;
+} mc_client_render_global_draw_receipt;
 
 typedef struct mc_client_render_global_entities_state {
     bool active, returned, retiring, delayed, ll_returned, th_returned;
@@ -40,6 +67,13 @@ typedef struct mc_client_render_global_entities_state {
     const mc_world_reference_list *entities_list;
     mc_entity *current;
     const mc_client_render_global_error *failure, *cleanup;
+    /* Scalar receipts survive successful nested draw retirement. The pending
+     * call is borrowed only while this retained N call still owns it. */
+    size_t draws_attempted, draws_returned, draws_retired;
+    size_t weather_draws_returned, entity_draws_returned;
+    size_t model_parts_compiled, model_faces, model_vertices, shadow_quads;
+    const mc_client_render_manager_draw_call *draw;
+    mc_client_render_global_draw_receipt last_draw, first_entity_draw;
 } mc_client_render_global_entities_state;
 
 /* Actual n.a(Lbt;Lyn;F)V on the same constructed N. Native admission allocates
@@ -58,9 +92,10 @@ typedef struct mc_client_render_global_entities_state {
  * Entity's distance, frustum, camera/sleeping and Chunk-presence predicates.
  * One native lease per reached World protects the borrowed containers; at
  * most 16 distinct Worlds can be captured by one call. Entity draws at
- * N329/N516 and nonempty N.a TileEntity rows at N551 remain explicit missing
- * dependencies. Genuine delay and supported skip-only traversal can return;
- * this API does not complete the enclosing World frame.
+ * N329/N516 invoke the real retained TH child. A returned child is checked-
+ * retired before traversal continues at N332/N519. Nonempty N.a TileEntity
+ * rows at N551 remain an explicit missing dependency. This API does not
+ * complete the enclosing World frame.
  *
  * Out starts NULL. Once admitted, return the terminal call even on failure.
  * App and the complete argument/service graph stay live and exclusive on the

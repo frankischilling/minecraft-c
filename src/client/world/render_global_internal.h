@@ -17,6 +17,7 @@ typedef struct mc_render_global_access mc_render_global_access;
 typedef struct mc_render_global_cv mc_render_global_cv;
 typedef struct mc_client_image_download_error mc_client_image_download_error;
 typedef struct mc_client_image_buffer_error mc_client_image_buffer_error;
+typedef struct mc_client_manager_draw_error mc_client_manager_draw_error;
 
 struct mc_client_render_global_error {
     mc_client_render_global_status status;
@@ -42,6 +43,7 @@ struct mc_client_render_global_error {
     const mc_client_tile_renderer_error *tile_renderer;
     const struct mc_entity_render_distance_error *render_distance;
     const struct mc_client_culling_error *entity_culling;
+    const mc_client_manager_draw_error *manager_draw;
 };
 
 struct mc_client_render_batch {
