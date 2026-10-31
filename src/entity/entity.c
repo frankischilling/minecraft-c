@@ -2,6 +2,7 @@
 #include "classes/memory_internal.h"
 #include "construction_internal.h"
 #include "entity_internal.h"
+#include "lightning/internal.h"
 #include "minecart/classes_internal.h"
 #include "minecart/entity_internal.h"
 #include "mob/internal.h"
@@ -12,6 +13,7 @@
 #include <float.h>
 #include <limits.h>
 #include <stdlib.h>
+#include <string.h>
 
 #if !defined(_M_X64) && !defined(_M_AMD64) && !defined(__x86_64__)
 #error "Entity numeric construction requires x86-64/SSE2"
@@ -165,6 +167,12 @@ mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_ent
             bytes = sizeof(mc_local_player_object);
             status = mc_entity_base_class_initialize(classes, error);
             break;
+        case MC_ENTITY_CLASS_KIND_C:
+            if (classes->source != MC_ENTITY_CLIENT)
+                return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
+            bytes = sizeof(mc_lightning_entity_object);
+            status = mc_entity_base_class_initialize(classes, error);
+            break;
         case MC_ENTITY_CLASS_KIND_SPIDER:
         case MC_ENTITY_CLASS_KIND_ZOMBIE:
         case MC_ENTITY_CLASS_KIND_SKELETON:
@@ -213,6 +221,11 @@ mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_ent
         *object = (mc_local_player_object){0};
         entity = &object->entity;
         entity->local_player = &object->state;
+    } else if (kind == MC_ENTITY_CLASS_KIND_C) {
+        mc_lightning_entity_object *object = storage;
+        memset(object, 0, sizeof(*object));
+        entity = &object->entity;
+        entity->lightning = &object->state;
     } else if (mc_entity_is_mob_kind(kind)) {
         mc_mob_entity_object *object = storage;
         *object = (mc_mob_entity_object){0};
@@ -442,7 +455,7 @@ mc_entity_status mc_entity_construct_base(mc_entity *entity, mc_world_runtime *w
     if (status != MC_ENTITY_OK)
         return status;
     entity->base_bytecode = 224;
-    /* Actual hl/ez, ju/gl, yl/pr and client xw hooks are empty. DC and concrete
+    /* Actual hl/ez, ju/gl, yl/pr and client xw/C hooks are empty. DC and concrete
      * Mob hooks dispatch here, before any Living/subclass initialization. */
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
         status = mc_local_player_watcher_initialize(entity, error);
@@ -637,20 +650,23 @@ void mc_entity_release(mc_entity *entity) {
     if (--entity->holds != 0)
         return;
     mc_entity_classes *classes = entity->classes;
-    const size_t bytes = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART)
-                             ? sizeof(mc_minecart_entity_object)
-                         : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)
-                             ? sizeof(mc_local_player_object)
-                         : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE)
-                             ? sizeof(mc_pickup_particle_object)
-                         : mc_entity_has_mob(entity) ? sizeof(mc_mob_entity_object)
-                                                     : sizeof(*entity);
+    const size_t bytes =
+        mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART) ? sizeof(mc_minecart_entity_object)
+        : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)
+            ? sizeof(mc_local_player_object)
+        : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE)
+            ? sizeof(mc_pickup_particle_object)
+        : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_C) ? sizeof(mc_lightning_entity_object)
+        : mc_entity_has_mob(entity)                         ? sizeof(mc_mob_entity_object)
+                                                            : sizeof(*entity);
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART))
         mc_minecart_entity_dispose(entity);
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
         mc_local_player_dispose(entity);
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE))
         mc_pickup_particle_dispose(entity);
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_C))
+        mc_lightning_dispose(entity);
     mc_nbt_tree_free(entity->storage_source);
     mc_item_stack_release(entity->stack);
     mc_world_runtime_binding_release(entity->base.world);

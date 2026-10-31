@@ -40,6 +40,7 @@
 #include "mc/entity/player/player.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/loading/player.h"
+#include "mc/world/runtime/random_tick.h"
 #include "platform/time/millis.h"
 #include "world/runtime/chunk_provider_internal.h"
 #include "world/runtime/construction_internal.h"
@@ -56,6 +57,17 @@ static unsigned int checks;
 
 static bool world_dependency_reached(const mc_world_tick_state *state,
                                      const mc_world_tick_error *error) {
+    if (state->returned && state->source_pc == 198) {
+        const mc_world_random_tick_state *random = state->random;
+        return error->status == MC_WORLD_STORAGE_OK && state->weather_returned &&
+               state->spawning_returned && state->provider_returned && state->time_stored &&
+               state->scheduled_returned && state->random_returned &&
+               state->random_chunk_count == 361 && random != NULL && random->returned &&
+               random->source_pc == 994 && random->chunk_count == 361 &&
+               random->chunks_started == 361 && random->chunks_returned == 361 &&
+               random->samples_started == 28880 && random->samples_returned == 28880 &&
+               random->error->status == MC_WORLD_STORAGE_OK;
+    }
     mc_entity_snapshot entity;
     mc_mob_state mob;
     if (!state->first_constructor.captured || state->spawn_constructors == 0 ||
@@ -66,11 +78,6 @@ static bool world_dependency_reached(const mc_world_tick_state *state,
         !mc_mob_inspect(state->spawn_entity, &mob) || entity.phase != MC_ENTITY_READY ||
         entity.base.world != state->world || !error->native_policy)
         return false;
-    if (state->source_pc == 195) {
-        return state->spawning_returned && state->provider_returned && state->time_stored &&
-               state->scheduled_returned && state->random_chunk_count == 361 &&
-               error->child == MC_WORLD_TICK_CHILD_RANDOM && error->child_bytecode == 207;
-    }
     mc_entity_snapshot jockey;
     return state->source_pc == 80 && error->child == MC_WORLD_TICK_CHILD_SPAWNING &&
            error->child_bytecode == 845 && state->spawn_postspawn_pc == 56 &&
@@ -91,13 +98,19 @@ static bool loaded_draw_reached(const mc_client_menu_loop_state *source) {
 }
 
 static bool unpaused_world_reached(const mc_client_menu_loop_state *source) {
-    return source->failed && source->source_class != NULL &&
-           strcmp(source->source_class, "fd") == 0 && source->source_method != NULL &&
-           strcmp(source->source_method, "l") == 0 && source->world_draws >= 1 &&
-           source->hud_draws >= 1 && source->world_tick != NULL && source->world_tick->failed &&
-           source->world_tick->renderer_returned && source->world_tick->entities_returned &&
-           world_dependency_reached(&source->world_tick->scheduler_state,
-                                    &source->world_tick->scheduler_error);
+    if (!source->failed || source->source_class == NULL || source->source_method == NULL ||
+        source->world_draws < 1 || source->hud_draws < 1 || source->world_tick == NULL ||
+        !source->world_tick->failed || !source->world_tick->renderer_returned ||
+        !source->world_tick->entities_returned ||
+        !world_dependency_reached(&source->world_tick->scheduler_state,
+                                  &source->world_tick->scheduler_error))
+        return false;
+    if (source->world_tick->scheduler_state.returned)
+        return strcmp(source->source_class, "net/minecraft/client/Minecraft") == 0 &&
+               strcmp(source->source_method, "k") == 0 && source->source_pc == 1311 &&
+               source->world_tick->ambience_arguments == 3;
+    return strcmp(source->source_class, "fd") == 0 && strcmp(source->source_method, "l") == 0 &&
+           source->source_pc == 80;
 }
 
 #define CHECK(condition)                                                                           \
@@ -607,7 +620,7 @@ static int world_tick_controls(fixture *f) {
     memset(call, 0, sizeof(*call));
     const bool returned =
         mc_client_world_tick_run(f->app, mc_client_bootstrap_math(f->bootstrap), call);
-    if (!returned && call->site.pc != 195 && call->site.pc != 80) {
+    if (!returned && call->site.pc != 1311 && call->site.pc != 80) {
         fprintf(stderr, "World segment reached %s.%s:%d: %s; renderer=%d entities=%d\n",
                 call->site.class_name, call->site.method, call->site.pc, call->operation,
                 call->renderer_returned, call->entities_returned);
@@ -616,7 +629,12 @@ static int world_tick_controls(fixture *f) {
                     call->entities.source_method, call->entities.bytecode,
                     (int)call->entities.child, call->entities.operation);
     }
-    CHECK(!returned && call->failed && strcmp(call->site.class_name, "fd") == 0 &&
+    const bool ambience = call->scheduler_state.returned;
+    CHECK(!returned && call->failed &&
+          (ambience ? strcmp(call->site.class_name, "net/minecraft/client/Minecraft") == 0 &&
+                          strcmp(call->site.method, "k") == 0 && call->site.pc == 1311 &&
+                          call->ambience_arguments == 3
+                    : strcmp(call->site.class_name, "fd") == 0 && call->site.pc == 80) &&
           call->counter_stored && !call->counter_reset && call->difficulty_stored &&
           call->renderer_returned && call->render_global_returned && call->entities_returned &&
           call->spawn_flags_stored && call->renderer_state.source_returned &&
@@ -636,14 +654,18 @@ static int world_tick_controls(fixture *f) {
           call->scheduler_state.spawn_pick.total_weight > 0);
     const unsigned int spawn_pc = call->scheduler_error.child_bytecode;
     const unsigned int world_pc = call->scheduler_state.source_pc;
+    const int32_t next_pc = call->site.pc;
+    const size_t samples =
+        call->scheduler_state.random == NULL ? 0 : call->scheduler_state.random->samples_returned;
     CHECK(mc_client_world_tick_cleanup(call) && call->failed && call->scheduler_error.mob == NULL &&
           call->scheduler_state.spawn_entity == NULL);
     atomic_store(&f->app->o, paused);
     f->app->ah = counter;
     free(call);
     printf("WORLD_TICK paused-refresh25=1 unpaused-renderer186=1 render-global=1 "
-           "entities=1 spawn-flags=1 weather=1 spawn-candidates=289 next=fd.l%u child=%u\n",
-           world_pc, spawn_pc);
+           "entities=1 spawn-flags=1 weather=1 spawn-candidates=289 scheduler=%u samples=%zu "
+           "next=%d child=%u\n",
+           world_pc, samples, next_pc, spawn_pc);
     return 0;
 }
 
@@ -1706,25 +1728,33 @@ int main(int argc, char **argv) {
                     CHECK(mc_client_menu_loop_inspect(f.loop, &f.state));
                     SDL_Delay(1);
                 }
-                if (next_failed &&
-                    (f.state.source_class == NULL || strcmp(f.state.source_class, "fd") != 0))
+                if (next_failed && !unpaused_world_reached(&f.state))
                     fprintf(stderr, "Next loaded frame %s.%s:%" PRId64 " %s\n",
                             f.state.source_class, f.state.source_method, f.state.source_pc,
                             f.state.operation);
                 CHECK(next_failed && unpaused_world_reached(&f.state) &&
                       f.state.world_frame == NULL && f.state.hud == NULL);
-                mc_entity_class_literal_view selected;
+                mc_entity_class_literal_view selected = {0};
                 const mc_world_tick_state *spawn = &f.state.world_tick->scheduler_state;
-                CHECK(mc_entity_class_literal_inspect(spawn->first_constructor.class_literal,
-                                                      &selected) == MC_ENTITY_OK);
+                if (spawn->first_constructor.captured)
+                    CHECK(mc_entity_class_literal_inspect(spawn->first_constructor.class_literal,
+                                                          &selected) == MC_ENTITY_OK);
+                else
+                    CHECK(spawn->spawn_constructors == 0 && spawn->spawn_predicates == 0);
+                const mc_world_random_tick_state *random = spawn->random;
                 printf(
-                    "WORLD_FRAME first-returned=1 next-unpaused-tick=fd.l%u child=%u "
+                    "WORLD_FRAME first-returned=1 next-unpaused-pc=%d scheduler=%u random=%u "
+                    "chunks=%zu samples=%zu "
                     "helper=%u mob=%s constructors=%zu predicates=%zu rejected=%zu published=%zu "
                     "completed-draws-retired=1 "
                     "stale-hud-cleared=1\n",
-                    spawn->source_pc, f.state.world_tick->scheduler_error.child_bytecode,
-                    spawn->spawn_postspawn_pc, selected.client_name, spawn->spawn_constructors,
-                    spawn->spawn_predicates, spawn->spawn_rejections, spawn->spawn_publications);
+                    f.state.world_tick->site.pc, spawn->source_pc,
+                    random == NULL ? 0 : random->source_pc,
+                    random == NULL ? 0 : random->chunk_count,
+                    random == NULL ? 0 : random->samples_returned, spawn->spawn_postspawn_pc,
+                    selected.client_name == NULL ? "none" : selected.client_name,
+                    spawn->spawn_constructors, spawn->spawn_predicates, spawn->spawn_rejections,
+                    spawn->spawn_publications);
             }
             if (repeat_load)
                 goto loaded_draw_controls_done;

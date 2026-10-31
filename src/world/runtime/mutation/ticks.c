@@ -78,7 +78,7 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
         case MC_BLOCK_TRAPDOOR:
             return tick_empty(error);
         case MC_BLOCK_GRASS:
-            return tick_unavailable(world, block, "wp", "oj", error);
+            return mc_world_mutation_grass_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_SAPLING:
             return mc_world_mutation_plant_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_FLOWING_FLUID:
@@ -88,7 +88,7 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
         case MC_BLOCK_GRAVEL:
             return mc_world_mutation_falling_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_LEAVES:
-            return tick_unavailable(world, block, "bk", "ar", error);
+            return mc_world_mutation_leaves_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_DISPENSER:
             return tick_unavailable(world, block, "xq", "pa", error);
         case MC_BLOCK_DETECTOR_RAIL:
@@ -119,9 +119,9 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
         case MC_BLOCK_SNOW_LAYER:
             return mc_world_mutation_snow_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_ICE:
-            return tick_unavailable(world, block, "nk", "ik", error);
+            return mc_world_mutation_ice_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_SNOW_BLOCK:
-            return tick_unavailable(world, block, "ac", "p", error);
+            return mc_world_mutation_snow_block_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_CACTUS:
         case MC_BLOCK_SUGAR_CANE:
             return mc_world_mutation_plant_tick(world, block, x, y, z, random, error);

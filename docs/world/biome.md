@@ -17,6 +17,36 @@ staged noise-backed/fixed methods needed by population. It preserves raw output 
 before auxiliary allocation failure and keeps output ownership independent of
 the current manager. The numerical interface described below remains atomic.
 
+## Fixed GAME managers
+
+`mc_world_chunk_manager_fixed_create_game`, declared in
+`mc/world/dimension/world_chunk_manager.h`, implements the original client HD
+and server ET constructors. It accepts an actual Biome reference from the
+supplied Registry, including null, and preserves every bit of both double
+arguments. The empty superclass constructor leaves the inherited noise fields
+and source arrays `a/b/c/d` null. Construction consumes no entropy, samples no
+climate, and performs no Biome initialization or floating-point arithmetic.
+
+The allocation provider supplies its counted ledger and buffer limits. Each
+manager owns an independent Registry borrow and ledger hold, plus one returned
+caller hold. `mc_world_provider_assign_chunk_manager_game` assigns the actual
+mutable provider `b` field on a READY provider with matching GAME Registry
+ownership. It retains the replacement before publication and releases the
+preceding field hold; same-reference assignment leaves counts unchanged.
+Assignment preserves World, flags, setup PCs and light arrays. Null assignment
+is supported.
+
+Retain external aliases with `mc_world_chunk_manager_retain` and release them
+with `mc_world_chunk_manager_release`. Such aliases survive replacement and
+retirement of the allocation or containing provider, keeping their Registry
+and ledger alive.
+
+The bounded native `world.fixed_manager_constructor` checks cover both
+constructors, null references, double bits, quota failures and alias lifetimes.
+The weather fixtures use genuine fixed Plains/Tundra managers with arguments
+`.5/.5`. Client FD.n reads the selected Biome's `v` snow flag; its snow/ice
+decision does not sample temperature.
+
 ## Classification and seeded state
 
 `mc_biome_classifier_init` builds all 4096 entries using binary32 index/63

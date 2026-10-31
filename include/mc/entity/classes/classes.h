@@ -70,7 +70,7 @@ typedef enum mc_entity_class_kind {
     MC_ENTITY_CLASS_KIND_VV,              /* Actual client vv, query-only. */
     MC_ENTITY_CLASS_KIND_CF,              /* Actual client cf, query-only. */
     MC_ENTITY_CLASS_KIND_LX,              /* Actual client lx, query-only. */
-    MC_ENTITY_CLASS_KIND_C,               /* Actual client c, query-only; yu is omitted ancestor. */
+    MC_ENTITY_CLASS_KIND_C,               /* Actual client Lightning c; yu is omitted ancestor. */
     MC_ENTITY_CLASS_KIND_COUNT
 } mc_entity_class_kind;
 

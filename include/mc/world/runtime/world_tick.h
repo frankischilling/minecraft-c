@@ -33,6 +33,8 @@ typedef struct mc_world_tick_call mc_world_tick_call;
 typedef struct mc_mob_error mc_mob_error;
 typedef struct mc_mob_spawn_state mc_mob_spawn_state;
 typedef struct mc_mob_spawn_error mc_mob_spawn_error;
+typedef struct mc_world_random_tick_error mc_world_random_tick_error;
+typedef struct mc_world_random_tick_state mc_world_random_tick_state;
 typedef struct mc_entity mc_entity;
 
 typedef enum mc_world_tick_child {
@@ -63,6 +65,7 @@ typedef struct mc_world_tick_error {
     const mc_mob_error *mob;
     const mc_mob_spawn_error *eligibility;
     const mc_world_entity_error *publication;
+    const mc_world_random_tick_error *random;
     mc_math_class_error math;
     mc_world_access_failure world_access;
 } mc_world_tick_error;
@@ -81,7 +84,7 @@ typedef struct mc_world_spawn_constructor_trace {
 
 typedef struct mc_world_tick_state {
     bool active, returned, weather_returned, sleeping, spawning_returned;
-    bool provider_returned, sky_stored, time_stored, scheduled_returned;
+    bool provider_returned, sky_stored, time_stored, scheduled_returned, random_returned;
     unsigned int source_pc;
     size_t spawn_chunk_count, random_chunk_count, sky_callbacks;
     int32_t spawn_category, spawn_chunk_x, spawn_chunk_z;
@@ -94,6 +97,7 @@ typedef struct mc_world_tick_state {
     bool spawn_constructed, spawn_positioned;
     bool spawn_eligibility_returned, spawn_eligible;
     const mc_mob_spawn_state *eligibility;
+    const mc_world_random_tick_state *random;
     size_t spawn_constructors, spawn_predicates, spawn_rejections, spawn_publications;
     int32_t spawn_group_successes, spawn_total;
     unsigned int spawn_postspawn_pc;
@@ -119,8 +123,9 @@ typedef struct mc_world_tick_state {
  * before actual publication, postspawn and the virtual group limit. Sheep color
  * and Spider jockey draws preserve World Random order. A reached Skeleton mount
  * body remains a dependency after the real Skeleton construction/publication.
- * Sleeping wake transitions and nonempty random Chunk work remain
- * separate dependencies, never successful no-ops.
+ * Random Chunk work continues through its retained actual fd.n call, including
+ * all eighty samples and real reached Block ticks. Missing concrete children
+ * preserve their exact typed failure prefixes. Sleeping wake remains separate.
  * Both false spawn flags return before touching its shared candidate Set.
  *
  * A published call independently binds the World and retains complete typed

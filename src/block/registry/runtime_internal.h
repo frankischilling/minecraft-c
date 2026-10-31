@@ -63,6 +63,21 @@ mc_registry_status mc_registry_block_m_get(mc_registry_classes *classes,
 mc_registry_status mc_registry_block_m_at(const mc_registry_block_m_view *array, int32_t index,
                                           const mc_block **out, mc_registry_error *error);
 
+/* Actual random-tick n reference. get performs reached Block active use;
+ * captured NULL succeeds. at checks that same reference before signed bounds,
+ * with no class use, current-array reload, phase gate or failed-prefix fallback.
+ * Keep its supplying Registry live/exclusive through every later baload. */
+typedef struct mc_registry_block_n_view {
+    mc_registry_classes *classes;
+    const bool *identity;
+    size_t length;
+} mc_registry_block_n_view;
+
+mc_registry_status mc_registry_block_n_get(mc_registry_classes *, mc_registry_block_n_view *,
+                                           mc_registry_error *);
+mc_registry_status mc_registry_block_n_at(const mc_registry_block_n_view *, int32_t index,
+                                          bool *out, mc_registry_error *);
+
 /* Actual o reference captured at its reached Block active use. Trees retain
  * this exact array across a later World getter; substrate predicates index it
  * immediately. at never reloads current o or performs another active use. The

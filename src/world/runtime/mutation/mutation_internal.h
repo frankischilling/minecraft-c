@@ -42,6 +42,19 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
                                   int32_t y, int32_t z, mc_java_random *random,
                                   mc_world_mutation_error *error);
 
+/* Genuine client WP/BK/NK/AC virtual random ticks. The enclosing dispatch holds
+ * the actual GAME World/Block/Registry graph. Leaves uses the real persistent
+ * subtype.bk.a array on the supplying Block arena; no reset or transient
+ * scratch substitutes for it. All source prefixes survive child failure. */
+bool mc_world_mutation_grass_tick(mc_world_runtime *, const mc_block *, int32_t x, int32_t y,
+                                  int32_t z, mc_java_random *, mc_world_mutation_error *);
+bool mc_world_mutation_leaves_tick(mc_world_runtime *, const mc_block *, int32_t x, int32_t y,
+                                   int32_t z, mc_java_random *, mc_world_mutation_error *);
+bool mc_world_mutation_ice_tick(mc_world_runtime *, const mc_block *, int32_t x, int32_t y,
+                                int32_t z, mc_java_random *, mc_world_mutation_error *);
+bool mc_world_mutation_snow_block_tick(mc_world_runtime *, const mc_block *, int32_t x, int32_t y,
+                                       int32_t z, mc_java_random *, mc_world_mutation_error *);
+
 /* Complete synchronous sm/lo lifecycle. The enclosing concrete dispatch owns
  * this actual World entry and Registry Block. Shared receiver flags and Set
  * stay live across recursive metadata writes and independent list snapshots. */

@@ -4,10 +4,41 @@ All eleven default [Mob constructors](https://github.com/frankischilling/minecra
 and [spawn predicates](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-spawning.md)
 now execute on actual Entity/Living owners. Rejected attempts continue; successful
 attempts publish real Mobs and perform postspawn work. A focused loaded Windows
-profile passes spawning and reaches random Chunk work at `fd.l:195`, child
-`fd.n:207`. A selected Spider jockey reaches its unfinished mount after actual
+profile passes spawning and completes [random Chunk work](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/random-ticking.md):
+361 coordinates and 28,880 samples return at `fd.n:994` and `fd.l:198`, then
+the client reaches ambience at `Minecraft.k:1311`. A selected Spider jockey reaches its unfinished mount after actual
 Skeleton construction and publication. Native cleanup preserves the nonempty
 active coordinate Set until final free.
+
+All 75 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 88 Windows tests pass in 136.24 seconds and all 84 Linux tests in
+176.83 seconds, without failures, skips or sanitizer findings. All 2,422 C,
+helper, build and reference inputs remain unchanged through both builds and tests.
+Formatting checks 1,679 files; source bindings cover 7,862 entries and 3,361 files.
+
+Each host passes 89,842 direct World random-tick checks. All 14 original frame
+rows, 14 rows of five array/identity hashes and 59 callbacks match exactly.
+The 18 direct Block profiles add 69,740 mandatory checks and 368 probe checks,
+with 54 array hashes, 18 persistent scratch results and five complete dropped
+Item records, including exact positions. Lightning adds 440 checks over five
+constructors, 594 deterministic field comparisons (including 66 JDI-only
+failed-object fields) and 35 separate scalar checks. Independent constructor
+entropy remains separate from deterministic source Random inputs.
+
+The audited original World/Block package checks 19 live method bodies, 801
+detailed samples and 77 Random returns, with 205 class pins and the same 204
+initialized classes in each VM. Native class-failure controls distinguish the
+first source initializer exception from cached erroneous-class use, while
+allocation limits and missing native dependencies stay native failures.
+
+The loaded Windows controls preserve saves, resources and all 72 original focus
+histories. A focused profile completes 361 random Chunk coordinates and 28,880
+samples, then reaches client ambience at `Minecraft.k:1311`. Further Block
+overrides, Mob ticking/storage/drawing, ambience and gameplay remain unfinished.
+The null-byte-array control retires its retained call unrepaired; complete
+Store shutdown with that malformed source field remains unsupported.
+
+## Earlier foundation checkpoints
 
 The [Entity render traversal](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) reads actual ordinary/weather Lists and
 uses the same Entity's distance, frustum, camera/sleeping and Chunk-presence
@@ -41,8 +72,10 @@ observations match native MSVC/GCC/Clang replays. Empty Player/candidate branche
 can return. The loaded Player path gathers 289 spawn candidates, selects the
 real weighted Biome entry and completes trial/support/distance gates before
 all eleven constructors, yaw, pose, predicates, publication and postspawn work.
-The focused loaded profile reaches random Chunk work at `fd.l:195`/`fd.n:207`.
-Mob AI/ticking/NBT/drawing and complete ordinary ticks remain unfinished.
+The focused loaded profile completes the random Chunk body and reaches client
+ambience at `Minecraft.k:1311`. Grass, Leaves, Ice and Snow Block execute their
+actual client ticks; weather can construct a genuine Lightning Entity. Mob
+ticking/NBT/drawing, further Block overrides and gameplay remain unfinished.
 
 The [World color services](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/colors.md)
 now supply actual raw temperature, virtual Biome sky, Dimension fog and cloud

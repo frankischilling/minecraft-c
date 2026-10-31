@@ -6,6 +6,7 @@
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/runtime.h"
 
+#include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
 #include "../biome/biome_internal.h"
 #include "../biome/sampling_internal.h"
@@ -405,6 +406,86 @@ static mc_world_provider_status new_biome(mc_world_provider *dimension, bool fix
         *out = &biome->base;
     }
     return MC_WORLD_PROVIDER_OK;
+}
+
+mc_world_provider_status mc_world_chunk_manager_fixed_create_game(
+    mc_world_provider *allocation_owner, const mc_world_provider_registry_binding *binding,
+    const mc_biome *selected, double temperature, double rainfall, mc_world_chunk_manager **out,
+    mc_world_provider_error *error) {
+    if (allocation_owner == NULL || binding == NULL || out == NULL ||
+        (selected != NULL && selected->classes != binding->classes))
+        return result(error, MC_WORLD_PROVIDER_INVALID_ARGUMENT,
+                      "fixed GAME biome constructor arguments", 0);
+    const mc_world_provider_registry_binding captured = *binding;
+    mc_world_provider_status status = mc_world_provider_retain(allocation_owner);
+    if (status != MC_WORLD_PROVIDER_OK)
+        return result(error, status, "fixed GAME biome allocation owner hold", 0);
+    mc_registry_error registry_error = {0};
+    if (mc_registry_classes_retain(captured.classes, captured.side, captured.profile,
+                                   &registry_error) != MC_REGISTRY_OK) {
+        status = result(error,
+                        registry_error.status == MC_REGISTRY_INVALID_ARGUMENT
+                            ? MC_WORLD_PROVIDER_INVALID_ARGUMENT
+                            : MC_WORLD_PROVIDER_REGISTRY_FAILED,
+                        "fixed GAME biome registry borrow", 0);
+        if (error != NULL)
+            error->registry = registry_error;
+        mc_world_provider_release(allocation_owner);
+        return status;
+    }
+    mc_world_chunk_manager *replacement = NULL;
+    status = new_biome(allocation_owner, true, &replacement);
+    if (status != MC_WORLD_PROVIDER_OK) {
+        (void)mc_registry_runtime_borrow_release(captured.classes);
+        mc_world_provider_release(allocation_owner);
+        return result(error, status, "fixed GAME biome allocation", 0);
+    }
+    replacement->registry = captured.classes;
+    fixed_biome *biome = (fixed_biome *)replacement;
+    /* XV/PH's protected constructor only invokes Object1 and returns4.
+     * HD/ET then stores its actual declaring fields at6/11/17. No class
+     * active use, World access, numerical operation or entropy is reached. */
+    biome->storage.e = selected;
+    biome->storage.f = temperature;
+    biome->storage.g = rainfall;
+    if (selected != NULL) {
+        for (size_t i = 0; i < 13u; ++i)
+            if (selected == captured.classes->biomes.named[i]) {
+                biome->projection_e = (mc_biome_id)(i + 1u);
+                break;
+            }
+    }
+    *out = replacement;
+    mc_world_provider_release(allocation_owner);
+    return result(error, MC_WORLD_PROVIDER_OK, "fixed GAME biome constructor return", 20);
+}
+
+mc_world_provider_status mc_world_provider_assign_chunk_manager_game(
+    mc_world_provider *dimension, mc_world_chunk_manager *biome, mc_world_provider_error *error) {
+    if (dimension == NULL)
+        return result(error, MC_WORLD_PROVIDER_INVALID_ARGUMENT, "dimension GAME biome assignment",
+                      0);
+    if (dimension->phase != MC_WORLD_PROVIDER_READY)
+        return result(error, MC_WORLD_PROVIDER_INVALID_PHASE, "dimension GAME biome assignment", 0);
+    if (biome != NULL) {
+        mc_registry_classes *expected = mc_world_runtime_registry(dimension->a);
+        if (expected == NULL && dimension->b != NULL)
+            expected = dimension->b->registry;
+        if (biome->registry == NULL || (expected != NULL && biome->registry != expected))
+            return result(error, MC_WORLD_PROVIDER_INVALID_ARGUMENT,
+                          "dimension GAME biome assignment registry", 0);
+    }
+    if (biome == dimension->b)
+        return result(error, MC_WORLD_PROVIDER_OK, NULL, 0);
+    if (biome != NULL) {
+        const mc_world_provider_status status = mc_world_chunk_manager_retain(biome);
+        if (status != MC_WORLD_PROVIDER_OK)
+            return result(error, status, "dimension GAME assigned biome hold", 0);
+    }
+    mc_world_chunk_manager *previous = dimension->b;
+    dimension->b = biome;
+    mc_world_chunk_manager_release(previous);
+    return result(error, MC_WORLD_PROVIDER_OK, NULL, 0);
 }
 
 mc_world_provider_status mc_world_provider_initialize_light_table(mc_world_provider *dimension,

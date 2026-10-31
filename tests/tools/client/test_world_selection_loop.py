@@ -174,18 +174,20 @@ def main():
                 if "WORLD_FOCUS hidden-inactive=1 restored-active=1 component-preserved=1 source-grab-preserved=1" not in result.stdout:
                     raise RuntimeError("Focused repeat fixture did not restore actual focus without source mutation")
                 receipt = re.search(
-                    r"^WORLD_FRAME first-returned=1 next-unpaused-tick=fd.l(80|195) child=(207|845) "
-                    r"helper=([0-9]+) mob=([a-z]+) constructors=([1-9][0-9]*) "
-                    r"predicates=([1-9][0-9]*) rejected=([0-9]+) published=([0-9]+) completed-draws-retired=1 "
+                    r"^WORLD_FRAME first-returned=1 next-unpaused-pc=(80|1311) scheduler=(80|198) "
+                    r"random=(0|994) chunks=(0|361) samples=(0|28880) "
+                    r"helper=([0-9]+) mob=([a-z]+) constructors=([0-9]+) "
+                    r"predicates=([0-9]+) rejected=([0-9]+) published=([0-9]+) completed-draws-retired=1 "
                     r"stale-hud-cleared=1$", result.stdout, re.MULTILINE)
                 if receipt is None:
                     raise RuntimeError("Real repeated frame did not expose the expected source dependency")
-                world_pc, child_pc, helper_pc = (int(receipt[i]) for i in (1, 2, 3))
-                if ((world_pc, child_pc) != (195, 207) and
-                        (world_pc, child_pc, helper_pc) != (80, 845, 56)):
-                    raise RuntimeError("Repeated frame did not reach random Chunk work or the genuine jockey mount")
-                if (receipt[4] not in ("cn", "uz", "fr", "gb", "uw", "wh", "dl", "bx", "ww", "gi", "xt") or
-                        int(receipt[5]) != int(receipt[6]) or int(receipt[7]) > int(receipt[6])):
+                prefix = tuple(int(receipt[i]) for i in range(1, 6))
+                if prefix != (1311, 198, 994, 361, 28880) and not (
+                        prefix == (80, 80, 0, 0, 0) and int(receipt[6]) == 56):
+                    raise RuntimeError("Repeated frame did not complete all random samples or reach the genuine jockey mount")
+                if (receipt[7] not in ("none", "cn", "uz", "fr", "gb", "uw", "wh", "dl", "bx", "ww", "gi", "xt") or
+                        int(receipt[8]) != int(receipt[9]) or int(receipt[10]) > int(receipt[9]) or
+                        (receipt[7] == "none") != (int(receipt[8]) == 0)):
                     raise RuntimeError("Repeated frame skipped or misreported its actual Mob predicates")
             after = snapshot(saves)
             if mode in ("load", "generate", "load-terminal", "load-partial", "repeat"):

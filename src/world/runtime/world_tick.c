@@ -14,6 +14,7 @@
 #include "mc/entity/mob/spawning.h"
 #include "mc/world/runtime/entities.h"
 #include "mc/world/runtime/environment.h"
+#include "mc/world/runtime/random_tick.h"
 #include "mc/world/runtime/saving/saving.h"
 #include "runtime_internal.h"
 #include "world_access_internal.h"
@@ -36,6 +37,9 @@ struct mc_world_tick_call {
     mc_mob_spawn_state eligibility;
     mc_mob_spawn_error eligibility_error;
     mc_world_entity_error publication;
+    mc_world_random_tick_call *random;
+    mc_world_random_tick_state random_state;
+    mc_world_random_tick_error random_admission, random_cleanup;
     bool world_held;
     bool math_held;
 };
@@ -215,34 +219,30 @@ static bool set_add(mc_world_tick_call *c, mc_world_active_chunks *set, int32_t 
     return true;
 }
 
-static bool candidates(mc_world_tick_call *c, mc_world_active_chunks *set, bool spawning) {
+static bool spawn_candidates(mc_world_tick_call *c, mc_world_active_chunks *set) {
     mc_world_runtime *w = c->state.world;
-    const int32_t radius = spawning ? 8 : 9;
-    const unsigned int size_pc = spawning ? 25 : 16;
     for (size_t i = 0;; ++i) {
         size_t count;
-        if (!list_size(c, w->fields.d, &w->player_membership, size_pc, &count))
+        if (!list_size(c, w->fields.d, &w->player_membership, 25, &count))
             return false;
         if (i >= count)
             return true;
         mc_entity *player;
-        if (!list_get(c, w->fields.d, &w->player_membership, i, spawning ? 38 : 29,
-                      spawning ? 43 : 34, true, &player))
+        if (!list_get(c, w->fields.d, &w->player_membership, i, 38, 43, true, &player))
             return false;
-        c->error.child_bytecode = spawning ? 50 : 39;
+        c->error.child_bytecode = 50;
         if (player == NULL) {
             c->error.exception_class = "java/lang/NullPointerException";
             return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World tick null Player position",
                         false);
         }
-        if (!floor_admit(c, spawning ? 56 : 45))
+        if (!floor_admit(c, 56))
             return false;
         const int32_t x = mc_math_floor_double(wt_div(player->base.x, 16.0));
         const int32_t z = mc_math_floor_double(wt_div(player->base.z, 16.0));
-        for (int32_t dx = -radius; dx <= radius; ++dx)
-            for (int32_t dz = -radius; dz <= radius; ++dz)
-                if (!set_add(c, set, mc_java_i32_add(x, dx), mc_java_i32_add(z, dz),
-                             spawning ? 124 : 111))
+        for (int32_t dx = -8; dx <= 8; ++dx)
+            for (int32_t dz = -8; dz <= 8; ++dz)
+                if (!set_add(c, set, mc_java_i32_add(x, dx), mc_java_i32_add(z, dz), 124))
                     return false;
     }
 }
@@ -783,7 +783,7 @@ static bool spawning(mc_world_tick_call *c, bool hostile, bool peaceful) {
     w->classes->spawning_initialized = true;
     if (!hostile && !peaceful)
         return true;
-    if (!set_prepare(c, set, 13) || !candidates(c, set, true))
+    if (!set_prepare(c, set, 13) || !spawn_candidates(c, set))
         return false;
     c->state.spawn_chunk_count = set->count;
     int32_t spawn[3];
@@ -1063,19 +1063,24 @@ static bool scheduler(mc_world_tick_call *c) {
     }
     c->state.scheduled_returned = true;
     at(c, 195, MC_WORLD_TICK_CHILD_RANDOM, "fd", "n()V", 4);
-    if (w->fields.P != NULL && w->fields.P != w->active_chunks)
-        return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                    "World random replaced candidate Set owner", true);
-    if (!set_prepare(c, w->fields.P, 4) || !candidates(c, w->fields.P, false))
-        return false;
-    c->state.random_chunk_count = w->fields.P->count;
-    if (w->fields.Q > 0)
-        w->fields.Q = mc_java_i32_sub(w->fields.Q, 1);
-    if (w->fields.P->count != 0) {
-        c->error.child_bytecode = 207;
-        return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World random active-Chunk tick body",
-                    true);
+    const mc_world_storage_status random_status =
+        mc_world_runtime_random_tick_begin(w, c->state.math, &c->random, &c->random_admission);
+    if (c->random != NULL) {
+        (void)mc_world_runtime_random_tick_inspect(c->random, &c->random_state);
+        c->state.random = &c->random_state;
+        c->state.random_chunk_count = c->random_state.chunk_count;
     }
+    if (random_status != MC_WORLD_STORAGE_OK) {
+        const mc_world_random_tick_error *random_error =
+            c->random == NULL ? &c->random_admission : c->random_state.error;
+        c->error.random = random_error;
+        c->error.child_bytecode = random_error->bytecode;
+        c->error.descendant_bytecode = random_error->child_bytecode;
+        c->error.native_policy = random_error->native_policy;
+        c->error.exception_class = random_error->exception_class;
+        return cause(c, random_error->cause);
+    }
+    c->state.random_returned = true;
     c->state.source_pc = 198;
     c->state.returned = true;
     c->error = (mc_world_tick_error){0};
@@ -1142,6 +1147,8 @@ mc_world_storage_status mc_world_runtime_tick_retire(mc_world_tick_call **slot,
         return rejected(cleanup, MC_WORLD_STORAGE_OK, NULL);
     if (c->state.active)
         return rejected(cleanup, MC_WORLD_STORAGE_BUSY, "World tick call active");
+    if (mc_world_runtime_random_tick_retire(&c->random, &c->random_cleanup) != MC_WORLD_STORAGE_OK)
+        return rejected(cleanup, c->random_cleanup.status, c->random_cleanup.operation);
     if (c->math_held) {
         mc_math_classes *math = c->state.math;
         const mc_math_class_status status = mc_math_classes_release(&math, NULL);

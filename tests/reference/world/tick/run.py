@@ -51,7 +51,7 @@ def main():
     spec.loader.exec_module(support)
     args.work_dir.mkdir(parents=True, exist_ok=True)
     output = Path(tempfile.mkdtemp(prefix="tick-", dir=args.work_dir.resolve()))
-    report = {"status": "FAIL", "scope": "11 unchanged-client scheduler prefixes; native authored-Chunk CQ false/true loops, publication/group/color/jockey contracts; later random Chunk body remains a dependency"}
+    report = {"status": "FAIL", "scope": "11 unchanged-client scheduler prefixes; native authored-Chunk CQ false/true loops, publication/group/color/jockey contracts; eight complete 361-Chunk FD.n continuations with independent Random/LCG/Grass-draw oracles and retained null-Random failure prefix"}
     inputs = [args.native.resolve(), Path(__file__).resolve(), support_path,
               HERE / "observations.json"]
     env = os.environ.copy()
@@ -146,8 +146,30 @@ def main():
                  "real rejected-predicate continuation contract: " + name)
         need(mob_rows[8] == "MOB_LOOP jockey cn next=cq845:56 published=2 skeleton=fr random-checked=1",
              "actual Skeleton publication before missing mount body")
+        random_rows = [line for line in text.splitlines()
+                       if line.startswith(("RANDOM_TICK publish ", "RANDOM_TICK reject "))]
+        expected_random = [("publish", "wh"), *(('reject', name)
+            for name in ("cn", "uz", "fr", "gb", "uw")), ("publish", "uz"), ("publish", "dl")]
+        need(len(random_rows) == len(expected_random), "native complete FD.n contract inventory")
+        for line, (kind, name) in zip(random_rows, expected_random):
+            row = re.fullmatch(
+                rf"RANDOM_TICK {kind} {name} chunks=361 samples=28880 lcg=([0-9]+) "
+                r"snow=([0-9]+) ambient=([0-9]+) world-draws=([0-9]+) block-draws=([0-9]+) "
+                r"block-ticks=([0-9]+) source=198:994 nested-holds=2", line)
+            need(row is not None, "complete source-return/counter/hold contract: " + kind + name)
+            lcg, snow, ambient, world_draws, block_draws, block_ticks = map(int, row.groups())
+            need(0 <= snow <= 361 and ambient in (0, 361) and lcg == 28880 + snow + ambient,
+                 "independent weather/sample LCG accounting: " + kind + name)
+            need(world_draws in (722, 723) and (world_draws == 722 or ambient == 361),
+                 "mandatory per-Chunk and reached ambient Random accounting: " + kind + name)
+            need(block_draws == block_ticks * (0 if kind == "publish" and name == "uz" else 3),
+                 "reached actual Grass Random accounting: " + kind + name)
+        prefix_rows = [line for line in text.splitlines() if line.startswith("RANDOM_TICK prefix ")]
+        need(prefix_rows == ["RANDOM_TICK prefix fd195:470 chunk-held=1 world-holds=2 math-holds=2 source-preserved=1"],
+             "retained typed null-Random prefix and exact cleanup without class/source reset")
         report.update(status="PASS", native=native.capture_report, observations=11,
-                      native_completed_spawn_contracts=9, original_replay=args.client_jar is not None)
+                      native_completed_spawn_contracts=9, native_completed_random_contracts=8,
+                      native_retained_random_prefixes=1, original_replay=args.client_jar is not None)
     except BaseException as exc:
         report["error"] = {"type": type(exc).__name__, "message": str(exc)}
         raise

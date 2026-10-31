@@ -92,4 +92,31 @@ mc_world_provider_status mc_world_chunk_manager_temperature_raw(mc_world_chunk_m
                                                                 int32_t z, double *out,
                                                                 mc_world_chunk_manager_error *);
 
+/* Actual standalone client hd(kd,double,double), and the corresponding fixed
+ * server constructor. allocation_owner supplies only its existing counted
+ * native ledger/buffer limits; no Dimension field or World is read or changed.
+ * The new manager owns one independent Registry borrow and one returned hold.
+ * Its empty superclass constructor leaves noise/arrays null, then e6/f11/g17
+ * store the supplied reference and every double bit unchanged (return20).
+ * A null Biome is valid; a nonnull Biome must belong to binding->classes.
+ * This does not actively initialize Biome, sample entropy, or require FP
+ * arithmetic. Evaluate actual Biome static arguments before calling it.
+ * Native admission/allocation failure preserves out and all source fields.
+ * Existing release retires the manager, including after allocation_owner dies. */
+mc_world_provider_status mc_world_chunk_manager_fixed_create_game(
+    mc_world_provider *allocation_owner, const mc_world_provider_registry_binding *binding,
+    const mc_biome *biome, double temperature, double rainfall, mc_world_chunk_manager **out,
+    mc_world_provider_error *error);
+
+/* Owned assignment of the actual mutable WorldProvider.b field. No setup,
+ * constructor, World query, class active use, flags, source PCs, or light-table
+ * initialization runs. READY provider required. A nonnull GAME manager must
+ * have the same Registry/side/profile as this provider's existing GAME binding
+ * (its containing World, or its current GAME manager when World is null).
+ * Null is a valid field value. Retains the replacement before publication and
+ * releases exactly the old field hold afterward; same-reference assignment
+ * leaves holds unchanged. Native failure preserves b and both hold counts. */
+mc_world_provider_status mc_world_provider_assign_chunk_manager_game(
+    mc_world_provider *dimension, mc_world_chunk_manager *biome, mc_world_provider_error *error);
+
 #endif

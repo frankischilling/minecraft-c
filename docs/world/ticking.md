@@ -8,8 +8,9 @@ Chunks and selects a real Biome entry. All eleven default
 Random yaw, actual position body and [spawn predicate](../entity/mob-spawning.md).
 False results continue the attempt loop. True results enter actual publication,
 postspawn work and the virtual group limit. A focused loaded profile now passes
-spawning and reaches nonempty random Chunk work at `fd.l:195`, child `fd.n:207`.
-A complete ordinary tick and gameplay remain unfinished.
+spawning and completes the [random Chunk body](random-ticking.md): 361 coordinates
+and 28,880 samples return at `fd.n:994`, followed by `fd.l:198`. The next client
+dependency is ambience at `Minecraft.k:1311`. Gameplay remains unfinished.
 
 The scheduler calls weather, tests sleeping Players, runs spawning, maintains
 the actual provider, updates sky subtraction and dispatches the live WorldAccess
@@ -30,8 +31,11 @@ in retained diagnostics. The current candidate stays owned through reached
 failure and is released at scheduler retirement. World/Chunk publications own
 their own occurrences. A first-constructor observation records actual source
 values before CQ773 without changing the attempt or Random stream.
-Skeleton jockey mounting, sleeping wake transitions and nonempty random Chunk
-work remain unfinished.
+Skeleton jockey mounting and sleeping wake transitions remain unfinished.
+Random Chunk work now retains the actual Chunk local through cave sounds,
+weather, snow/ice and all eighty raw-byte samples per coordinate. Its selected
+concrete Block ticks and genuine Lightning constructor keep their own reached
+dependencies; neither is replaced by an empty success.
 
 The [eleven original observations](../../tests/reference/world/tick/README.md)
 include one new selected-Pig prefix: seed 529, ticket 18 of 40, initial point
@@ -71,4 +75,4 @@ only at final native free. Cleanup performs no source clear or random block tick
 Native component tests cover no-Player returns, weather/time order, the 1,000
 record bound, force/future entries, size mismatch, removals before provider
 failure, sky callback mutation/reentry and retained ownership. Their finite
-scope does not establish complete spawning, random blocks or server ticks.
+scope does not establish every spawning branch, Block override or server tick.

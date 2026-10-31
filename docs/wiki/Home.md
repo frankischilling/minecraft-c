@@ -1,176 +1,33 @@
 # minecraft-c
 
-All eleven default [Mob constructors](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-construction.md)
-and [spawn predicates](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-spawning.md)
-now execute on actual Entity/Living owners. Rejected attempts continue; successful
-attempts publish real Mobs and perform postspawn work. A focused loaded Windows
-profile passes spawning and reaches random Chunk work at `fd.l:195`, child
-`fd.n:207`. A selected Spider jockey reaches its unfinished mount after actual
-Skeleton construction and publication. Native cleanup preserves the nonempty
-active coordinate Set until final free.
-
-All 68 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
-All 77 Windows tests pass in 105.78 seconds and all 73 Linux tests in
-141.36 seconds, without failures, skips or sanitizer findings. All 2,387 C,
-helper, build and reference inputs remain unchanged through both builds and tests.
-Formatting checks 1,665 files; source bindings cover 7,766 entries and 3,324 files.
-
-Each host passes 1,667 constructor checks over 33 actual constructors, with 8,244
-independent original field comparisons and 165 separately labelled scalar checks.
-Spawning adds 6,451 checks over 115 genuine predicates and 18 Chunk Random leaves;
-136 selected predicate/Chunk/thunder rows match the original exactly. Original
-constructor capture checks 25 live methods and 561 checkpoints. Predicate capture
-checks 19 live methods and 2,138 checkpoints. Independent JVM/native constructor
-entropy is not equated.
-
-The client remains pre-playable. Random Chunk work, Mob AI/ticking/NBT/drawing,
-ambience, sleeping wake transitions and gameplay remain unfinished.
-
-## Preceding rendering checkpoints
-
-The [RenderGlobal Entity pass](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) now runs its actual delay, LL/TH frame
-bindings and visibility predicates with checked ownership. The initial loaded
-frame executes both [particle draw entries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md), further fog setup, translucent terrain and the dry
-[precipitation return](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/precipitation.md), both [cloud modes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/clouds.md), and the [empty first-person hand](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/first-person-hand.md).
-World drawing returns at1013, then its parent composes the actual [GuiIngame](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/gui-ingame.md)
-and returns the focused loaded frame. The next unpaused tick enters the Mob spawn prefix.
-Entity draws,
-rendered-TileEntity row ownership and playable frames remain unfinished;
-composed original/native N parity remains unverified.
-
-The [normal terminal coordinator](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
-now connects menu-run shutdown to actual prefix ending, checked LL/TH retirement,
-complete retained-load classification and fresh selected-World admission. Early
-bootstrap close keeps the same graph retryable while getters stay closed.
-Retained screens and newly retained controllers still block their checked
-cleanup after World consumption. All 40 targets build on both hosts; 49 Windows
-tests pass in 68.21 seconds and 46 sanitized Linux tests pass in 98.26 seconds.
-Seven Windows selection profiles preserve saves/assets and both successful
-loaded modes retain all 72 focus histories. Authored partial Player NBT refuses
-the coordinator with its acquired World intact. Complete Format/App/service
-admission, partial-load shutdown, deferred old Worlds and complete frame drawing
-remain unfinished. There is no original shutdown equivalence claim.
-
-The [source lighting renderer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md)
-and [TileEntityRenderer CPU bodies](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/tile-entity-renderer.md)
-alongside [RenderManager frame binding](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-manager-frame.md)
-pass their specified Windows and Linux comparisons. [Build and tests](Build-and-tests)
-records the pixel, constructor and operand limits. Full Entity/TileEntity
-traversal, drawing and playable frames remain unfinished.
-
 minecraft-c is a C17 implementation of Minecraft Beta 1.7.3 for x86-64 Windows
-and Linux. There is no playable client or dedicated server yet. The native
-runtime requires no JVM after local resource import.
+and Linux. The native runtime needs no JVM after local resource import.
+The client remains pre-playable; the dedicated server is unfinished.
 
-The default client constructs the source App, initializes its main menu and
-opens genuine World selection. Save metadata, sorting, scrolling, row selection
-and same-parent Cancel use the actual source owners. Existing-save loading now
-completes all 289 terrain samples, attaches the renderer and particle manager,
-inserts the real Player and publishes that Player as the view entity. Healthy
-null-screen handling and mouse focus also run. The native selection profile
-then executes gameplay input through `Minecraft.k:1073` and the admitted
-World/frame segment. Direct unpaused checks on that same graph execute renderer,
-held-item/entity ticking, weather and real Biome spawn selection before missing
-all default constructors/predicates/publications before random Chunk work at `fd.l:195`/`fd.n:207`. Focused mouse look and source pause
-entry run. The hidden inactive frame opens OZ and completes colors, fog, camera,
-actual Sky drawing and W/SR/ChunkRenderer culling. It now enters the dirty-chunk
-selector, constructs the real ChunkCache and compiles standard Blocks through
-the same RenderBlocks and Tessellator. Current frame source calls real
-[terrain submission](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terrain-submission.md)
-at `px.a(FJ)V:486`; [standard lighting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/standard-lighting.md)
-and the actual camera eye getter now return before Entity/TileEntity rendering510.
-Native Windows lighting replay matches 86 original state/parameter rows. Three
-focused tests pass in 2.05 seconds. Hosted lighting source 0c0cc5a passes all
-four jobs and 1,520 tests; [Build and tests](Build-and-tests) records platform limits.
-The loaded UI passes in 18.59 seconds with all 72 focus histories/resources/saves. Its inspected
-back buffer shows authored grass terrain and Sky without HUD. Specialized Block shapes, later frame
-drawing and gameplay actions remain unfinished. See the
-[source frame scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/renderer-frames.md).
-The real READY renderer also
-completes [picking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/picking.md)
-through return452; existing-World ticks call it at `k:33`.
+The default client opens the main menu and genuine World selection. Saved-World
+loading attaches the real Player, renderer and particle manager. A focused
+loaded frame composes terrain, Sky, clouds, the empty hand and GuiIngame.
 
-Renderer attachment creates the source ChunkRenderer grid and bounding-box
-lists. Empty and standard Block sections now complete source compilation;
-specialized Block shapes and TileEntity rendering remain unfinished. The
-submission extension uses the same retained graph. Its preceding terrain
-checkpoint passes all four hosted jobs and 1,513 tests; see
-[Build and tests](Build-and-tests) for the distinct device scopes.
-The concrete sky-change callback runs
-the whole `n.e()V`, and standard lighting includes the shared U class's actual
-buffer initialization. The [chunk-compilation contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md)
-records source effects, retained failures and remaining children. Skin and cloak
-requests use actual asynchronous image owners, with separate factory and worker
-results. Native
-cleanup retains dependencies through worker stop/join and refuses retirement
-while external owners remain.
+World ticking now constructs all eleven default Mob kinds, runs their spawn
+predicates and publishes successful candidates. Random Chunk work completes
+361 coordinates and 28,880 samples before the client reaches ambience at
+`Minecraft.k:1311`. Grass, Leaves, Ice and Snow Block execute their concrete
+client ticks, and weather can construct a genuine Lightning Entity. A selected
+Spider jockey retains its separate unfinished mount after Skeleton publication.
 
-Version-zero conversion, new-World spawn completion, remaining menus, native
-Canvas integration, gameplay, multiplayer interoperability and the standalone
-server remain unfinished or unqualified. Diagnostic title and fixed-camera
-terrain inspection remain explicit options.
+All 75 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 88 Windows tests and 84 Linux tests pass. Original comparisons cover
+14 complete random-Chunk profiles, 18 direct Block profiles and finite Mob and
+Lightning constructor/predicate cases. Independent constructor entropy and
+whole-frame visual correspondence remain separate from those results.
 
-Selected Windows checks pass 950 original cache rows, 42 whole selector profiles,
-a complete empty DK call, eight sky-change profiles, three lighting rows and
-108 JDK17 sort histories.
-The loaded graph reaches the geometry frontier and preserves all 72 focus
-histories. After the lease-publication fix, Windows Debug ALL and all 512
-selected CTests pass in 215.93 seconds, retaining all 506 prior test names and
-adding six. Seven separate JDK/Sky device cases also pass.
+Mob ticking, persistence and drawing, further Block overrides, ambience,
+gameplay actions, inactive saving and general focus-loss handling remain
+unfinished. These checks do not establish playable single-player.
 
-At the previous [standard Block geometry checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-blocks.md),
-six focused MSVC tests passed, including 1,680 face/color rows, 25 flat rows,
-48 AO rows, 25 Block colors and seven actual static AO queries. The loaded UI
-passed 702 checks and preserved resources, saves and all 72 focus histories
-before submission was connected at PX486. Hosted [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797)
-passed all four jobs and 1,490 tests (Windows 478/GCC 506/Clang 506), zero failures
-or skips. Every preceding hosted name remained, with five additions per
-platform. That record's runtime/test sources were those of 6ccdc82; its later
-record edits changed documentation and file bindings. Remaining suite totals describe earlier
-checkpoints.
-
-Qualified source checkpoint
-[`91da6e2`](https://github.com/frankischilling/minecraft-c/actions/runs/40937788071)
-passes all four hosted jobs and 1,475 tests: Windows 473/GCC 501/Clang 501,
-with zero failures or skips and every preceding hosted test name retained.
-Hosted Linux runtime passes are separate from the local build evidence; no
-local Linux runtime tests ran after host-disk exhaustion.
-[Build and tests](Build-and-tests) records exact times and the device-profile
-difference: hosted Windows executes five additions, while local Windows and
-both Linux software-GL profiles execute all six.
-
-At the preceding fog/Sky/culling checkpoint, all 506 selected Windows CTests
-pass after Debug ALL. Audio-enabled Linux GCC13/Clang18 ALL builds and 489
-selected public tests each pass with sanitizers,
-leak detection and real GL. Six JDK-reference cases pass per compiler. The
-separate local Windows Sky device replay matches 48 original post-call states.
-[Qualification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#source-fog-sky-and-chunk-culling-qualification)
-separates 366 World/provider leaves, 48 fog states, 30 exact GPU samples, eight
-culling rows and four Sky prefix outcomes. NV-absent Linux state comparisons
-retain their source-derived selector scope. Terrain frames and play remain
-unfinished.
-
-Published [`e65860c`](https://github.com/frankischilling/minecraft-c/actions/runs/40920088558)
-passes all four jobs and 1,458 tests: Windows 468/GCC 495/Clang 495, with zero
-failures or skips. It precedes the new compilation and callback work.
-
-Earlier published [`06aa85f`](https://github.com/frankischilling/minecraft-c/actions/runs/40902957232)
-passes all four jobs and 1,448 tests: Windows 466/GCC 491/Clang 491, zero failures
-or skips. It precedes the fog/Sky/culling checkpoint.
-
-Published [`07e41f6`](https://github.com/frankischilling/minecraft-c/actions/runs/40879213780)
-passes all four hosted jobs and 1,427 tests: Windows 461, GCC 483 and Clang 483,
-with zero failures or skips. It precedes the focused-frame/pause/scheduler extension;
-[Build and tests](Build-and-tests) separates those scopes.
-
-- [Client startup](Startup) covers the default runtime and remaining session work.
-- [World simulation](World-simulation) links simulation contracts and reference evidence.
-- [Build and tests](Build-and-tests) records commands and qualified results.
-- [Architecture](Architecture) describes module ownership and boundaries.
-- [Storage and reference work](Storage-and-reference) covers saves and reference testing.
-
-The repository's
-[status](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md)
-and [parity matrix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md)
-distinguish implemented behavior from verified scenarios. Earlier checkpoint
-records remain in [History](History) and the linked testing documents.
+- [Startup and current client paths](Startup)
+- [Build instructions, test results and scope](Build-and-tests)
+- [World simulation](World-simulation)
+- [Storage and original-reference evidence](Storage-and-reference)
+- [Architecture](Architecture)
+- [Earlier checkpoints](History)

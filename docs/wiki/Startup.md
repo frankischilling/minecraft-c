@@ -59,7 +59,8 @@ Existing-World ticks invoke that body at `k:33`. The admitted provider branch,
 controller music tick, movement-key dispatch, hotbar and Settings input also
 run. Direct same-graph checks also execute renderer/equip and real entity
 updates, weather and actual weighted Biome selection. All eleven default constructors, yaw, pose and predicates now return; the focused
-loaded path reaches random Chunk work at `fd.l:195`, child `fd.n:207`.
+loaded path completes 361 random Chunk coordinates and 28,880 Block samples,
+returns from `fd.l:198` and reaches client ambience at `Minecraft.k:1311`.
 Frame sound, lighting, suffocation and controller interpolation are connected.
 Focused mouse look uses the actual SDK/CU/Player fields. Inactive pause entry
 constructs OZ; actual World drawing completes fog, camera, Sky and real

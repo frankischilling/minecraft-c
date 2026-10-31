@@ -85,7 +85,10 @@ publishes the view entity. Healthy null-screen/focus handling returns; the
 native selection tick executes gameplay input through 1073 and the admitted
 World/frame segment. Direct same-graph checks execute renderer/entity updates
 through weather and weighted Biome selection, then actual default Mob construction/yaw/pose,
-predicates and publication before random Chunk work at `fd.l:195`/`fd.n:207`. Source focused mouse look and pause entry are connected.
+predicates, publication and all 361 random Chunk coordinates before client
+ambience at `Minecraft.k:1311`. The retained random call owns its actual Chunk,
+Player, Lightning and callback receipts across failure. Source focused mouse
+look and pause entry are connected.
 World-frame rendering completes colors, fog state, canonical camera, actual
 Sky programs and W/SR/DK culling. The dirty-chunk selector now constructs the
 real EW cache and compiles standard Block geometry through the same CV, DK

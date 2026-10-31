@@ -6,7 +6,7 @@
 struct mc_player_string;
 
 /* Concrete callers are Item, FallingSand, Minecart, local Player, pickup
- * particle and the eleven client Overworld Mobs. This is not a public generic-kind
+ * particle, Lightning and the eleven client Overworld Mobs. This is not a public generic-kind
  * factory. Preserve actual active use before live count/budget and header
  * allocation. Mob callers perform their selected initializer first; Minecart's
  * branch performs its own initializer here. No fabricated subtype is admitted. */

@@ -282,6 +282,47 @@ mc_registry_status mc_registry_block_m_at(const mc_registry_block_m_view *array,
     return status;
 }
 
+mc_registry_status mc_registry_block_n_get(mc_registry_classes *classes,
+                                           mc_registry_block_n_view *out,
+                                           mc_registry_error *error) {
+    if (out == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime n output");
+    mc_registry_status status = enter_blocks(classes, error);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    const bool *identity = NULL;
+    status = mc_registry_blocks_active_use(classes);
+    if (status == MC_REGISTRY_OK)
+        identity = classes->blocks.n;
+    status = leave_blocks(classes, status, error);
+    if (status == MC_REGISTRY_OK)
+        *out = (mc_registry_block_n_view){classes, identity,
+                                          identity == NULL ? 0u : MC_REGISTRY_BLOCK_SLOTS};
+    return status;
+}
+
+mc_registry_status mc_registry_block_n_at(const mc_registry_block_n_view *array, int32_t index,
+                                          bool *out, mc_registry_error *error) {
+    if (array == NULL || array->classes == NULL || out == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime n element arguments");
+    mc_registry_status status;
+    if (array->identity == NULL)
+        status = result(&array->classes->last_error, MC_REGISTRY_NULL_REFERENCE,
+                        "Block runtime captured n array is null");
+    else if (array->length > MC_REGISTRY_BLOCK_SLOTS)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime n native extent");
+    else if (index < 0 || (size_t)index >= array->length)
+        status = result(&array->classes->last_error, MC_REGISTRY_INDEX_OUT_OF_RANGE,
+                        "Block runtime captured n index");
+    else {
+        *out = array->identity[index];
+        return result(error, MC_REGISTRY_OK, NULL);
+    }
+    if (error != NULL)
+        *error = array->classes->last_error;
+    return status;
+}
+
 mc_registry_status mc_registry_block_o_get(mc_registry_classes *classes,
                                            mc_registry_block_o_view *out,
                                            mc_registry_error *error) {
