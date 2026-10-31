@@ -8,6 +8,11 @@ All 89 Windows tests pass in 130.56 seconds and all 85 Linux tests in
 helper, build and reference inputs remain unchanged through both builds and tests.
 Formatting checks 1,679 files; source bindings cover 7,862 entries and 3,361 files.
 
+This local cohort was run at source `5be0dea`. Hosted Linux Debug builds now
+use `-g1` to retain sanitizer file/line traces while reducing repeated type
+data in test executables. Local Debug defaults and Windows symbols remain
+unchanged. Warning flags, sanitizers and the full test inventory stay enabled.
+
 The selection includes World queries and the spring's returned client Grass
 tick. Its bright prepared cavity checks the exact three supplied Random draws,
 cleared immediate flag, complete arrays and unchanged World Random/profile.

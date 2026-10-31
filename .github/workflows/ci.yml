@@ -90,6 +90,7 @@ jobs:
             build/_deps/*-subbuild/*-populate-prefix/src/*.zip
           key: ${{ runner.os }}-fetchcontent-archives-v1-${{ hashFiles('CMakeLists.txt', 'cmake/*dependencies.cmake') }}
           restore-keys: ${{ runner.os }}-fetchcontent-archives-v1-
+      # Keep sanitizer file/line traces without full type data in every test ELF.
       - name: Configure
         id: configure
         run: >-
@@ -99,6 +100,8 @@ jobs:
           -DCMAKE_C_COMPILER_LAUNCHER=ccache
           -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
           -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_C_FLAGS_DEBUG=-g1
+          -DCMAKE_CXX_FLAGS_DEBUG=-g1
           -DMC_ENABLE_SANITIZERS=ON
           -DMC_ENABLE_JAVA_REFERENCE_TESTS=ON
           -DMC_ENABLE_CLIENT_DISPLAY_TESTS=ON
