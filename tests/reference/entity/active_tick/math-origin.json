@@ -1,0 +1,23 @@
+{
+  "netlib-e_atan2.c": {
+    "url": "https://netlib.org/fdlibm/e_atan2.c",
+    "bytes": 3736,
+    "sha256": "61dbf9edc927468280ccde872ecfb7cb1ea7cbaf6e1b28e7021c968abe5f7c6e"
+  },
+  "jdk17-e_atan2.c": {
+    "url": "https://raw.githubusercontent.com/openjdk/jdk17u/jdk-17.0.17%2B10/src/java.base/share/native/libfdlibm/e_atan2.c",
+    "bytes": 5139,
+    "sha256": "3a7ff82b42ee353bed97de64d483fb4d56f6af1bcd41596e4f0564fdc5349fc8"
+  },
+  "kernel_audit": {
+    "normalizations": [
+      "extra parentheses around hx-constant OR expression",
+      "return -1.0*zero to return -zero; same exact negative zero under admitted profile"
+    ],
+    "same_remaining_tokens": true,
+    "normalized_token_sha256": {
+      "netlib-e_atan2.c": "bb9e589ebabce84e3691083a7490ccc7a9e3ea094d73fb8d4d4585780bee0867",
+      "jdk17-e_atan2.c": "bb9e589ebabce84e3691083a7490ccc7a9e3ea094d73fb8d4d4585780bee0867"
+    }
+  }
+}

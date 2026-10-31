@@ -27,23 +27,20 @@ static unsigned int checks;
         }                                                                                          \
     } while (0)
 
-static uint32_t float_bits(float value)
-{
+static uint32_t float_bits(float value) {
     uint32_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary32 storage required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static float float_from_bits(uint32_t bits)
-{
+static float float_from_bits(uint32_t bits) {
     float value;
     memcpy(&value, &bits, sizeof(value));
     return value;
 }
 
-static double double_from_bits(uint64_t bits)
-{
+static double double_from_bits(uint64_t bits) {
     double value;
     _Static_assert(sizeof(bits) == sizeof(value), "binary64 storage required");
     memcpy(&value, &bits, sizeof(value));
@@ -53,8 +50,7 @@ static double double_from_bits(uint64_t bits)
 /* Byte order follows the independently captured big-endian raw float files,
  * regardless of the C host's object byte order. The optional comparison probe
  * also exposes every table entry for a direct reference comparison. */
-static uint64_t table_fingerprint(const mc_math_trig *table)
-{
+static uint64_t table_fingerprint(const mc_math_trig *table) {
     uint64_t hash = UINT64_C(14695981039346656037);
     for (size_t i = 0; i < MC_MATH_TRIG_VALUES; ++i) {
         uint32_t bits = float_bits(table->values[i]);
@@ -67,8 +63,7 @@ static uint64_t table_fingerprint(const mc_math_trig *table)
     return hash;
 }
 
-static int test_floor_without_table(void)
-{
+static int test_floor_without_table(void) {
     for (size_t i = 0; i < ARRAY_LENGTH(observed_floor_calls); ++i) {
         const math_floor_fixture *fixture = &observed_floor_calls[i];
         int32_t result = mc_math_floor_double(double_from_bits(fixture->input));
@@ -78,8 +73,7 @@ static int test_floor_without_table(void)
     return 0;
 }
 
-static int check_observed_table(const mc_math_trig *table)
-{
+static int check_observed_table(const mc_math_trig *table) {
     CHECK(table_fingerprint(table) == observed_table_fnv1a);
     for (size_t i = 0; i < ARRAY_LENGTH(observed_table_entries); ++i) {
         const math_table_fixture *fixture = &observed_table_entries[i];
@@ -88,8 +82,7 @@ static int check_observed_table(const mc_math_trig *table)
     return 0;
 }
 
-static int test_initialization_and_reads(void)
-{
+static int test_initialization_and_reads(void) {
     /* Arbitrary prior bytes are not a partially initialized table to read. Both
      * complete objects must be replaced by the explicit initializer first. */
     memset(&first, 0xa5, sizeof(first));
@@ -133,8 +126,7 @@ static int test_initialization_and_reads(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_floor_without_table() != 0 || test_initialization_and_reads() != 0) {
         return 1;
     }

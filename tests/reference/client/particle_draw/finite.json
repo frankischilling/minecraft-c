@@ -1,0 +1,521 @@
+{
+  "schema": "particle-draw-projection-v1",
+  "scope": "Authored finite projection of audited unchanged-original observations. Method outcomes and independent per-process passivity only; no native comparison currently provided.",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "original_java_helper_sha256": "cebfbd712f2dd4a01f9afdfa0da63893eb19284ac4fdb6d1d2c9b27779aaffdc",
+  "capture_hashes": {
+    "empty": {
+      "capture_sha256": "c7014201817d8b87f6e31a6cbf6fcb363e4ea4116f6e7fd101b6ef1a34a57f8a",
+      "observation_sha256": "2de64ef7b00a730e918c292a536ca9f5cd69e67042b91d365293c526acce8cb4",
+      "class_init_log_sha256": "fece28d05bb05cf614718d111193107d33224cdde4f30e7775af2d5c949663fa"
+    },
+    "nulltarget": {
+      "capture_sha256": "a7efdfd14994c56a393d17bc559b3b1435a7124b829bdf310a1eac2cf3750692",
+      "observation_sha256": "8f5a7565a4d08e5fbc0bbced5bf3e94ffea5198218c92cc941556a6df3a3bf4b",
+      "class_init_log_sha256": "dc0db64d8a5c6786428501253d908590b364f4287ee350702556bee3d2eac652"
+    },
+    "nullworld": {
+      "capture_sha256": "a7efdfd14994c56a393d17bc559b3b1435a7124b829bdf310a1eac2cf3750692",
+      "observation_sha256": "78bbd75a1c44717f5bed9a21c19874934a6bdfad81e6dbf98ec942c882ef7e89",
+      "class_init_log_sha256": "282ab2c7010fd9ed47d4ca5e07de2c7f3ce74b99f11d18cec78101be21c9220f"
+    }
+  },
+  "source_pc_authority": "Pinned complete original Code plus reached conditions; Java stack traces do not measure BCIs.",
+  "selected_draw_outcomes": 40,
+  "raw_capture_logical_rows": 124,
+  "raw_capture_exceptions": 30,
+  "native_compared_outcomes": 0,
+  "cases": [
+    {
+      "id": "empty-b-0",
+      "profile": "empty",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "00000000",
+      "outcome": "return",
+      "source_pc": 16
+    },
+    {
+      "id": "empty-a-0",
+      "profile": "empty",
+      "method": "dn.a(Lsn;F)V",
+      "partial_bits": "00000000",
+      "outcome": "null_reference",
+      "source_pc": 1
+    },
+    {
+      "id": "empty-b-1",
+      "profile": "empty",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "80000000",
+      "outcome": "return",
+      "source_pc": 16
+    },
+    {
+      "id": "empty-a-1",
+      "profile": "empty",
+      "method": "dn.a(Lsn;F)V",
+      "partial_bits": "80000000",
+      "outcome": "null_reference",
+      "source_pc": 1
+    },
+    {
+      "id": "empty-b-2",
+      "profile": "empty",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "3e800000",
+      "outcome": "return",
+      "source_pc": 16
+    },
+    {
+      "id": "empty-a-2",
+      "profile": "empty",
+      "method": "dn.a(Lsn;F)V",
+      "partial_bits": "3e800000",
+      "outcome": "null_reference",
+      "source_pc": 1
+    },
+    {
+      "id": "empty-b-3",
+      "profile": "empty",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "3f000000",
+      "outcome": "return",
+      "source_pc": 16
+    },
+    {
+      "id": "empty-a-3",
+      "profile": "empty",
+      "method": "dn.a(Lsn;F)V",
+      "partial_bits": "3f000000",
+      "outcome": "null_reference",
+      "source_pc": 1
+    },
+    {
+      "id": "empty-b-4",
+      "profile": "empty",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "3f800000",
+      "outcome": "return",
+      "source_pc": 16
+    },
+    {
+      "id": "empty-a-4",
+      "profile": "empty",
+      "method": "dn.a(Lsn;F)V",
+      "partial_bits": "3f800000",
+      "outcome": "null_reference",
+      "source_pc": 1
+    },
+    {
+      "id": "empty-b-5",
+      "profile": "empty",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "bf800000",
+      "outcome": "return",
+      "source_pc": 16
+    },
+    {
+      "id": "empty-a-5",
+      "profile": "empty",
+      "method": "dn.a(Lsn;F)V",
+      "partial_bits": "bf800000",
+      "outcome": "null_reference",
+      "source_pc": 1
+    },
+    {
+      "id": "empty-b-6",
+      "profile": "empty",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "7f800000",
+      "outcome": "return",
+      "source_pc": 16
+    },
+    {
+      "id": "empty-a-6",
+      "profile": "empty",
+      "method": "dn.a(Lsn;F)V",
+      "partial_bits": "7f800000",
+      "outcome": "null_reference",
+      "source_pc": 1
+    },
+    {
+      "id": "empty-b-7",
+      "profile": "empty",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "ff800000",
+      "outcome": "return",
+      "source_pc": 16
+    },
+    {
+      "id": "empty-a-7",
+      "profile": "empty",
+      "method": "dn.a(Lsn;F)V",
+      "partial_bits": "ff800000",
+      "outcome": "null_reference",
+      "source_pc": 1
+    },
+    {
+      "id": "empty-b-8",
+      "profile": "empty",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "7fc12345",
+      "outcome": "return",
+      "source_pc": 16
+    },
+    {
+      "id": "empty-a-8",
+      "profile": "empty",
+      "method": "dn.a(Lsn;F)V",
+      "partial_bits": "7fc12345",
+      "outcome": "null_reference",
+      "source_pc": 1
+    },
+    {
+      "id": "empty-b-9",
+      "profile": "empty",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "7f812345",
+      "outcome": "return",
+      "source_pc": 16
+    },
+    {
+      "id": "empty-a-9",
+      "profile": "empty",
+      "method": "dn.a(Lsn;F)V",
+      "partial_bits": "7f812345",
+      "outcome": "null_reference",
+      "source_pc": 1
+    },
+    {
+      "id": "nulltarget-b-0",
+      "profile": "nulltarget",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "00000000",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 53
+      }
+    },
+    {
+      "id": "nulltarget-b-1",
+      "profile": "nulltarget",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "80000000",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 53
+      }
+    },
+    {
+      "id": "nulltarget-b-2",
+      "profile": "nulltarget",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "3e800000",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 53
+      }
+    },
+    {
+      "id": "nulltarget-b-3",
+      "profile": "nulltarget",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "3f000000",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 53
+      }
+    },
+    {
+      "id": "nulltarget-b-4",
+      "profile": "nulltarget",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "3f800000",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 53
+      }
+    },
+    {
+      "id": "nulltarget-b-5",
+      "profile": "nulltarget",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "bf800000",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 53
+      }
+    },
+    {
+      "id": "nulltarget-b-6",
+      "profile": "nulltarget",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "7f800000",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 53
+      }
+    },
+    {
+      "id": "nulltarget-b-7",
+      "profile": "nulltarget",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "ff800000",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 53
+      }
+    },
+    {
+      "id": "nulltarget-b-8",
+      "profile": "nulltarget",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "7fc12345",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 53
+      }
+    },
+    {
+      "id": "nulltarget-b-9",
+      "profile": "nulltarget",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "7f812345",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 53
+      }
+    },
+    {
+      "id": "nullworld-b-0",
+      "profile": "nullworld",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "00000000",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 220
+      }
+    },
+    {
+      "id": "nullworld-b-1",
+      "profile": "nullworld",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "80000000",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 220
+      }
+    },
+    {
+      "id": "nullworld-b-2",
+      "profile": "nullworld",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "3e800000",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 220
+      }
+    },
+    {
+      "id": "nullworld-b-3",
+      "profile": "nullworld",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "3f000000",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 220
+      }
+    },
+    {
+      "id": "nullworld-b-4",
+      "profile": "nullworld",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "3f800000",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 220
+      }
+    },
+    {
+      "id": "nullworld-b-5",
+      "profile": "nullworld",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "bf800000",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 220
+      }
+    },
+    {
+      "id": "nullworld-b-6",
+      "profile": "nullworld",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "7f800000",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 220
+      }
+    },
+    {
+      "id": "nullworld-b-7",
+      "profile": "nullworld",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "ff800000",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 220
+      }
+    },
+    {
+      "id": "nullworld-b-8",
+      "profile": "nullworld",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "7fc12345",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 220
+      }
+    },
+    {
+      "id": "nullworld-b-9",
+      "profile": "nullworld",
+      "method": "dn.b(Lsn;F)V",
+      "partial_bits": "7f812345",
+      "outcome": "null_reference",
+      "source_pc": 69,
+      "child": {
+        "class": "em",
+        "method": "a",
+        "descriptor": "(Lnw;FFFFFF)V",
+        "pc": 220
+      }
+    }
+  ],
+  "passivity_profiles": [
+    {
+      "profile": "empty",
+      "labels": [
+        "same_dn_list_array",
+        "same_four_list_identities",
+        "dn_list_contents_unchanged",
+        "same_dn_random",
+        "dn_random_seed_and_gaussian_cache_unchanged"
+      ]
+    },
+    {
+      "profile": "nulltarget",
+      "labels": [
+        "same_dn_list_array",
+        "same_four_list_identities",
+        "dn_list_contents_unchanged",
+        "same_dn_random",
+        "dn_random_seed_and_gaussian_cache_unchanged",
+        "actor_source_fields_and_randoms_unchanged",
+        "shared_math_random_unchanged"
+      ]
+    },
+    {
+      "profile": "nullworld",
+      "labels": [
+        "same_dn_list_array",
+        "same_four_list_identities",
+        "dn_list_contents_unchanged",
+        "same_dn_random",
+        "dn_random_seed_and_gaussian_cache_unchanged",
+        "actor_source_fields_and_randoms_unchanged",
+        "shared_math_random_unchanged"
+      ]
+    }
+  ],
+  "cleanup_evidence_not_added_to_draw_outcomes": [
+    "three_actual_source_world_clear_calls",
+    "three_actual_postclear_empty_dn_b_returns"
+  ],
+  "uncredited": [
+    "absolute_constructor_entropy_and_rng_states",
+    "JU_EM_constructor_peer_equality",
+    "raw_actor_fields_or_method_locals",
+    "Java_ArrayList_modCount_capacity_and_backing_equality",
+    "raw_NW_storage_or_constructor_peer_equality",
+    "geometry_pixels_or_successful_nonempty_rendering",
+    "general_DN_a_nonnull_camera_body",
+    "nonnull_World_renderer_dispatch",
+    "multiple_particle_loop_continuation"
+  ]
+}

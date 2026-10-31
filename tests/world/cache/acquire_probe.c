@@ -1,5 +1,5 @@
 #include "mc/world/cache/acquire.h"
-#include "mc/world/generation/normal.h"
+#include "mc/world/generation/overworld.h"
 
 #include <float.h>
 #include <inttypes.h>
@@ -29,16 +29,16 @@ _Static_assert(sizeof(double) == sizeof(uint64_t) && DBL_MANT_DIG == 53 && DBL_M
 /* Trusted adapter: real C generation and lighting, with a deliberately explicit
  * load-MISS boundary. Population features are not implemented here. All large
  * owners are static, including inspection copies which are never used as owners. */
-static mc_normal_generator generator;
+static mc_overworld_generator generator;
 static mc_biome_memory memory;
 static mc_biome_manager manager;
 static mc_math_trig trig, saved_trig;
-static mc_terrain_normal_state saved_terrain;
+static mc_terrain_overworld_state saved_terrain;
 static mc_noise_simplex saved_temperature[4], saved_rainfall[4], saved_auxiliary[2];
 static mc_biome_classifier saved_classifier;
-static mc_normal_generator_materials materials, saved_materials;
+static mc_overworld_generator_materials materials, saved_materials;
 static int32_t opacity[256], saved_opacity[256];
-static mc_normal_chunk chunks[MAX_CHUNKS], saved_chunks[MAX_CHUNKS], bootstrap;
+static mc_overworld_chunk chunks[MAX_CHUNKS], saved_chunks[MAX_CHUNKS], bootstrap;
 static uint8_t blocks[MAX_CHUNKS][BLOCK_CAPACITY], saved_blocks[MAX_CHUNKS][BLOCK_CAPACITY];
 static uint8_t bootstrap_blocks[BLOCK_CAPACITY];
 static mc_chunk_cache_entry entries[MAX_ENTRIES], saved_entries[MAX_ENTRIES];
@@ -49,7 +49,7 @@ static mc_chunk_height_query queries[MAX_OPERATIONS][MC_CHUNK_FINISH_QUERIES + 1
 static size_t finish_ids[MAX_OPERATIONS], finish_count;
 static mc_biome_id saved_d[MAX_MANAGER_VALUES], saved_biomes[256];
 static double saved_manager[3][MAX_MANAGER_VALUES];
-static unsigned char saved_generator[sizeof(mc_normal_generator)];
+static unsigned char saved_generator[sizeof(mc_overworld_generator)];
 static unsigned char saved_manager_owner[sizeof(mc_biome_manager)];
 static mc_biome_id *original_d;
 static size_t original_d_length, chunk_count, imported_count, operation_count;
@@ -69,6 +69,7 @@ typedef struct operation {
     uint32_t method;
     int32_t x, z;
 } operation;
+
 static operation operations[MAX_OPERATIONS];
 
 typedef struct callback_record {
@@ -78,11 +79,11 @@ typedef struct callback_record {
     bool active, dirty, populated;
     int64_t time;
 } callback_record;
+
 static callback_record callbacks[MAX_CALLBACKS];
 static size_t callback_count;
 
-static void emit(const char *format, ...)
-{
+static void emit(const char *format, ...) {
     if (output_failed)
         return;
     char buffer[512];
@@ -100,14 +101,12 @@ static void emit(const char *format, ...)
         output_failed = true;
 }
 
-static bool read_bytes(FILE *file, void *data, size_t count)
-{
+static bool read_bytes(FILE *file, void *data, size_t count) {
     return fread(data, 1, count, file) == count;
 }
 
-/* Binary and raw-bit JSON helpers follow the project-owned normal_probe.c. */
-static bool read_u32(FILE *file, uint32_t *value)
-{
+/* Binary and raw-bit JSON helpers follow the project-owned overworld_probe.c. */
+static bool read_u32(FILE *file, uint32_t *value) {
     uint8_t data[4];
     if (!read_bytes(file, data, sizeof(data)))
         return false;
@@ -116,8 +115,7 @@ static bool read_u32(FILE *file, uint32_t *value)
     return true;
 }
 
-static bool read_i32(FILE *file, int32_t *value)
-{
+static bool read_i32(FILE *file, int32_t *value) {
     uint32_t raw;
     if (!read_u32(file, &raw))
         return false;
@@ -125,8 +123,7 @@ static bool read_i32(FILE *file, int32_t *value)
     return true;
 }
 
-static bool read_i64(FILE *file, int64_t *value)
-{
+static bool read_i64(FILE *file, int64_t *value) {
     uint32_t high, low;
     if (!read_u32(file, &high) || !read_u32(file, &low))
         return false;
@@ -135,8 +132,7 @@ static bool read_i64(FILE *file, int64_t *value)
     return true;
 }
 
-static bool read_boolean(FILE *file, bool *value)
-{
+static bool read_boolean(FILE *file, bool *value) {
     int byte = fgetc(file);
     if (byte != 0 && byte != 1)
         return false;
@@ -144,8 +140,7 @@ static bool read_boolean(FILE *file, bool *value)
     return true;
 }
 
-static bool read_doubles(FILE *file, mc_biome_double_buffer *buffer)
-{
+static bool read_doubles(FILE *file, mc_biome_double_buffer *buffer) {
     int32_t length;
     if (!read_i32(file, &length) || length < -1 || length > (int32_t)MAX_MANAGER_VALUES)
         return false;
@@ -167,8 +162,7 @@ static bool read_doubles(FILE *file, mc_biome_double_buffer *buffer)
     return true;
 }
 
-static bool read_biomes(FILE *file)
-{
+static bool read_biomes(FILE *file) {
     int32_t length;
     if (!read_i32(file, &length) || length < -1 || length > (int32_t)MAX_MANAGER_VALUES)
         return false;
@@ -189,8 +183,7 @@ static bool read_biomes(FILE *file)
     return true;
 }
 
-static size_t chunk_id(const mc_chunk_state *state)
-{
+static size_t chunk_id(const mc_chunk_state *state) {
     for (size_t i = 0; i < chunk_count; ++i) {
         if (state == &chunks[i].chunk)
             return i;
@@ -198,8 +191,7 @@ static size_t chunk_id(const mc_chunk_state *state)
     return SIZE_MAX;
 }
 
-static bool suffixes_retained(void)
-{
+static bool suffixes_retained(void) {
     for (size_t i = 0; i < chunk_count; ++i) {
         for (size_t j = MC_CHUNK_BLOCKS; j < BLOCK_CAPACITY; ++j) {
             if (blocks[i][j] != 0xa7)
@@ -213,8 +205,7 @@ static bool suffixes_retained(void)
     return true;
 }
 
-static bool immutable_retained(void)
-{
+static bool immutable_retained(void) {
     return memcmp(&generator.terrain, &saved_terrain, sizeof(saved_terrain)) == 0 &&
            memcmp(&trig, &saved_trig, sizeof(trig)) == 0 &&
            memcmp(&materials, &saved_materials, sizeof(materials)) == 0 &&
@@ -231,20 +222,17 @@ static bool immutable_retained(void)
            manager.initialized == 1;
 }
 
-static void save_payloads(void)
-{
+static void save_payloads(void) {
     memcpy(saved_chunks, chunks, chunk_count * sizeof(*chunks));
     memcpy(saved_blocks, blocks, chunk_count * sizeof(*blocks));
 }
 
-static bool payloads_retained(size_t count)
-{
+static bool payloads_retained(size_t count) {
     return memcmp(saved_chunks, chunks, count * sizeof(*chunks)) == 0 &&
            memcmp(saved_blocks, blocks, count * sizeof(*blocks)) == 0;
 }
 
-static void save_generator(void)
-{
+static void save_generator(void) {
     memcpy(saved_generator, &generator, sizeof(generator));
     memcpy(saved_manager_owner, &manager, sizeof(manager));
     memcpy(saved_biomes, generator.biomes.data, sizeof(saved_biomes));
@@ -255,8 +243,7 @@ static void save_generator(void)
     }
 }
 
-static bool generator_retained(void)
-{
+static bool generator_retained(void) {
     if (memcmp(saved_generator, &generator, sizeof(generator)) != 0 ||
         memcmp(saved_manager_owner, &manager, sizeof(manager)) != 0 ||
         memcmp(saved_biomes, generator.biomes.data, sizeof(saved_biomes)) != 0)
@@ -271,8 +258,7 @@ static bool generator_retained(void)
 }
 
 static bool log_callback(const char *kind, int32_t x, int32_t z, const mc_chunk_state *chunk,
-                         size_t slice)
-{
+                         size_t slice) {
     if (callback_count == MAX_CALLBACKS || (chunk != NULL && chunk_id(chunk) == SIZE_MAX)) {
         callback_failed = true;
         return false;
@@ -293,8 +279,7 @@ static bool log_callback(const char *kind, int32_t x, int32_t z, const mc_chunk_
 }
 
 static mc_chunk_load_result load_miss(void *owner, const mc_chunk_acquire_context *context,
-                                      int32_t x, int32_t z, mc_chunk_state **loaded)
-{
+                                      int32_t x, int32_t z, mc_chunk_state **loaded) {
     if (owner != &lighting || context != &acquisition || loaded == NULL || *loaded != NULL ||
         !log_callback("load", x, z, NULL, SIZE_MAX)) {
         callback_failed = true;
@@ -304,8 +289,7 @@ static mc_chunk_load_result load_miss(void *owner, const mc_chunk_acquire_contex
 }
 
 static bool generate_chunk(void *owner, const mc_chunk_acquire_context *context, int32_t x,
-                           int32_t z, mc_chunk_state **generated)
-{
+                           int32_t z, mc_chunk_state **generated) {
     if (owner != &generator || context != &acquisition || generated == NULL ||
         chunk_count == MAX_CHUNKS || finish_count == MAX_OPERATIONS ||
         !log_callback("generate_begin", x, z, NULL, SIZE_MAX))
@@ -322,13 +306,13 @@ static bool generate_chunk(void *owner, const mc_chunk_acquire_context *context,
     mc_chunk_height_query suffix = queries[finish_count][MC_CHUNK_FINISH_QUERIES];
     mc_chunk_finish_trace trace = {queries[finish_count], MC_CHUNK_FINISH_QUERIES, 0};
     size_t aborts = SIZE_MAX;
-    mc_normal_generation_resources resources = {&lighting, &materials, opacity,
-                                                256u,      &trace,     &aborts};
-    mc_normal_generator_status status = mc_normal_generator_generate(
+    mc_overworld_generation_resources resources = {&lighting, &materials, opacity,
+                                                   256u,      &trace,     &aborts};
+    mc_overworld_generator_status status = mc_overworld_generator_generate(
         &generator, x, z, &resources, &chunks[chunk_count], blocks[chunk_count], BLOCK_CAPACITY);
-    if (status != MC_NORMAL_GENERATOR_OK) {
-        fprintf(stderr, "acquire probe normal generation: %s\n",
-                mc_normal_generator_status_string(status));
+    if (status != MC_OVERWORLD_GENERATOR_OK) {
+        fprintf(stderr, "acquire probe Overworld generation: %s\n",
+                mc_overworld_generator_status_string(status));
         return false;
     }
     if (memcmp(&cache, &before_cache, sizeof(cache)) != 0 ||
@@ -352,9 +336,8 @@ static bool generate_chunk(void *owner, const mc_chunk_acquire_context *context,
            log_callback("generate_end", x, z, *generated, SIZE_MAX);
 }
 
-static bool register_tiles(void *owner, const mc_chunk_acquire_context *context,
-                           mc_chunk_state *chunk)
-{
+static bool register_tile_entities(void *owner, const mc_chunk_acquire_context *context,
+                                   mc_chunk_state *chunk) {
     mc_chunk_state *mapped = NULL;
     if (owner != &lighting || context != &acquisition || !chunk->active ||
         cache.insertion_count == 0 || insertions[cache.insertion_count - 1u] != chunk ||
@@ -366,8 +349,7 @@ static bool register_tiles(void *owner, const mc_chunk_acquire_context *context,
 }
 
 static bool register_entities(void *owner, const mc_chunk_acquire_context *context,
-                              mc_chunk_state *chunk, size_t slice)
-{
+                              mc_chunk_state *chunk, size_t slice) {
     if (owner != &lighting || context != &acquisition || !chunk->active || slice >= 8u) {
         callback_failed = true;
         return false;
@@ -376,8 +358,7 @@ static bool register_entities(void *owner, const mc_chunk_acquire_context *conte
 }
 
 static bool unexpected_population(void *owner, const mc_chunk_acquire_context *context, int32_t x,
-                                  int32_t z)
-{
+                                  int32_t z) {
     mc_chunk_state *target = NULL;
     if (owner != &generator || context != &acquisition ||
         !mc_chunk_cache_lookup(&cache, x, z, &target))
@@ -388,8 +369,7 @@ static bool unexpected_population(void *owner, const mc_chunk_acquire_context *c
     return false;
 }
 
-static bool bootstrap_generator(void)
-{
+static bool bootstrap_generator(void) {
     mc_chunk_cache empty;
     mc_light_queue temporary;
     int32_t temporary_depth = 0;
@@ -397,16 +377,16 @@ static bool bootstrap_generator(void)
         !mc_light_queue_init(&temporary, bootstrap_regions, MC_CHUNK_FINISH_QUERIES))
         return false;
     mc_world_lighting world = {&empty, &temporary, &temporary_depth, no_sky};
-    mc_normal_generation_resources resources = {&world, &materials, opacity, 256u, NULL, NULL};
+    mc_overworld_generation_resources resources = {&world, &materials, opacity, 256u, NULL, NULL};
     memset(bootstrap_blocks, 0xa7, sizeof(bootstrap_blocks));
-    return mc_normal_generator_generate(&generator, 0, 0, &resources, &bootstrap, bootstrap_blocks,
-                                        sizeof(bootstrap_blocks)) == MC_NORMAL_GENERATOR_OK &&
+    return mc_overworld_generator_generate(&generator, 0, 0, &resources, &bootstrap,
+                                           bootstrap_blocks,
+                                           sizeof(bootstrap_blocks)) == MC_OVERWORLD_GENERATOR_OK &&
            empty.count == 0 && empty.insertion_count == 0 && temporary.count == 0 &&
            temporary_depth == 0;
 }
 
-static bool read_input(FILE *file)
-{
+static bool read_input(FILE *file) {
     char magic[4];
     uint32_t nc, ne, ni, np, nq, no;
     if (!read_bytes(file, magic, sizeof(magic)) || memcmp(magic, "MCA1", 4) != 0 ||
@@ -428,13 +408,14 @@ static bool read_input(FILE *file)
         if (!read_i32(file, &opacity[i]) || opacity[i] < 0)
             return false;
     }
-    for (size_t i = 0; i < MC_NORMAL_GENERATOR_BIOME_MATERIALS; ++i) {
+    for (size_t i = 0; i < MC_OVERWORLD_GENERATOR_BIOME_MATERIALS; ++i) {
         if (!read_bytes(file, &materials.by_biome[i].top, 1) ||
             !read_bytes(file, &materials.by_biome[i].filler, 1))
             return false;
     }
     if (!mc_math_trig_init(&trig) ||
-        mc_normal_generator_init(&generator, seed, &manager, &trig) != MC_NORMAL_GENERATOR_OK ||
+        mc_overworld_generator_init(&generator, seed, &manager, &trig) !=
+            MC_OVERWORLD_GENERATOR_OK ||
         !bootstrap_generator()) {
         runtime_failed = true;
         return false;
@@ -522,27 +503,24 @@ static bool read_input(FILE *file)
                                              .provider = &generator,
                                              .load = load_miss,
                                              .generate = generate_chunk,
-                                             .register_tiles = register_tiles,
+                                             .register_tile_entities = register_tile_entities,
                                              .register_entities = register_entities,
                                              .populate = unexpected_population};
     return fgetc(file) == EOF && !ferror(file) && mc_world_lighting_validate(&lighting) &&
            mc_chunk_acquire_validate(&acquisition);
 }
 
-static const char *boolean(bool value)
-{
+static const char *boolean(bool value) {
     return value ? "true" : "false";
 }
 
-static uint64_t double_bits(const double *value)
-{
+static uint64_t double_bits(const double *value) {
     uint64_t raw;
     memcpy(&raw, value, sizeof(raw));
     return raw;
 }
 
-static void print_doubles(const double *values, size_t length)
-{
+static void print_doubles(const double *values, size_t length) {
     if (values == NULL) {
         emit("null");
         return;
@@ -553,8 +531,7 @@ static void print_doubles(const double *values, size_t length)
     emit("\"}");
 }
 
-static void print_biomes(const mc_biome_id *values, size_t length)
-{
+static void print_biomes(const mc_biome_id *values, size_t length) {
     if (values == NULL) {
         emit("null");
         return;
@@ -565,8 +542,7 @@ static void print_biomes(const mc_biome_id *values, size_t length)
     emit("\"}");
 }
 
-static void print_manager(void)
-{
+static void print_manager(void) {
     emit("{\"a\":");
     print_doubles(manager.a.data, manager.a.length);
     emit(",\"b\":");
@@ -578,19 +554,17 @@ static void print_manager(void)
     emit("}");
 }
 
-static void print_random(mc_java_random random)
-{
+static void print_random(mc_java_random random) {
     emit("{\"state\":\"%012" PRIx64 "\",\"next_longs\":[", random.state);
     for (size_t i = 0; i < 8u; ++i)
         emit("%s\"%016" PRIx64 "\"", i ? "," : "", (uint64_t)mc_java_random_next_i64(&random));
     emit("]}");
 }
 
-static void print_noise(void)
-{
+static void print_noise(void) {
     static const char names[] = "klmnoabc";
     static const size_t counts[] = {16, 16, 8, 4, 4, 10, 16, 8};
-    const mc_terrain_normal_state *state = &generator.terrain;
+    const mc_terrain_overworld_state *state = &generator.terrain;
     const mc_noise_perlin *channels[] = {state->low_layers,
                                          state->high_layers,
                                          state->mix_layers,
@@ -617,16 +591,14 @@ static void print_noise(void)
     emit("}");
 }
 
-static void print_bytes(const char *name, const uint8_t *values, size_t length)
-{
+static void print_bytes(const char *name, const uint8_t *values, size_t length) {
     emit("\"%s\":{\"length\":%zu,\"values\":\"", name, length);
     for (size_t i = 0; i < length; ++i)
         emit("%02x", (unsigned int)values[i]);
     emit("\"}");
 }
 
-static void print_data(const mc_chunk_data *data)
-{
+static void print_data(const mc_chunk_data *data) {
     emit("{");
     print_bytes("blocks", data->blocks, MC_CHUNK_BLOCKS);
     emit(",");
@@ -640,8 +612,7 @@ static void print_data(const mc_chunk_data *data)
     emit(",\"minimum_height\":%" PRId32 "}", data->minimum_height);
 }
 
-static void print_generator(void)
-{
+static void print_generator(void) {
     emit("{\"noise\":");
     print_noise();
     emit(",\"scratch\":{");
@@ -667,8 +638,7 @@ static void print_generator(void)
     emit("}");
 }
 
-static void print_snapshot(void)
-{
+static void print_snapshot(void) {
     /* Map and pending have membership semantics, not Java bucket iteration.
      * Their projection alone is signed-key sorted; list and queue remain exact. */
     size_t order[MAX_ENTRIES];
@@ -732,8 +702,7 @@ static void print_snapshot(void)
     emit("}");
 }
 
-static void print_callbacks(void)
-{
+static void print_callbacks(void) {
     emit("[");
     for (size_t i = 0; i < callback_count; ++i) {
         const callback_record *record = &callbacks[i];
@@ -760,8 +729,7 @@ static void print_callbacks(void)
     emit("]");
 }
 
-static void print_finishes(size_t start)
-{
+static void print_finishes(size_t start) {
     emit("[");
     for (size_t i = start; i < finish_count; ++i) {
         emit("%s{\"id\":%zu,\"queries\":[", i != start ? "," : "", finish_ids[i]);
@@ -775,8 +743,7 @@ static void print_finishes(size_t start)
     emit("]");
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     if (argc > 2) {
         fputs("usage: acquire_probe [MCA1-file]; otherwise reads binary stdin\n", stderr);
         return 2;
@@ -874,7 +841,7 @@ int main(int argc, char **argv)
     if (complete && !output_failed && !ferror(stdout) && fflush(stdout) == 0)
         status = 0;
 cleanup:
-    mc_normal_generator_free(&generator);
+    mc_overworld_generator_free(&generator);
     mc_biome_manager_free(&manager);
     if (memory.live_allocation_bytes != 0) {
         fputs("acquire probe biome allocation accounting did not return to zero\n", stderr);

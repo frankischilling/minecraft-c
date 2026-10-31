@@ -1,0 +1,281 @@
+#ifndef MC_CLIENT_GAME_SETTINGS_H
+#define MC_CLIENT_GAME_SETTINGS_H
+
+#include "mc/core/java/writer.h"
+
+typedef struct mc_game_settings mc_game_settings;
+typedef struct mc_key_binding mc_key_binding;
+
+struct mc_sound_manager;
+
+#define MC_GAME_SETTINGS_NAMED_BINDINGS 10u
+#define MC_GAME_SETTINGS_MAX_BINDINGS 1024u
+#define MC_GAME_SETTINGS_MAX_BINDING_OWNERS 256u
+#define MC_GAME_SETTINGS_MAX_TEXT_UNITS 1048576u
+#define MC_GAME_SETTINGS_MAX_PATH_BYTES 1048576u
+#define MC_GAME_SETTINGS_MAX_INPUT_BYTES 16777216u
+#define MC_GAME_SETTINGS_OWNER_BYTES 16777216u
+#define MC_GAME_SETTINGS_READER_BYTES 33554432u
+
+typedef enum mc_game_settings_status {
+    MC_GAME_SETTINGS_OK,
+    MC_GAME_SETTINGS_INVALID_ARGUMENT,
+    MC_GAME_SETTINGS_ALLOCATION_FAILED,
+    MC_GAME_SETTINGS_LIMIT,
+    MC_GAME_SETTINGS_UNSUPPORTED_CHARSET,
+    MC_GAME_SETTINGS_BUSY,
+    MC_GAME_SETTINGS_NATIVE_IO_ERROR,
+    MC_GAME_SETTINGS_DIAGNOSTIC_FAILED,
+    MC_GAME_SETTINGS_SOURCE_EXCEPTION,
+    MC_GAME_SETTINGS_UNIMPLEMENTED_DEPENDENCY,
+    MC_GAME_SETTINGS_STATE_ERROR,
+    MC_GAME_SETTINGS_FILE_ERROR,
+    MC_GAME_SETTINGS_CLASS_ERRONEOUS,
+    MC_GAME_SETTINGS_THREAD_ERROR
+} mc_game_settings_status;
+
+typedef struct mc_game_settings_error {
+    mc_game_settings_status status;
+    int system_error;
+    const char *operation;
+} mc_game_settings_error;
+
+/* NULL String and nonnull empty String are distinct. State/KeyBinding UTF16
+ * views remain valid until this settings owner is retired. Empty values use
+ * the canonical empty String; arbitrary distinct externally created empty
+ * Java String objects have no identity representation at this seam. A diagnostic's
+ * original-line view is borrowed only during its callback. Inputs may contain
+ * NUL, colon, newline and lone surrogates; there is no escaping. */
+typedef struct mc_game_settings_text {
+    const uint16_t *units;
+    size_t length;
+    bool is_null;
+} mc_game_settings_text;
+
+/* The 23 scalar/String roles, including the two nullable String roles.
+ * D/G/H retain source letters because their complete gameplay roles have not
+ * been established. No slider, enum, key-code or finite-float clamp is added. */
+typedef struct mc_game_settings_values {
+    float music_volume, sound_volume, mouse_sensitivity; /* a, b, c */
+    bool invert_mouse;                                   /* d */
+    int32_t render_distance;                             /* e */
+    bool view_bobbing, anaglyph, advanced_opengl;        /* f, g, h */
+    int32_t performance_mode;                            /* i */
+    bool fancy_graphics, ambient_occlusion;              /* j, k */
+    mc_game_settings_text texture_pack;                  /* l */
+    int32_t difficulty;                                  /* y */
+    bool hide_gui, third_person_view, show_debug_info;   /* z, A, B */
+    mc_game_settings_text last_server;                   /* C */
+    bool source_D, smooth_camera, debug_camera;          /* D, E, F */
+    float source_G, source_H;                            /* G, H */
+    int32_t gui_scale;                                   /* I */
+} mc_game_settings_values;
+
+typedef struct mc_game_settings_state {
+    mc_game_settings_values values;
+    /* m..v construction order: forward,left,back,right,jump,inventory,drop,
+     * chat,fog,sneak. These references are independent of the current w array. */
+    mc_key_binding *named[MC_GAME_SETTINGS_NAMED_BINDINGS];
+    mc_key_binding *const *bindings;
+    size_t binding_count;
+    bool bindings_null;
+    void *minecraft;           /* borrowed x; never dereferenced by this owner */
+    const char *options_path;  /* legacy native path; typed N is in source_inspect */
+    const void *file_identity; /* actual typed File or legacy path identity, not Java address */
+    size_t native_borrows;     /* Diagnostic only, not a kv field or persisted value. */
+} mc_game_settings_state;
+
+typedef enum mc_game_settings_source_exception {
+    MC_GAME_SETTINGS_SOURCE_NONE,
+    MC_GAME_SETTINGS_SOURCE_NULL_FILE,
+    MC_GAME_SETTINGS_SOURCE_FILE_IO,
+    MC_GAME_SETTINGS_SOURCE_MISSING_SPLIT_VALUE,
+    MC_GAME_SETTINGS_SOURCE_NUMBER_FORMAT,
+    MC_GAME_SETTINGS_SOURCE_NULL_BINDING_ARRAY,
+    MC_GAME_SETTINGS_SOURCE_NULL_BINDING
+} mc_game_settings_source_exception;
+
+typedef enum mc_game_settings_diagnostic_kind {
+    MC_GAME_SETTINGS_BAD_OPTION,
+    MC_GAME_SETTINGS_LOAD_FAILED,
+    MC_GAME_SETTINGS_SAVE_FAILED
+} mc_game_settings_diagnostic_kind;
+
+typedef struct mc_game_settings_diagnostic {
+    mc_game_settings_diagnostic_kind kind;
+    const char *message; /* exact source message/prefix, without invented stack */
+    mc_game_settings_source_exception exception;
+    size_t line_number; /* 1 based for bad option; 0 for outer handler */
+    mc_game_settings_text line;
+    int system_error;
+} mc_game_settings_diagnostic;
+
+/* Optional native diagnostic delivery; not an emulation of System.out or a
+ * fabricated Java stack trace. A callback may inspect this owner but must not
+ * mutate/reenter/retire it. Callback failure is native, not a caught source IO.
+ * Context remains borrowed through the call. An operation string returned in
+ * an error must remain live while the caller uses that error. */
+typedef struct mc_game_settings_diagnostics {
+    void *context;
+    mc_game_settings_status (*emit)(void *context, const mc_game_settings_diagnostic *event,
+                                    mc_game_settings_error *error);
+} mc_game_settings_diagnostics;
+
+typedef struct mc_game_settings_profile {
+    mc_java_reader_charset charset;
+    mc_java_writer_lines lines;
+} mc_game_settings_profile;
+
+typedef struct mc_game_settings_report {
+    size_t lines_read, bad_options, bytes_read, println_attempts;
+    bool file_absent, source_opened, source_close_reached;
+    bool outer_exception_caught;
+    mc_game_settings_source_exception outer_exception;
+    int source_system_error;
+    bool writer_state_present;
+    mc_java_writer_state writer_state; /* passive; never calls checkError */
+    bool native_input_admission_close;
+    bool native_additional_close, native_cleanup_failed;
+    int native_cleanup_system_error;
+} mc_game_settings_report;
+
+/* Uncaught failures of kv.a(II)V, distinct from exceptions caught by save.
+ * This action-specific domain does not change the persistence report schema. */
+typedef enum mc_game_settings_binding_action_exception {
+    MC_GAME_SETTINGS_BINDING_ACTION_NONE,
+    MC_GAME_SETTINGS_BINDING_ACTION_NULL_ARRAY,
+    MC_GAME_SETTINGS_BINDING_ACTION_INDEX,
+    MC_GAME_SETTINGS_BINDING_ACTION_NULL_BINDING
+} mc_game_settings_binding_action_exception;
+
+typedef struct mc_game_settings_binding_action_report {
+    /* Reached/failing source instruction: aaload5, putfield7, save11 or
+     * normal return14. Native admission failure leaves this report unchanged. */
+    int32_t source_pc;
+    mc_game_settings_binding_action_exception uncaught_exception;
+    bool binding_assigned, save_reached;
+    mc_game_settings_report save;
+} mc_game_settings_binding_action_report;
+
+/* Defaults reproduce kv() without I/O. A NULL profile selects native charset
+ * discovery and the host line separator; discovery is deferred until I/O.
+ * The file constructor reproduces new File(directory,"options.txt") then
+ * load. NULL directory means the relative child, as File(File,null-parent)
+ * does; it is distinct from the noarg constructor's null File. Paths are
+ * UTF8 native filenames, strict on Windows, at most MAX_PATH_BYTES bytes.
+ * No directory creation occurs. A source-caught load error still publishes
+ * the partially loaded owner with native OK. Native failure preserves out.
+ * Report is populated for reached work even on native failure. */
+mc_game_settings_status mc_game_settings_create_defaults(const mc_game_settings_profile *profile,
+                                                         mc_game_settings **out,
+                                                         mc_game_settings_error *error);
+mc_game_settings_status mc_game_settings_create_file(
+    void *minecraft, const char *directory_utf8, const mc_game_settings_profile *profile,
+    const mc_game_settings_diagnostics *diagnostics, mc_game_settings **out,
+    mc_game_settings_report *report, mc_game_settings_error *error);
+
+bool mc_game_settings_read_state(const mc_game_settings *settings, mc_game_settings_state *out);
+bool mc_key_binding_read(const mc_key_binding *binding, mc_game_settings_text *name, int32_t *code);
+
+/* Counted native borrows of this SAME Settings instance. Neither operation
+ * allocates, copies a service/state owner, initializes a class, performs a
+ * source action, changes a source field, saves or frees anything. Counts start
+ * at zero. borrow(NULL) is INVALID_ARGUMENT; SIZE_MAX is LIMIT without change.
+ * Both operations return BUSY while this owner is active. Quiescent source
+ * RAW/READY/FAILED owners are valid. After the active gate, a source
+ * CONSTRUCTING/RETIRING phase rejects borrows/releases with STATE_ERROR,
+ * without reviving terminal ownership.
+ * release_borrow consumes one existing borrow and clears its slot on OK. A
+ * NULL slot is INVALID_ARGUMENT, NULL *slot is harmless, and a zero-count
+ * release is INVALID_ARGUMENT. Every failure preserves count and slot.
+ * There is no auto-final-free: the containing owner still explicitly retires
+ * Settings after all borrowers end. retire stays BUSY before ANY cleanup while
+ * a borrow exists. Hold the borrowed pointer until release, with exclusive
+ * synchronized owner access and disjoint slots/errors/views. This is an
+ * instance borrow, independent of the source Settings class-array lifetime.
+ * Source App.x remains borrowed: this API takes NO App hold. The actual App
+ * must outlive Settings and every borrower, as must its other borrowed services;
+ * outer retirement/detach must end captures before retiring those dependencies. */
+mc_game_settings_status mc_game_settings_borrow(mc_game_settings *settings,
+                                                mc_game_settings_error *error);
+mc_game_settings_status mc_game_settings_release_borrow(mc_game_settings **occurrence,
+                                                        mc_game_settings_error *error);
+
+/* Bind the actual Minecraft SoundManager field for option actions. This is a
+ * borrowed owner, separate from the opaque Minecraft identity; a null Minecraft
+ * still reaches its original dereference failure. Detach before retiring the
+ * manager. Binding performs no setup, settings action, save or playback. */
+mc_game_settings_status mc_game_settings_attach_sound_manager(mc_game_settings *settings,
+                                                              struct mc_sound_manager *manager,
+                                                              mc_game_settings_error *error);
+
+/* Direct public-field assignments, not kv's effectful option setters. Copy
+ * external strings into retained owner storage before committing the values;
+ * existing owner/literal String views preserve their identity. Two identical
+ * input views in one values assignment retain their common String identity.
+ * No save, SoundManager, RenderEngine or RenderGlobal effect is invented. */
+mc_game_settings_status mc_game_settings_set_values(mc_game_settings *settings,
+                                                    const mc_game_settings_values *values,
+                                                    mc_game_settings_error *error);
+mc_game_settings_status mc_game_settings_binding_create(mc_game_settings *settings,
+                                                        mc_game_settings_text name, int32_t code,
+                                                        mc_key_binding **out,
+                                                        mc_game_settings_error *error);
+mc_game_settings_status mc_game_settings_binding_set(mc_game_settings *settings,
+                                                     mc_key_binding *binding,
+                                                     mc_game_settings_text name, int32_t code,
+                                                     mc_game_settings_error *error);
+mc_game_settings_status mc_game_settings_set_named_binding(mc_game_settings *settings, size_t index,
+                                                           mc_key_binding *binding,
+                                                           mc_game_settings_error *error);
+/* Replace w with a distinct retained array of the same binding identities;
+ * duplicates/NULL entries and a NULL array are allowed. A nonnull empty array
+ * remains distinct from NULL. Bindings must belong to this owner. Named
+ * fields are not changed. Earlier array views remain valid until retirement. */
+mc_game_settings_status mc_game_settings_set_binding_array(mc_game_settings *settings,
+                                                           mc_key_binding *const *bindings,
+                                                           size_t count, bool is_null,
+                                                           mc_game_settings_error *error);
+
+/* Source Exception handlers produce native OK plus explicit report/diagnostic.
+ * Native limits/allocations/unsupported charsets/diagnostic failures propagate
+ * separately. Earlier field and filesystem effects are never rolled back.
+ * Report/error must not alias owner storage. All operations require exclusive
+ * access; mutating reentry returns BUSY. Output snapshots are borrowed views. */
+mc_game_settings_status mc_game_settings_load(mc_game_settings *settings,
+                                              const mc_game_settings_diagnostics *diagnostics,
+                                              mc_game_settings_report *report,
+                                              mc_game_settings_error *error);
+mc_game_settings_status mc_game_settings_save(mc_game_settings *settings,
+                                              const mc_game_settings_diagnostics *diagnostics,
+                                              mc_game_settings_report *report,
+                                              mc_game_settings_error *error);
+/* Execute the actual kv.a(II)V binding-code action on current w[index], then
+ * always invoke the production save body, including an unchanged code or a
+ * null options File. The signed index is not clamped. Null-array precedes
+ * index failure; a null selected binding fails before assignment/save.
+ * Uncaught source null/index failures return SOURCE_EXCEPTION and the action
+ * report. The existing raw binding_set above remains a no-save field edit.
+ * Save's caught exceptions still return native OK with its nested report;
+ * native save/diagnostic/cleanup failures propagate. Reached code assignment
+ * and file effects survive every later failure, with no rollback or extra
+ * finally save/flush/close. All aliases of the selected binding see the code.
+ * Admission/BUSY leaves report untouched; reached work publishes it even on
+ * failure. Diagnostic callbacks can inspect the assigned code but reentry or
+ * retirement remains BUSY throughout the action and nested save. No audio,
+ * renderer, key-name lookup or Controls selection policy is added. */
+mc_game_settings_status
+mc_game_settings_set_binding_code(mc_game_settings *settings, int32_t index, int32_t code,
+                                  const mc_game_settings_diagnostics *diagnostics,
+                                  mc_game_settings_binding_action_report *report,
+                                  mc_game_settings_error *error);
+/* Legacy path I/O retires its native streams before returning, separately from
+ * source close. Typed source construction/load can retain unfinished real
+ * reader/FIS/File/class prefixes; retirement releases those with guarded retry.
+ * No implicit save/flush/source close. Native instance borrows return BUSY
+ * before source or arena cleanup. NULL *settings is harmless; BUSY/error
+ * preserves the still-owned object. See construction.h for the typed lifetime. */
+mc_game_settings_status mc_game_settings_retire(mc_game_settings **settings,
+                                                mc_game_settings_error *error);
+
+#endif

@@ -1,18 +1,46 @@
 # Build and development setup
 
 The working target is native x86-64 Linux and Windows, using C17 and CMake 3.24
-or newer. There is no playable client or dedicated C server yet. Shared-library
-builds and public tests need no display, graphics, audio, Minecraft assets, or
-Java runtime. Storage uses pinned static zlib; see [dependency setup](dependencies.md)
-for its verified source archive, license, and offline source override.
+or newer. There is no playable client or dedicated C server yet. The default
+build includes a native graphical title screen and fixed generated-world
+inspection; see [client startup](client/startup.md) and
+[World rendering](client/world-renderer.md) for their scope and resources.
+Client compilation needs SDL's platform development dependencies, but ordinary
+tests need no display or original assets. Use `-DMC_BUILD_CLIENT=OFF` for shared
+libraries and tests without client dependencies. See
+[dependency setup](dependencies.md) for pinned archives, licenses and offline
+source overrides. Java is needed only by enabled reference tests.
 
-Install GCC or Clang, CMake, Ninja and Python 3.10+ on Linux. Build with:
+Install GCC/G++ or Clang/Clang++, CMake, Ninja and Python 3.10+ on Linux.
+OpenAL Soft needs C++20; project-owned runtime code remains C17. Select matching
+C and C++ compiler families when enabling sanitizers, for example
+`-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++`.
+
+For Ubuntu/Debian client builds, install the X11/OpenGL and audio development
+headers used by SDL:
+
+```sh
+sudo apt-get install pkg-config libfontconfig-dev fonts-dejavu-core libasound2-dev libpulse-dev \
+  libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev \
+  libxi-dev libxss-dev libxtst-dev libgl1-mesa-dev
+```
+
+Fontconfig development headers and a real sans font support the native default-font
+constructor. These are system inputs; the project downloads its pinned FreeType
+source separately. See [font dependency and license setup](dependencies.md#native-default-font-rasterizer).
+
+The list follows [SDL's Linux build notes](https://github.com/libsdl-org/SDL/blob/release-3.4.18/docs/README-linux.md).
+Other distributions use their corresponding packages. Configure and build with:
 
 ```sh
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
 cmake --build build
 ctest --test-dir build --output-on-failure
 ```
+
+Use the Linux filesystem for source and build trees when validating under WSL.
+Source-binding tests perform many small file operations; mounted Windows sources
+can exceed their existing deadlines. See [recorded test scope](testing.md).
 
 On Windows, install Visual Studio's C desktop tools, CMake, Ninja and Python.
 Run the same commands from an x64 developer shell. Alternatively, use a Visual
@@ -28,6 +56,51 @@ Choose a separate build directory when changing generators or compilers.
 For GCC/Clang sanitizers, configure `-DMC_ENABLE_SANITIZERS=ON`; instrumentation
 covers project code and its zlib dependency. Strict diagnostics apply to project
 source. Set `-DBUILD_TESTING=OFF` to build libraries without Python/Java discovery.
+
+Client builds also instrument SDL, libpng, Ogg/Vorbis and OpenAL Soft with
+GCC/Clang sanitizers. `MC_BUILD_CLIENT_AUDIO` defaults to `MC_BUILD_CLIENT` and
+requires `MC_BUILD_CLIENT_SOUND`. It adds the shared OpenAL device backend and
+its real loopback test. Set audio off for codec-only builds; fresh headless
+configurations leave both audio and graphical dependencies disabled.
+`MC_ENABLE_CLIENT_DISPLAY_TESTS=ON` adds `client.display` and
+`client.world_renderer` integration tests.
+It creates hidden windows with real OpenGL contexts and fails if the desktop
+cannot provide OpenGL 3.3 core. It uses authored pixels and needs no Minecraft
+resources. Keep this option off on runners without a graphics environment.
+
+Terrain submission compares 35 original rows when the current context supports
+the original ARB occlusion capability. Otherwise it compares 30 ordinary rows
+and explicitly reports the five unsupported rows. Use
+`-DMC_REQUIRE_TERRAIN_OCCLUSION_TEST=ON` together with display tests for a
+supported-device run that requires all 35 rows. See the
+[replay contract](../tests/reference/client/render_global_submit/README.md).
+
+Linux CI uses ccache for C and C++ compilation, with separate GCC and Clang
+caches capped at 512 MB each. A successful build saves its cache before tests,
+so a later test failure does not discard compilation work. Cache statistics
+are printed for each build. Tests still execute from the newly built targets;
+dependency-download and CTest scheduling caches remain separate.
+
+Both native CI jobs cache only the pinned FetchContent download archives.
+Source trees, populate stamps and dependency build products are excluded.
+CMake still checks each archive's `URL_HASH` and extracts it into a fresh build.
+This avoids repeated transfers when the archive cache is available; it does not
+cache test outcomes or establish a measured whole-workflow speedup.
+
+The configure wrapper retries once only when CMake reports a dependency download
+failure with HTTP 429, 500, 502, 503 or 504. A hash mismatch, HTTP 404 or ordinary
+configuration failure stops immediately. Both attempts retain their complete
+output, and a failed final attempt keeps its exit status. Windows compiler-cache
+fallbacks can reuse valid entries across workflow edits; cache shutdown runs
+only after an actual build attempt.
+
+`client.movement_input` and `entity.turn` build without graphics or audio.
+Optional `MC_ENABLE_INPUT_REFERENCE_TESTS=ON` and
+`MC_ENABLE_TURN_REFERENCE_TESTS=ON` compare their configured native observers
+with the supplied client JAR. Set `MC_REFERENCE_CLIENT_JAR` and select Java/Javac
+from one JDK17+ installation. These CPU observations construct no Player and
+do not establish the client gameplay loop. See [MovementInput](client/movement-input.md)
+and [Entity turning](entity/turn.md).
 
 Enable `-DMC_ENABLE_JAVA_REFERENCE_TESTS=ON` for the standard-library numerical
 oracle; it requires JDK8+ and uses no Minecraft files. The NBT and compression
@@ -58,20 +131,61 @@ JAR/JDK/commit settings. See its [interface](world/biome.md) and
 [reference evidence](reference/biome.md). These numerical fixtures do not start
 an original world or establish terrain generation.
 
-`MC_ENABLE_DENSITY_REFERENCE_TESTS=ON` compares original normal density and
+Plant lifecycle contracts and replay of recorded original results are part of
+the normal test build and need no Java or original archives. Set
+`MC_ENABLE_PLANT_REFERENCE_TESTS=ON` to add `reference.plant_lifecycle` with both
+verified `MC_REFERENCE_CLIENT_JAR` and `MC_REFERENCE_SERVER_JAR` paths. Select
+`Java_JAVA_EXECUTABLE` and `Java_JAVAC_EXECUTABLE` from the same JDK17+ installation,
+and record the source with `MC_REFERENCE_TESTED_COMMIT`. See the
+[test commands](testing.md#plant-lifecycle-validation), [runtime contract](world/plants.md)
+and [comparison scope](reference/plant-lifecycle.md). The comparison runs original
+Block bodies with prepared World services; it does not start an original World.
+
+`MC_ENABLE_POPULATION_REFERENCE_TESTS=ON` adds `reference.natural_population`,
+`reference.natural_population_ring` and `reference.population_dedicated` with
+those same archive and JDK settings.
+The origin and ring tests construct genuine fresh original and native GAME
+Worlds for seed23. The origin profile populates one of four normal Chunks; the
+ten-call ring profile populates four of nine and includes negative coordinates. The
+[comparison record](reference/natural-population.md) defines the complete cache,
+numerical-array and Random projection and its remaining limits.
+
+```sh
+ctest --test-dir build --output-on-failure -R '^reference\.natural_population(_ring)?$'
+```
+
+Public `world.natural_population_replay` and
+`world.natural_population_ring_replay` run the real native probe without Java or
+archives, using project-authored minimal resource files. Origin checks the older
+cache oracle and native numerical transports; ring also checks full original
+numerical golden records and array aliases. Both population drivers default to
+`--profile origin` and accept `--profile ring`. See the
+[test commands](testing.md#fresh-world-population) for both public replays.
+
+Public `tools.population_dedicated` and `world.population_dedicated_replay` also
+need no Java or archives. The dedicated replay runs the production probe with
+minimal resources and measured constructor inputs. Its separate optional
+reference test captures and audits the supplied original before comparing a
+fresh native run with exact original resources. See the
+[dedicated commands and scope](testing.md#dedicated-construction-and-synchronous-fluid-recursion).
+The [clean dedicated checkpoint](reference/dedicated-world-construction.md#committed-checkpoint)
+passes 622 local tests on MSVC/GCC/Clang and 601 hosted public/JDK tests; the
+seven supplied-archive comparisons per compiler retain their local scope.
+
+`MC_ENABLE_DENSITY_REFERENCE_TESTS=ON` compares original Overworld density and
 base-block methods with the same supplied-JAR/JDK/source settings. Its local
 fixture constructs genuine original world contexts in newly owned ignored
 directories; the server path can create a session lock and directories during
 normal setup. See [the interface](world/terrain.md) and
 [setup/evidence](reference/density.md). Public tests need no original setup.
 
-`MC_ENABLE_SURFACE_REFERENCE_TESTS=ON` compares original normal surface
+`MC_ENABLE_SURFACE_REFERENCE_TESTS=ON` compares original Overworld surface
 replacement and explicit chunk-reseed contexts with the same JAR/JDK/source
 settings. It creates fresh original contexts and records live Random separately
 from constructor state. See the [interface](world/surface.md) and
 [reference notes](reference/surface.md); complete chunks remain outside this pass.
 
-`MC_ENABLE_CAVES_REFERENCE_TESTS=ON` compares the normal cave stage with the same
+`MC_ENABLE_CAVES_REFERENCE_TESTS=ON` compares the Overworld cave stage with the same
 JAR/source settings and a JDK containing `java`, `javac` and `javap`. The natural
 comparison prepares actual base/surface inputs in fresh original contexts,
 then checks the separate cave Random and complete retained state. A separate
@@ -103,9 +217,9 @@ snapshots must match. Public fixtures replay the full captured records without
 Java. See the [finishing contract](world/finishing.md) and
 [reproduction procedure](reference/finishing.md).
 
-`MC_ENABLE_GENERATION_REFERENCE_TESTS=ON` enables `reference.normal_generation`
-for the complete unpublished normal generator entry. Build target
-`mc_normal_generation_probe` replays imported original world/cache/manager
+`MC_ENABLE_GENERATION_REFERENCE_TESTS=ON` enables `reference.overworld_generation`
+for the complete unpublished Overworld generator entry. Build target
+`mc_overworld_generation_probe` replays imported original world/cache/manager
 baselines through the production C API. The comparison requires both supplied
 JARs, JDK17+ with `java`, `javac`, `javap` and `jdk.jdi`, and the exact source
 commit setting. It uses loopback debugging, fresh original worlds and separate
@@ -119,9 +233,9 @@ comparisons pass at
 After configuring the JAR paths and source commit, the production commands are:
 
 ```sh
-cmake --build build --target mc_normal_generation_probe
+cmake --build build --target mc_overworld_generation_probe
 ctest --test-dir build -R '^tools\.normal_(reference|interop)$' --output-on-failure
-ctest --test-dir build -R '^reference\.normal_generation$' --output-on-failure
+ctest --test-dir build -R '^reference\.overworld_generation$' --output-on-failure
 ```
 
 Add `-C Debug` for a multi-configuration build. The two public tool checks use
@@ -191,7 +305,7 @@ and duplicate-label controls.
 Runtime code is organized as `src/<system>/<subsystem>/`, with matching public
 headers under `include/mc/` and tests under `tests/`. See [architecture](architecture.md)
 for current and planned modules. `.clang-format` sets four spaces, a 100-column
-limit, and Linux-style braces. CI uses clang-format18:
+limit, attached braces, and blank lines between definitions. CI uses clang-format18:
 
 ```sh
 python scripts/development/format_code.py --clang-format clang-format-18
@@ -211,8 +325,9 @@ python scripts/reference/binaries/inspect_jars.py --client b1.7.3.jar --server b
 
 Use explicit Linux paths on Linux. The importer requires a fresh output
 directory and reports missing resources. See [resource evidence](reference/resources.md)
-and [binary setup](reference/binaries.md). No native asset consumer is implemented
-yet. Keep originals, launcher files, credentials, recordings, logs and worlds in
+and [binary setup](reference/binaries.md). The [native title screen](client/startup.md)
+consumes a subset of those resources. Keep originals, launcher files,
+credentials, recordings, logs and worlds in
 ignored local directories. Copy a world before any writable reference test.
 
 Current compiler/platform results and remaining graphical access limits are in

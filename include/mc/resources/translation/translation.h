@@ -1,0 +1,64 @@
+#ifndef MC_RESOURCES_TRANSLATION_TRANSLATION_H
+#define MC_RESOURCES_TRANSLATION_TRANSLATION_H
+
+#include "mc/block/registry/registry.h"
+#include "mc/core/java/properties.h"
+
+typedef struct mc_translation mc_translation;
+
+/* Borrowed class-loader resource source. Names are the actual absolute game
+ * resource names, such as /lang/en_US.lang. OK supplies a live byte stream;
+ * NULL_REFERENCE represents an absent resource, whose null stream is used at
+ * the original subsequent load call. Other statuses report native failures.
+ * The source owns all opened stream contexts and their eventual retirement.
+ * Translation construction does not close them. Callbacks must not mutate or
+ * retire the admitted class owner or its borrowed dependencies. */
+struct mc_registry_resources {
+    void *context;
+    mc_registry_status (*open)(void *context, const char *name, mc_java_properties_input *out);
+    /* Optional until a reached source operation closes its reader. Retire
+     * the supplied stream's file immediately, but keep its context valid
+     * until the resource source is freed. Repeated close is successful; a
+     * closed stream reads IO_ERROR. Translation itself never calls close. */
+    mc_registry_status (*close)(void *context, const mc_java_properties_input *input);
+    /* Optional InputStream.available observation for a reached text reader.
+     * False includes no advertised bytes and an availability I/O failure,
+     * which StreamDecoder catches. It performs no owner mutation. */
+    bool (*ready)(void *context, const mc_java_properties_input *input);
+};
+
+typedef struct mc_registry_translation_view {
+    mc_registry_phase singleton_phase, wrapper_phase;
+    int32_t singleton_initializer_pc, wrapper_initializer_pc;
+    const mc_translation *singleton_a;
+    const mc_translation *wrapper_a;
+} mc_registry_translation_view;
+
+/* Execute the actual do/ch wrapper and nh/ii singleton initialization on the
+ * same class owner used by Block/Item. Resource reads occur only when reached.
+ * The singleton is published after both loads succeed. Reached internal
+ * formatted lookups support String/null arguments and English uppercase.
+ * Caught-I/O stack-trace output remains an unfinished dependency. */
+mc_registry_status mc_registry_classes_initialize_translation(mc_registry_classes *classes,
+                                                              mc_registry_error *error);
+/* Admit only nh/ii active use, retaining the same entry/BUSY/FAILED rules.
+ * This leaves the separately reached do/ch wrapper cold. Resource ownership,
+ * publication order and the unfinished caught-I/O diagnostic are unchanged. */
+mc_registry_status
+mc_registry_classes_initialize_translation_singleton(mc_registry_classes *classes,
+                                                     mc_registry_error *error);
+mc_registry_status mc_registry_classes_inspect_translation(const mc_registry_classes *classes,
+                                                           mc_registry_translation_view *out,
+                                                           mc_registry_error *error);
+
+/* Read an actual loaded String property without class initialization. Absence
+ * succeeds with NULL; the source game's getProperty(key,key) fallback belongs
+ * to the reached lookup caller. Returned String identities remain live through later
+ * operations until the common class owner is freed. No lookup allocation or
+ * map iteration order is observable through this interface. */
+mc_registry_status mc_translation_property(const mc_translation *translation, const uint16_t *key,
+                                           size_t length, const mc_registry_string **out,
+                                           mc_registry_error *error);
+size_t mc_translation_property_count(const mc_translation *translation);
+
+#endif

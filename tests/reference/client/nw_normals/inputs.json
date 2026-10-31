@@ -1,0 +1,23 @@
+{
+  "cases": [
+    ["positive_zero", "00000000", "00000000", "00000000"],
+    ["negative_zero", "80000000", "80000000", "80000000"],
+    ["positive_x", "3f800000", "00000000", "00000000"],
+    ["negative_x", "bf800000", "00000000", "00000000"],
+    ["positive_y", "00000000", "3f800000", "00000000"],
+    ["negative_y", "00000000", "bf800000", "00000000"],
+    ["positive_z", "00000000", "00000000", "3f800000"],
+    ["negative_z", "00000000", "00000000", "bf800000"],
+    ["fractional", "3e800000", "bf000000", "3f400000"],
+    ["nonunit", "40000000", "c0000000", "43000000"],
+    ["near_wrap", "3f7e0000", "3f800000", "bf800000"],
+    ["quiet_nan", "7fc12345", "ffc54321", "7fc00000"],
+    ["signaling_nan", "7f800001", "ff800001", "7fa12345"],
+    ["infinities", "7f800000", "ff800000", "7f800000"],
+    ["maximum_finite", "7f7fffff", "ff7fffff", "7f7fffff"],
+    ["subnormal", "00000001", "80000001", "007fffff"],
+    ["saturation", "4f000000", "cf000000", "4f000000"]
+  ],
+  "prepared_duplicate_normal_words": ["11223344", "55667788"],
+  "scope": "Whole unchanged nw.b(FFF), original begin/reset/failure and actual four-vertex quad expansion. Genuine singleton/arrays; only duplicate slots3/4 word6 are explicitly prepared before the four source vertex calls. No draw or GL context."
+}

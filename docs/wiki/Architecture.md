@@ -1,229 +1,337 @@
 # Systems and subsystems
 
-Project-owned runtime code uses C17. Implementations live under
-`src/<system>/<subsystem>/`; public headers mirror those paths under `include/mc/`,
-and tests mirror them under `tests/`. Create folders with actual implementations
-rather than empty placeholders.
+The [four-animal draw owner](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md) executes actual TH lookup,
+GV primary/pass work, PS lists and BW shadows for Sheep, Pig, Cow and Chicken.
+Sheep uses XY/MW/EA/NN; Pig ME/EH retains four real saddle lookups despite its
+false saddle predicate; Cow VA/HH virtually poses once through HH/NN before
+rendering nine parts; Chicken IP/TD uses the actual interpolated sine/flap pose
+and eight-part order. Native aggregate model work is paired to the actual Source
+model identity and once-entry counts. Global cross-entered invocation order is
+not recorded natively.
 
-| Current module | Responsibility | Runtime dependencies |
-| --- | --- | --- |
-| `core/java` | Defined integer/cast/Random behavior and bounded Integer-set history | C runtime |
-| `core/math` | Initialized float trig lookup and Java cast/compare double floor | Caller-owned table, system double sine during initialization |
-| `core/text` | Modified UTF-8 with explicit UTF-16 units | C runtime |
-| `storage/nbt` | Owned raw tag trees, original IDs 0..10, bounded read/write | Shared core |
-| `storage/compression` | Owned gzip/zlib memory output, explicit limits and checksums | Static zlib |
-| `storage/level` | Exact metadata types/defaults and independent NBT construction | Explicit source tree and save clock; no file access |
-| `storage/region` | Read-only diagnostics and owned mutable region images | Explicit compressed bytes, timestamps and allocation limits |
-| `world/noise` | Original seeded Perlin/octave and 2D simplex/octave sampling | Shared core, caller-owned layers |
-| `world/biome` | Original climate processing, float-table biome lookup and retained arrays | Shared core/noise, explicit allocation budget |
-| `world/terrain` | Normal density, base interpolation, surface replacement and cave carving | Shared core/noise/math, immutable layers/table, explicit Random and borrowed spans |
-| `world/chunk` | Packed voxel arrays, heights, direct skylight and normal finishing | Caller-owned data, borrowed blocks/opacity and explicit world context |
-| `world/cache` | Packed-key lookup, acquisition, live save/detach/unload coordination | Caller-owned map/list/pending, stable identities, clock and explicit callback/reference bindings |
-| `world/lighting` | Original region merging, ordered queue storage and world admission | Shared Java arithmetic, caller-owned cache/queue/depth |
-| `world/generation` | Complete unpublished normal generator entry through finishing | Same-world borrowed biome manager, immutable trig, current materials/opacity and existing lighting context |
-| `world/storage` | Stable stored chunks, native files, metadata/session ownership, reservations, leases and individual retirement | `mc_persistence`; explicit roots, borrowed region owner and registered cache/fallback views |
-| `world/runtime` | Acquisition/generation/storage/lifecycle composition with stable live world scalars | `mc_persistence`; borrowed store/cache/ordered pending and explicit callback owners |
+One retained call owns each reached actor, renderer, namespace and
+World/Engine/String/Settings/App occurrence. The App has a distinct render-borrow
+count checked before constructor retirement changes its phase. Foreign texture
+lookups and list definitions keep their original owners. Checked retirement
+replays no source work and preserves reached GL/NW and actual model/PS fields.
+Fresh KO, null-horn, wrong-bridge and bounded cold-Math controls prove their
+finite prefixes; these are Code-qualified native controls, not additional
+original runtime outcome pairs.
 
-The shared libraries initialize no window, graphics, audio, networking, assets,
-or Java. The raw NBT parser and compression module remain separate interfaces;
-callers explicitly compose them. Their raw interfaces imply no world schema
-or file write. `mc_persistence` adds the explicit storage composition described
-below, depending on the shared storage and world libraries.
-Noise sampling preserves original constructor ordering and bulk-specific
-behavior; [its interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/noise.md)
-and [reference evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/noise.md)
-describe the exact tested scope. Normal composition is documented below;
-terrain-feature population, propagation and other-dimension generation remain open.
+RenderGlobal enters this child at 329/516, retires a successful child before
+continuing at 332/519 and retains a failed child until checked cleanup. Scalar
+receipts survive retirement. Separate loaded Pig/Cow/Chicken profiles each
+return four World/HUD frames with one delay, one undrawn traversal and first/reuse
+draws. They compile six/nine/eight parts, then none on reuse, with 18/18/two
+shadow quads. `Minecraft.k:1328`, N569, PX1013 and HUD2101 return before cleanup.
+Existing-player statistics are declared inputs; no Player or Random forcing is
+credited as implementation.
 
-The [math interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/core/math.md)
-keeps the 256 KiB table caller-owned and immutable after exclusive initialization.
-Lookup methods retain float multiply/phase/conversion order, and the separate
-floor helper retains Java narrowing and wrapping. Complete table comparisons
-scope the measured native math backends; this is a cave prerequisite.
-The separate [simplex interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/simplex.md)
-preserves its own floor, wrapped cell sum and independent octave factors. Its
-numerical tests do not establish complete biome climate or classification.
+The focused draw comparison passes 3,350 native checks and 206,656 typed checks
+per host, with 316 direct queries, 35 lists, 210 faces, 18 direct String calls,
+eight animation returns, ten model-work records and ten comparator negatives.
+Linux ordinary/JDI evidence and the Windows ordinary NVIDIA GL supplement remain
+separate; the latter audits 36 inputs, four helpers and 45 artifacts. No pixel,
+live GL-order or whole-frame original equality follows.
 
-The separate [climate/biome module](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/biome.md)
-combines three independent seeded simplex channels with original processing and
-table lookup. Mutable managers preserve array growth, clear numeric suffixes
-and retain biome suffixes under a caller-selected allocation budget. Its
-[reference evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/biome.md)
-separates numerical fixtures from world startup, terrain and full biome behavior.
+The Display retains logical `GL_CLAMP` per actual texture slot and generation.
+Qualified nearest and linear pairs use distinct edge/border semantics;
+unsupported mixed/mipmap combinations refuse at sampling. Compiled geometry
+reads current material state. Same-device legacy SDK controls retain 46,802
+checks and 3,872 exact samples per host. Prepared draw matrices alone allow four
+float ULP and opposite-zero numeric equality; the strict default Mesa/NVIDIA
+normal mismatch is preserved. The completed local cohort builds 93 targets on
+each host and passes 121 Windows/115 Linux tests without failures, skips or
+sanitizer findings. Its 2,559 inputs stay unchanged through all four phases;
+all twenty original-comparison wrappers pass. [Build and tests](Build-and-tests#current-local-qualification)
+records timings and the current 5,510-path audit. Hosted results remain separate
+and tied to published commits in [Draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
 
-The [normal terrain module](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/terrain.md)
-constructs all 82 original Perlin layers in order, consumes caller-supplied
-processed climate and interpolates a fixed density grid into base blocks.
-Constructor state is immutable after initialization; workspace and outputs are
-borrowed. Population and light propagation remain separate from this stage.
+The [random display call](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/random-display.md)
+owns its actual World and one distinct default Random through inspection and
+retirement. Each Block getter ends its own Chunk use before the selected
+display callback. All eleven display bodies use actual World queries and
+presentation receivers; retained callback failures independently hold their
+producer. Native completion counters preserve finished calls across the next
+tick's fresh diagnostics and never control gameplay.
 
-The [surface interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/surface.md)
-uses those existing layers with current material byte pairs and a separate
-mutable Random. It preserves Z/X/Y traversal, unconditional bedrock draws and
-sea/sandstone state transitions. Field sampling and prepared-field application
-can also run independently. The normal generator below composes this pass.
+The [RenderGlobal Entity call](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) holds each reached dispatcher receiver,
+current Entity and actual World List lease until checked retirement. N owns
+separate LL/TH consumer records across ordinary World changes; terminal cleanup
+ends only those records. The traversal preserves live Lists, fresh fields and
+source predicate order. Sheep, Pig, Cow and Chicken drawing returns; the seven remaining default
+renderer families and nonempty TileEntity rows retain explicit dependencies.
 
-The [normal cave interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/caves.md)
-borrows an immutable math table, existing block prefix and separate cave Random.
-It preserves the original range-8 neighbor schedule, local path draw order,
-water screening, selective carving, lava and grass repair. Checked preflight
-precedes mutation; successful calls allocate nothing. Private room/path helpers
-are shared by normal runtime and focused reference adapters.
+The [normal terminal coordinator](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
+now connects menu-run shutdown to actual prefix ending, checked LL/TH retirement,
+complete retained-load classification and fresh selected-World admission. Early
+bootstrap close keeps the same graph retryable while getters stay closed.
+Retained screens and newly retained controllers still block their checked
+cleanup after World consumption. At the earlier coordinator checkpoint, all 40
+targets built on both hosts; 49 Windows tests passed in 68.21 seconds and 46
+sanitized Linux tests passed in 98.26 seconds. Seven Windows selection profiles
+preserved saves/assets and both successful loaded modes retained all 72 focus
+histories. Authored partial Player NBT refuses
+the coordinator with its acquired World intact. Complete Format/App/service
+admission, partial-load shutdown, deferred old Worlds and complete frame drawing
+remain unfinished. There is no original shutdown equivalence claim.
 
-The [chunk data interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/chunk.md)
-keeps blocks borrowed and embeds separate metadata, sky, block-light and height
-arrays. Checked nibble access preserves the opposite four-bit value. Local
-height/direct-skylight rebuilding retains the original boundary and repeat-pass
-behavior without allocating memory. The finishing boundary below adds
-world-height queries, lighting admission and dirty state; lifecycle composition
-has the separate boundary below.
+The [terminal preparation prefix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
+ends one RenderGlobal owner's local rights while preserving shared TH fields
+and the full World graph. Its policy survives checked cleanup retries. The
+Load/Screen/menu prefix remains separate from destructive World retirement;
+the normal coordinator now composes the selected storage admission and
+checked dispatcher retirement. Full service admission and deferred old Worlds
+still limit deferred old-World ownership.
 
-The [light-region queue](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/lighting.md)
-preserves the newest five-entry search, in-place merges and original wrapped
-volume arithmetic. Caller-owned storage reports a smaller capacity failure and
-the original million-entry abort separately. World admission and propagation
-remain outside this module.
+The [RenderManager CPU frame](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-manager-frame.md)
+preserves five ordered reference stores, the real Living sleeping query, reached
+Math/World/Bed calls and ordered camera interpolation. It retains actual World,
+Living, Engine, Font and Settings owners and releases captures with checked
+terminal retries. Ordinary menu World clearing leaves source-reachable captures
+alive. Normal shutdown now uses the bounded coordinator; deferred World
+ownership remains unfinished; current N integration now ends exact consumers.
 
-The [finishing contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/finishing.md)
-composes local height/direct sky rebuilding with all 1024 ordered world-height
-queries, admitted sky intervals and the final dirty effect. Cache lookup retains
-the original packed coordinate collisions and unsigned height bytes. Explicit
-publication replaces the map value and appends the same identity to a separate
-insertion list. The separate
-[acquisition coordinator](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/cache.md)
-adds load/generation callbacks, active registration and live population gates.
-The storage adapter below supplies disk decoding. The lifecycle section adds
-synchronous saving/unloads; terrain-feature bodies, tick-driven scheduling and
-light propagation remain open.
+The [TileEntityRenderer CPU owner](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/tile-entity-renderer.md)
+now constructs the real Sign, MobSpawner and Piston renderers. It shares
+canonical TileEntity Class identities and model geometry, preserves nullable
+lookup caching, and creates a fresh RenderBlocks object for each reached Piston
+World callback. Frame binding retains the actual owners and preserves ordered
+interpolation and failure prefixes. Other Entity renderer families and nonempty
+TileEntity draws remain unfinished.
 
-## Storage foundation
+The canonical Display program now supplies [source vertex lighting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md).
+It uses the existing matrix/light ledger, front/back materials and ColorMaterial
+state. Compiled lists retain their actual attribute effects. This closes the
+backend dependency used by the four qualified animal model/Entity draws. The
+remaining families and whole-frame original equality remain unfinished.
 
-The [world storage contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/storage.md)
-defines `mc_persistence` ownership. A stored chunk owns five fixed arrays,
-runtime state and retained NBT at stable addresses. Cache maps and insertion
-lists borrow its identity; every borrowed reference must be retired before
-freeing the owner. Decode enforces exact known types and fixed array shapes.
-Normalization uses an explicit frozen registry map and changes only blocks.
+The [LocalPlayer NBT path](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-nbt.md)
+dispatches through actual Entity, Living, Inventory and Player owners. Metadata
+saving holds the first selected Player; saved Info.Player attachment clears its
+tag only after complete load success. Complete selected child diagnostics share
+a tagged late-hook union. This reduces Windows stack use without truncating
+causes or changing the default 1 MiB executable reserve. Full wake and normal
+gameplay adoption remain unfinished.
 
-The region image writer owns allocation and retained bytes in memory. A separate
-native region owner maps signed chunk coordinates to files and local slots,
-retains a bounded cache, compresses records and stages checked file replacement.
-One world store owns metadata and loaded chunks while borrowing that region
-owner. It handles primary/backup metadata loading, session-token checks,
-metadata rotation, dimension roots and committed growth accounting. Its adapter
-connects real disk loads to the acquisition coordinator; generation is allowed
-only for missing records. Corrupt records and opaque entities/tiles cannot be
-silently activated.
+The [ordered Timer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/timer.md)
+keeps render partials separate from its accumulator and samples real clocks in
+source order. The [Minecraft class/worker owner](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/application-owner.md)
+holds the static arrays and actual atomic J/o, with native cancellation/join
+separate from source stores. The standalone constructor and retained resource
+owners have separate [native coverage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md).
+The [normal startup owner](Startup) now connects Display, the game directory,
+Settings, selected Pack, RenderEngine, Font, color maps, EntityRenderer and
+RenderManager on the same App. It continues through statistics, input, texture
+effects, RenderGlobal, particles and resource-thread startup. The default
+no-connection path now constructs GuiIngame and the main menu, publishes the
+screen, saves statistics and completes scaled screen initialization. That
+source startup method returns. The bounded probe stops at `Minecraft.run`32;
+the default [menu runtime](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/menu-runtime.md)
+continues with canonical Timer/input owners, no-World ticks and a drawing bridge
+that reads actual source menu fields and checks resource/Font identities. Quit
+clears the App run flag. Singleplayer now constructs the genuine
+[World-selection graph](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-selection.md):
+real SaveFormat metadata and stable sorting, scrolling rows, selection during
+drawing and same-parent Cancel. Synchronous publication keeps the original
+input receiver alive through its trailing input. Retained old RQ occurrences
+keep App dependencies live through BUSY teardown. Select constructs the actual
+controller and invokes the actual retained World-load call. Existing-save
+loading constructs the canonical source World, completes all 289 terrain
+samples, attaches its renderer and particles, inserts the real Player and
+publishes the view entity. Healthy null-screen/focus handling returns; the
+native selection tick executes gameplay input through 1073 and the admitted
+World/frame segment. Direct same-graph checks execute renderer/entity updates
+through weather and weighted Biome selection, then actual default Mob construction/yaw/pose,
+predicates, publication and all 361 random Chunk coordinates. Client ambience
+then completes all 1,000 display samples and 6,000 World Random draws. The
+actual Mob Living/Creature work returns before `Minecraft.k:1328`. The retained
+random call owns its actual Chunk, Player, Lightning and callback receipts across
+failure. Source focused mouse
+look and pause entry are connected.
+World-frame rendering completes colors, fog state, canonical camera, actual
+Sky programs and W/SR/DK culling. The dirty-chunk selector now constructs the
+real EW cache and compiles standard Block geometry through the same CV, DK
+list and NW. Current frame source invokes real
+[terrain submission](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terrain-submission.md)
+at `px.a(FJ)V:486`, using the same N/Ge/TG and ARB owners. Standard lighting496
+and camera eye positioning504 return before Entity/TileEntity rendering510.
+Windows lighting replay matches 86 original state rows. The earlier loaded
+profile passed in 18.59 seconds and showed authored grass terrain and Sky
+without HUD.
+Hosted source 0c0cc5a passes all four jobs and 1,520 tests. See
+[Build and tests](Build-and-tests) for native and device scopes.
+The Display owns its ordered matrix ledger; RenderModels owns the checked
+static-frustum lifetime.
+Complete presentation remains unfinished.
 
-Unknown metadata and chunk fields remain opaque. This is a C preservation
-policy, stronger than some original serializers; it does not implement entity
-or player factories. Unsupported edits to opaque records are refused. These
-APIs do not provide crash durability, concurrent-writer protection or complete
-save/unload scheduling.
+The [particle continuation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md)
+uses the same captured EffectRenderer and four live Lists. Completed child
+calls retire before later same-owner entries; scalar receipts survive while
+borrowed views end. At that earlier checkpoint, the initial frame computed
+particle origins, submitted and replayed actual translucent terrain, then
+reached weather932. A selected Hit
+would instead reach the actual damage/placement overlay before the outline.
 
-At `9ad690d83592f127b9bb39d7233e8eef06fd0029`, the finite storage foundation
-passes all 71 selected tests without skips on native MSVC and WSL GCC/Clang,
-with Linux ASan/UBSan. Independent platform, source/provenance and copied-world
-semantic audits pass. Hosted checks pass 59 tests per compiler and formatting
-for 111 C/header files. Both copied-world directions include opaque Boat/Sign
-transport; 74 Java-free world-harness guards pass in every suite. See the
-[storage evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md)
-and [wiki checkpoint](Storage-and-reference#storage-foundation-checkpoint) for
-exact manifests, evidence limits and the remaining simulation/scheduler work.
+The [compilation owners](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md)
+retain the exact N, camera, World and Store Chunk occurrences. Near selection
+clears the original dirty List slots before compilation; a failed child keeps
+that prefix. The lease-publication fix keeps a normal cache cell NULL until its
+exact Store lease succeeds, so a failed getter, binding or lease preserves a
+valid partial cache. DK.u clears only after the same compiler returns. Empty sections
+and standard Block sections complete, while specialized geometry and
+TileEntity rendering remain explicit children. Checked cleanup releases native occurrences without replaying source
+calls or compacting a failed queue. The whole sky-change callback rereads the
+live DK array, appends the same DK when A is true and u is false, then marks it dirty.
+Sky and the later frame lighting call share the actual U class buffer and its
+terminal initialization failure in the canonical Ge namespace.
+The canonical HitResult and pooled geometry now connect Living eye/look,
+source World block traversal and Entity queries to the real PX picking body.
+Owned target occurrences detach before their World; foreign holds retain the
+actual graph for cleanup retry. See the
+[picking contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/picking.md).
+Version-zero conversion stops at 52. Empty, populated, scrolling and double-click native Windows profiles
+pass. The preceding renderer-attachment checkpoint passes all 482 selected
+Windows CTests and formatting for 1,405 files.
+Thirty selected Linux sanitizer cases and 86 strict compiler checks also pass;
+the private CPU-wrapper scope is recorded in [Build and tests](Build-and-tests).
+Full source run/PX rendering, shutdown
+and gameplay adoption remain unqualified.
 
-## Save, unload and retirement
+At the previous [standard Block geometry checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-blocks.md),
+six focused MSVC tests passed, including 1,680 face/color rows, 25 flat rows,
+48 AO rows, 25 Block colors and seven actual static AO queries. The loaded UI
+passed 702 checks and preserved resources, saves and all 72 focus histories
+before submission was connected at PX486. Hosted [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797)
+passed all four jobs and 1,490 tests (Windows 478/GCC 506/Clang 506), zero failures
+or skips. Every preceding hosted name remained, with five additions per
+platform. That record's runtime/test sources were those of 6ccdc82; its later
+record edits changed documentation and file bindings. Remaining suite totals describe earlier
+checkpoints.
 
-The [lifecycle contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/lifecycle.md)
-borrows live cache/list/pending state and explicit callback owners. Forced saving
-performs extra-save before eligibility, incremental attempt 24 returns false,
-and completed forced saving flushes. Unload selects at most 100 actual pending
-keys, detaches and saves retained identities, then removes the retained key and
-first matching list occurrence. Provider maintenance returns its own Boolean.
+The selected Windows cache/compiler/callback/lighting/sort checks and all 72
+focus histories on the loaded graph pass. After the lease fix, Windows Debug
+ALL and all 512 selected CTests pass in 215.93 seconds, with all 506 prior names
+retained and six additions. Seven separate JDK/Sky device cases pass. Qualified
+source checkpoint [`91da6e2`](https://github.com/frankischilling/minecraft-c/actions/runs/40937788071)
+passes all four hosted jobs and 1,475 tests (Windows 473/GCC 501/Clang 501),
+without failures, skips or dropped preceding hosted names. Hosted Linux runtime
+passes are separate from local Clang/GCC build evidence: no local Linux runtime
+tests ran after host-disk exhaustion. [Build and tests](Build-and-tests) records
+the timings and why the hosted Windows profile adds five cases while local
+Windows and both Linux software-GL profiles execute all six.
+The previous fog/Sky/culling checkpoint retains its 506 Windows and
+489 public cases per Linux compiler. Published [`e65860c`](https://github.com/frankischilling/minecraft-c/actions/runs/40920088558) passes four hosted jobs
+and 1,458 tests (Windows 468/GCC 495/Clang 495), before the new increment.
 
-The bounded Integer set preserves the pinned modern JDKs' bucket/tree mutation
-history. Membership or insertion order cannot restore its traversal. Native
-retirement rescans registered map/list/fallback references and refuses active or
-leased chunks. Unpublication alone never frees. External deferred owners need
-leases, and callers must end every untracked borrowed view before retirement.
+The save manager uses the same shared MathHelper class owner as the App. Its
+DateFormat captures the actual default profile, including for an empty List.
+The supported English/en_US, UTC/US Eastern and UTC years 1967..2099 profile
+matches 2,926 JDK17 vectors on Windows and Linux; other profiles fail explicitly.
+[Build and tests](Build-and-tests) separates these focused results from the
+preceding complete hosted scopes.
 
-The runtime holds time/spawn in stable storage and overlays fresh metadata for
-each save, preserving live SizeOnDisk and loaded last_played. Metadata-first
-size lag and serialized LastPlayed remain distinct. The runtime's generation
-adapter reserves a slot before running and returns a stable copy owned by the
-store. Acquisition later publishes that identity in the cache; loaded NBT stays
-intact.
-Runtime free refuses nonempty state or active calls/leases and performs no save.
-Empty entity/tile bodies are native; nonempty bodies remain explicit external
-seams. See [qualification and limits](Storage-and-reference#lifecycle-qualification).
+Linux graphical CI uses one owned Xvfb server for its four CTest workers.
+A private pinned-SDL reproduction fails during init/window/quit repetition
+with default last-client resets, while three `-noreset` runs complete all
+2,400 window cycles. CI now disables that automatic reset without changing
+the default screen or test selection. SDL refusal diagnostics remain real
+failures. [Build and tests](Build-and-tests) records the matched controls,
+the distinct hosted refusals and the following exact `9d83665` green checkpoint:
+all 1,362 selected Windows/GCC/Clang tests pass without skips, with unchanged
+test names and matching trees. That checkpoint predates source World loading.
 
-The reference controller retains at most 32768 target mirrors from their first
-serialized IDs through a session. Its standalone JDI regression covers debugger
-disposal, pre-label records, capacity and duplicate rejection. This verification
-machinery does not change native owner retirement or establish Java GC lifetime.
-The observed dedicated101 helper intervals include JDI stop time and permit
-600 seconds at both validator call sites, matching the controller budget. Other
-profiles and control/preparation/constructor intervals retain 180 seconds; each
-event still belongs to its own interval. The asset-independent interval
-regression exercises these actual checks separately from capture qualification.
+The runtime uses C17 libraries with explicit ownership. The [architecture](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/architecture.md)
+describes the module boundaries; [parity](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md) records the qualified
+scenarios and remaining behavior.
 
-## Normal generator
+The [active Player entry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-active-tick.md) composes the Player
+and Living wrappers, local action, Inventory/Input updates, travel, nearby
+contact, animation and statistic dispatch on the same LocalPlayer. The
+[application](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/player-statistics.md) owns its Session, statistics
+writer and achievement notice. The outer Timer services the writer separately.
+[Movement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-movement.md), [travel](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/living-travel.md)
+and [environment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/environment.md) retain their own interfaces and
+failure diagnostics.
 
-The [normal generator API](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/generation.md)
-composes fresh chunk data, direct climate/biome sampling, density/base terrain,
-surface replacement, caves and full finishing. `mc_normal_generator_init`
-borrows the world's already initialized biome manager and immutable trig table.
-The generator retains all 82 terrain layers, fixed scratch and separate
-generator/cave Random states. Its separate biome output uses the manager's
-allocation owner; direct sampling updates `a/b/c` while preserving manager `d`.
-`mc_normal_generator_free` releases only the separate biome output.
+[Item pickup](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/item-pickup.md) runs Inventory insertion, achievements,
+sound, the concrete Player notification and the later Item death check.
+[Pickup particles](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particles.md) own em construction/ticking and the
+four dn effect Lists. The application captures its manager before constructing
+the effect and checks a null manager afterward. The selected manager startup
+body is implemented and adopted by the reached normal startup prefix;
+particle drawing remains unfinished. [Item ticking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/item-tick.md) supplies the actual
+Item environment, push-out, movement, friction and aging body. The
+[client World Entity pass](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entity-update.md)
+now invokes genuine Player/Item updates through live lists, removals, Chunk
+membership and retained riding actors. The enclosing World scheduler and normal
+application ticking remain unfinished.
 
-Each `mc_normal_generator_generate` call receives that same world's stable
-lighting/cache context, all 13 current biome top/filler pairs and current
-opacity. Materials remain mutable world inputs; the generator supplies no
-default table. The caller owns each fresh result wrapper and block buffer,
-including its retained capacity suffix. Results finish before publication, so
-world queries see the existing cache. Both coordinates must lie in
-`INT32_MIN + 8` through `INT32_MAX - 9`, the finite ordinary cave-scheduler
-domain. Checked resource/allocation failures preserve state; a defensive
-downstream invariant failure reports an unusable result.
+[Spawn/reset](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-spawn-reset.md)
+performs the real Player size/collision search before health/death stores. The
+[weather descendant](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/weather.md)
+updates live Info timers, toggles and rain/thunder values in source order.
+Neither completes application World entry.
 
-The API is verified for the measured unpopulated entry at
-`a08c12056a06261ed01d9f66999459f7ce9543b4`. All 41 selected local tests pass
-without skips on MSVC/GCC/Clang, including four-seed comparisons in all three
-pairings and complete untouched controls. Linux builds use ASan/UBSan. The
-[evidence page](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/generation.md)
-records exact manifest/source fingerprints and finite observation conditions.
+The [singleplayer controller](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/singleplayer-controller.md)
+constructs genuine LocalPlayers from the live Session and World provider,
+preserves failed candidates and applies yaw preparation. Its World and final
+Player hooks use the actual empty bodies. Selected existing-save loading now
+publishes the actual App Player, movement input and view. Controller ticks and
+the admitted input body run; mining, item use and playable World interaction
+remain unfinished.
 
-These observations use client base world `fd`/cache `ok` and server base world
-`dj`/cache `jb`. Actual `MinecraftServer` construction uses `dp`/`he`.
-The separate retained-provider acquisition comparison observes actual persistent
-client and dedicated-owner construction. Its finite constructor/API corpus passes
-exact-source MSVC/GCC/Clang checks at `9a50ac67997082c89dbc43cf4274fba1427c1565`.
-[Callback evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/cache-callbacks.md)
-adds genuine successful loads and natural population in base worlds, retaining
-observed effects within the cache/world boundary while C computes transitions.
-Expanded exact source `28a55b52c001c4c114a11ca7df844fc1f286d328` passes all 56
-selected tests without skips on MSVC/GCC/Clang, with Linux sanitizers, independent
-audit and hosted 48-test/89-file checks. That checkpoint predates the storage
-foundation above. Full persistence acceptance, terrain-feature bodies,
-propagation, other-dimension generation and running-server integration remain open.
+The water owner has its CPU animation body on the existing arrays and shared
+Math profile. Its [comparison guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/water_animation/README.md)
+records the finite raw-array/RGBA scope. The reached normal startup now registers
+all nine effects and the menu invokes their real atlas-update path. The isolated
+comparison does not establish GPU correspondence. [Notice/model ownership](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/achievement-notice.md) is also
+separate from notice and Item drawing.
 
-The planned game systems include ordered world/simulation updates, remaining
-platform sockets/clock/input services, OpenGL 3.3 rendering, audio, original
-protocol networking, client sessions, and a dedicated server. Native storage
-file helpers exist; these broader game systems are not implemented yet. The server must remain independent of client display/audio
-initialization, and shared simulation must retain evidenced original side
-differences.
+[World rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-renderer.md) remains a fixed inspection of a
+constructed GAME World with leased CPU meshes and owned GL buffers. It does not
+run the Player/World gameplay loop. The separate
+[first-person camera](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/first-person.md)
+reads genuine Player state and late App Settings/World fields; finite geometry
+can consume those matrices. Normal App h/i publication and the admitted source
+frame path now run; complete frames remain unfinished. [Lighting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/light-propagation.md),
+[Player publication](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/player-publication.md), [World queries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/queries.md),
+[storage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/storage.md) and [saving](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saving.md) have their own
+source-order and lifetime contracts. [Input attachment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/player-input.md)
+retains the real MovementInput owner and live Settings bindings.
 
-Strict project diagnostics and floating-point rules are configured in CMake.
-`.clang-format` specifies four spaces, 100 columns, and Linux-style braces; CI
-checks project C files with clang-format18. Reference tooling is kept under
-`scripts/reference/<subsystem>/` and `tests/reference/<subsystem>/`. Ignored
-original research inputs are excluded from formatting and publication.
+[Crafting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/inventory/crafting.md) owns the concrete inventory, grid/result
+and Slot graphs. [Registry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/block/registry.md) and [Item](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/registry.md)
+classes retain shared identities and initialization prefixes. [SavedData](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saved-data.md)
+keeps named MapData, ID counters and mutable color handles separate from Store
+and WorldInfo lifetimes.
 
-Read the versioned
-[architecture](https://github.com/frankischilling/minecraft-c/blob/main/docs/architecture.md)
-and [roadmap](https://github.com/frankischilling/minecraft-c/blob/main/docs/roadmap.md)
-for current module details and remaining dependencies. The
-[parity matrix](https://github.com/frankischilling/minecraft-c/blob/main/docs/parity.md)
-records scenario-specific evidence; a shared-library test is not gameplay parity.
+The [RenderEngine](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-engine.md) separates CPU constructor/font state from actual Display resources.
+[Biped construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/biped-construction.md) shares concrete model geometry without aliasing Notice's owner.
+Both retain their scoped native/original comparisons. At checkpoint `37dc83f`,
+the hosted Windows/GCC/Clang matrix also compiles the resource lookup probes and
+passes four pure observer checks per compiler. The separate earlier native
+producer and retained seven-row Windows CPU original result keep their own
+source/admission scope. Supplied-original profiles and later startup source
+proposals are outside that hosted result. The newer normal startup now adopts
+the real App resources; its scope is recorded separately above.
+
+The [OpenAL backend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/audio-backend.md) owns real devices, caches and
+workers; [sound resources](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/sound.md) retain streams and decoder state.
+Normal source startup binds the real SoundManager and scans local resources.
+Original device correspondence and complete gameplay audio remain unfinished.
+The shared simulation and server graph initializes no graphics or audio device.
+See [dependencies](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/dependencies.md) for source pins and notices.
+
+Complete World time/block scheduling, Map tracking and terrain updates,
+remaining wake/hurt/GUI operations and dynamic World drawing still prevent a
+playable client. Dedicated-server startup and ticking remain separate work.
+[Test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md) distinguishes the current full integration
+from earlier full matrices and isolated module comparisons.
+
+<a id="save-unload-and-retirement"></a>
+<a id="normal-generator"></a>
+
+The [former architecture page](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-architecture.md) retains earlier
+technical checkpoints, including [save, unload and retirement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-architecture.md#save-unload-and-retirement)
+and the [Overworld generator](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-architecture.md#normal-generator).

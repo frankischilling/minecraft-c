@@ -69,7 +69,7 @@ def descriptor(value, count, context):
 
 
 def helpers():
-    path = ROOT / "scripts/reference/generation/compare_normal.py"
+    path = ROOT / "scripts/reference/generation/compare_overworld.py"
     require(Path(__file__).resolve() == (ROOT / "scripts/reference/cache/compare_acquire.py").resolve(),
             "canonical executing source identity")
     data = path.read_bytes()

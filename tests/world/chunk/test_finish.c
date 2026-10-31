@@ -1,5 +1,7 @@
 #include "mc/world/chunk/finish.h"
 
+#include "mc/core/java/java.h"
+
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
@@ -34,8 +36,7 @@ typedef struct fixture {
 
 static fixture f, saved;
 
-static int reset_fixture(void)
-{
+static int reset_fixture(void) {
     memset(&f, 0, sizeof(f));
     for (size_t i = 0; i < 2u; ++i) {
         memset(f.blocks[i] + MC_CHUNK_BLOCKS, 0xa7, 3u);
@@ -54,8 +55,7 @@ static int reset_fixture(void)
     return 0;
 }
 
-static int test_cache(void)
-{
+static int test_cache(void) {
     CHECK(reset_fixture() == 0);
     CHECK(mc_chunk_cache_validate(&f.cache));
     CHECK(mc_chunk_cache_key(0, 0) == 0);
@@ -99,8 +99,55 @@ static int test_cache(void)
     return 0;
 }
 
-static int test_world_height(void)
-{
+static int test_restored_cache(void) {
+    enum { CAPACITY = 2049 };
+
+    static mc_chunk_cache_entry entries[CAPACITY], original[CAPACITY];
+    static mc_chunk_state *insertions[CAPACITY];
+    mc_chunk_state valid = {.blank = true}, invalid = {0};
+    const size_t counts[] = {0u, 1u, 17u, 289u, 511u, 512u, 513u, 1024u, CAPACITY};
+    for (size_t pattern = 0; pattern < 3u; ++pattern) {
+        for (size_t i = 0; i < CAPACITY; ++i) {
+            /* Distinct restored raw keys include both signs, shared low bits,
+             * and a permutation of all 32 key bits. Map order stays untouched. */
+            const uint32_t bits = pattern == 0u   ? (uint32_t)i << 16u
+                                  : pattern == 1u ? UINT32_MAX - (uint32_t)i
+                                                  : (uint32_t)i * UINT32_C(2654435761);
+            entries[i].key = mc_java_i32_narrow((int64_t)bits);
+            entries[i].chunk = &valid;
+            insertions[i] = &valid; /* Repeated insertion identities are legal. */
+        }
+        memcpy(original, entries, sizeof(entries));
+        for (size_t c = 0; c < sizeof(counts) / sizeof(counts[0]); ++c) {
+            mc_chunk_cache cache = {entries, CAPACITY, counts[c], insertions, CAPACITY, CAPACITY};
+            CHECK(mc_chunk_cache_validate(&cache));
+            CHECK(memcmp(entries, original, sizeof(entries)) == 0);
+            if (cache.count > 1u) {
+                entries[cache.count - 1u].key = entries[0].key;
+                CHECK(!mc_chunk_cache_validate(&cache));
+                entries[cache.count - 1u].key = original[cache.count - 1u].key;
+                CHECK(mc_chunk_cache_validate(&cache));
+            }
+            if (cache.count != 0u) {
+                entries[cache.count - 1u].chunk = &invalid;
+                CHECK(!mc_chunk_cache_validate(&cache));
+                entries[cache.count - 1u].chunk = NULL;
+                CHECK(!mc_chunk_cache_validate(&cache));
+                entries[cache.count - 1u].chunk = &valid;
+            }
+            insertions[CAPACITY - 1u] = &invalid;
+            CHECK(!mc_chunk_cache_validate(&cache));
+            insertions[CAPACITY - 1u] = NULL;
+            CHECK(!mc_chunk_cache_validate(&cache));
+            insertions[CAPACITY - 1u] = &valid;
+            CHECK(mc_chunk_cache_validate(&cache));
+            CHECK(memcmp(entries, original, sizeof(entries)) == 0);
+        }
+    }
+    return 0;
+}
+
+static int test_world_height(void) {
     CHECK(reset_fixture() == 0);
     f.data[0].heightmap[255] = 254u;
     f.data[0].heightmap[0] = 231u;
@@ -127,8 +174,7 @@ static int test_world_height(void)
     return 0;
 }
 
-static int test_admission(void)
-{
+static int test_admission(void) {
     CHECK(reset_fixture() == 0);
     CHECK(mc_chunk_cache_publish(&f.cache, 0, 0, &f.chunks[0]));
     mc_light_region region = {MC_LIGHT_SKY, {-1, -200, 0, 0, 300, 0}};
@@ -165,8 +211,7 @@ static int test_admission(void)
     return 0;
 }
 
-static int test_finish_preflight(void)
-{
+static int test_finish_preflight(void) {
     for (unsigned int failure = 0; failure < 5u; ++failure) {
         CHECK(reset_fixture() == 0);
         memset(f.data[0].skylight, 0x37, sizeof(f.data[0].skylight));
@@ -188,8 +233,7 @@ static int test_finish_preflight(void)
     return 0;
 }
 
-static int test_finish_order_and_preservation(void)
-{
+static int test_finish_order_and_preservation(void) {
     CHECK(reset_fixture() == 0);
     f.chunks[0].x = f.chunks[0].z = -1;
     memset(f.data[0].metadata, 0x35, sizeof(f.data[0].metadata));
@@ -217,8 +261,7 @@ static int test_finish_order_and_preservation(void)
     return 0;
 }
 
-static int test_finish_visibility_and_queue(void)
-{
+static int test_finish_visibility_and_queue(void) {
     for (unsigned int published = 0; published < 2u; ++published) {
         CHECK(reset_fixture() == 0);
         for (size_t column = 0; column < 256u; ++column)
@@ -252,10 +295,10 @@ static int test_finish_visibility_and_queue(void)
     return 0;
 }
 
-int main(void)
-{
-    if (test_cache() || test_world_height() || test_admission() || test_finish_preflight() ||
-        test_finish_order_and_preservation() || test_finish_visibility_and_queue()) {
+int main(void) {
+    if (test_cache() || test_restored_cache() || test_world_height() || test_admission() ||
+        test_finish_preflight() || test_finish_order_and_preservation() ||
+        test_finish_visibility_and_queue()) {
         return 1;
     }
     printf("chunk finishing contract: %u checks passed\n", checks);

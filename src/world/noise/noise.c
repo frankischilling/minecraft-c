@@ -8,18 +8,15 @@ typedef struct noise_axis {
     double fade;
 } noise_axis;
 
-static double noise_fade(double value)
-{
+static double noise_fade(double value) {
     return ((value * value) * value) * (value * (value * 6.0 - 15.0) + 10.0);
 }
 
-static double noise_lerp(double factor, double lower, double upper)
-{
+static double noise_lerp(double factor, double lower, double upper) {
     return lower + factor * (upper - lower);
 }
 
-static noise_axis noise_coordinate(double value)
-{
+static noise_axis noise_coordinate(double value) {
     int32_t integer = mc_java_double_to_i32(value);
     if (value < (double)integer) {
         integer = mc_java_i32_sub(integer, 1);
@@ -31,16 +28,14 @@ static noise_axis noise_coordinate(double value)
     return axis;
 }
 
-static double noise_gradient(uint16_t hash, double x, double y, double z)
-{
+static double noise_gradient(uint16_t hash, double x, double y, double z) {
     unsigned int direction = (unsigned int)hash & 15u;
     double first = direction < 8 ? x : y;
     double second = direction < 4 ? y : direction == 12 || direction == 14 ? x : z;
     return ((direction & 1u) == 0 ? first : -first) + ((direction & 2u) == 0 ? second : -second);
 }
 
-static double noise_gradient2(uint16_t hash, double x, double z)
-{
+static double noise_gradient2(uint16_t hash, double x, double z) {
     unsigned int direction = (unsigned int)hash & 15u;
     /* This multiplication is present in the original specialized corner.
      * Selecting a component instead changes signed-zero/nonfinite arithmetic. */
@@ -49,8 +44,7 @@ static double noise_gradient2(uint16_t hash, double x, double z)
     return ((direction & 1u) == 0 ? first : -first) + ((direction & 2u) == 0 ? second : -second);
 }
 
-static void noise_construct(mc_noise_perlin *noise, mc_java_random *random)
-{
+static void noise_construct(mc_noise_perlin *noise, mc_java_random *random) {
     noise->offset_x = mc_java_random_next_double(random) * 256.0;
     noise->offset_y = mc_java_random_next_double(random) * 256.0;
     noise->offset_z = mc_java_random_next_double(random) * 256.0;
@@ -68,8 +62,7 @@ static void noise_construct(mc_noise_perlin *noise, mc_java_random *random)
     }
 }
 
-bool mc_noise_perlin_init(mc_noise_perlin *noise, mc_java_random *random)
-{
+bool mc_noise_perlin_init(mc_noise_perlin *noise, mc_java_random *random) {
     if (noise == NULL || random == NULL) {
         return false;
     }
@@ -77,8 +70,7 @@ bool mc_noise_perlin_init(mc_noise_perlin *noise, mc_java_random *random)
     return true;
 }
 
-double mc_noise_perlin_sample(const mc_noise_perlin *noise, double x, double y, double z)
-{
+double mc_noise_perlin_sample(const mc_noise_perlin *noise, double x, double y, double z) {
     double shifted_x = x + noise->offset_x;
     double shifted_y = y + noise->offset_y;
     double shifted_z = z + noise->offset_z;
@@ -112,8 +104,7 @@ double mc_noise_perlin_sample(const mc_noise_perlin *noise, double x, double y, 
 }
 
 static bool noise_grid_valid(const mc_noise_grid *grid, const double *output, size_t length,
-                             size_t *elements)
-{
+                             size_t *elements) {
     if (grid == NULL || (output == NULL && length != 0) || length > SIZE_MAX / sizeof(double) ||
         grid->size_x > INT32_MAX || grid->size_y > INT32_MAX || grid->size_z > INT32_MAX) {
         return false;
@@ -137,8 +128,7 @@ static bool noise_grid_valid(const mc_noise_grid *grid, const double *output, si
 }
 
 static void noise_add_height_one(const mc_noise_perlin *noise, const mc_noise_grid *grid,
-                                 double reciprocal, double *output)
-{
+                                 double reciprocal, double *output) {
     const uint16_t *permutation = noise->permutation;
     size_t index = 0;
     for (size_t x = 0; x < grid->size_x; ++x) {
@@ -166,8 +156,7 @@ static void noise_add_height_one(const mc_noise_perlin *noise, const mc_noise_gr
 }
 
 static void noise_add_general(const mc_noise_perlin *noise, const mc_noise_grid *grid,
-                              double reciprocal, double *output)
-{
+                              double reciprocal, double *output) {
     const uint16_t *permutation = noise->permutation;
     size_t index = 0;
     for (size_t x = 0; x < grid->size_x; ++x) {
@@ -222,8 +211,7 @@ static void noise_add_general(const mc_noise_perlin *noise, const mc_noise_grid 
 }
 
 static void noise_add(const mc_noise_perlin *noise, const mc_noise_grid *grid, double divisor,
-                      double *output)
-{
+                      double *output) {
     double reciprocal = 1.0 / divisor;
     if (grid->size_y == 1) {
         noise_add_height_one(noise, grid, reciprocal, output);
@@ -233,8 +221,7 @@ static void noise_add(const mc_noise_perlin *noise, const mc_noise_grid *grid, d
 }
 
 bool mc_noise_perlin_add(const mc_noise_perlin *noise, const mc_noise_grid *grid, double divisor,
-                         double *output, size_t output_length)
-{
+                         double *output, size_t output_length) {
     size_t elements;
     if (noise == NULL || !noise_grid_valid(grid, output, output_length, &elements)) {
         return false;
@@ -246,8 +233,7 @@ bool mc_noise_perlin_add(const mc_noise_perlin *noise, const mc_noise_grid *grid
 }
 
 bool mc_noise_octaves_init(mc_noise_octaves *noise, mc_noise_perlin *layers, size_t count,
-                           mc_java_random *random)
-{
+                           mc_java_random *random) {
     if (noise == NULL || count > INT32_MAX || count > SIZE_MAX / sizeof(*layers) ||
         (count != 0 && (layers == NULL || random == NULL))) {
         return false;
@@ -260,8 +246,7 @@ bool mc_noise_octaves_init(mc_noise_octaves *noise, mc_noise_perlin *layers, siz
     return true;
 }
 
-double mc_noise_octaves_sample2(const mc_noise_octaves *noise, double x, double y)
-{
+double mc_noise_octaves_sample2(const mc_noise_octaves *noise, double x, double y) {
     double sum = 0.0;
     double frequency = 1.0;
     for (size_t i = 0; i < noise->count; ++i) {
@@ -273,8 +258,7 @@ double mc_noise_octaves_sample2(const mc_noise_octaves *noise, double x, double 
 }
 
 bool mc_noise_octaves_fill(const mc_noise_octaves *noise, const mc_noise_grid *grid, double *output,
-                           size_t output_length)
-{
+                           size_t output_length) {
     size_t elements;
     if (noise == NULL || noise->count > INT32_MAX ||
         noise->count > SIZE_MAX / sizeof(*noise->layers) ||

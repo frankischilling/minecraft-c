@@ -18,6 +18,18 @@ do not postpone original comparisons until a whole milestone is built. Independe
 research can proceed in parallel, but shared interfaces, builds, Git operations
 and integration need explicit ownership.
 
+The current priority is playable single-player before server work. Four default
+Mob draw paths now have finite original comparisons and loaded-client
+continuations: Sheep, Pig, Cow and Chicken. Complete the seven remaining
+default families, including Skeleton's actual held Bow, then close the active
+tutorial/achievement notice and genuine Canvas focus/resize paths. Live Mob
+NBT/factory round trips, the SourceStore region-write transport and actual
+save/detach/reload remain separate persistence dependencies. Ordinary click/use,
+progressive mining, carried-item drawing, pickup and placement must form a
+working interaction loop. Existing movement, look and time bodies remain part
+of that real loop. The detailed current evidence and remaining limits are in
+[development status](status.md) and [Mob drawing](client/mob-drawing.md).
+
 The raw NBT and modified UTF increment is integrated, as is bounded gzip/zlib,
 with [both-side evidence](reference/compression.md). Read-only original region
 inspection passes [exact-source original comparisons](reference/region.md) on
@@ -28,13 +40,13 @@ The separate 2D simplex/octave primitives are implemented, with exact-source
 acceptance recorded in [status](status.md). Climate blending and biome classification
 are implemented, with
 [actual both-side numerical methods and state comparisons](reference/biome.md).
-Normal-dimension density/base interpolation is integrated, with
+Overworld density/base interpolation is integrated, with
 [actual both-side context and numerical comparisons](reference/density.md).
 Surface replacement and chunk seeding are integrated, with
 [recorded scope and results](reference/surface.md) and native public CI.
 The float lookup/floor prerequisite is integrated, with
 [complete table and sampled scalar comparisons](reference/math.md) and native
-public CI. The normal cave runtime is integrated, with
+public CI. The Overworld cave runtime is integrated, with
 [natural and protected comparisons](reference/caves.md). Fresh chunk data,
 heightmaps, direct skylight and packed access now have
 [exact original comparisons](reference/chunk.md) for their local-state scope.
@@ -50,7 +62,7 @@ lifecycle order. The synchronous save/unload composition below adds that
 boundary; terrain-feature bodies, light propagation and tick-driven scheduling
 remain required.
 
-The [direct normal generator composition](world/generation.md) is implemented:
+The [direct Overworld generator composition](world/generation.md) is implemented:
 fresh data, direct climate/biomes, density/base, current-material surface,
 separately seeded caves and full finishing, with fresh unpublished results.
 It borrows the same world's existing biome manager, uses a separate biome
@@ -70,7 +82,7 @@ files. These results identify the a08 checkpoint; later acquisition acceptance
 is recorded separately below.
 `MC_ENABLE_GENERATION_REFERENCE_TESTS` selects
 the original comparison; public helper and fixture checks are named
-`tools.normal_reference` and `tools.normal_interop`.
+`tools.overworld_reference` and `tools.overworld_interop`.
 
 The [cache coordinator](world/cache.md) composes retained C generation and
 finishing with pending removal, ordered publication, activation and live
@@ -94,7 +106,7 @@ pass without skips on native MSVC/GCC/Clang, with Linux sanitizers and
 independent platform/provenance/semantic audits. Both finite copied-world
 directions pass; [storage evidence](reference/storage.md#exact-source-storage-checkpoint)
 records their exact source, captures and limits.
-Opaque entity, tile and Player bodies are retained with unsupported edits
+Opaque entity, TileEntity and Player bodies are retained with unsupported edits
 refused. This does not implement their simulation or complete save scheduling.
 
 The [synchronous lifecycle](world/lifecycle.md) composes acquisition, save/drop,
@@ -104,7 +116,7 @@ Linux sanitizers, independent audits and retained capture/storage evidence.
 This extends the accepted storage foundation. Finite constructor/API
 observations do not establish a running dedicated server.
 
-Complete normal terrain-feature population is the next cohesive generation
+Complete Overworld terrain-feature population is the next cohesive generation
 boundary: lakes, dungeons and their payloads, clay/ores, all original tree and
 vegetation families, springs and snow, with the world mutation and RNG/update
 order they invoke. Callback replay does not implement these bodies. Light

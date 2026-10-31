@@ -1,0 +1,60 @@
+{
+  "schema": "PRINTLN_BYTES_V1",
+  "line_separator_hex": "0d0a",
+  "rows": [
+    {
+      "name": "normal",
+      "kind": "BYTE_ARRAY",
+      "fail_after": -1,
+      "close_before": 0,
+      "input_hex": "68656c6c6f",
+      "output_hex": "68656c6c6f0d0a",
+      "check_error": false
+    },
+    {
+      "name": "empty",
+      "kind": "BYTE_ARRAY",
+      "fail_after": -1,
+      "close_before": 0,
+      "input_hex": "",
+      "output_hex": "0d0a",
+      "check_error": false
+    },
+    {
+      "name": "ascii64",
+      "kind": "BYTE_ARRAY",
+      "fail_after": -1,
+      "close_before": 0,
+      "input_hex": "30313233343536373839616263646566303132333435363738396162636465663031323334353637383961626364656630313233343536373839616263646566",
+      "output_hex": "303132333435363738396162636465663031323334353637383961626364656630313233343536373839616263646566303132333435363738396162636465660d0a",
+      "check_error": false
+    },
+    {
+      "name": "nul",
+      "kind": "BYTE_ARRAY",
+      "fail_after": -1,
+      "close_before": 0,
+      "input_hex": "410042",
+      "output_hex": "4100420d0a",
+      "check_error": false
+    },
+    {
+      "name": "failing",
+      "kind": "FAULT_STREAM",
+      "fail_after": 2,
+      "close_before": 0,
+      "input_hex": "68656c6c6f",
+      "output_hex": "6865",
+      "check_error": true
+    },
+    {
+      "name": "closed",
+      "kind": "FAULT_STREAM",
+      "fail_after": -1,
+      "close_before": 1,
+      "input_hex": "68656c6c6f",
+      "output_hex": "",
+      "check_error": true
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+OpenAL Soft 1.25.2
+
+Source: https://openal-soft.org/openal-releases/openal-soft-1.25.2.tar.bz2
+SHA-256: 1dbaac44e7579d5bc8847ca8db4b2e8b9fd3961041f35ee20def4958301e1089
+Project: https://openal-soft.org/
+
+The OpenAL Soft library is provided under the GNU Library General Public
+License, version 2 or later. COPYING retains the complete upstream license.
+The source archive above contains the pinned upstream source. Its terms are
+separate from the minecraft-c license.
+
+The build applies one compiler-compatibility change dated 2026-10-25 in private
+copies of alc/effects/chorus.cpp, distortion.cpp, fshifter.cpp and pshifter.cpp.
+It passes an explicitly value-initialized
+std::array<UpsampleParams, NumLines>{} to mUpsampler.emplace instead of invoking
+emplace with no arguments. This preserves the member defaults while avoiding
+a Clang 18/libstdc++ 13 constructibility rejection. The archive and supplied
+source overrides remain unchanged. cmake/openal_dependencies.cmake records
+the exact upstream hashes and replacement used to build the shared library.
+
+The bundled components retain their own notices:
+
+- BSD-3Clause: portions adapted from Spherical-Harmonic-Transform.
+- LICENSE-pffft: the modified PFFFT/FFTPACK implementation.
+- LICENSE-fmt: the bundled fmt 11.2.0 implementation.
+- LICENSE-GSL: Microsoft Guidelines Support Library headers.
+- LICENSE-bs2b: the Bauer stereo-to-binaural filter implementation.
+
+The embedded default HRTF dataset is based on MIT's KEMAR measurements.
+Copyright 1994, MIT Media Laboratory. The authors are Bill Gardner and Keith
+Martin. MIT permits use without restrictions provided the authors are cited
+in research or commercial applications using the data.
+Source and attribution: https://sound.media.mit.edu/resources/KEMAR.html
+Upstream dataset note: OpenAL Soft 1.25.2 docs/hrtf.txt.
+
+This notice records the selected dependency and its bundled notices. A binary
+distribution must also satisfy the applicable license's source and replacement
+requirements; copying this notice alone does not establish distribution compliance.

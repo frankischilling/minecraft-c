@@ -1,0 +1,167 @@
+{
+  "scope": "Whole original N submit on actual RGBA8 GL. Raw N/App/cameras, real TG/DK constructors; WorldNULL; explicit Math before constructors; authored pass lists. Six ordinary profiles and one whole16-entry occlusion profile via actual CX capability. No recenter/rebuild.",
+  "shared": {
+    "positions_x": [
+      0,
+      16,
+      1024
+    ],
+    "outer_previous": [
+      19,
+      29,
+      39
+    ],
+    "outer_current": [
+      20,
+      30,
+      40
+    ],
+    "view_previous": [
+      0,
+      0,
+      0
+    ],
+    "view_current": [
+      0.5,
+      0.25,
+      -0.5
+    ],
+    "partial": 0.5,
+    "distance": 3,
+    "advanced_opengl": false,
+    "anaglyph": false,
+    "R": -1,
+    "initial_counters": [
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "dirty_actors": [
+      1,
+      3
+    ],
+    "initial_dirty_list": [
+      1
+    ],
+    "pass_flags": [
+      [
+        false,
+        false
+      ],
+      [
+        false,
+        false
+      ],
+      [
+        false,
+        true
+      ]
+    ],
+    "buffer_hash": "uint64 fold over every capacity word: (hash xor unsigned_int32)*1099511628211, seed14695981039346656037"
+  },
+  "cases": [
+    {
+      "name": "empty_pass0",
+      "pass": 0,
+      "sorted": [],
+      "w": false,
+      "cull_middle": false,
+      "empty_last": false,
+      "null_view": false
+    },
+    {
+      "name": "groups_pass0",
+      "pass": 0,
+      "sorted": [
+        1,
+        2,
+        3
+      ],
+      "w": false,
+      "cull_middle": false,
+      "empty_last": false,
+      "null_view": false
+    },
+    {
+      "name": "groups_pass1",
+      "pass": 1,
+      "sorted": [
+        1,
+        2,
+        3
+      ],
+      "w": false,
+      "cull_middle": false,
+      "empty_last": false,
+      "null_view": false
+    },
+    {
+      "name": "counter_priority",
+      "pass": 0,
+      "sorted": [
+        1,
+        2,
+        3
+      ],
+      "w": false,
+      "cull_middle": true,
+      "empty_last": true,
+      "null_view": false
+    },
+    {
+      "name": "visibility_pass1",
+      "pass": 1,
+      "sorted": [
+        1,
+        2,
+        3
+      ],
+      "w": true,
+      "cull_middle": false,
+      "empty_last": false,
+      "null_view": false
+    },
+    {
+      "name": "null_current_view",
+      "pass": 0,
+      "sorted": [
+        1,
+        2,
+        3
+      ],
+      "w": false,
+      "cull_middle": false,
+      "empty_last": false,
+      "null_view": true
+    },
+    {
+      "name": "occlusion16",
+      "pass": 0,
+      "sorted": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "w": false,
+      "cull_middle": false,
+      "empty_last": false,
+      "null_view": false,
+      "actual_capability": true
+    }
+  ]
+}

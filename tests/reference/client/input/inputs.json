@@ -1,0 +1,1247 @@
+{
+  "schema": 1,
+  "scenarios": [
+    {
+      "name": "base-public-fields-and-genuine-empty-methods",
+      "commands": [
+        "create base",
+        "fields 80000000 7fc12345 1 1 1",
+        "event -2147483648 1",
+        "update",
+        "reset",
+        "event 2147483647 0",
+        "update"
+      ]
+    },
+    {
+      "name": "null-settings-constructor-reset-update-and-reached-event-failure",
+      "commands": [
+        "create null",
+        "fields 7f800000 ff800000 1 1 1",
+        "reset",
+        "event 17 1",
+        "update",
+        "reset",
+        "event 42 0"
+      ]
+    },
+    {
+      "name": "six-held-keys-00",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 0",
+        "event 30 0",
+        "event 32 0",
+        "event 57 0",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-01",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 0",
+        "event 30 0",
+        "event 32 0",
+        "event 57 0",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-02",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 1",
+        "event 30 0",
+        "event 32 0",
+        "event 57 0",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-03",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 1",
+        "event 30 0",
+        "event 32 0",
+        "event 57 0",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-04",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 0",
+        "event 30 1",
+        "event 32 0",
+        "event 57 0",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-05",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 0",
+        "event 30 1",
+        "event 32 0",
+        "event 57 0",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-06",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 1",
+        "event 30 1",
+        "event 32 0",
+        "event 57 0",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-07",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 1",
+        "event 30 1",
+        "event 32 0",
+        "event 57 0",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-08",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 0",
+        "event 30 0",
+        "event 32 1",
+        "event 57 0",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-09",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 0",
+        "event 30 0",
+        "event 32 1",
+        "event 57 0",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-10",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 1",
+        "event 30 0",
+        "event 32 1",
+        "event 57 0",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-11",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 1",
+        "event 30 0",
+        "event 32 1",
+        "event 57 0",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-12",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 0",
+        "event 30 1",
+        "event 32 1",
+        "event 57 0",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-13",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 0",
+        "event 30 1",
+        "event 32 1",
+        "event 57 0",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-14",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 1",
+        "event 30 1",
+        "event 32 1",
+        "event 57 0",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-15",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 1",
+        "event 30 1",
+        "event 32 1",
+        "event 57 0",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-16",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 0",
+        "event 30 0",
+        "event 32 0",
+        "event 57 1",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-17",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 0",
+        "event 30 0",
+        "event 32 0",
+        "event 57 1",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-18",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 1",
+        "event 30 0",
+        "event 32 0",
+        "event 57 1",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-19",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 1",
+        "event 30 0",
+        "event 32 0",
+        "event 57 1",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-20",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 0",
+        "event 30 1",
+        "event 32 0",
+        "event 57 1",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-21",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 0",
+        "event 30 1",
+        "event 32 0",
+        "event 57 1",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-22",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 1",
+        "event 30 1",
+        "event 32 0",
+        "event 57 1",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-23",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 1",
+        "event 30 1",
+        "event 32 0",
+        "event 57 1",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-24",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 0",
+        "event 30 0",
+        "event 32 1",
+        "event 57 1",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-25",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 0",
+        "event 30 0",
+        "event 32 1",
+        "event 57 1",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-26",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 1",
+        "event 30 0",
+        "event 32 1",
+        "event 57 1",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-27",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 1",
+        "event 30 0",
+        "event 32 1",
+        "event 57 1",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-28",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 0",
+        "event 30 1",
+        "event 32 1",
+        "event 57 1",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-29",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 0",
+        "event 30 1",
+        "event 32 1",
+        "event 57 1",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-30",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 1",
+        "event 30 1",
+        "event 32 1",
+        "event 57 1",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-31",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 1",
+        "event 30 1",
+        "event 32 1",
+        "event 57 1",
+        "event 42 0",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-32",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 0",
+        "event 30 0",
+        "event 32 0",
+        "event 57 0",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-33",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 0",
+        "event 30 0",
+        "event 32 0",
+        "event 57 0",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-34",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 1",
+        "event 30 0",
+        "event 32 0",
+        "event 57 0",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-35",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 1",
+        "event 30 0",
+        "event 32 0",
+        "event 57 0",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-36",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 0",
+        "event 30 1",
+        "event 32 0",
+        "event 57 0",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-37",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 0",
+        "event 30 1",
+        "event 32 0",
+        "event 57 0",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-38",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 1",
+        "event 30 1",
+        "event 32 0",
+        "event 57 0",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-39",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 1",
+        "event 30 1",
+        "event 32 0",
+        "event 57 0",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-40",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 0",
+        "event 30 0",
+        "event 32 1",
+        "event 57 0",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-41",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 0",
+        "event 30 0",
+        "event 32 1",
+        "event 57 0",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-42",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 1",
+        "event 30 0",
+        "event 32 1",
+        "event 57 0",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-43",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 1",
+        "event 30 0",
+        "event 32 1",
+        "event 57 0",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-44",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 0",
+        "event 30 1",
+        "event 32 1",
+        "event 57 0",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-45",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 0",
+        "event 30 1",
+        "event 32 1",
+        "event 57 0",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-46",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 1",
+        "event 30 1",
+        "event 32 1",
+        "event 57 0",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-47",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 1",
+        "event 30 1",
+        "event 32 1",
+        "event 57 0",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-48",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 0",
+        "event 30 0",
+        "event 32 0",
+        "event 57 1",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-49",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 0",
+        "event 30 0",
+        "event 32 0",
+        "event 57 1",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-50",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 1",
+        "event 30 0",
+        "event 32 0",
+        "event 57 1",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-51",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 1",
+        "event 30 0",
+        "event 32 0",
+        "event 57 1",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-52",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 0",
+        "event 30 1",
+        "event 32 0",
+        "event 57 1",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-53",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 0",
+        "event 30 1",
+        "event 32 0",
+        "event 57 1",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-54",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 1",
+        "event 30 1",
+        "event 32 0",
+        "event 57 1",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-55",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 1",
+        "event 30 1",
+        "event 32 0",
+        "event 57 1",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-56",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 0",
+        "event 30 0",
+        "event 32 1",
+        "event 57 1",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-57",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 0",
+        "event 30 0",
+        "event 32 1",
+        "event 57 1",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-58",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 1",
+        "event 30 0",
+        "event 32 1",
+        "event 57 1",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-59",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 1",
+        "event 30 0",
+        "event 32 1",
+        "event 57 1",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-60",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 0",
+        "event 30 1",
+        "event 32 1",
+        "event 57 1",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-61",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 0",
+        "event 30 1",
+        "event 32 1",
+        "event 57 1",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-62",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 0",
+        "event 31 1",
+        "event 30 1",
+        "event 32 1",
+        "event 57 1",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-held-keys-63",
+      "commands": [
+        "create options",
+        "fields bf800000 3f800000 1 1 1",
+        "event 17 1",
+        "event 31 1",
+        "event 30 1",
+        "event 32 1",
+        "event 57 1",
+        "event 42 1",
+        "update",
+        "reset",
+        "update"
+      ]
+    },
+    {
+      "name": "six-duplicate-codes-last-sneak-only",
+      "commands": [
+        "create options",
+        "code 0 -7",
+        "code 2 -7",
+        "code 1 -7",
+        "code 3 -7",
+        "code 4 -7",
+        "code 9 -7",
+        "event -7 1",
+        "update",
+        "event -7 0",
+        "update"
+      ]
+    },
+    {
+      "name": "null-named-field-0-after-0-comparisons",
+      "commands": [
+        "create options",
+        "code 0 -7",
+        "code 2 -7",
+        "code 1 -7",
+        "code 3 -7",
+        "code 4 -7",
+        "code 9 -7",
+        "alias 8 0",
+        "null 0",
+        "event -7 1",
+        "update",
+        "reset",
+        "alias 0 8",
+        "event -7 1",
+        "update"
+      ]
+    },
+    {
+      "name": "null-named-field-2-after-1-comparisons",
+      "commands": [
+        "create options",
+        "code 0 -7",
+        "code 2 -7",
+        "code 1 -7",
+        "code 3 -7",
+        "code 4 -7",
+        "code 9 -7",
+        "alias 8 2",
+        "null 2",
+        "event -7 1",
+        "update",
+        "reset",
+        "alias 2 8",
+        "event -7 1",
+        "update"
+      ]
+    },
+    {
+      "name": "null-named-field-1-after-2-comparisons",
+      "commands": [
+        "create options",
+        "code 0 -7",
+        "code 2 -7",
+        "code 1 -7",
+        "code 3 -7",
+        "code 4 -7",
+        "code 9 -7",
+        "alias 8 1",
+        "null 1",
+        "event -7 1",
+        "update",
+        "reset",
+        "alias 1 8",
+        "event -7 1",
+        "update"
+      ]
+    },
+    {
+      "name": "null-named-field-3-after-3-comparisons",
+      "commands": [
+        "create options",
+        "code 0 -7",
+        "code 2 -7",
+        "code 1 -7",
+        "code 3 -7",
+        "code 4 -7",
+        "code 9 -7",
+        "alias 8 3",
+        "null 3",
+        "event -7 1",
+        "update",
+        "reset",
+        "alias 3 8",
+        "event -7 1",
+        "update"
+      ]
+    },
+    {
+      "name": "null-named-field-4-after-4-comparisons",
+      "commands": [
+        "create options",
+        "code 0 -7",
+        "code 2 -7",
+        "code 1 -7",
+        "code 3 -7",
+        "code 4 -7",
+        "code 9 -7",
+        "alias 8 4",
+        "null 4",
+        "event -7 1",
+        "update",
+        "reset",
+        "alias 4 8",
+        "event -7 1",
+        "update"
+      ]
+    },
+    {
+      "name": "null-named-field-9-after-5-comparisons",
+      "commands": [
+        "create options",
+        "code 0 -7",
+        "code 2 -7",
+        "code 1 -7",
+        "code 3 -7",
+        "code 4 -7",
+        "code 9 -7",
+        "alias 8 9",
+        "null 9",
+        "event -7 1",
+        "update",
+        "reset",
+        "alias 9 8",
+        "event -7 1",
+        "update"
+      ]
+    },
+    {
+      "name": "live-code-rebinding-keeps-old-held-cell",
+      "commands": [
+        "create options",
+        "event 17 1",
+        "update",
+        "code 0 100",
+        "event 17 0",
+        "update",
+        "event 100 0",
+        "update"
+      ]
+    },
+    {
+      "name": "live-named-alias-replacement-and-unused-w-array",
+      "commands": [
+        "create options",
+        "array_null",
+        "alias 1 0",
+        "event 17 1",
+        "update",
+        "replace 1 92",
+        "event 92 0",
+        "update",
+        "event 17 1",
+        "update"
+      ]
+    },
+    {
+      "name": "signed-int32-codes-and-unbound-events",
+      "commands": [
+        "create options",
+        "event -2147483648 1",
+        "code 0 -2147483648",
+        "event -2147483648 1",
+        "update",
+        "event -2147483648 0",
+        "code 0 2147483647",
+        "event 2147483647 1",
+        "update",
+        "event 2147483647 0",
+        "event -1 1",
+        "event 0 1",
+        "update"
+      ]
+    },
+    {
+      "name": "reset-preserves-nonfinite-public-fields",
+      "commands": [
+        "create options",
+        "event 42 1",
+        "fields 7fc12345 80000000 1 0 0",
+        "reset",
+        "update",
+        "event 42 1",
+        "update"
+      ]
+    }
+  ]
+}

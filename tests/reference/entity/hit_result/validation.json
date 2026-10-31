@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "status": "original_observed_native_windows_qualified",
+  "authority": "Unchanged pinned original client and dedicated-server binaries",
+  "runtime": "Eclipse Temurin OpenJDK 17.0.17+10, Windows x86-64, -Xint",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "server_jar_sha256": "033a127e4a25a60b038f15369c89305a3d53752242a1cff11ae964954e79ba4d",
+  "classes": [
+    {
+      "source": "client",
+      "class": "bt",
+      "sha256": "32018dcec6f1af1efa93baac09178456d9d2537367721875dae6547588a308f8"
+    },
+    {
+      "source": "client",
+      "class": "eq",
+      "sha256": "81a4cf4a682b2c830e78160d944aa71342e2f6b6d415863c9f18600b08cd191f"
+    },
+    {
+      "source": "client",
+      "class": "vf",
+      "sha256": "fb28ca5382c97f87e9eccdbb8d0618f50fc329cef1d65500647a918aa9c32cfe"
+    },
+    {
+      "source": "client",
+      "class": "jg",
+      "sha256": "298d98dc3f520bee69f10b66502972a7d4eb651a0d568c0710dc3874de6f3759"
+    },
+    {
+      "source": "server",
+      "class": "ba",
+      "sha256": "f7d79d1a50cbb4b32de7736f9b3f6430c20621260c2fcf6ed865da5c54a6bce7"
+    },
+    {
+      "source": "server",
+      "class": "cz",
+      "sha256": "d45ed792134723da320caf34d9d0889133817f2b51cf68b686b3aad9e707cd01"
+    },
+    {
+      "source": "server",
+      "class": "nh",
+      "sha256": "4ac77a64f2ea3dbe543f708bba61aa821c96424b722d8b4a21dc476746800850"
+    },
+    {
+      "source": "server",
+      "class": "gd",
+      "sha256": "f583d175bf21401d9bdc37af4aeea5cb2da44581f5bc7b6fb6ff5142ac7a048d"
+    }
+  ],
+  "observer_sha256": "3c8bfd9afbab3f6e95d3a02cf05dc404401154ffe45a4aea043d5f1774395bfd",
+  "fixture_sha256": "8c17682c0b8e365347145a5999e07fd6c5e5f297539a5563b1d3ef5cca3310f6",
+  "rows_per_source": 942,
+  "original_sources": 2,
+  "identical_source_outputs": true,
+  "input_modes": [
+    "standalone authored coordinates",
+    "pooled inputs followed by actual cursor reset",
+    "identical start and end object"
+  ],
+  "scope": [
+    "Distance, squared distance and squared distance to coordinates",
+    "Three segment-plane helpers and pool cursor",
+    "Bounds point inclusion and segment intercept",
+    "Raw binary64 results, block face and returned hit-vector coordinates"
+  ],
+  "exclusions": [
+    "General NaN payload parity",
+    "Entity pickability original runtime observations",
+    "World ray traversal and PX selection",
+    "Rendering and full client frames",
+    "Lazy MathHelper class initialization timing in native geometry"
+  ],
+  "native": {
+    "platform": "Windows x86-64",
+    "configuration": "Debug",
+    "test": "entity.hit_result",
+    "result": "PASS",
+    "seconds": 0.04,
+    "checks": 58830,
+    "rows_client": 942,
+    "rows_server": 942,
+    "runtime_requires_original_jar": false,
+    "scope": "Committed authored numerical fixture plus VF/JG/quota/null/pool/ownership/pickability controls",
+    "not_claimed": [
+      "World DDA/PX integration",
+      "Rendered client frames"
+    ]
+  },
+  "native_linux": {
+    "result": "PASS",
+    "profiles": [
+      "Linux x86-64 GCC13 ASan/UBSan",
+      "Linux x86-64 Clang18 ASan/UBSan"
+    ],
+    "scope": "Finite frozen observations and native ownership controls; four new public CTests executed together",
+    "runtime_requires_original_jar": false,
+    "linux_leak_detection": true
+  }
+}

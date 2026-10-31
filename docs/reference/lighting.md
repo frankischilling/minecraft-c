@@ -15,6 +15,28 @@ Both selected merge bodies and queue overloads match after explicit class
 correspondence. The C [queue contract](../world/lighting.md) covers bounds merging
 and storage after world admission. It does not implement the admission checks.
 
+## Concrete World source
+
+`mc/world/runtime/lighting.h` supplies [actual GAME World operations](../world/runtime-lighting.md)
+alongside the earlier caller-owned projections. Fresh paired bytecode reads
+establish the following order; these are source observations, without a new
+executed-original World comparison.
+
+| Operation | Client | Server | Reached order |
+| --- | --- | --- | --- |
+| Height | `fd.d(II)I` | `dj.d(II)I` | Asymmetric border, nonloading presence33, separate getter48, unsigned height61 |
+| Enqueue | `fd.a(Leb;IIIIIIZ)V` | `dj.a(Lco;IIIIIIZ)V` | Current Dimension.e4; Sky11 only on no-sky branch; shared A increment23; equality50; midpoint presence67; getter87; blank90 |
+| Actual C storage | Same enqueue | Same enqueue | Initial size109; current size153/get163/type175; same-reference merge194; new region219/constructor234/add237; size251; diagnostic289 before clear296 |
+| Guard cleanup | Same enqueue | Same enqueue | Decrement current A on ordinary306 and exceptional319 exits, with earlier explicit decrements on guarded returns |
+| Light initialization | `eb.<clinit>()V` | `co.<clinit>()V` | Sky c=15/static12, Block c=0/static26; finite native handles omit generic Enum methods |
+| Region construction | `st.<init>(Leb;IIIIII)V` | `lv.<init>(Lco;IIIIII)V` | Actual nullable type and six signed fields; no bounds normalization |
+
+Native tests use real client World construction and store-owned restored chunks.
+The scalar depth controls explicitly set actual shared A after construction;
+they do not claim naturally reached recursion. Native allocation and output
+failures retain their documented resource policy. Queue propagation, live
+Chunk finishing and complete generation remain unfinished.
+
 ## Observations
 
 `LightObservation.java` invokes actual untouched region constructors and merge

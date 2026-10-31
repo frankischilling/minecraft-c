@@ -1,0 +1,16 @@
+# target declaring_class member type value
+actor sn c pose 8.5,64,8.5,30,15
+actor sn bl D 8.25
+actor sn bn D 8.25
+actor sn bm D 64
+actor sn aU F 10
+actor sn aV F -5
+actor ls I F 10
+actor ls H F 20
+actor ls ak F 0.2
+actor ls al F 0.4
+actor ls am F 3
+actor ls W F 0.1
+actor ls X F 0.4
+actor sn bt I 17
+camera sn c pose 8.5,65,12.5,180,15

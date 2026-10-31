@@ -5,6 +5,9 @@ fresh chunk arrays, heightmaps and direct skylight. The public interfaces are
 `include/mc/world/chunk/data.h` and `include/mc/world/chunk/nibbles.h`;
 their implementations belong to `mc_world`.
 
+The [generated Chunk owner](chunk-objects.md) adds actual World/child identities,
+store ownership and a full GAME finalizer above these numerical data functions.
+
 ## Storage and ownership
 
 The normal chunk shape is 16 by 128 by 16 blocks. A caller-owned

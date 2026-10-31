@@ -1,0 +1,217 @@
+{
+    "status":  "observed",
+    "scope":  "Instrumented Windows JDK17 -Xint constructor observations",
+    "inputs_before":  {
+                          "target":  {
+                                         "bytes":  1207,
+                                         "sha256":  "35ed03df8cbcbdafc90d58118f229a2e69c8e3aec292c78f24045ec7ab0f9555"
+                                     },
+                          "observer":  {
+                                           "bytes":  44703,
+                                           "sha256":  "b5006129d2316d8bb604d7e8ff64888b62fd595123eff8de2b8b8c9c374426e4"
+                                       },
+                          "recorder":  {
+                                           "bytes":  11807,
+                                           "sha256":  "6cfd3b0a597ea7154e46ab7cac0453d109242d486f1b58cb92f88c26c556a8cf"
+                                       },
+                          "process_helper":  {
+                                                 "bytes":  10182,
+                                                 "sha256":  "f08873d98d14ee3ce1fa8c650a4f41f71c11934e0319582a21212d8adc4ab02c"
+                                             },
+                          "java":  {
+                                       "bytes":  50344,
+                                       "sha256":  "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+                                   },
+                          "javac":  {
+                                        "bytes":  24232,
+                                        "sha256":  "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+                                    },
+                          "modules":  {
+                                          "bytes":  128648619,
+                                          "sha256":  "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+                                      },
+                          "jvm":  {
+                                      "bytes":  12681896,
+                                      "sha256":  "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+                                  },
+                          "java_native":  {
+                                              "bytes":  148136,
+                                              "sha256":  "18b105254c16e1d83614ff4e32cd62ce402fbe6339bdd1b24ccc7d999fed7f5f"
+                                          },
+                          "release":  {
+                                          "bytes":  1667,
+                                          "sha256":  "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+                                      },
+                          "source_archive":  {
+                                                 "bytes":  50855389,
+                                                 "sha256":  "5d0afb30b29d1eff95502604e9415d361f0f503553f32416320c58c1f0619e1e"
+                                             },
+                          "jdwp":  {
+                                       "bytes":  230056,
+                                       "sha256":  "4ff7345a0a66091f519a7546f1a865c4cbc9cc132fba31608604e88dec1cedf2"
+                                   },
+                          "dt_socket":  {
+                                            "bytes":  36520,
+                                            "sha256":  "1a5c8a2a198c8645f892cb68dca87885ad759c3a3f1f828167dcdb3ac41d4874"
+                                        }
+                      },
+    "inputs_after":  {
+                         "target":  {
+                                        "bytes":  1207,
+                                        "sha256":  "35ed03df8cbcbdafc90d58118f229a2e69c8e3aec292c78f24045ec7ab0f9555"
+                                    },
+                         "observer":  {
+                                          "bytes":  44703,
+                                          "sha256":  "b5006129d2316d8bb604d7e8ff64888b62fd595123eff8de2b8b8c9c374426e4"
+                                      },
+                         "recorder":  {
+                                          "bytes":  11807,
+                                          "sha256":  "6cfd3b0a597ea7154e46ab7cac0453d109242d486f1b58cb92f88c26c556a8cf"
+                                      },
+                         "process_helper":  {
+                                                "bytes":  10182,
+                                                "sha256":  "f08873d98d14ee3ce1fa8c650a4f41f71c11934e0319582a21212d8adc4ab02c"
+                                            },
+                         "java":  {
+                                      "bytes":  50344,
+                                      "sha256":  "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+                                  },
+                         "javac":  {
+                                       "bytes":  24232,
+                                       "sha256":  "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+                                   },
+                         "modules":  {
+                                         "bytes":  128648619,
+                                         "sha256":  "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+                                     },
+                         "jvm":  {
+                                     "bytes":  12681896,
+                                     "sha256":  "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+                                 },
+                         "java_native":  {
+                                             "bytes":  148136,
+                                             "sha256":  "18b105254c16e1d83614ff4e32cd62ce402fbe6339bdd1b24ccc7d999fed7f5f"
+                                         },
+                         "release":  {
+                                         "bytes":  1667,
+                                         "sha256":  "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+                                     },
+                         "source_archive":  {
+                                                "bytes":  50855389,
+                                                "sha256":  "5d0afb30b29d1eff95502604e9415d361f0f503553f32416320c58c1f0619e1e"
+                                            },
+                         "jdwp":  {
+                                      "bytes":  230056,
+                                      "sha256":  "4ff7345a0a66091f519a7546f1a865c4cbc9cc132fba31608604e88dec1cedf2"
+                                  },
+                         "dt_socket":  {
+                                           "bytes":  36520,
+                                           "sha256":  "1a5c8a2a198c8645f892cb68dca87885ad759c3a3f1f828167dcdb3ac41d4874"
+                                       }
+                     },
+    "trace":  {
+                  "bytes":  13399,
+                  "sha256":  "7c0034058912efc2791edfef70ebdcbf878b1a584457edf456dc716ee7f6cf88"
+              },
+    "constructors":  [
+                         {
+                             "stage":  "default_a",
+                             "role":  "A",
+                             "committed":  "2fd89ddcd351e3dc",
+                             "observed_nano_time":  "000010be0e23c774",
+                             "observed_state":  "00008d67039ec2c5",
+                             "observed_cache":  "0000000000000000",
+                             "observed_flag":  "0"
+                         },
+                         {
+                             "stage":  "math_first",
+                             "role":  "M",
+                             "committed":  "d72bcc3aedda868c",
+                             "observed_nano_time":  "000010be1033daf4",
+                             "observed_state":  "0000dc812305ba15",
+                             "observed_cache":  "0000000000000000",
+                             "observed_flag":  "0"
+                         },
+                         {
+                             "stage":  "default_b",
+                             "role":  "B",
+                             "committed":  "7e5bfab66f0d7cfc",
+                             "observed_nano_time":  "000010be118ddb20",
+                             "observed_state":  "0000ea0da06c41b1",
+                             "observed_cache":  "0000000000000000",
+                             "observed_flag":  "0"
+                         }
+                     ],
+    "classes":  {
+                    "RandomConstructorObserver$Held.class":  {
+                                                                 "bytes":  587,
+                                                                 "sha256":  "ff2587b9ae2d643d0feae6de2547edcd6207b2c4b509f5bf2a47b8acf0678c36"
+                                                             },
+                    "RandomConstructorObserver$Rejected.class":  {
+                                                                     "bytes":  543,
+                                                                     "sha256":  "ba5da0d311a85821402545e0a07b8caaef4a2ca633bd957ea5f432fc84fc47aa"
+                                                                 },
+                    "RandomConstructorObserver$Session.class":  {
+                                                                    "bytes":  36056,
+                                                                    "sha256":  "fc3be9adda14a8cd54f9c8ec5756132607ff45a6060ed21d9d2c24c1935dbf48"
+                                                                },
+                    "RandomConstructorObserver$State.class":  {
+                                                                  "bytes":  2669,
+                                                                  "sha256":  "c68c30c8f80bee2d571bcbbe5eb6cc6c0f0435ac2359b288158790b68af435b9"
+                                                              },
+                    "RandomConstructorObserver$Trace.class":  {
+                                                                  "bytes":  2948,
+                                                                  "sha256":  "e1c09fe17e506baa2bf58057baae454f1e23c398b3bec9b365e2b81e1f4620f5"
+                                                              },
+                    "RandomConstructorObserver.class":  {
+                                                            "bytes":  5510,
+                                                            "sha256":  "40f1a5007ff40a61d9a844e7aa1f96f3ee67e2650daab468fe3e72e9b12c6eeb"
+                                                        },
+                    "RandomConstructorTarget.class":  {
+                                                          "bytes":  1488,
+                                                          "sha256":  "06269cda2726e4cea9d41f2e2a5eb6d6c91e60aa8f69cb814e2befec2a93257e"
+                                                      }
+                },
+    "children":  [
+                     {
+                         "name":  "compiler",
+                         "exit_code":  0,
+                         "reaped":  true,
+                         "stdout":  {
+                                        "bytes":  0,
+                                        "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                                    },
+                         "stderr":  {
+                                        "bytes":  0,
+                                        "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                                    }
+                     },
+                     {
+                         "name":  "target",
+                         "exit_code":  0,
+                         "reaped":  true,
+                         "stdout":  {
+                                        "bytes":  52,
+                                        "sha256":  "a1fb24521fbad71e68aa3b3253d8d25364ecc4b7c8258d66b412e50d452c0343"
+                                    },
+                         "stderr":  {
+                                        "bytes":  0,
+                                        "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                                    }
+                     },
+                     {
+                         "name":  "observer",
+                         "exit_code":  0,
+                         "reaped":  true,
+                         "stdout":  {
+                                        "bytes":  13399,
+                                        "sha256":  "7c0034058912efc2791edfef70ebdcbf878b1a584457edf456dc716ee7f6cf88"
+                                    },
+                         "stderr":  {
+                                        "bytes":  0,
+                                        "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                                    }
+                     }
+                 ],
+    "limitation":  "Debugger pauses alter samples; full nanoTime returns are not underlying QPC observations"
+}

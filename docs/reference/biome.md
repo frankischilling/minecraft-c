@@ -1,10 +1,12 @@
 # Climate fields and biome classification
 
-This note records bytecode evidence for the Beta 1.7.3 climate managers and
-biome classifier. Original-only observations validated an isolated numerical
-fixture on Temurin 17.0.17+10; comparison with C is being implemented.
-The scope is climate grids and classification; world startup, complete biomes,
-terrain, population and rendering require further evidence.
+This note records bytecode evidence and the isolated numerical comparison for
+the Beta 1.7.3 climate managers and biome classifier. Its explicit-seed fixture
+separates climate grids and classification from original world startup.
+The [shared Biome bootstrap evidence](biome-registry.md) records actual
+class-owned objects, lists and table aliases, plus the source order of reference
+sampling.
+Complete World, terrain, population and rendering acceptance remains separate.
 
 ## Reference identity
 
@@ -28,7 +30,7 @@ Constructors `xv.<init>(Lfd;)V` / `ph.<init>(Ldj;)V` create three independent
 Random instances from wrapping signed-long world-seed products. Fields `e`, `f`,
 `g` use multipliers 9871, 39811, 543321 and octave counts 4, 4, 2. Seed getters
 are called separately at 14/41/68, multiplication occurs at 20/47/74, and octave
-constructors at 25/52/79. The manager retains no world field. Normal seed getters
+constructors at 25/52/79. The manager retains no world field. Noise-backed seed getters
 `fd.s()J` / `dj.l()J` read world-info field `x` at 1 and call `ei.b()J` /
 `ct.b()J` at 4; those methods return their stored `a:J` at 1/4.
 
@@ -71,6 +73,20 @@ below/above at 167-185. They write the supplied or newly allocated output at 192
 and assign raw G to manager `c` at 77. With disjoint output, manager `a`, `b`
 and `d` are unchanged. Both grid paths traverse X outermost, Z innermost, with
 flat index `x*height+z`.
+
+The concrete [Dimension temperature implementation](../world/temperature.md)
+preserves these separate publication points. Output allocation19 is local until
+the method returns209; raw temperature44 precedes auxiliary74 and `c`77. A later
+auxiliary allocation failure therefore leaves earlier raw writes on a reused
+input. The Overworld population caller stores the returned array in provider `w`
+only at2684 in the [installed controller](../world/population/overworld.md).
+Whole-controller reentry and natural population qualification remain unfinished.
+
+The complete fixed overrides `hd.a([DIIII)[D` / `et.a([DIIII)[D` allocate output19
+only for null/short input, read actual fixed `f`30, call prefix `Arrays.fill`33
+and return37. They preserve a larger output suffix and do not access normal
+noise or manager `a/b/c/d`. These bodies use the same descriptor on both sides.
+Native allocation limits are separate controls, not original OOME observations.
 
 ## Reused arrays and adapters
 
@@ -191,7 +207,7 @@ Observed initialization banners were 16 achievements and 151 recipes on each
 side, captured separately from numerical records. This static trace and isolated
 run do not establish every transitive initializer or world startup.
 
-Normal chunk methods `yf.b(II)Llm;` / `pk.b(II)Lhi;` request a square 16x16
+Overworld ChunkProvider methods `yf.b(II)Llm;` / `pk.b(II)Lhi;` request a square 16x16
 biome grid at 65, then read manager temperature `a` at 78 before block and
 surface calls at 93/104. Population methods `yf.a(Lcl;II)V` /
 `pk.a(Lbl;II)V` request a point biome at chunk origin+(16,16), call 33, and

@@ -11,8 +11,7 @@
 static char request[PROBE_INPUT_BYTES * 2u + 64u];
 static uint8_t input[PROBE_INPUT_BYTES];
 
-static int hex_digit(char digit)
-{
+static int hex_digit(char digit) {
     if (digit >= '0' && digit <= '9')
         return digit - '0';
     if (digit >= 'a' && digit <= 'f')
@@ -22,14 +21,12 @@ static int hex_digit(char digit)
     return -1;
 }
 
-static void print_hex(const uint8_t *bytes, size_t length)
-{
+static void print_hex(const uint8_t *bytes, size_t length) {
     for (size_t i = 0; i < length; ++i)
         printf("%02x", (unsigned int)bytes[i]);
 }
 
-static int handle_request(char *line)
-{
+static int handle_request(char *line) {
     char *separator = strchr(line, '\t');
     mc_compression_format format;
     int encode;
@@ -126,8 +123,7 @@ static int handle_request(char *line)
     return 1;
 }
 
-int main(void)
-{
+int main(void) {
     while (fgets(request, (int)sizeof(request), stdin) != NULL) {
         size_t length = strlen(request);
         if (length != 0 && request[length - 1u] == '\n')

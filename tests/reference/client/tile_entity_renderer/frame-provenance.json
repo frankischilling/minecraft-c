@@ -1,0 +1,50 @@
+{
+  "scope": "Unchanged LL frame arithmetic with genuine original wh(fd=NULL) receiver. Constructor is an original operand prerequisite only, with no native Pig-construction parity claim. No World/Engine/Font instance, asset, native link, graphics or draw. Seed only10 read Entity pose fields and5 LL scalar output sentinels.",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "original_capture_sha256": "2fb99beeae42d735ef2eae6a5cc15b4f779584651a024ef6b85f93374abe5eca",
+  "fixture_sha256": "dfec04b995618322b5872f2b15ab9dc757fd0efea2ec3f35c4d061197f17fe07",
+  "cases": 24,
+  "rows": 97,
+  "method_rows": 96,
+  "original_only_constructor_rows": 1,
+  "jdk": [
+    "openjdk version \"17.0.17\" 2025-10-21\nOpenJDK Runtime Environment Temurin-17.0.17+10 (build 17.0.17+10)\nOpenJDK 64-Bit Server VM Temurin-17.0.17+10 (build 17.0.17+10, mixed mode, sharing)\n",
+    "javac 17.0.17\n"
+  ],
+  "capture_input_sha256": {
+    "java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "b1.7.3.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "frame-inputs.tsv": "1458635146045ed615fbf6e0312deac11f4e009145a98f8ef93838083816f626",
+    "TileEntityRendererFrameObservation.java": "904a5b32fb9b18f08a8c6c28cdf23eb6f83c99d06b4ea112be091a35d9977ef2",
+    "capture_frame.py": "d420db26eb2356dfb14bddcb5eabfb22e98806eb9613f196553180af9e0ee4c4",
+    "frame-source-pins.json": "0b23f8b1fbce0a09070052d865eccc493927cf41cf53c3dd09fb9e0cfadfb1bd",
+    "frame-inputs.json": "ab7ab4711c039dd388cdc931f526efe10576bbe57a8d6eb9ae2f1a5afcbe3d34",
+    "FRAME_README.md": "7af5337b313d0d82a9c73af10532456cbab7abf770c5f1a9d3d2820b5e2fc275",
+    "capture_reference.py": "66d089f96951ebf20a3a28a9fefd893bd3e469f203ed008c45787659c6a49155",
+    "capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "classfile.py": "a2d6bf0923890ff6bd73c32bc5bcfabf89f883c421a2c1eab4270a3cb060857d"
+  },
+  "observer_class_sha256": {
+    "TileEntityRendererFrameObservation$1.class": "f979b79ce77e54dd46124420ccb0a53d164f3d877293cdc1b7396e3b2bdf2646",
+    "TileEntityRendererFrameObservation.class": "f484d56caa4b81d41c34fcfd15061470301a5e2c5aeb65e748db76cf6d45bed7"
+  },
+  "initialization_log_sha256": "edfca59c9c4ffd942b74e3314bde4df3d13599cc159f62b942c0aa1a97b1489c",
+  "declared_ll_scalar_inputs": {
+    "h_i": [
+      "3f012345",
+      "bf054321"
+    ],
+    "j_k_l": [
+      "3ff123456789abcd",
+      "3ff123456789abce",
+      "3ff123456789abcf"
+    ]
+  },
+  "operand_preparation": "Authored declared input rows and actual reread stored input rows are retained separately. Native method comparisons consume the actual stored words; reflection setter parity and native Pig constructor parity are uncredited.",
+  "capture_note": "README hashes identify the instructions at capture time; later result descriptions do not change the frozen observed rows."
+}

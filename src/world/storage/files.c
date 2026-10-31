@@ -33,22 +33,19 @@ typedef struct mc_ws_native_path {
 
 static mc_world_storage_status mc_ws_error(mc_world_storage_error *error,
                                            mc_world_storage_status status, const char *operation,
-                                           uint32_t system_error)
-{
+                                           uint32_t system_error) {
     if (error != NULL) {
         *error = (mc_world_storage_error){status, operation, system_error};
     }
     return status;
 }
 
-static mc_world_storage_status mc_ws_success(mc_world_storage_error *error)
-{
+static mc_world_storage_status mc_ws_success(mc_world_storage_error *error) {
     return mc_ws_error(error, MC_WORLD_STORAGE_OK, NULL, 0);
 }
 
 static mc_world_storage_status mc_ws_errno(mc_world_storage_error *error, const char *operation,
-                                           int code)
-{
+                                           int code) {
     if (code == 0) {
         code = EIO;
     }
@@ -57,14 +54,12 @@ static mc_world_storage_status mc_ws_errno(mc_world_storage_error *error, const 
 }
 
 static mc_world_storage_status mc_ws_io_errno(mc_world_storage_error *error, const char *operation,
-                                              int code)
-{
+                                              int code) {
     return mc_ws_error(error, MC_WORLD_STORAGE_IO_ERROR, operation,
                        (uint32_t)(code == 0 ? EIO : code));
 }
 
-static bool mc_ws_utf8(const unsigned char *text, size_t length)
-{
+static bool mc_ws_utf8(const unsigned char *text, size_t length) {
     for (size_t i = 0; i < length;) {
         unsigned int first = text[i++];
         if (first < 128u) {
@@ -103,8 +98,7 @@ static bool mc_ws_utf8(const unsigned char *text, size_t length)
 }
 
 static mc_world_storage_status mc_ws_validate_path(const char *path, size_t *length,
-                                                   mc_world_storage_error *error)
-{
+                                                   mc_world_storage_error *error) {
     if (path == NULL || path[0] == '\0') {
         return mc_ws_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "path.validate", 0);
     }
@@ -123,8 +117,7 @@ static mc_world_storage_status mc_ws_validate_path(const char *path, size_t *len
 }
 
 static mc_world_storage_status mc_ws_native(const char *path, mc_ws_native_path *out,
-                                            mc_world_storage_error *error)
-{
+                                            mc_world_storage_error *error) {
     size_t bytes = 0;
     mc_world_storage_status status = mc_ws_validate_path(path, &bytes, error);
     if (status != MC_WORLD_STORAGE_OK) {
@@ -165,8 +158,7 @@ static mc_world_storage_status mc_ws_native(const char *path, mc_ws_native_path 
     return MC_WORLD_STORAGE_OK;
 }
 
-static bool mc_ws_separator(mc_ws_native_char value)
-{
+static bool mc_ws_separator(mc_ws_native_char value) {
 #ifdef _WIN32
     return value == L'/' || value == L'\\';
 #else
@@ -174,8 +166,7 @@ static bool mc_ws_separator(mc_ws_native_char value)
 #endif
 }
 
-static int mc_ws_stat(const mc_ws_native_char *path, mc_ws_native_stat *info)
-{
+static int mc_ws_stat(const mc_ws_native_char *path, mc_ws_native_stat *info) {
 #ifdef _WIN32
     return _wstat64(path, info);
 #else
@@ -183,8 +174,7 @@ static int mc_ws_stat(const mc_ws_native_char *path, mc_ws_native_stat *info)
 #endif
 }
 
-static bool mc_ws_is_directory(const mc_ws_native_stat *info)
-{
+static bool mc_ws_is_directory(const mc_ws_native_stat *info) {
 #ifdef _WIN32
     return (info->st_mode & _S_IFMT) == _S_IFDIR;
 #else
@@ -192,8 +182,7 @@ static bool mc_ws_is_directory(const mc_ws_native_stat *info)
 #endif
 }
 
-static bool mc_ws_is_regular(const mc_ws_native_stat *info)
-{
+static bool mc_ws_is_regular(const mc_ws_native_stat *info) {
 #ifdef _WIN32
     return (info->st_mode & _S_IFMT) == _S_IFREG;
 #else
@@ -202,8 +191,7 @@ static bool mc_ws_is_regular(const mc_ws_native_stat *info)
 }
 
 static mc_world_storage_status mc_ws_regular(const mc_ws_native_char *path, bool missing_ok,
-                                             mc_world_storage_error *error)
-{
+                                             mc_world_storage_error *error) {
     mc_ws_native_stat info;
     if (mc_ws_stat(path, &info) != 0) {
         int code = errno;
@@ -218,8 +206,7 @@ static mc_world_storage_status mc_ws_regular(const mc_ws_native_char *path, bool
     return MC_WORLD_STORAGE_OK;
 }
 
-static int mc_ws_unlink(const mc_ws_native_char *path)
-{
+static int mc_ws_unlink(const mc_ws_native_char *path) {
 #ifdef _WIN32
     return _wremove(path);
 #else
@@ -228,8 +215,7 @@ static int mc_ws_unlink(const mc_ws_native_char *path)
 }
 
 mc_world_storage_status mc_ws_path_join(const char *root, const char *leaf, char **out,
-                                        mc_world_storage_error *error)
-{
+                                        mc_world_storage_error *error) {
     if (out == NULL) {
         return mc_ws_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "join.output", 0);
     }
@@ -273,8 +259,7 @@ mc_world_storage_status mc_ws_path_join(const char *root, const char *leaf, char
 }
 
 static mc_world_storage_status mc_ws_directory(const mc_ws_native_char *path, bool create,
-                                               mc_world_storage_error *error)
-{
+                                               mc_world_storage_error *error) {
     if (create) {
 #ifdef _WIN32
         int result = _wmkdir(path);
@@ -300,8 +285,7 @@ static mc_world_storage_status mc_ws_directory(const mc_ws_native_char *path, bo
 }
 
 static mc_world_storage_status mc_ws_root_length(const mc_ws_native_path *path, size_t *length,
-                                                 mc_world_storage_error *error)
-{
+                                                 mc_world_storage_error *error) {
     *length = 0;
 #ifdef _WIN32
     if (path->length >= 2 && path->value[1] == L':') {
@@ -342,8 +326,7 @@ static mc_world_storage_status mc_ws_root_length(const mc_ws_native_path *path, 
     return MC_WORLD_STORAGE_OK;
 }
 
-mc_world_storage_status mc_ws_mkdirs(const char *path, mc_world_storage_error *error)
-{
+mc_world_storage_status mc_ws_mkdirs(const char *path, mc_world_storage_error *error) {
     mc_ws_native_path native = {0};
     mc_world_storage_status status = mc_ws_native(path, &native, error);
     if (status != MC_WORLD_STORAGE_OK) {
@@ -376,8 +359,8 @@ mc_world_storage_status mc_ws_mkdirs(const char *path, mc_world_storage_error *e
 }
 
 static mc_world_storage_status mc_ws_open(const mc_ws_native_path *path, bool writing,
-                                          bool exclusive, FILE **out, mc_world_storage_error *error)
-{
+                                          bool exclusive, FILE **out,
+                                          mc_world_storage_error *error) {
     FILE *file = NULL;
     errno = 0;
 #ifdef _WIN32
@@ -394,8 +377,7 @@ static mc_world_storage_status mc_ws_open(const mc_ws_native_path *path, bool wr
 }
 
 static mc_world_storage_status mc_ws_file_stat(FILE *file, mc_ws_native_stat *info,
-                                               mc_world_storage_error *error)
-{
+                                               mc_world_storage_error *error) {
     errno = 0;
 #ifdef _WIN32
     int descriptor = _fileno(file);
@@ -414,8 +396,7 @@ static mc_world_storage_status mc_ws_file_stat(FILE *file, mc_ws_native_stat *in
 }
 
 static mc_world_storage_status mc_ws_close(FILE *file, mc_world_storage_status status,
-                                           const char *operation, mc_world_storage_error *error)
-{
+                                           const char *operation, mc_world_storage_error *error) {
     errno = 0;
     if (fclose(file) != 0 && status == MC_WORLD_STORAGE_OK) {
         return mc_ws_io_errno(error, operation, errno);
@@ -424,8 +405,7 @@ static mc_world_storage_status mc_ws_close(FILE *file, mc_world_storage_status s
 }
 
 mc_world_storage_status mc_ws_read_file(const char *path, size_t max_bytes, mc_ws_file_bytes *out,
-                                        mc_world_storage_error *error)
-{
+                                        mc_world_storage_error *error) {
     if (out == NULL || max_bytes > MC_WS_FILE_MAX_BYTES) {
         return mc_ws_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "read.arguments", 0);
     }
@@ -505,8 +485,7 @@ mc_world_storage_status mc_ws_read_file(const char *path, size_t max_bytes, mc_w
     return mc_ws_success(error);
 }
 
-void mc_ws_free_file_bytes(mc_ws_file_bytes *bytes)
-{
+void mc_ws_free_file_bytes(mc_ws_file_bytes *bytes) {
     if (bytes != NULL) {
         free(bytes->data);
         *bytes = (mc_ws_file_bytes){NULL, 0};
@@ -514,8 +493,7 @@ void mc_ws_free_file_bytes(mc_ws_file_bytes *bytes)
 }
 
 mc_world_storage_status mc_ws_read_prefix(const char *path, uint8_t *output, size_t length,
-                                          mc_world_storage_error *error)
-{
+                                          mc_world_storage_error *error) {
     if (output == NULL && length != 0) {
         return mc_ws_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "prefix.arguments", 0);
     }
@@ -562,8 +540,7 @@ mc_world_storage_status mc_ws_read_prefix(const char *path, uint8_t *output, siz
 }
 
 mc_world_storage_status mc_ws_write_file(const char *path, const uint8_t *bytes, size_t length,
-                                         bool exclusive, mc_world_storage_error *error)
-{
+                                         bool exclusive, mc_world_storage_error *error) {
     if (bytes == NULL && length != 0) {
         return mc_ws_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "write.arguments", 0);
     }
@@ -605,9 +582,55 @@ mc_world_storage_status mc_ws_write_file(const char *path, const uint8_t *bytes,
     return status == MC_WORLD_STORAGE_OK ? mc_ws_success(error) : status;
 }
 
+mc_world_storage_status mc_ws_output_open(const char *path, size_t max_bytes, mc_ws_output *out,
+                                          mc_world_storage_error *error) {
+    if (out == NULL)
+        return mc_ws_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "output.arguments", 0);
+    if (max_bytes > MC_WS_FILE_MAX_BYTES)
+        return mc_ws_error(error, MC_WORLD_STORAGE_LIMIT, "output.limit", 0);
+    mc_ws_native_path native = {0};
+    mc_world_storage_status status = mc_ws_native(path, &native, error);
+    FILE *file = NULL;
+    if (status == MC_WORLD_STORAGE_OK)
+        status = mc_ws_regular(native.value, true, error);
+    if (status == MC_WORLD_STORAGE_OK)
+        status = mc_ws_open(&native, true, false, &file, error);
+    free(native.value);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    *out = (mc_ws_output){file, max_bytes};
+    return mc_ws_success(error);
+}
+
+mc_world_storage_status mc_ws_output_write(mc_ws_output *output, const uint8_t *bytes,
+                                           size_t length, mc_world_storage_error *error) {
+    if (output == NULL || output->file == NULL || (length != 0 && bytes == NULL))
+        return mc_ws_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "output.arguments", 0);
+    if (length > output->remaining)
+        return mc_ws_error(error, MC_WORLD_STORAGE_LIMIT, "output.limit", 0);
+    errno = 0;
+    size_t written = length == 0 ? 0 : fwrite(bytes, 1, length, output->file);
+    output->remaining -= written;
+    if (written != length)
+        return mc_ws_io_errno(error, "output.write.errno", errno);
+    return mc_ws_success(error);
+}
+
+mc_world_storage_status mc_ws_output_close(mc_ws_output *output, mc_world_storage_error *error) {
+    if (output == NULL || output->file == NULL)
+        return mc_ws_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "output.arguments", 0);
+    mc_world_storage_status status = MC_WORLD_STORAGE_OK;
+    errno = 0;
+    if (fflush(output->file) != 0)
+        status = mc_ws_io_errno(error, "output.flush.errno", errno);
+    status = mc_ws_close(output->file, status, "output.close.errno", error);
+    output->file = NULL;
+    output->remaining = 0;
+    return status == MC_WORLD_STORAGE_OK ? mc_ws_success(error) : status;
+}
+
 mc_world_storage_status mc_ws_replace_file(const char *source, const char *target,
-                                           mc_world_storage_error *error)
-{
+                                           mc_world_storage_error *error) {
     mc_ws_native_path from = {0}, to = {0};
     mc_world_storage_status status = mc_ws_native(source, &from, error);
     if (status == MC_WORLD_STORAGE_OK) {
@@ -641,8 +664,7 @@ mc_world_storage_status mc_ws_replace_file(const char *source, const char *targe
 }
 
 mc_world_storage_status mc_ws_remove_file(const char *path, bool missing_ok,
-                                          mc_world_storage_error *error)
-{
+                                          mc_world_storage_error *error) {
     mc_ws_native_path native = {0};
     mc_world_storage_status status = mc_ws_native(path, &native, error);
     if (status == MC_WORLD_STORAGE_OK && mc_ws_unlink(native.value) != 0) {
@@ -656,8 +678,7 @@ mc_world_storage_status mc_ws_remove_file(const char *path, bool missing_ok,
 }
 
 mc_world_storage_status mc_ws_path_exists(const char *path, bool *out,
-                                          mc_world_storage_error *error)
-{
+                                          mc_world_storage_error *error) {
     if (out == NULL) {
         return mc_ws_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "exists.output", 0);
     }

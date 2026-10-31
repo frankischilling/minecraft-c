@@ -1,0 +1,5 @@
+add_executable(mc_test_calendar tests/platform/time/test_calendar.c)
+target_include_directories(mc_test_calendar PRIVATE src/platform/time)
+target_link_libraries(mc_test_calendar PRIVATE mc_platform_time mc_build_options)
+add_test(NAME platform.calendar_real_clock COMMAND mc_test_calendar)
+set_tests_properties(platform.calendar_real_clock PROPERTIES LABELS "public;unit" TIMEOUT 60)

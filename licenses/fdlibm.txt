@@ -1,0 +1,48 @@
+Netlib fdlibm 5.3 log component
+=============================
+
+The Netlib-derived code in src/core/math/fdlibm/log.c retains the Sun
+permission notice below. It is separately attributed; the project's MIT
+license does not replace or relabel this notice.
+
+Original source:
+  https://netlib.org/fdlibm/e_log.c
+  SCCS identifier: e_log.c 1.3 95/01/18
+  Official distribution README: https://netlib.org/fdlibm/readme
+  Distribution version identified by that README: fdlibm 5.3
+  Acquired source length: 4451 bytes
+  Acquired source SHA-256:
+    a2b1bd1b367026a35f36da53425cd618386c3bf69d23ac224a40791aa9855ac9
+  Acquisition: 2026-10-19, HTTPS source data from Netlib.
+
+Preserved original notice:
+
+/*
+ * ====================================================
+ * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
+ *
+ * Developed at SunSoft, a Sun Microsystems, Inc. business.
+ * Permission to use, copy, modify, and distribute this
+ * software is freely granted, provided that this notice
+ * is preserved.
+ * ====================================================
+ */
+
+Project adaptations:
+  - Rename the IEEE log entrypoint to mc_math_strict_log and supply a modern
+    C17 declaration in mc/core/math/strict.h.
+  - Replace fdlibm.h and int-pointer word aliasing with memcpy/uint64_t bit
+    extraction and high-word replacement; decode signed words without an
+    out-of-range signed cast. Use fixed-width, bounded integer arithmetic.
+  - Encode the ten supplied coefficients/scaling constants and the small-path
+    one-third coefficient as exact binary64 hexadecimal floating constants.
+  - Add explicit braces, formatting, platform/evaluation assertions and the
+    admitted positive-finite/strict-FP contract without changing the source
+    branch conditions, arithmetic association or return formulas.
+  - Preserve the full original algorithm and applicable copyright/permission
+    comments. Normalize their indentation/whitespace for this source file.
+
+The port origin is the independently acquired Netlib file identified above.
+No private GPL-licensed OpenJDK source is the port origin. The SSE2 sqrt
+implementation in src/core/math/strict.c is separate project code, not an
+import of Netlib's software sqrt or OpenJDK's native implementation.

@@ -1,0 +1,85 @@
+{
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "classes": {
+    "oz": {
+      "class_bytes": 2224,
+      "class_sha256": "cc8f7789e10db045a9760df75705b342f5c52dc93c30b82d8734da3b8b67ca7e",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 15,
+          "code_sha256": "fdfaca99a1dc649125477968ea0032b55c4e7ba0f5711f9ac4652ee91ef2bd83"
+        },
+        {
+          "name": "b",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 260,
+          "code_sha256": "7495506f96d2cd960d0e22985b3a88c91c023537c43056cadb584ea8ce1d5733"
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lke;)V",
+          "access": 4,
+          "code_bytes": 177,
+          "code_sha256": "88988bd69b2ef812410b301f9df06af22193d2c54d96278a41b8c717097daca1"
+        },
+        {
+          "name": "a",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 15,
+          "code_sha256": "a54f1e9e3058230effe9181e4a05d645dc7822f76602214036e8c27793839e9b"
+        },
+        {
+          "name": "a",
+          "descriptor": "(IIF)V",
+          "access": 1,
+          "code_bytes": 151,
+          "code_sha256": "24b8c7db596b54859951cb142b775f6d6ee422e2f73498ce364ea59bff241d41"
+        }
+      ]
+    },
+    "da": {
+      "class_bytes": 3962,
+      "class_sha256": "55349b76fb6119d1ea841fb3488b19b387a32abae0b2ce94b5e11706cc4b6890",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 26,
+          "code_sha256": "fa6033c77e35f433f7fc88ab9f2439498f30e166a5158be131d094de100ffb0d"
+        }
+      ]
+    },
+    "do": {
+      "class_bytes": 494,
+      "class_sha256": "c361dd8c809f5986c6d70a45c8e47a823d559316e5cc44228d4b9ee16f81bb41",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)Ljava/lang/String;",
+          "access": 9,
+          "code_bytes": 8,
+          "code_sha256": "e1b5951d0087e1c420e2c2e745999f29bfc15b7b3e64a6a37ef2c0b3f9c31497"
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8,
+          "code_bytes": 7,
+          "code_sha256": "8732e0dacb283e87bfb3a3422aca04bd01c091b1dbfbfee45e0d535ecf9720b3"
+        }
+      ]
+    }
+  }
+}

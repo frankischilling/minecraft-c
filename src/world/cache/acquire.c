@@ -4,8 +4,7 @@
 
 #include <string.h>
 
-const char *mc_chunk_acquire_status_string(mc_chunk_acquire_status status)
-{
+const char *mc_chunk_acquire_status_string(mc_chunk_acquire_status status) {
     switch (status) {
         case MC_CHUNK_ACQUIRE_OK:
             return "ok";
@@ -25,14 +24,12 @@ const char *mc_chunk_acquire_status_string(mc_chunk_acquire_status status)
     return "unknown chunk acquisition status";
 }
 
-static bool pending_metadata_valid(const mc_chunk_pending *pending)
-{
+static bool pending_metadata_valid(const mc_chunk_pending *pending) {
     return pending != NULL && pending->capacity <= SIZE_MAX / sizeof(*pending->keys) &&
            pending->count <= pending->capacity && (pending->capacity == 0 || pending->keys != NULL);
 }
 
-bool mc_chunk_pending_init(mc_chunk_pending *pending, int32_t *keys, size_t capacity)
-{
+bool mc_chunk_pending_init(mc_chunk_pending *pending, int32_t *keys, size_t capacity) {
     if (pending == NULL || capacity > SIZE_MAX / sizeof(*keys) || (capacity != 0 && keys == NULL)) {
         return false;
     }
@@ -41,8 +38,7 @@ bool mc_chunk_pending_init(mc_chunk_pending *pending, int32_t *keys, size_t capa
 }
 
 bool mc_chunk_pending_init_ordered(mc_chunk_pending *pending, int32_t *keys, size_t capacity,
-                                   mc_java_int_set *history)
-{
+                                   mc_java_int_set *history) {
     if (pending == NULL || history == NULL || mc_java_int_set_size(history) != 0 ||
         capacity > SIZE_MAX / sizeof(*keys) || (capacity != 0 && keys == NULL)) {
         return false;
@@ -51,8 +47,7 @@ bool mc_chunk_pending_init_ordered(mc_chunk_pending *pending, int32_t *keys, siz
     return true;
 }
 
-bool mc_chunk_pending_validate(const mc_chunk_pending *pending)
-{
+bool mc_chunk_pending_validate(const mc_chunk_pending *pending) {
     if (!pending_metadata_valid(pending))
         return false;
     if (pending->history != NULL && mc_java_int_set_size(pending->history) != pending->count)
@@ -69,8 +64,7 @@ bool mc_chunk_pending_validate(const mc_chunk_pending *pending)
     return true;
 }
 
-bool mc_chunk_pending_contains(const mc_chunk_pending *pending, int32_t key)
-{
+bool mc_chunk_pending_contains(const mc_chunk_pending *pending, int32_t key) {
     if (!pending_metadata_valid(pending))
         return false;
     for (size_t i = 0; i < pending->count; ++i) {
@@ -80,8 +74,8 @@ bool mc_chunk_pending_contains(const mc_chunk_pending *pending, int32_t key)
     return false;
 }
 
-mc_chunk_acquire_status mc_chunk_pending_add(mc_chunk_pending *pending, int32_t key, bool *changed)
-{
+mc_chunk_acquire_status mc_chunk_pending_add(mc_chunk_pending *pending, int32_t key,
+                                             bool *changed) {
     if (changed == NULL || !mc_chunk_pending_validate(pending))
         return MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
     if (mc_chunk_pending_contains(pending, key)) {
@@ -104,8 +98,7 @@ mc_chunk_acquire_status mc_chunk_pending_add(mc_chunk_pending *pending, int32_t 
 }
 
 mc_chunk_acquire_status mc_chunk_pending_remove(mc_chunk_pending *pending, int32_t key,
-                                                bool *changed)
-{
+                                                bool *changed) {
     if (changed == NULL || !mc_chunk_pending_validate(pending))
         return MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
     for (size_t i = 0; i < pending->count; ++i) {
@@ -128,8 +121,7 @@ mc_chunk_acquire_status mc_chunk_pending_remove(mc_chunk_pending *pending, int32
     return MC_CHUNK_ACQUIRE_OK;
 }
 
-mc_chunk_acquire_status mc_chunk_pending_first(const mc_chunk_pending *pending, int32_t *key)
-{
+mc_chunk_acquire_status mc_chunk_pending_first(const mc_chunk_pending *pending, int32_t *key) {
     if (key == NULL || !mc_chunk_pending_validate(pending) || pending->history == NULL)
         return MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
     mc_java_int_set_status status = mc_java_int_set_first(pending->history, key);
@@ -138,8 +130,7 @@ mc_chunk_acquire_status mc_chunk_pending_first(const mc_chunk_pending *pending, 
     return status == MC_JAVA_INT_SET_OK ? MC_CHUNK_ACQUIRE_OK : MC_CHUNK_ACQUIRE_STATE_ERROR;
 }
 
-mc_chunk_acquire_status mc_chunk_pending_clear(mc_chunk_pending *pending)
-{
+mc_chunk_acquire_status mc_chunk_pending_clear(mc_chunk_pending *pending) {
     if (!mc_chunk_pending_validate(pending))
         return MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
     if (pending->history != NULL)
@@ -148,19 +139,17 @@ mc_chunk_acquire_status mc_chunk_pending_clear(mc_chunk_pending *pending)
     return MC_CHUNK_ACQUIRE_OK;
 }
 
-static bool chunk_valid(const mc_chunk_state *chunk)
-{
+static bool chunk_valid(const mc_chunk_state *chunk) {
     return chunk != NULL && (chunk->blank || chunk->data != NULL);
 }
 
-bool mc_chunk_acquire_validate(const mc_chunk_acquire_context *context)
-{
+bool mc_chunk_acquire_validate(const mc_chunk_acquire_context *context) {
     if (context == NULL || context->cache == NULL ||
         context->cache->capacity > SIZE_MAX / sizeof(*context->cache->entries) ||
         context->cache->insertion_capacity > SIZE_MAX / sizeof(*context->cache->insertions) ||
         !mc_chunk_cache_validate(context->cache) || !mc_chunk_pending_validate(context->pending) ||
         !chunk_valid(context->fallback) || context->world_time == NULL ||
-        context->register_tiles == NULL || context->register_entities == NULL ||
+        context->register_tile_entities == NULL || context->register_entities == NULL ||
         (context->generate == NULL) != (context->populate == NULL)) {
         return false;
     }
@@ -174,50 +163,44 @@ bool mc_chunk_acquire_validate(const mc_chunk_acquire_context *context)
     return context->policy == MC_CHUNK_ACQUIRE_BASE;
 }
 
-static bool chunk_hold(const mc_chunk_acquire_context *context, mc_chunk_state *chunk)
-{
+static bool chunk_hold(const mc_chunk_acquire_context *context, mc_chunk_state *chunk) {
     return context->references == NULL ||
            context->references->retain(context->references->owner, chunk);
 }
 
-static void chunk_release(const mc_chunk_acquire_context *context, mc_chunk_state *chunk)
-{
+static void chunk_release(const mc_chunk_acquire_context *context, mc_chunk_state *chunk) {
     if (context->references != NULL)
         context->references->release(context->references->owner, chunk);
 }
 
-static size_t entry_index(const mc_chunk_cache *cache, int32_t key)
-{
+static size_t entry_index(const mc_chunk_cache *cache, int32_t key) {
     size_t index = 0;
     while (index < cache->count && cache->entries[index].key != key)
         ++index;
     return index;
 }
 
-static bool publication_room(const mc_chunk_cache *cache, int32_t key)
-{
+static bool publication_room(const mc_chunk_cache *cache, int32_t key) {
     return cache->insertion_count < cache->insertion_capacity &&
            (entry_index(cache, key) < cache->count || cache->count < cache->capacity);
 }
 
 static mc_chunk_acquire_status callback_result(const mc_chunk_acquire_context *context,
-                                               bool success)
-{
+                                               bool success) {
     if (!mc_chunk_acquire_validate(context))
         return MC_CHUNK_ACQUIRE_STATE_ERROR;
     return success ? MC_CHUNK_ACQUIRE_OK : MC_CHUNK_ACQUIRE_CALLBACK_FAILED;
 }
 
 static mc_chunk_acquire_status activate(const mc_chunk_acquire_context *context,
-                                        mc_chunk_state *chunk)
-{
+                                        mc_chunk_state *chunk) {
     if (chunk->blank)
         return MC_CHUNK_ACQUIRE_OK;
     /* Original pre-activation is a no-op. Activation itself sets active first,
-     * then registers tiles and all eight slices, including empty collections. */
+     * then registers TileEntities and all eight slices, including empty collections. */
     chunk->active = true;
     mc_chunk_acquire_status status =
-        callback_result(context, context->register_tiles(context->world, context, chunk));
+        callback_result(context, context->register_tile_entities(context->world, context, chunk));
     if (status != MC_CHUNK_ACQUIRE_OK)
         return status;
     for (size_t slice = 0; slice < 8u; ++slice) {
@@ -230,8 +213,7 @@ static mc_chunk_acquire_status activate(const mc_chunk_acquire_context *context,
 }
 
 mc_chunk_acquire_status mc_chunk_acquire_get(const mc_chunk_acquire_context *context, int32_t x,
-                                             int32_t z, mc_chunk_state **out)
-{
+                                             int32_t z, mc_chunk_state **out) {
     if (out == NULL || !mc_chunk_acquire_validate(context))
         return MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
     mc_chunk_state *chunk;
@@ -248,8 +230,7 @@ mc_chunk_acquire_status mc_chunk_acquire_get(const mc_chunk_acquire_context *con
 }
 
 mc_chunk_acquire_status mc_chunk_acquire_populate(const mc_chunk_acquire_context *context,
-                                                  int32_t x, int32_t z)
-{
+                                                  int32_t x, int32_t z) {
     if (!mc_chunk_acquire_validate(context))
         return MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
     mc_chunk_state *chunk;
@@ -271,8 +252,7 @@ mc_chunk_acquire_status mc_chunk_acquire_populate(const mc_chunk_acquire_context
 }
 
 static mc_chunk_acquire_status population_gates(const mc_chunk_acquire_context *context,
-                                                mc_chunk_state *returned, int32_t x, int32_t z)
-{
+                                                mc_chunk_state *returned, int32_t x, int32_t z) {
     int32_t west = mc_java_i32_sub(x, 1), east = mc_java_i32_add(x, 1);
     int32_t north = mc_java_i32_sub(z, 1), south = mc_java_i32_add(z, 1);
     mc_chunk_acquire_status status;
@@ -326,8 +306,7 @@ static mc_chunk_acquire_status population_gates(const mc_chunk_acquire_context *
 }
 
 mc_chunk_acquire_status mc_chunk_acquire(const mc_chunk_acquire_context *context, int32_t x,
-                                         int32_t z, mc_chunk_state **out)
-{
+                                         int32_t z, mc_chunk_state **out) {
     if (out == NULL || !mc_chunk_acquire_validate(context))
         return MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
     int32_t key = mc_chunk_cache_key(x, z);
@@ -403,8 +382,7 @@ mc_chunk_acquire_status mc_chunk_acquire(const mc_chunk_acquire_context *context
 }
 
 mc_chunk_acquire_status mc_chunk_acquire_mark_drop(const mc_chunk_acquire_context *context,
-                                                   int32_t x, int32_t z)
-{
+                                                   int32_t x, int32_t z) {
     if (!mc_chunk_acquire_validate(context) || context->policy != MC_CHUNK_ACQUIRE_DEDICATED)
         return MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
     int32_t dx = mc_java_i32_sub(mc_java_i32_add(mc_java_i32_mul(x, 16), 8), *context->spawn_x);

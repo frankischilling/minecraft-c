@@ -1,0 +1,158 @@
+{
+  "width": 64,
+  "height": 64,
+  "cases": [
+    {
+      "name": "byte_m128_negative",
+      "frames": 1
+    },
+    {
+      "name": "byte_m127_negative",
+      "frames": 1
+    },
+    {
+      "name": "byte_m1_negative",
+      "frames": 1
+    },
+    {
+      "name": "byte_zero_positive",
+      "frames": 1
+    },
+    {
+      "name": "byte_p1_positive",
+      "frames": 1
+    },
+    {
+      "name": "byte_p64_positive",
+      "frames": 1
+    },
+    {
+      "name": "byte_p126_positive",
+      "frames": 1
+    },
+    {
+      "name": "byte_p127_positive",
+      "frames": 1
+    },
+    {
+      "name": "byte_x_zero",
+      "frames": 1
+    },
+    {
+      "name": "byte_mixed",
+      "frames": 1
+    },
+    {
+      "name": "current_zero",
+      "frames": 1
+    },
+    {
+      "name": "current_half",
+      "frames": 1
+    },
+    {
+      "name": "current_unit",
+      "frames": 1
+    },
+    {
+      "name": "current_controls_00",
+      "frames": 1
+    },
+    {
+      "name": "current_controls_10",
+      "frames": 1
+    },
+    {
+      "name": "current_controls_01",
+      "frames": 1
+    },
+    {
+      "name": "current_controls_11",
+      "frames": 1
+    },
+    {
+      "name": "byte_controls_00",
+      "frames": 1
+    },
+    {
+      "name": "byte_controls_10",
+      "frames": 1
+    },
+    {
+      "name": "byte_controls_01",
+      "frames": 1
+    },
+    {
+      "name": "byte_controls_11",
+      "frames": 1
+    },
+    {
+      "name": "triangle_flat",
+      "frames": 1
+    },
+    {
+      "name": "triangle_smooth",
+      "frames": 1
+    },
+    {
+      "name": "fan_flat",
+      "frames": 1
+    },
+    {
+      "name": "fan_smooth",
+      "frames": 1
+    },
+    {
+      "name": "rotate_after_upload",
+      "frames": 1
+    },
+    {
+      "name": "rotate_before_upload",
+      "frames": 1
+    },
+    {
+      "name": "mirrored_scale",
+      "frames": 1
+    },
+    {
+      "name": "material_ambient",
+      "frames": 1
+    },
+    {
+      "name": "material_diffuse",
+      "frames": 1
+    },
+    {
+      "name": "material_emission",
+      "frames": 1
+    },
+    {
+      "name": "material_specular",
+      "frames": 1
+    },
+    {
+      "name": "material_switch_freeze",
+      "frames": 1
+    },
+    {
+      "name": "list_replay",
+      "frames": 2
+    },
+    {
+      "name": "texture_alpha",
+      "frames": 1
+    },
+    {
+      "name": "texture_fog",
+      "frames": 1
+    },
+    {
+      "name": "converted_quad_flat",
+      "frames": 1
+    },
+    {
+      "name": "converted_quad_smooth",
+      "frames": 1
+    }
+  ]
+}

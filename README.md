@@ -5,15 +5,19 @@ The target is a graphical single-player/multiplayer client and a dedicated
 headless server, reproducing the original behavior with locally selected
 usernames and no account authentication.
 
-There is no playable C client or server yet. Shared libraries cover numerical
-and text compatibility, NBT/compression, and terrain-generation components.
-Tests, reference tools and a local resource importer support development.
-The [parity matrix](docs/parity.md) records verified scenarios and outstanding work.
+Development currently focuses on the single-player client. Menus, existing-save
+loading, player input and parts of world rendering run, but the client is not
+playable yet. See [current status](docs/status.md) for progress and limitations,
+and the [parity matrix](docs/parity.md) for verified behavior.
 
 ## Build
 
 Use a C17 compiler, CMake 3.24+, Ninja, and Python 3.10+. On Windows, run from a
-Visual Studio developer shell. Initial configuration downloads pinned zlib.
+Visual Studio developer shell. Initial configuration downloads pinned zlib,
+SDL3, libpng, FreeType, libogg, libvorbis, OpenAL Soft, curl and Expat. Client audio
+needs a C++20 compiler for OpenAL Soft; project-owned runtime code remains C17.
+Linux builds need the platform
+development packages listed in [build setup](docs/building.md).
 
 ```sh
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug

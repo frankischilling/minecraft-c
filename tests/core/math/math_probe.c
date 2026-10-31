@@ -12,31 +12,27 @@ static mc_math_trig table;
 static mc_math_trig original;
 static char request[PROBE_LINE + 4u];
 
-static uint32_t float_bits(float value)
-{
+static uint32_t float_bits(float value) {
     uint32_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary32 storage required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static float float_from_bits(uint32_t bits)
-{
+static float float_from_bits(uint32_t bits) {
     float value;
     memcpy(&value, &bits, sizeof(value));
     return value;
 }
 
-static double double_from_bits(uint64_t bits)
-{
+static double double_from_bits(uint64_t bits) {
     double value;
     _Static_assert(sizeof(bits) == sizeof(value), "binary64 storage required");
     memcpy(&value, &bits, sizeof(value));
     return value;
 }
 
-static int parse_bits(const char *text, size_t digits, uint64_t *out)
-{
+static int parse_bits(const char *text, size_t digits, uint64_t *out) {
     if (strlen(text) != digits) {
         return 0;
     }
@@ -56,8 +52,7 @@ static int parse_bits(const char *text, size_t digits, uint64_t *out)
     return 1;
 }
 
-static int respond(char *line)
-{
+static int respond(char *line) {
     char *argument = strchr(line, '\t');
     if (argument == NULL) {
         return 0;
@@ -88,8 +83,7 @@ static int respond(char *line)
 
 /* Return one for a complete line, zero for clean EOF, and -1 for invalid input.
  * Count content bytes independently of C string termination and permit CRLF. */
-static int read_request(void)
-{
+static int read_request(void) {
     size_t length = 0;
     int byte;
     while ((byte = fgetc(stdin)) != EOF) {
@@ -115,8 +109,7 @@ static int read_request(void)
     return length == 0 ? 0 : 1;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     (void)argv;
     if (argc != 1 || !mc_math_trig_init(&table)) {
         return 1;

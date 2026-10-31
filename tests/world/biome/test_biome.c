@@ -16,22 +16,19 @@ static unsigned int checks;
         }                                                                                          \
     } while (0)
 
-static uint64_t bits_of(double value)
-{
+static uint64_t bits_of(double value) {
     uint64_t bits;
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static double from_bits(uint64_t bits)
-{
+static double from_bits(uint64_t bits) {
     double value;
     memcpy(&value, &bits, sizeof(value));
     return value;
 }
 
-static float float_from_bits(uint32_t bits)
-{
+static float float_from_bits(uint32_t bits) {
     float value;
     memcpy(&value, &bits, sizeof(value));
     return value;
@@ -494,8 +491,7 @@ static const climate_fixture observed_climates[] = {
      'h'},
 };
 
-static int test_catalogue_and_classifiers(void)
-{
+static int test_catalogue_and_classifiers(void) {
     static const char *names[] = {
         "Rainforest", "Swampland", "Seasonal Forest", "Forest", "Savanna", "Shrubland", "Taiga",
         "Desert",     "Plains",    "Ice Desert",      "Tundra", "Hell",    "Sky"};
@@ -556,8 +552,7 @@ static int test_catalogue_and_classifiers(void)
     return 0;
 }
 
-static int test_invalid_selectors(void)
-{
+static int test_invalid_selectors(void) {
     mc_biome_classifier classifier;
     CHECK(mc_biome_classifier_init(&classifier) == MC_BIOME_OK);
     mc_biome_classifier saved = classifier;
@@ -597,8 +592,7 @@ static int test_invalid_selectors(void)
     return 0;
 }
 
-static int test_buffer_lifetimes(void)
-{
+static int test_buffer_lifetimes(void) {
     mc_biome_memory memory = {0};
     mc_biome_memory other = {0};
     CHECK(mc_biome_memory_init(NULL, 0) == MC_BIOME_INVALID_ARGUMENT);
@@ -672,8 +666,7 @@ static int test_buffer_lifetimes(void)
     return 0;
 }
 
-static int test_original_climate_sequences(void)
-{
+static int test_original_climate_sequences(void) {
     for (size_t f = 0; f < sizeof(observed_climates) / sizeof(observed_climates[0]); ++f) {
         const climate_fixture *fixture = &observed_climates[f];
         mc_biome_memory memory = {0};
@@ -758,8 +751,7 @@ static int test_original_climate_sequences(void)
     return 0;
 }
 
-static int test_channel_construction(void)
-{
+static int test_channel_construction(void) {
     static const int64_t seeds[] = {0, 1, -1, INT64_MIN, INT64_MAX, INT64_C(1234567890123456789)};
     /* Constructor channel counts and independent wrapped seed products were
      * checked in both originals' manager constructors before the fixture setup. */
@@ -787,8 +779,7 @@ static int test_channel_construction(void)
     return 0;
 }
 
-static int test_reuse_adapters_and_client_raw(void)
-{
+static int test_reuse_adapters_and_client_raw(void) {
     mc_biome_memory memory = {0};
     mc_biome_manager manager = {0};
     mc_biome_buffer output = {0};
@@ -893,8 +884,7 @@ typedef struct manager_snapshot {
     mc_biome_id cached[16];
 } manager_snapshot;
 
-static void save_manager(manager_snapshot *snapshot, const mc_biome_manager *manager)
-{
+static void save_manager(manager_snapshot *snapshot, const mc_biome_manager *manager) {
     memcpy(&snapshot->manager, manager, sizeof(*manager));
     snapshot->memory = *manager->memory;
     const mc_biome_double_buffer *channels[] = {&manager->a, &manager->b, &manager->c};
@@ -903,8 +893,7 @@ static void save_manager(manager_snapshot *snapshot, const mc_biome_manager *man
     memcpy(snapshot->cached, manager->d.data, manager->d.length * sizeof(mc_biome_id));
 }
 
-static int check_saved(const manager_snapshot *snapshot, const mc_biome_manager *manager)
-{
+static int check_saved(const manager_snapshot *snapshot, const mc_biome_manager *manager) {
     CHECK(memcmp(&snapshot->manager, manager, sizeof(*manager)) == 0);
     CHECK(memcmp(&snapshot->memory, manager->memory, sizeof(snapshot->memory)) == 0);
     const mc_biome_double_buffer *channels[] = {&manager->a, &manager->b, &manager->c};
@@ -915,8 +904,7 @@ static int check_saved(const manager_snapshot *snapshot, const mc_biome_manager 
     return 0;
 }
 
-static int test_invalid_manager_calls(void)
-{
+static int test_invalid_manager_calls(void) {
     mc_biome_memory memory = {0};
     mc_biome_manager manager = {0};
     mc_biome_double_buffer temperatures = {0};
@@ -980,8 +968,7 @@ static int test_invalid_manager_calls(void)
     return 0;
 }
 
-static int test_staged_allocation_rollback(void)
-{
+static int test_staged_allocation_rollback(void) {
     /* Determine real allocation charges through the public live counter.
      * Sweep every byte of headroom for a four-buffer replacement. This crosses
      * every staged failure point while retaining real, initialized buffers. */
@@ -1046,8 +1033,7 @@ static int test_staged_allocation_rollback(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_catalogue_and_classifiers() || test_invalid_selectors() || test_buffer_lifetimes() ||
         test_original_climate_sequences() || test_channel_construction() ||
         test_reuse_adapters_and_client_raw() || test_invalid_manager_calls() ||

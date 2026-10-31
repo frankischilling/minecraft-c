@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "observed": "2026-10-29",
+  "scope": "Unmodified original rr, authored CPU images only",
+  "client_jar": {
+    "bytes": 1465375,
+    "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+  },
+  "classes": {
+    "rr.class": {
+      "bytes": 1558,
+      "sha256": "3645e5f9a421212801841378f764031da302f0217adb27c802a606cd36f2fdcd"
+    },
+    "nf.class": {
+      "bytes": 152,
+      "sha256": "b965f28eb81960c4fc212030659a4e3b35a7210845c6f260fa77d75b622c622b"
+    }
+  },
+  "runtime": {
+    "vendor": "Eclipse Adoptium",
+    "version": "Temurin 17.0.17+10",
+    "vm": "OpenJDK 64-Bit Server VM",
+    "os": "Windows",
+    "architecture": "x86-64",
+    "headless": true
+  },
+  "observer": {
+    "source": "RrAlphaGrid.java",
+    "sha256": "02a3ff1109e1ecd0741d394d8e7f36e1b7a1dc4bc700ab97823081c7e5cc1497",
+    "source_kind": "Authored test program; no original source copied"
+  },
+  "input": {
+    "width": 64,
+    "height": 32,
+    "types": [
+      2,
+      6
+    ],
+    "type_names": [
+      "TYPE_INT_ARGB",
+      "TYPE_4BYTE_ABGR"
+    ],
+    "batches_per_type": 128,
+    "alpha_channel_pairs_per_type": 65536,
+    "channel_grid": "R=c; G=255-c; B=(73*c+19)&255; A=code>>>8"
+  },
+  "output": {
+    "pixels_per_type": 262144,
+    "total_original_pixels": 524288,
+    "bytes_per_type": 1048576,
+    "encoding": "big-endian ARGB uint32",
+    "same_output_array_as_rr_a": true,
+    "types_identical": true,
+    "fnv1a64_per_type": "04e5e02bb77c37e9",
+    "sha256_per_type": "edad38f8044c8f2f7a15f0e3e082e0476d9e71f40ea08afd8f1ab18e5efcc55e"
+  },
+  "native_control": {
+    "ctest": "client.image_buffer",
+    "target": "mc_test_image_buffer",
+    "canonical_argb_grid_pixels": 262144,
+    "expected_fnv1a64": "04e5e02bb77c37e9",
+    "selected_windows_runtime": "PASS",
+    "reported_seconds": 0.04,
+    "broader_matrix": "Local Windows selection: 482/482; GCC13/Clang18 selected ASan/UBSan: 30/30, including four private Engine/RR CPU-wrapper cases. No full Linux graphical session or hosted qualification implied.",
+    "atomic_image_sharing_followup": "PASS: native Windows and private GCC13/Clang18 CPU wrappers with ASan/UBSan and leak detection; shared RR alias replacement, 40000 concurrent image retain/release pairs and 10000 caller inspections"
+  },
+  "excluded": [
+    "network or original-host observations",
+    "original image assets",
+    "arbitrary ImageIO providers",
+    "other JDK profiles",
+    "full client or original-rendered-pixel qualification"
+  ]
+}

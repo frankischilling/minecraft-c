@@ -1,0 +1,16 @@
+{
+  "feature": 17,
+  "profile": "RUNTIME 17.0.17+10 | Eclipse Adoptium | OpenJDK 64-Bit Server VM",
+  "bootstrap_class_sha256": {
+    "java.util.Arrays": "9990b6e06859452e1d7e4c15c0dba9d48f5d5449d4fbda12598771511406b485",
+    "java.util.TimSort": "0980722ec9fc120d686db65e51de52e2f531d798aac2970223d0408dabaca6eb"
+  },
+  "cases": 108,
+  "cases_txt_sha256": "14e981e2a2db1a097cd1359cc356e71df3c0466753b550f4a1e0b64d55a9c8fe",
+  "cases_json_sha256": "ffa2aaba56ecfb6057a329b316cabe532b0572fe765974f56e9848b919337f2f",
+  "expected_txt_sha256": "64e0db9527d9fd99f118b2f1c3ad1964ea752e8ec940a184bfb86f67926076f3",
+  "java_contract_child_athrow": {
+    "mergeLo": 607,
+    "mergeHi": 675
+  }
+}

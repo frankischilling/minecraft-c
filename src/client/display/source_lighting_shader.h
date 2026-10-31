@@ -1,0 +1,78 @@
+#ifndef MC_CLIENT_DISPLAY_SOURCE_LIGHTING_SHADER_H
+#define MC_CLIENT_DISPLAY_SOURCE_LIGHTING_SHADER_H
+
+/* The source fixed-function lighting stage runs once per vertex. Flat outputs
+ * retain the actual provoking vertex after NW's primitive conversion. Texture,
+ * alpha testing and fog remain fragment operations in the same program. */
+static const char source_vertex_shader[] =
+    "#version 330 core\n"
+    "layout(location=0) in vec3 position;layout(location=1) in vec2 uv;\n"
+    "layout(location=2) in vec4 color;layout(location=3) in vec3 normal;\n"
+    "uniform mat4 projection,modelview,normalMatrix;uniform int fogDistance;\n"
+    "uniform int lightingEnabled,normalNormalize,normalRescale,lightsEnabled;\n"
+    "uniform int localViewer,twoSide,separateSpecular,colorMaterial;\n"
+    "uniform int materialFace,materialMode;uniform float normalScale;\n"
+    "uniform vec4 globalAmbient;\n"
+    "uniform vec4 lightPosition[2],lightAmbient[2],lightDiffuse[2],lightSpecular[2];\n"
+    "uniform vec4 materialAmbient[2],materialDiffuse[2],materialSpecular[2];\n"
+    "uniform vec4 materialEmission[2];uniform float materialShininess[2];\n"
+    "out vec2 texUV;out float fogCoordinate;\n"
+    "out vec4 frontTint,backTint;flat out vec4 flatFrontTint,flatBackTint;\n"
+    "out vec3 frontSpec,backSpec;flat out vec3 flatFrontSpec,flatBackSpec;\n"
+    "vec3 unitVector(vec3 v){float d=dot(v,v);return d>0.0?v*inversesqrt(d):vec3(0.0);}\n"
+    "void litColor(int side,vec3 N,vec3 eye,out vec4 tint,out vec3 secondary){\n"
+    "vec4 A=materialAmbient[side],D=materialDiffuse[side],S=materialSpecular[side];\n"
+    "vec4 E=materialEmission[side];\n"
+    "bool tracking=colorMaterial!=0&&(materialFace==1032||materialFace==(side==0?1028:1029));\n"
+    "if(tracking){if(materialMode==4608||materialMode==5634)A=color;\n"
+    "if(materialMode==4609||materialMode==5634)D=color;\n"
+    "if(materialMode==4610)S=color;if(materialMode==5632)E=color;}\n"
+    "vec3 base=E.rgb+globalAmbient.rgb*A.rgb;vec3 spec=vec3(0.0);\n"
+    "vec3 V=localViewer!=0?unitVector(-eye):vec3(0.0,0.0,1.0);\n"
+    "for(int i=0;i<2;i++){if((lightsEnabled&(1<<i))==0)continue;\n"
+    "vec3 L=lightPosition[i].w==0.0?unitVector(lightPosition[i].xyz):\n"
+    "unitVector(lightPosition[i].xyz/lightPosition[i].w-eye);\n"
+    "float d=max(dot(N,L),0.0);base+=lightAmbient[i].rgb*A.rgb;\n"
+    "base+=lightDiffuse[i].rgb*D.rgb*d;\n"
+    "if(d>0.0){vec3 H=unitVector(L+V);float h=max(dot(N,H),0.0);\n"
+    "float power=materialShininess[side]==0.0?1.0:pow(h,materialShininess[side]);\n"
+    "spec+=lightSpecular[i].rgb*S.rgb*power;}}\n"
+    "tint=vec4(clamp(base+(separateSpecular==0?spec:vec3(0.0)),0.0,1.0),clamp(D.a,0.0,1.0));\n"
+    "secondary=separateSpecular!=0?clamp(spec,0.0,1.0):vec3(0.0);}\n"
+    "void main(){vec4 eye=modelview*vec4(position,1.0);gl_Position=projection*eye;texUV=uv;\n"
+    "fogCoordinate=fogDistance==34139?length(eye.xyz):(fogDistance==9474?eye.z:abs(eye.z));\n"
+    "if(lightingEnabled!=0){vec3 N=(normalMatrix*vec4(normal,0.0)).xyz;\n"
+    "if(normalRescale!=0)N*=normalScale;if(normalNormalize!=0)N=unitVector(N);\n"
+    "vec3 point=eye.xyz/eye.w;litColor(0,N,point,frontTint,frontSpec);\n"
+    "if(twoSide!=0)litColor(1,-N,point,backTint,backSpec);\n"
+    "else{backTint=frontTint;backSpec=frontSpec;}}\n"
+    "else{frontTint=clamp(color,0.0,1.0);backTint=frontTint;frontSpec=vec3(0.0);backSpec=frontSpec;"
+    "}\n"
+    "flatFrontTint=frontTint;flatBackTint=backTint;flatFrontSpec=frontSpec;flatBackSpec=backSpec;}"
+    "\n";
+
+static const char source_fragment_shader[] =
+    "#version 330 core\n"
+    "in vec2 texUV;in float fogCoordinate;in vec4 frontTint,backTint;\n"
+    "flat in vec4 flatFrontTint,flatBackTint;in vec3 frontSpec,backSpec;\n"
+    "flat in vec3 flatFrontSpec,flatBackSpec;layout(location=0) out vec4 outputColor;\n"
+    "uniform sampler2D image;uniform int "
+    "textured,alphaTest,flatShading;\n" SOURCE_TEXTURE_SAMPLING_GLSL
+    "uniform float alphaReference;\n"
+    "uniform int fogEnabled,fogMode;uniform vec4 fogColor;\n"
+    "uniform float fogDensity,fogStart,fogEnd;\n"
+    "void main(){vec4 value;vec3 secondary;\n"
+    "if(gl_FrontFacing){value=flatShading!=0?flatFrontTint:frontTint;\n"
+    "secondary=flatShading!=0?flatFrontSpec:frontSpec;}\n"
+    "else{value=flatShading!=0?flatBackTint:backTint;\n"
+    "secondary=flatShading!=0?flatBackSpec:backSpec;}\n"
+    "if(textured!=0)value*=sourceTextureSample(image,texUV);"
+    "value.rgb=clamp(value.rgb+secondary,0.0,1.0);\n"
+    "if(alphaTest!=0&&value.a<=alphaReference)discard;\n"
+    "if(fogEnabled!=0){float f;\n"
+    "if(fogMode==9729)f=(fogEnd-fogCoordinate)/(fogEnd-fogStart);\n"
+    "else if(fogMode==2049){float d=fogDensity*fogCoordinate;f=exp(-d*d);}\n"
+    "else f=exp(-fogDensity*fogCoordinate);\n"
+    "value.rgb=mix(fogColor.rgb,value.rgb,clamp(f,0.0,1.0));}outputColor=value;}\n";
+
+#endif

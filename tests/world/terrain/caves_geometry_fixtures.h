@@ -8,10 +8,12 @@ typedef struct caves_geometry_run {
     uint32_t count;
     uint8_t value;
 } caves_geometry_run;
+
 typedef struct caves_geometry_blocks {
     size_t offset;
     size_t count;
 } caves_geometry_blocks;
+
 typedef struct caves_geometry_consumption {
     const char *basis;
     uint32_t next_float_calls;
@@ -19,6 +21,7 @@ typedef struct caves_geometry_consumption {
     bool fork_inferred;
     uint32_t candidates_matched;
 } caves_geometry_consumption;
+
 typedef struct caves_geometry_fixture {
     const char *label;
     const char *request;

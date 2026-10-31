@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   formatting:
     runs-on: ubuntu-24.04
@@ -24,10 +28,18 @@ jobs:
 
   linux:
     runs-on: ubuntu-24.04
+    env:
+      CCACHE_DIR: ${{ github.workspace }}/.local/ccache
+      CCACHE_BASEDIR: ${{ github.workspace }}
+      CCACHE_MAXSIZE: 512M
     strategy:
       fail-fast: false
       matrix:
-        compiler: [gcc, clang]
+        include:
+          - compiler: gcc
+            cxx: g++
+          - compiler: clang
+            cxx: clang++
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -39,17 +51,99 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      - name: Validate current source bindings
+        run: python -B scripts/development/check_source_bindings.py
+      - name: Select dependency download cache
+        id: apt-cache
+        run: echo "week=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+      - name: Restore dependency downloads
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ runner.temp }}/mc-apt-archives/*.deb
+          key: linux-ubuntu24.04-client-apt-v1-${{ hashFiles('.github/workflows/ci.yml') }}-${{ steps.apt-cache.outputs.week }}
+          restore-keys: linux-ubuntu24.04-client-apt-v1-
+      - name: Install client build and software graphics dependencies
+        run: |
+          mkdir -p "$RUNNER_TEMP/mc-apt-archives"
+          sudo apt-get update
+          sudo apt-get -o "Dir::Cache::archives=$RUNNER_TEMP/mc-apt-archives" \
+            -o APT::Keep-Downloaded-Packages=true install -y --no-install-recommends \
+            ccache pkg-config libfontconfig-dev fonts-dejavu-core libasound2-dev libpulse-dev \
+            libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev \
+            libxi-dev libxss-dev libxtst-dev libgl1-mesa-dev libgl1-mesa-dri xvfb xauth
+      - name: Restore compiler cache
+        id: compiler-cache
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: linux-ubuntu24.04-${{ matrix.compiler }}-ccache-v1-${{ github.sha }}
+          restore-keys: linux-ubuntu24.04-${{ matrix.compiler }}-ccache-v1-
+      # No source trees or populate stamps: CMake verifies URL_HASH on reuse.
+      - name: Restore pinned dependency archives
+        id: dependency-archives
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: |
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.gz
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.xz
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.bz2
+            build/_deps/*-subbuild/*-populate-prefix/src/*.zip
+          key: ${{ runner.os }}-fetchcontent-archives-v1-${{ hashFiles('CMakeLists.txt', 'cmake/*dependencies.cmake') }}
+          restore-keys: ${{ runner.os }}-fetchcontent-archives-v1-
+      # Keep sanitizer file/line traces without full type data in every test ELF.
       - name: Configure
+        id: configure
         run: >-
-          cmake -S . -B build -G Ninja
+          python -B scripts/development/configure_with_retry.py -- cmake -S . -B build -G Ninja
           -DCMAKE_C_COMPILER=${{ matrix.compiler }}
+          -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache
+          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
           -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_C_FLAGS_DEBUG=-g1
+          -DCMAKE_CXX_FLAGS_DEBUG=-g1
           -DMC_ENABLE_SANITIZERS=ON
           -DMC_ENABLE_JAVA_REFERENCE_TESTS=ON
+          -DMC_ENABLE_CLIENT_DISPLAY_TESTS=ON
+          -DMC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS=ON
+          -DMC_ENABLE_APPLICATION_STARTUP_TESTS=ON
+          -DMC_ENABLE_RESOURCE_LOOKUP_OBSERVERS=ON
+      - name: Save pinned dependency archives
+        if: steps.configure.outcome == 'success' && steps.dependency-archives.outputs.cache-hit != 'true'
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: |
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.gz
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.xz
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.bz2
+            build/_deps/*-subbuild/*-populate-prefix/src/*.zip
+          key: ${{ runner.os }}-fetchcontent-archives-v1-${{ hashFiles('CMakeLists.txt', 'cmake/*dependencies.cmake') }}
       - name: Build
-        run: cmake --build build
+        id: build
+        run: |
+          ccache --zero-stats
+          cmake --build build
+      - name: Report compiler cache
+        if: always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure')
+        run: ccache --show-stats
+      - name: Save compiler cache
+        if: steps.build.outcome == 'success' && steps.compiler-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: linux-ubuntu24.04-${{ matrix.compiler }}-ccache-v1-${{ github.sha }}
+      # Preserve only scheduling estimates. Every test still runs from this build.
+      - name: Restore test timing estimates
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: build/Testing/Temporary/CTestCostData.txt
+          key: linux-ubuntu24.04-${{ matrix.compiler }}-ctest-costs-v1-${{ github.sha }}
+          restore-keys: linux-ubuntu24.04-${{ matrix.compiler }}-ctest-costs-v1-
       - name: Test
-        run: ctest --test-dir build --output-on-failure
+        run: xvfb-run -a -s "-screen 0 1280x1024x24 -noreset" env LIBGL_ALWAYS_SOFTWARE=1 ctest --test-dir build --parallel 4 --output-on-failure
+      - name: Report terrain test scopes and failures
+        if: always()
+        run: python -B scripts/development/report_terrain_tests.py --build build
       - name: Check controller mirror identities
         run: python tests/tools/cache/check_controller_mirrors.py --work-dir build/controller-mirrors
       - name: Check lifecycle interval bounds
@@ -57,6 +151,10 @@ jobs:
 
   windows:
     runs-on: windows-2022
+    env:
+      SCCACHE_DIR: ${{ github.workspace }}/.local/sccache
+      SCCACHE_CACHE_SIZE: 512M
+      SCCACHE_GHA_ENABLED: 'false'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -68,14 +166,103 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      - name: Validate current source bindings
+        run: python -B scripts/development/check_source_bindings.py
+      - name: Select x64 MSVC for Ninja
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio/Installer/vswhere.exe'
+          $installation = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $installation) { throw 'MSVC x64 tools not found' }
+          Import-Module (Join-Path $installation 'Common7/Tools/Microsoft.VisualStudio.DevShell.dll')
+          Enter-VsDevShell -VsInstallPath $installation -SkipAutomaticLocation -DevCmdArguments '-arch=x64 -host_arch=x64'
+          foreach ($name in 'PATH', 'INCLUDE', 'LIB', 'LIBPATH') {
+            $value = [Environment]::GetEnvironmentVariable($name)
+            if ([string]::IsNullOrEmpty($value)) { throw "Missing MSVC variable: $name" }
+            "$name=$value" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          }
+      - name: Restore compiler cache
+        id: compiler-cache
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ env.SCCACHE_DIR }}
+          key: windows-2022-msvc-x64-sccache-v0.19.0-v1-${{ hashFiles('.github/workflows/ci.yml') }}-${{ github.sha }}
+          restore-keys: |
+            windows-2022-msvc-x64-sccache-v0.19.0-v1-${{ hashFiles('.github/workflows/ci.yml') }}-
+            windows-2022-msvc-x64-sccache-v0.19.0-v1-
+      - name: Set up sccache
+        id: sccache
+        uses: Mozilla-Actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: v0.19.0
+          disable_annotations: true
+      # Cache archive bytes only. URL_HASH and fresh extraction remain required.
+      - name: Restore pinned dependency archives
+        id: dependency-archives
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: |
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.gz
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.xz
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.bz2
+            build/_deps/*-subbuild/*-populate-prefix/src/*.zip
+          key: ${{ runner.os }}-fetchcontent-archives-v1-${{ hashFiles('CMakeLists.txt', 'cmake/*dependencies.cmake') }}
+          restore-keys: ${{ runner.os }}-fetchcontent-archives-v1-
       - name: Configure
+        id: configure
         run: >-
-          cmake -S . -B build -A x64
+          python -B scripts/development/configure_with_retry.py -- cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_POLICY_DEFAULT_CMP0141=NEW
+          -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded
+          -DCMAKE_C_COMPILER_LAUNCHER=sccache
+          -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
+          "-DJava_JAVA_EXECUTABLE=$env:JAVA_HOME/bin/java.exe"
+          "-DJava_JAVAC_EXECUTABLE=$env:JAVA_HOME/bin/javac.exe"
           -DMC_ENABLE_JAVA_REFERENCE_TESTS=ON
+          -DMC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS=ON
+          -DMC_ENABLE_APPLICATION_STARTUP_TESTS=ON
+          -DMC_ENABLE_RESOURCE_LOOKUP_OBSERVERS=ON
+      - name: Save pinned dependency archives
+        if: steps.configure.outcome == 'success' && steps.dependency-archives.outputs.cache-hit != 'true'
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: |
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.gz
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.xz
+            build/_deps/*-subbuild/*-populate-prefix/src/*.tar.bz2
+            build/_deps/*-subbuild/*-populate-prefix/src/*.zip
+          key: ${{ runner.os }}-fetchcontent-archives-v1-${{ hashFiles('CMakeLists.txt', 'cmake/*dependencies.cmake') }}
       - name: Build
-        run: cmake --build build --config Debug
+        id: build
+        run: |
+          sccache --zero-stats
+          cmake --build build --config Debug --parallel 4
+      - name: Report compiler cache
+        if: always() && steps.sccache.outcome == 'success' && (steps.build.outcome == 'success' || steps.build.outcome == 'failure')
+        run: sccache --show-stats
+      - name: Stop compiler cache
+        id: stop-compiler-cache
+        if: always() && steps.sccache.outcome == 'success' && (steps.build.outcome == 'success' || steps.build.outcome == 'failure')
+        run: sccache --stop-server
+      - name: Save compiler cache
+        if: always() && steps.build.outcome == 'success' && steps.stop-compiler-cache.outcome == 'success' && steps.compiler-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ env.SCCACHE_DIR }}
+          key: windows-2022-msvc-x64-sccache-v0.19.0-v1-${{ hashFiles('.github/workflows/ci.yml') }}-${{ github.sha }}
+      # Preserve only scheduling estimates. Every test still runs from this build.
+      - name: Restore test timing estimates
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: build/Testing/Temporary/CTestCostData.txt
+          key: windows-2022-msvc-ctest-costs-v1-${{ github.sha }}
+          restore-keys: windows-2022-msvc-ctest-costs-v1-
       - name: Test
-        run: ctest --test-dir build -C Debug --output-on-failure
+        run: ctest --test-dir build -C Debug --parallel 4 --output-on-failure
+      - name: Report terrain test scopes and failures
+        if: always()
+        run: python -B scripts/development/report_terrain_tests.py --build build
       - name: Check controller mirror identities
         run: python tests/tools/cache/check_controller_mirrors.py --work-dir build/controller-mirrors
       - name: Check lifecycle interval bounds

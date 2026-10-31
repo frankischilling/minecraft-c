@@ -1,74 +1,121 @@
 # minecraft-c
 
-The project targets Minecraft Beta 1.7.3 in C17, with a graphical single-player
-and multiplayer client plus a dedicated headless server. Players select local
-usernames; account authentication is excluded.
+minecraft-c is a C17 implementation of Minecraft Beta 1.7.3 for x86-64 Windows
+and Linux. The native runtime needs no JVM after local resource import.
+The dedicated server remains unfinished.
 
-There is no playable C client or server yet. Current code provides numerical/text
-compatibility, float lookup/floor helpers, raw NBT, bounded gzip/zlib memory
-compression, seeded Perlin/octave noise, 2D simplex/octave noise,
-climate/biome classification, normal density/base
-terrain, surface replacement, normal cave carving, chunk voxel-data helpers,
-ordered light-region storage, cached height queries, normal chunk finishing,
-unpublished normal generator composition, synchronous cache acquisition,
-region inspection and writing, world metadata, stable stored chunks, native
-world-file ownership, synchronous save/unload coordination, tracked retirement,
-native world-runtime composition, local resource import and native builds.
-The storage foundation is implemented through `mc_persistence` and its cache
-acquisition adapter. At `9ad690d83592f127b9bb39d7233e8eef06fd0029`, all 71
-selected tests pass without skips on native MSVC and WSL GCC/Clang, with Linux
-ASan/UBSan. Independent platform, source/provenance and copied-world semantic
-audits pass. Hosted checks pass 59 public/numerical tests per compiler and
-clang-format18 for 111 C/header files. Both copied-world directions include
-opaque Boat/Sign transport. These finite storage results do not implement
-entity/player simulation, gameplay save/unload or running-server persistence.
-See the [storage checkpoint](Storage-and-reference#storage-foundation-checkpoint),
-[ownership contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/storage.md)
-and [storage evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md).
+The client constructs all eleven default [Mob kinds](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-construction.md),
+runs their [spawn predicates](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-spawning.md), and dispatches their actual
+[active tick chains](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-active-tick.md) through genuine Living fields.
+Shared environment, action, movement and travel work uses real World queries;
+sight uses the existing World ray tracer. Finite returning and failure-prefix
+scenarios are qualified independently of original constructor entropy.
 
-The [lifecycle boundary](Architecture#save-unload-and-retirement) adds live
-ordered saving, pending-key history, metadata-first accounting and safe owner
-retirement/reload. The [finite qualification](Storage-and-reference#lifecycle-qualification)
-for source `46546d8322de52beb6c3a51f30e827c0260d2b30` selects the complete
-Windows v10, GCC v9 and Clang v9 suites. Each passed 92 tests without failures
-or skips; independent source/semantic audits, storage rechecks and complete
-capture preservation also pass, with Linux ASan/UBSan. Empty entity/tile records are native;
-Boat/Sign bodies remain external callback evidence. General deferred cleanup,
-terrain-feature bodies, world ticking, gameplay dimension transitions,
-running-server persistence and crash recovery remain open. The v7 and v8
-matrices are excluded. Windows v9 is also excluded after an original setup
-skip; its successful rows are not carried into the fresh Windows v10 suite.
-The bounded debugger-mirror and scoped helper-interval
-corrections have separate Windows/Linux regression passes alongside the
-qualified full suites above.
+The [Sheep, Pig, Cow and Chicken drawing checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md)
+returns through the actual TH/GV, model, PS and NW owners. It includes unsheared
+Sheep fur, Pig's false saddle predicate after all four saddle texture lookups,
+Cow's virtual pose and nine-part model, Chicken's sine/flap pose and all four
+terrain shadows. The remaining seven default renderer families, including
+Skeleton's real held Bow, are unfinished.
 
-The [normal generator API](Architecture#normal-generator) composes the existing
-stages through finishing with borrowed world resources. At exact source
-`a08c12056a06261ed01d9f66999459f7ce9543b4`, all 41 selected local tests pass
-on MSVC/GCC/Clang without skips, including four-seed original comparisons and
-complete untouched controls. Hosted checks pass 36 public/numerical tests per
-compiler and formatting for 79 C/header files. See the
-[generation checkpoint](Storage-and-reference#normal-generation-checkpoint)
-for evidence and its finite scope.
-The expanded generation/cache/region checkpoint at
-`28a55b52c001c4c114a11ca7df844fc1f286d328` passes all 56 selected local tests
-without skips on those toolchains, with Linux sanitizers and independent audit.
-Hosted checks pass 48 tests per compiler and formatting for 89 C/header files.
-See [cache and region evidence](Storage-and-reference#cache-and-region-checks)
-for successful original loads, population callbacks and their remaining scope.
-The [repository README](https://github.com/frankischilling/minecraft-c#readme),
-[parity matrix](https://github.com/frankischilling/minecraft-c/blob/main/docs/parity.md)
-and [feature inventory](https://github.com/frankischilling/minecraft-c/blob/main/docs/inventory.md)
-are the reviewable sources for current behavior and evidence.
+Focused Windows and Linux comparisons each pass 3,350 native checks, comprising
+1,556 main checks and 452/328/344/339/331 checks in five fresh component
+processes. The paired draw comparison passes 206,656 typed checks, 17,012
+expanded graph records and 5,107 identity pairs. It covers 316 ordered direct
+queries, 35 lists, 210 model faces, eight shadows with 2,688 words, 18 direct
+String texture calls, eight animation returns, ten model-work records and ten
+comparator negatives. Constructor entropy stays independent.
 
-Original Minecraft binaries/assets, decompiled source, launcher files and worlds
-are excluded from source and releases. New project work is MIT licensed. See
-[build and tests](Build-and-tests) for development setup and its current limits.
+Linux uses the full ordinary/read-only JDI capture. Windows uses its graph,
+list and query authority plus a separately audited same-device ordinary NVIDIA
+GL supplement: 36 inputs, four helpers, 45 artifacts and four manifest
+negatives. The strict Windows-to-Mesa current-normal mismatch remains failed
+evidence. Only prepared matrices allow four float ULP and numeric equality of
+opposite signed zeros. Original/native pixels, live GL call order and whole-frame
+equality remain unqualified.
 
-Detailed pages cover [systems and subsystems](Architecture) and
-[storage and original-reference checks](Storage-and-reference). The
-[development status](https://github.com/frankischilling/minecraft-c/blob/main/docs/status.md)
-records the current branch, tested commits and remaining work.
+Three separate loaded Windows profiles publish a genuine Pig, Cow or Chicken
+through the ordinary Entity APIs. Each returns four later World/HUD frames:
+one delay, one traversal that leaves the unticked actor undrawn, then first
+compilation and reuse of that exact actor. Pig compiles six parts, Cow nine and
+Chicken eight; reuse compiles none. Their shadow totals are 18, 18 and two quads.
+Returns include `Minecraft.k:1328`, `N569`, `PX1013` and `HUD2101`, followed
+by checked cleanup. The existing-player inventory statistic is a declared input;
+Player pose and World Random are not forced, and ordinary subsequent ticks run.
+These controls do not qualify fresh-player tutorial completion or serialized
+Mob loading.
 
-These pages are versioned under `docs/wiki/`. Exact tested sources, retained
-evidence and remaining work are recorded in the linked development documents.
+Single-player remains pre-playable. Spider, Wolf, Creeper, Skeleton, Zombie,
+Slime and Squid rendering remain unfinished; Skeleton's held Bow is mandatory.
+Active VU achievement/tutorial notices, Canvas/focus transitions, nonempty items,
+save transport, health/combat, further Block overrides and nonempty TileEntity
+draws still need implementation and verification.
+
+The continuation also completes 361 random Chunk coordinates and 28,880 samples,
+then all 1,000 random-display samples and 6,000 World Random draws. Actual
+Living/Creature movement returns; terminal cleanup handles Path aliases, target
+cycles and Piston-only roots. A selected Spider jockey retains its separate
+unfinished mount. Separate legacy-clamp controls retain 46,802 checks and 3,872
+exact matching-SDK samples per host.
+
+The current local cohort builds all 93 selected targets on both hosts. All 121
+Windows tests and 115 Linux tests pass, without failures, skips or sanitizer
+findings. The same 2,559 inputs remain unchanged through all four build/test
+phases. All twenty fresh original-comparison wrappers pass, ten per host; the
+final audit covers 5,510 distinct paths. [Build and tests](Build-and-tests#current-local-qualification)
+records the separate CTest and post-run-audit timings, formatting and bindings.
+Hosted results retain their published-commit scope in [Draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
+
+The preceding path checkpoint retains its own results below.
+
+Focused Windows MSVC Debug and Linux Clang18 ASan/UBSan runs pass the actual
+World path wrappers, shared ChunkCache, PathFinder and shared-cursor Path.
+Each host passes 16,995 native checks over 64 paired scenarios: 143,871 typed
+graph/state checks, six separate failed-Path constructor checks, 12,464 ordered
+query attempts and 87,246 query words. Seven corrupted comparisons are rejected.
+Eight native ceilings and actual shared-Path/outliving-World controls pass.
+
+Mob following adds four full returns to the previous source-prefix cohort.
+Each host passes 113,936 native checks, 19,832 typed field checks, 14,558
+identity relations and all 72 events over 62 scenarios. The split is 52 full
+returns, two callback failures, four source-null failures and four remaining
+drop/hurt prefixes. All thirteen native controls and six reference negatives
+pass. Constructor entropy remains independent.
+
+At `f510367`, all 90 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 117 Windows tests pass in 220.67 seconds and all 112 Linux tests in
+264.30 seconds, without failures, skips or sanitizer findings. The same 2,508
+C, helper, build and reference inputs remain unchanged through both builds and tests.
+All eight original-comparison suites pass on each host. Formatting checks 1,722
+files; source bindings cover 8,107 entries across 3,450 current files.
+
+Detailed source order,
+ownership and limits are in [client pathfinding](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/pathfinding.md) and
+[Mob active ticks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-active-tick.md). These scoped results do not
+establish a playable client.
+
+- [Startup and current client paths](Startup)
+- [Build instructions, test results and scope](Build-and-tests)
+- [World simulation](World-simulation)
+- [Storage and original-reference evidence](Storage-and-reference)
+- [Architecture](Architecture)
+- [Earlier checkpoints](History)
+
+## Integration qualification
+
+At `a303b86`, all 92 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 119 Windows tests pass in 227.09 seconds and all 114 Linux tests in
+321.27 seconds, without failures, skips or sanitizer findings. The same 2,543
+C, helper, build and reference inputs remain unchanged through both builds and tests.
+All nine original-comparison suites pass on each host. Formatting checks 1,742
+files; six source-binding tables preserve their historical metadata. These scoped
+results do not establish playability or whole-frame original/native equality.
+
+The subsequent clamp-registration test repair changes no production code.
+It replaces an obsolete GL_CLAMP failure expectation with actual successful
+upload, logical/physical sampler, image ownership and cleanup checks. The
+other five failure cases and four original trace rows remain unchanged.
+The direct test and both Python controller modes reproduce the old failure,
+then pass on Windows and Linux with unchanged inputs. At `dbd1a83`, [all four hosted jobs pass](https://github.com/frankischilling/minecraft-c/actions/runs/41196374086) for the repaired
+commit. The failed parent run is preserved. That qualification predates the
+four-animal increment.

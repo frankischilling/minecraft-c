@@ -1,0 +1,156 @@
+{
+  "schema": 1,
+  "scope": "Exact whole-frame observations selected by the actual native driver and framebuffer. Original compatibility and native core context versions are recorded separately. Unknown devices fail; no alternate output, tolerance or skipped profile is accepted.",
+  "profiles": [
+    {
+      "id": "nvidia-581.42-rtx3060",
+      "driver": {
+        "vendor": "NVIDIA Corporation",
+        "renderer": "NVIDIA GeForce RTX 3060/PCIe/SSE2",
+        "version": "4.6.0 NVIDIA 581.42"
+      },
+      "framebuffer": {
+        "rgba": [
+          8,
+          8,
+          8,
+          8
+        ],
+        "depth": 24,
+        "stencil": 0
+      },
+      "fixtures": {
+        "initial": {
+          "path": "finite.json",
+          "sha256": "5cb2d7082847867b3e1ecf586d2e4b97b20a483c1689098004d819a3a70420a4",
+          "original_capture_sha256": "63af0633971a0c8179a9800fa193e981b803bbcf477e204edc4f00099b1b150b"
+        },
+        "extended": {
+          "path": "extended-finite.json",
+          "sha256": "9be7b87b027376bfa7220dafb6b83ad83803830ca9dbe8dd563430a525e9b894",
+          "original_capture_sha256": "cd1f89e05bc7bcd98c4a6dc2976c6b2460d829c1d9050103a7d584dc1bf4cdfb"
+        },
+        "converted": {
+          "path": "converted-finite.json",
+          "sha256": "f5de4d374070a8feeb665482caf545632bde6fbef6803a99ea32fb287244da55",
+          "original_capture_sha256": "f3874c61949a31e88c148a24163c91122be024fc657c9c95300be20875cec1bf"
+        },
+        "array_normals": {
+          "path": "array-normals.json",
+          "sha256": "8aafd5c52332cea15f0de8e4790e517d702f5439c7f9aa8148bb0a170634e70a",
+          "observations": {
+            "path": "normal-array.json",
+            "sha256": "c28247b78fecca86eafb0de5ef18794ef973756de7b38e9ec7c08ffe46e44fbc"
+          }
+        },
+        "list_state": {
+          "path": "list-state.json",
+          "sha256": "f331049d30b7beff47de5e510d50180ea09dd420457dcce1c25f8aaa40b632a6",
+          "observations": {
+            "path": "normal-list.json",
+            "sha256": "208b08e027c8b31a7429a72e9f715a6a89bb62cd6dc2da499cb7eb3c80562ee2"
+          }
+        },
+        "material": {
+          "path": "material.json",
+          "sha256": "2695c6ae20d24c4b0529fcab0d02998626f10282ffe97e27d55f5f13fbca2141"
+        },
+        "color_inputs": {
+          "path": "color-inputs.json",
+          "sha256": "2336fd6c22febd29098bbe996301f237f7794cdcba10115af10fb52cd37a426b",
+          "observations": {
+            "path": "color-conversion.json",
+            "sha256": "3b8078d30bf57f77f8e5bda793e856c974f16d2972f18384e514b78005f2763c"
+          },
+          "original_capture_sha256": "a00aa8ce557a40377bd68483112a4ffdaada8bb4ad623f7ecf8196f51ba49977"
+        },
+        "material_sequences": {
+          "path": "material-sequences.json",
+          "sha256": "a8ed58fee26019f2199a5470c08305a94e0376e5326330ed561c5d01f3399b29",
+          "prefix_capture_sha256": "d08a94261e4599998834a7d354dcbc115f2054d6fec79ad9feed8b6d611b3911",
+          "draw_capture_sha256": "5d95bcb3613ee694b62049595325bf57b698295c41c5dd83e7ac8636c7e84ff8"
+        }
+      },
+      "native_driver": {
+        "vendor": "NVIDIA Corporation",
+        "renderer": "NVIDIA GeForce RTX 3060/PCIe/SSE2",
+        "version": "3.3.0 NVIDIA 581.42"
+      }
+    },
+    {
+      "id": "mesa-25.2.8-llvmpipe-llvm20.1.2",
+      "driver": {
+        "vendor": "Mesa",
+        "renderer": "llvmpipe (LLVM 20.1.2, 256 bits)",
+        "version": "4.5 (Compatibility Profile) Mesa 25.2.8-0ubuntu0.24.04.4"
+      },
+      "native_driver": {
+        "vendor": "Mesa",
+        "renderer": "llvmpipe (LLVM 20.1.2, 256 bits)",
+        "version": "4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4"
+      },
+      "framebuffer": {
+        "rgba": [
+          8,
+          8,
+          8,
+          8
+        ],
+        "depth": 24,
+        "stencil": 0
+      },
+      "fixtures": {
+        "initial": {
+          "path": "mesa/finite.json",
+          "sha256": "d1da0a52750e642982d8e421ac0dddf2f7ba3fff4d1366371d519ead0b2956f1",
+          "original_capture_sha256": "70ff85d5ce80af9ff2ba3725c2ad76fdeb6dcb4ccc32412f17fc82de77b30b55"
+        },
+        "extended": {
+          "path": "mesa/extended-finite.json",
+          "sha256": "67705ea370e01de1579f5d3aff20e5a618ba10470bb4a6f5de1cd208243d655c",
+          "original_capture_sha256": "928325b0b66f1281c34af473ee285aff6fc9ebf0eb56869e62c07afd36b8259c"
+        },
+        "converted": {
+          "path": "mesa/converted-finite.json",
+          "sha256": "13f26c9835c4e0c1df092a4191fa249bd6ae8466bd5dd39c4ba87c6558ef3e20",
+          "original_capture_sha256": "21abf9a27b5683e7f4a16c0ac028e4ce3ea97c8c37f875171503f23f31f4c86b"
+        },
+        "array_normals": {
+          "path": "mesa/array-normals.json",
+          "sha256": "8b49fb70f12fa48cb7f1a9684d0fe1c5a52572f1311fa29364b8ebb90eeab99f",
+          "observations": {
+            "path": "mesa/normal-array.json",
+            "sha256": "eada43efc50ebd83c77474e5ce33fe18de5c1ae923d1e5f8c7ec171d14be66a4"
+          }
+        },
+        "list_state": {
+          "path": "mesa/list-state.json",
+          "sha256": "8d6fd42709569040d143c9f41e312894c9c6c9d2dc8c87ba745e20814db1f169",
+          "observations": {
+            "path": "mesa/normal-list.json",
+            "sha256": "df20e275d2efc269670050f0b3890b3e96facf3e068bb5c87d5677c4f0861b88"
+          }
+        },
+        "material": {
+          "path": "mesa/material.json",
+          "sha256": "ffd4556a6a86a4a9e5ad1734c987303aa1aebfdc9df7a322d98ac930b80995c8"
+        },
+        "color_inputs": {
+          "path": "mesa/color-inputs.json",
+          "sha256": "b0377aff260b0e21e43d9409bf7e611e4de97fdd5a78ff441f39cfedf2fb5f04",
+          "observations": {
+            "path": "mesa/color-conversion.json",
+            "sha256": "6d68ddb2efe75fd4df362bcaa95698e3389c4afe049fbb8f857317222c5e9ee4"
+          },
+          "original_capture_sha256": "6c4f7c90797d860fa972bcb9b2056d514630228aed3dbb7ddee0e282ec58c334"
+        },
+        "material_sequences": {
+          "path": "mesa/material-sequences.json",
+          "sha256": "b07be867453451cccc0e35f67ce524bf990172223d173de494a7b078d132280d",
+          "prefix_capture_sha256": "3c34d1e8231ad4a0db1672afa0339b49358144d58ec6adf8f75bbcdfe7815792",
+          "draw_capture_sha256": "12249baa8e52e24d43d5d77760f0871ed78e2adffe3c8eaec0de526089534a95"
+        }
+      }
+    }
+  ]
+}

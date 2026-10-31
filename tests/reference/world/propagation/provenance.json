@@ -1,0 +1,78 @@
+{
+  "schema": "WORLD_PROPAGATION_REFERENCE_V1",
+  "fixture": {
+    "World_seed": 23,
+    "post_constructor_World_r_setSeed": "0123456789abcdef",
+    "World_r_input_only": true,
+    "constructor_default_entropy_unchanged": true,
+    "generator_and_cave_Random_separate_and_unmodified": true,
+    "native_policy": {
+      "max_scheduled_entries": 262144,
+      "World_direct_bytes": 16777216,
+      "max_provider_and_store_chunks": 512,
+      "provider_default_bytes": 8388608
+    },
+    "default_profile": "view",
+    "full_grid_profiles_opt_in": [
+      "fresh",
+      "warm"
+    ]
+  },
+  "original_client": {
+    "jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "jar_bytes": 1465375,
+    "class_and_Code_pins": "source-pins.json",
+    "classes": 22,
+    "method_metadata_records": 438,
+    "runtime_origin_independently_checked": true,
+    "classfile_reader": "Authored metadata-only reader; extended existing rendering classfile.py to retain Code-attribute hash and stack/local bounds."
+  },
+  "paired_server_metadata": {
+    "jar_sha256": "033a127e4a25a60b038f15369c89305a3d53752242a1cff11ae964954e79ba4d",
+    "record": "paired-method-audit.json",
+    "selected_pairs": 30,
+    "normalization_reexecuted_by_this_package": false,
+    "server_runtime_executed": false,
+    "downstream_server_diagnostic_frames_verified": false
+  },
+  "native_validation_cohort": {
+    "configuration": "Release",
+    "compiler": {
+      "version": "19.51.36260.0",
+      "sha256": "b0a1818ebae6da7f18230a84e76ce839212584ac4c2ab55b97a0d5268085da57",
+      "basename": "cl.exe"
+    },
+    "all_linked_application_sources_and_headers_from_same_private_snapshot": true,
+    "imported_application_archives": false,
+    "private_build_manifest_sha256": "93a911653c55c0d7e4b702e1e6ae784d1d213eb7dfb43b8004b1f6bd1236dac5",
+    "native_executable_sha256": "a00a616c927931517f2658680fdbd00b62f0ea119b577f2db930d060039a60bf",
+    "production_source_file_count": 484,
+    "compiled_probe_sources_sha256": {
+      "native.c": "8b257cd7f18ca6d4c5a000aba9e38dbd2c676fbd876207127b4c23c7cb5c4313",
+      "owner.c": "ac0157f9af5e149101f87fc9bc0a9d7544c46fb89e575224a5edced5e009ba65",
+      "owner.h": "12c2027d88493754eeb06d16120cac5bb4f1742c67e97903635dc29569d1fc5e"
+    }
+  },
+  "authored_payload_sha256": {
+    "binary_pins.py": "e6a7c3aaa4875958081e76b9dc39177677ab589efd21da9201f03bd31ef04fd1",
+    "classfile.py": "a2d6bf0923890ff6bd73c32bc5bcfabf89f883c421a2c1eab4270a3cb060857d",
+    "compare.py": "f91c1a31133d0a99a27caeee47891015c2ca1e900771ae93e653602663e99811",
+    "native.c": "8b257cd7f18ca6d4c5a000aba9e38dbd2c676fbd876207127b4c23c7cb5c4313",
+    "owner.c": "ac0157f9af5e149101f87fc9bc0a9d7544c46fb89e575224a5edced5e009ba65",
+    "owner.h": "12c2027d88493754eeb06d16120cac5bb4f1742c67e97903635dc29569d1fc5e",
+    "paired-method-audit.json": "eefb8a08cfa9a2b64b5ec43f01f50d2e91781448c331f818000bdc5e87349a00",
+    "processes.py": "869f89f73a4940c65a4f518f6ec6d03d9193ed85aeb8c7339b91ac00c6ab17de",
+    "README.md": "d0d623528f02ea195958a98bf40723b3b489308e59f282665c2b5b96d4357860",
+    "records.py": "326718a131eccb389fdeaa689943f12da8d4ce7d7212a35f70dbed291849e286",
+    "source-pins.json": "94f6f601581107c996d6878b3881c4f4b122dd8fd09eaf83d8303f9e9182b33b",
+    "WorldPropagationProbe.java": "170739234f379eb6baa6c682b1fe084b92f13f92fd00641902248e44a1a6a5a9"
+  },
+  "payload_policy": {
+    "original_source_or_Code_bytes_included": false,
+    "original_assets_classes_JARs_or_binaries_included": false,
+    "captured_World_or_scheduler_answers_as_inputs": false,
+    "numerical_tolerance": false,
+    "generated_files_kept_private": true
+  },
+  "scope": "Finite controlled World preparation and propagation profiles only. No default-entropy transient, within-call complete event, Player, simulation tick, gameplay, rendering or pixel parity claim."
+}
