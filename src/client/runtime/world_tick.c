@@ -143,7 +143,20 @@ static bool body(client_application *app, mc_math_classes *math, mc_client_world
         }
         if (ambience_world == NULL)
             return stop(call, "actual ambience null World receiver", 1311);
-        return stop(call, "actual World ambience fd.q body is not connected", 1311);
+        const mc_world_storage_status status = mc_world_runtime_random_display_begin(
+            ambience_world, call->ambience_coordinates[0], call->ambience_coordinates[1],
+            call->ambience_coordinates[2], &call->ambience, &call->ambience_error);
+        if (call->ambience != NULL) {
+            (void)mc_world_runtime_random_display_inspect(call->ambience, &call->ambience_state);
+            call->ambience_error = *call->ambience_state.error;
+        }
+        if (status != MC_WORLD_STORAGE_OK) {
+            stop(call, call->ambience_error.operation, 1311);
+            if (call->ambience != NULL)
+                call->site = (mc_client_graphics_site){"fd", "q", "(III)V",
+                                                       (int32_t)call->ambience_error.bytecode};
+            return false;
+        }
     }
     if (!atomic_load(&app->o)) {
         if (mc_client_effect_renderer_tick(app->effect_renderer, &call->effects) !=
@@ -158,7 +171,7 @@ static bool body(client_application *app, mc_math_classes *math, mc_client_world
 bool mc_client_world_tick_run(client_application *app, mc_math_classes *math,
                               mc_client_world_tick *call) {
     if (app == NULL || call == NULL || call->active || call->failed || call->refresh != NULL ||
-        call->renderer != NULL || call->scheduler != NULL)
+        call->renderer != NULL || call->scheduler != NULL || call->ambience != NULL)
         return false;
     memset(call, 0, sizeof(*call));
     call->active = true;
@@ -170,6 +183,17 @@ bool mc_client_world_tick_run(client_application *app, mc_math_classes *math,
 bool mc_client_world_tick_cleanup(mc_client_world_tick *call) {
     if (call == NULL || call->active)
         return false;
+    mc_world_random_display_error ambience;
+    if (mc_world_runtime_random_display_retire(&call->ambience, &ambience) != MC_WORLD_STORAGE_OK)
+        return false;
+    call->ambience_state.error = &call->ambience_error;
+    call->ambience_state.world = NULL;
+    call->ambience_state.source_random = NULL;
+    call->ambience_state.selected_block = NULL;
+    call->ambience_error.acquisition = NULL;
+    call->ambience_error.registry = NULL;
+    call->ambience_error.block = NULL;
+    call->ambience_error.world_access = (mc_world_access_failure){0};
     mc_world_tick_error scheduler;
     if (mc_world_runtime_tick_retire(&call->scheduler, &scheduler) != MC_WORLD_STORAGE_OK)
         return false;

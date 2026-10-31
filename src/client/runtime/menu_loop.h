@@ -9,6 +9,11 @@ typedef struct mc_world_storage_error mc_world_storage_error;
 typedef struct mc_client_menu_loop_state {
     uint64_t frames, ticks, texture_ticks, account_checks_omitted;
     uint64_t world_draws, hud_draws;
+    /* Native observations of completed source calls survive child retirement
+     * and the next tick's fresh diagnostic record. They control no gameplay. */
+    uint64_t world_tick_returns, random_chunk_calls, random_chunk_samples;
+    uint64_t random_display_calls, random_display_samples, random_display_random_calls;
+    size_t last_random_chunk_count;
     bool render_clock_stored, render_returned;
     int64_t render_clock;
     size_t font_measurements, mouse_events, keyboard_events;

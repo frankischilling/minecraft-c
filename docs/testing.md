@@ -1,6 +1,28 @@
 # Test scope and reproduction
 
-## Client random Chunk ticks
+## Client random display updates
+
+All 78 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 93 Windows tests pass in 150.97 seconds and all 89 Linux tests in
+209.98 seconds, without failures, skips or sanitizer findings. The same 2,441
+C, helper, build and reference inputs remain unchanged through all four phases.
+Formatting checks 1,685 files; source bindings cover 7,909 entries and 3,381 files.
+
+Windows MSVC Debug and Linux Clang18 ASan/UBSan each pass 72,124 checks.
+All 99 direct Block state rows, twelve World state rows and 2,162 ordered
+sound/particle events match the unchanged original exactly. Positions and
+velocities compare complete binary64 words; volume and pitch compare binary32.
+Three additional native sampler controls and unused-null argument controls
+check ownership, true failure prefixes and the independent local Random.
+
+The original package verifies 24 live method bodies, 172 class identities,
+171 initialized classes in each VM and byte-identical ordinary/debugger
+records. Its input and compiled-helper fingerprints remain unchanged.
+See [random display updates](world/random-display.md) and the
+[capture procedure](../tests/reference/world/random_display/README.md) for
+source inputs, entropy rules and explicit limits.
+
+## Preceding client random Chunk checkpoint
 
 All 76 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
 All 89 Windows tests pass in 130.56 seconds and all 85 Linux tests in
@@ -33,10 +55,12 @@ initialized classes in each VM. Native class-failure controls distinguish the
 first source initializer exception from cached erroneous-class use, while
 allocation limits and missing native dependencies stay native failures.
 
-The loaded Windows controls preserve saves, resources and all 72 original focus
-histories. A focused profile completes 361 random Chunk coordinates and 28,880
-samples, then reaches client ambience at `Minecraft.k:1311`. Further Block
-overrides, Mob ticking/storage/drawing, ambience and gameplay remain unfinished.
+Those controls preserve saves, resources and all 72 original focus histories.
+At that checkpoint, a focused profile completed 361 random Chunk coordinates
+and 28,880 samples before the display-call dependency at `Minecraft.k:1311`.
+That call now returns after all 1,000 samples. Further Block simulation bodies,
+Mob ticking/storage/drawing, concrete display particles and gameplay remain
+unfinished.
 The null-byte-array control retires its retained call unrepaired; complete
 Store shutdown with that malformed source field remains unsupported.
 

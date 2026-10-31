@@ -1,5 +1,14 @@
 # Storage and original references
 
+The [random display observer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/world/random_display/README.md)
+executes twelve World profiles and 99 direct Block profiles through all
+eleven display declarations. Ordinary and read-only debugger records match
+byte for byte; 24 live methods, 172 class identities and 171 initialized
+classes are checked. Both native hosts match all 111 state rows and 2,162
+sound/particle events exactly. Default local Random entropy is observed
+separately; seeded direct Block inputs and native-only controls retain their
+own scopes. Concrete renderer Particle construction remains unfinished.
+
 The [World random-tick observer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/world/random_tick/README.md) executes 14 complete World calls and 18 concrete Block ticks from the unchanged JAR. Ordinary and read-only debugger runs preserve 205 class pins, 204 initialized classes, 19 live method bodies, 801 detailed samples and 77 Random returns. Both native hosts match the declared frame, array, scratch, callback and drop-position observations exactly. Cached terrain, controlled callback failures and independent constructor entropy remain explicit limits.
 
 The [particle observer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/particle_draw/README.md)

@@ -36,6 +36,7 @@
 #include "mc/entity/vector/vector.h"
 #include "mc/world/runtime/construction.h"
 #include "mc/world/runtime/propagation.h"
+#include "mc/world/runtime/random_tick.h"
 
 #include <SDL3/SDL.h>
 #include <inttypes.h>
@@ -348,6 +349,24 @@ static bool tick(mc_client_menu_loop *loop) {
     if (app->active_world != NULL) {
         const bool returned = mc_client_world_tick_run(app, loop->math, &loop->world_tick);
         loop->state.world_tick = &loop->world_tick;
+        if (returned) {
+            ++loop->state.world_tick_returns;
+            if (loop->world_tick.scheduler_state.random_returned) {
+                ++loop->state.random_chunk_calls;
+                loop->state.last_random_chunk_count =
+                    loop->world_tick.scheduler_state.random_chunk_count;
+                if (loop->world_tick.scheduler_state.random != NULL)
+                    loop->state.random_chunk_samples +=
+                        loop->world_tick.scheduler_state.random->samples_returned;
+            }
+            if (loop->world_tick.ambience_state.returned) {
+                ++loop->state.random_display_calls;
+                loop->state.random_display_samples +=
+                    loop->world_tick.ambience_state.samples_returned;
+                loop->state.random_display_random_calls +=
+                    loop->world_tick.ambience_state.world_random_calls;
+            }
+        }
         if (!returned) {
             const mc_client_graphics_site *site = &loop->world_tick.site;
             return stop(loop, loop->world_tick.operation, site->class_name, site->method, site->pc);

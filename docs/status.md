@@ -5,16 +5,34 @@ and their [spawn predicates](entity/mob-spawning.md). Rejected attempts continue
 source loop. Successful attempts publish real Mob owners and execute postspawn work.
 A focused loaded Windows profile passes spawning and completes
 [random Chunk work](world/random-ticking.md): 361 coordinates and 28,880 samples,
-returning at `fd.n:994` and `fd.l:198`. It then reaches client ambience at
-`Minecraft.k:1311`. Native terminal cleanup preserves and releases the nonempty
-coordinate Set. A selected Spider jockey instead reaches its unfinished mount
+returning at `fd.n:994` and `fd.l:198`. The following
+[random display call](world/random-display.md) completes all 1,000 samples and
+6,000 World Random draws, then EffectRenderer ticking returns. A repeated
+focused profile reaches the next actual Mob's active tick at `Minecraft.k:1216`,
+through `fd.a(Entity,boolean):121`. Native terminal cleanup preserves and releases
+the nonempty coordinate Set. A selected Spider jockey instead reaches its unfinished mount
 after real Skeleton construction and publication.
 
 Single-player remains pre-playable. Further Block overrides, Mob ticking/drawing,
-sleeping wake transitions, ambience and gameplay actions remain unfinished.
+sleeping wake transitions, concrete display particles and gameplay actions remain unfinished.
 Focus-loss Canvas integration and the hidden pause-screen save path remain open.
 
-## Qualified client random Chunk ticks
+## Client random display updates
+
+All 78 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 93 Windows tests pass in 150.97 seconds and all 89 Linux tests in
+209.98 seconds, without failures, skips or sanitizer findings. The same 2,441
+C, helper, build and reference inputs remain unchanged through all four phases.
+Formatting checks 1,685 files; source bindings cover 7,909 entries and 3,381 files.
+
+Each native host passes 72,124 checks over 99 direct Block profiles, twelve
+paired World profiles and three additional native sampler controls. All 111
+original state rows and 2,162 sound/particle events match exactly. The actual
+local default Random stays distinct; a separate native Redstone Torch control
+checks its 3,000 float draws. Detailed scope is in
+[random display updates](world/random-display.md).
+
+## Preceding client random Chunk checkpoint
 
 All 76 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
 All 89 Windows tests pass in 130.56 seconds and all 85 Linux tests in
@@ -47,10 +65,11 @@ initialized classes in each VM. Native class-failure controls distinguish the
 first source initializer exception from cached erroneous-class use, while
 allocation limits and missing native dependencies stay native failures.
 
-The loaded Windows controls preserve saves, resources and all 72 original focus
-histories. A focused profile completes 361 random Chunk coordinates and 28,880
-samples, then reaches client ambience at `Minecraft.k:1311`. Further Block
-overrides, Mob ticking/storage/drawing, ambience and gameplay remain unfinished.
+At that checkpoint, the loaded Windows controls preserved saves, resources and
+all 72 original focus histories. A focused profile completed 361 random Chunk
+coordinates and 28,880 samples before the display-call dependency at
+`Minecraft.k:1311`. That call is now connected; Mob ticking/storage/drawing,
+further Block simulation overrides and gameplay remain unfinished.
 The null-byte-array control retires its retained call unrepaired; complete
 Store shutdown with that malformed source field remains unsupported.
 

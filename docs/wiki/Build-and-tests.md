@@ -1,6 +1,21 @@
 # Build and tests
 
-## Client random Chunk ticks
+## Client random display updates
+
+All 78 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
+All 93 Windows tests pass in 150.97 seconds and all 89 Linux tests in
+209.98 seconds, without failures, skips or sanitizer findings. The same 2,441
+C, helper, build and reference inputs remain unchanged through all four phases.
+Formatting checks 1,685 files; source bindings cover 7,909 entries and 3,381 files.
+
+Windows MSVC Debug and Linux Clang18 ASan/UBSan each pass 72,124 checks.
+All 111 original state rows and 2,162 sound/particle events match exactly.
+The twelve World inputs and 99 direct Block inputs cover all eleven original
+display declarations. Three additional native sampler controls check the
+independent local Random, null whole-table ordering and native retirement.
+See [source scope and reproduction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/random-display.md).
+
+## Preceding client random Chunk checkpoint
 
 All 76 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.
 All 89 Windows tests pass in 130.56 seconds and all 85 Linux tests in
@@ -33,10 +48,12 @@ initialized classes in each VM. Native class-failure controls distinguish the
 first source initializer exception from cached erroneous-class use, while
 allocation limits and missing native dependencies stay native failures.
 
-The loaded Windows controls preserve saves, resources and all 72 original focus
-histories. A focused profile completes 361 random Chunk coordinates and 28,880
-samples, then reaches client ambience at `Minecraft.k:1311`. Further Block
-overrides, Mob ticking/storage/drawing, ambience and gameplay remain unfinished.
+Those controls preserve saves, resources and all 72 original focus histories.
+At that checkpoint, a focused profile completed 361 random Chunk coordinates
+and 28,880 samples before reaching the display-call dependency at
+`Minecraft.k:1311`. That call is now connected; further Block simulation
+overrides, Mob ticking/storage/drawing, concrete display particles and gameplay
+remain unfinished.
 The null-byte-array control retires its retained call unrepaired; complete
 Store shutdown with that malformed source field remains unsupported.
 

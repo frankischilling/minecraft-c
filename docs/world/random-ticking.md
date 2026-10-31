@@ -93,10 +93,12 @@ initialized classes in each VM. Native class-failure controls distinguish the
 first source initializer exception from cached erroneous-class use, while
 allocation limits and missing native dependencies stay native failures.
 
-The loaded Windows controls preserve saves, resources and all 72 original focus
+Those Windows controls preserve saves, resources and all 72 original focus
 histories. A focused profile completes 361 random Chunk coordinates and 28,880
-samples, then reaches client ambience at `Minecraft.k:1311`. Further Block
-overrides, Mob ticking/storage/drawing, ambience and gameplay remain unfinished.
+samples. Its following [random display call](random-display.md) now returns
+after all 1,000 samples; repeated play reaches the next actual Mob's unfinished
+active tick. Further Block simulation overrides, Mob storage/drawing, concrete
+display particles and gameplay remain unfinished.
 The null-byte-array control retires its retained call unrepaired; complete
 Store shutdown with that malformed source field remains unsupported.
 

@@ -2022,12 +2022,12 @@
       "sha256": "5c9149eaa4b84d1e6d1c22e84316deeb479e7b5b201cba472b7199f779ebc1ac"
     },
     "src/client/runtime/menu_loop.c": {
-      "bytes": 52188,
-      "sha256": "8564dc9cf0f2855a745f7706c4c4a9aa0a4c17deb687c6fdc05390622ede97ec"
+      "bytes": 53158,
+      "sha256": "53aa3ba1b6c248dbfb9c1b78b16f090e62427d4850a359f48509fa4b30243cd2"
     },
     "src/client/runtime/menu_loop.h": {
-      "bytes": 4715,
-      "sha256": "937fa6471171fe919a364b0532a16fa9763a96737b4fe78e702cf3c710debff1"
+      "bytes": 5073,
+      "sha256": "2abffc192e51657e2f446fd571f62c507091f10b8910d8b67250b255ee4eeb37"
     },
     "src/client/texture_packs/image_io.h": {
       "bytes": 482,
@@ -2154,8 +2154,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 116257,
-      "sha256": "dfa32b6973a1ffd38a239cdb7025cf6c3efe05e8fab70ad72780b07dcbd81b3f"
+      "bytes": 120812,
+      "sha256": "61da44b5087458a268d6a41e60b495a40a724d00e9823a23d99a8904449f80c7"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -2170,8 +2170,8 @@
       "sha256": "5337d15e53e776798d0a4f394e74432da7a578951b72f5c761439accb811786b"
     },
     "tests/tools/client/test_world_selection_loop.py": {
-      "bytes": 11523,
-      "sha256": "0d60c59f922875fefde52788fb21cfeb44a970f3e23084790eae46f76b22351b"
+      "bytes": 12476,
+      "sha256": "f809398051b45385c2b62037961ad8ff0dff2ea8c30469fa660aaaa559aeab89"
     },
     "tests/tools/platform/test_date_format_reference.py": {
       "bytes": 4341,
@@ -2974,12 +2974,12 @@
       "sha256": "44c04d7f465a6fbdbea456db236456ca9a6fc4dcb586951a007d796234a2e412"
     },
     "src/client/runtime/world_tick.c": {
-      "bytes": 10401,
-      "sha256": "dd77336221525c6078e29d22c50b29f8388483d336cfd97e83163e6de51da8c7"
+      "bytes": 11718,
+      "sha256": "d8bd497a5afd5d33a73ca395349773fbd826a7496ee89a6676462e732c6e8ff9"
     },
     "src/client/runtime/world_tick.h": {
-      "bytes": 2171,
-      "sha256": "cd7aeb0761bcbdbfff4df1a6010e56cb525d1464528a38972bb251a015a0204d"
+      "bytes": 2374,
+      "sha256": "09ef0890ce76de52a02adb0d0a873914cc3c110543519c9a01c79967689eea4e"
     },
     "src/client/view_slot.h": {
       "bytes": 946,
@@ -4712,6 +4712,46 @@
     "tests/world/runtime/test_world_random_tick.c": {
       "bytes": 39950,
       "sha256": "30497dfd06788a137e7d076976c366e6c929cbf53aacfe2236bd1bec34334e79"
+    },
+    "cmake/world_random_display.cmake": {
+      "bytes": 882,
+      "sha256": "52cc20f92e72601ab77b2538f702f841a0140bea6e4f72c434bfbe73019501b6"
+    },
+    "include/mc/world/runtime/block_random_display.h": {
+      "bytes": 2990,
+      "sha256": "168e9ea3d00989da047bcdc5b92cbea43393a55e1647cfa708953af596f34346"
+    },
+    "include/mc/world/runtime/random_display.h": {
+      "bytes": 3919,
+      "sha256": "d393b535e1e4465a33515f58058e09dfc4067d268f5f08341d702859508315f8"
+    },
+    "src/world/runtime/block_random_display.c": {
+      "bytes": 45846,
+      "sha256": "0d11d9e9bd7d874a0aae5057904113b27ea1648cf32bbed41a08a8ba05e9ae28"
+    },
+    "src/world/runtime/random_display.c": {
+      "bytes": 18710,
+      "sha256": "940c2c849d0bfe81760a040a3cda7ca27759ac71e3548e23da47961a9a7c464b"
+    },
+    "src/world/runtime/step_internal.h": {
+      "bytes": 1243,
+      "sha256": "4c7c6cf884332a68573b4390c73c9d7d4272c082455412eb2aee88b9df6c6b9f"
+    },
+    "tests/reference/world/random_display/capture_reference.py": {
+      "bytes": 6414,
+      "sha256": "3acea1bb0e2242091ba13b2955d7af17f5c4fe0aa5b7b970715461ccae9103b7"
+    },
+    "tests/reference/world/random_display/validate.py": {
+      "bytes": 12672,
+      "sha256": "eec485ed64ce3fdb2f7dc196a9cad22a553c305d95321b19db45bdbf60ba6636"
+    },
+    "tests/tools/world/test_random_display.py": {
+      "bytes": 17119,
+      "sha256": "a4bcd911841b11c94a62eb4e82837643f914296ed2cdce8bcef77896c318cf7e"
+    },
+    "tests/world/runtime/test_random_display.c": {
+      "bytes": 32424,
+      "sha256": "3070af809a4bab55665783787d0119fb923dbb39ccfaea0996232ccb403ffeb3"
     }
   },
   "source_suppliers": {

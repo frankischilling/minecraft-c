@@ -5,6 +5,7 @@
 #include "mc/client/world/renderer_tick.h"
 #include "mc/world/runtime/client_tick_state.h"
 #include "mc/world/runtime/entity_tick.h"
+#include "mc/world/runtime/random_display.h"
 #include "mc/world/runtime/world_tick.h"
 
 typedef struct mc_client_world_tick {
@@ -26,6 +27,9 @@ typedef struct mc_client_world_tick {
     mc_math_class_error ambience_math;
     int32_t ambience_coordinates[3];
     unsigned int ambience_arguments;
+    mc_world_random_display_call *ambience;
+    mc_world_random_display_state ambience_state;
+    mc_world_random_display_error ambience_error;
     mc_effect_renderer_error effects;
 } mc_client_world_tick;
 
@@ -34,7 +38,7 @@ typedef struct mc_client_world_tick {
  * The record starts zeroed and stays live/disjoint/exclusive through cleanup.
  * Completed fields and children survive terminal failures; no replay/resume.
  * The ordered World scheduler is invoked at1260 and retains its exact reached
- * descendants; ambience fd.q remains a later dependency.
+ * descendants, followed by the actual fd.q random display call at1311.
  * All graph owners stay live on the video thread through native cleanup. */
 bool mc_client_world_tick_run(client_application *, mc_math_classes *, mc_client_world_tick *);
 /* Releases child native occurrences without replaying source work. Top-level

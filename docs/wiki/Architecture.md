@@ -1,5 +1,13 @@
 # Systems and subsystems
 
+The [random display call](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/random-display.md)
+owns its actual World and one distinct default Random through inspection and
+retirement. Each Block getter ends its own Chunk use before the selected
+display callback. All eleven display bodies use actual World queries and
+presentation receivers; retained callback failures independently hold their
+producer. Native completion counters preserve finished calls across the next
+tick's fresh diagnostics and never control gameplay.
+
 The [RenderGlobal Entity call](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md) holds each reached dispatcher receiver,
 current Entity and actual World List lease until checked retirement. N owns
 separate LL/TH consumer records across ordinary World changes; terminal cleanup

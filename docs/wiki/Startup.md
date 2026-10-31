@@ -60,7 +60,10 @@ controller music tick, movement-key dispatch, hotbar and Settings input also
 run. Direct same-graph checks also execute renderer/equip and real entity
 updates, weather and actual weighted Biome selection. All eleven default constructors, yaw, pose and predicates now return; the focused
 loaded path completes 361 random Chunk coordinates and 28,880 Block samples,
-returns from `fd.l:198` and reaches client ambience at `Minecraft.k:1311`.
+returns from `fd.l:198`, then completes the random display call at `fd.q:134`
+with all 1,000 samples and 6,000 World Random draws. EffectRenderer ticking
+returns; a repeated focused profile reaches an actual Mob's unfinished active
+tick through `fd.a(Entity,boolean):121` at `Minecraft.k:1216`.
 Frame sound, lighting, suffocation and controller interpolation are connected.
 Focused mouse look uses the actual SDK/CU/Player fields. Inactive pause entry
 constructs OZ; actual World drawing completes fog, camera, Sky and real

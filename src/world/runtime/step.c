@@ -1,4 +1,5 @@
 #include "mc/world/runtime/step.h"
+#include "step_internal.h"
 
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
@@ -51,26 +52,36 @@ static bool registry(mc_world_step_error *error, mc_registry_status status, cons
 
 /* Exact fd.g/dj.d: capture live m BEFORE the acquiring World block read,
  * index the retained array, then virtual opacity only for a nonnull element. */
-static bool opaque(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, bool *out,
-                   mc_world_step_error *error) {
+bool mc_world_step_opaque_held(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, bool *out,
+                               mc_world_step_error *error, mc_world_step_source_failure *source) {
+    if (source != NULL)
+        *source = (mc_world_step_source_failure){0};
     mc_registry_block_m_view array;
     error->opaque_bytecode = 0;
-    if (!registry(
-            error,
-            mc_registry_block_m_get(mc_world_runtime_registry(world), &array, &error->registry),
-            "Step opaque Block.m"))
+    mc_registry_status result =
+        mc_registry_block_m_get(mc_world_runtime_registry(world), &array, &error->registry);
+    if (!registry(error, result, "Step opaque Block.m")) {
+        if (source != NULL)
+            *source = (mc_world_step_source_failure){MC_WORLD_STEP_SOURCE_REGISTRY, result};
         return false;
+    }
     int32_t id;
     error->opaque_bytecode = 7;
     const mc_world_storage_status status =
         mc_world_collision_block_value_held(world, x, y, z, false, &id, &error->block_read);
-    if (status != MC_WORLD_STORAGE_OK)
+    if (status != MC_WORLD_STORAGE_OK) {
+        if (source != NULL)
+            source->kind = MC_WORLD_STEP_SOURCE_QUERY;
         return fail(error, status, "Step opaque actual World block read");
+    }
     const mc_block *block;
     error->opaque_bytecode = 10;
-    if (!registry(error, mc_registry_block_m_at(&array, id, &block, &error->registry),
-                  "Step opaque retained m element"))
+    result = mc_registry_block_m_at(&array, id, &block, &error->registry);
+    if (!registry(error, result, "Step opaque retained m element")) {
+        if (source != NULL)
+            *source = (mc_world_step_source_failure){MC_WORLD_STEP_SOURCE_REGISTRY, result};
         return false;
+    }
     error->opaque_bytecode = 22;
     *out = block != NULL && mc_registry_block_opaque(block);
     return true;
@@ -83,12 +94,18 @@ static double random_coordinate(int32_t coordinate, mc_java_random *random) {
     return _mm_cvtsd_f64(_mm_cvtss_sd(_mm_setzero_pd(), _mm_set_ss(summed)));
 }
 
-static bool particles(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
-                      int32_t z, mc_world_step_error *error) {
+bool mc_world_step_redstone_particles(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                      int32_t y, int32_t z, mc_world_step_error *error,
+                                      mc_world_step_source_failure *source) {
+    if (source != NULL)
+        *source = (mc_world_step_source_failure){0};
     error->particle_bytecode = 1;
-    if (world == NULL)
+    if (world == NULL) {
+        if (source != NULL)
+            source->kind = MC_WORLD_STEP_SOURCE_NULL_WORLD;
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                     "Redstone Ore particles null World Random receiver");
+    }
     mc_java_random *random = world->fields.r; /* One actual source receiver capture. */
     if (mc_world_runtime_call_enter(world, &error->cause) != MC_WORLD_STORAGE_OK)
         return fail(error, error->cause.status, "Redstone Ore actual GAME World");
@@ -102,6 +119,8 @@ static bool particles(mc_world_runtime *world, const mc_block *block, int32_t x,
         error->particle_face = face;
         error->particle_bytecode = 25;
         if (random == NULL) {
+            if (source != NULL)
+                source->kind = MC_WORLD_STEP_SOURCE_NULL_RANDOM;
             fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Redstone Ore null captured Random");
             goto done;
         }
@@ -128,7 +147,7 @@ static bool particles(mc_world_runtime *world, const mc_block *block, int32_t x,
             nx = mc_java_i32_sub(x, 1);
         bool closed;
         error->particle_bytecode = calls[face];
-        if (!opaque(world, nx, ny, nz, &closed, error))
+        if (!mc_world_step_opaque_held(world, nx, ny, nz, &closed, error, source))
             goto done;
         if (!closed) {
             if (face == 0)
@@ -150,14 +169,18 @@ static bool particles(mc_world_runtime *world, const mc_block *block, int32_t x,
             pz > (double)mc_java_i32_add(z, 1)) {
             const mc_registry_string *name = NULL;
             error->particle_bytecode = 280;
-            if (!registry(error,
-                          mc_registry_runtime_literal_ascii(block->classes, "reddust", &name,
-                                                            &error->registry),
-                          "Redstone Ore particle code literal"))
+            const mc_registry_status result = mc_registry_runtime_literal_ascii(
+                block->classes, "reddust", &name, &error->registry);
+            if (!registry(error, result, "Redstone Ore particle code literal")) {
+                if (source != NULL)
+                    *source = (mc_world_step_source_failure){MC_WORLD_STEP_SOURCE_REGISTRY, result};
                 goto done;
+            }
             error->particle_bytecode = 291;
             if (!mc_world_mutation_particle(world, name, px, py, pz, 0.0, 0.0, 0.0,
                                             &error->mutation)) {
+                if (source != NULL)
+                    source->kind = MC_WORLD_STEP_SOURCE_PRESENTATION;
                 fail(error, error->mutation.status, "Redstone Ore actual World particle dispatch");
                 goto done;
             }
@@ -173,7 +196,7 @@ static bool redstone_ore(mc_world_runtime *world, const mc_block *block, int32_t
                          int32_t z, mc_world_step_error *error) {
     error->bytecode = 6;
     error->activation_bytecode = 6;
-    if (!particles(world, block, x, y, z, error))
+    if (!mc_world_step_redstone_particles(world, block, x, y, z, error, NULL))
         return false;
     const mc_block *normal = NULL;
     error->activation_bytecode = 13;

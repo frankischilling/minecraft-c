@@ -97,18 +97,59 @@ static bool loaded_draw_reached(const mc_client_menu_loop_state *source) {
            source->source_pc == 22;
 }
 
-static bool unpaused_world_reached(const mc_client_menu_loop_state *source) {
+static mc_entity *active_mob_tick_receiver(const mc_client_menu_loop_state *source,
+                                           const client_application *app) {
+    const mc_client_world_tick *call = source->world_tick;
+    if (app == NULL || app->active_world == NULL || call == NULL || source->source_pc != 1216 ||
+        strcmp(source->source_class, "net/minecraft/client/Minecraft") ||
+        strcmp(source->source_method, "k") || call->entities_returned ||
+        !call->render_global_returned || call->scheduler != NULL)
+        return NULL;
+    const mc_world_entity_tick_error *error = &call->entities;
+    if (error->status != MC_WORLD_STORAGE_UNSUPPORTED_STATE || error->source_class == NULL ||
+        strcmp(error->source_class, "fd") || error->source_method == NULL ||
+        strcmp(error->source_method, "a(Lsn;Z)V") || error->bytecode != 121 ||
+        error->update_bytecode != 121 || error->wrapper_bytecode != 3 ||
+        error->loop_bytecode != 274 || error->loaded_index <= 0 ||
+        error->child != MC_WORLD_ENTITY_TICK_CHILD_NONE || error->virtual_method == NULL ||
+        strcmp(error->virtual_method, "w_()V"))
+        return NULL;
+    const mc_world_runtime *world = app->active_world;
+    const mc_world_entity_list_ledger *ledger = &world->entity_membership;
+    const size_t index = (size_t)error->loaded_index;
+    if (world->fields.b == NULL || world->fields.b != ledger->list ||
+        world->fields.b->count != ledger->count || index >= ledger->count ||
+        world->fields.b->items[index] != ledger->entries[index])
+        return NULL;
+    mc_entity *entity = ledger->entries[index];
+    mc_mob_state mob;
+    if (entity == NULL || !mc_mob_inspect(entity, &mob) || entity->phase != MC_ENTITY_READY ||
+        entity->classes != world->classes->entities || entity->base.world != world ||
+        entity->base.be || !entity->base.bF || entity->base.bl != entity->base.x ||
+        entity->base.bm != entity->base.y || entity->base.bn != entity->base.z ||
+        entity->base.aU != entity->base.yaw || entity->base.aV != entity->base.aT)
+        return NULL;
+    return entity;
+}
+
+static bool unpaused_world_reached(const mc_client_menu_loop_state *source,
+                                   const client_application *app) {
     if (!source->failed || source->source_class == NULL || source->source_method == NULL ||
         source->world_draws < 1 || source->hud_draws < 1 || source->world_tick == NULL ||
-        !source->world_tick->failed || !source->world_tick->renderer_returned ||
-        !source->world_tick->entities_returned ||
+        !source->world_tick->failed || !source->world_tick->renderer_returned)
+        return false;
+    if (source->source_pc == 1216)
+        return source->random_chunk_calls > 0 && source->last_random_chunk_count == 361 &&
+               source->random_chunk_samples == source->random_chunk_calls * UINT64_C(28880) &&
+               source->random_display_calls == source->random_chunk_calls &&
+               source->random_display_samples == source->random_display_calls * UINT64_C(1000) &&
+               source->random_display_random_calls ==
+                   source->random_display_calls * UINT64_C(6000) &&
+               active_mob_tick_receiver(source, app) != NULL;
+    if (!source->world_tick->entities_returned ||
         !world_dependency_reached(&source->world_tick->scheduler_state,
                                   &source->world_tick->scheduler_error))
         return false;
-    if (source->world_tick->scheduler_state.returned)
-        return strcmp(source->source_class, "net/minecraft/client/Minecraft") == 0 &&
-               strcmp(source->source_method, "k") == 0 && source->source_pc == 1311 &&
-               source->world_tick->ambience_arguments == 3;
     return strcmp(source->source_class, "fd") == 0 && strcmp(source->source_method, "l") == 0 &&
            source->source_pc == 80;
 }
@@ -620,7 +661,7 @@ static int world_tick_controls(fixture *f) {
     memset(call, 0, sizeof(*call));
     const bool returned =
         mc_client_world_tick_run(f->app, mc_client_bootstrap_math(f->bootstrap), call);
-    if (!returned && call->site.pc != 1311 && call->site.pc != 80) {
+    if (!returned && call->site.pc != 80) {
         fprintf(stderr, "World segment reached %s.%s:%d: %s; renderer=%d entities=%d\n",
                 call->site.class_name, call->site.method, call->site.pc, call->operation,
                 call->renderer_returned, call->entities_returned);
@@ -630,11 +671,19 @@ static int world_tick_controls(fixture *f) {
                     (int)call->entities.child, call->entities.operation);
     }
     const bool ambience = call->scheduler_state.returned;
-    CHECK(!returned && call->failed &&
-          (ambience ? strcmp(call->site.class_name, "net/minecraft/client/Minecraft") == 0 &&
-                          strcmp(call->site.method, "k") == 0 && call->site.pc == 1311 &&
-                          call->ambience_arguments == 3
-                    : strcmp(call->site.class_name, "fd") == 0 && call->site.pc == 80) &&
+    CHECK((ambience ? returned && call->returned && !call->failed &&
+                          strcmp(call->site.class_name, "net/minecraft/client/Minecraft") == 0 &&
+                          strcmp(call->site.method, "k") == 0 && call->site.pc == 1328 &&
+                          call->ambience_arguments == 3 && call->ambience != NULL &&
+                          call->ambience_state.returned && call->ambience_state.source_pc == 134 &&
+                          call->ambience_state.local_random_constructed &&
+                          call->ambience_state.samples_started == 1000 &&
+                          call->ambience_state.samples_returned == 1000 &&
+                          call->ambience_state.world_random_calls == 6000 &&
+                          call->ambience_error.status == MC_WORLD_STORAGE_OK &&
+                          call->effects.status == MC_EFFECT_RENDERER_OK
+                    : !returned && call->failed && strcmp(call->site.class_name, "fd") == 0 &&
+                          call->site.pc == 80) &&
           call->counter_stored && !call->counter_reset && call->difficulty_stored &&
           call->renderer_returned && call->render_global_returned && call->entities_returned &&
           call->spawn_flags_stored && call->renderer_state.source_returned &&
@@ -657,15 +706,19 @@ static int world_tick_controls(fixture *f) {
     const int32_t next_pc = call->site.pc;
     const size_t samples =
         call->scheduler_state.random == NULL ? 0 : call->scheduler_state.random->samples_returned;
-    CHECK(mc_client_world_tick_cleanup(call) && call->failed && call->scheduler_error.mob == NULL &&
-          call->scheduler_state.spawn_entity == NULL);
+    const size_t display_samples = call->ambience_state.samples_returned;
+    const unsigned int display_pc = call->ambience_state.source_pc;
+    CHECK(mc_client_world_tick_cleanup(call) && call->failed == !ambience &&
+          call->scheduler_error.mob == NULL && call->scheduler_state.spawn_entity == NULL &&
+          call->ambience == NULL && call->ambience_state.source_random == NULL &&
+          call->ambience_state.world == NULL && call->ambience_error.block == NULL);
     atomic_store(&f->app->o, paused);
     f->app->ah = counter;
     free(call);
     printf("WORLD_TICK paused-refresh25=1 unpaused-renderer186=1 render-global=1 "
            "entities=1 spawn-flags=1 weather=1 spawn-candidates=289 scheduler=%u samples=%zu "
-           "next=%d child=%u\n",
-           world_pc, samples, next_pc, spawn_pc);
+           "display=%u display-samples=%zu next=%d child=%u\n",
+           world_pc, samples, display_pc, display_samples, next_pc, spawn_pc);
     return 0;
 }
 
@@ -1105,7 +1158,7 @@ static int normal_terminal_retirement_controls(fixture *f, mc_client_source_da *
                   MC_WORLD_STORAGE_OK &&
               scope == MC_CLIENT_TERMINAL_EMPTY_STORAGE && error.status == MC_WORLD_STORAGE_OK);
     } else {
-        CHECK((loaded_draw_reached(&source) || unpaused_world_reached(&source)) &&
+        CHECK((loaded_draw_reached(&source) || unpaused_world_reached(&source, app)) &&
               controller != NULL);
     }
     CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
@@ -1728,11 +1781,11 @@ int main(int argc, char **argv) {
                     CHECK(mc_client_menu_loop_inspect(f.loop, &f.state));
                     SDL_Delay(1);
                 }
-                if (next_failed && !unpaused_world_reached(&f.state))
+                if (next_failed && !unpaused_world_reached(&f.state, f.app))
                     fprintf(stderr, "Next loaded frame %s.%s:%" PRId64 " %s\n",
                             f.state.source_class, f.state.source_method, f.state.source_pc,
                             f.state.operation);
-                CHECK(next_failed && unpaused_world_reached(&f.state) &&
+                CHECK(next_failed && unpaused_world_reached(&f.state, f.app) &&
                       f.state.world_frame == NULL && f.state.hud == NULL);
                 mc_entity_class_literal_view selected = {0};
                 const mc_world_tick_state *spawn = &f.state.world_tick->scheduler_state;
@@ -1742,19 +1795,32 @@ int main(int argc, char **argv) {
                 else
                     CHECK(spawn->spawn_constructors == 0 && spawn->spawn_predicates == 0);
                 const mc_world_random_tick_state *random = spawn->random;
+                mc_entity_class_literal_view active = {0};
+                mc_entity *active_entity = active_mob_tick_receiver(&f.state, f.app);
+                if (active_entity != NULL)
+                    CHECK(mc_entity_class_literal_inspect(active_entity->class_literal, &active) ==
+                          MC_ENTITY_OK);
                 printf(
                     "WORLD_FRAME first-returned=1 next-unpaused-pc=%d scheduler=%u random=%u "
                     "chunks=%zu samples=%zu "
                     "helper=%u mob=%s constructors=%zu predicates=%zu rejected=%zu published=%zu "
                     "completed-draws-retired=1 "
-                    "stale-hud-cleared=1\n",
+                    "stale-hud-cleared=1 completed-random-calls=%" PRIu64
+                    " completed-chunks=%zu completed-samples=%" PRIu64 " display-calls=%" PRIu64
+                    " display-samples=%" PRIu64 " display-random=%" PRIu64
+                    " active=%s active-tick=%u\n",
                     f.state.world_tick->site.pc, spawn->source_pc,
                     random == NULL ? 0 : random->source_pc,
                     random == NULL ? 0 : random->chunk_count,
                     random == NULL ? 0 : random->samples_returned, spawn->spawn_postspawn_pc,
                     selected.client_name == NULL ? "none" : selected.client_name,
                     spawn->spawn_constructors, spawn->spawn_predicates, spawn->spawn_rejections,
-                    spawn->spawn_publications);
+                    spawn->spawn_publications, f.state.random_chunk_calls,
+                    f.state.last_random_chunk_count, f.state.random_chunk_samples,
+                    f.state.random_display_calls, f.state.random_display_samples,
+                    f.state.random_display_random_calls,
+                    active.client_name == NULL ? "none" : active.client_name,
+                    active_entity == NULL ? 0u : f.state.world_tick->entities.update_bytecode);
             }
             if (repeat_load)
                 goto loaded_draw_controls_done;

@@ -174,17 +174,29 @@ def main():
                 if "WORLD_FOCUS hidden-inactive=1 restored-active=1 component-preserved=1 source-grab-preserved=1" not in result.stdout:
                     raise RuntimeError("Focused repeat fixture did not restore actual focus without source mutation")
                 receipt = re.search(
-                    r"^WORLD_FRAME first-returned=1 next-unpaused-pc=(80|1311) scheduler=(80|198) "
-                    r"random=(0|994) chunks=(0|361) samples=(0|28880) "
+                    r"^WORLD_FRAME first-returned=1 next-unpaused-pc=(80|1216) scheduler=(0|80) "
+                    r"random=(0) chunks=(0) samples=(0) "
                     r"helper=([0-9]+) mob=([a-z]+) constructors=([0-9]+) "
                     r"predicates=([0-9]+) rejected=([0-9]+) published=([0-9]+) completed-draws-retired=1 "
-                    r"stale-hud-cleared=1$", result.stdout, re.MULTILINE)
+                    r"stale-hud-cleared=1 completed-random-calls=([0-9]+) "
+                    r"completed-chunks=([0-9]+) completed-samples=([0-9]+) "
+                    r"display-calls=([0-9]+) display-samples=([0-9]+) display-random=([0-9]+) "
+                    r"active=([a-z]+) active-tick=([0-9]+)$", result.stdout, re.MULTILINE)
                 if receipt is None:
                     raise RuntimeError("Real repeated frame did not expose the expected source dependency")
                 prefix = tuple(int(receipt[i]) for i in range(1, 6))
-                if prefix != (1311, 198, 994, 361, 28880) and not (
-                        prefix == (80, 80, 0, 0, 0) and int(receipt[6]) == 56):
-                    raise RuntimeError("Repeated frame did not complete all random samples or reach the genuine jockey mount")
+                if prefix == (1216, 0, 0, 0, 0):
+                    calls, chunks, samples, displays, display_samples, draws = (
+                        int(receipt[i]) for i in range(12, 18))
+                    if (calls < 1 or chunks != 361 or samples != calls * 28880 or
+                            displays != calls or display_samples != displays * 1000 or
+                            draws != displays * 6000 or receipt[18] not in
+                            ("cn", "uz", "fr", "gb", "uw", "wh", "dl", "bx", "ww", "gi", "xt") or
+                            int(receipt[19]) != 121):
+                        raise RuntimeError("Active Mob tick did not follow complete random Chunk/display calls")
+                elif not (prefix == (80, 80, 0, 0, 0) and int(receipt[6]) == 56 and
+                          receipt[18] == "none" and int(receipt[19]) == 0):
+                    raise RuntimeError("Repeated frame did not reach the genuine active Mob tick or jockey mount")
                 if (receipt[7] not in ("none", "cn", "uz", "fr", "gb", "uw", "wh", "dl", "bx", "ww", "gi", "xt") or
                         int(receipt[8]) != int(receipt[9]) or int(receipt[10]) > int(receipt[9]) or
                         (receipt[7] == "none") != (int(receipt[8]) == 0)):
