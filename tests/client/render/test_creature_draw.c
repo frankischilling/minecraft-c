@@ -562,7 +562,10 @@ static int mob_open(mob_fixture *f, const char *resources, const char *textures,
                                            &f->app->render_engine) == MC_CLIENT_RENDER_ENGINE_OK &&
           mc_client_render_engine_construct(f->app->render_engine, f->packs, f->app->settings,
                                             NULL) == MC_CLIENT_RENDER_ENGINE_OK);
-    CHECK(mc_client_display_create("Genuine creature draw", 256, 256, true, &f->display, NULL));
+#ifndef MC_CREATURE_DISPLAY_CREATE
+#define MC_CREATURE_DISPLAY_CREATE mc_client_display_create
+#endif
+    CHECK(MC_CREATURE_DISPLAY_CREATE("Genuine creature draw", 256, 256, true, &f->display, NULL));
     f->app->display = f->display;
     f->lookup_error = calloc(1, sizeof(*f->lookup_error));
     f->draw_error = calloc(1, sizeof(*f->draw_error));
@@ -1497,7 +1500,10 @@ static int creature_array_control(mob_fixture *f, const char *mode) {
     return 0;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_CREATURE_DRAW_MAIN
+#define MC_CREATURE_DRAW_MAIN main
+#endif
+int MC_CREATURE_DRAW_MAIN(int argc, char **argv) {
     CHECK(argc == 5 || argc == 6);
     SDL_SetMainReady();
     mob_fixture *f = calloc(1, sizeof(*f));

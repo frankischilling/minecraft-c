@@ -148,7 +148,7 @@ typedef struct mc_client_living_draw_caught {
     mc_client_living_draw_detail detail;
 } mc_client_living_draw_caught;
 
-#define MC_CLIENT_LIVING_DRAW_TEXTURE_CALLS 8u
+#define MC_CLIENT_LIVING_DRAW_TEXTURE_CALLS 16u
 #define MC_CLIENT_LIVING_DRAW_TEXTURE_KEY_UNITS 64u
 
 /* Passive values from actual direct JI lookup/bind calls. Identities cannot
@@ -176,6 +176,16 @@ typedef struct mc_client_living_draw_held_state {
     bool first_id_read, id_read, full3d_attempted, full3d_returned, full3d;
     bool child_attempted, child_source_entered, child_returned, returned;
 } mc_client_living_draw_held_state;
+
+/* Passive receipts of the actual primary and secondary redraws. The hurt and
+ * packed-color loops are separate invocations, including repeated predicates;
+ * these copies never select a pass or stand in for a model call. */
+typedef struct mc_client_living_overlay_state {
+    bool entered, primary_attempted, primary_returned, returned;
+    bool pass_attempted[4], pass_result[4], pass_render_returned[4];
+    float rgba[4];
+    mc_client_model_runtime_state primary, pass_render[4];
+} mc_client_living_overlay_state;
 
 typedef struct mc_client_living_draw_state {
     bool returned, primary_event_returned, primary_render_returned;
@@ -206,6 +216,8 @@ typedef struct mc_client_living_draw_state {
     int32_t slime_size, color;
     uintptr_t secondary_entry_identity, secondary_stored_identity;
     mc_client_living_draw_held_state held;
+    mc_client_living_overlay_state hurt_overlay, color_overlay;
+    bool overlay_state_restored;
 } mc_client_living_draw_state;
 
 typedef struct mc_client_living_draw_error {

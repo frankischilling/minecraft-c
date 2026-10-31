@@ -516,3 +516,14 @@ above. Wolf and Zombie now have their own returned loaded profiles. The earlier
 Zombie and Skeleton tick failures remain preserved. Active tutorial notices, Canvas/focus
 transitions, general nonempty items, combat, save transport and nonempty
 TileEntity draw rows still prevent a playable-client claim.
+
+## Hurt and packed-color redraws
+
+The shared LivingEntity renderer now executes its real hurt/death and packed
+color passes, including fresh primary/secondary model calls and the distinct
+Creeper overlay predicate. See [the overlay guide](living-overlays.md) for
+source order, model/GL comparisons, native failure prefixes and the remaining
+one-pixel Spider image differences. The registered loaded-Zombie profile has a
+new successful run; the earlier focus and overlay failures remain retained.
+This does not qualify powered Creeper texture rendering, fire billboards or
+complete Player and gameplay rendering.

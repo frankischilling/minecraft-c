@@ -58,12 +58,14 @@ samples. Checked shutdown succeeds. The profile is registered as
 `client.world_selection_zombie` when Windows display tests and imported
 resources are enabled.
 
-The registered test is not yet a reliable passing regression. Its first run
-reaches the NULL Component width read during focus release. A subsequent
-exclusive run reaches the unsupported `GL_EQUAL` depth call for the LivingEntity
-hurt overlay. Both failures remain retained separately from the successful
-loaded profile. The later successful run uses the same runtime,
-Timer, Player and random inputs; it does not qualify general focus transitions.
-These results do not establish audio-device behavior, complete combat,
-original/native pixels or a playable client. Canvas/focus, hurt overlays, Item interactions, mining, placement and
-save/reload still need work.
+The [LivingEntity overlay body](../client/living-overlays.md) now handles the
+hurt/death tint reached after damage. A development registered run passes in
+33.65 seconds before the framebuffer correction. The final run with the
+original SDK framebuffer request stops at the missing fire billboard body in
+23.78 seconds, after progressing past the overlay. These runs and the earlier
+focus-release and missing-overlay failures remain separate records. General
+Canvas/focus transitions are still unfinished; a successful finite run does
+not establish reliable extended play.
+These results do not establish complete combat, original/native full frames
+or a playable client. Item interactions, mining, placement and save/reload
+still need work.

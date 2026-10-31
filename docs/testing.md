@@ -1,5 +1,41 @@
 # Test scope and reproduction
 
+## LivingEntity overlay qualification
+
+Windows MSVC Debug and Linux Clang18 ASan/UBSan each pass seven authored
+overlay profiles and three native controls: 1,226 C checks, 209,478 selected
+original typed checks, 5,769 identity relations, eight model receivers and 48
+model-argument words. Seven comparator, four original-manifest and four actual
+build-record corruptions are rejected per host. Both actual build/output
+records precede the qualified executions; source/helper inputs remain unchanged.
+The original ordinary and read-only JDI captures remain immutable and are not
+rerun by the native comparison.
+
+Seven affected graphical CTests pass on each host without failures or skips:
+the overlay, four existing Mob-drawing tests, SDK window and GL setup. CTest
+takes 25.00 seconds on Windows and 132.35 seconds on Linux. Two additional
+Windows menu/World-frame regressions pass in 5.02 seconds. These are focused
+current-source results; the older 134/126 and 135-test cohorts below retain
+their historical scopes.
+
+The native SDK now requests the original default framebuffer format. A
+separate exact RGBA audit matches all seven baseline images per host. Windows
+matches five drawn images; each Spider draw differs at one pixel. Linux
+matches the Slime draw; the other six draws differ at 51/5/14/14/14/51 pixels.
+No channels or mismatches are omitted. Original/native draw-image parity
+remains unqualified on both hosts.
+
+The final registered loaded-Zombie regression fails in 23.78 seconds at the
+missing fire billboard child after progressing past the overlay. A prior
+33.65-second development run passed before the framebuffer correction; that
+success does not turn the final failure into a pass. Earlier focus-release
+and missing-overlay failures remain retained. No full current-source suite
+or reliable extended loaded-world run is claimed.
+
+The [overlay guide](client/living-overlays.md) and
+[reference packet](../tests/reference/client/living_overlay/README.md) describe
+the exact call, stream, device and image limits.
+
 <a id="focused-mob-drawing-qualification-unpublished"></a>
 
 ## Default Mob drawing and Wolf interest qualification
@@ -5010,11 +5046,13 @@ focus-release failure remains retained; the successful run changes no Timer,
 Player, placement or random inputs. The later CTest registration and prose
 updates do not change the qualified runtime bodies.
 
-The new `client.world_selection_zombie` registration is an unfinished graphical
-regression, not an additional passing test. The first post-registration run
+At the preceding damage checkpoint, the new `client.world_selection_zombie`
+registration was an unfinished graphical regression, not an additional passing
+test. The first post-registration run
 fails at focus release (`Minecraft.i:16`); a separate exclusive run reaches
 unsupported hurt-overlay depth testing (`n.a:516`, `glDepthFunc(GL_EQUAL)`).
 The damage CTest still passes. These failures remain recorded alongside the
 separate successful loaded run. No full 136-test pass or reliable loaded-Zombie
-regression is claimed. Completing Canvas/focus and the reached LivingEntity
-hurt-overlay body is required before this graphical case can pass reliably.
+regression was claimed. The subsequent overlay qualification above records
+progress beyond that depth failure and the currently reached fire-rendering
+child. Canvas/focus and extended loaded-world execution remain unfinished.

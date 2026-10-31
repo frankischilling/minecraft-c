@@ -297,6 +297,13 @@ int main(int argc, char **argv) {
               alpha.alpha_reference == clamped[i]);
     }
     CHECK(mc_client_display_source_alpha_function(display, GL_GREATER, alpha_reference(), &error));
+    /* LivingEntity overlays switch to equal-depth redraws, then restore LEQUAL. */
+    CHECK(mc_client_display_source_depth_function(display, GL_EQUAL, &error));
+    native_gl.GetIntegerv(GL_DEPTH_FUNC, &integer);
+    CHECK(integer == GL_EQUAL);
+    CHECK(mc_client_display_source_depth_function(display, GL_LEQUAL, &error));
+    native_gl.GetIntegerv(GL_DEPTH_FUNC, &integer);
+    CHECK(integer == GL_LEQUAL);
     /* Invalid profiles/function admission cannot publish a new state. */
     memcpy(snapshot, &display->source, sizeof(snapshot));
     const unsigned before_dispatch = dispatch_count;

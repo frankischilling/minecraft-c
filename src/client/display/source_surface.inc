@@ -945,10 +945,10 @@ bool mc_client_display_source_depth_function(mc_client_display *display, int32_t
                                              mc_client_display_error *error) {
     if (!source_setting_enter(display, "source glDepthFunc", error))
         return false;
-    if (function != GL_LEQUAL || display->gl.DepthFunc == NULL)
+    if ((function != GL_LEQUAL && function != GL_EQUAL) || display->gl.DepthFunc == NULL)
         return source_leave(display,
                             fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glDepthFunc",
-                                 "LEQUAL and actual function address required", 0),
+                                 "LEQUAL/EQUAL and actual function address required", 0),
                             error);
     source_material_core_integer(display, GL_DEPTH_FUNC, function);
     display->gl.DepthFunc((GLenum)function);

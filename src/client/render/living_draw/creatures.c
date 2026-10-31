@@ -142,7 +142,7 @@ static bool creeper_pass(ld_frame *f, int32_t pass, float partial, bool *out) {
 bool ld_creature_pass(ld_frame *f, int32_t pass, float partial, bool *out) {
     mc_client_living_draw_error *e = f->error;
     const mc_client_graphics_site parent = e->parent;
-    e->parent = ld_site("gv", "a", "(Lls;DDDFF)V", 315);
+    e->parent = e->site; /* Actual GV.a315 or inherited overlay GV.b4 invocation. */
     bool ok;
     if (strcmp(f->renderer->source_class, "yx") == 0)
         ok = spider_pass(f, pass, out);

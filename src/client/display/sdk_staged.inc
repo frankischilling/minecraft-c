@@ -294,7 +294,8 @@ bool mc_client_display_create_staged(mc_client_display *d, bool hidden,
     }
     char *title = NULL;
     if (!native_title(d, &title, &e, "createWindow", "()V", 71)) goto done;
-    const bool window = native_create_window(d, title, width, height, hidden, &e.display);
+    const bool window = native_create_window(d, title, width, height, hidden,
+                                              DISPLAY_FRAMEBUFFER_SDK_DEFAULT, &e.display);
     free(title);
     if (!window) {
         stage_failure(&e, MC_CLIENT_DISPLAY_NATIVE_PLATFORM, e.display.status,

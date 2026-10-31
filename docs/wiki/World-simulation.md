@@ -1,13 +1,30 @@
 # World simulation
 
+## LivingEntity overlays and framebuffer
+
+Hurt/death tinting and Creeper packed-color redraws now execute the actual
+primary and secondary model calls, repeated predicates and GL restores. Seven
+prepared original/native profiles match their selected model, state and stream
+checks on Windows and Linux. The SDK framebuffer request now matches the
+original alpha0/depth8/stencil0 defaults.
+
+Five Windows drawn images match exactly. Both Spider images retain one RGB
+pixel difference. Linux retains differences in six draws. Both hosts match all
+seven baseline images; complete image parity remains unqualified.
+[Overlay behavior and evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/living-overlays.md)
+records the finite scope. Fire, general focus and further gameplay work remain.
+
 ## Zombie environment damage
 
 Zombie damage with a NULL attacker now runs the actual health, hurt-resistance,
 random and World sound body. Windows and Linux each pass twelve focused
 profiles, including a real periodic-fire Mob tick. Fatal death/drop and damage
 with a nonnull attacker remain unfinished. A fresh loaded Windows profile
-passes four World/HUD frames, model reuse and checked cleanup. The new registered test still fails at focus release or hurt-overlay depth
-testing. Both failures remain retained separately.
+passes four World/HUD frames, model reuse and checked cleanup. The reached hurt
+overlay now runs. The final registered run with the original SDK framebuffer
+request gets past that overlay and stops at the missing fire billboard body.
+General Canvas/focus transitions remain unfinished; earlier successes and
+failures stay recorded separately.
 
 [Damage behavior and verification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/living-damage.md)
 records the finite comparisons and remaining gameplay work. Single-player

@@ -1,0 +1,8 @@
+case	kind	partial	phase	size	normalize
+0 cn .375 hurt 0 reset
+1 uw .375 hurt 1 reset
+2 xt .375 death 0 reset
+3 gb .375 color 0 reset
+4 gb .375 hurt_color 0 reset
+5 gb .375 even 0 reset
+6 cn .375 negative 0 reset

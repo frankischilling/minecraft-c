@@ -368,8 +368,14 @@ static bool context_check(mc_client_display *display, mc_client_display_error *e
     return gl_check(display, "query OpenGL implementation strings", error);
 }
 
+typedef enum display_framebuffer_profile {
+    DISPLAY_FRAMEBUFFER_DIAGNOSTIC,
+    DISPLAY_FRAMEBUFFER_SDK_DEFAULT
+} display_framebuffer_profile;
+
 static bool native_create_window(mc_client_display *display, const char *title, int width,
-                                 int height, bool hidden, mc_client_display_error *error) {
+                                 int height, bool hidden, display_framebuffer_profile profile,
+                                 mc_client_display_error *error) {
     if (!display->video && !SDL_InitSubSystem(SDL_INIT_VIDEO)) {
         sdl_failure(error, "initialize SDL video");
         return false;
@@ -386,8 +392,10 @@ static bool native_create_window(mc_client_display *display, const char *title, 
                       {SDL_GL_RED_SIZE, 8},
                       {SDL_GL_GREEN_SIZE, 8},
                       {SDL_GL_BLUE_SIZE, 8},
-                      {SDL_GL_ALPHA_SIZE, 8},
-                      {SDL_GL_DEPTH_SIZE, 16},
+                      /* Actual SDK PixelFormat() requests alpha0/depth8/stencil0.
+                       * Diagnostic RGBA captures keep their separate format. */
+                      {SDL_GL_ALPHA_SIZE, profile == DISPLAY_FRAMEBUFFER_SDK_DEFAULT ? 0 : 8},
+                      {SDL_GL_DEPTH_SIZE, profile == DISPLAY_FRAMEBUFFER_SDK_DEFAULT ? 8 : 16},
                       {SDL_GL_STENCIL_SIZE, 0},
                       {SDL_GL_DOUBLEBUFFER, 1},
                       {SDL_GL_MULTISAMPLEBUFFERS, 0},
@@ -441,8 +449,9 @@ static bool native_create_context(mc_client_display *display, mc_client_display_
     return true;
 }
 
-bool mc_client_display_create(const char *title, int width, int height, bool hidden,
-                              mc_client_display **out, mc_client_display_error *error) {
+static bool create_display_profile(const char *title, int width, int height, bool hidden,
+                                   display_framebuffer_profile profile, mc_client_display **out,
+                                   mc_client_display_error *error) {
     if (title == NULL || title[0] == '\0' || width <= 0 || height <= 0 || out == NULL)
         return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "create display", "invalid argument",
                     0);
@@ -455,7 +464,7 @@ bool mc_client_display_create(const char *title, int width, int height, bool hid
     if (display == NULL)
         return fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "create display",
                     "allocation failed", 0);
-    if (!native_create_window(display, title, width, height, hidden, error) ||
+    if (!native_create_window(display, title, width, height, hidden, profile, error) ||
         !native_create_context(display, error))
         goto failed;
     *out = display;
@@ -463,6 +472,12 @@ bool mc_client_display_create(const char *title, int width, int height, bool hid
 failed:
     mc_client_display_destroy(display, NULL);
     return false;
+}
+
+bool mc_client_display_create(const char *title, int width, int height, bool hidden,
+                              mc_client_display **out, mc_client_display_error *error) {
+    return create_display_profile(title, width, height, hidden, DISPLAY_FRAMEBUFFER_DIAGNOSTIC, out,
+                                  error);
 }
 
 SDL_Window *mc_client_display_window(mc_client_display *display) {

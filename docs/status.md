@@ -12,8 +12,13 @@ LivingEntity health, hurt-resistance, random and sound body. Windows and Linux
 each pass twelve focused profiles and selected original comparisons. Fatal
 death/drop and nonnull-attacker damage remain unfinished. The fresh loaded
 Zombie profile passes four World/HUD frames, model reuse and checked cleanup.
-The new registered loaded test still fails at focus release or the unsupported
-hurt-overlay depth call; those failures remain retained separately.
+The reached [hurt/color overlay body](client/living-overlays.md) now runs.
+Seven focused graphical regressions and the selected original overlay
+comparison pass on both hosts. The native SDK also requests the original
+default framebuffer format. The final loaded-Zombie run gets past the overlay
+and stops at the missing fire billboard body. Earlier passing and failing
+loaded runs retain their own source scope; general Canvas/focus transitions
+and extended play are still unfinished.
 
 The focused Windows profiles load a saved World, then construct and
 publish a declared Sheep, Pig, Cow or Chicken through the ordinary Entity APIs

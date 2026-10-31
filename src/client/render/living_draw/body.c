@@ -125,41 +125,8 @@ static bool body_try(ld_frame *f, double x, double y, double z, float partial) {
     int32_t color;
     if (!ld_color(f, brightness, partial, &color))
         return false;
-    const uint32_t alpha = ((uint32_t)color >> 24) & UINT32_C(255);
-    ls = mc_entity_living_fields(f->actor);
-    gv(f, 400);
-    if (alpha > 0 || ls->aa > 0 || ls->ad > 0) {
-        gv(f, 416);
-        if (!ld_display(f, mc_client_display_source_texture_enable(f->scope->model.display, false,
-                                                                   &e->detail.display)))
-            return false;
-        gv(f, 422);
-        if (!ld_display(f, mc_client_display_source_alpha_test(f->scope->model.display, false,
-                                                               &e->detail.display)))
-            return false;
-        gv(f, 428);
-        if (!ld_display(f, mc_client_display_source_blend_enable(f->scope->model.display, true,
-                                                                 &e->detail.display)))
-            return false;
-        gv(f, 437);
-        if (!ld_display(f, mc_client_display_source_blend_function(f->scope->model.display, 770,
-                                                                   771, &e->detail.display)))
-            return false;
-        gv(f, 443);
-        if (!ld_display(f, mc_client_display_source_depth_function(f->scope->model.display, 514,
-                                                                   &e->detail.display)))
-            return false;
-        /* A newly supported GL_EQUAL backend still needs its separate overlay
-         * cohort; never silently skip those source draws. */
-        gv(f, 447);
-        if (ls->aa > 0 || ls->ad > 0)
-            return ld_fail(f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED,
-                           "Living actual hurt/death overlay child");
-        /* The true packed-alpha branch reaches the distinct color overlay. */
-        gv(f, 561);
-        return ld_fail(f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED,
-                       "Living actual packed-color overlay body");
-    }
+    if (!ld_overlays(f, brightness, color, partial))
+        return false;
     gv(f, 737);
     if (!ld_display(f, mc_client_display_source_rescale_normal(f->scope->model.display, false,
                                                                &e->detail.display)))

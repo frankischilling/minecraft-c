@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "scope": "Post-capture SDK default framebuffer evidence; derived request/effective attributes and complete immutable fingerprints. Not a game-class, whole-frame or Native producer qualification.",
+  "public_path_was_capture_input": false,
+  "authored_probe_sha256": "c8505de5b70ac1a002186fffefaedc83c1982830584618e89c9929fca0097705",
+  "receipt_sha256": "5893372c7473616bd65913c68f985a2290641a8b6eb1f595e1d6bb9d48f4fe62",
+  "captured_input_sha256": {
+    "C:\\Users\\admin\\minecraft\\.local\\living-overlay-reference-20261031\\framebuffer_probe_windows.py": "34a8e2f75595a969cf2af068d51b9ec7a092fe396295921b8a2e5ffdc3fc880a",
+    "C:\\Users\\admin\\minecraft\\.local\\living-overlay-reference-20261031\\framebuffer-probe-inputs\\DefaultFramebufferProbe.java": "c8505de5b70ac1a002186fffefaedc83c1982830584618e89c9929fca0097705",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "C:\\Users\\admin\\minecraft\\.local\\living-overlay-reference-20261031\\windows-normal-c-a\\natives\\lwjgl64.dll": "86a8e4555d3614e7ed5a24beda921396ceb9e41dbf2508d713a3d26b928862b7",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\server\\jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\lib\\modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "C:\\Users\\admin\\minecraft\\.local\\living-overlay-reference-20261031\\capture-c\\classes\\ConstructorJson.class": "1c13bbd4aa1dc7928a37d158835f81cb977a33d3699d34d45a73e9cbacdd462a"
+  },
+  "captured_artifact_sha256": {
+    "after.rgba": "a062136f41d8caf5153624befc999897521538179b4e2789f9100f64e97374bc",
+    "before.rgba": "6476c3cce923acadb5a22c5dd631bf7deecb83f3fa21622f4d178954262074ae",
+    "DefaultFramebufferProbe.class": "d3fc284c79aee849074d20dac3bdd762c4f18900439f286847ef88729015fcfc",
+    "phase1.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "phase1.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "phase2.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "phase2.stdout": "8c7e7f3cb94ac8672ede0b5515b5ecaac5ef26065c6599b0be0e29bf0f1c1695"
+  },
+  "request": {
+    "bits_per_pixel": 0,
+    "alpha": 0,
+    "depth": 8,
+    "stencil": 0
+  },
+  "effective": {
+    "red": 8,
+    "green": 8,
+    "blue": 8,
+    "alpha": 0,
+    "depth": 24,
+    "stencil": 0,
+    "double_buffer": true,
+    "profile_mask": 0
+  },
+  "initial_color_writemask": [
+    true,
+    true,
+    true,
+    true
+  ],
+  "before_alpha_values": [
+    255
+  ],
+  "after_alpha_values": [
+    255
+  ],
+  "gl_error": 0,
+  "limits": "Recorded NVIDIA581.42 actual attributes; raw profile_mask0 is not relabelled a profile bit. Other drivers require actual observation."
+}

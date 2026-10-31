@@ -172,6 +172,9 @@ int main(int argc, char **argv) {
     CHECK(mc_client_display_create_staged(display, true, &error));
     CHECK(mc_client_display_stage_inspect(display, &stage) &&
           stage.phase == MC_CLIENT_DISPLAY_READY && stage.window_created);
+    mc_client_framebuffer_info format;
+    CHECK(mc_client_display_framebuffer_info_get(display, &format, NULL) &&
+          format.alpha_bits == 0 && format.depth_bits >= 8 && format.double_buffer);
     mc_client_sdk_input *input = mc_client_display_inputs(display);
     CHECK(mc_client_sdk_input_inspect(input, &input_state) &&
           input_state.phase == MC_CLIENT_SDK_INPUT_READY);
