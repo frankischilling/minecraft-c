@@ -358,7 +358,7 @@ typedef struct fixture {
     mc_client_menu_loop *loop;
     mc_client_menu_loop_state state;
     uintptr_t repeat_sheep_identity; /* Borrowed identity; World/Chunk own the live Entity. */
-    uintptr_t animal_identity; /* Independent animals profile; same real publication ownership. */
+    uintptr_t animal_identity; /* Independent actor profile; World/Chunk publication ownership. */
 } fixture;
 
 /* This continuation uses an existing-player statistic read by the genuine
@@ -2071,6 +2071,7 @@ static int animal_input(fixture *f, const animal_profile *profile) {
     struct animal_input_work {
         mc_entity_view_error view;
         mc_mob_error constructor;
+        mc_mob_error size;
         mc_world_light_error height;
         mc_world_entity_error publication;
     } *work = calloc(1, sizeof(*work));
@@ -2108,6 +2109,14 @@ static int animal_input(fixture *f, const animal_profile *profile) {
           animal->phase == MC_ENTITY_READY && animal->classes == player->classes &&
           animal->class_literal == literal && animal->base.world == world &&
           animal->bounds != NULL);
+    if (profile->kind == MC_ENTITY_CLASS_KIND_SLIME) {
+        /* Declared caller input through the actual UW.e(I) body. The raw
+         * constructor already completed and its private entropy stays intact. */
+        CHECK(animal->random != NULL);
+        const mc_java_random own_random = *animal->random;
+        CHECK(mc_mob_slime_set_size(animal, 1, &work->size) == MC_MOB_OK &&
+              mc_test_java_random_equal(&own_random, animal->random));
+    }
     CHECK(mc_entity_set_position(animal, x, (double)height, z) == MC_ENTITY_OK &&
           animal->base.x == x && animal->base.y == (double)height && animal->base.z == z &&
           animal->bounds->min_y == (double)height &&
@@ -2154,10 +2163,17 @@ static int animal_input(fixture *f, const animal_profile *profile) {
     CHECK((uintptr_t)published == f->animal_identity && published->holds == holds - 1 &&
           published->base.world == world && mc_entity_is_kind(published, profile->kind));
     free(work);
-    printf("WORLD_ANIMAL_ENTITY profile=%s input=native-constructed pose=actual-player-look "
-           "distance=6 world-and-chunk=1 same-world-and-classes=1 constructor-returned=1 "
-           "constructor-hold-released=1 player-unchanged=1 world-random-unchanged=1\n",
-           profile->name);
+    if (strncmp(profile->mode, "creatures-", 10) == 0)
+        printf("WORLD_CREATURE_ENTITY profile=%s input=native-constructed pose=actual-player-look "
+               "distance=6 world-and-chunk=1 same-world-and-classes=1 constructor-returned=1 "
+               "constructor-hold-released=1 player-unchanged=1 world-random-unchanged=1 "
+               "slime-size=%s\n",
+               profile->name, profile->kind == MC_ENTITY_CLASS_KIND_SLIME ? "1" : "not-applicable");
+    else
+        printf("WORLD_ANIMAL_ENTITY profile=%s input=native-constructed pose=actual-player-look "
+               "distance=6 world-and-chunk=1 same-world-and-classes=1 constructor-returned=1 "
+               "constructor-hold-released=1 player-unchanged=1 world-random-unchanged=1\n",
+               profile->name);
     return 0;
 }
 
@@ -2454,24 +2470,547 @@ static int animal_controls(fixture *f, const animal_profile *profile, const char
     return 0;
 }
 
+/* Independent sessions keep the exact declared actor in the existing copied
+ * N receipt. No model slot, constructor entropy or simulation field is edited. */
+typedef struct creature_profile {
+    animal_profile actor;
+    size_t primary_parts, secondary_parts;
+    const char *secondary_class;
+    unsigned int secondary_pc;
+} creature_profile;
+
+static const creature_profile creature_profiles[] = {
+    {{"creatures-spider", "spider", "cn", "yx", "sc", MC_ENTITY_CLASS_KIND_SPIDER, 25, 112, 22, 22},
+     11,
+     11,
+     "sc",
+     112},
+    {{"creatures-slime", "slime", "uw", "mj", "no", MC_ENTITY_CLASS_KIND_SLIME, 53, 56, 5, 5},
+     4,
+     1,
+     "no",
+     56},
+    {{"creatures-squid", "squid", "xt", "es", "wn", MC_ENTITY_CLASS_KIND_SQUID, 107, 53, 9, 9},
+     9,
+     0,
+     NULL,
+     0},
+    {{"creatures-creeper", "creeper", "gb", "m", "il", MC_ENTITY_CLASS_KIND_CREEPER, 11, 67, 6, 14},
+     6,
+     0,
+     NULL,
+     0}};
+
+static const creature_profile *creature_profile_get(const char *mode) {
+    for (size_t i = 0; i < sizeof(creature_profiles) / sizeof(*creature_profiles); ++i)
+        if (!strcmp(mode, creature_profiles[i].actor.mode))
+            return &creature_profiles[i];
+    return NULL;
+}
+
+typedef struct creature_render_control {
+    uintptr_t renderer, primary, secondary, own_model, parts[22];
+    int32_t lists[22];
+    const model_allocation *allocation_head;
+    size_t allocations, allocation_bytes;
+    const mc_client_model_part *displaced;
+    mc_client_model_part displaced_before;
+    size_t frames, entity_frames, delayed_frames, undrawn_frames;
+    size_t compile_parts, compile_faces, compile_vertices, shadow_quads;
+    bool compiled, reused;
+} creature_render_control;
+
+static int creature_model_graph(fixture *f, const creature_profile *profile,
+                                creature_render_control *control, bool compiled) {
+    const animal_profile *p = &profile->actor;
+    mc_entity *actor = animal_live(f);
+    CHECK(actor != NULL && actor->phase == MC_ENTITY_READY && actor->bounds != NULL &&
+          actor->base.world == f->app->active_world && actor->classes == f->app->entities &&
+          mc_entity_is_kind(actor, p->kind) && !actor->base.be && actor->base.bF);
+    mc_mob_state mob;
+    CHECK(mc_mob_inspect(actor, &mob) && mob.kind == p->kind &&
+          mob.constructor_pc == p->constructor_pc);
+    if (p->kind == MC_ENTITY_CLASS_KIND_SLIME)
+        CHECK(mob.watcher_16_present && mob.watcher_16_type == 0 && mob.watcher_16 == 1);
+    mc_client_manager_state manager;
+    CHECK(mc_client_render_manager_inspect(f->app->startup->manager_classes, &manager) &&
+          manager.phase == MC_CLIENT_MANAGER_READY && manager.a != NULL &&
+          client_renderer_roster(f->app, (mc_client_render_manager *)manager.a, &manager));
+    mc_client_managed_renderer *renderer = NULL;
+    for (size_t i = 0; i < manager.entries; ++i) {
+        const mc_entity_class_literal *key = NULL;
+        mc_client_managed_renderer *owner = NULL;
+        CHECK(mc_client_render_manager_entry((mc_client_render_manager *)manager.a, i, &key, &owner,
+                                             NULL) == MC_CLIENT_MANAGER_OK);
+        if (key == actor->class_literal)
+            renderer = owner;
+    }
+    mc_client_managed_renderer_state state;
+    CHECK(renderer != NULL && mc_client_managed_renderer_inspect(renderer, &state) &&
+          state.phase == MC_CLIENT_MODEL_READY && state.identity == renderer &&
+          state.manager == manager.a && state.source_class != NULL &&
+          !strcmp(state.source_class, p->renderer_class) && state.primary == renderer->primary &&
+          state.secondary == renderer->secondary && state.own_model == renderer->own_model &&
+          renderer->primary != NULL && renderer->primary->phase == MC_CLIENT_MODEL_READY &&
+          !strcmp(renderer->primary->source_class, p->model_class));
+    manager_model *primary = renderer->primary;
+    manager_model *secondary = renderer->secondary;
+    manager_model *own = renderer->own_model;
+    if (p->kind == MC_ENTITY_CLASS_KIND_SPIDER) {
+        CHECK(secondary != NULL && secondary != primary && own == NULL &&
+              secondary->phase == MC_CLIENT_MODEL_READY && !strcmp(secondary->source_class, "sc"));
+    } else if (p->kind == MC_ENTITY_CLASS_KIND_SLIME) {
+        CHECK(own != NULL && own != primary && own->phase == MC_CLIENT_MODEL_READY &&
+              !strcmp(own->source_class, "no") && primary->fields.a != NULL &&
+              primary->fields.b != NULL && primary->fields.c != NULL && primary->fields.d != NULL &&
+              own->fields.a != NULL && own->fields.b == NULL && own->fields.c == NULL &&
+              own->fields.d == NULL && (compiled ? secondary == own : secondary == NULL));
+        secondary = own; /* Expected rendered role; never a source field store. */
+    } else if (p->kind == MC_ENTITY_CLASS_KIND_CREEPER) {
+        CHECK(secondary == NULL && own != NULL && own != primary &&
+              own->phase == MC_CLIENT_MODEL_READY && !strcmp(own->source_class, "il"));
+    } else {
+        CHECK(secondary == NULL && own == NULL);
+    }
+    if (control->renderer == 0) {
+        control->renderer = (uintptr_t)renderer;
+        control->primary = (uintptr_t)primary;
+        control->secondary = (uintptr_t)secondary;
+        control->own_model = (uintptr_t)own;
+        control->allocation_head = renderer->allocations;
+        control->allocation_bytes = renderer->bytes;
+    }
+    CHECK(control->renderer == (uintptr_t)renderer && control->primary == (uintptr_t)primary &&
+          control->secondary == (uintptr_t)secondary && control->own_model == (uintptr_t)own &&
+          control->allocation_head == renderer->allocations &&
+          control->allocation_bytes == renderer->bytes);
+    size_t allocations = 0;
+    const mc_client_model_part *displaced = NULL;
+    for (const model_allocation *at = renderer->allocations; at != NULL; at = at->next) {
+        CHECK(++allocations <= 8192);
+        /* In this exact constructor, NO's first PS allocation5 immediately
+         * follows its manager_model allocation. The existing LIFO ledger
+         * retains that displaced cube after NO replaces field a at50. */
+        if (p->kind == MC_ENTITY_CLASS_KIND_SLIME && at->next != NULL &&
+            (const void *)(at->next + 1) == (const void *)primary) {
+            CHECK(displaced == NULL);
+            displaced = (const mc_client_model_part *)(at + 1);
+        }
+    }
+    if (control->allocations == 0)
+        control->allocations = allocations;
+    CHECK(allocations == control->allocations);
+    if (p->kind == MC_ENTITY_CLASS_KIND_SLIME) {
+        CHECK(displaced != NULL && displaced != primary->fields.a && displaced != own->fields.a &&
+              displaced->l == 0 && displaced->m == 16 && displaced->h && !displaced->i &&
+              !displaced->n && displaced->o == 0 && displaced->j != NULL && displaced->k != NULL);
+        double minimum[3] = {1e9, 1e9, 1e9}, maximum[3] = {-1e9, -1e9, -1e9};
+        for (size_t i = 0; i < 8; ++i) {
+            CHECK(displaced->j[i] != NULL && displaced->j[i]->a != NULL);
+            const mc_entity_vector *v = displaced->j[i]->a;
+            const double position[3] = {v->x, v->y, v->z};
+            for (size_t axis = 0; axis < 3; ++axis) {
+                if (position[axis] < minimum[axis])
+                    minimum[axis] = position[axis];
+                if (position[axis] > maximum[axis])
+                    maximum[axis] = position[axis];
+            }
+        }
+        CHECK(minimum[0] == -4 && minimum[1] == 16 && minimum[2] == -4 && maximum[0] == 4 &&
+              maximum[1] == 24 && maximum[2] == 4);
+        if (control->displaced == NULL) {
+            control->displaced = displaced;
+            memcpy(&control->displaced_before, displaced, sizeof(*displaced));
+        }
+        CHECK(control->displaced == displaced &&
+              !memcmp(&control->displaced_before, displaced, sizeof(*displaced)));
+    }
+    mc_client_model_part *parts[22] = {0};
+    if (p->kind == MC_ENTITY_CLASS_KIND_SPIDER) {
+        manager_model *models[2] = {primary, secondary};
+        for (size_t i = 0; i < 2; ++i) {
+            manager_model *model = models[i];
+            mc_client_model_part *selected[11] = {model->fields.a, model->fields.b, model->fields.c,
+                                                  model->fields.d, model->fields.e, model->fields.f,
+                                                  model->fields.g, model->fields.h, model->fields.i,
+                                                  model->extra_j,  model->extra_k};
+            memcpy(parts + i * 11, selected, sizeof(selected));
+        }
+    } else if (p->kind == MC_ENTITY_CLASS_KIND_SLIME) {
+        mc_client_model_part *selected[5] = {primary->fields.a, primary->fields.b,
+                                             primary->fields.c, primary->fields.d, own->fields.a};
+        memcpy(parts, selected, sizeof(selected));
+    } else if (p->kind == MC_ENTITY_CLASS_KIND_SQUID) {
+        size_t capacity = 0;
+        CHECK(primary->array_b != NULL &&
+              manager_part_array_native_extent(renderer, primary->array_b, &capacity) &&
+              capacity == 8 && primary->array_b->length == 8);
+        parts[0] = primary->fields.a;
+        for (size_t i = 0; i < 8; ++i)
+            parts[i + 1] = primary->array_b->elements[i];
+    } else {
+        mc_client_model_part *selected[14] = {
+            primary->fields.a, primary->fields.c, primary->fields.d, primary->fields.e,
+            primary->fields.f, primary->fields.g, primary->fields.b, own->fields.a,
+            own->fields.b,     own->fields.c,     own->fields.d,     own->fields.e,
+            own->fields.f,     own->fields.g};
+        memcpy(parts, selected, sizeof(selected));
+    }
+    CHECK(p->graph_parts <= sizeof(parts) / sizeof(*parts));
+    for (size_t i = 0; i < p->graph_parts; ++i) {
+        mc_client_model_part *part = parts[i];
+        const bool rendered = compiled && i < p->rendered_parts;
+        CHECK(part != NULL && part->h && !part->i && part->n == rendered);
+        if (control->parts[i] == 0)
+            control->parts[i] = (uintptr_t)part;
+        CHECK(control->parts[i] == (uintptr_t)part && part != displaced);
+        for (size_t j = 0; j < i; ++j)
+            CHECK(control->parts[j] != (uintptr_t)part);
+        if (rendered) {
+            mc_client_source_list_state list;
+            CHECK(part->o > 0 && mc_client_display_list_inspect(f->app->display, part->o, &list) &&
+                  list.defined && !list.building && list.draws == 6 && list.vertices == 36);
+            for (size_t face = 0; face < 6; ++face) {
+                mc_client_source_batch_view batch;
+                CHECK(mc_client_display_list_batch(f->app->display, part->o, face, &batch) &&
+                      batch.mode == 4 && batch.vertices == 6 && batch.byte_count == 192);
+            }
+            if (control->lists[i] == 0)
+                control->lists[i] = part->o;
+            CHECK(control->lists[i] == part->o);
+            for (size_t j = 0; j < i; ++j)
+                CHECK(control->lists[j] != part->o);
+        } else {
+            CHECK(part->o == 0);
+        }
+    }
+    if (compiled)
+        CHECK(manager.fields.g == f->app->active_world && manager.living_occurrence == f->app->i &&
+              manager.fields.k == f->app->settings && actor->base.bt > 0);
+    return 0;
+}
+
+static int creature_returned_frame(fixture *f, const creature_profile *profile,
+                                   creature_render_control *control) {
+    const animal_profile *p = &profile->actor;
+    const mc_client_menu_loop_state *source = &f->state;
+    const mc_client_world_frame_state *frame = source->world_frame;
+    const mc_client_gui_ingame_draw_state *hud = source->hud;
+    CHECK(!source->failed && source->running && source->render_returned &&
+          source->render_clock_stored && source->world_draws > 0 &&
+          source->world_draws == source->hud_draws && frame != NULL && !frame->active &&
+          frame->returned && frame->source_pc == 1013 && frame->app == f->app &&
+          frame->world == f->app->active_world && frame->owner == f->app->t &&
+          frame->camera == f->app->i && frame->render_global == f->app->g &&
+          frame->failure != NULL && frame->failure->status == MC_CLIENT_WORLD_FRAME_OK &&
+          frame->failure->entities == NULL && frame->failure->hand == NULL);
+    CHECK(frame->picking_returned && frame->viewport_set && frame->fog_returned &&
+          frame->camera_returned && frame->frustum_returned && frame->sky_returned &&
+          frame->updates_returned && frame->terrain_returned && frame->lighting_enabled &&
+          frame->eye_position_returned && frame->entities_returned &&
+          frame->lit_particles_returned && frame->sprite_particles_returned &&
+          frame->translucent_returned && frame->translucent_state_restored &&
+          frame->precipitation_returned && frame->clouds_returned && frame->hand_returned &&
+          frame->hand != NULL && frame->hand->returned && frame->hand->source_pc == 163 &&
+          frame->hand->held_returned && frame->hand->overlays_returned &&
+          frame->tail_anaglyph_read && !frame->tail_anaglyph);
+    CHECK(hud != NULL && !hud->active && hud->returned && hud->source_pc == 2101 &&
+          hud->projection_returned && hud->hotbar_returned && hud->crosshair_returned &&
+          hud->stats_returned && hud->slots_returned && hud->empty_slots == 9 &&
+          hud->chat_returned && hud->owner == NULL && hud->failure == NULL && hud->cleanup == NULL);
+    const mc_client_render_global_entities_state *entities = frame->entities;
+    CHECK(entities != NULL && !entities->active && entities->returned && !entities->retiring &&
+          entities->draw == NULL && entities->owner == NULL && entities->current == NULL &&
+          entities->entities_list == NULL && entities->eye == NULL && entities->frustum == NULL &&
+          entities->ll == NULL && entities->th == NULL && entities->failure == NULL &&
+          entities->cleanup == NULL);
+    ++control->frames;
+    if (entities->delayed) {
+        CHECK(entities->source_pc == 17 && entities->draws_attempted == 0 &&
+              !entities->first_entity_draw.valid && !control->compiled);
+        ++control->delayed_frames;
+        return 0;
+    }
+    CHECK(
+        entities->source_pc == 569 && entities->ll_returned && entities->th_returned &&
+        entities->counters_cleared && entities->origins_stored && entities->origins_written == 6 &&
+        entities->entities_visited == f->app->active_world->entity_membership.count &&
+        entities->entities_visited >= 2 && entities->distance_checks == entities->entities_visited);
+    mc_entity *actor = animal_live(f);
+    if (entities->draws_attempted == 0) {
+        /* A real returned cull path consumes the bounded frame budget; it
+         * receives no compilation/reuse credit and changes no source inputs. */
+        CHECK(actor != NULL && f->app->active_world->entity_membership.count == 2 &&
+              entities->entities_visited == 2 && entities->distance_checks == 2 &&
+              entities->frustum_checks == 2 && entities->camera_skips == 1 &&
+              entities->presence_checks == 0 && entities->draws_returned == 0 &&
+              entities->draws_retired == 0 && entities->entity_draws_returned == 0 &&
+              entities->weather_draws_returned == 0 && !entities->first_entity_draw.valid &&
+              !entities->last_draw.valid && entities->model_parts_compiled == 0 &&
+              entities->model_faces == 0 && entities->model_vertices == 0 &&
+              entities->shadow_quads == 0 && f->app->r == NULL && !atomic_load(&f->app->o));
+        CHECK(creature_model_graph(f, profile, control, control->compiled) == 0);
+        ++control->undrawn_frames;
+        return 0;
+    }
+    CHECK(entities->presence_checks >= 1 && entities->draws_attempted == entities->draws_returned &&
+          entities->draws_returned == entities->draws_retired &&
+          entities->entity_draws_returned > 0);
+    const mc_client_render_global_draw_receipt *draw = &entities->first_entity_draw;
+    CHECK(actor != NULL && repeat_world_work(source) && draw->valid && draw->returned &&
+          draw->retired && !draw->post_only && draw->n_invoke_pc == 516 &&
+          draw->th_source_pc == 115 && draw->living_source_pc == 769 &&
+          draw->post_draw_source_pc == 100 && draw->actor_identity == f->animal_identity &&
+          draw->actor_class_identity == (uintptr_t)actor->class_literal &&
+          draw->actor_kind == (int32_t)p->kind && draw->actor_class_name != NULL &&
+          !strcmp(draw->actor_class_name, p->source_class) &&
+          draw->renderer_identity == control->renderer && draw->renderer_class_name != NULL &&
+          !strcmp(draw->renderer_class_name, p->renderer_class) && draw->primary_returned &&
+          draw->post_draw_returned && draw->primary_event_returned);
+    CHECK(draw->primary_model.identity == control->primary &&
+          draw->primary_model.class_name != NULL &&
+          !strcmp(draw->primary_model.class_name, p->model_class) && draw->primary_model.returned &&
+          draw->primary_model.source_pc == p->model_pc &&
+          draw->primary_model.part_calls == profile->primary_parts &&
+          draw->primary_model.part_returns == profile->primary_parts);
+    if (profile->secondary_parts != 0)
+        CHECK(draw->secondary_model.identity == control->secondary &&
+              draw->secondary_model.class_name != NULL &&
+              !strcmp(draw->secondary_model.class_name, profile->secondary_class) &&
+              draw->secondary_model.returned &&
+              draw->secondary_model.source_pc == profile->secondary_pc &&
+              draw->secondary_model.part_calls == profile->secondary_parts &&
+              draw->secondary_model.part_returns == profile->secondary_parts);
+    else
+        CHECK(draw->secondary_model.identity == 0 && !draw->secondary_model.returned);
+    for (size_t i = 0; i < 4; ++i) {
+        const bool selected = i == 0 && profile->secondary_parts != 0;
+        CHECK(draw->pass_attempted[i] && draw->pass_result[i] == selected &&
+              draw->pass_render_returned[i] == selected);
+    }
+    CHECK(draw->shadow_quads > 0 && draw->shadow_vertices == draw->shadow_quads * 4);
+    if (!control->compiled) {
+        CHECK(draw->model_parts_compiled == p->rendered_parts &&
+              draw->primary_model.compiled_parts == profile->primary_parts &&
+              draw->secondary_model.compiled_parts == profile->secondary_parts &&
+              draw->model_faces == p->rendered_parts * 6 &&
+              draw->model_vertices == p->rendered_parts * 24);
+        control->compile_parts = draw->model_parts_compiled;
+        control->compile_faces = draw->model_faces;
+        control->compile_vertices = draw->model_vertices;
+        control->compiled = true;
+    } else {
+        CHECK(draw->model_parts_compiled == 0 && draw->primary_model.compiled_parts == 0 &&
+              draw->secondary_model.compiled_parts == 0 && draw->model_faces == 0 &&
+              draw->model_vertices == 0);
+        control->reused = true;
+    }
+    CHECK(creature_model_graph(f, profile, control, true) == 0);
+    ++control->entity_frames;
+    control->shadow_quads += draw->shadow_quads;
+    return 0;
+}
+
+static const char *creature_diagnostic_text(const char *text) {
+    return text == NULL ? "none" : text;
+}
+
+/* Failure-only observation of the existing retained child. It neither retries
+ * a source operation nor releases or replaces the failed ownership prefix. */
+static void creature_tick_diagnostics(const fixture *f) {
+    const mc_client_world_tick *tick = f->state.world_tick;
+    if (tick == NULL)
+        return;
+    const mc_world_entity_tick_error *world = &tick->entities;
+    fprintf(stderr,
+            "[creature-tick-diagnostic] world returned=%d failed=%d entities-returned=%d "
+            "site=%s.%s%s:%d operation=%s entity-status=%d entity-site=%s.%s:%u "
+            "virtual=%s.%s child=%d loaded-index=%d\n",
+            (int)tick->returned, (int)tick->failed, (int)tick->entities_returned,
+            creature_diagnostic_text(tick->site.class_name),
+            creature_diagnostic_text(tick->site.method),
+            creature_diagnostic_text(tick->site.descriptor), tick->site.pc,
+            creature_diagnostic_text(tick->operation), (int)world->status,
+            creature_diagnostic_text(world->source_class),
+            creature_diagnostic_text(world->source_method), world->bytecode,
+            creature_diagnostic_text(world->virtual_class),
+            creature_diagnostic_text(world->virtual_method), (int)world->child,
+            world->loaded_index);
+    if (world->child != MC_WORLD_ENTITY_TICK_CHILD_MOB)
+        return;
+    const mc_mob_tick_error *mob = &world->child_error.mob;
+    fprintf(stderr,
+            "[creature-tick-diagnostic] mob status=%d site=%s.%s%s:%d child-site=%s.%s%s:%d "
+            "operation=%s native-policy=%d source-exception=%d exception=%s child=%d "
+            "environment-returned=%d action-returned=%d behavior-returned=%d particles=%zu "
+            "sounds=%zu cleanup-pending=%d\n",
+            (int)mob->status, creature_diagnostic_text(mob->site.class_name),
+            creature_diagnostic_text(mob->site.method),
+            creature_diagnostic_text(mob->site.descriptor), mob->site.pc,
+            creature_diagnostic_text(mob->child_site.class_name),
+            creature_diagnostic_text(mob->child_site.method),
+            creature_diagnostic_text(mob->child_site.descriptor), mob->child_site.pc,
+            creature_diagnostic_text(mob->operation), (int)mob->native_policy,
+            (int)mob->source_exception, creature_diagnostic_text(mob->exception_class),
+            (int)mob->child, (int)mob->state.environment_returned, (int)mob->state.action_returned,
+            (int)mob->state.behavior_returned, mob->state.particles, mob->state.sounds,
+            (int)mob->state.cleanup_pending);
+    const mc_world_access_failure *access = NULL;
+    if (mob->child == MC_MOB_TICK_CHILD_PRESENTATION) {
+        const mc_world_mutation_error *presentation = &mob->detail.presentation;
+        fprintf(stderr,
+                "[creature-tick-diagnostic] presentation status=%d operation=%s "
+                "world-pc=%u world-access-pc=%u provider-pc=%u\n",
+                (int)presentation->status, creature_diagnostic_text(presentation->operation),
+                presentation->bytecode, presentation->world_access_bytecode,
+                presentation->provider_bytecode);
+        access = &presentation->world_access_failure;
+    } else if (mob->child == MC_MOB_TICK_CHILD_SOUND) {
+        access = &mob->detail.sound.world_access_failure;
+    } else if (mob->child == MC_MOB_TICK_CHILD_ENVIRONMENT) {
+        const mc_entity_tick_error *environment = &mob->detail.environment;
+        fprintf(stderr,
+                "[creature-tick-diagnostic] environment status=%d site=%s.%s:%u base-pc=%u "
+                "living-pc=%u operation=%s native-policy=%d source-exception=%d exception=%s\n",
+                (int)environment->status, creature_diagnostic_text(environment->source_class),
+                creature_diagnostic_text(environment->source_method), environment->bytecode,
+                environment->base_bytecode, environment->living_bytecode,
+                creature_diagnostic_text(environment->operation), (int)environment->native_policy,
+                (int)environment->source_exception,
+                creature_diagnostic_text(environment->exception_class));
+    } else if (mob->child == MC_MOB_TICK_CHILD_ACTION) {
+        const mc_player_action_error *action = &mob->detail.action;
+        fprintf(stderr,
+                "[creature-tick-diagnostic] action status=%d site=%s.%s living-pc=%u "
+                "operation=%s child-kind=%d\n",
+                (int)action->status, creature_diagnostic_text(action->source_class),
+                creature_diagnostic_text(action->source_method), action->living_bytecode,
+                creature_diagnostic_text(action->operation), (int)action->child_kind);
+    }
+    if (access != NULL) {
+        const char *exception = NULL;
+        const bool source = mc_world_access_failure_source_exception(access, &exception);
+        fprintf(stderr,
+                "[creature-tick-diagnostic] world-access receiver=%" PRIuPTR " receipt=%" PRIuPTR
+                " source-exception=%d exception=%s\n",
+                (uintptr_t)access->receiver, (uintptr_t)access->receipt, (int)source,
+                creature_diagnostic_text(exception));
+        const mc_client_render_global_error *render = access->render_global;
+        if (render != NULL)
+            fprintf(stderr,
+                    "[creature-tick-diagnostic] render-global status=%d site=%s.%s%s:%u "
+                    "child-class=%s child-method=%s child-descriptor=%s child-pc=%d "
+                    "operation=%s native-policy=%d source-returned=%d\n",
+                    (int)render->status, creature_diagnostic_text(render->source_class),
+                    creature_diagnostic_text(render->source_method),
+                    creature_diagnostic_text(render->source_descriptor), render->source_pc,
+                    creature_diagnostic_text(render->child.class_name),
+                    creature_diagnostic_text(render->child.method),
+                    creature_diagnostic_text(render->child.descriptor), render->child.pc,
+                    creature_diagnostic_text(render->operation), (int)render->native_policy,
+                    (int)render->source_returned);
+    }
+}
+
+static int creature_controls(fixture *f, const creature_profile *profile,
+                             const char *capture_path) {
+    const animal_profile *p = &profile->actor;
+    CHECK(repeat_statistics_controls(f, false) == 0 && f->app->r == NULL &&
+          !atomic_load(&f->app->o) && display_focus(f, true) == 0);
+    printf("WORLD_CREATURE_PROFILE profile=%s scopes=independent-loaded "
+           "statistics-input=pre-bootstrap-unsent-file open-inventory=1 "
+           "canonical=ep.f notice-inactive=1 native-integration-only=1\n",
+           p->name);
+    CHECK(animal_input(f, p) == 0);
+    creature_render_control control = {0};
+    CHECK(creature_model_graph(f, profile, &control, false) == 0);
+    SDL_Delay(100); /* Only real elapsed time: the existing Timer selects ticks. */
+    const uint64_t ticks_before = f->state.world_tick_returns;
+    const uint64_t draws_before = f->state.world_draws;
+    const uint64_t started = SDL_GetTicks(), deadline = started + 60000;
+    while (!control.reused && control.frames < 8 && SDL_GetTicks() < deadline) {
+        CHECK(display_focus(f, true) == 0);
+        const bool returned = mc_client_menu_loop_frame(f->loop);
+        CHECK(mc_client_menu_loop_inspect(f->loop, &f->state));
+        if (!returned) {
+            fprintf(stderr, "Creature %s retained %s.%s:%" PRId64 " %s\n", p->name,
+                    f->state.source_class == NULL ? "native" : f->state.source_class,
+                    f->state.source_method == NULL ? "frame" : f->state.source_method,
+                    f->state.source_pc, f->state.operation == NULL ? "none" : f->state.operation);
+            creature_tick_diagnostics(f);
+        }
+        CHECK(returned && creature_returned_frame(f, profile, &control) == 0);
+        if (!control.reused)
+            SDL_Delay(100);
+    }
+    if (!control.reused) {
+        mc_entity *actor = animal_live(f);
+        fprintf(stderr,
+                "Creature %s deadline elapsed-seconds=%" PRIu64
+                " limit-seconds=60 frames=%zu delayed=%zu undrawn=%zu entity-frames=%zu "
+                "paused=%d screen=%d actor-ticks=%d\n",
+                p->name, (SDL_GetTicks() - started) / UINT64_C(1000), control.frames,
+                control.delayed_frames, control.undrawn_frames, control.entity_frames,
+                (int)atomic_load(&f->app->o), f->app->r == NULL ? -1 : (int)f->app->r->kind,
+                actor == NULL ? -1 : actor->base.bt);
+    }
+    CHECK(control.compiled && control.reused && control.entity_frames >= 2 && control.frames >= 2 &&
+          control.frames <= 8 &&
+          control.frames ==
+              control.entity_frames + control.delayed_frames + control.undrawn_frames &&
+          f->state.world_tick_returns > ticks_before &&
+          f->state.world_draws == draws_before + control.frames &&
+          repeat_statistics_controls(f, false) == 0);
+    printf("WORLD_CREATURE_FRAME profile=%s frames=%zu entity-frames=%zu delayed-frames=%zu "
+           "undrawn-frames=%zu source=px.a:1013 entities=n.a:569 hud=uq.a:2101 "
+           "mob=%s renderer=%s primary=%s exact-declared-actor=1 "
+           "renderer-map=29 constructor-owners=28 local-player-alias=gs same-world-and-classes=1 "
+           "primary-parts=%zu secondary-parts=%zu compiled-parts=%zu reused-parts=0 "
+           "compiled-faces=%zu compiled-vertices=%zu part-lists=%zu unused-parts=%zu "
+           "displaced-parts=%u constructor-ledger-stable=1 secondary-initial=%s secondary-after=%s "
+           "part-source-vertices=24 part-list-vertices=36 stable-list-ids=1 "
+           "shadow-quads=%zu checked-draw-retirement=1 copied-receipts=1 "
+           "tick-return=1328 scheduler=198 completed-random-calls=%" PRIu64
+           " completed-chunks=%zu completed-samples=%" PRIu64 " display-calls=%" PRIu64
+           " display-samples=%" PRIu64 " display-random=%" PRIu64 "\n",
+           p->name, control.frames, control.entity_frames, control.delayed_frames,
+           control.undrawn_frames, p->source_class, p->renderer_class, p->model_class,
+           profile->primary_parts, profile->secondary_parts, control.compile_parts,
+           control.compile_faces, control.compile_vertices, p->rendered_parts,
+           p->graph_parts - p->rendered_parts, p->kind == MC_ENTITY_CLASS_KIND_SLIME ? 1u : 0u,
+           p->kind == MC_ENTITY_CLASS_KIND_SPIDER ? "constructed" : "null",
+           p->kind == MC_ENTITY_CLASS_KIND_SPIDER  ? "constructed"
+           : p->kind == MC_ENTITY_CLASS_KIND_SLIME ? "own-alias"
+                                                   : "null",
+           control.shadow_quads, f->state.random_chunk_calls, f->state.last_random_chunk_count,
+           f->state.random_chunk_samples, f->state.random_display_calls,
+           f->state.random_display_samples, f->state.random_display_random_calls);
+    CHECK(capture(f, capture_path) == 0);
+    return 0;
+}
+
 int main(int argc, char **argv) {
-    CHECK(argc == 4 && (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
-                        strcmp(argv[2], "large") == 0 || strcmp(argv[2], "double") == 0 ||
-                        strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
-                        strcmp(argv[2], "load-terminal") == 0 ||
-                        strcmp(argv[2], "load-partial") == 0 || strcmp(argv[2], "repeat") == 0 ||
-                        strcmp(argv[2], "load-light") == 0 || animal_profile_get(argv[2]) != NULL));
+    CHECK(argc == 4 &&
+          (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
+           strcmp(argv[2], "large") == 0 || strcmp(argv[2], "double") == 0 ||
+           strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
+           strcmp(argv[2], "load-terminal") == 0 || strcmp(argv[2], "load-partial") == 0 ||
+           strcmp(argv[2], "repeat") == 0 || strcmp(argv[2], "load-light") == 0 ||
+           animal_profile_get(argv[2]) != NULL || creature_profile_get(argv[2]) != NULL));
     const animal_profile *animal = animal_profile_get(argv[2]);
+    const creature_profile *creature = creature_profile_get(argv[2]);
     const bool animals_load = animal != NULL;
+    const bool creatures_load = creature != NULL;
     const bool double_click = strcmp(argv[2], "double") == 0;
     const bool terminal_admission = strcmp(argv[2], "load-terminal") == 0;
     const bool partial_load = strcmp(argv[2], "load-partial") == 0;
     const bool repeat_load = strcmp(argv[2], "repeat") == 0;
     const bool light_control = strcmp(argv[2], "load-light") == 0;
-    const bool focused_load =
-        strcmp(argv[2], "load") == 0 || repeat_load || light_control || animals_load;
+    const bool focused_load = strcmp(argv[2], "load") == 0 || repeat_load || light_control ||
+                              animals_load || creatures_load;
     const bool loading_world = strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
-                               terminal_admission || repeat_load || light_control || animals_load;
+                               terminal_admission || repeat_load || light_control || animals_load ||
+                               creatures_load;
     const bool populated =
         strcmp(argv[2], "populated") == 0 || double_click || loading_world || partial_load;
     const bool large = strcmp(argv[2], "large") == 0;
@@ -2485,7 +3024,7 @@ int main(int argc, char **argv) {
                                                    .hidden = !focused_load};
     CHECK(mc_client_bootstrap_open(&options, &f.bootstrap) == MC_CLIENT_BOOTSTRAP_OK);
     f.app = mc_client_bootstrap_app(f.bootstrap);
-    if (repeat_load || animals_load)
+    if (repeat_load || animals_load || creatures_load)
         CHECK(repeat_statistics_controls(&f, true) == 0);
     if (focused_load)
         CHECK(SDL_RaiseWindow(mc_client_display_window(f.app->display)));
@@ -2872,6 +3411,10 @@ int main(int argc, char **argv) {
                 CHECK(animal_controls(&f, animal, argv[3]) == 0);
                 goto loaded_draw_controls_done;
             }
+            if (creatures_load) {
+                CHECK(creature_controls(&f, creature, argv[3]) == 0);
+                goto loaded_draw_controls_done;
+            }
             if (repeat_load) {
                 CHECK(repeat_statistics_controls(&f, false) == 0);
                 puts("WORLD_REPEAT profile=existing-inventory-player "
@@ -3071,7 +3614,8 @@ int main(int argc, char **argv) {
         CHECK(terminal_prepare_controls(&f, external) == 0);
     if (terminal_admission)
         CHECK(loaded_terminal_admission_controls(&f) == 0);
-    if (loading_world && !terminal_admission && !repeat_load && !light_control && !animals_load) {
+    if (loading_world && !terminal_admission && !repeat_load && !light_control && !animals_load &&
+        !creatures_load) {
         mc_world_runtime *world = f.app->active_world;
         mc_entity *player = f.app->h;
         mc_client_render_global *renderer = f.app->g;
@@ -3099,7 +3643,8 @@ int main(int argc, char **argv) {
               f.app->active_world == world && f.app->h == player && f.app->i == player);
         CHECK(mc_client_effect_renderer_release(effects) == MC_EFFECT_RENDERER_OK);
     }
-    if (!loading_world || terminal_admission || repeat_load || light_control || animals_load) {
+    if (!loading_world || terminal_admission || repeat_load || light_control || animals_load ||
+        creatures_load) {
         CHECK(normal_terminal_retirement_controls(&f, &external, loading_world) == 0);
     } else {
         CHECK(!mc_client_menu_loop_retire(&f.loop) && f.loop != NULL && external != NULL);

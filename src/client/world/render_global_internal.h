@@ -44,6 +44,8 @@ struct mc_client_render_global_error {
     const struct mc_entity_render_distance_error *render_distance;
     const struct mc_client_culling_error *entity_culling;
     const mc_client_manager_draw_error *manager_draw;
+    const struct mc_particle_error *particle;
+    const struct mc_effect_renderer_error *effects;
 };
 
 struct mc_client_render_batch {

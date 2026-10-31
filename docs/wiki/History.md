@@ -1,6 +1,65 @@
 # History
 
-The current [Sheep/Pig/Cow/Chicken checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md) extends the earlier
+## Creature drawing, Slime particles and Creeper components
+
+The client now draws eight default Mob kinds: Sheep, Pig, Cow, Chicken,
+Spider, Slime, Squid and Creeper. [Mob drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md) uses the actual TH/GV, concrete
+renderer/model, PS and NW owners. Four independent loaded Windows sessions
+for Spider/Slime/Squid/Creeper each return four World/HUD frames: delay,
+unticked undrawn traversal, first draw and reuse, then checked cleanup.
+The new families draw 22/5/9/6 parts and 18/2/18/8 shadow quads across their
+two drawn frames. Existing-player statistics are declared inputs; these
+controls do not qualify fresh-player tutorials or serialized Mob loading.
+
+The creature comparison passes 3,722 native checks and 366,155 selected
+original checks per host: 341 queries, 42 lists, 252 faces and twelve rejected
+corruptions. Linux ordinary/read-only JDI and the audited matching-device
+NVIDIA ordinary supplement keep separate scopes. Native global invocation
+order, dynamic Block classes, original/native pixels and whole-frame equality
+remain unpaired. Prepared matrices alone allow four float ULP or opposite-zero
+numeric equality, with raw differences retained.
+
+[PB particles](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particles.md) now follow the actual Slime landing through N, eight distinct PBs,
+DN tick, real World movement and layer 2 sprite drawing. Both hosts pass 1,863
+native checks across five fresh processes and 67,444 selected original checks
+over seventeen operations, including four actual null failures, 180 identity
+pairs, 45 stream-progress relations and complete 48/48/384-word batches.
+Four manifest and eight targeted comparator corruptions are rejected.
+Eleven direct native constructor receipts have 77 separate scalar checks;
+twenty original constructor intervals retain their own proofs. Constructor
+entropy and raw landing x/z remain independent. Post-array current color,
+concrete JDK buffer/List layout, boxed-Byte and flattened String identity,
+full texture-state graphs and original/native pixels retain explicit limits.
+
+[Mob ticks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-active-tick.md) include the actual Creeper attack/unseen bodies. Each host passes 615
+native checks and 864 selected original comparisons: nine returns, the actual
+null-World failure and two explosion-entry prefixes. The real FD/QX explosion
+remains unfinished; later death/attacking stores receive no completion credit.
+The sound fixture's empty WorldAccess List gives no audio-device coverage.
+
+All 98 selected targets build on Windows MSVC Debug and Linux
+Clang18 ASan/UBSan. All 129 Windows and 122 Linux tests pass without
+failures, skips or sanitizer findings. CTest takes 457.67/460.55 seconds;
+complete test phases including following input audits take 458.08/501.85 seconds.
+The same 2,610 compiled/helper/build/reference inputs remain unchanged
+through both builds and tests and match the committed Git blobs.
+All 26 fresh original-comparison wrappers pass, thirteen per host. A separate
+current audit verifies 4,614 resolved paths, merging Windows separators
+and `/mnt/c` aliases of the same file. Formatting checks 1,757 C files.
+Six current binding tables pass with historical metadata preserved. Hosted
+results keep their exact published-commit scope in
+[Draft PR52](https://github.com/frankischilling/minecraft-c/pull/52).
+
+Single-player remains pre-playable. Wolf, Zombie and Skeleton with its genuine
+held Bow remain unfinished. Active achievement/tutorial notices, real Canvas
+focus/resize, Mob NBT and source-region writes, save/detach/reload, populated
+item/HUD interactions, mining/placement, combat, further Block overrides and
+TileEntities still require work. Server work follows single-player. Account
+authentication is the sole approved gameplay exclusion.
+
+## Preceding animal checkpoint
+
+The preceding [Sheep/Pig/Cow/Chicken checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md) extends the earlier
 Sheep closure with real Pig saddle lookup predicates, Cow virtual pose and
 Chicken sine/flap rendering. Each host passes 3,350 native checks and 206,656
 typed comparisons, with 316 ordered queries, 35 lists, 210 faces, eight shadows,

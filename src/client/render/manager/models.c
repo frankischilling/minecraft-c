@@ -1603,9 +1603,30 @@ manager_part_array *manager_part_array_new(mc_client_model_graph *g, int32_t len
     }
     manager_part_array *p = mc_client_model_graph_allocate(
         g, sizeof(*p) + (size_t)length * sizeof(*p->elements), source, pc);
-    if (p != NULL)
+    if (p != NULL) {
+        /* The allocator has just installed this exact payload as its head.
+         * No allocation, callback or Source work intervenes. This typed native
+         * extent survives Source field replacement and failed construction. */
+        (*g->allocations)->native.part_array_extent = (size_t)length + 1u;
         p->length = length;
+    }
     return p;
+}
+
+bool manager_part_array_native_extent(const mc_client_managed_renderer *owner,
+                                      const manager_part_array *array, size_t *out) {
+    if (owner == NULL || array == NULL || out == NULL)
+        return false;
+    for (const model_allocation *at = owner->allocations; at != NULL; at = at->next) {
+        if ((const void *)(at + 1) != (const void *)array)
+            continue;
+        const size_t extent = at->native.part_array_extent;
+        if (extent == 0 || extent - 1u > (size_t)INT32_MAX)
+            return false;
+        *out = extent - 1u;
+        return true;
+    }
+    return false;
 }
 
 manager_model *manager_model_allocate(mc_client_model_graph *g, const char *source_class,

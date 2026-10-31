@@ -86,8 +86,8 @@
       "sha256": "4cd33f11935846d9e978f46732b36ce88452d377e67bcbd3e0320c9284d59339"
     },
     "include/mc/entity/classes/classes.h": {
-      "bytes": 6854,
-      "sha256": "12e6e5680f7d1eadea69d000a45f8edb35e3dead3a66a22f3e0e722a741e8c2c"
+      "bytes": 6952,
+      "sha256": "5795bc59a17266baff952db01970b72ca96d770c4bb77089c5b4b2ca3fe7c9af"
     },
     "include/mc/entity/entity.h": {
       "bytes": 8689,
@@ -326,8 +326,8 @@
       "sha256": "0792285188cb96e23f2b0d815bb2cfb5c3b3161791a92ead79ef7ca6273ed063"
     },
     "src/client/render/model_graph_internal.h": {
-      "bytes": 3217,
-      "sha256": "23418f32ec78cb2fb08ed1c43baae57fa4c07e54653cb27459c8b46f5fc48392"
+      "bytes": 3509,
+      "sha256": "602dcae266d86f197c5d42801fc796de10e6e8d03df76a041f718a39155ce7fb"
     },
     "src/client/render/model_graph_trace.inc": {
       "bytes": 2643,

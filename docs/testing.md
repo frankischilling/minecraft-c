@@ -1,5 +1,72 @@
 # Test scope and reproduction
 
+## Creature drawing, PB particles and Creeper components
+
+All 98 selected targets build on Windows MSVC Debug and Linux Clang18
+ASan/UBSan. The registered selection passes all 129 Windows and 122 Linux tests,
+with no failures, skips or sanitizer findings. CTest takes 457.67/460.55 seconds;
+complete phases with following input audits take 458.08/501.85 seconds. All
+2,610 C/helper/build/reference inputs remain unchanged across both builds and
+tests. Formatting checks 1,757 C/header/fragment files. The six current binding
+tables verify 8,353 entries across 3,550 files, preserving historical metadata.
+Thirteen original-comparison suites pass freshly on each host; the independent
+final audit verifies all 26 wrappers and 4,614 resolved current paths. Windows
+separator variants and `/mnt/c` aliases share one resolved-file entry.
+
+`client.creature_draw` uses genuine Spider, Slime, Squid and Creeper owners.
+Windows and Linux each pass 3,722 native checks and 366,155 selected original
+graph/state comparisons over thirteen draws, including 341 queries, 42 lists,
+252 model faces and twelve rejected comparator corruptions. Five fresh WN
+component controls preserve actual partial model state through cleanup; these
+are Code-qualified native controls rather than additional original Throwables.
+The [drawing contract](client/mob-drawing.md#spider-slime-squid-and-creeper)
+separates ordinary/JDI evidence from the matching-device NVIDIA supplement.
+
+`entity.item_particle` runs five fresh processes with real PB/XW, App, World,
+Registry, N and DN owners. Each host passes 1,863 native checks and 67,444
+selected original checks over seventeen operations: thirteen returns and four
+actual null failures at PB17/PB42/SN394/SN118. The comparison checks 180 identity
+pairs, 45 stream-progress relations, complete 48/48/384-word NW batches and
+1,024-word backing prefixes. Four corrupt manifests and eight comparator
+corruptions must fail for their intended reason. Eleven actual native
+constructor receipts have 77 independent scalar checks; twenty original
+constructor intervals retain separate proofs. Raw default entropy is never
+transported into execution.
+
+```sh
+python tests/tools/entity/test_item_particle.py --executable /path/to/mc_test_item_particle \
+  --work-dir /path/to/fresh-results \
+  --observations /path/to/original/observations.json \
+  --original-audit /path/to/post-capture-current-output-audit.json
+```
+
+The original input/helper audit checks 28 inputs and four compiled helpers.
+The explicit companion records a separate post-capture inventory of 234 current
+outputs; it is not a capture-start output manifest. Both are checked before and
+after execution. Saved failure reports distinguish rejected provenance from
+started native execution. Actual private-input drift, changed/missing copied
+audit data and undeclared stdout are rejected by separate process controls.
+[Particle ownership](client/particles.md) and [drawing](client/particle-rendering.md)
+state the independent landing-position, constructor, JDK-layout, current-color,
+texture and pixel limits.
+
+`entity.creeper_attack` exercises the real protected components through the
+production admission and checked-cleanup runner. Both hosts pass 615 native
+checks and 864 selected original comparisons: nine returns, the actual
+null-World PC4 and two explosion-entry prefixes. Its optional comparison uses
+`--observations` and `--original-audit` with its separate revalidated companion.
+Seven manifest corruptions, six stdout corruptions and actual exit/drift controls
+pass. Full original explosion after-states remain separate; native FD/QX
+completion is unfinished.
+
+The Windows `client.world_selection_creatures` mode runs four independent loaded
+App/World scopes with actual constructors and ordinary Entity publication. Each
+returns four frames: real delay, exact undrawn traversal, first draw and reuse,
+then checked cleanup. The existing-player inventory statistic is a declared
+precondition. These native integration checks do not establish fresh-player
+tutorial completion, serialized Mob loading, original/native pixels, whole-frame
+equality or a playable client.
+
 ## Integration qualification
 
 At `a303b86`, all 92 selected targets build on Windows MSVC Debug and Linux Clang18 ASan/UBSan.

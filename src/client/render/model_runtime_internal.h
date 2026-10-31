@@ -47,6 +47,22 @@ typedef struct mc_client_model_runtime_state {
      * override fails. These do not credit the selected pose/render return. */
     mc_client_graphics_site nn_pose_site, nn_render_site;
     bool nn_pose_returned, nn_render_returned;
+    /* Actual selected declarations: IN.b / IN.a / java.lang.Math.abs(F).
+     * math_calls includes all three; the JDK leaf never initializes IN. */
+    unsigned int cosine_calls, sine_calls, absolute_calls;
+    /* Borrowed actual WN.b array, never a fabricated array for named slots.
+     * The role marks the most recently reached array operation. */
+    const manager_part_array *part_array;
+    int32_t array_index, array_length;
+    unsigned int array_length_reads, array_element_reads;
+
+    enum {
+        MC_CLIENT_MODEL_ARRAY_NONE,
+        MC_CLIENT_MODEL_ARRAY_POSE_LENGTH,
+        MC_CLIENT_MODEL_ARRAY_POSE_ELEMENT,
+        MC_CLIENT_MODEL_ARRAY_RENDER_LENGTH,
+        MC_CLIENT_MODEL_ARRAY_RENDER_ELEMENT
+    } array_role;
 } mc_client_model_runtime_state;
 
 typedef struct mc_client_model_runtime_error {
@@ -63,11 +79,13 @@ typedef struct mc_client_model_runtime_error {
      * separate; HH's maximum is HH.a10 -> NN.a10 -> HH.b10. */
     mc_client_graphics_site ancestors[3];
     unsigned int ancestor_count;
+    /* Borrowed native provenance association, not a source method operand. */
+    const mc_client_managed_renderer *native_owner;
 } mc_client_model_runtime_error;
 
 void mc_client_model_runtime_error_init(mc_client_model_runtime_error *);
 
-/* Entered synchronous KO/NN/HH/TD dispatch on the SAME manager_model allocation.
+/* Entered synchronous closed model dispatch on the SAME manager_model allocation.
  * The parent holds/guards the complete manager/renderer graph and actual
  * service namespaces until all borrowed diagnostics/pending PS rights retire.
  * An empty KO event reads no actor or service. Six-float methods read no

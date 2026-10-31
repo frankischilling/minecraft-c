@@ -130,6 +130,10 @@ void *manager_allocate_native(mc_client_render_manager_classes *, size_t, const 
 void *manager_allocate(mc_client_render_manager_classes *, size_t, const char *, int32_t);
 mc_client_model_graph manager_renderer_graph(mc_client_managed_renderer *);
 manager_part_array *manager_part_array_new(mc_client_model_graph *, int32_t, const char *, int32_t);
+/* Prove the exact typed allocation before inspecting a nullable source array.
+ * Its immutable native capacity never comes from mutable Source fields. */
+bool manager_part_array_native_extent(const mc_client_managed_renderer *,
+                                      const manager_part_array *, size_t *out);
 manager_model *manager_model_allocate(mc_client_model_graph *, const char *, const char *,
                                       const char *, int32_t);
 bool manager_model_construct(mc_client_model_graph *, manager_model *, float, int32_t);

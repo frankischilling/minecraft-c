@@ -1,10 +1,15 @@
 #include "render_global_access.h"
 
+#include "../../block/registry/runtime_internal.h"
 #include "../../entity/entity_internal.h"
+#include "../../entity/particles/particle_internal.h"
+#include "../../world/runtime/runtime_internal.h"
 #include "../../world/runtime/world_access_internal.h"
 #include "../application_state.h"
 #include "../render_engine/image_buffer.h"
 #include "../render_engine/image_download.h"
+#include "../startup/application_owner.h"
+#include "mc/client/particles/effect_renderer.h"
 #include "mc/client/sound/sound_manager.h"
 #include "mc/entity/appearance.h"
 #include "mc/world/runtime/runtime.h"
@@ -21,6 +26,19 @@ typedef struct access_registration {
     uint64_t identity;
 } access_registration;
 
+typedef struct access_particle {
+    client_application *application;
+    mc_client_effect_renderer *receiver;
+    mc_entity *candidate;
+    mc_world_runtime *world;
+    mc_registry_classes *registry;
+    mc_math_classes *math;
+    mc_particle_error error;
+    mc_effect_renderer_error effects, effects_cleanup;
+    mc_client_application_owner_error application_error, application_cleanup;
+    mc_math_class_error math_cleanup;
+} access_particle;
+
 typedef struct access_call {
     struct access_call *next;
     mc_client_render_global_error error;
@@ -30,6 +48,7 @@ typedef struct access_call {
     mc_client_image_buffer_error buffer_error, buffer_cleanup;
     mc_client_image_download_error image_error, image_cleanup;
     const char *source_exception_class;
+    access_particle *particle;
 } access_call;
 
 struct mc_render_global_access {
@@ -128,6 +147,59 @@ static void copy_image_error(access_call *call, const mc_client_image_download_e
 }
 
 static bool retire_children(access_call *call, mc_client_render_global_error *error) {
+    access_particle *particle = call->particle;
+    if (particle != NULL) {
+        if (particle->candidate != NULL) {
+            mc_entity_release(particle->candidate);
+            particle->candidate = NULL;
+        }
+        if (particle->math != NULL &&
+            mc_math_classes_release(&particle->math, &particle->math_cleanup) != MC_MATH_CLASS_OK) {
+            error->math = particle->math_cleanup;
+            fail(error, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED,
+                 "N reached particle Math occurrence retirement", NULL, NULL, 0, true);
+            return false;
+        }
+        if (particle->registry != NULL) {
+            if (!mc_registry_runtime_borrow_release(particle->registry)) {
+                fail(error, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED,
+                     "N particle Registry occurrence retirement", NULL, NULL, 0, true);
+                return false;
+            }
+            particle->registry = NULL;
+        }
+        if (particle->world != NULL) {
+            if (particle->world->persistent_bindings == 0) {
+                fail(error, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED,
+                     "N particle World occurrence retirement", NULL, NULL, 0, true);
+                return false;
+            }
+            mc_world_runtime_binding_release(particle->world);
+            particle->world = NULL;
+        }
+        if (particle->receiver != NULL) {
+            const mc_effect_renderer_status status =
+                mc_client_effect_renderer_release(particle->receiver);
+            if (status != MC_EFFECT_RENDERER_OK) {
+                particle->effects_cleanup.status = status;
+                particle->effects_cleanup.operation = "N captured DN occurrence retirement";
+                particle->effects_cleanup.native_policy = true;
+                error->effects = &particle->effects_cleanup;
+                fail(error, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED,
+                     "N captured DN occurrence retirement", NULL, NULL, 0, true);
+                return false;
+            }
+            particle->receiver = NULL;
+        }
+        if (particle->application != NULL &&
+            mc_client_application_render_release(&particle->application,
+                                                 &particle->application_cleanup) !=
+                MC_CLIENT_APPLICATION_OWNER_OK) {
+            fail(error, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED,
+                 "N particle App occurrence retirement", NULL, NULL, 0, true);
+            return false;
+        }
+    }
     for (size_t i = 0; i < 2; ++i) {
         if (call->images[i] != NULL) {
             const mc_client_image_download_status status =
@@ -207,6 +279,10 @@ static mc_world_storage_status call_end(mc_render_global_access *access, access_
     if (call->error.status == MC_CLIENT_RENDER_GLOBAL_OK) {
         (void)mc_world_access_receipt_retire(&call->receipt, NULL);
         access->bytes -= sizeof(*call) + sizeof(mc_world_access_receipt);
+        if (call->particle != NULL) {
+            access->bytes -= sizeof(*call->particle);
+            free(call->particle);
+        }
         free(call);
         *failure = (mc_world_access_failure){0};
         *error = (mc_world_storage_error){0};
@@ -405,6 +481,181 @@ static bool text_equals(const mc_registry_string_view *text, const char *ascii) 
     return true;
 }
 
+static mc_client_render_global_status particle_status(mc_entity_status status) {
+    switch (status) {
+        case MC_ENTITY_OK:
+            return MC_CLIENT_RENDER_GLOBAL_OK;
+        case MC_ENTITY_LIMIT:
+            return MC_CLIENT_RENDER_GLOBAL_LIMIT;
+        case MC_ENTITY_ALLOCATION_FAILED:
+            return MC_CLIENT_RENDER_GLOBAL_ALLOCATION_FAILED;
+        case MC_ENTITY_BUSY:
+            return MC_CLIENT_RENDER_GLOBAL_BUSY;
+        case MC_ENTITY_UNSUPPORTED_FP:
+            return MC_CLIENT_RENDER_GLOBAL_UNSUPPORTED_FP;
+        default:
+            return MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY;
+    }
+}
+
+static mc_client_render_global_status effect_status(mc_effect_renderer_status status) {
+    switch (status) {
+        case MC_EFFECT_RENDERER_OK:
+            return MC_CLIENT_RENDER_GLOBAL_OK;
+        case MC_EFFECT_RENDERER_BUSY:
+            return MC_CLIENT_RENDER_GLOBAL_BUSY;
+        case MC_EFFECT_RENDERER_LIMIT:
+            return MC_CLIENT_RENDER_GLOBAL_LIMIT;
+        case MC_EFFECT_RENDERER_ALLOCATION_FAILED:
+            return MC_CLIENT_RENDER_GLOBAL_ALLOCATION_FAILED;
+        case MC_EFFECT_RENDERER_NULL_REFERENCE:
+            return MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE;
+        default:
+            return MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY;
+    }
+}
+
+static bool slime_particle(mc_render_global_access *access, access_call *call, double x, double y,
+                           double z) {
+    const char *descriptor = "(Ljava/lang/String;DDDDDD)V";
+    if (!budget(access, sizeof(access_particle))) {
+        fail(&call->error, MC_CLIENT_RENDER_GLOBAL_LIMIT, "N reached particle capture ceiling", "a",
+             descriptor, 683, true);
+        return false;
+    }
+    access_particle *p = calloc(1, sizeof(*p));
+    if (p == NULL) {
+        fail(&call->error, MC_CLIENT_RENDER_GLOBAL_ALLOCATION_FAILED,
+             "N reached particle capture allocation", "a", descriptor, 683, true);
+        return false;
+    }
+    call->particle = p;
+    access->bytes += sizeof(*p);
+    /* Fresh N.t680, then the actual Minecraft.j field683. The initial guard
+     * above is a distinct Source read and does not supply this receiver. */
+    client_application *app = access->owner->fields.t;
+    if (app == NULL) {
+        fail(&call->error, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
+             "N particle null fresh Minecraft receiver", "a", descriptor, 683, false);
+        return false;
+    }
+    mc_client_effect_renderer *receiver = app->effect_renderer;
+    if (mc_client_application_render_borrow(app, &p->application_error) !=
+        MC_CLIENT_APPLICATION_OWNER_OK) {
+        fail(&call->error, MC_CLIENT_RENDER_GLOBAL_BUSY, "N particle actual App lifetime", "a",
+             descriptor, 683, true);
+        return false;
+    }
+    p->application = app;
+    if (receiver != NULL) {
+        const mc_effect_renderer_status held = mc_client_effect_renderer_retain(receiver);
+        if (held != MC_EFFECT_RENDERER_OK) {
+            p->effects.status = held;
+            p->effects.operation = "N captured particle receiver lifetime";
+            p->effects.native_policy = true;
+            call->error.effects = &p->effects;
+            fail(&call->error, effect_status(held), p->effects.operation, "a", descriptor, 683,
+                 true);
+            return false;
+        }
+        p->receiver = receiver;
+    }
+    /* Actual RAW allocation686 precedes every constructor argument below. */
+    const mc_entity_status allocated =
+        mc_item_particle_allocate(app->entities, &p->candidate, &call->error.entity);
+    if (allocated != MC_ENTITY_OK) {
+        fail(&call->error, particle_status(allocated), call->error.entity.operation, "a",
+             descriptor, 686, true);
+        return false;
+    }
+    mc_world_runtime *world = access->owner->fields.k; /* Actual fresh N.k691. */
+    if (world != NULL) {
+        if (!mc_world_runtime_binding_retain(world)) {
+            fail(&call->error,
+                 world->persistent_bindings == SIZE_MAX ? MC_CLIENT_RENDER_GLOBAL_LIMIT
+                                                        : MC_CLIENT_RENDER_GLOBAL_BUSY,
+                 "N captured particle World lifetime", "a", descriptor, 691, true);
+            return false;
+        }
+        p->world = world;
+    }
+    mc_registry_classes *registry = app->registry; /* Native service, not N.k. */
+    const mc_registry_status held = mc_registry_classes_retain(
+        registry, MC_REGISTRY_CLIENT, app->entities->profile, &call->error.registry);
+    if (held != MC_REGISTRY_OK) {
+        fail(&call->error,
+             held == MC_REGISTRY_LIMIT ? MC_CLIENT_RENDER_GLOBAL_LIMIT
+                                       : MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
+             "N reached Item Registry lifetime", "a", descriptor, 699, true);
+        return false;
+    }
+    p->registry = registry;
+    const mc_item *item = NULL;
+    if (mc_registry_item_static_get(registry, "aK", &item, &call->error.registry) !=
+        MC_REGISTRY_OK) {
+        mc_particle_throwable throwable;
+        const char *exception = NULL;
+        mc_particle_registry_classification(registry, &call->error.registry, &throwable,
+                                            &exception);
+        call->source_exception_class = throwable == MC_PARTICLE_SOURCE_EXCEPTION ? exception : NULL;
+        fail(&call->error,
+             call->error.registry.status == MC_REGISTRY_LIMIT ? MC_CLIENT_RENDER_GLOBAL_LIMIT
+             : call->error.registry.status == MC_REGISTRY_ALLOCATION_FAILED
+                 ? MC_CLIENT_RENDER_GLOBAL_ALLOCATION_FAILED
+                 : MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
+             call->error.registry.message, "a", descriptor, 699,
+             throwable == MC_PARTICLE_NO_THROWABLE);
+        return false;
+    }
+    call->error.particle = &p->error;
+    /* PB's entered XW body transfers the actual Math occurrence at164,
+     * after five prior shared draws, including on initializer failure.
+     * No early retain or IN ensure belongs to this N caller. */
+    const mc_entity_status constructed =
+        mc_item_particle_construct_entered(p->candidate, world, registry, app->source_math_classes,
+                                           x, y, z, item, &p->math, &p->error);
+    if (constructed != MC_ENTITY_OK) {
+        call->source_exception_class =
+            p->error.throwable == MC_PARTICLE_SOURCE_EXCEPTION ? p->error.exception_class : NULL;
+        const mc_client_render_global_status selected =
+            p->error.throwable == MC_PARTICLE_SOURCE_EXCEPTION &&
+                    p->error.exception_class != NULL &&
+                    strcmp(p->error.exception_class, "java/lang/NullPointerException") == 0
+                ? MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE
+                : particle_status(constructed);
+        fail(&call->error, selected, p->error.operation, "a", descriptor, 702,
+             p->error.native_policy);
+        call->error.child = (mc_client_graphics_site){
+            p->error.source_class, p->error.source_method, p->error.source_descriptor,
+            p->error.source_class == NULL ? -1 : (int32_t)p->error.source_pc};
+        return false;
+    }
+    if (receiver == NULL) {
+        fail(&call->error, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
+             "N particle null captured DN enqueue receiver", "a", descriptor, 705, false);
+        return false;
+    }
+    call->error.effects = &p->effects;
+    const mc_effect_renderer_status added =
+        mc_client_effect_renderer_add(receiver, p->candidate, &p->effects);
+    if (added != MC_EFFECT_RENDERER_OK) {
+        call->source_exception_class =
+            p->effects.source_exception ? p->effects.exception_class : NULL;
+        fail(&call->error, effect_status(added), p->effects.operation, "a", descriptor, 705,
+             p->effects.native_policy);
+        call->error.child =
+            (mc_client_graphics_site){"dn", p->effects.source_method, p->effects.source_descriptor,
+                                      (int32_t)p->effects.source_pc};
+        return false;
+    }
+    /* DN owns the independently retained List occurrence. End only this
+     * constructor-expression local; the actual particle remains in DN. */
+    mc_entity_release(p->candidate);
+    p->candidate = NULL;
+    call->error.source_returned = true;
+    return true;
+}
+
 static mc_world_storage_status particle(void *context, mc_world_runtime *world,
                                         const mc_registry_string *name, double x, double y,
                                         double z, double vx, double vy, double vz,
@@ -464,6 +715,10 @@ static mc_world_storage_status particle(void *context, mc_world_runtime *world,
             for (size_t i = 0; i < sizeof(kinds) / sizeof(kinds[0]); ++i) {
                 if (!text_equals(&text, kinds[i].name))
                     continue;
+                if (strcmp(kinds[i].name, "slime") == 0) {
+                    (void)slime_particle(access, call, x, y, z);
+                    break;
+                }
                 fail(&call->error, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
                      "actual concrete particle allocation", "a", descriptor, kinds[i].allocation_pc,
                      false);
@@ -813,6 +1068,10 @@ mc_render_global_access_retire(mc_render_global_access **slot,
         if (retired != MC_WORLD_STORAGE_OK)
             return fail(error, owner_status(retired), error->world.operation, NULL, NULL, 0, true);
         access->failures = call->next;
+        if (call->particle != NULL) {
+            access->bytes -= sizeof(*call->particle);
+            free(call->particle);
+        }
         free(call);
         --access->failure_count;
     }
@@ -842,10 +1101,18 @@ bool mc_render_global_access_callback_inspect(const mc_render_global_access *acc
     for (const access_call *call = access->failures; call != NULL; call = call->next) {
         if (failure->receipt != call->receipt || failure->render_global != &call->error)
             continue;
-        *out = (mc_render_global_callback_state){{call->processors[0], call->processors[1]},
-                                                 {call->images[0], call->images[1]},
-                                                 &call->error,
-                                                 call->error.source_returned};
+        const access_particle *p = call->particle;
+        *out = (mc_render_global_callback_state){
+            .processors = {call->processors[0], call->processors[1]},
+            .images = {call->images[0], call->images[1]},
+            .failure = &call->error,
+            .source_returned = call->error.source_returned,
+            .particle_receiver = p == NULL ? NULL : p->receiver,
+            .particle_candidate = p == NULL ? NULL : p->candidate,
+            .particle_world = p == NULL ? NULL : p->world,
+            .particle_math = p == NULL ? NULL : p->math,
+            .particle = call->error.particle,
+            .effects = call->error.effects};
         return true;
     }
     return false;

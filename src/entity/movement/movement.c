@@ -114,17 +114,27 @@ static bool transform_query(mc_entity *entity, double x, double y, double z, boo
     mc_world_runtime *const receiver = entity->base.world;
     mc_entity_bounds *argument = NULL;
     error->bytecode = transform_pc;
+    const mc_entity_bounds *const captured_bounds = entity->bounds;
     const mc_entity_status transformed =
-        shift ? mc_entity_bounds_shift(entity->classes, entity->bounds, x, y, z, &argument,
+        shift ? mc_entity_bounds_shift(entity->classes, captured_bounds, x, y, z, &argument,
                                        &error->bounds)
-              : mc_entity_bounds_sweep(entity->classes, entity->bounds, x, y, z, &argument,
+              : mc_entity_bounds_sweep(entity->classes, captured_bounds, x, y, z, &argument,
                                        &error->bounds);
-    if (transformed != MC_ENTITY_OK)
+    if (transformed != MC_ENTITY_OK) {
+        if (captured_bounds == NULL) {
+            error->source_null = true;
+            error->source_null_pc = transform_pc;
+        }
         return fail(error, transformed, "Entity movement collision argument");
+    }
     error->bytecode = query_pc;
     mc_world_collision_list_view next = {0};
     const mc_world_storage_status status =
         mc_world_runtime_collision_boxes(receiver, entity, argument, &next, &error->collision);
+    if (receiver == NULL) {
+        error->source_null = true;
+        error->source_null_pc = query_pc;
+    }
     mc_entity_bounds_release(entity->classes, argument);
     if (!world_result(error, status, "Entity movement collision query"))
         return false;
@@ -141,8 +151,13 @@ static bool clip(mc_entity *entity, mc_world_collision_list_view *list, unsigned
         error->bytecode = count_pc;
         size_t count;
         if (!world_result(error, mc_world_collision_list_view_count(list, &count),
-                          "Entity movement collision List size"))
+                          "Entity movement collision List size")) {
+            if (list->identity == NULL) {
+                error->source_null = true;
+                error->source_null_pc = count_pc;
+            }
             return false;
+        }
         if (count > INT_MAX)
             return fail(error, MC_ENTITY_LIMIT, "Entity movement Java List extent");
         if (i >= count)
@@ -154,8 +169,11 @@ static bool clip(mc_entity *entity, mc_world_collision_list_view *list, unsigned
                           "Entity movement collision List get"))
             return false;
         error->bytecode = clip_pc;
-        if (fixed == NULL)
+        if (fixed == NULL) {
+            error->source_null = true;
+            error->source_null_pc = clip_pc;
             return fail(error, MC_ENTITY_STATE_ERROR, "Entity movement null collision bounds");
+        }
         *delta = axis == 0   ? mc_entity_bounds_clip_x(fixed, entity->bounds, *delta)
                  : axis == 1 ? mc_entity_bounds_clip_y(fixed, entity->bounds, *delta)
                              : mc_entity_bounds_clip_z(fixed, entity->bounds, *delta);
@@ -206,12 +224,18 @@ static bool contacts(mc_entity *entity, mc_entity_move_error *error) {
     const int32_t max_y = mc_math_floor_double(subtract(entity->bounds->max_y, 0.001));
     const int32_t max_z = mc_math_floor_double(subtract(entity->bounds->max_z, 0.001));
     error->bytecode = 1792;
+    mc_world_runtime *const presence_world = entity->base.world;
     bool loaded;
     if (!world_result(error,
-                      mc_world_runtime_area_loaded(entity->base.world, min_x, min_y, min_z, max_x,
+                      mc_world_runtime_area_loaded(presence_world, min_x, min_y, min_z, max_x,
                                                    max_y, max_z, &loaded, &error->world),
-                      "Entity contact loaded area"))
+                      "Entity contact loaded area")) {
+        if (presence_world == NULL) {
+            error->source_null = true;
+            error->source_null_pc = 1792;
+        }
         return false;
+    }
     if (!loaded)
         return true;
     for (int32_t x = min_x; x <= max_x; x = mc_java_i32_add(x, 1))
@@ -223,6 +247,10 @@ static bool contacts(mc_entity *entity, mc_entity_move_error *error) {
                 mc_world_storage_error admission = {0};
                 mc_world_collision_error_init(&error->block_read);
                 mc_world_storage_status status = mc_world_runtime_call_enter(world, &admission);
+                if (world == NULL) {
+                    error->source_null = true;
+                    error->source_null_pc = 1841;
+                }
                 int32_t id = 0;
                 if (status == MC_WORLD_STORAGE_OK) {
                     status = mc_world_collision_block_value_held(world, x, y, z, false, &id,
@@ -427,14 +455,24 @@ static bool finish_environment(mc_entity *entity, mc_registry_classes *code_regi
     mc_world_runtime *const receiver = entity->base.world;
     mc_entity_bounds *argument = NULL;
     error->bytecode = 1912;
+    const mc_entity_bounds *const captured_bounds = entity->bounds;
     const mc_entity_status contracted = mc_entity_bounds_contract(
-        entity->classes, entity->bounds, 0.001, 0.001, 0.001, &argument, &error->bounds);
-    if (contracted != MC_ENTITY_OK)
+        entity->classes, captured_bounds, 0.001, 0.001, 0.001, &argument, &error->bounds);
+    if (contracted != MC_ENTITY_OK) {
+        if (captured_bounds == NULL) {
+            error->source_null = true;
+            error->source_null_pc = 1912;
+        }
         return fail(error, contracted, "Entity burning bounds argument");
+    }
     error->bytecode = 1915;
     bool burning;
     const mc_world_storage_status status =
         mc_world_runtime_burning(receiver, argument, &burning, &error->world);
+    if (receiver == NULL) {
+        error->source_null = true;
+        error->source_null_pc = 1915;
+    }
     mc_entity_bounds_release(entity->classes, argument);
     if (!world_result(error, status, "Entity burning query"))
         return false;
@@ -494,6 +532,7 @@ mc_entity_status mc_entity_move_in_context(mc_entity *entity, mc_registry_classe
     else if (entity->phase != MC_ENTITY_READY)
         fail(&frame, MC_ENTITY_INVALID_PHASE, "Entity movement phase");
     else if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
+             !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) &&
              !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
              !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
              !(mc_entity_has_mob(entity) && mc_entity_is_kind(entity, entity->class_literal->kind)))
@@ -510,6 +549,8 @@ mc_entity_status mc_entity_move_in_context(mc_entity *entity, mc_registry_classe
             if (entity->base.bq) {
                 frame.bytecode = 15;
                 if (entity->bounds == NULL) {
+                    frame.source_null = true;
+                    frame.source_null_pc = 15;
                     fail(&frame, MC_ENTITY_STATE_ERROR, "Entity movement null permanent bounds");
                     goto done;
                 }
@@ -533,6 +574,8 @@ mc_entity_status mc_entity_move_in_context(mc_entity *entity, mc_registry_classe
             double original_x = x, original_y = y, original_z = z;
             frame.bytecode = 173;
             if (entity->bounds == NULL) {
+                frame.source_null = true;
+                frame.source_null_pc = 173;
                 fail(&frame, MC_ENTITY_STATE_ERROR, "Entity movement null permanent bounds");
                 goto done;
             }

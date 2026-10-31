@@ -1184,7 +1184,8 @@ static mc_world_storage_status terminal_empty_app(const client_application *app,
                                              : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                          "Load terminal empty App particle owner");
     if (effects.classes != app->entities || effects.render_engine != app->render_engine ||
-        effects.world_slot == NULL || *effects.world_slot != NULL)
+        effects.world_slot == NULL || *effects.world_slot != NULL ||
+        effects.particle_occurrences != 0)
         return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                          "Load terminal empty App particle World provenance");
     if (app->controller != NULL) {
@@ -1469,15 +1470,14 @@ mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
                                          "Load terminal external controller occurrence");
 
     mc_effect_renderer_terminal_view effects_view;
-    mc_effect_renderer_error effects_error;
-    const mc_effect_renderer_status effects_status = mc_client_effect_renderer_terminal_inspect(
-        call->effects_owner, &effects_view, &effects_error);
+    const mc_effect_renderer_status effects_status =
+        mc_client_effect_renderer_terminal_inspect(call->effects_owner, &effects_view, NULL);
     if (effects_status != MC_EFFECT_RENDERER_OK)
         return terminal_admission_result(error,
                                          effects_status == MC_EFFECT_RENDERER_BUSY
                                              ? MC_WORLD_STORAGE_BUSY
                                              : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                         effects_error.operation);
+                                         "Load terminal effect manager closure");
     if (effects_view.classes != app->entities || effects_view.render_engine != app->render_engine ||
         *effects_view.world_slot != call->state.world)
         return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -1516,13 +1516,46 @@ mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
     if (source_status != MC_WORLD_STORAGE_OK)
         return source_status;
 
-    const mc_world_terminal_entity_anchor entities[] = {
+    const mc_world_terminal_entity_anchor fixed_entities[] = {
         {&call->state.player}, {&call->h_occurrence}, {&app->view_occurrence}};
     const mc_world_terminal_world_anchor worlds[] = {{&app->active_world},
                                                      {effects_view.world_slot}};
-    const mc_world_terminal_anchors anchors = {entities, sizeof(entities) / sizeof(entities[0]),
-                                               worlds, sizeof(worlds) / sizeof(worlds[0])};
-    return mc_world_runtime_terminal_admit_owned(call->state.world, &anchors, limits, out, error);
+    const size_t fixed_count = sizeof(fixed_entities) / sizeof(fixed_entities[0]);
+    mc_world_terminal_limits bounded =
+        limits == NULL ? mc_world_runtime_terminal_default_limits() : *limits;
+    mc_world_terminal_entity_anchor *allocated = NULL;
+    const mc_world_terminal_entity_anchor *entities = fixed_entities;
+    size_t entity_count = fixed_count;
+    if (effects_view.particle_occurrences != 0) {
+        if (effects_view.particle_occurrences > SIZE_MAX - fixed_count)
+            return terminal_admission_result(error, MC_WORLD_STORAGE_LIMIT,
+                                             "Load terminal particle anchor count overflow");
+        entity_count += effects_view.particle_occurrences;
+        if (entity_count > bounded.max_entries || entity_count > SIZE_MAX / sizeof(*allocated) ||
+            entity_count * sizeof(*allocated) > bounded.max_bytes)
+            return terminal_admission_result(error, MC_WORLD_STORAGE_LIMIT,
+                                             "Load terminal particle anchor scratch bound");
+        const size_t anchor_bytes = entity_count * sizeof(*allocated);
+        allocated = malloc(anchor_bytes);
+        if (allocated == NULL)
+            return terminal_admission_result(error, MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                                             "Load terminal particle anchor scratch allocation");
+        memcpy(allocated, fixed_entities, sizeof(fixed_entities));
+        size_t at = fixed_count;
+        for (size_t layer = 0; layer < 4; ++layer)
+            for (size_t i = 0; i < effects_view.lists[layer]->size; ++i)
+                allocated[at++].slot = &effects_view.lists[layer]->elements[i];
+        entities = allocated;
+        /* The collector's table/queue grow while these anchors remain live.
+         * Reserve their complete native allocation from the same peak bound. */
+        bounded.max_bytes -= anchor_bytes;
+    }
+    const mc_world_terminal_anchors anchors = {entities, entity_count, worlds,
+                                               sizeof(worlds) / sizeof(worlds[0])};
+    source_status =
+        mc_world_runtime_terminal_admit_owned(call->state.world, &anchors, &bounded, out, error);
+    free(allocated);
+    return source_status;
 }
 
 mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_call **slot) {

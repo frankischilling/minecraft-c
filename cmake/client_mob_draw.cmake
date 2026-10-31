@@ -6,9 +6,14 @@ if(TARGET mc_client_entity_renderer)
         src/client/render/model_runtime/quadruped.c
         src/client/render/model_runtime/cow.c
         src/client/render/model_runtime/chicken.c
+        src/client/render/model_runtime/spider.c
+        src/client/render/model_runtime/slime.c
+        src/client/render/model_runtime/squid.c
+        src/client/render/model_runtime/creeper.c
         src/client/render/living_draw/common.c
         src/client/render/living_draw/body.c
         src/client/render/living_draw/animals.c
+        src/client/render/living_draw/creatures.c
         src/client/render/living_draw/sheep.c
         src/client/render/living_draw/shadow.c
         src/client/render/manager/draw.c
@@ -17,7 +22,7 @@ if(TARGET mc_client_entity_renderer)
         mc_client_render_manager_cpu mc_math_classes)
     if(BUILD_TESTING AND TARGET mc_test_application_startup)
         get_target_property(_mc_mob_draw_links mc_test_application_startup LINK_LIBRARIES)
-        foreach(_mc_draw_kind IN ITEMS mob animal)
+        foreach(_mc_draw_kind IN ITEMS mob animal creature)
             set(_mc_draw_target "mc_test_${_mc_draw_kind}_draw")
             add_executable(${_mc_draw_target} "tests/client/render/test_${_mc_draw_kind}_draw.c")
             target_include_directories(${_mc_draw_target} PRIVATE src src/platform/time)
@@ -33,7 +38,7 @@ if(TARGET mc_client_entity_renderer)
             endif()
             if(MC_ENABLE_CLIENT_DISPLAY_TESTS)
                 set(_mc_draw_timeout 300)
-                if(_mc_draw_kind STREQUAL "animal")
+                if(NOT _mc_draw_kind STREQUAL "mob")
                     set(_mc_draw_timeout 600)
                 endif()
                 add_test(NAME "client.${_mc_draw_kind}_draw" COMMAND Python3::Interpreter -B

@@ -39,6 +39,43 @@ bool ld_fp(ld_frame *f) {
            ld_fail(f, MC_CLIENT_LIVING_DRAW_STATE, "Living draw strict floating controls");
 }
 
+bool ld_float_math(ld_frame *f, const char *method, float argument, float *out) {
+    mc_client_living_draw_error *e = f->error;
+    if (!ld_capture(f, mc_client_draw_capture_math(f->scope, &e->detail.capture)))
+        return false;
+    e->selected_child = MC_CLIENT_LIVING_DRAW_CHILD_MATH;
+    e->child = ld_site("in", method, "(F)F", 0);
+    if (f->scope->model.math == NULL)
+        return ld_fail(f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED,
+                       "Living hook reached actual Math namespace");
+    const mc_math_class_status status =
+        mc_math_classes_ensure(f->scope->model.math, &e->detail.math);
+    if (status != MC_MATH_CLASS_OK) {
+        if (e->detail.math.source_pc >= 0)
+            e->child = ld_site("in", "<clinit>", "()V", e->detail.math.source_pc);
+        return ld_fail(f,
+                       status == MC_MATH_CLASS_LIMIT ? MC_CLIENT_LIVING_DRAW_LIMIT
+                                                     : MC_CLIENT_LIVING_DRAW_CHILD_FAILED,
+                       "Living hook actual Math active use");
+    }
+    if (!ld_fp(f))
+        return false;
+    const mc_math_trig *table = mc_math_classes_table(f->scope->model.math);
+    if (table == NULL)
+        return ld_fail(f, MC_CLIENT_LIVING_DRAW_STATE, "Living hook actual READY Math table");
+    if (strcmp(method, "a") == 0)
+        *out = mc_math_sin(table, argument);
+    else if (strcmp(method, "b") == 0)
+        *out = mc_math_cos(table, argument);
+    else if (strcmp(method, "c") == 0)
+        *out = at_root(at_widen(argument));
+    else
+        return ld_fail(f, MC_CLIENT_LIVING_DRAW_STATE, "Living hook actual IN method identity");
+    e->selected_child = MC_CLIENT_LIVING_DRAW_CHILD_NONE;
+    e->child = (mc_client_graphics_site){.pc = -1};
+    return true;
+}
+
 bool ld_work(ld_frame *f) {
     if (f->scope->work == f->scope->max_work)
         return ld_fail(f, MC_CLIENT_LIVING_DRAW_LIMIT, "Living draw reached native work ceiling");

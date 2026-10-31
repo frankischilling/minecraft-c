@@ -57,7 +57,7 @@ struct mc_entity {
     struct mc_minecart_entity_state *minecart;
     /* Actual embedded subobject of a dc allocation, never an invented Player. */
     struct mc_local_player_state *local_player;
-    /* Actual xw/em subobjects of a pickup-particle allocation, else NULL. */
+    /* Actual XW subobject of a canonical EM/PB allocation, else NULL. */
     struct mc_particle_state *particle;
     /* Actual embedded LS/II/GZ/BG/AR/leaf storage of a concrete client Mob. */
     struct mc_mob_entity_state *mob;

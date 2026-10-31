@@ -50,7 +50,8 @@ These are reached dependencies, not successful empty implementations:
 
 | Source boundary | Pending work |
 |---|---|
-| `ii.f_:97/109` | Concrete attack or Creeper unseen-target behavior where selected. |
+| `ii.f_:97/109` | Other concrete attacks remain unfinished; Creeper attack and unseen-target bodies now run. |
+| `gb.a:108/134` | Actual World explosion, including QX rays, damage, drops and block effects. |
 | `ww.o:217` | Actual Item drop after egg sound and Egg static-field access. |
 | Living/Monster/Sheep/Wolf hurt entries | Damage and downstream combat, death or drop work. |
 | Selected Wolf children | Owner following, selected-Item interest and other reached behavior still requiring its own body. |
@@ -61,6 +62,29 @@ Egg item/count, and hurt source/amount. Path results come from the complete
 entered World/PathFinder body; a failed search is not a returned null Path.
 Remaining drop and hurt boundaries preserve their evaluated operands.
 Constructor diagnostics remain unchanged by ticking.
+
+Creeper attack uses the actual signed watcher16 direction, fuse counter and
+remote-World field. Ignition starts below distance3; an already positive
+direction continues below7. The first fuse sound occurs at55 before watcher60
+and count70. At the threshold, a fresh powered watcher17 read selects radius3
+or6 and reaches the real World explosion at134 or108. That child remains
+unfinished, so Entity.K139 and the attacking store144 do not run. Cooling and
+the separate unseen-target body store direction-1 before decrementing and
+clamping a negative counter. Neither body makes direct Random or shared Math calls.
+
+The separate [Creeper original package](../../tests/reference/entity/creeper_attack/README.md)
+retains nine returning profiles, the actual null-World failure at4 and both
+explosion-entry prefixes. Original post-explosion results are retained as
+separate evidence and do not qualify native explosion completion. The private
+component fixture uses the same production admission, active-call guards,
+owner retention and checked cleanup as the enclosing Mob tick.
+Fresh Windows and Linux runs each pass 615 native checks and 864 selected
+original comparisons. Seven corrupted audit manifests are rejected. Complete
+input/helper hashes and a separate post-capture inventory of 24 original output
+artifacts are checked before and after execution; the original raw validator
+also regenerates the consumed observations. This qualification does not equate
+independent constructor entropy or give an empty WorldAccess List audio-device
+coverage.
 
 ## Native ownership
 

@@ -3,7 +3,9 @@
 
 #include "../render_engine/texture_lookup.h"
 #include "effect_renderer_internal.h"
+#include "entity/render/internal.h"
 #include "mc/client/particles/render.h"
+#include "mc/world/storage/source_chunk_loader.h"
 
 struct mc_client_effect_draw_call {
     mc_effect_draw_state state;
@@ -19,12 +21,18 @@ struct mc_client_effect_draw_call {
     mc_client_render_engine *engines[3], *pending_lookup;
     size_t engine_count;
     mc_client_texture_lookup_error texture, texture_cleanup;
+    struct mc_effect_item_draw *item;
 };
 
 bool mc_effect_draw_fail(mc_client_effect_draw_call *, mc_effect_draw_status, const char *,
                          unsigned int pc, bool native_policy);
 bool mc_effect_draw_fp(mc_client_effect_draw_call *, const char *source_class, unsigned int pc);
 bool mc_effect_draw_math(mc_client_effect_draw_call *, unsigned int pc);
+bool mc_effect_draw_capture_math(mc_client_effect_draw_call *, unsigned int pc);
 bool mc_effect_draw_particle(mc_client_effect_draw_call *, unsigned int invoke_pc);
+bool mc_effect_draw_item(mc_client_effect_draw_call *, unsigned int invoke_pc);
+bool mc_effect_draw_item_capture(mc_client_effect_draw_call *);
+bool mc_effect_draw_item_discharge(mc_client_effect_draw_call *);
+void mc_effect_draw_item_free(mc_client_effect_draw_call *);
 
 #endif

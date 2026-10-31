@@ -42,6 +42,19 @@ typedef struct mc_mob_tick_drop_arguments {
     int32_t item_id, count;
 } mc_mob_tick_drop_arguments;
 
+typedef struct mc_mob_tick_attack_arguments {
+    bool stored, unseen, returned;
+    uintptr_t target_identity;
+    float distance;
+} mc_mob_tick_attack_arguments;
+
+typedef struct mc_mob_tick_explosion_arguments {
+    bool stored, invoke_reached, returned;
+    uintptr_t world_identity, source_identity;
+    double x, y, z;
+    float radius;
+} mc_mob_tick_explosion_arguments;
+
 typedef struct mc_mob_tick_state {
     bool returned, environment_returned, action_returned, behavior_returned;
     bool cleanup_pending, ray_returned, ray_arguments_stored;
@@ -54,6 +67,10 @@ typedef struct mc_mob_tick_state {
     unsigned int source_pc, living_pc, creature_pc, monster_pc, concrete_pc;
     mc_mob_tick_path_arguments path;
     mc_mob_tick_drop_arguments drop;
+    /* Actual evaluated operands only; scalar identities own no occurrence.
+     * invoke_reached credits the caller opcode, never an unentered FD body. */
+    mc_mob_tick_attack_arguments attack;
+    mc_mob_tick_explosion_arguments explosion;
 } mc_mob_tick_state;
 
 typedef enum mc_mob_tick_child {

@@ -2,8 +2,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-mc_entity_status mc_mob_tick(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
-                             const mc_mob_tick_limits *limits, mc_mob_tick_error *out) {
+typedef enum mob_entry {
+    MOB_ENTRY_TICK,
+    MOB_ENTRY_CREEPER_ATTACK,
+    MOB_ENTRY_CREEPER_UNSEEN
+} mob_entry;
+
+/* Closed native entries share the exact same admission and lifetime guard.
+ * Selecting a protected component executes no enclosing Source tick body. */
+static mc_entity_status run(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
+                            const mc_mob_tick_limits *limits, mob_entry entry, mc_entity *target,
+                            float distance, mc_mob_tick_error *out) {
     mc_mob_tick_error *e = malloc(sizeof(*e));
     if (e == NULL) {
         mc_mob_tick_error_init(out);
@@ -34,6 +43,8 @@ mc_entity_status mc_mob_tick(mc_entity *p, mc_registry_classes *registry, mc_mat
     if (p == NULL || !mc_entity_has_mob(p) || !mc_entity_is_kind(p, p->class_literal->kind) ||
         p->classes->source != MC_ENTITY_CLIENT)
         mt_fail(&s, MC_ENTITY_STATE_ERROR, "Mob tick actual canonical client owner");
+    else if (entry != MOB_ENTRY_TICK && !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_CREEPER))
+        mt_fail(&s, MC_ENTITY_STATE_ERROR, "Creeper component actual canonical receiver");
     else if (p->phase != MC_ENTITY_READY)
         mt_fail(&s, MC_ENTITY_INVALID_PHASE, "Mob tick READY owner");
     else if (p->mob->tick_active)
@@ -68,8 +79,14 @@ mc_entity_status mc_mob_tick(mc_entity *p, mc_registry_classes *registry, mc_mat
                 mt_fail(&s, status == MC_MATH_CLASS_LIMIT ? MC_ENTITY_LIMIT : MC_ENTITY_STATE_ERROR,
                         "Mob tick Math lifetime hold");
         }
-        if (e->status == MC_ENTITY_OK && mt_concrete_w(&s))
-            e->state.returned = true;
+        if (e->status == MC_ENTITY_OK) {
+            const bool returned = entry == MOB_ENTRY_TICK ? mt_concrete_w(&s)
+                                  : entry == MOB_ENTRY_CREEPER_ATTACK
+                                      ? mt_creeper_attack(&s, target, distance)
+                                      : mt_creeper_unseen(&s, target, distance);
+            if (returned)
+                e->state.returned = true;
+        }
     }
     if (math_held) {
         mc_math_classes *occurrence = math;
@@ -90,4 +107,17 @@ mc_entity_status mc_mob_tick(mc_entity *p, mc_registry_classes *registry, mc_mat
         *out = *e;
     free(e);
     return status;
+}
+
+mc_entity_status mc_mob_tick(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
+                             const mc_mob_tick_limits *limits, mc_mob_tick_error *out) {
+    return run(p, registry, math, limits, MOB_ENTRY_TICK, NULL, 0.0f, out);
+}
+
+mc_entity_status mt_creeper_component(mc_entity *p, mc_registry_classes *registry,
+                                      mc_math_classes *math, const mc_mob_tick_limits *limits,
+                                      mc_entity *target, float distance, bool unseen,
+                                      mc_mob_tick_error *out) {
+    return run(p, registry, math, limits,
+               unseen ? MOB_ENTRY_CREEPER_UNSEEN : MOB_ENTRY_CREEPER_ATTACK, target, distance, out);
 }

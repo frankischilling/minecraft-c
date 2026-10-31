@@ -75,6 +75,11 @@ bool mt_living_w(mc_mob_tick_scope *);
 bool mt_concrete_w(mc_mob_tick_scope *);
 bool mt_concrete_o(mc_mob_tick_scope *);
 bool mt_creature(mc_mob_tick_scope *);
+bool mt_creeper_attack(mc_mob_tick_scope *, mc_entity *unused_target, float distance);
+bool mt_creeper_unseen(mc_mob_tick_scope *, mc_entity *unused_target, float distance);
+mc_entity_status mt_creeper_component(mc_entity *, mc_registry_classes *, mc_math_classes *,
+                                      const mc_mob_tick_limits *, mc_entity *target, float distance,
+                                      bool unseen, mc_mob_tick_error *);
 bool mt_slime_behavior(mc_mob_tick_scope *);
 bool mt_squid_behavior(mc_mob_tick_scope *);
 bool mt_wolf_behavior(mc_mob_tick_scope *);

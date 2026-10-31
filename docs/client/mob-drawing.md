@@ -1,10 +1,10 @@
-# Sheep, Pig, Cow and Chicken drawing
+# Default Mob drawing
 
-The client executes the canonical Sheep, Pig, Cow and Chicken renderers through
-the existing TH/GV, model, PS and NW owners. The finite closure includes Sheep's
-unsheared fur, Pig's actual saddle texture calls, Cow's horn pose, Chicken's
-flap animation and the ordinary `Settings.j=true` terrain shadow. Seven other
-default Mob families and several nondefault branches remain unfinished. These
+The client executes the canonical Sheep, Pig, Cow, Chicken, Spider, Slime,
+Squid and Creeper renderers through the existing TH/GV, model, PS and NW owners.
+The finite closure includes their ordinary subtype poses and passes, first
+compilation and reuse, and the `Settings.j=true` terrain shadow. Wolf, Zombie,
+Skeleton with its real Bow, and several nondefault branches remain unfinished. These
 results do not establish playability or whole-frame original/native equality.
 
 ## Entry and source work
@@ -203,7 +203,108 @@ signed zeros, with raw signs retained. The measured maximum absolute error is
 independent controls, without original/native pixel equality or native live
 GL invocation-order credit.
 
-## Broad validation
+## Spider, Slime, Squid and Creeper
+
+The [separate original package](../../tests/reference/client/mob_draw_creatures/README.md)
+and [native fixture](../../tests/client/render/test_creature_draw.c) exercise
+thirteen calls through the actual canonical renderer Map:
+
+| Actor | Renderer and model | Selected work |
+| --- | --- | --- |
+| Spider | YX, two distinct SC models | Eleven parts per model; even zero-alpha eyes perform their texture lookup and second render. Each SC pose retains its 34 stores and real Math calls. |
+| Slime | MJ, primary NO16 and its own NO0 outer model | Four primary parts and one outer part. The actual pass setter replaces initially NULL GV.f with the existing outer model. Size1/2/4 and nonzero squash exercise real transforms. |
+| Squid | ES, WN | The head and eight actual PS-array elements use the genuine interpolation and age override. Each loop rereads the same array field, length and selected element. |
+| Creeper | M, IL | Six primary parts render. The unused primary part and all seven separate secondary parts remain uncompiled; zero swell still executes IN sine and every powered predicate. |
+
+The Source sequence revisits Spider after Slime and enters Creeper after that
+revisit. Selected calls retain the NORMALIZE state left by an actual Slime
+pass. The first Slime outer pose flags differ from reuse because the pass
+setter runs after the earlier KO flag copies. The displaced first NO16 cube
+has its actual original constructor identity; it is not invented as a later
+reachable graph node. Creeper's actual watcher Byte17 remains false in this
+finite sequence. Powered texture-matrix work, nonzero packed overlays,
+hurt/death, fire and debug labels retain their reached boundaries.
+
+The frozen original capture retains 248 archive class bindings, 245 initialized
+classes in each VM, 209 live Code bodies, and 59,103 balanced entries and
+returns. It records thirteen draws, six texture uploads, 42 compiled lists,
+252 model face batches and thirteen final shadow batches. The App is again a
+declared RAW KQ with actual Settings/World/Engine inputs, a genuine Cow camera,
+authored cached terrain and textures. Ordinary and read-only JDI observations
+remain separate from independent raw constructor entropy.
+
+At the four-creature focused checkpoint, both native hosts pass 3,722 checks:
+2,129 main checks and five fresh components with 316,319,324,317,317 checks.
+The [comparison driver](../../tests/tools/client/test_creature_draw.py) passes
+366,155 typed graph/state checks, 28,620 expanded records and 5,771 identity
+pairs. It pairs 341 ordered direct World/Block attempts, all 42 lists and 252
+faces, 2,832 shadow words, sixteen direct String texture routes, thirteen
+animation returns and 22 selected model-work records. Twelve meaningful
+comparison corruptions are rejected. Inputs remain unchanged, with no Linux
+sanitizer finding.
+
+The Windows ordinary original supplement independently audits 36 inputs,
+four exact compiled helpers and 64 artifacts on the matching NVIDIA device.
+It supplies ordinary GL values only. The strict default comparison to the
+Mesa current normal still fails and is retained. Only prepared matrices admit
+four float ULP and numeric equality of opposite signed zeros; the measured
+maximum absolute difference remains `1.1920928955078125e-7`. These checks confer
+no native global GL-call-order, raw actor-field cross-VM equality or
+original/native pixel-equality credit.
+
+Five fresh native components preserve actual WN failure prefixes through
+checked retirement: NULL array at pose9, NULL element3 at pose21 after three
+stores, and NULL head at render19 after all eight tentacle stores. A mutable
+length7 over a real capacity8 and an actual opaque PS allocation used as the
+array are distinct native storage refusals. The immutable native array extent
+comes from the real allocating owner's typed allocation record, before any
+untrusted descriptor read; mutable Source length does not establish capacity.
+These controls are checked against original Code, without claiming paired
+original Throwable outcomes. Failed fields and GL/NW prefixes are not repaired.
+
+The later Windows loaded run passes all four independent App/World profiles
+in 103.60 seconds. Each returns four World/HUD frames: one real delay, one
+exact unticked undrawn traversal, then first compilation and reuse of that
+same declared actor. Actual tick1328, World1013, HUD2101 and checked terminal
+cleanup return in each scope. Parts/faces/Source vertices are respectively
+22/132/528 for Spider, 5/30/120 for Slime, 9/54/216 for Squid and 6/36/144 for
+Creeper; their observed shadow totals are 18,2,18,8. Slime selects its actual
+own outer model from initial NULL; Creeper's eight unused parts remain
+uncompiled. Constructor/publication changes neither Player pose nor World
+Random, and subsequent real ticks retain their normal random consumption.
+
+Earlier failed runs remain distinct evidence. Slime first stopped at its
+actual landing particle, `UW136 -> N686 -> PB`; its real constructor, enqueue,
+collision tick and layer2 draw now run. Creeper then stopped at `II97 -> GB.a`.
+The implementation now executes its signed watcher direction, distance
+hysteresis, sound-before-stores, wrapping progress and unseen cooling. The
+larger FD/QX explosion remains an explicit reached boundary at GB108/134 after
+the real earlier stores. An unreturned explosion earns neither death139 nor
+attacking144 nor method-return credit. These finite four-frame profiles do
+not qualify the thirty-tick explosion path or general combat.
+
+## Creature and particle broad validation
+
+All 98 selected targets build on Windows MSVC Debug and Linux Clang18
+ASan/UBSan. All 129 Windows tests and 122 Linux tests pass without failures,
+skips or sanitizer findings. The same 2,610 C/helper/build/reference inputs
+remain unchanged through both builds and tests. Formatting checks 1,757
+C/header/fragment files; six current binding tables preserve historical metadata.
+
+| Host | Tests | CTest seconds | Test phase including hash audit |
+| --- | ---: | ---: | ---: |
+| Windows | 129 | 457.67 | 458.08 seconds |
+| Linux | 122 | 460.55 | 501.85 seconds |
+
+The registered four-creature loaded-world test passes in 112.50 seconds,
+repeating all four actual constructors, publications, first/reuse draws,
+World/HUD returns and checked cleanup. This remains native integration
+evidence with the existing-player statistic precondition.
+All thirteen original-comparison suites pass freshly on each host. An
+independent audit checks 26 wrappers against 4,614 resolved current paths,
+including the retained Sheep, animal, Path, Mob and World evidence.
+
+## Published four-animal broad validation
 
 All 93 selected targets build on Windows MSVC and Linux Clang. The same
 2,559 C, helper, build and reference inputs remain unchanged across both build
@@ -281,11 +382,12 @@ World draw 1013 and HUD 2101, followed by checked terminal cleanup in every
 profile. The constructor/publication input changes neither Player pose nor
 World Random, and normal subsequent ticks remain enabled.
 
-These loaded controls preserve the existing-player inventory-achievement
+These four-animal loaded controls preserve the existing-player inventory-achievement
 precondition and Entity-empty saved Chunks. They qualify native integration,
 not fresh-player tutorial completion, serialized Mob loading, natural spawning
-within a deadline or original/native full-frame equality. Spider, Wolf,
-Creeper, Skeleton, Zombie, Slime and Squid drawing remain outside this closure;
+within a deadline or original/native full-frame equality. The later four-creature
+focused checkpoint has the distinct scope recorded above. Wolf, Skeleton and
+Zombie drawing remain unfinished;
 Skeleton's real held Bow is a mandatory dependency. Active tutorial notices,
 Canvas/focus transitions, nonempty items, save transport and nonempty TileEntity
 draw rows still prevent a playable-client claim.

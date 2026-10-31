@@ -14,42 +14,6 @@ static bool model_cell(ld_frame *f, manager_model *model, int32_t pc) {
     return ld_fail(f, MC_CLIENT_LIVING_DRAW_STATE, "Living draw model allocation provenance");
 }
 
-static bool rotate_actor(ld_frame *f, float age, float body, float partial) {
-    (void)age;
-    mc_client_living_draw_error *e = f->error;
-    ld_at(f, "gv", "a", "(Lls;FFF)V", 7);
-    if (!ld_fp(f) || !ld_display(f, mc_client_display_source_rotate(
-                                        f->scope->model.display, at_fsub(180.0f, body), 0.0f, 1.0f,
-                                        0.0f, &e->detail.display)))
-        return false;
-    mc_living_entity_fields *ls = mc_entity_living_fields(f->actor);
-    ld_at(f, "gv", "a", "(Lls;FFF)V", 14);
-    if (ls == NULL)
-        return ld_fail(f, MC_CLIENT_LIVING_DRAW_STATE, "Living draw actual LS rotation storage");
-    if (ls->ad > 0) {
-        if (!ld_fp(f))
-            return false;
-        float value = at_fmul(at_fdiv(at_fsub(at_fadd((float)ls->ad, partial), 1.0f), 20.0f), 1.6f);
-        ld_at(f, "gv", "a", "(Lls;FFF)V", 37);
-        if (f->scope->model.math == NULL)
-            return ld_fail(f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED,
-                           "Living death rotation actual Math namespace");
-        e->selected_child = MC_CLIENT_LIVING_DRAW_CHILD_MATH;
-        if (mc_math_classes_ensure(f->scope->model.math, &e->detail.math) != MC_MATH_CLASS_OK)
-            return ld_fail(f, MC_CLIENT_LIVING_DRAW_CHILD_FAILED,
-                           "Living death rotation Math active use");
-        value = at_root(at_widen(value));
-        if (value > 1.0f)
-            value = 1.0f;
-        ld_at(f, "gv", "a", "(Lls;FFF)V", 63);
-        if (!ld_display(f, mc_client_display_source_rotate(f->scope->model.display,
-                                                           at_fmul(value, 90.0f), 0.0f, 0.0f, 1.0f,
-                                                           &e->detail.display)))
-            return false;
-    }
-    return true;
-}
-
 static bool body_try(ld_frame *f, double x, double y, double z, float partial) {
     mc_client_living_draw_error *e = f->error;
     mc_client_living_draw_state *s = &e->state;
@@ -72,7 +36,7 @@ static bool body_try(ld_frame *f, double x, double y, double z, float partial) {
     gv(f, 147);
     if (!ld_age(f, partial, &s->age))
         return false;
-    if (!rotate_actor(f, s->age, s->body_yaw, partial))
+    if (!ld_rotation(f, s->age, s->body_yaw, partial))
         return false;
     s->scale = .0625f;
     gv(f, 169);
@@ -83,7 +47,9 @@ static bool body_try(ld_frame *f, double x, double y, double z, float partial) {
     if (!ld_display(f, mc_client_display_source_scale(f->scope->model.display, -1.0, -1.0, 1.0,
                                                       &e->detail.display)))
         return false;
-    /* Actual base GV.a(LS,F) invoked184 returns0, reading no actor or service. */
+    gv(f, 184);
+    if (!ld_prescale(f, partial))
+        return false;
     gv(f, 197);
     if (!ld_display(
             f, mc_client_display_source_translate(f->scope->model.display, 0.0f,
@@ -152,10 +118,14 @@ static bool body_try(ld_frame *f, double x, double y, double z, float partial) {
     float brightness;
     if (!ld_brightness(f, partial, &brightness))
         return false;
-    (void)brightness; /* Actual base color-multiplier382 returns0, ignoring its operands. */
+    gv(f, 382);
+    int32_t color;
+    if (!ld_color(f, brightness, partial, &color))
+        return false;
+    const uint32_t alpha = ((uint32_t)color >> 24) & UINT32_C(255);
     ls = mc_entity_living_fields(f->actor);
     gv(f, 400);
-    if (ls->aa > 0 || ls->ad > 0) {
+    if (alpha > 0 || ls->aa > 0 || ls->ad > 0) {
         gv(f, 416);
         if (!ld_display(f, mc_client_display_source_texture_enable(f->scope->model.display, false,
                                                                    &e->detail.display)))
@@ -179,8 +149,13 @@ static bool body_try(ld_frame *f, double x, double y, double z, float partial) {
         /* A newly supported GL_EQUAL backend still needs its separate overlay
          * cohort; never silently skip those source draws. */
         gv(f, 447);
+        if (ls->aa > 0 || ls->ad > 0)
+            return ld_fail(f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED,
+                           "Living actual hurt/death overlay child");
+        /* The true packed-alpha branch reaches the distinct color overlay. */
+        gv(f, 561);
         return ld_fail(f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED,
-                       "Living actual hurt/death overlay child");
+                       "Living actual packed-color overlay body");
     }
     gv(f, 737);
     if (!ld_display(f, mc_client_display_source_rescale_normal(f->scope->model.display, false,
@@ -241,16 +216,20 @@ bool mc_client_living_draw_entered(mc_client_draw_scope *scope, mc_client_manage
         return ld_fail(&f, MC_CLIENT_LIVING_DRAW_ARGUMENT, "Living draw native scope/renderer");
     const bool cow = strcmp(r->source_class, "va") == 0;
     const bool chicken = strcmp(r->source_class, "ip") == 0;
+    const bool squid = strcmp(r->source_class, "es") == 0;
+    const bool creature = strcmp(r->source_class, "yx") == 0 ||
+                          strcmp(r->source_class, "mj") == 0 || strcmp(r->source_class, "m") == 0;
     if (strcmp(r->source_class, "xy") != 0 && strcmp(r->source_class, "me") != 0 && !cow &&
-        !chicken) {
+        !chicken && !squid && !creature) {
         ld_at(&f, r->source_class, "a", "(Lsn;DDDFF)V", 0);
         return ld_fail(&f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED,
                        "Living actual concrete renderer body");
     }
-    if (cow || chicken) {
+    if (cow || chicken || squid) {
         ld_at(&f, r->source_class, "a", "(Lsn;DDDFF)V", 2);
-        if (actor != NULL && !mc_entity_is_kind(actor, cow ? MC_ENTITY_CLASS_KIND_COW
-                                                           : MC_ENTITY_CLASS_KIND_CHICKEN)) {
+        if (actor != NULL && !mc_entity_is_kind(actor, cow       ? MC_ENTITY_CLASS_KIND_COW
+                                                       : chicken ? MC_ENTITY_CLASS_KIND_CHICKEN
+                                                                 : MC_ENTITY_CLASS_KIND_SQUID)) {
             e->throwable = MC_CLIENT_LIVING_DRAW_EXCEPTION;
             e->source_exception = true;
             e->exception_class = "java/lang/ClassCastException";
@@ -258,6 +237,7 @@ bool mc_client_living_draw_entered(mc_client_draw_scope *scope, mc_client_manage
                            "Living actual concrete renderer checkcast");
         }
     }
+    e->state.secondary_entry_identity = (uintptr_t)r->secondary;
     gv(&f, 0);
     if (!ld_display(&f, mc_client_display_source_push(scope->model.display, &e->detail.display)))
         return false;

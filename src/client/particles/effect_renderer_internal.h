@@ -20,6 +20,7 @@ struct mc_client_effect_renderer {
     size_t allocation_bytes, max_allocation_bytes, holds;
     bool entered;
     struct mc_client_effect_draw_call *draw_call;
+    struct mc_effect_tick_call *tick_call;
 };
 
 typedef struct mc_effect_renderer_terminal_view {
@@ -27,11 +28,14 @@ typedef struct mc_effect_renderer_terminal_view {
     mc_client_render_engine *render_engine;
     mc_world_runtime *const *world_slot;
     size_t holds;
+    const mc_effect_particle_list *lists[4];
+    size_t particle_occurrences;
 } mc_effect_renderer_terminal_view;
 
 /* Passive native inspection of this exact READY owner and its four distinct
- * empty Lists. Retained capacities are permitted; a nonempty List is refused
- * with UNSUPPORTED_PARTICLE without clearing any occurrence. No hold allowance
+ * Lists. Nonempty Lists admit only complete canonical PB objects in layer2,
+ * bound to this same World and namespace. Every actual List slot remains an
+ * independent owning occurrence; no List is cleared and no hold allowance
  * is inferred. The returned slot is the actual owning World field, including
  * when NULL. Keep r live and exclusive; the view expires on its next mutation
  * or retirement. No source/class work, retain/release, cleanup or diagnostic-

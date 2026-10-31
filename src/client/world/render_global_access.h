@@ -7,6 +7,9 @@
 typedef struct mc_render_global_access mc_render_global_access;
 typedef struct mc_client_image_buffer mc_client_image_buffer;
 typedef struct mc_client_image_download_call mc_client_image_download_call;
+typedef struct mc_entity mc_entity;
+typedef struct mc_client_effect_renderer mc_client_effect_renderer;
+typedef struct mc_math_classes mc_math_classes;
 
 typedef struct mc_render_global_access_state {
     size_t registrations, active_callbacks, retained_failures;
@@ -18,6 +21,12 @@ typedef struct mc_render_global_callback_state {
     const mc_client_image_download_call *images[2];
     const mc_client_render_global_error *failure;
     bool source_returned;
+    const mc_client_effect_renderer *particle_receiver;
+    const mc_entity *particle_candidate;
+    const mc_world_runtime *particle_world;
+    const mc_math_classes *particle_math;
+    const struct mc_particle_error *particle;
+    const struct mc_effect_renderer_error *effects;
 } mc_render_global_callback_state;
 
 /* All operations require exclusive serialized use of the actual receiver and

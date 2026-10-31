@@ -20,7 +20,14 @@ struct mc_client_render_classes {
 typedef struct model_allocation {
     struct model_allocation *next;
     mc_entity_vector *vector;
-    long double alignment;
+
+    /* Native metadata shares the existing alignment slot. Zero denotes an
+     * opaque payload; a part array records its allocated capacity plus one.
+     * Source array.length remains in the separate actual array object. */
+    union {
+        long double alignment;
+        size_t part_array_extent;
+    } native;
 } model_allocation;
 
 /* Borrowed synchronous view of the REAL owner's native ledger fields. No

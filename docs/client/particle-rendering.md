@@ -4,8 +4,9 @@ The client connects the real `dn.b(sn,float)` lit-particle entry and
 `dn.a(sn,float)` sprite entry to the existing effect manager. They use its
 four actual Lists, the same particle Entities and the actual graphics and
 Math namespaces. The supported empty paths return from DN and continue the
-enclosing World frame. Reached particle and World draw dependencies still
-stop that frame at their source invocation.
+enclosing World frame. The concrete PB Item sprite now completes the nonempty
+layer2 path. Other reached particle and World draw dependencies retain their
+own source invocation.
 
 The [draw API](../../include/mc/client/particles/render.h) returns a retained
 call with its source position, completed stores, current particle and typed
@@ -52,9 +53,25 @@ For a nonempty sprite layer, the source texture is `/particles.png`,
 `/terrain.png` or `/gui/items.png`, respectively. Lookup uses the manager's
 current source RenderEngine, followed by the real texture bind, NW capture,
 quad begin, live-size traversal, concrete draw invocation and NW draw. The
-current concrete particle support is the genuine EM pickup particle, whose
-normal source layer is3. Other reached virtual draw bodies remain explicit
-dependencies. The loop structure does not establish successful sprite draws.
+concrete particle support includes EM pickup on its normal layer3 and the
+returning PB Item sprite on layer2. Other reached virtual draw bodies remain
+explicit dependencies.
+
+PB's draw body selects one quarter of its Item atlas cell, computes size from
+the actual inherited `g` field, and interpolates each previous/current position
+in double precision before subtracting the shared XW origin and narrowing to
+float. Its actual World brightness call at139 precedes NW color166. Four real
+vertices at214,262,310,358 complete the quad before return361. PB does not begin
+or submit a batch, bind a texture or set a normal; the enclosing DN loop performs
+its own reached operations. Failed brightness retains the exact World cause and
+leaves the already active NW batch intact through cleanup.
+
+The PB fixture observes an actual cold `/gui/items.png` lookup on the first DN
+draw and cache hits on later draws. Its three returning batches contain 48,48
+and384 words, with the last batch drawing eight distinct particles emitted by
+a real size1 Slime landing. Post-array legacy current color is unspecified;
+native observations preserve `color_known=false` and a null value. The original
+raw device color remains separate and earns no equality credit.
 
 The [origin API](../../include/mc/entity/particles/origin.h) stores XW origins
 in the same client Entity namespace as the particles. These are class fields,
@@ -170,7 +187,24 @@ checks are separate from original draw correspondence. Qualification of
 successful nonempty draws requires the returning concrete renderer and its
 actual World, texture, NW and Display dependencies.
 
-## Qualification
+## PB sprite qualification
+
+The current [PB comparison](particles.md) passes on Windows MSVC Debug and Linux
+Clang18 ASan/UBSan: 1,863 native checks across five fresh processes and 67,444
+selected original checks per host. All three complete expanded NW batches
+(48,48,384 words) and their 1,024-word backing prefixes match. Decoded atlas
+bytes, actual cache-hit/bound-texture identity relations and selected defined GL
+state match. Four manifest and eight targeted comparison corruptions are rejected.
+Native readbacks show visible particles; original/native pixels remain unpaired.
+
+Prepared view/projection matrices alone allow four float ULP or numeric equality
+of opposite signed zeros; raw differences are recorded. Texture dimensions,
+samplers, transfer-buffer cursor and full cache-map graph are not paired here.
+The two observed original SecureRandom/NIO temporary-file events belong to
+ImageIO and remain separate from the unchanged game streams. Other particle
+classes and the completed pickup renderer still require their own bodies.
+
+## Preceding empty/pickup checkpoint
 
 All 45 selected production/test targets build on Windows MSVC Debug and Linux
 Clang18 ASan/UBSan. All 54 Windows CTests pass in 79.27 seconds and all 50 Linux

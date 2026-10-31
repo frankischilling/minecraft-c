@@ -5,7 +5,7 @@ static const uint16_t saddle_units[] = {'/', 'm', 'o', 'b', '/', 's', 'a', 'd',
 static const mc_player_string saddle = {SIZE_MAX, sizeof(saddle_units) / sizeof(*saddle_units),
                                         saddle_units};
 
-static bool cast_actor(ld_frame *f, mc_entity_class_kind kind, const char *operation) {
+bool ld_cast_actor(ld_frame *f, mc_entity_class_kind kind, const char *operation) {
     if (f->actor == NULL || mc_entity_is_kind(f->actor, kind))
         return true;
     f->error->throwable = MC_CLIENT_LIVING_DRAW_EXCEPTION;
@@ -20,7 +20,7 @@ bool ld_pig_pass(ld_frame *f, int32_t pass, float partial, bool *out) {
     const mc_client_graphics_site parent = e->parent;
     e->parent = ld_site("gv", "a", "(Lls;DDDFF)V", 315);
     ld_at(f, "me", "a", "(Lls;IF)Z", 2);
-    if (!cast_actor(f, MC_ENTITY_CLASS_KIND_PIG, "Pig pass actual WH checkcast"))
+    if (!ld_cast_actor(f, MC_ENTITY_CLASS_KIND_PIG, "Pig pass actual WH checkcast"))
         return false;
     ld_at(f, "me", "a", "(Lwh;IF)Z", 3);
     if (!ld_texture(f, &saddle, 3))
@@ -45,8 +45,12 @@ bool ld_pass(ld_frame *f, int32_t pass, float partial, bool *out) {
         return ld_sheep_pass(f, pass, partial, out);
     if (strcmp(f->renderer->source_class, "me") == 0)
         return ld_pig_pass(f, pass, partial, out);
+    if (strcmp(f->renderer->source_class, "yx") == 0 ||
+        strcmp(f->renderer->source_class, "mj") == 0 || strcmp(f->renderer->source_class, "m") == 0)
+        return ld_creature_pass(f, pass, partial, out);
     if (strcmp(f->renderer->source_class, "va") != 0 &&
-        strcmp(f->renderer->source_class, "ip") != 0)
+        strcmp(f->renderer->source_class, "ip") != 0 &&
+        strcmp(f->renderer->source_class, "es") != 0)
         return ld_fail(f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED, "Living actual concrete pass body");
     /* VA and IP inherit this actual two-instruction GV body. */
     ld_at(f, "gv", "a", "(Lls;IF)Z", 0);
@@ -57,10 +61,15 @@ bool ld_pass(ld_frame *f, int32_t pass, float partial, bool *out) {
 
 bool ld_age(ld_frame *f, float partial, float *out) {
     mc_client_living_draw_error *e = f->error;
+    if (strcmp(f->renderer->source_class, "es") == 0)
+        return ld_squid_age(f, partial, out);
     if (strcmp(f->renderer->source_class, "ip") != 0) {
         if (strcmp(f->renderer->source_class, "xy") != 0 &&
             strcmp(f->renderer->source_class, "me") != 0 &&
-            strcmp(f->renderer->source_class, "va") != 0)
+            strcmp(f->renderer->source_class, "va") != 0 &&
+            strcmp(f->renderer->source_class, "yx") != 0 &&
+            strcmp(f->renderer->source_class, "mj") != 0 &&
+            strcmp(f->renderer->source_class, "m") != 0)
             return ld_fail(f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED,
                            "Living actual concrete animation body");
         ld_at(f, "gv", "c", "(Lls;F)F", 1);
@@ -77,7 +86,7 @@ bool ld_age(ld_frame *f, float partial, float *out) {
     const mc_client_graphics_site parent = e->parent;
     e->parent = ld_site("gv", "a", "(Lls;DDDFF)V", 147);
     ld_at(f, "ip", "c", "(Lls;F)F", 2);
-    if (!cast_actor(f, MC_ENTITY_CLASS_KIND_CHICKEN, "Chicken age actual WW checkcast"))
+    if (!ld_cast_actor(f, MC_ENTITY_CLASS_KIND_CHICKEN, "Chicken age actual WW checkcast"))
         return false;
     ld_at(f, "ip", "a", "(Lww;F)F", 1);
     if (f->actor == NULL)

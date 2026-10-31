@@ -4,6 +4,7 @@
 #include "../../entity/mob/internal.h"
 #include "../../entity/mob/references_internal.h"
 #include "construction_internal.h"
+#include "mc/entity/particles/particle.h"
 #include "mc/world/dimension/world_provider.h"
 #include "runtime_internal.h"
 
@@ -198,7 +199,23 @@ static mc_world_storage_status collect_entity(void *context, const void *slot, m
             canonical != value->class_literal)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal canonical Entity Class identity");
-        if (value->particle != NULL || value->base.aG != NULL || value->base.aH != NULL)
+        if (value->particle != NULL) {
+            /* PB owns no Entity reference fields. Its single World backedge
+             * is counted below once per identity, independently of how many
+             * genuine DN List occurrences point at it. Other particle child
+             * graphs remain outside this terminal closure. */
+            mc_particle_snapshot particle;
+            if (!mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) ||
+                !mc_particle_read(value, &particle) || particle.phase != MC_ENTITY_READY ||
+                particle.item_pc != 58)
+                return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "World terminal canonical complete PB child");
+            if (particle.tick_active)
+                return result(error, MC_WORLD_STORAGE_BUSY, "World terminal PB tick still entered");
+        } else if (mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE))
+            return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                          "World terminal missing PB child storage");
+        if (value->base.aG != NULL || value->base.aH != NULL)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal unqualified Entity child or relationship graph");
         if (value->mob != NULL && value->mob->tick_active)

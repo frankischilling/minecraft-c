@@ -31,6 +31,9 @@ bool ld_graphics(ld_frame *, bool);
 bool ld_entity(ld_frame *, bool);
 bool ld_model(ld_frame *, bool);
 bool ld_capture(ld_frame *, bool);
+bool ld_cast_actor(ld_frame *, mc_entity_class_kind, const char *operation);
+/* The caller has already selected its actual IN invocation site. */
+bool ld_float_math(ld_frame *, const char *method, float argument, float *);
 mc_client_render_manager *ld_manager(ld_frame *, int32_t dereference_pc);
 bool ld_texture(ld_frame *, const mc_player_string *, int32_t caller_pc);
 bool ld_texture_engine(ld_frame *, mc_client_render_engine *, const mc_player_string *,
@@ -40,6 +43,11 @@ bool ld_skin(ld_frame *);
 bool ld_brightness(ld_frame *, float, float *);
 bool ld_sheep_pass(ld_frame *, int32_t, float, bool *);
 bool ld_pig_pass(ld_frame *, int32_t, float, bool *);
+bool ld_creature_pass(ld_frame *, int32_t, float, bool *);
+bool ld_squid_age(ld_frame *, float, float *);
+bool ld_rotation(ld_frame *, float age, float body_yaw, float partial);
+bool ld_prescale(ld_frame *, float partial);
+bool ld_color(ld_frame *, float brightness, float partial, int32_t *);
 bool ld_age(ld_frame *, float, float *);
 bool ld_pass(ld_frame *, int32_t, float, bool *);
 bool ld_shadow(ld_frame *, double, double, double, float, float);

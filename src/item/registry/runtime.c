@@ -28,6 +28,27 @@ static mc_registry_status quiescent(const mc_registry_classes *classes, mc_regis
     return MC_REGISTRY_OK;
 }
 
+mc_registry_status mc_registry_item_base_icon(mc_registry_classes *classes, const mc_item *item,
+                                              int32_t damage, int32_t *out,
+                                              mc_registry_error *error) {
+    (void)damage; /* Actual GM body reads no argument. */
+    if (out == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Item icon native output");
+    if (item == NULL)
+        return result(error, MC_REGISTRY_NULL_REFERENCE, "actual GM icon null receiver");
+    const mc_registry_status status = quiescent(classes, error);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    if (item->classes != classes)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Item icon actual Registry owner");
+    if (item->kind != MC_ITEM_BASE)
+        return result(error, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
+                      "actual Item icon override is not connected");
+    const int32_t icon = item->fields.bh; /* Actual GM.a(I) getfield1. */
+    *out = icon;
+    return result(error, MC_REGISTRY_OK, NULL); /* Actual return4. */
+}
+
 static mc_registry_status enter_items(mc_registry_classes *classes, mc_registry_error *error) {
     const mc_registry_status status = quiescent(classes, error);
     if (status != MC_REGISTRY_OK)

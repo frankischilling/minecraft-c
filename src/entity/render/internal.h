@@ -89,4 +89,7 @@ bool mc_entity_render_texture(mc_entity *, const mc_player_string **, mc_entity_
 bool mc_entity_render_sheep_sheared(mc_entity *, bool *, mc_entity_render_error *);
 bool mc_entity_render_sheep_color(mc_entity *, int32_t *, mc_entity_render_error *);
 bool mc_entity_render_pig_saddled(mc_entity *, bool *, mc_entity_render_error *);
+bool mc_entity_render_slime_size(mc_entity *, int32_t *, mc_entity_render_error *);
+bool mc_entity_render_creeper_powered(mc_entity *, bool *, mc_entity_render_error *);
+bool mc_entity_render_creeper_swell(mc_entity *, float partial, float *, mc_entity_render_error *);
 #endif

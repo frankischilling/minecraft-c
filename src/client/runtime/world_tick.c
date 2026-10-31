@@ -160,8 +160,14 @@ static bool body(client_application *app, mc_math_classes *math, mc_client_world
         }
     }
     if (!atomic_load(&app->o)) {
-        if (mc_client_effect_renderer_tick(app->effect_renderer, &call->effects) !=
-            MC_EFFECT_RENDERER_OK)
+        mc_client_effect_renderer *effects = app->effect_renderer;
+        if (effects != NULL) {
+            if (mc_client_effect_renderer_retain(effects) != MC_EFFECT_RENDERER_OK)
+                return stop(call, "actual particle tick receiver occurrence", 1325);
+            call->effects_owner = effects;
+        }
+        if (mc_client_effect_renderer_tick_in_context(effects, app->registry, NULL,
+                                                      &call->effects) != MC_EFFECT_RENDERER_OK)
             return stop(call, call->effects.operation, 1325);
     }
     call->returned = true;
@@ -172,7 +178,8 @@ static bool body(client_application *app, mc_math_classes *math, mc_client_world
 bool mc_client_world_tick_run(client_application *app, mc_math_classes *math,
                               mc_client_world_tick *call) {
     if (app == NULL || call == NULL || call->active || call->failed || call->refresh != NULL ||
-        call->renderer != NULL || call->scheduler != NULL || call->ambience != NULL)
+        call->renderer != NULL || call->scheduler != NULL || call->ambience != NULL ||
+        call->effects_owner != NULL)
         return false;
     memset(call, 0, sizeof(*call));
     call->active = true;
@@ -184,6 +191,18 @@ bool mc_client_world_tick_run(client_application *app, mc_math_classes *math,
 bool mc_client_world_tick_cleanup(mc_client_world_tick *call) {
     if (call == NULL || call->active)
         return false;
+    if (call->effects_owner != NULL) {
+        if (call->effects.movement != NULL && call->effects.movement != &call->effects_movement) {
+            call->effects_movement = *call->effects.movement;
+            call->effects.movement = &call->effects_movement;
+        }
+        if (mc_client_effect_renderer_tick_cleanup(call->effects_owner, &call->effects_cleanup) !=
+            MC_EFFECT_RENDERER_OK)
+            return false;
+        if (mc_client_effect_renderer_release(call->effects_owner) != MC_EFFECT_RENDERER_OK)
+            return false;
+        call->effects_owner = NULL;
+    }
     mc_world_random_display_error ambience;
     if (mc_world_runtime_random_display_retire(&call->ambience, &ambience) != MC_WORLD_STORAGE_OK)
         return false;

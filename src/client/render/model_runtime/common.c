@@ -13,6 +13,7 @@ void mc_client_model_runtime_error_init(mc_client_model_runtime_error *error) {
     for (size_t i = 0; i < sizeof(error->ancestors) / sizeof(*error->ancestors); ++i)
         error->ancestors[i].pc = -1;
     error->math.source_pc = -1;
+    error->state.array_index = error->state.array_length = -1;
 }
 
 void model_runtime_at(mc_client_model_runtime_error *error, const char *cl, const char *method,
@@ -79,6 +80,7 @@ bool model_runtime_admit(mc_client_managed_renderer *owner, manager_model *model
     if (!canonical_renderer)
         return model_runtime_fail(error, MC_CLIENT_MODEL_RUNTIME_STATE,
                                   "Model canonical renderer ledger identity");
+    error->native_owner = owner;
     if (model == NULL)
         return model_runtime_null(error, "Model null captured invocation receiver");
     bool owned = false;
@@ -101,7 +103,9 @@ bool model_runtime_quadruped(const manager_model *model) {
 
 static bool supported(const manager_model *model) {
     return model_runtime_quadruped(model) || strcmp(model->source_class, "hh") == 0 ||
-           strcmp(model->source_class, "td") == 0;
+           strcmp(model->source_class, "td") == 0 || strcmp(model->source_class, "sc") == 0 ||
+           strcmp(model->source_class, "no") == 0 || strcmp(model->source_class, "wn") == 0 ||
+           strcmp(model->source_class, "il") == 0;
 }
 
 bool model_runtime_fp(mc_client_model_runtime_error *error) {
@@ -110,11 +114,15 @@ bool model_runtime_fp(mc_client_model_runtime_error *error) {
                               "Model strict floating controls");
 }
 
-bool model_runtime_math(const mc_client_model_runtime_context *context,
-                        mc_client_model_runtime_error *error) {
+static bool math_enter(const mc_client_model_runtime_context *context, bool sine,
+                       mc_client_model_runtime_error *error) {
     ++error->state.math_calls;
+    if (sine)
+        ++error->state.sine_calls;
+    else
+        ++error->state.cosine_calls;
     error->selected_child = MC_CLIENT_MODEL_RUNTIME_CHILD_MATH;
-    error->child = (mc_client_graphics_site){"in", "b", "(F)F", -1};
+    error->child = (mc_client_graphics_site){"in", sine ? "a" : "b", "(F)F", -1};
     if (context == NULL || context->math == NULL)
         return model_runtime_fail(error, MC_CLIENT_MODEL_RUNTIME_MATH_FAILED,
                                   "Model actual Math namespace");
@@ -133,6 +141,36 @@ bool model_runtime_math(const mc_client_model_runtime_context *context,
         return false;
     error->selected_child = MC_CLIENT_MODEL_RUNTIME_CHILD_NONE;
     error->child = (mc_client_graphics_site){.pc = -1};
+    return true;
+}
+
+bool model_runtime_math(const mc_client_model_runtime_context *context,
+                        mc_client_model_runtime_error *error) {
+    return math_enter(context, false, error);
+}
+
+bool model_runtime_math_value(const mc_client_model_runtime_context *context,
+                              model_runtime_math_kind kind, float value, float *out,
+                              mc_client_model_runtime_error *error) {
+    if (kind == MODEL_RUNTIME_ABSOLUTE) {
+        ++error->state.math_calls;
+        ++error->state.absolute_calls;
+        error->selected_child = MC_CLIENT_MODEL_RUNTIME_CHILD_MATH;
+        error->child = (mc_client_graphics_site){"java/lang/Math", "abs", "(F)F", 0};
+        if (!model_runtime_fp(error))
+            return false;
+        /* JDK17 Math.abs(F): fcmpg/ifgt, otherwise 0f-value. This preserves
+         * the source signed-zero/NaN behavior without a host fabsf substitute. */
+        *out = value <= 0.0f ? at_fsub(0.0f, value) : value;
+        error->selected_child = MC_CLIENT_MODEL_RUNTIME_CHILD_NONE;
+        error->child = (mc_client_graphics_site){.pc = -1};
+        return true;
+    }
+    const bool sine = kind == MODEL_RUNTIME_SINE;
+    if (!math_enter(context, sine, error))
+        return false;
+    *out = sine ? mc_math_sin(mc_math_classes_table(context->math), value)
+                : mc_math_cos(mc_math_classes_table(context->math), value);
     return true;
 }
 
@@ -169,6 +207,14 @@ bool model_runtime_pose_body(manager_model *model, const float values[6],
         ok = model_runtime_hh_pose(model, values, context, error);
     else if (strcmp(model->source_class, "td") == 0)
         ok = model_runtime_td_pose(model, values, context, error);
+    else if (strcmp(model->source_class, "sc") == 0)
+        ok = model_runtime_sc_pose(model, values, context, error);
+    else if (strcmp(model->source_class, "no") == 0)
+        ok = model_runtime_no_pose(model, values, context, error);
+    else if (strcmp(model->source_class, "wn") == 0)
+        ok = model_runtime_wn_pose(model, values, context, error);
+    else if (strcmp(model->source_class, "il") == 0)
+        ok = model_runtime_il_pose(model, values, context, error);
     else if (model_runtime_quadruped(model))
         ok = model_runtime_nn_pose(model, values, context, error);
     else
@@ -296,6 +342,14 @@ bool mc_client_model_render_entered(mc_client_managed_renderer *owner, manager_m
                         ? model_runtime_hh_render(owner, model, values, context, error)
                     : strcmp(model->source_class, "td") == 0
                         ? model_runtime_td_render(owner, model, values, context, error)
+                    : strcmp(model->source_class, "sc") == 0
+                        ? model_runtime_sc_render(owner, model, values, context, error)
+                    : strcmp(model->source_class, "no") == 0
+                        ? model_runtime_no_render(owner, model, values, context, error)
+                    : strcmp(model->source_class, "wn") == 0
+                        ? model_runtime_wn_render(owner, model, values, context, error)
+                    : strcmp(model->source_class, "il") == 0
+                        ? model_runtime_il_render(owner, model, values, context, error)
                         : model_runtime_nn_render(owner, model, values, context, error);
     if (!ok)
         return false;

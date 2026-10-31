@@ -72,6 +72,7 @@ typedef enum mc_entity_class_kind {
     MC_ENTITY_CLASS_KIND_CF,              /* Actual client cf, query-only. */
     MC_ENTITY_CLASS_KIND_LX,              /* Actual client lx, query-only. */
     MC_ENTITY_CLASS_KIND_C,               /* Actual client Lightning c; yu is omitted ancestor. */
+    MC_ENTITY_CLASS_KIND_ITEM_PARTICLE,   /* Actual client pb; existing selectors stay stable. */
     MC_ENTITY_CLASS_KIND_COUNT
 } mc_entity_class_kind;
 
@@ -93,7 +94,7 @@ typedef struct mc_entity_class_literal_view {
  * their reached point. External stack/world/profile owners, allocator overhead
  * and C stack are excluded. Failure preserves out. All access is exclusive;
  * the profile must outlive every dependent class/entity and concurrent user.
- * create alone performs no game-class initialization or entropy draw. The 33
+ * create alone performs no game-class initialization or entropy draw. The 34
  * passive canonical literal cells are charged in this actual native header. */
 mc_entity_status mc_entity_classes_create(mc_entity_source source, mc_java_random_profile *profile,
                                           const mc_entity_limits *limits, mc_entity_classes **out);

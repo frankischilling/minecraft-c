@@ -46,15 +46,23 @@ static bool services(mc_client_effect_draw_call *c, const mc_effect_draw_service
     return true;
 }
 
+bool mc_effect_draw_capture_math(mc_client_effect_draw_call *c, unsigned int pc) {
+    if (c->math != NULL || c->services.math == NULL)
+        return true;
+    if (mc_math_classes_retain(c->services.math, &c->failure.math) != MC_MATH_CLASS_OK)
+        return mc_effect_draw_fail(c, MC_EFFECT_DRAW_BUSY, "particle draw actual Math occurrence",
+                                   pc, true);
+    c->math = c->services.math;
+    return true;
+}
+
 bool mc_effect_draw_math(mc_client_effect_draw_call *c, unsigned int pc) {
     if (c->math == NULL) {
         if (c->services.math == NULL)
             return mc_effect_draw_fail(c, MC_EFFECT_DRAW_DEPENDENCY,
                                        "particle draw reached canonical Math namespace", pc, true);
-        if (mc_math_classes_retain(c->services.math, &c->failure.math) != MC_MATH_CLASS_OK)
-            return mc_effect_draw_fail(c, MC_EFFECT_DRAW_BUSY,
-                                       "particle draw actual Math occurrence", pc, true);
-        c->math = c->services.math;
+        if (!mc_effect_draw_capture_math(c, pc))
+            return false;
     }
     if (mc_math_classes_ensure(c->math, &c->failure.math) == MC_MATH_CLASS_OK)
         return true;
@@ -115,7 +123,8 @@ static bool get(mc_client_effect_draw_call *c, unsigned int array_pc, unsigned i
                                    "actual DN particle List.get index", get_pc, false);
     mc_entity *particle = list->elements[(size_t)c->state.index];
     if (particle != NULL) {
-        if (!mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE) ||
+        if ((!mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE) &&
+             !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE)) ||
             particle->classes != c->state.owner->classes || particle->particle == NULL)
             return mc_effect_draw_fail(c, MC_EFFECT_DRAW_DEPENDENCY,
                                        "particle List reached unsupported concrete owning row",
@@ -363,7 +372,8 @@ static mc_effect_draw_status begin(mc_client_effect_renderer *r, mc_entity *came
         error->native_policy = true;
         return error->status;
     }
-    if (r->entered || r->draw_call != NULL || r->phase != MC_EFFECT_RENDERER_READY) {
+    if (r->entered || r->draw_call != NULL || r->tick_call != NULL ||
+        r->phase != MC_EFFECT_RENDERER_READY) {
         error->status = MC_EFFECT_DRAW_BUSY;
         error->operation = "particle draw native pending/entered/constructed owner";
         error->native_policy = true;
@@ -485,9 +495,12 @@ mc_effect_draw_status mc_client_effect_renderer_draw_retire(mc_client_effect_dra
         c->graphics = NULL;
         c->state.nw = c->nw = NULL;
     }
+    if (!mc_effect_draw_item_discharge(c))
+        goto refused;
     if (mc_client_effect_renderer_release(c->state.owner) != MC_EFFECT_RENDERER_OK)
         goto refused;
     c->state.owner->draw_call = NULL;
+    mc_effect_draw_item_free(c);
     free(c);
     *slot = NULL;
     return MC_EFFECT_DRAW_OK;

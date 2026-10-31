@@ -35,6 +35,11 @@ typedef struct mc_effect_renderer_error {
     mc_entity_status entity;
     mc_java_random_profile_status random;
     mc_particle_error particle;
+    bool native_policy, source_exception;
+    const char *exception_class;
+    /* PB-only entered movement cause, borrowed from the actual pending tick
+     * record until successful tick_cleanup. Legacy EM paths leave this NULL. */
+    const mc_entity_move_error *movement;
 } mc_effect_renderer_error;
 
 typedef struct mc_effect_renderer_options {
@@ -49,6 +54,8 @@ typedef struct mc_effect_renderer_snapshot {
     const void *layers, *lists[4];
     size_t sizes[4], capacities[4], allocation_bytes;
     const mc_java_random *random;
+    bool tick_pending;
+    const mc_entity *tick_current;
 } mc_effect_renderer_snapshot;
 
 /* Actual client dn CPU owner: four distinct ArrayLists, its ordinary Random,
@@ -88,6 +95,15 @@ mc_effect_renderer_status mc_client_effect_renderer_add(mc_client_effect_rendere
                                                         mc_effect_renderer_error *);
 mc_effect_renderer_status mc_client_effect_renderer_tick(mc_client_effect_renderer *,
                                                          mc_effect_renderer_error *);
+/* Actual DN update with the reached PB movement's real code Registry. The
+ * legacy entry above supplies no Registry and preserves the EM-only facade.
+ * A failed entered update retains its current particle/producer receipts in
+ * this DN owner. Cleanup consumes only those native rights, never source work. */
+mc_effect_renderer_status mc_client_effect_renderer_tick_in_context(
+    mc_client_effect_renderer *, mc_registry_classes *nullable_registry,
+    const mc_entity_move_limits *nullable_movement_limits, mc_effect_renderer_error *);
+mc_effect_renderer_status mc_client_effect_renderer_tick_cleanup(mc_client_effect_renderer *,
+                                                                 mc_effect_renderer_error *);
 mc_effect_renderer_status mc_client_effect_renderer_change_world(mc_client_effect_renderer *,
                                                                  mc_world_runtime *,
                                                                  mc_effect_renderer_error *);

@@ -29,7 +29,38 @@ hidden pause-screen save path remain open.
 
 ## Integration qualification
 
-The current four-animal focused comparison passes on Windows and Linux:
+The subsequent four-creature focused checkpoint adds actual Spider, Slime,
+Squid and Creeper drawing. Both hosts pass 3,722 native checks and 366,155
+selected original graph/state comparisons, with 42 lists, 252 model faces,
+341 direct query attempts and twelve rejected comparison corruptions.
+The new original ordinary/JDI capture and matching-device Windows ordinary
+supplement retain their separate scopes. A later 103.60-second Windows run
+passes four independent loaded Spider/Slime/Squid/Creeper scopes, each with
+four returned frames, first compilation/reuse and checked cleanup. Actual
+Slime landing particles and nonexploding Creeper attack/unseen work close
+the earlier retained failures. The true explosion still stops at its real
+FD/QX invocation. [Mob drawing](client/mob-drawing.md) records the exact boundaries.
+The separate Creeper component comparison passes 615 native checks and 864
+selected original comparisons on each host. The current PB fixture passes
+1,863 native checks across five fresh processes per host, including real Slime
+landing, three returning DN batches, four source-null failures and strict owner
+retirement controls. Its fresh comparison passes 67,444 selected original checks,
+180 identity pairs and 45 stream-progress checks, while retaining independent
+constructor entropy and explicit JDK/pixel limits. Four manifest and eight
+targeted comparator corruptions are rejected.
+All 98 selected targets now build on Windows MSVC Debug and Linux Clang18
+ASan/UBSan. All 129 Windows tests and 122 Linux tests pass without failures,
+skips or sanitizer findings. CTest takes 457.67/460.55 seconds; complete phases
+with following hash audits take 458.08/501.85 seconds. The same 2,610
+C/helper/build/reference inputs stay unchanged through both builds and tests.
+Formatting passes for 1,757 C files. Six current binding tables verify 8,353
+entries across 3,550 files while preserving historical metadata.
+All thirteen original-comparison suites pass freshly on each host. The final
+current-input audit verifies 26 wrappers and 4,614 resolved paths, merging
+Windows separators and `/mnt/c` aliases of the same file.
+The preceding animal and hosted results below retain their published-commit scope.
+
+The preceding four-animal focused comparison passes on Windows and Linux:
 3,350 native checks per host across six fresh processes, 206,656 selected
 original graph/state checks, 35 lists, 210 model faces and 316 direct
 World/Block queries. Ten deliberately corrupted comparisons are rejected.

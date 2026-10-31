@@ -369,7 +369,6 @@ bool mt_creature(mc_mob_tick_scope *s) {
             const double dz = at_sub(s->entity->base.z, target->base.z);
             const float distance =
                 at_root(at_add(at_add(at_mul(dx, dx), at_mul(dy, dy)), at_mul(dz, dz)));
-            (void)distance;
             mt_at(s, "ii", "f_", "()V", 85);
             bool visible;
             if (!mt_visible(s, target, &visible))
@@ -385,7 +384,11 @@ bool mt_creature(mc_mob_tick_scope *s) {
                                         : kind == MC_ENTITY_CLASS_KIND_CREEPER  ? "gb"
                                         : kind == MC_ENTITY_CLASS_KIND_WOLF     ? "gi"
                                                                                 : NULL;
-                if (declaring != NULL) {
+                if (kind == MC_ENTITY_CLASS_KIND_CREEPER) {
+                    mt_at(s, "ii", "f_", "()V", 97);
+                    if (!mt_creeper_attack(s, target, distance))
+                        return false;
+                } else if (declaring != NULL) {
                     mt_at(s, "ii", "f_", "()V", 97);
                     s->error->child_site = (mc_mob_site){declaring, "a", "(Lsn;F)V", 0};
                     return mt_fail(s, MC_ENTITY_STATE_ERROR,
@@ -399,8 +402,8 @@ bool mt_creature(mc_mob_tick_scope *s) {
                     return false;
                 if (kind == MC_ENTITY_CLASS_KIND_CREEPER) {
                     mt_at(s, "ii", "f_", "()V", 109);
-                    s->error->child_site = (mc_mob_site){"gb", "b", "(Lsn;F)V", 0};
-                    return mt_fail(s, MC_ENTITY_STATE_ERROR, "Creeper actual unseen-target child");
+                    if (!mt_creeper_unseen(s, target, distance))
+                        return false;
                 } /* The other selected kinds inherit actual II.b return0. */
             }
         }

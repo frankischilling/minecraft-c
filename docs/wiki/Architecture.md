@@ -1,51 +1,58 @@
 # Systems and subsystems
 
-The [four-animal draw owner](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md) executes actual TH lookup,
-GV primary/pass work, PS lists and BW shadows for Sheep, Pig, Cow and Chicken.
-Sheep uses XY/MW/EA/NN; Pig ME/EH retains four real saddle lookups despite its
-false saddle predicate; Cow VA/HH virtually poses once through HH/NN before
-rendering nine parts; Chicken IP/TD uses the actual interpolated sine/flap pose
-and eight-part order. Native aggregate model work is paired to the actual Source
-model identity and once-entry counts. Global cross-entered invocation order is
-not recorded natively.
+The client now draws eight default Mob kinds: Sheep, Pig, Cow, Chicken,
+Spider, Slime, Squid and Creeper. [Mob drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md) uses the actual TH/GV, concrete
+renderer/model, PS and NW owners. Four independent loaded Windows sessions
+for Spider/Slime/Squid/Creeper each return four World/HUD frames: delay,
+unticked undrawn traversal, first draw and reuse, then checked cleanup.
+The new families draw 22/5/9/6 parts and 18/2/18/8 shadow quads across their
+two drawn frames. Existing-player statistics are declared inputs; these
+controls do not qualify fresh-player tutorials or serialized Mob loading.
 
-One retained call owns each reached actor, renderer, namespace and
-World/Engine/String/Settings/App occurrence. The App has a distinct render-borrow
-count checked before constructor retirement changes its phase. Foreign texture
-lookups and list definitions keep their original owners. Checked retirement
-replays no source work and preserves reached GL/NW and actual model/PS fields.
-Fresh KO, null-horn, wrong-bridge and bounded cold-Math controls prove their
-finite prefixes; these are Code-qualified native controls, not additional
-original runtime outcome pairs.
+The creature comparison passes 3,722 native checks and 366,155 selected
+original checks per host: 341 queries, 42 lists, 252 faces and twelve rejected
+corruptions. Linux ordinary/read-only JDI and the audited matching-device
+NVIDIA ordinary supplement keep separate scopes. Native global invocation
+order, dynamic Block classes, original/native pixels and whole-frame equality
+remain unpaired. Prepared matrices alone allow four float ULP or opposite-zero
+numeric equality, with raw differences retained.
 
-RenderGlobal enters this child at 329/516, retires a successful child before
-continuing at 332/519 and retains a failed child until checked cleanup. Scalar
-receipts survive retirement. Separate loaded Pig/Cow/Chicken profiles each
-return four World/HUD frames with one delay, one undrawn traversal and first/reuse
-draws. They compile six/nine/eight parts, then none on reuse, with 18/18/two
-shadow quads. `Minecraft.k:1328`, N569, PX1013 and HUD2101 return before cleanup.
-Existing-player statistics are declared inputs; no Player or Random forcing is
-credited as implementation.
+[PB particles](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particles.md) now follow the actual Slime landing through N, eight distinct PBs,
+DN tick, real World movement and layer 2 sprite drawing. Both hosts pass 1,863
+native checks across five fresh processes and 67,444 selected original checks
+over seventeen operations, including four actual null failures, 180 identity
+pairs, 45 stream-progress relations and complete 48/48/384-word batches.
+Four manifest and eight targeted comparator corruptions are rejected.
+Eleven direct native constructor receipts have 77 separate scalar checks;
+twenty original constructor intervals retain their own proofs. Constructor
+entropy and raw landing x/z remain independent. Post-array current color,
+concrete JDK buffer/List layout, boxed-Byte and flattened String identity,
+full texture-state graphs and original/native pixels retain explicit limits.
 
-The focused draw comparison passes 3,350 native checks and 206,656 typed checks
-per host, with 316 direct queries, 35 lists, 210 faces, 18 direct String calls,
-eight animation returns, ten model-work records and ten comparator negatives.
-Linux ordinary/JDI evidence and the Windows ordinary NVIDIA GL supplement remain
-separate; the latter audits 36 inputs, four helpers and 45 artifacts. No pixel,
-live GL-order or whole-frame original equality follows.
+[Mob ticks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-active-tick.md) include the actual Creeper attack/unseen bodies. Each host passes 615
+native checks and 864 selected original comparisons: nine returns, the actual
+null-World failure and two explosion-entry prefixes. The real FD/QX explosion
+remains unfinished; later death/attacking stores receive no completion credit.
+The sound fixture's empty WorldAccess List gives no audio-device coverage.
 
-The Display retains logical `GL_CLAMP` per actual texture slot and generation.
-Qualified nearest and linear pairs use distinct edge/border semantics;
-unsupported mixed/mipmap combinations refuse at sampling. Compiled geometry
-reads current material state. Same-device legacy SDK controls retain 46,802
-checks and 3,872 exact samples per host. Prepared draw matrices alone allow four
-float ULP and opposite-zero numeric equality; the strict default Mesa/NVIDIA
-normal mismatch is preserved. The completed local cohort builds 93 targets on
-each host and passes 121 Windows/115 Linux tests without failures, skips or
-sanitizer findings. Its 2,559 inputs stay unchanged through all four phases;
-all twenty original-comparison wrappers pass. [Build and tests](Build-and-tests#current-local-qualification)
-records timings and the current 5,510-path audit. Hosted results remain separate
-and tied to published commits in [Draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
+Retained calls own each reached actor, namespace, World, Engine and App
+occurrence independently. Failed calls keep their genuine child resources
+until checked cleanup; retirement replays no Source work or failed fields.
+PB terminal admission counts actual DN List slots, duplicates and distinct
+World backedges, and refuses unexplained external owners before mutation.
+
+All 98 selected targets build on Windows MSVC Debug and Linux
+Clang18 ASan/UBSan. All 129 Windows and 122 Linux tests pass without
+failures, skips or sanitizer findings. CTest takes 457.67/460.55 seconds;
+complete test phases including following input audits take 458.08/501.85 seconds.
+The same 2,610 compiled/helper/build/reference inputs remain unchanged
+through both builds and tests and match the committed Git blobs.
+All 26 fresh original-comparison wrappers pass, thirteen per host. A separate
+current audit verifies 4,614 resolved paths, merging Windows separators
+and `/mnt/c` aliases of the same file. Formatting checks 1,757 C files.
+Six current binding tables pass with historical metadata preserved. Hosted
+results keep their exact published-commit scope in
+[Draft PR52](https://github.com/frankischilling/minecraft-c/pull/52).
 
 The [random display call](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/random-display.md)
 owns its actual World and one distinct default Random through inspection and
@@ -59,8 +66,9 @@ The [RenderGlobal Entity call](https://github.com/frankischilling/minecraft-c/bl
 current Entity and actual World List lease until checked retirement. N owns
 separate LL/TH consumer records across ordinary World changes; terminal cleanup
 ends only those records. The traversal preserves live Lists, fresh fields and
-source predicate order. Sheep, Pig, Cow and Chicken drawing returns; the seven remaining default
-renderer families and nonempty TileEntity rows retain explicit dependencies.
+source predicate order. Eight supported Mob families return; Wolf, Zombie and
+Skeleton with its actual held Bow, plus nonempty TileEntity rows, retain explicit
+dependencies.
 
 The [normal terminal coordinator](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/terminal-retirement.md)
 now connects menu-run shutdown to actual prefix ending, checked LL/TH retirement,

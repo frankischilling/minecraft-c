@@ -24,6 +24,10 @@ typedef struct mc_entity_move_error {
     mc_world_step_error step;
     mc_entity_effect_error effect;
     mc_registry_error registry;
+    /* Proof from an actual captured NULL receiver at its reached operation.
+     * Never reconstructed from mutable Entity fields after a child returns. */
+    bool source_null;
+    unsigned int source_null_pc;
 } mc_entity_move_error;
 
 /* Passive full fresh initialization in caller storage; NULL is a no-op.

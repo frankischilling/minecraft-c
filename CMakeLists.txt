@@ -606,6 +606,7 @@ add_library(mc_simulation STATIC
     src/entity/player/eligibility.c
     src/entity/player/atan2.c
     src/entity/particles/pickup.c
+    src/entity/particles/item.c
     src/entity/particles/origin.c
     src/entity/player/pickup.c
     src/client/particles/effect_renderer.c
@@ -5567,4 +5568,5 @@ if(MC_BUILD_CLIENT)
     include(cmake/tests/client_lighting_raster.cmake)
     include(cmake/tests/client_legacy_clamp.cmake)
     include(cmake/client_mob_draw.cmake)
+    include(cmake/tests/item_particle.cmake)
 endif()

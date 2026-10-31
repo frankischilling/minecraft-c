@@ -11,6 +11,7 @@
 typedef struct mc_client_effect_draw_call mc_client_effect_draw_call;
 typedef struct mc_client_texture_lookup_error mc_client_texture_lookup_error;
 typedef struct mc_client_tessellator mc_client_tessellator;
+typedef struct mc_entity_render_error mc_entity_render_error;
 
 typedef enum mc_effect_draw_status {
     MC_EFFECT_DRAW_OK,
@@ -40,6 +41,11 @@ typedef struct mc_effect_draw_error {
     const mc_client_texture_lookup_error *texture;
     mc_effect_renderer_status owner;
     mc_client_manager_error manager;
+    bool source_exception;
+    const char *exception_class;
+    mc_particle_throwable throwable;
+    const mc_entity_render_error *entity_render;
+    mc_world_storage_status receipt_status;
 } mc_effect_draw_error;
 
 /* Actual enclosing namespaces, not source DN World/Engine/camera operands.
@@ -62,6 +68,11 @@ typedef struct mc_effect_draw_state {
     double draw_x, draw_y, draw_z;
     unsigned int particle_pc;
     bool brightness_returned, color_set;
+    /* Actual selected PB body values; no sprite or atlas work is inferred. */
+    bool item_particle_returned;
+    float item_u0, item_u1, item_v0, item_v1, item_half_size;
+    float item_center[3], item_color[3], item_vertices[4][5];
+    unsigned int item_vertices_returned;
     mc_client_effect_renderer *owner;
     const mc_entity *camera; /* Borrowed; its enclosing graph stays live/exclusive. */
     mc_entity *current;

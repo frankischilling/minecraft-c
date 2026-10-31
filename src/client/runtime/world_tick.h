@@ -31,6 +31,13 @@ typedef struct mc_client_world_tick {
     mc_world_random_display_state ambience_state;
     mc_world_random_display_error ambience_error;
     mc_effect_renderer_error effects;
+    /* Complete selected movement value copied from the exact pending PB call
+     * before its native record retires. Nested producer views remain borrowed. */
+    mc_entity_move_error effects_movement;
+    /* Exact DN receiver captured at the reached source invocation. Native
+     * cleanup keeps its pending tick/WA rights alive independently of App.j. */
+    mc_client_effect_renderer *effects_owner;
+    mc_effect_renderer_error effects_cleanup;
 } mc_client_world_tick;
 
 /* Source Minecraft.k1074..1328 on the actual App graph. This segment performs
@@ -43,7 +50,11 @@ typedef struct mc_client_world_tick {
 bool mc_client_world_tick_run(client_application *, mc_math_classes *, mc_client_world_tick *);
 /* Releases child native occurrences without replaying source work. Top-level
  * value diagnostics and complete entity/field errors survive cleanup retry;
- * renderer/refresh borrowed child views end with their successful release. */
+ * renderer/refresh borrowed child views end with their successful release.
+ * effects copies its selected complete movement value before releasing the PB
+ * record; its nested producer-borrowed World/loader/WorldAccess views must be
+ * consumed before successful cleanup releases their native protection. They
+ * never become owning error fields. */
 bool mc_client_world_tick_cleanup(mc_client_world_tick *);
 
 #endif

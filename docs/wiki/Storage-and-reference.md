@@ -1,55 +1,63 @@
 # Storage and original references
 
-The [four-animal draw observations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/mob_draw_animals/README.md) retain eight actual calls from
-the unchanged archive: Sheep first, Pig first/reuse, Cow first/reuse, Chicken
-first/reuse at changed partial and Sheep revisit. The current ordinary/read-only
-JDI capture pins 242 initialized classes and 191 live Code bodies, with eleven
-fixed-LF input/helper files, seven texture uploads, 35 lists and 218 complete
-batches. Raw Entity/Random/Math constructor contexts are retained independently.
-No captured entropy is rebound into execution.
+The client now draws eight default Mob kinds: Sheep, Pig, Cow, Chicken,
+Spider, Slime, Squid and Creeper. [Mob drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md) uses the actual TH/GV, concrete
+renderer/model, PS and NW owners. Four independent loaded Windows sessions
+for Spider/Slime/Squid/Creeper each return four World/HUD frames: delay,
+unticked undrawn traversal, first draw and reuse, then checked cleanup.
+The new families draw 22/5/9/6 parts and 18/2/18/8 shadow quads across their
+two drawn frames. Existing-player statistics are declared inputs; these
+controls do not qualify fresh-player tutorials or serialized Mob loading.
 
-Each native host passes 3,350 checks and 206,656 selected typed comparisons,
-including 17,012 expanded graph records and 5,107 actual identity pairs. The
-comparison preserves classes, aliases and cross-family temporal continuity,
-316 ordered direct queries, 35 lists, all 210 face buffers, eight shadow buffers
-with 2,688 words and 18 direct String texture routes. Eight actual animation
-returns, ten model-work records and ten comparator negatives are checked.
-Pig's unused saddle model stays uncompiled despite four lookups per draw.
+The creature comparison passes 3,722 native checks and 366,155 selected
+original checks per host: 341 queries, 42 lists, 252 faces and twelve rejected
+corruptions. Linux ordinary/read-only JDI and the audited matching-device
+NVIDIA ordinary supplement keep separate scopes. Native global invocation
+order, dynamic Block classes, original/native pixels and whole-frame equality
+remain unpaired. Prepared matrices alone allow four float ULP or opposite-zero
+numeric equality, with raw differences retained.
 
-The audited Windows ordinary NVIDIA GL supplement is separate from the full
-Linux evidence. Before parsing raw transport it requires the matching actual
-device/driver, 36 inputs, four byte-identical helpers and exactly 45 artifacts.
-Four manifest omission/hash negatives must fail. It supplies only the
-matching-device GL baseline; model/list/query authority remains the Linux
-ordinary/JDI capture. The strict default Windows-to-Mesa normal mismatch stays
-failed evidence. Prepared matrices alone allow four float ULP and opposite-zero
-numeric equality. Original/native pixels, native live GL order and whole-frame
-equality remain outside this comparison.
+[PB particles](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particles.md) now follow the actual Slime landing through N, eight distinct PBs,
+DN tick, real World movement and layer 2 sprite drawing. Both hosts pass 1,863
+native checks across five fresh processes and 67,444 selected original checks
+over seventeen operations, including four actual null failures, 180 identity
+pairs, 45 stream-progress relations and complete 48/48/384-word batches.
+Four manifest and eight targeted comparator corruptions are rejected.
+Eleven direct native constructor receipts have 77 separate scalar checks;
+twenty original constructor intervals retain their own proofs. Constructor
+entropy and raw landing x/z remain independent. Post-array current color,
+concrete JDK buffer/List layout, boxed-Byte and flattened String identity,
+full texture-state graphs and original/native pixels retain explicit limits.
 
-Five fresh native component processes check seven finite outcomes: three KO
-empty hooks, a null-horn pose with the actual model/PS prefix preserved through
-retirement, two casts before push and a captured bounded-Math failure. These
-are Code-qualified controls, not added original runtime outcome pairs. The
-[earlier Sheep package](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/mob_draw/README.md)
-and its three calls remain unchanged: 666 native checks, 70,341 typed checks,
-twelve lists, 72 faces, 147 queries and six comparator negatives per host.
+[Mob ticks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-active-tick.md) include the actual Creeper attack/unseen bodies. Each host passes 615
+native checks and 864 selected original comparisons: nine returns, the actual
+null-World failure and two explosion-entry prefixes. The real FD/QX explosion
+remains unfinished; later death/attacking stores receive no completion credit.
+The sound fixture's empty WorldAccess List gives no audio-device coverage.
 
-Separate legacy-clamp controls retain 46,802 checks and 3,872 exact same-device
-SDK samples per host. The [drawing contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md) also records three loaded
-Windows Pig/Cow/Chicken profiles, each with four returned frames, two actual
-draws, first/reuse list identities and checked cleanup. Existing-player
-statistics are declared inputs. These native integration results are distinct
-from the prepared original observations.
+The new frozen creature package records 13 actual draws, six uploads, 42 lists,
+252 faces and 265 complete batches with 209 live Code bodies. The Windows
+ordinary supplement independently audits 36 inputs/four helpers/64 artifacts.
+The PB package records 17 operations and 20 constructor intervals with 117 live
+Code bodies. Its 28-input/four-helper capture is bound to a separate post-capture
+audit of 234 current outputs, without claiming capture-start output hashes.
+Creeper records 12 cases/16 live Code bodies; its 24 original output artifacts
+are separately revalidated from raw transports. Cold PB Registry initialization
+failure remains separate original-only evidence, not native cold success.
+The earlier Sheep, animal, Path and Mob packages remain immutable.
 
-The completed broad local cohort builds 93 targets per host and passes all 121
-Windows/115 Linux tests without failures, skips or sanitizer findings. All twenty
-fresh original-comparison wrappers pass, ten per host. Their final current-input
-audit checks 5,510 distinct paths. The same 2,559 C/helper/build/reference inputs
-remain unchanged through both builds and both test phases. Formatting checks
-1,746 files; six current binding tables cover 8,251 entries and 3,502 files,
-with historical metadata unchanged. [Build and tests](Build-and-tests#current-local-qualification)
-records the CTest and complete phase timings. Hosted results remain tied to
-published commits in [Draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
+All 98 selected targets build on Windows MSVC Debug and Linux
+Clang18 ASan/UBSan. All 129 Windows and 122 Linux tests pass without
+failures, skips or sanitizer findings. CTest takes 457.67/460.55 seconds;
+complete test phases including following input audits take 458.08/501.85 seconds.
+The same 2,610 compiled/helper/build/reference inputs remain unchanged
+through both builds and tests and match the committed Git blobs.
+All 26 fresh original-comparison wrappers pass, thirteen per host. A separate
+current audit verifies 4,614 resolved paths, merging Windows separators
+and `/mnt/c` aliases of the same file. Formatting checks 1,757 C files.
+Six current binding tables pass with historical metadata preserved. Hosted
+results keep their exact published-commit scope in
+[Draft PR52](https://github.com/frankischilling/minecraft-c/pull/52).
 
 The [random display observer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/world/random_display/README.md)
 executes twelve World profiles and 99 direct Block profiles through all

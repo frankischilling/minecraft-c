@@ -334,6 +334,51 @@ bool mc_entity_render_pig_saddled(mc_entity *p, bool *out, mc_entity_render_erro
     return true;
 }
 
+bool mc_entity_render_slime_size(mc_entity *p, int32_t *out, mc_entity_render_error *e) {
+    if (!start(p, out, e, "uw", "v", "()I"))
+        return false;
+    if (!mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SLIME))
+        return fail(e, MC_ENTITY_STATE_ERROR, "Entity render actual Slime receiver");
+    int8_t value;
+    if (!watch(p, 16, 6, &value, e))
+        return false;
+    *out = (int32_t)value;
+    e->site.pc = 9;
+    return true;
+}
+
+bool mc_entity_render_creeper_powered(mc_entity *p, bool *out, mc_entity_render_error *e) {
+    if (!start(p, out, e, "gb", "s", "()Z"))
+        return false;
+    if (!mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_CREEPER))
+        return fail(e, MC_ENTITY_STATE_ERROR, "Entity render actual Creeper receiver");
+    int8_t value;
+    if (!watch(p, 17, 6, &value, e))
+        return false;
+    *out = value == 1;
+    e->site.pc = 18;
+    return true;
+}
+
+bool mc_entity_render_creeper_swell(mc_entity *p, float partial, float *out,
+                                    mc_entity_render_error *e) {
+    if (!start(p, out, e, "gb", "a_", "(F)F"))
+        return false;
+    if (!mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_CREEPER) || !mc_entity_has_mob(p))
+        return fail(e, MC_ENTITY_STATE_ERROR, "Entity render actual Creeper fields");
+    const int32_t previous = p->mob->creeper_b;
+    e->site.pc = 4;
+    if (!floating(e))
+        return false;
+    const float first = (float)previous;
+    const int32_t current = p->mob->creeper_a;
+    const int32_t previous_again = p->mob->creeper_b;
+    const int32_t difference = mc_java_i32_sub(current, previous_again);
+    *out = at_fdiv(at_fadd(first, at_fmul((float)difference, partial)), 28.0f);
+    e->site.pc = 21;
+    return true;
+}
+
 static mc_entity_render_query *query_begin(mc_entity_render_error *e, mc_world_runtime *world,
                                            const char *method, const char *descriptor,
                                            int32_t caller_pc, const int32_t *args, size_t nargs,

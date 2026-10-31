@@ -34,6 +34,19 @@ mc_registry_status mc_registry_item_c_at(mc_registry_classes *classes,
                                          int32_t index, const mc_item **out,
                                          mc_registry_error *error);
 
+/* Entered actual base GM.a(I)I: read this same Item's bh at1, return4; damage
+ * is unused. This performs no initializer, table lookup, inspector operation,
+ * allocation, retain or Source phase read. A NULL receiver is the reached
+ * Source null; other receiver kinds stop at their unimplemented override.
+ * Nonnull item must be genuine live base-Item storage of this exclusive,
+ * quiescent classes owner, which the caller keeps retained through the call.
+ * out/error are disjoint from each other and all input storage; out is required
+ * and preserved on failure, error is optional and receives complete fresh
+ * diagnostics. The returned scalar owns no Item/Registry occurrence. */
+mc_registry_status mc_registry_item_base_icon(mc_registry_classes *classes, const mc_item *item,
+                                              int32_t damage, int32_t *out,
+                                              mc_registry_error *error);
+
 /* Every public operation requires a quiescent exclusive Registry and rejects
  * entered initialization with BUSY, including c_at. Existing admitted private
  * bootstrap recursion continues through its own APIs. No new hold is acquired;

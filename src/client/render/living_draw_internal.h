@@ -151,6 +151,18 @@ typedef struct mc_client_living_draw_state {
     mc_client_living_draw_texture_call texture_calls[MC_CLIENT_LIVING_DRAW_TEXTURE_CALLS];
     bool flap_arguments_read, flap_math_returned;
     float flap_first, flap_second;
+    /* Values copied only after the corresponding actual virtual hook step. */
+    bool rotation_returned, prescale_returned, color_returned;
+    bool eyes_brightness_returned, slime_size_returned, slime_secondary_stored;
+    bool slime_normalize_enabled, creeper_prescale_swell_returned, creeper_color_swell_returned;
+    bool creeper_powered_age_read;
+    bool creeper_sine_returned, powered_returned[4], powered[4];
+    float eyes_brightness, eyes_alpha, squid_pitch, squid_yaw;
+    float slime_squash, slime_reciprocal, prescale[3];
+    float creeper_prescale_swell, creeper_color_swell, creeper_sine;
+    float creeper_powered_age;
+    int32_t slime_size, color;
+    uintptr_t secondary_entry_identity, secondary_stored_identity;
 } mc_client_living_draw_state;
 
 typedef struct mc_client_living_draw_error {
