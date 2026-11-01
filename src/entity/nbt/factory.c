@@ -2,6 +2,7 @@
 
 #include "../../platform/text/stdout.h"
 #include "../entity_internal.h"
+#include "../mob/internal.h"
 #include "mc/entity/minecart/minecart.h"
 
 #include <string.h>
@@ -102,12 +103,34 @@ mc_entity_nbt_status mc_entity_save_nbt(mc_entity *entity, const mc_nbt_limits *
              (root->value.compound.length == 8 || root->value.compound.length == 9 ||
               root->value.compound.length == 11))
         field_count = root->value.compound.length;
+    else if (mc_entity_has_mob(entity)) {
+        switch (entity->class_literal->kind) {
+            case MC_ENTITY_CLASS_KIND_CREEPER:
+                if (root != NULL && root->type == MC_NBT_COMPOUND &&
+                    (root->value.compound.length == 11 || root->value.compound.length == 12))
+                    field_count = root->value.compound.length;
+                break;
+            case MC_ENTITY_CLASS_KIND_SLIME:
+            case MC_ENTITY_CLASS_KIND_PIG:
+                field_count = 12;
+                break;
+            case MC_ENTITY_CLASS_KIND_SHEEP:
+                field_count = 13;
+                break;
+            case MC_ENTITY_CLASS_KIND_WOLF:
+                field_count = 14;
+                break;
+            default:
+                field_count = 11;
+                break;
+        }
+    }
     if (field_count == 0 || root == NULL || root->type != MC_NBT_COMPOUND ||
         root->value.compound.length != field_count) {
         fail(&frame, MC_ENTITY_NBT_NBT_FAILED, "Entity NBT Boolean save semantic shape");
         goto done;
     }
-    const mc_nbt_tag *items[12] = {&id};
+    const mc_nbt_tag *items[15] = {&id};
     for (size_t index = 0; index < field_count; ++index)
         items[index + 1] = root->value.compound.items[index];
     const mc_nbt_tag compound = {.type = MC_NBT_COMPOUND,
@@ -197,6 +220,32 @@ static bool skipped(const mc_nbt_tag *compound, mc_entity_nbt_error *frame) {
     return true;
 }
 
+/* Keep the complete direct Mob receiver out of ordinary factory frames. The
+ * result is compacted by value before this bounded call frame ends. */
+static bool construct_mob(mc_entity_classes *classes, mc_world_runtime *world,
+                          const mc_entity_class_literal *type, mc_entity **out,
+                          mc_entity_nbt_error *frame) {
+    mc_mob_error call;
+    mc_mob_status status =
+        mc_mob_allocate(classes, mc_world_runtime_registry(world), type, out, &call);
+    if (status == MC_MOB_OK)
+        status = mc_mob_construct(*out, world, &call);
+    if (status == MC_MOB_OK)
+        return true;
+    if (!mc_entity_nbt_select_mob_call_detail(frame, &call)) {
+        fail(frame, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Mob factory native diagnostic representation");
+        return false;
+    }
+    fail(frame,
+         status == MC_MOB_LIMIT             ? MC_ENTITY_NBT_LIMIT
+         : status == MC_MOB_ALLOCATION      ? MC_ENTITY_NBT_ALLOCATION_FAILED
+         : status == MC_MOB_UNSUPPORTED_FP  ? MC_ENTITY_NBT_UNSUPPORTED_FP
+         : status == MC_MOB_REGISTRY_FAILED ? MC_ENTITY_NBT_REGISTRY_FAILED
+                                            : MC_ENTITY_NBT_ENTITY_FAILED,
+         "Entity NBT actual client Mob factory constructor");
+    return false;
+}
+
 mc_entity_nbt_status mc_entity_factory_nbt(mc_entity_classes *classes, mc_world_runtime *world,
                                            const mc_nbt_tag *compound, mc_entity **out,
                                            mc_entity_nbt_error *error) {
@@ -233,15 +282,22 @@ mc_entity_nbt_status mc_entity_factory_nbt(mc_entity_classes *classes, mc_world_
         return finish(frame, error);
     }
     frame.factory_bytecode = 45;
+    const bool mob = type->source == MC_ENTITY_CLIENT && mc_entity_is_mob_kind(type->kind);
     if (type->kind != MC_ENTITY_CLASS_KIND_ITEM &&
         type->kind != MC_ENTITY_CLASS_KIND_FALLING_SAND &&
-        type->kind != MC_ENTITY_CLASS_KIND_MINECART) {
+        type->kind != MC_ENTITY_CLASS_KIND_MINECART && !mob) {
         fail(&frame, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Entity NBT factory concrete constructor");
         return finish(frame, error);
     }
     mc_entity *entity = NULL;
     mc_entity_status constructed;
-    if (type->kind == MC_ENTITY_CLASS_KIND_FALLING_SAND) {
+    if (mob) {
+        if (!construct_mob(classes, world, type, &entity, &frame)) {
+            mc_entity_release(entity);
+            return finish(frame, error);
+        }
+        constructed = MC_ENTITY_OK;
+    } else if (type->kind == MC_ENTITY_CLASS_KIND_FALLING_SAND) {
         constructed = mc_falling_entity_allocate(classes, &entity, &frame.construction);
         if (constructed == MC_ENTITY_OK)
             constructed = mc_falling_entity_construct_world(entity, world, &frame.construction);

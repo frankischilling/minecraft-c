@@ -15,18 +15,52 @@ timestamps and metadata growth ordering. Failure controls retain unclosed
 streams without an invented serializer finally. Four lower-region profiles
 pass on both hosts and have separate finite original comparisons.
 
-Windows MSVC Debug and Linux Clang18 ASan/UBSan each build twenty selected
-targets including the ordinary client. All seven World profiles pass with
-581 checks per host, alongside the region profiles and seventeen regressions.
+The client source factory now imports all eleven Overworld Mob kinds and saves
+their actual Living and species fields. Each host passes 83 native snapshots
+and 972 checks, plus 43 separate Wolf String ownership checks. The rebuilt
+Windows and Linux fixtures each match 61 common original NBT cases. Constructor
+entropy and the declared input-Z difference retain their explicit treatment;
+the original caller is a prepared NULLWorld probe, not a whole World session.
 
-Remaining Mob writers, nonempty SavedData, exception printing, ordinary
-Save-and-quit and natural gameplay restart retain separate requirements.
-The earlier loaded-World focus failures remain unresolved by this storage work.
+Windows MSVC Debug and Linux Clang18 ASan/UBSan each pass 33 selected headless
+CTests after building 34 targets, including the ordinary client. The source
+World-save test now includes eight profiles. Its session-terminal regression
+first reproduces the old rejection, then verifies passive admission of the
+known inactive `fm.b42` input, external FIS/Handler BUSY refusals and native
+cleanup. It does not invent a thrown exception or source finally-close.
+
+Nonempty SavedData, exception printing, remaining Entity subtypes and natural
+gameplay restart retain separate requirements. Earlier loaded-World focus
+failures keep their own source and environment scope.
 
 [Chunk saving](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saving.md),
 [region output](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/region-output.md)
 and [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#source-chunk-output-and-world-reload)
 record the evidence and limits.
+
+## Visible Save and quit
+
+The Windows Tiny scenario selects an authored saved World through the ordinary
+Frame/Canvas menu, loads `viewDistance:3` through GameSettings, and uses real SDK
+Escape and Pause ID1. All seven selected graphical CTests pass in 106.43 seconds;
+the save/title test includes both normal leave and session-failure cleanup.
+
+The controller snapshots files immediately before the actual leave-entering
+frame. It decodes prior Pause writes separately from the explicit save, checks
+metadata before late Chunk growth, exact backups, Player data and region records,
+then verifies a fresh title and checked retirement. The session case stops at
+the native `fm.b42` exception-allocation frontier with only App.i cleared. It
+preserves World/Player, refuses replay and restores its authored lock fault only
+after native cleanup closes the retained handle. No source exception or title
+return is credited for that failed call.
+
+This scope uses a declared saved openInventory statistic. Fresh-player notices,
+default-Far playability, Linux visible save/title, ordinary World reselection and
+complete original/native caller comparison remain unqualified.
+
+[Client saving](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-saving.md)
+and the [native record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/save_title/native-qualification.json)
+identify the executed products, source inputs and finite checks.
 
 ## Source metadata output
 
@@ -40,7 +74,7 @@ prepared metadata transport scenarios match unchanged original calls on each
 host. Separate ordinary/read-only JDI observations, primitive payload checks
 and authored stream faults keep their declared scopes. The World metadata
 callback is connected. The Chunk route has its separate native scope above;
-nonempty SavedData output, exception diagnostics, ordinary detach and a
+nonempty SavedData output, exception diagnostics, ordinary World reselection and a
 playable save session remain unfinished.
 
 [SaveHandler contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/save-handler.md#metadata-output)
@@ -54,8 +88,14 @@ Display attaches to the child after the startup Graphics calls. Component
 resize, native Frame close and nonnull MouseHelper release are connected.
 Separate menu profiles exercise hidden/visible hosting, real focus recovery,
 physical cursor positioning after resize and terminal cleanup after native
-faults. Loaded-World focus/close, source saving and extended play remain separate
-unfinished work.
+faults. The six current Windows Canvas checks pass. A separate private
+Xvfb/Openbox run passes the same six checks in 10.60 seconds with llvmpipe/Mesa
+software GL, a 4.5 core context and sanitizers. Its 64 real activation cycles
+exercise native Canvas focus, SDK input, grab and warp behavior. Owned native
+processes and private authority files are cleaned up.
+
+WSLg warp and auxiliary-window focus failures remain unresolved. Loaded-World
+native close, high-DPI/fullscreen behavior and extended play remain unqualified.
 
 The broad Windows selection retains two failed NULL-Canvas loaded tests after
 another desktop application takes focus. These results do not qualify a

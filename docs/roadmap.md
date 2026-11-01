@@ -23,8 +23,9 @@ Mob draw paths now have finite original comparisons and loaded-client
 continuations: Sheep, Pig, Cow and Chicken. Complete the seven remaining
 default families, including Skeleton's actual held Bow, then close the active
 tutorial/achievement notice and genuine Canvas focus/resize paths. Live Mob
-NBT/factory round trips, the SourceStore region-write transport and actual
-save/detach/reload remain separate persistence dependencies. Ordinary click/use,
+[NBT/factory round trips](entity/mob-nbt.md) and the SourceStore region-write
+transport now have bounded authored World save/reload controls. Ordinary
+save/detach/reload remains a separate persistence dependency. Ordinary click/use,
 progressive mining, carried-item drawing, pickup and placement must form a
 working interaction loop. Existing movement, look and time bodies remain part
 of that real loop. The detailed current evidence and remaining limits are in

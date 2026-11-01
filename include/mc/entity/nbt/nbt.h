@@ -43,6 +43,18 @@
  * earlier slot store. Detached old h and each occurrence hold remain live until all input reads
  * finish, including failure, so input may borrow any old Stack source. Other
  * Type values leave h/push/fuel untouched. No provenance is attached.
+ * The eleven canonical client Overworld Mobs execute their actual Living
+ * Short Health/HurtTime/DeathTime/AttackTime body (missing Health defaults10),
+ * then only their evidenced own tags. Creeper reads powered Boolean; Slime
+ * reads Size Int, adds1 with Java wrap and invokes the same actual size body,
+ * including signed Byte16, full-int dimensions/health reset and position.
+ * Pig replaces Saddle Byte16 with0/1. Sheep changes Sheared then low Color
+ * nibble. Wolf changes Angry/Sitting, then sets Owner and tame only when the
+ * actual UTF16 Owner length is positive: missing/empty Owner retains both.
+ * Native Wolf String ownership copies the reached immutable span into a
+ * counted player-string owner; old/new copies overlap under limits, and its
+ * fixed text bound remains native policy, not Java OOM timing. No generic
+ * watcher setter, Mob READY gate, server mapping or later-version schema is supplied.
  * Caller retains exclusive live owners for the call. error may be NULL. */
 /* Context-aware read uses the explicitly borrowed same-owner code Registry
  * only at reached Inventory Item lookup. NULL is valid until that operation;
@@ -65,6 +77,12 @@ mc_entity_nbt_status mc_entity_read_nbt(mc_entity *entity, const mc_nbt_tag *com
  * Canonical LocalPlayer adds the actual Living/Inventory/Player/Score fields,
  * including an optional all-three spawn coordinate (16 or19 total fields).
  * It remains unnamed in Boolean c save; this direct writer supplies no id.
+ * Client Mobs add four actual Living Shorts. Creeper adds powered only when
+ * Byte17 equals1; Slime writes signed Byte16 minus1 as Size Int. Pig writes
+ * Saddle, Sheep Sheared/Color and Wolf Angry/Sitting/Owner (null emits empty
+ * String). Delegate classes add no other tags. The concrete own-field tree
+ * stays charged during final base+own copying. Semantic output excludes all
+ * retained native provenance overlays.
  * Minecart Stack records use actual fields in every live phase, with no
  * READY-only/provenance builder, ID validation, count clamp or inventory callback.
  * No id/dead/namespace/Boolean c wrapper or retained unknown tags are supplied.

@@ -855,8 +855,18 @@ static int fc_frontiers(mc_entity_source source) {
         expected.factory_bytecode = 99;
         CHECK(error.operation != NULL && fc_error_equal(&error, &expected));
     }
-    const char *const known[] = {"Skeleton", "Zombie", "Spider", "Mob"};
-    for (size_t index = 0; index < sizeof(known) / sizeof(known[0]); ++index) {
+    /* The eleven concrete client Overworld Mobs have their actual import
+     * coverage in entity.client_mob_nbt. Cold NULLWorld Skeleton's genuine
+     * Registry refusal is covered by entity.player_nbt_errors. Keep abstract
+     * Mob and all server unsupported-family cases here: these calls must leave
+     * the complete existing Entity/class/profile guard unchanged. */
+    const char *const client_known[] = {"Mob"};
+    const char *const server_known[] = {"Skeleton", "Zombie", "Spider", "Mob"};
+    const char *const *known = source == MC_ENTITY_CLIENT ? client_known : server_known;
+    const size_t known_count = source == MC_ENTITY_CLIENT
+                                   ? sizeof(client_known) / sizeof(client_known[0])
+                                   : sizeof(server_known) / sizeof(server_known[0]);
+    for (size_t index = 0; index < known_count; ++index) {
         fc_record_init(&record, known[index]);
         mc_entity *out = sentinel;
         error = fc_poison();

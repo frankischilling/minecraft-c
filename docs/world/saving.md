@@ -5,7 +5,9 @@ The source client Store writes metadata through its
 World's loader and [shared region cache](region-output.md). The actual World
 save callback follows this route. Native tests save authored loaded Worlds,
 retire their owners, then reconstruct new source Worlds from those files.
-Ordinary menu Save-and-quit and complete gameplay retain separate requirements.
+[Windows Tiny menu Save and quit](../client/world-saving.md) has separate
+normal-leave and session-failure/cleanup observations. Linux visible save/title
+and complete gameplay retain their separate requirements.
 
 [`saving/saving.h`](../../include/mc/world/runtime/saving/saving.h) writes one
 actual committed Chunk from its owning GAME World. It uses the same Store
@@ -36,10 +38,17 @@ sum94. Source QJ samples its own timestamp during commit; the callback skips
 the legacy transport's earlier clock sample.
 
 Source Entity occurrences invoke the actual Boolean `SN.c` wrapper. Supported
-Item, FallingSand and Minecart writers use current semantic fields. Missing
-live Mob writers remain explicit dependencies. Source Chest, Spawner and
-Piston output uses direct subtype fields; Chest Stack values do not pass
+Item, FallingSand, Minecart and all eleven client Overworld [Mob writers](../entity/mob-nbt.md)
+use current semantic fields. The Mob hooks retain their Living/species order,
+including Slime health reset and Wolf owner retention. Source Chest, Spawner
+and Piston output uses direct subtype fields; Chest Stack values do not pass
 through the legacy storage overlay.
+
+The Mob native fixture performs actual nonnullWorld factory/import, two full
+source saves and two reloads. Retained provenance remains separate from these
+fresh fields. The independent legacy Mob overlay entry refuses after semantic
+save rather than restoring inactive keys such as Creeper `powered`. Original
+NULLWorld hook observations and native World admission have separate scope.
 
 Unconsumed opaque Entity or TileEntity records refuse source saving before
 commit. This native safety policy prevents silent data loss while those
@@ -53,6 +62,16 @@ freeing input it may still borrow, without emitting pending bytes. A failed
 attempt blocks further loader reads and saves while permitting passive
 terminal inspection and native retirement. Reached exception-printing calls
 remain explicit diagnostic dependencies.
+
+A full-save session mismatch precedes metadata and Chunk writes. The known
+`fm.b:42` native exception-allocation prefix can reach checked terminal
+retirement while its actual FileInputStream remains open and source-unclosed.
+The [Handler contract](save-handler.md#retained-session-mismatch-and-terminal-retirement)
+limits admission to that exact inactive graph with matching File/namespace
+identities and one stream hold. Extra FileInputStream or Handler holds return
+BUSY without consuming the retained prefix. Native retirement does not invent
+`us`, a source finally-close or a resumed save. Both hosts pass the actual
+external-hold/release/retry control and preserve metadata, regions and Info size.
 
 ## Source order and effects
 

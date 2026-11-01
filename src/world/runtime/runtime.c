@@ -378,8 +378,9 @@ static mc_chunk_callback_result session(void *owner, const mc_world_save_context
     (void)context;
     mc_world_runtime *runtime = owner;
     mc_world_storage_status status;
-    if (mc_world_store_is_source(runtime->options.store)) {
-        mc_world_source_error source;
+    mc_world_source_error source = {0};
+    const bool source_call = mc_world_store_is_source(runtime->options.store);
+    if (source_call) {
         mc_world_source_status child =
             mc_world_store_source_check_session(runtime->options.store, &source);
         status = child == MC_WORLD_SOURCE_OK           ? MC_WORLD_STORAGE_OK
@@ -391,8 +392,11 @@ static mc_chunk_callback_result session(void *owner, const mc_world_save_context
         runtime_error(&runtime->last_error, status, source.operation);
     } else
         status = mc_world_store_check_session(runtime->options.store, &runtime->last_error);
-    if (status != MC_WORLD_STORAGE_OK)
+    if (status != MC_WORLD_STORAGE_OK) {
         lifecycle_cause(runtime, runtime->last_error);
+        if (source_call && runtime->lifecycle_error != NULL)
+            runtime->lifecycle_error->source_session = source;
+    }
     return status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK : MC_CHUNK_CALLBACK_FATAL;
 }
 
@@ -890,10 +894,11 @@ typedef enum lifecycle_operation {
     LIFECYCLE_FINISH_MAINTENANCE
 } lifecycle_operation;
 
-static mc_chunk_lifecycle_status lifecycle_attempt(mc_world_runtime *runtime, bool force,
-                                                   int32_t pass, bool *out,
-                                                   lifecycle_operation operation,
-                                                   mc_world_runtime_lifecycle_error *error) {
+static mc_chunk_lifecycle_status lifecycle_attempt_progress(mc_world_runtime *runtime, bool force,
+                                                            int32_t pass, bool *out,
+                                                            lifecycle_operation operation,
+                                                            mc_world_runtime_lifecycle_error *error,
+                                                            const mc_world_save_context *progress) {
     mc_world_runtime_lifecycle_error frame;
     lifecycle_error_init(&frame);
     frame.status = enter_lifecycle(runtime, &frame.cause);
@@ -907,7 +912,8 @@ static mc_chunk_lifecycle_status lifecycle_attempt(mc_world_runtime *runtime, bo
                 frame.status = mc_chunk_lifecycle_save(&runtime->lifecycle, force, out);
                 break;
             case LIFECYCLE_SAVE_WORLD:
-                frame.status = mc_world_lifecycle_save(&runtime->saving, force);
+                frame.status =
+                    mc_world_lifecycle_save(progress == NULL ? &runtime->saving : progress, force);
                 break;
             case LIFECYCLE_SAVE_CLIENT:
                 frame.status = mc_world_lifecycle_save_client(&runtime->saving, pass, out);
@@ -953,6 +959,26 @@ static mc_chunk_lifecycle_status lifecycle_attempt(mc_world_runtime *runtime, bo
     if (error != NULL)
         *error = frame;
     return frame.status;
+}
+
+static mc_chunk_lifecycle_status lifecycle_attempt(mc_world_runtime *runtime, bool force,
+                                                   int32_t pass, bool *out,
+                                                   lifecycle_operation operation,
+                                                   mc_world_runtime_lifecycle_error *error) {
+    return lifecycle_attempt_progress(runtime, force, pass, out, operation, error, NULL);
+}
+
+mc_chunk_lifecycle_status
+mc_world_runtime_save_with_progress_detailed(mc_world_runtime *runtime, bool force, void *owner,
+                                             mc_world_save_progress_callback callback,
+                                             mc_world_runtime_lifecycle_error *error) {
+    if (runtime == NULL)
+        return lifecycle_attempt(runtime, force, 0, NULL, LIFECYCLE_SAVE_WORLD, error);
+    mc_world_save_context selected = runtime->saving;
+    selected.progress = owner;
+    selected.report_progress = callback;
+    return lifecycle_attempt_progress(runtime, force, 0, NULL, LIFECYCLE_SAVE_WORLD, error,
+                                      &selected);
 }
 
 mc_chunk_lifecycle_status

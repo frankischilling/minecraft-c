@@ -39,12 +39,39 @@ function(mc_sdl_native_source_fix relative before after)
 endfunction()
 
 if(WIN32)
-    # GetForegroundWindow names the top-level Frame, never its embedded Canvas.
-    # Preserve the existing top-level path; only real native child windows need
-    # the focused HWND under their foreground root during SDL dispatch.
+    # Real OS keyboard focus belongs to the embedded SDL Canvas. Its foreground
+    # root is the decorated Frame; both HWNDs must not claim SDL focus at once.
+    # Yield only to a known SDL WS_CHILD under that SAME root. Ordinary native
+    # children/IME windows, foreign roots and popup/toplevel behavior stay intact.
+    # One original-source replacement also supplies the later helper prototype.
     mc_sdl_native_source_fix("src/video/windows/SDL_windowsevents.c"
-        "bool has_focus = (GetForegroundWindow() == hwnd);"
-        "bool has_focus = (GetForegroundWindow() == hwnd);\n    if (GetWindowLongPtrW(hwnd, GWL_STYLE) & WS_CHILD) {\n        has_focus = (GetFocus() == hwnd && GetForegroundWindow() == GetAncestor(hwnd, GA_ROOT));\n    }")
+[=[static void WIN_UpdateFocus(SDL_Window *window, bool expect_focus, LPPOINT pos)
+{
+    SDL_WindowData *data = window->internal;
+    HWND hwnd = data->hwnd;
+    bool had_focus = (SDL_GetKeyboardFocus() == window);
+    bool has_focus = (GetForegroundWindow() == hwnd);]=]
+[=[/* Native Frame/Canvas focus predicate correction; original SDL input stays unchanged. */
+static SDL_WindowData *WIN_GetWindowDataFromHWND(HWND hwnd);
+
+static void WIN_UpdateFocus(SDL_Window *window, bool expect_focus, LPPOINT pos)
+{
+    SDL_WindowData *data = window->internal;
+    HWND hwnd = data->hwnd;
+    HWND focused = GetFocus();
+    HWND foreground = GetForegroundWindow();
+    bool had_focus = (SDL_GetKeyboardFocus() == window);
+    bool has_focus = (foreground == hwnd);
+
+    if (GetWindowLongPtrW(hwnd, GWL_STYLE) & WS_CHILD) {
+        has_focus = (focused == hwnd && foreground == GetAncestor(hwnd, GA_ROOT));
+    } else if (has_focus && focused && focused != hwnd &&
+               (GetWindowLongPtrW(focused, GWL_STYLE) & WS_CHILD) &&
+               GetAncestor(focused, GA_ROOT) == hwnd && WIN_GetWindowDataFromHWND(focused)) {
+        /* The real focused SDL child owns this activation; the ancestor must
+         * not overwrite its SDL keyboard focus merely because it is foreground. */
+        has_focus = false;
+    }]=])
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     # ConfigureNotify queries can return child storage for the real Frame.
     # XQueryTree transfers that allocation even when only its parent is needed.

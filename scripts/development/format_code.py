@@ -72,7 +72,10 @@ def main():
                  "src/world/storage/source_metadata_output.inc",
                  "src/world/storage/source_region_output.inc",
                  "src/world/storage/source_chunk_save.inc",
-                 "src/world/runtime/tile_entities/source_save.inc"}
+                 "src/world/runtime/tile_entities/source_save.inc",
+                 "tests/world/runtime/saving/mob_nbt_source_support.inc",
+                 "tests/world/runtime/saving/source_session_terminal_controls.inc",
+                 "src/client/world/source_leave.inc"}
     files = sorted(path for directory in ("src", "include", "tests")
                    for path in (root / directory).rglob("*")
                    if path.is_file() and (path.suffix in (".c", ".h") or

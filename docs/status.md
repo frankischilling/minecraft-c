@@ -4,18 +4,26 @@ The source World now saves metadata and supported live Chunk records through
 its actual SaveHandler, loader and shared region cache. It writes fresh
 semantic records, explicitly closes the compressed stream, then adds region
 growth to live Info. Native tests cover full saves and new World reloads with
-Item and Chest contents. The [save contract](world/saving.md) distinguishes
-this route from legacy native storage and records its failure ownership.
-Remaining Mob writers, nonempty SavedData output, exception diagnostics and
-ordinary Save-and-quit remain unfinished. These tests do not establish a
-playable save session or complete original-world interoperability.
+Item, Chest and all eleven client Overworld [Mob records](entity/mob-nbt.md).
+The [save contract](world/saving.md) distinguishes this route from legacy
+native storage and records its failure ownership. Nonempty SavedData output
+and exception diagnostics remain unfinished. The visible Windows
+[Tiny Save and quit profiles](client/world-saving.md) now have actual native
+normal-leave and session-failure/cleanup evidence with independent disk checks.
+The session case retains the `fm.b:42` allocation frontier; it throws no `us`
+and creates no title. Linux visible save/title, default-Far playability,
+fresh-player notices and ordinary reselection remain unqualified. This does
+not establish a complete playable save session or original-world interoperability.
 
 The ordinary executable now owns a real [Frame and embedded Canvas](client/frame-canvas.md).
 Startup paints through native Graphics before attaching Display to the child.
 The menu host connects Component resize, native close and nonnull MouseHelper
 release. Focus loss/recovery and cursor positioning after a native resize have
-separate returning profiles and retained failure-prefix controls. Fullscreen,
-high-DPI behavior, loaded-World close and extended play remain unqualified.
+separate returning profiles and retained failure-prefix controls. Six current
+Windows Canvas checks pass alongside both Save and quit modes; the final six
+isolated X11/Openbox/software-GL Canvas checks also pass. Earlier WSLg warp and
+native auxiliary-window focus failures remain unresolved. Fullscreen,
+high-DPI behavior, loaded-World native close and extended play remain unqualified.
 
 The client constructs all eleven default Overworld [Mob kinds](entity/mob-construction.md),
 runs their [spawn predicates](entity/mob-spawning.md), and dispatches their actual
@@ -60,8 +68,9 @@ A selected Spider jockey retains its separate unfinished mount.
 Single-player remains pre-playable. Mob combat, storage and remaining renderers,
 further Block overrides, concrete display particles, sleeping wake transitions
 and gameplay actions remain unfinished. Active achievement and tutorial notices
-also retain an unfinished draw child. Loaded-World focus/close qualification and
-the hidden pause-screen save path remain open.
+also retain an unfinished draw child. Broader loaded-World focus/native-close
+qualification and pause-screen save cases beyond the declared Windows Tiny
+profile remain open.
 
 ## Integration qualification
 

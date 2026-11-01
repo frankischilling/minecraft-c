@@ -24,6 +24,11 @@ typedef struct mc_mob_entity_state {
     unsigned int living_pc, creature_pc, monster_pc, constructor_pc, watcher_hook_pc;
     unsigned int animal_pc, water_creature_pc;
     mc_mob_error failure;
+    /* Counted native String occurrence backing the actual Wolf watcher17
+     * after semantic NBT replacement. It is separate from source fields and
+     * constructor's borrowed eternal literal; no generic watcher ownership. */
+    mc_player_string *nbt_owner_hold;
+    size_t nbt_owner_bytes;
 } mc_mob_entity_state;
 
 typedef struct mc_mob_entity_object {
@@ -49,4 +54,6 @@ bool mc_entity_is_mob_kind(mc_entity_class_kind);
 bool mc_entity_has_mob(const mc_entity *);
 mc_entity_status mc_mob_watcher_initialize(mc_entity *, mc_entity_error *);
 void mc_mob_classes_dispose(mc_entity_classes *);
+/* Same UW.e source body, with phase/lifetime admitted by its concrete caller. */
+bool mc_mob_slime_size_held(mc_entity *, int32_t, mc_mob_error *);
 #endif

@@ -59,6 +59,17 @@ mc_world_runtime_save_chunks_detailed(mc_world_runtime *world, bool force, bool 
  * Player List and retains its explicit unsupported metadata result. */
 mc_chunk_lifecycle_status mc_world_runtime_save_detailed(mc_world_runtime *world, bool force,
                                                          mc_world_runtime_lifecycle_error *error);
+/* Actual synchronous progress argument join for fd.a(Z,yb). Copy only the
+ * canonical save context's progress owner/callback for this call; preserve its
+ * same session/metadata/auxiliary/Chunk owners, entered-World hold and typed
+ * per-attempt error. No runtime option/context is rebound. The concrete caller
+ * must invoke its actual progress owner; this seam supplies no successful
+ * callback, Loading screen or returned source result. NULL callback represents
+ * the genuine null progress argument. Owner/error remain live and disjoint. */
+mc_chunk_lifecycle_status
+mc_world_runtime_save_with_progress_detailed(mc_world_runtime *, bool force, void *progress_owner,
+                                             mc_world_save_progress_callback,
+                                             mc_world_runtime_lifecycle_error *);
 mc_chunk_lifecycle_status
 mc_world_runtime_save_client_detailed(mc_world_runtime *world, int32_t pass, bool *completed,
                                       mc_world_runtime_lifecycle_error *error);

@@ -25,6 +25,11 @@ Existing Item/Falling storage evidence retains its recorded scope and source
 binding. Original/native Minecart inventory, NBT and storage equality remains
 pending; optional unknown-field preservation is native policy.
 
+The eleven client Overworld [Mob NBT hooks](../entity/mob-nbt.md) now connect to
+actual source World factory/import and fresh semantic saves. Their separate
+native World reload and counted Wolf owner controls do not extend the historical
+Item/Falling/Minecart checkpoint or supply a legacy Mob unknown-field overlay.
+
 ## Source SaveHandler and World ownership
 
 The selected client load uses the source SaveFormat's actual

@@ -588,6 +588,21 @@ mc_java_file_status mc_java_file_stream_read_state(const mc_java_file_stream *s,
     return mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
 }
 
+mc_java_file_status mc_java_file_stream_terminal_open_admit(const mc_java_file_stream *s,
+                                                            const mc_java_files *files,
+                                                            const mc_java_file *file) {
+    if (s == NULL || files == NULL || file == NULL || s->files != files || s->file != file ||
+        file->files != files)
+        return MC_JAVA_FILE_STATE_ERROR;
+    if (s->active || s->phase == MC_JAVA_FILE_CONSTRUCTING || s->phase == MC_JAVA_FILE_RETIRING ||
+        s->holds > 1)
+        return MC_JAVA_FILE_BUSY;
+    if (s->phase != MC_JAVA_FILE_READY || s->holds != 1 || !s->armed || s->descriptor < 0 ||
+        s->source_close_reached || s->source_close_succeeded || file->state.holds < 2)
+        return MC_JAVA_FILE_STATE_ERROR;
+    return MC_JAVA_FILE_OK;
+}
+
 mc_java_file_status mc_java_file_mkdir(mc_java_file *file, bool *out, mc_java_file_error *e) {
     if (out == NULL)
         return mc_file_result(e, MC_JAVA_FILE_INVALID_ARGUMENT, "File mkdir output", 0);

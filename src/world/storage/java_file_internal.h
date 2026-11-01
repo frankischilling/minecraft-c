@@ -47,6 +47,13 @@ struct mc_java_file_stream {
     bool active, source_close_reached, source_close_succeeded;
 };
 
+/* Passive native ownership check for an OPEN input retired by its containing
+ * owner. The actual File/namespace must match and the one stream occurrence
+ * must be exclusive. No source close, IO, release or diagnostic mutation. */
+mc_java_file_status mc_java_file_stream_terminal_open_admit(const mc_java_file_stream *,
+                                                            const mc_java_files *,
+                                                            const mc_java_file *);
+
 /* Entrants/waiters must already have an externally live counted occurrence.
  * These guards cannot make a stale borrowed pointer safe. Same File/stream/
  * array mutation remains exclusively handed off; only namespace lifetime and

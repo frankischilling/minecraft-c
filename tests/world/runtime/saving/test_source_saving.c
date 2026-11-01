@@ -10,6 +10,7 @@
 #include "mc/world/storage/source_handler.h"
 #include "mc/world/storage/source_region_output.h"
 #include "platform/time/millis.h"
+#include "world/runtime/source_terminal_internal.h"
 
 #ifdef _MSC_VER
 #include <share.h>
@@ -402,17 +403,28 @@ static int ss_failure(source_save_fixture *s, const char *mode) {
     return ss_stop(s);
 }
 
+#include "source_session_terminal_controls.inc"
+
 int main(int argc, char **argv) {
     VERIFY(argc == 3);
     source_save_fixture *s = calloc(1, sizeof(*s));
     VERIFY(s != NULL && ss_setup(s, argv[1]) == 0 && ss_open(s) == 0);
     VERIFY(ss_event(s, "loaded") == 0);
     const bool empty = strcmp(argv[2], "empty") == 0, objects = strcmp(argv[2], "item-chest") == 0;
-    VERIFY(empty || objects || strcmp(argv[2], "session-mismatch") == 0 ||
+    const bool terminal = strcmp(argv[2], "session-terminal") == 0;
+    VERIFY(empty || objects || terminal || strcmp(argv[2], "session-mismatch") == 0 ||
            strcmp(argv[2], "opaque") == 0 || strcmp(argv[2], "null-stack") == 0 ||
            strcmp(argv[2], "null-m") == 0 || strcmp(argv[2], "null-l") == 0);
-    VERIFY((empty || objects ? ss_success(s, objects) : ss_failure(s, argv[2])) == 0 &&
-           ss_finish(s) == 0);
+    if (terminal) {
+        const int result = ss_session_terminal(s);
+        VERIFY(ss_finish(s) == 0);
+        free(s);
+        s = NULL;
+        VERIFY(result == 0);
+    } else {
+        VERIFY((empty || objects ? ss_success(s, objects) : ss_failure(s, argv[2])) == 0 &&
+               ss_finish(s) == 0);
+    }
     printf("{\"event\":\"complete\",\"mode\":\"%s\",\"checks\":%u,\"cleanup\":1,\"reload\":%d}\n",
            argv[2], checks, empty || objects);
     free(s);

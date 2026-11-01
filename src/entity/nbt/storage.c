@@ -2,6 +2,8 @@
 
 #include "../entity_internal.h"
 #include "../minecart/storage_internal.h"
+#include "../mob/internal.h"
+#include "../mob/nbt_internal.h"
 #include "mc/storage/nbt/overlay.h"
 
 #include <stdlib.h>
@@ -60,6 +62,10 @@ mc_entity_nbt_status mc_entity_storage_native_bytes(const mc_entity *entity, siz
         return publish(frame, error);
     }
     size_t bytes = mc_entity_native_bytes(entity);
+    if (!add_size(&bytes, mc_mob_nbt_owner_bytes(entity))) {
+        fail(&frame, MC_ENTITY_NBT_LIMIT, "Mob storage native owner String extent");
+        return publish(frame, error);
+    }
     if (!add_size(&bytes, mc_nbt_tree_allocation_bytes(entity->storage_source))) {
         fail(&frame, MC_ENTITY_NBT_LIMIT, "Entity storage source byte extent");
         return publish(frame, error);
@@ -98,7 +104,8 @@ mc_entity_nbt_status mc_entity_preserve_source(mc_entity *entity, const mc_nbt_t
         return publish(frame, error);
     }
     const bool item_entity = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM);
-    if (!item_entity && !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND)) {
+    if (!item_entity && !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
+        !mc_entity_has_mob(entity)) {
         fail(&frame, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Entity storage provenance concrete type");
         return publish(frame, error);
     }
@@ -135,7 +142,7 @@ mc_entity_nbt_status mc_entity_preserve_source(mc_entity *entity, const mc_nbt_t
         return publish(frame, error);
     }
     if (!item_entity) {
-        /* FallingSand owns only this independent source tree. No Item getter,
+        /* FallingSand and Mobs own only this independent source tree. No Item getter,
          * Stack admission, Stack attachment or subtype field store is reached. */
         mc_nbt_tree *old_source = entity->storage_source;
         entity->storage_source = source;
@@ -239,6 +246,14 @@ mc_entity_nbt_status mc_entity_save_storage_nbt(mc_entity *entity, const mc_nbt_
         return publish(mc_entity_nbt_empty_error(), error);
     }
     const mc_nbt_tag *known = mc_nbt_tree_root(semantic);
+    if (mc_entity_has_mob(entity)) {
+        /* Source World saving uses the semantic result directly. The separate
+         * native archive overlay would need class-specific inactive-key rules
+         * (notably an absent Creeper powered tag); do not resurrect old keys. */
+        mc_nbt_tree_free(semantic);
+        fail(&frame, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Mob native overlay save policy");
+        return publish(frame, error);
+    }
     const bool item_entity = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM);
     const bool falling_entity = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND);
     const mc_nbt_tag *known_item = item_entity ? mc_nbt_compound_get(known, item_units, 4) : NULL;

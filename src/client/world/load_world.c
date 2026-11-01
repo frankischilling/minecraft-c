@@ -27,6 +27,7 @@
 #include "mc/statistics/registry/registry.h"
 #include "mc/world/runtime/entities.h"
 #include "mc/world/runtime/loading/player.h"
+#include "mc/world/runtime/saving/saving.h"
 #include "mc/world/runtime/source_construction.h"
 #include "prepare_world.h"
 #include "render_global_access.h"
@@ -45,11 +46,12 @@ struct mc_client_world_load_classes {
     mc_client_loading_classes *gui;
     size_t calls;
     bool app_borrow, active, retiring;
+    mc_player_string *saving_chunks; /* Lazy actual FD constant in selected class-loader profile. */
 };
 
 typedef struct change_prefix {
     bool stats_b_returned, stats_c_returned, i_stored, start_returned, message_returned;
-    bool stream_returned, f_stored, h_stored, P_stored, source_returned;
+    bool stream_returned, previous_save_returned, f_stored, h_stored, P_stored, source_returned;
     mc_client_stats_error statistics;
     mc_client_stats_report statistics_report;
     mc_client_stats_file_error statistics_file;
@@ -57,6 +59,17 @@ typedef struct change_prefix {
     mc_sound_error sound;
     mc_sound_manager_report sound_report;
 } change_prefix;
+
+typedef struct source_leave {
+    struct source_leave *next;
+    change_prefix prefix;
+    mc_client_world_load_error failure;
+    mc_world_runtime_lifecycle_error saving;
+    mc_client_loading_error level, chunks;
+    mc_client_loading_screen *progress; /* Actual fd.a(yb) argument hold. */
+    bool level_returned, chunks_returned;
+    int pc;
+} source_leave;
 
 typedef struct captured_format {
     mc_client_save_format *owner;
@@ -105,6 +118,8 @@ struct mc_client_world_load_call {
     mc_world_player_load_error player_load;
     mc_world_access_failure captured_player_failure;
     mc_client_entity_renderer_pick_error pick_cleanup;
+    source_leave *leaves, *active_leave;
+    size_t leave_count;
 };
 
 static mc_client_world_load_site site(const char *method, const char *descriptor, int pc) {
@@ -119,7 +134,9 @@ static mc_client_world_load_status fail(mc_client_world_load_call *call,
     call->failure.site = site(method, descriptor, pc);
     call->failure.native_policy = status != MC_CLIENT_WORLD_LOAD_NULL_REFERENCE;
     if (strcmp(descriptor, CHANGE_DESC) == 0 || strcmp(descriptor, CONVERT_DESC) == 0)
-        call->failure.caller = site("a", LOAD_DESC, call->state.last_outer_pc);
+        call->failure.caller = call->active_leave == NULL
+                                   ? site("a", LOAD_DESC, call->state.last_outer_pc)
+                                   : site("a", "(Lfd;)V", 4);
     return status;
 }
 
@@ -217,6 +234,7 @@ mc_client_world_load_classes_retire(mc_client_world_load_classes **slot) {
     }
     if (!mc_client_application_screen_release(classes->app, classes->app_borrow))
         return MC_CLIENT_WORLD_LOAD_BUSY;
+    mc_player_string_release(classes->saving_chunks);
     free(classes);
     *slot = NULL;
     return MC_CLIENT_WORLD_LOAD_OK;
@@ -233,8 +251,8 @@ mc_client_world_load_classes_terminal_end(mc_client_world_load_classes *classes)
 }
 
 static bool loading(mc_client_world_load_call *call, mc_client_loading_screen *receiver,
-                    mc_player_string *text, bool start, const char *method, const char *descriptor,
-                    int pc, mc_client_loading_error *error) {
+                    mc_player_string *text, int operation, const char *method,
+                    const char *descriptor, int pc, mc_client_loading_error *error) {
     if (receiver == NULL) {
         fail(call, MC_CLIENT_WORLD_LOAD_NULL_REFERENCE, "actual mk null receiver", method,
              descriptor, pc);
@@ -249,9 +267,10 @@ static bool loading(mc_client_world_load_call *call, mc_client_loading_screen *r
     call->pending_loading_owned_call = false;
     mc_client_loading_call_state before = {0};
     (void)mc_client_loading_screen_call_inspect(receiver, &before);
-    mc_client_loading_status status = start
-                                          ? mc_client_loading_screen_start(receiver, text, error)
-                                          : mc_client_loading_screen_message(receiver, text, error);
+    mc_client_loading_status status =
+        operation == 2   ? mc_client_loading_screen_allow_stopped(receiver, text, error)
+        : operation == 1 ? mc_client_loading_screen_start(receiver, text, error)
+                         : mc_client_loading_screen_message(receiver, text, error);
     mc_client_loading_call_state after = {0};
     if (mc_client_loading_screen_call_inspect(receiver, &after))
         call->pending_loading_owned_call =
@@ -261,11 +280,14 @@ static bool loading(mc_client_world_load_call *call, mc_client_loading_screen *r
         call->failure.child = (mc_client_world_load_site){
             error->site.class_name, error->site.method, error->site.descriptor, error->site.pc};
         fail(call,
-             status == MC_CLIENT_LOADING_BUSY ? MC_CLIENT_WORLD_LOAD_BUSY
+             status == MC_CLIENT_LOADING_BUSY             ? MC_CLIENT_WORLD_LOAD_BUSY
+             : status == MC_CLIENT_LOADING_NULL_REFERENCE ? MC_CLIENT_WORLD_LOAD_NULL_REFERENCE
              : status == MC_CLIENT_LOADING_UNIMPLEMENTED_DEPENDENCY
                  ? MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED
                  : MC_CLIENT_WORLD_LOAD_CHILD_FAILED,
              error->operation, method, descriptor, pc);
+        if (status == MC_CLIENT_LOADING_STOPPED_ERROR)
+            call->failure.native_policy = false;
         return false;
     }
     if (mc_client_loading_screen_release(receiver) != MC_CLIENT_LOADING_OK) {
@@ -278,10 +300,13 @@ static bool loading(mc_client_world_load_call *call, mc_client_loading_screen *r
     return true;
 }
 
+static bool previous_world_save(mc_client_world_load_call *);
+static bool source_app_slots(const mc_client_world_load_call *);
+
 static bool change_prefix_run(mc_client_world_load_call *call, mc_world_runtime *world,
                               mc_player_string *text, size_t index) {
     client_application *app = call->classes->app;
-    change_prefix *prefix = &call->changes[index];
+    change_prefix *prefix = index == 2 ? &call->active_leave->prefix : &call->changes[index];
     call->state.last_change_pc = 4;
     if (app->stats_writer == NULL) {
         change_fail(call, MC_CLIENT_WORLD_LOAD_NULL_REFERENCE, "actual xi.b null receiver", 4);
@@ -315,7 +340,8 @@ static bool change_prefix_run(mc_client_world_load_call *call, mc_world_runtime 
     }
     prefix->stats_c_returned = true;
     call->state.last_change_pc = 16;
-    if (app->i != NULL) {
+    if (app->i != NULL && (index != 2 || app->i != call->i_occurrence ||
+                           app->view_occurrence != call->i_occurrence)) {
         change_fail(call, MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED,
                     "earlier LivingEntity occurrence outside selected closure", 16);
         return false;
@@ -325,6 +351,10 @@ static bool change_prefix_run(mc_client_world_load_call *call, mc_world_runtime 
         return false;
     }
     prefix->i_stored = true;
+    if (index == 2) {
+        call->i_occurrence = NULL;
+        call->state.leave.i_cleared = true;
+    }
     if (index == 0)
         call->state.initial_i_cleared = true;
     call->state.last_change_pc = 24;
@@ -352,9 +382,14 @@ static bool change_prefix_run(mc_client_world_load_call *call, mc_world_runtime 
     }
     prefix->stream_returned = true;
     if (app->active_world != NULL) {
-        change_fail(call, MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED,
-                    "actual previous World save with LoadingScreen", 64);
-        return false;
+        if (index != 2) {
+            change_fail(call, MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED,
+                        "actual previous World save with LoadingScreen", 64);
+            return false;
+        }
+        if (!previous_world_save(call))
+            return false;
+        prefix->previous_save_returned = true;
     }
     call->state.last_change_pc = 69;
     if (mc_client_application_publish_world(app, world) != MC_EFFECT_RENDERER_OK) {
@@ -362,6 +397,10 @@ static bool change_prefix_run(mc_client_world_load_call *call, mc_world_runtime 
         return false;
     }
     prefix->f_stored = true;
+    if (index == 2) {
+        call->world_slot_owned = false;
+        call->state.leave.f_cleared = true;
+    }
     if (world != NULL) {
         call->world_slot_owned = true;
         call->state.world_published = true;
@@ -393,27 +432,33 @@ static bool controller_failure(mc_client_world_load_call *call, int pc) {
     return false;
 }
 
-static bool change_world(mc_client_world_load_call *call, mc_world_runtime *world,
-                         mc_player_string *text) {
-    const size_t index = world == NULL ? 0 : 1;
+static bool change_world_at(mc_client_world_load_call *call, mc_world_runtime *world,
+                            mc_player_string *text, size_t index) {
     client_application *app = call->classes->app;
     if (!change_prefix_run(call, world, text, index))
         return false;
     if (world == NULL) {
         call->state.last_change_pc = 355;
-        if (app->h != NULL) {
+        if (app->h != NULL && (index != 2 || app->h != call->h_occurrence)) {
             change_fail(call, MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED,
                         "earlier LocalPlayer occurrence outside selected closure", 355);
             return false;
         }
         app->h = NULL;
-        call->changes[0].h_stored = true;
-        call->state.initial_h_cleared = true;
+        change_prefix *prefix = index == 2 ? &call->active_leave->prefix : &call->changes[index];
+        prefix->h_stored = true;
+        if (index == 2) {
+            mc_entity_release(call->h_occurrence);
+            call->h_occurrence = NULL;
+            call->state.leave.h_cleared = true;
+        } else
+            call->state.initial_h_cleared = true;
         ++call->state.gc_requests; /* Source System.gc358, advisory native request. */
         app->P = 0;
-        call->changes[0].P_stored = true;
-        call->state.initial_P_stored = true;
-        call->changes[0].source_returned = true;
+        prefix->P_stored = true;
+        if (index == 0)
+            call->state.initial_P_stored = true;
+        prefix->source_returned = true;
         call->state.last_change_pc = 366;
         return true;
     }
@@ -844,7 +889,7 @@ static bool convert(mc_client_world_load_call *call) {
 static void run(mc_client_world_load_call *call) {
     client_application *app = call->classes->app;
     call->state.last_outer_pc = 2;
-    if (!change_world(call, NULL, mc_client_loading_classes_empty(call->classes->gui)))
+    if (!change_world_at(call, NULL, mc_client_loading_classes_empty(call->classes->gui), 0))
         return;
     call->state.initial_detach_returned = true;
     ++call->state.gc_requests; /* Actual outer gc5; no JVM collector is executed. */
@@ -963,7 +1008,7 @@ static void run(mc_client_world_load_call *call) {
                         fields.s ? 92 : 125, &call->level_text))
         return;
     call->state.last_outer_pc = fields.s ? 94 : 127;
-    if (!change_world(call, call->state.world, call->level_text))
+    if (!change_world_at(call, call->state.world, call->level_text, 1))
         return;
     call->state.last_outer_pc = 130;
     call->state.source_returned = true;
@@ -1013,6 +1058,11 @@ bool mc_client_world_load_inspect(const mc_client_world_load_call *call,
     out->prepare = call->prepare;
     out->failure = &call->failure;
     out->cleanup = &call->cleanup;
+    if (call->leaves != NULL) {
+        out->leave.pc = call->leaves->pc;
+        out->leave.failure = &call->leaves->failure;
+        out->leave.saving = &call->leaves->saving;
+    }
     return true;
 }
 
@@ -1074,10 +1124,20 @@ static mc_client_world_load_status cleanup_prefix(mc_client_world_load_call *cal
          * original caller alone owns that retirement right; only the captured
          * native mk occurrence belongs to this load attempt in that case. */
         call->failure.loading = NULL;
+        if (call->leaves != NULL)
+            call->leaves->failure.loading = NULL;
         if (mc_client_loading_screen_release(call->pending_loading) != MC_CLIENT_LOADING_OK)
             return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
                                 "captured Loading occurrence release");
         call->pending_loading = NULL;
+    }
+    for (source_leave *left = call->leaves; left != NULL; left = left->next) {
+        if (left->progress != NULL) {
+            if (mc_client_loading_screen_release(left->progress) != MC_CLIENT_LOADING_OK)
+                return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
+                                    "captured source save progress argument native release");
+            left->progress = NULL;
+        }
     }
     mc_world_access_failure_release(&call->captured_player_failure);
     call->player_load.publication.world_access_failure = (mc_world_access_failure){0};
@@ -1106,7 +1166,7 @@ static mc_client_world_load_status cleanup_prefix(mc_client_world_load_call *cal
         if (call->state.terminal_prepare_selected)
             call->render_owner = NULL; /* This terminal N source view has ended. */
     }
-    if (call->world_slot_owned && app->t != NULL &&
+    if ((call->world_slot_owned || call->state.leave.started) && app->t != NULL &&
         mc_client_entity_renderer_pick_detach(app->t, &call->pick_cleanup) != MC_CLIENT_PICK_OK) {
         call->cleanup.picking = &call->pick_cleanup;
         return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
@@ -1319,11 +1379,8 @@ mc_world_storage_status mc_client_world_load_terminal_classify(
             !call->state.world_published || !call->state.player_published ||
             !call->state.input_published || !call->state.view_published ||
             call->state.handler == NULL || call->state.player == NULL ||
-            call->state.input == NULL || !call->world_slot_owned || !call->effects_world_owned ||
+            call->state.input == NULL || !source_app_slots(call) || !call->effects_world_owned ||
             !call->effects_held || call->effects_owner == NULL || call->render_owner != NULL ||
-            call->h_occurrence != call->state.player || call->i_occurrence != call->state.player ||
-            app->active_world != call->state.world || app->h != call->state.player ||
-            app->i != call->state.player || app->view_occurrence != call->state.player ||
             mc_world_runtime_construction_get(call->state.world, &world) != MC_WORLD_STORAGE_OK ||
             world.mode != MC_WORLD_RUNTIME_GAME || world.phase != MC_WORLD_RUNTIME_READY ||
             world.entry != MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE)
@@ -1421,12 +1478,8 @@ mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
         app->effect_renderer_constructing || app->startup->rendering->active)
         return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
                                          "Load terminal live inactive startup/rendering owners");
-    if (call->h_occurrence != call->state.player || call->i_occurrence != call->state.player ||
-        app->h != call->h_occurrence || app->i != call->i_occurrence ||
-        app->view_occurrence != call->i_occurrence || !call->world_slot_owned ||
-        app->active_world != call->state.world || !call->effects_world_owned ||
-        !call->effects_held || call->effects_owner == NULL ||
-        app->effect_renderer != call->effects_owner ||
+    if (!source_app_slots(call) || !call->effects_world_owned || !call->effects_held ||
+        call->effects_owner == NULL || app->effect_renderer != call->effects_owner ||
         app->effect_renderer_retained != call->effects_owner ||
         app->startup->rendering->particle != call->effects_owner)
         return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
@@ -1518,8 +1571,9 @@ mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
 
     const mc_world_terminal_entity_anchor fixed_entities[] = {
         {&call->state.player}, {&call->h_occurrence}, {&app->view_occurrence}};
-    const mc_world_terminal_world_anchor worlds[] = {{&app->active_world},
-                                                     {effects_view.world_slot}};
+    const mc_world_terminal_world_anchor worlds[] = {{effects_view.world_slot},
+                                                     {&app->active_world}};
+    const size_t world_count = call->world_slot_owned ? 2u : 1u;
     const size_t fixed_count = sizeof(fixed_entities) / sizeof(fixed_entities[0]);
     mc_world_terminal_limits bounded =
         limits == NULL ? mc_world_runtime_terminal_default_limits() : *limits;
@@ -1550,8 +1604,7 @@ mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
          * Reserve their complete native allocation from the same peak bound. */
         bounded.max_bytes -= anchor_bytes;
     }
-    const mc_world_terminal_anchors anchors = {entities, entity_count, worlds,
-                                               sizeof(worlds) / sizeof(worlds[0])};
+    const mc_world_terminal_anchors anchors = {entities, entity_count, worlds, world_count};
     source_status =
         mc_world_runtime_terminal_admit_owned(call->state.world, &anchors, &bounded, out, error);
     free(allocated);
@@ -1739,9 +1792,16 @@ mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_cal
         mc_world_info_name_release(call->state.folder);
     if (call->display_held)
         mc_world_info_name_release(call->state.display);
+    while (call->leaves != NULL) {
+        source_leave *next = call->leaves->next;
+        free(call->leaves);
+        call->leaves = next;
+    }
     --call->classes->calls;
     call->classes->active = false;
     free(call);
     *slot = NULL;
     return MC_CLIENT_WORLD_LOAD_OK;
 }
+
+#include "source_leave.inc"

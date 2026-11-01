@@ -23,21 +23,25 @@ mc_client_world_load_classes_terminal_validate(const mc_client_world_load_classe
 /* Classify this actual prepared call without authorizing World destruction.
  * EMPTY_STORAGE requires no acquired or consumed World/Handler/Player/Input
  * graph and no captured Format-owned Handler. Owned non-Handler Format prefixes
- * may remain for the existing checked cleanup. SELECTED_LOAD requires an intact
- * successful selected load; the existing strict admission must still run fresh.
- * Partial/consumed tails remain unsupported. out is required, error optional;
+ * may remain for the existing checked cleanup. SELECTED_LOAD requires a
+ * successful selected load and either its original App slots or only the exact
+ * i16/f69/h355 stores traced by actual source leave calls. A failed leave may
+ * retain its reached prefix; no source call is replayed. The existing strict
+ * admission must still run fresh. Other partial/consumed tails remain unsupported.
+ * out is required, error optional;
  * both are disjoint from owners/each other, and failure preserves *out. */
 mc_world_storage_status mc_client_world_load_terminal_classify(
     const mc_client_world_load_call *, const mc_client_world_load_classes *expected_classes,
     mc_client_terminal_storage_scope *out, mc_world_storage_error *);
 
-/* Passive first-scope admission for a fully published selected World after the
+/* Passive first-scope admission for a successful selected World after the
  * real terminal prefix. The transition owner supplies the address of its actual
  * owned base-controller slot, never App.controller's borrowed source alias.
- * Other captured controllers, failed/partial loads and partially consumed tails
- * remain unsupported. This checks actual controller/effect/Input occurrences
- * and passes actual Entity/World owning slots to the lower audit. The Handler
- * audit counts the Load slot and the actual World/HC/loader Store slots while
+ * Other captured controllers, failed/partial loads and untraced consumed tails
+ * remain unsupported. Actual leave stores may have consumed App.i/f/h, while
+ * the original null-target branch keeps N/DN World references. This checks actual
+ * controller/effect/Input occurrences and passes actual Entity/World owning slots to the lower
+ * audit. The Handler audit counts the Load slot and the actual World/HC/loader Store slots while
  * checking the loader's independent holds and source input quiescence. No permission
  * is cached and no owner, source failure or cleanup receipt changes. Outputs
  * must be disjoint; out is required and error is optional. Keep the exclusive

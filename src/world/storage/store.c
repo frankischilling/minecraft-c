@@ -7,6 +7,7 @@
 #include "compressed_output_internal.h"
 #include "files.h"
 #include "generated_internal.h"
+#include "java_file_internal.h"
 #include "mc/core/java/java.h"
 #include "metadata_internal.h"
 #include "objects_internal.h"
@@ -2255,6 +2256,71 @@ static mc_world_storage_status store_terminal_source_file(const mc_java_file *fi
     return MC_WORLD_STORAGE_OK;
 }
 
+static bool store_terminal_session_site(mc_world_source_site site, int pc) {
+    return site.class_name != NULL && strcmp(site.class_name, "fm") == 0 && site.method != NULL &&
+           strcmp(site.method, "b") == 0 && site.descriptor != NULL &&
+           strcmp(site.descriptor, "()V") == 0 && site.pc == pc;
+}
+
+static mc_world_storage_status store_terminal_session_mismatch(const mc_world_store_source *source,
+                                                               mc_world_storage_error *error) {
+    const mc_world_source_input_state *input = source->input;
+    const mc_world_source_error *failure = &source->failure;
+    /* Actual fm.b compares e35, then stops at NEW us42 before any throw51,
+     * close53/finally61 or return80. This is only native owner retirement. */
+    if (input->call != MC_WORLD_SOURCE_INPUT_SESSION || input->last_pc != 42 ||
+        input->close_pc != -1 || !input->input_constructed || !input->token_read ||
+        input->token_matches || input->observed_token == source->state.source_e || input->closed ||
+        input->source_returned || input->old_file || input->exists || input->parsed ||
+        input->output_transferred || input->candidate != NULL || input->stream == NULL ||
+        input->reader == NULL || input->gzip != NULL || input->document != NULL ||
+        input->data != NULL || input->info != NULL || input->file == source->state.source_b ||
+        input->file == source->state.source_c || input->file == source->state.source_d ||
+        input->file == source->state.session_file ||
+        failure->status != MC_WORLD_SOURCE_UNIMPLEMENTED || !failure->native_policy ||
+        !failure->session_mismatch || failure->source_exception || failure->caught_io ||
+        failure->caught_exception || failure->diagnostic_frontier ||
+        failure->exception_class != NULL || failure->frame_count != 1 ||
+        !store_terminal_session_site(failure->frames[0], 42) ||
+        !store_terminal_session_site(failure->cause_site, 35))
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal source incomplete session mismatch prefix");
+    if (source->output != NULL &&
+        (input->file == source->output->new_file || input->file == source->output->old_file ||
+         input->file == source->output->current_file))
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal source aliased mismatch input File");
+    mc_nbt_stream_state reader;
+    if (mc_nbt_stream_state_read(input->reader, &reader, NULL) != MC_NBT_OK)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal source mismatch DataInput owner");
+    if (reader.active || reader.phase == MC_NBT_STREAM_CONSTRUCTING ||
+        reader.phase == MC_NBT_STREAM_PARSING || reader.phase == MC_NBT_STREAM_RETIRING)
+        return store_error(error, MC_WORLD_STORAGE_BUSY,
+                           "Store terminal source active mismatch DataInput");
+    if (reader.phase != MC_NBT_STREAM_READY || reader.source_in != input->stream ||
+        reader.position != 8 || reader.close_calls != 0 || reader.bytearr == NULL ||
+        reader.chararr == NULL || reader.read_buffer == NULL || reader.bytearr_capacity != 80 ||
+        reader.chararr_capacity != 80 || reader.last_data_input_store != 26 ||
+        reader.candidate != NULL || reader.last_tag != NULL || reader.pending_tag != NULL ||
+        reader.last_collection != NULL || reader.last_array != NULL)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal source incomplete mismatch DataInput");
+    const mc_java_file_status admitted =
+        mc_java_file_stream_terminal_open_admit(input->stream, source->classes->files, input->file);
+    if (admitted != MC_JAVA_FILE_OK)
+        return store_error(error,
+                           admitted == MC_JAVA_FILE_BUSY ? MC_WORLD_STORAGE_BUSY
+                                                         : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal source mismatch FileInputStream ownership");
+    mc_java_file_stream_state stream;
+    if (mc_java_file_stream_read_state(input->stream, &stream, NULL) != MC_JAVA_FILE_OK ||
+        stream.native_bytes_read != 8)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store terminal source mismatch token extent");
+    return MC_WORLD_STORAGE_OK;
+}
+
 static mc_world_storage_status store_terminal_source_input(const mc_world_store_source *source,
                                                            mc_world_storage_error *error) {
     const mc_world_source_input_state *input = source->input;
@@ -2267,6 +2333,9 @@ static mc_world_storage_status store_terminal_source_input(const mc_world_store_
         store_terminal_source_file(input->file, source->classes->files, error);
     if (status != MC_WORLD_STORAGE_OK)
         return status;
+    if (input->call == MC_WORLD_SOURCE_INPUT_SESSION && input->last_pc == 42 &&
+        !input->source_returned)
+        return store_terminal_session_mismatch(source, error);
     if (input->stream != NULL) {
         mc_java_file_stream_state stream;
         if (mc_java_file_stream_read_state(input->stream, &stream, NULL) != MC_JAVA_FILE_OK)

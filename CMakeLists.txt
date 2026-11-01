@@ -745,6 +745,7 @@ add_library(mc_simulation STATIC
     src/entity/entity.c
     src/entity/living/construction.c
     src/entity/mob/construction.c
+    src/entity/mob/nbt.c
     src/entity/player/construction.c
     src/entity/player/input.c
     src/entity/player/session.c
@@ -5516,6 +5517,8 @@ if(BUILD_TESTING)
     include(cmake/tests/source_region_output.cmake)
     include(cmake/tests/source_region_output_reference.cmake)
     include(cmake/tests/source_world_saving.cmake)
+    include(cmake/tests/client_mob_nbt.cmake)
+    include(cmake/tests/client_mob_nbt_reference.cmake)
     target_link_libraries(mc_test_source_handler PRIVATE mc_simulation)
 endif()
 

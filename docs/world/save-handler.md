@@ -22,6 +22,34 @@ finally-close effects. A mismatch or caught I/O error reaches the original
 exception allocation, which remains an explicit dependency. Native cleanup
 never deletes the lock, invents a source exception, or repeats a consumed close.
 
+## Retained session mismatch and terminal retirement
+
+A real token mismatch stops the source session method at `fm.b:42`, before
+allocating the unfinished `us` exception. Its native failure retains the token
+comparison at35, an inactive DataInput at position eight, zero reader close
+calls and an actually open FileInputStream. No thrown exception, source
+finally-close, return or repaired token is credited.
+
+Native terminal admission recognizes only that exact retained prefix. It checks
+the typed File namespace and File identities, completed reader scratch owners,
+eight bytes actually read, the unclosed native descriptor and one exclusive
+FileInputStream hold. It also rejects aliases with metadata/output Files.
+Active or independently retained stream occurrences return BUSY; extra Handler
+holds retain their existing BUSY rule. The admission helper only inspects
+state. It performs no I/O, source close, release or diagnostic mutation.
+
+Actual terminal retirement later releases the retained native owners. In the
+Windows UI control the handle is closed before the fixture restores and reads
+back the original exact eight-byte token. The source failed call remains
+failed. The [native save/title record](../client/world-saving.md) separates this
+cleanup from normal leave and fresh-title construction.
+
+The source-World regression first fails against the old runtime on both hosts,
+then passes the eight default profiles on Windows and sanitized Linux. Real
+external FileInputStream and Handler holds each produce BUSY with passive state
+unchanged; releasing them permits retry. Metadata, region bytes and Info size
+are preserved. The token is restored only after final native retirement.
+
 ## Metadata output
 
 The World completes its actual first-Player selection and Info record before
@@ -61,7 +89,8 @@ ordinary and read-only JDI observations, direct JDK payload output and authored
 native/original fault controls retain distinct scopes. The
 [test record](../testing.md#source-metadata-output) and
 [comparison recipe](../../tests/reference/world/source_metadata_output/comparison-README.md)
-describe the exact boundaries. A loaded World save/reload is not established.
+describe the exact boundaries. These metadata-only controls do not establish
+a loaded World save/reload.
 
 ## Source chunk loader
 

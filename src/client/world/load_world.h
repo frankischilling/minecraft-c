@@ -34,6 +34,7 @@ typedef struct mc_client_render_global_error mc_client_render_global_error;
 typedef struct mc_client_entity_renderer_pick_error mc_client_entity_renderer_pick_error;
 typedef struct mc_effect_renderer_error mc_effect_renderer_error;
 typedef struct mc_world_player_load_error mc_world_player_load_error;
+typedef struct mc_world_runtime_lifecycle_error mc_world_runtime_lifecycle_error;
 
 typedef enum mc_client_world_load_status {
     MC_CLIENT_WORLD_LOAD_OK,
@@ -81,7 +82,17 @@ typedef struct mc_client_world_load_error {
     const mc_client_entity_renderer_pick_error *picking;
     const mc_effect_renderer_error *effects;
     const mc_world_player_load_error *player_load;
+    const mc_world_runtime_lifecycle_error *saving;
 } mc_client_world_load_error;
+
+typedef struct mc_client_world_leave_state {
+    size_t calls;
+    bool started, source_returned, failed;
+    bool i_cleared, f_cleared, h_cleared; /* Exact reached source stores only. */
+    int pc;
+    const mc_client_world_load_error *failure;
+    const mc_world_runtime_lifecycle_error *saving;
+} mc_client_world_leave_state;
 
 typedef struct mc_client_world_load_state {
     bool active, retiring, source_returned;
@@ -103,6 +114,7 @@ typedef struct mc_client_world_load_state {
     mc_movement_input *input;
     const mc_client_world_prepare_call *prepare;
     const mc_client_world_load_error *failure, *cleanup;
+    mc_client_world_leave_state leave;
 } mc_client_world_load_state;
 
 /* One native association per completed App runtime. Bind its SAME GUI/loading
@@ -139,6 +151,20 @@ mc_client_world_load_status mc_client_world_load_begin(mc_client_world_load_clas
                                                        mc_client_world_load_call **out);
 bool mc_client_world_load_inspect(const mc_client_world_load_call *,
                                   mc_client_world_load_state *out);
+
+/* Actual Minecraft.a(NULL World) after a completed selected load, including
+ * previous-World save with the SAME actual LoadingScreen before f69/h355.
+ * One synchronous retained record per call (native bound32); a failed call is
+ * terminal and cannot replay. Repeated fully returning null changes execute
+ * their own real prefix, with no second World save after f was cleared.
+ * Only reached owned i/f/h stores consume those Native occurrences. N/DN old
+ * World fields remain exactly as original null-target branch; no source or
+ * terminal renderer detach, World destruction or next World is supplied.
+ * Inspect leave/failure through the same retained load; initial load diagnostics
+ * stay separate. error is a fresh per-attempt copy with borrowed owned children.
+ * Keep all App/World/GUI/services exclusive/live through checked cleanup. */
+mc_client_world_load_status mc_client_world_load_leave(mc_client_world_load_call *,
+                                                       mc_client_world_load_error *error);
 
 /* One-way native terminal prefix, not source World clear/save or full retirement.
  * End this call's real prepare/Loading/failure-receipt/N World-call occurrences,

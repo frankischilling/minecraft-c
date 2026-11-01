@@ -9,6 +9,9 @@
  * current successfully read READY Stack through that Stack's provenance owner;
  * missing Item uses an empty Compound. FallingSand owns an independent Entity
  * source only: no Item getter, Stack requirement or Stack attachment occurs.
+ * Client Mobs use the same independent whole-input root copy after their
+ * actual factory/read returns. Wolf's counted NBT owner String is charged by
+ * byte inspection; no source String/watcher field is rewritten by attachment.
  * Minecart has a separate occurrence policy below, with no Stack attachment.
  * No source field, ID, Random, Class phase/accounting, World binding or hold is
  * changed. The Entity's independent source is freed only on replacement or its
@@ -103,6 +106,10 @@ mc_entity_nbt_status mc_entity_storage_native_bytes(const mc_entity *entity, siz
  * name/namespace effects still occur; a true build has no remaining allocation
  * budget in that case and fails. Native overlay failures have fresh zero PCs;
  * semantic failure returns its whole existing child unchanged.
+ * Mob direct semantic save is implemented, while this separate legacy native
+ * overlay path stops explicitly after semantic success until class-specific
+ * inactive-key policy is defined. An old powered tag must not be resurrected
+ * when Creeper omits it. Source World saving does not call this overlay path.
  *
  * Minecart also runs that semantic Boolean writer FIRST, retaining its actual
  * name/dead/false/failure behavior and actual h27/36 traversal in all phases.

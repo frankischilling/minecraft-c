@@ -23,6 +23,7 @@ typedef struct screen_node {
     struct screen_node *next;
     mc_client_source_rq *rq;
     mc_client_source_oz *pause;
+    mc_client_source_fu *menu;
     mc_client_display_screen_call *display;
     mc_client_world_load_call *load;
 } screen_node;
@@ -38,6 +39,9 @@ struct mc_client_screen_transitions {
     mc_client_singleplayer_controller *controller;
     mc_client_world_load_classes *world_classes;
     mc_client_world_load_call *last_load;
+    mc_client_world_load_error world_leave;
+    size_t leave_calls;
+    bool world_leave_retained;
     mc_world_info_name *fallback_filename, *fallback_display;
     mc_client_save_error save;
     mc_singleplayer_controller_error controller_error;
@@ -370,8 +374,40 @@ static void pause_action(mc_client_screen_transitions *r, mc_client_source_ke *b
             return;
         }
     }
-    fail(r, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY, "actual Minecraft.a(World) detach call",
-         "oz", "a", "(Lke;)V", 76);
+    if (r->last_load == NULL) {
+        fail(r, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY, "actual selected World leave owner",
+             "oz", "a", "(Lke;)V", 76);
+        return;
+    }
+    mc_client_world_load_state prior = {0};
+    (void)mc_client_world_load_inspect(r->last_load, &prior);
+    ++r->leave_calls;
+    const mc_client_world_load_status left =
+        mc_client_world_load_leave(r->last_load, &r->world_leave);
+    mc_client_world_load_state current = {0};
+    r->world_leave_retained = mc_client_world_load_inspect(r->last_load, &current) &&
+                              current.leave.calls > prior.leave.calls;
+    if (left != MC_CLIENT_WORLD_LOAD_OK) {
+        const mc_client_world_load_error *error = &r->world_leave;
+        const mc_client_world_load_site *site =
+            error->child.class_name == NULL ? &error->site : &error->child;
+        fail(r, world_status(left), error->operation, site->class_name, site->method,
+             site->descriptor, site->pc < 0 ? 0u : (unsigned int)site->pc);
+        r->failure.native_policy = error->native_policy;
+        r->failure.parent_site = (mc_client_screen_site){"oz", "a", "(Lke;)V", 76};
+        return;
+    }
+    /* Actual NEW fu83/constructor87, owned independently of startup's FU. */
+    screen_node *n = node(r);
+    if (n == NULL)
+        return;
+    if (mc_client_screen_menu_allocate(r->classes, NULL, &n->menu, &r->failure) !=
+        MC_CLIENT_SCREEN_OK)
+        return;
+    ++r->screens;
+    if (mc_client_screen_menu_construct(n->menu, &r->failure) != MC_CLIENT_SCREEN_OK)
+        return;
+    (void)display(r, mc_client_screen_menu_base(n->menu), "oz", "a", "(Lke;)V", 90);
 }
 
 static bool indexed_text(mc_client_screen_transitions *r, mc_nbt_string prefix, bool space,
@@ -542,6 +578,10 @@ bool mc_client_screen_transitions_inspect(const mc_client_screen_transitions *r,
                                           mc_client_screen_transition_state *out) {
     if (r == NULL || out == NULL)
         return false;
+    const mc_client_world_load_error *world_leave = r->leave_calls == 0 ? NULL : &r->world_leave;
+    mc_client_world_load_state load;
+    if (r->world_leave_retained && mc_client_world_load_inspect(r->last_load, &load))
+        world_leave = load.leave.failure; /* Fresh view after any child cleanup. */
     *out = (mc_client_screen_transition_state){.active = r->active,
                                                .retiring = r->retiring,
                                                .slot_handed_off = r->slot_handed_off,
@@ -550,6 +590,8 @@ bool mc_client_screen_transitions_inspect(const mc_client_screen_transitions *r,
                                                .initial_screen = r->initial,
                                                .failure = &r->failure,
                                                .world_load = r->last_load,
+                                               .world_leave = world_leave,
+                                               .leave_calls = r->leave_calls,
                                                .terminal_prepare_selected =
                                                    r->terminal_prepare_selected,
                                                .terminal_prepared = r->terminal_prepared};
@@ -744,8 +786,12 @@ mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_tra
         if (loaded != MC_CLIENT_WORLD_LOAD_OK)
             return mc_screen_fail(e, world_status(loaded), "retained actual World-load prefix",
                                   NULL, NULL, NULL, 0);
-        if (load != NULL && r->last_load == load)
+        if (load != NULL && r->last_load == load) {
             r->last_load = NULL;
+            r->world_leave = (mc_client_world_load_error){0};
+            r->leave_calls = 0;
+            r->world_leave_retained = false;
+        }
         if (mc_client_display_screen_retire(&n->display) != MC_CLIENT_DISPLAY_SCREEN_OK)
             return mc_screen_fail(e, MC_CLIENT_SCREEN_BUSY, "retained actual display prefix", NULL,
                                   NULL, NULL, 0);
@@ -759,6 +805,12 @@ mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_tra
         const mc_client_screen_status pause = mc_client_screen_pause_retire(&n->pause, e);
         if (pause != MC_CLIENT_SCREEN_OK)
             return pause;
+        if (base != NULL && r->app->r == base)
+            r->app->r = NULL;
+        base = mc_client_screen_menu_base(n->menu);
+        const mc_client_screen_status menu = mc_client_screen_menu_retire(&n->menu, e);
+        if (menu != MC_CLIENT_SCREEN_OK)
+            return menu;
         if (base != NULL && r->app->r == base)
             r->app->r = NULL;
         r->nodes = n->next;

@@ -32,12 +32,16 @@ static bool at_least_one(uint32_t bits) {
            magnitude <= UINT32_C(0x7f800000);
 }
 
-/* Initialize caller storage without a full tick-error return temporary. The
- * typed static template supplies C-defined zero/null values and the sentinel;
- * each canonical child initializer supplies its complete nested defaults. */
+/* Initialize caller storage without a full tick-error return temporary or a
+ * compiler-depth-limited aggregate initializer. Each canonical child initializer
+ * supplies its complete nested defaults. */
 static void initialize_error(mc_piston_tick_error *out) {
-    static const mc_piston_tick_error zero = {.entity_index = SIZE_MAX};
-    memcpy(out, &zero, sizeof(*out));
+    static const mc_entity_error entity = {0};
+    out->status = MC_WORLD_STORAGE_OK;
+    out->operation = NULL;
+    out->tick_bytecode = out->push_bytecode = 0;
+    out->entity_index = SIZE_MAX;
+    out->entity = entity;
     mc_world_mutation_error_init(&out->mutation);
     mc_live_tile_entities_error_init(&out->tile_entity);
     out->registry = out->mutation.registry;

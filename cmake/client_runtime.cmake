@@ -50,7 +50,8 @@ if(TARGET mc_client_application_startup AND TARGET mc_client_source_screen_drawi
             endforeach()
         endif()
         if(MC_ENABLE_CLIENT_DISPLAY_TESTS AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
-            foreach(_mc_canvas_profile IN ITEMS hidden visible visible-fp-position visible-fp-ungrab)
+            foreach(_mc_canvas_profile IN ITEMS hidden visible visible-fp-position visible-fp-ungrab
+                visible-reactivation)
                 add_test(NAME "client.standalone_canvas_${_mc_canvas_profile}" COMMAND Python3::Interpreter -B
                     "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_standalone_canvas.py"
                     --executable "$<TARGET_FILE:mc_test_standalone_canvas>"

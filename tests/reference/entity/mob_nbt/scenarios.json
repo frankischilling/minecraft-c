@@ -1,0 +1,74 @@
+{
+  "kinds": {
+    "cn": "Spider",
+    "uz": "Zombie",
+    "fr": "Skeleton",
+    "gb": "Creeper",
+    "uw": "Slime",
+    "wh": "Pig",
+    "dl": "Sheep",
+    "bx": "Cow",
+    "ww": "Chicken",
+    "gi": "Wolf",
+    "xt": "Squid"
+  },
+  "steps_each": [
+    "genuine NULLWorld constructor, own b writer",
+    "unchanged JC.a(compound,NULLWorld) known-id ctor+full SN.e, own b/full SN.d/SN.c",
+    "direct subtype a(emptyCompound) then own b"
+  ],
+  "full_input": {
+    "Pos": [
+      "double1.25",
+      "double65.5",
+      "double-2.75"
+    ],
+    "Motion": [
+      "double0.125",
+      "double-0.25",
+      "double0.5"
+    ],
+    "Rotation": [
+      "float35",
+      "float-10"
+    ],
+    "FallDistance": "float1.5",
+    "Fire": "short-7",
+    "Air": "short250",
+    "OnGround": "byte-1",
+    "Health": "short-123",
+    "HurtTime": "short-32768",
+    "DeathTime": "short32767",
+    "AttackTime": "short-1",
+    "Saddle": "byte-1",
+    "Sheared": "byte-1",
+    "Color": "byte-1",
+    "powered": "byte-1",
+    "Angry": "byte-1",
+    "Sitting": "byte1",
+    "Owner_utf16": [
+      79,
+      119,
+      110,
+      101,
+      114,
+      0,
+      937,
+      55357,
+      56378
+    ],
+    "Size": "int3",
+    "Age": "int999",
+    "EggLayTime": "int1",
+    "Fuse": "short1",
+    "ExplosionRadius": "byte42",
+    "Unknown": "int42"
+  },
+  "extra": [
+    "Slime own Size-1,127,255 with Health-123 (source size resets health after Living reader)",
+    "Pig actual K then storage gate versus direct full writer",
+    "Pig own Health BYTE wrong-type cast",
+    "Creeper actual DataWatcher.b index17 Byte2 then own writer fresh and preexistingpowered"
+  ],
+  "scope": "Prepared source NBT/registry owners only, no live World/Chunk caller; constructors have independent entropy, not source seed/clock substitution."
+}

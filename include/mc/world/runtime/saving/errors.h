@@ -42,6 +42,7 @@ typedef struct mc_world_game_save_error {
 typedef struct mc_world_runtime_lifecycle_error {
     mc_chunk_lifecycle_status status;
     mc_world_storage_error cause;
+    mc_world_source_error source_session; /* Actual outer source World.r child, when reached. */
     mc_world_game_save_error save;
     /* Actual maintenance activation/deferral child, independent of save.
      * Fresh batch.index is SIZE_MAX; caller/callee PCs remain distinct. */

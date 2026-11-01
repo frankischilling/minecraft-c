@@ -213,6 +213,8 @@ def main():
     parser.add_argument('--executable', type=Path, required=True)
     parser.add_argument('--source-root', type=Path, default=Path(__file__).resolve().parents[3])
     parser.add_argument('--work-dir', type=Path, required=True)
+    parser.add_argument('--mode', action='append', choices=('empty', 'item-chest', 'session-mismatch',
+                        'opaque', 'null-stack', 'null-m', 'null-l', 'session-terminal'))
     args = parser.parse_args()
     source = args.source_root.resolve()
     helper = source / 'tests/reference/client/statistics/support.py'
@@ -221,6 +223,7 @@ def main():
     spec.loader.exec_module(support)
     selected_inputs = [Path(__file__).resolve(), helper, args.executable.resolve(),
         source / 'tests/world/runtime/saving/test_source_saving.c',
+        source / 'tests/world/runtime/saving/source_session_terminal_controls.inc',
         source / 'tests/world/runtime/tile_entities/test_tile_entities.c']
     def freeze():
         require(all(p.is_file() and p.stat().st_size <= 268435456 for p in selected_inputs),
@@ -232,7 +235,8 @@ def main():
     (work / 'INPUT-FREEZE.json').write_text(json.dumps(before_inputs, indent=2) + '\n', encoding='utf-8', newline='\n')
     print(json.dumps({'retained_work': str(work), 'stage': 'FROZEN_BEFORE_NATIVE_EXECUTION'}), flush=True)
     cases = {}
-    for mode in ('empty', 'item-chest', 'session-mismatch', 'opaque', 'null-stack', 'null-m', 'null-l'):
+    for mode in args.mode or ('empty', 'item-chest', 'session-mismatch', 'opaque', 'null-stack',
+                              'null-m', 'null-l', 'session-terminal'):
         directory = work / mode
         owned = directory / 'owned'
         require(str(owned).isascii(), 'selected native fixture has an ASCII owned path')
@@ -252,8 +256,12 @@ def main():
         rows = [json.loads(line) for line in lines if line.startswith('{')]
         require(rows[-1]['event'] == 'complete' and rows[-1]['mode'] == mode and rows[-1]['cleanup'] == 1,
                 mode + ': complete actual save/cleanup receipt')
-        states = {row['phase']: row for row in rows[:-1]}
-        require(len(states) == len(rows) - 1 and 'loaded' in states, 'unique actual state events')
+        terminal = [row for row in rows[:-1] if row['event'] == 'terminal']
+        state_rows = [row for row in rows[:-1] if row['event'] == 'state']
+        states = {row['phase']: row for row in state_rows}
+        require(len(states) == len(state_rows) and len(state_rows) + len(terminal) == len(rows) - 1 and
+                'loaded' in states, 'unique actual state events')
+        require(mode == 'session-terminal' or not terminal, 'terminal controls only in dedicated profile')
         snapshots = {path.name: fingerprint(path) for path in sorted((owned / 'snapshots').iterdir())}
         decoded = {}
         if mode in ('empty', 'item-chest'):
@@ -310,6 +318,32 @@ def main():
                     snapshots['reloaded-region.mcr'] == snapshots['saved-second-region.mcr'] and
                     snapshots['reloaded-level.dat'] == snapshots['saved-second-level.dat'],
                     'new actual source World/Chunk loads same unchanged committed files')
+        elif mode == 'session-terminal':
+            require(set(states) == {'loaded', 'failed'} and rows[-1]['reload'] == 0,
+                    'actual full World session mismatch before metadata/Chunks')
+            require(snapshots['loaded-region.mcr'] == snapshots['failed-region.mcr'] and
+                    snapshots['loaded-level.dat'] == snapshots['failed-level.dat'] and
+                    states['loaded']['size'] == states['failed']['size'],
+                    'full-save session failure preserves metadata/region/Info size')
+            phases = ['before-fault', 'fm42', 'external-fis', 'fis-released',
+                      'external-handler', 'handler-released']
+            require([row['phase'] for row in terminal] == phases, 'exact genuine terminal control phases')
+            # Exact public mc_world_storage_status values: OK0 and BUSY9.
+            for row, expected in zip(terminal, [0, 0, 9, 0, 9, 0]):
+                require(set(row) == {'event', 'phase', 'status', 'expected', 'unchanged',
+                                    'fis_holds', 'native_open', 'reader_close_calls', 'session_token'} and
+                        row['status'] == row['expected'] == expected and row['unchanged'] == 1,
+                        'exact passive terminal result/invariance')
+                if row['phase'] != 'before-fault':
+                    require(row['fis_holds'] == (2 if row['phase'] == 'external-fis' else 1) and
+                            row['native_open'] == 1 and row['reader_close_calls'] == 0,
+                            'retained mismatch input stays genuinely open without source-close credit')
+            require(fingerprint(owned / 'world/region/r.0.0.mcr') == snapshots['failed-region.mcr'] and
+                    fingerprint(owned / 'world/level.dat') == snapshots['failed-level.dat'],
+                    'actual final native retirement does not perform a source save/commit')
+            require(read(owned / 'world/session.lock') == struct.pack('>q', terminal[0]['session_token']) and
+                    all(row['session_token'] == terminal[0]['session_token'] for row in terminal),
+                    'original actual Handler token restored only after final native retirement')
         else:
             require(set(states) == {'loaded', 'failed'} and rows[-1]['reload'] == 0, 'explicit failing source LD call')
             before, failed = states['loaded'], states['failed']
@@ -343,7 +377,7 @@ def main():
                     fingerprint(owned / 'world/level.dat') == snapshots['failed-level.dat'], 'native teardown does not finish retained failed stream')
         require(read(owned / 'world/preserve.bin') == b'unrelated disposable World file\0\xff', 'unrelated authored file unchanged')
         cases[mode] = {'root': str(owned), 'capture': capture.capture_report, 'summary': rows[-1],
-                       'states': states, 'snapshots': snapshots, 'decoded': decoded, 'console': console,
+                       'states': states, 'terminal': terminal, 'snapshots': snapshots, 'decoded': decoded, 'console': console,
                        'files': {p.relative_to(owned).as_posix(): fingerprint(p) for p in sorted(owned.rglob('*')) if p.is_file()}}
     after_inputs = freeze()
     require(before_inputs == after_inputs, 'actual fixture/helper/product unchanged through native execution')

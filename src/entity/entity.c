@@ -6,6 +6,7 @@
 #include "minecart/classes_internal.h"
 #include "minecart/entity_internal.h"
 #include "mob/internal.h"
+#include "mob/nbt_internal.h"
 #include "mob/references_internal.h"
 #include "particles/particle_internal.h"
 #include "player/player_internal.h"
@@ -668,6 +669,7 @@ static void destroy_entity(mc_entity *entity) {
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_C))
         mc_lightning_dispose(entity);
     if (mc_entity_has_mob(entity)) {
+        mc_mob_nbt_dispose(entity);
         mc_mob_references_dispose(entity);
         mc_mob_path_dispose(entity);
     }

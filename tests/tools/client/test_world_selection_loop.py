@@ -1,5 +1,12 @@
 """Exercise the genuine Windows source loop with isolated empty/populated saves.
 
+The save-title profiles use the actual visible selected World, real Escape and
+pause button1 SDK inputs, and a pre-bootstrap saved inventory achievement. The
+success profile independently decodes actual source metadata and region commits
+before accepting a fresh title screen. Its session control corrupts/restores the
+real lock file and retains the fm.b42 native exception-allocation frontier.
+Neither publishes a prepared NPC or claims original whole-frame equivalence.
+
 The repeat profile declares an existing player whose saved openInventory
 achievement is already present. Its valid pre-bootstrap statistics file uses
 real imported GUIDs and the source checksum; the actual client loads it.
@@ -44,6 +51,7 @@ Mob rendering. That fresh-player route is outside the repeat renderer proof.
 import argparse
 import gzip
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -52,7 +60,251 @@ import struct
 import subprocess
 import sys
 import tempfile
+import time
 import zlib
+
+sys.dont_write_bytecode = True
+
+
+def save_title_files(root, destination):
+    """Preserve bounded actual inputs/products before the isolated APPDATA ends."""
+    result, total = {}, 0
+    for path in sorted(root.rglob("*")):
+        if not path.is_file():
+            continue
+        if len(result) >= 1024 or path.stat().st_size > 1048576:
+            raise RuntimeError("Save/title bounded file inventory")
+        data = path.read_bytes()
+        total += len(data)
+        if total > 16 * 1048576:
+            raise RuntimeError("Save/title bounded aggregate inventory")
+        relative = path.relative_to(root)
+        target = destination / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
+        result[relative.as_posix()] = {"bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
+    return result
+
+
+def save_title_decode(before, entries, after, mode, stdout, process_first):
+    # Independent Python NBT/MUTF8/zlib parser, shared with the disk-save
+    # fixture, reads actual bytes and has no access to C runtime state.
+    parser_path = Path(__file__).resolve().parents[1] / "world/test_source_saving.py"
+    spec = importlib.util.spec_from_file_location("save_title_independent_nbt", parser_path)
+    parser = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(parser)
+    if (parser.read(entries.parent / "options-input.txt") != b"viewDistance:3\n" or
+            [line for line in stdout.splitlines() if line.startswith("WORLD_SAVE_TITLE_OPTIONS ")] !=
+            ["WORLD_SAVE_TITLE_OPTIONS view-distance=3 lines=1 bytes=15 source-loaded=1"]):
+        raise RuntimeError("Exact declared Tiny input and actual source GameSettings parse")
+    rows = [line for line in stdout.splitlines() if line.startswith("WORLD_SAVE_TITLE ")]
+    if len(rows) != 1:
+        raise RuntimeError("One actual source save/title receipt required")
+    pairs = [word.split("=", 1) for word in rows[0].split()[1:]]
+    if any(len(pair) != 2 for pair in pairs) or len({key for key, _ in pairs}) != len(pairs):
+        raise RuntimeError("Unique save/title receipt fields")
+    row = dict(pairs)
+    mismatch = mode == "save-title-session"
+    exact = dict(mode=mode, **{"escape-sdk": "1", "button-id": "1", "leave-pc": "64" if mismatch else "366",
+                              "i": "1", "f": "0" if mismatch else "1", "h": "0" if mismatch else "1",
+                              "new-title": "0" if mismatch else "1", "old-renderer-world": "1",
+                              "old-effects-world": "1", "original-load-returned": "1"})
+    numeric = {"eligible", "time", "size-before", "size-after", "first", "last",
+               "entry-frame", "entry-bytes"}
+    if (set(row) != set(exact) | numeric or any(row[k] != v for k, v in exact.items()) or
+            any(re.fullmatch(r"-?[0-9]+", row[k]) is None for k in numeric)):
+        raise RuntimeError("Exact source save/title receipt shape")
+    numbers = {k: int(row[k]) for k in numeric}
+    # Full save checks the session BEFORE considering any Chunk eligibility.
+    # Only the session-failure profile may enter with no remaining Chunk writes.
+    if (numbers["eligible"] < 0 or (not mismatch and numbers["eligible"] == 0) or
+            numbers["first"] > numbers["last"] or
+            not 0 <= numbers["entry-frame"] < 64 or numbers["entry-bytes"] <= 0):
+        raise RuntimeError("Actual source save eligibility/clock interval")
+    admissions = [line for line in stdout.splitlines()
+                  if line.startswith("WORLD_SAVE_TITLE_SESSION_ADMISSION ")]
+    if mismatch:
+        admitted = re.fullmatch(
+            r"WORLD_SAVE_TITLE_SESSION_ADMISSION frames=([0-9]+) frame-ms=([0-9]+) "
+            r"time=(-?[0-9]+) eligible=([0-9]+) source-frames=1 same-pause=1 world-time-unchanged=1",
+            admissions[0]) if len(admissions) == 1 else None
+        if (admitted is None or not 1 <= int(admitted[1]) <= 64 or not 0 <= int(admitted[2]) < 250 or
+                int(admitted[3]) != numbers["time"] or int(admitted[4]) != numbers["eligible"]):
+            raise RuntimeError("Actual bounded short Pause-frame session admission")
+    elif admissions:
+        raise RuntimeError("Normal save unexpectedly used session-only admission")
+    # Every saved candidate is actual bytes immediately before one real frame.
+    # Only the frame that entered button1 selects the full-save entry baseline.
+    expected_entries = {f"frame-{i}" for i in range(numbers["entry-frame"] + 1)}
+    if not entries.is_dir() or {path.name for path in entries.iterdir()} != expected_entries:
+        raise RuntimeError("Exact bounded source entry candidate inventory")
+    aggregate = 0
+    for phase in entries.iterdir():
+        files = [path for path in phase.rglob("*") if path.is_file()]
+        total = sum(path.stat().st_size for path in files)
+        if (not phase.is_dir() or not 0 < len(files) <= 1024 or total > 16 * 1048576 or
+                any(path.stat().st_size > 1048576 for path in files)):
+            raise RuntimeError("Bounded actual source entry snapshot")
+        aggregate += total
+    if aggregate > 64 * 16 * 1048576:
+        raise RuntimeError("Bounded aggregate source entry snapshots")
+    entry = entries / f"frame-{numbers['entry-frame']}"
+    if sum(path.stat().st_size for path in entry.rglob("*") if path.is_file()) != numbers["entry-bytes"]:
+        raise RuntimeError("Selected actual source entry byte receipt")
+    initial_inventory = {Path(name).as_posix(): value for name, value in snapshot(before).items()}
+    old_inventory = {Path(name).as_posix(): value for name, value in snapshot(entry).items()}
+    new_inventory = {Path(name).as_posix(): value for name, value in snapshot(after).items()}
+
+    def world_product(name):
+        return name in {"alpha/level.dat", "alpha/level.dat_old", "alpha/session.lock"} or name.startswith("alpha/region/")
+
+    protected_initial = {name: digest for name, digest in initial_inventory.items() if not world_product(name)}
+    if any(old_inventory.get(name) != digest for name, digest in protected_initial.items()):
+        raise RuntimeError("Pause prefix changed protected initial fixture bytes")
+    if any(name not in initial_inventory and not world_product(name) for name in old_inventory):
+        raise RuntimeError("Pause prefix unexpected new save file")
+    protected = {name: digest for name, digest in old_inventory.items()
+                 if name != "alpha/session.lock" and
+                 (mismatch or not (name in {"alpha/level.dat", "alpha/level.dat_old"} or name.startswith("alpha/region/")))}
+    if any(new_inventory.get(name) != digest for name, digest in protected.items()):
+        raise RuntimeError("Full save changed protected entry fixture bytes")
+    allowed = {"alpha/session.lock"} if mismatch else {"alpha/session.lock", "alpha/level.dat_old"}
+    if any(name not in old_inventory and name not in allowed and
+           not (not mismatch and name.startswith("alpha/region/")) for name in new_inventory):
+        raise RuntimeError("Full save unexpected new save file")
+    old_token = parser.read(entry / "alpha/session.lock")
+    new_token = parser.read(after / "alpha/session.lock")
+    expected_token = bytes([old_token[0] ^ 1]) + old_token[1:] if mismatch and old_token else old_token
+    if len(old_token) != 8 or new_token != expected_token:
+        raise RuntimeError("Full save exact original session token/restored fault input")
+
+    entry_tree = parser.inflate(parser.read(entry / "alpha/level.dat"), 31)
+    if set(entry_tree) != {"Data"} or entry_tree["Data"][0] != 10:
+        raise RuntimeError("Pause prefix fresh metadata root")
+    entry_data = entry_tree["Data"][1]
+    fields = {"RandomSeed", "SpawnX", "SpawnY", "SpawnZ", "Time", "SizeOnDisk", "LastPlayed",
+              "LevelName", "version", "rainTime", "raining", "thunderTime", "thundering", "Player"}
+    initial_size = parser.inflate(parser.read(before / "alpha/level.dat"), 31)["Data"][1]["SizeOnDisk"]
+    if (set(entry_data) != fields or entry_data.get("RandomSeed") != [4, 123] or
+            entry_data.get("version") != [3, 19132] or entry_data.get("LevelName") != [8, "Alpha world"] or
+            entry_data.get("Time", [None])[0] != 4 or not 0 <= entry_data["Time"][1] <= numbers["time"] or
+            entry_data.get("SizeOnDisk", [None])[0] != 4 or initial_size[0] != 4 or
+            not initial_size[1] <= entry_data["SizeOnDisk"][1] <= numbers["size-before"] or
+            entry_data.get("LastPlayed", [None])[0] != 4 or
+            not process_first <= entry_data["LastPlayed"][1] <= numbers["first"] or
+            entry_data.get("Player", [None])[0] != 10):
+        raise RuntimeError("Pause prefix exact fresh metadata fields/source interval")
+
+    def regions(root, initial=None):
+        decoded = {}
+        for path in sorted((root / "alpha/region").glob("r.*.*.mcr")):
+            match = re.fullmatch(r"r\.(-?[0-9]+)\.(-?[0-9]+)\.mcr", path.name)
+            if match is None:
+                raise RuntimeError("Save/title actual region filename")
+            rx, rz = map(int, match.groups())
+            raw = parser.read(path)
+            if len(raw) < 8192 or len(raw) % 4096:
+                raise RuntimeError("Save/title actual region extent")
+            used = {0, 1}
+            for slot, offset in enumerate(struct.unpack_from(">1024I", raw)):
+                if offset == 0:
+                    continue
+                sector, count = offset >> 8, offset & 255
+                if (sector < 2 or count == 0 or (sector + count) * 4096 > len(raw) or
+                        used.intersection(range(sector, sector + count))):
+                    raise RuntimeError("Save/title complete disjoint region allocation")
+                used.update(range(sector, sector + count))
+                at = sector * 4096
+                size = struct.unpack_from(">i", raw, at)[0]
+                if not 1 < size <= count * 4096 - 4 or raw[at + 4] != 2:
+                    raise RuntimeError("Save/title selector2 compressed extent")
+                tree = parser.inflate(raw[at + 5:at + 4 + size], 15)
+                if set(tree) != {"Level"} or tree["Level"][0] != 10:
+                    raise RuntimeError("Save/title actual Chunk root")
+                level = tree["Level"][1]
+                coordinate = (rx * 32 + (slot & 31), rz * 32 + (slot >> 5))
+                if level.get("xPos") != [3, coordinate[0]] or level.get("zPos") != [3, coordinate[1]]:
+                    raise RuntimeError("Save/title persisted actual Chunk coordinates")
+                for key, length in (("Blocks", 32768), ("Data", 16384), ("SkyLight", 16384),
+                                    ("BlockLight", 16384), ("HeightMap", 256)):
+                    if level.get(key, [None])[0] != 7 or len(level[key][1]) != length:
+                        raise RuntimeError("Save/title actual Chunk array extent")
+                stamp = struct.unpack_from(">i", raw, 4096 + slot * 4)[0]
+                source_written = initial is not None and initial.get(coordinate) != (tree, stamp)
+                for key in ("Entities", "TileEntities"):
+                    if level.get(key, [None])[0] != 9:
+                        raise RuntimeError("Save/title actual typed Chunk lists")
+                    element_type, items = level[key][1]
+                    # Source sp.a(DataOutput) forcibly writes Byte1 for empty
+                    # lists. Untouched authored records retain Compound10;
+                    # every nonempty Entity/TileEntity list is Compound10.
+                    expected_type = 1 if source_written and not items else 10
+                    if element_type != expected_type:
+                        raise RuntimeError("Save/title exact source/original Chunk list type")
+                for entity in level["Entities"][1][1]:
+                    if entity.get("id", [None])[0] != 8 or entity["id"][1] == "Player":
+                        raise RuntimeError("Save/title LocalPlayer Boolean false, named saved Entity")
+                decoded[coordinate] = (tree, stamp)
+        return decoded
+    initial = regions(before)
+    old, new = regions(entry, initial), regions(after, initial)
+    if (not set(initial) <= set(old) <= set(new) or
+            any(chunks[(0, 0)][0]["Level"][1]["Blocks"][1][127] != 57 for chunks in (initial, old, new))):
+        raise RuntimeError("Pause/full save stored marker and original Chunk coverage")
+    pause_changed = []
+    for coordinate, (tree, stamp) in old.items():
+        if coordinate in initial and (tree, stamp) == initial[coordinate]:
+            continue
+        last_update = tree["Level"][1].get("LastUpdate")
+        if (last_update is None or last_update[0] != 4 or not 0 <= last_update[1] <= numbers["time"] or
+                not process_first // 1000 <= stamp <= numbers["first"] // 1000):
+            raise RuntimeError("Pause prefix actual Chunk time and QJ source interval")
+        pause_changed.append(coordinate)
+    if mismatch:
+        if numbers["size-after"] != numbers["size-before"]:
+            raise RuntimeError("Session mismatch changed actual entry Info size")
+        return {"mode": mode, "receipt": row, "pause_changed_chunks": pause_changed,
+                "entry_frame": numbers["entry-frame"],
+                "scope": "fm.b42 native exception-allocation frontier; source entry bytes retained; no thrown us/title return"}
+
+    metadata = parser.inflate(parser.read(after / "alpha/level.dat"), 31)
+    if set(metadata) != {"Data"} or metadata["Data"][0] != 10:
+        raise RuntimeError("Save/title fresh metadata root")
+    data = metadata["Data"][1]
+    if set(data) != {"RandomSeed", "SpawnX", "SpawnY", "SpawnZ", "Time", "SizeOnDisk", "LastPlayed",
+                     "LevelName", "version", "rainTime", "raining", "thunderTime", "thundering", "Player"}:
+        raise RuntimeError("Save/title exact fresh source Data fields")
+    for key, value in {"RandomSeed": [4, 123], "version": [3, 19132],
+                       "LevelName": [8, "Alpha world"], "Time": [4, numbers["time"]],
+                       "SizeOnDisk": [4, numbers["size-before"]]}.items():
+        if data.get(key) != value:
+            raise RuntimeError(f"Save/title source metadata {key}")
+    if (data.get("LastPlayed", [None])[0] != 4 or
+            not numbers["first"] <= data["LastPlayed"][1] <= numbers["last"] or
+            data.get("Player", [None])[0] != 10 or numbers["size-after"] < numbers["size-before"]):
+        raise RuntimeError("Save/title genuine Player metadata, reached clock and late Info size")
+    player = data["Player"][1]
+    if (player.get("Pos", [None])[0] != 9 or player["Pos"][1][0] != 6 or
+            len(player["Pos"][1][1]) != 3 or player.get("Inventory", [None])[0] != 9 or
+            player.get("Health", [None])[0] != 2):
+        raise RuntimeError("Save/title actual LocalPlayer semantic output")
+    if parser.read(after / "alpha/level.dat_old") != parser.read(entry / "alpha/level.dat"):
+        raise RuntimeError("Save/title source metadata rotation backup")
+
+    changed = []
+    for coordinate, (tree, stamp) in new.items():
+        if coordinate in old and (tree, stamp) == old[coordinate]:
+            continue
+        if (tree["Level"][1].get("LastUpdate") != [4, numbers["time"]] or
+                not numbers["first"] // 1000 <= stamp <= numbers["last"] // 1000):
+            raise RuntimeError("Save/title actual late Chunk time and QJ clock")
+        changed.append(coordinate)
+    if not changed:
+        raise RuntimeError("Save/title did not commit a real region Chunk")
+    return {"mode": mode, "receipt": row, "metadata": parser.compact(metadata),
+            "decoded_chunks": len(new), "changed_chunks": changed,
+            "pause_changed_chunks": pause_changed, "entry_frame": numbers["entry-frame"],
+            "scope": "native visible UI save/title; no original whole-frame or source reload claim"}
 
 
 def string(value):
@@ -337,7 +589,8 @@ def main():
                         choices=("empty", "populated", "large", "double", "load", "generate",
                                  "load-terminal", "load-partial", "repeat", "load-light", "animals", "creatures",
                                  "creatures-slime", "creatures-creeper", "remaining-mobs",
-                                 "remaining-wolf", "remaining-zombie", "remaining-skeleton"))
+                                 "remaining-wolf", "remaining-zombie", "remaining-skeleton",
+                                 "save-title", "save-title-session"))
     parser.add_argument("--timeout", type=float)
     args = parser.parse_args()
     if os.name != "nt":
@@ -357,23 +610,30 @@ def main():
         animal = mode in ANIMAL_PROFILES
         creature = mode in CREATURE_PROFILES
         remaining = mode in REMAINING_PROFILES
+        save_title = mode in ("save-title", "save-title-session")
+        evidence = Path(tempfile.mkdtemp(prefix=mode + "-", dir=artifacts)) if save_title else None
         with tempfile.TemporaryDirectory(prefix="mc-rq-loop-") as work:
             appdata = Path(work)
             game = appdata / ".minecraft"
-            if mode == "repeat" or animal or creature or remaining:
+            if mode == "repeat" or animal or creature or remaining or save_title:
                 repeat_statistics(game, assets)
+            if save_title:
+                # Declared pre-bootstrap input; source kv.a() parses the real file.
+                options_input = b"viewDistance:3\n"
+                (game / "options.txt").write_bytes(options_input)
+                (evidence / "options-input.txt").write_bytes(options_input)
             saves = game / "saves"
             saves.mkdir(parents=True)
             (saves / "preserve-me.bin").write_bytes(b"unrelated save-directory file\x00\xff")
             if mode == "large":
                 worlds = [(f"world{i:02d}", f"Scroll world {i:02d}", 1304000000000, 19132)
                           for i in range(16)]
-            elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature or remaining:
+            elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature or remaining or save_title:
                 worlds = [
                     ("older", "Old world", 1303000000000, 19132),
                     ("bravo", "", 1304000000000, 19132),
                     ("alpha", "Alpha world", 1304000000000,
-                     19132 if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature or remaining else 0),
+                     19132 if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature or remaining or save_title else 0),
                 ]
             else:
                 worlds = []
@@ -386,19 +646,44 @@ def main():
                                            partial=mode == "load-partial" and folder == "alpha"),
                                   mtime=0))
                 (directory / "preserve-chunk.dat").write_bytes(b"authored untouched chunk")
-            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature or remaining:
+            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature or remaining or save_title:
                 regions = saves / "alpha" / "region"
                 regions.mkdir()
                 saved_regions(regions, generate=mode == "generate")
             before = snapshot(saves)
+            if save_title:
+                before_files = save_title_files(saves, evidence / "before")
             environment = os.environ.copy()
             environment["APPDATA"] = str(appdata)
+            if save_title:
+                environment["MC_WORLD_SAVE_TITLE_SESSION"] = str(saves / "alpha/session.lock")
+                environment["MC_WORLD_SAVE_TITLE_SAVES"] = str(saves)
+                environment["MC_WORLD_SAVE_TITLE_ENTRIES"] = str(evidence / "entries")
             capture = artifacts / (mode + ".png")
-            result = subprocess.run([str(executable), str(assets), mode, str(capture)],
-                                    env=environment,
-                                    timeout=args.timeout if args.timeout is not None else
-                                    (600 if mode == "generate" else 240 if animal or creature or remaining else 110), check=False,
-                                    capture_output=True, text=True)
+            process_first = time.time_ns() // 1000000
+            try:
+                result = subprocess.run([str(executable), str(assets), mode, str(capture)],
+                                        env=environment,
+                                        timeout=args.timeout if args.timeout is not None else
+                                        (600 if mode == "generate" else 240 if animal or creature or remaining or save_title else 110), check=False,
+                                        capture_output=True, text=True)
+            except subprocess.TimeoutExpired as error:
+                if save_title:
+                    for name, value in (("stdout.txt", error.stdout), ("stderr.txt", error.stderr)):
+                        text = value.decode("utf-8", "replace") if isinstance(value, bytes) else value or ""
+                        (evidence / name).write_text(text, encoding="utf-8")
+                    (evidence / "execution.json").write_text(json.dumps({"mode": mode, "timeout": True,
+                        "before": before_files}, indent=2) + "\n", encoding="utf-8")
+                raise
+            finally:
+                if save_title:
+                    after_files = save_title_files(saves, evidence / "after")
+            if save_title:
+                (evidence / "stdout.txt").write_text(result.stdout, encoding="utf-8")
+                (evidence / "stderr.txt").write_text(result.stderr, encoding="utf-8")
+                (evidence / "execution.json").write_text(json.dumps({"mode": mode, "exit_code": result.returncode,
+                    "before": before_files, "after": after_files,
+                    "process_first_millis": process_first}, indent=2) + "\n", encoding="utf-8")
             print(result.stdout, end="")
             print(result.stderr, end="", file=sys.stderr)
             if result.returncode:
@@ -472,7 +757,16 @@ def main():
                 if observed != [expected]:
                     raise RuntimeError("Declared paused caller did not retain the real 499-record light batch")
             after = snapshot(saves)
-            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature or remaining:
+            if save_title:
+                decoded = save_title_decode(evidence / "before", evidence / "entries", evidence / "after",
+                                            mode, result.stdout, process_first)
+                cleanup = [line for line in result.stdout.splitlines()
+                           if line.startswith(f"WORLD_SELECTION mode={mode} cleanup=")]
+                if len(cleanup) != 1 or re.fullmatch(
+                        rf"WORLD_SELECTION mode={mode} cleanup=1 checks=[1-9][0-9]*", cleanup[0]) is None:
+                    raise RuntimeError("Save/title native terminal ownership cleanup receipt")
+                (evidence / "report.json").write_text(json.dumps(decoded, indent=2) + "\n", encoding="utf-8")
+            elif mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature or remaining:
                 if any(after.get(name) != digest for name, digest in before.items()):
                     raise RuntimeError("World loading changed pre-existing fixture bytes")
                 if not (saves / "alpha" / "session.lock").is_file():
@@ -501,9 +795,14 @@ def main():
         print("Native remaining Mobs: three independent real Wolf/Zombie/Skeleton loaded scopes, "
               "full tick/World/HUD first compilation/reuse, actual V/RA/Bow receipts and checked "
               "cleanup passed; no original whole-frame parity credit")
-    print("World-selection loop: original-receiver input, held entry, rows, Cancel, "
-          "large-list scrollbar drag, real-clock double-click failure order, "
-          "World-load frontier, captures, save preservation and cleanup passed")
+    if all(mode in ("save-title", "save-title-session") for mode in modes):
+        print("Native visible save/title: real Escape/button1, actual source save and independent "
+              "metadata/region readback, fresh title, session allocation frontier and retained-load "
+              "terminal cleanup passed; no original whole-frame or source reload claim")
+    else:
+        print("World-selection loop: original-receiver input, held entry, rows, Cancel, "
+              "large-list scrollbar drag, real-clock double-click failure order, "
+              "World-load frontier, captures, save preservation and cleanup passed")
     return 0
 
 

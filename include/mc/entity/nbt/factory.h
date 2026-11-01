@@ -9,7 +9,8 @@
  * immutable same-owner Entity literal, never a forced Item name. A true result
  * owns an independent compound containing id plus ten base/Item fields,
  * eight base/FallingSand fields, or8/9/11 base/Minecart fields selected by its
- * actual Type. It contains no retained unknown tags.
+ * actual Type. It contains no retained unknown tags. The eleven client Mobs
+ * add id plus their exact base/Living/own fields. Name/dead/d27 order is unchanged.
  * Entity, Stack and class owners are borrowed and excluded from tree budgets.
  * Peak allocation includes the intermediate leaf tree while copying the final
  * compound; bounded C-stack views are excluded. Output/count/error must be
@@ -23,6 +24,12 @@ mc_entity_nbt_status mc_entity_save_nbt(mc_entity *entity, const mc_nbt_limits *
 /* Actual jc/ga NBT factory on the supplied application class owner. NULL World
  * is supported. A matched Item, FallingSand or Minecart uses its real world-only
  * constructor, then its semantic NBT read outside the source reflection catch.
+ * The eleven client Overworld Mobs use their real allocation/constructor,
+ * followed by the same full reader outside that catch at66. Skeleton's first
+ * static Bow use needs the actual supplied World's Registry; a NULL/unbound
+ * World remains an explicit dependency until that initializer has genuinely
+ * returned. No default Registry, fake constructor or server Mob body is used.
+ * Complete Mob child causes use the selected MOB diagnostic detail.
  * FallingSand has no Item Math draws or Stack substitute. IDs/profile effects
  * survive a later failure; factory-local owners are released on failure.
  * Minecart's array/earlier semantic prefixes remain real until that local

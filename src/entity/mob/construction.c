@@ -457,7 +457,7 @@ static bool fp(mc_mob_error *e, const char *cl, const char *method, const char *
     return false;
 }
 
-static bool slime_size(mc_entity *entity, int32_t size, mc_mob_error *e) {
+bool mc_mob_slime_size_held(mc_entity *entity, int32_t size, mc_mob_error *e) {
     mc_mob_entity_state *s = entity->mob;
     mc_entity_watch_record *record = watch_record(entity, 16);
     if (record == NULL || record->type != 0) {
@@ -491,7 +491,7 @@ mc_mob_status mc_mob_slime_set_size(mc_entity *entity, int32_t size, mc_mob_erro
         result(&local, entity->phase == MC_ENTITY_CONSTRUCTING ? MC_MOB_BUSY : MC_MOB_PHASE,
                "Slime constructed size receiver");
     else
-        (void)slime_size(entity, size, &local);
+        (void)mc_mob_slime_size_held(entity, size, &local);
     if (out != NULL)
         *out = local;
     return local.status;
@@ -611,7 +611,7 @@ static bool body(mc_entity *entity, mc_world_runtime *world) {
             }
             s->slime_jump_delay = mc_java_i32_add(delay_draw, 10);
             s->constructor_pc = 45;
-            if (!slime_size(entity, size, e)) {
+            if (!mc_mob_slime_size_held(entity, size, e)) {
                 if (e->status == MC_MOB_UNSUPPORTED_FP) {
                     e->child = e->site;
                     e->site = location("uw", "<init>", "(Lfd;)V", 50);

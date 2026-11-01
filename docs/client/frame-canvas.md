@@ -56,8 +56,12 @@ can supply the reached native height. Cursor positioning itself does not poll
 Mouse, pump events, reset deltas or consume the input queue.
 
 Two checked SDL source corrections support the native host. The Windows event
-backend recognizes the focused child HWND under its foreground Frame. The X11
-ConfigureNotify path frees the child array returned by XQueryTree and handles
+backend recognizes the focused child HWND under its foreground Frame. When the
+actual focused window is a known SDL `WS_CHILD` under that same foreground
+root, the parent yields rather than stealing the child's SDL keyboard focus.
+Foreign roots, ordinary native/IME children and popup/toplevel behavior keep
+their existing paths. The X11 ConfigureNotify path frees the child array
+returned by XQueryTree and handles
 a failed query before using its outputs. CMake compiles corrected copies of
 these translation units and leaves cached dependency
 sources untouched. File-specific include paths preserve the other SDL compile
@@ -67,25 +71,66 @@ commands and compiler-cache keys.
 
 `client.frame_canvas_owner` exercises cold/foreign identities, native peers,
 Graphics, retained event retries, callback reentrancy and checked ownership.
-The four imported-resource standalone profiles use fresh isolated game
-directories. They cover hidden and visible menu hosting, focus loss/recovery,
-cursor positioning after resize without a Mouse poll, both native warp failure
-prefixes, resize, native close and terminal cleanup. Fault profiles run in
-separate processes because the failed Input owner is terminal.
+The five imported-resource standalone profiles use fresh isolated game
+directories. The original four are `hidden`, `visible`, `visible-fp-position`
+and `visible-fp-ungrab`. They cover hidden and visible menu hosting, focus
+loss/recovery, cursor positioning after resize without a Mouse poll, both native
+warp failure prefixes, resize, native close and terminal cleanup. The fifth,
+`visible-reactivation`, repeatedly switches between a real auxiliary window and
+the Frame/Canvas host. Fault profiles still run in separate processes because
+the failed Input owner is terminal. Together with the owner test, these make
+six selected tests.
+
+All six Windows owner/standalone tests pass in the current seven-test selection,
+which also includes the two-mode Save and quit test. The final isolated Linux
+invocation passes the same six Canvas tests in 10.602 seconds on private Xvfb
+with Openbox, llvmpipe LLVM 20.1.2 and Mesa 25.2.8, using a 4.5 core context.
+ASan leak detection and UBSan halt-on-error are enabled. Source, product and
+asset hashes match across that run; its ten recorded cleanup entries pass and
+the private X authority is removed.
+
+An earlier isolated run passes in 9.82 seconds and has an independent read-only
+audit. It records 64 real auxiliary-window to Frame/Canvas focus cycles and
+128 WM transitions, with SDK keys, grab and native warp actually exercised.
+Reported capabilities are seven with warp capability one; the warp checks are
+not skipped. Raw WM state names the Frame while native input focus belongs to
+its Canvas. Source, product, asset, tool and CTest-registration hashes match
+across that run. Its ten recorded cleanup entries pass; a later read-only audit
+finds no active members in the eleven recorded command sessions. Cleanup
+evidence covers those recorded PIDs and sessions. These runs qualify the stated
+isolated X11 configuration. Earlier WSLg warp and native auxiliary-window focus
+failures remain retained and unresolved.
 
 These are authored native integration checks. Prepared observations of the
 original AWT/SDK/MouseHelper boundaries do not establish a complete original
 launcher, Frame or gameplay comparison. High-DPI behavior, fullscreen,
 created-Display reparenting, default Frame icons and extended play remain
 unqualified. Capability-zero Cursor construction retains a separate unfinished
-branch. Loaded-World close, Chunk output, complete metadata diagnostics,
-source save/detach/reload and the remaining gameplay actions still require their
-own implementation and verification. See the [test record](../testing.md).
+branch. Loaded-World native close, complete metadata diagnostics, ordinary World
+reselection and the remaining gameplay actions keep their separate requirements.
+The [Windows Tiny Save and quit profiles](world-saving.md) now have bounded
+normal leave and session-failure/cleanup evidence. They supply no Linux visible
+save/title or complete original World/launcher comparison. See the
+[test record](../testing.md).
 
 Enable `MC_ENABLE_CLIENT_DISPLAY_TESTS` and supply imported resources through
-`MC_APPLICATION_STARTUP_IMPORTED_RESOURCES` to register the four standalone
+`MC_APPLICATION_STARTUP_IMPORTED_RESOURCES` to register the five standalone
 profiles. Build `mc_test_standalone_canvas` and `mc_test_frame_canvas`, then run
-`ctest --test-dir build --output-on-failure -R 'client\.(frame_canvas_owner|standalone_canvas_)'`.
-On Linux, use the same X11/software-graphics and sanitizer environment as the
-other native graphical tests. Each profile preserves its output under the
-build directory's `standalone-canvas-contracts` directory.
+`ctest --test-dir build --output-on-failure -R '^client\.(frame_canvas_owner|standalone_canvas_)'`.
+
+To reproduce the isolated Linux scope, first start a private authenticated Xvfb
+server and run Openbox on that server. Export its `DISPLAY` and `XAUTHORITY`;
+CTest does not create the server or start the window manager. With those
+processes already running, select the six tests under the measured environment:
+
+```sh
+env SDL_VIDEO_DRIVER=x11 LIBGL_ALWAYS_SOFTWARE=1 \
+    ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1 \
+    ctest --test-dir build --output-on-failure \
+      -R '^client\.(frame_canvas_owner|standalone_canvas_(hidden|visible|visible-fp-position|visible-fp-ungrab|visible-reactivation))$'
+```
+
+Each standalone profile preserves its output under the build directory's
+`standalone-canvas-contracts` directory. Retain and retire the Xvfb, Openbox and
+child process identities belonging to that run; the isolated result supplies
+no WSLg desktop qualification.

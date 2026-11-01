@@ -4,6 +4,8 @@
 #include "../../block/registry/runtime_internal.h"
 #include "../entity_internal.h"
 #include "../minecart/nbt_internal.h"
+#include "../mob/internal.h"
+#include "../mob/nbt_internal.h"
 #include "../player/nbt_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
@@ -205,6 +207,8 @@ static bool read_subtype(mc_entity *entity, mc_registry_classes *registry,
         return read_item(entity, compound, frame);
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART))
         return mc_minecart_nbt_read_held(entity, compound, frame);
+    if (mc_entity_has_mob(entity))
+        return mc_mob_nbt_read_held(entity, compound, limits, frame);
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND)) {
         const mc_nbt_tag *tag;
         frame->falling_bytecode = 4;
@@ -527,6 +531,18 @@ mc_entity_nbt_status mc_entity_build_nbt(mc_entity *entity, const mc_nbt_limits 
         for (size_t index = 0; index < own->value.compound.length; ++index)
             root_items[7 + index] = own->value.compound.items[index];
         root.value.compound.length = 7 + own->value.compound.length;
+    } else if (mc_entity_has_mob(entity)) {
+        if (!mc_mob_nbt_build_fields_held(entity, limits, &minecart_fields, &frame))
+            goto done;
+        const mc_nbt_tag *own = mc_nbt_tree_root(minecart_fields);
+        if (own == NULL || own->type != MC_NBT_COMPOUND || own->value.compound.length < 4 ||
+            own->value.compound.length > 7) {
+            fail(&frame, MC_ENTITY_NBT_NBT_FAILED, "Mob NBT own-field result shape");
+            goto done;
+        }
+        for (size_t index = 0; index < own->value.compound.length; ++index)
+            root_items[7 + index] = own->value.compound.items[index];
+        root.value.compound.length = 7 + own->value.compound.length;
     } else {
         fail(&frame, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Entity NBT concrete write hook");
         goto done;
@@ -542,7 +558,8 @@ mc_entity_nbt_status mc_entity_build_nbt(mc_entity *entity, const mc_nbt_limits 
             fail(&frame, MC_ENTITY_NBT_LIMIT,
                  mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)
                      ? "Entity NBT retained Player fields budget"
-                     : "Entity NBT retained Minecart fields budget");
+                 : mc_entity_has_mob(entity) ? "Entity NBT retained Mob fields budget"
+                                             : "Entity NBT retained Minecart fields budget");
             goto done;
         }
         remaining.max_allocation_bytes -= retained;

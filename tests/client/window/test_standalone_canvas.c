@@ -13,12 +13,14 @@
 #include "client/window/frame.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#include <inttypes.h>
 #include <stdio.h>
 #include <string.h>
 #include <xmmintrin.h>
 #ifdef _WIN32
 #include <windows.h>
 #else
+#include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #endif
 #define CHECK(x)                                                                                   \
@@ -320,6 +322,446 @@ static int focus_cycle(client_application *app, const mc_client_frame_state *hos
     return 0;
 }
 
+#ifndef _WIN32
+/* Bounded read-only X properties. No atom/property is created or changed. */
+static bool x11_property32(Display *display, Window window, const char *name, Atom expected,
+                           unsigned long *value) {
+    if (display == NULL || window == None)
+        return false;
+    const Atom property = XInternAtom(display, name, True);
+    if (property == None)
+        return false;
+    Atom actual = None;
+    int format = 0;
+    unsigned long count = 0, remaining = 0;
+    unsigned char *data = NULL;
+    const int status = XGetWindowProperty(display, window, property, 0, 1, False, expected, &actual,
+                                          &format, &count, &remaining, &data);
+    const bool observed = status == Success && actual == expected && format == 32 && count == 1 &&
+                          remaining == 0 && data != NULL;
+    if (observed)
+        *value = ((const unsigned long *)data)[0] & 0xffffffffUL;
+    if (data != NULL)
+        XFree(data);
+    return observed;
+}
+
+static void observe_x11_activation(const mc_client_frame_state *host, SDL_Window *other,
+                                   const char *phase, long long cycle) {
+    const SDL_PropertiesID properties = SDL_GetWindowProperties(host->frame_window);
+    Display *display =
+        SDL_GetPointerProperty(properties, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, NULL);
+    const Window frame =
+        (Window)SDL_GetNumberProperty(properties, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0);
+    const Window canvas = (Window)SDL_GetNumberProperty(
+        SDL_GetWindowProperties(host->canvas_window), SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0);
+    const Window auxiliary = (Window)SDL_GetNumberProperty(SDL_GetWindowProperties(other),
+                                                           SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0);
+    Window native_focus = None;
+    int revert = RevertToNone;
+    const bool have_focus = display != NULL && XGetInputFocus(display, &native_focus, &revert);
+    unsigned long active = 0, frame_time = 0, canvas_time = 0, auxiliary_time = 0;
+    const bool have_active =
+        display != NULL && x11_property32(display, DefaultRootWindow(display), "_NET_ACTIVE_WINDOW",
+                                          XA_WINDOW, &active);
+    const bool have_frame_time =
+        x11_property32(display, frame, "_NET_WM_USER_TIME", XA_CARDINAL, &frame_time);
+    const bool have_canvas_time =
+        x11_property32(display, canvas, "_NET_WM_USER_TIME", XA_CARDINAL, &canvas_time);
+    const bool have_auxiliary_time =
+        x11_property32(display, auxiliary, "_NET_WM_USER_TIME", XA_CARDINAL, &auxiliary_time);
+    fprintf(stderr,
+            "CANVAS WM-observation phase=%s cycle%lld native-query%d native-focus%lu "
+            "Frame-xid%lu Canvas-xid%lu Aux-xid%lu WM-active-query%d WM-active%lu "
+            "Frame-user-property-query%d Frame-user-property%lu Canvas-user-property-query%d "
+            "Canvas-user-property%lu Aux-user-property-query%d Aux-user-property%lu\n",
+            phase, cycle, have_focus, (unsigned long)native_focus, (unsigned long)frame,
+            (unsigned long)canvas, (unsigned long)auxiliary, have_active, active, have_frame_time,
+            frame_time, have_canvas_time, canvas_time, have_auxiliary_time, auxiliary_time);
+}
+#endif
+
+static void request_other_focus(SDL_Window *window) {
+    (void)SDL_RaiseWindow(window);
+    const SDL_PropertiesID p = SDL_GetWindowProperties(window);
+#ifdef _WIN32
+    HWND hwnd = SDL_GetPointerProperty(p, SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
+    if (hwnd != NULL) {
+        (void)SetForegroundWindow(hwnd);
+        (void)SetFocus(hwnd);
+    }
+#else
+    Display *display = SDL_GetPointerProperty(p, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, NULL);
+    Window xid = (Window)SDL_GetNumberProperty(p, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0);
+    XWindowAttributes bounds;
+    if (display != NULL && xid != 0 && XGetWindowAttributes(display, xid, &bounds) &&
+        bounds.map_state == IsViewable) {
+        XSetInputFocus(display, xid, RevertToParent, CurrentTime);
+        XFlush(display);
+    }
+#endif
+}
+
+/* Reacquire only the real Frame. The production Frame event listener must
+ * establish Canvas focus; this arm never directly focuses the child. */
+static void request_frame_activation(const mc_client_frame_state *host) {
+    (void)SDL_RaiseWindow(host->frame_window);
+    const SDL_PropertiesID p = SDL_GetWindowProperties(host->frame_window);
+#ifdef _WIN32
+    HWND hwnd = SDL_GetPointerProperty(p, SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
+    if (hwnd != NULL)
+        (void)SetForegroundWindow(hwnd);
+#else
+    Display *display = SDL_GetPointerProperty(p, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, NULL);
+    Window xid = (Window)SDL_GetNumberProperty(p, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0);
+    XWindowAttributes bounds = {0};
+    const bool have_bounds =
+        display != NULL && xid != 0 && XGetWindowAttributes(display, xid, &bounds);
+    if (have_bounds && bounds.map_state == IsViewable) {
+        const Window canvas = (Window)SDL_GetNumberProperty(
+            SDL_GetWindowProperties(host->canvas_window), SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0);
+        const uint64_t deadline = SDL_GetTicks() + 3000;
+        mc_client_sdk_update *update = mc_client_display_update_owner(host->app->display);
+        if (canvas == 0 || update == NULL) {
+            fprintf(stderr, "Canvas X11 Frame activation missing Canvas or SDK peer\n");
+            return;
+        }
+        Window focused = None;
+        int revert = RevertToNone;
+        for (unsigned int attempt = 0; attempt < 64 && SDL_GetTicks() < deadline; ++attempt) {
+            XGetInputFocus(display, &focused, &revert);
+            if (focused == canvas)
+                return;
+            /* A pending WM activation may overwrite an earlier request. Only
+             * the real Frame is requested, and only while native focus is
+             * outside this Frame/Canvas pair. The production Frame listener
+             * remains responsible for focusing the child. */
+            if (focused != xid)
+                XSetInputFocus(display, xid, RevertToParent, CurrentTime);
+            XSync(display, False);
+            mc_client_sdk_update_error error;
+            if (mc_client_sdk_display_process_messages(update, &error) != MC_CLIENT_SDK_UPDATE_OK) {
+                fprintf(stderr, "Canvas X11 Frame activation SDK failure: %s\n",
+                        error.operation == NULL ? "unknown operation" : error.operation);
+                return;
+            }
+            XGetInputFocus(display, &focused, &revert);
+            if (focused == canvas)
+                return;
+            SDL_Delay(2);
+        }
+        fprintf(stderr, "Canvas X11 Frame activation pending: frame%lu canvas%lu focus%lu\n",
+                (unsigned long)xid, (unsigned long)canvas, (unsigned long)focused);
+    } else {
+        fprintf(stderr,
+                "Canvas X11 Frame activation unavailable: display%d frame%lu bounds%d map%d\n",
+                display != NULL, (unsigned long)xid, have_bounds, bounds.map_state);
+    }
+#endif
+}
+
+static int observe_reactivation(mc_client_sdk_update *update, const mc_client_frame_state *host,
+                                SDL_Window *other, bool canvas, uint64_t deadline) {
+    bool active = false;
+#ifndef _WIN32
+    mc_client_sdk_update_error error = {0};
+    int processed = -1, active_status = -1;
+#endif
+    do {
+#ifdef _WIN32
+        mc_client_sdk_update_error error;
+        CHECK(mc_client_sdk_display_process_messages(update, &error) == MC_CLIENT_SDK_UPDATE_OK &&
+              mc_client_sdk_display_active(update, &active, &error) == MC_CLIENT_SDK_UPDATE_OK);
+#else
+        CHECK((processed = (int)mc_client_sdk_display_process_messages(update, &error)) ==
+                  (int)MC_CLIENT_SDK_UPDATE_OK &&
+              (active_status = (int)mc_client_sdk_display_active(update, &active, &error)) ==
+                  (int)MC_CLIENT_SDK_UPDATE_OK);
+#endif
+        if (active == canvas && SDL_GetKeyboardFocus() == (canvas ? host->canvas_window : other) &&
+            native_has_focus(canvas ? host->canvas_window : other))
+            return 0;
+        SDL_Delay(2);
+    } while (SDL_GetTicks() < deadline);
+    fprintf(stderr,
+            "Canvas real reactivation timed out: expected-canvas%d SDK%d SDL-id%u native%d "
+            "frame-flags%llu canvas-flags%llu\n",
+            canvas, active,
+            SDL_GetKeyboardFocus() == NULL ? 0 : SDL_GetWindowID(SDL_GetKeyboardFocus()),
+            native_has_focus(host->canvas_window),
+            (unsigned long long)SDL_GetWindowFlags(host->frame_window),
+            (unsigned long long)SDL_GetWindowFlags(host->canvas_window));
+#ifndef _WIN32
+    const SDL_PropertiesID properties = SDL_GetWindowProperties(host->frame_window);
+    Display *display =
+        SDL_GetPointerProperty(properties, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, NULL);
+    const Window frame =
+        (Window)SDL_GetNumberProperty(properties, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0);
+    const Window child = (Window)SDL_GetNumberProperty(SDL_GetWindowProperties(host->canvas_window),
+                                                       SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0);
+    const Window auxiliary = (Window)SDL_GetNumberProperty(SDL_GetWindowProperties(other),
+                                                           SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0);
+    Window native_focus = None;
+    int revert = RevertToNone;
+    const bool have_focus = display != NULL && XGetInputFocus(display, &native_focus, &revert);
+    XWindowAttributes frame_bounds = {0}, canvas_bounds = {0}, auxiliary_bounds = {0};
+    const bool have_frame =
+        display != NULL && frame != 0 && XGetWindowAttributes(display, frame, &frame_bounds);
+    const bool have_canvas =
+        display != NULL && child != 0 && XGetWindowAttributes(display, child, &canvas_bounds);
+    const bool have_auxiliary = display != NULL && auxiliary != 0 &&
+                                XGetWindowAttributes(display, auxiliary, &auxiliary_bounds);
+    mc_client_events_state events = {0};
+    const bool have_events =
+        mc_client_events_inspect(mc_client_display_event_port(host->app->display), &events);
+    mc_client_sdk_input_state input = {0};
+    const bool have_input =
+        mc_client_sdk_input_inspect(mc_client_display_inputs(host->app->display), &input);
+    mc_client_sdk_bytes_state mouse_read = {0}, keyboard_read = {0};
+    const bool have_mouse =
+        have_input && mc_client_sdk_bytes_inspect(input.mouse_read, &mouse_read);
+    const bool have_keyboard =
+        have_input && mc_client_sdk_bytes_inspect(input.keyboard_read, &keyboard_read);
+    const SDL_Event *pending = have_input && input.pending_native_event != NULL
+                                   ? mc_client_event_read(input.pending_native_event)
+                                   : NULL;
+    SDL_Window *keyboard = SDL_GetKeyboardFocus();
+    fprintf(
+        stderr,
+        "CANVAS timeout-observation expected-canvas%d processed%d active-status%d SDK-active%d "
+        "SDL-id%u Frame-id%u Canvas-id%u Aux-id%u native-query%d native-focus%lu native-revert%d "
+        "Frame-xid%lu Frame-query%d Frame-map%d Canvas-xid%lu Canvas-query%d Canvas-map%d "
+        "Aux-xid%lu Aux-query%d Aux-map%d SDK-error%d SDK-operation=%s\n",
+        canvas, processed, active_status, active, keyboard == NULL ? 0 : SDL_GetWindowID(keyboard),
+        SDL_GetWindowID(host->frame_window), SDL_GetWindowID(host->canvas_window),
+        SDL_GetWindowID(other), have_focus, (unsigned long)native_focus, revert,
+        (unsigned long)frame, have_frame, have_frame ? frame_bounds.map_state : -1,
+        (unsigned long)child, have_canvas, have_canvas ? canvas_bounds.map_state : -1,
+        (unsigned long)auxiliary, have_auxiliary, have_auxiliary ? auxiliary_bounds.map_state : -1,
+        (int)error.status, error.operation == NULL ? "none" : error.operation);
+    fprintf(stderr,
+            "CANVAS timeout-queues events-query%d ports%zu retained-global-records%zu bytes%zu "
+            "tickets%zu port-tickets%zu pump-generation%" PRIu64 " events-active%d dirty%d "
+            "input-query%d input-phase%d pending-native%d pending-type%u queue-full-results%zu "
+            "mouse-query%d mouse-position%zu mouse-limit%zu keyboard-query%d keyboard-position%zu "
+            "keyboard-limit%zu\n",
+            have_events, events.ports, events.records, events.bytes, events.tickets,
+            events.port_tickets, events.pump_generation, events.active, events.dirty, have_input,
+            (int)input.phase, pending != NULL, pending == NULL ? 0 : pending->type,
+            input.source_queue_full_results, have_mouse, mouse_read.position, mouse_read.limit,
+            have_keyboard, keyboard_read.position, keyboard_read.limit);
+    observe_x11_activation(host, other, "observation-timeout", -1);
+#endif
+    return 1;
+}
+
+#ifdef _WIN32
+static bool native_cursor_constrained(SDL_Window *window) {
+    HWND hwnd = SDL_GetPointerProperty(SDL_GetWindowProperties(window),
+                                       SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
+    RECT bounds, clip;
+    POINT origin = {0, 0};
+    if (hwnd == NULL || !GetClientRect(hwnd, &bounds) || !ClientToScreen(hwnd, &origin) ||
+        !GetClipCursor(&clip))
+        return false;
+    return clip.right > clip.left && clip.bottom > clip.top && clip.left >= origin.x &&
+           clip.top >= origin.y && clip.right <= origin.x + bounds.right &&
+           clip.bottom <= origin.y + bounds.bottom;
+}
+#endif
+
+/* Actual shown sibling activation, with Canvas kept visible throughout. No
+ * focus records are pushed. Only the declared keyboard transport below uses
+ * SDL_PushEvent; it is not a claim of physical HID delivery. */
+static int real_reactivation(client_application *app, const mc_client_frame_state *host,
+                             int32_t caps) {
+    mc_client_sdk_update *update = mc_client_display_update_owner(app->display);
+    mc_client_sdk_input *input = mc_client_display_inputs(app->display);
+    mc_client_source_da *screen = app->r;
+    const bool focused = app->N;
+    const SDL_GLContext context = SDL_GL_GetCurrentContext();
+    CHECK(screen != NULL && !focused && context != NULL &&
+          SDL_GL_GetCurrentWindow() == host->canvas_window && !input->grabbed);
+    SDL_Window *other =
+        SDL_CreateWindow("Canvas reactivation control", 240, 140, SDL_WINDOW_HIDDEN);
+    CHECK(other != NULL && other != host->frame_window && other != host->canvas_window);
+    mc_client_event_port *other_events = NULL;
+    mc_client_events_error events_error;
+    CHECK(mc_client_events_attach(other, 0, &other_events, &events_error) == MC_CLIENT_EVENTS_OK);
+    CHECK(SDL_ShowWindow(other));
+    request_focus(host);
+    CHECK(observe_reactivation(update, host, other, true, SDL_GetTicks() + 3000) == 0);
+    mc_client_mouse_helper_error mouse_error;
+    CHECK(mc_client_mouse_helper_grab(app->C, input, &mouse_error) == MC_CLIENT_MOUSE_HELPER_OK &&
+          mouse_error.source_returned && input->grabbed &&
+          SDL_GetWindowRelativeMouseMode(host->canvas_window));
+    const uint64_t start_deadline = SDL_GetTicks() + 3000;
+    size_t cycles = 0;
+    while (cycles < 64 && (cycles < 2 || SDL_GetTicks() < start_deadline)) {
+        /* A late start receives a complete observation bound, rather than
+         * failing because the cycle-start sampling window expires midway. */
+        const uint64_t deadline = SDL_GetTicks() + 3000;
+        request_other_focus(other);
+        CHECK(observe_reactivation(update, host, other, false, deadline) == 0);
+        CHECK((SDL_GetWindowFlags(host->frame_window) & SDL_WINDOW_HIDDEN) == 0 &&
+              (SDL_GetWindowFlags(host->canvas_window) & SDL_WINDOW_HIDDEN) == 0);
+#ifndef _WIN32
+        observe_x11_activation(host, other, "before-frame-request", (long long)cycles);
+#endif
+        request_frame_activation(host);
+#ifndef _WIN32
+        observe_x11_activation(host, other, "after-frame-request", (long long)cycles);
+#endif
+        CHECK(observe_reactivation(update, host, other, true, deadline) == 0);
+        /* Native child focus is already established. Do not issue another
+         * focus request while late actual parent activation messages drain. */
+        for (size_t pump = 0; pump < 8; ++pump) {
+            bool active = false;
+            mc_client_sdk_update_error error;
+#ifndef _WIN32
+            const mc_client_sdk_update_status processed =
+                mc_client_sdk_display_process_messages(update, &error);
+            const bool active_called = processed == MC_CLIENT_SDK_UPDATE_OK;
+            const int active_status =
+                active_called ? (int)mc_client_sdk_display_active(update, &active, &error)
+                              : -1; /* Explicit not-called diagnostic sentinel. */
+            SDL_Window *keyboard = SDL_GetKeyboardFocus();
+            const bool native_canvas = native_has_focus(host->canvas_window);
+            const bool grabbed = input->grabbed;
+            const bool relative = SDL_GetWindowRelativeMouseMode(host->canvas_window);
+            SDL_Window *gl_window = SDL_GL_GetCurrentWindow();
+            const SDL_GLContext gl_context = SDL_GL_GetCurrentContext();
+            const bool same_screen = app->r == screen;
+            const bool actual_focus_field = app->N;
+            const bool passive = processed == MC_CLIENT_SDK_UPDATE_OK && active_called &&
+                                 active_status == (int)MC_CLIENT_SDK_UPDATE_OK && active &&
+                                 keyboard == host->canvas_window && native_canvas && grabbed &&
+                                 relative && gl_window == host->canvas_window &&
+                                 gl_context == context && same_screen &&
+                                 actual_focus_field == focused;
+            if (!passive) {
+                const SDL_PropertiesID properties = SDL_GetWindowProperties(host->frame_window);
+                Display *display =
+                    SDL_GetPointerProperty(properties, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, NULL);
+                const Window native_frame =
+                    (Window)SDL_GetNumberProperty(properties, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0);
+                const Window native_child =
+                    (Window)SDL_GetNumberProperty(SDL_GetWindowProperties(host->canvas_window),
+                                                  SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0);
+                const Window native_other = (Window)SDL_GetNumberProperty(
+                    SDL_GetWindowProperties(other), SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0);
+                Window native_focus = None;
+                int revert = RevertToNone;
+                if (display != NULL)
+                    XGetInputFocus(display, &native_focus, &revert);
+                fprintf(stderr,
+                        "CANVAS passive-failure cycle%zu pump%zu processed%d active-called%d "
+                        "active-status%d SDK-active%d SDL-id%u Frame-id%u Canvas-id%u Aux-id%u "
+                        "native-canvas%d native-focus%lu native-Frame%lu native-Canvas%lu "
+                        "native-Aux%lu native-revert%d grabbed%d backend-grabbed%d "
+                        "relative%d GL-window-id%u GL-window-same%d GL-context-same%d "
+                        "GL-context-null%d "
+                        "screen-same%d App-N%d expected-N%d Frame-flags%llu Canvas-flags%llu "
+                        "Aux-flags%llu SDK-error%d SDK-operation=%s\n",
+                        cycles, pump, (int)processed, active_called, active_status, active,
+                        keyboard == NULL ? 0 : SDL_GetWindowID(keyboard),
+                        SDL_GetWindowID(host->frame_window), SDL_GetWindowID(host->canvas_window),
+                        SDL_GetWindowID(other), native_canvas, (unsigned long)native_focus,
+                        (unsigned long)native_frame, (unsigned long)native_child,
+                        (unsigned long)native_other, revert, grabbed, input->backend_grabbed,
+                        relative, gl_window == NULL ? 0 : SDL_GetWindowID(gl_window),
+                        gl_window == host->canvas_window, gl_context == context, gl_context == NULL,
+                        same_screen, actual_focus_field, focused,
+                        (unsigned long long)SDL_GetWindowFlags(host->frame_window),
+                        (unsigned long long)SDL_GetWindowFlags(host->canvas_window),
+                        (unsigned long long)SDL_GetWindowFlags(other), (int)error.status,
+                        error.operation == NULL ? "none" : error.operation);
+            }
+            CHECK(passive);
+#else
+            CHECK(
+                mc_client_sdk_display_process_messages(update, &error) == MC_CLIENT_SDK_UPDATE_OK &&
+                mc_client_sdk_display_active(update, &active, &error) == MC_CLIENT_SDK_UPDATE_OK &&
+                active && SDL_GetKeyboardFocus() == host->canvas_window &&
+                native_has_focus(host->canvas_window) && input->grabbed &&
+                SDL_GetWindowRelativeMouseMode(host->canvas_window) &&
+                SDL_GL_GetCurrentWindow() == host->canvas_window &&
+                SDL_GL_GetCurrentContext() == context && app->r == screen && app->N == focused);
+#endif
+#ifdef _WIN32
+            CHECK(native_cursor_constrained(host->canvas_window));
+#endif
+            SDL_Delay(2);
+        }
+        ++cycles;
+    }
+    CHECK(cycles >= 2);
+    /* Deliver actual Canvas-targeted SDK keyboard records after reactivation.
+     * The distinct timestamps identify these authored occurrences only. */
+    mc_client_sdk_input_error input_error;
+    bool next;
+    mc_client_sdk_key_event key;
+    size_t drained = 0;
+    do {
+        CHECK(mc_client_sdk_keyboard_next(input, &next, &key, &input_error) ==
+              MC_CLIENT_SDK_INPUT_OK);
+        ++drained;
+    } while (next && drained < 256);
+    CHECK(!next);
+    const uint64_t stamp = UINT64_C(0x0102030405060708);
+    for (size_t i = 0; i < 2; ++i) {
+        SDL_Event event = {0};
+        event.type = i == 0 ? SDL_EVENT_KEY_DOWN : SDL_EVENT_KEY_UP;
+        event.key.timestamp = stamp + i;
+        event.key.windowID = SDL_GetWindowID(host->canvas_window);
+        event.key.scancode = SDL_SCANCODE_A;
+        event.key.key = SDLK_A;
+        event.key.down = i == 0;
+        CHECK(SDL_PushEvent(&event));
+    }
+    mc_client_sdk_update_error update_error;
+    CHECK(mc_client_sdk_display_process_messages(update, &update_error) == MC_CLIENT_SDK_UPDATE_OK);
+    size_t authored = 0;
+    drained = 0;
+    do {
+        CHECK(mc_client_sdk_keyboard_next(input, &next, &key, &input_error) ==
+              MC_CLIENT_SDK_INPUT_OK);
+        if (next && key.nanos >= (int64_t)stamp && key.nanos <= (int64_t)(stamp + 1)) {
+            CHECK(authored < 2 && key.nanos == (int64_t)(stamp + authored) && key.key == 30 &&
+                  key.pressed == (authored == 0) && !key.repeat);
+            ++authored;
+        }
+        ++drained;
+    } while (next && drained < 256);
+    CHECK(!next && authored == 2);
+    CHECK(mc_client_mouse_helper_ungrab(app->C, input, &mouse_error) == MC_CLIENT_MOUSE_HELPER_OK &&
+          mouse_error.source_returned && mouse_error.site.pc == 25 && !input->grabbed &&
+          !SDL_GetWindowRelativeMouseMode(host->canvas_window));
+    int width, height;
+    CHECK(native_extent(host->canvas_window, &width, &height));
+    if ((caps & 1) != 0)
+        CHECK(pointer_at(host->canvas_window, width / 2, height - 1 - height / 2));
+    else
+        puts("CANVAS reactivation native warp skipped: actual capability0");
+    CHECK(mc_client_events_retire(&other_events, &events_error) == MC_CLIENT_EVENTS_OK &&
+          other_events == NULL);
+    SDL_DestroyWindow(other);
+    CHECK(SDL_GL_GetCurrentWindow() == host->canvas_window &&
+          SDL_GL_GetCurrentContext() == context && app->r == screen && app->N == focused);
+#ifdef _WIN32
+    const char *clip_scope = "win32";
+#else
+    const char *clip_scope = "not-observed";
+#endif
+    printf(
+        "CANVAS reactivation cycles=%zu sibling-visible=1 native-canvas-focus=1 "
+        "SDK-canvas-focus=1 frame-only-reactivation=1 passive-pumps=8 relative-grab=1 keyboard=2 "
+        "warp-capability=%d "
+        "native-clip=%s checked-owner-retirement=1\n",
+        cycles, caps & 1, clip_scope);
+    return 0;
+}
+
 static int fp_prefix(client_application *app, bool grabbed, int32_t caps) {
     if ((caps & 1) == 0) {
         puts("CANVAS warp FP prefix skipped: actual capability0");
@@ -357,8 +799,9 @@ int main(int argc, char **argv) {
     const bool visible = strcmp(profile, "hidden") != 0;
     const bool fp_position = strcmp(profile, "visible-fp-position") == 0;
     const bool fp_ungrab = strcmp(profile, "visible-fp-ungrab") == 0;
+    const bool reactivation = strcmp(profile, "visible-reactivation") == 0;
     CHECK(strcmp(profile, "hidden") == 0 || strcmp(profile, "visible") == 0 || fp_position ||
-          fp_ungrab);
+          fp_ungrab || reactivation);
     SDL_SetMainReady();
     const mc_client_application_options options = {.width = 854,
                                                    .height = 480,
@@ -403,6 +846,8 @@ int main(int argc, char **argv) {
         CHECK(mouse_helper(app) == 0);
         CHECK(warp_after_resize(app, &host, caps) == 0);
         CHECK(focus_cycle(app, &host) == 0);
+        if (reactivation)
+            CHECK(real_reactivation(app, &host, caps) == 0);
     }
     /* Hidden-host native fault control: a queued focus-gained record must not
      * demand X11 viewability or Win32 foreground focus from an intentional

@@ -20,6 +20,14 @@ if(BUILD_TESTING AND TARGET mc_client_runtime)
                 --artifacts "${CMAKE_CURRENT_BINARY_DIR}/world-selection-captures")
             set_tests_properties(client.world_selection_loop PROPERTIES
                 LABELS "public;integration;client;input;graphics;ownership" TIMEOUT 240)
+            add_test(NAME client.world_save_title COMMAND Python3::Interpreter -B
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_world_selection_loop.py"
+                --executable "$<TARGET_FILE:mc_test_world_selection_loop>"
+                --assets "${MC_APPLICATION_STARTUP_IMPORTED_RESOURCES}"
+                --artifacts "${CMAKE_CURRENT_BINARY_DIR}/world-save-title-captures"
+                --mode save-title --mode save-title-session)
+            set_tests_properties(client.world_save_title PROPERTIES
+                LABELS "public;integration;client;input;graphics;storage;ownership" TIMEOUT 600)
             add_test(NAME client.world_selection_light COMMAND Python3::Interpreter -B
                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_world_selection_loop.py"
                 --executable "$<TARGET_FILE:mc_test_world_selection_loop>"

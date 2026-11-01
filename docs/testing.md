@@ -1,5 +1,38 @@
 # Test scope and reproduction
 
+## Client Mob NBT and source World persistence
+
+`entity.client_mob_nbt` loads all eleven client Overworld Mobs through the real
+source World factory and Registry. Two full saves and two reloads check 83
+snapshots: 61 common original cases and 22 own-field readbacks from new Worlds.
+The fixture emits 82 binary NBT files and one false Pig Boolean result. Each
+host's executed headless fixture passes 972 native checks. The separate
+`entity.client_mob_nbt_wolf_owner` profile passes 43 checks for counted UTF16,
+equal-owner identity at budget zero, overlapping replacement limits, retained
+reader stores and external String holds through Entity/World/class retirement.
+These ownership limits are native policy, without Java OOM equivalence.
+
+`entity.player_nbt_errors` retains the measured 544-byte diagnostic contract and
+checks value expansion of actual cold-Skeleton and first/repeated Sheep class
+failures after owner retirement. Its authored all-member matrix remains a
+separate passive storage control. See the [Mob contract](entity/mob-nbt.md).
+
+```text
+ctest --test-dir <build> -C Debug -R '^(entity.client_mob_nbt|entity.client_mob_nbt_wolf_owner|entity.player_nbt_errors)$' --output-on-failure
+```
+
+The unchanged original recipe ran 62 outputs per ordinary/JDI VM on Windows
+and Linux, with 3,086 events and 74 observed Code pins per host. The optional
+original CTest defaults off and requires a full JDK 17 and the verified client
+JAR. [Comparison instructions](../tests/reference/entity/mob_nbt/comparison-README.md)
+record 61 shared cases, the single original-only mutable-Compound control,
+explicit input-Z/constructor-entropy differences and separately qualified
+corruption checks. Current native/comparison metadata identify the actual
+executables and retained captures. These headless controls provide no visible
+Save-and-quit or complete original World caller qualification. The
+[ordinary client save route](client/world-saving.md) records that separate
+static-source and UI scope.
+
 ## Source Chunk output and World reload
 
 `storage.source_region_output` runs four fresh-process profiles over real
@@ -110,6 +143,87 @@ Original tests require supplied verified JARs and
 [comparison recipe](../tests/reference/world/source_metadata_output/comparison-README.md)
 and [handler contract](world/save-handler.md#metadata-output) record the scopes
 and retained source/tool/capture hashes. Public CI keeps original tests off.
+
+## Visible Windows Tiny save/title
+
+The current Windows selection passes all seven CTests in 106.43 seconds:
+six Frame/Canvas tests and the 95.08-second visible Save and quit test. The
+latter completes both normal Tiny leave and the session-mismatch failure
+control. The [hash-only qualification record](../tests/reference/client/save_title/native-qualification.json)
+retains actual product, source/helper, capture, execution and independent
+verification hashes. Earlier failing attempts keep their original results.
+
+Both modes use actual GameSettings input `viewDistance:3` and a valid
+pre-bootstrap unsent openInventory statistic loaded by the real statistics
+reader. SDK Escape, genuine ID4 recovery when needed, and a separate Pause ID1
+drive the source leave. No active/paused flag or runtime statistics Map is
+repaired. Tiny with that saved-player statistic does not qualify fresh-player
+notices or default-Far playability.
+
+The final normal capture enters on frame 1 with 88 eligible Chunks at time 18.
+Live Info grows from 3,207,168 to 3,506,176 after metadata; stored SizeOnDisk
+therefore retains 3,207,168. Independent decoding checks 377 Chunks and separates
+48 earlier Pause writes from the 88 explicit-leave changes. All App clears,
+fresh FU, retained renderer/effects references and 864 fixture checks pass.
+The strict source-list rule remains Byte1 for written empty lists, Compound10
+for nonempty lists, and the original type for untouched authored records.
+The earlier 54-file retained recheck and fresh normal run remain separate
+observations; their 56 and 62 changed Chunks are not forced equal to this run.
+The old Compound-only decoder failure is retained.
+
+The session capture enters on frame 0 with nine eligible Chunks at time 18 and
+unchanged Info size 3,506,176. It reaches `fm.b:42`, the native `us` allocation
+dependency, then stops at leave64: only `i` is cleared; `f` and `h` remain, no FU
+is created, the original successful load remains retained and replay is BUSY.
+No thrown `us`, source finally-close or successful title return is claimed.
+Its exact-entry metadata/region bytes remain unchanged; 121 prior Pause writes
+are separate. External-effects BUSY, retry and terminal retirement pass. Only
+after Windows closes the retained handle does the fixture restore and read back
+the exact original eight-byte token. All 1,264 fixture checks pass.
+
+The actual source-World terminal-input regression first fails against the old
+runtime on both hosts, then passes all eight default profiles on Windows and
+sanitized Linux. Additional real FileInputStream and Handler holds cause BUSY;
+actual release permits admission. Passive state, metadata, regions and the
+original token remain preserved. Admission is limited to the
+[known inactive mismatch input](world/save-handler.md#retained-session-mismatch-and-terminal-retirement).
+The seventeen original Code pins remain static evidence; these native UI and
+ownership checks supply no complete original caller comparison. Linux visible
+save/title, ordinary reselection and extended play remain separate.
+
+The final isolated Linux Canvas invocation passes six tests in 10.602 seconds
+with private Xvfb/Openbox, llvmpipe LLVM 20.1.2 / Mesa 25.2.8, a 4.5 core context,
+ASan leak detection and UBSan halt-on-error. Source, products and assets match
+across the run; all ten recorded cleanup entries pass and its authority is
+removed. This is Canvas qualification, not a Linux visible save/title run.
+
+An independent read-only audit of the earlier 9.82-second isolated run verifies
+3,263 source inputs, six products, 413 assets, ten tools and three CTest-registration
+hashes. It records 64 real focus cycles and 128 WM transitions. Native capabilities
+report seven and warp capability one; native warp is actually exercised. Later
+drift from that earlier capture is confined to the World-save fixture and its
+executable; the Canvas products remain unchanged. Openbox identity comes from
+its launch record and native process identity; `_NET_WM_PID` is absent. Its ten
+cleanup entries pass and a later read-only check finds no active members in all
+eleven recorded command sessions. That cleanup covers the recorded PIDs and
+sessions. WSLg warp/native-auxiliary-focus failures remain unresolved. The
+[Frame/Canvas recipe](client/frame-canvas.md#scope-and-limits) requires an
+already-running private Xvfb server and Openbox with explicit X11, software-GL,
+leak-detection and UBSan environments.
+
+The seven affected Entity tests also pass on both hosts: `entity.nbt`,
+`entity.classes`, `entity.factory`, `entity.player_nbt_errors`,
+`entity.nbt_observation`, `entity.client_mob_nbt` and
+`entity.client_mob_nbt_wolf_owner`. The obsolete client unsupported-family
+expectation was updated without changing server failures or original fixtures.
+These results keep their own headless scope. The final E cohort passes all
+33 distinct selected headless CTests on both hosts, with no failures or skips:
+13.08 seconds on Windows and 47.80 seconds on sanitized Linux. Both hosts build
+34 selected targets in 33.01 and 21.49 seconds, respectively. All 3,264 recorded
+inputs match before and after each build/test phase. The hash-only native record
+pins these E receipts separately from the Windows UI and isolated Linux Canvas
+runs. These selected regressions do not establish fresh-client, default-Far or
+complete original caller qualification.
 
 ## Native Frame and Canvas
 

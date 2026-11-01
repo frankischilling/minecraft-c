@@ -24,6 +24,8 @@
 #include "client/runtime/world_tick.h"
 #include "client/startup/application_startup.h"
 #include "client/startup/application_startup_internal.h"
+#include "client/window/frame.h"
+#include "client/window/frame_platform.h"
 #include "client/world/load_world.h"
 #include "client/world/prepare_world.h"
 #include "client/world/render_global_access.h"
@@ -34,6 +36,7 @@
 #include "mc/client/gui/gui_ingame_draw.h"
 #include "mc/client/input/movement_input.h"
 #include "mc/client/particles/effect_renderer.h"
+#include "mc/client/settings/construction.h"
 #include "mc/client/statistics/writer.h"
 #include "mc/client/world/chunk_cache.h"
 #include "mc/client/world/held_item_draw.h"
@@ -359,6 +362,11 @@ typedef struct fixture {
     mc_client_menu_loop_state state;
     uintptr_t repeat_sheep_identity; /* Borrowed identity; World/Chunk own the live Entity. */
     uintptr_t animal_identity; /* Independent actor profile; World/Chunk publication ownership. */
+    /* Authored session fault input, independent of every source/native owner.
+     * Its bounded path copy survives SDL environment and bootstrap teardown. */
+    char save_title_session_path[8192];
+    uint8_t save_title_session_token[8];
+    bool save_title_session_authored;
 } fixture;
 
 /* This continuation uses an existing-player statistic read by the genuine
@@ -1829,7 +1837,7 @@ static int loaded_terminal_admission_controls(fixture *f) {
 }
 
 static int normal_terminal_retirement_controls(fixture *f, mc_client_source_da **external,
-                                               bool selected_load) {
+                                               bool selected_load, bool source_left) {
     mc_client_menu_loop_state source;
     client_application *app = f->app;
     mc_client_menu_loop *same_loop = f->loop;
@@ -1845,9 +1853,49 @@ static int normal_terminal_retirement_controls(fixture *f, mc_client_source_da *
         CHECK(mc_client_screen_transitions_terminal_classify(transitions, &scope, &error) ==
                   MC_WORLD_STORAGE_OK &&
               scope == MC_CLIENT_TERMINAL_EMPTY_STORAGE && error.status == MC_WORLD_STORAGE_OK);
+    } else if (source_left) {
+        mc_client_screen_transition_state retained;
+        mc_client_world_load_state load;
+        CHECK(controller != NULL && mc_client_screen_transitions_inspect(transitions, &retained) &&
+              retained.world_load != NULL &&
+              mc_client_world_load_inspect(retained.world_load, &load) && load.source_returned &&
+              load.leave.started && load.leave.calls == 1 && load.leave.i_cleared &&
+              load.world != NULL && load.player != NULL && load.input != NULL && app->i == NULL &&
+              app->view_occurrence == NULL &&
+              app->active_world == (load.leave.f_cleared ? NULL : load.world) &&
+              app->h == (load.leave.h_cleared ? NULL : load.player));
     } else {
         CHECK((loaded_draw_reached(&source) || unpaused_world_reached(&source, app)) &&
               controller != NULL);
+    }
+    if (source_left) {
+        /* An external occurrence must refuse native retirement while the
+         * retained Load anchors the World, including after App.f/h were cleared. */
+        mc_client_effect_renderer *effects = app->effect_renderer;
+        mc_client_screen_transition_state retained;
+        mc_client_world_load_state load;
+        mc_effect_renderer_snapshot particles;
+        mc_client_terminal_storage_scope scope;
+        mc_world_storage_error error;
+        CHECK(mc_client_effect_renderer_retain(effects) == MC_EFFECT_RENDERER_OK &&
+              !mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
+              terminal_source_diagnostic_same(f, &source) == 0 && !f->state.terminal_tail_entered &&
+              f->state.retirement_world != NULL &&
+              f->state.retirement_world->status == MC_WORLD_STORAGE_BUSY &&
+              strcmp(f->state.retirement_world->operation,
+                     "Load terminal external effect occurrence") == 0 &&
+              mc_client_screen_transitions_inspect(transitions, &retained) &&
+              retained.world_load != NULL &&
+              mc_client_world_load_inspect(retained.world_load, &load) && load.world != NULL &&
+              load.player != NULL && load.leave.calls == 1 && load.leave.i_cleared &&
+              app->active_world == (load.leave.f_cleared ? NULL : load.world) &&
+              app->h == (load.leave.h_cleared ? NULL : load.player) && app->i == NULL &&
+              mc_client_effect_renderer_read(effects, &particles) &&
+              particles.world == load.world &&
+              mc_client_screen_transitions_terminal_classify(transitions, &scope, &error) ==
+                  MC_WORLD_STORAGE_OK &&
+              scope == MC_CLIENT_TERMINAL_SELECTED_LOAD &&
+              mc_client_effect_renderer_release(effects) == MC_EFFECT_RENDERER_OK);
     }
     CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
           terminal_source_diagnostic_same(f, &source) == 0 && f->state.terminal_prepare_selected &&
@@ -3384,6 +3432,461 @@ static int remaining_controls(fixture *f, const creature_profile *profile,
     return 0;
 }
 
+/* The ordinary executable owns the Frame before App construction. Observe
+ * that same host here; request actual native focus without authoring a focus
+ * event or changing App.N. Frame/App borrows end at the first bootstrap close. */
+static int save_title_focus(fixture *f) {
+    mc_client_source_frame *frame = mc_client_bootstrap_frame(f->bootstrap);
+    mc_client_frame_state host;
+    CHECK(frame != NULL && mc_client_source_frame_inspect(frame, &host) && !host.active &&
+          !host.failed && host.app == f->app && host.frame_window != NULL &&
+          host.canvas_window != NULL);
+    mc_client_sdk_update *update = mc_client_display_update_owner(f->app->display);
+    mc_client_sdk_update_error error;
+    bool active = false;
+    const uint64_t deadline = SDL_GetTicks() + 3000;
+    do {
+        mc_client_frame_error native = {0};
+        CHECK(SDL_RaiseWindow(host.frame_window) &&
+              mc_client_frame_native_focus(host.canvas_window, &native) &&
+              mc_client_sdk_display_process_messages(update, &error) == MC_CLIENT_SDK_UPDATE_OK &&
+              mc_client_sdk_display_active(update, &active, &error) == MC_CLIENT_SDK_UPDATE_OK);
+        if (active && SDL_GetKeyboardFocus() == host.canvas_window)
+            break;
+        SDL_Delay(1);
+    } while (SDL_GetTicks() < deadline);
+    CHECK(active && SDL_GetKeyboardFocus() == host.canvas_window);
+    return 0;
+}
+
+static int save_title_host(fixture *f, const char *stage, bool focus, uint32_t *frame_id,
+                           uint32_t *canvas_id) {
+    mc_client_source_frame *frame = mc_client_bootstrap_frame(f->bootstrap);
+    mc_client_frame_state host;
+    mc_client_display_parent_state parent;
+    mc_client_canvas_state canvas;
+    mc_client_mouse_helper_state helper;
+    CHECK(f->app != NULL && frame != NULL && mc_client_source_frame_inspect(frame, &host) &&
+          !host.active && !host.failed && host.app == f->app && host.canvas != NULL &&
+          f->app->m == host.canvas && host.frame_window != NULL && host.canvas_window != NULL &&
+          host.frame_window != host.canvas_window &&
+          mc_client_source_canvas_inspect(host.canvas, &canvas) && canvas.peer_bound &&
+          !canvas.active && canvas.graphics == 0 && canvas.width == 854 && canvas.height == 480 &&
+          mc_client_display_stage_parent_inspect(f->app->display, &parent) &&
+          parent.parent == host.canvas && parent.listener_parent == host.canvas &&
+          parent.borrowed_window && parent.window == host.canvas_window &&
+          mc_client_display_window(f->app->display) == host.canvas_window &&
+          mc_client_mouse_helper_inspect(f->app->C, &helper) &&
+          helper.phase == MC_CLIENT_MOUSE_HELPER_READY && helper.source_c == host.canvas &&
+          !helper.active);
+    const uint32_t actual_frame = SDL_GetWindowID(host.frame_window),
+                   actual_canvas = SDL_GetWindowID(host.canvas_window);
+    CHECK(actual_frame != 0 && actual_canvas != 0 && actual_frame != actual_canvas &&
+          canvas.window_id == actual_canvas);
+    if (*frame_id == 0) {
+        *frame_id = actual_frame;
+        *canvas_id = actual_canvas;
+    }
+    CHECK(*frame_id == actual_frame && *canvas_id == actual_canvas);
+    if (focus)
+        CHECK(save_title_focus(f) == 0);
+    printf("WORLD_SAVE_TITLE_HOST stage=%s frame-id=%" PRIu32 " canvas-id=%" PRIu32
+           " canvas=1 display-parent=1 helper-parent=1 bound-app=1 borrowed-window=1\n",
+           stage, actual_frame, actual_canvas);
+    return 0;
+}
+
+static int save_title_eligibility(mc_world_runtime *world, const mc_chunk_provider_fields *provider,
+                                  size_t *eligible, int64_t *world_time) {
+    CHECK(mc_world_info_time_get(world->fields.x, world_time) == MC_WORLD_INFO_OK);
+    *eligible = 0;
+    for (size_t i = 0; i < provider->cache->insertion_count; ++i) {
+        const mc_chunk_state *chunk = provider->cache->insertions[i];
+        if (chunk != NULL && !chunk->blank && !chunk->never_save &&
+            (chunk->dirty || (chunk->has_entities && chunk->last_save_time != *world_time)))
+            ++*eligible;
+    }
+    return 0;
+}
+
+/* Recover only an actually published source Pause, through its real ID4 SDK
+ * button. These screens stay retained by the transition owner, so the later
+ * controlled Escape must allocate a different Pause. No flag/clock repair. */
+static int save_title_resume(fixture *f, mc_world_runtime *world,
+                             const mc_chunk_provider_fields *provider,
+                             mc_client_source_da *recovered[4], size_t *focus_pauses,
+                             size_t *eligible, int64_t *world_time) {
+    while (f->app->r != NULL) {
+        mc_client_source_da *pause = f->app->r;
+        CHECK(pause->kind == MC_CLIENT_SCREEN_PAUSE && *focus_pauses < 4 &&
+              save_title_focus(f) == 0);
+        recovered[(*focus_pauses)++] = pause;
+        const size_t mouse_before = f->state.mouse_events;
+        CHECK(push_button(f, pause, 4, true) == 0 && push_button(f, pause, 4, false) == 0 &&
+              transfer(f) == 0);
+        /* Debug Chunk compilation may exceed the source Timer reset threshold.
+         * Wait for actual GUI ticks without changing the Timer or queued input. */
+        const uint64_t deadline = SDL_GetTicks() + 60000;
+        size_t frames = 0;
+        do {
+            CHECK(save_title_focus(f) == 0 && frame(f) == 0 &&
+                  save_title_eligibility(world, provider, eligible, world_time) == 0);
+            ++frames;
+        } while (f->app->r == pause && frames < 64 && SDL_GetTicks() < deadline);
+        CHECK(f->app->r != pause && f->state.mouse_events >= mouse_before + 2);
+    }
+    CHECK(f->app->r == NULL && f->app->N);
+    return 0;
+}
+
+typedef struct save_title_entry_budget {
+    size_t entries, files, bytes;
+} save_title_entry_budget;
+
+typedef struct save_title_entry_walk {
+    const char *destination;
+    unsigned int depth;
+    save_title_entry_budget *budget;
+} save_title_entry_walk;
+
+static bool save_title_entry_tree(const char *, const char *, unsigned int,
+                                  save_title_entry_budget *);
+
+static SDL_EnumerationResult SDLCALL save_title_entry_file(void *context, const char *directory,
+                                                           const char *name) {
+    save_title_entry_walk *walk = context;
+    char source[8192], target[8192];
+    if (++walk->budget->entries > 1024 || strcmp(name, ".") == 0 || strcmp(name, "..") == 0 ||
+        strchr(name, '/') != NULL || strchr(name, '\\') != NULL)
+        return SDL_ENUM_FAILURE;
+    const int a = snprintf(source, sizeof(source), "%s%s", directory, name);
+    const int b = snprintf(target, sizeof(target), "%s/%s", walk->destination, name);
+    if (a <= 0 || (size_t)a >= sizeof(source) || b <= 0 || (size_t)b >= sizeof(target))
+        return SDL_ENUM_FAILURE;
+    SDL_PathInfo info;
+    if (!SDL_GetPathInfo(source, &info))
+        return SDL_ENUM_FAILURE;
+    if (info.type == SDL_PATHTYPE_DIRECTORY)
+        return walk->depth < 3 &&
+                       save_title_entry_tree(source, target, walk->depth + 1, walk->budget)
+                   ? SDL_ENUM_CONTINUE
+                   : SDL_ENUM_FAILURE;
+    if (info.type != SDL_PATHTYPE_FILE || info.size > 1048576 || walk->budget->files >= 1024 ||
+        info.size > 16u * 1048576u - walk->budget->bytes || !SDL_CopyFile(source, target))
+        return SDL_ENUM_FAILURE;
+    ++walk->budget->files;
+    walk->budget->bytes += (size_t)info.size;
+    return SDL_ENUM_CONTINUE;
+}
+
+static bool save_title_entry_tree(const char *source, const char *target, unsigned int depth,
+                                  save_title_entry_budget *budget) {
+    save_title_entry_walk walk = {target, depth, budget};
+    return SDL_CreateDirectory(target) &&
+           SDL_EnumerateDirectory(source, save_title_entry_file, &walk);
+}
+
+/* Preserve the actual pre-frame bytes, never run a save/flush to make them.
+ * Separate bounded directories retain zero-tick Pause writes before the frame
+ * that really enters button1. No previous candidate snapshot is overwritten. */
+static int save_title_entry_snapshot(size_t frame_index, size_t *aggregate, size_t *bytes) {
+    const char *source =
+        SDL_GetEnvironmentVariable(SDL_GetEnvironment(), "MC_WORLD_SAVE_TITLE_SAVES");
+    const char *root =
+        SDL_GetEnvironmentVariable(SDL_GetEnvironment(), "MC_WORLD_SAVE_TITLE_ENTRIES");
+    char target[8192];
+    CHECK(source != NULL && root != NULL && frame_index < 64 && *aggregate <= 64u * 16u * 1048576u);
+    const int n = snprintf(target, sizeof(target), "%s/frame-%zu", root, frame_index);
+    CHECK(n > 0 && (size_t)n < sizeof(target));
+    save_title_entry_budget budget = {0};
+    CHECK(save_title_entry_tree(source, target, 0, &budget) && budget.files != 0 &&
+          budget.bytes <= 64u * 16u * 1048576u - *aggregate);
+    *aggregate += budget.bytes;
+    *bytes = budget.bytes;
+    return 0;
+}
+
+/* These two ordinary UI profiles never assign an App/source World field. The
+ * only authored failure input is the actual eight-byte session.lock file. */
+static int save_title_controls(fixture *f, mc_client_source_da *initial, const char *capture_path,
+                               bool mismatch) {
+    client_application *app = f->app;
+    mc_client_screen_transition_state transitions;
+    mc_client_world_load_state load;
+    CHECK(mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
+          transitions.world_load != NULL &&
+          mc_client_world_load_inspect(transitions.world_load, &load) && load.source_returned &&
+          load.world == app->active_world && load.player == app->h && app->i == app->h &&
+          !f->state.failed);
+    mc_world_runtime *world = load.world;
+    mc_entity *player = load.player;
+    mc_client_render_global *renderer = app->g;
+    mc_client_effect_renderer *effects = app->effect_renderer;
+    mc_effect_renderer_snapshot particles;
+    CHECK(renderer->fields.k == world && mc_client_effect_renderer_read(effects, &particles) &&
+          particles.world == world && repeat_statistics_controls(f, false) == 0);
+
+    /* Wait only through actual Timer-selected frames for an eligible cached
+     * Chunk. No dirty/q/time field is repaired to manufacture a write. */
+    mc_chunk_provider_fields provider;
+    mc_world_storage_error storage;
+    CHECK(mc_chunk_provider_bind_fields(world->fields.v, &provider, &storage) ==
+              MC_WORLD_STORAGE_OK &&
+          provider.cache != NULL);
+    size_t eligible = 0;
+    int64_t world_time = 0;
+    mc_client_source_da *recovered[4] = {0};
+    size_t focus_pauses = 0;
+    const uint64_t tick_deadline = SDL_GetTicks() + 3000;
+    for (;;) {
+        CHECK(save_title_resume(f, world, &provider, recovered, &focus_pauses, &eligible,
+                                &world_time) == 0 &&
+              save_title_eligibility(world, &provider, &eligible, &world_time) == 0);
+        if (eligible != 0 || SDL_GetTicks() >= tick_deadline)
+            break;
+        CHECK(save_title_focus(f) == 0 && frame(f) == 0 &&
+              save_title_eligibility(world, &provider, &eligible, &world_time) == 0);
+    }
+    CHECK(eligible != 0 && app->r == NULL && app->N &&
+          mc_client_screen_transitions_inspect(app->screen_transitions, &transitions));
+    size_t screens_before_escape = 0, keyboard_before = 0;
+    mc_client_source_da *pause = NULL;
+    for (size_t attempt = 0; attempt < 4; ++attempt) {
+        CHECK(app->r == NULL && app->N && eligible != 0 &&
+              mc_client_screen_transitions_inspect(app->screen_transitions, &transitions));
+        screens_before_escape = transitions.screens;
+        keyboard_before = f->state.keyboard_events;
+        printf("WORLD_SAVE_TITLE_RECOVERY focus-pauses=%zu keyboard-before-escape=%zu resumed=1\n",
+               focus_pauses, keyboard_before);
+        CHECK(push_escape(f, true) == 0 && push_escape(f, false) == 0 && transfer(f) == 0);
+        const uint64_t attempt_deadline = SDL_GetTicks() + 60000;
+        size_t attempt_frames = 0;
+        do {
+            CHECK(save_title_focus(f) == 0 && frame(f) == 0);
+            ++attempt_frames;
+        } while (app->r == NULL && f->state.keyboard_events == keyboard_before &&
+                 attempt_frames < 64 && SDL_GetTicks() < attempt_deadline);
+        pause = app->r;
+        if (f->state.keyboard_events >= keyboard_before + 2)
+            break;
+
+        /* Only the observed zero-tick inactive-render Pause may precede BOTH
+         * queued Escape events. A partial key drain or missing Pause is not a
+         * retry prefix. Keep the same total recovery ledger and attempt budget. */
+        mc_client_pause_screen_state automatic;
+        mc_client_screen_error automatic_error;
+        mc_client_sdk_update_error update;
+        mc_timer_view timer;
+        bool active = true;
+        CHECK(f->state.keyboard_events == keyboard_before && pause != NULL &&
+              pause->kind == MC_CLIENT_SCREEN_PAUSE && pause != initial && !app->N &&
+              atomic_load(&app->o) && mc_timer_view_get(app->timer, &timer) && timer.ticks == 0 &&
+              mc_client_sdk_display_active(mc_client_display_update_owner(app->display), &active,
+                                           &update) == MC_CLIENT_SDK_UPDATE_OK &&
+              !active &&
+              mc_client_screen_pause_inspect((mc_client_source_oz *)pause, &automatic,
+                                             &automatic_error) == MC_CLIENT_SCREEN_OK &&
+              automatic.last_initialization_returned &&
+              mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
+              transitions.screens == screens_before_escape + 1 && focus_pauses < 4 &&
+              attempt + 1 < 4 && attempt_frames < 64 && SDL_GetTicks() < attempt_deadline);
+        for (size_t i = 0; i < focus_pauses; ++i)
+            CHECK(pause != recovered[i]);
+        recovered[focus_pauses++] = pause;
+        const size_t mouse_before = f->state.mouse_events;
+        CHECK(push_button(f, pause, 4, true) == 0 && push_button(f, pause, 4, false) == 0 &&
+              transfer(f) == 0);
+        /* da.e captures this old OZ once. Its Mouse loop executes actual ID4
+         * before its Keyboard loop drains the queued pair on that SAME OZ,
+         * even though the action has already stored App.r=NULL. */
+        do {
+            CHECK(save_title_focus(f) == 0 && frame(f) == 0 &&
+                  save_title_eligibility(world, &provider, &eligible, &world_time) == 0);
+            ++attempt_frames;
+        } while (app->r == pause && attempt_frames < 64 && SDL_GetTicks() < attempt_deadline);
+        CHECK(app->r == NULL && app->N && eligible != 0 &&
+              f->state.mouse_events >= mouse_before + 2 &&
+              f->state.keyboard_events == keyboard_before + 2 &&
+              mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
+              transitions.screens == screens_before_escape + 1);
+        printf("WORLD_SAVE_TITLE_AUTOPAUSE attempt=%zu focus-pauses=%zu old-oz-keys=2 "
+               "real-id4=1 resumed=1 frames=%zu\n",
+               attempt + 1, focus_pauses, attempt_frames);
+        pause = NULL;
+    }
+    mc_client_pause_screen_state paused;
+    mc_client_screen_error screen_error;
+    CHECK(pause != NULL && pause->kind == MC_CLIENT_SCREEN_PAUSE && pause != initial && !app->N &&
+          f->state.keyboard_events >= keyboard_before + 2 &&
+          mc_client_screen_pause_inspect((mc_client_source_oz *)pause, &paused, &screen_error) ==
+              MC_CLIENT_SCREEN_OK &&
+          paused.last_initialization_returned &&
+          mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
+          transitions.screens == screens_before_escape + 1);
+    for (size_t i = 0; i < focus_pauses; ++i)
+        CHECK(pause != recovered[i]);
+    printf("WORLD_SAVE_TITLE_ESCAPE keyboard-before=%zu keyboard-after=%zu fresh-pause=1 "
+           "distinct-recovered=1\n",
+           keyboard_before, f->state.keyboard_events);
+    const size_t screens_before = transitions.screens;
+    mc_world_info_fields info_before, info_after;
+    CHECK(mc_world_info_fields_get(world->fields.x, &info_before) == MC_WORLD_INFO_OK &&
+          capture(f, capture_path) == 0);
+    const char *lock_path =
+        SDL_GetEnvironmentVariable(SDL_GetEnvironment(), "MC_WORLD_SAVE_TITLE_SESSION");
+    uint8_t obstruction[8];
+    if (mismatch) {
+        CHECK(lock_path != NULL && !f->save_title_session_authored);
+        const int path_bytes = snprintf(f->save_title_session_path,
+                                        sizeof(f->save_title_session_path), "%s", lock_path);
+        CHECK(path_bytes > 0 && (size_t)path_bytes < sizeof(f->save_title_session_path));
+        /* A long preceding render can exceed py.a's1000ms reset gate even
+         * after a real60ms wait. Admit only after an actual short returned
+         * Pause frame, BEFORE the lock fault or any button1 input exists. */
+        const int64_t paused_time = info_before.value.time;
+        const uint64_t warmup_deadline = SDL_GetTicks() + 60000;
+        size_t warmup_frames = 0;
+        uint64_t frame_millis = UINT64_MAX;
+        do {
+            CHECK(app->r == pause && !app->N && atomic_load(&app->o) &&
+                  app->active_world == world && save_title_focus(f) == 0);
+            const uint64_t frame_started = SDL_GetTicks();
+            CHECK(frame(f) == 0);
+            frame_millis = SDL_GetTicks() - frame_started;
+            ++warmup_frames;
+            CHECK(app->r == pause && !app->N && atomic_load(&app->o) &&
+                  app->active_world == world &&
+                  save_title_eligibility(world, &provider, &eligible, &world_time) == 0 &&
+                  world_time == paused_time &&
+                  mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
+                  transitions.screens == screens_before);
+        } while (frame_millis >= 250 && warmup_frames < 64 && SDL_GetTicks() < warmup_deadline);
+        printf("WORLD_SAVE_TITLE_SESSION_ADMISSION frames=%zu frame-ms=%" PRIu64 " time=%" PRId64
+               " eligible=%zu source-frames=1 same-pause=1 "
+               "world-time-unchanged=1\n",
+               warmup_frames, frame_millis, world_time, eligible);
+        CHECK(frame_millis < 250);
+        /* Declared real input wait only: the next ordinary source Timer update
+         * must choose its own tick. Do not poll input or alter a Timer field. */
+        mc_timer_view before_wait, after_wait;
+        CHECK(mc_timer_view_get(app->timer, &before_wait));
+        const uint64_t wait_start = SDL_GetTicks();
+        SDL_Delay(60);
+        const uint64_t waited = SDL_GetTicks() - wait_start;
+        CHECK(waited >= 60 && mc_timer_view_get(app->timer, &after_wait) &&
+              after_wait.ticks == before_wait.ticks &&
+              after_wait.partial_ticks == before_wait.partial_ticks &&
+              after_wait.ticks_per_second == before_wait.ticks_per_second &&
+              after_wait.speed == before_wait.speed);
+        printf("WORLD_SAVE_TITLE_SESSION_WAIT requested-ms=60 actual-ms=%" PRIu64
+               " timer-ticks=%" PRId32 " timer-unchanged=1\n",
+               waited, after_wait.ticks);
+        SDL_IOStream *input = SDL_IOFromFile(f->save_title_session_path, "rb");
+        uint8_t extra;
+        CHECK(input != NULL &&
+              SDL_ReadIO(input, f->save_title_session_token, sizeof(f->save_title_session_token)) ==
+                  sizeof(f->save_title_session_token) &&
+              SDL_ReadIO(input, &extra, 1) == 0 && SDL_CloseIO(input));
+        memcpy(obstruction, f->save_title_session_token, sizeof(obstruction));
+        obstruction[0] ^= 1u;
+        CHECK(SDL_SaveFile(f->save_title_session_path, obstruction, sizeof(obstruction)));
+        f->save_title_session_authored = true;
+    }
+    int64_t first, last;
+    CHECK(mc_platform_current_time_millis(&first) == MC_PLATFORM_MILLIS_OK &&
+          push_button(f, pause, 1, true) == 0 && push_button(f, pause, 1, false) == 0 &&
+          transfer(f) == 0);
+    bool returned = true;
+    const uint64_t save_deadline = SDL_GetTicks() + 60000;
+    size_t save_frames = 0, entry_aggregate = 0, entry_bytes = 0;
+    do {
+        CHECK(save_title_focus(f) == 0 && app->r == pause && !app->N && atomic_load(&app->o) &&
+              mc_chunk_provider_concrete_kind_of(world->fields.v) == MC_CHUNK_PROVIDER_MAP_CACHE &&
+              save_title_entry_snapshot(save_frames, &entry_aggregate, &entry_bytes) == 0 &&
+              mc_world_info_fields_get(world->fields.x, &info_before) == MC_WORLD_INFO_OK &&
+              save_title_eligibility(world, &provider, &eligible, &world_time) == 0 &&
+              mc_platform_current_time_millis(&first) == MC_PLATFORM_MILLIS_OK);
+        /* This real paused MAP_CACHE frame cannot save before GUI input: fd.w
+         * returns its field, paused controller/texture ticks are skipped, and
+         * the World tick follows button1/leave. Select this exact pre-frame
+         * snapshot only when the actual call below enters the source leave. */
+        returned = mc_client_menu_loop_frame(f->loop);
+        CHECK(mc_client_menu_loop_inspect(f->loop, &f->state) &&
+              mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
+              mc_client_world_load_inspect(transitions.world_load, &load));
+        if (!returned || load.leave.started)
+            break;
+        SDL_Delay(1);
+        ++save_frames;
+    } while (save_frames < 64 && SDL_GetTicks() < save_deadline);
+    CHECK(mc_platform_current_time_millis(&last) == MC_PLATFORM_MILLIS_OK);
+    CHECK(mc_world_info_fields_get(world->fields.x, &info_after) == MC_WORLD_INFO_OK);
+    printf("WORLD_SAVE_TITLE_ENTRY mode=%s frame=%zu eligible=%zu time=%" PRId64
+           " size-before=%" PRId64 " size-after=%" PRId64 " entered=%d bytes=%zu "
+           "copied-before-frame=1\n",
+           mismatch ? "save-title-session" : "save-title", save_frames, eligible,
+           info_before.value.time, info_before.value.size_on_disk, info_after.value.size_on_disk,
+           load.leave.started, entry_bytes);
+    CHECK(load.source_returned && load.failure->status == MC_CLIENT_WORLD_LOAD_OK &&
+          load.world == world && load.player == player && load.input != NULL &&
+          load.leave.calls == 1 && load.leave.started && load.leave.i_cleared &&
+          load.leave.failure != NULL && load.leave.saving != NULL && (mismatch || eligible != 0) &&
+          transitions.leave_calls == 1 && transitions.world_leave == load.leave.failure &&
+          app->i == NULL && app->view_occurrence == NULL && app->g == renderer &&
+          renderer->fields.k == world && app->effect_renderer == effects &&
+          mc_client_effect_renderer_read(effects, &particles) && particles.world == world &&
+          mc_world_info_fields_get(world->fields.x, &info_after) == MC_WORLD_INFO_OK);
+    if (mismatch) {
+        const mc_world_source_error *cause = &load.leave.saving->source_session;
+        CHECK(!returned && f->state.failed && load.leave.failed && !load.leave.source_returned &&
+              load.leave.pc == 64 && !load.leave.f_cleared && !load.leave.h_cleared &&
+              app->active_world == world && app->h == player && app->r == pause &&
+              transitions.screens == screens_before && load.leave.failure->native_policy &&
+              cause->status == MC_WORLD_SOURCE_UNIMPLEMENTED && !cause->source_exception &&
+              cause->native_policy && cause->session_mismatch && cause->frame_count != 0 &&
+              cause->exception_class == NULL && cause->cause_site.pc == 35 &&
+              strcmp(cause->frames[0].class_name, "fm") == 0 &&
+              strcmp(cause->frames[0].method, "b") == 0 && cause->frames[0].pc == 42 &&
+              info_after.value.size_on_disk == info_before.value.size_on_disk);
+        mc_client_world_load_error retry;
+        CHECK(mc_client_world_load_leave((mc_client_world_load_call *)transitions.world_load,
+                                         &retry) == MC_CLIENT_WORLD_LOAD_BUSY &&
+              retry.native_policy && mc_client_world_load_inspect(transitions.world_load, &load) &&
+              load.leave.calls == 1 && load.leave.failed && load.leave.pc == 64 &&
+              app->active_world == world && app->h == player && app->i == NULL);
+    } else {
+        mc_client_screen_state title;
+        mc_world_source_chunk_loader_state loader;
+        mc_world_source_region_output_state output;
+        CHECK(returned && !f->state.failed && !load.leave.failed && load.leave.source_returned &&
+              load.leave.pc == 366 && load.leave.f_cleared && load.leave.h_cleared &&
+              load.leave.failure->status == MC_CLIENT_WORLD_LOAD_OK &&
+              load.leave.saving->status == MC_CHUNK_LIFECYCLE_OK && app->active_world == NULL &&
+              app->h == NULL && app->r != NULL && app->r != initial && app->r != pause &&
+              app->r->kind == MC_CLIENT_SCREEN_MAIN_MENU &&
+              transitions.screens == screens_before + 1 &&
+              mc_client_screen_inspect(app->r, &title, NULL) == MC_CLIENT_SCREEN_OK &&
+              title.phase == MC_CLIENT_SCREEN_READY && title.is_menu &&
+              app->r->initialization_count == 1 &&
+              mc_world_source_chunk_loader_inspect(world->source_construction->loader, &loader) &&
+              loader.save.source_returned && loader.save.closed && loader.save.output != NULL &&
+              mc_world_source_region_output_inspect(loader.save.output, &output) && output.closed &&
+              output.commit_returned && output.source_close_calls == 1 &&
+              info_after.value.size_on_disk >= info_before.value.size_on_disk);
+        CHECK(frame(f) == 0 && app->active_world == NULL &&
+              app->r->kind == MC_CLIENT_SCREEN_MAIN_MENU && capture(f, capture_path) == 0);
+    }
+    printf("WORLD_SAVE_TITLE mode=%s escape-sdk=1 button-id=1 leave-pc=%d i=1 f=%d h=%d "
+           "new-title=%d old-renderer-world=1 old-effects-world=1 original-load-returned=1 "
+           "eligible=%zu time=%" PRId64 " size-before=%" PRId64 " size-after=%" PRId64
+           " first=%" PRId64 " last=%" PRId64 " entry-frame=%zu entry-bytes=%zu\n",
+           mismatch ? "save-title-session" : "save-title", load.leave.pc, load.leave.f_cleared,
+           load.leave.h_cleared, !mismatch, eligible, info_before.value.time,
+           info_before.value.size_on_disk, info_after.value.size_on_disk, first, last, save_frames,
+           entry_bytes);
+    return 0;
+}
+
 int main(int argc, char **argv) {
     CHECK(argc == 4 &&
           (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
@@ -3391,6 +3894,7 @@ int main(int argc, char **argv) {
            strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
            strcmp(argv[2], "load-terminal") == 0 || strcmp(argv[2], "load-partial") == 0 ||
            strcmp(argv[2], "repeat") == 0 || strcmp(argv[2], "load-light") == 0 ||
+           strcmp(argv[2], "save-title") == 0 || strcmp(argv[2], "save-title-session") == 0 ||
            animal_profile_get(argv[2]) != NULL || creature_profile_get(argv[2]) != NULL ||
            remaining_profile_get(argv[2]) != NULL));
     const animal_profile *animal = animal_profile_get(argv[2]);
@@ -3404,15 +3908,18 @@ int main(int argc, char **argv) {
     const bool partial_load = strcmp(argv[2], "load-partial") == 0;
     const bool repeat_load = strcmp(argv[2], "repeat") == 0;
     const bool light_control = strcmp(argv[2], "load-light") == 0;
+    const bool save_title =
+        strcmp(argv[2], "save-title") == 0 || strcmp(argv[2], "save-title-session") == 0;
     const bool focused_load = strcmp(argv[2], "load") == 0 || repeat_load || light_control ||
-                              animals_load || creatures_load || remaining_load;
+                              animals_load || creatures_load || remaining_load || save_title;
     const bool loading_world = strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
                                terminal_admission || repeat_load || light_control || animals_load ||
-                               creatures_load || remaining_load;
+                               creatures_load || remaining_load || save_title;
     const bool populated =
         strcmp(argv[2], "populated") == 0 || double_click || loading_world || partial_load;
     const bool large = strcmp(argv[2], "large") == 0;
     fixture f = {0};
+    uint32_t save_title_frame_id = 0, save_title_canvas_id = 0;
     mc_client_bootstrap_status closed;
     uint64_t close_deadline;
     const mc_client_application_options options = {.assets = argv[1],
@@ -3420,11 +3927,28 @@ int main(int argc, char **argv) {
                                                    .width = 854,
                                                    .height = 480,
                                                    .hidden = !focused_load};
-    CHECK(mc_client_bootstrap_open(&options, &f.bootstrap) == MC_CLIENT_BOOTSTRAP_OK);
+    CHECK((save_title
+               ? mc_client_bootstrap_open_standalone(&options, &f.bootstrap)
+               : mc_client_bootstrap_open(&options, &f.bootstrap)) == MC_CLIENT_BOOTSTRAP_OK);
     f.app = mc_client_bootstrap_app(f.bootstrap);
-    if (repeat_load || animals_load || creatures_load || remaining_load)
+    if (save_title) {
+        mc_game_settings_state parsed;
+        mc_game_settings_source_state source;
+        CHECK(f.app != NULL && mc_game_settings_read_state(f.app->settings, &parsed) &&
+              parsed.values.render_distance == 3 &&
+              mc_game_settings_source_inspect(f.app->settings, &source) &&
+              source.phase == MC_GAME_SETTINGS_SOURCE_READY && !source.active && source.N != NULL &&
+              source.load_report != NULL && source.load_report->source_opened &&
+              source.load_report->source_close_reached && !source.load_report->file_absent &&
+              !source.load_report->outer_exception_caught && source.load_report->bad_options == 0 &&
+              source.load_report->lines_read == 1 && source.load_report->bytes_read == 15);
+        printf("WORLD_SAVE_TITLE_OPTIONS view-distance=3 lines=1 bytes=15 source-loaded=1\n");
+    }
+    if (repeat_load || animals_load || creatures_load || remaining_load || save_title)
         CHECK(repeat_statistics_controls(&f, true) == 0);
-    if (focused_load)
+    if (save_title)
+        CHECK(save_title_host(&f, "open", true, &save_title_frame_id, &save_title_canvas_id) == 0);
+    else if (focused_load)
         CHECK(SDL_RaiseWindow(mc_client_display_window(f.app->display)));
     CHECK(f.app != NULL && f.app->constructor_phase == MC_CLIENT_APP_READY && f.app->r != NULL &&
           f.app->r->kind == MC_CLIENT_SCREEN_MAIN_MENU);
@@ -3639,13 +4163,28 @@ int main(int argc, char **argv) {
                   f.state.world_frame->picking_returned && f.state.world_frame->viewport_set &&
                   f.state.world_frame->fog_blend_computed && f.state.world_frame->fog_returned &&
                   f.state.world_frame->camera_returned && f.state.world_frame->frustum_returned &&
-                  f.state.world_frame->sky_fog_returned && f.state.world_frame->sky_returned &&
-                  f.state.world_frame->sky != NULL && f.state.world_frame->sky->cleanup == NULL &&
                   f.state.world_frame->terrain_fog_returned &&
                   f.state.world_frame->frustum_constructed &&
                   f.state.world_frame->frustum_recentered && f.state.world_frame->culling_returned);
+            if (save_title) {
+                /* Actual post-camera Settings.e296 is3/Tiny. The source skips
+                 * sky fog306 and sky312 unless that SAME value is below2. */
+                CHECK(f.state.world_frame->fog_distance_branch_read &&
+                      f.state.world_frame->post_camera_render_distance == 3 &&
+                      !f.state.world_frame->sky_fog_returned &&
+                      !f.state.world_frame->sky_returned && f.state.world_frame->sky == NULL);
+            } else {
+                CHECK(f.state.world_frame->sky_fog_returned && f.state.world_frame->sky_returned &&
+                      f.state.world_frame->sky != NULL &&
+                      f.state.world_frame->sky->cleanup == NULL);
+            }
             if (focused_load)
                 CHECK(display_active && !f.state.failed && f.state.render_returned);
+            if (save_title) {
+                CHECK(save_title_controls(&f, initial, argv[3],
+                                          strcmp(argv[2], "save-title-session") == 0) == 0);
+                goto loaded_draw_controls_done;
+            }
             CHECK(f.state.hud != NULL && f.state.hud->returned && f.state.hud->source_pc == 2101 &&
                   f.state.hud->projection_returned && f.state.hud->hotbar_returned &&
                   f.state.hud->crosshair_returned && f.state.hud->stats_returned &&
@@ -4017,7 +4556,7 @@ int main(int argc, char **argv) {
     if (terminal_admission)
         CHECK(loaded_terminal_admission_controls(&f) == 0);
     if (loading_world && !terminal_admission && !repeat_load && !light_control && !animals_load &&
-        !creatures_load && !remaining_load) {
+        !creatures_load && !remaining_load && !save_title) {
         mc_world_runtime *world = f.app->active_world;
         mc_entity *player = f.app->h;
         mc_client_render_global *renderer = f.app->g;
@@ -4046,8 +4585,8 @@ int main(int argc, char **argv) {
         CHECK(mc_client_effect_renderer_release(effects) == MC_EFFECT_RENDERER_OK);
     }
     if (!loading_world || terminal_admission || repeat_load || light_control || animals_load ||
-        creatures_load || remaining_load) {
-        CHECK(normal_terminal_retirement_controls(&f, &external, loading_world) == 0);
+        creatures_load || remaining_load || save_title) {
+        CHECK(normal_terminal_retirement_controls(&f, &external, loading_world, save_title) == 0);
     } else {
         CHECK(!mc_client_menu_loop_retire(&f.loop) && f.loop != NULL && external != NULL);
         CHECK(mc_client_bootstrap_app(f.bootstrap) == f.app &&
@@ -4055,6 +4594,9 @@ int main(int argc, char **argv) {
         CHECK(mc_client_screen_release(&external, NULL) == MC_CLIENT_SCREEN_OK && external == NULL);
         CHECK(mc_client_menu_loop_retire(&f.loop) && f.loop == NULL);
     }
+    if (save_title)
+        CHECK(save_title_host(&f, "after-loop", false, &save_title_frame_id,
+                              &save_title_canvas_id) == 0);
 close_bootstrap:
     close_deadline = SDL_GetTicks() + 35000;
     do {
@@ -4063,6 +4605,30 @@ close_bootstrap:
             SDL_Delay(1);
     } while (closed == MC_CLIENT_BOOTSTRAP_BUSY && SDL_GetTicks() < close_deadline);
     CHECK(closed == MC_CLIENT_BOOTSTRAP_OK && f.bootstrap == NULL);
+    if (save_title) {
+        CHECK(save_title_frame_id != 0 && save_title_canvas_id != 0 &&
+              SDL_GetWindowFromID(save_title_frame_id) == NULL &&
+              SDL_GetWindowFromID(save_title_canvas_id) == NULL);
+        printf("WORLD_SAVE_TITLE_HOST stage=closed frame-id=%" PRIu32 " canvas-id=%" PRIu32
+               " windows-absent=1\n",
+               save_title_frame_id, save_title_canvas_id);
+    }
+    if (f.save_title_session_authored) {
+        /* The retained failed source input has now passed actual terminal and
+         * bootstrap cleanup. Never clear/close it early merely to restore an
+         * authored file: restore only after all native owners have retired. */
+        CHECK(save_title && strcmp(argv[2], "save-title-session") == 0 && f.loop == NULL &&
+              f.bootstrap == NULL && f.save_title_session_path[0] != '\0' &&
+              SDL_SaveFile(f.save_title_session_path, f.save_title_session_token,
+                           sizeof(f.save_title_session_token)));
+        SDL_IOStream *restored = SDL_IOFromFile(f.save_title_session_path, "rb");
+        uint8_t actual[8], extra;
+        CHECK(restored != NULL && SDL_ReadIO(restored, actual, sizeof(actual)) == sizeof(actual) &&
+              SDL_ReadIO(restored, &extra, 1) == 0 && SDL_CloseIO(restored) &&
+              memcmp(actual, f.save_title_session_token, sizeof(actual)) == 0);
+        f.save_title_session_authored = false;
+        printf("WORLD_SAVE_TITLE_SESSION_RESTORE after-bootstrap=1 exact-bytes=8 verified=1\n");
+    }
     printf("WORLD_SELECTION mode=%s cleanup=1 checks=%u\n", argv[2], checks);
     return 0;
 }
