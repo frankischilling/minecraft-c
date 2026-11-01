@@ -524,6 +524,9 @@ add_library(mc_java_outputs STATIC
     src/world/storage/java_output.c src/world/storage/java_data_output.c)
 target_link_libraries(mc_java_outputs PUBLIC mc_java_files
     PRIVATE mc_core mc_platform_files Threads::Threads mc_build_options)
+add_library(mc_compressed_output STATIC src/world/storage/compressed_output.c)
+target_link_libraries(mc_compressed_output PUBLIC mc_java_outputs mc_storage
+    PRIVATE ZLIB::ZLIBSTATIC mc_build_options)
 include(cmake/java_file_writer.cmake)
 include(cmake/java_file_urls.cmake)
 include(cmake/client_settings_source_save.cmake)
@@ -579,7 +582,7 @@ add_library(mc_persistence STATIC
     src/world/storage/store.c
     src/world/storage/chunk.c)
 target_link_libraries(mc_persistence PUBLIC mc_world mc_storage mc_world_info mc_java_outputs
-    mc_gzip_input PRIVATE mc_platform_time mc_build_options)
+    mc_gzip_input mc_compressed_output PRIVATE mc_platform_time mc_build_options)
 
 add_library(mc_world_saved_data STATIC
     src/world/saved_data/storage.c

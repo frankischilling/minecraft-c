@@ -1,5 +1,71 @@
 # Test scope and reproduction
 
+## Source metadata output
+
+Windows MSVC Debug and Linux Clang18 ASan/UBSan each build eighteen selected
+targets, including the ordinary client. `storage.source_metadata_output` passes
+23 fresh-process profiles and 1,294 checks per host. The profiles exercise fresh
+and existing files, exact preceding-current backups, ignored rename/delete
+refusals, actual FOS open failure, native literal/codec/UTF/output ceilings,
+retained child owners, reentry and passive terminal admission. Consumed native
+close failures retain an allocation-free retry without another close.
+
+Four profiles add an authored selected Player array, a partial three-byte
+constructor header, a large-array write failure followed by source finally30,
+and a failing finally close that replaces the write cause. Normal close22
+remains separate. Independent readback checks all supported metadata fields,
+modified UTF16 and real clock intervals. Fault streams preserve their actual
+partial bytes and trailer state without receiving completed-NBT or valid-gzip
+credit. Prepared Player payloads do not establish a live LocalPlayer/List call.
+
+`storage.compressed_output` separately passes 141 checks across ten real-file
+scenarios on each host. Its two successful decompressed payloads, 40,240 and
+65,548 bytes, equal the independently executed pinned JDK primitive output.
+Link maps prove that the fault controls use the canonical native byte-output
+body once. They do not replace the production FOS with a callback transport.
+
+Sixteen existing storage, source constructor/read, SavedData, Player NBT,
+World-save and terminal-inventory regressions pass per host. The final
+supplement changes only the new fixture: all seventeen inherited executables,
+including the client, remain byte-identical, retaining those execution results.
+All eighteen final products remain unchanged during qualification. Its 3,205
+recorded code, helper, Java and metadata inputs remain unchanged through the
+build/test phase. Later documentation and evidence annotations add no execution
+credit. The current project formatter checks 1,802 C/header/fragment files;
+8,698 current source-binding entries pass. Linux leak detection and UBSan
+halt-on-error are enabled throughout.
+
+The registered original metadata test passes seven prepared scenarios in
+independent ordinary and read-only JDI VMs on each host: fourteen original
+calls, 504 events and 22 exact observed Code pins per host. The installed
+profiles are Windows Temurin17.0.17+10 and Linux OpenJDK17.0.20.1. Seven
+matching-host native/original comparisons pass exact supported typed values,
+file-result projections, sentinels and intra-process backup preservation.
+LastPlayed remains independently interval-checked rather than forced equal.
+Native result flags are listed in reviewed source order; the original call
+order is independently observed. No native File event trace is invented.
+
+The separate authored original stream-fault test passes eighteen calls,
+205 events and eleven observed Code pins per host. It qualifies constructor,
+serialization/finally and normal-close exception ordering on that prepared
+OutputStream. These are separate from original operating-system FOS failures
+and from the native actual-I/O-first controls. The original caught open failure
+returns150; native execution still stops at the real `fm.a:147` diagnostic
+dependency. Complete JDK/NBT caller stacks, Java heap/OOM timing, HashMap byte
+order, compression-library identity, full World/Chunk saving and reload remain
+unqualified.
+
+Build `mc_test_compressed_output` and `mc_test_source_metadata_output`, then run
+`ctest --test-dir build -C Debug --output-on-failure -R '^storage\.(compressed_output|source_metadata_output)$'`.
+Original tests require supplied verified JARs and
+`MC_ENABLE_SOURCE_METADATA_OUTPUT_REFERENCE_TESTS=ON`; select actual JDK17
+`Java_JAVA_EXECUTABLE` and `Java_JAVAC_EXECUTABLE` paths. Run the two
+`reference.source_metadata_output` CTests. The
+[original recipe](../tests/reference/world/source_metadata_output/README.md),
+[comparison recipe](../tests/reference/world/source_metadata_output/comparison-README.md)
+and [handler contract](world/save-handler.md#metadata-output) record the scopes
+and retained source/tool/capture hashes. Public CI keeps original tests off.
+
 ## Native Frame and Canvas
 
 Twenty-two selected targets, including the normal client, build on Windows

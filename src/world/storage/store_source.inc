@@ -263,6 +263,7 @@ mc_world_source_status mc_world_store_source_classes_release(mc_world_store_sour
     mc_world_info_name_release(c->session_lock);
     mc_world_info_name_release(c->level_name);
     mc_world_info_name_release(c->old_name);
+    mc_world_info_name_release(c->new_name);
     mc_world_info_name_release(c->data_key);
     *slot = NULL;
     free(c);
@@ -615,7 +616,7 @@ mc_world_source_status mc_world_store_source_release(mc_world_store **slot,
     s->classes->active = true;
     v->phase = MC_WORLD_SOURCE_RETIRING;
     source_result(&s->work, MC_WORLD_SOURCE_OK, NULL, NULL, NULL, NULL, -1);
-    if (source_input_clear(s) != MC_WORLD_SOURCE_OK)
+    if (source_input_clear(s) != MC_WORLD_SOURCE_OK || source_write_clear(s) != MC_WORLD_SOURCE_OK)
         goto incomplete;
     while (store->chunks != NULL) {
         store_chunk *entry = store->chunks;
@@ -690,6 +691,7 @@ static mc_world_source_status source_admit(mc_world_store *store, mc_world_sourc
 }
 
 #include "source_metadata.inc"
+#include "source_metadata_output.inc"
 
 mc_world_source_status mc_world_store_source_classes_bind_regions(mc_world_store_source_classes *c,
                                                                   mc_world_source_regions *r,

@@ -74,3 +74,24 @@ foreach(_mc_reads_kind IN ITEMS ordinary close)
 endforeach()
 unset(_mc_reads_kind)
 unset(_mc_reads_target)
+
+add_executable(mc_test_compressed_output
+    tests/world/storage/test_compressed_output.c tests/world/storage/java_output_native.c)
+target_link_libraries(mc_test_compressed_output PRIVATE mc_compressed_output mc_build_options)
+if(MSVC)
+    target_link_options(mc_test_compressed_output PRIVATE
+        "/MAP:${CMAKE_CURRENT_BINARY_DIR}/mc_test_compressed_output.map")
+elseif(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+    target_link_options(mc_test_compressed_output PRIVATE
+        "-Wl,-Map,${CMAKE_CURRENT_BINARY_DIR}/mc_test_compressed_output.map")
+endif()
+add_test(NAME storage.compressed_output COMMAND Python3::Interpreter -B
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/storage/test_compressed_output.py"
+    --executable "$<TARGET_FILE:mc_test_compressed_output>"
+    --work-dir "${CMAKE_CURRENT_BINARY_DIR}/compressed-output-controls")
+set_tests_properties(storage.compressed_output PROPERTIES
+    LABELS "public;integration;storage;ownership;filesystem" TIMEOUT 240)
+
+include(cmake/tests/source_metadata_output_reference.cmake)
+
+include(cmake/tests/source_metadata_output.cmake)

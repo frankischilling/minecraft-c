@@ -64,6 +64,7 @@ typedef struct mc_java_file_output_state {
     mc_java_output_phase phase;
     size_t holds, owner_bytes, native_write_calls, source_close_calls, native_close_calls;
     uint64_t bytes_committed;
+    const mc_java_files *files;
     const mc_java_file *argument;
     const mc_world_info_name *path;
     const void *close_lock, *descriptor;

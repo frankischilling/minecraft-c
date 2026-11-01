@@ -20,7 +20,7 @@ struct mc_world_store_source_classes {
     mc_registry_error block_map_registry;
     mc_java_logger *source_a, *pending_logger;
     mc_world_info_name *minecraft, *players, *data, *session_lock;
-    mc_world_info_name *level_name, *old_name, *data_key;
+    mc_world_info_name *level_name, *old_name, *new_name, *data_key;
     mc_world_source_options options;
     mc_world_source_error failure, cleanup, work;
 };
@@ -30,11 +30,15 @@ typedef struct mc_world_store_source {
     mc_world_store_source_classes *classes;
     mc_world_source_error failure, cleanup, work;
     mc_world_source_input_state *input;
+    mc_world_source_output_state *output;
     mc_java_file *data_file;
     mc_world_info_name *data_name;
 } mc_world_store_source;
 
 static mc_world_source_status source_input_clear(mc_world_store_source *);
+static mc_world_source_status source_write_clear(mc_world_store_source *);
+static mc_world_storage_status
+store_source_write_record(mc_world_store *, const mc_world_info_record *, mc_world_storage_error *);
 static mc_world_storage_status store_source_legacy(mc_world_storage_error *error);
 static mc_world_storage_status store_source_native_admit(const mc_world_store *,
                                                          mc_world_storage_error *);

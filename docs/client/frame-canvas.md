@@ -78,9 +78,9 @@ original AWT/SDK/MouseHelper boundaries do not establish a complete original
 launcher, Frame or gameplay comparison. High-DPI behavior, fullscreen,
 created-Display reparenting, default Frame icons and extended play remain
 unqualified. Capability-zero Cursor construction retains a separate unfinished
-branch. Loaded-World close, metadata/Chunk output, source save/detach/reload and
-the remaining gameplay actions still require their own implementation and
-verification. See the [test record](../testing.md).
+branch. Loaded-World close, Chunk output, complete metadata diagnostics,
+source save/detach/reload and the remaining gameplay actions still require their
+own implementation and verification. See the [test record](../testing.md).
 
 Enable `MC_ENABLE_CLIENT_DISPLAY_TESTS` and supply imported resources through
 `MC_APPLICATION_STARTUP_IMPORTED_RESOURCES` to register the four standalone

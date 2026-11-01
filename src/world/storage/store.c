@@ -4,6 +4,7 @@
 #include "../runtime/source_terminal_internal.h"
 #include "../runtime/terminal_inventory_internal.h"
 #include "chunk_build_internal.h"
+#include "compressed_output_internal.h"
 #include "files.h"
 #include "generated_internal.h"
 #include "mc/core/java/java.h"
@@ -663,7 +664,7 @@ mc_world_storage_status mc_world_store_write_info_record(mc_world_store *store, 
                                                          const mc_world_info_record *record,
                                                          mc_world_storage_error *error) {
     if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
+        return store_source_write_record(store, record, error);
     if (store == NULL || mc_world_info_live_get(info) == NULL ||
         mc_world_info_record_root(record) == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "metadata record transport");
@@ -2291,6 +2292,86 @@ static mc_world_storage_status store_terminal_source_input(const mc_world_store_
     return MC_WORLD_STORAGE_OK;
 }
 
+static mc_world_storage_status store_terminal_source_output(const mc_world_store_source *source,
+                                                            mc_world_storage_error *error) {
+    const mc_world_source_output_state *output = source->output;
+    if (output == NULL)
+        return MC_WORLD_STORAGE_OK;
+    /* Source completion is not a condition for retiring a known native graph.
+     * Keep the receipt unchanged until actual final Handler release. */
+    bool compressed_holds_file = false;
+    if (output->compressed_output != NULL) {
+        const mc_java_output_status status = mc_compressed_output_terminal_admit(
+            output->compressed_output, output->file_output, &compressed_holds_file);
+        if (status != MC_JAVA_OUTPUT_OK)
+            return store_error(error,
+                               status == MC_JAVA_OUTPUT_BUSY ? MC_WORLD_STORAGE_BUSY
+                                                             : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal source compressed output ownership");
+    }
+    mc_java_file_output_state file = {0};
+    if (output->file_output != NULL) {
+        if (output->file_output == source->state.pending_fos)
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal source aliased session output");
+        if (!mc_java_file_output_inspect(output->file_output, &file))
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal source FileOutputStream owner");
+        if (file.active || file.phase == MC_JAVA_OUTPUT_CONSTRUCTING)
+            return store_error(error, MC_WORLD_STORAGE_BUSY,
+                               "Store terminal source active metadata output");
+        if ((file.phase != MC_JAVA_OUTPUT_RAW && file.phase != MC_JAVA_OUTPUT_FAILED &&
+             file.phase != MC_JAVA_OUTPUT_READY && file.phase != MC_JAVA_OUTPUT_RETIRING) ||
+            file.files != source->classes->files ||
+            file.holds < 1 + (size_t)compressed_holds_file ||
+            (file.argument != NULL && file.argument != output->new_file) ||
+            (file.path != NULL &&
+             (output->new_file == NULL || file.path != mc_java_file_path(output->new_file))) ||
+            file.descriptor_parent != (file.descriptor == NULL ? NULL : output->file_output))
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal source FileOutputStream provenance");
+        if (file.phase == MC_JAVA_OUTPUT_READY &&
+            (output->new_file == NULL || file.argument != output->new_file || file.path == NULL ||
+             file.descriptor == NULL || file.close_lock == NULL || file.pending_close_lock != NULL))
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal source ready FileOutputStream prefix");
+    }
+    const mc_java_file *files[] = {output->new_file, output->old_file, output->current_file};
+    for (size_t i = 0; i < sizeof(files) / sizeof(*files); ++i) {
+        if (files[i] == NULL)
+            continue;
+        if (files[i] == source->state.source_b || files[i] == source->state.source_c ||
+            files[i] == source->state.source_d || files[i] == source->state.session_file ||
+            (source->input != NULL && files[i] == source->input->file))
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal source aliased Handler File");
+        for (size_t j = 0; j < i; ++j)
+            if (files[j] == files[i])
+                return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                   "Store terminal source aliased output Files");
+        mc_java_file_state state;
+        if (mc_java_file_namespace(files[i]) != source->classes->files ||
+            mc_java_file_read_state(files[i], &state, NULL) != MC_JAVA_FILE_OK)
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal source output File provenance");
+        if (state.active || state.phase == MC_JAVA_FILE_CONSTRUCTING)
+            return store_error(error, MC_WORLD_STORAGE_BUSY,
+                               "Store terminal source active output File");
+        if ((state.phase != MC_JAVA_FILE_RAW && state.phase != MC_JAVA_FILE_FAILED &&
+             state.phase != MC_JAVA_FILE_READY && state.phase != MC_JAVA_FILE_RETIRING) ||
+            state.holds < 1 + (size_t)(file.argument == files[i]) || state.has_failed_array ||
+            (state.phase == MC_JAVA_FILE_READY && state.path == NULL) ||
+            (file.argument == files[i] && state.phase != MC_JAVA_FILE_READY) ||
+            ((state.phase == MC_JAVA_FILE_RAW || state.phase == MC_JAVA_FILE_FAILED) &&
+             state.path != NULL))
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store terminal source incomplete output File owner");
+    }
+    /* External counted File/FOS occurrences survive our nonfinal releases.
+     * Inactive native cleanup retries retain their consumed slots as observed. */
+    return MC_WORLD_STORAGE_OK;
+}
+
 mc_world_storage_status
 mc_world_store_terminal_source_admit(const mc_world_store *store,
                                      const mc_world_terminal_store_anchor *anchors, size_t count,
@@ -2364,6 +2445,9 @@ mc_world_store_terminal_source_admit(const mc_world_store *store,
         return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                            "Store terminal source incomplete session output");
     mc_world_storage_status status = store_terminal_source_input(source, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    status = store_terminal_source_output(source, error);
     if (status != MC_WORLD_STORAGE_OK)
         return status;
     /* No shared File/logging/region namespace is closed, retained or activated.

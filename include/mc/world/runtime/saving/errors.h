@@ -6,6 +6,7 @@
 #include "mc/world/runtime/entity_errors.h"
 #include "mc/world/runtime/tile_entities/errors.h"
 #include "mc/world/storage/chunk.h"
+#include "mc/world/storage/source_handler.h"
 
 typedef struct mc_world_player_metadata_error {
     mc_world_storage_status status;
@@ -14,6 +15,7 @@ typedef struct mc_world_player_metadata_error {
     size_t player_index;
     mc_entity_nbt_error entity;
     mc_world_info_error info;
+    mc_world_source_error source_handler;
 } mc_world_player_metadata_error;
 
 void mc_world_player_metadata_error_init(mc_world_player_metadata_error *);

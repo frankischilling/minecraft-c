@@ -408,7 +408,22 @@ static mc_chunk_callback_result metadata(void *owner, const mc_world_save_contex
         mc_world_storage_error cause = {0};
         mc_world_storage_status status =
             mc_world_runtime_build_player_metadata(runtime, &record, &detail);
-        if (status == MC_WORLD_STORAGE_OK)
+        if (status == MC_WORLD_STORAGE_OK && mc_world_store_is_source(runtime->fields.w)) {
+            const mc_world_source_status written = mc_world_store_source_write_info_record(
+                runtime->fields.w, record, &detail.source_handler);
+            status = written == MC_WORLD_SOURCE_OK           ? MC_WORLD_STORAGE_OK
+                     : written == MC_WORLD_SOURCE_BUSY       ? MC_WORLD_STORAGE_BUSY
+                     : written == MC_WORLD_SOURCE_LIMIT      ? MC_WORLD_STORAGE_LIMIT
+                     : written == MC_WORLD_SOURCE_ALLOCATION ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+                     : written == MC_WORLD_SOURCE_FILE || written == MC_WORLD_SOURCE_OUTPUT
+                         ? MC_WORLD_STORAGE_IO_ERROR
+                         : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+            cause = (mc_world_storage_error){status, detail.source_handler.operation, 0};
+            if (written != MC_WORLD_SOURCE_OK) {
+                detail.status = status;
+                detail.operation = detail.source_handler.operation;
+            }
+        } else if (status == MC_WORLD_STORAGE_OK)
             status = mc_world_store_write_info_record(runtime->fields.w, info, record, &cause);
         else
             cause = (mc_world_storage_error){status, detail.operation, 0};

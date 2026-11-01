@@ -1,5 +1,14 @@
 # Development status
 
+Completed Info records now write through the [source SaveHandler](world/save-handler.md#metadata-output),
+using real File/FOS, streaming NBT/GZIP and the original ignored-Boolean backup
+rotation. Windows and sanitized Linux each pass 23 profiles and 1,294 checks;
+seven prepared transport scenarios match unchanged original calls on each host.
+Native failures retain checked cleanup without inventing source close or file
+rotation. The World metadata callback is connected; complete source Chunk and
+nonempty SavedData output, exception diagnostics and save/detach/reload remain
+unfinished. These results do not establish a playable save session.
+
 The ordinary executable now owns a real [Frame and embedded Canvas](client/frame-canvas.md).
 Startup paints through native Graphics before attaching Display to the child.
 The menu host connects Component resize, native close and nonnull MouseHelper

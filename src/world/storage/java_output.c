@@ -451,6 +451,7 @@ bool mc_java_file_output_inspect(const mc_java_file_output *f, mc_java_file_outp
                                        .source_close_calls = f->source_closes,
                                        .native_close_calls = f->native_closes,
                                        .bytes_committed = f->committed,
+                                       .files = f->files,
                                        .argument = f->argument,
                                        .path = f->path,
                                        .close_lock = f->last_store >= 12 ? f->lock : NULL,

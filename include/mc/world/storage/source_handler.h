@@ -1,6 +1,7 @@
 #ifndef MC_WORLD_STORAGE_SOURCE_HANDLER_H
 #define MC_WORLD_STORAGE_SOURCE_HANDLER_H
 #include "mc/core/java/logging.h"
+#include "mc/world/storage/compressed_output.h"
 #include "mc/world/storage/gzip_input.h"
 #include "mc/world/storage/java_output.h"
 #include "mc/world/storage/store.h"
@@ -48,6 +49,7 @@ typedef struct mc_world_source_error {
     bool native_policy, source_exception, caught_io, diagnostic_frontier;
     mc_java_file_error file;
     mc_java_output_error output, finally_close;
+    mc_compressed_output_error compressed, compressed_close;
     mc_java_logging_error logging;
     mc_gzip_error gzip, gzip_close;
     mc_nbt_stream_error input, input_close;
@@ -90,6 +92,37 @@ typedef struct mc_world_source_state {
     const mc_world_store_source_classes *classes;
     const mc_world_source_error *failure, *cleanup;
 } mc_world_source_state;
+
+/* Actual fm.a(ei,List) output prefix after the caller has completed Info
+ * serialization at2. This owner retains real Files, FOS and the bounded
+ * compressed DataOutput child. No legacy paths or cached metadata are used. */
+typedef struct mc_world_source_output_state {
+    mc_java_file *new_file, *old_file, *current_file;
+    mc_java_file_output *file_output;
+    mc_compressed_output *compressed_output;
+    bool root_constructed, data_attached, file_constructed, compressed_constructed;
+    bool nbt_written, closed, source_returned;
+    bool old_exists_called, old_exists, old_delete_called, old_deleted;
+    bool old_rename_called, old_renamed, current_exists_called, current_exists;
+    bool current_delete_called, current_deleted;
+    bool new_rename_called, new_renamed, new_exists_called, new_exists;
+    bool new_delete_called, new_deleted;
+    int last_pc, compressed_pc, close_pc;
+} mc_world_source_output_state;
+
+/* Prepared reached transport: record is the actual completed ei.a(List)
+ * result from this caller. It is borrowed only for this exclusive call; this
+ * entry does not resample LastPlayed, select a Player, set version or recheck
+ * the session. Source fresh root/Data assembly precedes File construction.
+ * Source read/write call prefixes remain distinct on the same Store. */
+mc_world_source_status mc_world_store_source_write_info_record(mc_world_store *,
+                                                               const mc_world_info_record *,
+                                                               mc_world_source_error *);
+bool mc_world_store_source_output_inspect(const mc_world_store *, mc_world_source_output_state *);
+/* Native cleanup only, not as.a source close/finally or fm file rotation.
+ * Successful earlier child retirement stays consumed on a later failure. */
+mc_world_source_status mc_world_store_source_output_clear(mc_world_store *,
+                                                          mc_world_source_error *);
 
 typedef enum mc_world_source_input_call {
     MC_WORLD_SOURCE_INPUT_NONE,

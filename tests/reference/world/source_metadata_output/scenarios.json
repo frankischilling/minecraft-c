@@ -1,0 +1,15 @@
+{
+  "scope": "Genuine prepared unchanged original mx.a(ei,List), not a World save or native execution",
+  "source_calls": [
+    {"phase": 0, "name": "fresh", "variant": 1, "list": "empty"},
+    {"phase": 1, "name": "existing", "variant": 1, "list": "empty", "before": "obsolete current and old files"},
+    {"phase": 2, "name": "existing", "variant": 2, "list": "empty", "before": "exact preceding original current"},
+    {"phase": 3, "name": "old-directory", "variant": 2, "list": "empty", "before": "nonempty old dir plus copied phase1 current"},
+    {"phase": 4, "name": "both-directories", "variant": 1, "list": "empty", "before": "nonempty old and current dirs"},
+    {"phase": 5, "name": "open-failure", "variant": 1, "list": "empty", "before": "nonempty new dir"},
+    {"phase": 6, "name": "null-first", "variant": 1, "list": "singleton null"}
+  ],
+  "input_info": {"RandomSeed": -9223372036854775807, "SpawnX": -17, "SpawnY": 65, "SpawnZ": 1003, "Time_variant1": 23999, "Time_variant2": -1234567890123, "LastPlayed": -5, "SizeOnDisk": 9876543210, "LevelName_variant1_utf16": [70,105,114,115,116,0,937,55357,56832], "LevelName_variant2_utf16": [83,101,99,111,110,100,0,937,55357,56832], "version": -12, "rainTime": -345, "raining": 1, "thunderTime": 678, "thundering": 0, "Player": {"Dimension": -1, "Keep": 42}, "Unknown": "ignored"},
+  "expected_source_effect": "mx sets version19132, ei List serializer samples genuine current time and omits loaded Player with empty or null-first List; fresh Data-only root; exact source ignored booleans",
+  "independent_clock_policy": "per-process before/after invocation interval; never forced equal across runs"
+}

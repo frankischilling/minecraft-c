@@ -67,7 +67,9 @@ def main():
                  "src/client/world/entity_renderer/world_frame_after_particles.inc",
                  "src/client/settings/source_input.inc",
                  "src/world/saved_data/source_storage.inc",
-                 "src/world/storage/source_game_stage.inc"}
+                 "src/world/storage/source_game_stage.inc",
+                 "src/world/storage/store_source.inc",
+                 "src/world/storage/source_metadata_output.inc"}
     files = sorted(path for directory in ("src", "include", "tests")
                    for path in (root / directory).rglob("*")
                    if path.is_file() and (path.suffix in (".c", ".h") or

@@ -1,5 +1,25 @@
 # World simulation
 
+## Source metadata output
+
+Completed Info records now write through the real source SaveHandler, File/FOS
+and streaming NBT/GZIP owners. The handler preserves the original ignored
+rename/delete results and backup sequence. Native failure cleanup keeps the
+reached receipt without source finish, close or rotation.
+
+Windows and sanitized Linux each pass 23 profiles and 1,294 checks; seven
+prepared metadata transport scenarios match unchanged original calls on each
+host. Separate ordinary/read-only JDI observations, primitive payload checks
+and authored stream faults keep their declared scopes. The World metadata
+callback is connected, but complete Chunk/nonempty SavedData output,
+exception diagnostics, detach/reload and a playable save session remain
+unfinished. The two earlier private loaded-World focus failures below remain
+unresolved by this storage work.
+
+[SaveHandler contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/save-handler.md#metadata-output)
+and [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#source-metadata-output)
+record the evidence and limits.
+
 ## Standalone client hosting
 
 The ordinary client now owns a native Frame and distinct embedded Canvas.

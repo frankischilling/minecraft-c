@@ -22,6 +22,47 @@ finally-close effects. A mismatch or caught I/O error reaches the original
 exception allocation, which remains an explicit dependency. Native cleanup
 never deletes the lock, invents a source exception, or repeats a consumed close.
 
+## Metadata output
+
+The World completes its actual first-Player selection and Info record before
+entering the source transport. The transport borrows that record, constructs a
+fresh root containing `Data`, and writes through the actual `level.dat_new`
+FileOutputStream. It does not sample LastPlayed again or retain unknown children
+from a previous root. The source path and legacy Store writer remain separate.
+
+The compressed child streams NBT primitives through default raw deflate with a
+512-byte output buffer, the installed JDK17 gzip header, CRC and trailer. Native
+tree validation and allocation limits remain explicit safety policies. Compound
+order follows the supplied native tree; Java HashMap iteration, zlib byte
+identity and every intermediate JDK/NBT caller frame are not qualified.
+
+After successful source close, the handler tests/deletes old, renames current
+to old, tests/deletes current, renames new to current, then tests/deletes new.
+Each reached Boolean remains observable and ignored as in the original.
+Successful return does not imply that a rename succeeded.
+
+The serialization failure branch runs its actual enclosing close at `as.a:30`;
+a failed close replaces the write exception. Normal close at22 has no second
+finally close. Native safety/provider failures do not invent Java catch/finally
+execution. A reached source Exception still stops at the unfinished
+`Exception.printStackTrace` call in `fm.a:147`, retaining its lower typed cause.
+
+Native retirement frees the remaining compressed, FOS and File occurrences
+without source finish, close or rotation. Terminal admission checks the owned
+graph rather than requiring a successful save. Failed metadata-child
+construction, partial output and consumed-close retry receipts can therefore
+reach checked cleanup.
+Independent retained File/FOS occurrences survive the handler's releases.
+
+Windows and sanitized Linux each pass 23 metadata profiles with 1,294 checks,
+plus the codec's 141 checks and sixteen existing regressions. Seven prepared
+transport scenarios match unchanged original calls on each host. Original
+ordinary and read-only JDI observations, direct JDK payload output and authored
+native/original fault controls retain distinct scopes. The
+[test record](../testing.md#source-metadata-output) and
+[comparison recipe](../../tests/reference/world/source_metadata_output/comparison-README.md)
+describe the exact boundaries. A loaded World save/reload is not established.
+
 ## Source chunk loader
 
 `mc_world_store_source_loader` implements `mx.a(xa)` and returns a retained
@@ -102,7 +143,7 @@ coordinate mismatch reaches the relocation diagnostic. These return typed
 failures rather than successful misses. The source chunk-save entry performs its real
 session check, then stops at bytecode 16 of `ld.a(fd,lm)`, where `rj.d` and its
 deflater/output ownership are still required. Region allocation/reuse for saving, the remaining
-handler writes and the reached exception/printing methods remain explicit
+named-data writes and the reached exception/printing methods remain explicit
 dependencies. Cache flush and native retirement do not establish source saving,
 reload or crash durability.
 

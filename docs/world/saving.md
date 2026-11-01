@@ -1,5 +1,13 @@
 # Live GAME Chunk saving
 
+The ordinary source Store now transports completed World Info records through
+its [source metadata writer](save-handler.md#metadata-output). It preserves the
+caller's first-Player selection, sampled LastPlayed and version rather than
+rebuilding them inside transport. The legacy storage path below retains its
+separate composition and preservation rules. Source Chunk saving still checks
+the genuine session token, then stops at `ld.a(fd,lm):16`; region output,
+fresh Chunk composition and the reached live serializers remain required.
+
 [`saving/saving.h`](../../include/mc/world/runtime/saving/saving.h) writes one
 actual committed Chunk from its owning GAME World. It uses the same Store
 entry, header, arrays and source document; no replacement Chunk or opaque list

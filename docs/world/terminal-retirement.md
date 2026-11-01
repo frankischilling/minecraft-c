@@ -92,8 +92,16 @@ states without source calls or diagnostic mutation. The loader's DataInput
 port borrows its compression owner; it contributes no second compression hold.
 That owner must have its one actual loader occurrence before the borrowed
 record bytes can later be freed. A completed RAM input is not falsely reported
-as source-closed. File-backed Handler prefixes require their completed native
-ownership and source-close state in this scope.
+as source-closed. Handler construction, session and input prefixes retain
+their completed native ownership and source-close requirements in this scope.
+
+Metadata output instead admits its known inactive native graph, including
+RAW/FAILED construction children, partial streams and consumed-close retries.
+The audit checks namespaces, exact child identities and counted occurrences;
+it performs no source finish, close, rename or delete. Final Handler release
+retires the remaining output slots in order. Extra independent File/FOS holds
+survive those releases. This cleanup admission does not credit a failed save
+as a successful source method.
 
 Safe independent File, Info and document retains are not extra World roots.
 Shared File, logging, regions and class namespaces are kept live rather than

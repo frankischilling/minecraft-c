@@ -550,8 +550,8 @@
       "sha256": "e5beff867ecaa268117a2854dd0b12bc9f5bf72c7f832cbc6d90d8304663e586"
     },
     "include/mc/world/runtime/saving/errors.h": {
-      "bytes": 1942,
-      "sha256": "28e8bb3b8958840a56d9e22a3bdeb73e467b793db600db80346a39e59875cfd7"
+      "bytes": 2029,
+      "sha256": "57be90706c3c3375976eb5086dfc5b5cc9c93f912b9806bebe9c3367f9a8bdb6"
     },
     "include/mc/world/runtime/tile_entities/errors.h": {
       "bytes": 5784,
@@ -602,16 +602,16 @@
       "sha256": "7bdbdd15c1d47ba9785574b72ca2a5cb7ad5e3d132b37137b080c23ee47d8968"
     },
     "include/mc/world/storage/java_output.h": {
-      "bytes": 8170,
-      "sha256": "e0b75d66caee0c0ecfdcadad772a3b28e46ba5874d5a1f42ba2364b20bf96590"
+      "bytes": 8202,
+      "sha256": "2f4bf6748860436118f1cce985e7fd1b4f67c1b5785161adf4a5bff9ea45fdc5"
     },
     "include/mc/world/storage/regions.h": {
       "bytes": 4655,
       "sha256": "4233b34b793eca6cc8a2b324af46badd762e2617feffa13b61fef679890dce72"
     },
     "include/mc/world/storage/source_handler.h": {
-      "bytes": 10468,
-      "sha256": "279fb4df611942b75eb8f8a01669392ae2cf8708d6cdf8d6048e2ad6f0bc4f84"
+      "bytes": 12561,
+      "sha256": "5c519d7fd9d0029b67ab621b8006b9be3dd1d6ec522891d2a44920d3e5e22da6"
     },
     "include/mc/world/storage/status.h": {
       "bytes": 857,
@@ -1398,8 +1398,8 @@
       "sha256": "7bdf83f6dde15014543f0652e9a06f088e0e267e7c571a3be4d7b6fb914700d1"
     },
     "src/world/storage/java_output.c": {
-      "bytes": 23375,
-      "sha256": "c7065221c538ea79989601323eeea082343d4daaacc9e824c6e4c766210b12fb"
+      "bytes": 23433,
+      "sha256": "00bc275841c7d32fd6dc0159a2fedf6c2c1e505ff20f9dc85bde731100077b8d"
     },
     "src/world/storage/java_output_internal.h": {
       "bytes": 2404,
@@ -3662,24 +3662,24 @@
       "sha256": "f388afafc47063308648132a4ba729c035b3fd207e4d7781135f0461dd99d547"
     },
     "src/world/storage/metadata_internal.h": {
-      "bytes": 734,
-      "sha256": "b565cdd383076f69213d124b819325c7070aa3a3d6e83bbd8af3a5da51b9e50a"
+      "bytes": 890,
+      "sha256": "3a71fc1afcad9c6934c5d527636c6c08d2e2a5a58096fc01d473c30ccc0be392"
     },
     "src/world/storage/source_handler_internal.h": {
-      "bytes": 2120,
-      "sha256": "e5275176048f37417214126bf5c00292252d5b66187a5b4d7ba8fcb139629e06"
+      "bytes": 2380,
+      "sha256": "e7165703a8052386d579d32636b6b13eaf764b3fdeadccb72a42d60611df1fc8"
     },
     "src/world/storage/source_metadata.inc": {
       "bytes": 22027,
       "sha256": "fed826a2e36dc16e765335a682932deebbcab0ebc90b91fa017f9872c43841ad"
     },
     "src/world/storage/store.c": {
-      "bytes": 121863,
-      "sha256": "9481c50a604dc501db27f98c717f2c6da1d3027dd5d7fb0316a8a3bdbaa9d8cf"
+      "bytes": 127329,
+      "sha256": "6c0054973c60c0e94afeab529f61daf3c72cfc6351b7a19db332d1bc424fbd56"
     },
     "src/world/storage/store_source.inc": {
-      "bytes": 39393,
-      "sha256": "b609f81700adcabd54aee22fdc40f57da2c16eb70ec404c285366259989f3562"
+      "bytes": 39523,
+      "sha256": "545146473d7f90b7a9319f1adfc5213f56ec2ba143cd726ce27b50ff901a99d4"
     },
     "cmake/client_render_block_colors.cmake": {
       "bytes": 2159,
@@ -5404,6 +5404,46 @@
     "cmake/sdl_native_fixes.cmake": {
       "bytes": 3113,
       "sha256": "dfb42ac6abbc483290dde07f982708ca31c83b30d654c6a2c900701fb20dcb63"
+    },
+    "include/mc/world/storage/compressed_output.h": {
+      "bytes": 4204,
+      "sha256": "03d92655d493c428cf3070239d730dbe44508342fa08b5e1762faa7a078075ff"
+    },
+    "src/world/storage/compressed_output.c": {
+      "bytes": 28256,
+      "sha256": "1747887bbd5ae85a94dbf5a143b6fea5b63e663d54e1d93a915a38b776ae0c94"
+    },
+    "src/world/storage/source_metadata_output.inc": {
+      "bytes": 15622,
+      "sha256": "9c3e4d4328b8bef34e9dd0ffb3105317462433151dd9ec5da89365445c35fb12"
+    },
+    "src/world/storage/compressed_output_internal.h": {
+      "bytes": 504,
+      "sha256": "50c28dc398f8071ea4f80b763e79d4f57bbb9b49f0e16b466a7b28c291d460c4"
+    },
+    "tests/world/storage/test_compressed_output.c": {
+      "bytes": 16736,
+      "sha256": "1f464769113412b7dd3d831fa1cc71bb647e03c59f4db8425cd103e7732f886a"
+    },
+    "tests/tools/storage/test_compressed_output.py": {
+      "bytes": 6386,
+      "sha256": "dc93490ffa01685042376fb8f8eb7480db4227ac74446bccb965b540bf6c7409"
+    },
+    "tests/world/storage/test_source_metadata_output.c": {
+      "bytes": 35181,
+      "sha256": "48161e78c7b8cd2a469f9c070315c9e3087deca9f4bda2110a0fa25c5c2e68e2"
+    },
+    "tests/tools/storage/test_source_metadata_output.py": {
+      "bytes": 17076,
+      "sha256": "3400b732be16e8f55c916fab12f1ffcaf1797c00148a72dd5dbb245819eb53fe"
+    },
+    "cmake/tests/source_metadata_output.cmake": {
+      "bytes": 1340,
+      "sha256": "2e749ee1173cd7c7698dbc4681fe8b235a1849f8d2c2c019421fe654ebfde66f"
+    },
+    "cmake/tests/source_metadata_output_reference.cmake": {
+      "bytes": 2018,
+      "sha256": "7bb59d45553196b3f54efc7baba4b872b29b231631272a2001449bab03080f2f"
     }
   },
   "source_suppliers": {
@@ -6564,6 +6604,206 @@
             "cmake/sdl_native_fixes.cmake": {
               "bytes": 2920,
               "sha256": "fc68dcdee5de0d2791ce3f39cedeeaf596bc0ec9a0d9ee17b287725be5e89d63"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "465f4f7",
+      "role": "Current source metadata output input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 271257,
+        "sha256": "98ba142deb4e17f3ad5fe33e377daa7806de782ab07b5827026e50a54c67136d"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1351,
+          "after_count": 1354,
+          "previous": {
+            "include/mc/world/runtime/saving/errors.h": {
+              "bytes": 1942,
+              "sha256": "28e8bb3b8958840a56d9e22a3bdeb73e467b793db600db80346a39e59875cfd7"
+            },
+            "include/mc/world/storage/source_handler.h": {
+              "bytes": 10468,
+              "sha256": "279fb4df611942b75eb8f8a01669392ae2cf8708d6cdf8d6048e2ad6f0bc4f84"
+            },
+            "src/world/storage/metadata_internal.h": {
+              "bytes": 734,
+              "sha256": "b565cdd383076f69213d124b819325c7070aa3a3d6e83bbd8af3a5da51b9e50a"
+            },
+            "src/world/storage/source_handler_internal.h": {
+              "bytes": 2120,
+              "sha256": "e5275176048f37417214126bf5c00292252d5b66187a5b4d7ba8fcb139629e06"
+            },
+            "src/world/storage/store.c": {
+              "bytes": 121863,
+              "sha256": "9481c50a604dc501db27f98c717f2c6da1d3027dd5d7fb0316a8a3bdbaa9d8cf"
+            },
+            "src/world/storage/store_source.inc": {
+              "bytes": 39393,
+              "sha256": "b609f81700adcabd54aee22fdc40f57da2c16eb70ec404c285366259989f3562"
+            }
+          },
+          "added": [
+            "include/mc/world/storage/compressed_output.h",
+            "src/world/storage/compressed_output.c",
+            "src/world/storage/source_metadata_output.inc"
+          ]
+        }
+      }
+    },
+    {
+      "from_commit": "465f4f7",
+      "role": "Current source metadata output input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 273605,
+        "sha256": "70899810f54c128e4c84feecbcb4e2033c2872b30fead5a648bf1ae8a916da36"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1354,
+          "after_count": 1354,
+          "previous": {
+            "src/world/storage/compressed_output.c": {
+              "bytes": 27011,
+              "sha256": "ad513f5efb4b4d59ed8a61f70f56f687193a5683afc094694b7ee6273fca025d"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "465f4f7",
+      "role": "Current source metadata output input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 274330,
+        "sha256": "5de2f88fb4c606cb4b3b72c7c260a118bf9002b3be70ccec2348462926479419"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1354,
+          "after_count": 1357,
+          "previous": {
+            "include/mc/world/storage/java_output.h": {
+              "bytes": 8170,
+              "sha256": "e0b75d66caee0c0ecfdcadad772a3b28e46ba5874d5a1f42ba2364b20bf96590"
+            },
+            "src/world/storage/java_output.c": {
+              "bytes": 23375,
+              "sha256": "c7065221c538ea79989601323eeea082343d4daaacc9e824c6e4c766210b12fb"
+            },
+            "src/world/storage/store.c": {
+              "bytes": 124650,
+              "sha256": "129efc87bf4d63c5664af0017b9dade66d82358311fdb2b0d897b79101c89809"
+            },
+            "src/world/storage/compressed_output.c": {
+              "bytes": 27233,
+              "sha256": "22131afbf010d6ba0222dd3e97ffbe94854241e9fe9a3c986ac711629d85bf16"
+            }
+          },
+          "added": [
+            "src/world/storage/compressed_output_internal.h",
+            "tests/world/storage/test_compressed_output.c",
+            "tests/tools/storage/test_compressed_output.py"
+          ]
+        }
+      }
+    },
+    {
+      "from_commit": "465f4f7",
+      "role": "Current source metadata output input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 276302,
+        "sha256": "bc35b9fd3955d85a825291977dc9cc5f44db9164b19b6f16d3fa5f6688619245"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1357,
+          "after_count": 1357,
+          "previous": {
+            "src/world/storage/store.c": {
+              "bytes": 126094,
+              "sha256": "3ecb06149fdfad7e53c135910321bc2b540cb0e6c8f0616dcefa91abdb12ebe9"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "465f4f7",
+      "role": "Current source metadata output input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 277016,
+        "sha256": "c155902f89bb00aaf6d9a51e86c848df1625aa62af0bcbcf39b84a000230bdd2"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1357,
+          "after_count": 1361,
+          "previous": {
+            "src/world/storage/source_metadata_output.inc": {
+              "bytes": 15593,
+              "sha256": "4a630c5b5963b4d9a638ffae8d6c5cfc9589e346c588dd518eef985e02a89578"
+            }
+          },
+          "added": [
+            "tests/world/storage/test_source_metadata_output.c",
+            "tests/tools/storage/test_source_metadata_output.py",
+            "cmake/tests/source_metadata_output.cmake",
+            "cmake/tests/source_metadata_output_reference.cmake"
+          ]
+        }
+      }
+    },
+    {
+      "from_commit": "465f4f7",
+      "role": "Current source metadata output input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 278686,
+        "sha256": "c03310e96e631ee53fc0c25228b20482ffcd0aa2f458db3e481bfc482a5c9cda"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1361,
+          "after_count": 1361,
+          "previous": {
+            "tests/tools/storage/test_source_metadata_output.py": {
+              "bytes": 12528,
+              "sha256": "4afa0faf6b308bf7d34b29f8965325acd5e5dc976346b7db3c923638582f7e02"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "465f4f7",
+      "role": "Current source metadata output input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 279424,
+        "sha256": "db1270717c49d0163552dc6e22c63029913f9070f178ce8844abecd40bdfb4f1"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1361,
+          "after_count": 1361,
+          "previous": {
+            "tests/world/storage/test_source_metadata_output.c": {
+              "bytes": 27711,
+              "sha256": "fb0c551b1542f9b08e86c077ca6d0edc90c734f38e2f84950de38689f7624fa8"
+            },
+            "tests/tools/storage/test_source_metadata_output.py": {
+              "bytes": 12807,
+              "sha256": "55d95ef0504fa0ed03ca61f5dac42c36930f5fc3a8391f38e4d2038a38258b26"
+            },
+            "cmake/tests/source_metadata_output_reference.cmake": {
+              "bytes": 1411,
+              "sha256": "bd31c7c8b9f14d61229554b70afd9692eba92b87683f8e4606a2359d6b7ad8ec"
             }
           },
           "added": []
