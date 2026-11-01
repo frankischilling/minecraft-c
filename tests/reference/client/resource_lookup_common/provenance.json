@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 360437,
-      "sha256": "5583f3ed009e21ec9d2c387110bb8b0e6b8895cd928a64a8d243042ff55cb260"
+      "bytes": 361133,
+      "sha256": "87f2b763313f1c02f7fa21268a4f62bb24f93f0d82fff71291d9283ab2b2d6e7"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 458348,
-      "sha256": "38ef5d43679afbc517f37adf5023a2392386f16be6aeddafbe9632798de31a6f"
+      "bytes": 459046,
+      "sha256": "d040d1de31e39c76094248dbcef2afbe3a6d5c5e84ff3babd9e963dc31844a59"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 356450,
-      "sha256": "5d98fb03b0b444496eb010642a417ed6910fbad6fbe29084e49a6baa5f09de76"
+      "bytes": 357146,
+      "sha256": "f5a78511fbf5729f1262e3f7a7aab802383759a2602805000f615b9db8ddeed1"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9854,8 +9854,8 @@
       "sha256": "a2de1a7a93eeb45db5eef8ddfc9b1ceef1d75b321d1603e5dec205159fe749f5"
     },
     "cmake/tests/client_world_selection_loop.cmake": {
-      "bytes": 6024,
-      "sha256": "577f2575bc982f2aaf4348b59652814ea98aba7492400b062bc752c4cafc3fc9"
+      "bytes": 5943,
+      "sha256": "34d629c5a0c099ffdd477484d7c45181056147ef4ad8fb3e6ac9aa06e48a7156"
     },
     "cmake/tests/platform_date_format.cmake": {
       "bytes": 2244,
@@ -15146,8 +15146,8 @@
       "sha256": "ad345e862b5c1e312a19a87f444beab9a485ce2c30aafb3b5c987352b31173be"
     },
     "tests/tools/world/collision/selected_getter_cases.json": {
-      "bytes": 77038,
-      "sha256": "6c2dbc3261ed44cdb0082de51d9c4f82fa2aa43259e2e871e967d5c983974ea0"
+      "bytes": 73950,
+      "sha256": "45bcc66391eef5f95360a556ec1ba0b0ea55a4cc33a753e13a96741053b1ac0d"
     },
     "tests/tools/world/collision/test_selected_getters.py": {
       "bytes": 9405,
@@ -19998,6 +19998,33 @@
           "tests/client/gui/test_block_selection.c": {
             "bytes": 19234,
             "sha256": "cbbe58f9ce3a8d7c8aaa3fb47c859d3e7437de546ab7b055b77a0a87a87986b0"
+          }
+        }
+      }
+    },
+    {
+      "role": "Current selection/reselection and private Chunk lookup sources after native integration repairs and clang-format-18. Admission hashes only; historical products and observations retain their recorded source scope.",
+      "previous": {
+        "source_files": {
+          "tests/reference/client/display_sdk/provenance.json": {
+            "bytes": 360437,
+            "sha256": "5583f3ed009e21ec9d2c387110bb8b0e6b8895cd928a64a8d243042ff55cb260"
+          },
+          "tests/reference/client/loading_draw/provenance.json": {
+            "bytes": 458348,
+            "sha256": "38ef5d43679afbc517f37adf5023a2392386f16be6aeddafbe9632798de31a6f"
+          },
+          "tests/reference/client/render_resources/provenance.json": {
+            "bytes": 356450,
+            "sha256": "5d98fb03b0b444496eb010642a417ed6910fbad6fbe29084e49a6baa5f09de76"
+          },
+          "cmake/tests/client_world_selection_loop.cmake": {
+            "bytes": 6024,
+            "sha256": "577f2575bc982f2aaf4348b59652814ea98aba7492400b062bc752c4cafc3fc9"
+          },
+          "tests/tools/world/collision/selected_getter_cases.json": {
+            "bytes": 77038,
+            "sha256": "6c2dbc3261ed44cdb0082de51d9c4f82fa2aa43259e2e871e967d5c983974ea0"
           }
         }
       }

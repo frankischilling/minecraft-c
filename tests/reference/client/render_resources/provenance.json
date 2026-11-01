@@ -2074,8 +2074,8 @@
       "sha256": "a2de1a7a93eeb45db5eef8ddfc9b1ceef1d75b321d1603e5dec205159fe749f5"
     },
     "cmake/tests/client_world_selection_loop.cmake": {
-      "bytes": 6024,
-      "sha256": "577f2575bc982f2aaf4348b59652814ea98aba7492400b062bc752c4cafc3fc9"
+      "bytes": 5943,
+      "sha256": "34d629c5a0c099ffdd477484d7c45181056147ef4ad8fb3e6ac9aa06e48a7156"
     },
     "cmake/tests/platform_date_format.cmake": {
       "bytes": 2244,
@@ -5806,8 +5806,8 @@
       "sha256": "ad345e862b5c1e312a19a87f444beab9a485ce2c30aafb3b5c987352b31173be"
     },
     "tests/tools/world/collision/selected_getter_cases.json": {
-      "bytes": 77038,
-      "sha256": "6c2dbc3261ed44cdb0082de51d9c4f82fa2aa43259e2e871e967d5c983974ea0"
+      "bytes": 73950,
+      "sha256": "45bcc66391eef5f95360a556ec1ba0b0ea55a4cc33a753e13a96741053b1ac0d"
     },
     "tests/tools/world/collision/test_selected_getters.py": {
       "bytes": 9405,
@@ -8670,6 +8670,21 @@
           "tests/client/gui/test_block_selection.c": {
             "bytes": 19234,
             "sha256": "cbbe58f9ce3a8d7c8aaa3fb47c859d3e7437de546ab7b055b77a0a87a87986b0"
+          }
+        }
+      }
+    },
+    {
+      "role": "Current selection/reselection and private Chunk lookup sources after native integration repairs and clang-format-18. Admission hashes only; historical products and observations retain their recorded source scope.",
+      "previous": {
+        "source_files": {
+          "cmake/tests/client_world_selection_loop.cmake": {
+            "bytes": 6024,
+            "sha256": "577f2575bc982f2aaf4348b59652814ea98aba7492400b062bc752c4cafc3fc9"
+          },
+          "tests/tools/world/collision/selected_getter_cases.json": {
+            "bytes": 77038,
+            "sha256": "6c2dbc3261ed44cdb0082de51d9c4f82fa2aa43259e2e871e967d5c983974ea0"
           }
         }
       }
