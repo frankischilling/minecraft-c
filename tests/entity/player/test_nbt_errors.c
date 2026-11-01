@@ -77,7 +77,9 @@ static int passive_mob_controls(void) {
                  *expanded = malloc(sizeof(*expanded));
     CHECK(error && copy && input && expected && expanded);
     mc_entity_nbt_error_init(error);
-    CHECK(sizeof(*error) == 544 && sizeof(error->mob_call) == 464 && sizeof(error->mob) <= 224);
+    _Static_assert(sizeof(*error) == 544, "Entity NBT error frame must remain 544 bytes");
+    _Static_assert(sizeof(error->mob_call) == 464, "Mob call detail must remain 464 bytes");
+    _Static_assert(sizeof(error->mob) <= 224, "Mob hook detail must fit the existing error frame");
     error->factory_bytecode = 45;
     input->status = MC_MOB_REGISTRY_FAILED;
     input->operation = "authored lower operation";

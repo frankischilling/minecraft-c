@@ -6078,8 +6078,8 @@
       "sha256": "1848af447f2f45bbff91cd75383336bc0240b92448e4d8ef3582d80751d089c4"
     },
     "tests/entity/player/test_nbt_errors.c": {
-      "bytes": 22430,
-      "sha256": "99dea1f4f300b9643b1a9479851b811149086658d8d47c75bf1ec6cd5b12c6c8"
+      "bytes": 22617,
+      "sha256": "18e3b5ad82b939d858b8f800c6d736511fa8f18f6c2775460cf65df1ad08f660"
     },
     "tests/entity/player/test_spawn.c": {
       "bytes": 14090,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 317165,
-      "sha256": "640bb475467b8aff3dd62fcfc31da4bc5efaf73a70043108aed2a49a12e1f8e0"
+      "bytes": 317917,
+      "sha256": "8f9d46ed8067774a72ae2ab59357922f15ac9f8e10e71c8af03ab21d5a4fb465"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 411904,
-      "sha256": "c4c0ea434f50a671af0d79e8e96df336f567b0c14c4bc59812d96748d8b2db89"
+      "bytes": 412849,
+      "sha256": "aa3738a3002a47a077733335662abd42a50f8363fb9fff7b415d3ca7bb1b0926"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 312619,
-      "sha256": "c052960f30372fa255c4ffe9a7b1ffb9bb28535f0b36b117371acd012f377ef3"
+      "bytes": 313371,
+      "sha256": "27fc6e75615d19ef1e49a2e8a2844ff8c6893d08c897ba3524a5d129031212e8"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -15030,8 +15030,8 @@
       "sha256": "0b49c59dd66c535f00400ac2334009e8178d5c69ebd209abb7b3d437666a3650"
     },
     "tests/world/runtime/saving/source_session_terminal_controls.inc": {
-      "bytes": 10553,
-      "sha256": "f6df2456d2f85898d2e9d3b43bd824228becfe389bb772b91411bb12ad9cd2b6"
+      "bytes": 10716,
+      "sha256": "b463407b42f24402bed480453fee37984f7868ea573d4fdb1183158e67b55ffd"
     }
   },
   "self_metadata_excluded": true,
@@ -18292,6 +18292,43 @@
             "tests/reference/entity/mob_nbt/windows-comparison.json",
             "tests/world/runtime/saving/source_session_terminal_controls.inc"
           ]
+        }
+      }
+    },
+    {
+      "from_commit": "c578454",
+      "role": "Current fixture compiler checks input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 757766,
+        "sha256": "05819e5a3bf449c7434a6cf621b585aeb465ac5c82cd675c32664ebb7b30f1a4"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 3758,
+          "after_count": 3758,
+          "previous": {
+            "tests/entity/player/test_nbt_errors.c": {
+              "bytes": 22430,
+              "sha256": "99dea1f4f300b9643b1a9479851b811149086658d8d47c75bf1ec6cd5b12c6c8"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 317165,
+              "sha256": "640bb475467b8aff3dd62fcfc31da4bc5efaf73a70043108aed2a49a12e1f8e0"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 411904,
+              "sha256": "c4c0ea434f50a671af0d79e8e96df336f567b0c14c4bc59812d96748d8b2db89"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 312619,
+              "sha256": "c052960f30372fa255c4ffe9a7b1ffb9bb28535f0b36b117371acd012f377ef3"
+            },
+            "tests/world/runtime/saving/source_session_terminal_controls.inc": {
+              "bytes": 10553,
+              "sha256": "f6df2456d2f85898d2e9d3b43bd824228becfe389bb772b91411bb12ad9cd2b6"
+            }
+          },
+          "added": []
         }
       }
     }

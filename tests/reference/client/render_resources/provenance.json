@@ -5690,8 +5690,8 @@
       "sha256": "0b49c59dd66c535f00400ac2334009e8178d5c69ebd209abb7b3d437666a3650"
     },
     "tests/world/runtime/saving/source_session_terminal_controls.inc": {
-      "bytes": 10553,
-      "sha256": "f6df2456d2f85898d2e9d3b43bd824228becfe389bb772b91411bb12ad9cd2b6"
+      "bytes": 10716,
+      "sha256": "b463407b42f24402bed480453fee37984f7868ea573d4fdb1183158e67b55ffd"
     }
   },
   "source_suppliers": {
@@ -7547,6 +7547,27 @@
             "tests/reference/entity/mob_nbt/windows-comparison.json",
             "tests/world/runtime/saving/source_session_terminal_controls.inc"
           ]
+        }
+      }
+    },
+    {
+      "from_commit": "c578454",
+      "role": "Current fixture compiler checks input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 312619,
+        "sha256": "c052960f30372fa255c4ffe9a7b1ffb9bb28535f0b36b117371acd012f377ef3"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1423,
+          "after_count": 1423,
+          "previous": {
+            "tests/world/runtime/saving/source_session_terminal_controls.inc": {
+              "bytes": 10553,
+              "sha256": "f6df2456d2f85898d2e9d3b43bd824228becfe389bb772b91411bb12ad9cd2b6"
+            }
+          },
+          "added": []
         }
       }
     }

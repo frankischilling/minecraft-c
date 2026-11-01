@@ -124,7 +124,7 @@ static int ss_session_terminal(source_save_fixture *s) {
            MC_CHUNK_LIFECYCLE_OK);
     const mc_world_source_error failure = s->lifecycle.source_session;
     mc_world_source_input_state input;
-    mc_java_file_stream_state stream;
+    mc_java_file_stream_state session_stream_state;
     mc_nbt_stream_state reader;
     VERIFY(failure.status == MC_WORLD_SOURCE_UNIMPLEMENTED && failure.native_policy &&
            failure.session_mismatch && !failure.source_exception && !failure.caught_io &&
@@ -136,10 +136,13 @@ static int ss_session_terminal(source_save_fixture *s) {
            input.call == MC_WORLD_SOURCE_INPUT_SESSION && input.last_pc == 42 &&
            input.close_pc == -1 && input.token_read && !input.token_matches && !input.closed &&
            !input.source_returned &&
-           mc_java_file_stream_read_state(input.stream, &stream, NULL) == MC_JAVA_FILE_OK &&
-           stream.phase == MC_JAVA_FILE_READY && stream.holds == 1 && !stream.active &&
-           stream.native_open && !stream.source_close_reached && !stream.source_close_succeeded &&
-           stream.native_bytes_read == 8 &&
+           mc_java_file_stream_read_state(input.stream, &session_stream_state, NULL) ==
+               MC_JAVA_FILE_OK &&
+           session_stream_state.phase == MC_JAVA_FILE_READY && session_stream_state.holds == 1 &&
+           !session_stream_state.active && session_stream_state.native_open &&
+           !session_stream_state.source_close_reached &&
+           !session_stream_state.source_close_succeeded &&
+           session_stream_state.native_bytes_read == 8 &&
            mc_nbt_stream_state_read(input.reader, &reader, NULL) == MC_NBT_OK &&
            reader.phase == MC_NBT_STREAM_READY && !reader.active && reader.position == 8 &&
            reader.close_calls == 0 && reader.source_in == input.stream);

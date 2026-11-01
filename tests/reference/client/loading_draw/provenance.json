@@ -4550,8 +4550,8 @@
       "sha256": "1848af447f2f45bbff91cd75383336bc0240b92448e4d8ef3582d80751d089c4"
     },
     "tests/entity/player/test_nbt_errors.c": {
-      "bytes": 22430,
-      "sha256": "99dea1f4f300b9643b1a9479851b811149086658d8d47c75bf1ec6cd5b12c6c8"
+      "bytes": 22617,
+      "sha256": "18e3b5ad82b939d858b8f800c6d736511fa8f18f6c2775460cf65df1ad08f660"
     },
     "tests/entity/player/test_spawn.c": {
       "bytes": 14090,
@@ -8146,8 +8146,8 @@
       "sha256": "0b49c59dd66c535f00400ac2334009e8178d5c69ebd209abb7b3d437666a3650"
     },
     "tests/world/runtime/saving/source_session_terminal_controls.inc": {
-      "bytes": 10553,
-      "sha256": "f6df2456d2f85898d2e9d3b43bd824228becfe389bb772b91411bb12ad9cd2b6"
+      "bytes": 10716,
+      "sha256": "b463407b42f24402bed480453fee37984f7868ea573d4fdb1183158e67b55ffd"
     }
   },
   "actual_source_method": {
@@ -10209,6 +10209,31 @@
             "tests/reference/entity/mob_nbt/windows-comparison.json",
             "tests/world/runtime/saving/source_session_terminal_controls.inc"
           ]
+        }
+      }
+    },
+    {
+      "from_commit": "c578454",
+      "role": "Current fixture compiler checks input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 411904,
+        "sha256": "c4c0ea434f50a671af0d79e8e96df336f567b0c14c4bc59812d96748d8b2db89"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 2037,
+          "after_count": 2037,
+          "previous": {
+            "tests/entity/player/test_nbt_errors.c": {
+              "bytes": 22430,
+              "sha256": "99dea1f4f300b9643b1a9479851b811149086658d8d47c75bf1ec6cd5b12c6c8"
+            },
+            "tests/world/runtime/saving/source_session_terminal_controls.inc": {
+              "bytes": 10553,
+              "sha256": "f6df2456d2f85898d2e9d3b43bd824228becfe389bb772b91411bb12ad9cd2b6"
+            }
+          },
+          "added": []
         }
       }
     }
