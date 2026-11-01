@@ -10,6 +10,7 @@ target_sources(mc_simulation PRIVATE
     src/entity/mob/tick/behavior.c
     src/entity/mob/tick/creeper.c
     src/entity/mob/tick/monster_attack.c
+    src/entity/mob/tick/wolf_attack.c
     src/entity/mob/tick/path.c
     src/entity/mob/tick/path_follow.c
     src/entity/mob/tick/tick.c
@@ -20,6 +21,31 @@ target_sources(mc_simulation PRIVATE
     src/entity/mob/tick/wrappers.c)
 
 if(BUILD_TESTING)
+    add_executable(mc_test_wolf_attack tests/entity/test_wolf_attack.c)
+    target_include_directories(mc_test_wolf_attack PRIVATE src src/core/java)
+    target_link_libraries(mc_test_wolf_attack PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_math_classes mc_build_options)
+    add_test(NAME entity.wolf_attack COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_wolf_attack.py"
+        --executable "$<TARGET_FILE:mc_test_wolf_attack>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/wolf-attack-contracts")
+    set_tests_properties(entity.wolf_attack PROPERTIES
+        LABELS "public;integration;entity;world;ownership;math" TIMEOUT 180)
+    add_test(NAME entity.wolf_attack_reference COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/wolf_attack/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_wolf_attack>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/wolf-attack-reference")
+    set_tests_properties(entity.wolf_attack_reference PROPERTIES
+        LABELS "public;integration;entity;ownership;replay" TIMEOUT 180)
+    add_test(NAME tools.wolf_attack_packet COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/wolf_attack/test_packet.py"
+        WolfPacket.test_unchanged_baseline
+        WolfPacket.test_count_identity_exception_effect_and_type_mutations
+        WolfPacket.test_random_velocity_position_and_bounds_exact_comparison
+        WolfPacket.test_capture_source_pins
+        WolfPacket.test_duplicate_keys_and_boolean_coercion)
+    set_tests_properties(tools.wolf_attack_packet PROPERTIES
+        LABELS "public;unit;tools;entity;replay" TIMEOUT 60)
     add_executable(mc_test_skeleton_null_damage tests/entity/mob/test_skeleton_null_damage.c)
     target_include_directories(mc_test_skeleton_null_damage PRIVATE src src/core/java)
     target_link_libraries(mc_test_skeleton_null_damage PRIVATE

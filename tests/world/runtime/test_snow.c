@@ -6,8 +6,13 @@
 #undef main
 
 #include "../../../src/world/chunk/object_state_internal.h"
+#include "mc/world/runtime/world_access.h"
+
+enum { SNOW_CASCADE_CELLS = 22 };
 
 static input_cell snow_input(int32_t x, int32_t y, int32_t z) {
+    if (x >= 1 && x <= SNOW_CASCADE_CELLS && (y == 110 || y == 112) && z == 20)
+        return (input_cell){78, (uint8_t)(x & 7)};
     if (z == 4 && y == 10) {
         switch (x) {
             case 5:
@@ -525,6 +530,102 @@ cleanup:
     return ok;
 }
 
+typedef struct snow_cascade_observation {
+    int32_t order[SNOW_CASCADE_CELLS];
+    size_t count;
+    bool invalid;
+    int32_t y, stop_x;
+} snow_cascade_observation;
+
+static mc_world_storage_status snow_cascade_cell(void *context, mc_world_runtime *world, int32_t x,
+                                                 int32_t y, int32_t z,
+                                                 mc_world_storage_error *error) {
+    snow_cascade_observation *observation = context;
+    if (y != observation->y || z != 20)
+        return MC_WORLD_STORAGE_OK;
+    int32_t id = -1;
+    const mc_world_storage_status status = mc_world_runtime_block_get(world, x, y, z, &id, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    if (observation->count >= COUNT(observation->order) || x < 1 || x > SNOW_CASCADE_CELLS ||
+        id != 0)
+        observation->invalid = true;
+    else
+        observation->order[observation->count] = x;
+    ++observation->count;
+    if (x == observation->stop_x) {
+        *error = (mc_world_storage_error){MC_WORLD_STORAGE_LIMIT,
+                                          "Snow cascade WorldAccess frontier", 17};
+        return MC_WORLD_STORAGE_LIMIT;
+    }
+    return MC_WORLD_STORAGE_OK;
+}
+
+/* A real notifying write removes one endpoint, then recursively reaches each
+ * distinct unsupported Snow neighbor. Inputs are serialized before loading;
+ * no live Chunk payload or source recursion limit is installed for this call. */
+static bool snow_cascade(fixture *f, size_t slot) {
+    bool ok = false, written = false, removed = false;
+    mc_world_runtime *world = f->worlds[slot];
+    const mc_java_random random = *world->fields.r;
+    mc_world_mutation_error *error = malloc(sizeof(*error));
+    mc_world_access *access = NULL;
+    snow_cascade_observation observation = {.y = 110};
+    CHECK(error != NULL);
+    const bool client = slot % 2u == 0;
+    if (client) {
+        const mc_world_access_callbacks callbacks = {.cell = snow_cascade_cell};
+        CHECK(mc_world_access_create(&callbacks, &observation, &access, NULL) ==
+                  MC_WORLD_STORAGE_OK &&
+              mc_world_runtime_add_world_access(world, access, NULL) == MC_WORLD_STORAGE_OK);
+    }
+    for (int32_t x = 1; x <= SNOW_CASCADE_CELLS; ++x)
+        CHECK(at(world, x, 110, 20, 78, x & 7) && at(world, x, 109, 20, 0, 0));
+    CHECK(mc_world_runtime_block_set(world, 1, 110, 20, 0, &written, error) ==
+              MC_WORLD_STORAGE_OK &&
+          written && snow_clear(error));
+    for (int32_t x = 1; x <= SNOW_CASCADE_CELLS; ++x)
+        CHECK(at(world, x, 110, 20, 0, 0));
+    if (client) {
+        CHECK(!observation.invalid && observation.count == SNOW_CASCADE_CELLS);
+        for (size_t i = 0; i < observation.count; ++i)
+            CHECK(observation.order[i] == (int32_t)i + 1);
+        CHECK(mc_world_runtime_remove_world_access(world, access, &removed, NULL) ==
+                  MC_WORLD_STORAGE_OK &&
+              removed && mc_world_access_free(access, NULL) == MC_WORLD_STORAGE_OK);
+        access = NULL;
+        observation = (snow_cascade_observation){.y = 112, .stop_x = 8};
+        const mc_world_access_callbacks callbacks = {.cell = snow_cascade_cell};
+        CHECK(mc_world_access_create(&callbacks, &observation, &access, NULL) ==
+                  MC_WORLD_STORAGE_OK &&
+              mc_world_runtime_add_world_access(world, access, NULL) == MC_WORLD_STORAGE_OK);
+        written = true;
+        const mc_world_storage_status stopped =
+            mc_world_runtime_block_set(world, 1, 112, 20, 0, &written, error);
+        CHECK(stopped == MC_WORLD_STORAGE_LIMIT && error->status == MC_WORLD_STORAGE_LIMIT &&
+              error->operation != NULL &&
+              strcmp(error->operation, "Snow cascade WorldAccess frontier") == 0 &&
+              error->cause.system_error == 17 && error->snow_neighbor_bytecode == 6 &&
+              error->snow_bytecode == 35 && error->world_access_bytecode == 34 &&
+              same_cause(&world->last_error, &error->cause) && !observation.invalid &&
+              observation.count == 8);
+        for (int32_t x = 1; x <= SNOW_CASCADE_CELLS; ++x)
+            CHECK(at(world, x, 112, 20, x <= 8 ? 0 : 78, x <= 8 ? 0 : x & 7));
+        for (size_t i = 0; i < observation.count; ++i)
+            CHECK(observation.order[i] == (int32_t)i + 1);
+        CHECK(mc_world_runtime_remove_world_access(world, access, &removed, NULL) ==
+                  MC_WORLD_STORAGE_OK &&
+              removed && mc_world_access_free(access, NULL) == MC_WORLD_STORAGE_OK);
+        access = NULL;
+    }
+    CHECK(mc_test_java_random_equal(world->fields.r, &random) && world->active_calls == 0 &&
+          world->local_leases == 0);
+    ok = true;
+cleanup:
+    free(error);
+    return ok;
+}
+
 int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
@@ -578,6 +679,8 @@ int main(int argc, char **argv) {
           f->profile->math != NULL);
     for (size_t slot = 0; slot < COUNT(f->worlds); ++slot)
         CHECK(snow_world(f, slot));
+    for (size_t slot = 0; slot < COUNT(f->worlds); ++slot)
+        CHECK(snow_cascade(f, slot));
     result = 0;
 cleanup:
     if (!cleanup_fixture(f)) {

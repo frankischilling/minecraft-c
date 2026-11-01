@@ -71,6 +71,7 @@ def main():
                  "src/client/particles/block_effects.inc",
                  "src/client/gui/gui_ingame_slots.inc",
                  "src/client/world/source_epoch.inc",
+                 "src/client/world/source_save.inc",
                  "src/world/runtime/chunk_provider_owned.inc",
                  "src/world/storage/chunk_lookup.inc",
                  "tests/client/startup/test_world_reload.inc",

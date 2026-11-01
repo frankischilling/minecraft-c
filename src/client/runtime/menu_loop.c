@@ -12,6 +12,7 @@
 #include "../display/source_surface.h"
 #include "../display/staged.h"
 #include "../display/world_frame_surface.h"
+#include "../gui/source_create_world_drawing.h"
 #include "../gui/source_pause_drawing.h"
 #include "../gui/source_screen_drawing.h"
 #include "../gui/source_screen_events.h"
@@ -30,6 +31,7 @@
 #include "mc/client/gui/gui_ingame_draw.h"
 #include "mc/client/sound/sound_manager.h"
 #include "mc/client/statistics/writer.h"
+#include "mc/client/world/overlay_setup.h"
 #include "mc/client/world/picking.h"
 #include "mc/client/world/renderer_focus.h"
 #include "mc/client/world/world_frame.h"
@@ -96,6 +98,9 @@ struct mc_client_menu_loop {
     int32_t second_frames;
     mc_client_source_screen_draw_error draw;
     mc_client_pause_draw_error pause_draw;
+    mc_client_overlay_setup_state menu_projection;
+    mc_client_overlay_setup_error menu_projection_error;
+    mc_client_create_world_draw_error create_world_draw;
     mc_client_world_selection_draw_error world_draw;
     mc_client_screen_event_error events;
     mc_client_screen_event_report event_report;
@@ -552,13 +557,14 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
             loop->hud_state.failure = loop->hud_state.cleanup = NULL;
         }
     } else {
-        /* Place the no-World overlay bridge before the source delay/I clock. The
-         * screen bridge begins again at its later depth clear before FU geometry.
-         * Both qq values have the same immutable Settings and physical dimensions;
-         * no separately constructed source qq identity is claimed here. */
-        if (!mc_client_display_begin(app->display, projection.width_exact, projection.height_exact,
-                                     &loop->display))
-            return stop(loop, "PX no-World overlay GL3.3 bridge", "px", "b", 550);
+        /* Actual PX.b() overlay call550 updates the canonical source matrices,
+         * including fresh QQ extents after resize, before any screen drawing. */
+        if (!entity_renderer_overlay_setup(px, &loop->menu_projection,
+                                           &loop->menu_projection_error))
+            return stop(loop, loop->menu_projection_error.operation,
+                        loop->menu_projection_error.site.class_name,
+                        loop->menu_projection_error.site.method,
+                        loop->menu_projection_error.site.pc);
         if (settings.values.performance_mode == 2) {
             int64_t sample;
             if (!render_nanoseconds(loop, &sample, 578))
@@ -588,6 +594,16 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
                             e->site.class_name, e->site.method, e->site.pc);
             }
             loop->state.font_measurements += loop->world_draw.list.font_measurements;
+        } else if (drawn.kind == MC_CLIENT_SCREEN_CREATE_WORLD) {
+            loop->state.create_world_draw = &loop->create_world_draw;
+            if (!mc_client_source_create_world_draw((mc_client_source_fj *)app->r, loop->renderer,
+                                                    &projection, mouse, partial,
+                                                    &loop->create_world_draw))
+                return stop(loop, loop->create_world_draw.screen.operation,
+                            loop->create_world_draw.screen.site.class_name,
+                            loop->create_world_draw.screen.site.method,
+                            loop->create_world_draw.screen.site.pc);
+            loop->state.font_measurements += loop->create_world_draw.font_measurements;
         } else if (drawn.kind == MC_CLIENT_SCREEN_PAUSE) {
             if (!mc_client_source_pause_draw((mc_client_source_oz *)app->r, loop->renderer,
                                              &projection, mouse, partial, loop->math,
@@ -945,7 +961,7 @@ static bool frame_body(mc_client_menu_loop *loop) {
             return false;
         if (screen.kind != MC_CLIENT_SCREEN_MAIN_MENU &&
             screen.kind != MC_CLIENT_SCREEN_WORLD_SELECTION &&
-            screen.kind != MC_CLIENT_SCREEN_PAUSE)
+            screen.kind != MC_CLIENT_SCREEN_PAUSE && screen.kind != MC_CLIENT_SCREEN_CREATE_WORLD)
             return run_stop(loop, "actual screen pause virtual route is not connected", 546);
         pauses = true;
     }
@@ -1047,6 +1063,8 @@ static bool retire_calls(mc_client_menu_loop *loop) {
             MC_CLIENT_PICK_OK)
         return false;
     return mc_client_screen_event_retire(&loop->events) == MC_CLIENT_SCREEN_OK &&
+           mc_client_source_create_world_draw_retire(&loop->create_world_draw) ==
+               MC_CLIENT_SCREEN_OK &&
            mc_client_source_pause_draw_retire(&loop->pause_draw) == MC_CLIENT_SCREEN_OK &&
            mc_client_source_world_selection_draw_retire(&loop->world_draw) == MC_CLIENT_SCREEN_OK;
 }

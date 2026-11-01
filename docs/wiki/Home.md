@@ -7,7 +7,8 @@ authentication is excluded.
 
 The client is still pre-playable. Existing-save loading, movement, targeting,
 empty-hand Dirt mining, pickup, held-block drawing and collected-Dirt placement
-have finite native scenarios. These scenarios include ordinary save/title
+have finite native scenarios. The Create World screen also completes a genuine
+seed 777 generation/save/title/reselection scenario. These scenarios include ordinary save/title
 transitions, reselection and independent decoding of saved state.
 
 Tools, combat, Inventory UI, remaining Item/Block actions, unrestricted

@@ -118,7 +118,7 @@ real vector, client mean-edge length and Java text conversion remain unfinished.
 World collision Lists and concrete Block shapes have their own
 [collision contract](../world/collision/boxes.md). Current Item/Falling movement
 and environment effects have a separate [movement contract](movement.md).
-FallingSand landing/drop and full original-game replay remain unfinished.
+The [Falling Sand active tick](falling-tick.md) now has finite native landing/drop controls; full original-game replay remains unqualified.
 
 ## Verification
 

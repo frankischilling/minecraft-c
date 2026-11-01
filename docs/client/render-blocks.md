@@ -21,7 +21,8 @@ Other inventory render families retain reached dependencies.
 ## Dispatcher and standard blocks
 
 `cv.b(Luu;III)Z` reads the Block's virtual render type before updating that
-same Block's mutable bounds. Type 0 enters `cv.l(Luu;III)Z`. The other 17
+same Block's mutable bounds. Type 0 enters `cv.l(Luu;III)Z`, type 1 enters the
+crossed-plant body and type 4 enters fluid rendering. The other 15
 recognized render families retain an explicit missing-child failure at their
 source call; they do not return fabricated geometry. Unknown render types
 follow the original ordinary false return.
@@ -84,6 +85,37 @@ float-to-int conversions before entering the integer color body's clamp and
 color-lock logic. Color packing, partial array writes and quad copies remain
 source effects in NW's actual backing storage.
 
+## Crossed plants and fluids
+
+Type 1 calls the actual brightness and Block-color virtuals, reads the PX
+anaglyph flag, and colors the current NW batch. Only the actual shared Tall
+Grass object receives the original wrapping coordinate hash and jitter.
+Metadata lookup precedes the crossed-plane helper. That helper selects the
+Block's metadata texture before applying the CV override, computes the atlas
+coordinates at the original float widths, and emits sixteen vertices as four
+double-sided planes. NW expands them to 24 triangle vertices and 192 words.
+
+The [unchanged-original plant packet](../../tests/reference/client/render_blocks_special/README.md)
+compares 125 exact CPU rows on Windows and sanitized Linux: 117 Sapling, Tall Grass, Dead Bush,
+flower, mushroom and Reed geometry inputs, plus eight NULL/backing-array
+failure prefixes. It observes live CV fields, Block bounds, NW state and every
+backing word. This comparison covers the direct geometry helper; whole type1
+brightness, climate color, jitter, anaglyph, GL and pixels retain separate scopes.
+
+Type 4 performs all six visibility queries before its all-hidden return. It
+reads metadata and four fluid heights, selects still or flowing textures from
+the actual RP flow vector, and uses the same MathHelper table for sine/cosine.
+Flow calculation consumes genuine pooled Entity vectors. Top, bottom and four
+sides use their original brightness, color, UV and vertex order. The shared
+Block's bottom and top bounds reset only at source stores1233/1239 after those
+calls return. Failed prefixes retain their vector, World and NW diagnostics.
+
+The native fluid suite passes 306 checks on Windows and Linux ASan/UBSan. It
+covers flowing/still Water and Lava, exact top position/UV words, vector-pool
+progress, hidden-face early return, unchanged hidden bounds and NULL failure
+order. This is authored native evidence; executed-original fluid comparison
+and fluid pixel equality remain unqualified.
+
 ## Ownership and failed prefixes
 
 The entered CV context borrows the compiler's actual CV object, leased EW
@@ -100,7 +132,7 @@ without replaying source work or inventing successful end-list operations.
 The N caller clears `DK.u` only after that same compiler returns normally.
 
 TileEntity renderer eligibility at `dk.a()V:399` and the chest texture
-adjacency helper remain missing children. Together with the 17 specialized
+adjacency helper remain missing children. Together with the 15 remaining specialized
 geometry families, these limits prevent a claim that all Block rendering or
 all nonempty sections are complete.
 

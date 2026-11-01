@@ -104,6 +104,7 @@ typedef struct mc_client_world_load_state {
     bool initial_i_cleared, initial_h_cleared, initial_P_stored;
     bool statistics_first_returned, statistics_second_returned;
     bool renderer_returned, effects_returned, player_load_returned, view_published;
+    bool initial_save_returned; /* Actual new-World fd.a(yb) at Minecraft339. */
     size_t gc_requests, terrain_samples;
     int last_outer_pc, last_change_pc;
     int64_t seed;
@@ -148,8 +149,9 @@ mc_client_world_load_classes_terminal_end(mc_client_world_load_classes *);
  * other reached branches stop explicitly instead of releasing unknown borrows.
  * A failure is terminal: inspect and retire, never replay its source effects.
  * Existing saved Worlds reach renderer/effect attachment, Player insertion and
- * view publication. New-World saving and centered providers remain explicit
- * reached dependencies. */
+ * view publication. Fresh Worlds run the actual full forced save with the
+ * captured nullable LoadingScreen before view publication; centered providers
+ * remain explicit reached dependencies. */
 mc_client_world_load_status mc_client_world_load_begin(mc_client_world_load_classes *,
                                                        mc_world_info_name *folder,
                                                        mc_world_info_name *display, int64_t seed,

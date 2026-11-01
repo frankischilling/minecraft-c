@@ -1,6 +1,28 @@
 # Build and tests
 
-## Current local qualification
+## Create World and block geometry
+
+The [Create World contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/create-world.md)
+records the new name/seed screen, native SDK control input, real generation and
+initial saving, and the separate full-session acceptance scenario. The client
+remains pre-playable; finite menu or component tests do not qualify unrestricted
+gameplay.
+
+The current Windows Release lifecycle passes 3,132 native checks, with independent
+decoding of 447 saved Chunks and captured Player/WorldInfo state. The final focused
+selection passes 22 Windows CTests and 20 Linux Clang ASan/UBSan CTests, plus a
+separate X11 SDK input check. Falling Sand passes 112 authored controls per host;
+Wolf attack passes 75 controls and 24 exact unchanged-original CPU comparisons.
+Close-range LivingEntity damage remains unfinished.
+
+The [crossed-plant packet](https://github.com/frankischilling/minecraft-c/tree/feature/normal-population/tests/reference/client/render_blocks_special)
+compares 125 exact unchanged-original CPU rows on Windows and Linux ASan/UBSan.
+Whole type1 climate color/jitter, GL and pixels are outside that comparison.
+Native Water/Lava geometry passes 306 checks per host. A generated World also
+exposed a native Snow-stack overflow; its minimized 22-layer cascade and retained
+failure prefix now pass within the 700-check Snow suite on both hosts.
+
+## Earlier broad qualification
 
 At `c88e648`, all 98 selected targets build on Windows MSVC Debug and Linux
 Clang18 ASan/UBSan. All 129 Windows and 122 Linux tests pass without
@@ -13,7 +35,7 @@ current audit verifies 4,614 resolved paths, merging Windows separators
 and `/mnt/c` aliases of the same file. Formatting checks 1,757 C files.
 Six current binding tables pass with historical metadata preserved. Hosted
 results keep their exact published-commit scope in
-[Draft PR52](https://github.com/frankischilling/minecraft-c/pull/52).
+[hosted validation](https://github.com/frankischilling/minecraft-c/actions).
 
 The full local selection above was recorded at `c88e648`. A subsequent
 test-only GCC repair makes the existing cosine-count assertion's `&&` grouping
@@ -22,7 +44,7 @@ with the actual target flags rejects the original and accepts the correction.
 Rebuilt Windows and Clang18 creature comparisons each retain 3,722 native checks,
 366,155 selected original checks and twelve rejected comparator corruptions.
 Production and build configuration are unchanged; hosted results keep their
-separate commit scope in [draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
+separate commit scope in [hosted validation](https://github.com/frankischilling/minecraft-c/actions).
 
 The client now draws eight default Mob kinds: Sheep, Pig, Cow, Chicken,
 Spider, Slime, Squid and Creeper. [Mob drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md) uses the actual TH/GV, concrete
@@ -525,7 +547,7 @@ generated-terrain Release profile also reaches full World-load return and
 cleanup under a 300-second process bound.
 Version-zero conversion stops at 52.
 Empty, populated and bottom-scroll 854 by 480 captures were inspected. Save and resource hashes remain unchanged,
-without a new session lock. Create/Rename remain at `NEW162`/`NEW189`; Delete
+without a new session lock. At that checkpoint Create/Rename remained at `NEW162`/`NEW189`; the current Create World scenario has its separate contract. Delete
 stops at preparation 21 without skipping its prefix. The Windows MSVC Debug
 ALL build and all 482 selected CTests pass without failures or skips in
 209.59 seconds, excluding 46 of 528 configured reference-label profiles.

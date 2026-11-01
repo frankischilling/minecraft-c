@@ -4,6 +4,8 @@
 #include "../display/staged.h"
 #include "../startup/application_startup.h"
 #include "mc/core/java/java.h"
+#include "source_clipboard.h"
+#include "source_create_world_internal.h"
 #include "source_pause_screen_internal.h"
 #include "source_screen_internal.h"
 #include "source_screen_transitions.h"
@@ -99,7 +101,8 @@ mc_client_screen_status mc_client_screen_button_hit(mc_client_source_ke *button,
 
 static bool action(mc_client_source_da *o, mc_client_source_ke *button,
                    mc_client_screen_event_report *r, mc_client_screen_event_error *e) {
-    if (o->kind == MC_CLIENT_SCREEN_WORLD_SELECTION || o->kind == MC_CLIENT_SCREEN_PAUSE) {
+    if (o->kind == MC_CLIENT_SCREEN_WORLD_SELECTION || o->kind == MC_CLIENT_SCREEN_PAUSE ||
+        o->kind == MC_CLIENT_SCREEN_CREATE_WORLD) {
         r->button = button;
         r->button_id = button->fields.f;
         ++r->actions;
@@ -116,11 +119,18 @@ static bool action(mc_client_source_da *o, mc_client_source_ke *button,
                         : button->fields.f == 5 ? MC_CLIENT_SCREEN_ACTION_ACHIEVEMENTS
                         : button->fields.f == 6 ? MC_CLIENT_SCREEN_ACTION_STATISTICS
                                                 : MC_CLIENT_SCREEN_ACTION_NONE;
+        if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD)
+            r->action = button->fields.f == 0   ? MC_CLIENT_SCREEN_ACTION_CREATE_WORLD
+                        : button->fields.f == 1 ? MC_CLIENT_SCREEN_ACTION_CANCEL
+                                                : MC_CLIENT_SCREEN_ACTION_NONE;
         if (o->transitions != NULL)
             return transition(o, button, r, e);
         fail(e, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY,
              "screen requires actual transition ownership",
-             o->kind == MC_CLIENT_SCREEN_PAUSE ? "oz" : "rq", "a", "(Lke;)V", 0, true);
+             o->kind == MC_CLIENT_SCREEN_PAUSE          ? "oz"
+             : o->kind == MC_CLIENT_SCREEN_CREATE_WORLD ? "fj"
+                                                        : "rq",
+             "a", "(Lke;)V", 0, true);
         return false;
     }
     if (!(o->kind == MC_CLIENT_SCREEN_MAIN_MENU))
@@ -262,7 +272,34 @@ static bool mouse(mc_client_source_da *o, const mc_client_sdk_mouse_event *event
     y = mc_java_i32_sub(mc_java_i32_sub(o->fields.d, y), 1);
     r->mouse_x = x;
     r->mouse_y = y;
-    return down ? press(o, x, y, event->button, r, e) : release_button(o, event->button, r, e);
+    if (!down)
+        return release_button(o, event->button, r, e);
+    if (!press(o, x, y, event->button, r, e))
+        return false;
+    return o->kind != MC_CLIENT_SCREEN_CREATE_WORLD ||
+           mc_screen_create_world_mouse_after_base_locked((mc_client_source_fj *)o, x, y,
+                                                          event->button, &e->screen);
+}
+
+typedef struct create_key_context {
+    mc_client_screen_event_report *report;
+    mc_client_screen_event_error *error;
+} create_key_context;
+
+static bool create_enter(void *context, mc_client_source_fj *fj, mc_client_source_ke *button,
+                         mc_client_screen_error *error) {
+    create_key_context *call = context;
+    const bool ok = action(&fj->base, button, call->report, call->error);
+    if (error != &call->error->screen)
+        *error = call->error->screen;
+    return ok;
+}
+
+static bool create_tab(void *context, mc_client_source_da *parent, mc_client_screen_error *error) {
+    (void)context;
+    /* FJ.j overrides the inherited literal DA.j return. */
+    return parent->kind != MC_CLIENT_SCREEN_CREATE_WORLD ||
+           mc_screen_create_world_tab_locked((mc_client_source_fj *)parent, error);
 }
 
 static bool key(mc_client_source_da *o, const mc_client_sdk_key_event *event,
@@ -278,6 +315,16 @@ static bool key(mc_client_source_da *o, const mc_client_sdk_key_event *event,
         fail(e, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY, "actual Minecraft.j fullscreen child",
              "da", "g", "()V", 18, true);
         return false;
+    }
+    if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD) {
+        mc_client_source_fj *fj = (mc_client_source_fj *)o;
+        create_key_context context = {r, e};
+        const mc_client_text_field_hooks hooks = {.mapping = fj->mapping,
+                                                  .context = &context,
+                                                  .tab = create_tab,
+                                                  .clipboard = mc_client_screen_clipboard_read};
+        return mc_screen_create_world_key_locked(fj, (uint16_t)event->character, event->key, &hooks,
+                                                 create_enter, &context, &e->screen);
     }
     if (!(o->kind == MC_CLIENT_SCREEN_MAIN_MENU) && event->key == 1) {
         r->action = MC_CLIENT_SCREEN_ACTION_CLOSE;
@@ -454,6 +501,8 @@ mc_client_screen_status mc_client_screen_tick(mc_client_source_da *o,
         }
     } else if (o->kind == MC_CLIENT_SCREEN_PAUSE)
         mc_screen_pause_tick_locked((mc_client_source_oz *)o, &e->screen);
+    else if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD)
+        (void)mc_screen_create_world_tick_locked((mc_client_source_fj *)o, &e->screen);
     else
         e->screen.source_returned = true;
     --o->active_calls;

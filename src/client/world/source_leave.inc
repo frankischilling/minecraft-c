@@ -14,98 +14,15 @@ static bool source_app_slots(const mc_client_world_load_call *call) {
            call->world_slot_owned == !left->f_cleared && app->active_world == world;
 }
 
-static mc_chunk_callback_result leave_progress(void *owner, const mc_world_save_context *context,
-                                               mc_world_save_stage stage) {
-    (void)context;
-    mc_client_world_load_call *call = owner;
-    source_leave *left = call->active_leave;
-    const bool level = stage == MC_WORLD_SAVE_LEVEL;
-    const int pc = level ? 20 : 36;
-    mc_client_loading_error *error = level ? &left->level : &left->chunks;
-    mc_player_string *text = NULL;
-    if (!level) {
-        if (call->classes->saving_chunks == NULL) {
-            static const uint16_t units[] = {'S', 'a', 'v', 'i', 'n', 'g', ' ',
-                                             'c', 'h', 'u', 'n', 'k', 's'};
-            const mc_player_status created = mc_player_string_create(
-                units, sizeof(units) / sizeof(*units), &call->classes->saving_chunks);
-            if (created != MC_PLAYER_OK) {
-                change_fail(call,
-                            created == MC_PLAYER_LIMIT ? MC_CLIENT_WORLD_LOAD_LIMIT
-                                                       : MC_CLIENT_WORLD_LOAD_ALLOCATION,
-                            "FD Saving chunks native literal owner", 64);
-                call->failure.child = (mc_client_world_load_site){"fd", "a", "(ZLyb;)V", 34};
-                return MC_CHUNK_CALLBACK_FATAL;
-            }
-        }
-        text = call->classes->saving_chunks;
-    }
-    /* Concrete mk.b ignores its String operand, sets e, then reloads its own c.
-     * No surrogate progress result or eagerly substituted title is supplied. */
-    if (!loading(call, left->progress, text, level ? 2 : 0, "a", CHANGE_DESC, 64, error)) {
-        call->failure.child = (mc_client_world_load_site){"fd", "a", "(ZLyb;)V", pc};
-        return MC_CHUNK_CALLBACK_FATAL;
-    }
-    if (level)
-        left->level_returned = true;
-    else
-        left->chunks_returned = true;
-    return MC_CHUNK_CALLBACK_OK;
-}
-
 static bool previous_world_save(mc_client_world_load_call *call) {
-    client_application *app = call->classes->app;
     source_leave *left = call->active_leave;
     call->state.last_change_pc = 64;
-    if (left == NULL || app->active_world != call->state.world) {
+    if (left == NULL || call->classes->app->active_world != call->state.world) {
         change_fail(call, MC_CLIENT_WORLD_LOAD_STATE, "actual previous World native provenance",
                     64);
         return false;
     }
-    /* MC reloads s at61 and passes that SAME nullable yb for both FD stages. */
-    mc_client_loading_screen *progress = app->loading_screen;
-    if (progress != NULL) {
-        if (mc_client_loading_screen_retain(progress) != MC_CLIENT_LOADING_OK) {
-            change_fail(call, MC_CLIENT_WORLD_LOAD_BUSY, "captured FD progress argument", 64);
-            return false;
-        }
-        left->progress = progress;
-    }
-    const mc_chunk_lifecycle_status saved = mc_world_runtime_save_with_progress_detailed(
-        app->active_world, true, call, progress == NULL ? NULL : leave_progress, &left->saving);
-    if (saved != MC_CHUNK_LIFECYCLE_OK) {
-        call->failure.saving = &left->saving;
-        call->failure.world = &left->saving.cause;
-        if (call->failure.status == MC_CLIENT_WORLD_LOAD_OK) {
-            change_fail(call, MC_CLIENT_WORLD_LOAD_CHILD_FAILED, left->saving.cause.operation, 64);
-            const mc_world_source_error *source =
-                left->saving.save.source_chunk.source.status != MC_WORLD_SOURCE_OK
-                    ? &left->saving.save.source_chunk.source
-                : left->saving.save.metadata.source_handler.status != MC_WORLD_SOURCE_OK
-                    ? &left->saving.save.metadata.source_handler
-                    : &left->saving.source_session;
-            if (source->frame_count != 0)
-                call->failure.child = (mc_client_world_load_site){
-                    source->frames[0].class_name, source->frames[0].method,
-                    source->frames[0].descriptor, source->frames[0].pc};
-            else
-                call->failure.child = (mc_client_world_load_site){"fd", "a", "(ZLyb;)V",
-                                                                  left->chunks_returned ? 47 : 26};
-            if (source->status != MC_WORLD_SOURCE_OK)
-                call->failure.native_policy = source->native_policy;
-        }
-        return false;
-    }
-    left->prefix.previous_save_returned = true;
-    if (left->progress != NULL) {
-        if (mc_client_loading_screen_release(left->progress) != MC_CLIENT_LOADING_OK) {
-            change_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
-                        "completed FD progress argument native release", 64);
-            return false;
-        }
-        left->progress = NULL;
-    }
-    return true;
+    return source_world_save(call, call->classes->app->active_world, &left->save, 64);
 }
 
 static mc_client_world_load_status leave_admission(mc_client_world_load_error *out,

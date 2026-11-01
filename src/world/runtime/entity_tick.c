@@ -8,6 +8,16 @@ void mc_world_entity_tick_error_init(mc_world_entity_tick_error *e) {
     }
 }
 
+bool mc_world_entity_tick_error_retire(mc_world_entity_tick_error *e) {
+    if (e == NULL)
+        return false;
+    if (e->child == MC_WORLD_ENTITY_TICK_CHILD_FALLING_SAND &&
+        !mc_falling_entity_tick_error_retire(&e->child_error.falling))
+        return false;
+    mc_world_entity_tick_error_init(e);
+    return true;
+}
+
 void wt_at(wt_scope *s, const char *method, unsigned int pc) {
     s->error.source_class =
         s->world->classes != NULL && s->world->classes->side == MC_WORLD_INFO_SERVER ? "dj" : "fd";
@@ -186,6 +196,7 @@ static mc_world_storage_status run(mc_world_runtime *world, mc_entity *entity, b
     mc_world_entity_tick_error_init(&s->error);
     s->world = world;
     s->context = context;
+    s->has_error_output = out != NULL;
     s->error.max_loop_work =
         limits == NULL ? MC_WORLD_ENTITY_TICK_DEFAULT_LOOP_WORK : limits->max_loop_work;
     s->error.max_passenger_calls =
@@ -205,8 +216,11 @@ static mc_world_storage_status run(mc_world_runtime *world, mc_entity *entity, b
         status == MC_WORLD_STORAGE_OK ? (mc_world_storage_error){0} : s->error.cause;
     if (status == MC_WORLD_STORAGE_OK)
         mc_world_entity_tick_error_init(&s->error);
-    if (out != NULL)
+    if (out != NULL) {
         *out = s->error;
+        /* Transfer any retained child work; the scratch no longer owns it. */
+        mc_world_entity_tick_error_init(&s->error);
+    }
     free(s);
     mc_world_runtime_call_leave(world);
     return status;

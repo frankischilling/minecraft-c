@@ -10,6 +10,7 @@
 #include "mc/core/java/java.h"
 #include "mc/statistics/registry/registry.h"
 #include "mc/world/runtime/construction.h"
+#include "source_create_world_internal.h"
 #include "source_pause_screen_internal.h"
 #include "source_screen_transitions_terminal_internal.h"
 #include "source_world_list.h"
@@ -24,6 +25,8 @@ typedef struct screen_node {
     mc_client_source_rq *rq;
     mc_client_source_oz *pause;
     mc_client_source_fu *menu;
+    mc_client_source_fj *create;
+    mc_world_info_name *create_folder, *create_name;
     mc_client_display_screen_call *display;
     mc_client_world_load_call *load;
     mc_client_singleplayer_controller *controller; /* Candidate or displaced owning occurrence. */
@@ -242,6 +245,117 @@ static bool open_world_selection(mc_client_screen_transitions *r, mc_client_sour
         MC_CLIENT_SCREEN_OK)
         return false;
     return display(r, mc_client_screen_world_selection_base(n->rq), "fu", "a", "(Lke;)V", 49);
+}
+
+static bool open_create_world(mc_client_screen_transitions *r, mc_client_source_da *parent) {
+    screen_node *n = node(r);
+    if (n == NULL)
+        return false;
+    if (mc_client_screen_create_world_allocate(r->classes, NULL, &n->create, &r->failure) !=
+        MC_CLIENT_SCREEN_OK)
+        return false;
+    ++r->screens;
+    if (mc_client_screen_create_world_construct(n->create, parent, &r->failure) !=
+        MC_CLIENT_SCREEN_OK)
+        return false;
+    return display(r, mc_client_screen_create_world_base(n->create), "rq", "a", "(Lke;)V", 165);
+}
+
+static bool create_text(mc_client_screen_transitions *r, mc_client_screen_text text,
+                        mc_world_info_name **out, unsigned int pc) {
+    if (text.kind == MC_CLIENT_SCREEN_TEXT_NULL)
+        return true;
+    mc_player_string_view value;
+    if (!mc_client_screen_text_read(text, &value) ||
+        mc_world_info_name_copy((mc_nbt_string){value.units, value.length}, SIZE_MAX, out) !=
+            MC_WORLD_INFO_OK) {
+        fail(r, MC_CLIENT_SCREEN_STRING_FAILED, "FJ native World-call String occurrence", "fj", "a",
+             "(Lke;)V", pc);
+        return false;
+    }
+    return true;
+}
+
+static bool create_action(mc_client_screen_transitions *r, mc_client_source_fj *fj,
+                          mc_client_source_ke *button) {
+    if (!button->fields.g)
+        return true;
+    const int32_t id = button->fields.f;
+    if (id == 1)
+        return display(r, fj->fields.a, "fj", "a", "(Lke;)V", 24);
+    if (id != 0)
+        return true;
+    if (!display(r, NULL, "fj", "a", "(Lke;)V", 42))
+        return false;
+    if (fj->fields.m)
+        return true;
+    fj->fields.m = true;
+    fj->last_pc = 55;
+    int64_t seed;
+    if (!mc_screen_lock(r->classes, &r->failure))
+        return false;
+    const bool seeded = mc_screen_create_world_seed_locked(fj, &seed, &r->failure);
+    mtx_unlock(&r->classes->mutex);
+    if (!seeded)
+        return false;
+    mc_client_world_load_state previous = {0};
+    const bool reload =
+        r->last_load != NULL && mc_client_world_load_inspect(r->last_load, &previous) &&
+        previous.leave.source_returned && !previous.leave.failed && previous.leave.i_cleared &&
+        previous.leave.f_cleared && previous.leave.h_cleared;
+    if (r->app->controller != r->controller || (r->controller != NULL && !reload)) {
+        fail(r, MC_CLIENT_SCREEN_BUSY, "native earlier controller occurrence", "fj", "a", "(Lke;)V",
+             119);
+        return false;
+    }
+    screen_node *n = node(r);
+    if (n == NULL)
+        return false;
+    mc_singleplayer_controller_status status = mc_client_singleplayer_controller_allocate(
+        r->app->entities, r->app->profile, 0, &n->controller, &r->controller_error);
+    if (status == MC_SINGLEPLAYER_CONTROLLER_OK)
+        status = mc_client_singleplayer_controller_construct(n->controller, r->app,
+                                                             &r->controller_error);
+    if (status != MC_SINGLEPLAYER_CONTROLLER_OK) {
+        fail(r, MC_CLIENT_SCREEN_APP_FAILED, "actual FJ OS constructor child", "fj", "a", "(Lke;)V",
+             127);
+        r->failure.parent_site = (mc_client_screen_site){
+            r->controller_error.site.class_name, r->controller_error.site.method,
+            r->controller_error.site.descriptor, r->controller_error.site.pc};
+        return false;
+    }
+    mc_client_singleplayer_controller *candidate = n->controller;
+    n->controller = r->controller;
+    r->controller = candidate;
+    r->app->controller = candidate;
+    fj->last_pc = 130;
+    if (!create_text(r, fj->fields.l, &n->create_folder, 138))
+        return false;
+    if (fj->fields.i == NULL) {
+        fail(r, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE, "FJ actual RO.a name null receiver", "fj",
+             "a", "(Lke;)V", 145);
+        r->failure.native_policy = false;
+        return false;
+    }
+    if (!create_text(r, fj->fields.i->fields.h, &n->create_name, 145))
+        return false;
+    fj->last_pc = 149;
+    const mc_client_world_load_status loaded =
+        reload ? mc_client_world_load_begin_after(r->last_load, n->create_folder, n->create_name,
+                                                  seed, &n->load)
+               : mc_client_world_load_begin(r->world_classes, n->create_folder, n->create_name,
+                                            seed, &n->load);
+    if (n->load != NULL)
+        r->last_load = n->load;
+    if (loaded != MC_CLIENT_WORLD_LOAD_OK) {
+        (void)world_failure(r, loaded, n->load);
+        r->failure.parent_site = (mc_client_screen_site){"fj", "a", "(Lke;)V", 149};
+        return false;
+    }
+    if (!display(r, NULL, "fj", "a", "(Lke;)V", 157))
+        return false;
+    fj->last_pc = 160;
+    return true;
 }
 
 static bool focus(mc_client_screen_transitions *r, const char *type, const char *method,
@@ -573,18 +687,17 @@ mc_client_screen_status mc_client_screen_transitions_button(mc_client_screen_tra
             (void)display(r, rq->fields.a, "rq", "a", "(Lke;)V", 226);
         else if (id == 1)
             (void)select_body(r, rq, rq->fields.m);
-        else if (id == 2 || id == 3 || id == 6)
+        else if (id == 3)
+            (void)open_create_world(r, screen);
+        else if (id == 2 || id == 6)
             fail(r, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY,
-                 id == 2   ? "actual delete-confirmation preparation"
-                 : id == 3 ? "actual create-world fj construction"
-                           : "actual rename-world jk construction",
-                 "rq", "a", "(Lke;)V",
-                 id == 2   ? 21u
-                 : id == 3 ? 162u
-                           : 189u);
+                 id == 2 ? "actual delete-confirmation preparation"
+                         : "actual rename-world jk construction",
+                 "rq", "a", "(Lke;)V", id == 2 ? 21u : 189u);
         else
             (void)mc_client_world_list_button(rq->fields.o, button, &r->failure);
-    }
+    } else if (screen->kind == MC_CLIENT_SCREEN_CREATE_WORLD)
+        (void)create_action(r, (mc_client_source_fj *)screen, button);
     return leave(r, e);
 }
 
@@ -902,12 +1015,21 @@ mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_tra
             return pause;
         if (base != NULL && r->app->r == base)
             r->app->r = NULL;
+        base = mc_client_screen_create_world_base(n->create);
+        const mc_client_screen_status create = mc_client_screen_create_world_retire(&n->create, e);
+        if (create != MC_CLIENT_SCREEN_OK)
+            return create;
+        if (base != NULL && r->app->r == base)
+            r->app->r = NULL;
         base = mc_client_screen_menu_base(n->menu);
         const mc_client_screen_status menu = mc_client_screen_menu_retire(&n->menu, e);
         if (menu != MC_CLIENT_SCREEN_OK)
             return menu;
         if (base != NULL && r->app->r == base)
             r->app->r = NULL;
+        mc_world_info_name_release(n->create_folder);
+        mc_world_info_name_release(n->create_name);
+        n->create_folder = n->create_name = NULL;
         r->nodes = n->next;
         if (n->controller != NULL) {
             n->next = r->controller_nodes;

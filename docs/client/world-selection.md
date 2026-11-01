@@ -45,8 +45,9 @@ saves can construct the source World, run all 289 terrain samples and publish
 the real Player and movement input. Renderer/effect attachment and view
 publication complete; the loaded authored saved World compiles standard Block
 lists before terrain submission486 remains unfinished. Complete gameplay
-remains unfinished. Create and
-Rename stop at their destination allocations, `NEW162` and `NEW189`. Delete
+remains unfinished. [Create World](create-world.md) now constructs its actual
+screen at162, edits the name and seed, and enters the ordinary loader. Rename
+stops at its destination allocation `NEW189`. Delete
 stops at preparation offset 21; its earlier preparation is not skipped to reach
 a confirmation screen.
 

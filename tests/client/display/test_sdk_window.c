@@ -115,6 +115,126 @@ static unsigned checks;
         }                                                                                          \
     } while (0)
 
+typedef struct control_case {
+    SDL_Scancode scancode;
+    SDL_Keycode logical;
+    SDL_Keymod modifiers;
+    int32_t legacy;
+    uint32_t character;
+} control_case;
+
+static bool control_frames(mc_client_sdk_update *updates, mc_client_sdk_input *input,
+                           SDL_WindowID window, const control_case *value, bool repeats) {
+    bool ok = false, next = false, held = true;
+    mc_client_sdk_input_error input_error;
+    mc_client_sdk_update_error update_error;
+    mc_client_sdk_key_event observed;
+    SDL_Event event = {0};
+    event.type = SDL_EVENT_KEY_DOWN;
+    event.key.windowID = window;
+    event.key.scancode = value->scancode;
+    event.key.key = value->logical;
+    event.key.mod = value->modifiers;
+    event.key.down = true;
+    event.key.timestamp = UINT64_C(1234567000000);
+    CHECK(SDL_PushEvent(&event));
+    event.key.repeat = true;
+    ++event.key.timestamp;
+    CHECK(SDL_PushEvent(&event));
+    event.type = SDL_EVENT_KEY_UP;
+    event.key.down = false;
+    event.key.repeat = false;
+    ++event.key.timestamp;
+    CHECK(SDL_PushEvent(&event));
+    CHECK(mc_client_sdk_display_process_messages(updates, &update_error) ==
+          MC_CLIENT_SDK_UPDATE_OK);
+    CHECK(mc_client_sdk_keyboard_key_down(input, value->legacy, &held, &input_error) ==
+              MC_CLIENT_SDK_INPUT_OK &&
+          !held);
+    for (unsigned i = 0; i < (repeats ? 3u : 2u); ++i) {
+        const bool released = i == (repeats ? 2u : 1u);
+        const uint32_t expected = released ? 0 : value->character;
+        const bool repeated = repeats && i == 1;
+        const int64_t stamp = INT64_C(1234567000000) + (released ? 2 : (repeated ? 1 : 0));
+        CHECK(mc_client_sdk_keyboard_next(input, &next, &observed, &input_error) ==
+                  MC_CLIENT_SDK_INPUT_OK &&
+              next);
+        if (observed.key != value->legacy || observed.character != expected ||
+            observed.pressed == released || observed.repeat != repeated || observed.nanos != stamp)
+            fprintf(stderr,
+                    "control key scan=%d logical=%u mod=%u frame=%u: key=%d char=%u down=%d "
+                    "repeat=%d nanos=%lld expected=%d/%u/%d/%d/%lld\n",
+                    (int)value->scancode, (unsigned)value->logical, (unsigned)value->modifiers, i,
+                    observed.key, observed.character, observed.pressed, observed.repeat,
+                    (long long)observed.nanos, value->legacy, expected, !released, repeated,
+                    (long long)stamp);
+        CHECK(observed.key == value->legacy && observed.character == expected &&
+              observed.pressed != released && observed.repeat == repeated &&
+              observed.nanos == stamp);
+    }
+    CHECK(mc_client_sdk_keyboard_next(input, &next, &observed, &input_error) ==
+              MC_CLIENT_SDK_INPUT_OK &&
+          !next);
+    ok = true;
+cleanup:
+    return ok;
+}
+
+static bool control_characters(mc_client_sdk_update *updates, mc_client_sdk_input *input,
+                               SDL_WindowID window) {
+    bool ok = false;
+    mc_client_sdk_input_error error;
+    /* Authored physical SDL key records, with no TEXT_INPUT payload. Original
+     * game RO/FJ consume character9/13/22, not just the legacy key number.
+     * Latin key semantics use the SDL logical symbol, independently of its
+     * physical LWJGL key. These are native-adapter controls, not original
+     * Windows/X11 message/timestamp qualification. */
+    static const control_case ordinary[] = {
+        {SDL_SCANCODE_TAB, SDLK_TAB, SDL_KMOD_NONE, 15, 9},
+        {SDL_SCANCODE_TAB, SDLK_LEFT_TAB, SDL_KMOD_LSHIFT, 15, 9},
+        {SDL_SCANCODE_RETURN, SDLK_RETURN, SDL_KMOD_NONE, 28, 13},
+        {SDL_SCANCODE_RETURN, SDLK_RETURN, SDL_KMOD_RSHIFT, 28, 13},
+        {SDL_SCANCODE_KP_ENTER, SDLK_KP_ENTER, SDL_KMOD_NONE, 156, 13},
+        {SDL_SCANCODE_BACKSPACE, SDLK_BACKSPACE, SDL_KMOD_NONE, 14, 8},
+        {SDL_SCANCODE_BACKSPACE, SDLK_BACKSPACE, SDL_KMOD_LSHIFT, 14, 8},
+        {SDL_SCANCODE_LCTRL, SDLK_LCTRL, SDL_KMOD_LCTRL, 29, 0},
+        {SDL_SCANCODE_V, SDLK_V, SDL_KMOD_NONE, 47, 0},
+        {SDL_SCANCODE_V, SDLK_V, SDL_KMOD_LCTRL | SDL_KMOD_RALT, 47, 0},
+        {SDL_SCANCODE_V, SDLK_V, SDL_KMOD_LCTRL | SDL_KMOD_LGUI, 47, 0},
+        {SDL_SCANCODE_V, SDLK_V, SDL_KMOD_LCTRL | SDL_KMOD_MODE, 47, 0},
+        {SDL_SCANCODE_V, SDLK_V, SDL_KMOD_LCTRL | SDL_KMOD_LEVEL5, 47, 0},
+        {SDL_SCANCODE_V, SDLK_V, SDL_KMOD_LCTRL | SDL_KMOD_CAPS, 47, 22},
+        {SDL_SCANCODE_TAB, SDLK_TAB, SDL_KMOD_LALT, 15, 0},
+        {SDL_SCANCODE_TAB, SDLK_TAB, SDL_KMOD_LCTRL, 15, 0},
+        {SDL_SCANCODE_RETURN, SDLK_RETURN, SDL_KMOD_LCTRL, 28, 0},
+        {SDL_SCANCODE_BACKSPACE, SDLK_BACKSPACE, SDL_KMOD_LCTRL, 14, 0},
+        {SDL_SCANCODE_Q, SDLK_A, SDL_KMOD_LCTRL, 16, 1},
+        {SDL_SCANCODE_E, 0xe9, SDL_KMOD_LCTRL, 18, 0},
+        {SDL_SCANCODE_V, SDLK_UNKNOWN, SDL_KMOD_LCTRL, 47, 0},
+    };
+    static const int32_t legacy_letters[] = {30, 48, 46, 32, 18, 33, 34, 35, 23, 36, 37, 38, 50,
+                                             49, 24, 25, 16, 19, 31, 20, 22, 47, 17, 45, 21, 44};
+    CHECK(mc_client_sdk_keyboard_enable_repeat(input, true, &error) == MC_CLIENT_SDK_INPUT_OK);
+    for (size_t i = 0; i < sizeof(ordinary) / sizeof(ordinary[0]); ++i)
+        CHECK(control_frames(updates, input, window, &ordinary[i], true));
+    for (size_t i = 0; i < 26; ++i) {
+        control_case value = {(SDL_Scancode)(SDL_SCANCODE_A + i), (SDL_Keycode)('a' + i),
+                              SDL_KMOD_LCTRL, legacy_letters[i], (uint32_t)i + 1};
+        CHECK(control_frames(updates, input, window, &value, true));
+        value.logical = (SDL_Keycode)('A' + i);
+        value.modifiers = SDL_KMOD_RCTRL | SDL_KMOD_RSHIFT;
+        CHECK(control_frames(updates, input, window, &value, true));
+    }
+    CHECK(mc_client_sdk_keyboard_enable_repeat(input, false, &error) == MC_CLIENT_SDK_INPUT_OK);
+    const control_case paste = {SDL_SCANCODE_V, SDLK_V, SDL_KMOD_LCTRL, 47, 22};
+    CHECK(control_frames(updates, input, window, &paste, false));
+    ok = true;
+cleanup:
+    if (mc_client_sdk_keyboard_enable_repeat(input, false, &error) != MC_CLIENT_SDK_INPUT_OK)
+        ok = false;
+    return ok;
+}
+
 int main(int argc, char **argv) {
     int result = 1;
     mc_resource_files *files = NULL;
@@ -255,6 +375,7 @@ int main(int argc, char **argv) {
               MC_CLIENT_SDK_INPUT_SOURCE_INDEX &&
           held);
     CHECK(input_error.site.pc == 26);
+    CHECK(control_characters(updates, input, id));
     event = (SDL_Event){0};
     event.type = SDL_EVENT_WINDOW_EXPOSED;
     event.window.windowID = id;

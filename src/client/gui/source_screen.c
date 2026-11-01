@@ -1,3 +1,4 @@
+#include "source_create_world_internal.h"
 #include "source_pause_screen_internal.h"
 #include "source_screen_internal.h"
 #include "source_world_selection_internal.h"
@@ -156,6 +157,8 @@ static bool prepare_final(mc_client_source_da *o, mc_client_screen_error *e) {
         ready = mc_screen_world_selection_cleanup_locked((mc_client_source_rq *)o, e);
     else if (o->kind == MC_CLIENT_SCREEN_PAUSE)
         ready = mc_screen_pause_cleanup_locked((mc_client_source_oz *)o, e);
+    else if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD)
+        ready = mc_screen_create_world_cleanup_locked((mc_client_source_fj *)o, e);
     if (ready)
         ready = mc_screen_button_release_locked(&o->selected_cleanup, e);
     if (ready)
@@ -218,6 +221,26 @@ mc_client_screen_status mc_client_screen_retain(mc_client_source_da *o,
     else if (mc_screen_lock(o->classes, &e)) {
         (void)mc_screen_instance_hold_locked(o, &e);
         (void)mtx_unlock(&o->classes->mutex);
+    }
+    return mc_screen_publish(&e, error);
+}
+
+mc_client_screen_status mc_client_screen_closed(mc_client_source_da *o,
+                                                mc_client_screen_error *error) {
+    mc_client_screen_error e = {0};
+    if (o == NULL) {
+        mc_screen_fail(&e, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE, "actual screen h null receiver",
+                       "da", "h", "()V", 0);
+        e.native_policy = false;
+    } else if (mc_screen_lock(o->classes, &e)) {
+        if (o->classes->retiring)
+            mc_screen_fail(&e, MC_CLIENT_SCREEN_BUSY, "screen close live source receiver", "da",
+                           "h", "()V", 0);
+        else if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD)
+            (void)mc_screen_create_world_closed_locked((mc_client_source_fj *)o, &e);
+        else
+            e.source_returned = true;
+        mtx_unlock(&o->classes->mutex);
     }
     return mc_screen_publish(&e, error);
 }

@@ -49,8 +49,14 @@ bool wt_tick(wt_scope *s, mc_entity *p, unsigned int pc) {
                              &s->error.child_error.mob);
     } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_FALLING_SAND)) {
         s->error.virtual_class = "ju";
-        return wt_fail(s, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                       "World actual FallingSand.w_ active tick dependency");
+        if (!s->has_error_output)
+            return wt_fail(s, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "World FallingSand tick requires retained error output");
+        s->error.child = MC_WORLD_ENTITY_TICK_CHILD_FALLING_SAND;
+        mc_falling_entity_tick_error_init(&s->error.child_error.falling);
+        status = mc_falling_entity_tick_in_context(
+            p, s->context == NULL ? NULL : s->context->player.travel.code_registry,
+            s->context == NULL ? NULL : s->context->falling_limits, &s->error.child_error.falling);
     } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_MINECART)) {
         s->error.virtual_class = "yl";
         return wt_fail(s, MC_WORLD_STORAGE_UNSUPPORTED_STATE,

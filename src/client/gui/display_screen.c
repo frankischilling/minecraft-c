@@ -112,8 +112,11 @@ static mc_client_display_screen_status run(mc_client_display_screen_call *call,
         bool ignored;
         if (!menu(call, call->old_screen, 4, &ignored))
             return call->status;
-        /* The implemented da/fu classes cannot be ce. Both inherit da.h()V,
-         * whose bytecode is the literal return0, with no source field access. */
+        /* Actual virtual old h() precedes every target/fallback decision. */
+        if (mc_client_screen_closed(call->old_screen, &call->screen) != MC_CLIENT_SCREEN_OK) {
+            call->child = call->screen.site;
+            return fail(call, MC_CLIENT_DISPLAY_SCREEN_CHILD_FAILED, call->screen.operation, 22);
+        }
         call->old_closed = true;
     }
     bool is_menu;

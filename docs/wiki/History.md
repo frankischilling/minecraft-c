@@ -48,7 +48,7 @@ current audit verifies 4,614 resolved paths, merging Windows separators
 and `/mnt/c` aliases of the same file. Formatting checks 1,757 C files.
 Six current binding tables pass with historical metadata preserved. Hosted
 results keep their exact published-commit scope in
-[Draft PR52](https://github.com/frankischilling/minecraft-c/pull/52).
+[hosted validation](https://github.com/frankischilling/minecraft-c/actions).
 
 The full local selection above was recorded at `c88e648`. A subsequent
 test-only GCC repair makes the existing cosine-count assertion's `&&` grouping
@@ -57,7 +57,7 @@ with the actual target flags rejects the original and accepts the correction.
 Rebuilt Windows and Clang18 creature comparisons each retain 3,722 native checks,
 366,155 selected original checks and twelve rejected comparator corruptions.
 Production and build configuration are unchanged; hosted results keep their
-separate commit scope in [draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
+separate commit scope in [hosted validation](https://github.com/frankischilling/minecraft-c/actions).
 
 Single-player remains pre-playable. Wolf, Zombie and Skeleton with its genuine
 held Bow remain unfinished. Active achievement/tutorial notices, real Canvas
@@ -90,7 +90,7 @@ Twenty fresh original-comparison wrappers pass, ten per host; current hashes
 cover 5,510 distinct paths. Formatting checks 1,746 files, and six current
 binding tables cover 8,251 entries across 3,502 files without changing their
 historical metadata. Hosted results retain their own published-commit scope in
-[Draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
+[hosted validation](https://github.com/frankischilling/minecraft-c/actions).
 
 The preceding Sheep checkpoint advanced the earlier N516 dependency through
 fur, terrain shadow and list reuse. It retains 666 native checks, 70,341 typed

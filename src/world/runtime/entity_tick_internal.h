@@ -22,6 +22,7 @@ typedef struct wt_scope {
     mc_world_entity_tick_error error;
     mc_entity **parents;
     size_t parent_count, parent_capacity, temporary_bytes;
+    bool has_error_output;
 } wt_scope;
 
 bool wt_fail(wt_scope *, mc_world_storage_status, const char *);

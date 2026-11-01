@@ -68,4 +68,4 @@ The native contracts are [Entity construction and NBT](../../tests/entity/test_f
 and [Block/runtime ownership](../../tests/world/runtime/test_falling.c).
 They use genuine owners and explicitly prepared native inputs. They do not
 establish original-game replay, arbitrary recursion, full natural population,
-FallingSand Entity ticking or complete save interoperability.
+or complete save interoperability. The [client Falling Sand active tick](../entity/falling-tick.md) now has a separate body and finite native landing/drop qualification.

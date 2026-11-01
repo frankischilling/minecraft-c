@@ -47,6 +47,17 @@ poll/cursor, Keyboard poll and deferred Controllers check in order. Errors
 retain complete typed children, caller sites and completed swap/pump/store
 effects. Native policy or platform failures are not fabricated Java exceptions.
 
+The native keyboard adapter supplies ordinary and Shift Tab, Return/keypad
+Enter and Backspace control characters, which SDL filters from committed text.
+Ctrl with a logical Latin letter supplies units 1 through 26. Key releases
+carry zero; a matching committed control is deduplicated. Physical legacy key
+codes remain independent of the logical letter. Alt, GUI, AltGr, Level5 and
+other Ctrl combinations remain outside this finite adapter. The real staged
+Display test checks 21 modifier cases, all 26 letters in both cases, repeat,
+timestamps, physical down state and queue exhaustion on Windows and sanitized
+Linux/X11. These authored events do not qualify native layout, IME or message
+timing parity. [Create World](create-world.md) uses this route for Tab and Enter.
+
 Calls require the SDL main thread and live, exclusive owners. Native callbacks
 cannot reenter or retire active Display, input, transport or icon operations.
 BUSY preserves admitted occurrences and outputs. Failed partial construction

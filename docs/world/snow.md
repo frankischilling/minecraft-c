@@ -50,15 +50,32 @@ call-stack owner or evidence for arbitrary recursion resources.
 
 ## Verification
 
+A genuinely generated seed777 World exposed a Windows stack overflow during
+a finite Snow cascade. The focused regression isolated the default-stack
+threshold: 21 connected unsupported layers returned; 22 overflowed. Actual
+WorldAccess callbacks observed distinct positions already changed to air.
+Each recursive native frame reserved a large nested error record. Snow now
+allocates that record on the heap, initializes it in place and copies a failed
+child before releasing its workspace. The source removal order and native
+thread stack size remain unchanged.
+
+The current Windows and Linux ASan/UBSan `world.snow` suites pass 700 checks. Client and server
+fixtures remove all 22 positions in ascending callback order with unchanged
+Random state. A separate callback failure at position8 retains the exact
+LIMIT, operation, system code17 and nested source sites after workspace release;
+positions1..8 remain air and9..22 remain Snow. The earlier Snow, Rail, NULL,
+Random and light-melting controls still pass. The focused runs take 1.20 seconds
+on Windows and 0.73 seconds on sanitized Linux.
+
 The native `world.snow` case uses both Registry sides and real GAME owners with
 serialized input chunks. Its capture retains inputs and streams; saved regions
 are fixture inputs, not final-state observations or original-game comparisons.
-The focused case passes 380 checks on MSVC and sanitized GCC/Clang. It covers
+The earlier focused case passed 380 checks on MSVC and sanitized GCC/Clang. It covered
 live opacity fields, the independent material query, null dependencies, ignored
 Random/source-ID arguments, zero-quantity ownership/RNG effects, recursive and
 partially failed removals, remote melting, Block-light eleven versus twelve,
 and wrapped/out-of-World coordinates. All 159 configured MSVC cases and 161
-per sanitized GCC/Clang build pass in focused/complementary partitions. Fresh
+per sanitized GCC/Clang build passed in focused/complementary partitions. That
 qualification verifies actual source, dependencies, products, captures and the
 Snow executable/process/stream joins. No original snow replay, player harvesting
 or complete population claim follows.

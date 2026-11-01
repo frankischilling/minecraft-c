@@ -1,6 +1,7 @@
 #ifndef MC_WORLD_RUNTIME_ENTITY_TICK_H
 #define MC_WORLD_RUNTIME_ENTITY_TICK_H
 
+#include "mc/entity/falling_sand/tick.h"
 #include "mc/entity/item/tick.h"
 #include "mc/entity/mob/tick.h"
 #include "mc/entity/player/tick.h"
@@ -21,6 +22,7 @@ typedef struct mc_world_entity_tick_context {
     size_t relationship_actor_count;
     mc_math_classes *math;
     const mc_mob_tick_limits *mob_limits;
+    const mc_entity_move_limits *falling_limits;
 } mc_world_entity_tick_context;
 
 typedef struct mc_world_entity_tick_limits {
@@ -42,7 +44,8 @@ typedef enum mc_world_entity_tick_child {
     MC_WORLD_ENTITY_TICK_CHILD_TILE_ENTITY,
     MC_WORLD_ENTITY_TICK_CHILD_PRESENTATION,
     MC_WORLD_ENTITY_TICK_CHILD_REGISTRY,
-    MC_WORLD_ENTITY_TICK_CHILD_MOB
+    MC_WORLD_ENTITY_TICK_CHILD_MOB,
+    MC_WORLD_ENTITY_TICK_CHILD_FALLING_SAND
 } mc_world_entity_tick_child;
 
 typedef struct mc_world_entity_tick_error {
@@ -74,12 +77,18 @@ typedef struct mc_world_entity_tick_error {
         mc_world_mutation_error presentation;
         mc_registry_error registry;
         mc_mob_tick_error mob;
+        mc_falling_entity_tick_error falling;
     } child_error;
 
     mc_world_access_failure world_access_failure;
 } mc_world_entity_tick_error;
 
 void mc_world_entity_tick_error_init(mc_world_entity_tick_error *);
+/* End owned FallingSand failure work before reusing this record or retiring
+ * its graph. A failed child transfers ownership into the output; it must not
+ * be copied or cleared. Other child projections are borrowed. False preserves
+ * remaining work and its cleanup cause. No source work is replayed. */
+bool mc_world_entity_tick_error_retire(mc_world_entity_tick_error *);
 /* Genuine GAME World bodies: fd.f(Entity), fd.a(Entity,flag), fd.g(). These
  * are not the World time/block/weather scheduler or Minecraft/frontend loop.
  * Context, limits, exact owners and disjoint caller outputs stay live/exclusive
@@ -95,6 +104,9 @@ void mc_world_entity_tick_error_init(mc_world_entity_tick_error *);
  * not a synthetic Java exception. Base/dedicated SERVER updates remain a
  * separate unfinished dependency. Admission preserves World/Entity state and
  * earlier World diagnostics; optional caller error is fresh for this attempt. */
+/* The reached FallingSand child requires a nonnull error output to own any
+ * failed constructor/publication/placement prefix. With NULL output it stops
+ * before that child; earlier loop effects are preserved. */
 mc_world_storage_status mc_world_runtime_tick_entity(mc_world_runtime *, mc_entity *,
                                                      const mc_world_entity_tick_context *,
                                                      const mc_world_entity_tick_limits *,

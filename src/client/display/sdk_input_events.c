@@ -2,6 +2,7 @@
 #include "sdk_input_internal.h"
 
 #include <SDL3/SDL_events.h>
+#include <SDL3/SDL_keycode.h>
 #include <SDL3/SDL_scancode.h>
 #include <string.h>
 #include <xmmintrin.h>
@@ -17,6 +18,37 @@ int32_t mc_client_sdk_input_key_code(int32_t scancode) {
         sdk_key_codes[scancode] == 0)
         return -1;
     return sdk_key_codes[scancode];
+}
+
+static uint32_t control_character(const SDL_KeyboardEvent *event) {
+    /* SDL3.4.18 SDL_SendKeyboardText filters C0 characters. The pinned
+     * WindowsKeyboard.handleChar and LinuxKeyboard.translateEvent receive
+     * those characters from WM_CHAR/XLookupString instead. Adapt the ordinary
+     * Tab/Enter/Backspace and Latin Ctrl-letter subset at the retained physical
+     * key; key release never translates text. Alt/GUI/AltGr/Level5 and other
+     * Ctrl combinations remain outside this finite native adaptation. */
+    if (event->type != SDL_EVENT_KEY_DOWN ||
+        (event->mod & (SDL_KMOD_ALT | SDL_KMOD_GUI | SDL_KMOD_MODE | SDL_KMOD_LEVEL5)) != 0)
+        return 0;
+    if ((event->mod & SDL_KMOD_CTRL) != 0) {
+        const SDL_Keycode key = event->key;
+        if (key >= 'a' && key <= 'z')
+            return key - 'a' + 1;
+        if (key >= 'A' && key <= 'Z')
+            return key - 'A' + 1;
+        return 0;
+    }
+    switch (event->scancode) {
+        case SDL_SCANCODE_TAB:
+            return 9;
+        case SDL_SCANCODE_RETURN:
+        case SDL_SCANCODE_KP_ENTER:
+            return 13;
+        case SDL_SCANCODE_BACKSPACE:
+            return 8;
+        default:
+            return 0;
+    }
 }
 
 static void u32(uint8_t *out, uint32_t value) {
@@ -85,6 +117,11 @@ bool mc_client_sdk_input_flush_key(mc_client_sdk_input *o, mc_client_sdk_input_e
 
 static bool committed_unit(mc_client_sdk_input *o, uint32_t unit, uint64_t nanos,
                            mc_client_sdk_input_error *e) {
+    /* A backend that also commits the same adapted control must not create a
+     * second logical key. Keep unrelated committed/IME text in source order. */
+    if (o->key_pending && o->retained_key.pressed && o->retained_key.key != 0 && unit < 32 &&
+        unit != 0 && o->retained_key.character == unit)
+        return true;
     if (o->key_pending && o->retained_key.pressed && o->retained_key.character == 0) {
         o->retained_key.character = unit;
         return true;
@@ -286,8 +323,9 @@ static bool collect(mc_client_sdk_input *o, bool mouse, mc_client_sdk_input_erro
                 const uint64_t nanos = event->common.timestamp;
                 memcpy(&timestamp, &nanos, sizeof(timestamp));
                 o->backend_keys[key] = event->type == SDL_EVENT_KEY_DOWN ? 1 : 0;
-                o->retained_key = (mc_client_sdk_key_event){
-                    key, 0, timestamp, event->type == SDL_EVENT_KEY_DOWN, event->key.repeat};
+                o->retained_key =
+                    (mc_client_sdk_key_event){key, control_character(&event->key), timestamp,
+                                              event->type == SDL_EVENT_KEY_DOWN, event->key.repeat};
                 o->key_pending = true;
                 ok = true;
             }

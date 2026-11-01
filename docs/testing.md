@@ -1,5 +1,37 @@
 # Test scope and reproduction
 
+## Create World and reached natural interactions
+
+The [Create World lifecycle](client/create-world.md) now has a full native
+Windows Release scenario from empty saves. The current run passes 3,132 checks
+in 94.50 seconds, creates seed 777 with 289 preparation samples and the initial
+forced save, returns three World/HUD frames, saves to the title, and reselects
+the actual disk World for three more frames. Independent NBT decoding checks
+447 Chunks across four regions and the selected live Player/WorldInfo values.
+Three corrupted metadata copies are rejected. Both host windows close and
+native terminal cleanup returns. The [run summary](../tests/reference/client/create_world/native-validation.json)
+records its 1,388 bound inputs and 413 immutable imported-resource files.
+The earlier 54.99-second run has different natural inputs and an older diagnostic
+site; these are finite execution records, not a controlled speed comparison.
+
+The final selection passes all 22 Windows CTests, including ordinary save/title.
+All 20 corresponding Linux Clang ASan/UBSan CTests pass in 14.33 seconds,
+followed by a separate X11 SDK input check. RO/FJ model tests complete 42/207
+checks. Crossed-plant replay matches
+125 exact unchanged-original CPU rows on both hosts; native Water/Lava controls
+complete 306 checks. Snow's 700-check suite now includes the minimized 22-layer
+Windows stack-overflow regression and a failure after eight distinct removals.
+The [Falling Sand tick](entity/falling-tick.md) passes 112 native checks and owns
+its failed constructor/publication/placement prefixes through checked cleanup.
+
+A later natural Wolf attack failed at the previously missing concrete body.
+The [Wolf component](entity/wolf-attack.md) now executes pounce and bite routing;
+non-NULL LivingEntity hurt remains a reached dependency. Both hosts pass its 75
+authored checks and match all 24 unchanged-original CPU rows. These component
+results remain separate from the full Windows graphical lifecycle.
+Original GUI/pixels, the full Linux native lifecycle, default-Far performance,
+unrestricted reselection and extended play remain unqualified.
+
 ## Mining controls and execution-guard cost
 
 The [mining contract](client/mining.md) describes the public controller,
@@ -1919,7 +1951,7 @@ cleanup, active-call refusal and idempotence. No host mutex failure was forced.
 The profiles use isolated native APPDATA directories and authored NBT metadata,
 including `level.dat_old` fallback. Save and imported-resource hashes remain
 unchanged, with no new session lock in these menu/conversion profiles. Their empty and populated 854 by 480 captures
-were inspected, along with the bottom-scroll capture. Create/Rename still stop at `NEW162`/`NEW189`; Delete stops at
+were inspected, along with the bottom-scroll capture. At that checkpoint Create/Rename stopped at `NEW162`/`NEW189`; the current Create World scenario is recorded separately. Delete stopped at
 preparation 21 without skipping its earlier source work. See the
 [World-selection contract](client/world-selection.md).
 

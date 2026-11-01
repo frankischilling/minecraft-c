@@ -61,14 +61,20 @@ typedef struct change_prefix {
     mc_sound_manager_report sound_report;
 } change_prefix;
 
-typedef struct source_leave {
-    struct source_leave *next;
-    change_prefix prefix;
-    mc_client_world_load_error failure;
+typedef struct source_save {
+    mc_client_world_load_call *call;
     mc_world_runtime_lifecycle_error saving;
     mc_client_loading_error level, chunks;
     mc_client_loading_screen *progress; /* Actual fd.a(yb) argument hold. */
     bool level_returned, chunks_returned;
+    int caller_pc;
+} source_save;
+
+typedef struct source_leave {
+    struct source_leave *next;
+    change_prefix prefix;
+    mc_client_world_load_error failure;
+    source_save save;
     int pc;
 } source_leave;
 
@@ -119,6 +125,7 @@ struct mc_client_world_load_call {
     mc_world_player_load_error player_load;
     mc_world_access_failure captured_player_failure;
     mc_client_entity_renderer_pick_error pick_cleanup;
+    source_save initial_save;
     source_leave *leaves, *active_leave;
     size_t leave_count;
     mc_client_world_load_call *previous, *successor; /* Borrowed bounded LIFO epoch chain. */
@@ -303,6 +310,7 @@ static bool loading(mc_client_world_load_call *call, mc_client_loading_screen *r
 }
 
 static bool previous_world_save(mc_client_world_load_call *);
+static bool source_world_save(mc_client_world_load_call *, mc_world_runtime *, source_save *, int);
 static bool source_app_slots(const mc_client_world_load_call *);
 static bool source_epoch_slots(const mc_client_world_load_call *);
 static bool epoch_admit(const mc_client_world_load_call *);
@@ -731,9 +739,9 @@ static bool change_world_at(mc_client_world_load_call *call, mc_world_runtime *w
         return false;
     }
     if (fields.s) {
-        change_fail(call, MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED,
-                    "actual new-World save with LoadingScreen", 339);
-        return false;
+        if (!source_world_save(call, world, &call->initial_save, 339))
+            return false;
+        call->state.initial_save_returned = true;
     }
     call->state.last_change_pc = 347;
     if (mc_client_view_slot_store(app, app->h) != MC_ENTITY_OK) {
@@ -1104,7 +1112,7 @@ bool mc_client_world_load_inspect(const mc_client_world_load_call *call,
     if (call->leaves != NULL) {
         out->leave.pc = call->leaves->pc;
         out->leave.failure = &call->leaves->failure;
-        out->leave.saving = &call->leaves->saving;
+        out->leave.saving = &call->leaves->save.saving;
     }
     return true;
 }
@@ -1173,12 +1181,18 @@ static mc_client_world_load_status cleanup_records(mc_client_world_load_call *ca
                                 "captured Loading occurrence release");
         call->pending_loading = NULL;
     }
+    if (call->initial_save.progress != NULL) {
+        if (mc_client_loading_screen_release(call->initial_save.progress) != MC_CLIENT_LOADING_OK)
+            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
+                                "captured initial save progress argument native release");
+        call->initial_save.progress = NULL;
+    }
     for (source_leave *left = call->leaves; left != NULL; left = left->next) {
-        if (left->progress != NULL) {
-            if (mc_client_loading_screen_release(left->progress) != MC_CLIENT_LOADING_OK)
+        if (left->save.progress != NULL) {
+            if (mc_client_loading_screen_release(left->save.progress) != MC_CLIENT_LOADING_OK)
                 return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
                                     "captured source save progress argument native release");
-            left->progress = NULL;
+            left->save.progress = NULL;
         }
     }
     mc_world_access_failure_release(&call->captured_player_failure);
@@ -1878,3 +1892,4 @@ mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_cal
 
 #include "source_epoch.inc"
 #include "source_leave.inc"
+#include "source_save.inc"

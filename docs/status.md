@@ -1,5 +1,23 @@
 # Development status
 
+The source [Create World screen](client/create-world.md) now edits actual name
+and seed fields, derives a valid folder through the real SaveFormat lookup,
+and enters ordinary generation. The Windows seed 777 scenario completes 289
+terrain samples, its initial forced save, three World/HUD frames, ordinary
+Save and Quit, and reselection for three more frames. The current run passes
+3,132 native checks in 94.50 seconds, with independent decoding of 447 saved Chunks and
+the selected live Player/WorldInfo values, then checked cleanup. RO/FJ model controls,
+SDK control-character input, plant/fluid geometry and a minimized Snow cascade
+pass on Windows and sanitized Linux. The direct plant helper matches 125
+unchanged-original CPU rows on both hosts. The reached [Falling Sand tick](entity/falling-tick.md)
+and a mixed-Entity diagnostic-ownership fix complete this finite lifecycle.
+The reached [Wolf attack](entity/wolf-attack.md) now preserves pounce and bite
+routing. Both hosts pass 75 native controls and 24 exact unchanged-original
+CPU comparisons; non-NULL LivingEntity damage remains unfinished.
+Whole GUI, plant climate/jitter, fluid pixels and unrestricted play retain
+separate verification limits. The earlier 54.99-second pass and current pass
+have different natural inputs; they are not a controlled speed comparison.
+
 The Windows Release [collected-Dirt placement scenario](client/placement.md)
 now completes mining, dropped-Item drawing, keyboard pickup, held-block drawing,
 real right-button placement and three save/title transitions across four World
@@ -198,7 +216,7 @@ is checked again for the repaired commit; the failed parent run is preserved.
 At `dbd1a83`, all four hosted jobs pass: 558 GCC, 558 Clang and 510 Windows
 tests, plus formatting. Those results qualify the preceding Sheep/clamp
 checkpoint. Hosted results for the published animal commit are recorded
-separately on the draft pull request.
+in the commit-specific hosted runs.
 
 ## Pig, Cow and Chicken drawing
 
@@ -748,10 +766,10 @@ renderer cohort's 482 Windows cases and 30 selected Linux cases retain their
 separate scopes, including its four private Engine/RR CPU-wrapper cases.
 See the [current qualification](testing.md#picking-body-and-geometry-qualification).
 
-The current World-entry extension passes its focused native Windows loop.
+The earlier World-entry extension passed its focused native Windows loop.
 Its DateFormat module matches 2,926 JDK17 vectors on Windows and Linux for
 English/en_US, UTC/US Eastern and UTC years 1967..2099; other profiles fail
-explicitly. Create and Rename stop at `NEW162` and `NEW189`. Delete stops at
+explicitly. At that checkpoint, Create and Rename stopped at `NEW162` and `NEW189`; the current Create World route is recorded above. Delete stopped at
 preparation 21 without skipping its prefix. The preceding source-loading Windows MSVC Debug ALL build
 and all 475 selected CTests pass without failures or skips in 208.25 seconds;
 46 configured reference-label profiles are excluded. The separate headless

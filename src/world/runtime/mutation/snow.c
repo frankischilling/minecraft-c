@@ -5,6 +5,8 @@
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
 
+#include <stdlib.h>
+
 typedef enum snow_method { SNOW_SUPPORT, SNOW_PRIVATE, SNOW_NEIGHBOR, SNOW_TICK } snow_method;
 
 typedef struct snow_frame {
@@ -79,17 +81,40 @@ static bool snow_null(const snow_frame *frame, unsigned int pc, const char *oper
  * snow frames. This diagnostic projection does not cap source recursion. */
 static bool snow_nested(const snow_frame *frame, unsigned int pc,
                         const mc_world_mutation_error *lower) {
-    const mc_world_mutation_error captured = *lower;
-    *frame->error = captured;
-    if (captured.cause_hook_class == NULL) {
-        frame->error->cause_hook_class = captured.hook_class;
-        frame->error->cause_hook_method = captured.hook_method;
-        frame->error->cause_hook_bytecode = captured.hook_bytecode;
+    if (frame->error != lower)
+        *frame->error = *lower;
+    if (frame->error->cause_hook_class == NULL) {
+        frame->error->cause_hook_class = frame->error->hook_class;
+        frame->error->cause_hook_method = frame->error->hook_method;
+        frame->error->cause_hook_bytecode = frame->error->hook_bytecode;
     }
+    const mc_world_storage_error cause = frame->error->cause;
     snow_at(frame, pc);
     if (frame->world != NULL)
-        frame->world->last_error = captured.cause;
+        frame->world->last_error = cause;
     return false;
+}
+
+/* A notifying removal can synchronously remove a long row of neighboring
+ * Snow. Keep each complete child diagnostic on the heap while descendants
+ * run, rather than reserving this large native record in every source frame. */
+static mc_world_mutation_error *snow_workspace(const snow_frame *frame, unsigned int pc) {
+    mc_world_mutation_error *lower = malloc(sizeof(*lower));
+    if (lower == NULL) {
+        snow_at(frame, pc);
+        (void)mc_world_mutation_fail(frame->world, frame->error, MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                                     "Snow child diagnostic allocation");
+    } else
+        mc_world_mutation_error_init(lower);
+    return lower;
+}
+
+static bool snow_child_result(const snow_frame *frame, unsigned int pc,
+                              mc_world_mutation_error *lower, bool completed) {
+    if (!completed)
+        (void)snow_nested(frame, pc, lower);
+    free(lower);
+    return completed;
 }
 
 bool mc_world_mutation_snow_can_place(mc_world_runtime *world, const mc_block *block, int32_t x,
@@ -162,10 +187,14 @@ static bool snow_survive(mc_world_runtime *world, const mc_block *block, int32_t
     if (!mc_world_mutation_drop(world, block, x, y, z, metadata, error))
         return snow_nested(&frame, 26, error);
     bool ignored;
-    mc_world_mutation_error lower = mc_world_mutation_empty_error();
+    mc_world_mutation_error *lower = snow_workspace(&frame, 35);
+    if (lower == NULL)
+        return false;
     snow_at(&frame, 35);
-    if (mc_world_runtime_block_set(world, x, y, z, 0, &ignored, &lower) != MC_WORLD_STORAGE_OK)
-        return snow_nested(&frame, 35, &lower);
+    if (!snow_child_result(&frame, 35, lower,
+                           mc_world_runtime_block_set(world, x, y, z, 0, &ignored, lower) ==
+                               MC_WORLD_STORAGE_OK))
+        return false;
     return snow_done(error);
 }
 
@@ -209,9 +238,13 @@ bool mc_world_mutation_snow_tick(mc_world_runtime *world, const mc_block *block,
     if (!mc_world_mutation_drop(world, block, x, y, z, metadata, error))
         return snow_nested(&frame, 30, error);
     bool ignored;
-    mc_world_mutation_error lower = mc_world_mutation_empty_error();
+    mc_world_mutation_error *lower = snow_workspace(&frame, 39);
+    if (lower == NULL)
+        return false;
     snow_at(&frame, 39);
-    if (mc_world_runtime_block_set(world, x, y, z, 0, &ignored, &lower) != MC_WORLD_STORAGE_OK)
-        return snow_nested(&frame, 39, &lower);
+    if (!snow_child_result(&frame, 39, lower,
+                           mc_world_runtime_block_set(world, x, y, z, 0, &ignored, lower) ==
+                               MC_WORLD_STORAGE_OK))
+        return false;
     return snow_done(error);
 }

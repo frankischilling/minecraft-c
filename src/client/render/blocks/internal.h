@@ -6,6 +6,7 @@
 #include "../../world/render_global_internal.h"
 #include "mc/block/registry/rendering.h"
 #include "mc/client/world/chunk_cache.h"
+#include "mc/entity/vector/vector.h"
 #include "mc/world/dimension/world_chunk_manager.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/brightness.h"
@@ -74,6 +75,7 @@ typedef struct mc_cv_context {
     mc_client_colorizer_error colorizer_error;
     mc_world_chunk_manager_error climate_error;
     mc_client_application_query_error application_query_error;
+    mc_entity_vector_error fluid_vector_error;
     mc_cv_world_error world_error;
 } mc_cv_context;
 
@@ -123,6 +125,10 @@ bool mc_cv_flat(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, fl
 bool mc_source_cv_ambient_occlusion(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t,
                                     float, float, float, bool *);
 bool mc_cv_render(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
+bool mc_cv_crossed_plant(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
+bool mc_cv_crossed_plant_geometry(mc_cv_context *, const mc_block *, int32_t, double, double,
+                                  double);
+bool mc_cv_fluid(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
 /* Actual cv.a(Block,III,texture): d3, child b12, d=-1 at18, return21.
  * Failure retains d and the complete nested source/CV/World diagnostics. */
 bool mc_cv_texture_override(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, int32_t);

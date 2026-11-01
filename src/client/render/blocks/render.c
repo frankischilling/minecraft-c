@@ -69,11 +69,25 @@ static bool render_block(mc_cv_context *c, const mc_block *block, int32_t x, int
     if (!mc_cv_update_bounds(c, block, x, y, z, 15))
         return false;
     bool rendered = false;
+    unsigned int return_pc = 323;
     if (type == 0) {
         mc_cv_pc(c, 29);
         if (!mc_cv_push(c, "l", "(Luu;III)Z") || !standard(c, block, x, y, z, &rendered))
             return false;
         mc_cv_pop(c);
+        return_pc = 32;
+    } else if (type == 1) {
+        mc_cv_pc(c, 78);
+        if (!mc_cv_push(c, "i", "(Luu;III)Z") || !mc_cv_crossed_plant(c, block, x, y, z, &rendered))
+            return false;
+        mc_cv_pop(c);
+        return_pc = 81;
+    } else if (type == 4) {
+        mc_cv_pc(c, 45);
+        if (!mc_cv_push(c, "k", "(Luu;III)Z") || !mc_cv_fluid(c, block, x, y, z, &rendered))
+            return false;
+        mc_cv_pop(c);
+        return_pc = 48;
     } else {
         static const unsigned int pc[] = {29,  78,  111, 127, 45, 143, 95,  177, 160,
                                           197, 214, 231, 248, 62, 265, 282, 300, 318};
@@ -89,7 +103,7 @@ static bool render_block(mc_cv_context *c, const mc_block *block, int32_t x, int
                               "actual specialized RenderBlocks geometry child", pc[type], true);
         }
     }
-    mc_cv_pc(c, type == 0 ? 32 : 323);
+    mc_cv_pc(c, return_pc);
     c->returned = true;
     mc_cv_pop(c);
     *out = rendered;

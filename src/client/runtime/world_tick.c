@@ -191,6 +191,9 @@ bool mc_client_world_tick_run(client_application *app, mc_math_classes *math,
 bool mc_client_world_tick_cleanup(mc_client_world_tick *call) {
     if (call == NULL || call->active)
         return false;
+    if (call->entities.child == MC_WORLD_ENTITY_TICK_CHILD_FALLING_SAND &&
+        !mc_world_entity_tick_error_retire(&call->entities))
+        return false;
     if (call->effects_owner != NULL) {
         if (call->effects.movement != NULL && call->effects.movement != &call->effects_movement) {
             call->effects_movement = *call->effects.movement;

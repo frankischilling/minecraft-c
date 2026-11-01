@@ -19,7 +19,8 @@ conversion title and message prefix, then stops at the unimplemented converter
 call at bytecode 52. No successful conversion result or recursive seed-zero
 load is supplied. Saves with other versions continue through the real
 SaveHandler and `fd` constructor. A missing WorldInfo takes the new-World branch
-and retains that branch's explicit unfinished spawn-construction dependency.
+and runs the actual Overworld provider and spawn search. [Create World](create-world.md)
+supplies its real folder, raw display name and selected seed to this same route.
 
 An existing WorldInfo can reach `CLIENT_LOAD_OR_CREATE` and `READY`. The
 constructor uses the canonical [SaveHandler](../world/save-handler.md),
@@ -54,7 +55,12 @@ completion remain distinct. A callback failure retains the partial publication
 and its exact invocation receipt; it does not acknowledge the source boolean
 return that follows the callback.
 
-For the existing-save profile, the final new-World save branch is false. The
+For the existing-save profile, the final new-World save branch is false. A fresh
+World instead calls the actual forced full save with the nullable LoadingScreen
+captured at336, before view publication. It uses the same metadata, SavedData,
+Chunk and region owners as ordinary leave. Both loading-screen stages execute
+through that captured owner; no successful callback result is substituted.
+The retained load reports whether this initial save returned. The
 caller publishes the same Player in `i347`, requests its third advisory GC,
 stores `P=0` and returns at World-change 366 and outer load 130. The following
 `displayScreen(NULL)` reads actual Player health. A healthy Player leaves `r`

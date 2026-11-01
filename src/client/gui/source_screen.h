@@ -54,7 +54,8 @@ typedef enum mc_client_screen_kind {
     MC_CLIENT_SCREEN_BASE,
     MC_CLIENT_SCREEN_MAIN_MENU,
     MC_CLIENT_SCREEN_WORLD_SELECTION,
-    MC_CLIENT_SCREEN_PAUSE
+    MC_CLIENT_SCREEN_PAUSE,
+    MC_CLIENT_SCREEN_CREATE_WORLD
 } mc_client_screen_kind;
 
 typedef enum mc_client_screen_class_phase {
@@ -94,6 +95,10 @@ typedef struct mc_client_screen_error {
     mc_java_random_profile_status first_class_random;
     const mc_client_screen_init_error *initialization;
 } mc_client_screen_error;
+
+/* Actual virtual DA.h(): ordinary screens return; FJ disables keyboard repeat.
+ * A synchronous enclosing input call may still hold this exact old receiver. */
+mc_client_screen_status mc_client_screen_closed(mc_client_source_da *, mc_client_screen_error *);
 
 /* A String reference, not a copied label. NULL is kind NULL; Registry String
  * views borrow the exact configured Registry held by this screen namespace.

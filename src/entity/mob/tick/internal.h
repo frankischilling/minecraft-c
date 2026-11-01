@@ -76,6 +76,10 @@ bool mt_concrete_w(mc_mob_tick_scope *);
 bool mt_concrete_o(mc_mob_tick_scope *);
 bool mt_creature(mc_mob_tick_scope *);
 bool mt_monster_attack(mc_mob_tick_scope *, mc_entity *target, float distance);
+bool mt_wolf_attack(mc_mob_tick_scope *, mc_entity *target, float distance);
+mc_entity_status mt_wolf_attack_component(mc_entity *, mc_registry_classes *, mc_math_classes *,
+                                          const mc_mob_tick_limits *, mc_entity *target,
+                                          float distance, mc_mob_tick_error *);
 mc_entity_status mt_monster_component(mc_entity *, mc_registry_classes *, mc_math_classes *,
                                       const mc_mob_tick_limits *, mc_entity *target, float distance,
                                       mc_mob_tick_error *);

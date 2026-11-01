@@ -52,6 +52,7 @@ typedef struct mc_client_menu_loop_state {
      * value diagnostics survive cleanup retry; released focus/monitor views
      * end with their successful native cleanup. */
     const struct mc_singleplayer_tick_state *controller_tick;
+    const struct mc_client_create_world_draw_error *create_world_draw;
     const struct mc_client_display_screen_call *display_call;
     const struct mc_player_error *player;
     const struct mc_client_gameplay_input *gameplay_input;
