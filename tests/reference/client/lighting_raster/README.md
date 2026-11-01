@@ -169,10 +169,39 @@ This control supplies no pixel or complete-frame evidence.
 each of 256 actual direct-array draws, it observes the bound GPU buffer and
 attribute 3's float3 layout, then reads back all three submitted normal vectors
 with `glGetBufferSubData`. Position and UV words must match the authored input,
-and the canonical current normal must become unknown. `array-normals.json`
+and the canonical current normal must retain its prior bits on the two qualified
+profiles. `array-normals.json`
 copies the actual array transform-feedback values from the complete public
 `normal-array.json`; the runner verifies that file's hash and projection before
 comparing every vector bit. It calculates no expected normal conversion.
+
+The separate [direct-transition evidence](normal-transition.json) records original
+NW six-face array draws followed by a quad without normals. Both exact driver
+profiles retain the explicit prior normal `(.25,.5,.75)`: queried and no-query
+controls agree, all six following `gl_Normal` feedback vertices match those bits,
+and the fixed-pipeline center pixels are white unlit and `bfbfbfff` lit. Input,
+helper, tool and raw-output hashes identify that separate observation; the older
+normal decoding captures remain unchanged. The native control now repeats the
+four lighting/query combinations and checks the following GPU normals and pixel.
+Other driver identities retain the unqualified boundary. This does not qualify
+a complete BB draw or establish a universal OpenGL current-normal rule.
+
+The byte-identical authored `NormalTransition.java` is now accompanied by a
+portable capture wrapper. Supply every input explicitly and use a new output
+directory:
+
+```text
+python -B scripts/reference/client/normal_transition.py --java <JDK17-java> --javac <JDK17-javac> --client <client.jar> --lwjgl <lwjgl.jar> --lwjgl-util <lwjgl_util.jar> --jinput <jinput.jar> --jutils <jutils.jar> --natives <extracted-native-directory> --work-dir <new-capture-directory>
+```
+
+On Linux, run that command under `xvfb-run -a` with
+`LIBGL_ALWAYS_SOFTWARE=1` for the measured Mesa profile. The wrapper requires
+matching JDK17 tools and pinned archive/native bytes, checks actual class/Code
+origins, captures bounded processes and verifies input/helper continuity. Missing
+prerequisites return77 with `UNAVAILABLE`; executed failures return1. Fresh
+captures pass on both measured hosts and reproduce the historical observation
+rows. Their producer/report hashes are recorded separately in the manifest.
+This wrapper does not relabel earlier captures or admit another driver.
 
 For Linux normal/list/material observations, `capture_mesa_attributes.py` uses
 the same reversible guard replacement as the raster capture. Its frozen helper

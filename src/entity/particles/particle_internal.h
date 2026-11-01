@@ -13,9 +13,12 @@ struct mc_particle_state {
         struct {
             unsigned int item_pc, tick_pc;
             bool tick_active;
-        } item_native; /* PB-only native diagnostics; no PB Source fields. */
+        } item_native; /* PB/QM native diagnostics; no declared Source fields. */
     };
 
+    const mc_block *digging_block;         /* Actual QM.a. */
+    mc_registry_classes *digging_registry; /* Native lifetime of that Block. */
+    int32_t digging_face;                  /* Actual QM.o. */
     unsigned int particle_pc, pickup_pc;
 };
 
@@ -72,5 +75,14 @@ void mc_particle_registry_classification(mc_registry_classes *, const mc_registr
                                          mc_particle_throwable *, const char **);
 
 void mc_pickup_particle_dispose(mc_entity *entity);
+void mc_digging_particle_dispose(mc_entity *entity);
+mc_entity_status mc_particle_tick_inherited(mc_entity *, mc_entity_class_kind,
+                                            mc_registry_classes *, const mc_entity_move_limits *,
+                                            mc_item_particle_tick_error *);
+mc_entity_status mc_digging_particle_construct_entered(mc_entity *, mc_world_runtime *,
+                                                       mc_registry_classes *, mc_math_classes *,
+                                                       double, double, double, double, double,
+                                                       double, const mc_block *, int32_t, int32_t,
+                                                       mc_math_classes **, mc_particle_error *);
 
 #endif

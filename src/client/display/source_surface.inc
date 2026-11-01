@@ -74,8 +74,14 @@ static void source_attribute_batch_complete(mc_client_source_state *s,
     const unsigned normal_bit = 1u << MC_CLIENT_SOURCE_NORMAL_ARRAY;
     /* Mesa list array draws retain the prior current attributes, including
      * any explicit Color command replayed before this draw. NVIDIA adopts
-     * the final array attributes. Direct arrays remain unspecified here. */
+     * the final array attributes. Direct color arrays remain unspecified. */
     const bool adopt = compiled && count > 0 && profile == SOURCE_ATTRIBUTE_PROFILE_NVIDIA_581_42;
+    /* Original NW six-face normal-array draws followed by a no-normal draw
+     * retain the actual prior normal on these two measured profiles. Both
+     * queried/unqueried fixed-pipeline pixels and gl_Normal feedback agree;
+     * this does not assign the last array normal or repair unknown input. */
+    const bool retain_direct_normal = profile == SOURCE_ATTRIBUTE_PROFILE_NVIDIA_581_42 ||
+                                      profile == SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8;
     if ((arrays & color_bit) != 0) {
         if (adopt) {
             memcpy(s->color, vertices[count - 1].color, sizeof(s->color));
@@ -91,7 +97,7 @@ static void source_attribute_batch_complete(mc_client_source_state *s,
         if (adopt) {
             memcpy(s->fog.normal, vertices[count - 1].normal, sizeof(s->fog.normal));
             s->fog.normal_known = true;
-        } else if (!compiled) {
+        } else if (!compiled && !retain_direct_normal) {
             s->fog.normal_known = false;
             s->attribute_staging.normal_known = false;
         }

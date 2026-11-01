@@ -61,6 +61,108 @@ static bool screen_result(mc_client_gameplay_input *call, mc_client_screen_statu
                 e->site.pc);
 }
 
+static bool retire_hit(mc_client_gameplay_input *call) {
+    if (call->hit_renderer == NULL)
+        return !call->hit_block_work;
+    if (call->hit_block_work) {
+        if (mc_client_effect_renderer_block_cleanup(call->hit_renderer, &call->hit_cleanup) !=
+            MC_EFFECT_RENDERER_OK)
+            return false;
+        /* Drop this right before releasing the producer occurrence. A rejected
+         * call, or a later retry after successful cleanup, owns no other work. */
+        call->hit_block_work = false;
+    }
+    if (mc_client_effect_renderer_release(call->hit_renderer) != MC_EFFECT_RENDERER_OK)
+        return false;
+    call->hit_renderer = NULL;
+    call->hit_effect = (mc_effect_renderer_error){0};
+    return true;
+}
+
+static bool mine(client_application *app, mc_client_gameplay_input *call,
+                 mc_singleplayer_mining_action action, int32_t x, int32_t y, int32_t z,
+                 int32_t face, unsigned int invoke_pc, const char *descriptor) {
+    if (app->controller == NULL)
+        return fail(call, "actual mining null controller invocation",
+                    "net/minecraft/client/Minecraft", "a", descriptor, invoke_pc);
+    const mc_singleplayer_mining_status status = mc_client_singleplayer_mining_begin(
+        app->controller, action, x, y, z, face, &call->mining_call, &call->mining_error);
+    if (call->mining_call != NULL)
+        (void)mc_client_singleplayer_mining_inspect(call->mining_call, &call->mining_state);
+    if (status != MC_SINGLEPLAYER_MINING_OK) {
+        const mc_singleplayer_mining_error *e = &call->mining_error;
+        return fail(call, e->operation, e->site.class_name, e->site.method, e->site.descriptor,
+                    e->site.pc);
+    }
+    if (action == MC_SINGLEPLAYER_MINING_START)
+        ++call->mining_starts;
+    else if (action == MC_SINGLEPLAYER_MINING_PROGRESS)
+        ++call->mining_progress_calls;
+    if (call->mining_state.removal_returned && call->mining_state.removed)
+        ++call->mined_blocks;
+    if (mc_client_singleplayer_mining_retire(&call->mining_call, &call->mining_cleanup) !=
+        MC_SINGLEPLAYER_MINING_OK)
+        return fail(call, call->mining_cleanup.operation, "net/minecraft/client/Minecraft", "a",
+                    descriptor, invoke_pc);
+    call->mining_state.error = NULL; /* The per-invocation diagnostic occurrence ended. */
+    call->mining_error = (mc_singleplayer_mining_error){0};
+    return true;
+}
+
+static bool hit_fields(client_application *app, mc_client_gameplay_input *call,
+                       mc_entity_hit_result_view *out, mc_entity_hit_kind_class_view *kinds,
+                       const char *descriptor, unsigned int pc) {
+    if (app->y == NULL)
+        return fail(call, "actual click null HitResult field receiver",
+                    "net/minecraft/client/Minecraft", "a", descriptor, pc);
+    if (mc_entity_hit_result_inspect(app->y, out) != MC_ENTITY_HIT_OK ||
+        mc_entity_hit_kind_class_inspect(app->entities, kinds) != MC_ENTITY_HIT_OK ||
+        kinds->phase != MC_ENTITY_CLASS_READY)
+        return fail(call, "actual click HitResult and kind fields",
+                    "net/minecraft/client/Minecraft", "a", descriptor, pc);
+    return true;
+}
+
+/* Actual Minecraft.a(I), with the empty-hand Block/miss closure. Unsupported
+ * combat/use paths stop at their reached invocations after the actual swing. */
+static bool click(client_application *app, mc_client_gameplay_input *call, int32_t button) {
+    if (button == 0 && app->W > 0)
+        return true;
+    if (button == 0) {
+        if (app->h == NULL)
+            return fail(call, "actual click null Player swing receiver",
+                        "net/minecraft/client/Minecraft", "a", "(I)V", 20);
+        if (mc_local_player_swing(app->h, &call->swing) != MC_ENTITY_OK)
+            return fail(call, call->swing.operation, "net/minecraft/client/Minecraft", "a", "(I)V",
+                        20);
+        ++call->swing_calls;
+    }
+    if (app->y == NULL) {
+        if (button == 0)
+            app->W = 10; /* Canonical concrete OS is never the source PJ creative class. */
+        return true;
+    }
+    mc_entity_hit_result_view hit;
+    mc_entity_hit_kind_class_view kinds;
+    if (!hit_fields(app, call, &hit, &kinds, "(I)V", 59))
+        return false;
+    if (hit.fields.a == kinds.b)
+        return fail(call,
+                    button == 0 ? "actual Player attack controller invocation"
+                                : "actual Player Entity interaction controller invocation",
+                    "net/minecraft/client/Minecraft", "a", "(I)V", button == 0 ? 87u : 110u);
+    if (hit.fields.a == kinds.a) {
+        const int32_t x = hit.fields.b, y = hit.fields.c, z = hit.fields.d, face = hit.fields.e;
+        if (button == 0) {
+            ++call->left_clicks;
+            return mine(app, call, MC_SINGLEPLAYER_MINING_START, x, y, z, face, 184, "(I)V");
+        }
+        return fail(call, "actual Block activation/Stack placement controller invocation",
+                    "net/minecraft/client/Minecraft", "a", "(I)V", 239);
+    }
+    return true;
+}
+
 static bool mouse_event(client_application *app, mc_client_screen_transitions *transitions,
                         mc_client_gameplay_input *call, const mc_client_sdk_mouse_event *event) {
     int64_t now;
@@ -95,8 +197,12 @@ static bool mouse_event(client_application *app, mc_client_screen_transitions *t
                 return pending(call, "actual gameplay focus native retirement", 442);
             return true; /* Source goto533 skips click after focus. */
         }
-        if (event->pressed && event->button == 0)
-            return pending(call, "actual left click is not connected", 462);
+        if (event->pressed && event->button == 0) {
+            if (!click(app, call, 0))
+                return false;
+            app->ag = app->V; /* Only a returned source click reaches putfield470. */
+            ++call->click_timer_stores;
+        }
         if (event->pressed && event->button == 1)
             return pending(call, "actual right click is not connected", 488);
         if (event->pressed && event->button == 2)
@@ -231,8 +337,15 @@ static bool held_click(client_application *app, mc_client_gameplay_input *call, 
         _mm_cvtss_f32(_mm_cvtsi32_ss(_mm_setzero_ps(), mc_java_i32_sub(app->V, app->ag)));
     const float delay =
         _mm_cvtss_f32(_mm_div_ss(_mm_set_ss(timer.ticks_per_second), _mm_set_ss(4.0f)));
-    if (elapsed >= delay && app->N)
-        return pending(call, "actual held click is not connected", click_pc);
+    /* The original fcmpl/iflt skips this arm for an unordered comparison. */
+    if (elapsed >= delay && app->N) {
+        if (button != 0)
+            return pending(call, "actual held right click is not connected", click_pc);
+        if (!click(app, call, button))
+            return false;
+        app->ag = app->V;
+        ++call->click_timer_stores;
+    }
     return true;
 }
 
@@ -255,9 +368,41 @@ static bool mining(client_application *app, mc_client_gameplay_input *call, bool
             kinds.phase != MC_ENTITY_CLASS_READY)
             return fail(call, "actual mining HitResult fields", "net/minecraft/client/Minecraft",
                         "a", "(IZ)V", 47);
-        if (hit.fields.a == kinds.a)
-            return fail(call, "actual progressive block mining is not connected",
-                        "net/minecraft/client/Minecraft", "a", "(IZ)V", 102);
+        if (hit.fields.a == kinds.a) {
+            const int32_t x = hit.fields.b, y = hit.fields.c, z = hit.fields.d;
+            if (!mine(app, call, MC_SINGLEPLAYER_MINING_PROGRESS, x, y, z, hit.fields.e, 102,
+                      "(IZ)V"))
+                return false;
+            /* Capture DN105 before the fresh Hit side read at118. This native
+             * occurrence keeps a failed exact producer alive through retire. */
+            call->hit_renderer = app->effect_renderer;
+            if (call->hit_renderer != NULL &&
+                mc_client_effect_renderer_retain(call->hit_renderer) != MC_EFFECT_RENDERER_OK) {
+                call->hit_renderer = NULL;
+                return fail(call, "mining hit-particle producer occurrence limit",
+                            "net/minecraft/client/Minecraft", "a", "(IZ)V", 121);
+            }
+            if (!hit_fields(app, call, &hit, &kinds, "(IZ)V", 118))
+                return false;
+            if (call->hit_renderer == NULL)
+                return fail(call, "actual mining null EffectRenderer invocation",
+                            "net/minecraft/client/Minecraft", "a", "(IZ)V", 121);
+            const mc_effect_renderer_status hit_status = mc_client_effect_renderer_hit_block(
+                call->hit_renderer, app->registry, app->source_math_classes, x, y, z, hit.fields.e,
+                &call->hit_effect);
+            call->hit_block_work = call->hit_effect.block != NULL;
+            if (hit_status != MC_EFFECT_RENDERER_OK)
+                return fail(call, call->hit_effect.operation, "net/minecraft/client/Minecraft", "a",
+                            "(IZ)V", 121);
+            if (call->hit_effect.block != NULL) {
+                call->hit_particles_constructed += call->hit_effect.block->constructed;
+                call->hit_particles_appended += call->hit_effect.block->appended;
+            }
+            if (!retire_hit(call))
+                return fail(call, "mining hit-particle native retirement",
+                            "net/minecraft/client/Minecraft", "a", "(IZ)V", 121);
+            return true;
+        }
     }
     if (mc_client_singleplayer_controller_reset(app->controller, &call->controller) !=
         MC_SINGLEPLAYER_TICK_OK)
@@ -314,7 +459,8 @@ bool mc_client_gameplay_input_run(client_application *app,
                                   mc_client_screen_transitions *transitions,
                                   mc_client_gameplay_input *call) {
     if (app == NULL || transitions == NULL || call == NULL || call->active || call->failed ||
-        call->focus != NULL || call->screen.pending_receiver != NULL)
+        call->focus != NULL || call->screen.pending_receiver != NULL || call->mining_call != NULL ||
+        call->hit_renderer != NULL || call->hit_block_work)
         return false;
     memset(call, 0, sizeof(*call));
     call->active = true;
@@ -326,6 +472,13 @@ bool mc_client_gameplay_input_run(client_application *app,
 bool mc_client_gameplay_input_retire(mc_client_gameplay_input *call) {
     if (call == NULL || call->active)
         return false;
+    if (!retire_hit(call))
+        return false;
+    if (mc_client_singleplayer_mining_retire(&call->mining_call, &call->mining_cleanup) !=
+        MC_SINGLEPLAYER_MINING_OK)
+        return false;
+    call->mining_state.error = NULL;
+    call->mining_error = (mc_singleplayer_mining_error){0};
     if (mc_client_screen_event_retire(&call->screen) != MC_CLIENT_SCREEN_OK ||
         mc_client_display_screen_retire(&call->focus) != MC_CLIENT_DISPLAY_SCREEN_OK)
         return false;

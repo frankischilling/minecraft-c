@@ -1,13 +1,19 @@
 # Development status
 
-Selected dirt and snow blocks now draw their outlines through the ordinary
-loaded World frame. Four Windows SDK profiles pass with real picking, all
-eighteen submitted vertices, state-dependent bounds and checked cleanup.
-The Windows save/reselect test also completes three successive World loads
-through the ordinary menus. The [selection and reselection contract](client/block-selection.md)
-records these finite scenarios, the new private Chunk lookup indexes, and the
-remaining eight-load session limit. Mining, placement and unrestricted World
-reselection remain unfinished; the client is still pre-playable.
+The Windows Release [Dirt mining scenario](client/mining.md) now completes a
+fresh click, held break with cracks and real particles, dropped-Item drawing,
+save/title/reselection, keyboard approach and pickup, held-block HUD/hand
+drawing, and a second save/title/reselection. Independent disk decoding checks
+air, Inventory and every saved Item against live entry snapshots. Three final-source runs
+pass in 21.53, 22.39 and 19.46 seconds with checked native cleanup. A separate
+natural Mob tick failure after pickup remains unresolved. Focused mining, HUD and
+lighting controls also pass on Windows Debug and sanitized Linux.
+
+Selected dirt and snow outlines retain their separate four-profile qualification.
+The [selection and reselection contract](client/block-selection.md) records those
+scenarios, private Chunk lookup indexes and the eight-load session limit.
+Placement, tools, combat, Inventory UI, unrestricted reselection and extended
+play remain unfinished or unqualified. The client is still pre-playable.
 
 The source World now saves metadata and supported live Chunk records through
 its actual SaveHandler, loader and shared region cache. It writes fresh
@@ -21,7 +27,7 @@ and exception diagnostics remain unfinished. The visible Windows
 normal-leave and session-failure/cleanup evidence with independent disk checks.
 The session case retains the `fm.b:42` allocation frontier; it throws no `us`
 and creates no title. Linux visible save/title, default-Far playability and
-ordinary reselection remain unqualified. A separate Windows Release tutorial
+unrestricted reselection remain unqualified. A separate Windows Release tutorial
 profile now returns with active notices; it does not establish a complete
 playable save session or original-world interoperability.
 
@@ -76,7 +82,7 @@ cleanup releases genuine Path aliases, target cycles and Piston-only roots.
 A selected Spider jockey retains its separate unfinished mount.
 
 Single-player remains pre-playable. Mob combat, storage and remaining renderers,
-further Block overrides, concrete display particles, sleeping wake transitions
+further Block overrides, remaining display particle kinds, sleeping wake transitions
 and gameplay actions remain unfinished. Active achievement and tutorial notices
 now draw through the [source Font and flat Item path](client/achievement-notice.md).
 The Windows Release fresh-player profile passes 61 frames and 49 Book draws with

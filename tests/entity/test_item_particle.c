@@ -946,7 +946,8 @@ static int ip_draw(ip_fixture *f, unsigned int index, float partial, const char 
     CHECK(mc_client_render_engine_cached_texture(f->app->render_engine, key, &cache_before,
                                                  &texture) &&
           cache_before == (index != 7));
-    const mc_effect_draw_services services = {f->runtime.graphics, f->math, f->display, NULL};
+    const mc_effect_draw_services services = {
+        .graphics = f->runtime.graphics, .math = f->math, .display = f->display};
     CHECK(mc_client_effect_renderer_sprites_begin(f->effects, f->camera, partial, &services,
                                                   &f->call, f->draw_error) == MC_EFFECT_DRAW_OK &&
           f->call != NULL);
@@ -1166,8 +1167,8 @@ static int ip_source_failure(ip_fixture *f, const char *mode) {
                   strcmp(f->tick_error->particle.source_method, "w_") == 0 &&
                   f->tick_error->movement.source_null_pc == pc);
         } else {
-            const mc_effect_draw_services services = {f->runtime.graphics, f->math, f->display,
-                                                      NULL};
+            const mc_effect_draw_services services = {
+                .graphics = f->runtime.graphics, .math = f->math, .display = f->display};
             CHECK(mc_client_effect_renderer_sprites_begin(f->effects, f->camera, .375f, &services,
                                                           &f->call, f->draw_error) ==
                       MC_EFFECT_DRAW_CHILD_FAILED &&
@@ -1457,7 +1458,10 @@ static int ip_close(ip_fixture *f) {
     return 0;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_ITEM_PARTICLE_MAIN
+#define MC_ITEM_PARTICLE_MAIN main
+#endif
+int MC_ITEM_PARTICLE_MAIN(int argc, char **argv) {
     CHECK(argc == 5 || argc == 6);
     const char *mode = argc == 6 ? argv[5] : "main";
     SDL_SetMainReady();

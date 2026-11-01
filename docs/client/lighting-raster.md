@@ -2,9 +2,9 @@
 
 The canonical Display renderer now computes legacy lighting once per vertex
 in its OpenGL 3.3 program. It consumes the same modelview, lights and materials
-that [standard lighting](standard-lighting.md) updates. The World frame still
-stops at Entity/TileEntity rendering510; this backend work does not complete a
-gameplay frame.
+that [standard lighting](standard-lighting.md) updates. Later loaded-World
+profiles now return through Entity drawing, hand and HUD; each retains its own
+finite qualification. This backend contract alone does not establish gameplay.
 
 ## Materials and shading
 
@@ -16,6 +16,13 @@ below. Direct Material writes leave tracked properties alone. A direct
 color-array draw makes the corresponding current color and tracked properties
 indeterminate; a later draw must supply actual array values or restore those
 properties.
+Direct normal-array draws retain the actual preceding current normal on the
+exact measured NVIDIA 581.42 and Mesa 25.2.8 profiles. Separate unchanged-original
+NW six-face/no-normal controls check queried and no-query consumption and
+lit/unlit pixels. See the [finite manifest](../../tests/reference/client/lighting_raster/normal-transition.json)
+and [reproduction command](../../tests/reference/client/lighting_raster/README.md).
+Unknown profiles retain their explicit boundary. Color and compiled-list
+behavior keep their distinct rules below.
 On the measured NVIDIA profile, compiled array commands retain their last
 converted normal and color after replay, including tracked material properties.
 Mesa retains the preceding current attributes and explicit list Color instead.

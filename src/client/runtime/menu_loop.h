@@ -22,6 +22,9 @@ typedef struct mc_client_loop_clock_observation {
 typedef struct mc_client_menu_loop_state {
     uint64_t frames, ticks, texture_ticks, account_checks_omitted;
     uint64_t world_draws, hud_draws;
+    uint64_t gameplay_left_clicks, gameplay_swing_calls, gameplay_click_timer_stores;
+    uint64_t gameplay_mining_starts, gameplay_mining_progress_calls, gameplay_mined_blocks;
+    uint64_t gameplay_hit_particles_constructed, gameplay_hit_particles_appended;
     uint64_t notice_returns, notice_draws, notice_text_returns, notice_vertices;
     /* Native observations of completed source calls survive child retirement
      * and the next tick's fresh diagnostic record. They control no gameplay. */

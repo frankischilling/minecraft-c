@@ -1,4 +1,5 @@
 #include "client/application_state.h"
+#include "client/render/blocks/internal.h"
 #include "client/render_engine/texture_lookup_internal.h"
 #include "client/world/entity_renderer/held_stack_guard_internal.h"
 #include "draw_internal.h"
@@ -181,6 +182,21 @@ mc_held_stack_parent_error *mc_client_draw_held_workspace(mc_client_draw_scope *
     c->held_workspace = manager_draw_allocate_bytes(c, sizeof(*c->held_workspace), e);
     c->state.held = c->held_workspace;
     return c->held_workspace;
+}
+
+mc_cv_context *mc_client_draw_inventory_workspace(mc_client_draw_scope *scope,
+                                                  mc_client_manager_error *e) {
+    if (!scope_valid(scope, e))
+        return NULL;
+    mc_client_render_manager_draw_call *c = scope->owner;
+    if (c->inventory_workspace_count == 4) {
+        owner_fail(e, MC_CLIENT_MANAGER_LIMIT, "Draw actual Item copy inventory-call extent");
+        return NULL;
+    }
+    mc_cv_context *inventory = manager_draw_allocate_bytes(c, sizeof(*inventory), e);
+    if (inventory != NULL)
+        c->inventory_workspaces[c->inventory_workspace_count++] = inventory;
+    return inventory;
 }
 
 bool mc_client_draw_work_step(mc_client_draw_scope *scope, mc_client_manager_error *e) {
@@ -1252,6 +1268,9 @@ mc_client_render_manager_draw_retire(mc_client_render_manager_draw_call **slot,
     c->receipt_count = 0;
     mc_entity_release(c->actor_hold);
     c->actor_hold = NULL;
+    for (size_t i = 0; i < c->inventory_workspace_count; ++i)
+        manager_draw_free_bytes(c, c->inventory_workspaces[i], sizeof(*c->inventory_workspaces[i]));
+    c->inventory_workspace_count = 0;
     manager_draw_free_bytes(c, c->held_workspace, sizeof(*c->held_workspace));
     c->held_workspace = NULL;
     manager_draw_free_bytes(c, c->queries, c->query_capacity * sizeof(*c->queries));

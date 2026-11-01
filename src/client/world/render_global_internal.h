@@ -46,6 +46,7 @@ struct mc_client_render_global_error {
     const mc_client_manager_draw_error *manager_draw;
     const struct mc_particle_error *particle;
     const struct mc_effect_renderer_error *effects;
+    const struct mc_world_mutation_error *auxiliary_world;
 };
 
 struct mc_client_render_batch {

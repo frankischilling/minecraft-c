@@ -13,8 +13,8 @@ _Static_assert(MC_ENTITY_CLASS_KIND_ARROW == 0 && MC_ENTITY_CLASS_KIND_BOAT == 2
                    MC_ENTITY_CLASS_KIND_ENTITY == 24 &&
                    MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE == 28 && MC_ENTITY_CLASS_KIND_VV == 29 &&
                    MC_ENTITY_CLASS_KIND_C == 32 && MC_ENTITY_CLASS_KIND_ITEM_PARTICLE == 33 &&
-                   MC_ENTITY_CLASS_KIND_COUNT == 34,
-               "existing29 literal selectors stay stable; five canonical cells append");
+                   MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE == 34 && MC_ENTITY_CLASS_KIND_COUNT == 35,
+               "existing29 literal selectors stay stable; six canonical cells append");
 static unsigned checks;
 #define CHECK(x)                                                                                   \
     do {                                                                                           \

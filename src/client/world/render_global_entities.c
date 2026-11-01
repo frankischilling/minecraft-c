@@ -139,6 +139,9 @@ static bool retire_draw(mc_client_render_global_entities_call *c,
     if (c->state.first_entity_draw.valid &&
         c->state.first_entity_draw.attempt == c->state.draws_attempted)
         c->state.first_entity_draw.retired = true;
+    if (c->state.first_item_draw.valid &&
+        c->state.first_item_draw.attempt == c->state.draws_attempted)
+        c->state.first_item_draw.retired = true;
     draw_views_expired(c);
     return true;
 }
@@ -280,6 +283,11 @@ static void draw_receipt(mc_client_render_global_entities_call *c,
     c->state.last_draw = receipt;
     if (c->draw_invoke_pc == 516 && !c->state.first_entity_draw.valid)
         c->state.first_entity_draw = receipt;
+    if (receipt.returned && receipt.actor_kind == (int32_t)MC_ENTITY_CLASS_KIND_ITEM) {
+        ++c->state.item_draws_returned;
+        if (!c->state.first_item_draw.valid)
+            c->state.first_item_draw = receipt;
+    }
 }
 
 static client_application *app(mc_client_render_global_entities_call *c, unsigned int pc) {

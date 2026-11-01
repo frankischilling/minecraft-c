@@ -1,0 +1,448 @@
+{
+  "schema": 1,
+  "status": "Verified for specified scenarios",
+  "scope": "Authored native mining/World persistence scenarios. No complete original mining caller, matched original mining pixels/audio, extended-play, default-Far or server claim. Raw source/product/resource paths, screenshots, saves and logs remain local.",
+  "authority": "source-pins.json; static identities are distinct from native execution.",
+  "sdk": {
+    "platform": "native Windows x86-64",
+    "compiler": "MSVC 14.51",
+    "configuration": "Release",
+    "graphics": "NVIDIA RTX3060, 581.42; canonical source Display on OpenGL3.3",
+    "settings": {
+      "width": 854,
+      "height": 480,
+      "viewDistance": 3
+    },
+    "elapsed_seconds": 19.46,
+    "report": {
+      "bytes": 489936,
+      "sha256": "c0bdc6e8c1e1e6e257a6b96da3440b08149804893c567fdd6cdb878106f65885"
+    },
+    "products": {
+      "mc_test_mining_loop.exe": {
+        "bytes": 8233472,
+        "sha256": "642e50b755e8ecaca02dcdd3f72ebdc2c57f303e6fd31a566d1d8b341987552f"
+      }
+    },
+    "public_input_files": 1356,
+    "public_input_map_sha256": "c5e2c88cc35a63cb3b7f6c932cbc5e0f8d9f49eb7f500f7763ac1c2d2ca6249a",
+    "input_map_rule": "Repository-relative src/include/tests entries from run.json inputs_before; values are SHA256. Hash UTF8 JSON with sorted keys and comma/colon separators. All three maps match each other and current files; raw map remains local.",
+    "source_product_resource_continuity": true,
+    "native": {
+      "mining": {
+        "frames": 17,
+        "partial": 2,
+        "qm-frames": 5,
+        "qm-ticks": 5,
+        "item-frames": 3,
+        "max-ticks": 10,
+        "clicks": 5,
+        "swings": 5,
+        "click-stores": 5,
+        "starts": 5,
+        "progress": 18,
+        "mined": 1,
+        "hit-constructed": 17,
+        "hit-appended": 17
+      },
+      "pickup": {
+        "sdk-forward": "1",
+        "actual-movement": "1",
+        "inventory-dirt": "1",
+        "count": "1",
+        "live-items": "0",
+        "held-frames": "3"
+      },
+      "cleanup_checks": 1843
+    },
+    "independent_saves": [
+      {
+        "epoch": 1,
+        "target": [
+          0,
+          64,
+          2
+        ],
+        "block_id": 0,
+        "metadata": 0,
+        "items": 1,
+        "inventory_slots": 0,
+        "all_items": 1,
+        "incidental_items": 0,
+        "saved_chunks": 388,
+        "dirt_item_chunks": [
+          [
+            0,
+            0
+          ]
+        ],
+        "saved_level_sha256": "3382567e07ea023ddea2925fe2b6d6ca41611deda12a3e9c7880f31b04a40a23"
+      },
+      {
+        "epoch": 2,
+        "target": [
+          0,
+          64,
+          2
+        ],
+        "block_id": 0,
+        "metadata": 0,
+        "items": 0,
+        "inventory_slots": 1,
+        "all_items": 1,
+        "incidental_items": 1,
+        "saved_chunks": 419,
+        "dirt_item_chunks": [],
+        "saved_level_sha256": "f4877bca7a3e0962d3874f3d2ba542e94c2279c74518934fb36490eae2c8844a"
+      }
+    ],
+    "native_fields_assigned_by_fixture": [],
+    "prebootstrap_inputs": "Authored original-format saved Player/terrain and Tiny render distance. Later actions use ordinary SDK events, frames and menus.",
+    "fresh_click": "Bounded down/up admission before hold; requires actual click/swing/timer-store/OS-start receipts. No time/progress/input-flag repair.",
+    "saved_item_matching": "Search all allocated saved Chunk records and compare every saved Item body with owned live-entry NBT as a typed multiset, including incidental seeds and cross-Chunk Dirt movement.",
+    "cleanup": "Native loop/bootstrap retirement succeeds and both Frame/Canvas window IDs are absent.",
+    "successful_runs": [
+      {
+        "elapsed_seconds": 21.53,
+        "report": {
+          "bytes": 489937,
+          "sha256": "0d9dece07999ddb2ed754ab7449ccc3778a8c9afdfae2095e07ba6e68d9cedc6"
+        },
+        "products": {
+          "mc_test_mining_loop.exe": {
+            "bytes": 8233472,
+            "sha256": "642e50b755e8ecaca02dcdd3f72ebdc2c57f303e6fd31a566d1d8b341987552f"
+          }
+        },
+        "native": {
+          "mining": {
+            "frames": 19,
+            "partial": 1,
+            "qm-frames": 4,
+            "qm-ticks": 4,
+            "item-frames": 3,
+            "max-ticks": 10,
+            "clicks": 5,
+            "swings": 5,
+            "click-stores": 5,
+            "starts": 5,
+            "progress": 19,
+            "mined": 1,
+            "hit-constructed": 18,
+            "hit-appended": 18
+          },
+          "pickup": {
+            "sdk-forward": "1",
+            "actual-movement": "1",
+            "inventory-dirt": "1",
+            "count": "1",
+            "live-items": "0",
+            "held-frames": "3"
+          },
+          "cleanup_checks": 1859
+        },
+        "independent_saves": [
+          {
+            "epoch": 1,
+            "target": [
+              0,
+              64,
+              2
+            ],
+            "block_id": 0,
+            "metadata": 0,
+            "items": 1,
+            "inventory_slots": 0,
+            "all_items": 1,
+            "incidental_items": 0,
+            "saved_chunks": 389,
+            "dirt_item_chunks": [
+              [
+                -1,
+                0
+              ]
+            ],
+            "saved_level_sha256": "2c98cb23917313a7a409eba699e9ab941ed81470cd6c5a3cf4c00520aead4044"
+          },
+          {
+            "epoch": 2,
+            "target": [
+              0,
+              64,
+              2
+            ],
+            "block_id": 0,
+            "metadata": 0,
+            "items": 0,
+            "inventory_slots": 1,
+            "all_items": 0,
+            "incidental_items": 0,
+            "saved_chunks": 416,
+            "dirt_item_chunks": [],
+            "saved_level_sha256": "a962e2d3ee50ccac577e6d836fbefa75b59daa11ad1bafb7763a2aa7ead68c75"
+          }
+        ],
+        "source_product_resource_continuity": true
+      },
+      {
+        "elapsed_seconds": 22.39,
+        "report": {
+          "bytes": 489936,
+          "sha256": "90202b2ba08f23c22f7396f140ec84733e4ddbbda3c013b349c0a91bc472a215"
+        },
+        "products": {
+          "mc_test_mining_loop.exe": {
+            "bytes": 8233472,
+            "sha256": "642e50b755e8ecaca02dcdd3f72ebdc2c57f303e6fd31a566d1d8b341987552f"
+          }
+        },
+        "native": {
+          "mining": {
+            "frames": 21,
+            "partial": 4,
+            "qm-frames": 5,
+            "qm-ticks": 5,
+            "item-frames": 3,
+            "max-ticks": 10,
+            "clicks": 6,
+            "swings": 6,
+            "click-stores": 6,
+            "starts": 6,
+            "progress": 25,
+            "mined": 1,
+            "hit-constructed": 24,
+            "hit-appended": 24
+          },
+          "pickup": {
+            "sdk-forward": "1",
+            "actual-movement": "1",
+            "inventory-dirt": "1",
+            "count": "1",
+            "live-items": "0",
+            "held-frames": "3"
+          },
+          "cleanup_checks": 2061
+        },
+        "independent_saves": [
+          {
+            "epoch": 1,
+            "target": [
+              0,
+              64,
+              2
+            ],
+            "block_id": 0,
+            "metadata": 0,
+            "items": 1,
+            "inventory_slots": 0,
+            "all_items": 2,
+            "incidental_items": 1,
+            "saved_chunks": 391,
+            "dirt_item_chunks": [
+              [
+                0,
+                0
+              ]
+            ],
+            "saved_level_sha256": "2a30e89505de11570d501c4ecb3b3ae4f888336475c35e8f09f826492768ca36"
+          },
+          {
+            "epoch": 2,
+            "target": [
+              0,
+              64,
+              2
+            ],
+            "block_id": 0,
+            "metadata": 0,
+            "items": 0,
+            "inventory_slots": 1,
+            "all_items": 2,
+            "incidental_items": 2,
+            "saved_chunks": 428,
+            "dirt_item_chunks": [],
+            "saved_level_sha256": "5981ddfbb6e6c9c3a8bb35fefbfc5c96039d811dce48a90b878e0d9ec245d276"
+          }
+        ],
+        "source_product_resource_continuity": true
+      },
+      {
+        "elapsed_seconds": 19.46,
+        "report": {
+          "bytes": 489936,
+          "sha256": "c0bdc6e8c1e1e6e257a6b96da3440b08149804893c567fdd6cdb878106f65885"
+        },
+        "products": {
+          "mc_test_mining_loop.exe": {
+            "bytes": 8233472,
+            "sha256": "642e50b755e8ecaca02dcdd3f72ebdc2c57f303e6fd31a566d1d8b341987552f"
+          }
+        },
+        "native": {
+          "mining": {
+            "frames": 17,
+            "partial": 2,
+            "qm-frames": 5,
+            "qm-ticks": 5,
+            "item-frames": 3,
+            "max-ticks": 10,
+            "clicks": 5,
+            "swings": 5,
+            "click-stores": 5,
+            "starts": 5,
+            "progress": 18,
+            "mined": 1,
+            "hit-constructed": 17,
+            "hit-appended": 17
+          },
+          "pickup": {
+            "sdk-forward": "1",
+            "actual-movement": "1",
+            "inventory-dirt": "1",
+            "count": "1",
+            "live-items": "0",
+            "held-frames": "3"
+          },
+          "cleanup_checks": 1843
+        },
+        "independent_saves": [
+          {
+            "epoch": 1,
+            "target": [
+              0,
+              64,
+              2
+            ],
+            "block_id": 0,
+            "metadata": 0,
+            "items": 1,
+            "inventory_slots": 0,
+            "all_items": 1,
+            "incidental_items": 0,
+            "saved_chunks": 388,
+            "dirt_item_chunks": [
+              [
+                0,
+                0
+              ]
+            ],
+            "saved_level_sha256": "3382567e07ea023ddea2925fe2b6d6ca41611deda12a3e9c7880f31b04a40a23"
+          },
+          {
+            "epoch": 2,
+            "target": [
+              0,
+              64,
+              2
+            ],
+            "block_id": 0,
+            "metadata": 0,
+            "items": 0,
+            "inventory_slots": 1,
+            "all_items": 1,
+            "incidental_items": 1,
+            "saved_chunks": 419,
+            "dirt_item_chunks": [],
+            "saved_level_sha256": "f4877bca7a3e0962d3874f3d2ba542e94c2279c74518934fb36490eae2c8844a"
+          }
+        ],
+        "source_product_resource_continuity": true
+      }
+    ]
+  },
+  "focused_components": [
+    {
+      "platform": "native Windows x86-64",
+      "configuration": "MSVC Debug",
+      "tests": 9,
+      "seconds": 11.61,
+      "status": "PASS",
+      "log": {
+        "bytes": 3300,
+        "sha256": "a04cdba27ba3b2ef653df2ae8ddc2b3928aca83439c20accdf15edb273275be3"
+      }
+    },
+    {
+      "platform": "Linux x86-64, isolated Xvfb/Mesa25.2.8",
+      "configuration": "Clang18 Debug ASan/UBSan",
+      "tests": 9,
+      "seconds": 18.42,
+      "status": "PASS",
+      "log": {
+        "bytes": 3478,
+        "sha256": "f3e96a6193c7b8549538c4d63af11cb34aa729443f32b0e7d0c224ca67a35a83"
+      }
+    }
+  ],
+  "retained_failures": [
+    {
+      "configuration": "MSVC Debug under parallel compilation load",
+      "status": "FAIL",
+      "site": "SDK fresh-click admission after12 taps",
+      "observed_render_ms": [
+        225,
+        1285
+      ],
+      "reason": "Original200ms freshness rule discards every event; no gameplay action admitted. Release runs the same assertions and real clocks.",
+      "log": {
+        "bytes": 12608,
+        "sha256": "32902ac5b9ec0b1b98b1cfa607a76ed121c29ee63fe23190c6e6007c293ef003"
+      }
+    },
+    {
+      "configuration": "MSVC Release, separate default-entropy run",
+      "status": "FAIL",
+      "site": "World Mob active tick at fd.a(Entity,boolean):121 during the second pause transition",
+      "reason": "Reached after mining, save/reload and pickup. Old fixture did not expose the selected Mob descendant. Failure-only descendant diagnostics are now present; no Mob, entropy, timing or difficulty field is repaired. This case remains unresolved.",
+      "log": {
+        "bytes": 10240,
+        "sha256": "6c20a65bbbe78a43b77f59046b6217c9edb7e79f9d654b05dbc1478ab446aaed"
+      }
+    }
+  ],
+  "limits": [
+    "Tools, combat, placement and Inventory screen unfinished",
+    "Distinct Item/Block overrides and damaged-item bar retain reached dependencies",
+    "Unmeasured drivers retain explicit boundaries",
+    "Linux SDK/full-loop qualification absent",
+    "Eight-load session limit and extended play remain unfinished",
+    "A separate natural Mob tick failure remains unresolved; three successful finite runs do not establish stable unrestricted play."
+  ],
+  "preceding_full_suites": {
+    "scope": "Complete local suites before the final HUD diagnostic-retirement repair and EM coordinate bridge. Both subsequent changes have focused controls above; exact published-head full checks remain separate.",
+    "windows": {
+      "tests": 527,
+      "seconds": 223.11,
+      "status": "PASS",
+      "log": {
+        "bytes": 152220,
+        "sha256": "abdf4b95ba8690d240e6bafd683565789878464d808bcc1b03d3db0fe7a8a3f3"
+      }
+    },
+    "linux": {
+      "tests": 576,
+      "seconds": 592.9,
+      "status": "PASS",
+      "log": {
+        "bytes": 166540,
+        "sha256": "850a77ac36e875e131247871b2e1ab91cbcffb43296e18cf68078bf6269ed987"
+      }
+    }
+  },
+  "resolved_failures": [
+    {
+      "site": "EM286 TH coordinate renderer invocation",
+      "reason": "The old pickup body stopped before its real TH draw. Tick-heavy frames could consume the complete EM lifetime before a draw. A stress run reached the missing call.",
+      "log": {
+        "bytes": 9750,
+        "sha256": "6e4ec5faec216461df82bbc2d730122c44e99ae6c5c34f23d4fbf0ea5305cf49"
+      },
+      "resolution": "Connect the exact coordinate overload with the original partial argument, retained child scopes and copied receipts. A real two-pickup control renders dead Items with zero-count Stacks, preserves foreign TH work, and checks exact manager holds; final SDK runs above pass."
+    }
+  ],
+  "mob_followup": {
+    "status": "Unresolved",
+    "captured_snapshot": "27 healthy stationary Mobs; no hurt/death/fire state. Exact captured replay admits zero actual ticks because required neighborhoods are absent and returns UNAVAILABLE/77. Ordinary neighbor loading admits27 ticks, then all27 despawn normally beyond128 blocks. This does not reproduce the later failure or establish a cause.",
+    "next": "Retain the failing SDK descendant diagnostic; do not disable Mobs or repair entropy/flags to obtain a pass."
+  }
+}

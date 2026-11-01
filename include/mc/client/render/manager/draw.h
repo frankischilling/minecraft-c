@@ -61,7 +61,7 @@ typedef struct mc_client_manager_draw_error {
 
 typedef struct mc_client_manager_draw_state {
     bool active, returned, retiring;
-    bool post_only;
+    bool post_only, coordinates_only;
     bool brightness_returned, color_returned, lookup_returned;
     bool primary_returned, post_draw_returned;
     unsigned int source_pc;
@@ -94,6 +94,13 @@ mc_client_manager_draw_limits mc_client_render_manager_draw_default_limits(void)
 mc_client_manager_status mc_client_render_manager_draw_begin(
     mc_client_render_manager *, mc_entity *nullable_actor, float partial,
     const mc_client_manager_draw_services *, const mc_client_manager_draw_limits *,
+    mc_client_render_manager_draw_call **, mc_client_manager_draw_error *);
+/* Enter actual TH.a(SN,DDDFF) with the source caller's coordinates/yaw.
+ * Does not execute TH.a(SN,F)'s interpolation, brightness, Color or origin
+ * subtraction. Lookup, primary draw, postdraw and ownership are unchanged. */
+mc_client_manager_status mc_client_render_manager_coordinates_draw_begin(
+    mc_client_render_manager *, mc_entity *nullable_actor, double x, double y, double z, float yaw,
+    float partial, const mc_client_manager_draw_services *, const mc_client_manager_draw_limits *,
     mc_client_render_manager_draw_call **, mc_client_manager_draw_error *);
 /* Enter only the existing renderer's actual BW.b(SN,DDDFF) body. Coordinates
  * and angles are source call operands; TH interpolation/lookup/primary draw

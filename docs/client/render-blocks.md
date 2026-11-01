@@ -5,13 +5,18 @@ The actual ChunkRenderer compiler now calls RenderBlocks through
 same ChunkCache, and append geometry to the real NW Tessellator. A native
 one-stone section completes its display list with 36 expanded vertices, then
 the N caller clears that DK's dirty flag. Current frame source invokes real
-[terrain submission](terrain-submission.md) at `px.a(FJ)V:486`; a normal N return
-continues to the explicit U.b496 lighting-enable dependency.
+[terrain submission](terrain-submission.md) at `px.a(FJ)V:486`; later loaded-frame
+profiles continue through lighting, Entity drawing, hand and HUD.
 
-The specified Windows MSVC Debug submission profiles pass, and the loaded
-profile's inspected back buffer now shows authored grass terrain and Sky without
-HUD at frontier 496. Hosted qualification is pending. Later frame children are unfinished, and
-these changes establish no complete rendered frame or matched original pixels.
+The preceding Windows submission profiles showed authored grass terrain and
+Sky at frontier496. They retain that historical scope. Later frame qualification
+is recorded separately; terrain geometry alone establishes no matched original
+pixels or complete gameplay.
+
+The distinct `cv.a(Block,metadata,brightness)` inventory method now supplies
+ordinary six-face blocks to dropped-Item, GUI and held-item rendering. The
+[Dirt mining contract](mining.md) records those callers and their finite tests.
+Other inventory render families retain reached dependencies.
 
 ## Dispatcher and standard blocks
 

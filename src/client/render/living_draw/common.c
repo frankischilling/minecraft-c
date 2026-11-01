@@ -195,7 +195,12 @@ bool ld_model(ld_frame *f, bool ok) {
 
 mc_client_render_manager *ld_manager(ld_frame *f, int32_t pc) {
     f->error->site.pc = pc;
-    const void *source = f->renderer->manager;
+    /* BB is the canonical separately allocated source object. Its actual
+     * inherited BW.b was set by TH's constructor loop; the managed wrapper's
+     * spare BW storage is not another source receiver. */
+    const void *source = f->renderer->bb == NULL
+                             ? f->renderer->manager
+                             : mc_client_item_renderer_fields_get(f->renderer->bb)->render_manager;
     if (source == NULL) {
         ld_null(f, "Living draw null BW manager receiver");
         return NULL;

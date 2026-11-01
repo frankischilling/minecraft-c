@@ -2,10 +2,12 @@
 #include "../../block/registry/runtime_internal.h"
 #include "../../item/registry/registry_internal.h"
 #include "../../item/stack/source_internal.h"
+#include "../display/camera_surface.h"
 #include "../display/fog_surface.h"
 #include "../display/source_surface.h"
 #include "../display/world_frame_surface.h"
 #include "../render_engine/internal.h"
+#include "blocks/internal.h"
 #include "item_renderer_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
@@ -22,6 +24,7 @@ struct mc_client_item_gui_call {
     mc_client_render_engine *engine;
     mc_item_stack *stack;
     mc_client_tessellator *nw;
+    mc_cv_context *inventory;
     bool graphics_lease, graphics_held, registry_held, stack_held, engine_held, pending_owned;
     uint16_t key[32];
 };
@@ -210,6 +213,159 @@ static bool quad(mc_client_item_gui_call *c) {
     return true;
 }
 
+static bool item_color(mc_client_item_gui_call *c, int32_t active_pc, int32_t index_pc,
+                       int32_t invoke_pc) {
+    if (mc_registry_item_c_get(c->registry, &c->state.item_array, &c->failure.registry) !=
+        MC_REGISTRY_OK)
+        return registry_failure(c, "GUI Item actual GM.c active use", active_pc);
+    if (mc_registry_item_c_at(c->registry, c->state.item_array, c->state.id, &c->state.color_item,
+                              &c->failure.registry) != MC_REGISTRY_OK)
+        return registry_failure(c, "GUI Item actual GM.c aaload", index_pc);
+    if (c->state.color_item == NULL)
+        return null_reference(c, "actual GUI Item null color Item", invoke_pc);
+    if (c->state.color_item->kind != MC_ITEM_BASE && c->state.color_item->kind != MC_ITEM_BOW &&
+        c->state.color_item->kind != MC_ITEM_BLOCK)
+        return fail(c, MC_CLIENT_ITEM_GUI_UNIMPLEMENTED, "GUI Item color declaring-class proof",
+                    raw_descriptor, invoke_pc, true);
+    c->state.color = 16777215; /* Actual inherited GM.f(int). */
+    c->state.color_returned = true;
+    return true;
+}
+
+static void inventory_throwable(mc_client_item_gui_call *c,
+                                const mc_client_render_global_error *e) {
+    if (e->native_policy)
+        return;
+    const char *name = NULL;
+    if (e->status == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE)
+        name = "java/lang/NullPointerException";
+    else if (e->status == MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED && !e->graphics.native_policy) {
+        switch (e->graphics.status) {
+            case MC_CLIENT_GRAPHICS_NULL_REFERENCE:
+                name = "java/lang/NullPointerException";
+                break;
+            case MC_CLIENT_GRAPHICS_SOURCE_ILLEGAL_ARGUMENT:
+                name = "java/lang/IllegalArgumentException";
+                break;
+            case MC_CLIENT_GRAPHICS_SOURCE_ILLEGAL_STATE:
+                name = "java/lang/IllegalStateException";
+                break;
+            case MC_CLIENT_GRAPHICS_ARRAY_INDEX:
+                name = "java/lang/ArrayIndexOutOfBoundsException";
+                break;
+            case MC_CLIENT_GRAPHICS_BUFFER_OVERFLOW:
+                name = "java/nio/BufferOverflowException";
+                break;
+            case MC_CLIENT_GRAPHICS_BUFFER_UNDERFLOW:
+                name = "java/nio/BufferUnderflowException";
+                break;
+            default:
+                break;
+        }
+    }
+    if (name != NULL) {
+        c->failure.throwable = MC_ITEM_RENDER_SOURCE_EXCEPTION;
+        c->failure.source_exception = true;
+        c->failure.exception_class = name;
+    }
+}
+
+static bool block_inventory(mc_client_item_gui_call *c) {
+    if (!lookup(c, "/terrain.png", 28, 31))
+        return false;
+    mc_registry_block_m_view blocks;
+    if (mc_registry_block_m_get(c->registry, &blocks, &c->failure.registry) != MC_REGISTRY_OK)
+        return registry_failure(c, "GUI Item actual second UU.m active use", 34);
+    if (mc_registry_block_m_at(&blocks, c->state.id, &c->state.block, &c->failure.registry) !=
+        MC_REGISTRY_OK)
+        return registry_failure(c, "GUI Item actual second UU.m aaload", 39);
+    if (!gl(c, mc_client_display_source_push(c->state.display, &c->failure.display), 42))
+        return false;
+    c->state.block_matrix_pushed = true;
+    if (!fp(c, 57) ||
+        !gl(c,
+            mc_client_display_source_translate(
+                c->state.display, (float)mc_java_i32_sub(c->state.x, 2),
+                (float)mc_java_i32_add(c->state.y, 3), -3.0f, &c->failure.display),
+            57) ||
+        !gl(c, mc_client_display_source_scale(c->state.display, 10, 10, 10, &c->failure.display),
+            66) ||
+        !gl(c,
+            mc_client_display_source_translate(c->state.display, 1, 0.5f, 1, &c->failure.display),
+            73) ||
+        !gl(c, mc_client_display_source_scale(c->state.display, 1, 1, -1, &c->failure.display),
+            80) ||
+        !gl(c, mc_client_display_source_rotate(c->state.display, 210, 1, 0, 0, &c->failure.display),
+            88) ||
+        !gl(c, mc_client_display_source_rotate(c->state.display, 45, 0, 1, 0, &c->failure.display),
+            96))
+        return false;
+    if (!item_color(c, 99, 103, 106) || !fp(c, 123))
+        return false;
+    for (size_t i = 0; i < 3; ++i) {
+        volatile float component =
+            (float)(((uint32_t)c->state.color >> (unsigned int)(16 - 8 * i)) & 255u) / 255.0f;
+        c->state.color_rgba[i] = component;
+    }
+    c->state.color_rgba[3] = 1.0f;
+    if (c->owner->fields.a) {
+        if (!gl(c,
+                mc_client_display_source_color(c->state.display, c->state.color_rgba[0],
+                                               c->state.color_rgba[1], c->state.color_rgba[2], 1,
+                                               &c->failure.display),
+                167))
+            return false;
+        c->state.color_set = true;
+    }
+    if (!gl(c, mc_client_display_source_rotate(c->state.display, -90, 0, 1, 0, &c->failure.display),
+            175))
+        return false;
+    mc_client_render_blocks *fields = c->owner->fields.e;
+    if (fields == NULL)
+        return null_reference(c, "GUI Item actual CV.b store receiver", 186);
+    fields->b = c->owner->fields.a;
+    c->state.block_color_stored = true;
+    fields = c->owner->fields.e;
+    if (fields == NULL)
+        return null_reference(c, "GUI Item actual inventory CV receiver", 198);
+    if (!hold_graphics(c, 198))
+        return false;
+    if (c->owner->bytes > c->owner->max_bytes ||
+        sizeof(*c->inventory) > c->owner->max_bytes - c->owner->bytes)
+        return fail(c, MC_CLIENT_ITEM_GUI_LIMIT, "GUI Item inventory diagnostic allocation ceiling",
+                    raw_descriptor, 198, true);
+    c->inventory = calloc(1, sizeof(*c->inventory));
+    if (c->inventory == NULL)
+        return fail(c, MC_CLIENT_ITEM_GUI_ALLOCATION_FAILED,
+                    "GUI Item inventory diagnostic allocation", raw_descriptor, 198, true);
+    c->owner->bytes += sizeof(*c->inventory);
+    *c->inventory = (mc_cv_context){.fields = fields,
+                                    .registry = c->registry,
+                                    .models = c->owner->classes,
+                                    .graphics = c->graphics,
+                                    .display = c->state.display};
+    c->failure.inventory = c->inventory;
+    c->state.block_inventory_entered = true;
+    if (!mc_cv_inventory(c->inventory, c->state.block, c->state.metadata, 1.0f)) {
+        const mc_client_render_global_error *e = &c->inventory->failure;
+        c->failure.child = (mc_client_graphics_site){e->source_class, e->source_method,
+                                                     e->source_descriptor, (int32_t)e->source_pc};
+        inventory_throwable(c, e);
+        return fail(c, MC_CLIENT_ITEM_GUI_GRAPHICS_FAILED, e->operation, raw_descriptor, 198,
+                    e->native_policy);
+    }
+    c->state.block_inventory_returned = true;
+    c->state.block_faces = c->inventory->inventory_faces;
+    fields = c->owner->fields.e;
+    if (fields == NULL)
+        return null_reference(c, "GUI Item actual returned CV.b store receiver", 206);
+    fields->b = true;
+    if (!gl(c, mc_client_display_source_pop(c->state.display, &c->failure.display), 209))
+        return false;
+    c->state.block_matrix_pushed = false;
+    return true;
+}
+
 static bool body(mc_client_item_gui_call *c) {
     if (c->stack == NULL) {
         c->state.null_stack = c->state.returned = true;
@@ -262,8 +418,18 @@ static bool body(mc_client_item_gui_call *c) {
             return registry_failure(c, "GUI Item actual UU.m aaload", 11);
         if (c->state.block == NULL)
             return null_reference(c, "actual GUI Item null Block render-type receiver", 12);
-        return fail(c, MC_CLIENT_ITEM_GUI_UNIMPLEMENTED,
-                    "GUI Item reached Block render-type dispatch", raw_descriptor, 12, true);
+        mc_block_render_description description;
+        if (mc_block_render_describe(c->state.block, &description) != MC_REGISTRY_OK)
+            return fail(c, MC_CLIENT_ITEM_GUI_UNIMPLEMENTED,
+                        "GUI Item actual Block render-type dispatch", raw_descriptor, 12, true);
+        c->state.block_type = description.type;
+        c->state.block_type_returned = true;
+        c->state.block_3d = mc_cv_inventory_type_3d(description.type);
+        if (c->state.block_3d) {
+            if (!block_inventory(c))
+                return false;
+            goto culling;
+        }
     }
     c->state.raw_pc = 215;
     c->state.negative_icon = c->state.icon < 0;
@@ -274,7 +440,8 @@ static bool body(mc_client_item_gui_call *c) {
                 223))
             return false;
         c->state.lighting_disabled = true;
-        if (!lookup(c, "/gui/items.png", 250, 253))
+        if (!lookup(c, c->state.id < 256 ? "/terrain.png" : "/gui/items.png",
+                    c->state.id < 256 ? 237 : 250, c->state.id < 256 ? 240 : 253))
             return false;
         if (mc_registry_item_c_get(c->registry, &c->state.item_array, &c->failure.registry) !=
             MC_REGISTRY_OK)
@@ -284,7 +451,8 @@ static bool body(mc_client_item_gui_call *c) {
             return registry_failure(c, "GUI Item actual GM.c aaload", 260);
         if (c->state.color_item == NULL)
             return null_reference(c, "actual GUI Item null color Item", 263);
-        if (c->state.color_item->kind != MC_ITEM_BASE && c->state.color_item->kind != MC_ITEM_BOW)
+        if (c->state.color_item->kind != MC_ITEM_BASE && c->state.color_item->kind != MC_ITEM_BOW &&
+            c->state.color_item->kind != MC_ITEM_BLOCK)
             return fail(c, MC_CLIENT_ITEM_GUI_UNIMPLEMENTED, "GUI Item color declaring-class proof",
                         raw_descriptor, 263, true);
         c->state.color = 16777215; /* Actual GM.f(int), inherited by QZ. */
@@ -317,6 +485,7 @@ static bool body(mc_client_item_gui_call *c) {
             return false;
         c->state.lighting_enabled = true;
     }
+culling:
     if (!gl(c, mc_client_display_source_cull_test(c->state.display, true, &c->failure.display),
             364))
         return false;
@@ -424,6 +593,10 @@ mc_client_item_gui_status mc_client_item_gui_retire(mc_client_item_gui_call **sl
         c->registry_held = false;
     }
     c->owner->gui_call = NULL;
+    if (c->inventory != NULL) {
+        c->owner->bytes -= sizeof(*c->inventory);
+        free(c->inventory);
+    }
     c->owner->gui_active = false;
     free(c);
     *slot = NULL;

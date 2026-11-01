@@ -88,9 +88,13 @@ typedef struct mc_client_render_global_entities_state {
      * call is borrowed only while this retained N call still owns it. */
     size_t draws_attempted, draws_returned, draws_retired;
     size_t weather_draws_returned, entity_draws_returned;
+    size_t item_draws_returned;
     size_t model_parts_compiled, model_faces, model_vertices, shadow_quads;
     const mc_client_render_manager_draw_call *draw;
     mc_client_render_global_draw_receipt last_draw, first_entity_draw;
+    /* First returned actual Item-kind draw, even when another Entity was
+     * traversed first. Same scalar-only lifetime as the other draw receipts. */
+    mc_client_render_global_draw_receipt first_item_draw;
 } mc_client_render_global_entities_state;
 
 /* Actual n.a(Lbt;Lyn;F)V on the same constructed N. Native admission allocates

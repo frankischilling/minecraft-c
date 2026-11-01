@@ -51,6 +51,11 @@ mc_registry_status mc_block_render_texture_metadata(const mc_block *block, int32
 mc_registry_status mc_block_render_color(const mc_block *block,
                                          const mc_block_render_access *access, int32_t x, int32_t y,
                                          int32_t z, uint32_t *out);
+/* Actual metadata-only inventory color and item-bound hook. Closed declaring
+ * class dispatch currently admits UU and Dirt's inherited UU bodies; other
+ * overrides remain explicit dependencies. No World/climate lookup occurs. */
+mc_registry_status mc_block_render_inventory_color(const mc_block *, int32_t, int32_t *);
+mc_registry_status mc_block_render_inventory_shape(const mc_block *);
 mc_registry_status mc_block_render_side(const mc_block *block, const mc_block_render_access *access,
                                         int32_t neighbor_x, int32_t neighbor_y, int32_t neighbor_z,
                                         int32_t side, bool *out);

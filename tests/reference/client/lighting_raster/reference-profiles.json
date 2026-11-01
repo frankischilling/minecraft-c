@@ -37,7 +37,7 @@
         },
         "array_normals": {
           "path": "array-normals.json",
-          "sha256": "8aafd5c52332cea15f0de8e4790e517d702f5439c7f9aa8148bb0a170634e70a",
+          "sha256": "1d79f746b760a0b16e243b2f6a7140df6bf42e986552cf2e154a752620564d10",
           "observations": {
             "path": "normal-array.json",
             "sha256": "c28247b78fecca86eafb0de5ef18794ef973756de7b38e9ec7c08ffe46e44fbc"
@@ -117,7 +117,7 @@
         },
         "array_normals": {
           "path": "mesa/array-normals.json",
-          "sha256": "8b49fb70f12fa48cb7f1a9684d0fe1c5a52572f1311fa29364b8ebb90eeab99f",
+          "sha256": "79accc083760601d169ca287bdd83214c2fe50961e8006b9214899221d9400e3",
           "observations": {
             "path": "mesa/normal-array.json",
             "sha256": "eada43efc50ebd83c77474e5ce33fe18de5c1ae923d1e5f8c7ec171d14be66a4"

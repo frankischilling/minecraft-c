@@ -40,6 +40,9 @@ void mc_item_render_registry_classification(mc_registry_classes *, const mc_regi
 bool mc_item_render_full_3d(mc_registry_classes *, const mc_item *, bool *, mc_item_render_error *);
 bool mc_item_render_icon(mc_registry_classes *, const mc_item *, int32_t damage, int32_t *,
                          mc_item_render_error *);
+bool mc_item_render_color(mc_registry_classes *, const mc_item *, int32_t damage, int32_t *,
+                          mc_item_render_error *);
+bool mc_item_render_rotate(mc_registry_classes *, const mc_item *, bool *, mc_item_render_error *);
 /* Actual IZ.b -> IZ.a -> GM.b(IZ) -> IZ.i -> selected GM.a(int).
  * c_get precedes each current id read; c_at uses that captured array. */
 bool mc_item_stack_render_icon(mc_registry_classes *, mc_item_stack *, int32_t *,

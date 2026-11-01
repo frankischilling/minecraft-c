@@ -1,5 +1,39 @@
 # Test scope and reproduction
 
+## Mining controls and execution-guard cost
+
+The [mining contract](client/mining.md) describes the public controller,
+WorldAccess, DiggingParticle and inventory-Block controls, plus the separate
+local SDK save/pickup scenario. The latter requires supplied imported resources
+and does not run in public CI.
+
+Three final Windows MSVC Release scenarios pass in 21.53, 22.39 and 19.46
+seconds. The final run completes 1,843 native checks. It performs three genuine World loads and two ordinary
+save/title transitions. Independent decoding checks air/metadata at (0,64,2),
+the live-entry Player fields, all persisted Item bodies and the final one-Dirt
+Inventory. The decoder searches all allocated Chunk records, including cross-Chunk
+drops; incidental seed Items are preserved in the comparison. Three actual BB frames and three
+nonempty HUD/hand frames return, with no runtime pose/Hit/Timer/progress writes.
+Nine focused component/lighting/HUD tests pass on Windows Debug and Linux
+Clang18 with ASan/UBSan; their finite evidence is separate from this Release
+SDK scenario. Debug fresh-click admission under concurrent build load remains
+a recorded failure. See the [validation record](../tests/reference/client/mining/native-validation.json).
+
+Mocked JDK/process execution guards now use small real source trees through
+`tests/support/attributed_project.py`. They still read and hash real driver,
+declared Java, helper and authored native bytes. Real same-length source changes
+must fail the final audit. Production collectors, native replays and the positive
+World-storage source-binding test continue to inventory the actual checkout;
+the full positive control also copies and binds its constructed Git tree.
+
+A WSL Python 3.12.3 cProfile run of eight acquisition execution guards took
+273.981 seconds before this change. The same group, with a ninth source-mutation
+negative, passed in 2.225 seconds afterward. The checkout was on `/mnt/c`, the
+fixture on the Linux temporary filesystem, on an Intel Core i9-10900F with
+10 cores and 20 logical processors. This measures test preparation cost, not
+gameplay performance or hosted-runner throughput. No timeout or source assertion
+was relaxed. Concurrent source edits still invalidate the full binding test.
+
 ## Client Mob NBT and source World persistence
 
 `entity.client_mob_nbt` loads all eleven client Overworld Mobs through the real
@@ -1509,7 +1543,7 @@ The new finite comparisons are distinct:
   original false-capability profile or complete original NV-false state parity.
 - The same fixture's six authored shader profiles compare30 exact RGBA pixels
   across LINEAR/EXP/EXP2 and radial/absolute distance. Channel error is zero on
-  Windows NVIDIA and Linux Mesa25.2.8 llvmpipe/LLVM20.1.2/OpenGL4.5. These are
+  Windows NVIDIA and Linux Mesa 25.2.8 llvmpipe/LLVM20.1.2/OpenGL4.5. These are
   controlled GPU probes, not complete World-frame screenshots.
 - [SR/N/DK culling](../tests/reference/client/frustum_culling/README.md):eight
   exact original rows for constructor/recenter, actual bounds/empty-pass flags,
@@ -5363,7 +5397,7 @@ Observed on 2026-10-17, Intel Core i9-10900F, x86-64:
 | Environment | Toolchain and configuration | Result before integration |
 | --- | --- | --- |
 | Native Windows10 Home 10.0.19045 | Visual Studio 18 Community, MSVC19.51.36260.0, CMake4.2.3, Ninja, Debug, `/W4 /WX /fp:strict`, Python3.14.3 | All 33 CTests pass at the cave source, with explicit Temurin17 |
-| Ubuntu WSL2, Linux6.6.87.2, Ubuntu24.04 userspace | GCC13.3.0, CMake3.28.3, Ninja, Debug, ASan/UBSan, strict diagnostics, Python3.12.3 | All 33 CTests pass at the cave source with JDK21 |
+| Ubuntu WSL2, Linux6.6.87.2, Ubuntu24.04 userspace | GCC13.3.0, CMake3.28.3, Ninja, Debug, ASan/UBSan, strict diagnostics, Python 3.12.3 | All 33 CTests pass at the cave source with JDK21 |
 | Same Linux environment | Clang18.1.3, same diagnostics/sanitizers | All 33 CTests pass at the cave source with JDK21 |
 
 Current exact-source Windows checks explicitly select Temurin17.0.17; Linux

@@ -21,6 +21,7 @@ struct mc_client_effect_renderer {
     bool entered;
     struct mc_client_effect_draw_call *draw_call;
     struct mc_effect_tick_call *tick_call;
+    struct mc_effect_block_call *block_call;
 };
 
 typedef struct mc_effect_renderer_terminal_view {

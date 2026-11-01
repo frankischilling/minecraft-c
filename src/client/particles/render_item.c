@@ -19,7 +19,9 @@ static bool item_failed(mc_client_effect_draw_call *c, unsigned int invocation,
                         bool native) {
     mc_effect_draw_fail(c, status, operation, invocation, native);
     c->state.particle_pc = pc;
-    c->failure.child = (mc_client_graphics_site){"pb", "a", "(Lnw;FFFFFF)V", (int32_t)pc};
+    c->failure.child = (mc_client_graphics_site){
+        mc_entity_is_kind(c->current, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE) ? "qm" : "pb", "a",
+        "(Lnw;FFFFFF)V", (int32_t)pc};
     if (!native && status == MC_EFFECT_DRAW_SOURCE_NULL) {
         c->failure.source_exception = true;
         c->failure.exception_class = "java/lang/NullPointerException";

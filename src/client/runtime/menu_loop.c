@@ -354,6 +354,16 @@ static bool tick(mc_client_menu_loop *loop) {
             const mc_client_screen_site *site = &loop->gameplay.site;
             return stop(loop, loop->gameplay.operation, site->class_name, site->method, site->pc);
         }
+        /* Passive totals of completed input calls survive later ticks in the
+         * same frame; they never control source input, timing or simulation. */
+        loop->state.gameplay_left_clicks += loop->gameplay.left_clicks;
+        loop->state.gameplay_swing_calls += loop->gameplay.swing_calls;
+        loop->state.gameplay_click_timer_stores += loop->gameplay.click_timer_stores;
+        loop->state.gameplay_mining_starts += loop->gameplay.mining_starts;
+        loop->state.gameplay_mining_progress_calls += loop->gameplay.mining_progress_calls;
+        loop->state.gameplay_mined_blocks += loop->gameplay.mined_blocks;
+        loop->state.gameplay_hit_particles_constructed += loop->gameplay.hit_particles_constructed;
+        loop->state.gameplay_hit_particles_appended += loop->gameplay.hit_particles_appended;
     }
     if (app->active_world != NULL) {
         const bool returned = mc_client_world_tick_run(app, loop->math, &loop->world_tick);

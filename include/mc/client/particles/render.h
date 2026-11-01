@@ -3,6 +3,7 @@
 
 #include "ge.h"
 #include "mc/client/particles/effect_renderer.h"
+#include "mc/client/render/manager/draw.h"
 #include "mc/client/render/manager/manager.h"
 #include "mc/core/math/classes.h"
 #include "mc/entity/particles/origin.h"
@@ -46,6 +47,7 @@ typedef struct mc_effect_draw_error {
     mc_particle_throwable throwable;
     const mc_entity_render_error *entity_render;
     mc_world_storage_status receipt_status;
+    const mc_client_manager_draw_error *manager_draw;
 } mc_effect_draw_error;
 
 /* Actual enclosing namespaces, not source DN World/Engine/camera operands.
@@ -55,7 +57,24 @@ typedef struct mc_effect_draw_services {
     mc_math_classes *math;
     mc_client_display *display;
     mc_client_render_manager_classes *manager;
+    mc_client_application_classes *application_classes;
 } mc_effect_draw_services;
+
+/* Copied per-invocation EM286/TH coordinate draw observations. Identities are
+ * scalars; source class strings have static storage. No owner/view survives
+ * through this receipt. Dead actors and zero-count Stacks are never filtered. */
+typedef struct mc_effect_pickup_draw_receipt {
+    bool attempted, admitted, returned, retired, coordinates_only;
+    bool primary_returned, post_draw_returned, bb_returned, actor_dead;
+    bool th_brightness_returned, th_color_returned;
+    uintptr_t actor_identity, renderer_identity;
+    int32_t actor_kind;
+    const char *renderer_class;
+    unsigned int th_pc, primary_pc, post_pc;
+    double x, y, z;
+    float yaw, partial;
+    size_t copies, faces;
+} mc_effect_pickup_draw_receipt;
 
 typedef struct mc_effect_draw_state {
     bool active, returned, retiring, lit, empty, nw_captured;
@@ -68,6 +87,7 @@ typedef struct mc_effect_draw_state {
     double draw_x, draw_y, draw_z;
     unsigned int particle_pc;
     bool brightness_returned, color_set;
+    size_t pickup_draw_attempts, pickup_draw_returns, pickup_draw_retirements;
     /* Actual selected PB body values; no sprite or atlas work is inferred. */
     bool item_particle_returned;
     float item_u0, item_u1, item_v0, item_v1, item_half_size;
@@ -105,6 +125,9 @@ mc_client_effect_renderer_sprites_begin(mc_client_effect_renderer *, mc_entity *
                                         mc_client_effect_draw_call **, mc_effect_draw_error *);
 bool mc_client_effect_renderer_draw_inspect(const mc_client_effect_draw_call *,
                                             mc_effect_draw_state *);
+size_t mc_client_effect_renderer_pickup_draw_count(const mc_client_effect_draw_call *);
+bool mc_client_effect_renderer_pickup_draw_at(const mc_client_effect_draw_call *, size_t,
+                                              mc_effect_pickup_draw_receipt *);
 mc_effect_draw_status mc_client_effect_renderer_draw_retire(mc_client_effect_draw_call **,
                                                             mc_effect_draw_error *);
 

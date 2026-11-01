@@ -374,10 +374,11 @@ mc_entity_status mc_pickup_particle_layer(const mc_entity *p, int32_t *out) {
 
 bool mc_particle_read(const mc_entity *p, mc_particle_snapshot *out) {
     if ((!mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE) &&
-         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE)) ||
+         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) &&
+         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE)) ||
         out == NULL || p->particle == NULL)
         return false;
-    const bool item = mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE);
+    const bool item = !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE);
     *out = (mc_particle_snapshot){p->phase,
                                   p->particle->particle_pc,
                                   p->particle->pickup_pc,
@@ -385,7 +386,10 @@ bool mc_particle_read(const mc_entity *p, mc_particle_snapshot *out) {
                                   item ? (mc_pickup_particle_fields){0} : p->particle->pickup,
                                   item ? p->particle->item_native.item_pc : 0,
                                   item ? p->particle->item_native.tick_pc : 0,
-                                  item && p->particle->item_native.tick_active};
+                                  item && p->particle->item_native.tick_active,
+                                  p->particle->digging_block,
+                                  p->particle->digging_registry,
+                                  p->particle->digging_face};
     return true;
 }
 

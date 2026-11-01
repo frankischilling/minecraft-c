@@ -417,6 +417,18 @@ static void lit_draw_and_normal_knowledge(fixture *f) {
         memcpy(bytes->data + 32 * i, positions[i], sizeof(positions[i]));
     mc_client_display_context_lease *lease = NULL;
     mc_client_display_error error;
+    const mc_client_display_info *info = mc_client_display_info_get(f->display);
+    CHECK(info != NULL);
+    const bool retain_normal =
+        (strcmp(info->vendor, "NVIDIA Corporation") == 0 &&
+         strcmp(info->renderer, "NVIDIA GeForce RTX 3060/PCIe/SSE2") == 0 &&
+         strcmp(info->version, "3.3.0 NVIDIA 581.42") == 0) ||
+        (strcmp(info->vendor, "Mesa") == 0 &&
+         strcmp(info->renderer, "llvmpipe (LLVM 20.1.2, 256 bits)") == 0 &&
+         strcmp(info->version, "4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4") == 0);
+    const float prior_normal[3] = {.25f, .5f, .75f};
+    CHECK(mc_client_display_source_normal(f->display, prior_normal[0], prior_normal[1],
+                                          prior_normal[2], &error));
     CHECK(mc_client_display_context_acquire(f->display, &lease, &error));
     CHECK(mc_client_display_source_pointer(lease, MC_CLIENT_SOURCE_VERTEX_ARRAY, bytes, 0, &error));
     CHECK(mc_client_display_source_array(f->display, MC_CLIENT_SOURCE_VERTEX_ARRAY, true, &error));
@@ -426,11 +438,20 @@ static void lit_draw_and_normal_knowledge(fixture *f) {
     CHECK(mc_client_display_source_array(f->display, MC_CLIENT_SOURCE_NORMAL_ARRAY, true, &error));
     CHECK(mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
     mc_client_source_fog_state state;
-    CHECK(mc_client_display_source_fog_inspect(f->display, &state) && !state.normal_known);
+    CHECK(mc_client_display_source_fog_inspect(f->display, &state) &&
+          state.normal_known == retain_normal);
+    CHECK(!retain_normal || memcmp(state.normal, prior_normal, sizeof(prior_normal)) == 0);
     CHECK(mc_client_display_source_array(f->display, MC_CLIENT_SOURCE_NORMAL_ARRAY, false, &error));
-    CHECK(!mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
-    CHECK(error.status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL && error.operation != NULL &&
-          strcmp(error.operation, "source current normal") == 0);
+    const bool followed =
+        mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error);
+    if (retain_normal) {
+        CHECK(followed);
+        CHECK(mc_client_display_source_fog_inspect(f->display, &state) && state.normal_known &&
+              memcmp(state.normal, prior_normal, sizeof(prior_normal)) == 0);
+    } else {
+        CHECK(!followed && error.status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL &&
+              error.operation != NULL && strcmp(error.operation, "source current normal") == 0);
+    }
     CHECK(mc_client_display_source_normal(f->display, 0, 0, 1, &error));
     CHECK(mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
     uint32_t nan_bits = UINT32_C(0x7fc12345);

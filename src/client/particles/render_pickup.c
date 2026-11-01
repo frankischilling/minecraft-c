@@ -4,9 +4,68 @@
 #include "../../entity/particles/particle_internal.h"
 #include "../display/source_surface.h"
 #include "../render/interpolation_internal.h"
+#include "../render/living_draw_internal.h"
 #include "mc/core/math/math.h"
 
+#include <stdlib.h>
+
 static const char particle_descriptor[] = "(Lnw;FFFFFF)V";
+
+static void draw_views_expired(mc_client_effect_draw_call *c) {
+    mc_client_manager_draw_error *errors[] = {&c->manager_failure, &c->manager_cleanup,
+                                              &c->manager_retirement};
+    for (size_t i = 0; i < sizeof errors / sizeof *errors; ++i) {
+        errors[i]->entity = NULL;
+        errors[i]->living = NULL;
+        errors[i]->owner.font = NULL;
+        errors[i]->owner.acquisition = NULL;
+    }
+    c->cleanup.manager_draw = NULL;
+}
+
+static void draw_retired(mc_client_effect_draw_call *c) {
+    ++c->state.pickup_draw_retirements;
+    if (c->pickup_last != NULL)
+        c->pickup_last->value.retired = true;
+    draw_views_expired(c);
+}
+
+bool mc_effect_draw_pickup_retire(mc_client_effect_draw_call *c) {
+    if (c->manager_draw == NULL)
+        return true;
+    if (mc_client_render_manager_draw_retire(&c->manager_draw, &c->manager_retirement) !=
+        MC_CLIENT_MANAGER_OK) {
+        c->cleanup.manager_draw = &c->manager_retirement;
+        return false;
+    }
+    draw_retired(c);
+    return true;
+}
+
+void mc_effect_draw_pickup_free(mc_client_effect_draw_call *c) {
+    while (c->pickup_first != NULL) {
+        mc_effect_pickup_draw_record *next = c->pickup_first->next;
+        free(c->pickup_first);
+        c->pickup_first = next;
+    }
+    c->pickup_last = NULL;
+    c->pickup_count = 0;
+}
+
+size_t mc_client_effect_renderer_pickup_draw_count(const mc_client_effect_draw_call *c) {
+    return c == NULL || c->state.active ? 0 : c->pickup_count;
+}
+
+bool mc_client_effect_renderer_pickup_draw_at(const mc_client_effect_draw_call *c, size_t index,
+                                              mc_effect_pickup_draw_receipt *out) {
+    if (c == NULL || c->state.active || out == NULL || index >= c->pickup_count)
+        return false;
+    const mc_effect_pickup_draw_record *record = c->pickup_first;
+    while (index-- != 0)
+        record = record->next;
+    *out = record->value;
+    return true;
+}
 
 static bool failed(mc_client_effect_draw_call *c, unsigned int invocation,
                    mc_effect_draw_status status, const char *operation, unsigned int pc,
@@ -38,11 +97,115 @@ static bool math(mc_client_effect_draw_call *c, unsigned int invocation, unsigne
     return failed(c, invocation, status, c->failure.operation, pc, true);
 }
 
+static void draw_receipt(mc_client_effect_draw_call *c, mc_entity *actor) {
+    mc_effect_pickup_draw_receipt *r = &c->pickup_last->value;
+    r->admitted = c->manager_draw != NULL;
+    r->actor_identity = (uintptr_t)actor;
+    r->actor_kind = -1;
+    if (actor != NULL) {
+        r->actor_dead = actor->base.be;
+        mc_entity_class_literal_view view;
+        if (mc_entity_class_literal_inspect(actor->class_literal, &view) == MC_ENTITY_OK)
+            r->actor_kind = (int32_t)view.kind;
+    }
+    mc_client_manager_draw_state s;
+    if (c->manager_draw == NULL || !mc_client_render_manager_draw_inspect(c->manager_draw, &s))
+        return;
+    r->returned = s.returned;
+    r->coordinates_only = s.coordinates_only;
+    r->primary_returned = s.primary_returned;
+    r->post_draw_returned = s.post_draw_returned;
+    r->th_brightness_returned = s.brightness_returned;
+    r->th_color_returned = s.color_returned;
+    r->th_pc = s.source_pc;
+    r->x = s.x;
+    r->y = s.y;
+    r->z = s.z;
+    r->yaw = s.yaw;
+    r->partial = s.partial;
+    r->renderer_identity = (uintptr_t)s.renderer_identity;
+    mc_client_managed_renderer_state renderer;
+    if (mc_client_managed_renderer_inspect(s.renderer, &renderer))
+        r->renderer_class = renderer.source_class;
+    if (s.living != NULL) {
+        r->primary_pc = s.living->source_pc;
+        r->bb_returned = s.living->item.returned;
+        r->copies = s.living->item.copies_returned;
+        r->faces = s.living->item.faces_returned;
+    }
+    if (s.post_draw != NULL)
+        r->post_pc = s.post_draw->source_pc;
+}
+
+static bool draw_actor(mc_client_effect_draw_call *c, unsigned int invocation, mc_entity *actor,
+                       float yaw) {
+    const size_t ceiling = c->state.owner->max_allocation_bytes;
+    const size_t used = c->state.owner->allocation_bytes;
+    if (used > ceiling || sizeof(*c) > ceiling - used ||
+        c->pickup_count >= (ceiling - used - sizeof(*c)) / sizeof(mc_effect_pickup_draw_record))
+        return failed(c, invocation, MC_EFFECT_DRAW_LIMIT,
+                      "EM reached per-invocation draw diagnostic extent", 286, true);
+    mc_effect_pickup_draw_record *record = calloc(1, sizeof(*record));
+    if (record == NULL)
+        return failed(c, invocation, MC_EFFECT_DRAW_ALLOCATION,
+                      "EM reached per-invocation draw diagnostic allocation", 286, true);
+    if (c->pickup_last == NULL)
+        c->pickup_first = record;
+    else
+        c->pickup_last->next = record;
+    c->pickup_last = record;
+    ++c->pickup_count;
+    record->value.attempted = true;
+    ++c->state.pickup_draw_attempts;
+    const mc_client_manager_draw_services services = {.math = c->math,
+                                                      .graphics = c->graphics,
+                                                      .display = c->services.display,
+                                                      .application_classes =
+                                                          c->services.application_classes};
+    c->failure.manager_draw = &c->manager_failure;
+    const mc_client_manager_status status = mc_client_render_manager_coordinates_draw_begin(
+        c->manager, actor, c->state.draw_x, c->state.draw_y, c->state.draw_z, yaw, c->state.partial,
+        &services, NULL, &c->manager_draw, &c->manager_failure);
+    draw_receipt(c, actor);
+    if (status != MC_CLIENT_MANAGER_OK) {
+        c->failure.source_exception = c->manager_failure.source_exception;
+        c->failure.exception_class = c->manager_failure.exception_class;
+        c->failure.throwable = c->manager_failure.native_policy ? MC_PARTICLE_NO_THROWABLE
+                               : c->manager_failure.unclassified_throwable
+                                   ? MC_PARTICLE_UNCLASSIFIED_THROWABLE
+                               : c->manager_failure.source_exception ? MC_PARTICLE_SOURCE_EXCEPTION
+                                                                     : MC_PARTICLE_SOURCE_ERROR;
+        return failed(c, invocation,
+                      status == MC_CLIENT_MANAGER_BUSY    ? MC_EFFECT_DRAW_BUSY
+                      : status == MC_CLIENT_MANAGER_LIMIT ? MC_EFFECT_DRAW_LIMIT
+                                                          : MC_EFFECT_DRAW_CHILD_FAILED,
+                      c->manager_failure.operation, 286, c->manager_failure.native_policy);
+    }
+    if (!record->value.returned)
+        return failed(c, invocation, MC_EFFECT_DRAW_CHILD_FAILED,
+                      "EM actual TH coordinate body did not return", 286, true);
+    ++c->state.pickup_draw_returns;
+    if (mc_client_render_manager_draw_retire(&c->manager_draw, &c->manager_cleanup) !=
+        MC_CLIENT_MANAGER_OK) {
+        c->failure.manager_draw = &c->manager_cleanup;
+        return failed(c, invocation, MC_EFFECT_DRAW_CLEANUP_FAILED, c->manager_cleanup.operation,
+                      286, true);
+    }
+    draw_retired(c);
+    c->failure.manager_draw = NULL;
+    if (mc_client_render_manager_release(&c->manager, &c->failure.manager) != MC_CLIENT_MANAGER_OK)
+        return failed(c, invocation, MC_EFFECT_DRAW_CLEANUP_FAILED,
+                      "EM completed actual TH receiver retirement", 286, true);
+    c->state.particle_pc = 289;
+    return true;
+}
+
 bool mc_effect_draw_particle(mc_client_effect_draw_call *c, unsigned int invocation) {
     if (c->current == NULL)
         return mc_effect_draw_fail(c, MC_EFFECT_DRAW_SOURCE_NULL,
                                    "actual DN particle draw receiver", invocation, false);
-    if (mc_entity_is_kind(c->current, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) &&
+    if ((mc_entity_is_kind(c->current, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) ||
+         mc_entity_is_kind(c->current, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE)) &&
         c->current->particle != NULL)
         return mc_effect_draw_item(c, invocation);
     if (!mc_entity_is_kind(c->current, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE) ||
@@ -173,6 +336,7 @@ bool mc_effect_draw_particle(mc_client_effect_draw_call *c, unsigned int invocat
         mc_client_render_manager_retain(manager, &c->failure.manager) != MC_CLIENT_MANAGER_OK)
         return failed(c, invocation, MC_EFFECT_DRAW_BUSY, c->failure.manager.operation, 259, true);
     c->manager = manager;
+    mc_entity *drawn_actor = f->a; /* Actual argument captured at263 before narrowing. */
     /* These actual narrowing/widening operations precede the draw invocation. */
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u)
         return failed(c, invocation, MC_EFFECT_DRAW_UNSUPPORTED_FP,
@@ -185,10 +349,8 @@ bool mc_effect_draw_particle(mc_client_effect_draw_call *c, unsigned int invocat
         return failed(c, invocation, MC_EFFECT_DRAW_SOURCE_NULL, "actual EM picked yaw receiver",
                       282, false);
     const float yaw = picked_actor->base.yaw;
-    (void)yaw;
     if (manager == NULL)
         return failed(c, invocation, MC_EFFECT_DRAW_SOURCE_NULL, "actual EM TH draw receiver", 286,
                       false);
-    return failed(c, invocation, MC_EFFECT_DRAW_DEPENDENCY,
-                  "actual TH Entity renderer draw child is not connected", 286, true);
+    return draw_actor(c, invocation, drawn_actor, yaw);
 }

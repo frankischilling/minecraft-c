@@ -355,6 +355,11 @@ class ExecutionGuards(unittest.TestCase):
             executable = root / "probe"
             executable.write_bytes(b"constructed native probe; never executed")
             real_fp = world.fp
+            # The native probe and all child processes are mocked here. Keep
+            # actual imported Python, Java, fixture and probe attribution, but
+            # leave unrelated runtime inventory to the source-binding controls.
+            selected_sources = tuple(name for name in world.source_paths()
+                                     if not name.startswith(("src/", "include/")))
             calls = []
 
             def fingerprint(raw):
@@ -416,6 +421,7 @@ class ExecutionGuards(unittest.TestCase):
                 environment["JAVA_TOOL_OPTIONS"] = "-Dconstructed=true"
             with patch.dict(os.environ, environment, clear=True), \
                  patch.object(world, "fp", side_effect=fingerprint), \
+                 patch.object(world, "source_paths", return_value=selected_sources), \
                  patch.object(world.r, "tool_path", side_effect=tool_path), \
                  patch.object(world.r, "process", side_effect=process), \
                  contextlib.redirect_stdout(io.StringIO()):
@@ -495,6 +501,12 @@ class SourceBindingGuards(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="mc-world-source-") as directory:
             root = Path(directory)
             paths = world.source_paths()
+            if mutation is not None:
+                # The positive case copies/binds the complete runtime inventory.
+                # Invalid constructed Git records need the same checks on a
+                # smaller catalog, not another full copy of unrelated C files.
+                paths = tuple(name for name in paths
+                              if not name.startswith(("src/", "include/")))
             report = {}
 
             def process(command, where, label, timeout=90, stdin=None, stdout_limit=32768):
@@ -525,13 +537,16 @@ class SourceBindingGuards(unittest.TestCase):
                 return process_record(command, label, stdout)
 
             environment = {key: value for key, value in os.environ.items() if key not in world.JAVA_ENVIRONMENT}
-            with patch.dict(os.environ, environment, clear=True), patch.object(world.r, "process", side_effect=process):
+            with patch.dict(os.environ, environment, clear=True), \
+                 patch.object(world, "source_paths", return_value=paths), \
+                 patch.object(world.r, "process", side_effect=process):
                 sources = world.prepare_sources(argparse.Namespace(tested_commit="a" * 40), root, report)
             self.assertEqual(set(sources), set(paths))
             self.assertGreater(len(sources), 20)
             for name, fingerprint in sources.items():
-                self.assertEqual((root / "sources" / name).read_bytes(), (ROOT / name).read_bytes())
-                self.assertEqual(fingerprint, world.fp((ROOT / name).read_bytes()))
+                actual = (ROOT / name).read_bytes()
+                self.assertEqual((root / "sources" / name).read_bytes(), actual)
+                self.assertEqual(fingerprint, world.fp(actual))
             return report
 
     def test_complete_source_closure_copied_and_bound_to_constructed_tree(self):
@@ -571,6 +586,8 @@ class SourceBindingGuards(unittest.TestCase):
         loaded = copy.deepcopy(world.LOADED_PYTHON)
         self.assertTrue(loaded)
         name = next(iter(loaded))
+        selected_sources = tuple(name for name in world.source_paths()
+                                 if not name.startswith(("src/", "include/")))
         for mutation in ("float-count", "changed-digest", "aliased-path"):
             changed = copy.deepcopy(loaded)
             if mutation == "float-count":
@@ -584,6 +601,7 @@ class SourceBindingGuards(unittest.TestCase):
                 environment = {key: value for key, value in os.environ.items() if key not in world.JAVA_ENVIRONMENT}
                 with patch.dict(os.environ, environment, clear=True), \
                      patch.object(world, "LOADED_PYTHON", changed), \
+                     patch.object(world, "source_paths", return_value=selected_sources), \
                      patch.object(world.r, "process") as process, \
                      self.subTest(mutation=mutation), self.assertRaisesRegex(world.Failure, "actual compiled Python bytes"):
                     world.prepare_sources(argparse.Namespace(tested_commit=None), root, {})

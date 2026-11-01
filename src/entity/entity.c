@@ -193,6 +193,7 @@ mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_ent
             break;
         case MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE:
         case MC_ENTITY_CLASS_KIND_ITEM_PARTICLE:
+        case MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE:
             if (classes->source != MC_ENTITY_CLIENT)
                 return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
             bytes = sizeof(mc_pickup_particle_object);
@@ -235,7 +236,8 @@ mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_ent
         entity = &object->entity;
         entity->mob = &object->state;
     } else if (kind == MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE ||
-               kind == MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) {
+               kind == MC_ENTITY_CLASS_KIND_ITEM_PARTICLE ||
+               kind == MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE) {
         mc_pickup_particle_object *object = storage;
         *object = (mc_pickup_particle_object){0};
         entity = &object->entity;
@@ -655,7 +657,8 @@ static void destroy_entity(mc_entity *entity) {
         : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)
             ? sizeof(mc_local_player_object)
         : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE) ||
-                mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE)
+                mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) ||
+                mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE)
             ? sizeof(mc_pickup_particle_object)
         : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_C) ? sizeof(mc_lightning_entity_object)
         : mc_entity_has_mob(entity)                         ? sizeof(mc_mob_entity_object)
@@ -666,6 +669,8 @@ static void destroy_entity(mc_entity *entity) {
         mc_local_player_dispose(entity);
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE))
         mc_pickup_particle_dispose(entity);
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE))
+        mc_digging_particle_dispose(entity);
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_C))
         mc_lightning_dispose(entity);
     if (mc_entity_has_mob(entity)) {

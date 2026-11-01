@@ -5604,3 +5604,5 @@ if(MC_BUILD_CLIENT)
     include(cmake/client_mob_draw.cmake)
     include(cmake/tests/item_particle.cmake)
 endif()
+
+include(cmake/client_mining.cmake)

@@ -284,14 +284,15 @@ static void movement_exception(mc_particle_error *e, const mc_entity_move_error 
     }
 }
 
-mc_entity_status mc_item_particle_tick(mc_entity *p, mc_registry_classes *registry,
-                                       const mc_entity_move_limits *limits,
-                                       mc_item_particle_tick_error *error) {
+mc_entity_status mc_particle_tick_inherited(mc_entity *p, mc_entity_class_kind expected,
+                                            mc_registry_classes *registry,
+                                            const mc_entity_move_limits *limits,
+                                            mc_item_particle_tick_error *error) {
     if (error == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
     mc_item_particle_tick_error_init(error);
     mc_particle_error *e = &error->particle;
-    if (!mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) || p->particle == NULL)
+    if (!mc_entity_is_kind(p, expected) || p->particle == NULL)
         return tick_fail(e, MC_ENTITY_INVALID_ARGUMENT, MC_PARTICLE_OWNER,
                          "PB tick canonical native storage", 0);
     if (p->phase != MC_ENTITY_READY)
@@ -354,6 +355,13 @@ done:
     p->particle->item_native.tick_active = false;
     mc_entity_release(p);
     return e->status;
+}
+
+mc_entity_status mc_item_particle_tick(mc_entity *p, mc_registry_classes *registry,
+                                       const mc_entity_move_limits *limits,
+                                       mc_item_particle_tick_error *error) {
+    return mc_particle_tick_inherited(p, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE, registry, limits,
+                                      error);
 }
 
 mc_entity_status mc_item_particle_layer(const mc_entity *p, int32_t *out) {

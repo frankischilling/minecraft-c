@@ -40,6 +40,7 @@ typedef struct mc_client_item_gui_error {
     mc_item_render_error item;
     mc_client_texture_lookup_error texture;
     mc_client_render_engine_status owner;
+    const struct mc_cv_context *inventory;
 } mc_client_item_gui_error;
 
 typedef struct mc_client_item_gui_state {
@@ -60,6 +61,8 @@ typedef struct mc_client_item_gui_state {
     bool color_returned, color_set, block_color_stored;
     bool quad_started, quad_drawn, quad_returned;
     bool lighting_disabled, lighting_enabled, culling_enabled;
+    bool block_inventory_entered, block_inventory_returned, block_matrix_pushed;
+    size_t block_faces;
     int32_t entry_pc, raw_pc, quad_pc;
     int32_t id, metadata, icon, x, y, texture_x, texture_y, color, block_type;
     mc_client_texture texture_id;

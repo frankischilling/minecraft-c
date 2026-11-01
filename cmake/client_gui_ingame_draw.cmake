@@ -2,7 +2,8 @@ include_guard(GLOBAL)
 if(TARGET mc_client_entity_renderer)
     target_sources(mc_client_entity_renderer PRIVATE
         src/client/world/entity_renderer/overlay_setup.c
-        src/client/gui/gui_ingame_draw.c)
+        src/client/gui/gui_ingame_draw.c
+        src/client/render/item_gui.c src/client/render/item_overlay.c)
     if(BUILD_TESTING AND TARGET mc_test_application_startup)
         add_executable(mc_test_gui_ingame_draw tests/client/gui/test_gui_ingame_draw.c)
         get_target_property(_mc_hud_links mc_test_application_startup LINK_LIBRARIES)

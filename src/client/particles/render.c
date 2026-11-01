@@ -124,7 +124,8 @@ static bool get(mc_client_effect_draw_call *c, unsigned int array_pc, unsigned i
     mc_entity *particle = list->elements[(size_t)c->state.index];
     if (particle != NULL) {
         if ((!mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE) &&
-             !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE)) ||
+             !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) &&
+             !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE)) ||
             particle->classes != c->state.owner->classes || particle->particle == NULL)
             return mc_effect_draw_fail(c, MC_EFFECT_DRAW_DEPENDENCY,
                                        "particle List reached unsupported concrete owning row",
@@ -372,7 +373,7 @@ static mc_effect_draw_status begin(mc_client_effect_renderer *r, mc_entity *came
         error->native_policy = true;
         return error->status;
     }
-    if (r->entered || r->draw_call != NULL || r->tick_call != NULL ||
+    if (r->entered || r->draw_call != NULL || r->tick_call != NULL || r->block_call != NULL ||
         r->phase != MC_EFFECT_RENDERER_READY) {
         error->status = MC_EFFECT_DRAW_BUSY;
         error->operation = "particle draw native pending/entered/constructed owner";
@@ -455,6 +456,8 @@ mc_effect_draw_status mc_client_effect_renderer_draw_retire(mc_client_effect_dra
         return error->status;
     }
     c->state.retiring = true;
+    if (!mc_effect_draw_pickup_retire(c))
+        goto refused;
     if (c->manager != NULL &&
         mc_client_render_manager_release(&c->manager, &c->cleanup.manager) != MC_CLIENT_MANAGER_OK)
         goto refused;
@@ -501,6 +504,7 @@ mc_effect_draw_status mc_client_effect_renderer_draw_retire(mc_client_effect_dra
         goto refused;
     c->state.owner->draw_call = NULL;
     mc_effect_draw_item_free(c);
+    mc_effect_draw_pickup_free(c);
     free(c);
     *slot = NULL;
     return MC_EFFECT_DRAW_OK;

@@ -6,4 +6,5 @@ if(MC_BUILD_CLIENT)
     target_link_libraries(mc_client_particles_draw PUBLIC mc_simulation
         mc_client_render_textures mc_client_render_manager_cpu PRIVATE mc_build_options)
     target_link_libraries(mc_client_entity_renderer PUBLIC mc_client_particles_draw)
+    target_link_libraries(mc_client_particles_draw PUBLIC mc_client_entity_renderer)
 endif()

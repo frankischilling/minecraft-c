@@ -27,6 +27,8 @@ typedef enum mc_effect_renderer_status {
     MC_EFFECT_RENDERER_UNSUPPORTED_PARTICLE
 } mc_effect_renderer_status;
 
+typedef struct mc_effect_block_state mc_effect_block_state;
+
 typedef struct mc_effect_renderer_error {
     mc_effect_renderer_status status;
     const char *operation, *source_method, *source_descriptor;
@@ -40,6 +42,7 @@ typedef struct mc_effect_renderer_error {
     /* PB-only entered movement cause, borrowed from the actual pending tick
      * record until successful tick_cleanup. Legacy EM paths leave this NULL. */
     const mc_entity_move_error *movement;
+    const mc_effect_block_state *block; /* Exact DN-owned hit/destruction work. */
 } mc_effect_renderer_error;
 
 typedef struct mc_effect_renderer_options {
@@ -82,11 +85,11 @@ mc_effect_renderer_status mc_client_effect_renderer_construct(mc_client_effect_r
                                                               mc_effect_renderer_error *);
 
 /* Actual dn.a(xw), dn.a() and dn.a(fd), respectively. The current concrete
- * virtual closure admits real READY em only; other particle kinds report their
+ * virtual closure admits real READY EM/PB/QM; other particle kinds report their
  * missing body. Each List occurrence has its own native Entity hold. Adding
  * at 4000 removes the first occurrence before appending, including on a later
  * native resource failure. Keep the supplied Entity held until add returns.
- * Tick reloads list size, invokes the concrete em override, reads be and removes
+ * Tick reloads list size, invokes EM or inherited XW, reads be and removes
  * dead occurrences in source order. World change stores its new World first,
  * then clears all four lists without replacing their identities/capacities.
  * Native admission/ownership failures preserve reached prefixes. No callback,
@@ -130,5 +133,39 @@ mc_entity *mc_client_effect_renderer_particle(const mc_client_effect_renderer *,
 mc_effect_renderer_status mc_client_effect_renderer_retain(mc_client_effect_renderer *);
 mc_effect_renderer_status mc_client_effect_renderer_release(mc_client_effect_renderer *);
 mc_effect_renderer_status mc_client_effect_renderer_free(mc_client_effect_renderer **);
+
+/* Passive values of the actual retained DN block-particle invocation. Child
+ * pointers belong to this exact work record until block_cleanup succeeds. */
+struct mc_effect_block_state {
+    bool hit, returned;
+    unsigned int source_pc;
+    size_t constructed, appended, random_calls;
+    int32_t x, y, z, face, block_id, metadata;
+    int32_t destruction_faces[64];
+    double hit_random[3], position[3];
+    const mc_entity *candidate;
+    const mc_particle_error *particle;
+    const mc_effect_renderer_error *append;
+    const struct mc_world_storage_error *world;
+    const struct mc_world_runtime_acquisition_error *acquisition;
+    const mc_registry_error *registry;
+};
+
+/* Actual DN.a(IIII) and DN.a(IIIII). Registry/Math are canonical native
+ * services, consulted only at reached source descendants. The exact work is
+ * retained on return and on failure; cleanup must precede another DN source
+ * operation. Cleanup only consumes native rights, preserving Random, List and
+ * particle effects. An errored invocation is never replayed. */
+mc_effect_renderer_status mc_client_effect_renderer_hit_block(mc_client_effect_renderer *,
+                                                              mc_registry_classes *,
+                                                              mc_math_classes *, int32_t, int32_t,
+                                                              int32_t, int32_t,
+                                                              mc_effect_renderer_error *);
+mc_effect_renderer_status
+mc_client_effect_renderer_destroy_block(mc_client_effect_renderer *, mc_registry_classes *,
+                                        mc_math_classes *, int32_t, int32_t, int32_t, int32_t,
+                                        int32_t, mc_effect_renderer_error *);
+mc_effect_renderer_status mc_client_effect_renderer_block_cleanup(mc_client_effect_renderer *,
+                                                                  mc_effect_renderer_error *);
 
 #endif

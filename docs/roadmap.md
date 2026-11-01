@@ -25,8 +25,11 @@ focus/resize paths have separate returning profiles. Live Mob
 [NBT/factory round trips](entity/mob-nbt.md), source region writes, and ordinary
 save/title/reselection now have bounded authored controls. The
 [selected-block path](client/block-selection.md) draws dirt and snow outlines
-from real picking results. Complete ordinary click/use, progressive mining,
-carried-item drawing, pickup and placement as one working interaction loop.
+from real picking results. The [empty-hand Dirt loop](client/mining.md) now
+connects mining, dropped-Item drawing, pickup, held-block drawing and two
+save/reselection steps in a passing Windows Release scenario. Complete
+right-click placement, tools, remaining Item/Block overrides and Inventory UI
+on that same ordinary input/World loop.
 Remove the retained loader's eight-load session limit and qualify failed
 successor loads, default-Far settings and extended play. Existing movement,
 look and time bodies remain part of that real loop. Detailed evidence and

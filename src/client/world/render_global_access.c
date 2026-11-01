@@ -3,15 +3,18 @@
 #include "../../block/registry/runtime_internal.h"
 #include "../../entity/entity_internal.h"
 #include "../../entity/particles/particle_internal.h"
+#include "../../world/runtime/construction_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../../world/runtime/world_access_internal.h"
 #include "../application_state.h"
 #include "../render_engine/image_buffer.h"
 #include "../render_engine/image_download.h"
 #include "../startup/application_owner.h"
+#include "mc/block/registry/step_sound.h"
 #include "mc/client/particles/effect_renderer.h"
 #include "mc/client/sound/sound_manager.h"
 #include "mc/entity/appearance.h"
+#include "mc/world/runtime/presentation.h"
 #include "mc/world/runtime/runtime.h"
 #include "render_global_internal.h"
 #include "source_chunk_renderer_internal.h"
@@ -37,6 +40,7 @@ typedef struct access_particle {
     mc_effect_renderer_error effects, effects_cleanup;
     mc_client_application_owner_error application_error, application_cleanup;
     mc_math_class_error math_cleanup;
+    bool block_work;
 } access_particle;
 
 typedef struct access_call {
@@ -49,6 +53,10 @@ typedef struct access_call {
     mc_client_image_download_error image_error, image_cleanup;
     const char *source_exception_class;
     access_particle *particle;
+    mc_step_sound_name effect_name;
+    mc_world_mutation_error *world_effect;
+    bool auxiliary2001;
+    mc_render_global_auxiliary_event auxiliary;
 } access_call;
 
 struct mc_render_global_access {
@@ -58,7 +66,17 @@ struct mc_render_global_access {
     access_call *failures;
     size_t registration_count, active_callbacks, failure_count, bytes;
     bool retiring;
+    mc_render_global_auxiliary_observation auxiliary;
 };
+
+static void auxiliary_count(mc_render_global_auxiliary_observation *observation, uint64_t *value,
+                            uint64_t amount) {
+    if (amount > UINT64_MAX - *value) {
+        *value = UINT64_MAX;
+        observation->overflowed = true;
+    } else
+        *value += amount;
+}
 
 static mc_world_storage_status storage_status(mc_client_render_global_status status) {
     switch (status) {
@@ -146,9 +164,21 @@ static void copy_image_error(access_call *call, const mc_client_image_download_e
     }
 }
 
-static bool retire_children(access_call *call, mc_client_render_global_error *error) {
+static bool retire_children(mc_render_global_access *access, access_call *call,
+                            mc_client_render_global_error *error) {
     access_particle *particle = call->particle;
     if (particle != NULL) {
+        if (particle->block_work) {
+            const mc_effect_renderer_status status = mc_client_effect_renderer_block_cleanup(
+                particle->receiver, &particle->effects_cleanup);
+            if (status != MC_EFFECT_RENDERER_OK) {
+                error->effects = &particle->effects_cleanup;
+                fail(error, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED,
+                     particle->effects_cleanup.operation, NULL, NULL, 0, true);
+                return false;
+            }
+            particle->block_work = false;
+        }
         if (particle->candidate != NULL) {
             mc_entity_release(particle->candidate);
             particle->candidate = NULL;
@@ -200,6 +230,18 @@ static bool retire_children(access_call *call, mc_client_render_global_error *er
             return false;
         }
     }
+    if (mc_registry_step_sound_name_release(&call->effect_name, &error->registry) !=
+        MC_REGISTRY_OK) {
+        fail(error, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED,
+             "N auxiliary StepSound String occurrence retirement", NULL, NULL, 0, true);
+        return false;
+    }
+    if (call->world_effect != NULL) {
+        free(call->world_effect);
+        call->world_effect = NULL;
+        access->bytes -= sizeof(mc_world_mutation_error);
+    }
+    error->auxiliary_world = NULL;
     for (size_t i = 0; i < 2; ++i) {
         if (call->images[i] != NULL) {
             const mc_client_image_download_status status =
@@ -263,7 +305,8 @@ static access_call *call_begin(mc_render_global_access *access, const char *desc
 static mc_world_storage_status call_end(mc_render_global_access *access, access_call *call,
                                         mc_world_storage_error *error,
                                         mc_world_access_failure *failure) {
-    if (call->error.status == MC_CLIENT_RENDER_GLOBAL_OK && !retire_children(call, &call->error)) {
+    if (call->error.status == MC_CLIENT_RENDER_GLOBAL_OK &&
+        !retire_children(access, call, &call->error)) {
         /* Preserve this first post-source failure independently of later
          * checked cleanup attempts, which own separate mutable diagnostics. */
         if (call->error.image_download != NULL) {
@@ -274,6 +317,14 @@ static mc_world_storage_status call_end(mc_render_global_access *access, access_
             call->buffer_error = *call->error.image_buffer;
             call->error.image_buffer = &call->buffer_error;
         }
+    }
+    if (call->auxiliary2001) {
+        call->auxiliary.source_returned = call->error.source_returned;
+        call->auxiliary.native_cleanup_returned =
+            call->error.source_returned && call->error.status == MC_CLIENT_RENDER_GLOBAL_OK;
+        call->auxiliary.source_pc = call->error.source_returned ? 716u : call->error.source_pc;
+        call->auxiliary.native_status = call->error.status;
+        access->auxiliary.last = call->auxiliary;
     }
     --access->active_callbacks;
     if (call->error.status == MC_CLIENT_RENDER_GLOBAL_OK) {
@@ -903,6 +954,8 @@ static mc_world_storage_status tile_entity_dirty(void *context, mc_world_runtime
     return call_end(access, call, error, failure);
 }
 
+#include "render_global_auxiliary.inc"
+
 mc_client_render_global_status
 mc_render_global_access_create(mc_client_render_global *owner, mc_render_global_access **out,
                                mc_client_render_global_error *error) {
@@ -925,7 +978,8 @@ mc_render_global_access_create(mc_client_render_global *owner, mc_render_global_
                                                         .entity_added = entity_added,
                                                         .tile_entity_dirty = tile_entity_dirty,
                                                         .entity_removed = entity_removed,
-                                                        .sky_changed = sky_changed};
+                                                        .sky_changed = sky_changed,
+                                                        .auxiliary = auxiliary};
     mc_world_storage_status status =
         mc_world_access_source_create(&callbacks, access, &access->identity, &error->world);
     if (status != MC_WORLD_STORAGE_OK) {
@@ -1027,7 +1081,7 @@ mc_render_global_access_detach_all(mc_render_global_access *access,
                         "RenderGlobal captured callback failure", NULL, NULL, 0, true);
     access->retiring = true;
     for (access_call *call = access->failures; call != NULL; call = call->next)
-        if (!retire_children(call, error))
+        if (!retire_children(access, call, error))
             return error->status;
     while (access->registrations != NULL) {
         access_registration *registration = access->registrations;
@@ -1090,6 +1144,14 @@ bool mc_render_global_access_inspect(const mc_render_global_access *access,
     *out = (mc_render_global_access_state){
         access->registration_count, access->active_callbacks, access->failure_count,
         access->failures == NULL ? NULL : &access->failures->error};
+    return true;
+}
+
+bool mc_render_global_access_auxiliary_observe(const mc_client_render_global *owner,
+                                               mc_render_global_auxiliary_observation *out) {
+    if (owner == NULL || owner->access == NULL || out == NULL)
+        return false;
+    *out = owner->access->auxiliary;
     return true;
 }
 

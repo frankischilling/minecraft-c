@@ -552,6 +552,25 @@ mc_world_storage_status mc_world_access_call_tile_entity_dirty(
                   "TileEntity dirty WorldAccess invocation");
 }
 
+mc_world_storage_status
+mc_world_access_call_auxiliary(mc_world_access *access, mc_world_runtime *world, mc_entity *player,
+                               int32_t effect, int32_t x, int32_t y, int32_t z, int32_t data,
+                               mc_world_storage_error *error, mc_world_access_failure *failure) {
+    *failure = (mc_world_access_failure){0};
+    if (access != NULL && access->source_callbacks.auxiliary != NULL) {
+        const mc_world_storage_status status = access->source_callbacks.auxiliary(
+            access->context, world, player, effect, x, y, z, data, error, failure);
+        if (failure->render_global != NULL)
+            failure->receiver = access;
+        return status;
+    }
+    if (access != NULL && access->callbacks.auxiliary != NULL)
+        return access->callbacks.auxiliary(access->context, world, player, effect, x, y, z, data,
+                                           error);
+    return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                  "World auxiliary WorldAccess invocation");
+}
+
 mc_world_storage_status mc_world_access_receipt_create(mc_world_access *receiver,
                                                        const mc_client_render_global_error *cause,
                                                        mc_world_access_receipt **out,

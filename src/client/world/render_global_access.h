@@ -4,12 +4,44 @@
 #include "mc/client/world/render_global.h"
 #include "mc/world/runtime/world_access_error.h"
 
+#include <stdint.h>
+
 typedef struct mc_render_global_access mc_render_global_access;
 typedef struct mc_client_image_buffer mc_client_image_buffer;
 typedef struct mc_client_image_download_call mc_client_image_download_call;
 typedef struct mc_entity mc_entity;
 typedef struct mc_client_effect_renderer mc_client_effect_renderer;
 typedef struct mc_math_classes mc_math_classes;
+
+/* Passive values copied from this SAME N auxiliary invocation before its
+ * temporary DN/StepSound records retire. No pointer into a retired child is
+ * retained. Prefix fields remain meaningful on a failed invocation. */
+typedef struct mc_render_global_auxiliary_event {
+    uint64_t sequence;
+    int32_t x, y, z, data, block_id, metadata;
+    unsigned int source_pc, destruction_pc;
+    size_t constructed, appended;
+    mc_client_render_global_status native_status;
+    int destruction_status; /* Actual mc_effect_renderer_status value. */
+    bool sound_returned, destruction_called, destruction_returned;
+    bool sound_before_destruction, source_returned, native_cleanup_returned;
+} mc_render_global_auxiliary_event;
+
+typedef struct mc_render_global_auxiliary_observation {
+    uint64_t event2001_entered, event2001_returned, break_sound_returns;
+    uint64_t destruction_calls, destruction_returns;
+    uint64_t destruction_constructed, destruction_appended;
+    bool overflowed; /* Saturated observations never change source execution. */
+    mc_render_global_auxiliary_event last;
+} mc_render_global_auxiliary_observation;
+
+/* Exclusive passive inspection through the actual N owner. No World, source,
+ * clock, Registry, GL, retain/release or cleanup work occurs. False preserves
+ * out. Counters accumulate for this N access owner's lifetime across frames
+ * and World replacements; a fresh owner begins at zero. Outputs are disjoint
+ * from the owner/graph. Success does not certify gameplay completion. */
+bool mc_render_global_access_auxiliary_observe(const mc_client_render_global *,
+                                               mc_render_global_auxiliary_observation *out);
 
 typedef struct mc_render_global_access_state {
     size_t registrations, active_callbacks, retained_failures;
@@ -35,9 +67,9 @@ typedef struct mc_render_global_callback_state {
 /* One native interface identity belongs to the actual n receiver. This owns no
  * counted self occurrence. The caller keeps n and all its actual dependencies
  * alive until checked retirement succeeds. Creation runs no source callback. */
-/* The eight presently implemented World caller slots enter their actual n
+/* The nine presently implemented World caller slots enter their actual n
  * methods. Reached particle/appearance descendants retain explicit missing
- * bodies. The other two pm slots remain separate World caller work. */
+ * bodies. The remaining pm slot stays separate World caller work. */
 mc_client_render_global_status mc_render_global_access_create(mc_client_render_global *,
                                                               mc_render_global_access **,
                                                               mc_client_render_global_error *);

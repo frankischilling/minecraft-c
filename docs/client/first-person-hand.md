@@ -4,8 +4,10 @@ The normal empty hand now draws through the actual Player renderer, Biped model,
 ModelRenderer, NW and Display. A loaded dry World frame can return from
 `px.a(FJ)V` at 1013. Its parent now executes timing and
 [GuiIngame](gui-ingame.md), returning the focused loaded frame. The next unpaused
-tick enters the [Mob spawn prefix](../entity/mob-construction.md). Complete Entity rendering, held items, wet/fire
-overlays and interactive gameplay remain unfinished.
+tick enters the [Mob spawn prefix](../entity/mob-construction.md). The reached
+[Dirt held-block path](mining.md) now uses the real inventory-Block geometry.
+Remaining Item overrides, wet/fire overlays and interactive gameplay retain
+their separate requirements.
 
 ## Source order
 
@@ -22,7 +24,8 @@ Source exceptions retain the reached stack and matrix; native retirement
 releases occurrences without inventing a pop or undoing GL effects.
 
 The [held body](../../src/client/world/entity_renderer/held_item_draw.c)
-implements the empty-slot route of `ra.a(F)V`. It interpolates equipped height
+implements the empty-slot and ordinary held-block routes of `ra.a(F)V`.
+It interpolates equipped height
 and Player pitch, enables standard lighting under the actual rotation, queries
 World brightness and performs the swing transforms. The actual Engine chooses
 the downloaded skin or its fallback texture. RenderManager resolves the real
@@ -32,7 +35,8 @@ the source pose stores before its right arm draws.
 The ordinary dry `ra.b(F)V` body disables alpha testing, evaluates actual
 burning, suffocation and water predicates, then restores alpha testing. Reached
 fire, inside-block and water drawing remain explicit dependencies. A nonempty
-held slot also retains its missing draw child; it never becomes an empty arm.
+ordinary Block uses the genuine Stack, source transforms, atlas and six-face CV
+inventory body. Unsupported Item/render families keep their reached draw child.
 
 ## Arm geometry and reuse
 

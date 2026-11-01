@@ -1,0 +1,582 @@
+{
+  "schema": 1,
+  "scope": "Finite original NW direct normal-array to no-normal transition observations on two exact driver profiles. Original NW and GE classes and selected Code hashes match nw_normals/source-pins.json. No game classes replaced or source fields assigned. This is neither a complete BB draw nor a universal OpenGL guarantee.",
+  "observer": "Wholly authored NormalTransition.java and capture.py; input, helper and tool hashes below. Original artifacts, raw process outputs, local paths and private helper products remain excluded.",
+  "sequence": "Explicit initial current normal (.25,.5,.75), RESCALE_NORMAL enabled, PushMatrix/Scale(.25), six unchanged NW begin/normal/vertex/draw face batches, RESCALE_NORMAL disabled/PopMatrix, then unchanged NW color/vertex/draw quad without normals. Queried and no-intermediate-getter controls are separate. Each is run with lighting disabled and enabled.",
+  "consumption": "Four fixed-pipeline controls observe the following quad center pixel. Four separate compatibility-GLSL transform-feedback controls keep their observer program active before every prefix batch and capture gl_Normal for all six following converted vertices; no program change occurs between batches. Every captured normal is the prior (.25,.5,.75), including no-query controls.",
+  "normal_bits": [
+    "3e800000",
+    "3f000000",
+    "3f400000"
+  ],
+  "fixed_pixels": {
+    "lighting_disabled": "ffffffff",
+    "lighting_enabled": "bfbfbfff"
+  },
+  "limits": "Existing compiled NVIDIA last-array adoption, compiled Mesa staging, direct color knowledge and normal decoding observations are unchanged. Other driver identities retain the explicit unqualified boundary. Native products must be rebuilt and compared separately.",
+  "profiles": [
+    {
+      "id": "nvidia-581.42-rtx3060",
+      "status": "PASS",
+      "original_driver": {
+        "vendor": "NVIDIA Corporation",
+        "renderer": "NVIDIA GeForce RTX 3060/PCIe/SSE2",
+        "version": "4.6.0 NVIDIA 581.42"
+      },
+      "native_driver": {
+        "vendor": "NVIDIA Corporation",
+        "renderer": "NVIDIA GeForce RTX 3060/PCIe/SSE2",
+        "version": "3.3.0 NVIDIA 581.42"
+      },
+      "original_report_sha256": "56b3020714394e877108405c5399f391b2b390caf92324c3aee023044340709d",
+      "original_stdout_sha256": "0d23dec4106c7e93050192c7306ff658ff9fab5d43b53843e24cea2b9c15e114",
+      "original_stderr_sha256": "d33ed97077f81415dfd5a914f06753231a673f729fa49493b320dd0d73d7f5e0",
+      "input_hashes": {
+        "capture.py": {
+          "bytes": 5840,
+          "sha256": "002233a6625f7a5ef946954c0f1f0c1defd13d6e7c6376afb1f17dd013962cbc"
+        },
+        "NormalTransition.java": {
+          "bytes": 7939,
+          "sha256": "a6622f734a3d1a2d8ebcd16057589bce327081e9e807503beb6dea223b9a0049"
+        },
+        "java.exe": {
+          "bytes": 50344,
+          "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+        },
+        "javac.exe": {
+          "bytes": 24232,
+          "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+        },
+        "b1.7.3.jar": {
+          "bytes": 1465375,
+          "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+        },
+        "lwjgl-2.9.0.jar": {
+          "bytes": 994633,
+          "sha256": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a"
+        },
+        "lwjgl_util-2.9.0.jar": {
+          "bytes": 173360,
+          "sha256": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad"
+        },
+        "jinput-2.0.5.jar": {
+          "bytes": 208338,
+          "sha256": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018"
+        },
+        "jutils-1.0.0.jar": {
+          "bytes": 7508,
+          "sha256": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5"
+        },
+        "lwjgl64.dll": {
+          "bytes": 306176,
+          "sha256": "86a8e4555d3614e7ed5a24beda921396ceb9e41dbf2508d713a3d26b928862b7"
+        },
+        "source-pins.json": {
+          "bytes": 2742,
+          "sha256": "c9d337cb36d581890da18be2e185815fd4d50c799a00468c678531495d6386d4"
+        },
+        "classfile.py": {
+          "bytes": 2578,
+          "sha256": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+        },
+        "capture_prefix.py": {
+          "bytes": 6783,
+          "sha256": "2cff97f757d110b3fe1b2ba13209a741e3d080e00e9b4e18615ca38c0bb04249"
+        },
+        "awt.dll": {
+          "bytes": 1492136,
+          "sha256": "3a08da4cf9614add3adcc2414a15400464372238101899db914e3c73a8e5d8b2"
+        },
+        "jawt.dll": {
+          "bytes": 21672,
+          "sha256": "30475691705580b4a0073f54b26fd7c7e20bb2b7694d2554cb0d40b3fde8a17a"
+        },
+        "fontmanager.dll": {
+          "bytes": 973992,
+          "sha256": "21951c96e6f44c37a413e9fafd6a57aa49674aba6193242f8bd681f0d1d89a40"
+        }
+      },
+      "helper_class_hashes": {
+        "NormalTransition$1.class": {
+          "bytes": 2353,
+          "sha256": "2f91efb206f9ca5ae4d54b46965ff80b5de4ef6bb9f5c9dfc39e5b3167d62985"
+        },
+        "NormalTransition.class": {
+          "bytes": 10245,
+          "sha256": "8151dedff6b5add82c85090f2063e3356751811aa48fe7b92edb54c3f18bb7c8"
+        }
+      },
+      "input_hashes_unchanged": true,
+      "helper_class_hashes_unchanged": true,
+      "verified_original_classes": [
+        "nw",
+        "ge"
+      ],
+      "network_attempts": 0,
+      "direct_normal_retained": true,
+      "rows": [
+        "NORMAL_DRIVER NVIDIA Corporation | NVIDIA GeForce RTX 3060/PCIe/SSE2 | 4.6.0 NVIDIA 581.42",
+        "NORMAL_PIXEL fixed-lighting0-queries0 ffffffff",
+        "NORMAL_AFTER fixed-lighting0-queries0 3e800000,3f000000,3f400000 normal-array=0 error=0",
+        "NORMAL_CURRENT fixed-lighting0-queries1 initial 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting0-queries1 face0 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting0-queries1 face1 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting0-queries1 face2 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting0-queries1 face3 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting0-queries1 face4 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting0-queries1 face5 3e800000,3f000000,3f400000",
+        "NORMAL_PIXEL fixed-lighting0-queries1 ffffffff",
+        "NORMAL_AFTER fixed-lighting0-queries1 3e800000,3f000000,3f400000 normal-array=0 error=0",
+        "NORMAL_PIXEL fixed-lighting1-queries0 bfbfbfff",
+        "NORMAL_AFTER fixed-lighting1-queries0 3e800000,3f000000,3f400000 normal-array=0 error=0",
+        "NORMAL_CURRENT fixed-lighting1-queries1 initial 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting1-queries1 face0 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting1-queries1 face1 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting1-queries1 face2 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting1-queries1 face3 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting1-queries1 face4 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting1-queries1 face5 3e800000,3f000000,3f400000",
+        "NORMAL_PIXEL fixed-lighting1-queries1 bfbfbfff",
+        "NORMAL_AFTER fixed-lighting1-queries1 3e800000,3f000000,3f400000 normal-array=0 error=0",
+        "NORMAL_CONSUMED feedback-lighting0-queries0 3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000",
+        "NORMAL_AFTER feedback-lighting0-queries0 3e800000,3f000000,3f400000 normal-array=0 error=0",
+        "NORMAL_CURRENT feedback-lighting0-queries1 initial 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting0-queries1 face0 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting0-queries1 face1 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting0-queries1 face2 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting0-queries1 face3 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting0-queries1 face4 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting0-queries1 face5 3e800000,3f000000,3f400000",
+        "NORMAL_CONSUMED feedback-lighting0-queries1 3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000",
+        "NORMAL_AFTER feedback-lighting0-queries1 3e800000,3f000000,3f400000 normal-array=0 error=0",
+        "NORMAL_CONSUMED feedback-lighting1-queries0 3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000",
+        "NORMAL_AFTER feedback-lighting1-queries0 3e800000,3f000000,3f400000 normal-array=0 error=0",
+        "NORMAL_CURRENT feedback-lighting1-queries1 initial 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting1-queries1 face0 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting1-queries1 face1 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting1-queries1 face2 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting1-queries1 face3 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting1-queries1 face4 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting1-queries1 face5 3e800000,3f000000,3f400000",
+        "NORMAL_CONSUMED feedback-lighting1-queries1 3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000",
+        "NORMAL_AFTER feedback-lighting1-queries1 3e800000,3f000000,3f400000 normal-array=0 error=0"
+      ]
+    },
+    {
+      "id": "mesa-25.2.8-llvmpipe-llvm20.1.2",
+      "status": "PASS",
+      "original_driver": {
+        "vendor": "Mesa",
+        "renderer": "llvmpipe (LLVM 20.1.2, 256 bits)",
+        "version": "4.5 (Compatibility Profile) Mesa 25.2.8-0ubuntu0.24.04.4"
+      },
+      "native_driver": {
+        "vendor": "Mesa",
+        "renderer": "llvmpipe (LLVM 20.1.2, 256 bits)",
+        "version": "4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4"
+      },
+      "original_report_sha256": "bb3dec55b9eb4b6af4877df8d275becc4bbf5f42d0a4350b61570dd2a561dfd2",
+      "original_stdout_sha256": "565f85c07ffc9344f32239d84fe8383167830d583f8d24038f427594ec5f9122",
+      "original_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "input_hashes": {
+        "capture.py": {
+          "bytes": 5840,
+          "sha256": "002233a6625f7a5ef946954c0f1f0c1defd13d6e7c6376afb1f17dd013962cbc"
+        },
+        "NormalTransition.java": {
+          "bytes": 7939,
+          "sha256": "a6622f734a3d1a2d8ebcd16057589bce327081e9e807503beb6dea223b9a0049"
+        },
+        "java": {
+          "bytes": 14464,
+          "sha256": "e363cce82477c5f19cab72d432defe96fa1c69503353c3e5e9660243e2030883"
+        },
+        "javac": {
+          "bytes": 14512,
+          "sha256": "f2e122ed86c4de8eb368d054de2a15fccf9bba52297cbd5cf7ae6d70eb45e2f3"
+        },
+        "b1.7.3.jar": {
+          "bytes": 1465375,
+          "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+        },
+        "lwjgl-2.9.0.jar": {
+          "bytes": 994633,
+          "sha256": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a"
+        },
+        "lwjgl_util-2.9.0.jar": {
+          "bytes": 173360,
+          "sha256": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad"
+        },
+        "jinput-2.0.5.jar": {
+          "bytes": 208338,
+          "sha256": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018"
+        },
+        "jutils-1.0.0.jar": {
+          "bytes": 7508,
+          "sha256": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5"
+        },
+        "liblwjgl64.so": {
+          "bytes": 445368,
+          "sha256": "60a9a67061a3dc6b9d055946c58f1f64792abb2127ba0156eaf735dbee5bc729"
+        },
+        "source-pins.json": {
+          "bytes": 2742,
+          "sha256": "c9d337cb36d581890da18be2e185815fd4d50c799a00468c678531495d6386d4"
+        },
+        "classfile.py": {
+          "bytes": 2578,
+          "sha256": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+        },
+        "capture_prefix.py": {
+          "bytes": 6783,
+          "sha256": "2cff97f757d110b3fe1b2ba13209a741e3d080e00e9b4e18615ca38c0bb04249"
+        },
+        "libawt.so": {
+          "bytes": 944840,
+          "sha256": "f121bd4b025acd2de6dacd7dfba6dfbf7d451fb2e845703e684405acdbe9321d"
+        },
+        "libawt_xawt.so": {
+          "bytes": 603760,
+          "sha256": "e721367fa8844499ea3e7020de0c1b292b03d2e5f221be74e5bc52cc830d9da6"
+        },
+        "libawt_headless.so": {
+          "bytes": 46512,
+          "sha256": "a7dfab0d6506599c324e66986a295cd64176089e85e2b6e3c02993eac1880543"
+        },
+        "libjawt.so": {
+          "bytes": 15424,
+          "sha256": "b08c33ab5185af8671dad805caa93478e5e35db82ccad6270eb7951aa572bb43"
+        },
+        "libfontmanager.so": {
+          "bytes": 71672,
+          "sha256": "13aed75741438496de5d2218e0d2b617d3721e94a060900cfada21f2860336bb"
+        }
+      },
+      "helper_class_hashes": {
+        "NormalTransition$1.class": {
+          "bytes": 2353,
+          "sha256": "2f91efb206f9ca5ae4d54b46965ff80b5de4ef6bb9f5c9dfc39e5b3167d62985"
+        },
+        "NormalTransition.class": {
+          "bytes": 10245,
+          "sha256": "8151dedff6b5add82c85090f2063e3356751811aa48fe7b92edb54c3f18bb7c8"
+        }
+      },
+      "input_hashes_unchanged": true,
+      "helper_class_hashes_unchanged": true,
+      "verified_original_classes": [
+        "nw",
+        "ge"
+      ],
+      "network_attempts": 0,
+      "direct_normal_retained": true,
+      "rows": [
+        "NORMAL_DRIVER Mesa | llvmpipe (LLVM 20.1.2, 256 bits) | 4.5 (Compatibility Profile) Mesa 25.2.8-0ubuntu0.24.04.4",
+        "NORMAL_PIXEL fixed-lighting0-queries0 ffffffff",
+        "NORMAL_AFTER fixed-lighting0-queries0 3e800000,3f000000,3f400000 normal-array=0 error=0",
+        "NORMAL_CURRENT fixed-lighting0-queries1 initial 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting0-queries1 face0 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting0-queries1 face1 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting0-queries1 face2 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting0-queries1 face3 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting0-queries1 face4 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting0-queries1 face5 3e800000,3f000000,3f400000",
+        "NORMAL_PIXEL fixed-lighting0-queries1 ffffffff",
+        "NORMAL_AFTER fixed-lighting0-queries1 3e800000,3f000000,3f400000 normal-array=0 error=0",
+        "NORMAL_PIXEL fixed-lighting1-queries0 bfbfbfff",
+        "NORMAL_AFTER fixed-lighting1-queries0 3e800000,3f000000,3f400000 normal-array=0 error=0",
+        "NORMAL_CURRENT fixed-lighting1-queries1 initial 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting1-queries1 face0 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting1-queries1 face1 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting1-queries1 face2 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting1-queries1 face3 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting1-queries1 face4 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT fixed-lighting1-queries1 face5 3e800000,3f000000,3f400000",
+        "NORMAL_PIXEL fixed-lighting1-queries1 bfbfbfff",
+        "NORMAL_AFTER fixed-lighting1-queries1 3e800000,3f000000,3f400000 normal-array=0 error=0",
+        "NORMAL_CONSUMED feedback-lighting0-queries0 3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000",
+        "NORMAL_AFTER feedback-lighting0-queries0 3e800000,3f000000,3f400000 normal-array=0 error=0",
+        "NORMAL_CURRENT feedback-lighting0-queries1 initial 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting0-queries1 face0 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting0-queries1 face1 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting0-queries1 face2 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting0-queries1 face3 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting0-queries1 face4 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting0-queries1 face5 3e800000,3f000000,3f400000",
+        "NORMAL_CONSUMED feedback-lighting0-queries1 3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000",
+        "NORMAL_AFTER feedback-lighting0-queries1 3e800000,3f000000,3f400000 normal-array=0 error=0",
+        "NORMAL_CONSUMED feedback-lighting1-queries0 3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000",
+        "NORMAL_AFTER feedback-lighting1-queries0 3e800000,3f000000,3f400000 normal-array=0 error=0",
+        "NORMAL_CURRENT feedback-lighting1-queries1 initial 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting1-queries1 face0 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting1-queries1 face1 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting1-queries1 face2 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting1-queries1 face3 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting1-queries1 face4 3e800000,3f000000,3f400000",
+        "NORMAL_CURRENT feedback-lighting1-queries1 face5 3e800000,3f000000,3f400000",
+        "NORMAL_CONSUMED feedback-lighting1-queries1 3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000,3e800000,3f000000,3f400000,00000000",
+        "NORMAL_AFTER feedback-lighting1-queries1 3e800000,3f000000,3f400000 normal-array=0 error=0"
+      ]
+    }
+  ],
+  "portable_producer": {
+    "wrapper": "scripts/reference/client/normal_transition.py",
+    "wrapper_pin": {
+      "bytes": 16724,
+      "sha256": "fa34857445a8c880986882e389a134e0d93b605cb0e76237150637dd7a1f9358"
+    },
+    "java": "tests/reference/client/lighting_raster/NormalTransition.java",
+    "java_pin": {
+      "bytes": 7939,
+      "sha256": "a6622f734a3d1a2d8ebcd16057589bce327081e9e807503beb6dea223b9a0049"
+    },
+    "scope": "Fresh reruns through the portable wrapper. Historical V3 producer/report hashes above are unchanged. Raw products remain local. These reruns establish the same finite original observation rows, not native whole-frame parity.",
+    "reruns": [
+      {
+        "profile_id": "nvidia-581.42-rtx3060",
+        "status": "PASS",
+        "report": {
+          "bytes": 26644,
+          "sha256": "52911984be3873bc634f9ed163663578c39876124089bbb8b6c3c48af6801592"
+        },
+        "stdout": {
+          "bytes": 4458,
+          "sha256": "0d23dec4106c7e93050192c7306ff658ff9fab5d43b53843e24cea2b9c15e114"
+        },
+        "stderr": {
+          "bytes": 398,
+          "sha256": "93e9476c0ef0db51b1acb19d4839385044d8b7d2f4c528998ad8a79e7b12dbdb"
+        },
+        "same_historical_observation_rows": true,
+        "observation_rows": 44,
+        "inputs": {
+          "wrapper": {
+            "bytes": 16724,
+            "sha256": "fa34857445a8c880986882e389a134e0d93b605cb0e76237150637dd7a1f9358"
+          },
+          "observer_source": {
+            "bytes": 7939,
+            "sha256": "a6622f734a3d1a2d8ebcd16057589bce327081e9e807503beb6dea223b9a0049"
+          },
+          "classfile_validator": {
+            "bytes": 2578,
+            "sha256": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+          },
+          "process_capture": {
+            "bytes": 8065,
+            "sha256": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e"
+          },
+          "archive_pins": {
+            "bytes": 6783,
+            "sha256": "2cff97f757d110b3fe1b2ba13209a741e3d080e00e9b4e18615ca38c0bb04249"
+          },
+          "source_pins": {
+            "bytes": 2742,
+            "sha256": "c9d337cb36d581890da18be2e185815fd4d50c799a00468c678531495d6386d4"
+          },
+          "python": {
+            "bytes": 106328,
+            "sha256": "cce21c0e8710e304273e98ac4b2b0f5aceb639acbcd2343cbaa5c4e81619c45b"
+          },
+          "java": {
+            "bytes": 50344,
+            "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+          },
+          "javac": {
+            "bytes": 24232,
+            "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+          },
+          "client": {
+            "bytes": 1465375,
+            "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+          },
+          "native": {
+            "bytes": 306176,
+            "sha256": "86a8e4555d3614e7ed5a24beda921396ceb9e41dbf2508d713a3d26b928862b7"
+          },
+          "lwjgl": {
+            "bytes": 994633,
+            "sha256": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a"
+          },
+          "lwjgl_util": {
+            "bytes": 173360,
+            "sha256": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad"
+          },
+          "jinput": {
+            "bytes": 208338,
+            "sha256": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018"
+          },
+          "jutils": {
+            "bytes": 7508,
+            "sha256": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5"
+          },
+          "jdk_bin_awt": {
+            "bytes": 1492136,
+            "sha256": "3a08da4cf9614add3adcc2414a15400464372238101899db914e3c73a8e5d8b2"
+          },
+          "jdk_bin_jawt": {
+            "bytes": 21672,
+            "sha256": "30475691705580b4a0073f54b26fd7c7e20bb2b7694d2554cb0d40b3fde8a17a"
+          },
+          "jdk_bin_fontmanager": {
+            "bytes": 973992,
+            "sha256": "21951c96e6f44c37a413e9fafd6a57aa49674aba6193242f8bd681f0d1d89a40"
+          },
+          "jdk_release": {
+            "bytes": 1667,
+            "sha256": "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+          },
+          "jdk_lib_modules": {
+            "bytes": 128648619,
+            "sha256": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+          },
+          "jdk_bin_java.dll": {
+            "bytes": 148136,
+            "sha256": "18b105254c16e1d83614ff4e32cd62ce402fbe6339bdd1b24ccc7d999fed7f5f"
+          },
+          "jdk_bin_server_jvm.dll": {
+            "bytes": 12681896,
+            "sha256": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+          }
+        },
+        "helper_classes": {
+          "NormalTransition$1.class": {
+            "bytes": 2353,
+            "sha256": "2f91efb206f9ca5ae4d54b46965ff80b5de4ef6bb9f5c9dfc39e5b3167d62985"
+          },
+          "NormalTransition.class": {
+            "bytes": 10245,
+            "sha256": "8151dedff6b5add82c85090f2063e3356751811aa48fe7b92edb54c3f18bb7c8"
+          }
+        }
+      },
+      {
+        "profile_id": "mesa-25.2.8-llvmpipe-llvm20.1.2",
+        "status": "PASS",
+        "report": {
+          "bytes": 27003,
+          "sha256": "24697cc50e2eff5cd37800cbc5226cee149a1f4e3e2315d458805cb8e385da42"
+        },
+        "stdout": {
+          "bytes": 4540,
+          "sha256": "cd5010b47c7d9281f9ac49e7641689da514e588fa7416d38f77cd5c410cbf2fc"
+        },
+        "stderr": {
+          "bytes": 399,
+          "sha256": "c5f2ad1e35f07e776e828f4809838fb4b141a1de0c80d9e54b18e7dd97c107b4"
+        },
+        "same_historical_observation_rows": true,
+        "observation_rows": 44,
+        "inputs": {
+          "wrapper": {
+            "bytes": 16724,
+            "sha256": "fa34857445a8c880986882e389a134e0d93b605cb0e76237150637dd7a1f9358"
+          },
+          "observer_source": {
+            "bytes": 7939,
+            "sha256": "a6622f734a3d1a2d8ebcd16057589bce327081e9e807503beb6dea223b9a0049"
+          },
+          "classfile_validator": {
+            "bytes": 2578,
+            "sha256": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+          },
+          "process_capture": {
+            "bytes": 8065,
+            "sha256": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e"
+          },
+          "archive_pins": {
+            "bytes": 6783,
+            "sha256": "2cff97f757d110b3fe1b2ba13209a741e3d080e00e9b4e18615ca38c0bb04249"
+          },
+          "source_pins": {
+            "bytes": 2742,
+            "sha256": "c9d337cb36d581890da18be2e185815fd4d50c799a00468c678531495d6386d4"
+          },
+          "python": {
+            "bytes": 8020928,
+            "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+          },
+          "java": {
+            "bytes": 14464,
+            "sha256": "e363cce82477c5f19cab72d432defe96fa1c69503353c3e5e9660243e2030883"
+          },
+          "javac": {
+            "bytes": 14512,
+            "sha256": "f2e122ed86c4de8eb368d054de2a15fccf9bba52297cbd5cf7ae6d70eb45e2f3"
+          },
+          "client": {
+            "bytes": 1465375,
+            "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+          },
+          "native": {
+            "bytes": 445368,
+            "sha256": "60a9a67061a3dc6b9d055946c58f1f64792abb2127ba0156eaf735dbee5bc729"
+          },
+          "lwjgl": {
+            "bytes": 994633,
+            "sha256": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a"
+          },
+          "lwjgl_util": {
+            "bytes": 173360,
+            "sha256": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad"
+          },
+          "jinput": {
+            "bytes": 208338,
+            "sha256": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018"
+          },
+          "jutils": {
+            "bytes": 7508,
+            "sha256": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5"
+          },
+          "jdk_lib_awt": {
+            "bytes": 944840,
+            "sha256": "f121bd4b025acd2de6dacd7dfba6dfbf7d451fb2e845703e684405acdbe9321d"
+          },
+          "jdk_lib_awt_xawt": {
+            "bytes": 603760,
+            "sha256": "e721367fa8844499ea3e7020de0c1b292b03d2e5f221be74e5bc52cc830d9da6"
+          },
+          "jdk_lib_awt_headless": {
+            "bytes": 46512,
+            "sha256": "a7dfab0d6506599c324e66986a295cd64176089e85e2b6e3c02993eac1880543"
+          },
+          "jdk_lib_jawt": {
+            "bytes": 15424,
+            "sha256": "b08c33ab5185af8671dad805caa93478e5e35db82ccad6270eb7951aa572bb43"
+          },
+          "jdk_lib_fontmanager": {
+            "bytes": 71672,
+            "sha256": "13aed75741438496de5d2218e0d2b617d3721e94a060900cfada21f2860336bb"
+          },
+          "jdk_release": {
+            "bytes": 1232,
+            "sha256": "077ffccfca180fa0a83f1e831d72d4077d6818bb458723b8064f819a40c7b215"
+          },
+          "jdk_lib_modules": {
+            "bytes": 128902398,
+            "sha256": "17d8d9fcb235eb1fa855606a83c8adbcf1607fc7ea79c7bf6172a7a2af783695"
+          },
+          "jdk_lib_libjava.so": {
+            "bytes": 189488,
+            "sha256": "d0adf895035d0a7923e19883a743e6682f9bb81735b640d07b04469cab29ef92"
+          },
+          "jdk_lib_server_libjvm.so": {
+            "bytes": 24245448,
+            "sha256": "d1df07399cb00fd030a1c036ef8795edbdc9b9bc66a7295bc2e4c74800ac0c7a"
+          }
+        },
+        "helper_classes": {
+          "NormalTransition$1.class": {
+            "bytes": 2353,
+            "sha256": "2f91efb206f9ca5ae4d54b46965ff80b5de4ef6bb9f5c9dfc39e5b3167d62985"
+          },
+          "NormalTransition.class": {
+            "bytes": 10245,
+            "sha256": "8151dedff6b5add82c85090f2063e3356751811aa48fe7b92edb54c3f18bb7c8"
+          }
+        }
+      }
+    ]
+  }
+}

@@ -121,9 +121,10 @@ text uses its separate unshadowed yellow and white Font calls.
 
 The Item call uses the real Stack overload, its ID/metadata/icon getters and
 the reached flat atlas path. Book340 uses icon59, the real Item color and four
-local-z-zero vertices. No overlay call is added. Three-dimensional Block icons
-and other unsupported Item overrides retain their reached dependencies; there
-is no placeholder icon.
+local-z-zero vertices. No overlay call is added. The shared Item renderer now
+also supplies ordinary six-face Block icons for the [Dirt pickup path](mining.md).
+That continuation has separate qualification from these Book notice profiles.
+Other unsupported Item/render overrides retain their reached dependencies.
 
 Each draw has a retained operation owner with typed clock, Font, texture, Item
 and graphics causes. It holds the actual App and each reached service until

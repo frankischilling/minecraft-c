@@ -5,12 +5,16 @@
 #include "../application_state.h"
 #include "../display/camera_surface.h"
 #include "../display/fog_surface.h"
+#include "../render/blocks/internal.h"
+#include "../render/item_gui.h"
+#include "../render/item_overlay.h"
 #include "../render/model_graph_internal.h"
 #include "../render_engine/lighting.h"
 #include "../render_engine/nw.h"
 #include "../render_engine/texture_lookup.h"
 #include "bitmap_font.h"
 #include "gui_ingame_internal.h"
+#include "item/stack/source_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/client/controller/singleplayer.h"
 #include "mc/client/world/overlay_setup.h"
@@ -42,6 +46,13 @@ struct mc_client_gui_ingame_draw_call {
     mc_client_singleplayer_controller *controller;
     size_t player_count, world_count, settings_count, engine_count;
     bool lookup_owned[3], owner_held, graphics_held, math_held, flag;
+    mc_item_stack *slot_stacks[9];
+    mc_registry_classes *slot_registries[9];
+    mc_client_bitmap_font *slot_fonts[18];
+    size_t slot_stack_count, slot_registry_count, slot_font_count, overlay_count;
+    mc_client_item_gui_call *item_call;
+    mc_client_item_gui_error item_error, item_cleanup, item_retirement;
+    mc_client_item_overlay_context *item_overlays[9];
 };
 
 static mc_client_gui_ingame_draw_status admission(mc_client_gui_ingame_draw_error *out,
@@ -549,6 +560,8 @@ static bool stats(mc_client_gui_ingame_draw_call *c) {
     return true;
 }
 
+#include "gui_ingame_slots.inc"
+
 static bool body(mc_client_gui_ingame_draw_call *c) {
     client_application *a = app(c, 8);
     if (a == NULL)
@@ -725,19 +738,11 @@ static bool body(mc_client_gui_ingame_draw_call *c) {
     if (!gl(c, mc_client_display_source_pop(c->display, &c->failure.display), 968))
         return false;
     for (int32_t i = 0; i < 9; ++i) {
-        inv = inventory(c, 1015, 1015);
-        if (c->failure.status != MC_CLIENT_GUI_INGAME_DRAW_OK ||
-            !inventory_state(c, inv, &inventory_fields, 1015))
+        const int32_t slot_x = mc_java_i32_add(
+            mc_java_i32_add(mc_java_i32_sub(center, 90), mc_java_i32_mul(i, 20)), 2);
+        const int32_t slot_y = mc_java_i32_sub(mc_java_i32_sub(c->state.resolution.height, 16), 3);
+        if (!item_slot(c, i, slot_x, slot_y))
             return false;
-        if (inventory_fields.main_slots == NULL)
-            return child_fail(c, MC_CLIENT_GUI_INGAME_DRAW_SOURCE_NULL,
-                              "actual UQ slot null main array", 1015, "uq", "a", "(IIIF)V", 14,
-                              false);
-        if (inventory_fields.main_slots[i] != NULL)
-            return child_fail(c, MC_CLIENT_GUI_INGAME_DRAW_DEPENDENCY,
-                              "actual nonempty HUD item rendering", 1015, "uq", "a", "(IIIF)V", 23,
-                              true);
-        ++c->state.empty_slots;
     }
     c->state.slots_returned = true;
     if (!mc_client_lighting_disable(c->graphics, c->display, site(1024), &c->failure.graphics))
@@ -875,6 +880,29 @@ mc_client_gui_ingame_draw_retire(mc_client_gui_ingame_draw_call **slot,
         return admission(error, MC_CLIENT_GUI_INGAME_DRAW_OK, NULL);
     if (c->state.active)
         return admission(error, MC_CLIENT_GUI_INGAME_DRAW_BUSY, "HUD active cleanup");
+    if (c->item_call != NULL) {
+        item_inventory_snapshot(c);
+        if (mc_client_item_gui_retire(&c->item_call, &c->item_retirement) !=
+            MC_CLIENT_ITEM_GUI_OK) {
+            c->cleanup.item = &c->item_retirement;
+            return cleanup_failed(c, error, "HUD owned Item draw cleanup");
+        }
+        item_inventory_detach(c);
+    }
+    while (c->slot_font_count != 0) {
+        if (mc_client_bitmap_font_release(&c->slot_fonts[c->slot_font_count - 1], &c->font_error) !=
+            MC_CLIENT_BITMAP_FONT_OK)
+            return cleanup_failed(c, error, "HUD slot Font occurrence cleanup");
+        --c->slot_font_count;
+    }
+    while (c->slot_registry_count != 0) {
+        if (mc_registry_classes_release(c->slot_registries[c->slot_registry_count - 1],
+                                        &c->cleanup.registry) != MC_REGISTRY_OK)
+            return cleanup_failed(c, error, "HUD slot Registry occurrence cleanup");
+        --c->slot_registry_count;
+    }
+    while (c->slot_stack_count != 0)
+        mc_item_stack_release(c->slot_stacks[--c->slot_stack_count]);
     for (size_t i = c->engine_count; i != 0; --i) {
         const size_t index = i - 1;
         if (c->lookup_owned[index]) {
@@ -927,6 +955,8 @@ mc_client_gui_ingame_draw_retire(mc_client_gui_ingame_draw_call **slot,
         owner->draw_call = c;
         return cleanup_failed(c, error, "HUD source owner occurrence cleanup");
     }
+    for (size_t i = 0; i < c->overlay_count; ++i)
+        free(c->item_overlays[i]);
     free(c);
     *slot = NULL;
     return admission(error, MC_CLIENT_GUI_INGAME_DRAW_OK, NULL);

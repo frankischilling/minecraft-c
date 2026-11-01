@@ -6,14 +6,20 @@ int mc_hud_startup_fixture_main(int argc, char **argv);
 #include "client/display/camera_surface.h"
 #include "client/display/fog_surface.h"
 #include "client/display/world_frame_surface.h"
+#include "client/gui/bitmap_font_internal.h"
 #include "client/gui/gui_ingame_internal.h"
+#include "client/particles/application.h"
+#include "client/render/item_gui.h"
 #include "client/render_engine/internal.h"
 #include "client/render_engine/texture_lookup.h"
 #include "entity/player/player_internal.h"
+#include "item/stack/source_internal.h"
 #include "mc/client/controller/singleplayer.h"
 #include "mc/client/gui/gui_ingame_draw.h"
+#include "mc/client/particles/render.h"
 #include "mc/client/world/overlay_setup.h"
 #include "mc/core/math/math.h"
+#include "mc/entity/item/pickup.h"
 #include "world/runtime/chunk_provider_internal.h"
 #include "world/runtime/runtime_internal.h"
 #include <SDL3/SDL.h>
@@ -459,24 +465,101 @@ static int hud_failures(fixture *runtime, client_application *app, mc_entity *pl
     CHECK(mc_client_gui_ingame_draw_retire(&call, &error) == MC_CLIENT_GUI_INGAME_DRAW_OK);
     puts("HUD_CONTROL debug_text_dependency_after_hud");
 
+    for (int32_t count = 1; count <= 3; count += 2) {
+        CHECK(hud_prepare(app, player, 0, 0, false) == 0 && hud_reset(runtime, app) == 0);
+        mc_item_stack *dirt = NULL;
+        CHECK(mc_item_stack_allocate(&dirt) == MC_ITEM_STACK_OK &&
+              mc_item_stack_construct(dirt, 3, count, 0) == MC_ITEM_STACK_OK &&
+              mc_item_stack_source_animation_set(dirt, 5) == MC_ITEM_STACK_OK);
+        CHECK(mc_inventory_player_set(player->local_player->fields.player.c, 0, dirt, NULL) ==
+              MC_INVENTORY_OK);
+        CHECK(mc_client_gui_ingame_draw_begin(app->v, runtime->graphics, math, app->display, .375f,
+                                              false, 17, 23, &call,
+                                              &error) == MC_CLIENT_GUI_INGAME_DRAW_OK);
+        CHECK(mc_client_gui_ingame_draw_inspect(call, &state) && state.returned &&
+              state.slots_returned && state.empty_slots == 8 && state.item_slots == 1 &&
+              state.item_overlays == 1 && state.animated_slots == 1 && state.item_faces == 6);
+        mc_item_stack_fields fields;
+        CHECK(mc_item_stack_fields_get(dirt, &fields) == MC_ITEM_STACK_OK && fields.id == 3 &&
+              fields.count == count && fields.damage == 0 && fields.animation == 5);
+        CHECK(hud_pending_guards(app->v, runtime->graphics, math, app->display) == 0);
+        CHECK(mc_client_gui_ingame_draw_retire(&call, &error) == MC_CLIENT_GUI_INGAME_DRAW_OK);
+        CHECK(mc_inventory_player_set(player->local_player->fields.player.c, 0, NULL, NULL) ==
+              MC_INVENTORY_OK);
+        mc_item_stack_release(dirt);
+    }
+    puts("HUD_CONTROL dirt_count_animation_overlay");
+
     CHECK(hud_prepare(app, player, 0, 0, false) == 0 && hud_reset(runtime, app) == 0);
+    mc_item_stack *first_dirt = NULL;
+    CHECK(mc_item_stack_allocate(&first_dirt) == MC_ITEM_STACK_OK &&
+          mc_item_stack_construct(first_dirt, 3, 1, 0) == MC_ITEM_STACK_OK);
+    CHECK(mc_inventory_player_set(player->local_player->fields.player.c, 0, first_dirt, NULL) ==
+          MC_INVENTORY_OK);
     mc_item_stack *stack = NULL;
     CHECK(mc_item_stack_allocate(&stack) == MC_ITEM_STACK_OK &&
-          mc_item_stack_construct(stack, 1, 1, 0) == MC_ITEM_STACK_OK);
-    CHECK(mc_inventory_player_set(player->local_player->fields.player.c, 0, stack, NULL) ==
+          mc_item_stack_construct(stack, 2, 1, 0) == MC_ITEM_STACK_OK);
+    CHECK(mc_inventory_player_set(player->local_player->fields.player.c, 1, stack, NULL) ==
           MC_INVENTORY_OK);
     CHECK(mc_client_gui_ingame_draw_begin(app->v, runtime->graphics, math, app->display, .375f,
                                           false, 17, 23, &call,
                                           &error) == MC_CLIENT_GUI_INGAME_DRAW_DEPENDENCY);
     CHECK(mc_client_gui_ingame_draw_inspect(call, &state) && state.source_pc == 1015 &&
-          state.failure->child.pc == 23 && state.stats_returned && !state.slots_returned &&
-          !state.returned);
+          state.failure->child.pc == 118 && state.failure->item != NULL &&
+          state.failure->item->status == MC_CLIENT_ITEM_GUI_GRAPHICS_FAILED &&
+          state.stats_returned && !state.slots_returned && state.item_slots == 1 &&
+          state.item_overlays == 1 && state.item_faces == 6 &&
+          !state.failure->item_inventory.valid && !state.returned);
+    const mc_client_item_gui_error *item_failure = state.failure->item;
+    const char *item_operation = item_failure->operation;
+    const int32_t item_pc = item_failure->site.pc;
+    CHECK(item_failure->inventory != NULL);
+    /* Use the actual split Font call scope used by measure_view. This keeps
+     * a genuine source receiver entered while HUD cleanup first retires its
+     * failed Item/CV child, then reaches the still-active Font occurrence.
+     * No busy flag, enum result or callback outcome is supplied by the test. */
+    static const uint16_t measure_units[] = {' '};
+    const mc_player_string_view measure_text = {measure_units, 1};
+    mc_client_bitmap_font_error font_error, *font_call = NULL;
+    CHECK(mc_client_bitmap_font_view_enter(app->font_renderer, &measure_text, "a",
+                                           "(Ljava/lang/String;)I", &font_call,
+                                           &font_error) == MC_CLIENT_BITMAP_FONT_OK);
+    for (unsigned int retry = 0; retry < 2; ++retry) {
+        CHECK(mc_client_gui_ingame_draw_retire(&call, &error) == MC_CLIENT_GUI_INGAME_DRAW_BUSY &&
+              call != NULL && strcmp(error.operation, "HUD Font occurrence cleanup") == 0);
+        CHECK(mc_client_gui_ingame_draw_inspect(call, &state) &&
+              state.failure->item == item_failure &&
+              state.failure->item->status == MC_CLIENT_ITEM_GUI_GRAPHICS_FAILED &&
+              state.failure->item->operation == item_operation &&
+              state.failure->item->site.pc == item_pc && state.failure->item->inventory == NULL &&
+              state.failure->item_inventory.valid && state.failure->item_inventory.failed &&
+              !state.failure->item_inventory.returned &&
+              state.failure->item_inventory.native_policy &&
+              state.failure->item_inventory.status ==
+                  MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY &&
+              state.failure->item_inventory.source_pc == 14 &&
+              state.failure->item_inventory.site.pc == 14 &&
+              strcmp(state.failure->item_inventory.site.class_name, "cv") == 0 &&
+              strcmp(state.failure->item_inventory.site.descriptor, "(Luu;IF)V") == 0 &&
+              state.failure->item_inventory.depth == 1 &&
+              state.failure->item_inventory.frames[0].pc == 14 &&
+              state.failure->item_inventory.faces == 0);
+    }
+    int32_t measured = -1;
+    mc_client_bitmap_font_measure_entered(app->font_renderer, measure_text, &measured, font_call);
+    CHECK(mc_client_bitmap_font_view_leave(app->font_renderer, font_call, &font_error) ==
+              MC_CLIENT_BITMAP_FONT_OK &&
+          measured == 4);
     CHECK(mc_client_gui_ingame_draw_retire(&call, &error) == MC_CLIENT_GUI_INGAME_DRAW_OK);
+    puts("HUD_CONTROL item_cleanup_refusal_retry");
     mc_client_source_fog_state fog;
     CHECK(mc_client_display_source_fog_inspect(app->display, &fog) && fog.lighting_enabled &&
           fog.rescale_normal_enabled);
     CHECK(mc_inventory_player_set(player->local_player->fields.player.c, 0, NULL, NULL) ==
           MC_INVENTORY_OK);
+    CHECK(mc_inventory_player_set(player->local_player->fields.player.c, 1, NULL, NULL) ==
+          MC_INVENTORY_OK);
+    mc_item_stack_release(first_dirt);
     mc_item_stack_release(stack);
     puts("HUD_CONTROL item_dependency_preserves_lighting");
     return 0;
@@ -528,6 +611,126 @@ static int hud_blend_pixels(fixture *runtime, client_application *app) {
     return 0;
 }
 
+static int hud_pickup_draw(fixture *runtime, client_application *app, hud_world *world,
+                           mc_math_classes *math, mc_client_render_manager_classes *classes) {
+    CHECK(hud_reset(runtime, app) == 0);
+    const bool effects_owned = app->effect_renderer == NULL;
+    if (effects_owned)
+        CHECK(mc_client_application_construct_effect_renderer(app, NULL, NULL) ==
+              MC_EFFECT_RENDERER_OK);
+    CHECK(mc_client_effect_renderer_change_world(app->effect_renderer, world->world, NULL) ==
+          MC_EFFECT_RENDERER_OK);
+    mc_entity *items[2] = {0};
+    mc_item_stack *stacks[2] = {0};
+    for (size_t i = 0; i < 2; ++i) {
+        CHECK(mc_item_stack_allocate(&stacks[i]) == MC_ITEM_STACK_OK &&
+              mc_item_stack_construct(stacks[i], 3, 1, 0) == MC_ITEM_STACK_OK);
+        CHECK(mc_item_entity_allocate(runtime->services.entities, &items[i], NULL) ==
+                  MC_ENTITY_OK &&
+              mc_item_entity_construct(items[i], world->world, 8.5, 200.5, 8.5, stacks[i], NULL) ==
+                  MC_ENTITY_OK &&
+              mc_entity_item_pickup_delay_set(items[i], 0) == MC_ENTITY_OK);
+        mc_item_pickup_error pickup;
+        CHECK(mc_item_entity_pickup(items[i], world->player, runtime->services.registry, NULL,
+                                    &pickup) == MC_ENTITY_OK &&
+              items[i]->base.be);
+        mc_item_stack_fields fields;
+        CHECK(mc_item_stack_fields_get(stacks[i], &fields) == MC_ITEM_STACK_OK &&
+              fields.count == 0);
+    }
+    mc_effect_renderer_snapshot effects;
+    CHECK(mc_client_effect_renderer_read(app->effect_renderer, &effects) && effects.sizes[3] == 2);
+    mc_client_render_manager *manager = NULL;
+    CHECK(mc_client_render_manager_static_get(classes, &manager, NULL) == MC_CLIENT_MANAGER_OK &&
+          manager != NULL);
+    CHECK(mc_client_render_manager_bind_frame(manager, math, world->world, app->render_engine,
+                                              app->font_renderer, world->player, app->settings,
+                                              .375f, NULL) == MC_CLIENT_MANAGER_OK);
+    mc_client_manager_state manager_state;
+    CHECK(mc_client_render_manager_inspect(classes, &manager_state));
+    const size_t manager_holds = manager_state.manager_holds;
+    const mc_client_manager_draw_services draw_services = {.math = math,
+                                                           .graphics = runtime->graphics,
+                                                           .display = app->display,
+                                                           .application_classes =
+                                                               app->source_namespace};
+    mc_client_render_manager_draw_call *foreign = NULL;
+    mc_client_manager_draw_error foreign_error;
+    CHECK(mc_client_render_manager_coordinates_draw_begin(manager, items[0], 1, 2, 3, 0, .375f,
+                                                          &draw_services, NULL, &foreign,
+                                                          &foreign_error) == MC_CLIENT_MANAGER_OK);
+    mc_client_manager_draw_state foreign_state;
+    CHECK(mc_client_render_manager_draw_inspect(foreign, &foreign_state) &&
+          foreign_state.returned && foreign_state.coordinates_only &&
+          !foreign_state.brightness_returned && !foreign_state.color_returned);
+    CHECK(mc_client_render_manager_inspect(classes, &manager_state) &&
+          manager_state.manager_holds == manager_holds + 1);
+    const mc_effect_draw_services services = {.graphics = runtime->graphics,
+                                              .math = math,
+                                              .display = app->display,
+                                              .manager = classes,
+                                              .application_classes = app->source_namespace};
+    mc_client_effect_draw_call *call = NULL;
+    mc_effect_draw_error error;
+    CHECK(mc_client_effect_renderer_lit_begin(app->effect_renderer, world->player, .375f, &services,
+                                              &call, &error) == MC_EFFECT_DRAW_BUSY);
+    mc_effect_draw_state state;
+    mc_effect_pickup_draw_receipt receipt;
+    CHECK(mc_client_effect_renderer_draw_inspect(call, &state) && !state.returned &&
+          state.particle_pc == 286 && state.pickup_draw_attempts == 1 &&
+          mc_client_effect_renderer_pickup_draw_at(call, 0, &receipt) && receipt.attempted &&
+          !receipt.admitted && !receipt.returned && !receipt.retired);
+    CHECK(mc_client_render_manager_inspect(classes, &manager_state) &&
+          manager_state.manager_holds == manager_holds + 2);
+    CHECK(mc_client_effect_renderer_draw_retire(&call, &error) == MC_EFFECT_DRAW_OK &&
+          call == NULL);
+    CHECK(mc_client_render_manager_draw_inspect(foreign, &foreign_state) &&
+          foreign_state.returned && manager->draw_call == foreign);
+    CHECK(mc_client_render_manager_inspect(classes, &manager_state) &&
+          manager_state.manager_holds == manager_holds + 1);
+    CHECK(mc_client_render_manager_draw_retire(&foreign, &foreign_error) == MC_CLIENT_MANAGER_OK);
+    CHECK(mc_client_render_manager_inspect(classes, &manager_state) &&
+          manager_state.manager_holds == manager_holds);
+    CHECK(mc_client_effect_renderer_lit_begin(app->effect_renderer, world->player, .375f, &services,
+                                              &call, &error) == MC_EFFECT_DRAW_OK);
+    CHECK(mc_client_effect_renderer_draw_inspect(call, &state) && state.returned &&
+          state.source_pc == 78 && state.particle_pc == 289 && state.visited == 2 &&
+          state.pickup_draw_attempts == 2 && state.pickup_draw_returns == 2 &&
+          state.pickup_draw_retirements == 2 &&
+          mc_client_effect_renderer_pickup_draw_count(call) == 2);
+    /* Both real EM invocations have already consumed their own actual TH
+     * receiver occurrences; the retained DN call adds no surviving TH hold. */
+    CHECK(mc_client_render_manager_inspect(classes, &manager_state) &&
+          manager_state.manager_holds == manager_holds);
+    for (size_t i = 0; i < 2; ++i) {
+        CHECK(mc_client_effect_renderer_pickup_draw_at(call, i, &receipt) && receipt.attempted &&
+              receipt.admitted && receipt.returned && receipt.retired && receipt.coordinates_only &&
+              receipt.actor_identity == (uintptr_t)items[i] && receipt.actor_dead &&
+              receipt.actor_kind == MC_ENTITY_CLASS_KIND_ITEM && receipt.primary_returned &&
+              receipt.post_draw_returned && receipt.bb_returned && receipt.th_pc == 42 &&
+              receipt.primary_pc == 796 && receipt.renderer_class != NULL &&
+              strcmp(receipt.renderer_class, "bb") == 0 && receipt.partial == .375f &&
+              !receipt.th_brightness_returned && !receipt.th_color_returned &&
+              receipt.copies == 1 && receipt.faces == 6);
+        mc_item_stack_fields fields;
+        CHECK(mc_item_stack_fields_get(stacks[i], &fields) == MC_ITEM_STACK_OK &&
+              fields.count == 0 && items[i]->base.be);
+    }
+    CHECK(mc_client_effect_renderer_draw_retire(&call, &error) == MC_EFFECT_DRAW_OK &&
+          call == NULL);
+    CHECK(mc_client_effect_renderer_change_world(app->effect_renderer, NULL, NULL) ==
+          MC_EFFECT_RENDERER_OK);
+    for (size_t i = 0; i < 2; ++i) {
+        mc_entity_release(items[i]);
+        mc_item_stack_release(stacks[i]);
+    }
+    if (effects_owned)
+        CHECK(mc_client_application_retire_effect_renderer(app) == MC_EFFECT_RENDERER_OK &&
+              app->effect_renderer == NULL && app->effect_renderer_retained == NULL);
+    puts("HUD_CONTROL pickup_coordinate_draw_dead_zero_foreign");
+    return 0;
+}
+
 static int hud_device(const char *resources, const char *assets, const char *directory,
                       const char *screenshot) {
     fixture runtime;
@@ -573,19 +776,25 @@ static int hud_device(const char *resources, const char *assets, const char *dir
     CHECK(hud_pixels(&runtime, app, world.player, math, screenshot) == 0);
     CHECK(hud_blend_pixels(&runtime, app) == 0);
     CHECK(hud_failures(&runtime, app, world.player, math) == 0);
+    CHECK(hud_pickup_draw(&runtime, app, &world, math, attempt->manager_classes) == 0);
     app->controller = NULL;
     CHECK(mc_client_singleplayer_controller_free(&controller, NULL) ==
           MC_SINGLEPLAYER_CONTROLLER_OK);
-    CHECK(hud_world_close(&world, app) == 0);
-    CHECK(mc_math_classes_release(&math, NULL) == MC_MATH_CLASS_OK);
     mc_client_render_texture_error *terminal = calloc(1, sizeof(*terminal));
     CHECK(terminal != NULL);
     mc_client_render_manager_classes *manager = attempt->manager_classes;
+    /* End the prepared App views at the same point as hud_world_close did
+     * before this control added TH frame ownership. Keep the actual local
+     * World/Player owners alive until that frame releases its occurrences. */
+    app->i = app->h = NULL;
+    app->active_world = NULL;
     CHECK(mc_client_application_startup_retire(&attempt, startup.error) == MC_CLIENT_STARTUP_BUSY);
     CHECK(mc_client_render_manager_retire_hands(manager, &startup.error->manager) ==
           MC_CLIENT_MANAGER_OK);
     CHECK(mc_client_render_manager_classes_retire(&manager, &startup.error->manager) ==
           MC_CLIENT_MANAGER_OK);
+    CHECK(hud_world_close(&world, app) == 0);
+    CHECK(mc_math_classes_release(&math, NULL) == MC_MATH_CLASS_OK);
     CHECK(mc_client_application_startup_retire(&attempt, startup.error) == MC_CLIENT_STARTUP_BUSY);
     CHECK(mc_client_render_engine_retire_resources(runtime.graphics, terminal) ==
           MC_CLIENT_RENDER_TEXTURE_OK);

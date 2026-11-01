@@ -108,7 +108,7 @@ static void *allocate(mc_client_effect_renderer *r, size_t bytes, mc_effect_erro
 static bool enter(mc_client_effect_renderer *r, mc_effect_error *e) {
     if (r == NULL)
         fail(e, MC_EFFECT_RENDERER_INVALID_ARGUMENT, "EffectRenderer receiver", NULL, NULL, 0);
-    else if (r->entered || r->draw_call != NULL || r->tick_call != NULL)
+    else if (r->entered || r->draw_call != NULL || r->tick_call != NULL || r->block_call != NULL)
         fail(e, MC_EFFECT_RENDERER_BUSY, "EffectRenderer operation entered", NULL, NULL, 0);
     else if (r->phase != MC_EFFECT_RENDERER_READY)
         fail(e, MC_EFFECT_RENDERER_INVALID_PHASE, "EffectRenderer READY receiver", NULL, NULL, 0);
@@ -166,7 +166,7 @@ mc_client_effect_renderer_construct(mc_client_effect_renderer *r, mc_world_runti
     if (r == NULL)
         fail(e, MC_EFFECT_RENDERER_INVALID_ARGUMENT, "EffectRenderer constructor receiver", NULL,
              NULL, 0);
-    else if (r->entered || r->draw_call != NULL || r->tick_call != NULL)
+    else if (r->entered || r->draw_call != NULL || r->tick_call != NULL || r->block_call != NULL)
         fail(e, MC_EFFECT_RENDERER_BUSY, "EffectRenderer constructor entered", NULL, NULL, 0);
     else if (r->phase != MC_EFFECT_RENDERER_RAW)
         fail(e, MC_EFFECT_RENDERER_INVALID_PHASE, "EffectRenderer RAW receiver", NULL, NULL, 0);
@@ -259,53 +259,57 @@ static bool grow(mc_client_effect_renderer *r, mc_effect_particle_list *list, mc
     return true;
 }
 
+static void add_entered(mc_client_effect_renderer *r, mc_entity *particle, mc_effect_error *e) {
+    if (particle == NULL)
+        fail(e, MC_EFFECT_RENDERER_NULL_REFERENCE, "EffectRenderer null particle", "a", "(Lxw;)V",
+             1);
+    else if (particle->classes != r->classes)
+        fail(e, MC_EFFECT_RENDERER_INVALID_ARGUMENT, "EffectRenderer particle class owner", NULL,
+             NULL, 0);
+    else if (!mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE) &&
+             !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) &&
+             !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE))
+        fail(e, MC_EFFECT_RENDERER_UNSUPPORTED_PARTICLE, "EffectRenderer concrete c_ closure", "a",
+             "(Lxw;)V", 1);
+    else if (particle->phase != MC_ENTITY_READY)
+        fail(e, MC_EFFECT_RENDERER_INVALID_PHASE, "EffectRenderer READY particle", NULL, NULL, 0);
+    else {
+        int32_t layer = 0;
+        /* The API caller owns the evaluated argument throughout this
+         * call, independently of any max4000 List eviction. */
+        e->entity = mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE)
+                        ? mc_pickup_particle_layer(particle, &layer)
+                    : mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE)
+                        ? mc_digging_particle_layer(particle, &layer)
+                        : mc_item_particle_layer(particle, &layer);
+        if (e->entity != MC_ENTITY_OK) {
+            if (e->status == MC_EFFECT_RENDERER_OK)
+                fail(e, MC_EFFECT_RENDERER_ENTITY_FAILED, "EffectRenderer concrete c_", "a",
+                     "(Lxw;)V", 1);
+        } else {
+            e->layer = (size_t)layer;
+            mc_effect_particle_list *list = r->layers[e->layer];
+            if (list->size >= 4000)
+                remove_at(list, 0);
+            if (grow(r, list, e)) {
+                e->entity = mc_entity_retain(particle);
+                if (e->entity != MC_ENTITY_OK)
+                    fail(e, MC_EFFECT_RENDERER_ENTITY_FAILED,
+                         "EffectRenderer List occurrence native hold", "a", "(Lxw;)V", 42);
+                else
+                    list->elements[list->size++] = particle;
+            }
+        }
+    }
+}
+
 mc_effect_renderer_status mc_client_effect_renderer_add(mc_client_effect_renderer *r,
                                                         mc_entity *particle,
                                                         mc_effect_renderer_error *error) {
     effect_error_scope work;
     mc_effect_error *e = error_begin(r, error, &work);
-    if (e == NULL)
-        return MC_EFFECT_RENDERER_ALLOCATION_FAILED;
     if (enter(r, e)) {
-        if (particle == NULL)
-            fail(e, MC_EFFECT_RENDERER_NULL_REFERENCE, "EffectRenderer null particle", "a",
-                 "(Lxw;)V", 1);
-        else if (particle->classes != r->classes)
-            fail(e, MC_EFFECT_RENDERER_INVALID_ARGUMENT, "EffectRenderer particle class owner",
-                 NULL, NULL, 0);
-        else if (!mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE) &&
-                 !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE))
-            fail(e, MC_EFFECT_RENDERER_UNSUPPORTED_PARTICLE, "EffectRenderer concrete c_ closure",
-                 "a", "(Lxw;)V", 1);
-        else if (particle->phase != MC_ENTITY_READY)
-            fail(e, MC_EFFECT_RENDERER_INVALID_PHASE, "EffectRenderer READY particle", NULL, NULL,
-                 0);
-        else {
-            int32_t layer = 0;
-            /* The API caller owns the evaluated argument throughout this
-             * call, independently of any max4000 List eviction. */
-            e->entity = mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE)
-                            ? mc_pickup_particle_layer(particle, &layer)
-                            : mc_item_particle_layer(particle, &layer);
-            if (e->entity != MC_ENTITY_OK) {
-                if (e->status == MC_EFFECT_RENDERER_OK)
-                    fail(e, MC_EFFECT_RENDERER_ENTITY_FAILED, "EffectRenderer concrete c_", "a",
-                         "(Lxw;)V", 1);
-            } else {
-                e->layer = (size_t)layer;
-                mc_effect_particle_list *list = r->layers[e->layer];
-                if (list->size >= 4000)
-                    remove_at(list, 0);
-                if (grow(r, list, e)) {
-                    e->entity = mc_entity_retain(particle);
-                    if (e->entity != MC_ENTITY_OK)
-                        fail(e, MC_EFFECT_RENDERER_ENTITY_FAILED,
-                             "EffectRenderer List occurrence native hold", "a", "(Lxw;)V", 42);
-                    else
-                        list->elements[list->size++] = particle;
-                }
-            }
-        }
+        add_entered(r, particle, e);
         r->entered = false;
         if (e->status == MC_EFFECT_RENDERER_OK)
             *e = (mc_effect_error){.layer = SIZE_MAX, .index = SIZE_MAX};
@@ -393,7 +397,9 @@ mc_effect_renderer_status mc_client_effect_renderer_tick_in_context(
                      "EffectRenderer null concrete tick receiver", "a", "()V", 41);
                 break;
             }
-            const bool item = mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE);
+            const bool digging = mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE);
+            const bool item =
+                digging || mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE);
             if (particle->classes != r->classes ||
                 (!item && !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE))) {
                 fail(e, MC_EFFECT_RENDERER_UNSUPPORTED_PARTICLE,
@@ -435,7 +441,8 @@ mc_effect_renderer_status mc_client_effect_renderer_tick_in_context(
             } else {
                 call->current = particle;
                 call->failure.entity =
-                    mc_item_particle_tick(particle, registry, limits, &call->item);
+                    digging ? mc_digging_particle_tick(particle, registry, limits, &call->item)
+                            : mc_item_particle_tick(particle, registry, limits, &call->item);
                 call->failure.particle = call->item.particle;
                 if (call->item.particle.cause == MC_PARTICLE_MOVEMENT)
                     call->failure.movement = &call->item.movement;
@@ -598,7 +605,7 @@ mc_client_effect_renderer_terminal_inspect(const mc_client_effect_renderer *r,
     if (r == NULL || out == NULL)
         return terminal_report(error, MC_EFFECT_RENDERER_INVALID_ARGUMENT,
                                "EffectRenderer terminal inspection arguments", SIZE_MAX);
-    if (r->entered || r->draw_call != NULL || r->tick_call != NULL)
+    if (r->entered || r->draw_call != NULL || r->tick_call != NULL || r->block_call != NULL)
         return terminal_report(error, MC_EFFECT_RENDERER_BUSY,
                                "EffectRenderer terminal inspection entered", SIZE_MAX);
     if (r->phase != MC_EFFECT_RENDERER_READY)
@@ -627,10 +634,13 @@ mc_client_effect_renderer_terminal_inspect(const mc_client_effect_renderer *r,
         for (size_t j = 0; j < list->size; ++j) {
             const mc_entity *particle = list->elements[j];
             mc_particle_snapshot state;
-            if (i != 2 || !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) ||
+            const bool digging = mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE);
+            if ((digging ? i != 1 : i != 2) ||
+                (!digging && !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE)) ||
                 particle->classes != r->classes || particle->holds == 0 ||
                 particle->base.world != r->world || !mc_particle_read(particle, &state) ||
-                state.phase != MC_ENTITY_READY || state.item_pc != 58)
+                state.phase != MC_ENTITY_READY || state.item_pc != (digging ? 80u : 58u) ||
+                (digging && (state.digging_block == NULL || state.digging_registry == NULL)))
                 return terminal_report(error, MC_EFFECT_RENDERER_UNSUPPORTED_PARTICLE,
                                        "EffectRenderer terminal inspection canonical PB closure",
                                        i);
@@ -658,7 +668,8 @@ mc_effect_renderer_status mc_client_effect_renderer_retire_world(mc_client_effec
     if (r == NULL)
         fail(e, MC_EFFECT_RENDERER_INVALID_ARGUMENT, "EffectRenderer native World owner", NULL,
              NULL, 0);
-    else if (r->entered || r->draw_call != NULL || r->tick_call != NULL || r->holds != 1)
+    else if (r->entered || r->draw_call != NULL || r->tick_call != NULL || r->block_call != NULL ||
+             r->holds != 1)
         fail(e, MC_EFFECT_RENDERER_BUSY, "EffectRenderer native World occurrence", NULL, NULL, 0);
     else if (r->world != expected)
         fail(e, MC_EFFECT_RENDERER_INVALID_PHASE, "EffectRenderer expected World changed", NULL,
@@ -707,7 +718,8 @@ mc_effect_renderer_status mc_client_effect_renderer_free(mc_client_effect_render
     if (owner == NULL || *owner == NULL)
         return MC_EFFECT_RENDERER_OK;
     mc_client_effect_renderer *r = *owner;
-    if (r->entered || r->draw_call != NULL || r->tick_call != NULL || r->holds != 1)
+    if (r->entered || r->draw_call != NULL || r->tick_call != NULL || r->block_call != NULL ||
+        r->holds != 1)
         return MC_EFFECT_RENDERER_BUSY;
     if (r->layers != NULL) {
         for (size_t i = 0; i < 4; ++i) {
@@ -728,3 +740,5 @@ mc_effect_renderer_status mc_client_effect_renderer_free(mc_client_effect_render
     *owner = NULL;
     return MC_EFFECT_RENDERER_OK;
 }
+
+#include "block_effects.inc"

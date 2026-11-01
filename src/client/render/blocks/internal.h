@@ -61,12 +61,14 @@ typedef struct mc_cv_context {
     mc_registry_classes *registry;
     mc_client_render_classes *models;
     mc_client_render_engine_classes *graphics;
+    mc_client_display *display; /* Actual inventory-call Display; World paths need none here. */
     client_application *application;
     mc_client_tessellator *tessellator;
     mc_cv_frame frames[16];
     size_t depth;
     unsigned int source_pc, last_store_pc;
     bool failed, returned;
+    size_t inventory_faces;
     mc_client_render_global_error failure;
     mc_client_chunk_cache_error cache_error;
     mc_client_colorizer_error colorizer_error;
@@ -124,5 +126,10 @@ bool mc_cv_render(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, 
 /* Actual cv.a(Block,III,texture): d3, child b12, d=-1 at18, return21.
  * Failure retains d and the complete nested source/CV/World diagnostics. */
 bool mc_cv_texture_override(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, int32_t);
+/* Actual static cv.a(I)Z and instance cv.a(Block,int,float). The enclosing
+ * owner retains the same CV, Block, graphics namespace and Display. Each face
+ * uses an independent genuine NW begin/normal/face/draw sequence. */
+bool mc_cv_inventory_type_3d(int32_t);
+bool mc_cv_inventory(mc_cv_context *, const mc_block *, int32_t, float);
 
 #endif

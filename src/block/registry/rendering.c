@@ -10,6 +10,25 @@ static bool valid(const mc_block *block) {
            (unsigned int)block->kind < (unsigned int)MC_BLOCK_KIND_COUNT;
 }
 
+mc_registry_status mc_block_render_inventory_color(const mc_block *block, int32_t metadata,
+                                                   int32_t *out) {
+    (void)metadata;
+    if (!valid(block) || out == NULL)
+        return MC_REGISTRY_INVALID_ARGUMENT;
+    if (block->kind != MC_BLOCK_BASE && block->kind != MC_BLOCK_DIRT)
+        return MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
+    *out = 0xffffff; /* Actual inherited uu.b(I)I. */
+    return MC_REGISTRY_OK;
+}
+
+mc_registry_status mc_block_render_inventory_shape(const mc_block *block) {
+    if (!valid(block))
+        return MC_REGISTRY_INVALID_ARGUMENT;
+    if (block->kind != MC_BLOCK_BASE && block->kind != MC_BLOCK_DIRT)
+        return MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
+    return MC_REGISTRY_OK; /* Actual inherited uu.g()V has only return0. */
+}
+
 mc_registry_status mc_block_render_describe(const mc_block *block,
                                             mc_block_render_description *out) {
     if (!valid(block) || out == NULL)

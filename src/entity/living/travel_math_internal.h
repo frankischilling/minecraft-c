@@ -44,6 +44,10 @@ static inline double mc_travel_dmul(double a, double b) {
     return _mm_cvtsd_f64(_mm_mul_sd(_mm_set_sd(b), _mm_set_sd(a)));
 }
 
+static inline double mc_travel_ddiv(double a, double b) {
+    return _mm_cvtsd_f64(_mm_div_sd(_mm_set_sd(a), _mm_set_sd(b)));
+}
+
 static inline float mc_travel_sqrt_float(double a) {
     const __m128d root = _mm_sqrt_sd(_mm_setzero_pd(), _mm_set_sd(a));
     return _mm_cvtss_f32(_mm_cvtsd_ss(_mm_setzero_ps(), root));

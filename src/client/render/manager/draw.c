@@ -194,9 +194,15 @@ static bool coordinates(mc_client_render_manager_draw_call *c) {
         renderer->bb == NULL ? (const void *)renderer : (const void *)renderer->bb;
     renderer->active = true;
     at(c, coordinates_descriptor, 24);
-    if (!mc_client_living_draw_entered(&c->scope, renderer, c->actor_hold, c->state.x, c->state.y,
-                                       c->state.z, c->state.yaw, c->state.partial, c->error.site,
-                                       &c->living))
+    const bool primary =
+        renderer->bb != NULL
+            ? mc_client_item_draw_entered(&c->scope, renderer, c->actor_hold, c->state.x,
+                                          c->state.y, c->state.z, c->state.yaw, c->state.partial,
+                                          c->error.site, &c->living)
+            : mc_client_living_draw_entered(&c->scope, renderer, c->actor_hold, c->state.x,
+                                            c->state.y, c->state.z, c->state.yaw, c->state.partial,
+                                            c->error.site, &c->living);
+    if (!primary)
         return living_failure(c, &c->living);
     c->state.primary_returned = true;
     at(c, coordinates_descriptor, 39);
@@ -263,6 +269,43 @@ mc_client_manager_status mc_client_render_manager_draw_begin(
     else {
         c->executing = c->state.active = c->manager_hold->active = true;
         c->state.returned = execute(c);
+        c->executing = c->state.active = c->manager_hold->active = false;
+        if (c->renderer_hold != NULL)
+            c->renderer_hold->active = false;
+    }
+    if (!manager_draw_capture_children(c, &c->owner_work)) {
+        c->error.source_exception = false;
+        native_owner(c, &c->owner_work);
+    }
+    if (error != NULL)
+        *error = c->error;
+    return c->error.status;
+}
+
+mc_client_manager_status mc_client_render_manager_coordinates_draw_begin(
+    mc_client_render_manager *manager, mc_entity *actor, double x, double y, double z, float yaw,
+    float partial, const mc_client_manager_draw_services *services,
+    const mc_client_manager_draw_limits *limits, mc_client_render_manager_draw_call **out,
+    mc_client_manager_draw_error *error) {
+    const mc_client_manager_status admitted =
+        manager_draw_allocate(manager, services, limits, out, error);
+    if (admitted != MC_CLIENT_MANAGER_OK)
+        return admitted;
+    mc_client_render_manager_draw_call *c = *out;
+    c->state.coordinates_only = true;
+    c->state.actor = actor;
+    c->state.x = x;
+    c->state.y = y;
+    c->state.z = z;
+    c->state.yaw = yaw;
+    c->state.partial = partial;
+    c->state.living = &c->living.state;
+    c->state.post_draw = &c->post.state;
+    if (!manager_draw_capture_actor(c, actor, &c->owner_work))
+        native_owner(c, &c->owner_work);
+    else {
+        c->executing = c->state.active = c->manager_hold->active = true;
+        c->state.returned = coordinates(c);
         c->executing = c->state.active = c->manager_hold->active = false;
         if (c->renderer_hold != NULL)
             c->renderer_hold->active = false;

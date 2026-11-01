@@ -153,7 +153,7 @@ static bool icon_entered(mc_registry_classes *classes, const mc_item *item, int3
     (void)damage; /* Actual GM.a(I) reads only bh. */
     if (!admit(classes, item, out, e))
         return false;
-    if (item->kind != MC_ITEM_BASE && item->kind != MC_ITEM_BOW)
+    if (item->kind != MC_ITEM_BASE && item->kind != MC_ITEM_BOW && item->kind != MC_ITEM_BLOCK)
         return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
                     "Item render actual icon override boundary");
     e->site = at("gm", "a", "(I)I", 1);
@@ -183,12 +183,48 @@ bool mc_item_render_full_3d(mc_registry_classes *classes, const mc_item *item, b
     e->item_identity = (uintptr_t)item;
     if (!admit(classes, item, out, e))
         return false;
-    if (item->kind != MC_ITEM_BASE && item->kind != MC_ITEM_BOW)
+    if (item->kind != MC_ITEM_BASE && item->kind != MC_ITEM_BOW && item->kind != MC_ITEM_BLOCK)
         return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
                     "Item render actual full3D override boundary");
     e->site = at("gm", "b", "()Z", 1);
     *out = item->fields.bi;
     e->site.pc = 4;
+    e->returned = true;
+    return true;
+}
+
+bool mc_item_render_color(mc_registry_classes *classes, const mc_item *item, int32_t damage,
+                          int32_t *out, mc_item_render_error *e) {
+    if (e == NULL)
+        return false;
+    mc_item_render_error_init(e);
+    e->damage = damage;
+    e->item_identity = (uintptr_t)item;
+    if (!admit(classes, item, out, e))
+        return false;
+    e->site = at("gm", "f", "(I)I", 0);
+    if (item->kind != MC_ITEM_BASE && item->kind != MC_ITEM_BOW && item->kind != MC_ITEM_BLOCK)
+        return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY, "Item actual metadata color override");
+    *out = 16777215;
+    e->site.pc = 2;
+    e->returned = true;
+    return true;
+}
+
+bool mc_item_render_rotate(mc_registry_classes *classes, const mc_item *item, bool *out,
+                           mc_item_render_error *e) {
+    if (e == NULL)
+        return false;
+    mc_item_render_error_init(e);
+    e->item_identity = (uintptr_t)item;
+    if (!admit(classes, item, out, e))
+        return false;
+    e->site = at("gm", "c", "()Z", 0);
+    if (item->kind != MC_ITEM_BASE && item->kind != MC_ITEM_BOW && item->kind != MC_ITEM_BLOCK)
+        return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
+                    "Item actual rotating render override");
+    *out = false;
+    e->site.pc = 1;
     e->returned = true;
     return true;
 }

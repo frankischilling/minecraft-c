@@ -4,15 +4,21 @@
 #include "../../display/camera_surface.h"
 #include "../../display/fog_surface.h"
 #include "../../display/source_surface.h"
+#include "../../render/blocks/internal.h"
 #include "../../render/manager/internal.h"
 #include "../../render_engine/image_download.h"
 #include "../../render_engine/lighting.h"
 #include "../../render_engine/texture_lookup.h"
+#include "block/registry/runtime_internal.h"
+#include "entity/render/internal.h"
 #include "held_item_draw_internal.h"
 #include "internal.h"
+#include "item/render/internal.h"
+#include "item/stack/source_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/client/render/model_draw.h"
 #include "mc/core/math/math.h"
+#include "mc/item/registry/runtime.h"
 #include "mc/world/runtime/entities.h"
 #include <stdlib.h>
 #include <string.h>
@@ -32,6 +38,11 @@ struct mc_client_held_item_draw_call {
     mc_client_render_engine *engine;
     mc_client_render_manager *manager;
     mc_client_managed_renderer *renderer;
+    mc_registry_classes *item_registry;
+    mc_item_render_error item_error;
+    mc_entity_render_error *item_brightness;
+    mc_cv_context *inventory;
+    bool item_registry_held;
     bool owner_held, entered, math_held, world_held, stack_held, lookup_owned;
 };
 
@@ -467,6 +478,8 @@ static bool empty_hand(mc_client_held_item_draw_call *c) {
     return true;
 }
 
+#include "held_block.inc"
+
 static bool hand(mc_client_held_item_draw_call *c) {
     mc_client_source_ra *ra = c->state.owner->source;
     if (!fp(c, 12))
@@ -539,16 +552,18 @@ static bool hand(mc_client_held_item_draw_call *c) {
         return fail(c, MC_CLIENT_HELD_ITEM_DRAW_CHILD_FAILED, "actual World brightness child", 116,
                     true);
     c->state.brightness_returned = true;
-    if (c->state.stack != NULL)
-        return fail(c, MC_CLIENT_HELD_ITEM_DRAW_DEPENDENCY,
-                    "actual GM item-color and held item/map geometry descendants", 126, true);
-    if (!gl(c,
-            mc_client_display_source_color(device(c), c->state.brightness, c->state.brightness,
-                                           c->state.brightness, 1, &c->failure.display),
-            216))
+    if (c->state.stack != NULL) {
+        if (!held_color(c))
+            return false;
+    } else if (!gl(c,
+                   mc_client_display_source_color(device(c), c->state.brightness,
+                                                  c->state.brightness, c->state.brightness, 1,
+                                                  &c->failure.display),
+                   216))
         return false;
-    c->state.color_set = c->state.empty_hand = true;
-    if (!empty_hand(c) ||
+    c->state.color_set = true;
+    c->state.empty_hand = c->state.stack == NULL;
+    if (!(c->state.stack == NULL ? empty_hand(c) : held_nonempty(c)) ||
         !gl(c, mc_client_display_source_rescale_normal(device(c), false, &c->failure.display),
             1371))
         return false;
@@ -682,8 +697,10 @@ bool mc_client_held_item_draw_inspect(const mc_client_held_item_draw_call *c,
     if (c == NULL || out == NULL)
         return false;
     *out = c->state;
-    out->faces = c->model.faces;
-    out->vertices = c->model.vertices;
+    if (!c->state.block_item) {
+        out->faces = c->model.faces;
+        out->vertices = c->model.vertices;
+    }
     return true;
 }
 
@@ -723,6 +740,9 @@ mc_client_held_item_draw_retire(mc_client_held_item_draw_call **slot,
             return cleanup_failed(c, error, "held draw owned texture lookup cleanup");
         }
     }
+    if (c->item_brightness != NULL &&
+        mc_entity_render_worlds_release(c->item_brightness) != MC_ENTITY_OK)
+        return cleanup_failed(c, error, "held Block brightness World occurrence cleanup");
     if (c->renderer != NULL && mc_client_managed_renderer_release(
                                    &c->renderer, &c->cleanup.manager) != MC_CLIENT_MANAGER_OK)
         return cleanup_failed(c, error, "held draw DS occurrence cleanup");
@@ -749,6 +769,11 @@ mc_client_held_item_draw_retire(mc_client_held_item_draw_call **slot,
         mc_item_stack_release((mc_item_stack *)c->state.stack);
         c->stack_held = false;
     }
+    if (c->item_registry_held) {
+        if (mc_registry_classes_release(c->item_registry, &c->cleanup.registry) != MC_REGISTRY_OK)
+            return cleanup_failed(c, error, "held Block Registry occurrence cleanup");
+        c->item_registry_held = false;
+    }
     owner->draw_call = NULL;
     if (c->owner_held) {
         mc_client_held_item *occurrence = owner;
@@ -758,6 +783,8 @@ mc_client_held_item_draw_retire(mc_client_held_item_draw_call **slot,
             return cleanup_failed(c, error, "held draw RA occurrence cleanup");
         }
     }
+    free(c->item_brightness);
+    free(c->inventory);
     free(c);
     *slot = NULL;
     return admission(error, MC_CLIENT_HELD_ITEM_DRAW_OK, NULL);

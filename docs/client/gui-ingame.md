@@ -56,10 +56,11 @@ through NW. Low health consumes ten real bounded Random calls for vertical
 jitter. Hurt blinking uses actual Player counters and prior health; each draw
 reseeds the same UQ Random with the wrapped `h * 312871` integer.
 
-The default path then enables standard lighting, visits nine genuine empty
-Inventory slots, disables lighting/rescale-normal and runs the remaining
-sleep/debug/record/chat predicates. Empty chat returns at 2101. Nonempty item
-icons, pumpkin/portal/water overlays, sleep fading, debug text, record messages
+The default path then enables standard lighting, visits nine genuine Inventory
+slots, disables lighting/rescale-normal and runs the remaining
+sleep/debug/record/chat predicates. Empty chat returns at 2101. Collected Dirt
+uses the actual six-face Block icon body described in the [mining contract](mining.md).
+Remaining Item overrides, pumpkin/portal/water overlays, sleep fading, debug text, record messages
 and nonempty chat keep their explicit missing descendants. The armor arithmetic
 is implemented, but populated armor is outside the current reference selection.
 

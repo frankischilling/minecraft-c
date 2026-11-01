@@ -2,6 +2,16 @@
 #include "mc/core/java/java.h"
 #include "world/runtime/block_normal_internal.h"
 
+static float shadow_size(const mc_client_managed_renderer *renderer) {
+    return renderer->bb == NULL ? renderer->shadow_size
+                                : mc_client_item_renderer_fields_get(renderer->bb)->shadow_size;
+}
+
+static float shadow_opacity(const mc_client_managed_renderer *renderer) {
+    return renderer->bb == NULL ? renderer->shadow_opacity
+                                : mc_client_item_renderer_fields_get(renderer->bb)->shadow_opacity;
+}
+
 static void shadow_at(ld_frame *f, int32_t pc) {
     ld_at(f, "bw", "c", "(Lsn;DDDFF)V", pc);
 }
@@ -246,7 +256,7 @@ bool ld_shadow(ld_frame *f, double x, double y, double z, float alpha, float par
     if (!ld_display(f, mc_client_display_source_depth_mask(f->scope->model.display, false,
                                                            &e->detail.display)))
         return false;
-    const float radius = f->renderer->shadow_size;
+    const float radius = shadow_size(f->renderer);
     shadow_at(f, 56);
     if (f->actor == NULL)
         return ld_null(f, "Shadow interpolation null actor");
@@ -413,7 +423,7 @@ bool mc_client_entity_post_draw_entered(mc_client_draw_scope *scope, mc_client_m
     if (!mc_game_settings_read_state(settings, &values))
         return ld_fail(&f, MC_CLIENT_LIVING_DRAW_STATE, "Postdraw actual Settings fields");
     e->state.shadow_settings = values.values.fancy_graphics;
-    if (values.values.fancy_graphics && r->shadow_size > 0.0f) {
+    if (values.values.fancy_graphics && shadow_size(r) > 0.0f) {
         ld_at(&f, "bw", "b", "(Lsn;DDDFF)V", 27);
         if (actor == NULL)
             return ld_null(&f, "Postdraw null actor distance arguments");
@@ -427,7 +437,7 @@ bool mc_client_entity_post_draw_entered(mc_client_draw_scope *scope, mc_client_m
         const double distance = at_add(at_add(at_mul(dx, dx), at_mul(dy, dy)), at_mul(dz, dz));
         ld_at(&f, "bw", "b", "(Lsn;DDDFF)V", 57);
         const float alpha =
-            at_narrow(at_mul(at_sub(1.0, at_div(distance, 256.0)), at_widen(r->shadow_opacity)));
+            at_narrow(at_mul(at_sub(1.0, at_div(distance, 256.0)), at_widen(shadow_opacity(r))));
         e->state.shadow_alpha = alpha;
         if (alpha > 0.0f) {
             e->state.shadow_started = true;

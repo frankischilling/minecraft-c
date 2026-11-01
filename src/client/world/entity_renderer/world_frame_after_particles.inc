@@ -593,7 +593,8 @@ static bool particles_body(mc_client_world_frame_call *call, mc_math_classes *ma
         .graphics = call->state.owner->services.graphics,
         .math = math,
         .display = call->state.owner->services.display,
-        .manager = app->startup == NULL ? NULL : app->startup->manager_classes};
+        .manager = app->startup == NULL ? NULL : app->startup->manager_classes,
+        .application_classes = app->source_namespace};
     mc_effect_draw_status status = mc_client_effect_renderer_lit_begin(
         call->state.effects, call->state.camera, call->state.partial, &services,
         &call->lit_particles, &call->lit_particles_error);

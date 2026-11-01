@@ -11,6 +11,7 @@
 
 typedef struct mc_client_render_manager_draw_call mc_client_render_manager_draw_call;
 typedef struct mc_held_stack_parent_error mc_held_stack_parent_error;
+typedef struct mc_cv_context mc_cv_context;
 
 typedef struct mc_client_draw_scope {
     mc_client_render_manager_draw_call *owner;
@@ -25,6 +26,8 @@ typedef struct mc_client_draw_scope {
  * discharge and all checked child retirement. A call cannot reuse it. */
 mc_held_stack_parent_error *mc_client_draw_held_workspace(mc_client_draw_scope *,
                                                           mc_client_manager_error *);
+mc_cv_context *mc_client_draw_inventory_workspace(mc_client_draw_scope *,
+                                                  mc_client_manager_error *);
 /* Reached native work accounting; no Source operation or eager path estimate. */
 bool mc_client_draw_work_step(mc_client_draw_scope *, mc_client_manager_error *);
 
@@ -112,7 +115,8 @@ typedef enum mc_client_living_draw_child {
     MC_CLIENT_LIVING_DRAW_CHILD_HELD,
     MC_CLIENT_LIVING_DRAW_CHILD_ITEM,
     MC_CLIENT_LIVING_DRAW_CHILD_PART,
-    MC_CLIENT_LIVING_DRAW_CHILD_STACK
+    MC_CLIENT_LIVING_DRAW_CHILD_STACK,
+    MC_CLIENT_LIVING_DRAW_CHILD_INVENTORY_BLOCK
 } mc_client_living_draw_child;
 
 typedef struct mc_client_living_draw_block_error {
@@ -138,6 +142,7 @@ typedef union mc_client_living_draw_detail {
     mc_item_render_error item;
     mc_client_model_draw_error part;
     mc_item_stack_status stack;
+    const mc_cv_context *inventory;
 } mc_client_living_draw_detail;
 
 typedef struct mc_client_living_draw_caught {
@@ -240,6 +245,14 @@ typedef struct mc_client_living_draw_state {
     mc_client_living_overlay_state hurt_overlay, color_overlay;
     bool overlay_state_restored;
     mc_client_living_fire_state fire;
+
+    struct {
+        bool entered, stack_captured, matrix_pushed, rescale_enabled, returned;
+        uintptr_t stack_identity;
+        int32_t copies;
+        float bob, rotation, scale;
+        size_t copies_returned, faces_returned;
+    } item;
 } mc_client_living_draw_state;
 
 typedef struct mc_client_living_draw_error {
@@ -261,6 +274,9 @@ bool mc_client_living_draw_entered(mc_client_draw_scope *, mc_client_managed_ren
                                    mc_entity *, double x, double y, double z, float yaw,
                                    float partial, mc_client_graphics_site caller,
                                    mc_client_living_draw_error *);
+bool mc_client_item_draw_entered(mc_client_draw_scope *, mc_client_managed_renderer *, mc_entity *,
+                                 double, double, double, float, float, mc_client_graphics_site,
+                                 mc_client_living_draw_error *);
 bool mc_client_entity_post_draw_entered(mc_client_draw_scope *, mc_client_managed_renderer *,
                                         mc_entity *, double x, double y, double z, float yaw,
                                         float partial, mc_client_graphics_site caller,

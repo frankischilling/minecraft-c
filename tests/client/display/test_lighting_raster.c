@@ -633,7 +633,7 @@ static void list_state(mc_client_display *display, const char *label) {
     printf(" %u %d %d\n", state.color_material ? 1u : 0u, state.material_face, state.material_mode);
 }
 
-static void submitted_attribute(GLuint location, GLint components, float *out) {
+static void submitted_attribute_count(GLuint location, GLint components, float *out, size_t count) {
     /* Observe submitted vertices separately from the driver's persistent
      * current attributes. Legacy list replay differs between those states. */
 #define LIST_OBSERVATION_PROC(type, name, symbol)                                                  \
@@ -652,7 +652,8 @@ static void submitted_attribute(GLuint location, GLint components, float *out) {
     LIST_OBSERVATION_PROC(PFNGLGETBUFFERPARAMETERIVPROC, get_buffer, "glGetBufferParameteriv");
     LIST_OBSERVATION_PROC(PFNGLGETBUFFERSUBDATAPROC, read_buffer, "glGetBufferSubData");
 #undef LIST_OBSERVATION_PROC
-    CHECK((location == 3 && components == 3) || (location == 2 && components == 4));
+    CHECK(((location == 3 && components == 3) || (location == 2 && components == 4)) && count > 0 &&
+          count <= 6);
     CHECK(get_error() == GL_NO_ERROR);
     GLint binding = 0, capacity = 0, enabled = 0, size = 0, type = 0, stride = 0, normalized = 0,
           attribute_buffer = 0;
@@ -671,13 +672,18 @@ static void submitted_attribute(GLuint location, GLint components, float *out) {
           size == components && type == GL_FLOAT && normalized == GL_FALSE &&
           attribute_buffer == binding && stride >= components * (GLint)sizeof(float) &&
           stride <= 4096 && offset <= 4096 &&
-          offset + 2u * (size_t)stride + (size_t)components * sizeof(float) <= (size_t)capacity);
+          offset + (count - 1u) * (size_t)stride + (size_t)components * sizeof(float) <=
+              (size_t)capacity);
     uint8_t uploaded[4096];
     read_buffer(GL_ARRAY_BUFFER, 0, (GLsizeiptr)capacity, uploaded);
     CHECK(get_error() == GL_NO_ERROR);
-    for (size_t vertex = 0; vertex < 3; ++vertex)
+    for (size_t vertex = 0; vertex < count; ++vertex)
         memcpy(out + vertex * (size_t)components, uploaded + offset + vertex * (size_t)stride,
                (size_t)components * sizeof(float));
+}
+
+static void submitted_attribute(GLuint location, GLint components, float *out) {
+    submitted_attribute_count(location, components, out, 3);
 }
 
 static void submitted_list_normals(float out[9]) {
@@ -776,6 +782,83 @@ static void list_controls(mc_client_display *display, mc_client_display_context_
     list_state(display, "after_repeat");
 }
 
+static bool direct_normal_retained(mc_client_display *display) {
+    const mc_client_display_info *info = mc_client_display_info_get(display);
+    CHECK(info != NULL);
+    return (strcmp(info->vendor, "NVIDIA Corporation") == 0 &&
+            strcmp(info->renderer, "NVIDIA GeForce RTX 3060/PCIe/SSE2") == 0 &&
+            strcmp(info->version, "3.3.0 NVIDIA 581.42") == 0) ||
+           (strcmp(info->vendor, "Mesa") == 0 &&
+            strcmp(info->renderer, "llvmpipe (LLVM 20.1.2, 256 bits)") == 0 &&
+            strcmp(info->version, "4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4") == 0);
+}
+
+static void direct_normal_followup(mc_client_display *display,
+                                   mc_client_display_context_lease *lease) {
+    /* The V3 original NW control uses six normal-array faces then one
+     * no-normal quad. Observe the following submitted six vertices and lit
+     * pixel only after that draw; queries inside the prefix are a separate
+     * control, never a prerequisite for the no-query transition. */
+    CHECK(direct_normal_retained(display));
+    static const float prior[3] = {.25f, .5f, .75f};
+    static const int8_t normals[6][3] = {{0, -127, 0}, {0, 127, 0},  {0, 0, -127},
+                                         {0, 0, 127},  {-127, 0, 0}, {127, 0, 0}};
+    static const float positions[6][3] = {{-.75f, -.75f, 0}, {.75f, -.75f, 0}, {.75f, .75f, 0},
+                                          {-.75f, -.75f, 0}, {.75f, .75f, 0},  {-.75f, .75f, 0}};
+    uint8_t bytes[192] = {0};
+    for (size_t vertex = 0; vertex < 6; ++vertex) {
+        memcpy(bytes + vertex * 32, positions[vertex], sizeof(positions[vertex]));
+        memset(bytes + vertex * 32 + 20, 255, 4);
+    }
+    for (unsigned int lighting = 0; lighting < 2; ++lighting) {
+        for (unsigned int queries = 0; queries < 2; ++queries) {
+            setup(display, true);
+            CHECK(mc_client_display_source_lighting_enable(display, lighting != 0, &display_error));
+            CHECK(mc_client_display_source_normal(display, prior[0], prior[1], prior[2],
+                                                  &display_error));
+            CHECK(mc_client_display_source_rescale_normal(display, true, &display_error));
+            CHECK(mc_client_display_source_push(display, &display_error));
+            CHECK(mc_client_display_source_scale(display, .25, .25, .25, &display_error));
+            for (size_t face = 0; face < 6; ++face) {
+                constant_bytes(bytes, 6, normals[face][0], normals[face][1], normals[face][2]);
+                arrays(display, lease, bytes, true, true, false);
+                CHECK(mc_client_display_source_batch(lease, bytes, bytes, sizeof(bytes), 6,
+                                                     GL_TRIANGLES, &display_error));
+                if (queries != 0) {
+                    float current[4] = {0, 0, 0, 17};
+                    CHECK(mc_client_display_source_current_attribute(display, GL_CURRENT_NORMAL,
+                                                                     current, 4, &display_error));
+                    CHECK(memcmp(current, prior, sizeof(prior)) == 0 && current[3] == 17);
+                }
+            }
+            CHECK(mc_client_display_source_rescale_normal(display, false, &display_error));
+            CHECK(mc_client_display_source_pop(display, &display_error));
+            CHECK(mc_client_display_source_clear(display, GL_COLOR_BUFFER_BIT, &display_error));
+            arrays(display, lease, bytes, false, true, false);
+            CHECK(mc_client_display_source_batch(lease, bytes, bytes, sizeof(bytes), 6,
+                                                 GL_TRIANGLES, &display_error));
+            float consumed[18];
+            submitted_attribute_count(3, 3, consumed, 6);
+            for (size_t vertex = 0; vertex < 6; ++vertex)
+                CHECK(memcmp(consumed + vertex * 3, prior, sizeof(prior)) == 0);
+            mc_client_source_fog_state state;
+            CHECK(mc_client_display_source_fog_inspect(display, &state) && state.normal_known &&
+                  memcmp(state.normal, prior, sizeof(prior)) == 0);
+            mc_client_capture capture = {0};
+            CHECK(mc_client_display_capture_rgba(display, &capture, &display_error));
+            CHECK(capture.width == 64 && capture.height == 64 && capture.stride == 256);
+            const uint8_t *pixel = capture.pixels + 32 * capture.stride + 32 * 4;
+            const uint8_t expected = lighting != 0 ? 191 : 255;
+            CHECK(pixel[0] == expected && pixel[1] == expected && pixel[2] == expected &&
+                  pixel[3] == 255);
+            printf("NATIVE_NORMAL_TRANSITION lighting=%u queries=%u ", lighting, queries);
+            words(consumed, 18);
+            printf(" pixel=%02x%02x%02x%02x\n", pixel[0], pixel[1], pixel[2], pixel[3]);
+            mc_client_capture_free(&capture);
+        }
+    }
+}
+
 static void array_normal_controls(mc_client_display *display,
                                   mc_client_display_context_lease **lease) {
     setup(display, true);
@@ -799,6 +882,10 @@ static void array_normal_controls(mc_client_display *display,
     ARRAY_OBSERVATION_PROC(PFNGLGETBUFFERSUBDATAPROC, read_buffer, "glGetBufferSubData");
 #undef ARRAY_OBSERVATION_PROC
     CHECK(get_error() == GL_NO_ERROR);
+    const bool retain_normal = direct_normal_retained(display);
+    const float prior_normal[3] = {.25f, .5f, .75f};
+    CHECK(mc_client_display_source_normal(display, prior_normal[0], prior_normal[1],
+                                          prior_normal[2], &display_error));
     uint8_t bytes[192];
     for (int value = -128; value <= 127; ++value) {
         CHECK(geometry(bytes, false, false, false) == 3);
@@ -807,7 +894,9 @@ static void array_normal_controls(mc_client_display *display,
         CHECK(mc_client_display_source_batch(*lease, bytes, bytes, 96, 3, GL_TRIANGLES,
                                              &display_error));
         mc_client_source_fog_state state;
-        CHECK(mc_client_display_source_fog_inspect(display, &state) && !state.normal_known);
+        CHECK(mc_client_display_source_fog_inspect(display, &state) &&
+              state.normal_known == retain_normal);
+        CHECK(!retain_normal || memcmp(state.normal, prior_normal, sizeof(prior_normal)) == 0);
         GLint binding = 0, capacity = 0;
         get_integer(GL_ARRAY_BUFFER_BINDING, &binding);
         get_buffer(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &capacity);
@@ -859,6 +948,7 @@ static void array_normal_controls(mc_client_display *display,
         }
         printf(" %u\n", state.normal_known ? 1u : 0u);
     }
+    direct_normal_followup(display, *lease);
 }
 
 static void color_input_controls(mc_client_display *display,

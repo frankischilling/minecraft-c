@@ -65,14 +65,15 @@ typedef enum mc_entity_class_kind {
     MC_ENTITY_CLASS_KIND_BOAT,
     MC_ENTITY_CLASS_KIND_ENTITY,
     MC_ENTITY_CLASS_KIND_PLAYER,
-    MC_ENTITY_CLASS_KIND_LOCAL_PLAYER,    /* Client dc; existing selectors stay stable. */
-    MC_ENTITY_CLASS_KIND_PARTICLE,        /* Client xw, query-only ancestor. */
-    MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE, /* Client em. */
-    MC_ENTITY_CLASS_KIND_VV,              /* Actual client vv, query-only. */
-    MC_ENTITY_CLASS_KIND_CF,              /* Actual client cf, query-only. */
-    MC_ENTITY_CLASS_KIND_LX,              /* Actual client lx, query-only. */
-    MC_ENTITY_CLASS_KIND_C,               /* Actual client Lightning c; yu is omitted ancestor. */
-    MC_ENTITY_CLASS_KIND_ITEM_PARTICLE,   /* Actual client pb; existing selectors stay stable. */
+    MC_ENTITY_CLASS_KIND_LOCAL_PLAYER,     /* Client dc; existing selectors stay stable. */
+    MC_ENTITY_CLASS_KIND_PARTICLE,         /* Client xw, query-only ancestor. */
+    MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE,  /* Client em. */
+    MC_ENTITY_CLASS_KIND_VV,               /* Actual client vv, query-only. */
+    MC_ENTITY_CLASS_KIND_CF,               /* Actual client cf, query-only. */
+    MC_ENTITY_CLASS_KIND_LX,               /* Actual client lx, query-only. */
+    MC_ENTITY_CLASS_KIND_C,                /* Actual client Lightning c; yu is omitted ancestor. */
+    MC_ENTITY_CLASS_KIND_ITEM_PARTICLE,    /* Actual client pb; existing selectors stay stable. */
+    MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE, /* Actual client qm. */
     MC_ENTITY_CLASS_KIND_COUNT
 } mc_entity_class_kind;
 

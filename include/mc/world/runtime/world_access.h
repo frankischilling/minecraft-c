@@ -9,7 +9,7 @@ typedef struct mc_world_access mc_world_access;
 typedef struct mc_entity mc_entity;
 typedef struct mc_tile_entity mc_tile_entity;
 
-/* Native adapters for the seven presently reached pm/jp method slots. Each
+/* Native adapters for the presently reached pm/jp method slots. Each
  * callback receives the actual World and already-evaluated source arguments.
  * Returning non-OK stops that source loop without rolling back earlier work.
  * error carries a static operation string and native system_error; an absent
@@ -37,6 +37,9 @@ typedef struct mc_world_access_callbacks {
                                               mc_entity *entity, mc_world_storage_error *error);
     mc_world_storage_status (*sky_changed)(void *context, mc_world_runtime *world,
                                            mc_world_storage_error *error);
+    mc_world_storage_status (*auxiliary)(void *context, mc_world_runtime *world, mc_entity *player,
+                                         int32_t effect, int32_t x, int32_t y, int32_t z,
+                                         int32_t data, mc_world_storage_error *error);
 } mc_world_access_callbacks;
 
 /* Concrete source receivers return the full, stable failure receipt as part of
@@ -63,6 +66,9 @@ typedef struct mc_world_access_source_callbacks {
                                               mc_world_storage_error *, mc_world_access_failure *);
     mc_world_storage_status (*sky_changed)(void *, mc_world_runtime *, mc_world_storage_error *,
                                            mc_world_access_failure *);
+    mc_world_storage_status (*auxiliary)(void *, mc_world_runtime *, mc_entity *, int32_t, int32_t,
+                                         int32_t, int32_t, int32_t, mc_world_storage_error *,
+                                         mc_world_access_failure *);
 } mc_world_access_source_callbacks;
 
 mc_world_storage_status mc_world_access_source_create(const mc_world_access_source_callbacks *,

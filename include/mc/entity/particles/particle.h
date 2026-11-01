@@ -84,6 +84,9 @@ typedef struct mc_particle_snapshot {
     mc_pickup_particle_fields pickup;
     unsigned int item_pc, tick_pc;
     bool tick_active;
+    const mc_block *digging_block;
+    const mc_registry_classes *digging_registry; /* Native Block lifetime. */
+    int32_t digging_face;
 } mc_particle_snapshot;
 
 /* Caller-owned full initialization; never consumes an owning child receipt. */
@@ -146,5 +149,24 @@ mc_entity_status mc_item_particle_tick(mc_entity *particle, mc_registry_classes 
                                        mc_item_particle_tick_error *error);
 /* Actual PB.c_ literal2; no phase or Source field access. */
 mc_entity_status mc_item_particle_layer(const mc_entity *particle, int32_t *out);
+
+/* Actual client QM. The particle owns the reached Block's Registry lifetime.
+ * Constructor, tint and inherited scaling preserve every reached Source effect.
+ * Tint currently closes inherited white and the actual Grass identity skip;
+ * specialized Leaves/TallGrass color bodies retain a reached dependency. */
+mc_entity_status mc_digging_particle_allocate(mc_entity_classes *, mc_entity **, mc_entity_error *);
+mc_entity_status mc_digging_particle_construct(mc_entity *, mc_world_runtime *,
+                                               mc_registry_classes *, mc_math_classes *, double,
+                                               double, double, double, double, double,
+                                               const mc_block *, int32_t face, int32_t metadata,
+                                               mc_particle_error *);
+mc_entity_status mc_digging_particle_tint(mc_entity *, int32_t, int32_t, int32_t,
+                                          mc_particle_error *);
+mc_entity_status mc_digging_particle_velocity_scale(mc_entity *, float, mc_particle_error *);
+mc_entity_status mc_digging_particle_size_scale(mc_entity *, float, mc_particle_error *);
+mc_entity_status mc_digging_particle_tick(mc_entity *, mc_registry_classes *,
+                                          const mc_entity_move_limits *,
+                                          mc_item_particle_tick_error *);
+mc_entity_status mc_digging_particle_layer(const mc_entity *, int32_t *);
 
 #endif

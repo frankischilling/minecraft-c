@@ -30,8 +30,8 @@ def rows(text):
     for value, line in zip(range(-128, 128), found):
         cells = line.split()
         ensure(len(cells) == 6 and cells[:2] == ["NATIVE_ARRAY_NORMAL", str(value)] and
-               all(words(vector) for vector in cells[2:5]) and cells[5] == "0",
-               "ordered three complete GPU normal vectors and unknown current normal")
+               all(words(vector) for vector in cells[2:5]) and cells[5] == "1",
+               "ordered three complete GPU normal vectors and retained known current normal")
     return found
 
 
@@ -45,7 +45,7 @@ def projection(reference):
                all(words(vector) for vector in cells[2:]),
                "actual current/array/formula observations for each original byte value")
         projected.append("NATIVE_ARRAY_NORMAL " + str(value) + " " +
-                         " ".join([cells[3]] * 3) + " 0")
+                         " ".join([cells[3]] * 3) + " 1")
     return projected
 
 
@@ -56,6 +56,9 @@ def main():
     args = parser.parse_args()
     executable = args.executable.resolve(strict=True)
     references, reference_paths, reference_hashes = load_references("array_normals", None, None, rows)
+    transition_path = HERE / "normal-transition.json"
+    transition_hash = digest(transition_path)
+    transition = json.loads(transition_path.read_text(encoding="utf-8"))
     for reference in references:
         original = reference["fixture"]
         ensure(original["original_fixture"] == reference["observations_path"].name and
@@ -63,9 +66,15 @@ def main():
                "unchanged complete original array observations")
         ensure(projection(reference["observations"]) == original["rows"],
                "exact projection from actual original array TF")
+        ensure(original["normal_transition_evidence"] ==
+               {"path": transition_path.name, "sha256": transition_hash} and
+               any(entry["native_driver"] == reference["profile"]["native_driver"] and
+                   entry["status"] == "PASS" and entry["direct_normal_retained"] is True
+                   for entry in transition["profiles"]),
+               "separate finite original NW transition evidence for retained current normal")
     args.work_dir.mkdir(parents=True, exist_ok=True)
     output = Path(tempfile.mkdtemp(prefix="lighting-array-normals-", dir=args.work_dir)).resolve(strict=True)
-    inputs = [executable, *reference_paths, HERE / "run_array_normals.py", SUPPORT]
+    inputs = [executable, *reference_paths, transition_path, HERE / "run_array_normals.py", SUPPORT]
     before = {str(path.resolve()): digest(path) for path in inputs}
     ensure(all(before.get(path) == value for path, value in reference_hashes.items()),
            "parsed original reference bytes match the initial input snapshot")
@@ -91,6 +100,15 @@ def main():
         ensure(layout and 12 <= int(layout[1]) <= 4096 and int(layout[2]) <= 4096,
                "actual enabled float3 normal attribute in the queried bound GPU buffer")
         report["gpu_layout"] = layouts[0]
+        transitions = [line for line in lines if line.startswith("NATIVE_NORMAL_TRANSITION ")]
+        expected_transitions = [
+            "NATIVE_NORMAL_TRANSITION lighting=" + str(lighting) + " queries=" + str(queries) +
+            " " + ",".join(["3e800000,3f000000,3f400000"] * 6) +
+            " pixel=" + ("bfbfbfff" if lighting else "ffffffff")
+            for lighting in range(2) for queries in range(2)]
+        ensure(transitions == expected_transitions,
+               "six following no-normal vertices and actual pixel agree with queried/unqueried original controls")
+        report["normal_transitions"] = transitions
         actual = rows(text)
         report["mismatches"] = [
             {"index": index, "native": native, "original": legacy}

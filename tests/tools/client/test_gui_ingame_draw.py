@@ -174,7 +174,10 @@ def main():
         controls = [line for line in result.stdout.splitlines() if line.startswith("HUD_CONTROL ")]
         if controls != ["HUD_CONTROL blend_numeric_pairs", "HUD_CONTROL projection_null_settings_before_gl", "HUD_CONTROL null_app",
                         "HUD_CONTROL foreign_lookup_preserved", "HUD_CONTROL debug_text_dependency_after_hud",
-                        "HUD_CONTROL item_dependency_preserves_lighting"]:
+                        "HUD_CONTROL dirt_count_animation_overlay",
+                        "HUD_CONTROL item_cleanup_refusal_retry",
+                        "HUD_CONTROL item_dependency_preserves_lighting",
+                        "HUD_CONTROL pickup_coordinate_draw_dead_zero_foreign"]:
             raise AssertionError("HUD failure/ownership controls missing")
         blends = [line.split() for line in result.stdout.splitlines() if line.startswith("HUD_BLEND ")]
         if len(blends) != 2:
