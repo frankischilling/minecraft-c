@@ -2,6 +2,7 @@
 #define MC_CLIENT_INPUT_MOUSE_HELPER_H
 
 #include "../display/sdk_cursor.h"
+#include "../window/canvas.h"
 
 typedef struct mc_client_source_canvas mc_client_source_canvas;
 typedef struct mc_client_source_vy mc_client_source_vy;
@@ -47,6 +48,7 @@ typedef struct mc_client_mouse_helper_error {
     mc_client_sdk_cursor_error cursor;
     mc_client_render_engine_status classes;
     mc_client_sdk_input_error input;
+    mc_client_canvas_error canvas;
 } mc_client_mouse_helper_error;
 
 typedef struct mc_client_mouse_helper_state {
@@ -97,9 +99,10 @@ mc_client_mouse_helper_status mc_client_mouse_helper_grab(mc_client_source_vy *,
 mc_client_mouse_helper_status mc_client_mouse_helper_read_motion(mc_client_source_vy *,
                                                                  mc_client_sdk_input *,
                                                                  mc_client_mouse_helper_error *);
-/* Actual vy.b()V first dereferences c at Component.getWidth4. NULL fails there
- * before any Mouse operation. A nonnull Component remains an explicit owner
- * dependency; SDL window dimensions do not substitute for that source object. */
+/* Actual vy.b()V: fresh c/getWidth4 and c/getHeight13, Java int /2,
+ * Mouse.setCursorPosition18, then Mouse.setGrabbed(false)22 and return25.
+ * The same live Canvas owns Component fields; NULL still fails at4 before
+ * input admission or any Mouse call. No standalone window-size substitute. */
 mc_client_mouse_helper_status mc_client_mouse_helper_ungrab(mc_client_source_vy *,
                                                             mc_client_sdk_input *,
                                                             mc_client_mouse_helper_error *);

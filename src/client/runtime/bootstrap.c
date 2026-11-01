@@ -9,6 +9,7 @@
 #include "../startup/application_services.h"
 #include "../startup/application_startup_internal.h"
 #include "../startup/application_startup_menu.h"
+#include "../window/frame.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/client/world/frustum.h"
 #include "mc/core/java/logging.h"
@@ -52,6 +53,8 @@ struct mc_client_bootstrap {
     mc_client_statistics_owner_error session_error;
     mc_client_render_texture_error texture_error;
     mc_client_image_download_error image_download_error;
+    mc_client_source_frame *frame;
+    mc_client_frame_error frame_error;
     bool retiring, startup_returned;
 };
 
@@ -307,8 +310,8 @@ static mc_client_bootstrap_status open_session(mc_client_bootstrap *context, con
     return MC_CLIENT_BOOTSTRAP_OK;
 }
 
-mc_client_bootstrap_status mc_client_bootstrap_open(const mc_client_application_options *options,
-                                                    mc_client_bootstrap **out) {
+static mc_client_bootstrap_status open_profile(const mc_client_application_options *options,
+                                               bool standalone, mc_client_bootstrap **out) {
     if (options == NULL || out == NULL || *out != NULL || options->assets == NULL ||
         options->assets[0] == '\0' || options->width <= 0 || options->height <= 0)
         return MC_CLIENT_BOOTSTRAP_INVALID_ARGUMENT;
@@ -331,12 +334,21 @@ mc_client_bootstrap_status mc_client_bootstrap_open(const mc_client_application_
     status = open_startup_services(context);
     if (status != MC_CLIENT_BOOTSTRAP_OK)
         return status;
+    if (standalone && !mc_client_source_frame_open(options->width, options->height, &context->frame,
+                                                   &context->frame_error))
+        return owner_failure("standalone Frame/Canvas peer creation",
+                             (int)context->frame_error.status);
     mc_client_application_construction_status constructed =
         mc_client_application_constructor_allocate(&context->constructor, NULL, &context->app,
                                                    &context->construction_error);
     if (constructed == MC_CLIENT_APP_OK) {
         const mc_client_application_constructor_arguments arguments = {
-            NULL, NULL, NULL, options->width, options->height, false};
+            context->frame,
+            mc_client_source_frame_canvas(context->frame),
+            NULL,
+            options->width,
+            options->height,
+            false};
         constructed = mc_client_application_constructor_construct(context->app, &arguments,
                                                                   &context->construction_error);
     }
@@ -352,6 +364,10 @@ mc_client_bootstrap_status mc_client_bootstrap_open(const mc_client_application_
     status = open_session(context, options->username);
     if (status != MC_CLIENT_BOOTSTRAP_OK)
         return status;
+    if (context->frame != NULL &&
+        (!mc_client_source_frame_bind_app(context->frame, context->app, &context->frame_error) ||
+         !mc_client_source_frame_show(context->frame, options->hidden, &context->frame_error)))
+        return owner_failure("standalone Frame show/listener", (int)context->frame_error.status);
     mc_client_startup_options startup = mc_client_application_startup_default_options();
     startup.hidden = options->hidden;
     mc_client_startup_status started = mc_client_application_startup_allocate(
@@ -382,6 +398,17 @@ mc_client_bootstrap_status mc_client_bootstrap_open(const mc_client_application_
         return owner_failure(text(context->nw_output_graphics.operation),
                              (int)context->nw_output_graphics.status);
     return MC_CLIENT_BOOTSTRAP_OK;
+}
+
+mc_client_bootstrap_status mc_client_bootstrap_open(const mc_client_application_options *o,
+                                                    mc_client_bootstrap **out) {
+    return open_profile(o, false, out);
+}
+
+mc_client_bootstrap_status
+mc_client_bootstrap_open_standalone(const mc_client_application_options *o,
+                                    mc_client_bootstrap **out) {
+    return open_profile(o, true, out);
 }
 
 #undef OPEN_OWNER
@@ -586,6 +613,9 @@ mc_client_bootstrap_status mc_client_bootstrap_close(mc_client_bootstrap **slot)
             context->app->world_classes = NULL; /* End the consumed native class view. */
         context->world_classes = NULL;
     }
+    if (context->frame != NULL &&
+        !mc_client_source_frame_bind_app(context->frame, NULL, &context->frame_error))
+        return owner_failure("Frame App borrow unbinding", (int)context->frame_error.status);
     status = close_application(context);
     if (status != MC_CLIENT_BOOTSTRAP_OK)
         return status;
@@ -677,6 +707,11 @@ mc_client_bootstrap_status mc_client_bootstrap_close(mc_client_bootstrap **slot)
         if (resource != MC_REGISTRY_OK)
             return owner_failure("SDK resource provider retirement", (int)resource);
     }
+    if (context->frame != NULL &&
+        !mc_client_source_frame_retire(&context->frame, &context->frame_error))
+        return context->frame_error.status == MC_CLIENT_CANVAS_BUSY
+                   ? MC_CLIENT_BOOTSTRAP_BUSY
+                   : owner_failure("standalone Frame retirement", (int)context->frame_error.status);
     free(context);
     *slot = NULL;
     return MC_CLIENT_BOOTSTRAP_OK;
@@ -706,4 +741,8 @@ mc_math_classes *mc_client_bootstrap_math(const mc_client_bootstrap *context) {
 
 mc_client_render_engine_classes *mc_client_bootstrap_graphics(const mc_client_bootstrap *context) {
     return context == NULL || context->retiring ? NULL : context->graphics;
+}
+
+mc_client_source_frame *mc_client_bootstrap_frame(mc_client_bootstrap *context) {
+    return context != NULL && !context->retiring ? context->frame : NULL;
 }

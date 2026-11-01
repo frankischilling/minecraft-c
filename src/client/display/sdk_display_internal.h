@@ -13,6 +13,8 @@ bool mc_client_display_sdk_created(const mc_client_display *);
 bool mc_client_display_sdk_live(const mc_client_display *);
 bool mc_client_display_sdk_operation_busy(const mc_client_display *);
 bool mc_client_display_sdk_external_busy(const mc_client_display *);
+bool mc_client_display_sdk_parent(const mc_client_display *);
+bool mc_client_display_sdk_parent_resize(mc_client_display *, bool *, mc_client_display_error *);
 bool mc_client_display_sdk_resized(mc_client_display *, bool *, mc_client_display_error *);
 bool mc_client_display_sdk_extent(mc_client_display *, bool width, int32_t *,
                                   mc_client_display_error *);

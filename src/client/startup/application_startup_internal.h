@@ -20,6 +20,7 @@ struct mc_client_application_startup {
         appdata_present;
     int32_t last_startup_store, last_directory_pc;
     mc_client_display *display;
+    mc_client_canvas_graphics *canvas_graphics;
     mc_client_display_mode *mode;
     mc_java_file *directory_candidate, *saves_candidate;
     mc_client_save_format *format_candidate;

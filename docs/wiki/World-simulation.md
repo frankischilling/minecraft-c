@@ -1,5 +1,22 @@
 # World simulation
 
+## Standalone client hosting
+
+The ordinary client now owns a native Frame and distinct embedded Canvas.
+Display attaches to the child after the startup Graphics calls. Component
+resize, native Frame close and nonnull MouseHelper release are connected.
+Separate menu profiles exercise hidden/visible hosting, real focus recovery,
+physical cursor positioning after resize and terminal cleanup after native
+faults. Loaded-World focus/close, source saving and extended play remain separate
+unfinished work.
+
+The broad Windows selection retains two failed NULL-Canvas loaded tests after
+another desktop application takes focus. These results do not qualify a
+reliable loaded-World session; the detailed test record preserves their scope.
+
+[Frame and Canvas scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/frame-canvas.md)
+records the owners, native backend corrections and remaining limits.
+
 ## Burning billboards
 
 The Entity post body now renders actual fire layers from the terrain atlas,
@@ -11,7 +28,8 @@ while preserving the existing matrix bound.
 Fourteen prepared Windows images match the original byte for byte on the same
 GPU/driver. Linux matches all seven baselines but retains drawn-image
 differences. A later registered loaded-Zombie run returns after the fire body;
-general Canvas/focus and extended play remain unfinished.
+the later Canvas menu profiles retain their own scope. Loaded-World transitions
+and extended play remain unfinished.
 
 [Fire behavior and evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/burning-billboards.md)
 records the finite scope and the retained earlier failures.

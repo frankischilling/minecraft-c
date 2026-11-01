@@ -17,11 +17,9 @@ static int32_t clip(int32_t value, int32_t extent) {
 
 bool mc_client_sdk_mouse_poll_body(mc_client_sdk_input *o, bool collect,
                                    mc_client_sdk_input_error *e) {
-    int native_width = 0, native_height = 0;
-    if (!SDL_GetWindowSize(o->window, &native_width, &native_height)) {
-        mc_client_sdk_input_fail(e, MC_CLIENT_SDK_INPUT_PLATFORM_FAILED,
-                                 "SDK actual backend window coordinates", "org/lwjgl/input/Mouse",
-                                 "poll", "()V", 31, true);
+    int32_t native_width, native_height;
+    if (!mc_client_sdk_mouse_native_extent(o, &native_width, &native_height, e, "poll", "()V",
+                                           31)) {
         return false;
     }
     o->width = native_width;
@@ -223,6 +221,15 @@ mc_client_sdk_input_status mc_client_sdk_mouse_set_grabbed(mc_client_sdk_input *
             o->grab_y = o->y;
             o->last_mouse_store = 37;
         }
+        bool warp = false;
+        if (!grabbed && old) {
+            int32_t capabilities;
+            if (!mc_client_sdk_native_cursor_capabilities(o, &capabilities, &e)) {
+                mc_client_sdk_input_caller(&e, "org/lwjgl/input/Mouse", "setGrabbed", "(Z)V", 51);
+                return mc_client_sdk_input_leave(o, &e, out);
+            }
+            warp = (capabilities & 1) != 0;
+        }
         /* Preserve SDL records before its documented relative-mode motion
          * flush. Translate mouse records using the OLD concrete backend mode;
          * keyboard/window occurrences remain in their shared transport. */
@@ -237,18 +244,23 @@ mc_client_sdk_input_status mc_client_sdk_mouse_set_grabbed(mc_client_sdk_input *
                 mc_client_sdk_input_caller(&e, "org/lwjgl/input/Mouse", "setGrabbed", "(Z)V", 77);
             return mc_client_sdk_input_leave(o, &e, out);
         }
-        if (!grabbed && old) {
-            /* The admitted actual Windows/X11 SDL attachment has real cursor
-             * warp support. This is the source capability-bit1 path at51/68;
-             * a different native platform was rejected during construction. */
+        if (warp) {
+            /* Source capability-bit1 was tested at51/56 before native event
+             * preservation. A zero capability never reaches this conversion. */
+            int32_t native_height;
+            if (!mc_client_sdk_mouse_native_extent(o, NULL, &native_height, &e, "setGrabbed",
+                                                   "(Z)V", 68)) {
+                return mc_client_sdk_input_leave(o, &e, out);
+            }
             if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
                 mc_client_sdk_input_fail(&e, MC_CLIENT_SDK_INPUT_UNSUPPORTED_FP,
                                          "SDK reached real SDL warp coordinate conversion",
                                          "org/lwjgl/input/Mouse", "setGrabbed", "(Z)V", 68, true);
                 return mc_client_sdk_input_leave(o, &e, out);
             }
-            SDL_WarpMouseInWindow(o->window, (float)o->grab_x,
-                                  (float)mc_java_i32_sub(mc_java_i32_sub(o->height, 1), o->grab_y));
+            SDL_WarpMouseInWindow(
+                o->window, (float)o->grab_x,
+                (float)mc_java_i32_sub(mc_java_i32_sub(native_height, 1), o->grab_y));
         }
         const bool changed = o->backend_grabbed != grabbed;
         mc_client_sdk_queue *replacement = NULL;

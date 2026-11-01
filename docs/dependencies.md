@@ -47,6 +47,12 @@ that contains zlib. No release artifact has been published yet.
 
 ## Client libraries
 
+The native Frame/Canvas host compiles narrowly corrected SDL translation units:
+Windows child focus detection and X11 ConfigureNotify child-array retirement.
+CMake creates checked build-directory copies; downloaded and offline
+source trees stay unchanged. SDL's license remains in each copied file.
+See [Frame and Canvas hosting](client/frame-canvas.md).
+
 `MC_BUILD_CLIENT=ON` is the default. It adds pinned static SDL3 3.4.18 and
 libpng 1.6.59 from their upstream source archives:
 

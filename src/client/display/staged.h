@@ -1,6 +1,7 @@
 #ifndef MC_CLIENT_DISPLAY_STAGED_H
 #define MC_CLIENT_DISPLAY_STAGED_H
 
+#include "../window/canvas.h"
 #include "display.h"
 #include "mc/entity/player/player.h"
 #include "sdk_icons.h"
@@ -40,6 +41,7 @@ typedef struct mc_client_display_stage_error {
     mc_client_display_site site, child;
     mc_client_display_error display;
     mc_client_display_error cleanup_display;
+    mc_client_canvas_error canvas;
     mc_player_status string;
     /* Complete value remains valid across partial or terminal retirement;
      * no returned cleanup error points into an already-freed native child. */
@@ -89,6 +91,11 @@ bool mc_client_display_stage_allocate(mc_client_display **out, mc_client_display
  * success. The caller's occurrence stays independent of Display retirement. */
 bool mc_client_display_stage_bind_icons(mc_client_display *, mc_client_sdk_icons *,
                                         mc_client_display_stage_error *);
+/* Source static initialization precedes parent identity check. Same parent
+ * returns without stores. Changed parent stores14 before created17; created
+ * reparent remains an explicit frontier after that completed field store. */
+bool mc_client_display_stage_set_parent(mc_client_display *, mc_client_source_canvas *,
+                                        mc_client_display_stage_error *);
 /* Source setDisplayMode stores SAME counted Mode25 before checking created28.
  * The admitted no-window branch has no window work. Reconfiguration of an
  * already-created window remains explicit until its full source body exists. */
@@ -115,5 +122,15 @@ bool mc_client_display_stage_inspect(const mc_client_display *, mc_client_displa
 bool mc_client_display_stage_retire(mc_client_display **, mc_client_display_stage_error *);
 mc_client_sdk_input *mc_client_display_inputs(mc_client_display *);
 mc_client_sdk_update *mc_client_display_update_owner(mc_client_display *);
+
+typedef struct mc_client_display_parent_state {
+    const mc_client_source_canvas *parent, *listener_parent;
+    const mc_client_display_mode *effective_mode;
+    SDL_Window *window;
+    bool borrowed_window, parent_resized;
+} mc_client_display_parent_state;
+
+bool mc_client_display_stage_parent_inspect(const mc_client_display *,
+                                            mc_client_display_parent_state *);
 
 #endif

@@ -212,40 +212,56 @@ mc_client_startup_status mc_client_application_run_prefix(mc_client_application_
     atomic_store_explicit(&app->J, true, memory_order_seq_cst); /* run putfield2 */
     startup->run_J_store_completed = true;
     startup->failure.caller = (mc_client_application_owner_site){MC_CLASS, "run", "()V", 6};
-    if (app->m != NULL) {
-        application_startup_fail(&startup->failure, MC_CLIENT_STARTUP_UNIMPLEMENTED,
-                                 "actual nonnull Canvas getGraphics", "java/awt/Canvas",
-                                 "getGraphics", "()Ljava/awt/Graphics;", 11);
-        return stop_attempt(startup, out);
+    const bool parent_branch = app->m != NULL;
+    if (parent_branch) {
+        mc_client_canvas_graphics **graphics = &startup->canvas_graphics;
+        if (mc_client_source_canvas_get_graphics(app->m, graphics, &startup->failure.canvas) !=
+            MC_CLIENT_CANVAS_OK)
+            goto canvas11;
+        if (*graphics != NULL) {
+            /* Source arguments d/e are captured at fillRect37 after setColor23. */
+            if (mc_client_canvas_graphics_black(*graphics, &startup->failure.canvas) !=
+                MC_CLIENT_CANVAS_OK)
+                goto canvas23;
+            if (mc_client_canvas_graphics_fill_rect(*graphics, 0, 0, app->d, app->e,
+                                                    &startup->failure.canvas) !=
+                MC_CLIENT_CANVAS_OK)
+                goto canvas37;
+            if (mc_client_canvas_graphics_dispose(graphics, &startup->failure.canvas) !=
+                MC_CLIENT_CANVAS_OK)
+                goto canvas41;
+        }
+    } else {
+        if (app->Q) {
+            application_startup_fail(&startup->failure, MC_CLIENT_STARTUP_UNIMPLEMENTED,
+                                     "actual fullscreen Display child", "org/lwjgl/opengl/Display",
+                                     "setFullscreen", "(Z)V", 62);
+            return stop_attempt(startup, out);
+        }
+        if (!mc_client_display_mode_allocate(&startup->mode, &startup->failure.display)) {
+            display_failure(startup, 112);
+            return stop_attempt(startup, out);
+        }
+        if (!mc_client_display_mode_construct(startup->mode, app->d, app->e,
+                                              &startup->failure.display)) {
+            display_failure(startup, 124);
+            return stop_attempt(startup, out);
+        }
     }
-    if (app->Q) {
-        application_startup_fail(&startup->failure, MC_CLIENT_STARTUP_UNIMPLEMENTED,
-                                 "actual fullscreen Display child", "org/lwjgl/opengl/Display",
-                                 "setFullscreen", "(Z)V", 62);
-        return stop_attempt(startup, out);
-    }
-    if (!mc_client_display_mode_allocate(&startup->mode, &startup->failure.display)) {
-        display_failure(startup, 112);
-        return stop_attempt(startup, out);
-    }
-    if (!mc_client_display_mode_construct(startup->mode, app->d, app->e,
-                                          &startup->failure.display)) {
-        display_failure(startup, 124);
-        return stop_attempt(startup, out);
-    }
-    if (!mc_client_display_stage_allocate(&startup->display, &startup->failure.display)) {
-        display_failure(startup, 127);
-        return stop_attempt(startup, out);
-    }
-    /* Native prerequisite only: same imported ready Icons, before any SDK
-     * active use. A missing/bad binding is not a source LWJGLException. */
-    if (!mc_client_display_stage_bind_icons(startup->display, startup->services.icons,
+    if (!mc_client_display_stage_allocate(&startup->display, &startup->failure.display) ||
+        !mc_client_display_stage_bind_icons(startup->display, startup->services.icons,
                                             &startup->failure.display)) {
-        display_failure(startup, 127);
+        display_failure(startup, parent_branch ? 48 : 127);
         return stop_attempt(startup, out);
     }
-    if (!mc_client_display_stage_set_mode(startup->display, startup->mode,
-                                          &startup->failure.display)) {
+    if (parent_branch) {
+        if (!mc_client_display_stage_set_parent(startup->display, app->m,
+                                                &startup->failure.display)) {
+            display_failure(startup, 48);
+            return stop_attempt(startup, out);
+        }
+    } else if (!mc_client_display_stage_set_mode(startup->display, startup->mode,
+                                                 &startup->failure.display)) {
         display_failure(startup, 127);
         return stop_attempt(startup, out);
     }
@@ -266,6 +282,30 @@ mc_client_startup_status mc_client_application_run_prefix(mc_client_application_
     app->display = startup->display; /* SAME concrete native resource, not a source putfield. */
     startup->failure.caller = (mc_client_application_owner_site){MC_CLASS, "a", "()V", 160};
     (void)application_startup_directory(startup);
+    return stop_attempt(startup, out);
+canvas11:
+    startup->failure.caller = (mc_client_application_owner_site){MC_CLASS, "a", "()V", 11};
+    application_startup_fail(&startup->failure, MC_CLIENT_STARTUP_OWNER_FAILED,
+                             "actual Canvas/Graphics child", "java/awt/Canvas", "getGraphics",
+                             "()Ljava/awt/Graphics;", 0);
+    return stop_attempt(startup, out);
+canvas23:
+    startup->failure.caller = (mc_client_application_owner_site){MC_CLASS, "a", "()V", 23};
+    application_startup_fail(&startup->failure, MC_CLIENT_STARTUP_OWNER_FAILED,
+                             "actual Canvas/Graphics child", "java/awt/Graphics", "setColor",
+                             "(Ljava/awt/Color;)V", 0);
+    return stop_attempt(startup, out);
+canvas37:
+    startup->failure.caller = (mc_client_application_owner_site){MC_CLASS, "a", "()V", 37};
+    application_startup_fail(&startup->failure, MC_CLIENT_STARTUP_OWNER_FAILED,
+                             "actual Canvas/Graphics child", "java/awt/Graphics", "fillRect",
+                             "(IIII)V", 0);
+    return stop_attempt(startup, out);
+canvas41:
+    startup->failure.caller = (mc_client_application_owner_site){MC_CLASS, "a", "()V", 41};
+    application_startup_fail(&startup->failure, MC_CLIENT_STARTUP_OWNER_FAILED,
+                             "actual Canvas/Graphics child", "java/awt/Graphics", "dispose", "()V",
+                             0);
     return stop_attempt(startup, out);
 }
 

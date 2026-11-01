@@ -1,4 +1,5 @@
 #include "display.h"
+#include "../window/canvas.h"
 #include "gl_internal.h"
 #include "occlusion.h"
 #include "sdk_display_internal.h"
@@ -75,7 +76,9 @@ struct mc_client_display {
     bool native_retiring, native_cleanup_issued, sdk_profile, stage_active, class_initialized,
         window_created;
     mc_client_display_phase stage_phase;
-    mc_client_display_mode *initial_mode, *current_mode;
+    mc_client_display_mode *initial_mode, *current_mode, *effective_mode;
+    mc_client_source_canvas *parent, *listener_parent, *replaced_parent;
+    bool borrowed_window, parent_listener, parent_resized;
     mc_player_string *title, *empty_title;
     mc_client_sdk_icons *icons;
     mc_client_sdk_window_icons *window_icons;
@@ -1302,7 +1305,30 @@ static bool destroy_native(mc_client_display *display, bool preserve_context, bo
             return false;
         }
     }
-    if (display->window != NULL)
+    /* SDL context destruction succeeded or this diagnostic owner is being
+     * consumed. Never retry destruction through a stale context after a later
+     * checked Canvas release retains the native Display owner. */
+    display->context = NULL;
+    if (display->parent != NULL || display->listener_parent != NULL ||
+        display->replaced_parent != NULL) {
+        mc_client_canvas_error canvas_error = {0};
+        if (display->parent_listener &&
+            mc_client_source_canvas_resize_listener(display->listener_parent, NULL, NULL,
+                                                    &canvas_error) != MC_CLIENT_CANVAS_OK)
+            return fail(error, MC_CLIENT_DISPLAY_BUSY, "Display Canvas listener retirement",
+                        "active Canvas", 0);
+        display->parent_listener = false;
+        if (mc_client_source_canvas_release(&display->replaced_parent, &canvas_error) !=
+            MC_CLIENT_CANVAS_OK)
+            return fail(error, MC_CLIENT_DISPLAY_BUSY, "Display replaced Canvas retirement",
+                        "active Canvas", 0);
+        if (mc_client_source_canvas_release(&display->listener_parent, &canvas_error) !=
+                MC_CLIENT_CANVAS_OK ||
+            mc_client_source_canvas_release(&display->parent, &canvas_error) != MC_CLIENT_CANVAS_OK)
+            return fail(error, MC_CLIENT_DISPLAY_BUSY, "Display Canvas parent retirement",
+                        "active Canvas", 0);
+    }
+    if (display->window != NULL && !display->borrowed_window)
         SDL_DestroyWindow(display->window);
     if (display->video)
         SDL_QuitSubSystem(SDL_INIT_VIDEO);

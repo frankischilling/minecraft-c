@@ -5,6 +5,10 @@ GuiMainMenu. `runtime/bootstrap.c` creates the actual constructor and startup
 services, local Session and imported-resource namespaces. The bounded startup
 probe still stops before `Minecraft.run`32 after `Minecraft.a()` returns749.
 The production `runtime/menu_loop.c` continues from that completed graph.
+The ordinary entry now owns a [native Frame and embedded Canvas](frame-canvas.md).
+It attaches Display to the real child, follows Component resizing, handles native
+Frame close and executes MouseHelper release through the nonnull Component.
+The prepared NULL-Canvas bootstrap remains available to its existing fixtures.
 
 Singleplayer now opens the genuine [World-selection screen](world-selection.md).
 Focused Windows empty and populated save-list runs pass, including drawing,

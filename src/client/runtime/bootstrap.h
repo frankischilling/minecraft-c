@@ -8,6 +8,9 @@
 #include "mc/resources/files/files.h"
 
 typedef struct mc_client_bootstrap mc_client_bootstrap;
+typedef struct mc_client_source_frame mc_client_source_frame;
+/* Borrow expires at the first close attempt, like the App getter. */
+mc_client_source_frame *mc_client_bootstrap_frame(mc_client_bootstrap *);
 typedef struct mc_client_render_engine_classes mc_client_render_engine_classes;
 
 typedef enum mc_client_bootstrap_status {
@@ -31,6 +34,11 @@ typedef enum mc_client_bootstrap_status {
  * separate diagnostic entry points until their source integration is available. */
 mc_client_bootstrap_status mc_client_bootstrap_open(const mc_client_application_options *,
                                                     mc_client_bootstrap **out);
+
+/* Ordinary standalone Frame/Canvas launch. The prepared open entry above
+ * deliberately retains its NULL source Canvas profile for existing callers. */
+mc_client_bootstrap_status
+mc_client_bootstrap_open_standalone(const mc_client_application_options *, mc_client_bootstrap **);
 
 /* Retire caller-owned renderers, assets and other borrowed users first. Native
  * cancellation/join, manager/graphics terminal retirement and App callback-cycle

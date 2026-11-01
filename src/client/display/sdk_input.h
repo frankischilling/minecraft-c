@@ -151,6 +151,12 @@ mc_client_sdk_input_status mc_client_sdk_mouse_poll(mc_client_sdk_input *,
                                                     mc_client_sdk_input_error *);
 mc_client_sdk_input_status mc_client_sdk_mouse_update_cursor(mc_client_sdk_input *,
                                                              mc_client_sdk_input_error *);
+/* Actual Mouse.setCursorPosition(II)V: created guard precedes x/event_x and
+ * y/event_y stores; the grabbed/capability branch either updates grab_x/y or
+ * performs the real native warp. It neither polls nor clears deltas/queues. */
+mc_client_sdk_input_status mc_client_sdk_mouse_set_cursor_position(mc_client_sdk_input *, int32_t,
+                                                                   int32_t,
+                                                                   mc_client_sdk_input_error *);
 mc_client_sdk_input_status mc_client_sdk_mouse_set_grabbed(mc_client_sdk_input *, bool,
                                                            mc_client_sdk_input_error *);
 mc_client_sdk_input_status mc_client_sdk_keyboard_poll(mc_client_sdk_input *,

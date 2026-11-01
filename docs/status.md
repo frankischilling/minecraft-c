@@ -1,5 +1,12 @@
 # Development status
 
+The ordinary executable now owns a real [Frame and embedded Canvas](client/frame-canvas.md).
+Startup paints through native Graphics before attaching Display to the child.
+The menu host connects Component resize, native close and nonnull MouseHelper
+release. Focus loss/recovery and cursor positioning after a native resize have
+separate returning profiles and retained failure-prefix controls. Fullscreen,
+high-DPI behavior, loaded-World close and extended play remain unqualified.
+
 The client constructs all eleven default Overworld [Mob kinds](entity/mob-construction.md),
 runs their [spawn predicates](entity/mob-spawning.md), and dispatches their actual
 [active tick chains](entity/mob-active-tick.md) through genuine Living fields.
@@ -23,8 +30,8 @@ Both hosts pass seven finite fire profiles and eight failure/cleanup controls;
 the matching Mesa comparison retains its strict matrix limit. Fourteen
 prepared Windows images match the original exactly. Linux draw-image
 differences remain unqualified. Earlier passing and failing loaded runs retain
-their own source scope; general Canvas/focus transitions and extended play
-are still unfinished.
+their own source scope. The later standalone menu host has its own Canvas/focus
+qualification; loaded-World transitions and extended play remain unfinished.
 
 The focused Windows profiles load a saved World, then construct and
 publish a declared Sheep, Pig, Cow or Chicken through the ordinary Entity APIs
@@ -43,8 +50,8 @@ A selected Spider jockey retains its separate unfinished mount.
 Single-player remains pre-playable. Mob combat, storage and remaining renderers,
 further Block overrides, concrete display particles, sleeping wake transitions
 and gameplay actions remain unfinished. Active achievement and tutorial notices
-also retain an unfinished draw child. Focus-loss Canvas integration and the
-hidden pause-screen save path remain open.
+also retain an unfinished draw child. Loaded-World focus/close qualification and
+the hidden pause-screen save path remain open.
 
 ## Integration qualification
 

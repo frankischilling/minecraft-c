@@ -117,6 +117,11 @@ mc_client_startup_status mc_client_application_startup_retire(mc_client_applicat
     startup->active = true;
     startup->retirement = error;
     client_application *app = startup->app;
+    if (startup->canvas_graphics != NULL &&
+        mc_client_canvas_graphics_dispose(&startup->canvas_graphics, &startup->retirement.canvas) !=
+            MC_CLIENT_CANVAS_OK)
+        return cleanup_failure(startup, MC_CLIENT_STARTUP_BUSY,
+                               "startup pending native Graphics retirement", out);
     const mc_client_startup_status menu = application_startup_menu_retire(startup);
     if (menu != MC_CLIENT_STARTUP_OK)
         return cleanup_failure(startup, menu, "startup menu/screen retirement", out);

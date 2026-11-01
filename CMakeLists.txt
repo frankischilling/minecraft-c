@@ -152,6 +152,15 @@ if(MC_BUILD_CLIENT)
     add_library(mc_client_timer_construction STATIC src/client/timer/construction.c)
     target_link_libraries(mc_client_timer_construction PUBLIC mc_client_timer
         PRIVATE mc_platform_time mc_build_options)
+    add_library(mc_client_canvas STATIC src/client/window/canvas.c src/client/window/canvas_platform.c)
+    target_include_directories(mc_client_canvas PUBLIC src include)
+    target_link_libraries(mc_client_canvas PUBLIC SDL3::SDL3-static PRIVATE mc_build_options)
+    if(WIN32)
+        target_link_libraries(mc_client_canvas PRIVATE user32 gdi32)
+    else()
+        find_package(X11 REQUIRED)
+        target_link_libraries(mc_client_canvas PRIVATE X11::X11)
+    endif()
     add_library(mc_client_event_transport STATIC src/client/display/events.c)
     target_include_directories(mc_client_event_transport PUBLIC src/client/display)
     target_link_libraries(mc_client_event_transport PUBLIC SDL3::SDL3-static PRIVATE mc_build_options)
@@ -159,10 +168,11 @@ if(MC_BUILD_CLIENT)
         src/client/display/sdk_mode.c src/client/display/sdk_platform.c
         src/client/display/sdk_input.c src/client/display/sdk_input_events.c
         src/client/display/sdk_input_poll.c src/client/display/sdk_update.c
+        src/client/display/sdk_mouse_position.c src/client/display/sdk_cursor_capabilities.c
         src/client/display/sdk_window_icons.c)
     target_include_directories(mc_client_sdk_runtime PUBLIC src/client/display)
     target_link_libraries(mc_client_sdk_runtime PUBLIC
-        mc_client_sdk_queue mc_client_sdk_icons SDL3::SDL3-static
+        mc_client_canvas mc_client_sdk_queue mc_client_sdk_icons SDL3::SDL3-static
         PRIVATE mc_client_event_transport mc_simulation mc_game_settings mc_build_options)
     if(WIN32)
         target_link_libraries(mc_client_sdk_runtime PRIVATE user32 gdi32)
@@ -173,7 +183,7 @@ if(MC_BUILD_CLIENT)
     include(cmake/client_controllers.cmake)
     add_library(mc_client_display STATIC src/client/display/display.c)
     target_include_directories(mc_client_display PUBLIC src/client/display)
-    target_link_libraries(mc_client_display PUBLIC mc_image SDL3::SDL3-static
+    target_link_libraries(mc_client_display PUBLIC mc_client_canvas mc_image SDL3::SDL3-static
         PRIVATE mc_client_event_transport mc_client_sdk_runtime mc_build_options)
     if(UNIX)
         target_link_libraries(mc_client_display PRIVATE m)

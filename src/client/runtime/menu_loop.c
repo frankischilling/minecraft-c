@@ -1,4 +1,7 @@
 #include "menu_loop.h"
+#include "../gui/loading_internal.h"
+#include "../gui/source_screen_initialize.h"
+#include "../window/canvas.h"
 #include "gameplay_input.h"
 #include "world_tick.h"
 
@@ -104,6 +107,9 @@ struct mc_client_menu_loop {
     mc_client_screen_error screen;
     mc_client_display_error display;
     mc_client_graphics_error graphics_error;
+    mc_client_canvas_error canvas_error;
+    mc_client_loading_error resize_resolution_error;
+    mc_client_screen_init_error resize_initialization_error;
 };
 
 static bool stop(mc_client_menu_loop *loop, const char *operation, const char *source_class,
@@ -810,8 +816,50 @@ static bool frame_body(mc_client_menu_loop *loop) {
         }
     } else
         app->L = false;
-    if (app->m != NULL)
-        return run_stop(loop, "actual Canvas sizing is not connected", 436);
+    if (app->m != NULL && !app->Q) {
+        int32_t width, height;
+        if (mc_client_source_canvas_width(app->m, &width, &loop->canvas_error) !=
+            MC_CLIENT_CANVAS_OK)
+            return run_stop(loop, "actual Canvas.getWidth", 436);
+        bool changed = width != app->d;
+        if (!changed) {
+            if (mc_client_source_canvas_height(app->m, &height, &loop->canvas_error) !=
+                MC_CLIENT_CANVAS_OK)
+                return run_stop(loop, "actual Canvas.getHeight", 450);
+            changed = height != app->e;
+        }
+        if (changed) {
+            if (mc_client_source_canvas_width(app->m, &width, &loop->canvas_error) !=
+                MC_CLIENT_CANVAS_OK)
+                return run_stop(loop, "actual fresh Canvas.getWidth", 465);
+            app->d = width;
+            if (mc_client_source_canvas_height(app->m, &height, &loop->canvas_error) !=
+                MC_CLIENT_CANVAS_OK)
+                return run_stop(loop, "actual fresh Canvas.getHeight", 476);
+            app->e = height;
+            if (app->d <= 0)
+                app->d = 1;
+            if (app->e <= 0)
+                app->e = 1;
+            /* Minecraft.a(II): argument clamps, d14/e19, fresh r26; qq39,
+             * then fresh r56 and same screen initialization64. */
+            const int32_t w = app->d > 0 ? app->d : 1, h = app->e > 0 ? app->e : 1;
+            app->d = w;
+            app->e = h;
+            if (app->r != NULL) {
+                mc_scaled_resolution resolution;
+                if (mc_client_loading_resolution(app, &resolution, &loop->resize_resolution_error,
+                                                 39) != MC_CLIENT_LOADING_OK)
+                    return stop(loop, "actual resize QQ constructor",
+                                "net/minecraft/client/Minecraft", "a", 39);
+                if (mc_client_screen_initialize(app->r, app, resolution.width, resolution.height,
+                                                &loop->resize_initialization_error) !=
+                    MC_CLIENT_SCREEN_OK)
+                    return stop(loop, "actual resize screen initialization",
+                                "net/minecraft/client/Minecraft", "a", 64);
+            }
+        }
+    }
     if (mc_client_application_gl_diagnostic(app->display, NULL, &loop->diagnostic) !=
         MC_CLIENT_GL_DIAGNOSTIC_OK)
         return run_stop(loop, "actual Post render GL diagnostic", 521);
@@ -1047,7 +1095,7 @@ int mc_client_menu_run(const mc_client_application_options *options) {
     mc_client_bootstrap *bootstrap = NULL;
     mc_client_menu_loop *loop = NULL;
     int result = 1;
-    if (mc_client_bootstrap_open(options, &bootstrap) != MC_CLIENT_BOOTSTRAP_OK ||
+    if (mc_client_bootstrap_open_standalone(options, &bootstrap) != MC_CLIENT_BOOTSTRAP_OK ||
         !mc_client_menu_loop_create(bootstrap, &loop))
         goto cleanup;
     bool captured = false;

@@ -269,7 +269,10 @@ static mc_client_sdk_update_status source_extent(mc_client_sdk_update *o, bool w
     }
     /* This actual windowed/null-parent branch reads source width/height26;
      * no created guard or App/native pixel substitution is inserted. */
-    *result = width ? o->width : o->height;
+    if (!mc_client_display_sdk_source_extent(o->display, width, result)) {
+        failure(&e, MC_CLIENT_SDK_UPDATE_PLATFORM_FAILED, "actual parent extent dispatch", method,
+                "()I", 22);
+    }
     return leave(o, &e, out);
 }
 
@@ -321,7 +324,8 @@ mc_client_sdk_update_status mc_client_sdk_display_update_messages(mc_client_sdk_
     /* This finite profile is real windowed/null-parent creation. Unsupported
      * fullscreen/AWT mutation never enters through a fabricated source flag. */
     bool resized = false;
-    if (!mc_client_display_sdk_resized(o->display, &resized, &e.display)) {
+    if (!mc_client_display_sdk_parent(o->display) &&
+        !mc_client_display_sdk_resized(o->display, &resized, &e.display)) {
         failure(&e, MC_CLIENT_SDK_UPDATE_PLATFORM_FAILED, "actual native wasResized", "update",
                 "(Z)V", 75);
         goto done;
@@ -346,6 +350,16 @@ mc_client_sdk_update_status mc_client_sdk_display_update_messages(mc_client_sdk_
         o->height = value;
         o->last_store = 116;
         e.height_stored = true;
+    }
+    bool reshaped = false;
+    if (!mc_client_display_sdk_parent_resize(o->display, &reshaped, &e.display)) {
+        failure(&e, MC_CLIENT_SDK_UPDATE_PLATFORM_FAILED, "actual parent reshape", "update", "(Z)V",
+                125);
+        goto done;
+    }
+    if (reshaped) {
+        o->window_resized = true;
+        o->last_store = 133;
     }
     if (process && !messages(o, &e))
         caller(&e, "update", "(Z)V", 140);

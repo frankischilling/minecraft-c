@@ -270,24 +270,68 @@ mc_client_mouse_helper_read_motion(mc_client_source_vy *owner, mc_client_sdk_inp
     return method_leave(owner, &error, out);
 }
 
+static void canvas_failed(mc_client_mouse_helper_error *e) {
+    e->operation = e->canvas.operation;
+    e->native_policy = e->canvas.native_policy;
+    switch (e->canvas.status) {
+        case MC_CLIENT_CANVAS_NULL_REFERENCE:
+            e->status = MC_CLIENT_MOUSE_HELPER_NULL_REFERENCE;
+            e->exception_class = "java/lang/NullPointerException";
+            break;
+        case MC_CLIENT_CANVAS_BUSY:
+            e->status = MC_CLIENT_MOUSE_HELPER_BUSY;
+            break;
+        case MC_CLIENT_CANVAS_LIMIT:
+            e->status = MC_CLIENT_MOUSE_HELPER_LIMIT;
+            break;
+        case MC_CLIENT_CANVAS_ALLOCATION:
+            e->status = MC_CLIENT_MOUSE_HELPER_ALLOCATION_FAILED;
+            break;
+        default:
+            e->status = MC_CLIENT_MOUSE_HELPER_UNIMPLEMENTED_DEPENDENCY;
+            break;
+    }
+}
+
 mc_client_mouse_helper_status mc_client_mouse_helper_ungrab(mc_client_source_vy *owner,
                                                             mc_client_sdk_input *input,
                                                             mc_client_mouse_helper_error *out) {
-    (void)input; /* No Mouse call precedes the reached Component.getWidth. */
     mc_client_mouse_helper_error error = {0};
     if (!method_enter(owner, "b", &error))
         return publish(&error, out);
     error.site.pc = 4;
     error.child = (mc_client_graphics_site){"java/awt/Component", "getWidth", "()I", 0};
-    if (owner->c == NULL) {
-        error.status = MC_CLIENT_MOUSE_HELPER_NULL_REFERENCE;
-        error.operation = "actual vy Component.getWidth null receiver";
-        error.exception_class = "java/lang/NullPointerException";
-    } else {
-        error.status = MC_CLIENT_MOUSE_HELPER_UNIMPLEMENTED_DEPENDENCY;
-        error.operation = "actual Component.getWidth owner dependency";
-        error.native_policy = true;
+    int32_t width;
+    if (mc_client_source_canvas_width(owner->c, &width, &error.canvas) != MC_CLIENT_CANVAS_OK) {
+        canvas_failed(&error);
+        return method_leave(owner, &error, out);
     }
+    const int32_t x = width / 2; /* Java idiv8; defined for every signed width. */
+    error.site.pc = 13;
+    error.child = (mc_client_graphics_site){"java/awt/Component", "getHeight", "()I", 0};
+    int32_t height;
+    /* This evaluates owner->c again. Neither receiver nor height is preloaded
+     * ahead of the actual first width invocation/division. */
+    if (mc_client_source_canvas_height(owner->c, &height, &error.canvas) != MC_CLIENT_CANVAS_OK) {
+        canvas_failed(&error);
+        return method_leave(owner, &error, out);
+    }
+    const int32_t y = height / 2; /* Java idiv17. */
+    if (!method_input(owner, input, &error, 18))
+        return method_leave(owner, &error, out);
+    if (mc_client_sdk_mouse_set_cursor_position(input, x, y, &error.input) !=
+        MC_CLIENT_SDK_INPUT_OK) {
+        input_failed(&error);
+        return method_leave(owner, &error, out);
+    }
+    error.site.pc = 22;
+    if (mc_client_sdk_mouse_set_grabbed(input, false, &error.input) != MC_CLIENT_SDK_INPUT_OK) {
+        input_failed(&error);
+        return method_leave(owner, &error, out);
+    }
+    error.child = (mc_client_graphics_site){0};
+    error.site.pc = 25;
+    error.source_returned = true;
     return method_leave(owner, &error, out);
 }
 

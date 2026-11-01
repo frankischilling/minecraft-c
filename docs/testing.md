@@ -1,5 +1,47 @@
 # Test scope and reproduction
 
+## Native Frame and Canvas
+
+Twenty-two selected targets, including the normal client, build on Windows
+MSVC Debug; Linux Clang18 ASan/UBSan builds 21. Each build/test cohort tracks
+unchanged hashes for its 2,563 program, helper and build inputs. The Windows-only
+successor and Linux product audit are distinguished below. Formatting checks
+1,795 C/header/fragment files.
+
+The latest Windows selection passes 27 of 29 CTests in 153.31 seconds. All five
+new host checks pass: the asset-independent Frame/Canvas owner and four
+imported-resource hidden/visible/fault profiles. Constructor, NULL MouseHelper,
+SDK transport/window, controller, GL setup, menu, World-frame, camera, lighting
+and the six Mob/overlay/fire rendering selections also pass.
+
+The two loaded-World return tests fail. In a separate failure-only diagnostic,
+Chrome owns the foreground after a 17.161-second frame; Win32 and SDL both
+report that the test window lacks focus. The prepared NULL-Canvas graph then
+fails at `Minecraft.i:16` through its real Component width read. The initiating
+foreground action is not established. The diagnostic was removed afterward;
+no fake focus result, changed Timer/Player input or weaker assertion replaces
+these failures. The later child-only SDL focus correction keeps the existing
+top-level path and still retains those two failures. A reliable loaded-World
+return or extended-play result is not claimed for this cohort.
+
+Linux passes all 22 selected CTests in 224.86 seconds and all four separate
+standalone profiles. The complete phase, including the final input audit, takes
+255.16 seconds. The actual X11 cursor capability is seven; both physical warps
+and both native floating-point failure prefixes execute. No sanitizer finding
+remains in these passing runs. After the Windows-only focus correction, a fresh
+Linux build performs no compilation and retains all 21 recorded ELF hashes.
+That product audit supplies no extra test execution credit.
+
+The native tests check actual parentage, a distinct desktop/effective Mode,
+pre-context Graphics, parent-relative origin after resize, physical cursor
+coordinates, focus loss/recovery, native close and checked retirement. Retained
+event tests cover successful delivery before another callback fails, retry,
+port replacement and callback reentrancy. Earlier failed graphics, extent,
+cursor and allocation-leak runs remain separate from the passing cohort.
+See [Frame and Canvas hosting](client/frame-canvas.md) for reproduction and
+remaining source, device and persistence limits. No whole original/native
+Frame, launcher, pixel or gameplay comparison is established here.
+
 ## Burning billboard qualification
 
 The current Windows source passes nineteen affected CTests, including the

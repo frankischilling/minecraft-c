@@ -40,6 +40,7 @@ function(mc_add_client_dependencies)
         URL_HASH SHA256=9c75cf16330322c217dedd2e0609f1124f1b54b8633e763467b4684d0f4334a3
         DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
     FetchContent_MakeAvailable(mc_sdl3)
+    include("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/sdl_native_fixes.cmake")
 
     # libpng asks for package ZLIB and target ZLIB::ZLIB. Both must resolve to
     # the already configured mc_zlib owner, including its offline override.

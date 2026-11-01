@@ -86,6 +86,7 @@ typedef struct mc_client_startup_error {
     mc_client_game_directory_error directory;
     mc_client_game_directory_state directory_prefix;
     mc_world_info_status string;
+    mc_client_canvas_error canvas;
     mc_player_status player_string;
     mc_java_file_error file;
     mc_client_save_error save;

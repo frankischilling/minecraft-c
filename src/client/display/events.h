@@ -47,6 +47,19 @@ typedef struct mc_client_events_state {
 mc_client_events_status mc_client_events_attach(SDL_Window *, size_t max_bytes,
                                                 mc_client_event_port **out,
                                                 mc_client_events_error *);
+typedef bool (*mc_client_events_window_dispatch)(void *, const SDL_Event *);
+/* Main-thread, idle port registration. A callback must not enter the event
+ * owner. New retained Frame-window events are dispatched once after the complete
+ * bounded SDL batch is copied;
+ * successful own-window dispatch consumes that record, global QUIT remains
+ * available to other ports. Failed dispatch retains its record and returns
+ * the actual native failure, without replaying a successful earlier callback.
+ * Retired ports may disappear before retry; newly attached ports never receive
+ * earlier retained window/global dispatches. Progress stores numeric identities,
+ * not borrowed port pointers. */
+mc_client_events_status mc_client_events_bind_window_dispatch(mc_client_event_port *,
+                                                              mc_client_events_window_dispatch,
+                                                              void *, mc_client_events_error *);
 /* One explicit pump, followed by a bounded snapshot of pending SDL records.
  * Deep copy/reserve precedes GET. On a later failure, earlier records and the
  * still-queued SDL head remain owned. No input consumer runs here. */

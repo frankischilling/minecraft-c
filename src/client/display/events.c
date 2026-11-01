@@ -33,7 +33,8 @@ struct mc_client_event_record {
     int width, height;
     bool window_extent;
     size_t bytes;
-    bool ticket;
+    uint64_t dispatch_next;
+    bool ticket, native_dispatched;
 };
 
 struct mc_client_event_port {
@@ -44,13 +45,16 @@ struct mc_client_event_port {
     int width, height;
     bool dirty, resized, close_requested;
     size_t tickets;
+    uint64_t dispatch_sequence;
+    mc_client_events_window_dispatch dispatch;
+    void *dispatch_context;
 };
 
 struct event_owner {
     mc_client_event_port *ports;
     mc_client_event_record *head, *tail;
     size_t port_count, records, bytes, tickets, max_bytes;
-    uint64_t generation;
+    uint64_t generation, port_sequence;
     bool active;
 };
 
@@ -362,6 +366,9 @@ mc_client_events_status mc_client_events_attach(SDL_Window *window, size_t max_b
     if (shared != NULL && (shared->active || shared->max_bytes != max_bytes))
         return fail(shared, e, MC_CLIENT_EVENTS_BUSY, "attach SDL event port",
                     "active owner or different fixed native byte policy");
+    if (shared != NULL && shared->port_sequence == UINT64_MAX)
+        return fail(shared, e, MC_CLIENT_EVENTS_LIMIT, "attach SDL event port",
+                    "native port identity limit");
     const SDL_WindowID id = SDL_GetWindowID(window);
     int width = 0, height = 0;
     if (id == 0 || !SDL_GetWindowSize(window, &width, &height))
@@ -404,6 +411,7 @@ mc_client_events_status mc_client_events_attach(SDL_Window *window, size_t max_b
     p->width = width;
     p->height = height;
     p->owner = o;
+    p->dispatch_sequence = ++o->port_sequence;
     p->next = o->ports;
     o->ports = p;
     ++o->port_count;
@@ -411,6 +419,18 @@ mc_client_events_status mc_client_events_attach(SDL_Window *window, size_t max_b
     if (fresh)
         shared = o;
     *out = p;
+    return MC_CLIENT_EVENTS_OK;
+}
+
+mc_client_events_status
+mc_client_events_bind_window_dispatch(mc_client_event_port *p,
+                                      mc_client_events_window_dispatch dispatch, void *context,
+                                      mc_client_events_error *e) {
+    if (p == NULL || !SDL_IsMainThread() || p->owner->active || p->dispatch != NULL)
+        return fail(shared, e, MC_CLIENT_EVENTS_BUSY, "Frame native window listener binding",
+                    "active/already bound port");
+    p->dispatch = dispatch;
+    p->dispatch_context = context;
     return MC_CLIENT_EVENTS_OK;
 }
 
@@ -443,6 +463,7 @@ static mc_client_events_status transfer_pending(event_owner *o, mc_client_events
         }
         r->owner = o;
         r->event = peek;
+        r->dispatch_next = o->port_sequence;
         r->bytes = sizeof(*r);
         o->bytes += r->bytes;
         r->window = event_window(&peek);
@@ -486,6 +507,54 @@ static mc_client_events_status transfer_pending(event_owner *o, mc_client_events
         if (e != NULL) {
             ++e->records_transferred;
             e->pending_type = 0;
+        }
+    }
+    /* Dispatch only after the entire observed SDL batch is retained. Native
+     * layout may SDL_FilterEvents superseded resize messages; it must never
+     * erase a not-yet-copied head of this transfer batch. New native events
+     * stay in SDL until the next bounded transfer. */
+    if (status == MC_CLIENT_EVENTS_OK) {
+        mc_client_event_record **slot = &o->head, *previous = NULL;
+        while (*slot != NULL) {
+            mc_client_event_record *r = *slot;
+            bool consume = false;
+            if (!r->native_dispatched) {
+                for (mc_client_event_port *v = o->ports; v != NULL; v = v->next) {
+                    /* Ports are linked in descending, never-reused sequence
+                     * order. Persist only a numeric cursor: an idle failed
+                     * batch may outlive a retired port or a later attachment.
+                     * A later global callback failure must not replay an
+                     * earlier successful callback on retry. */
+                    if (v->dispatch_sequence > r->dispatch_next)
+                        continue;
+                    const Uint32 type = r->event.type;
+                    if (v->dispatch == NULL ||
+                        (type != SDL_EVENT_QUIT &&
+                         (type < SDL_EVENT_WINDOW_FIRST || type > SDL_EVENT_WINDOW_LAST ||
+                          r->window != v->id))) {
+                        r->dispatch_next = v->dispatch_sequence - 1;
+                        continue;
+                    }
+                    if (!v->dispatch(v->dispatch_context, &r->event))
+                        return fail(o, e, MC_CLIENT_EVENTS_SDL_FAILED,
+                                    "Frame/Canvas native window listener",
+                                    "retained failed event; host owns detailed failure");
+                    r->dispatch_next = v->dispatch_sequence - 1;
+                    if (r->window == v->id)
+                        consume = true;
+                }
+                r->native_dispatched = true;
+            }
+            if (consume) {
+                *slot = r->next;
+                if (o->tail == r)
+                    o->tail = previous;
+                --o->records;
+                record_free(r);
+            } else {
+                previous = r;
+                slot = &r->next;
+            }
         }
     }
     return status;

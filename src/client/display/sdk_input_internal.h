@@ -79,4 +79,13 @@ int32_t mc_client_sdk_input_key_code(int32_t sdl_scancode);
  * its input child even while a real SDL pump callback runs before device poll. */
 bool mc_client_display_sdk_operation_busy(const mc_client_display *);
 
+/* Reached capability query for actual supported Windows/X11 owners. The
+ * caller already owns this input's active guard and live Display graph. */
+bool mc_client_sdk_native_cursor_capabilities(mc_client_sdk_input *, int32_t *,
+                                              mc_client_sdk_input_error *);
+/* Native coordinates must not use SDL's pre-ConfigureNotify size cache. */
+bool mc_client_sdk_mouse_native_extent(mc_client_sdk_input *, int32_t *width, int32_t *height,
+                                       mc_client_sdk_input_error *, const char *method,
+                                       const char *descriptor, int32_t pc);
+
 #endif
