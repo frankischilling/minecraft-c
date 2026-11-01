@@ -5998,8 +5998,8 @@
       "sha256": "3b4d1b7618a4680f206bc49e80f714aafc123ef502d7be943cd80b5e7f35fb54"
     },
     "tests/entity/movement/movement_probe.c": {
-      "bytes": 49921,
-      "sha256": "cb2b35cee94ee020bc067bfb9da36c3774a0467509929b10a12e981973efa5dd"
+      "bytes": 49979,
+      "sha256": "d41613da222f61554f29e72a3ab523bab94fdafdeb93015798f47ec86d3f709d"
     },
     "tests/entity/movement/test_effects.c": {
       "bytes": 6394,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 412849,
-      "sha256": "aa3738a3002a47a077733335662abd42a50f8363fb9fff7b415d3ca7bb1b0926"
+      "bytes": 413578,
+      "sha256": "a32f88bd842964f7c6ba0efd41db6bb105c9a248067ca5bf00e7846367a7e03b"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -18326,6 +18326,31 @@
             "tests/world/runtime/saving/source_session_terminal_controls.inc": {
               "bytes": 10553,
               "sha256": "f6df2456d2f85898d2e9d3b43bd824228becfe389bb772b91411bb12ad9cd2b6"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "bb9eb02",
+      "role": "Current fixture compiler checks input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 759330,
+        "sha256": "2aa5be2b960888f9b9ec5b20583b980f918a1e65fc30c1f01d23fcc0e095a6d6"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 3758,
+          "after_count": 3758,
+          "previous": {
+            "tests/entity/movement/movement_probe.c": {
+              "bytes": 49921,
+              "sha256": "cb2b35cee94ee020bc067bfb9da36c3774a0467509929b10a12e981973efa5dd"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 412849,
+              "sha256": "aa3738a3002a47a077733335662abd42a50f8363fb9fff7b415d3ca7bb1b0926"
             }
           },
           "added": []

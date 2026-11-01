@@ -4470,8 +4470,8 @@
       "sha256": "3b4d1b7618a4680f206bc49e80f714aafc123ef502d7be943cd80b5e7f35fb54"
     },
     "tests/entity/movement/movement_probe.c": {
-      "bytes": 49921,
-      "sha256": "cb2b35cee94ee020bc067bfb9da36c3774a0467509929b10a12e981973efa5dd"
+      "bytes": 49979,
+      "sha256": "d41613da222f61554f29e72a3ab523bab94fdafdeb93015798f47ec86d3f709d"
     },
     "tests/entity/movement/test_effects.c": {
       "bytes": 6394,
@@ -10231,6 +10231,27 @@
             "tests/world/runtime/saving/source_session_terminal_controls.inc": {
               "bytes": 10553,
               "sha256": "f6df2456d2f85898d2e9d3b43bd824228becfe389bb772b91411bb12ad9cd2b6"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "bb9eb02",
+      "role": "Current fixture compiler checks input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 412849,
+        "sha256": "aa3738a3002a47a077733335662abd42a50f8363fb9fff7b415d3ca7bb1b0926"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 2037,
+          "after_count": 2037,
+          "previous": {
+            "tests/entity/movement/movement_probe.c": {
+              "bytes": 49921,
+              "sha256": "cb2b35cee94ee020bc067bfb9da36c3774a0467509929b10a12e981973efa5dd"
             }
           },
           "added": []

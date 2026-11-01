@@ -598,7 +598,8 @@ static bool mp_string(const char *text, const char *expected) {
 
 static bool mp_dispatch(mp_probe *probe, const mp_case *row, mc_entity *entity,
                         const double delta[3], float single, size_t call, mp_result *result) {
-    *result = (mp_result){.returned = "-"};
+    memset(result, 0, sizeof(*result));
+    result->returned = "-";
     bool returned = false;
     mc_entity_status status = MC_ENTITY_OK;
     mc_world_storage_status world_status = MC_WORLD_STORAGE_OK;
@@ -781,7 +782,8 @@ static bool mp_replay(mp_probe *probe, const mp_case *row) {
     bool success = false;
     mc_entity *entity = NULL;
     mc_entity_bounds *anchor = NULL;
-    mp_result result = {0};
+    mp_result result;
+    memset(&result, 0, sizeof(result));
     mp_owners owners = {0};
     char constructor_storage[MP_SNAPSHOT], before_storage[MP_SNAPSHOT], after_storage[MP_SNAPSHOT];
     char reread_storage[MP_INPUT], watcher_before_storage[128], watcher_after_storage[128];
