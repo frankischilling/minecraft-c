@@ -105,7 +105,8 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk_stat
     }
     mc_chunk_provider_fields provider;
     mc_world_storage_error native = {0};
-    if (mc_chunk_provider_bind_fields(world->fields.v, &provider, &native) != MC_WORLD_STORAGE_OK) {
+    if (mc_chunk_provider_internal_fields(world->fields.v, &provider, &native) !=
+        MC_WORLD_STORAGE_OK) {
         cause(error, native);
         return false;
     }
@@ -1288,6 +1289,296 @@ mc_world_storage_status mc_world_collision_block_state_shape_in_classes_held(
     mc_world_runtime_classes *code_classes, mc_world_runtime *world, const mc_block *block,
     int32_t x, int32_t y, int32_t z, mc_world_collision_error *error) {
     return state_shape_core(code_classes, world, false, block, x, y, z, error);
+}
+
+/* Selected-box virtual dispatch is intentionally independent of box/e above.
+ * The original client declares exactly these seven overrides plus UU.f. */
+_Static_assert(MC_BLOCK_KIND_COUNT == 69, "audit selected-box declaring methods");
+
+static const char *selected_declaring(mc_block_kind kind) {
+    switch (kind) {
+        case MC_BLOCK_LADDER:
+            return "dp";
+        case MC_BLOCK_DOOR:
+            return "le";
+        case MC_BLOCK_TRAPDOOR:
+            return "oq";
+        case MC_BLOCK_CACTUS:
+            return "or";
+        case MC_BLOCK_STAIRS:
+            return "ss";
+        case MC_BLOCK_SIGN:
+            return "uj";
+        case MC_BLOCK_CAKE:
+            return "um";
+        case MC_BLOCK_BASE:
+        case MC_BLOCK_STONE:
+        case MC_BLOCK_GRASS:
+        case MC_BLOCK_DIRT:
+        case MC_BLOCK_SAPLING:
+        case MC_BLOCK_FLOWING_FLUID:
+        case MC_BLOCK_STILL_FLUID:
+        case MC_BLOCK_SAND:
+        case MC_BLOCK_GRAVEL:
+        case MC_BLOCK_ORE:
+        case MC_BLOCK_LOG:
+        case MC_BLOCK_LEAVES:
+        case MC_BLOCK_SPONGE:
+        case MC_BLOCK_GLASS:
+        case MC_BLOCK_DISPENSER:
+        case MC_BLOCK_SANDSTONE:
+        case MC_BLOCK_NOTE_BLOCK:
+        case MC_BLOCK_BED:
+        case MC_BLOCK_RAIL:
+        case MC_BLOCK_DETECTOR_RAIL:
+        case MC_BLOCK_PISTON_BASE:
+        case MC_BLOCK_COBWEB:
+        case MC_BLOCK_TALL_GRASS:
+        case MC_BLOCK_DEAD_BUSH:
+        case MC_BLOCK_PISTON_HEAD:
+        case MC_BLOCK_WOOL:
+        case MC_BLOCK_MOVING_PISTON:
+        case MC_BLOCK_FLOWER:
+        case MC_BLOCK_MUSHROOM:
+        case MC_BLOCK_MINERAL_STORAGE:
+        case MC_BLOCK_SLAB:
+        case MC_BLOCK_TNT:
+        case MC_BLOCK_BOOKSHELF:
+        case MC_BLOCK_OBSIDIAN:
+        case MC_BLOCK_TORCH:
+        case MC_BLOCK_FIRE:
+        case MC_BLOCK_MOB_SPAWNER:
+        case MC_BLOCK_CHEST:
+        case MC_BLOCK_REDSTONE:
+        case MC_BLOCK_CRAFTING_TABLE:
+        case MC_BLOCK_CROPS:
+        case MC_BLOCK_FARMLAND:
+        case MC_BLOCK_FURNACE:
+        case MC_BLOCK_LEVER:
+        case MC_BLOCK_PRESSURE_PLATE:
+        case MC_BLOCK_REDSTONE_ORE:
+        case MC_BLOCK_REDSTONE_TORCH:
+        case MC_BLOCK_BUTTON:
+        case MC_BLOCK_SNOW_LAYER:
+        case MC_BLOCK_ICE:
+        case MC_BLOCK_SNOW_BLOCK:
+        case MC_BLOCK_CLAY:
+        case MC_BLOCK_SUGAR_CANE:
+        case MC_BLOCK_JUKEBOX:
+        case MC_BLOCK_FENCE:
+        case MC_BLOCK_PUMPKIN:
+        case MC_BLOCK_NETHERRACK:
+        case MC_BLOCK_SOUL_SAND:
+        case MC_BLOCK_GLOWSTONE:
+        case MC_BLOCK_PORTAL:
+        case MC_BLOCK_REPEATER:
+        case MC_BLOCK_LOCKED_CHEST:
+            return "uu";
+        case MC_BLOCK_KIND_COUNT:
+        default:
+            return NULL;
+    }
+}
+
+static mc_world_storage_status selected_failure(mc_world_selected_box_error *e,
+                                                mc_world_storage_status status,
+                                                const char *operation, bool source_null) {
+    e->status = status;
+    e->operation = operation;
+    e->source_null = source_null;
+    e->native_policy = !source_null;
+    return status;
+}
+
+static mc_world_selected_box_frame *selected_enter(mc_world_selected_box_error *e, const char *name,
+                                                   const mc_block *receiver) {
+    if (e->frame_count == MC_WORLD_SELECTED_BOX_FRAMES) {
+        (void)selected_failure(e, MC_WORLD_STORAGE_LIMIT,
+                               "selected-box native delegation frame extent", false);
+        return NULL;
+    }
+    mc_world_selected_box_frame *frame = &e->frames[e->frame_count++];
+    frame->declaring_class = name;
+    frame->receiver = receiver;
+    mc_world_collision_error_init(&e->child);
+    return frame;
+}
+
+static unsigned int selected_return_pc(const char *name) {
+    if (strcmp(name, "dp") == 0)
+        return 95;
+    if (strcmp(name, "or") == 0)
+        return 43;
+    if (strcmp(name, "ss") == 0)
+        return 12;
+    if (strcmp(name, "um") == 0)
+        return 71;
+    if (strcmp(name, "uu") == 0)
+        return 47;
+    return 18; /* The three pinned LE/OQ/UJ wrappers. */
+}
+
+mc_world_storage_status mc_world_collision_block_selected_box_in_classes_held(
+    mc_world_runtime_classes *code_classes, mc_world_runtime *world, const mc_block *block,
+    int32_t x, int32_t y, int32_t z, mc_entity_bounds **out, mc_world_selected_box_error *error) {
+    if (error == NULL)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    memset(error, 0, sizeof(*error));
+    mc_world_collision_error_init(&error->child);
+    if (code_classes == NULL || out == NULL || *out != NULL)
+        return selected_failure(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                "selected-box native code/output/scratch arguments", false);
+    if (code_classes->side != MC_WORLD_INFO_CLIENT)
+        return selected_failure(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                "selected-box client code namespace", false);
+    block_context context = {code_classes, world, false};
+    const mc_block *receiver = block;
+    for (;;) {
+        if (receiver == NULL)
+            return selected_failure(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                    "actual selected-box null virtual receiver", true);
+        if (!block_admit(&context, receiver, &error->child))
+            return selected_failure(error, error->child.nearby.query.status,
+                                    error->child.nearby.query.operation, false);
+        const char *name = selected_declaring(receiver->kind);
+        if (name == NULL)
+            return selected_failure(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                    "selected-box unqualified declaring method", false);
+        mc_world_selected_box_frame *f = selected_enter(error, name, receiver);
+        if (f == NULL)
+            return error->status;
+        if (receiver->kind == MC_BLOCK_STAIRS) {
+            f->bytecode = 1;
+            const mc_block *prototype = receiver->subtype.ss.a;
+            f->bytecode = 9;
+            f->reference_owner = "uu";
+            if (prototype == NULL)
+                return selected_failure(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                        "actual Stairs selected-box null prototype receiver", true);
+            receiver = prototype;
+            continue; /* Actual invokevirtual on this SAME prototype. */
+        }
+        mc_world_storage_status status;
+        if (receiver->kind == MC_BLOCK_DOOR || receiver->kind == MC_BLOCK_TRAPDOOR ||
+            receiver->kind == MC_BLOCK_SIGN) {
+            f->bytecode = 6;
+            status = state_shape(&context, (mc_block *)receiver, x, y, z, &error->child);
+            if (status != MC_WORLD_STORAGE_OK)
+                return selected_failure(error, status, error->child.nearby.query.operation,
+                                        world == NULL);
+            f->state_shape_returned = true;
+            f->bytecode = 15;
+            f->reference_owner = receiver->kind == MC_BLOCK_SIGN ? "rw" : "uu";
+            f = selected_enter(error, "uu", receiver);
+            if (f == NULL)
+                return error->status;
+            f->bytecode = 44;
+            status = base_box(&context, receiver, x, y, z, out, &error->child);
+        } else if (receiver->kind == MC_BLOCK_LADDER) {
+            f->bytecode = 5;
+            if (world == NULL)
+                return selected_failure(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                        "actual Ladder selected metadata World receiver", true);
+            int32_t value;
+            if (!metadata(&context, "dp", "cg", 5, x, y, z, &value, &error->child))
+                return selected_failure(error, error->child.nearby.query.status,
+                                        error->child.nearby.query.operation, false);
+            f->metadata_returned = true;
+            f->metadata = value;
+            mc_world_collision_error_init(&error->child);
+            mc_block *mutable = (mc_block *)receiver;
+            const float depth = 0.125f;
+            if (value == 2) {
+                f->bytecode = 26;
+                if (!floating(&context, &error->child, "dp", "cg", 26))
+                    return selected_failure(error, error->child.nearby.query.status,
+                                            error->child.nearby.query.operation, false);
+                shape(&context, mutable, "dp", "cg", 30, 0, 0, 1.0f - depth, 1, 1, 1,
+                      &error->child);
+                f->bounds_store_pc = 30;
+            }
+            if (value == 3) {
+                shape(&context, mutable, "dp", "cg", 47, 0, 0, 0, 1, 1, depth, &error->child);
+                f->bounds_store_pc = 47;
+            }
+            if (value == 4) {
+                f->bytecode = 60;
+                if (!floating(&context, &error->child, "dp", "cg", 60))
+                    return selected_failure(error, error->child.nearby.query.status,
+                                            error->child.nearby.query.operation, false);
+                shape(&context, mutable, "dp", "cg", 66, 1.0f - depth, 0, 0, 1, 1, 1,
+                      &error->child);
+                f->bounds_store_pc = 66;
+            }
+            if (value == 5) {
+                shape(&context, mutable, "dp", "cg", 83, 0, 0, 0, depth, 1, 1, &error->child);
+                f->bounds_store_pc = 83;
+            }
+            f->bytecode = 92;
+            f->reference_owner = "uu";
+            f = selected_enter(error, "uu", receiver);
+            if (f == NULL)
+                return error->status;
+            f->bytecode = 44;
+            status = base_box(&context, receiver, x, y, z, out, &error->child);
+        } else if (receiver->kind == MC_BLOCK_CACTUS) {
+            f->bytecode = 5;
+            if (!floating(&context, &error->child, "or", "je", 5))
+                return selected_failure(error, error->child.nearby.query.status,
+                                        error->child.nearby.query.operation, false);
+            const float edge = 0.0625f;
+            const float x0 = (float)x + edge, z0 = (float)z + edge;
+            const float x1 = (float)mc_java_i32_add(x, 1) - edge;
+            const double y1 = (double)mc_java_i32_add(y, 1);
+            const float z1 = (float)mc_java_i32_add(z, 1) - edge;
+            f->bytecode = 40;
+            status = pooled(&context, "or", "je", 40, (double)x0, (double)y, (double)z0, (double)x1,
+                            y1, (double)z1, out, &error->child);
+        } else if (receiver->kind == MC_BLOCK_CAKE) {
+            f->bytecode = 5;
+            if (world == NULL)
+                return selected_failure(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                        "actual Cake selected metadata World receiver", true);
+            int32_t value;
+            if (!metadata(&context, "um", "mw", 5, x, y, z, &value, &error->child))
+                return selected_failure(error, error->child.nearby.query.status,
+                                        error->child.nearby.query.operation, false);
+            f->metadata_returned = true;
+            f->metadata = value;
+            mc_world_collision_error_init(&error->child);
+            f->bytecode = 20;
+            if (!floating(&context, &error->child, "um", "mw", 20))
+                return selected_failure(error, error->child.nearby.query.status,
+                                        error->child.nearby.query.operation, false);
+            const float edge = 0.0625f;
+            const float width = (float)mc_java_i32_add(1, mc_java_i32_mul(value, 2)) / 16.0f;
+            const float x0 = (float)x + width, z0 = (float)z + edge;
+            const float x1 = (float)mc_java_i32_add(x, 1) - edge;
+            const float y1 = (float)y + 0.5f;
+            const float z1 = (float)mc_java_i32_add(z, 1) - edge;
+            f->bytecode = 68;
+            status = pooled(&context, "um", "mw", 68, (double)x0, (double)y, (double)z0, (double)x1,
+                            (double)y1, (double)z1, out, &error->child);
+        } else {
+            f->bytecode = 44;
+            status = base_box(&context, receiver, x, y, z, out, &error->child);
+        }
+        if (status != MC_WORLD_STORAGE_OK) {
+            if (error->child.block_class != NULL &&
+                strcmp(error->child.block_class, f->declaring_class) == 0)
+                f->bytecode = error->child.block_bytecode;
+            return selected_failure(error, status, error->child.nearby.query.operation, false);
+        }
+        for (size_t count = error->frame_count; count != 0; --count) {
+            mc_world_selected_box_frame *completed = &error->frames[count - 1];
+            completed->bytecode = selected_return_pc(completed->declaring_class);
+            completed->returned = true;
+        }
+        error->status = MC_WORLD_STORAGE_OK;
+        error->native_policy = false;
+        error->returned = true;
+        return MC_WORLD_STORAGE_OK;
+    }
 }
 
 static mc_world_storage_status base_contribute(const block_context *context, mc_block *block,

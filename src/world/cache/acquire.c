@@ -1,4 +1,5 @@
 #include "mc/world/cache/acquire.h"
+#include "acquire_internal.h"
 
 #include "mc/core/java/java.h"
 
@@ -143,13 +144,14 @@ static bool chunk_valid(const mc_chunk_state *chunk) {
     return chunk != NULL && (chunk->blank || chunk->data != NULL);
 }
 
-bool mc_chunk_acquire_validate(const mc_chunk_acquire_context *context) {
+static bool validate_context(const mc_chunk_acquire_context *context, bool inspect_cache) {
     if (context == NULL || context->cache == NULL ||
         context->cache->capacity > SIZE_MAX / sizeof(*context->cache->entries) ||
         context->cache->insertion_capacity > SIZE_MAX / sizeof(*context->cache->insertions) ||
-        !mc_chunk_cache_validate(context->cache) || !mc_chunk_pending_validate(context->pending) ||
-        !chunk_valid(context->fallback) || context->world_time == NULL ||
-        context->register_tile_entities == NULL || context->register_entities == NULL ||
+        (inspect_cache && !mc_chunk_cache_validate(context->cache)) ||
+        !mc_chunk_pending_validate(context->pending) || !chunk_valid(context->fallback) ||
+        context->world_time == NULL || context->register_tile_entities == NULL ||
+        context->register_entities == NULL ||
         (context->generate == NULL) != (context->populate == NULL)) {
         return false;
     }
@@ -161,6 +163,14 @@ bool mc_chunk_acquire_validate(const mc_chunk_acquire_context *context) {
                context->spawn_x != NULL && context->spawn_z != NULL;
     }
     return context->policy == MC_CHUNK_ACQUIRE_BASE;
+}
+
+bool mc_chunk_acquire_validate(const mc_chunk_acquire_context *context) {
+    return validate_context(context, true);
+}
+
+bool mc_chunk_acquire_validate_without_cache(const mc_chunk_acquire_context *context) {
+    return validate_context(context, false);
 }
 
 static bool chunk_hold(const mc_chunk_acquire_context *context, mc_chunk_state *chunk) {

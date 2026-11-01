@@ -109,3 +109,92 @@ done:
         *error = frame;
     return frame.status;
 }
+
+mc_world_storage_status mc_world_runtime_min_brightness(mc_world_runtime *world, int32_t x,
+                                                        int32_t y, int32_t z, int32_t minimum,
+                                                        float *out,
+                                                        mc_world_brightness_error *error) {
+    mc_world_brightness_error frame = empty_error();
+    if (world == NULL || out == NULL) {
+        (void)fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World minimum brightness arguments",
+                   0, true);
+        if (error != NULL)
+            *error = frame;
+        return frame.status;
+    }
+    if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
+        world->construction.phase == MC_WORLD_RUNTIME_RETIRED ||
+        world->classes->side != MC_WORLD_INFO_CLIENT) {
+        (void)fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                   "World minimum brightness client GAME admission", 0, true);
+        if (error != NULL)
+            *error = frame;
+        return frame.status;
+    }
+    const mc_world_storage_status entered = mc_world_runtime_call_enter(world, &frame.cause);
+    if (entered != MC_WORLD_STORAGE_OK) {
+        (void)fail(&frame, entered, frame.cause.operation, 0, true);
+        if (error != NULL)
+            *error = frame;
+        return frame.status;
+    }
+    mc_world_provider *captured = NULL;
+    bool held = false;
+    frame.query_reached = true;
+    frame.bytecode = 4;
+    frame.status = mc_world_runtime_block_light(world, x, y, z, &frame.light, &frame.query);
+    if (frame.status != MC_WORLD_STORAGE_OK) {
+        frame.operation = frame.query.operation;
+        frame.cause = frame.query.cause;
+        goto done;
+    }
+    if (frame.light < minimum)
+        frame.light = minimum;
+    captured = world->fields.t; /* Actual late getfield21, after the query. */
+    if (captured == NULL) {
+        frame.source_exception = MC_WORLD_BRIGHTNESS_SOURCE_NULL_DIMENSION;
+        (void)fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                   "actual minimum brightness null Dimension receiver", 24, false);
+        goto done;
+    }
+    frame.provider = mc_world_provider_retain(captured);
+    if (frame.provider != MC_WORLD_PROVIDER_OK) {
+        (void)fail(&frame,
+                   frame.provider == MC_WORLD_PROVIDER_LIMIT ? MC_WORLD_STORAGE_LIMIT
+                                                             : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                   "World minimum brightness Dimension native hold", 24, true);
+        goto done;
+    }
+    held = true;
+    mc_world_provider_fields fields;
+    frame.provider = mc_world_provider_fields_get(captured, &fields);
+    if (frame.provider != MC_WORLD_PROVIDER_OK) {
+        (void)fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                   "World minimum brightness Dimension fields", 24, true);
+        goto done;
+    }
+    const float *const table = fields.f;
+    if (table == NULL) {
+        frame.source_exception = MC_WORLD_BRIGHTNESS_SOURCE_NULL_TABLE;
+        (void)fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                   "actual minimum brightness null float array", 29, false);
+        goto done;
+    }
+    if (frame.light < 0 || frame.light >= 16) {
+        frame.source_exception = MC_WORLD_BRIGHTNESS_SOURCE_INDEX;
+        (void)fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                   "actual minimum brightness float array index", 29, false);
+        goto done;
+    }
+    memcpy(out, &table[frame.light], sizeof(*out));
+    frame.bytecode = 30;
+done:
+    if (held)
+        mc_world_provider_release(captured);
+    if (frame.status != MC_WORLD_STORAGE_OK)
+        world->last_error = frame.cause;
+    mc_world_runtime_call_leave(world);
+    if (error != NULL)
+        *error = frame;
+    return frame.status;
+}

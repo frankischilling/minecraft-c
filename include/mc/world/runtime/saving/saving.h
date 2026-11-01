@@ -65,7 +65,10 @@ mc_chunk_lifecycle_status mc_world_runtime_save_detailed(mc_world_runtime *world
  * per-attempt error. No runtime option/context is rebound. The concrete caller
  * must invoke its actual progress owner; this seam supplies no successful
  * callback, Loading screen or returned source result. NULL callback represents
- * the genuine null progress argument. Owner/error remain live and disjoint. */
+ * the genuine null progress argument. Owner/error remain live and disjoint.
+ * A nonnull callback accepts the actual mutable Chunk descriptor and therefore
+ * permanently discards the source provider's optional private index before
+ * dispatch, even if the save subsequently fails. */
 mc_chunk_lifecycle_status
 mc_world_runtime_save_with_progress_detailed(mc_world_runtime *, bool force, void *progress_owner,
                                              mc_world_save_progress_callback,

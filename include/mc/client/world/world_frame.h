@@ -15,6 +15,7 @@
 #include "mc/client/world/renderer_camera.h"
 #include "mc/client/world/renderer_fog.h"
 #include "mc/client/world/renderer_fog_state.h"
+#include "mc/client/world/selection_overlay.h"
 #include "mc/core/math/classes.h"
 #include "mc/entity/hit_result.h"
 #include "mc/entity/movement/material.h"
@@ -59,6 +60,7 @@ typedef struct mc_client_world_frame_error {
     const mc_client_texture_lookup_error *texture;
     const mc_client_graphics_error *lighting;
     const mc_client_lighting_error *lighting_enable;
+    const mc_client_selection_error *selection;
     const mc_entity_view_error *view;
     mc_platform_nanotime_status clock;
     mc_client_display_error display;
@@ -74,6 +76,10 @@ typedef struct mc_client_world_frame_error {
 
 typedef struct mc_client_world_frame_state {
     bool active, returned, cull_enabled, depth_enabled, view_stored, picking_returned;
+    /* Passive scalar receipts captured before the completed picker retires.
+     * Integer identities retain no Hit occurrence or borrowed child view. */
+    bool picking_source_returned, picking_block_published;
+    uintptr_t picking_result_identity, picking_block_identity;
     bool provider_read, anaglyph_read, anaglyph, eye_stored, color_masked, viewport_set;
     bool fog_world_captured, fog_camera_captured, fog_distance_read, fog_blend_computed;
     bool fog_returned, buffers_cleared, post_fog_cull_enabled;
@@ -95,6 +101,8 @@ typedef struct mc_client_world_frame_state {
     bool selection_zoom_read, selection_player_read, selection_player, selection_hit_read;
     bool selection_hit_present, selection_water_read, selection_water;
     bool selection_alpha_disabled, selection_current_returned;
+    unsigned int selection_calls;
+    const mc_client_selection_state *selections[2];
     bool precipitation_returned, weather_fog_disabled, cloud_fog_returned, cloud_fog_enabled;
     bool clouds_returned, post_cloud_fog_disabled, post_cloud_fog_returned;
     bool hand_zoom_read, hand_depth_cleared, hand_returned, tail_anaglyph_read, tail_anaglyph;

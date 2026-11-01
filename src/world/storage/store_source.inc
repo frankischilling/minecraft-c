@@ -618,6 +618,9 @@ mc_world_source_status mc_world_store_source_release(mc_world_store **slot,
     source_result(&s->work, MC_WORLD_SOURCE_OK, NULL, NULL, NULL, NULL, -1);
     if (source_input_clear(s) != MC_WORLD_SOURCE_OK || source_write_clear(s) != MC_WORLD_SOURCE_OK)
         goto incomplete;
+    /* Native optional identity storage ends before canonical Chunk destruction.
+     * A preceding retained stream/write cleanup failure leaves it untouched. */
+    store_chunk_lookup_clear(store);
     while (store->chunks != NULL) {
         store_chunk *entry = store->chunks;
         store->chunks = entry->next;

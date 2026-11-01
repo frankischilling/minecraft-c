@@ -570,8 +570,8 @@
       "sha256": "ae2437bb22228022bf1f3589941214b62500c23ca9f2b6ff3a2f62b4f88c3bf4"
     },
     "include/mc/world/runtime/blocks.h": {
-      "bytes": 8156,
-      "sha256": "1db57a4234e102126f00adbbef6a1a5b8cc97348b27500a8c1a8f4af00d62848"
+      "bytes": 9908,
+      "sha256": "084970104c0bf18b945bd13e32722a266b129b585e75830d6dc65107ddd8278c"
     },
     "include/mc/world/runtime/collision/boxes.h": {
       "bytes": 3060,
@@ -646,8 +646,8 @@
       "sha256": "38827403096c8eb2229fe049c67b09266a89bffec83d6dbfba746d4b63e0c2b4"
     },
     "include/mc/world/runtime/runtime.h": {
-      "bytes": 12283,
-      "sha256": "e5beff867ecaa268117a2854dd0b12bc9f5bf72c7f832cbc6d90d8304663e586"
+      "bytes": 12734,
+      "sha256": "b195f4b705b00e2e70b13a2856d2dd999a36e1d7b91713c3c24da6d79a4ed8d0"
     },
     "include/mc/world/runtime/saving/errors.h": {
       "bytes": 2222,
@@ -714,16 +714,16 @@
       "sha256": "4233b34b793eca6cc8a2b324af46badd762e2617feffa13b61fef679890dce72"
     },
     "include/mc/world/storage/source_handler.h": {
-      "bytes": 12561,
-      "sha256": "5c519d7fd9d0029b67ab621b8006b9be3dd1d6ec522891d2a44920d3e5e22da6"
+      "bytes": 12631,
+      "sha256": "c561de119bbee4fad9195da8bcebe9115e3871433feeca37bfad01117b665425"
     },
     "include/mc/world/storage/status.h": {
       "bytes": 857,
       "sha256": "3a1b750e2d969a44d15d263dbc33b7d0ed9417ecb223843297b7d104cccd2054"
     },
     "include/mc/world/storage/store.h": {
-      "bytes": 20327,
-      "sha256": "21d205621c786a5e10a127b1ca4f2ecc16e492c336c5bbe2412152011d1a3a4d"
+      "bytes": 20798,
+      "sha256": "2d9c412277d545ea6d04e1297890d94e03912f3577ae964e9e16335c05eb2ab1"
     },
     "include/mc/world/terrain/caves.h": {
       "bytes": 1309,
@@ -798,8 +798,8 @@
       "sha256": "7669d69b81e2452558113a82ce17e3927a0cd4a8235ccec989e57f7e55f59fdc"
     },
     "src/client/display/gl_internal.h": {
-      "bytes": 9242,
-      "sha256": "d22f99400779cea30b3e19ffb9be16d15b66313e6ca7e648b993b00ecb6901d3"
+      "bytes": 9602,
+      "sha256": "dcfdd2a8e440c2544128ab0178606d63347122f217ed4e6f643c3039cdc03bbd"
     },
     "src/client/display/loading_projection.inc": {
       "bytes": 4116,
@@ -818,8 +818,8 @@
       "sha256": "bc51a3138712cc30378200588d48f766210b58e3cd967a3e609255ac496bc7b6"
     },
     "src/client/display/query_names.inc": {
-      "bytes": 18155,
-      "sha256": "bd861702c957b1ab2e67ef37c69021d20df1d6fce4747bee8d36fa9cfce70fa2"
+      "bytes": 18903,
+      "sha256": "191ba100cf913fadb3316c5efc1f45c1939a6f7abea02f202072c1b6cf80d3bd"
     },
     "src/client/display/sdk_controllers.c": {
       "bytes": 11434,
@@ -938,16 +938,16 @@
       "sha256": "f5de2e5b95a7bde1a4b34fa0f4867f427a3bb42bdf8225cc85fbdcc66d0692ae"
     },
     "src/client/display/source_internal.h": {
-      "bytes": 6440,
-      "sha256": "b1f67ea039a5035d0613c339551c5fe39ee6a29bf51bf55e15fb69279100dc69"
+      "bytes": 6878,
+      "sha256": "554237dac62297bc19d694ebb8dfa50b7a1546b03024cd865be6da3883a74932"
     },
     "src/client/display/source_surface.h": {
-      "bytes": 10433,
-      "sha256": "98644640a5f6da99a637300ee43a0d64d16370078573b416821a5f89995509a6"
+      "bytes": 10792,
+      "sha256": "7b02fadfaf8310e34b2649de9dc5a7c9b79b2773185f035ff5681d9077a8e5e1"
     },
     "src/client/display/source_surface.inc": {
-      "bytes": 56995,
-      "sha256": "84314602db64dd59bb992408f3aa3023e452fba8fcc0d002a112f28cb78c775d"
+      "bytes": 57083,
+      "sha256": "a066abbdc4bdf705e9a495a0757a4192832a8eea587268e4e18c676a4b7d6507"
     },
     "src/client/display/source_viewport.inc": {
       "bytes": 3343,
@@ -1142,8 +1142,8 @@
       "sha256": "9b578820a3a8d557c0af9b23058ee00787cfa97850da8c83228ee32facb8e4ee"
     },
     "src/client/render_engine/nw.h": {
-      "bytes": 5417,
-      "sha256": "2cb2ccd2a784ed022bb2b69b47e7bc007000594458134a1e12d83b83b295c26a"
+      "bytes": 5665,
+      "sha256": "1cc9941428b8b9ac025d27fc1bc94a1505c78fca139b41e902864e0aae90df64"
     },
     "src/client/render_engine/nw_internal.h": {
       "bytes": 591,
@@ -1522,8 +1522,8 @@
       "sha256": "e17720111da4631764e2ae1ca256b98f2840a16165946b787a14c7b7a78e1966"
     },
     "src/client/world/render_global_internal.h": {
-      "bytes": 6315,
-      "sha256": "5acfd1c6920cdd6b5827fd0e2ce23d190332125462bd6dedc5da754c2cbeabc2"
+      "bytes": 7581,
+      "sha256": "8f078018a5e06ff51b512ba821c8faa3919ef5360c4354f8e415c93e006ed9af"
     },
     "src/client/world/render_global_owner.c": {
       "bytes": 10060,
@@ -2350,12 +2350,12 @@
       "sha256": "82e3671128e8d5728c5c285d94e2d03e04de93bf49446305d18098be76824d92"
     },
     "src/client/runtime/menu_loop.c": {
-      "bytes": 57164,
-      "sha256": "49f2be84c166e1bbae3c4039db39d5d6237f463331f3538234f5239db710d383"
+      "bytes": 58265,
+      "sha256": "4f35da05de2aa547ef71aee55782b73710f4df15dda38fa268432f1f51cccd0c"
     },
     "src/client/runtime/menu_loop.h": {
-      "bytes": 5208,
-      "sha256": "9efd16bf072f56614923af6345db26f807b70723ccd07efab1aac265b58ffe05"
+      "bytes": 6529,
+      "sha256": "8e8d3be425f7f9dcdc057b35e9506254a8ddd82f3aebc9f806435ef4bea5a87f"
     },
     "src/client/texture_packs/image_io.h": {
       "bytes": 482,
@@ -2398,8 +2398,8 @@
       "sha256": "a2de1a7a93eeb45db5eef8ddfc9b1ceef1d75b321d1603e5dec205159fe749f5"
     },
     "cmake/tests/client_world_selection_loop.cmake": {
-      "bytes": 5314,
-      "sha256": "78075434b8e963da2176371d6db7aa28b4ebf51b286f9a9ea34b6242af4fab32"
+      "bytes": 6024,
+      "sha256": "577f2575bc982f2aaf4348b59652814ea98aba7492400b062bc752c4cafc3fc9"
     },
     "cmake/tests/platform_date_format.cmake": {
       "bytes": 2244,
@@ -2422,12 +2422,12 @@
       "sha256": "610682740237465ff495b5f2e339aea2c77a81aac38e0754892922a2fcbe7f02"
     },
     "src/client/gui/source_screen_transitions.c": {
-      "bytes": 39856,
-      "sha256": "fe01530a13bdb2ff856a37484bb5136b4882ff5348ec31d33453fd13e4a000f1"
+      "bytes": 44903,
+      "sha256": "2de9e0dc03466e8cdb5734c774ba60212e9368c0beedde1fcfbdd49fd0d7d288"
     },
     "src/client/gui/source_screen_transitions.h": {
-      "bytes": 5153,
-      "sha256": "24b6ca542dc00f36d50da0f2106beec31a715a3c89de234a10a04a7c94fe0cf1"
+      "bytes": 5488,
+      "sha256": "e52388a40c44273c31da1fe370c112ff13bb3e06a0ebab41db53bb38b8b93626"
     },
     "src/client/gui/source_world_list.c": {
       "bytes": 7402,
@@ -2474,8 +2474,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 278846,
-      "sha256": "4a05bab7481470751898e7dc856cad4b2e34d0ab4b96aca0af6fe948b7ffab0e"
+      "bytes": 285289,
+      "sha256": "d72cc7617473184e8907021cbfddeb83206f91eb16c74315bb49784344885485"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -2490,8 +2490,8 @@
       "sha256": "5337d15e53e776798d0a4f394e74432da7a578951b72f5c761439accb811786b"
     },
     "tests/tools/client/test_world_selection_loop.py": {
-      "bytes": 51833,
-      "sha256": "7bec67996caaeff8d01498c8024267c6d5783995340210e2a1effcfed768d5f4"
+      "bytes": 61592,
+      "sha256": "beda7c7bda3f6fd4b45fb60dbf9fe75fb913d6f372882c3e446378833a33bb78"
     },
     "tests/tools/platform/test_date_format_reference.py": {
       "bytes": 4341,
@@ -2550,12 +2550,12 @@
       "sha256": "7aca6fcbd8139daeac6da779a0c3cacc49d46cb6738167287c5b0e4d68686b5e"
     },
     "src/client/world/load_world.c": {
-      "bytes": 95123,
-      "sha256": "72a98ee8f361d16ce72a34adf883b0df7dff0aa95b036eb82f4c6fa82c3a4470"
+      "bytes": 98901,
+      "sha256": "064228a50b0e0e55ab20e0b22bc78ce800b9a5745a5dc5912bb8827cafdafe9d"
     },
     "src/client/world/load_world.h": {
-      "bytes": 11008,
-      "sha256": "e200e2c14dd10fc428dec5594222f69bac4e9ef47fa9a79aeeb6923d6534a93f"
+      "bytes": 12497,
+      "sha256": "a6c4236626f367d212ce7eb9c5cbbca5a13660884e6859f9e7882cbf9d8a85ff"
     },
     "src/client/world/prepare_world.c": {
       "bytes": 19048,
@@ -2566,8 +2566,8 @@
       "sha256": "d5719a0cccc32f68520e1a13bbbf111fa157b2a164862eaf92952200a544d4a9"
     },
     "src/world/runtime/chunk_provider_internal.h": {
-      "bytes": 8297,
-      "sha256": "fb0d919f807c2834df6b72ff3835f163fc433c48612f02e927fcabb638b389f8"
+      "bytes": 10635,
+      "sha256": "7bbe28d0fb311caa17ed8fe09713187ef5a3880b223d0d2dc153dd23bb561032"
     },
     "src/world/runtime/construction_internal.h": {
       "bytes": 1490,
@@ -2706,8 +2706,8 @@
       "sha256": "f147f230daf46d14dbcdc5fad76fc1fa29f6c6b82fce66dc9a861931d227ab34"
     },
     "include/mc/world/runtime/saving/saving.h": {
-      "bytes": 5424,
-      "sha256": "53adde931a5f7d62c006787e4501b9376538d152b995a9cb4490d7790df2bb95"
+      "bytes": 5630,
+      "sha256": "75d23f82d56e9c6be62ffeeb48b1b22c6c96d2de1f15c3c76dd1eaedf6a63281"
     },
     "include/mc/world/runtime/world_access_error.h": {
       "bytes": 1925,
@@ -2754,8 +2754,8 @@
       "sha256": "438f7bfb7cddc97374ba94c5f089860192fa2b33bd9091cb1703496895682b22"
     },
     "src/client/world/render_global_world.c": {
-      "bytes": 30230,
-      "sha256": "7bce880c3f3b3967c96f49d028a906d219dd0827adb03f7bd761c771dd5ee7c9"
+      "bytes": 33182,
+      "sha256": "f534aa0c727c7c82769e078166343662fa9f9799f597bd9deaec709d1b4cd93a"
     },
     "src/client/world/source_chunk_renderer.c": {
       "bytes": 16483,
@@ -2914,8 +2914,8 @@
       "sha256": "a2d914493f61a116c072b1ed662b03c29d6f5b69784ae7201a1c37af5aee6798"
     },
     "src/world/runtime/collision/blocks_internal.h": {
-      "bytes": 6733,
-      "sha256": "468b7de87ac2263fb2ae76fe3b813484fbee90d663aea2a8172f092ae02e401d"
+      "bytes": 8777,
+      "sha256": "7ad616ef84cfcb556647f58e47dbe651e847768154f7ef08ac1030433f07fe76"
     },
     "src/world/runtime/collision/boxes_internal.h": {
       "bytes": 1673,
@@ -3138,8 +3138,8 @@
       "sha256": "5eefbafc7cb1b59159f21c261f927a506b09dc8828027947954b0c2397d7fbe0"
     },
     "include/mc/world/runtime/brightness.h": {
-      "bytes": 2125,
-      "sha256": "956971e14d7ee2377eb29cfefacdc7206f4ade304252dc05bf2d947e73722b29"
+      "bytes": 3014,
+      "sha256": "0708acf19e97c9693a3aad7a8f3ae39fc8d6e665b25e639dbd8da21989c6e66c"
     },
     "include/mc/world/runtime/client_tick_state.h": {
       "bytes": 4415,
@@ -3198,12 +3198,12 @@
       "sha256": "2827e8804d5bc86686a43f9add16f0aafd7a3e000c3da6d3f69be1dca31cb55d"
     },
     "src/world/runtime/brightness.c": {
-      "bytes": 4755,
-      "sha256": "f4eba4144ec9326ba01ccba5c63bd499db08641820c7bc3af8128f211e9c79a7"
+      "bytes": 8602,
+      "sha256": "39d42939b117c4ebbc06b34991c92820886a691244c9a1ea11d2c040ce26ce15"
     },
     "src/world/runtime/client_tick_state.c": {
-      "bytes": 13494,
-      "sha256": "a979fd6ce972a58648e925b47dcb2e78ec1adbcac7a5ca1e81bdcfa729d75379"
+      "bytes": 13559,
+      "sha256": "0412a9a3a6f60fa7863d7222122d61c03f53687937fb46d693a504a78c542298"
     },
     "src/world/runtime/entity_publication_internal.h": {
       "bytes": 3048,
@@ -3318,8 +3318,8 @@
       "sha256": "f332863a8dbdac177226c5e86a8f34a317a47c774d24fc813488c07b496b02a8"
     },
     "include/mc/client/world/world_frame.h": {
-      "bytes": 8984,
-      "sha256": "a4f7631a2ef2adc1e93015eafcd60c58d60dbb9fea409b2a099c8525c9d2a369"
+      "bytes": 9442,
+      "sha256": "277fd0d06f4eba97ed36f5c5b440ef6686b9106787ed969a807102e8452b52d6"
     },
     "include/mc/entity/movement/turn.h": {
       "bytes": 1588,
@@ -3374,8 +3374,8 @@
       "sha256": "baa5fdacd446c1edd4c66b1b2506d4ac804755e0538cdb82431b1e82f6955489"
     },
     "src/client/world/entity_renderer/world_frame.c": {
-      "bytes": 62129,
-      "sha256": "78ca4517b434cea4aaede1aa1c85fc23c4652462dae6980c895ce23772d0071b"
+      "bytes": 62190,
+      "sha256": "8302dd70fae3d48b2466f5154500e89558c83b733d24c9bacfba1b25ab2a7f56"
     },
     "src/entity/player/mouse_filter.c": {
       "bytes": 1627,
@@ -3390,8 +3390,8 @@
       "sha256": "fffd887ecb52ab47777995e76f01dbc243a662be4a785134460b65fb60668f35"
     },
     "src/world/runtime/world_tick.c": {
-      "bytes": 52860,
-      "sha256": "5bfcd838c219b1e88b0c184ee7adb4f78a10b919f48fb61932f7c5f9f74f3a16"
+      "bytes": 52864,
+      "sha256": "b918dfb2f2f2e99d8466aec33ec43c6acd273690c81e7012d09c3c84f2ebdd5f"
     },
     "src/world/runtime/world_tick_scheduled.c": {
       "bytes": 9599,
@@ -3630,12 +3630,12 @@
       "sha256": "815dae21d51be8825ed35ab22d714bf74a5379eff04895716ed0df729039f942"
     },
     "src/client/display/fog_surface.h": {
-      "bytes": 6262,
-      "sha256": "8574e7bc548ff752b3deef8becfb6cda7bf2652d09b9d06abc1996ec7ca2764c"
+      "bytes": 7049,
+      "sha256": "6f23656803f60bad850f44afc89a262b5ef48801a84827cf0ba02dc4f141dc04"
     },
     "src/client/display/fog_surface.inc": {
-      "bytes": 28450,
-      "sha256": "1a0bb0cfece022ef751920a6dd2d88ef20d1ef64c1207322f7f08f65aebf9488"
+      "bytes": 31152,
+      "sha256": "c0403bcead4e144f3f9b10969cc0b0081c1e3b8f1e13cd182b7043c5783f2946"
     },
     "src/client/world/entity_renderer/renderer_fog_state.c": {
       "bytes": 18585,
@@ -3866,12 +3866,12 @@
       "sha256": "fed826a2e36dc16e765335a682932deebbcab0ebc90b91fa017f9872c43841ad"
     },
     "src/world/storage/store.c": {
-      "bytes": 135253,
-      "sha256": "319ede685a46a26b9a1440f44788748394912a4a998cc0001700222dc7c42d95"
+      "bytes": 136011,
+      "sha256": "d1edb41c43279b917fe056a756b0e48454aa4323983cc5ea7ab1f2d792856c9e"
     },
     "src/world/storage/store_source.inc": {
-      "bytes": 38311,
-      "sha256": "aa8d28fe67e89ab46f65002a7ba344b4ad00518af4aadd8d0d3a6cc8cc635bb1"
+      "bytes": 38510,
+      "sha256": "789971109a78ca0e3ac09ef994768ea28032cace641c51364912a231b92796f3"
     },
     "cmake/client_render_block_colors.cmake": {
       "bytes": 2159,
@@ -3890,8 +3890,8 @@
       "sha256": "db48725dd52b8f9b466cb9d98768104adf93ce762818eedcb3015c2597f2497f"
     },
     "src/client/render/blocks/access.c": {
-      "bytes": 10380,
-      "sha256": "cc2973de8ee5a133ab25986380a025e87fdbc6ba10f19f246b3424d191174dac"
+      "bytes": 16104,
+      "sha256": "0b35f738369501d3978fab7a06342ca9e8248f497ece456b6c449d28f76e1d0a"
     },
     "src/client/render/blocks/ambient_occlusion.c": {
       "bytes": 14218,
@@ -3918,12 +3918,12 @@
       "sha256": "99c3d7bee454b78341314364052eb3aeeecb6448bec898380ad091f790efef3f"
     },
     "src/client/render/blocks/internal.h": {
-      "bytes": 4746,
-      "sha256": "1f6f1592999adefb813f0a133e4618ab1f6ca0ccea91c520e8b0b4f2c51c398d"
+      "bytes": 6140,
+      "sha256": "39c9adb55e0d33d2dc90fd4312c02b4e53acbfe059c631b5a659552170e95e5e"
     },
     "src/client/render/blocks/render.c": {
-      "bytes": 4802,
-      "sha256": "8c5bb387cad8023216bef4eb1d1315c61bf277d94dede66efcdc9c66b9e8460e"
+      "bytes": 5765,
+      "sha256": "bf8224a04213a0bfe4f9f1e3031f9cf08a13cb8915625b5216bfffe77e503679"
     },
     "src/client/startup/application_queries.c": {
       "bytes": 3537,
@@ -4426,12 +4426,12 @@
       "sha256": "d58c19ab253958a4e469bb87c72b81b422be6b7f9d47c4e47ae1fc1ac840588b"
     },
     "src/client/gui/source_screen_transitions_terminal_internal.h": {
-      "bytes": 1642,
-      "sha256": "61c50ee5031c03177bcfe3d03b399465fe1e48f2ae9d403caa7c0fe46e1cd75e"
+      "bytes": 1915,
+      "sha256": "8c8431bb11199e5a05453ee910ab3399b7f8d7e3fed3c3bd62093495a63f48a3"
     },
     "src/client/world/load_world_terminal_internal.h": {
-      "bytes": 3318,
-      "sha256": "0e51b40b7c18d43839e6235238a8feddff5ad81d28e7c85ec86b6dfcc6a12f3c"
+      "bytes": 3956,
+      "sha256": "e81fd8d4a82fdb1eab1be831cd6aa569afcdfeacce9e58fac84c4498dc432620"
     },
     "src/world/runtime/source_terminal_internal.h": {
       "bytes": 2664,
@@ -4538,8 +4538,8 @@
       "sha256": "086fdc24644b70780c8d0b9f8d85f4b969a6b39bfc2e2eda29c1e87831cd9369"
     },
     "src/client/world/entity_renderer/world_frame_after_particles.inc": {
-      "bytes": 33098,
-      "sha256": "ac6df56cf82b5bdb79a8dede3fd88cf20a7a51ee357a5ff906fdd233f05172d5"
+      "bytes": 34892,
+      "sha256": "5a6f987063d921b8034d170e84ec968763130ea11daf52c94b1f3b103b146f0f"
     },
     "src/entity/particles/origin.c": {
       "bytes": 1518,
@@ -4786,8 +4786,8 @@
       "sha256": "7ed2efa2008f302a05d97dcef45f5cf870a2f7446005083e74a1cdc903fd1317"
     },
     "src/entity/mob/spawning.c": {
-      "bytes": 27924,
-      "sha256": "b4115e05009adb9b1023795118a9893edd07661cb62ddc829f97203b5857e5a6"
+      "bytes": 27928,
+      "sha256": "f66809e63ad59f91a854e9bacad65e77ca1bae088cff2266ded7c93d4797eceb"
     },
     "src/world/runtime/chunk_random.c": {
       "bytes": 5764,
@@ -4846,8 +4846,8 @@
       "sha256": "a3b2ea14bd0314899640233d6bf4701fb63fe8a265355ccb8a0cb0938743b06b"
     },
     "src/world/runtime/world_tick_random.c": {
-      "bytes": 48444,
-      "sha256": "a916b771471f988a9908f3c1c00e3dd8b3b84c28e489533930c712c7b09e013b"
+      "bytes": 48448,
+      "sha256": "545b6219e43476471a426b6a89200602e5430e87766f768ddc12e0982915405b"
     },
     "src/world/runtime/world_tick_random_internal.h": {
       "bytes": 562,
@@ -5094,8 +5094,8 @@
       "sha256": "39ee7f49684cdefaa5bab60c00dfe12708898111b68a8b4aa4ec552be7193f43"
     },
     "src/world/runtime/chunk_cache.c": {
-      "bytes": 35399,
-      "sha256": "96a0ac954b13b5599312d51588d03c5606c1c32c14a4d87ae5f4424ee4d75b64"
+      "bytes": 35420,
+      "sha256": "ac27ebdd6a3f33b95e11b42bf3f7968ebbcacc9c623452a43fbbec913d4d1a1b"
     },
     "src/world/runtime/chunk_cache_internal.h": {
       "bytes": 649,
@@ -5670,8 +5670,8 @@
       "sha256": "7e343b192ec286e343fd9496c793b38cb3cdeb0d470ee920772be8fdc222a288"
     },
     "cmake/tests/source_world_saving.cmake": {
-      "bytes": 834,
-      "sha256": "76c7c5c2fc615d16f5cb93cc3572968cb1283e69248f0541922f4cc2333e2a20"
+      "bytes": 1670,
+      "sha256": "7889029f0371c02d419e537a6153cee60499c9cbab6aed611c43b67faee5fe41"
     },
     "src/world/runtime/tile_entities/source_save.inc": {
       "bytes": 11082,
@@ -5846,8 +5846,8 @@
       "sha256": "4228b18027d116a6b0649586a1eaaac2857a9fc5b3111a039e1937a11615dbf7"
     },
     "src/client/world/source_leave.inc": {
-      "bytes": 8893,
-      "sha256": "74256cc828188a44a16e209486493f4a7ff3e9ca6053b44b56c7be6bec8576fe"
+      "bytes": 8934,
+      "sha256": "4b1d8f43559d6fe71ea73184e621129de5b23c429da79670bb827503a30f14bb"
     },
     "tests/reference/client/save_title/class-code-pins.json": {
       "bytes": 4801,
@@ -5918,8 +5918,8 @@
       "sha256": "d1632a7e875a08c1fe1ba1a80d66f38b4ff0e23621ed47238e200164264c9086"
     },
     "tests/client/gui/test_active_notice.c": {
-      "bytes": 25818,
-      "sha256": "bd68e88929182b264b46658c681e7f1cdca7f43470bfc7f566b9d09fa3f9d10f"
+      "bytes": 27500,
+      "sha256": "5f035a463a69c4fa4aaac7777dfb7f40a9a76b73e06385d592671396029dbc2f"
     },
     "tests/client/gui/test_active_notice_cpu.c": {
       "bytes": 8015,
@@ -5932,6 +5932,94 @@
     "tests/reference/client/notice/active-draw-qualification.json": {
       "bytes": 11622,
       "sha256": "12966cd1e7de0a1453589473df940636d2ff2471e64fff22c0f7661f276cb95c"
+    },
+    "src/client/world/source_epoch.inc": {
+      "bytes": 4486,
+      "sha256": "4a44d4ed7bf83c831b58ede09a9df798dc7d739213d5c6a70f2159868cbc62ab"
+    },
+    "tests/client/startup/test_world_reload.inc": {
+      "bytes": 17101,
+      "sha256": "1a65c9512cc42f79da74e1ee3fdae6d18cbca7d621726b3415ce7a1fe2184d12"
+    },
+    "src/world/cache/acquire_internal.h": {
+      "bytes": 362,
+      "sha256": "84786c930812caeb696bf777e2abb70177827376a6d72d6b15bd009933fde2b1"
+    },
+    "src/world/runtime/chunk_provider_owned.inc": {
+      "bytes": 9246,
+      "sha256": "85bccb7962cea0e779245edf6d4ee3c176feaa83f1d2d04c21af11821a1abf69"
+    },
+    "tests/tools/world/test_owned_cache.py": {
+      "bytes": 11388,
+      "sha256": "5d3c5989f39a0a0bc6d76e939bb1b2116df752d9aff3d70e23d91f908810b7eb"
+    },
+    "tests/world/runtime/saving/test_owned_cache.c": {
+      "bytes": 19043,
+      "sha256": "b6a42d2480b9827f7726947cf5a5881a6d34f1fac1e9fa96a0139129a34f55b4"
+    },
+    "src/world/storage/chunk_lookup.inc": {
+      "bytes": 8279,
+      "sha256": "ea1ab8b8957bcd1066601c2f40006731ab8dd6ec09350af8c20947331e478b1d"
+    },
+    "src/world/storage/chunk_lookup_internal.h": {
+      "bytes": 922,
+      "sha256": "749d678f9db2acc489a3b4a025e23047baed02e5476bb053b056812ff5b82681"
+    },
+    "cmake/client_block_selection_tests.cmake": {
+      "bytes": 2064,
+      "sha256": "e19681434d3afd831c3f901c0f593c3eec2df5baf7bfeefcd602a6c90315f645"
+    },
+    "cmake/source_store_chunk_lookup_tests.cmake": {
+      "bytes": 907,
+      "sha256": "cc5ac5ce5913e5103e15126fe15e85ad679b224c4e945ecff18afff3369ded44"
+    },
+    "include/mc/client/world/selection_overlay.h": {
+      "bytes": 3640,
+      "sha256": "16506b7d794790b024d2cb91ade4022f1343a8f1df247bba85928430fb8d81db"
+    },
+    "src/client/world/entity_renderer/selection_internal.h": {
+      "bytes": 1859,
+      "sha256": "bfc08611c5759ca5e01b35583e9c082ec3b135fd9245a8ef8d419a54f6d3102e"
+    },
+    "src/client/world/entity_renderer/world_frame_selection.inc": {
+      "bytes": 33885,
+      "sha256": "323cc9a3b11fae3150d67523b417ca9de871b1db5a9ec0fcf507c32eebc29a9f"
+    },
+    "tests/client/gui/block_selection_scenarios.json": {
+      "bytes": 1076,
+      "sha256": "7f059611bd3a1097588ea8aa375dff428cc34d7dba85430da2564a190e73644b"
+    },
+    "tests/client/gui/test_block_selection.c": {
+      "bytes": 19334,
+      "sha256": "177af654674bfa1ba25fa7f0e16d38595e91ea963f91e8b07227e8adf24861a0"
+    },
+    "tests/tools/client/test_block_selection.py": {
+      "bytes": 20535,
+      "sha256": "ad345e862b5c1e312a19a87f444beab9a485ce2c30aafb3b5c987352b31173be"
+    },
+    "tests/tools/world/collision/selected_getter_cases.json": {
+      "bytes": 77038,
+      "sha256": "6c2dbc3261ed44cdb0082de51d9c4f82fa2aa43259e2e871e967d5c983974ea0"
+    },
+    "tests/tools/world/collision/test_selected_getters.py": {
+      "bytes": 9405,
+      "sha256": "e011db54e02cebdbafd9af5ff7509268abcc8c415041bf0276e0f9831db4d747"
+    },
+    "tests/tools/world/test_store_chunk_lookup.py": {
+      "bytes": 15136,
+      "sha256": "3d920d578fa704014a56142500666f594823282b01e6a200da304e622a15a5d7"
+    },
+    "tests/world/runtime/collision/selected_getter_cases.inc": {
+      "bytes": 3583,
+      "sha256": "72464969a5041aefdf5759623adc7aff0497f3034dd678c79fbfa20fa0b3dd66"
+    },
+    "tests/world/runtime/collision/test_selected_getters.c": {
+      "bytes": 12226,
+      "sha256": "06c29a13c2d31b4ba0266ffb0463dae80ef5eeafc0adc39a8a2f6c7c6d191143"
+    },
+    "tests/world/storage/test_chunk_lookup.c": {
+      "bytes": 24815,
+      "sha256": "c379275ccb554ef787eabcc2af7eb69d38b252499806156abc16b5bb1aa53733"
     }
   },
   "authorities": {
@@ -7989,6 +8077,772 @@
           "added": [
             "tests/reference/client/notice/active-draw-qualification.json"
           ]
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current copies of existing client loop clock samples and test observations input admission only. Historical observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 326777,
+        "sha256": "aefff7dc6ea3fb8477ec16cf4942e06a1aa41c3fdd3b6571c371cb104374110f"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1483,
+          "after_count": 1483,
+          "previous": {
+            "src/client/runtime/menu_loop.c": {
+              "bytes": 57164,
+              "sha256": "49f2be84c166e1bbae3c4039db39d5d6237f463331f3538234f5239db710d383"
+            },
+            "src/client/runtime/menu_loop.h": {
+              "bytes": 5208,
+              "sha256": "9efd16bf072f56614923af6345db26f807b70723ccd07efab1aac265b58ffe05"
+            },
+            "tests/client/gui/test_active_notice.c": {
+              "bytes": 25818,
+              "sha256": "bd68e88929182b264b46658c681e7f1cdca7f43470bfc7f566b9d09fa3f9d10f"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current ordinary World reload implementation and native observation inputs only. Historical captures and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 327904,
+        "sha256": "a2feca6985ba259ea861be1d62802ace0a7335ab8542c32971be0687cbdfa132"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1483,
+          "after_count": 1485,
+          "previous": {
+            "src/client/world/render_global_internal.h": {
+              "bytes": 6315,
+              "sha256": "5acfd1c6920cdd6b5827fd0e2ce23d190332125462bd6dedc5da754c2cbeabc2"
+            },
+            "cmake/tests/client_world_selection_loop.cmake": {
+              "bytes": 5314,
+              "sha256": "78075434b8e963da2176371d6db7aa28b4ebf51b286f9a9ea34b6242af4fab32"
+            },
+            "src/client/gui/source_screen_transitions.c": {
+              "bytes": 39856,
+              "sha256": "fe01530a13bdb2ff856a37484bb5136b4882ff5348ec31d33453fd13e4a000f1"
+            },
+            "src/client/gui/source_screen_transitions.h": {
+              "bytes": 5153,
+              "sha256": "24b6ca542dc00f36d50da0f2106beec31a715a3c89de234a10a04a7c94fe0cf1"
+            },
+            "tests/client/startup/test_world_selection_loop.c": {
+              "bytes": 278846,
+              "sha256": "4a05bab7481470751898e7dc856cad4b2e34d0ab4b96aca0af6fe948b7ffab0e"
+            },
+            "tests/tools/client/test_world_selection_loop.py": {
+              "bytes": 51833,
+              "sha256": "7bec67996caaeff8d01498c8024267c6d5783995340210e2a1effcfed768d5f4"
+            },
+            "src/client/world/load_world.c": {
+              "bytes": 95123,
+              "sha256": "72a98ee8f361d16ce72a34adf883b0df7dff0aa95b036eb82f4c6fa82c3a4470"
+            },
+            "src/client/world/load_world.h": {
+              "bytes": 11008,
+              "sha256": "e200e2c14dd10fc428dec5594222f69bac4e9ef47fa9a79aeeb6923d6534a93f"
+            },
+            "src/client/world/render_global_world.c": {
+              "bytes": 30230,
+              "sha256": "7bce880c3f3b3967c96f49d028a906d219dd0827adb03f7bd761c771dd5ee7c9"
+            },
+            "src/client/gui/source_screen_transitions_terminal_internal.h": {
+              "bytes": 1642,
+              "sha256": "61c50ee5031c03177bcfe3d03b399465fe1e48f2ae9d403caa7c0fe46e1cd75e"
+            },
+            "src/client/world/load_world_terminal_internal.h": {
+              "bytes": 3318,
+              "sha256": "0e51b40b7c18d43839e6235238a8feddff5ad81d28e7c85ec86b6dfcc6a12f3c"
+            },
+            "src/client/world/source_leave.inc": {
+              "bytes": 8893,
+              "sha256": "74256cc828188a44a16e209486493f4a7ff3e9ca6053b44b56c7be6bec8576fe"
+            }
+          },
+          "added": [
+            "src/client/world/source_epoch.inc",
+            "tests/client/startup/test_world_reload.inc"
+          ]
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current reload and failure-only native child diagnostic inputs. Historical captures retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 331232,
+        "sha256": "d3269416ff5be07ae1d92ceaaa2c7eea45cd2082dcd03e14e17d658072c8e842"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1485,
+          "after_count": 1485,
+          "previous": {
+            "tests/client/startup/test_world_selection_loop.c": {
+              "bytes": 279755,
+              "sha256": "8469df00005d78afb7cbda802f5872f9f0775195eb5e453664021236eaf5013a"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current reload and retained Entity environment/position diagnostic inputs. Historical captures retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 331945,
+        "sha256": "672cce298acf2de70a44623e394db00bdad6a200821e46c7732ebd41a8b4dbc6"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1485,
+          "after_count": 1485,
+          "previous": {
+            "tests/client/startup/test_world_selection_loop.c": {
+              "bytes": 281693,
+              "sha256": "14e7e75307eb8c4dcf8b3f3f3fbf3fd0d6c7f640218aa470af5947b4f04d0d1a"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current reload diagnostic using the existing public Entity offset field. Historical failed compiler receipt retained.",
+      "previous_metadata": {
+        "bytes": 332669,
+        "sha256": "eb285b5ccefe6b3e122d4765937264cc06868befc6d602f0d107d3cedd7bf4c4"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1485,
+          "after_count": 1485,
+          "previous": {
+            "tests/client/startup/test_world_selection_loop.c": {
+              "bytes": 282861,
+              "sha256": "ed600efb7ca3e3988d99abb864e9f4bba0ac1d359887b7a412d0a2740b8f8483"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current reload inputs with an authored saved Player position above terrain. Retained damage-frontier and initial focus/compiler failures are historical observations.",
+      "previous_metadata": {
+        "bytes": 333383,
+        "sha256": "06b15770088161941e74f1e078910fbcfc8292a7a4ff4587ac9601ccd2205871"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1485,
+          "after_count": 1485,
+          "previous": {
+            "tests/tools/client/test_world_selection_loop.py": {
+              "bytes": 60509,
+              "sha256": "2154b3ae7ce248c84ee462585caca1ba7407d0086ac27b731d121323ac30ef7c"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current reload regression diagnostic input. Prior 16/17 Windows and 12/12 Linux results retain their exact input snapshots.",
+      "previous_metadata": {
+        "bytes": 334143,
+        "sha256": "177270a2b330caa4fd4ecbda2b3fad9cf01454bfd66f8d0d6d32edfca8cac214"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1485,
+          "after_count": 1485,
+          "previous": {
+            "tests/client/startup/test_world_selection_loop.c": {
+              "bytes": 282865,
+              "sha256": "7c84d2a85b45806e977506fba72d849edfb977659a833c87743cc4c50fcb18c7"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current reload regression diagnostic with native unsigned renderer counter format. Previous compiler receipt retained.",
+      "previous_metadata": {
+        "bytes": 334863,
+        "sha256": "5830ea7f338071761dbc8b867d47cbec7865b3ce19a9b27c2b6eb6ecda5209a0"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1485,
+          "after_count": 1485,
+          "previous": {
+            "tests/client/startup/test_world_selection_loop.c": {
+              "bytes": 283949,
+              "sha256": "7d23ae67e37417494284ef8fb0d63e3611af70f82c6f6506f16c9f4550aa6a1b"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current World-loop regression nested Player diagnostic only. Prior observations retain preceding bindings.",
+      "previous_metadata": {
+        "bytes": 335578,
+        "sha256": "c9d4c5e4af4792efab1566a2750a86042b55887b77108306effc3bc21d1a5586"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1485,
+          "after_count": 1485,
+          "previous": {
+            "tests/client/startup/test_world_selection_loop.c": {
+              "bytes": 283948,
+              "sha256": "6f97cc33dcbb83f48ace455fcf92eec57281980d4b321041a7dea6e081fc4591"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current checked completed-draw release for direct native component invocations; temporary World tick probes removed. Existing source prefix and clocks retain their order.",
+      "previous_metadata": {
+        "bytes": 336281,
+        "sha256": "e2e9b5b22349d3d571782652bc25d18b323f4f3f259f62340fda771f75d7991a"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1485,
+          "after_count": 1485,
+          "previous": {
+            "src/client/runtime/menu_loop.c": {
+              "bytes": 57754,
+              "sha256": "d30f791abec79e2a50327e5ea17091e9466cca0779ea20bbe8fc34f192deff56"
+            },
+            "src/client/runtime/menu_loop.h": {
+              "bytes": 5997,
+              "sha256": "4b2d32110d0785a53866918596beab5a8822f8ea63e86df0375d639eb8ad47a5"
+            },
+            "tests/client/startup/test_world_selection_loop.c": {
+              "bytes": 285193,
+              "sha256": "d9c007233bec000ab9727e0f20daa55e00a41288f0d8a916c86026922686afed"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current reload with checked draw retirement and preserved selected-load terminal admission diagnostics. Prior red and passing cohorts retain their own bindings.",
+      "previous_metadata": {
+        "bytes": 337415,
+        "sha256": "73918a2d2640fff96c16e5daed6e726df3112a58d08c21965297e951943f3bbc"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1485,
+          "after_count": 1485,
+          "previous": {
+            "src/client/gui/source_screen_transitions.c": {
+              "bytes": 44263,
+              "sha256": "f4b95989df9dc51e2a3ea5a13b018d88d5470485fcd1f8b0926f6bc21bae51df"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current World-selection controller retains all bounded process and file evidence. Existing file protection and native/source assertions remain exact.",
+      "previous_metadata": {
+        "bytes": 338165,
+        "sha256": "d229a57976330bda9d4b77cde488ed8fd502381ab00c136af622d4744b8725d9"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1485,
+          "after_count": 1485,
+          "previous": {
+            "tests/tools/client/test_world_selection_loop.py": {
+              "bytes": 60744,
+              "sha256": "39c9f8db52f4c7435acae18034864ac52f8ad270845abaa7aea99d4bd77a4ddd"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current passive terminal-admission input uses an actual focused window and asserts no Pause draw; existing World file guard remains unchanged. Hidden-Pause save failure bytes retained.",
+      "previous_metadata": {
+        "bytes": 338909,
+        "sha256": "7c92597c8b3ab64561d89ab7c3d1a33c8e4c096eb7bbb1e9671e1b99083a4df7"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1485,
+          "after_count": 1485,
+          "previous": {
+            "tests/client/startup/test_world_selection_loop.c": {
+              "bytes": 284135,
+              "sha256": "f8a5c4bc610f6314f309e861fc5d891d9a86af763fc271655928c9abda8f969d"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current repeated whole-frame controls use the actual standalone source Frame/Canvas host. Legacy component/null-Canvas controls remain separately composed; file protection remains unchanged.",
+      "previous_metadata": {
+        "bytes": 339690,
+        "sha256": "0dc4488e3a53e0ee24cb4a7ebbd686848018971725250972149179e3917e6a41"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1485,
+          "after_count": 1485,
+          "previous": {
+            "tests/client/startup/test_world_selection_loop.c": {
+              "bytes": 284540,
+              "sha256": "49ae1befae73fff290047a86e20f807b0f1687b10d4aa308f54f73b4aa440171"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current whole-frame transport recovery targets the actual standalone Frame and Canvas using the existing native focus helper; source grab and input assertions remain intact.",
+      "previous_metadata": {
+        "bytes": 340477,
+        "sha256": "8010ead46d1f268d272285cbb048e6af557ffb7afc078b09be3daf897401fe66"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1485,
+          "after_count": 1485,
+          "previous": {
+            "tests/client/startup/test_world_selection_loop.c": {
+              "bytes": 284872,
+              "sha256": "96658c7bd57e0b0b436d113e0c814d12dbd4bbd7a5e6578c550490d60eecb9fe"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current owned source-provider GET adapter and eleven native controls input admission only. Generic mutable cache semantics and historical executions retain their own bindings.",
+      "previous_metadata": {
+        "bytes": 341247,
+        "sha256": "1caff645a4ea6b5c7ffd15b4f622a6e47e48092b734670e001ffff6407bb4677"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1485,
+          "after_count": 1489,
+          "previous": {
+            "include/mc/world/runtime/runtime.h": {
+              "bytes": 12283,
+              "sha256": "e5beff867ecaa268117a2854dd0b12bc9f5bf72c7f832cbc6d90d8304663e586"
+            },
+            "tests/client/startup/test_world_selection_loop.c": {
+              "bytes": 285066,
+              "sha256": "73bd046b254402bd50bf64d7086167e7d66494ec3e7d0bead9f523462ebba42c"
+            },
+            "src/world/runtime/chunk_provider_internal.h": {
+              "bytes": 8297,
+              "sha256": "fb0d919f807c2834df6b72ff3835f163fc433c48612f02e927fcabb638b389f8"
+            },
+            "include/mc/world/runtime/saving/saving.h": {
+              "bytes": 5424,
+              "sha256": "53adde931a5f7d62c006787e4501b9376538d152b995a9cb4490d7790df2bb95"
+            },
+            "src/world/runtime/client_tick_state.c": {
+              "bytes": 13494,
+              "sha256": "a979fd6ce972a58648e925b47dcb2e78ec1adbcac7a5ca1e81bdcfa729d75379"
+            },
+            "src/world/runtime/world_tick.c": {
+              "bytes": 52860,
+              "sha256": "5bfcd838c219b1e88b0c184ee7adb4f78a10b919f48fb61932f7c5f9f74f3a16"
+            },
+            "src/entity/mob/spawning.c": {
+              "bytes": 27924,
+              "sha256": "b4115e05009adb9b1023795118a9893edd07661cb62ddc829f97203b5857e5a6"
+            },
+            "src/world/runtime/world_tick_random.c": {
+              "bytes": 48444,
+              "sha256": "a916b771471f988a9908f3c1c00e3dd8b3b84c28e489533930c712c7b09e013b"
+            },
+            "src/world/runtime/chunk_cache.c": {
+              "bytes": 35399,
+              "sha256": "96a0ac954b13b5599312d51588d03c5606c1c32c14a4d87ae5f4424ee4d75b64"
+            },
+            "cmake/tests/source_world_saving.cmake": {
+              "bytes": 834,
+              "sha256": "76c7c5c2fc615d16f5cb93cc3572968cb1283e69248f0541922f4cc2333e2a20"
+            },
+            "tests/client/gui/test_active_notice.c": {
+              "bytes": 26852,
+              "sha256": "a173f9e10864545544602dbb7c4671afb57bb4eabbef7c7ce54ed2f712119404"
+            }
+          },
+          "added": [
+            "src/world/cache/acquire_internal.h",
+            "src/world/runtime/chunk_provider_owned.inc",
+            "tests/tools/world/test_owned_cache.py",
+            "tests/world/runtime/saving/test_owned_cache.c"
+          ]
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current owned-cache native observer outputs explicitly initialized for MSVC control-flow analysis. First compiler refusal retained; source behavior and assertions unchanged.",
+      "previous_metadata": {
+        "bytes": 344783,
+        "sha256": "532b9437e8258dc4fa35b7955b7d0dc740a51345a97cec368800fadd3e5d2c2c"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1489,
+          "after_count": 1489,
+          "previous": {
+            "tests/world/runtime/saving/test_owned_cache.c": {
+              "bytes": 19031,
+              "sha256": "df435d06cc33cc969f487f70ac72316dfe3f601cfbf950b8243b6b630b2d8271"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current-input-only binding update for passive focus diagnostics; historical execution remains separately pinned.",
+      "previous_metadata": {
+        "bytes": 345549,
+        "sha256": "1cceb8d2be2cb9bd66134c65ad6fc01c483e4e82b1b7f1cd9a7c09532ddb755a"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1489,
+          "after_count": 1489,
+          "previous": {
+            "tests/client/startup/test_world_selection_loop.c": {
+              "bytes": 285289,
+              "sha256": "d72cc7617473184e8907021cbfddeb83206f91eb16c74315bb49784344885485"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current-input-only after removing temporary focus diagnostics; historical executions remain separately pinned.",
+      "previous_metadata": {
+        "bytes": 346258,
+        "sha256": "cab3e8181aa39f85750abdfc7a2ce1cd889f3033b1a559b888b482a1e9bcea05"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1489,
+          "after_count": 1489,
+          "previous": {
+            "tests/client/startup/test_world_selection_loop.c": {
+              "bytes": 286410,
+              "sha256": "eb049e2cb4749a0ce330fef431530a5dde25f3fe38eac34cb8a850a8ecb189ef"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current-input-only binding refresh for private Store state-identity index; historical execution remains separately pinned.",
+      "previous_metadata": {
+        "bytes": 346965,
+        "sha256": "82e7edc213250d9c1a93d023d54a8853d2118242979aead41e5bed0952014c80"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1489,
+          "after_count": 1491,
+          "previous": {
+            "include/mc/world/storage/source_handler.h": {
+              "bytes": 12561,
+              "sha256": "5c519d7fd9d0029b67ab621b8006b9be3dd1d6ec522891d2a44920d3e5e22da6"
+            },
+            "include/mc/world/storage/store.h": {
+              "bytes": 20327,
+              "sha256": "21d205621c786a5e10a127b1ca4f2ecc16e492c336c5bbe2412152011d1a3a4d"
+            },
+            "src/world/storage/store.c": {
+              "bytes": 135253,
+              "sha256": "319ede685a46a26b9a1440f44788748394912a4a998cc0001700222dc7c42d95"
+            },
+            "src/world/storage/store_source.inc": {
+              "bytes": 38311,
+              "sha256": "aa8d28fe67e89ab46f65002a7ba344b4ad00518af4aadd8d0d3a6cc8cc635bb1"
+            }
+          },
+          "added": [
+            "src/world/storage/chunk_lookup.inc",
+            "src/world/storage/chunk_lookup_internal.h"
+          ]
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current-input-only for selected getters, SDK selection and Store lookup controls after formatting; historical executions remain separately pinned.",
+      "previous_metadata": {
+        "bytes": 348663,
+        "sha256": "db2da839308333d4c49fee37c3a43bde97ddae0f00eae288c1e985e3adc78cad"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1491,
+          "after_count": 1505,
+          "previous": {
+            "include/mc/world/runtime/blocks.h": {
+              "bytes": 8156,
+              "sha256": "1db57a4234e102126f00adbbef6a1a5b8cc97348b27500a8c1a8f4af00d62848"
+            },
+            "src/client/display/gl_internal.h": {
+              "bytes": 9242,
+              "sha256": "d22f99400779cea30b3e19ffb9be16d15b66313e6ca7e648b993b00ecb6901d3"
+            },
+            "src/client/display/query_names.inc": {
+              "bytes": 18155,
+              "sha256": "bd861702c957b1ab2e67ef37c69021d20df1d6fce4747bee8d36fa9cfce70fa2"
+            },
+            "src/client/display/source_internal.h": {
+              "bytes": 6440,
+              "sha256": "b1f67ea039a5035d0613c339551c5fe39ee6a29bf51bf55e15fb69279100dc69"
+            },
+            "src/client/display/source_surface.h": {
+              "bytes": 10433,
+              "sha256": "98644640a5f6da99a637300ee43a0d64d16370078573b416821a5f89995509a6"
+            },
+            "src/client/display/source_surface.inc": {
+              "bytes": 56995,
+              "sha256": "84314602db64dd59bb992408f3aa3023e452fba8fcc0d002a112f28cb78c775d"
+            },
+            "src/client/render_engine/nw.h": {
+              "bytes": 5417,
+              "sha256": "2cb2ccd2a784ed022bb2b69b47e7bc007000594458134a1e12d83b83b295c26a"
+            },
+            "src/client/world/render_global_internal.h": {
+              "bytes": 6810,
+              "sha256": "6a5655c66184db1250a15a74e978c66e32e6f59306fb7088cf04d9855cb6ad32"
+            },
+            "src/client/world/render_global_world.c": {
+              "bytes": 31825,
+              "sha256": "e739b077473a272da3124927aa6c649b2b585855f387dbad4f40053be626c893"
+            },
+            "src/world/runtime/collision/blocks_internal.h": {
+              "bytes": 6733,
+              "sha256": "468b7de87ac2263fb2ae76fe3b813484fbee90d663aea2a8172f092ae02e401d"
+            },
+            "include/mc/world/runtime/brightness.h": {
+              "bytes": 2125,
+              "sha256": "956971e14d7ee2377eb29cfefacdc7206f4ade304252dc05bf2d947e73722b29"
+            },
+            "src/world/runtime/brightness.c": {
+              "bytes": 4755,
+              "sha256": "f4eba4144ec9326ba01ccba5c63bd499db08641820c7bc3af8128f211e9c79a7"
+            },
+            "include/mc/client/world/world_frame.h": {
+              "bytes": 8984,
+              "sha256": "a4f7631a2ef2adc1e93015eafcd60c58d60dbb9fea409b2a099c8525c9d2a369"
+            },
+            "src/client/world/entity_renderer/world_frame.c": {
+              "bytes": 62129,
+              "sha256": "78ca4517b434cea4aaede1aa1c85fc23c4652462dae6980c895ce23772d0071b"
+            },
+            "src/client/display/fog_surface.h": {
+              "bytes": 6262,
+              "sha256": "8574e7bc548ff752b3deef8becfb6cda7bf2652d09b9d06abc1996ec7ca2764c"
+            },
+            "src/client/display/fog_surface.inc": {
+              "bytes": 28450,
+              "sha256": "1a0bb0cfece022ef751920a6dd2d88ef20d1ef64c1207322f7f08f65aebf9488"
+            },
+            "src/client/render/blocks/access.c": {
+              "bytes": 10380,
+              "sha256": "cc2973de8ee5a133ab25986380a025e87fdbc6ba10f19f246b3424d191174dac"
+            },
+            "src/client/render/blocks/internal.h": {
+              "bytes": 4746,
+              "sha256": "1f6f1592999adefb813f0a133e4618ab1f6ca0ccea91c520e8b0b4f2c51c398d"
+            },
+            "src/client/render/blocks/render.c": {
+              "bytes": 4802,
+              "sha256": "8c5bb387cad8023216bef4eb1d1315c61bf277d94dede66efcdc9c66b9e8460e"
+            },
+            "src/client/world/entity_renderer/world_frame_after_particles.inc": {
+              "bytes": 33098,
+              "sha256": "ac6df56cf82b5bdb79a8dede3fd88cf20a7a51ee357a5ff906fdd233f05172d5"
+            }
+          },
+          "added": [
+            "cmake/client_block_selection_tests.cmake",
+            "cmake/source_store_chunk_lookup_tests.cmake",
+            "include/mc/client/world/selection_overlay.h",
+            "src/client/world/entity_renderer/selection_internal.h",
+            "src/client/world/entity_renderer/world_frame_selection.inc",
+            "tests/client/gui/block_selection_scenarios.json",
+            "tests/client/gui/test_block_selection.c",
+            "tests/tools/client/test_block_selection.py",
+            "tests/tools/world/collision/selected_getter_cases.json",
+            "tests/tools/world/collision/test_selected_getters.py",
+            "tests/tools/world/test_store_chunk_lookup.py",
+            "tests/world/runtime/collision/selected_getter_cases.inc",
+            "tests/world/runtime/collision/test_selected_getters.c",
+            "tests/world/storage/test_chunk_lookup.c"
+          ]
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current-input-only after fixing selected renderer header dependency; historical executions remain separately pinned.",
+      "previous_metadata": {
+        "bytes": 356270,
+        "sha256": "6a9e78f0e74a820db4982cb796426c95b5503e51f7a66bd0e49446d7fa6c8988"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1505,
+          "after_count": 1505,
+          "previous": {
+            "src/client/world/entity_renderer/selection_internal.h": {
+              "bytes": 1865,
+              "sha256": "6241b3b49ab65467a6ca7fbfc7cbc130bc99fac1a8e3c8fe474ae3c082e780cc"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current-input-only after portable signed minimum fixture spelling; historical executions remain separately pinned.",
+      "previous_metadata": {
+        "bytes": 356986,
+        "sha256": "3f925d6800be6a95c5d853bd584b8c628d2a4eaeaad3a3b7782880e75049505f"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1505,
+          "after_count": 1505,
+          "previous": {
+            "tests/world/runtime/collision/selected_getter_cases.inc": {
+              "bytes": 3590,
+              "sha256": "1c06d728961565ba72578cdeee4ff4d886ac8024b6a00a5a80b334b48224d1de"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current-input-only for passive completed-picker scalar receipts; source child retirement order unchanged and historical executions separately pinned.",
+      "previous_metadata": {
+        "bytes": 357702,
+        "sha256": "448c1f7880bd77b93daf1359fa866200425c3d8557ecf1885de298f35aafed01"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1505,
+          "after_count": 1505,
+          "previous": {
+            "include/mc/client/world/world_frame.h": {
+              "bytes": 9165,
+              "sha256": "ca67e008014ed43fc59e0664485674565ba192c249a4577f05c0dbb5bcedad7f"
+            },
+            "src/client/world/entity_renderer/world_frame.c": {
+              "bytes": 61877,
+              "sha256": "20e6e90682dfa97b9d628592f05904c012ce1720f27a6be728b845746023156b"
+            },
+            "tests/client/gui/test_block_selection.c": {
+              "bytes": 18818,
+              "sha256": "765f80e192c89fbf6614989ab09b7118d58acae552974764d22da0e4a3738acf"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current-input-only for result-first bounded outline batch receipts; no runtime behavior change and historical executions separately pinned.",
+      "previous_metadata": {
+        "bytes": 358828,
+        "sha256": "1ee9c9c3b5cebda03a0dcefd35fc4c8030a674e42d0de42d98466c9dcf7096bf"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 1505,
+          "after_count": 1505,
+          "previous": {
+            "tests/client/gui/test_block_selection.c": {
+              "bytes": 18857,
+              "sha256": "74f17d0d68d86507b250f2f328f20eedf4b5eb1edbe000cc3c3d11d2b10dbd4d"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "role": "Current selection/reselection and private Chunk lookup sources after native integration repairs and clang-format-18. Admission hashes only; historical products and observations retain their recorded source scope.",
+      "previous": {
+        "source_files": {
+          "include/mc/client/world/selection_overlay.h": {
+            "bytes": 3521,
+            "sha256": "148c3ec02ee410f3fb03c038ecd12796e436a3a70089b6ee9095717631f854b9"
+          },
+          "src/client/world/entity_renderer/world_frame_selection.inc": {
+            "bytes": 33468,
+            "sha256": "7129f71526474d576a99b74ef3b9b82414dc368cf0d4ef3941d51129691ca5df"
+          },
+          "tests/client/gui/test_block_selection.c": {
+            "bytes": 19234,
+            "sha256": "cbbe58f9ce3a8d7c8aaa3fb47c859d3e7437de546ab7b055b77a0a87a87986b0"
+          }
         }
       }
     }

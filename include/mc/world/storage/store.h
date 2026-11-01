@@ -31,6 +31,12 @@ typedef struct mc_world_store_options {
  * budget; max_loaded_chunks bounds owned plus reserved slots, not a shared
  * process budget. Individual retirement is explicit and checks registered
  * references; arbitrary external borrowed views remain a caller obligation. */
+/* Store identity lookup may additionally own an optional private index. The
+ * list still defines iteration/retirement order; reads change no index state.
+ * Its live-plus-rehash peak is capped at 256KiB and, for source handlers, at
+ * the remaining max_owner_bytes after the required Store/prefix allocations.
+ * This is separate native auxiliary storage, not charged to NBT/codec/Chunk
+ * budgets. Resource failure retains linear lookup without failing attachment. */
 mc_world_store_limits mc_world_store_default_limits(void);
 
 /* Open an explicitly selected read/write world root. regions is borrowed until

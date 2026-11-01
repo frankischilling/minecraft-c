@@ -138,7 +138,8 @@ static bool acquire(mc_world_runtime *world, int32_t chunk_x, int32_t chunk_z, l
                       "World propagation getter provider");
     mc_chunk_provider_fields provider;
     mc_world_storage_error cause = {0};
-    if (mc_chunk_provider_bind_fields(world->fields.v, &provider, &cause) != MC_WORLD_STORAGE_OK)
+    if (mc_chunk_provider_internal_fields(world->fields.v, &provider, &cause) !=
+        MC_WORLD_STORAGE_OK)
         return storage_failed(frame, cause);
     if (provider.world != world || provider.cache != world->acquisition.cache ||
         provider.pending != world->acquisition.pending || provider.store != world->options.store)

@@ -266,8 +266,8 @@
       "sha256": "24827d487a83879fdd4027f1b5eedf26a1ae03abac2fea18841dabdbda99171c"
     },
     "include/mc/world/runtime/runtime.h": {
-      "bytes": 12283,
-      "sha256": "e5beff867ecaa268117a2854dd0b12bc9f5bf72c7f832cbc6d90d8304663e586"
+      "bytes": 12734,
+      "sha256": "b195f4b705b00e2e70b13a2856d2dd999a36e1d7b91713c3c24da6d79a4ed8d0"
     },
     "include/mc/world/saved_data/storage.h": {
       "bytes": 10538,
@@ -306,8 +306,8 @@
       "sha256": "3a1b750e2d969a44d15d263dbc33b7d0ed9417ecb223843297b7d104cccd2054"
     },
     "include/mc/world/storage/store.h": {
-      "bytes": 20327,
-      "sha256": "21d205621c786a5e10a127b1ca4f2ecc16e492c336c5bbe2412152011d1a3a4d"
+      "bytes": 20798,
+      "sha256": "2d9c412277d545ea6d04e1297890d94e03912f3577ae964e9e16335c05eb2ab1"
     },
     "include/mc/world/terrain/caves.h": {
       "bytes": 1309,
@@ -726,6 +726,48 @@
         }
       },
       "native_compiler_JVM_or_original_results_transferred": false
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current owned source-provider GET adapter and eleven native controls input admission only. Generic mutable cache semantics and historical executions retain their own bindings.",
+      "previous_metadata": {
+        "bytes": 28877,
+        "sha256": "0620be0854f492e72e72db7ea57f675b791c5e93bd0b0613979889b95c202b8b"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 116,
+          "after_count": 116,
+          "previous": {
+            "include/mc/world/runtime/runtime.h": {
+              "bytes": 12283,
+              "sha256": "e5beff867ecaa268117a2854dd0b12bc9f5bf72c7f832cbc6d90d8304663e586"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "54914e8",
+      "role": "Current-input-only binding refresh for private Store state-identity index; historical execution remains separately pinned.",
+      "previous_metadata": {
+        "bytes": 29633,
+        "sha256": "59a439881c63aa1ec3de4c61b1ad71b9a747c33078dac4062a31c67b8e5b3b8c"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 116,
+          "after_count": 116,
+          "previous": {
+            "include/mc/world/storage/store.h": {
+              "bytes": 20327,
+              "sha256": "21d205621c786a5e10a127b1ca4f2ecc16e492c336c5bbe2412152011d1a3a4d"
+            }
+          },
+          "added": []
+        }
+      }
     }
   ]
 }

@@ -51,12 +51,10 @@ static bool standard(mc_cv_context *c, const mc_block *b, int32_t x, int32_t y, 
     return true;
 }
 
-bool mc_cv_render(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y, int32_t z,
-                  bool *out) {
+static bool render_block(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y, int32_t z,
+                         bool *out) {
     if (c->failed)
         return false;
-    c->returned = false;
-    c->depth = 0;
     if (!mc_cv_push(c, "b", "(Luu;III)Z"))
         return false;
     if (block == NULL)
@@ -95,5 +93,38 @@ bool mc_cv_render(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y,
     c->returned = true;
     mc_cv_pop(c);
     *out = rendered;
+    return true;
+}
+
+bool mc_cv_render(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y, int32_t z,
+                  bool *out) {
+    if (c->failed)
+        return false;
+    c->returned = false;
+    c->depth = 0;
+    return render_block(c, block, x, y, z, out);
+}
+
+bool mc_cv_texture_override(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y,
+                            int32_t z, int32_t texture) {
+    if (c->failed)
+        return false;
+    c->returned = false;
+    c->depth = 0;
+    if (!mc_cv_push(c, "a", "(Luu;IIII)V"))
+        return false;
+    c->fields->d = texture;
+    mc_cv_store(c, 3);
+    mc_cv_pc(c, 12);
+    bool rendered;
+    if (!render_block(c, block, x, y, z, &rendered))
+        return false;
+    /* The child return is discarded by the actual void wrapper. There is no
+     * cleanup/finally resetting d after a child failure. */
+    c->fields->d = -1;
+    mc_cv_store(c, 18);
+    mc_cv_pc(c, 21);
+    c->returned = true;
+    mc_cv_pop(c);
     return true;
 }

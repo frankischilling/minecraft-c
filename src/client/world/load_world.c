@@ -45,6 +45,7 @@ struct mc_client_world_load_classes {
     client_application *app;
     mc_client_loading_classes *gui;
     size_t calls;
+    mc_client_world_load_call *latest;
     bool app_borrow, active, retiring;
     mc_player_string *saving_chunks; /* Lazy actual FD constant in selected class-loader profile. */
 };
@@ -120,6 +121,7 @@ struct mc_client_world_load_call {
     mc_client_entity_renderer_pick_error pick_cleanup;
     source_leave *leaves, *active_leave;
     size_t leave_count;
+    mc_client_world_load_call *previous, *successor; /* Borrowed bounded LIFO epoch chain. */
 };
 
 static mc_client_world_load_site site(const char *method, const char *descriptor, int pc) {
@@ -302,6 +304,9 @@ static bool loading(mc_client_world_load_call *call, mc_client_loading_screen *r
 
 static bool previous_world_save(mc_client_world_load_call *);
 static bool source_app_slots(const mc_client_world_load_call *);
+static bool source_epoch_slots(const mc_client_world_load_call *);
+static bool epoch_admit(const mc_client_world_load_call *);
+static bool prepare_previous(mc_client_world_load_call *, mc_client_world_load_call *);
 
 static bool change_prefix_run(mc_client_world_load_call *call, mc_world_runtime *world,
                               mc_player_string *text, size_t index) {
@@ -404,6 +409,8 @@ static bool change_prefix_run(mc_client_world_load_call *call, mc_world_runtime 
     if (world != NULL) {
         call->world_slot_owned = true;
         call->state.world_published = true;
+        if (call->previous != NULL)
+            call->previous->state.superseded = true; /* Actual successor f69. */
     }
     return true;
 }
@@ -420,6 +427,8 @@ static mc_client_singleplayer_controller *controller(mc_client_world_load_call *
         return NULL;
     }
     call->controllers[call->controller_count++] = actual;
+    if (call->state.controller == NULL)
+        call->state.controller = actual;
     return actual;
 }
 
@@ -597,7 +606,8 @@ static bool change_world_at(mc_client_world_load_call *call, mc_world_runtime *w
         call->render_owner = app->g;
         mc_client_render_global_state before_renderer;
         if (!mc_client_render_global_inspect(call->render_owner, &before_renderer) ||
-            before_renderer.fields.k != NULL) {
+            before_renderer.fields.k !=
+                (call->previous == NULL ? NULL : call->previous->state.world)) {
             change_fail(call, MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED,
                         "prior renderer World outside selected entry closure", 220);
             return false;
@@ -630,6 +640,17 @@ static bool change_world_at(mc_client_world_load_call *call, mc_world_runtime *w
             return false;
         }
         call->state.renderer_returned = true;
+        if (call->previous != NULL) {
+            call->previous->render_world_owned = false;
+            call->previous->render_owner = NULL; /* Genuine N source replacement returned. */
+            if (mc_render_global_world_collect_displaced(
+                    call->render_call, &call->render_cleanup) != MC_CLIENT_RENDER_GLOBAL_OK) {
+                call->failure.render_global = &call->render_cleanup;
+                change_fail(call, MC_CLIENT_WORLD_LOAD_CLEANUP_FAILED,
+                            "completed source N replacement displaced native DK cleanup", 220);
+                return false;
+            }
+        }
     }
     if (app->effect_renderer != NULL) {
         call->state.last_change_pc = 235;
@@ -641,7 +662,7 @@ static bool change_world_at(mc_client_world_load_call *call, mc_world_runtime *w
         call->effects_held = true;
         mc_effect_renderer_snapshot before_effects;
         if (!mc_client_effect_renderer_read(call->effects_owner, &before_effects) ||
-            before_effects.world != NULL) {
+            before_effects.world != (call->previous == NULL ? NULL : call->previous->state.world)) {
             change_fail(call, MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED,
                         "prior particle World outside selected entry closure", 235);
             return false;
@@ -661,6 +682,10 @@ static bool change_world_at(mc_client_world_load_call *call, mc_world_runtime *w
             return false;
         }
         call->state.effects_returned = true;
+        if (call->previous != NULL) {
+            call->previous->effects_world_owned = false;
+            call->previous->effects_owner = NULL; /* Genuine DN source replacement returned. */
+        }
     }
     actual = controller(call, 246);
     if (actual == NULL)
@@ -1014,23 +1039,31 @@ static void run(mc_client_world_load_call *call) {
     call->state.source_returned = true;
 }
 
-mc_client_world_load_status mc_client_world_load_begin(mc_client_world_load_classes *classes,
-                                                       mc_world_info_name *folder,
-                                                       mc_world_info_name *display, int64_t seed,
-                                                       mc_client_world_load_call **out) {
+static mc_client_world_load_status load_begin(mc_client_world_load_classes *classes,
+                                              mc_client_world_load_call *previous,
+                                              mc_world_info_name *folder,
+                                              mc_world_info_name *display, int64_t seed,
+                                              mc_client_world_load_call **out) {
     if (classes == NULL || out == NULL || *out != NULL)
         return MC_CLIENT_WORLD_LOAD_ARGUMENT;
-    if (classes->active || classes->retiring || classes->calls != 0)
+    if (previous != NULL && classes->calls >= 8)
+        return MC_CLIENT_WORLD_LOAD_LIMIT;
+    if (classes->active || classes->retiring ||
+        (previous == NULL ? classes->calls != 0 : !epoch_admit(previous)))
         return MC_CLIENT_WORLD_LOAD_BUSY;
     mc_client_world_load_call *call = calloc(1, sizeof(*call));
     if (call == NULL)
         return MC_CLIENT_WORLD_LOAD_ALLOCATION;
     call->classes = classes;
+    call->previous = previous;
     call->state.app = classes->app;
     call->state.seed = seed;
     call->state.last_outer_pc = call->state.last_change_pc = -1;
     call->state.active = classes->active = true;
     ++classes->calls;
+    classes->latest = call;
+    if (previous != NULL)
+        previous->successor = call;
     *out = call;
     if (folder != NULL && mc_world_info_name_retain(folder) != MC_WORLD_INFO_OK) {
         fail(call, MC_CLIENT_WORLD_LOAD_LIMIT, "native folder argument hold", "a", LOAD_DESC, -1);
@@ -1044,10 +1077,19 @@ mc_client_world_load_status mc_client_world_load_begin(mc_client_world_load_clas
     }
     call->state.display = display;
     call->display_held = display != NULL;
+    if (previous != NULL && !prepare_previous(previous, call))
+        goto done;
     run(call);
 done:
     call->state.active = classes->active = false;
     return call->failure.status;
+}
+
+mc_client_world_load_status mc_client_world_load_begin(mc_client_world_load_classes *classes,
+                                                       mc_world_info_name *folder,
+                                                       mc_world_info_name *display, int64_t seed,
+                                                       mc_client_world_load_call **out) {
+    return load_begin(classes, NULL, folder, display, seed, out);
 }
 
 bool mc_client_world_load_inspect(const mc_client_world_load_call *call,
@@ -1056,6 +1098,7 @@ bool mc_client_world_load_inspect(const mc_client_world_load_call *call,
         return false;
     *out = call->state;
     out->prepare = call->prepare;
+    out->renderer = call->render_call == NULL ? NULL : &call->render_state;
     out->failure = &call->failure;
     out->cleanup = &call->cleanup;
     if (call->leaves != NULL) {
@@ -1099,8 +1142,7 @@ static void world_cleanup_cause(mc_client_world_load_call *call) {
  * terminal preparation. Both active guards belong to the admitted caller.
  * Every successful slot consumption is final; failure clears the guards via
  * cleanup_fail and preserves every remaining occurrence. */
-static mc_client_world_load_status cleanup_prefix(mc_client_world_load_call *call) {
-    client_application *app = call->classes->app;
+static mc_client_world_load_status cleanup_records(mc_client_world_load_call *call) {
     if (call->prepare != NULL) {
         if (mc_client_world_prepare_retire(&call->prepare) != MC_CLIENT_WORLD_PREPARE_OK) {
             (void)mc_client_world_prepare_inspect(call->prepare, &call->terrain);
@@ -1152,6 +1194,13 @@ static mc_client_world_load_status cleanup_prefix(mc_client_world_load_call *cal
         call->failure.renderer = NULL;
         call->render_state = (mc_client_render_global_world_state){0};
     }
+    return MC_CLIENT_WORLD_LOAD_OK;
+}
+
+static mc_client_world_load_status cleanup_prefix(mc_client_world_load_call *call) {
+    client_application *app = call->classes->app;
+    if (cleanup_records(call) != MC_CLIENT_WORLD_LOAD_OK)
+        return call->cleanup.status;
     if (call->render_world_owned) {
         const mc_client_render_global_status detached =
             call->state.terminal_prepare_selected
@@ -1166,7 +1215,8 @@ static mc_client_world_load_status cleanup_prefix(mc_client_world_load_call *cal
         if (call->state.terminal_prepare_selected)
             call->render_owner = NULL; /* This terminal N source view has ended. */
     }
-    if ((call->world_slot_owned || call->state.leave.started) && app->t != NULL &&
+    if (!call->state.superseded && (call->world_slot_owned || call->state.leave.started) &&
+        app->t != NULL &&
         mc_client_entity_renderer_pick_detach(app->t, &call->pick_cleanup) != MC_CLIENT_PICK_OK) {
         call->cleanup.picking = &call->pick_cleanup;
         return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
@@ -1332,6 +1382,9 @@ mc_world_storage_status mc_client_world_load_classes_terminal_validate(
     if (classes->calls < owned_call_count)
         return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                          "Load terminal call occurrence deficit");
+    if (owned_call_count > 8)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_LIMIT,
+                                         "Load terminal epoch bound");
     return owned_call_count == 0 ? terminal_empty_app(expected_app, error)
                                  : terminal_admission_result(error, MC_WORLD_STORAGE_OK, NULL);
 }
@@ -1379,8 +1432,10 @@ mc_world_storage_status mc_client_world_load_terminal_classify(
             !call->state.world_published || !call->state.player_published ||
             !call->state.input_published || !call->state.view_published ||
             call->state.handler == NULL || call->state.player == NULL ||
-            call->state.input == NULL || !source_app_slots(call) || !call->effects_world_owned ||
-            !call->effects_held || call->effects_owner == NULL || call->render_owner != NULL ||
+            call->state.input == NULL || !source_epoch_slots(call) ||
+            (!call->state.superseded &&
+             (!call->effects_world_owned || call->effects_owner == NULL)) ||
+            call->render_owner != NULL ||
             mc_world_runtime_construction_get(call->state.world, &world) != MC_WORLD_STORAGE_OK ||
             world.mode != MC_WORLD_RUNTIME_GAME || world.phase != MC_WORLD_RUNTIME_READY ||
             world.entry != MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE)
@@ -1399,7 +1454,13 @@ mc_world_storage_status mc_client_world_load_terminal_classify(
         call->state.view_published || call->state.source_returned)
         return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                          "Load terminal classification acquired storage graph");
-    mc_world_storage_status status = terminal_empty_app(app, error);
+    mc_world_storage_status status =
+        call->previous == NULL
+            ? terminal_empty_app(app, error)
+            : (call->previous->successor == call && call->previous->classes == classes
+                   ? MC_WORLD_STORAGE_OK
+                   : terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                               "empty epoch predecessor provenance"));
     if (status != MC_WORLD_STORAGE_OK)
         return status;
     for (size_t i = 0; i < call->controller_count; ++i) {
@@ -1464,12 +1525,12 @@ mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
     if (call->state.active || classes->active || (app->startup != NULL && app->startup->active))
         return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
                                          "Load terminal owner operation entered");
-    if (!classes->retiring || classes->calls != 1 || !call->state.terminal_prepare_selected ||
-        !call->state.terminal_prepared || !call->state.source_returned ||
-        call->failure.status != MC_CLIENT_WORLD_LOAD_OK || call->state.app != app ||
-        call->state.world == NULL || call->state.player == NULL || call->state.input == NULL ||
-        call->state.handler == NULL || call->world_retired || call->cache_retired ||
-        call->failed_controller != NULL || call->failed_candidate != NULL ||
+    if (!classes->retiring || classes->calls == 0 || classes->calls > 8 ||
+        !call->state.terminal_prepare_selected || !call->state.terminal_prepared ||
+        !call->state.source_returned || call->failure.status != MC_CLIENT_WORLD_LOAD_OK ||
+        call->state.app != app || call->state.world == NULL || call->state.player == NULL ||
+        call->state.input == NULL || call->state.handler == NULL || call->world_retired ||
+        call->cache_retired || call->failed_controller != NULL || call->failed_candidate != NULL ||
         call->state.failed_player != NULL || call->prepare != NULL ||
         call->pending_loading != NULL || call->render_call != NULL || call->render_world_owned)
         return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -1478,10 +1539,11 @@ mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
         app->effect_renderer_constructing || app->startup->rendering->active)
         return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
                                          "Load terminal live inactive startup/rendering owners");
-    if (!source_app_slots(call) || !call->effects_world_owned || !call->effects_held ||
-        call->effects_owner == NULL || app->effect_renderer != call->effects_owner ||
-        app->effect_renderer_retained != call->effects_owner ||
-        app->startup->rendering->particle != call->effects_owner)
+    if (!source_epoch_slots(call) ||
+        (!call->state.superseded && (!call->effects_world_owned || call->effects_owner == NULL ||
+                                     app->effect_renderer != call->effects_owner ||
+                                     app->effect_renderer_retained != call->effects_owner ||
+                                     app->startup->rendering->particle != call->effects_owner)))
         return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
                                          "Load terminal actual App/Player/World slots changed");
     mc_world_runtime_fields fields;
@@ -1492,7 +1554,7 @@ mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
                                          "Load terminal actual World/handler/profile provenance");
 
     mc_client_singleplayer_controller *controller = *controller_owner;
-    if (controller == NULL || app->controller != controller || call->controller_count == 0 ||
+    if (controller == NULL || call->controller_count == 0 ||
         call->controller_count > sizeof(call->controllers) / sizeof(call->controllers[0]))
         return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                          "Load terminal actual transition controller owner");
@@ -1522,23 +1584,27 @@ mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
         return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
                                          "Load terminal external controller occurrence");
 
-    mc_effect_renderer_terminal_view effects_view;
-    const mc_effect_renderer_status effects_status =
-        mc_client_effect_renderer_terminal_inspect(call->effects_owner, &effects_view, NULL);
-    if (effects_status != MC_EFFECT_RENDERER_OK)
-        return terminal_admission_result(error,
-                                         effects_status == MC_EFFECT_RENDERER_BUSY
-                                             ? MC_WORLD_STORAGE_BUSY
-                                             : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                         "Load terminal effect manager closure");
-    if (effects_view.classes != app->entities || effects_view.render_engine != app->render_engine ||
-        *effects_view.world_slot != call->state.world)
-        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                         "Load terminal effect namespace/Engine/World provenance");
-    const size_t effects_holds = 1u + (call->effects_held ? 1u : 0u);
-    if (effects_view.holds != effects_holds)
-        return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
-                                         "Load terminal external effect occurrence");
+    mc_effect_renderer_terminal_view effects_view = {0};
+    if (!call->state.superseded) {
+        const mc_effect_renderer_status effects_status =
+            mc_client_effect_renderer_terminal_inspect(call->effects_owner, &effects_view, NULL);
+        if (effects_status != MC_EFFECT_RENDERER_OK)
+            return terminal_admission_result(error,
+                                             effects_status == MC_EFFECT_RENDERER_BUSY
+                                                 ? MC_WORLD_STORAGE_BUSY
+                                                 : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                             "Load terminal effect manager closure");
+        if (effects_view.classes != app->entities ||
+            effects_view.render_engine != app->render_engine ||
+            *effects_view.world_slot != call->state.world)
+            return terminal_admission_result(
+                error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                "Load terminal effect namespace/Engine/World provenance");
+        const size_t effects_holds = 1u + (call->effects_held ? 1u : 0u);
+        if (effects_view.holds != effects_holds)
+            return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
+                                             "Load terminal external effect occurrence");
+    }
 
     mc_local_player_snapshot player;
     mc_movement_input_state input;
@@ -1573,8 +1639,9 @@ mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
         {&call->state.player}, {&call->h_occurrence}, {&app->view_occurrence}};
     const mc_world_terminal_world_anchor worlds[] = {{effects_view.world_slot},
                                                      {&app->active_world}};
-    const size_t world_count = call->world_slot_owned ? 2u : 1u;
-    const size_t fixed_count = sizeof(fixed_entities) / sizeof(fixed_entities[0]);
+    const size_t world_count = call->state.superseded ? 0 : call->world_slot_owned ? 2u : 1u;
+    const size_t fixed_count =
+        call->state.superseded ? 1u : sizeof(fixed_entities) / sizeof(fixed_entities[0]);
     mc_world_terminal_limits bounded =
         limits == NULL ? mc_world_runtime_terminal_default_limits() : *limits;
     mc_world_terminal_entity_anchor *allocated = NULL;
@@ -1619,6 +1686,8 @@ mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_cal
         return MC_CLIENT_WORLD_LOAD_OK;
     if (call->state.active || call->classes->active)
         return MC_CLIENT_WORLD_LOAD_BUSY;
+    if (call != call->classes->latest)
+        return MC_CLIENT_WORLD_LOAD_BUSY; /* Borrowed epoch links require LIFO consumption. */
     call->state.retiring = true;
     call->state.active = call->classes->active = true;
     call->cleanup = (mc_client_world_load_error){0};
@@ -1798,10 +1867,14 @@ mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_cal
         call->leaves = next;
     }
     --call->classes->calls;
+    call->classes->latest = call->previous;
+    if (call->previous != NULL)
+        call->previous->successor = NULL;
     call->classes->active = false;
     free(call);
     *slot = NULL;
     return MC_CLIENT_WORLD_LOAD_OK;
 }
 
+#include "source_epoch.inc"
 #include "source_leave.inc"

@@ -121,8 +121,8 @@ static bool get(mc_world_refresh_entity_call *call, int32_t x, int32_t z) {
     call->error.provider_bytecode = 6;
     mc_chunk_provider_fields provider;
     mc_world_storage_error cause;
-    if (world->fields.v == NULL ||
-        mc_chunk_provider_bind_fields(world->fields.v, &provider, &cause) != MC_WORLD_STORAGE_OK)
+    if (world->fields.v == NULL || mc_chunk_provider_internal_fields(world->fields.v, &provider,
+                                                                     &cause) != MC_WORLD_STORAGE_OK)
         return fail(call, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                     "World refresh actual ChunkProvider receiver", 62, world->fields.v != NULL);
     if (provider.world != world || provider.cache != world->acquisition.cache ||

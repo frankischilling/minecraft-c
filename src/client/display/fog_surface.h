@@ -62,6 +62,16 @@ bool mc_client_display_source_blend_enable(mc_client_display *, bool enabled,
                                            mc_client_display_error *);
 bool mc_client_display_source_blend_function(mc_client_display *, int32_t source,
                                              int32_t destination, mc_client_display_error *);
+/* Actual reached selection GL calls on the same context. No GetError, draw,
+ * width clamp, attribute reset or state rollback. Arguments reach GL unchanged;
+ * passive inspection records requested values, not driver rasterization limits.
+ * Compiling these state changes remains an explicit native dependency. */
+bool mc_client_display_source_line_width(mc_client_display *, float width,
+                                         mc_client_display_error *);
+bool mc_client_display_source_polygon_offset(mc_client_display *, float factor, float units,
+                                             mc_client_display_error *);
+bool mc_client_display_source_polygon_offset_fill(mc_client_display *, bool enabled,
+                                                  mc_client_display_error *);
 
 typedef struct mc_client_source_light_state {
     float ambient[4], diffuse[4], specular[4];

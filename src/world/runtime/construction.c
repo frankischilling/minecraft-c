@@ -681,7 +681,7 @@ static bool world_chunk_provider(mc_world_runtime *runtime, unsigned int call_pc
     runtime->construction.last_store_pc = call_pc + 3u;
     runtime->construction.failed_call_pc = 0;
     mc_chunk_provider_fields fields;
-    status = mc_chunk_provider_bind_fields(provider, &fields, &runtime->last_error);
+    status = mc_chunk_provider_internal_fields(provider, &fields, &runtime->last_error);
     if (status != MC_WORLD_STORAGE_OK)
         return false;
     runtime->options.cache = fields.cache;

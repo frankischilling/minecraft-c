@@ -354,5 +354,16 @@ bool mc_client_display_source_draw_inspect(const mc_client_display *display,
     out->lighting_enabled = display->source.lighting_enabled;
     out->alpha_function_set = display->source.alpha_function_set;
     out->alpha_reference = display->source.alpha_reference;
+    out->line_width = display->source.line_width;
+    out->polygon_offset_factor = display->source.polygon_offset_factor;
+    out->polygon_offset_units = display->source.polygon_offset_units;
+    out->polygon_offset_fill = display->source.polygon_offset_fill;
+    out->depth_mask_known = display->source.depth_mask_known;
+    out->requested_depth_mask = display->source.requested_depth_mask;
+    out->blend_known = display->source.blend_known;
+    out->requested_blend_enabled = display->source.requested_blend_enabled;
+    out->blend_function_known = display->source.blend_function_known;
+    out->requested_blend_source = display->source.requested_blend_source;
+    out->requested_blend_destination = display->source.requested_blend_destination;
     return true;
 }

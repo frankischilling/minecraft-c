@@ -4,6 +4,7 @@
 #include "../runtime/source_terminal_internal.h"
 #include "../runtime/terminal_inventory_internal.h"
 #include "chunk_build_internal.h"
+#include "chunk_lookup_internal.h"
 #include "compressed_output_internal.h"
 #include "files.h"
 #include "generated_internal.h"
@@ -81,6 +82,9 @@ struct mc_world_store {
     bool has_info;
     store_chunk *chunks, *last_chunk;
     size_t chunk_count;
+    struct store_chunk_lookup *chunk_lookup;
+    size_t chunk_lookup_peak_bytes;
+    bool chunk_lookup_disabled;
     store_cache *caches;
     size_t cache_count;
     mc_world_store_reservation *reservations;
@@ -96,6 +100,8 @@ static mc_chunk_state *store_chunk_state(const store_chunk *entry) {
     }
     return NULL;
 }
+
+#include "chunk_lookup.inc"
 
 static const mc_nbt_tag *store_chunk_root(const store_chunk *entry) {
     switch (entry->kind) {
@@ -750,6 +756,8 @@ static mc_world_storage_status store_new_chunk(mc_world_store *store, store_chun
 static store_chunk *store_find_chunk(const mc_world_store *store, const mc_chunk_state *chunk) {
     if (store == NULL || chunk == NULL)
         return NULL;
+    if (store->chunk_lookup != NULL && store->chunk_lookup->count == store->chunk_count)
+        return store_chunk_lookup_find(store->chunk_lookup, (uintptr_t)chunk);
     store_chunk *entry = store->chunks;
     while (entry != NULL && store_chunk_state(entry) != chunk)
         entry = entry->next;
@@ -766,6 +774,7 @@ static void store_publish_chunk(mc_world_store *store, store_chunk *entry, int32
         store->last_chunk->next = entry;
     store->last_chunk = entry;
     ++store->chunk_count;
+    store_chunk_lookup_publish(store, entry);
 }
 
 mc_world_storage_status mc_world_store_create_generated(mc_world_store *store,
@@ -799,7 +808,8 @@ mc_world_storage_status mc_world_store_create_generated(mc_world_store *store,
         free(entry);
         return status;
     }
-    /* No fallible step remains after the lower constructor adopts the blocks. */
+    /* No required fallible step remains after the lower constructor adopts the
+     * blocks. Optional native lookup storage cannot fail this attachment. */
     store_publish_chunk(store, entry, dimension);
     *out = entry->owner.generated;
     return store_error(error, MC_WORLD_STORAGE_OK, NULL);
@@ -1223,6 +1233,10 @@ mc_world_storage_status mc_world_store_retire_chunk(mc_world_store *store, mc_ch
          !mc_world_chunk_entity_containers_retired(runtime_chunk)) ||
         (chunk->active && !mc_world_chunk_entity_containers_retired(runtime_chunk)))
         return store_error(error, MC_WORLD_STORAGE_BUSY, "chunk identity still referenced");
+    /* Capture identity while the canonical state is still live. Index erase
+     * completes before any destructor may free that state or permit reuse. */
+    const uintptr_t state_key = (uintptr_t)chunk;
+    store_chunk_lookup_erase(store, state_key);
     *link = entry->next;
     if (store->last_chunk == entry)
         store->last_chunk = previous;
@@ -1942,6 +1956,7 @@ void mc_world_store_free(mc_world_store *store) {
         return; /* Counted source owners require their explicit occurrence API. */
     if (store == NULL)
         return;
+    store_chunk_lookup_clear(store);
     store_chunk *entry = store->chunks;
     while (entry != NULL) {
         store_chunk *next = entry->next;

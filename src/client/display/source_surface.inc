@@ -104,6 +104,7 @@ static void source_initialize(mc_client_display *display) {
         return;
     s->color[0] = s->color[1] = s->color[2] = s->color[3] = 1.0f;
     s->color_known = true;
+    s->line_width = 1.0f;
     s->fog.mode = GL_EXP;
     s->fog.distance_mode = 34140; /* GL_EYE_PLANE_ABSOLUTE_NV. */
     s->fog.density = 1.0f;
@@ -487,7 +488,9 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
     /* source_enter initialized the actual projection/modelview defaults.
      * Camera matrix calls replace that same ledger; drawing does not require
      * the unrelated loading-screen projection method to have run first. */
-    if (count < 0 || (mode != GL_TRIANGLES && mode != GL_TRIANGLE_FAN) ||
+    if (count < 0 ||
+        (mode != GL_TRIANGLES && mode != GL_TRIANGLE_FAN && mode != GL_LINES &&
+         mode != GL_LINE_STRIP) ||
         (arrays & vertex_bit) == 0 || (size_t)count > bytes / 32u ||
         (size_t)count > SOURCE_COMMAND_BYTES / sizeof(mc_client_source_gpu_vertex))
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source interleaved draw",

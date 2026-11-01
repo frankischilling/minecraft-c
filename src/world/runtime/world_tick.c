@@ -1000,7 +1000,7 @@ static bool scheduler(mc_world_tick_call *c) {
     mc_chunk_provider_fields provider;
     mc_world_storage_error error = {0};
     if (w->fields.v == NULL ||
-        mc_chunk_provider_bind_fields(w->fields.v, &provider, &error) != MC_WORLD_STORAGE_OK)
+        mc_chunk_provider_internal_fields(w->fields.v, &provider, &error) != MC_WORLD_STORAGE_OK)
         return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World tick actual provider receiver",
                     w->fields.v != NULL);
     if (provider.world != w || provider.cache != w->lifecycle.cache ||

@@ -116,8 +116,24 @@ bool mc_render_global_fp(mc_client_render_global *, const char *method, unsigned
  * inside its native cleanup guard; never used for an ordinary World change. */
 mc_client_render_global_status
 mc_render_global_entities_end_consumers(mc_client_render_global *, mc_client_render_global_error *);
+/* Native-only end of old DK private bounds after this SAME successful actual
+ * N.a(World) replacement. Source DK.c already cleared its World. Keep bounded
+ * arena headers, source call receipts, current DKs/GL lists and N admission.
+ * No terminal flag, source close, World detach or dispatcher mutation. */
+mc_client_render_global_status
+mc_render_global_world_collect_displaced(mc_client_render_global_world_call *,
+                                         mc_client_render_global_error *);
 bool mc_render_global_stars(mc_client_render_global *);
 bool mc_render_global_sky(mc_client_render_global *);
+/* Native-only capture of the existing CV occurrence's actual backing World.
+ * Source fields are not read/repaired and no source method runs. The caller
+ * already holds/enters this same N, supplies its actual captured CV, and owns
+ * a NULL output slot. Success returns one nullable World binding occurrence;
+ * release it after the synchronous CV/error workspace is fully retired. */
+mc_client_render_global_status mc_render_global_cv_capture_world(mc_client_render_global *,
+                                                                 const mc_client_render_blocks *,
+                                                                 mc_world_runtime **owned_out,
+                                                                 mc_client_render_global_error *);
 bool mc_render_batch_construct(mc_client_render_global *, mc_client_render_batch *,
                                unsigned int enclosing_pc);
 

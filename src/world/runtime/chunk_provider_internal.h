@@ -80,7 +80,11 @@ typedef struct mc_chunk_provider_fields {
  * or buffers.
  *
  * Direct bytes count the provider (including generator/fixed scratch/grid),
- * pending keys, cache entries/list, blank data and its 32768 blocks. Exclude
+ * pending keys, cache entries/list, blank data and its 32768 blocks. An optional
+ * source-client owned index is allocated only from the remaining direct budget
+ * after all required allocations; inability to fit/allocate keeps generic
+ * acquisition without failing construction. Export discards its direct bytes.
+ * Exclude
  * allocator overhead, stack, borrowed World/store/trig/profile, retained biome
  * storage/buffers, independent temperature owner/arrays, and pending HashSet.
  * The latter
@@ -122,6 +126,38 @@ void mc_chunk_provider_free(mc_chunk_provider *provider);
 mc_world_storage_status mc_chunk_provider_bind_fields(mc_chunk_provider *provider,
                                                       mc_chunk_provider_fields *out,
                                                       mc_world_storage_error *error);
+
+/* Ordinary implementation binding. These native descriptors remain private
+ * to the source provider/runtime implementation; do not give them to external
+ * callbacks or retain a mutable view outside that implementation. The old
+ * bind_fields function above is the explicit raw export and permanently ends
+ * the opaque accelerated representation without changing source map contents. */
+mc_world_storage_status mc_chunk_provider_internal_fields(mc_chunk_provider *,
+                                                          mc_chunk_provider_fields *,
+                                                          mc_world_storage_error *);
+
+typedef struct mc_chunk_provider_cache_observation {
+    bool owned;
+    size_t map_count, insertion_count, index_capacity, index_bytes, mutation_depth, direct_bytes;
+    uint64_t hits, misses, generic_gets, raw_exports, rebuilds;
+} mc_chunk_provider_cache_observation;
+
+/* Scalar-only passive observation; no mutable cache/Chunk/context escapes. */
+bool mc_chunk_provider_cache_observe(const mc_chunk_provider *,
+                                     mc_chunk_provider_cache_observation *);
+mc_world_storage_status mc_chunk_provider_cache_eligible(const mc_chunk_provider *, int64_t now,
+                                                         bool force, size_t *,
+                                                         mc_world_storage_error *);
+
+/* Private owned-adapter operations. A false get means use the unchanged generic
+ * coordinator. Every raw mutation/callback scope forces nested gets through
+ * that coordinator; depth-zero completion rebuilds only after full validation.
+ * Export discards the opaque index permanently, including from inside a scope. */
+void mc_chunk_provider_cache_export(mc_chunk_provider *);
+void mc_chunk_provider_cache_mutation_begin(mc_chunk_provider *);
+void mc_chunk_provider_cache_mutation_end(mc_chunk_provider *);
+bool mc_chunk_provider_cache_get(mc_chunk_provider *, const mc_chunk_acquire_context *, int32_t,
+                                 int32_t, mc_chunk_state **, mc_chunk_acquire_status *);
 
 /* Actual current World.v presence receiver, with only inert native cache
  * metadata admission. No border, load, generation, pending removal, callbacks

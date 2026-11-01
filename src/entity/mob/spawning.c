@@ -528,7 +528,7 @@ static bool slime(spawn_frame *f, bool *out) {
         goto done;
     }
     mc_chunk_provider_fields provider;
-    status = mc_chunk_provider_bind_fields(captured->fields.v, &provider, &f->error->world);
+    status = mc_chunk_provider_internal_fields(captured->fields.v, &provider, &f->error->world);
     if (status != MC_WORLD_STORAGE_OK || provider.world != captured ||
         provider.cache != captured->acquisition.cache ||
         provider.pending != captured->acquisition.pending ||

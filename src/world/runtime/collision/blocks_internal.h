@@ -59,6 +59,44 @@ mc_world_storage_status mc_world_collision_block_state_shape_in_classes_held(
     mc_world_runtime_classes *code_classes, mc_world_runtime *world, const mc_block *block,
     int32_t x, int32_t y, int32_t z, mc_world_collision_error *error);
 
+enum { MC_WORLD_SELECTED_BOX_FRAMES = 64 };
+
+typedef struct mc_world_selected_box_frame {
+    const char *declaring_class, *reference_owner;
+    const mc_block *receiver;
+    unsigned int bytecode, bounds_store_pc;
+    bool metadata_returned, state_shape_returned, returned;
+    int32_t metadata;
+} mc_world_selected_box_frame;
+
+typedef struct mc_world_selected_box_error {
+    mc_world_storage_status status;
+    const char *operation;
+    bool native_policy, source_null, returned;
+    size_t frame_count;
+    mc_world_selected_box_frame frames[MC_WORLD_SELECTED_BOX_FRAMES];
+    /* Fresh current child only. Completed metadata/state-shape prefixes have
+     * their own frame flags and actual singleton/World effects, not stale
+     * failures copied into a later pool/FP diagnostic. */
+    mc_world_collision_error child;
+} mc_world_selected_box_error;
+
+/* Actual closed client virtual f(World,III), distinct from collision e and
+ * from a(XP,III). Covers UU plus DP/LE/OQ/OR/SS/UJ/UM, including SS's actual
+ * prototype dispatch and UJ's inherited RW->UU invokespecial resolution.
+ * World is nullable until a reached metadata/state-shape query. No World,
+ * collision-box, ID palette, normalized coordinates or null-box substitute.
+ * code_classes, Block graph and a nonnull World remain live/exclusive; no
+ * outer World entry is required, matching state_shape's explicit-code entry.
+ * error is required disjoint caller-owned scratch; out is a NULL owning slot.
+ * Success transfers one actual pool hold (current closed bodies return a
+ * nonnull box). Failure preserves out, prior singleton/query/pool effects and
+ * records actual getter frames. The finite native frame ceiling is not a Java
+ * StackOverflowError or a successful shortened delegation. */
+mc_world_storage_status mc_world_collision_block_selected_box_in_classes_held(
+    mc_world_runtime_classes *code_classes, mc_world_runtime *nullable_world, const mc_block *block,
+    int32_t x, int32_t y, int32_t z, mc_entity_bounds **out, mc_world_selected_box_error *error);
+
 /* Actual MovingPiston a(World,IIIIFI), distinct from its TileEntity lookup in e.
  * The carried Block's virtual getter supplies the same held box mutated in source
  * order. A late failure keeps coordinate/pool prefixes and preserves out.

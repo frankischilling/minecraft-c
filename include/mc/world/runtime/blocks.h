@@ -1,6 +1,7 @@
 #ifndef MC_WORLD_RUNTIME_BLOCKS_H
 #define MC_WORLD_RUNTIME_BLOCKS_H
 
+#include "mc/world/dimension/world_provider.h"
 #include "mc/world/runtime/acquisition_error.h"
 #include "mc/world/runtime/construction.h"
 
@@ -124,5 +125,40 @@ typedef struct mc_world_solid_support_error {
 mc_world_storage_status mc_world_runtime_solid_support_get(mc_world_runtime *world, int32_t x,
                                                            int32_t y, int32_t z, bool *out,
                                                            mc_world_solid_support_error *error);
+
+typedef struct mc_world_opaque_error {
+    mc_world_storage_status status;
+    const char *operation;
+    unsigned int bytecode;
+    bool native_policy;
+    mc_world_storage_error cause;
+    mc_registry_error registry;
+} mc_world_opaque_error;
+
+/* Actual client fd.g(III)Z. Capture Block.m0 before the actual ID query7,
+ * index that same array10, return false for null Block, otherwise invoke its
+ * actual c() opacity predicate22. No opaque-array or normal-cube substitute.
+ * The actual World/Registry stay held/exclusive through synchronous queries.
+ * Failure preserves out and reached initialization/acquisition; diagnostics
+ * retain the scalar getter's storage cause and fresh Registry error only. */
+mc_world_storage_status mc_world_runtime_opaque_get(mc_world_runtime *, int32_t x, int32_t y,
+                                                    int32_t z, bool *out, mc_world_opaque_error *);
+
+typedef struct mc_world_manager_error {
+    mc_world_storage_status status;
+    const char *operation;
+    unsigned int bytecode;
+    bool native_policy;
+    mc_world_provider_status provider;
+    mc_world_storage_error cause;
+} mc_world_manager_error;
+
+/* Actual client fd.a()Lxv;: read World.t1, its nullable b4, return7. A null
+ * Dimension fails at4; a null manager is a genuine successful return. No
+ * sampling, Chunk acquisition, class initialization or cached manager.
+ * The returned borrow is live under the caller's same exclusive World graph. */
+mc_world_storage_status mc_world_runtime_chunk_manager(mc_world_runtime *,
+                                                       mc_world_chunk_manager **out,
+                                                       mc_world_manager_error *);
 
 #endif

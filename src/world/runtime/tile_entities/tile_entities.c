@@ -3630,7 +3630,7 @@ static bool live_acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk
     }
     mc_chunk_provider_fields provider;
     mc_world_storage_error binding = {0};
-    if (mc_chunk_provider_bind_fields(world->fields.v, &provider, &binding) !=
+    if (mc_chunk_provider_internal_fields(world->fields.v, &provider, &binding) !=
         MC_WORLD_STORAGE_OK) {
         error->provider_bytecode = 6;
         live_cause(error, binding);

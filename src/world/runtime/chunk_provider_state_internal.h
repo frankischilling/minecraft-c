@@ -28,6 +28,9 @@ struct mc_chunk_provider {
     mc_chunk_cache cache;
     mc_chunk_cache_entry *entries;
     mc_chunk_state **insertions;
+    struct mc_source_owned_cache *owned_cache;
+    size_t owned_cache_bytes;
+    uint64_t cache_hits, cache_misses, cache_generic_gets, cache_raw_exports, cache_rebuilds;
     mc_chunk_data *fallback_data;
     uint8_t *fallback_blocks;
     size_t max_chunks, direct_bytes, max_direct_bytes;

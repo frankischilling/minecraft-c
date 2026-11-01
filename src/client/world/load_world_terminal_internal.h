@@ -11,6 +11,11 @@ typedef enum mc_client_terminal_storage_scope {
     MC_CLIENT_TERMINAL_SELECTED_LOAD
 } mc_client_terminal_storage_scope;
 
+/* First pass for all genuine epochs before any N terminal detach: end only
+ * completed/failed owned call records. Keep source fields and full graphs.
+ * Ordinary renderer reuse never selects this terminal policy. */
+mc_client_world_load_status mc_client_world_load_terminal_records(mc_client_world_load_call *);
+
 /* Passive complete-namespace check. owned_call_count is derived by the actual
  * transition owner from its bounded live node slots, never a hold allowance.
  * Zero calls additionally proves that this App has no retained storage graph.
@@ -34,12 +39,17 @@ mc_world_storage_status mc_client_world_load_terminal_classify(
     const mc_client_world_load_call *, const mc_client_world_load_classes *expected_classes,
     mc_client_terminal_storage_scope *out, mc_world_storage_error *);
 
-/* Passive first-scope admission for a successful selected World after the
+/* Passive per-epoch admission for a successful selected World after the
  * real terminal prefix. The transition owner supplies the address of its actual
  * owned base-controller slot, never App.controller's borrowed source alias.
+ * Each supplied controller slot belongs to this epoch; App.controller is only
+ * the newest source alias and is validated by the actual transition owner.
  * Other captured controllers, failed/partial loads and untraced consumed tails
  * remain unsupported. Actual leave stores may have consumed App.i/f/h, while
- * the original null-target branch keeps N/DN World references. This checks actual
+ * the original null-target branch keeps N/DN World references until a genuine
+ * successor replaces them. Superseded epochs require that actual successful
+ * successor and own only their retained Player/Input/World/Handler graph.
+ * This checks actual
  * controller/effect/Input occurrences and passes actual Entity/World owning slots to the lower
  * audit. The Handler audit counts the Load slot and the actual World/HC/loader Store slots while
  * checking the loader's independent holds and source input quiescence. No permission

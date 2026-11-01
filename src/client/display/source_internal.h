@@ -98,6 +98,13 @@ typedef struct mc_client_source_state {
     mc_client_source_attribute_staging attribute_staging;
     bool shade_flat, alpha_function_set;
     float alpha_reference;
+    float line_width, polygon_offset_factor, polygon_offset_units;
+    bool polygon_offset_fill;
+    /* Passive requested-state ledger. Unknown until this source surface has
+     * actually issued the corresponding call; never queried or used to draw. */
+    bool depth_mask_known, requested_depth_mask;
+    bool blend_known, requested_blend_enabled, blend_function_known;
+    int32_t requested_blend_source, requested_blend_destination;
     unsigned arrays, pointers;
     const void *array_buffers[4];
     uint64_t array_contexts[4];

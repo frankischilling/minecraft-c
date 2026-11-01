@@ -670,9 +670,7 @@ bool mc_client_menu_loop_create(mc_client_bootstrap *bootstrap, mc_client_menu_l
     return true;
 }
 
-static bool frame_body(mc_client_menu_loop *loop) {
-    if (loop == NULL || loop->state.failed || !loop->state.running)
-        return false;
+static bool retire_completed_draws(mc_client_menu_loop *loop) {
     /* Completed frame receipts stay inspectable through that frame. Drain
      * their native occurrences before the next source pool reset or tick. */
     if (loop->notice_draw != NULL && loop->notice_state.returned) {
@@ -693,12 +691,22 @@ static bool frame_body(mc_client_menu_loop *loop) {
             return run_stop(loop, "completed World draw native retirement", 0);
         loop->state.world_frame = NULL;
     }
+    return true;
+}
+
+static bool frame_body(mc_client_menu_loop *loop) {
+    if (loop == NULL || loop->state.failed || !loop->state.running)
+        return false;
+    if (!retire_completed_draws(loop))
+        return false;
     loop->state.render_clock_stored = loop->state.render_returned = false;
+    loop->state.clocks = (mc_client_loop_clock_observation){.frame_index = loop->state.frames};
     client_application *app = loop->app;
     if (!atomic_load(&app->J)) {
         loop->state.running = false;
         return true;
     }
+    loop->state.clocks.frame_entered = true;
     if (app->A != NULL)
         return run_stop(loop, "actual Applet activity is not connected", 56);
     mc_entity_bounds_error bounds = {0};
@@ -729,16 +737,23 @@ static bool frame_body(mc_client_menu_loop *loop) {
     int64_t tick_start, tick_end;
     if (!nanoseconds(loop, &tick_start, 137))
         return false;
+    loop->state.clocks.run_137 = tick_start;
+    loop->state.clocks.run_137_read = true;
     mc_timer_view timer;
     if (!mc_timer_view_get(app->timer, &timer))
         return run_stop(loop, "actual Timer fields", 151);
+    loop->state.clocks.timer_ticks = timer.ticks;
+    loop->state.clocks.timer_fields_read = true;
     for (int32_t i = 0; i < timer.ticks; ++i) {
         app->V = mc_java_i32_add(app->V, 1);
         if (!tick(loop))
             return false;
+        ++loop->state.clocks.tick_returns;
     }
     if (!nanoseconds(loop, &tick_end, 203))
         return false;
+    loop->state.clocks.run_203 = tick_end;
+    loop->state.clocks.run_203_read = true;
     (void)mc_java_i64_sub(tick_end, tick_start);
     if (mc_client_application_gl_diagnostic(app->display, NULL, &loop->diagnostic) !=
         MC_CLIENT_GL_DIAGNOSTIC_OK)
@@ -806,6 +821,8 @@ static bool frame_body(mc_client_menu_loop *loop) {
         return run_stop(loop, "actual debug timing graph is not connected", 380);
     if (!nanoseconds(loop, &app->M, 387))
         return false;
+    loop->state.clocks.run_387 = app->M;
+    loop->state.clocks.run_387_read = true;
     if (app->achievement_notice == NULL)
         return run_stop(loop, "actual null AchievementNotice invocation", 397);
     const mc_client_notice_draw_status notice_status =
@@ -914,6 +931,7 @@ static bool frame_body(mc_client_menu_loop *loop) {
         return false;
     ++loop->state.frames;
     loop->state.running = atomic_load(&app->J);
+    loop->state.clocks.frame_returned = true;
     return true;
 }
 
@@ -924,6 +942,16 @@ bool mc_client_menu_loop_frame(mc_client_menu_loop *loop) {
     const bool returned = frame_body(loop);
     loop->active = false;
     return returned;
+}
+
+bool mc_client_menu_loop_retire_completed_draws(mc_client_menu_loop *loop) {
+    if (loop == NULL || !loop->setup_complete || loop->active || loop->retiring ||
+        loop->state.failed || loop->state.frames == 0)
+        return false;
+    loop->active = true;
+    const bool retired = retire_completed_draws(loop);
+    loop->active = false;
+    return retired;
 }
 
 bool mc_client_menu_loop_inspect(const mc_client_menu_loop *loop, mc_client_menu_loop_state *out) {

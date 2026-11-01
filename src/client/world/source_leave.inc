@@ -128,8 +128,9 @@ mc_client_world_load_status mc_client_world_load_leave(mc_client_world_load_call
         return leave_admission(out, MC_CLIENT_WORLD_LOAD_BUSY,
                                "source leave active/retiring owner");
     if (!call->state.source_returned || call->failure.status != MC_CLIENT_WORLD_LOAD_OK ||
-        call->state.world == NULL || call->state.player == NULL || call->state.input == NULL ||
-        call->state.handler == NULL || !call->state.player_load_returned || !source_app_slots(call))
+        call->classes->latest != call || call->state.world == NULL || call->state.player == NULL ||
+        call->state.input == NULL || call->state.handler == NULL ||
+        !call->state.player_load_returned || !source_app_slots(call))
         return leave_admission(out, MC_CLIENT_WORLD_LOAD_STATE,
                                "source leave completed selected ownership scope");
     if (call->state.leave.failed)

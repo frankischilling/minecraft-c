@@ -449,7 +449,7 @@ static bool acquire(mc_world_random_tick_call *c) {
         return source_null(c, "World random tick null ChunkProvider");
     mc_chunk_provider_fields provider;
     mc_world_storage_error error = {0};
-    if (mc_chunk_provider_bind_fields(w->fields.v, &provider, &error) != MC_WORLD_STORAGE_OK)
+    if (mc_chunk_provider_internal_fields(w->fields.v, &provider, &error) != MC_WORLD_STORAGE_OK)
         return storage_fail(c, error);
     if (provider.world != w || provider.cache != w->acquisition.cache ||
         provider.pending != w->acquisition.pending || provider.store != w->options.store)

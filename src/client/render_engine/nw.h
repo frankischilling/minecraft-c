@@ -52,6 +52,9 @@ bool mc_client_nw_fields_get(const mc_client_tessellator *, mc_client_nw_fields 
  * Default c=false CPU construction and vertex work require no Display. */
 bool mc_client_nw_begin(mc_client_tessellator *, int32_t mode, mc_client_graphics_error *);
 bool mc_client_nw_begin_quads(mc_client_tessellator *, mc_client_graphics_error *);
+/* Actual nw.c()V: q=true at2, return5. No batch/phase-dependent source guard,
+ * color clearing, geometry reset or draw. Native namespace entry is unchanged. */
+bool mc_client_nw_disable_color(mc_client_tessellator *, mc_client_graphics_error *);
 bool mc_client_nw_uv(mc_client_tessellator *, double u, double v, mc_client_graphics_error *);
 /* Actual nw.b(DDD)V: raw source offset stores, including outside a begin/draw. */
 bool mc_client_nw_translation(mc_client_tessellator *, double x, double y, double z,

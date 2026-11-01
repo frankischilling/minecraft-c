@@ -309,6 +309,36 @@ static int notice_components(fixture *f, notice_test *t, const char *directory) 
     return 0;
 }
 
+/* Test-only scalar output. It reads retained native copies and samples no clock. */
+static void notice_timing(const mc_client_menu_loop_state *state) {
+    const mc_client_loop_clock_observation *clock = &state->clocks;
+    printf("NOTICE_TIMING frame=%" PRIu64 " completed-frames=%" PRIu64
+           " entered=%d returned=%d timer-read=%d timer-ticks=%" PRId32 " tick-returns=%" PRId32
+           " run137-valid=%d run137=%" PRId64 " run203-valid=%d run203=%" PRId64
+           " px450-valid=%d px450=%" PRId64 " run387-valid=%d run387=%" PRId64
+           " render-returned=%d failed=%d\n",
+           clock->frame_index, state->frames, clock->frame_entered, clock->frame_returned,
+           clock->timer_fields_read, clock->timer_ticks, clock->tick_returns, clock->run_137_read,
+           clock->run_137, clock->run_203_read, clock->run_203, state->render_clock_stored,
+           state->render_clock, clock->run_387_read, clock->run_387, state->render_returned,
+           state->failed);
+}
+
+/* Test-only scalar receipt; no raw cache/Chunk/context view escapes. */
+static int notice_cache(mc_world_runtime *world) {
+    if (world == NULL)
+        return 0;
+    mc_chunk_provider_cache_observation cache;
+    CHECK(mc_chunk_provider_cache_observe(world->fields.v, &cache));
+    printf("NOTICE_CACHE owned=%d map=%zu list=%zu slots=%zu index-bytes=%zu depth=%zu "
+           "direct-bytes=%zu hits=%" PRIu64 " misses=%" PRIu64 " generic=%" PRIu64
+           " exports=%" PRIu64 " rebuilds=%" PRIu64 "\n",
+           cache.owned, cache.map_count, cache.insertion_count, cache.index_capacity,
+           cache.index_bytes, cache.mutation_depth, cache.direct_bytes, cache.hits, cache.misses,
+           cache.generic_gets, cache.raw_exports, cache.rebuilds);
+    return 0;
+}
+
 static int notice_tutorial(fixture *f, notice_test *t, const char *directory) {
     const mc_statistic *inventory = NULL;
     CHECK(notice_inventory(f, &inventory, true) == 0 &&
@@ -335,6 +365,8 @@ static int notice_tutorial(fixture *f, notice_test *t, const char *directory) {
     do {
         CHECK(save_title_focus(f) == 0 && frame(f) == 0 &&
               notice_inventory(f, &inventory, true) == 0);
+        notice_timing(&f->state);
+        CHECK(notice_cache(f->app->active_world) == 0);
         ++frames;
         if (f->app->active_world == NULL)
             continue;
@@ -350,12 +382,9 @@ static int notice_tutorial(fixture *f, notice_test *t, const char *directory) {
               world.phase == MC_WORLD_RUNTIME_READY && world.mode == MC_WORLD_RUNTIME_GAME &&
               world.entry == MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE);
         if (f->app->r != NULL) {
-            mc_chunk_provider_fields provider;
             size_t eligible;
             int64_t time;
-            CHECK(mc_chunk_provider_bind_fields(load.world->fields.v, &provider, NULL) ==
-                      MC_WORLD_STORAGE_OK &&
-                  save_title_resume(f, load.world, &provider, recovered, &focus_pauses, &eligible,
+            CHECK(save_title_resume(f, load.world, NULL, recovered, &focus_pauses, &eligible,
                                     &time) == 0);
             continue;
         }

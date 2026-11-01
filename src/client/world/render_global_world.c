@@ -22,6 +22,28 @@ struct mc_render_global_cv {
     mc_world_runtime *world;
 };
 
+mc_client_render_global_status
+mc_render_global_cv_capture_world(mc_client_render_global *n, const mc_client_render_blocks *fields,
+                                  mc_world_runtime **out, mc_client_render_global_error *error) {
+    if (n == NULL || fields == NULL || out == NULL || *out != NULL)
+        return mc_render_global_source_fail(error, MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT,
+                                            "selection CV native capture arguments", NULL, NULL,
+                                            NULL, 0, true);
+    for (mc_render_global_cv *cv = n->cv_owners; cv != NULL; cv = cv->next) {
+        if (&cv->fields != fields)
+            continue;
+        if (cv->world != NULL && !mc_world_runtime_binding_retain(cv->world))
+            return mc_render_global_source_fail(error, MC_CLIENT_RENDER_GLOBAL_BUSY,
+                                                "selection actual CV World native occurrence", NULL,
+                                                NULL, NULL, 0, true);
+        *out = cv->world;
+        return MC_CLIENT_RENDER_GLOBAL_OK;
+    }
+    return mc_render_global_source_fail(error, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
+                                        "selection CV has no actual N-owned backing occurrence",
+                                        NULL, NULL, NULL, 0, true);
+}
+
 struct mc_client_render_global_world_call {
     mc_client_render_global *owner;
     mc_client_render_global_world_state state;
@@ -611,6 +633,38 @@ static mc_client_render_global_status world_detach(mc_client_render_global *o,
         mc_client_render_manager_release(&o->world_manager, &e->manager) != MC_CLIENT_MANAGER_OK)
         return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_BUSY, e->manager.operation,
                                             NULL, NULL, NULL, 0, true);
+    return MC_CLIENT_RENDER_GLOBAL_OK;
+}
+
+mc_client_render_global_status
+mc_render_global_world_collect_displaced(mc_client_render_global_world_call *c,
+                                         mc_client_render_global_error *e) {
+    if (c == NULL || e == NULL)
+        return MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT;
+    *e = (mc_client_render_global_error){0};
+    mc_client_render_global *o = c->owner;
+    if (c->state.active || o->active || o->world_call != c || !c->state.source_returned ||
+        c->failure.status != MC_CLIENT_RENDER_GLOBAL_OK || o->world_retiring ||
+        o->phase != MC_CLIENT_RENDER_GLOBAL_READY)
+        return mc_render_global_source_fail(
+            e, MC_CLIENT_RENDER_GLOBAL_BUSY,
+            "actual completed replacement required for displaced DK native cleanup", NULL, NULL,
+            NULL, 0, true);
+    o->active = true;
+    for (mc_client_source_dk *chunk = o->chunk_owners; chunk != NULL; chunk = chunk->next) {
+        if (chunk->phase != MC_CLIENT_RENDER_GLOBAL_READY || !chunk->constructor_returned ||
+            chunk->world_held || chunk->fields.a != NULL || chunk->source_pc != 9 ||
+            chunk->last_store_pc != 6)
+            continue;
+        /* Complete N rebuild returned: old arrays/list were replaced, and
+         * source DK.c:6 already consumed a. No old source receiver survives. */
+        const mc_client_render_global_status status = mc_source_dk_native_retire(chunk, e);
+        if (status != MC_CLIENT_RENDER_GLOBAL_OK) {
+            o->active = false;
+            return status;
+        }
+    }
+    o->active = false;
     return MC_CLIENT_RENDER_GLOBAL_OK;
 }
 

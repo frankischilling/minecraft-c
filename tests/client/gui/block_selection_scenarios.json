@@ -1,0 +1,16 @@
+{
+  "scope": "Authored disposable native source World inputs; not original observations",
+  "world": {"folder": "alpha", "name": "Aiming world", "seed": 123, "spawn": [0, 64, 0], "chunk_radius": 8, "floor_block": 3},
+  "player": {"feet": [0.5, 64.0, 0.5], "saved_y": "64 + binary32(1.62)", "rotation": [0.0, 45.0], "motion": [0.0, 0.0, 0.0], "health": 20, "score": 7, "inventory": []},
+  "target": {"coordinate": [0, 64, 2], "dirt": {"id": 3, "metadata": 0, "height": 1.0}, "snow": {"id": 78, "metadata": 3, "height": 0.5}},
+  "profiles": [
+    {"name": "dirt", "block": "dirt", "width": 854, "height": 480},
+    {"name": "snow", "block": "snow", "width": 854, "height": 480},
+    {"name": "dirt-rounded", "block": "dirt", "width": 641, "height": 481},
+    {"name": "snow-rounded", "block": "snow", "width": 641, "height": 481}
+  ],
+  "required_target_frames": 3,
+  "frame_bound": 96,
+  "real_wait_bound_ms": 120000,
+  "source_inputs": "Actual saved Player NBT, options-loaded Tiny and valid pre-bootstrap inventory statistic; no runtime pose/Hit/progress/clock assignment"
+}

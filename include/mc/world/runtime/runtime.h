@@ -115,7 +115,10 @@ mc_world_storage_status mc_world_runtime_read_info(const mc_world_runtime *runti
 /* Contexts are borrowed inspection views. Enter top-level operations through
  * the runtime functions below so owner destruction remains blocked across every
  * callback, including callbacks without a current chunk. Synchronous recursive
- * generic operations within such a callback retain the outer call protection. */
+ * generic operations within such a callback retain the outer call protection.
+ * Returning any of these mutable descriptor views permanently discards the
+ * source provider's optional private index. The returned descriptors preserve
+ * their existing mutable generic contract, including future callback edits. */
 const mc_chunk_acquire_context *mc_world_runtime_acquisition(const mc_world_runtime *runtime);
 const mc_chunk_lifecycle_context *mc_world_runtime_lifecycle(const mc_world_runtime *runtime);
 const mc_world_save_context *mc_world_runtime_saving(const mc_world_runtime *runtime);
@@ -156,6 +159,9 @@ mc_java_random_profile_status mc_world_runtime_last_random_status(const mc_world
 bool mc_world_runtime_binding_retain(mc_world_runtime *runtime);
 void mc_world_runtime_binding_release(mc_world_runtime *runtime);
 
+/* Successful raw Chunk output also permanently discards the optional source
+ * index. Source implementation calls use their private detailed GET entry;
+ * these public outputs retain their mutable generic contract. */
 mc_chunk_acquire_status mc_world_runtime_acquire(mc_world_runtime *runtime, int32_t x, int32_t z,
                                                  mc_chunk_state **out);
 mc_chunk_acquire_status mc_world_runtime_get(mc_world_runtime *runtime, int32_t x, int32_t z,

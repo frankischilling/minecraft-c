@@ -74,7 +74,10 @@ def save_title_files(root, destination):
             continue
         if len(result) >= 1024 or path.stat().st_size > 1048576:
             raise RuntimeError("Save/title bounded file inventory")
-        data = path.read_bytes()
+        with path.open("rb") as source:
+            data = source.read(1048577)
+        if len(data) > 1048576:
+            raise RuntimeError("Save/title bounded file inventory")
         total += len(data)
         if total > 16 * 1048576:
             raise RuntimeError("Save/title bounded aggregate inventory")
@@ -86,14 +89,56 @@ def save_title_files(root, destination):
     return result
 
 
-def save_title_decode(before, entries, after, mode, stdout, process_first):
+
+def retained_native_run(command, environment, evidence, saves, before_files, mode,
+                        process_first, timeout):
+    """Retain process evidence before attempting a fallible final disk copy."""
+    result = primary = after_error = None
+    try:
+        result = subprocess.run(command, env=environment, timeout=timeout, check=False,
+                                capture_output=True, text=True)
+    except BaseException as error:
+        primary = error
+    stdout = result.stdout if result is not None else getattr(primary, "stdout", None)
+    stderr = result.stderr if result is not None else getattr(primary, "stderr", None)
+    for filename, value in (("stdout.txt", stdout), ("stderr.txt", stderr)):
+        data = value if isinstance(value, bytes) else (value or "").encode("utf-8")
+        (evidence / filename).write_bytes(data)
+    execution = {"mode": mode, "before": before_files, "command": command,
+                 "process_first_millis": process_first}
+    if result is not None:
+        execution.update(event="result", exit_code=result.returncode)
+    else:
+        execution.update(event="timeout" if isinstance(primary, subprocess.TimeoutExpired) else
+                         "launch-error" if isinstance(primary, OSError) else "process-error",
+                         error_type=type(primary).__name__, error=str(primary))
+        if isinstance(primary, subprocess.TimeoutExpired):
+            execution["timeout"] = True
+    record = evidence / "execution.json"
+    record.write_text(json.dumps(execution, indent=2) + "\n", encoding="utf-8")
+    try:
+        execution["after"] = save_title_files(saves, evidence / "after")
+    except BaseException as error:
+        after_error = error
+        execution["after_snapshot_error"] = {"type": type(error).__name__, "error": str(error)}
+    record.write_text(json.dumps(execution, indent=2) + "\n", encoding="utf-8")
+    if primary is not None:
+        raise primary
+    if after_error is not None and result.returncode == 0:
+        raise after_error
+    return result
+
+
+def save_title_decode(before, entries, after, mode, stdout, process_first, *,
+                      folder="alpha", display="Alpha world", marker=57, options_input=None,
+                      inherited_source_chunks=()):
     # Independent Python NBT/MUTF8/zlib parser, shared with the disk-save
     # fixture, reads actual bytes and has no access to C runtime state.
     parser_path = Path(__file__).resolve().parents[1] / "world/test_source_saving.py"
     spec = importlib.util.spec_from_file_location("save_title_independent_nbt", parser_path)
     parser = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(parser)
-    if (parser.read(entries.parent / "options-input.txt") != b"viewDistance:3\n" or
+    if (parser.read(entries.parent / "options-input.txt" if options_input is None else options_input) != b"viewDistance:3\n" or
             [line for line in stdout.splitlines() if line.startswith("WORLD_SAVE_TITLE_OPTIONS ")] !=
             ["WORLD_SAVE_TITLE_OPTIONS view-distance=3 lines=1 bytes=15 source-loaded=1"]):
         raise RuntimeError("Exact declared Tiny input and actual source GameSettings parse")
@@ -156,7 +201,7 @@ def save_title_decode(before, entries, after, mode, stdout, process_first):
     new_inventory = {Path(name).as_posix(): value for name, value in snapshot(after).items()}
 
     def world_product(name):
-        return name in {"alpha/level.dat", "alpha/level.dat_old", "alpha/session.lock"} or name.startswith("alpha/region/")
+        return name in {f"{folder}/level.dat", f"{folder}/level.dat_old", f"{folder}/session.lock"} or name.startswith(f"{folder}/region/")
 
     protected_initial = {name: digest for name, digest in initial_inventory.items() if not world_product(name)}
     if any(old_inventory.get(name) != digest for name, digest in protected_initial.items()):
@@ -164,29 +209,29 @@ def save_title_decode(before, entries, after, mode, stdout, process_first):
     if any(name not in initial_inventory and not world_product(name) for name in old_inventory):
         raise RuntimeError("Pause prefix unexpected new save file")
     protected = {name: digest for name, digest in old_inventory.items()
-                 if name != "alpha/session.lock" and
-                 (mismatch or not (name in {"alpha/level.dat", "alpha/level.dat_old"} or name.startswith("alpha/region/")))}
+                 if name != f"{folder}/session.lock" and
+                 (mismatch or not (name in {f"{folder}/level.dat", f"{folder}/level.dat_old"} or name.startswith(f"{folder}/region/")))}
     if any(new_inventory.get(name) != digest for name, digest in protected.items()):
         raise RuntimeError("Full save changed protected entry fixture bytes")
-    allowed = {"alpha/session.lock"} if mismatch else {"alpha/session.lock", "alpha/level.dat_old"}
+    allowed = {f"{folder}/session.lock"} if mismatch else {f"{folder}/session.lock", f"{folder}/level.dat_old"}
     if any(name not in old_inventory and name not in allowed and
-           not (not mismatch and name.startswith("alpha/region/")) for name in new_inventory):
+           not (not mismatch and name.startswith(f"{folder}/region/")) for name in new_inventory):
         raise RuntimeError("Full save unexpected new save file")
-    old_token = parser.read(entry / "alpha/session.lock")
-    new_token = parser.read(after / "alpha/session.lock")
+    old_token = parser.read(entry / f"{folder}/session.lock")
+    new_token = parser.read(after / f"{folder}/session.lock")
     expected_token = bytes([old_token[0] ^ 1]) + old_token[1:] if mismatch and old_token else old_token
     if len(old_token) != 8 or new_token != expected_token:
         raise RuntimeError("Full save exact original session token/restored fault input")
 
-    entry_tree = parser.inflate(parser.read(entry / "alpha/level.dat"), 31)
+    entry_tree = parser.inflate(parser.read(entry / f"{folder}/level.dat"), 31)
     if set(entry_tree) != {"Data"} or entry_tree["Data"][0] != 10:
         raise RuntimeError("Pause prefix fresh metadata root")
     entry_data = entry_tree["Data"][1]
     fields = {"RandomSeed", "SpawnX", "SpawnY", "SpawnZ", "Time", "SizeOnDisk", "LastPlayed",
               "LevelName", "version", "rainTime", "raining", "thunderTime", "thundering", "Player"}
-    initial_size = parser.inflate(parser.read(before / "alpha/level.dat"), 31)["Data"][1]["SizeOnDisk"]
+    initial_size = parser.inflate(parser.read(before / f"{folder}/level.dat"), 31)["Data"][1]["SizeOnDisk"]
     if (set(entry_data) != fields or entry_data.get("RandomSeed") != [4, 123] or
-            entry_data.get("version") != [3, 19132] or entry_data.get("LevelName") != [8, "Alpha world"] or
+            entry_data.get("version") != [3, 19132] or entry_data.get("LevelName") != [8, display] or
             entry_data.get("Time", [None])[0] != 4 or not 0 <= entry_data["Time"][1] <= numbers["time"] or
             entry_data.get("SizeOnDisk", [None])[0] != 4 or initial_size[0] != 4 or
             not initial_size[1] <= entry_data["SizeOnDisk"][1] <= numbers["size-before"] or
@@ -197,7 +242,7 @@ def save_title_decode(before, entries, after, mode, stdout, process_first):
 
     def regions(root, initial=None):
         decoded = {}
-        for path in sorted((root / "alpha/region").glob("r.*.*.mcr")):
+        for path in sorted((root / f"{folder}/region").glob("r.*.*.mcr")):
             match = re.fullmatch(r"r\.(-?[0-9]+)\.(-?[0-9]+)\.mcr", path.name)
             if match is None:
                 raise RuntimeError("Save/title actual region filename")
@@ -230,7 +275,7 @@ def save_title_decode(before, entries, after, mode, stdout, process_first):
                     if level.get(key, [None])[0] != 7 or len(level[key][1]) != length:
                         raise RuntimeError("Save/title actual Chunk array extent")
                 stamp = struct.unpack_from(">i", raw, 4096 + slot * 4)[0]
-                source_written = initial is not None and initial.get(coordinate) != (tree, stamp)
+                source_written = coordinate in inherited_source_chunks or (initial is not None and initial.get(coordinate) != (tree, stamp))
                 for key in ("Entities", "TileEntities"):
                     if level.get(key, [None])[0] != 9:
                         raise RuntimeError("Save/title actual typed Chunk lists")
@@ -249,7 +294,7 @@ def save_title_decode(before, entries, after, mode, stdout, process_first):
     initial = regions(before)
     old, new = regions(entry, initial), regions(after, initial)
     if (not set(initial) <= set(old) <= set(new) or
-            any(chunks[(0, 0)][0]["Level"][1]["Blocks"][1][127] != 57 for chunks in (initial, old, new))):
+            any(chunks[(0, 0)][0]["Level"][1]["Blocks"][1][127] != marker for chunks in (initial, old, new))):
         raise RuntimeError("Pause/full save stored marker and original Chunk coverage")
     pause_changed = []
     for coordinate, (tree, stamp) in old.items():
@@ -267,7 +312,7 @@ def save_title_decode(before, entries, after, mode, stdout, process_first):
                 "entry_frame": numbers["entry-frame"],
                 "scope": "fm.b42 native exception-allocation frontier; source entry bytes retained; no thrown us/title return"}
 
-    metadata = parser.inflate(parser.read(after / "alpha/level.dat"), 31)
+    metadata = parser.inflate(parser.read(after / f"{folder}/level.dat"), 31)
     if set(metadata) != {"Data"} or metadata["Data"][0] != 10:
         raise RuntimeError("Save/title fresh metadata root")
     data = metadata["Data"][1]
@@ -275,7 +320,7 @@ def save_title_decode(before, entries, after, mode, stdout, process_first):
                      "LevelName", "version", "rainTime", "raining", "thunderTime", "thundering", "Player"}:
         raise RuntimeError("Save/title exact fresh source Data fields")
     for key, value in {"RandomSeed": [4, 123], "version": [3, 19132],
-                       "LevelName": [8, "Alpha world"], "Time": [4, numbers["time"]],
+                       "LevelName": [8, display], "Time": [4, numbers["time"]],
                        "SizeOnDisk": [4, numbers["size-before"]]}.items():
         if data.get(key) != value:
             raise RuntimeError(f"Save/title source metadata {key}")
@@ -288,7 +333,7 @@ def save_title_decode(before, entries, after, mode, stdout, process_first):
             len(player["Pos"][1][1]) != 3 or player.get("Inventory", [None])[0] != 9 or
             player.get("Health", [None])[0] != 2):
         raise RuntimeError("Save/title actual LocalPlayer semantic output")
-    if parser.read(after / "alpha/level.dat_old") != parser.read(entry / "alpha/level.dat"):
+    if parser.read(after / f"{folder}/level.dat_old") != parser.read(entry / f"{folder}/level.dat"):
         raise RuntimeError("Save/title source metadata rotation backup")
 
     changed = []
@@ -307,6 +352,95 @@ def save_title_decode(before, entries, after, mode, stdout, process_first):
             "scope": "native visible UI save/title; no original whole-frame or source reload claim"}
 
 
+
+def reload_decode(evidence, stdout, process_first):
+    """Read byte-for-byte snapshots taken after real source stages; no inputs rewritten."""
+    shots = evidence / "native-snapshots"
+    rows = stdout.splitlines()
+    saves = [line for line in rows if line.startswith("WORLD_SAVE_TITLE ")]
+    phases = [line for line in rows if line.startswith("WORLD_RELOAD_PHASE ")]
+    if len(saves) != 3 or phases != [
+            "WORLD_RELOAD_PHASE epoch=1 folder=alpha save-title=1",
+            "WORLD_RELOAD_PHASE epoch=2 folder=alpha save-title=1",
+            "WORLD_RELOAD_PHASE epoch=3 folder=older save-title=1"]:
+        raise RuntimeError("Three actual ordered source save/title epochs required")
+    suffix = (" distinct-os=1 distinct-load=1 distinct-handler=1 distinct-world=1 distinct-player=1"
+              " distinct-input=1 n-ready=1 n-old-remove=1 n-th=1 n-k=1 n-cv=1 n-register=1"
+              " n-rebuild=1 dn-replaced=1 previous-ready=1 returned=130 frame=1013")
+    selections = [line for line in rows if line.startswith("WORLD_RELOAD_SELECT ")]
+    if selections != ["WORLD_RELOAD_SELECT epoch=2 folder=alpha" + suffix,
+                      "WORLD_RELOAD_SELECT epoch=3 folder=older" + suffix]:
+        raise RuntimeError("Actual same/different source selection and renderer receipts required")
+    if rows.count("WORLD_RELOAD_NOTICE terminal-prefix-retired=1 source-fields-unchanged=1") != 1:
+        raise RuntimeError("Actual Notice call retirement must precede all-epoch terminal audit")
+    terminal = "WORLD_RELOAD_TERMINAL epochs=3 old-root-busy=1 all-worlds-ready=1 passive-invariant=1 released-root-retry=1 all-epoch-audit=1"
+    if rows.count(terminal) != 1 or rows.count("WORLD_RELOAD_IDENTITIES epochs=3 all-pairs-distinct=1 source-owners-live=1") != 1:
+        raise RuntimeError("All-pairs genuine identities, predecessor root refusal and passive retry required")
+    snapshots = [line for line in rows if line.startswith("WORLD_RELOAD_SNAPSHOT ")]
+    names = [f"{stage}-{epoch}" for epoch in range(1, 4) for stage in ("before", "after")]
+    if len(snapshots) != 6:
+        raise RuntimeError("Six actual raw disk snapshots required")
+    for row, name in zip(snapshots, names):
+        found = re.fullmatch(rf"WORLD_RELOAD_SNAPSHOT phase={name} files=([1-9][0-9]*) bytes=([1-9][0-9]*) actual-file-copy=1", row)
+        if found is None or not 0 < int(found[1]) <= 1024 or not 0 < int(found[2]) <= 16 * 1048576:
+            raise RuntimeError("Bounded actual reload file-copy receipt")
+        inventory = save_title_files(shots / name, evidence / ("audited-" + name))
+        if len(inventory) != int(found[1]) or sum(value["bytes"] for value in inventory.values()) != int(found[2]):
+            raise RuntimeError("Actual snapshot inventory differs from copy receipt")
+    reports = []
+    source_chunks = {}
+    for epoch, (folder, display, marker) in enumerate((("alpha", "Alpha world", 57),
+                                                      ("alpha", "Alpha world", 57),
+                                                      ("older", "Old world", 56)), 1):
+        stage_stdout = "\n".join([line for line in rows if line.startswith("WORLD_SAVE_TITLE_OPTIONS ")] +
+                                  [saves[epoch - 1]])
+        reports.append(save_title_decode(shots / f"before-{epoch}", evidence / "entries" / f"epoch-{epoch}",
+                                         shots / f"after-{epoch}", "save-title", stage_stdout, process_first,
+                                         folder=folder, display=display, marker=marker,
+                                         options_input=evidence / "options-input.txt",
+                                         inherited_source_chunks=source_chunks.get(folder, ())))
+        report = reports[-1]
+        source_chunks.setdefault(folder, set()).update(
+            tuple(coordinate) for coordinate in report["pause_changed_chunks"] + report["changed_chunks"])
+    def hashes(root):
+        return {Path(key).as_posix(): value for key, value in snapshot(root).items()}
+    for previous, current, changed in ((evidence / "before", shots / "before-1", "alpha/session.lock"),
+                                       (shots / "after-1", shots / "before-2", "alpha/session.lock"),
+                                       (shots / "after-2", shots / "before-3", "older/session.lock")):
+        left, right = hashes(previous), hashes(current)
+        if any(right.get(key) != value for key, value in left.items() if key != changed):
+            raise RuntimeError("Source reopening changed existing disk bytes before Save")
+        if set(right) - set(left) - {changed} or changed not in right or (current / changed).stat().st_size != 8:
+            raise RuntimeError("Source reopening only creates/replaces actual session token")
+    if hashes(shots / "after-3") != hashes(evidence / "after"):
+        raise RuntimeError("Native multi-epoch terminal cleanup wrote source save bytes")
+    parser_path = Path(__file__).resolve().parents[1] / "world/test_source_saving.py"
+    spec = importlib.util.spec_from_file_location("reload_independent_nbt", parser_path)
+    parser = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(parser)
+    saved = parser.inflate(parser.read(shots / "after-1/alpha/level.dat"), 31)["Data"][1]["Player"]
+    loaded = parser.Nbt(parser.read(shots / "loaded-player-2.nbt")).root()
+    def payload(kind, value):
+        if kind == 10:
+            return {key: typed(item) for key, item in value.items()}
+        if kind == 9:
+            child, items = value
+            return [child if items else 0, [payload(child, item) for item in items]]
+        return value
+    def typed(tag):
+        return [tag[0], payload(tag[0], tag[1])]
+    # The observer's generic encoder canonicalizes an empty List's child byte.
+    # Compare complete stable-field semantics; no nonempty child type/value is normalized.
+    if saved[0] != 10 or saved[1].get("Score") != [3, 7] or loaded.get("Score") != [3, 7]:
+        raise RuntimeError("Declared saved Player Score7 must survive actual source read/save/reopen")
+    for key in ("Inventory", "Dimension", "Score"):
+        if key not in saved[1] or key not in loaded or typed(saved[1][key]) != typed(loaded[key]):
+            raise RuntimeError(f"Actual reopened LocalPlayer semantic {key}")
+    return {"mode": "reload-cycle", "stages": reports,
+            "loaded_player_sha256": hashlib.sha256(parser.read(shots / "loaded-player-2.nbt")).hexdigest(),
+            "scope": "native actual source same/different World UI reload and multi-epoch cleanup; no original whole-frame equivalence"}
+
+
 def string(value):
     data = value.encode("ascii")
     return struct.pack(">H", len(data)) + data
@@ -316,7 +450,7 @@ def tag(kind, key, value):
     return bytes([kind]) + string(key) + value
 
 
-def metadata(display, played, version, partial=False):
+def metadata(display, played, version, partial=False, player_score=None):
     data = tag(8, "LevelName", string(display))
     data += tag(4, "LastPlayed", struct.pack(">q", played))
     data += tag(4, "SizeOnDisk", struct.pack(">q", 3145728))
@@ -332,10 +466,24 @@ def metadata(display, played, version, partial=False):
         player += tag(9, "Pos", b"\x06" + struct.pack(">i", 0))
         player += tag(9, "Rotation", b"\x05" + struct.pack(">i2f", 2, 0, 0))
         data += tag(10, "Player", player + b"\x00")
+    if player_score is not None:
+        if partial:
+            raise RuntimeError("Distinct authored source Player fixture arms")
+        player = tag(3, "Dimension", struct.pack(">i", 0))
+        # Source saved Pos uses Entity.y, including the Player's float offset.
+        # Feet at the authored grass surface y64 therefore require this value.
+        saved_y = 64.0 + struct.unpack(">f", struct.pack(">f", 1.62))[0]
+        player += tag(9, "Pos", b"\x06" + struct.pack(">i3d", 3, .5, saved_y, .5))
+        player += tag(9, "Motion", b"\x06" + struct.pack(">i3d", 3, 0., 0., 0.))
+        player += tag(9, "Rotation", b"\x05" + struct.pack(">i2f", 2, 0., 0.))
+        player += tag(2, "Health", struct.pack(">h", 20))
+        player += tag(3, "Score", struct.pack(">i", player_score))
+        player += tag(9, "Inventory", b"\x0a\x00\x00\x00\x00")
+        data += tag(10, "Player", player + b"\x00")
     return b"\x0a\x00\x00" + tag(10, "Data", data + b"\x00") + b"\x00"
 
 
-def chunk_record(chunk_x, chunk_z):
+def chunk_record(chunk_x, chunk_z, marker=57):
     blocks = bytearray(32768)
     skylight = bytearray(16384)
     heights = bytearray([64] * 256)
@@ -349,7 +497,7 @@ def chunk_record(chunk_x, chunk_z):
             skylight[(base + 64) // 2:(base + 128) // 2] = bytes([255] * 32)
     # A valid high marker distinguishes the actual stored Chunk from generation.
     if (chunk_x, chunk_z) == (0, 0):
-        blocks[127] = 57
+        blocks[127] = marker
         skylight[127 // 2] &= 15
         heights[0] = 128
     level = tag(3, "xPos", struct.pack(">i", chunk_x))
@@ -369,7 +517,7 @@ def chunk_record(chunk_x, chunk_z):
     return record + bytes(sectors * 4096 - len(record)), sectors
 
 
-def saved_regions(directory, generate):
+def saved_regions(directory, generate, marker=57):
     # The default UI profile reads all 289 existing Chunks. The optional
     # generation profile retains one saved marker Chunk and generates its
     # surroundings through the same source path.
@@ -377,7 +525,7 @@ def saved_regions(directory, generate):
                                             for z in range(-8, 9)]
     regions = {}
     for x, z in coordinates:
-        body, sectors = chunk_record(x, z)
+        body, sectors = chunk_record(x, z, marker)
         region = regions.setdefault((x >> 5, z >> 5), bytearray(8192))
         offset = len(region) // 4096
         index = (x & 31) + (z & 31) * 32
@@ -590,7 +738,7 @@ def main():
                                  "load-terminal", "load-partial", "repeat", "load-light", "animals", "creatures",
                                  "creatures-slime", "creatures-creeper", "remaining-mobs",
                                  "remaining-wolf", "remaining-zombie", "remaining-skeleton",
-                                 "save-title", "save-title-session"))
+                                 "save-title", "save-title-session", "reload-cycle"))
     parser.add_argument("--timeout", type=float)
     args = parser.parse_args()
     if os.name != "nt":
@@ -610,8 +758,9 @@ def main():
         animal = mode in ANIMAL_PROFILES
         creature = mode in CREATURE_PROFILES
         remaining = mode in REMAINING_PROFILES
-        save_title = mode in ("save-title", "save-title-session")
-        evidence = Path(tempfile.mkdtemp(prefix=mode + "-", dir=artifacts)) if save_title else None
+        reload_cycle = mode == "reload-cycle"
+        save_title = mode in ("save-title", "save-title-session") or reload_cycle
+        evidence = Path(tempfile.mkdtemp(prefix=mode + "-", dir=artifacts))
         with tempfile.TemporaryDirectory(prefix="mc-rq-loop-") as work:
             appdata = Path(work)
             game = appdata / ".minecraft"
@@ -643,47 +792,38 @@ def main():
                 filename = "level.dat_old" if folder == "bravo" else "level.dat"
                 (directory / filename).write_bytes(
                     gzip.compress(metadata(display, played, version,
-                                           partial=mode == "load-partial" and folder == "alpha"),
+                                           partial=mode == "load-partial" and folder == "alpha",
+                                           player_score=7 if reload_cycle and folder == "alpha" else None),
                                   mtime=0))
                 (directory / "preserve-chunk.dat").write_bytes(b"authored untouched chunk")
             if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature or remaining or save_title:
                 regions = saves / "alpha" / "region"
                 regions.mkdir()
                 saved_regions(regions, generate=mode == "generate")
+            if reload_cycle:
+                regions = saves / "older" / "region"
+                regions.mkdir()
+                saved_regions(regions, generate=False, marker=56)
             before = snapshot(saves)
-            if save_title:
-                before_files = save_title_files(saves, evidence / "before")
+            before_files = save_title_files(saves, evidence / "before")
             environment = os.environ.copy()
             environment["APPDATA"] = str(appdata)
             if save_title:
                 environment["MC_WORLD_SAVE_TITLE_SESSION"] = str(saves / "alpha/session.lock")
                 environment["MC_WORLD_SAVE_TITLE_SAVES"] = str(saves)
                 environment["MC_WORLD_SAVE_TITLE_ENTRIES"] = str(evidence / "entries")
+            if reload_cycle:
+                shots = evidence / "native-snapshots"
+                shots.mkdir()
+                environment["MC_WORLD_RELOAD_SAVES"] = str(saves)
+                environment["MC_WORLD_SAVE_TITLE_SNAPSHOTS"] = str(shots)
             capture = artifacts / (mode + ".png")
             process_first = time.time_ns() // 1000000
-            try:
-                result = subprocess.run([str(executable), str(assets), mode, str(capture)],
-                                        env=environment,
-                                        timeout=args.timeout if args.timeout is not None else
-                                        (600 if mode == "generate" else 240 if animal or creature or remaining or save_title else 110), check=False,
-                                        capture_output=True, text=True)
-            except subprocess.TimeoutExpired as error:
-                if save_title:
-                    for name, value in (("stdout.txt", error.stdout), ("stderr.txt", error.stderr)):
-                        text = value.decode("utf-8", "replace") if isinstance(value, bytes) else value or ""
-                        (evidence / name).write_text(text, encoding="utf-8")
-                    (evidence / "execution.json").write_text(json.dumps({"mode": mode, "timeout": True,
-                        "before": before_files}, indent=2) + "\n", encoding="utf-8")
-                raise
-            finally:
-                if save_title:
-                    after_files = save_title_files(saves, evidence / "after")
-            if save_title:
-                (evidence / "stdout.txt").write_text(result.stdout, encoding="utf-8")
-                (evidence / "stderr.txt").write_text(result.stderr, encoding="utf-8")
-                (evidence / "execution.json").write_text(json.dumps({"mode": mode, "exit_code": result.returncode,
-                    "before": before_files, "after": after_files,
-                    "process_first_millis": process_first}, indent=2) + "\n", encoding="utf-8")
+            result = retained_native_run(
+                [str(executable), str(assets), mode, str(capture)], environment, evidence,
+                saves, before_files, mode, process_first,
+                args.timeout if args.timeout is not None else
+                (600 if mode == "generate" else 240 if animal or creature or remaining or save_title else 110))
             print(result.stdout, end="")
             print(result.stderr, end="", file=sys.stderr)
             if result.returncode:
@@ -758,8 +898,9 @@ def main():
                     raise RuntimeError("Declared paused caller did not retain the real 499-record light batch")
             after = snapshot(saves)
             if save_title:
-                decoded = save_title_decode(evidence / "before", evidence / "entries", evidence / "after",
-                                            mode, result.stdout, process_first)
+                decoded = (reload_decode(evidence, result.stdout, process_first) if reload_cycle else
+                           save_title_decode(evidence / "before", evidence / "entries", evidence / "after",
+                                             mode, result.stdout, process_first))
                 cleanup = [line for line in result.stdout.splitlines()
                            if line.startswith(f"WORLD_SELECTION mode={mode} cleanup=")]
                 if len(cleanup) != 1 or re.fullmatch(
@@ -795,7 +936,10 @@ def main():
         print("Native remaining Mobs: three independent real Wolf/Zombie/Skeleton loaded scopes, "
               "full tick/World/HUD first compilation/reuse, actual V/RA/Bow receipts and checked "
               "cleanup passed; no original whole-frame parity credit")
-    if all(mode in ("save-title", "save-title-session") for mode in modes):
+    if all(mode == "reload-cycle" for mode in modes):
+        print("Native actual same/different World reload: three source UI epochs, actual entry snapshots, "
+              "N/DN replacements, disk/player readback and all-epoch terminal ownership; no original parity claim")
+    elif all(mode in ("save-title", "save-title-session") for mode in modes):
         print("Native visible save/title: real Escape/button1, actual source save and independent "
               "metadata/region readback, fresh title, session allocation frontier and retained-load "
               "terminal cleanup passed; no original whole-frame or source reload claim")

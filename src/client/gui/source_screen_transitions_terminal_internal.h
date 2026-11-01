@@ -6,8 +6,9 @@
 
 /* Inspect every actual retained node/call after terminal preparation and verify
  * the namespace's exact call count. EMPTY_STORAGE is an explicit absence proof,
- * not a successful empty World audit. SELECTED_LOAD requires exactly one intact
- * selected call; terminal_admit below remains mandatory before its cleanup.
+ * not a successful empty World audit. SELECTED_LOAD requires one or more actual
+ * successful selected epochs within the native8-call bound; terminal_admit
+ * below remains mandatory for every epoch before any World cleanup.
  * No source/cleanup/owner diagnostic mutation. out is required, error optional,
  * all output storage is disjoint, and failure preserves *out. */
 mc_world_storage_status
@@ -16,8 +17,11 @@ mc_client_screen_transitions_terminal_classify(const mc_client_screen_transition
                                                mc_world_storage_error *);
 
 /* Passive first-scope World admission through this actual transition owner.
- * Requires its completed terminal prefix and exactly one retained selected
- * load. Supplies the real controller owning slot; no caller provides count
+ * Requires its completed terminal prefix and a bounded retained epoch graph.
+ * Audits every selected World with that epoch's real controller owning slot
+ * and remaining source roots. Aggregate values are checked sums; scratch is
+ * released between audits (limits apply to each actual World, peak memory
+ * does not accumulate). No caller provides count
  * exemptions or reconstructed anchors. The complete graph stays live. Outputs
  * must be disjoint; out is required, error optional, and out changes only on
  * success. Remaining globals can still make the lower World audit BUSY. */

@@ -21,6 +21,8 @@ typedef void(GLAPIENTRY *mc_client_gl_disable_fn)(GLenum capability);
 typedef void(GLAPIENTRY *mc_client_gl_depth_function_fn)(GLenum function);
 typedef void(GLAPIENTRY *mc_client_gl_depth_mask_fn)(GLboolean flag);
 typedef void(GLAPIENTRY *mc_client_gl_blend_function_fn)(GLenum source, GLenum destination);
+typedef void(GLAPIENTRY *mc_client_gl_line_width_fn)(GLfloat width);
+typedef void(GLAPIENTRY *mc_client_gl_polygon_offset_fn)(GLfloat factor, GLfloat units);
 typedef void(GLAPIENTRY *mc_client_gl_generate_textures_fn)(GLsizei count, GLuint *textures);
 typedef void(GLAPIENTRY *mc_client_gl_delete_textures_fn)(GLsizei count, const GLuint *textures);
 typedef void(GLAPIENTRY *mc_client_gl_bind_texture_fn)(GLenum target, GLuint texture);
@@ -60,6 +62,8 @@ typedef void(GLAPIENTRY *mc_client_gl_cull_face_fn)(GLenum mode);
     X(mc_client_gl_depth_function_fn, DepthFunc, "glDepthFunc")                                    \
     X(mc_client_gl_depth_mask_fn, DepthMask, "glDepthMask")                                        \
     X(mc_client_gl_blend_function_fn, BlendFunc, "glBlendFunc")                                    \
+    X(mc_client_gl_line_width_fn, LineWidth, "glLineWidth")                                        \
+    X(mc_client_gl_polygon_offset_fn, PolygonOffset, "glPolygonOffset")                            \
     X(mc_client_gl_generate_textures_fn, GenTextures, "glGenTextures")                             \
     X(mc_client_gl_delete_textures_fn, DeleteTextures, "glDeleteTextures")                         \
     X(mc_client_gl_bind_texture_fn, BindTexture, "glBindTexture")                                  \

@@ -106,6 +106,14 @@ bool mc_client_nw_begin_quads(mc_client_tessellator *o, mc_client_graphics_error
     return mc_client_nw_begin(o, 7, e);
 }
 
+bool mc_client_nw_disable_color(mc_client_tessellator *o, mc_client_graphics_error *e) {
+    if (!enter(o, e))
+        return false;
+    o->fields.q = true;
+    o->last_store_pc = 2;
+    return leave(o, true, e);
+}
+
 bool mc_client_nw_uv(mc_client_tessellator *o, double u, double v, mc_client_graphics_error *e) {
     if (!enter(o, e))
         return false;

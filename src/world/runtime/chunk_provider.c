@@ -13,6 +13,8 @@ static mc_world_storage_status result(mc_world_storage_error *error, mc_world_st
     return status;
 }
 
+#include "chunk_provider_owned.inc"
+
 /* No request changes accounting until its allocation succeeds. Zero-length
  * arrays are represented by NULL and consume no direct bytes. */
 static void *request(mc_chunk_provider *provider, size_t count, size_t width,
@@ -79,6 +81,7 @@ static mc_world_storage_status generator_status(mc_overworld_generator_status st
 void mc_chunk_provider_free(mc_chunk_provider *provider) {
     if (provider == NULL)
         return;
+    owned_cache_discard(provider);
     if (provider->fallback_data != NULL &&
         provider->world->fallback.data == provider->fallback_data)
         provider->world->fallback.data = NULL;
@@ -253,6 +256,7 @@ mc_world_storage_status mc_chunk_provider_create(mc_world_runtime *runtime,
     /* The sole fallback identity is embedded in the SAME runtime. Its actual
      * zero blocks and data are provider-owned; the binder must preserve them.
      * Nothing fallible follows this in-place construction/publication. */
+    owned_cache_create_optional(provider);
     runtime->fallback = (mc_chunk_state){
         .data = provider->fallback_data, .x = 0, .z = 0, .blank = true, .never_save = true};
     *out = provider;
@@ -263,9 +267,9 @@ fail:
     return result(error, status, operation);
 }
 
-mc_world_storage_status mc_chunk_provider_bind_fields(mc_chunk_provider *provider,
-                                                      mc_chunk_provider_fields *out,
-                                                      mc_world_storage_error *error) {
+mc_world_storage_status mc_chunk_provider_internal_fields(mc_chunk_provider *provider,
+                                                          mc_chunk_provider_fields *out,
+                                                          mc_world_storage_error *error) {
     if (provider == NULL || out == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "provider field arguments");
     *out = (mc_chunk_provider_fields){.world = provider->world,
@@ -288,6 +292,14 @@ mc_world_storage_status mc_chunk_provider_bind_fields(mc_chunk_provider *provide
                                       .max_direct_allocation_bytes = provider->max_direct_bytes,
                                       .pending_history_limits = provider->history_limits};
     return result(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_chunk_provider_bind_fields(mc_chunk_provider *provider,
+                                                      mc_chunk_provider_fields *out,
+                                                      mc_world_storage_error *error) {
+    if (provider != NULL && out != NULL)
+        mc_chunk_provider_cache_export(provider);
+    return mc_chunk_provider_internal_fields(provider, out, error);
 }
 
 mc_chunk_provider_concrete_kind

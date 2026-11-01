@@ -1,5 +1,14 @@
 # Development status
 
+Selected dirt and snow blocks now draw their outlines through the ordinary
+loaded World frame. Four Windows SDK profiles pass with real picking, all
+eighteen submitted vertices, state-dependent bounds and checked cleanup.
+The Windows save/reselect test also completes three successive World loads
+through the ordinary menus. The [selection and reselection contract](client/block-selection.md)
+records these finite scenarios, the new private Chunk lookup indexes, and the
+remaining eight-load session limit. Mining, placement and unrestricted World
+reselection remain unfinished; the client is still pre-playable.
+
 The source World now saves metadata and supported live Chunk records through
 its actual SaveHandler, loader and shared region cache. It writes fresh
 semantic records, explicitly closes the compressed stream, then adds region

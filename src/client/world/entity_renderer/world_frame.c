@@ -15,15 +15,20 @@
 #include "mc/core/java/java.h"
 #include "mc/entity/living/view.h"
 #include "mc/entity/player/player.h"
+#include "mc/world/runtime/blocks.h"
 #include "precipitation_internal.h"
 #include "renderer_camera_internal.h"
 #include "renderer_fog_internal.h"
 #include "renderer_fog_state_internal.h"
 #ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+#include "../../../block/registry/registry_internal.h"
+#include "../../../world/runtime/collision/blocks_internal.h"
+#include "../../../world/runtime/runtime_internal.h"
 #include "../../startup/application_startup_internal.h"
 #include "../render_global_clouds_internal.h"
 #include "../render_global_internal.h"
 #include "../render_global_sky_internal.h"
+#include "selection_internal.h"
 #endif
 
 #include <emmintrin.h>
@@ -108,9 +113,7 @@ struct mc_client_world_frame_call {
     mc_entity_view_error eye_error;
     mc_entity_vector *entity_eye;
     mc_entity_classes *eye_classes;
-    mc_entity_hit_result *selection_hit;
-    mc_entity_hit_error selection_hit_cleanup;
-    mc_item_stack *selection_stack;
+    mc_world_frame_selection_work selections[2];
     mc_platform_nanotime update_clock;
 #endif
     bool owner_held, camera_held;
@@ -642,6 +645,10 @@ static bool body(mc_client_world_frame_call *call, mc_math_classes *math) {
                           call->failure.picking == NULL || call->failure.picking->native_policy);
     }
     call->state.picking_returned = true;
+    call->state.picking_source_returned = call->pick_state.source_returned;
+    call->state.picking_block_published = call->pick_state.block_published;
+    call->state.picking_result_identity = (uintptr_t)call->pick_state.result;
+    call->state.picking_block_identity = (uintptr_t)call->pick_state.block_result;
     owner->active = false;
     const mc_client_pick_status retired = mc_client_entity_renderer_pick_retire(&call->pick);
     owner->active = true;
@@ -1018,17 +1025,8 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
         call->failure.submission = NULL;
     submission_views_expired(&call->translucent_submission_state);
     render_error_views_expired(&call->translucent_retirement_error);
-    if (mc_entity_hit_result_release(&call->selection_hit, &call->selection_hit_cleanup) !=
-        MC_ENTITY_HIT_OK) {
-        result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame selection Hit retirement");
-        if (error != NULL)
-            error->hit = call->selection_hit_cleanup;
+    if (!selection_retire_all(call, error))
         return MC_CLIENT_WORLD_FRAME_BUSY;
-    }
-    call->state.selection_hit = NULL;
-    mc_item_stack_release(call->selection_stack);
-    call->selection_stack = NULL;
-    call->state.selection_stack = NULL;
     if (call->entity_eye != NULL) {
         const mc_entity_status released =
             mc_entity_vector_release(call->eye_classes, call->entity_eye);

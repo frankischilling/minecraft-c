@@ -342,7 +342,8 @@ bool mc_world_entity_query_acquire_held(mc_world_runtime *world, int32_t x, int3
      * dispatch this getter through the old provider's cached contexts. */
     mc_chunk_provider_fields provider;
     mc_world_storage_error native = {0};
-    if (mc_chunk_provider_bind_fields(world->fields.v, &provider, &native) != MC_WORLD_STORAGE_OK) {
+    if (mc_chunk_provider_internal_fields(world->fields.v, &provider, &native) !=
+        MC_WORLD_STORAGE_OK) {
         cause(frame, native);
         return false;
     }

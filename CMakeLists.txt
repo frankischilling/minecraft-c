@@ -2273,6 +2273,9 @@ if(BUILD_TESTING)
     add_executable(mc_test_world_collision_boxes tests/world/runtime/collision/test_boxes.c)
     target_link_libraries(mc_test_world_collision_boxes PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
+    add_executable(mc_test_selected_getters tests/world/runtime/collision/test_selected_getters.c)
+    target_link_libraries(mc_test_selected_getters PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
     add_executable(mc_test_piston_geometry tests/world/runtime/collision/test_piston_geometry.c)
     target_link_libraries(mc_test_piston_geometry PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
@@ -4181,6 +4184,14 @@ if(BUILD_TESTING)
     set_tests_properties(world.collision_boxes PROPERTIES
         LABELS "public;integration;ownership;collision" TIMEOUT 90)
 
+    add_test(NAME world.selected_getters
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/collision/test_selected_getters.py"
+        --executable "$<TARGET_FILE:mc_test_selected_getters>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/selected-getter-contracts")
+    set_tests_properties(world.selected_getters PROPERTIES
+        LABELS "public;integration;ownership;collision" TIMEOUT 90)
+
     add_test(NAME world.piston_geometry
         COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
@@ -5475,6 +5486,8 @@ include(cmake/client_effect_upload.cmake)
 include(cmake/tests/source_screen_events.cmake)
 include(cmake/client_runtime.cmake)
 include(cmake/client_active_notice_tests.cmake)
+include(cmake/client_block_selection_tests.cmake)
+include(cmake/source_store_chunk_lookup_tests.cmake)
 include(cmake/platform_date_format.cmake)
 if(TARGET mc_client_source_screens)
     target_sources(mc_client_source_screens PRIVATE

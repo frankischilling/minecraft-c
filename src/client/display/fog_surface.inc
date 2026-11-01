@@ -487,6 +487,8 @@ bool mc_client_display_source_depth_mask(mc_client_display *display, bool enable
                             error);
     source_material_core_integer(display, GL_DEPTH_WRITEMASK, enabled ? GL_TRUE : GL_FALSE);
     display->gl.DepthMask(enabled ? GL_TRUE : GL_FALSE);
+    display->source.depth_mask_known = true;
+    display->source.requested_depth_mask = enabled;
     return source_leave(display, true, error);
 }
 
@@ -505,6 +507,8 @@ bool mc_client_display_source_blend_enable(mc_client_display *display, bool enab
         display->gl.Enable(GL_BLEND);
     else
         display->gl.Disable(GL_BLEND);
+    display->source.blend_known = true;
+    display->source.requested_blend_enabled = enabled;
     return source_leave(display, true, error);
 }
 
@@ -517,7 +521,8 @@ bool mc_client_display_source_blend_function(mc_client_display *display, int32_t
     const bool vignette = source == GL_ZERO && destination == GL_ONE_MINUS_SRC_COLOR;
     const bool crosshair =
         source == GL_ONE_MINUS_DST_COLOR && destination == GL_ONE_MINUS_SRC_COLOR;
-    if ((!alpha && !vignette && !crosshair) || display->gl.BlendFunc == NULL)
+    const bool damage = source == GL_DST_COLOR && destination == GL_SRC_COLOR;
+    if ((!alpha && !vignette && !crosshair && !damage) || display->gl.BlendFunc == NULL)
         return source_leave(display,
                             fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source blend function",
                                  "unimplemented blend pair or missing GL function", 0),
@@ -528,5 +533,54 @@ bool mc_client_display_source_blend_function(mc_client_display *display, int32_t
         !source_material_blend_integer(display, GL_BLEND_DST_ALPHA, destination, error))
         return source_leave(display, false, error);
     display->gl.BlendFunc((GLenum)source, (GLenum)destination);
+    display->source.blend_function_known = true;
+    display->source.requested_blend_source = source;
+    display->source.requested_blend_destination = destination;
+    return source_leave(display, true, error);
+}
+
+bool mc_client_display_source_line_width(mc_client_display *display, float width,
+                                         mc_client_display_error *error) {
+    if (!source_setting_enter(display, "source line width", error))
+        return false;
+    if (display->gl.LineWidth == NULL)
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source line width",
+                                 "actual GL function unavailable", 0),
+                            error);
+    display->gl.LineWidth(width);
+    display->source.line_width = width;
+    return source_leave(display, true, error);
+}
+
+bool mc_client_display_source_polygon_offset(mc_client_display *display, float factor, float units,
+                                             mc_client_display_error *error) {
+    if (!source_setting_enter(display, "source polygon offset", error))
+        return false;
+    if (display->gl.PolygonOffset == NULL)
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source polygon offset",
+                                 "actual GL function unavailable", 0),
+                            error);
+    display->gl.PolygonOffset(factor, units);
+    display->source.polygon_offset_factor = factor;
+    display->source.polygon_offset_units = units;
+    return source_leave(display, true, error);
+}
+
+bool mc_client_display_source_polygon_offset_fill(mc_client_display *display, bool enabled,
+                                                  mc_client_display_error *error) {
+    if (!source_setting_enter(display, "source polygon offset fill", error))
+        return false;
+    if ((enabled && display->gl.Enable == NULL) || (!enabled && display->gl.Disable == NULL))
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL,
+                                 "source polygon offset fill", "actual GL function unavailable", 0),
+                            error);
+    if (enabled)
+        display->gl.Enable(GL_POLYGON_OFFSET_FILL);
+    else
+        display->gl.Disable(GL_POLYGON_OFFSET_FILL);
+    display->source.polygon_offset_fill = enabled;
     return source_leave(display, true, error);
 }

@@ -14,7 +14,7 @@ typedef enum mc_world_brightness_exception {
 typedef struct mc_world_brightness_error {
     mc_world_storage_status status;
     const char *operation;
-    unsigned int bytecode; /* fd.c(III)F; normal return15, child invocation11. */
+    unsigned int bytecode; /* c(III)F: child11/return15; a(IIII)F: child4/return30. */
     bool native_policy, query_reached;
     int32_t light;
     mc_world_brightness_exception source_exception;
@@ -39,5 +39,17 @@ typedef struct mc_world_brightness_error {
 mc_world_storage_status mc_world_runtime_brightness(mc_world_runtime *world, int32_t x, int32_t y,
                                                     int32_t z, float *out,
                                                     mc_world_brightness_error *error);
+
+/* Actual client fd.a(IIII)F. Invoke block-light at4 BEFORE reading World.t21
+ * and its f table24; raise light to the supplied full signed minimum, then
+ * index29/return30. This is a different capture order from fd.c above. No
+ * clamp to0..15, alternate Dimension, cached EW value or light-table copy.
+ * The same error's bytecode belongs to this overload, and source exceptions
+ * identify null Dimension24, null table29 or index29. Output and prior query
+ * effects/diagnostics follow the existing brightness ownership contract. */
+mc_world_storage_status mc_world_runtime_min_brightness(mc_world_runtime *world, int32_t x,
+                                                        int32_t y, int32_t z, int32_t minimum,
+                                                        float *out,
+                                                        mc_world_brightness_error *error);
 
 #endif

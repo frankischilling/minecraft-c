@@ -78,7 +78,7 @@ typedef struct mc_world_source_class_state {
 
 typedef struct mc_world_source_state {
     mc_world_source_phase phase;
-    size_t holds, allocations;
+    size_t holds, allocations; /* Fixed Handler-prefix allocations; excludes Chunk/index storage. */
     bool active, e_stored, session_entered, session_file_stored, output_stored;
     bool write_returned, close_returned, d_returned, fm_returned, mx_returned;
     int last_store_pc, last_close_pc;

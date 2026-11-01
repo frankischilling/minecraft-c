@@ -11,6 +11,7 @@ typedef struct mc_world_store mc_world_store;
 typedef struct mc_world_runtime mc_world_runtime;
 typedef struct mc_entity mc_entity;
 typedef struct mc_movement_input mc_movement_input;
+typedef struct mc_client_singleplayer_controller mc_client_singleplayer_controller;
 typedef struct mc_client_world_load_classes mc_client_world_load_classes;
 typedef struct mc_client_world_load_call mc_client_world_load_call;
 typedef struct mc_client_world_prepare_call mc_client_world_prepare_call;
@@ -96,6 +97,7 @@ typedef struct mc_client_world_leave_state {
 
 typedef struct mc_client_world_load_state {
     bool active, retiring, source_returned;
+    bool superseded; /* Reached successor f69; full source replacement proven separately. */
     bool terminal_prepare_selected, terminal_prepared; /* Native cleanup policy/progress only. */
     bool initial_detach_returned, conversion_checked, needs_conversion;
     bool handler_opened, world_constructed, world_published, player_published, input_published;
@@ -112,7 +114,10 @@ typedef struct mc_client_world_load_state {
     mc_entity *player;
     mc_entity *failed_player; /* Borrowed SAME candidate retained by the captured controller. */
     mc_movement_input *input;
+    const mc_client_singleplayer_controller *controller; /* Same first captured actual OS. */
     const mc_client_world_prepare_call *prepare;
+    const mc_client_render_global_world_state
+        *renderer; /* Actual retained N invocation, borrowed. */
     const mc_client_world_load_error *failure, *cleanup;
     mc_client_world_leave_state leave;
 } mc_client_world_load_state;
@@ -166,7 +171,20 @@ bool mc_client_world_load_inspect(const mc_client_world_load_call *,
 mc_client_world_load_status mc_client_world_load_leave(mc_client_world_load_call *,
                                                        mc_client_world_load_error *error);
 
+/* Actual next selected load after the previous same-class invocation's fully
+ * returning source NULL change. Up to8 real retained epochs. Native completed
+ * child records end before source entry; no N/DN field is cleared or reset.
+ * All World/Player/Input/Handler graphs and source failure prefixes stay owned.
+ * Every returned call (success/failure) must be consumed in LIFO order. */
+mc_client_world_load_status mc_client_world_load_begin_after(mc_client_world_load_call *previous,
+                                                             mc_world_info_name *folder,
+                                                             mc_world_info_name *display,
+                                                             int64_t seed,
+                                                             mc_client_world_load_call **out);
+
 /* One-way native terminal prefix, not source World clear/save or full retirement.
+ * For several retained epochs, the transition owner first runs terminal_records
+ * on all of them before any terminal_prepare can detach the shared N.
  * End this call's real prepare/Loading/failure-receipt/N World-call occurrences,
  * terminally detach this N while preserving the actual global TH.g, and detach
  * picking. Latch call/class retirement and keep the full World/Player/Input/
@@ -181,8 +199,10 @@ mc_client_world_load_status mc_client_world_load_leave(mc_client_world_load_call
  * prerequisites before the caller deliberately starts full World retirement. */
 mc_client_world_load_status mc_client_world_load_terminal_prepare(mc_client_world_load_call *);
 
-/* Checked native cleanup without source save/unload or rollback. Drain actual
- * retained loading/terrain calls, detach owned renderer/particle World users
+/* Checked native cleanup without source save/unload or rollback. Consume epochs
+ * in LIFO order; a predecessor is BUSY while its successor lives. This keeps
+ * borrowed epoch links live. Drain retained loading/terrain calls, detach owned
+ * renderer/particle World users
  * and end owned App.h/i/f occurrences and failed controller candidates before
  * World/handler release. The input owner outlives World/Chunk Player memberships.
  * BUSY/error keeps

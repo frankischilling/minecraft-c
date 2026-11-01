@@ -9,6 +9,7 @@
 #include "../../entity/mob/internal.h"
 #include "../chunk/object_internal.h"
 #include "../storage/objects_internal.h"
+#include "acquisition_internal.h"
 #include "chunk_provider_internal.h"
 #include "construction_internal.h"
 #include "dedicated/entity_index.h"
@@ -695,7 +696,7 @@ static bool insert_entity(mc_world_runtime *world, mc_entity *entity, bool *valu
     mc_chunk_state *state = NULL;
     /* World.c invokes provider b: a cached hit preserves pending work. */
     world->last_error = (mc_world_storage_error){0};
-    frame->acquisition = mc_world_runtime_get(world, chunk_x, chunk_z, &state);
+    frame->acquisition = mc_world_runtime_get_detailed(world, chunk_x, chunk_z, &state, NULL);
     if (frame->acquisition != MC_CHUNK_ACQUIRE_OK) {
         if (frame->acquisition == MC_CHUNK_ACQUIRE_LIMIT ||
             frame->acquisition == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT)

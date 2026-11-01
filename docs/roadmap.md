@@ -18,18 +18,19 @@ do not postpone original comparisons until a whole milestone is built. Independe
 research can proceed in parallel, but shared interfaces, builds, Git operations
 and integration need explicit ownership.
 
-The current priority is playable single-player before server work. Four default
-Mob draw paths now have finite original comparisons and loaded-client
-continuations: Sheep, Pig, Cow and Chicken. Complete the seven remaining
-default families, including Skeleton's actual held Bow, then close the active
-tutorial/achievement notice and genuine Canvas focus/resize paths. Live Mob
-[NBT/factory round trips](entity/mob-nbt.md) and the SourceStore region-write
-transport now have bounded authored World save/reload controls. Ordinary
-save/detach/reload remains a separate persistence dependency. Ordinary click/use,
-progressive mining, carried-item drawing, pickup and placement must form a
-working interaction loop. Existing movement, look and time bodies remain part
-of that real loop. The detailed current evidence and remaining limits are in
-[development status](status.md) and [Mob drawing](client/mob-drawing.md).
+The current priority is playable single-player before server work. All eleven
+default Overworld Mob draw paths have finite comparisons and loaded-client
+continuations, including Skeleton's held Bow. Tutorial notices and Canvas
+focus/resize paths have separate returning profiles. Live Mob
+[NBT/factory round trips](entity/mob-nbt.md), source region writes, and ordinary
+save/title/reselection now have bounded authored controls. The
+[selected-block path](client/block-selection.md) draws dirt and snow outlines
+from real picking results. Complete ordinary click/use, progressive mining,
+carried-item drawing, pickup and placement as one working interaction loop.
+Remove the retained loader's eight-load session limit and qualify failed
+successor loads, default-Far settings and extended play. Existing movement,
+look and time bodies remain part of that real loop. Detailed evidence and
+remaining limits are in [development status](status.md).
 
 The raw NBT and modified UTF increment is integrated, as is bounded gzip/zlib,
 with [both-side evidence](reference/compression.md). Read-only original region

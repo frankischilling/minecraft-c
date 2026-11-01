@@ -25,6 +25,12 @@ typedef struct mc_client_source_draw_state {
     bool color_known, texture_enabled, alpha_test, shade_flat, lighting_enabled;
     bool alpha_function_set;
     float alpha_reference;
+    /* Requested source arguments, not a query of driver line-width limits. */
+    float line_width, polygon_offset_factor, polygon_offset_units;
+    bool polygon_offset_fill;
+    bool depth_mask_known, requested_depth_mask;
+    bool blend_known, requested_blend_enabled, blend_function_known;
+    int32_t requested_blend_source, requested_blend_destination;
 } mc_client_source_draw_state;
 
 /* Passive source state used by the draw program. No GL query or initialization. */

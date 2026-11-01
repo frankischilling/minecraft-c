@@ -78,7 +78,8 @@ static bool acquire(mc_client_chunk_cache *c, int32_t x, int32_t z,
         return fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL, "actual World.c null provider", 112,
                     false);
     mc_chunk_provider_fields provider;
-    if (!storage(e, mc_chunk_provider_bind_fields(world->fields.v, &provider, &e->storage), 112))
+    if (!storage(e, mc_chunk_provider_internal_fields(world->fields.v, &provider, &e->storage),
+                 112))
         return false;
     if (provider.world != world || provider.cache != world->acquisition.cache ||
         provider.pending != world->acquisition.pending || provider.store != world->options.store)

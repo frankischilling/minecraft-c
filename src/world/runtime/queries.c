@@ -92,7 +92,8 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, query_chunk *
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World query provider receiver");
     mc_chunk_provider_fields provider;
     mc_world_storage_error binding = {0};
-    if (mc_chunk_provider_bind_fields(world->fields.v, &provider, &binding) != MC_WORLD_STORAGE_OK)
+    if (mc_chunk_provider_internal_fields(world->fields.v, &provider, &binding) !=
+        MC_WORLD_STORAGE_OK)
         return storage_fail(error, &binding);
     if (provider.world != world || provider.cache != world->acquisition.cache ||
         provider.pending != world->acquisition.pending || provider.store != world->options.store)

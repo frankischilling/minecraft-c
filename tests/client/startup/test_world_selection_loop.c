@@ -46,6 +46,7 @@
 #include "mc/core/math/math.h"
 #include "mc/entity/living/view.h"
 #include "mc/entity/mob/construction.h"
+#include "mc/entity/nbt/nbt.h"
 #include "mc/entity/player/player.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/loading/player.h"
@@ -757,12 +758,55 @@ static int repeat_returned_frame(fixture *f, repeat_render_control *control) {
 static int frame(fixture *f) {
     const bool result = mc_client_menu_loop_frame(f->loop);
     CHECK(mc_client_menu_loop_inspect(f->loop, &f->state));
-    if (!result)
+    if (!result) {
         fprintf(stderr, "Reached %s.%s:%" PRId64 ": %s\n",
                 f->state.source_class == NULL ? "native" : f->state.source_class,
                 f->state.source_method == NULL ? "frame" : f->state.source_method,
                 f->state.source_pc,
                 f->state.operation == NULL ? "unknown operation" : f->state.operation);
+        if (f->state.world_tick != NULL) {
+            const mc_world_entity_tick_error *entity = &f->state.world_tick->entities;
+            if (entity->status != MC_WORLD_STORAGE_OK) {
+                fprintf(stderr, "Entity tick child=%u at %s.%s:%u: %s\n", (unsigned)entity->child,
+                        entity->source_class == NULL ? "native" : entity->source_class,
+                        entity->source_method == NULL ? "tick" : entity->source_method,
+                        entity->bytecode,
+                        entity->operation == NULL ? "unknown operation" : entity->operation);
+                if (entity->child == MC_WORLD_ENTITY_TICK_CHILD_PLAYER) {
+                    const mc_player_tick_error *player = &entity->child_error.player;
+                    fprintf(
+                        stderr, "Player tick child=%u at %s.%s player=%u living=%u local=%u: %s\n",
+                        (unsigned)player->child,
+                        player->source_class == NULL ? "native" : player->source_class,
+                        player->source_method == NULL ? "tick" : player->source_method,
+                        player->player_bytecode, player->living_bytecode, player->local_bytecode,
+                        player->operation == NULL ? "unknown operation" : player->operation);
+                    const char *child_operation = player->child == MC_PLAYER_TICK_CHILD_ENVIRONMENT
+                                                      ? player->child_error.environment.operation
+                                                  : player->child == MC_PLAYER_TICK_CHILD_ACTION
+                                                      ? player->child_error.action.operation
+                                                      : NULL;
+                    if (child_operation != NULL)
+                        fprintf(stderr, "Player descendant: %s\n", child_operation);
+                    if (player->child == MC_PLAYER_TICK_CHILD_ENVIRONMENT) {
+                        const mc_entity_tick_error *environment = &player->child_error.environment;
+                        fprintf(stderr, "Environment %s.%s:%u base=%u living=%u\n",
+                                environment->source_class == NULL ? "native"
+                                                                  : environment->source_class,
+                                environment->source_method == NULL ? "tick"
+                                                                   : environment->source_method,
+                                environment->bytecode, environment->base_bytecode,
+                                environment->living_bytecode);
+                        mc_entity_snapshot snapshot;
+                        if (mc_entity_get_snapshot(f->app->h, &snapshot) == MC_ENTITY_OK)
+                            fprintf(stderr, "Player position x=%.17g y=%.17g z=%.17g offset=%.9g\n",
+                                    snapshot.base.x, snapshot.base.y, snapshot.base.z,
+                                    (double)snapshot.base.offset);
+                    }
+                }
+            }
+        }
+    }
     CHECK(result && !f->state.failed && f->state.running);
     SDL_Delay(1);
     return 0;
@@ -889,8 +933,14 @@ static int ticks(fixture *f, uint64_t count) {
     return 0;
 }
 
+static int save_title_focus(fixture *f);
+
 static int display_focus(fixture *f, bool expected) {
     SDL_Window *window = mc_client_display_window(f->app->display);
+    if (expected && mc_client_bootstrap_frame(f->bootstrap) != NULL) {
+        CHECK(SDL_ShowWindow(window));
+        return save_title_focus(f);
+    }
     if (expected)
         CHECK(SDL_ShowWindow(window) && SDL_RaiseWindow(window));
     const uint64_t deadline = SDL_GetTicks() + 1500;
@@ -3499,6 +3549,11 @@ static int save_title_host(fixture *f, const char *stage, bool focus, uint32_t *
 static int save_title_eligibility(mc_world_runtime *world, const mc_chunk_provider_fields *provider,
                                   size_t *eligible, int64_t *world_time) {
     CHECK(mc_world_info_time_get(world->fields.x, world_time) == MC_WORLD_INFO_OK);
+    if (provider == NULL) {
+        CHECK(mc_chunk_provider_cache_eligible(world->fields.v, *world_time, true, eligible,
+                                               NULL) == MC_WORLD_STORAGE_OK);
+        return 0;
+    }
     *eligible = 0;
     for (size_t i = 0; i < provider->cache->insertion_count; ++i) {
         const mc_chunk_state *chunk = provider->cache->insertions[i];
@@ -3608,8 +3663,10 @@ static int save_title_entry_snapshot(size_t frame_index, size_t *aggregate, size
 
 /* These two ordinary UI profiles never assign an App/source World field. The
  * only authored failure input is the actual eight-byte session.lock file. */
-static int save_title_controls(fixture *f, mc_client_source_da *initial, const char *capture_path,
-                               bool mismatch) {
+static int reload_entry_snapshot(size_t, size_t, size_t *, size_t *);
+
+static int save_title_run(fixture *f, mc_client_source_da *initial, const char *capture_path,
+                          bool mismatch, size_t leave_sequence, size_t reload_epoch) {
     client_application *app = f->app;
     mc_client_screen_transition_state transitions;
     mc_client_world_load_state load;
@@ -3802,7 +3859,10 @@ static int save_title_controls(fixture *f, mc_client_source_da *initial, const c
     do {
         CHECK(save_title_focus(f) == 0 && app->r == pause && !app->N && atomic_load(&app->o) &&
               mc_chunk_provider_concrete_kind_of(world->fields.v) == MC_CHUNK_PROVIDER_MAP_CACHE &&
-              save_title_entry_snapshot(save_frames, &entry_aggregate, &entry_bytes) == 0 &&
+              (reload_epoch == 0
+                   ? save_title_entry_snapshot(save_frames, &entry_aggregate, &entry_bytes)
+                   : reload_entry_snapshot(reload_epoch, save_frames, &entry_aggregate,
+                                           &entry_bytes)) == 0 &&
               mc_world_info_fields_get(world->fields.x, &info_before) == MC_WORLD_INFO_OK &&
               save_title_eligibility(world, &provider, &eligible, &world_time) == 0 &&
               mc_platform_current_time_millis(&first) == MC_PLATFORM_MILLIS_OK);
@@ -3831,10 +3891,11 @@ static int save_title_controls(fixture *f, mc_client_source_da *initial, const c
           load.world == world && load.player == player && load.input != NULL &&
           load.leave.calls == 1 && load.leave.started && load.leave.i_cleared &&
           load.leave.failure != NULL && load.leave.saving != NULL && (mismatch || eligible != 0) &&
-          transitions.leave_calls == 1 && transitions.world_leave == load.leave.failure &&
-          app->i == NULL && app->view_occurrence == NULL && app->g == renderer &&
-          renderer->fields.k == world && app->effect_renderer == effects &&
-          mc_client_effect_renderer_read(effects, &particles) && particles.world == world &&
+          transitions.leave_calls == leave_sequence &&
+          transitions.world_leave == load.leave.failure && app->i == NULL &&
+          app->view_occurrence == NULL && app->g == renderer && renderer->fields.k == world &&
+          app->effect_renderer == effects && mc_client_effect_renderer_read(effects, &particles) &&
+          particles.world == world &&
           mc_world_info_fields_get(world->fields.x, &info_after) == MC_WORLD_INFO_OK);
     if (mismatch) {
         const mc_world_source_error *cause = &load.leave.saving->source_session;
@@ -3887,6 +3948,13 @@ static int save_title_controls(fixture *f, mc_client_source_da *initial, const c
     return 0;
 }
 
+static int save_title_controls(fixture *f, mc_client_source_da *initial, const char *capture_path,
+                               bool mismatch) {
+    return save_title_run(f, initial, capture_path, mismatch, 1, 0);
+}
+
+#include "test_world_reload.inc"
+
 int main(int argc, char **argv) {
     CHECK(argc == 4 &&
           (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
@@ -3894,9 +3962,9 @@ int main(int argc, char **argv) {
            strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
            strcmp(argv[2], "load-terminal") == 0 || strcmp(argv[2], "load-partial") == 0 ||
            strcmp(argv[2], "repeat") == 0 || strcmp(argv[2], "load-light") == 0 ||
-           strcmp(argv[2], "save-title") == 0 || strcmp(argv[2], "save-title-session") == 0 ||
-           animal_profile_get(argv[2]) != NULL || creature_profile_get(argv[2]) != NULL ||
-           remaining_profile_get(argv[2]) != NULL));
+           strcmp(argv[2], "reload-cycle") == 0 || strcmp(argv[2], "save-title") == 0 ||
+           strcmp(argv[2], "save-title-session") == 0 || animal_profile_get(argv[2]) != NULL ||
+           creature_profile_get(argv[2]) != NULL || remaining_profile_get(argv[2]) != NULL));
     const animal_profile *animal = animal_profile_get(argv[2]);
     const creature_profile *creature = creature_profile_get(argv[2]);
     const creature_profile *remaining = remaining_profile_get(argv[2]);
@@ -3908,10 +3976,16 @@ int main(int argc, char **argv) {
     const bool partial_load = strcmp(argv[2], "load-partial") == 0;
     const bool repeat_load = strcmp(argv[2], "repeat") == 0;
     const bool light_control = strcmp(argv[2], "load-light") == 0;
-    const bool save_title =
-        strcmp(argv[2], "save-title") == 0 || strcmp(argv[2], "save-title-session") == 0;
-    const bool focused_load = strcmp(argv[2], "load") == 0 || repeat_load || light_control ||
-                              animals_load || creatures_load || remaining_load || save_title;
+    const bool reload_cycle = strcmp(argv[2], "reload-cycle") == 0;
+    const bool save_title = reload_cycle || strcmp(argv[2], "save-title") == 0 ||
+                            strcmp(argv[2], "save-title-session") == 0;
+    /* A hidden loaded World opens Pause and its real draw saves metadata.
+     * Passive terminal admission uses a focused World, with no Pause draw. */
+    const bool focused_load = strcmp(argv[2], "load") == 0 || terminal_admission || repeat_load ||
+                              light_control || animals_load || creatures_load || remaining_load ||
+                              save_title;
+    const bool complete_host = repeat_load || light_control || animals_load || creatures_load ||
+                               remaining_load || save_title;
     const bool loading_world = strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
                                terminal_admission || repeat_load || light_control || animals_load ||
                                creatures_load || remaining_load || save_title;
@@ -3927,7 +4001,7 @@ int main(int argc, char **argv) {
                                                    .width = 854,
                                                    .height = 480,
                                                    .hidden = !focused_load};
-    CHECK((save_title
+    CHECK((complete_host
                ? mc_client_bootstrap_open_standalone(&options, &f.bootstrap)
                : mc_client_bootstrap_open(&options, &f.bootstrap)) == MC_CLIENT_BOOTSTRAP_OK);
     f.app = mc_client_bootstrap_app(f.bootstrap);
@@ -3948,6 +4022,9 @@ int main(int argc, char **argv) {
         CHECK(repeat_statistics_controls(&f, true) == 0);
     if (save_title)
         CHECK(save_title_host(&f, "open", true, &save_title_frame_id, &save_title_canvas_id) == 0);
+    else if (complete_host)
+        CHECK(save_title_host(&f, "continuation-open", true, &save_title_frame_id,
+                              &save_title_canvas_id) == 0);
     else if (focused_load)
         CHECK(SDL_RaiseWindow(mc_client_display_window(f.app->display)));
     CHECK(f.app != NULL && f.app->constructor_phase == MC_CLIENT_APP_READY && f.app->r != NULL &&
@@ -4180,6 +4257,14 @@ int main(int argc, char **argv) {
             }
             if (focused_load)
                 CHECK(display_active && !f.state.failed && f.state.render_returned);
+            if (terminal_admission) {
+                CHECK(display_active && f.app->r == NULL);
+                puts("WORLD_TERMINAL_INPUT focused=1 pause-draw=0 immutable-inputs=1");
+            }
+            if (reload_cycle) {
+                CHECK(reload_cycle_controls(&f, initial, argv[3]) == 0);
+                goto loaded_draw_controls_done;
+            }
             if (save_title) {
                 CHECK(save_title_controls(&f, initial, argv[3],
                                           strcmp(argv[2], "save-title-session") == 0) == 0);
@@ -4468,6 +4553,23 @@ int main(int argc, char **argv) {
             CHECK(f.state.gameplay_input != NULL && f.state.gameplay_input->returned &&
                   f.state.gameplay_input->source_pc == 1073 && f.state.world_tick != NULL &&
                   f.state.world_tick->returned && !f.state.world_tick->failed);
+            /* These direct component calls start after the preceding draw's
+             * source return. End its borrowed native inspection first, as the
+             * ordinary next outer frame does before refreshing the tutorial. */
+            const mc_client_achievement_notice_fields *notice_fields =
+                mc_client_achievement_notice_fields_get(f.app->achievement_notice);
+            CHECK(notice_fields != NULL && f.state.notice != NULL);
+            unsigned char notice_before[sizeof(*notice_fields)];
+            memcpy(notice_before, notice_fields, sizeof(notice_before));
+            const uint64_t frames_before = f.state.frames, ticks_before = f.state.ticks;
+            CHECK(mc_client_menu_loop_retire_completed_draws(f.loop) &&
+                  mc_client_menu_loop_inspect(f.loop, &f.state) && f.state.notice == NULL &&
+                  f.state.hud == NULL && f.state.world_frame == NULL &&
+                  f.state.frames == frames_before && f.state.ticks == ticks_before &&
+                  memcmp(notice_before,
+                         mc_client_achievement_notice_fields_get(f.app->achievement_notice),
+                         sizeof(notice_before)) == 0 &&
+                  mc_client_menu_loop_retire_completed_draws(f.loop));
             CHECK(pause_controls(&f) == 0);
             CHECK(world_display_controls(&f, initial->classes) == 0);
             CHECK(mc_test_renderer_focus(f.app) == 0);

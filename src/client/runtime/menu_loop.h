@@ -6,6 +6,19 @@
 typedef struct mc_client_menu_loop mc_client_menu_loop;
 typedef struct mc_world_storage_error mc_world_storage_error;
 
+/* Native copies of already reached source clock reads. No sample controls
+ * gameplay, source fields or scheduling. Valid flags describe this frame's
+ * prefix; zeros never stand for an unreached clock. The index is the number
+ * of completed frames before this prefix. A native retirement refusal before
+ * the next frame's reset leaves the preceding snapshot intact. */
+typedef struct mc_client_loop_clock_observation {
+    uint64_t frame_index;
+    int64_t run_137, run_203, run_387;
+    int32_t timer_ticks, tick_returns;
+    bool frame_entered, frame_returned, timer_fields_read;
+    bool run_137_read, run_203_read, run_387_read;
+} mc_client_loop_clock_observation;
+
 typedef struct mc_client_menu_loop_state {
     uint64_t frames, ticks, texture_ticks, account_checks_omitted;
     uint64_t world_draws, hud_draws;
@@ -16,7 +29,8 @@ typedef struct mc_client_menu_loop_state {
     uint64_t random_display_calls, random_display_samples, random_display_random_calls;
     size_t last_random_chunk_count;
     bool render_clock_stored, render_returned;
-    int64_t render_clock;
+    int64_t render_clock; /* Existing World-branch px.b450 read / I453 store, before HUD506. */
+    mc_client_loop_clock_observation clocks;
     size_t font_measurements, mouse_events, keyboard_events;
     bool failed, running;
     bool terminal_prepare_selected, terminal_prepared; /* Native cleanup progress only. */
@@ -57,6 +71,13 @@ typedef struct mc_client_menu_loop_state {
 bool mc_client_menu_loop_create(mc_client_bootstrap *, mc_client_menu_loop **);
 bool mc_client_menu_loop_frame(mc_client_menu_loop *);
 bool mc_client_menu_loop_inspect(const mc_client_menu_loop *, mc_client_menu_loop_state *);
+/* End inspection of a healthy completed frame's native Notice/HUD/World draw
+ * records before direct component invocations. Requires an inactive loop and
+ * at least one returned frame. Borrowed draw views expire; source fields,
+ * frame/tick counts and clock observations remain unchanged. Idempotent after
+ * success. A native retirement failure preserves its remaining owners and
+ * selects the same terminal failure as the ordinary next-frame prefix. */
+bool mc_client_menu_loop_retire_completed_draws(mc_client_menu_loop *);
 /* End this loop's source admission and drain its owned call/World-load prefix,
  * retaining screens, App, full Worlds/Players/Inputs/handlers and all services.
  * This one-way operation performs no World container/cache/provider teardown

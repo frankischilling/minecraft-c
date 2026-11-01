@@ -21,11 +21,16 @@ typedef struct mc_client_screen_transition_state {
 
 /* Native ownership for actual synchronous screen calls on one genuine App.
  * The completed startup owns its initial FU. This module retains later screens,
- * constructor/display failure prefixes and their exact parent identities (up
+ * constructor/display failure prefixes, genuine replaced-controller owners,
+ * and their exact parent identities (up
  * to 4096 native records; screen arenas have their own explicit limits). It
  * leases the complete startup graph through successful retirement. All calls
  * require exclusive use on the video thread; no source call is deferred to a
- * later tick/frame. Error storage is mandatory, disjoint and caller-owned.
+ * later tick/frame. After a fully returned source save/title, the next selection
+ * can retain a new genuine Load/World epoch (up to8) and execute the actual
+ * nonnull N/DN replacements. Old Worlds stay owned through final terminal
+ * admission; global TH/LL source fields are never cleared for ordinary reuse.
+ * Error storage is mandatory, disjoint and caller-owned.
  *
  * Button callers keep their ORIGINAL receiver/list alive through the entire
  * source input drain after this call changes App.r. The caller releases the

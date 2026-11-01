@@ -1,5 +1,9 @@
 #include "mc/world/runtime/blocks.h"
 
+#include "../../block/registry/runtime_internal.h"
+#include "construction_internal.h"
+#include "mc/block/registry/rendering.h"
+#include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
 #include "runtime_internal.h"
 
@@ -193,4 +197,136 @@ mc_world_storage_status mc_world_runtime_top_block(mc_world_runtime *runtime, in
         ++y;
     }
     return mc_world_runtime_block_get(runtime, x, y, z, out, error);
+}
+
+mc_world_storage_status mc_world_runtime_opaque_get(mc_world_runtime *world, int32_t x, int32_t y,
+                                                    int32_t z, bool *out,
+                                                    mc_world_opaque_error *error) {
+    mc_world_opaque_error frame = {0};
+    frame.registry = (mc_registry_error){.initializer_pc = -1,
+                                         .block_id = -1,
+                                         .constructor_pc = -1,
+                                         .active_initializer_pc = -1,
+                                         .item_argument = -1};
+    frame.native_policy = true;
+    if (world == NULL || out == NULL) {
+        frame.status = MC_WORLD_STORAGE_INVALID_ARGUMENT;
+        frame.operation = "World opacity arguments";
+        goto publish;
+    }
+    if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
+        world->construction.phase == MC_WORLD_RUNTIME_RETIRED ||
+        world->classes->side != MC_WORLD_INFO_CLIENT) {
+        frame.status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        frame.operation = "World opacity client GAME admission";
+        goto publish;
+    }
+    frame.status = mc_world_runtime_call_enter(world, &frame.cause);
+    if (frame.status != MC_WORLD_STORAGE_OK) {
+        frame.operation = frame.cause.operation;
+        goto publish;
+    }
+    mc_registry_classes *classes = mc_world_runtime_registry(world);
+    mc_registry_block_m_view array;
+    const mc_block *block;
+    if (mc_registry_block_m_get(classes, &array, &frame.registry) != MC_REGISTRY_OK) {
+        frame.status =
+            mc_world_runtime_registry_result(world, frame.registry.status, &frame.registry,
+                                             "World opacity Block.m active use", &frame.cause);
+        frame.operation = frame.cause.operation;
+        goto leave;
+    }
+    frame.bytecode = 7;
+    int32_t id;
+    frame.status = mc_world_runtime_block_get(world, x, y, z, &id, &frame.cause);
+    if (frame.status != MC_WORLD_STORAGE_OK) {
+        frame.operation = frame.cause.operation;
+        goto leave;
+    }
+    frame.bytecode = 10;
+    if (mc_registry_block_m_at(&array, id, &block, &frame.registry) != MC_REGISTRY_OK) {
+        frame.native_policy = frame.registry.status != MC_REGISTRY_NULL_REFERENCE &&
+                              frame.registry.status != MC_REGISTRY_INDEX_OUT_OF_RANGE;
+        frame.status = mc_world_runtime_registry_result(
+            world, frame.registry.status, &frame.registry, "World opacity captured Block.m element",
+            &frame.cause);
+        frame.operation = frame.cause.operation;
+        goto leave;
+    }
+    if (block == NULL) {
+        *out = false;
+        frame.bytecode = 19;
+    } else {
+        frame.bytecode = 22;
+        *out = mc_block_render_opaque(block);
+        frame.bytecode = 25;
+    }
+    frame.native_policy = false;
+leave:
+    if (frame.status != MC_WORLD_STORAGE_OK) {
+        if (frame.cause.operation == NULL)
+            frame.cause = (mc_world_storage_error){frame.status, frame.operation, 0};
+        world->last_error = frame.cause;
+    }
+    mc_world_runtime_call_leave(world);
+publish:
+    if (frame.status != MC_WORLD_STORAGE_OK && frame.cause.operation == NULL)
+        frame.cause = (mc_world_storage_error){frame.status, frame.operation, 0};
+    if (error != NULL)
+        *error = frame;
+    return frame.status;
+}
+
+mc_world_storage_status mc_world_runtime_chunk_manager(mc_world_runtime *world,
+                                                       mc_world_chunk_manager **out,
+                                                       mc_world_manager_error *error) {
+    mc_world_manager_error frame = {0};
+    frame.native_policy = true;
+    if (world == NULL || out == NULL) {
+        frame.status = MC_WORLD_STORAGE_INVALID_ARGUMENT;
+        frame.operation = "World manager arguments";
+        goto publish;
+    }
+    if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
+        world->construction.phase == MC_WORLD_RUNTIME_RETIRED ||
+        world->classes->side != MC_WORLD_INFO_CLIENT) {
+        frame.status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        frame.operation = "World manager client GAME admission";
+        goto publish;
+    }
+    frame.status = mc_world_runtime_call_enter(world, &frame.cause);
+    if (frame.status != MC_WORLD_STORAGE_OK) {
+        frame.operation = frame.cause.operation;
+        goto publish;
+    }
+    frame.bytecode = 4;
+    mc_world_provider *dimension = world->fields.t;
+    if (dimension == NULL) {
+        frame.status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        frame.operation = "actual World manager null Dimension receiver";
+        frame.native_policy = false;
+    } else {
+        mc_world_provider_fields fields;
+        frame.provider = mc_world_provider_fields_get(dimension, &fields);
+        if (frame.provider != MC_WORLD_PROVIDER_OK) {
+            frame.status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+            frame.operation = "World manager actual Dimension fields";
+        } else {
+            *out = fields.b;
+            frame.bytecode = 7;
+            frame.native_policy = false;
+        }
+    }
+    if (frame.status != MC_WORLD_STORAGE_OK) {
+        if (frame.cause.operation == NULL)
+            frame.cause = (mc_world_storage_error){frame.status, frame.operation, 0};
+        world->last_error = frame.cause;
+    }
+    mc_world_runtime_call_leave(world);
+publish:
+    if (frame.status != MC_WORLD_STORAGE_OK && frame.cause.operation == NULL)
+        frame.cause = (mc_world_storage_error){frame.status, frame.operation, 0};
+    if (error != NULL)
+        *error = frame;
+    return frame.status;
 }

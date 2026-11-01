@@ -102,24 +102,18 @@ static bool source_water(mc_client_world_frame_call *call, bool *out, unsigned i
         call->failure.material.operation, invoke_pc, !source_null);
 }
 
-static bool selection_body(mc_client_world_frame_call *call, bool underwater) {
-    const unsigned int app_pc = underwater ? 585u : 881u;
-    const unsigned int hit_pc = underwater ? 588u : 884u;
-    const unsigned int inventory_pc = underwater ? 594u : 890u;
-    const unsigned int current_pc = underwater ? 597u : 893u;
-    const unsigned int invoke_pc = underwater ? 601u : 897u;
+#include "world_frame_selection.inc"
+
+static bool selection_arguments(mc_client_world_frame_call *call,
+                                mc_world_frame_selection_work *selection, bool outline) {
+    const unsigned int delta = outline ? 24u : 0u;
+    const bool underwater = selection->state.underwater;
+    const unsigned int app_pc = (underwater ? 585u : 881u) + delta;
+    const unsigned int hit_pc = (underwater ? 588u : 884u) + delta;
+    const unsigned int inventory_pc = (underwater ? 594u : 890u) + delta;
+    const unsigned int current_pc = (underwater ? 597u : 893u) + delta;
+    const unsigned int argument = outline ? 1u : 0u;
     mc_local_player_snapshot player;
-    call->failure.entity = mc_local_player_get_snapshot(call->state.camera, &player);
-    if (call->failure.entity != MC_ENTITY_OK)
-        return outer_fail(call, MC_CLIENT_WORLD_FRAME_NATIVE_FAILED,
-                          "actual Player fields for reached selection draw",
-                          underwater ? 569u : 865u, true);
-    if (!display_result(call,
-                        mc_client_display_source_alpha_test(call->state.owner->services.display,
-                                                            false, &call->failure.display),
-                        underwater ? 577u : 873u))
-        return false;
-    call->state.selection_alpha_disabled = true;
     client_application *app = app_at(call, app_pc, "a", "(FJ)V");
     if (app == NULL)
         return false;
@@ -128,9 +122,13 @@ static bool selection_body(mc_client_world_frame_call *call, bool underwater) {
         if (mc_entity_hit_result_retain(hit, &call->failure.hit) != MC_ENTITY_HIT_OK)
             return outer_fail(call, MC_CLIENT_WORLD_FRAME_NATIVE_FAILED,
                               "World-frame selection Hit occurrence", hit_pc, true);
-        call->selection_hit = hit;
+        selection->hits[argument] = hit;
     }
     call->state.selection_hit = hit;
+    if (outline)
+        selection->state.outline_hit = hit;
+    else
+        selection->state.overlay_hit = hit;
     /* The actual gs.c read occurs after the fresh Hit argument. No cached
      * Inventory/Stack from the earlier predicate supplies this call. */
     call->failure.entity = mc_local_player_get_snapshot(call->state.camera, &player);
@@ -159,9 +157,41 @@ static bool selection_body(mc_client_world_frame_call *call, bool underwater) {
         if (call->failure.stack != MC_ITEM_STACK_OK)
             return outer_fail(call, MC_CLIENT_WORLD_FRAME_NATIVE_FAILED,
                               "World-frame selected Stack occurrence", current_pc, true);
-        call->selection_stack = (mc_item_stack *)stack;
+        selection->stacks[argument] = (mc_item_stack *)stack;
     }
     call->state.selection_stack = stack;
+    if (outline)
+        selection->state.outline_stack = stack;
+    else
+        selection->state.overlay_stack = stack;
+    return true;
+}
+
+static bool selection_body(mc_client_world_frame_call *call, mc_math_classes *math,
+                           bool underwater) {
+    const unsigned int invoke_pc = underwater ? 601u : 897u;
+    if (call->state.selection_calls == 2)
+        return outer_fail(call, MC_CLIENT_WORLD_FRAME_BUSY,
+                          "selection finite caller occurrence capacity", invoke_pc, true);
+    mc_world_frame_selection_work *selection = &call->selections[call->state.selection_calls];
+    selection->state.underwater = underwater;
+    selection->state.failure = &selection->failure;
+    selection->parent_pc = invoke_pc;
+    call->state.selections[call->state.selection_calls++] = &selection->state;
+    mc_local_player_snapshot player;
+    call->failure.entity = mc_local_player_get_snapshot(call->state.camera, &player);
+    if (call->failure.entity != MC_ENTITY_OK)
+        return outer_fail(call, MC_CLIENT_WORLD_FRAME_NATIVE_FAILED,
+                          "actual Player fields for reached selection draw",
+                          underwater ? 569u : 865u, true);
+    if (!display_result(call,
+                        mc_client_display_source_alpha_test(call->state.owner->services.display,
+                                                            false, &call->failure.display),
+                        underwater ? 577u : 873u))
+        return false;
+    call->state.selection_alpha_disabled = true;
+    if (!selection_arguments(call, selection, false))
+        return false;
     /* The source evaluates every argument before the captured N receiver is
      * dereferenced. The actual damage/placement overlay precedes n.b outline. */
     if (!end_completed_entities(call, invoke_pc))
@@ -169,10 +199,21 @@ static bool selection_body(mc_client_world_frame_call *call, bool underwater) {
     if (call->state.render_global == NULL)
         return outer_fail(call, MC_CLIENT_WORLD_FRAME_SOURCE_NULL,
                           "actual captured selection RenderGlobal receiver", invoke_pc, false);
-    call->failure.child = (mc_client_graphics_site){"n", "a", "(Lgs;Lvf;ILiz;F)V", 0};
-    return outer_fail(call, MC_CLIENT_WORLD_FRAME_DEPENDENCY,
-                      "actual damage/placement overlay render child is not connected", invoke_pc,
-                      true);
+    if (!sel_invoke(call, selection, math, false))
+        return false;
+    /* Evaluate the second call's actual App/Hit/Inventory/Stack operands again. */
+    if (!selection_arguments(call, selection, true))
+        return false;
+    selection->parent_pc = underwater ? 625u : 921u;
+    if (!sel_invoke(call, selection, math, true))
+        return false;
+    if (!display_result(call,
+                        mc_client_display_source_alpha_test(call->state.owner->services.display,
+                                                            true, &call->failure.display),
+                        underwater ? 631u : 927u))
+        return false;
+    selection->state.alpha_restored = true;
+    return true;
 }
 
 static void submission_views_expired(mc_client_render_global_submit_state *state) {
@@ -315,8 +356,8 @@ static bool after_particles_body(mc_client_world_frame_call *call, mc_math_class
             if (!source_player(call, &call->state.first_player, 561))
                 return false;
             call->state.first_player_read = true;
-            if (call->state.first_player)
-                return selection_body(call, true);
+            if (call->state.first_player && !selection_body(call, math, true))
+                return false;
         }
     }
     if (!display_result(
@@ -429,8 +470,8 @@ static bool after_particles_body(mc_client_world_frame_call *call, mc_math_class
                 if (!source_water(call, &call->state.selection_water, 854, 857))
                     return false;
                 call->state.selection_water_read = true;
-                if (!call->state.selection_water)
-                    return selection_body(call, false);
+                if (!call->state.selection_water && !selection_body(call, math, false))
+                    return false;
             }
         }
     }
