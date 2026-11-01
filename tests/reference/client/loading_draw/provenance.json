@@ -8210,8 +8210,8 @@
       "sha256": "84786c930812caeb696bf777e2abb70177827376a6d72d6b15bd009933fde2b1"
     },
     "src/world/runtime/chunk_provider_owned.inc": {
-      "bytes": 9246,
-      "sha256": "85bccb7962cea0e779245edf6d4ee3c176feaa83f1d2d04c21af11821a1abf69"
+      "bytes": 9346,
+      "sha256": "3372177f53cb548d808ca812edf12eee513fe554d7961a90f3f126e4c3b092ca"
     },
     "tests/tools/world/test_owned_cache.py": {
       "bytes": 11388,
@@ -8222,8 +8222,8 @@
       "sha256": "b6a42d2480b9827f7726947cf5a5881a6d34f1fac1e9fa96a0139129a34f55b4"
     },
     "src/world/storage/chunk_lookup.inc": {
-      "bytes": 8279,
-      "sha256": "ea1ab8b8957bcd1066601c2f40006731ab8dd6ec09350af8c20947331e478b1d"
+      "bytes": 8386,
+      "sha256": "3c9ccc786bc359a4937a7b9ba7397f1c6b0d17aa907300f6ef712a8aaf2d45c3"
     },
     "src/world/storage/chunk_lookup_internal.h": {
       "bytes": 922,
@@ -11399,6 +11399,21 @@
           "tests/tools/world/collision/selected_getter_cases.json": {
             "bytes": 77038,
             "sha256": "6c2dbc3261ed44cdb0082de51d9c4f82fa2aa43259e2e871e967d5c983974ea0"
+          }
+        }
+      }
+    },
+    {
+      "role": "Current selection/reselection and private Chunk lookup sources after native integration repairs and clang-format-18. Admission hashes only; historical products and observations retain their recorded source scope.",
+      "previous": {
+        "native_sources": {
+          "src/world/runtime/chunk_provider_owned.inc": {
+            "bytes": 9246,
+            "sha256": "85bccb7962cea0e779245edf6d4ee3c176feaa83f1d2d04c21af11821a1abf69"
+          },
+          "src/world/storage/chunk_lookup.inc": {
+            "bytes": 8279,
+            "sha256": "ea1ab8b8957bcd1066601c2f40006731ab8dd6ec09350af8c20947331e478b1d"
           }
         }
       }

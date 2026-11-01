@@ -10,7 +10,7 @@ typedef struct mc_source_owned_cache {
     mc_chunk_state **insertions;
     size_t capacity, insertion_capacity, count, insertion_count;
     size_t slots_count, mutation_depth;
-    uint32_t slots[]; /* Entry index+1; zero is empty. */
+    uint32_t *slots; /* Same-allocation tail. Entry index+1; zero is empty. */
 } mc_source_owned_cache;
 
 static void owned_cache_discard(mc_chunk_provider *provider) {
@@ -80,7 +80,8 @@ static void owned_cache_create_optional(mc_chunk_provider *provider) {
                                      .insertions = provider->insertions,
                                      .capacity = provider->max_chunks,
                                      .insertion_capacity = provider->max_chunks,
-                                     .slots_count = slots};
+                                     .slots_count = slots,
+                                     .slots = (uint32_t *)(void *)(owner + 1)};
     provider->owned_cache = owner;
     provider->owned_cache_bytes = bytes;
     provider->direct_bytes += bytes;

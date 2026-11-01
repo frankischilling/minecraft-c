@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 361133,
-      "sha256": "87f2b763313f1c02f7fa21268a4f62bb24f93f0d82fff71291d9283ab2b2d6e7"
+      "bytes": 361805,
+      "sha256": "3010e287603112daecc499f3801430ba60dbc0ed843d2bc0df0c29498ba5a9be"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 459046,
-      "sha256": "d040d1de31e39c76094248dbcef2afbe3a6d5c5e84ff3babd9e963dc31844a59"
+      "bytes": 459720,
+      "sha256": "9a4c9bf1373e4b4c4c1b5af0bce6a9e8395743db554d69fa1c01086195fe0c47"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 357146,
-      "sha256": "f5a78511fbf5729f1262e3f7a7aab802383759a2602805000f615b9db8ddeed1"
+      "bytes": 357818,
+      "sha256": "46dc41692e157f29f690f28c22c719f7a5cda8e04e42915655283f2d1ad8b772"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -15094,8 +15094,8 @@
       "sha256": "84786c930812caeb696bf777e2abb70177827376a6d72d6b15bd009933fde2b1"
     },
     "src/world/runtime/chunk_provider_owned.inc": {
-      "bytes": 9246,
-      "sha256": "85bccb7962cea0e779245edf6d4ee3c176feaa83f1d2d04c21af11821a1abf69"
+      "bytes": 9346,
+      "sha256": "3372177f53cb548d808ca812edf12eee513fe554d7961a90f3f126e4c3b092ca"
     },
     "tests/tools/world/test_owned_cache.py": {
       "bytes": 11388,
@@ -15106,8 +15106,8 @@
       "sha256": "b6a42d2480b9827f7726947cf5a5881a6d34f1fac1e9fa96a0139129a34f55b4"
     },
     "src/world/storage/chunk_lookup.inc": {
-      "bytes": 8279,
-      "sha256": "ea1ab8b8957bcd1066601c2f40006731ab8dd6ec09350af8c20947331e478b1d"
+      "bytes": 8386,
+      "sha256": "3c9ccc786bc359a4937a7b9ba7397f1c6b0d17aa907300f6ef712a8aaf2d45c3"
     },
     "src/world/storage/chunk_lookup_internal.h": {
       "bytes": 922,
@@ -20025,6 +20025,33 @@
           "tests/tools/world/collision/selected_getter_cases.json": {
             "bytes": 77038,
             "sha256": "6c2dbc3261ed44cdb0082de51d9c4f82fa2aa43259e2e871e967d5c983974ea0"
+          }
+        }
+      }
+    },
+    {
+      "role": "Current selection/reselection and private Chunk lookup sources after native integration repairs and clang-format-18. Admission hashes only; historical products and observations retain their recorded source scope.",
+      "previous": {
+        "source_files": {
+          "tests/reference/client/display_sdk/provenance.json": {
+            "bytes": 361133,
+            "sha256": "87f2b763313f1c02f7fa21268a4f62bb24f93f0d82fff71291d9283ab2b2d6e7"
+          },
+          "tests/reference/client/loading_draw/provenance.json": {
+            "bytes": 459046,
+            "sha256": "d040d1de31e39c76094248dbcef2afbe3a6d5c5e84ff3babd9e963dc31844a59"
+          },
+          "tests/reference/client/render_resources/provenance.json": {
+            "bytes": 357146,
+            "sha256": "f5a78511fbf5729f1262e3f7a7aab802383759a2602805000f615b9db8ddeed1"
+          },
+          "src/world/runtime/chunk_provider_owned.inc": {
+            "bytes": 9246,
+            "sha256": "85bccb7962cea0e779245edf6d4ee3c176feaa83f1d2d04c21af11821a1abf69"
+          },
+          "src/world/storage/chunk_lookup.inc": {
+            "bytes": 8279,
+            "sha256": "ea1ab8b8957bcd1066601c2f40006731ab8dd6ec09350af8c20947331e478b1d"
           }
         }
       }

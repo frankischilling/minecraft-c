@@ -13,7 +13,7 @@ typedef struct store_chunk_lookup_slot {
 
 typedef struct store_chunk_lookup {
     size_t capacity, count;
-    store_chunk_lookup_slot slots[];
+    store_chunk_lookup_slot *slots; /* Tail storage in the same allocation. */
 } store_chunk_lookup;
 
 static size_t store_chunk_lookup_base_bytes(const mc_world_store *store) {
@@ -127,6 +127,7 @@ static void store_chunk_lookup_publish(mc_world_store *store, store_chunk *entry
         store_chunk_lookup_disable(store);
         return;
     }
+    next->slots = (store_chunk_lookup_slot *)(void *)(next + 1);
     const size_t peak = old_bytes + bytes;
     if (peak > store->chunk_lookup_peak_bytes)
         store->chunk_lookup_peak_bytes = peak;
