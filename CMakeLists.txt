@@ -250,7 +250,7 @@ if(MC_BUILD_CLIENT)
     add_library(mc_client_source_resources STATIC
         src/client/gui/font_mapping.c
         src/client/gui/bitmap_font.c src/client/gui/bitmap_font_measure.c
-        src/client/gui/bitmap_font_draw.c
+        src/client/gui/bitmap_font_draw.c src/client/gui/bitmap_font_wrap.c
         src/client/gui/loading_screen.c src/client/gui/loading_projection.c
         src/client/gui/loading_geometry.c src/client/gui/loading_draw.c
         src/client/startup/application_quad.c)
@@ -5474,6 +5474,7 @@ include(cmake/client_source_screen_events.cmake)
 include(cmake/client_effect_upload.cmake)
 include(cmake/tests/source_screen_events.cmake)
 include(cmake/client_runtime.cmake)
+include(cmake/client_active_notice_tests.cmake)
 include(cmake/platform_date_format.cmake)
 if(TARGET mc_client_source_screens)
     target_sources(mc_client_source_screens PRIVATE

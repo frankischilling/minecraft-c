@@ -306,8 +306,8 @@
       "sha256": "77c0f538d95556faab313934d57e5d81ec75cc34898c009037435fb798ef2f12"
     },
     "src/client/gui/achievement_notice.c": {
-      "bytes": 10746,
-      "sha256": "c3a16b23968b9118a159add3fab34d1b898b443cd4b49a741a2c8b6499055f42"
+      "bytes": 10717,
+      "sha256": "84b4c5279d506881416aa37370661d895aabe00a3c5e12380f16eb18270c15ed"
     },
     "src/client/render/biped.c": {
       "bytes": 5714,
@@ -318,8 +318,8 @@
       "sha256": "ad48002075913c6db865c2474bbbc4b121055ef689ef6d9040e575624ce10cd8"
     },
     "src/client/render/model.c": {
-      "bytes": 7803,
-      "sha256": "a65b3c5267282b4a6c3ad51c23f596897d8b07066f7ad5ae5451a6fcf5ed0658"
+      "bytes": 7843,
+      "sha256": "f634491c3190c46392ab4e1dc4460354ec31414c8120a6a6d08afd29490ebca1"
     },
     "src/client/render/model_graph.c": {
       "bytes": 14356,
@@ -689,6 +689,31 @@
         }
       },
       "native_compiler_JVM_or_original_results_transferred": false
+    },
+    {
+      "from_commit": "6c8a3e5",
+      "role": "Current active Notice, wrapped Font and flat GUI Item input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 27092,
+        "sha256": "77933f892a0a436e3d097d5d3554a702e5e04c08ba896e7a5a69f97503ee9f79"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 123,
+          "after_count": 123,
+          "previous": {
+            "src/client/gui/achievement_notice.c": {
+              "bytes": 10746,
+              "sha256": "c3a16b23968b9118a159add3fab34d1b898b443cd4b49a741a2c8b6499055f42"
+            },
+            "src/client/render/model.c": {
+              "bytes": 7803,
+              "sha256": "a65b3c5267282b4a6c3ad51c23f596897d8b07066f7ad5ae5451a6fcf5ed0658"
+            }
+          },
+          "added": []
+        }
+      }
     }
   ]
 }

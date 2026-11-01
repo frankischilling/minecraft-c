@@ -2948,6 +2948,75 @@ native server World rows use client observations and paired bytecode evidence;
 they are not successful original-server World observations. See the
 [runtime contract](entity/environment.md) for exact scope and remaining ticks.
 
+## Active achievement and tutorial notices
+
+`client.active_notice_cpu` runs under ordinary BUILD_TESTING without imported
+assets or a window. Its 48 checks use actual RAW/constructed owners for the
+no-notice branch, App borrowing, pending/free guards, null Stack and unbound-App
+prefixes. A RAW Font is never presented as a successfully constructed Font.
+The compact Entity NBT error remains 544 bytes.
+
+Graphical controls are opt-in:
+
+```text
+cmake -S . -B BUILD -DBUILD_TESTING=ON -DMC_ENABLE_CLIENT_DISPLAY_TESTS=ON -DMC_ENABLE_CLIENT_ACTIVE_NOTICE_TESTS=ON -DMC_APPLICATION_STARTUP_IMPORTED_RESOURCES=/absolute/path/to/imported-assets
+cmake --build BUILD --config Release --target mc_test_active_notice_cpu mc_test_active_notice
+ctest --test-dir BUILD -C Release --output-on-failure -R "^client[.]active_notice_(cpu|components|rounded|tutorial)$"
+```
+
+Windows registers `client.active_notice_components`, `client.active_notice_rounded`
+and `client.active_notice_tutorial`. Components exercise six actual Notice calls,
+twelve READY Font wrap/height cases, texture reuse, real clock expiry, retained
+ownership and checked cleanup. Rounded uses physical 641x481 and the reached
+VU projection 321x241. Atlas checks use the real Book340/icon59 and compare154
+opaque texels/nine colors with an RGB8 allowance of one; they do not compare
+original pixels. CPU/components/rounded pass on Windows Debug; the later run
+passes all three in 11.47 seconds with 320/316 component/rounded checks.
+The six-test Windows Release selection passes
+in 11.16 seconds.
+
+The tutorial uses actual SDK menu/World selection, authored saved Chunks and
+`viewDistance:3` read through GameSettings. Its pre-bootstrap statistics directory
+is empty. The Release run passes in 54.16 seconds with 61 returned frames, 49 Book
+draws, 31 actual reminder refreshes, two real Pause ID4 focus recoveries and 1,125
+checks. It awards no inventory statistic, changes no source clock/notice fields
+and injects no actor. The independent capture checks the actual integer-y-zero
+draw. It does not require or establish an exactly-zero quartic easing plateau.
+
+The same corrected Debug fixture fails visibility in 64.17 seconds, with 24 draws
+and no integer-y-zero draw. Retained same-source analysis finds minimum
+reminder-to-draw intervals of 263 ms in Release and 809 ms in Debug. The earlier
+99.44-second failure also included a35-second test-owned screen-hold cleanup
+defect, now fixed. Neither timing analysis identifies the runtime bottleneck.
+Default-Far playability remains unqualified.
+
+On Linux, the current CMake registration exposes components and rounded only
+when `MC_CLIENT_ACTIVE_NOTICE_LINUX_GAME_DIR` names the actual account's
+`getpwuid` `.minecraft` directory. Execution also requires
+`MC_CLIENT_ACTIVE_NOTICE_MOUNT_RECEIPT` from a live, validated disposable mount
+namespace and a successful outer host-tree audit. HOME redirection is
+insufficient. Use a private X11 display/window manager and the pinned software-GL
+environment; the earlier WSLg failures retain their own scope. The corrected
+private-filesystem cohort passes both tests with 330/332 native checks, zero
+skips/errors, 30.72 seconds summed test time (30.73 seconds CTest real time), a
+private `:99` Display and 4.5 core context under sanitizers. Inner source, products,
+assets and tools remain unchanged. The successful outer receipt verifies the
+unchanged host tree, actual private bind/unmount, closed namespace FD and no
+remaining processes. Private bootstrap options/statistics writes are expected
+outputs. Both prior failed namespace attempts remain retained. Linux tutorial
+registration remains disabled; no Linux loaded-World or ordinary original VU
+drawing comparison is credited.
+
+The separate original component cohort passes 56 operations in each ordinary
+and read-only debugger VM, with 1,637 events and 270 Code pins. It uses real Font
+and null-App Notice constructors, real clocks, expiry and null-prefix calls.
+The retained comparison checks 48 exact heights and 24 actual debugger root
+operands across twelve common UTF16 cases and both native extents. Font pixels,
+native per-line Strings, original active VU/Book pixels, QQ/KH and full caller
+return through 477 are outside that comparison. See the
+[draw contract](client/achievement-notice.md) and
+[hash-only record](../tests/reference/client/notice/active-draw-qualification.json).
+
 ## Achievement notice and model construction
 
 The final combined source passes all 272 Windows MSVC tests and all 253 tests

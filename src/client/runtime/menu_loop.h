@@ -9,6 +9,7 @@ typedef struct mc_world_storage_error mc_world_storage_error;
 typedef struct mc_client_menu_loop_state {
     uint64_t frames, ticks, texture_ticks, account_checks_omitted;
     uint64_t world_draws, hud_draws;
+    uint64_t notice_returns, notice_draws, notice_text_returns, notice_vertices;
     /* Native observations of completed source calls survive child retirement
      * and the next tick's fresh diagnostic record. They control no gameplay. */
     uint64_t world_tick_returns, random_chunk_calls, random_chunk_samples;
@@ -36,6 +37,7 @@ typedef struct mc_client_menu_loop_state {
     const struct mc_client_renderer_focus_state *renderer_focus;
     const struct mc_client_world_frame_state *world_frame;
     const struct mc_client_gui_ingame_draw_state *hud;
+    const struct mc_client_notice_draw_state *notice;
 } mc_client_menu_loop_state;
 
 /* Native frame composition for the genuine constructed, initialized no-World

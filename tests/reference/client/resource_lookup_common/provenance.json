@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 336476,
-      "sha256": "96a8869c55bd35a666677da5777961a58dea2781c047e855d1167ff7f0726de3"
+      "bytes": 336558,
+      "sha256": "7821156efa6c7fe005e0b87bda1faf5cfca1719c0fe0651aa2104415c887a688"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -190,8 +190,8 @@
       "sha256": "8284ee0457a0eb0eea64f007281428cdef0ee575d8bc83373acfb896603b0a6f"
     },
     "docs/client/achievement-notice.md": {
-      "bytes": 5997,
-      "sha256": "8fc7bdae1c976e74f1f9f2a9a4cc767308763348f5e97242a6ad0173ab850601"
+      "bytes": 11890,
+      "sha256": "68c4c1bec14d7a17a655728944078c9a3f52d2b389ccf5ec216ed5b922329caa"
     },
     "docs/client/application-owner.md": {
       "bytes": 7415,
@@ -466,8 +466,8 @@
       "sha256": "93226a41c97403c4e3e61a23f633b553fc6c96c3058e44d362bf01409dfdaff9"
     },
     "docs/parity.md": {
-      "bytes": 148177,
-      "sha256": "dad6c5074eca91a99d6962aa440ef428d37363bd37b53c6f17f58737916e18b7"
+      "bytes": 149197,
+      "sha256": "8056d7a96eb3ead9adc1fb29c64da7594dc9f81b0290bd5d911e45843f2d379c"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 67101,
-      "sha256": "a105fa0f3dec98c63574c7f298448ec761326374e4e2d270d37211c8bdf2a2ec"
+      "bytes": 67537,
+      "sha256": "0c5834da0c7278bab0c064f67bbf23a093f1f8e613fe3d6edd0e534320930598"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 365175,
-      "sha256": "0b3d09c1634e4c618e5a2243bdccc279d298f5359ace08a98d5ffd90849dad90"
+      "bytes": 369569,
+      "sha256": "775f89d8e3bf914c1809b03065c58d76007b411aa16183031c64f9049a884cbf"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 28039,
@@ -854,8 +854,8 @@
       "sha256": "f8ece751b0b5c7af311e7bdcfbcaba816eeab10a80fe244a1135db9002d5db1e"
     },
     "docs/wiki/World-simulation.md": {
-      "bytes": 38653,
-      "sha256": "187929508e0163352071c6455afe66df29e490ee4c3b4bf4943e5858674737ed"
+      "bytes": 39472,
+      "sha256": "75055f169e3e2dd045fae2ca0ef33e91fbf2ac693ad631819479ff11dcb1ddbe"
     },
     "docs/wiki/_Sidebar.md": {
       "bytes": 2090,
@@ -2762,28 +2762,28 @@
       "sha256": "b4f850b175e4a1032a1812f78d7b2acf8e13277453401db249e76f49bc80eb66"
     },
     "src/client/gui/achievement_notice.c": {
-      "bytes": 10746,
-      "sha256": "c3a16b23968b9118a159add3fab34d1b898b443cd4b49a741a2c8b6499055f42"
+      "bytes": 10717,
+      "sha256": "84b4c5279d506881416aa37370661d895aabe00a3c5e12380f16eb18270c15ed"
     },
     "src/client/gui/bitmap_font.c": {
       "bytes": 26758,
       "sha256": "9665a1529cc40eefe00c93999596aee94eeea09266c99ac1211d14569e8f9a09"
     },
     "src/client/gui/bitmap_font.h": {
-      "bytes": 8688,
-      "sha256": "ec1b2551cc288b2e1da23f47278ea77cd17e3283188e5c762dfed39b52128d19"
+      "bytes": 10512,
+      "sha256": "c16e983f91db2907b1bf6af7215ae5a44b67cdde2b275b0c1f0232c30e99c5d7"
     },
     "src/client/gui/bitmap_font_draw.c": {
-      "bytes": 13296,
-      "sha256": "f332428041d377328ac613ff2be3315f0dc7f5adff54d22ee3315dc8d752a371"
+      "bytes": 13546,
+      "sha256": "78a0ad255f9bc463b62c864fe1a8469f721a276cc8f4701dee698a9aef04ce97"
     },
     "src/client/gui/bitmap_font_internal.h": {
-      "bytes": 2733,
-      "sha256": "a9e37000671cb56fbfba2ff61a7d58e9fb4f1550edb57badc88882ef11c99dfc"
+      "bytes": 3318,
+      "sha256": "6df0ac7e4fde76fd4fc32bc67971cbee096c9d66d5b96f10e801f45e9feeacad"
     },
     "src/client/gui/bitmap_font_measure.c": {
-      "bytes": 4627,
-      "sha256": "4e3f20323d23c4ff2d34e6507cf82fc998a5d51e01f90f0dbaf61b1c9a8c661e"
+      "bytes": 4709,
+      "sha256": "0cb98632273ea3bd292d719cf39371604232dd9245f8f5d6316bb4e27ca18b50"
     },
     "src/client/gui/font_kernels.h": {
       "bytes": 1487,
@@ -2974,8 +2974,8 @@
       "sha256": "7e90b98bc63cbde29769324556a51595f65a1c1c14baf5e0dff9470082cf3fb2"
     },
     "src/client/render/model.c": {
-      "bytes": 7803,
-      "sha256": "a65b3c5267282b4a6c3ad51c23f596897d8b07066f7ad5ae5451a6fcf5ed0658"
+      "bytes": 7843,
+      "sha256": "f634491c3190c46392ab4e1dc4460354ec31414c8120a6a6d08afd29490ebca1"
     },
     "src/client/render/model_graph.c": {
       "bytes": 14356,
@@ -6306,8 +6306,8 @@
       "sha256": "a84476874a75591bba353f7590376c59c29e123687966ddc4fa41925d9b7f910"
     },
     "tests/reference/client/biped/provenance.json": {
-      "bytes": 27092,
-      "sha256": "77933f892a0a436e3d097d5d3554a702e5e04c08ba896e7a5a69f97503ee9f79"
+      "bytes": 28015,
+      "sha256": "4bc6d552c93623624507e2d964c2ff82c32eccca80bc51e74137e862a6cb88d9"
     },
     "tests/reference/client/biped/run_native.py": {
       "bytes": 2290,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 317917,
-      "sha256": "8f9d46ed8067774a72ae2ab59357922f15ac9f8e10e71c8af03ab21d5a4fb465"
+      "bytes": 326777,
+      "sha256": "aefff7dc6ea3fb8477ec16cf4942e06a1aa41c3fdd3b6571c371cb104374110f"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,16 +6470,16 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 413578,
-      "sha256": "a32f88bd842964f7c6ba0efd41db6bb105c9a248067ca5bf00e7846367a7e03b"
+      "bytes": 423545,
+      "sha256": "e6d0c3d09a884066455e6904ad6c262f93f84503e404016ea2ba8e4d0a8bf938"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
       "sha256": "308a2e6a2b8ee9199046613f62385617b1dca003324785ddad34ff21a99f391d"
     },
     "tests/reference/client/notice/README.md": {
-      "bytes": 3071,
-      "sha256": "bd3997721e5ccaffbce1094264eee532659b6cdc692d9f3c1b9e1b73ef013333"
+      "bytes": 4688,
+      "sha256": "1d0f0e1be56412d850f2aa1d349ec2069d818db59735aedfe561011ac9989bb5"
     },
     "tests/reference/client/notice/capture.py": {
       "bytes": 5247,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 313371,
-      "sha256": "27fc6e75615d19ef1e49a2e8a2844ff8c6893d08c897ba3524a5d129031212e8"
+      "bytes": 322607,
+      "sha256": "d4f0437d28a79d5585446b0e684b9c3b9f58750a08465aca6017b1dd10127587"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9750,8 +9750,8 @@
       "sha256": "78321bb335d5f90fc5e419fa97ead8dd8ac486dc148be73f3abf4dab4ebf6253"
     },
     "cmake/client_runtime.cmake": {
-      "bytes": 5407,
-      "sha256": "42265595c82448d4bccba3ab7ebc91aa460ec043f084f39cd8665b35a4e7faf0"
+      "bytes": 5485,
+      "sha256": "a5cd1ab9cca660402e08a9198dd816d8d1ab75bccb1bf1f6afabdf2de7f27e58"
     },
     "cmake/client_source_screen_drawing.cmake": {
       "bytes": 589,
@@ -9766,8 +9766,8 @@
       "sha256": "8252109ad38050a87780d39190b84c14a8c41f91bd3c772fea5ca7f90cad54cf"
     },
     "docs/client/menu-runtime.md": {
-      "bytes": 12302,
-      "sha256": "31a5e90f70855a3798ec5814d7ec115cf5a18a7dd4ab83a34884706c5ca760db"
+      "bytes": 12607,
+      "sha256": "98e6b4b2157d54ff0edd1297a1b6bf16347c766451dfc37019d78172be19a535"
     },
     "src/client/display/source_texture_update.h": {
       "bytes": 1017,
@@ -9818,12 +9818,12 @@
       "sha256": "82e3671128e8d5728c5c285d94e2d03e04de93bf49446305d18098be76824d92"
     },
     "src/client/runtime/menu_loop.c": {
-      "bytes": 55585,
-      "sha256": "2e1067cc38e8577b316ea8e1d01614602f95d9fc266e4efd2dcf0a1504d7c95a"
+      "bytes": 57164,
+      "sha256": "49f2be84c166e1bbae3c4039db39d5d6237f463331f3538234f5239db710d383"
     },
     "src/client/runtime/menu_loop.h": {
-      "bytes": 5073,
-      "sha256": "2abffc192e51657e2f446fd571f62c507091f10b8910d8b67250b255ee4eeb37"
+      "bytes": 5208,
+      "sha256": "9efd16bf072f56614923af6345db26f807b70723ccd07efab1aac265b58ffe05"
     },
     "tests/client/gui/test_source_screen_events.c": {
       "bytes": 11463,
@@ -15032,6 +15032,54 @@
     "tests/world/runtime/saving/source_session_terminal_controls.inc": {
       "bytes": 10716,
       "sha256": "b463407b42f24402bed480453fee37984f7868ea573d4fdb1183158e67b55ffd"
+    },
+    "src/client/gui/achievement_notice_draw.c": {
+      "bytes": 30700,
+      "sha256": "8c121dfa832bc793f5cc129804b1e6f3f03339775dee803d547bc9f03f892a9c"
+    },
+    "src/client/gui/achievement_notice_draw.h": {
+      "bytes": 4536,
+      "sha256": "f6e417ca5ac1cf3a87d406f08039cd10c18ff6e5d08f79e8dcf42510f484294b"
+    },
+    "src/client/gui/achievement_notice_internal.h": {
+      "bytes": 587,
+      "sha256": "18cedcc498c59c3f64d9a652d7c5e1d4c04abb0e44fb2232ede5a2a4f0b75f4a"
+    },
+    "src/client/gui/bitmap_font_wrap.c": {
+      "bytes": 19661,
+      "sha256": "d06662e486fabc14193d2937fed0b4e4f8b77fde3a1d173245706ac858716ae2"
+    },
+    "src/client/render/item_gui.c": {
+      "bytes": 19958,
+      "sha256": "f3170851926980ded68c84ff4660aacb01dbbd6da0471aa385fe6bca4a428797"
+    },
+    "src/client/render/item_gui.h": {
+      "bytes": 4646,
+      "sha256": "6adfd972679763a41aa3dd2617bff6f5bc5af0fbf0d8c545adcedb3f6c83bfc9"
+    },
+    "src/client/render/item_renderer_internal.h": {
+      "bytes": 603,
+      "sha256": "8018a6b9e9b6dce25bd651f48905b849176590e7a92ca57a9046fe041a533faf"
+    },
+    "cmake/client_active_notice_tests.cmake": {
+      "bytes": 3606,
+      "sha256": "d1632a7e875a08c1fe1ba1a80d66f38b4ff0e23621ed47238e200164264c9086"
+    },
+    "tests/client/gui/test_active_notice.c": {
+      "bytes": 25818,
+      "sha256": "bd68e88929182b264b46658c681e7f1cdca7f43470bfc7f566b9d09fa3f9d10f"
+    },
+    "tests/client/gui/test_active_notice_cpu.c": {
+      "bytes": 8015,
+      "sha256": "8d6a5056fdb952cf7ec1b95515469c0ea62a1ef9a785b2acfb484670e353c48a"
+    },
+    "tests/tools/client/test_active_notice.py": {
+      "bytes": 23168,
+      "sha256": "fa33468b805935d0e0a2ec17d84837ea86802f4d8f4c0ad7516c70501db35ebf"
+    },
+    "tests/reference/client/notice/active-draw-qualification.json": {
+      "bytes": 11622,
+      "sha256": "12966cd1e7de0a1453589473df940636d2ff2471e64fff22c0f7661f276cb95c"
     }
   },
   "self_metadata_excluded": true,
@@ -18354,6 +18402,349 @@
             }
           },
           "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "6c8a3e5",
+      "role": "Current active Notice, wrapped Font and flat GUI Item input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 760263,
+        "sha256": "1a2b20b0be6c630691f984eb93f203dca03b6b549e16ba27def75008e83eb5ed"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 3758,
+          "after_count": 3765,
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 336476,
+              "sha256": "96a8869c55bd35a666677da5777961a58dea2781c047e855d1167ff7f0726de3"
+            },
+            "src/client/gui/achievement_notice.c": {
+              "bytes": 10746,
+              "sha256": "c3a16b23968b9118a159add3fab34d1b898b443cd4b49a741a2c8b6499055f42"
+            },
+            "src/client/gui/bitmap_font.h": {
+              "bytes": 8688,
+              "sha256": "ec1b2551cc288b2e1da23f47278ea77cd17e3283188e5c762dfed39b52128d19"
+            },
+            "src/client/gui/bitmap_font_draw.c": {
+              "bytes": 13296,
+              "sha256": "f332428041d377328ac613ff2be3315f0dc7f5adff54d22ee3315dc8d752a371"
+            },
+            "src/client/gui/bitmap_font_internal.h": {
+              "bytes": 2733,
+              "sha256": "a9e37000671cb56fbfba2ff61a7d58e9fb4f1550edb57badc88882ef11c99dfc"
+            },
+            "src/client/gui/bitmap_font_measure.c": {
+              "bytes": 4627,
+              "sha256": "4e3f20323d23c4ff2d34e6507cf82fc998a5d51e01f90f0dbaf61b1c9a8c661e"
+            },
+            "src/client/render/model.c": {
+              "bytes": 7803,
+              "sha256": "a65b3c5267282b4a6c3ad51c23f596897d8b07066f7ad5ae5451a6fcf5ed0658"
+            },
+            "tests/reference/client/biped/provenance.json": {
+              "bytes": 27092,
+              "sha256": "77933f892a0a436e3d097d5d3554a702e5e04c08ba896e7a5a69f97503ee9f79"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 317917,
+              "sha256": "8f9d46ed8067774a72ae2ab59357922f15ac9f8e10e71c8af03ab21d5a4fb465"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 413578,
+              "sha256": "a32f88bd842964f7c6ba0efd41db6bb105c9a248067ca5bf00e7846367a7e03b"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 313371,
+              "sha256": "27fc6e75615d19ef1e49a2e8a2844ff8c6893d08c897ba3524a5d129031212e8"
+            },
+            "cmake/client_runtime.cmake": {
+              "bytes": 5407,
+              "sha256": "42265595c82448d4bccba3ab7ebc91aa460ec043f084f39cd8665b35a4e7faf0"
+            },
+            "src/client/runtime/menu_loop.c": {
+              "bytes": 55585,
+              "sha256": "2e1067cc38e8577b316ea8e1d01614602f95d9fc266e4efd2dcf0a1504d7c95a"
+            },
+            "src/client/runtime/menu_loop.h": {
+              "bytes": 5073,
+              "sha256": "2abffc192e51657e2f446fd571f62c507091f10b8910d8b67250b255ee4eeb37"
+            }
+          },
+          "added": [
+            "src/client/gui/achievement_notice_draw.c",
+            "src/client/gui/achievement_notice_draw.h",
+            "src/client/gui/achievement_notice_internal.h",
+            "src/client/gui/bitmap_font_wrap.c",
+            "src/client/render/item_gui.c",
+            "src/client/render/item_gui.h",
+            "src/client/render/item_renderer_internal.h"
+          ]
+        }
+      }
+    },
+    {
+      "from_commit": "6c8a3e5",
+      "role": "Current active Notice fixture input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 764949,
+        "sha256": "bb85b276911faa56ee16d774cb457a1c598b33b7f5c791d2aa4224a081a883d6"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 3765,
+          "after_count": 3769,
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 336510,
+              "sha256": "35bd6429dc8a9dcd557c03d10f31a9591002801f7e70c4f21a0c8fd1b56f0b80"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 320872,
+              "sha256": "5b3344c561b8fb3af45ca87e52a3bc7785f418b080dcd5d5a194c0b8022baf07"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 417447,
+              "sha256": "667ebcbd1618c07e908510e10dca6f92f8a6b3799ff57a24397ce6ac37ab365f"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 316702,
+              "sha256": "7f69f3be9a3c23a405b7797dcfe73404abe7ce07a46eb33889b7bb59af4d8fb1"
+            }
+          },
+          "added": [
+            "cmake/client_active_notice_tests.cmake",
+            "tests/client/gui/test_active_notice.c",
+            "tests/client/gui/test_active_notice_cpu.c",
+            "tests/tools/client/test_active_notice.py"
+          ]
+        }
+      }
+    },
+    {
+      "from_commit": "6c8a3e5",
+      "role": "Current active Notice fixture link input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 767144,
+        "sha256": "36a03c4b4b32e41bf99ac62f708e023b6a9f0a2f190cdba95ceb00965b99171c"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 3769,
+          "after_count": 3769,
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 322267,
+              "sha256": "943c83fce1b3a7e2abb49ae05dde55946674385e9506b9b976fa47619b12d36a"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 419023,
+              "sha256": "2721bcaedd64355ce32b8135f4452e0b0e22a1512179b3abd4fdf4bb636172ec"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 318097,
+              "sha256": "a4e4e548741d5f972576ca363dca2c1a3d518cab40bb46e539160675f592e44a"
+            },
+            "cmake/client_active_notice_tests.cmake": {
+              "bytes": 3283,
+              "sha256": "9eb973ccbece67109b831c20457618aad140566ee87cadc498772d05ec69bc46"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "6c8a3e5",
+      "role": "Current active Notice controller preservation and namespace input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 768494,
+        "sha256": "7a6d4e7e97d00f45928edb4ba84f124f87a933b20b2600bc19f8e1937bf170d3"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 3769,
+          "after_count": 3769,
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 322996,
+              "sha256": "a6a28692d4f94c3acb7e067e6e11e9b88213136b206154a6f5208a780b1ccd05"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 419754,
+              "sha256": "16878ee719bae4bd9a87090c3c878c8546c9f3413a0269b27a3b563950a0d8e3"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 318826,
+              "sha256": "12a36d79a2e1aa441a67e25d7e1109728d6eabea829d0672d20d62b2c60f3e8f"
+            },
+            "tests/tools/client/test_active_notice.py": {
+              "bytes": 15479,
+              "sha256": "a19850d3467ef71b00647b8d8f22c332a0b369d04ec30f33436170a0146ad294"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "6c8a3e5",
+      "role": "Current active Notice fixture failure cleanup input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 769872,
+        "sha256": "ed2cc53ac3c554294eec543d25b6bb8ac6608584b36082cbe0f43c42830def39"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 3769,
+          "after_count": 3769,
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 323753,
+              "sha256": "9da4adf77694f92b76f09c4adc93b5870d3330163025641046f245b55cd6b10f"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 420513,
+              "sha256": "d94304cde663418b0f1dfdcab086913218e22914864bfcb96afa576dde947d91"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 319583,
+              "sha256": "c8f8c54ab5bb7f1a7cd22f24d6c1a4e3e17c64f6e4399f7581c61c38d554cdd3"
+            },
+            "tests/client/gui/test_active_notice.c": {
+              "bytes": 25553,
+              "sha256": "9a5af637defebfe3e2f078cfe506828f773b99118e66ec013d74850b3ffb0638"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "6c8a3e5",
+      "role": "Current active Notice streamed executable input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 771233,
+        "sha256": "15581cb453af265f06f4c89773de3f9459bd0d05aeb85b1d21ed3af3e9087510"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 3769,
+          "after_count": 3769,
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 324493,
+              "sha256": "121fdf296aa377f5973fec478ba245739d07b3e9871c1541bc619dc70466b841"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 421255,
+              "sha256": "76ce81cee469b5ee019e69fd4a4c963dc29d372f8e9124ebe5c0fbe33fbdf473"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 320323,
+              "sha256": "a1e1967e6a8ddb43ac24b77152810438d4d878e06d74ca201f4f23145eceae6f"
+            },
+            "tests/tools/client/test_active_notice.py": {
+              "bytes": 22088,
+              "sha256": "957ad7f3adc4de1f045a42704f534ae47cbbe89f822064e177f4fd02081724d2"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "6c8a3e5",
+      "role": "Current isolated active Notice private output admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 772593,
+        "sha256": "53492c0cb69433c44086beb4e2cdc7185a8949923b8adc675e97a9b39e3161f6"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 3769,
+          "after_count": 3769,
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 325232,
+              "sha256": "751c0fdeca694668e6322f756e539977405c4afcda7c3d13e1899b932d804c8a"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 421996,
+              "sha256": "b9f391d38fa4430ed779a3add5c23204458e8d9f0d04e2db4de1a522e4c9d57e"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 321062,
+              "sha256": "e140b3612385542240ff09645a67d7abd17e1f9606820ffb3bf260195f23ba2f"
+            },
+            "tests/tools/client/test_active_notice.py": {
+              "bytes": 22831,
+              "sha256": "375899b51fdb22d0c1253d5a2769440c6da968634634de509736c00fc7894277"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "6c8a3e5",
+      "role": "Current active Notice derived qualification metadata admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 773951,
+        "sha256": "494c5097dc7a52631a2e97062e5bd1c85e675f3f5b4805cd771a2e25e973b9f8"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 3769,
+          "after_count": 3770,
+          "previous": {
+            "docs/client/achievement-notice.md": {
+              "bytes": 5997,
+              "sha256": "8fc7bdae1c976e74f1f9f2a9a4cc767308763348f5e97242a6ad0173ab850601"
+            },
+            "docs/parity.md": {
+              "bytes": 148177,
+              "sha256": "dad6c5074eca91a99d6962aa440ef428d37363bd37b53c6f17f58737916e18b7"
+            },
+            "docs/status.md": {
+              "bytes": 67101,
+              "sha256": "a105fa0f3dec98c63574c7f298448ec761326374e4e2d270d37211c8bdf2a2ec"
+            },
+            "docs/testing.md": {
+              "bytes": 365175,
+              "sha256": "0b3d09c1634e4c618e5a2243bdccc279d298f5359ace08a98d5ffd90849dad90"
+            },
+            "docs/wiki/World-simulation.md": {
+              "bytes": 38653,
+              "sha256": "187929508e0163352071c6455afe66df29e490ee4c3b4bf4943e5858674737ed"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 325969,
+              "sha256": "fd04708538590da09f80b3b66fbfe43da83f16b2a49a22d19ae0560a8736c9bd"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 422735,
+              "sha256": "5991db3d8b03ca5ffde8993e303c16ec841c13cfff36c52351b559d696f5566a"
+            },
+            "tests/reference/client/notice/README.md": {
+              "bytes": 3071,
+              "sha256": "bd3997721e5ccaffbce1094264eee532659b6cdc692d9f3c1b9e1b73ef013333"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 321799,
+              "sha256": "b7c1a84c836aa013a483ad2ff6e1c2ab67b431048fa735309d2f050280b5a5f6"
+            },
+            "docs/client/menu-runtime.md": {
+              "bytes": 12302,
+              "sha256": "31a5e90f70855a3798ec5814d7ec115cf5a18a7dd4ab83a34884706c5ca760db"
+            }
+          },
+          "added": [
+            "tests/reference/client/notice/active-draw-qualification.json"
+          ]
         }
       }
     }

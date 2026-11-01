@@ -1,15 +1,6 @@
-#include "model_graph_internal.h"
+#include "item_renderer_internal.h"
 #include <stdlib.h>
 #include <string.h>
-
-struct mc_client_item_renderer {
-    mc_client_render_classes *classes;
-    mc_client_model_phase phase;
-    mc_client_item_renderer_fields fields;
-    model_allocation *allocations;
-    size_t bytes, max_bytes;
-    mc_client_model_error failure;
-};
 
 static mc_client_model_status fail(mc_client_item_renderer *o, mc_client_model_status status,
                                    const char *source, int32_t pc) {
@@ -110,6 +101,8 @@ mc_client_model_status mc_client_item_renderer_construct(mc_client_item_renderer
                                                          mc_client_model_error *error) {
     if (o == NULL)
         return MC_CLIENT_MODEL_INVALID_ARGUMENT;
+    if (o->gui_active || o->gui_call != NULL)
+        return MC_CLIENT_MODEL_BUSY;
     if (o->phase != MC_CLIENT_MODEL_RAW)
         return MC_CLIENT_MODEL_INVALID_PHASE;
     o->phase = MC_CLIENT_MODEL_CONSTRUCTING;
@@ -165,7 +158,7 @@ mc_client_model_status mc_client_item_renderer_free(mc_client_item_renderer **ou
     mc_client_item_renderer *o = *out;
     if (o == NULL)
         return MC_CLIENT_MODEL_OK;
-    if (o->phase == MC_CLIENT_MODEL_CONSTRUCTING)
+    if (o->phase == MC_CLIENT_MODEL_CONSTRUCTING || o->gui_active || o->gui_call != NULL)
         return MC_CLIENT_MODEL_BUSY;
     for (model_allocation *a = o->allocations; a != NULL; a = a->next)
         if (a->vector != NULL) {
@@ -189,6 +182,8 @@ mc_client_model_status mc_client_item_renderer_draw(mc_client_item_renderer *p,
                                                     mc_client_model_error *error) {
     if (p == NULL)
         return MC_CLIENT_MODEL_INVALID_ARGUMENT;
+    if (p->gui_active || p->gui_call != NULL)
+        return MC_CLIENT_MODEL_BUSY;
     if (error != NULL)
         *error = (mc_client_model_error){.status = MC_CLIENT_MODEL_UNIMPLEMENTED_DEPENDENCY,
                                          .source_class = "bb",
@@ -200,6 +195,8 @@ mc_client_model_status mc_client_item_renderer_bind_manager(mc_client_item_rende
                                                             const void *manager) {
     if (o == NULL || o->phase != MC_CLIENT_MODEL_READY)
         return MC_CLIENT_MODEL_INVALID_PHASE;
+    if (o->gui_active || o->gui_call != NULL)
+        return MC_CLIENT_MODEL_BUSY;
     mc_client_model_graph_bw_set_manager(&o->fields.render_manager, manager);
     return MC_CLIENT_MODEL_OK;
 }

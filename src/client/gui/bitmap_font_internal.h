@@ -45,4 +45,11 @@ mc_client_bitmap_font_status mc_client_bitmap_font_view_enter(mc_client_bitmap_f
 mc_client_bitmap_font_status mc_client_bitmap_font_view_leave(mc_client_bitmap_font *,
                                                               mc_client_bitmap_font_error *,
                                                               mc_client_bitmap_font_error *);
+/* Entered source kernels: caller owns the actual Font active/hold scope and
+ * immutable String view. No admission, diagnostic reset or nested Font hold. */
+void mc_client_bitmap_font_measure_entered(mc_client_bitmap_font *, mc_player_string_view,
+                                           int32_t *, mc_client_bitmap_font_error *);
+bool mc_client_bitmap_font_draw_entered(mc_client_bitmap_font *, mc_player_string_view, int32_t x,
+                                        int32_t y, uint32_t argb, bool shadow,
+                                        mc_client_bitmap_font_error *);
 #endif

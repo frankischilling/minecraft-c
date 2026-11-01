@@ -8,8 +8,8 @@ static mc_client_bitmap_font_status fail(mc_client_bitmap_font_error *e,
                                       native_policy);
 }
 
-static void measure_width(mc_client_bitmap_font *font, mc_player_string_view input, int32_t *out,
-                          mc_client_bitmap_font_error *e) {
+void mc_client_bitmap_font_measure_entered(mc_client_bitmap_font *font, mc_player_string_view input,
+                                           int32_t *out, mc_client_bitmap_font_error *e) {
     int32_t measured = 0;
     for (size_t index = 0; index < input.length; ++index) {
         if (input.units[index] == UINT16_C(0x00a7)) {
@@ -75,7 +75,7 @@ mc_client_bitmap_font_status mc_client_bitmap_font_measure(mc_client_bitmap_font
                                               error);
     if (status != MC_CLIENT_BITMAP_FONT_OK)
         return status;
-    measure_width(font, input, out, e);
+    mc_client_bitmap_font_measure_entered(font, input, out, e);
     return mc_client_bitmap_font_call_leave(font, text, e, error);
 }
 
@@ -100,6 +100,6 @@ mc_client_bitmap_font_measure_view(mc_client_bitmap_font *font, const mc_player_
     status = mc_client_bitmap_font_view_enter(font, text, "a", "(Ljava/lang/String;)I", &e, error);
     if (status != MC_CLIENT_BITMAP_FONT_OK)
         return status;
-    measure_width(font, *text, out, e);
+    mc_client_bitmap_font_measure_entered(font, *text, out, e);
     return mc_client_bitmap_font_view_leave(font, e, error);
 }

@@ -51,8 +51,33 @@ Profiles compare raw float/double bits and actual identities/order, with no
 pixels or numerical tolerance. The callback profile uses genuine `kq` and joins
 its real Timer-hack daemon. Real timestamps are checked independently. Default
 Random entropy is not synchronized; the sole constructor advance and Gaussian
-defaults are checked. No source-empty draw succeeds. See the implementation
-scope in `docs/client/achievement-notice.md`.
+defaults are checked. This constructor comparison supplies no drawing result.
+See the [implementation scope](../../../../docs/client/achievement-notice.md).
+
+## Active drawing evidence
+
+The older constructor/callback commands above retain their original scope.
+The new native active controls use `MC_ENABLE_CLIENT_ACTIVE_NOTICE_TESTS`;
+`client.active_notice_cpu` is public under BUILD_TESTING, while components,
+rounded and the Windows tutorial require imported resources and display tests.
+See the [current commands](../../../../docs/testing.md#active-achievement-and-tutorial-notices).
+
+The separate original component recipe uses real Settings, RenderEngine, Font
+and `vu(NULL)` constructors and real clocks. Both ordinary and read-only debugger
+VMs pass 56 operations; their hardened audits retain 1,637 events and 270 Code
+pins. The retained comparison matches 48 exact wrapped heights and 24 root draw
+operand sets for twelve common UTF16 cases across two native component extents.
+No native per-line Strings or Font pixels are paired. A null-App prefix is not
+an original active VU/Book, QQ/KH or full-caller return comparison.
+
+Windows Release native tutorial evidence uses absent openInventory statistics
+and actual Player ticks, with 61 returned frames, 49 Book draws and checked
+cleanup. The same corrected Debug fixture fails visibility. The 154-opaque-texel
+Book check is native imported-asset/geometry evidence with an RGB8 allowance of
+one. Isolated Linux components/rounded pass with private mount and outer
+host-tree checks; Linux tutorial remains unqualified. The
+[derived qualification record](active-draw-qualification.json) contains hashes
+and finite results only; it includes retained failures and comparison limits.
 
 Only source and binary metadata belong here. Keep JARs, native libraries, assets,
 generated classes and runtime outputs private.

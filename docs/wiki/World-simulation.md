@@ -54,9 +54,20 @@ preserves World/Player, refuses replay and restores its authored lock fault only
 after native cleanup closes the retained handle. No source exception or title
 return is credited for that failed call.
 
-This scope uses a declared saved openInventory statistic. Fresh-player notices,
-default-Far playability, Linux visible save/title, ordinary World reselection and
-complete original/native caller comparison remain unqualified.
+This save/title scope uses a declared saved openInventory statistic.
+Default-Far playability, Linux visible save/title, ordinary World reselection
+and complete original/native caller comparison remain unqualified.
+
+The separate Windows Release fresh-player tutorial leaves openInventory absent
+and passes 61 returned frames, 49 real Book340/icon59 notice draws, 31 reminder
+refreshes and checked cleanup. It uses actual SDK selection, Player ticks and
+clocks, with no awarded statistic or injected actor. The same corrected Debug
+fixture fails its visibility requirement. Isolated Linux components and rounded
+pass with a private filesystem and unchanged-host-tree audit; normal Far and
+Linux fresh-player tutorial remain unqualified. The original component comparison
+covers wrapped Font heights and selected operands, not original active-notice pixels.
+[Notice scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/achievement-notice.md)
+records the evidence and retained failures.
 
 [Client saving](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-saving.md)
 and the [native record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/save_title/native-qualification.json)
@@ -194,12 +205,12 @@ null-World failure and two explosion-entry prefixes. The real FD/QX explosion
 remains unfinished; later death/attacking stores receive no completion credit.
 The sound fixture's empty WorldAccess List gives no audio-device coverage.
 
-Single-player remains pre-playable. Wolf, Zombie and Skeleton with its genuine
-held Bow remain unfinished. Active achievement/tutorial notices, real Canvas
-focus/resize, Mob NBT and source-region writes, save/detach/reload, populated
-item/HUD interactions, mining/placement, combat, further Block overrides and
-TileEntities still require work. Server work follows single-player. Account
-authentication is the sole approved gameplay exclusion.
+Single-player remains pre-playable. The later source Mob persistence,
+Frame/Canvas, save/title and active-notice checkpoints have finite native
+coverage. They do not complete extended play, populated item/HUD interactions,
+mining/placement, combat, further Block overrides or TileEntities. Skeleton's
+held-Bow path and remaining descendants still require work. Server work follows
+single-player. Account authentication is the sole approved gameplay exclusion.
 
 [Build and tests](Build-and-tests#current-local-qualification) records current validation.
 

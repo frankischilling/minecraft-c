@@ -164,8 +164,9 @@ static bool draw_body(mc_client_bitmap_font *font, mc_player_string_view input, 
     return true;
 }
 
-static bool draw(mc_client_bitmap_font *font, mc_player_string_view input, int32_t x, int32_t y,
-                 uint32_t argb, bool shadow, mc_client_bitmap_font_error *e) {
+bool mc_client_bitmap_font_draw_entered(mc_client_bitmap_font *font, mc_player_string_view input,
+                                        int32_t x, int32_t y, uint32_t argb, bool shadow,
+                                        mc_client_bitmap_font_error *e) {
     if (!mc_client_font_lease_begin(font->lease, &e->graphics)) {
         graphics_failed(e, -1);
         return false;
@@ -196,17 +197,18 @@ mc_client_bitmap_font_status mc_client_bitmap_font_draw(mc_client_bitmap_font *f
     status = mc_client_bitmap_font_call_enter(font, text, "a", inner_descriptor, &input, &e, error);
     if (status != MC_CLIENT_BITMAP_FONT_OK)
         return status;
-    (void)draw(font, input, x, y, argb, shadow, e);
+    (void)mc_client_bitmap_font_draw_entered(font, input, x, y, argb, shadow, e);
     return mc_client_bitmap_font_call_leave(font, text, e, error);
 }
 
 static void draw_shadow(mc_client_bitmap_font *font, mc_player_string_view input, int32_t x,
                         int32_t y, uint32_t argb, mc_client_bitmap_font_error *e) {
-    if (!draw(font, input, mc_java_i32_add(x, 1), mc_java_i32_add(y, 1), argb, true, e)) {
+    if (!mc_client_bitmap_font_draw_entered(font, input, mc_java_i32_add(x, 1),
+                                            mc_java_i32_add(y, 1), argb, true, e)) {
         e->parent_method = "a";
         e->parent_descriptor = wrapper_descriptor;
         e->parent_pc = 11;
-    } else if (!draw(font, input, x, y, argb, false, e)) {
+    } else if (!mc_client_bitmap_font_draw_entered(font, input, x, y, argb, false, e)) {
         e->parent_method = "b";
         e->parent_descriptor = wrapper_descriptor;
         e->parent_pc = 7;
@@ -247,7 +249,7 @@ mc_client_bitmap_font_status mc_client_bitmap_font_draw_view(mc_client_bitmap_fo
     status = mc_client_bitmap_font_view_enter(font, text, "a", inner_descriptor, &e, error);
     if (status != MC_CLIENT_BITMAP_FONT_OK)
         return status;
-    (void)draw(font, *text, x, y, argb, shadow, e);
+    (void)mc_client_bitmap_font_draw_entered(font, *text, x, y, argb, shadow, e);
     return mc_client_bitmap_font_view_leave(font, e, error);
 }
 

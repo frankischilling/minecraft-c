@@ -32,7 +32,8 @@ typedef enum mc_client_bitmap_font_status {
     MC_CLIENT_BITMAP_FONT_UNIMPLEMENTED_DEPENDENCY,
     MC_CLIENT_BITMAP_FONT_SOURCE_RUNTIME_EXCEPTION,
     MC_CLIENT_BITMAP_FONT_SOURCE_ILLEGAL_ARGUMENT,
-    MC_CLIENT_BITMAP_FONT_UNSUPPORTED_FP
+    MC_CLIENT_BITMAP_FONT_UNSUPPORTED_FP,
+    MC_CLIENT_BITMAP_FONT_STRING_INDEX
 } mc_client_bitmap_font_status;
 
 typedef struct mc_client_bitmap_font_error {
@@ -145,6 +146,34 @@ mc_client_bitmap_font_status
 mc_client_bitmap_font_draw_shadow_view(mc_client_bitmap_font *,
                                        const mc_player_string_view *nullable_text, int32_t x,
                                        int32_t y, uint32_t argb, mc_client_bitmap_font_error *);
+
+/* Exact sj.a(String,IIII) and sj.a(String,I), including their newline/space
+ * split, strict greedy candidate comparison, long-word prefix comparison and
+ * trim-only emission guards. Draws are unshadowed with the original color and
+ * untrimmed UTF16. NULL text faults at actual String.split3. Height is at least
+ * eight for a leaf, including an empty or whitespace-only leaf; newline sums
+ * use Java int addition. The borrowed-view lifetime contract above applies.
+ *
+ * Native policy: input <=65536 UTF16 units; one temporary buffer <=65537 units;
+ * at most 16777216 source-string content/occurrence units and 16777216
+ * scanned/measured/copied content/operation units per call. A source loop that cannot consume a
+ * prefix reports LIMIT. A native limit preserves prior GL/NIO work and never returns truncated
+ * success. These calls hold/enter the same actual Font once for all nested source calls. */
+typedef struct mc_client_bitmap_font_wrap_error {
+    mc_client_bitmap_font_error font;
+    /* Fourth source frame only, when newline draw38 encloses a leaf draw.
+     * Immediate callers remain in font.parent/entry. NULL / -1 means absent. */
+    const char *recursive_descriptor;
+    int32_t recursive_pc;
+} mc_client_bitmap_font_wrap_error;
+
+mc_client_bitmap_font_status mc_client_bitmap_font_draw_wrapped_view(
+    mc_client_bitmap_font *, const mc_player_string_view *nullable_text, int32_t x, int32_t y,
+    int32_t width, uint32_t argb, mc_client_bitmap_font_wrap_error *);
+mc_client_bitmap_font_status
+mc_client_bitmap_font_wrapped_height_view(mc_client_bitmap_font *,
+                                          const mc_player_string_view *nullable_text, int32_t width,
+                                          int32_t *out, mc_client_bitmap_font_wrap_error *);
 /* Native identity check only: no activation, resource/GL call, hold or source
  * receiver admission. A RAW font has no Display yet. The caller preserves
  * the actual nullable source operand order before requesting this check. */

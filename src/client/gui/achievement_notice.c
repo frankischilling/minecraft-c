@@ -1,19 +1,11 @@
 #include "mc/client/gui/achievement_notice.h"
 #include "../achievements/description_registry.h"
 #include "../startup/application_owner_internal.h"
+#include "achievement_notice_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
 #include "millis.h"
 #include <stdlib.h>
-
-struct mc_client_achievement_notice {
-    mc_client_render_classes *models;
-    mc_registry_classes *registry;
-    mc_client_model_phase phase;
-    mc_client_achievement_notice_fields fields;
-    mc_client_description_result description;
-    mc_client_item_renderer *item; /* Native retention of unpublished child. */
-};
 
 static mc_client_notice_status result(mc_client_notice_error *e, mc_client_notice_status s,
                                       int32_t pc) {
@@ -100,6 +92,8 @@ static mc_client_notice_status admitted(mc_client_achievement_notice *p,
         return result(error, MC_CLIENT_NOTICE_INVALID_ARGUMENT, -1);
     if (p->phase != MC_CLIENT_MODEL_READY)
         return result(error, MC_CLIENT_NOTICE_INVALID_PHASE, -1);
+    if (p->draw_active || p->draw_call != NULL)
+        return result(error, MC_CLIENT_NOTICE_BUSY, -1);
     mc_registry_error cause = {0};
     if (mc_client_achievement_admit(p->registry, achievement, &cause) != MC_REGISTRY_OK) {
         result(error, MC_CLIENT_NOTICE_REGISTRY_FAILED, -1);
@@ -174,7 +168,7 @@ mc_client_notice_status mc_client_achievement_notice_free(mc_client_achievement_
     mc_client_achievement_notice *p = *out;
     if (p == NULL)
         return result(error, MC_CLIENT_NOTICE_OK, -1);
-    if (p->phase == MC_CLIENT_MODEL_CONSTRUCTING)
+    if (p->phase == MC_CLIENT_MODEL_CONSTRUCTING || p->draw_active || p->draw_call != NULL)
         return result(error, MC_CLIENT_NOTICE_BUSY, -1);
     mc_registry_error cause = {0};
     if (mc_client_notice_registry_retire_admit(p->registry, &cause) != MC_REGISTRY_OK) {
@@ -204,6 +198,8 @@ mc_client_notice_status mc_client_achievement_notice_draw(mc_client_achievement_
         return result(error, MC_CLIENT_NOTICE_INVALID_ARGUMENT, -1);
     if (p->phase != MC_CLIENT_MODEL_READY)
         return result(error, MC_CLIENT_NOTICE_INVALID_PHASE, -1);
+    if (p->draw_active || p->draw_call != NULL)
+        return result(error, MC_CLIENT_NOTICE_BUSY, -1);
     client_application *app = p->fields.a;
     /* getstatic Minecraft.H0 requires the real bound class namespace. A RAW
      * fixture or a null App cannot supply that static owner by inference. */

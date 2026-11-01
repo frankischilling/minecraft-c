@@ -54,7 +54,8 @@ Drawing reads the actual screen dimensions, splash and button list through the
 shared resource identities and canonical bitmap Font widths before using the
 existing OpenGL 3.3 kernels. The admitted profile has the default texture pack,
 no World and the same captured/current Font. Empty screen particles and the
-genuine no-notice achievement branch complete without inventing active drawing.
+genuine no-notice achievement branch complete. Active notices now use the
+[source notice, wrapped Font and flat Item path](achievement-notice.md).
 
 The original menu action dispatch is connected. Singleplayer synchronously
 constructs and initializes RQ; its real save rows can be selected during drawing.
@@ -121,9 +122,11 @@ Random unchanged; normal later ticks keep their actual random effects.
 
 The returned renderer controls declare an existing Player whose genuinely loaded
 statistics
-already contain the inventory achievement. A Player without that entry can
-reach the unfinished active tutorial-notice draw at `vu.a:108` before the Mob
-draw. Serialized Mob loading is not qualified by the Entity-empty saves.
+already contain the inventory achievement. Their Entity-empty saves do not
+qualify serialized Mob loading. A separate Windows Release profile leaves that
+statistic absent and returns61 World/HUD frames with49 active Book notices;
+the same corrected Debug fixture fails the visibility check. The notice result
+does not extend these older actor controls or qualify normal-Far playability.
 The RenderManager retains its original 28 renderer owners; hand lookup adds
 the actual LocalPlayer key sharing the Player renderer, producing exactly 29
 Map entries. Nonempty TileEntity rows and unsupported drawing branches remain
@@ -170,8 +173,9 @@ audit checks 6,413 resolved paths. [Mob drawing](mob-drawing.md) and the
 
 The old 2dab hosted and c88e648 broad records remain historical; no new
 hosted result is claimed. Loaded inputs still declare the inventory statistic
-and Entity-empty saved Chunks. They do not qualify fresh-player tutorials,
-Canvas ungrab, general nonempty items, combat or Mob save/reload. Additional
+and Entity-empty saved Chunks. Their scope excludes fresh-player tutorials,
+Canvas ungrab, general nonempty items, combat and Mob save/reload. The later
+notice and source persistence profiles retain separate evidence. Additional
 NULL-World/fire work is outside this qualification.
 
 Account authentication is excluded by the development specification. At

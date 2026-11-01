@@ -2,8 +2,8 @@
   "scope": "Current authored real-owner loading draw/update/yield/retirement controls; native results are recorded separately for their exact tested snapshots.",
   "native_sources": {
     "CMakeLists.txt": {
-      "bytes": 336476,
-      "sha256": "96a8869c55bd35a666677da5777961a58dea2781c047e855d1167ff7f0726de3"
+      "bytes": 336558,
+      "sha256": "7821156efa6c7fe005e0b87bda1faf5cfca1719c0fe0651aa2104415c887a688"
     },
     "cmake/client_controllers.cmake": {
       "bytes": 1093,
@@ -1282,28 +1282,28 @@
       "sha256": "b4f850b175e4a1032a1812f78d7b2acf8e13277453401db249e76f49bc80eb66"
     },
     "src/client/gui/achievement_notice.c": {
-      "bytes": 10746,
-      "sha256": "c3a16b23968b9118a159add3fab34d1b898b443cd4b49a741a2c8b6499055f42"
+      "bytes": 10717,
+      "sha256": "84b4c5279d506881416aa37370661d895aabe00a3c5e12380f16eb18270c15ed"
     },
     "src/client/gui/bitmap_font.c": {
       "bytes": 26758,
       "sha256": "9665a1529cc40eefe00c93999596aee94eeea09266c99ac1211d14569e8f9a09"
     },
     "src/client/gui/bitmap_font.h": {
-      "bytes": 8688,
-      "sha256": "ec1b2551cc288b2e1da23f47278ea77cd17e3283188e5c762dfed39b52128d19"
+      "bytes": 10512,
+      "sha256": "c16e983f91db2907b1bf6af7215ae5a44b67cdde2b275b0c1f0232c30e99c5d7"
     },
     "src/client/gui/bitmap_font_draw.c": {
-      "bytes": 13296,
-      "sha256": "f332428041d377328ac613ff2be3315f0dc7f5adff54d22ee3315dc8d752a371"
+      "bytes": 13546,
+      "sha256": "78a0ad255f9bc463b62c864fe1a8469f721a276cc8f4701dee698a9aef04ce97"
     },
     "src/client/gui/bitmap_font_internal.h": {
-      "bytes": 2733,
-      "sha256": "a9e37000671cb56fbfba2ff61a7d58e9fb4f1550edb57badc88882ef11c99dfc"
+      "bytes": 3318,
+      "sha256": "6df0ac7e4fde76fd4fc32bc67971cbee096c9d66d5b96f10e801f45e9feeacad"
     },
     "src/client/gui/bitmap_font_measure.c": {
-      "bytes": 4627,
-      "sha256": "4e3f20323d23c4ff2d34e6507cf82fc998a5d51e01f90f0dbaf61b1c9a8c661e"
+      "bytes": 4709,
+      "sha256": "0cb98632273ea3bd292d719cf39371604232dd9245f8f5d6316bb4e27ca18b50"
     },
     "src/client/gui/font_kernels.h": {
       "bytes": 1487,
@@ -1494,8 +1494,8 @@
       "sha256": "7e90b98bc63cbde29769324556a51595f65a1c1c14baf5e0dff9470082cf3fb2"
     },
     "src/client/render/model.c": {
-      "bytes": 7803,
-      "sha256": "a65b3c5267282b4a6c3ad51c23f596897d8b07066f7ad5ae5451a6fcf5ed0658"
+      "bytes": 7843,
+      "sha256": "f634491c3190c46392ab4e1dc4460354ec31414c8120a6a6d08afd29490ebca1"
     },
     "src/client/render/model_graph.c": {
       "bytes": 14356,
@@ -5614,8 +5614,8 @@
       "sha256": "78321bb335d5f90fc5e419fa97ead8dd8ac486dc148be73f3abf4dab4ebf6253"
     },
     "cmake/client_runtime.cmake": {
-      "bytes": 5407,
-      "sha256": "42265595c82448d4bccba3ab7ebc91aa460ec043f084f39cd8665b35a4e7faf0"
+      "bytes": 5485,
+      "sha256": "a5cd1ab9cca660402e08a9198dd816d8d1ab75bccb1bf1f6afabdf2de7f27e58"
     },
     "cmake/client_source_screen_drawing.cmake": {
       "bytes": 589,
@@ -5678,12 +5678,12 @@
       "sha256": "82e3671128e8d5728c5c285d94e2d03e04de93bf49446305d18098be76824d92"
     },
     "src/client/runtime/menu_loop.c": {
-      "bytes": 55585,
-      "sha256": "2e1067cc38e8577b316ea8e1d01614602f95d9fc266e4efd2dcf0a1504d7c95a"
+      "bytes": 57164,
+      "sha256": "49f2be84c166e1bbae3c4039db39d5d6237f463331f3538234f5239db710d383"
     },
     "src/client/runtime/menu_loop.h": {
-      "bytes": 5073,
-      "sha256": "2abffc192e51657e2f446fd571f62c507091f10b8910d8b67250b255ee4eeb37"
+      "bytes": 5208,
+      "sha256": "9efd16bf072f56614923af6345db26f807b70723ccd07efab1aac265b58ffe05"
     },
     "tests/client/gui/test_source_screen_events.c": {
       "bytes": 11463,
@@ -8148,6 +8148,54 @@
     "tests/world/runtime/saving/source_session_terminal_controls.inc": {
       "bytes": 10716,
       "sha256": "b463407b42f24402bed480453fee37984f7868ea573d4fdb1183158e67b55ffd"
+    },
+    "src/client/gui/achievement_notice_draw.c": {
+      "bytes": 30700,
+      "sha256": "8c121dfa832bc793f5cc129804b1e6f3f03339775dee803d547bc9f03f892a9c"
+    },
+    "src/client/gui/achievement_notice_draw.h": {
+      "bytes": 4536,
+      "sha256": "f6e417ca5ac1cf3a87d406f08039cd10c18ff6e5d08f79e8dcf42510f484294b"
+    },
+    "src/client/gui/achievement_notice_internal.h": {
+      "bytes": 587,
+      "sha256": "18cedcc498c59c3f64d9a652d7c5e1d4c04abb0e44fb2232ede5a2a4f0b75f4a"
+    },
+    "src/client/gui/bitmap_font_wrap.c": {
+      "bytes": 19661,
+      "sha256": "d06662e486fabc14193d2937fed0b4e4f8b77fde3a1d173245706ac858716ae2"
+    },
+    "src/client/render/item_gui.c": {
+      "bytes": 19958,
+      "sha256": "f3170851926980ded68c84ff4660aacb01dbbd6da0471aa385fe6bca4a428797"
+    },
+    "src/client/render/item_gui.h": {
+      "bytes": 4646,
+      "sha256": "6adfd972679763a41aa3dd2617bff6f5bc5af0fbf0d8c545adcedb3f6c83bfc9"
+    },
+    "src/client/render/item_renderer_internal.h": {
+      "bytes": 603,
+      "sha256": "8018a6b9e9b6dce25bd651f48905b849176590e7a92ca57a9046fe041a533faf"
+    },
+    "cmake/client_active_notice_tests.cmake": {
+      "bytes": 3606,
+      "sha256": "d1632a7e875a08c1fe1ba1a80d66f38b4ff0e23621ed47238e200164264c9086"
+    },
+    "tests/client/gui/test_active_notice.c": {
+      "bytes": 25818,
+      "sha256": "bd68e88929182b264b46658c681e7f1cdca7f43470bfc7f566b9d09fa3f9d10f"
+    },
+    "tests/client/gui/test_active_notice_cpu.c": {
+      "bytes": 8015,
+      "sha256": "8d6a5056fdb952cf7ec1b95515469c0ea62a1ef9a785b2acfb484670e353c48a"
+    },
+    "tests/tools/client/test_active_notice.py": {
+      "bytes": 23168,
+      "sha256": "fa33468b805935d0e0a2ec17d84837ea86802f4d8f4c0ad7516c70501db35ebf"
+    },
+    "tests/reference/client/notice/active-draw-qualification.json": {
+      "bytes": 11622,
+      "sha256": "12966cd1e7de0a1453589473df940636d2ff2471e64fff22c0f7661f276cb95c"
     }
   },
   "actual_source_method": {
@@ -10255,6 +10303,220 @@
             }
           },
           "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "6c8a3e5",
+      "role": "Current active Notice, wrapped Font and flat GUI Item input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 413578,
+        "sha256": "a32f88bd842964f7c6ba0efd41db6bb105c9a248067ca5bf00e7846367a7e03b"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 2037,
+          "after_count": 2044,
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 336476,
+              "sha256": "96a8869c55bd35a666677da5777961a58dea2781c047e855d1167ff7f0726de3"
+            },
+            "src/client/gui/achievement_notice.c": {
+              "bytes": 10746,
+              "sha256": "c3a16b23968b9118a159add3fab34d1b898b443cd4b49a741a2c8b6499055f42"
+            },
+            "src/client/gui/bitmap_font.h": {
+              "bytes": 8688,
+              "sha256": "ec1b2551cc288b2e1da23f47278ea77cd17e3283188e5c762dfed39b52128d19"
+            },
+            "src/client/gui/bitmap_font_draw.c": {
+              "bytes": 13296,
+              "sha256": "f332428041d377328ac613ff2be3315f0dc7f5adff54d22ee3315dc8d752a371"
+            },
+            "src/client/gui/bitmap_font_internal.h": {
+              "bytes": 2733,
+              "sha256": "a9e37000671cb56fbfba2ff61a7d58e9fb4f1550edb57badc88882ef11c99dfc"
+            },
+            "src/client/gui/bitmap_font_measure.c": {
+              "bytes": 4627,
+              "sha256": "4e3f20323d23c4ff2d34e6507cf82fc998a5d51e01f90f0dbaf61b1c9a8c661e"
+            },
+            "src/client/render/model.c": {
+              "bytes": 7803,
+              "sha256": "a65b3c5267282b4a6c3ad51c23f596897d8b07066f7ad5ae5451a6fcf5ed0658"
+            },
+            "cmake/client_runtime.cmake": {
+              "bytes": 5407,
+              "sha256": "42265595c82448d4bccba3ab7ebc91aa460ec043f084f39cd8665b35a4e7faf0"
+            },
+            "src/client/runtime/menu_loop.c": {
+              "bytes": 55585,
+              "sha256": "2e1067cc38e8577b316ea8e1d01614602f95d9fc266e4efd2dcf0a1504d7c95a"
+            },
+            "src/client/runtime/menu_loop.h": {
+              "bytes": 5073,
+              "sha256": "2abffc192e51657e2f446fd571f62c507091f10b8910d8b67250b255ee4eeb37"
+            }
+          },
+          "added": [
+            "src/client/gui/achievement_notice_draw.c",
+            "src/client/gui/achievement_notice_draw.h",
+            "src/client/gui/achievement_notice_internal.h",
+            "src/client/gui/bitmap_font_wrap.c",
+            "src/client/render/item_gui.c",
+            "src/client/render/item_gui.h",
+            "src/client/render/item_renderer_internal.h"
+          ]
+        }
+      }
+    },
+    {
+      "from_commit": "6c8a3e5",
+      "role": "Current active Notice fixture input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 417447,
+        "sha256": "667ebcbd1618c07e908510e10dca6f92f8a6b3799ff57a24397ce6ac37ab365f"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 2044,
+          "after_count": 2048,
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 336510,
+              "sha256": "35bd6429dc8a9dcd557c03d10f31a9591002801f7e70c4f21a0c8fd1b56f0b80"
+            }
+          },
+          "added": [
+            "cmake/client_active_notice_tests.cmake",
+            "tests/client/gui/test_active_notice.c",
+            "tests/client/gui/test_active_notice_cpu.c",
+            "tests/tools/client/test_active_notice.py"
+          ]
+        }
+      }
+    },
+    {
+      "from_commit": "6c8a3e5",
+      "role": "Current active Notice fixture link input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 419023,
+        "sha256": "2721bcaedd64355ce32b8135f4452e0b0e22a1512179b3abd4fdf4bb636172ec"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 2048,
+          "after_count": 2048,
+          "previous": {
+            "cmake/client_active_notice_tests.cmake": {
+              "bytes": 3283,
+              "sha256": "9eb973ccbece67109b831c20457618aad140566ee87cadc498772d05ec69bc46"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "6c8a3e5",
+      "role": "Current active Notice controller preservation and namespace input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 419754,
+        "sha256": "16878ee719bae4bd9a87090c3c878c8546c9f3413a0269b27a3b563950a0d8e3"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 2048,
+          "after_count": 2048,
+          "previous": {
+            "tests/tools/client/test_active_notice.py": {
+              "bytes": 15479,
+              "sha256": "a19850d3467ef71b00647b8d8f22c332a0b369d04ec30f33436170a0146ad294"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "6c8a3e5",
+      "role": "Current active Notice fixture failure cleanup input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 420513,
+        "sha256": "d94304cde663418b0f1dfdcab086913218e22914864bfcb96afa576dde947d91"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 2048,
+          "after_count": 2048,
+          "previous": {
+            "tests/client/gui/test_active_notice.c": {
+              "bytes": 25553,
+              "sha256": "9a5af637defebfe3e2f078cfe506828f773b99118e66ec013d74850b3ffb0638"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "6c8a3e5",
+      "role": "Current active Notice streamed executable input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 421255,
+        "sha256": "76ce81cee469b5ee019e69fd4a4c963dc29d372f8e9124ebe5c0fbe33fbdf473"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 2048,
+          "after_count": 2048,
+          "previous": {
+            "tests/tools/client/test_active_notice.py": {
+              "bytes": 22088,
+              "sha256": "957ad7f3adc4de1f045a42704f534ae47cbbe89f822064e177f4fd02081724d2"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "6c8a3e5",
+      "role": "Current isolated active Notice private output admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 421996,
+        "sha256": "b9f391d38fa4430ed779a3add5c23204458e8d9f0d04e2db4de1a522e4c9d57e"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 2048,
+          "after_count": 2048,
+          "previous": {
+            "tests/tools/client/test_active_notice.py": {
+              "bytes": 22831,
+              "sha256": "375899b51fdb22d0c1253d5a2769440c6da968634634de509736c00fc7894277"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "6c8a3e5",
+      "role": "Current active Notice derived qualification metadata admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 422735,
+        "sha256": "5991db3d8b03ca5ffde8993e303c16ec841c13cfff36c52351b559d696f5566a"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 2048,
+          "after_count": 2049,
+          "previous": {},
+          "added": [
+            "tests/reference/client/notice/active-draw-qualification.json"
+          ]
         }
       }
     }

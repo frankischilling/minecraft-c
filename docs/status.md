@@ -11,9 +11,10 @@ and exception diagnostics remain unfinished. The visible Windows
 [Tiny Save and quit profiles](client/world-saving.md) now have actual native
 normal-leave and session-failure/cleanup evidence with independent disk checks.
 The session case retains the `fm.b:42` allocation frontier; it throws no `us`
-and creates no title. Linux visible save/title, default-Far playability,
-fresh-player notices and ordinary reselection remain unqualified. This does
-not establish a complete playable save session or original-world interoperability.
+and creates no title. Linux visible save/title, default-Far playability and
+ordinary reselection remain unqualified. A separate Windows Release tutorial
+profile now returns with active notices; it does not establish a complete
+playable save session or original-world interoperability.
 
 The ordinary executable now owns a real [Frame and embedded Canvas](client/frame-canvas.md).
 Startup paints through native Graphics before attaching Display to the child.
@@ -68,7 +69,12 @@ A selected Spider jockey retains its separate unfinished mount.
 Single-player remains pre-playable. Mob combat, storage and remaining renderers,
 further Block overrides, concrete display particles, sleeping wake transitions
 and gameplay actions remain unfinished. Active achievement and tutorial notices
-also retain an unfinished draw child. Broader loaded-World focus/native-close
+now draw through the [source Font and flat Item path](client/achievement-notice.md).
+The Windows Release fresh-player profile passes 61 frames and 49 Book draws with
+the inventory statistic absent, real clocks and checked cleanup. The same
+corrected Debug fixture still fails visibility. Isolated Linux components and
+rounded pass with a private filesystem; Linux fresh-player tutorial and normal
+Far remain unqualified. Broader loaded-World focus/native-close
 qualification and pause-screen save cases beyond the declared Windows Tiny
 profile remain open.
 

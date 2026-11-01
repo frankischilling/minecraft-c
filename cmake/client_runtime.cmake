@@ -3,7 +3,8 @@ if(TARGET mc_client_application_startup AND TARGET mc_client_source_screen_drawi
     add_library(mc_client_runtime STATIC
         src/client/window/frame.c src/client/window/frame_platform.c
         src/client/runtime/bootstrap.c src/client/runtime/menu_loop.c
-        src/client/runtime/gameplay_input.c src/client/runtime/world_tick.c)
+        src/client/runtime/gameplay_input.c src/client/runtime/world_tick.c
+        src/client/gui/achievement_notice_draw.c src/client/render/item_gui.c)
     target_include_directories(mc_client_runtime PUBLIC src/client/runtime
         PRIVATE src src/client src/platform/time)
     target_link_libraries(mc_client_runtime PUBLIC mc_client_application_startup

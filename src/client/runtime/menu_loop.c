@@ -1,4 +1,5 @@
 #include "menu_loop.h"
+#include "../gui/achievement_notice_draw.h"
 #include "../gui/loading_internal.h"
 #include "../gui/source_screen_initialize.h"
 #include "../window/canvas.h"
@@ -68,6 +69,9 @@ struct mc_client_menu_loop {
     mc_client_gui_ingame_draw_call *hud;
     mc_client_gui_ingame_draw_state hud_state;
     mc_client_gui_ingame_draw_error hud_error, hud_cleanup;
+    mc_client_notice_draw_call *notice_draw;
+    mc_client_notice_draw_state notice_state;
+    mc_client_notice_draw_error notice_error, notice_cleanup;
     mc_singleplayer_tick_call *controller_tick;
     mc_singleplayer_tick_state controller_state;
     mc_singleplayer_tick_error controller_failure, controller_cleanup;
@@ -101,7 +105,6 @@ struct mc_client_menu_loop {
     mc_client_sdk_input_error input;
     mc_client_application_gl_diagnostic_error diagnostic;
     mc_client_gui_ingame_error ingame;
-    mc_client_notice_error notice;
     mc_client_stats_error statistics;
     mc_sound_error sound;
     mc_client_screen_error screen;
@@ -672,6 +675,12 @@ static bool frame_body(mc_client_menu_loop *loop) {
         return false;
     /* Completed frame receipts stay inspectable through that frame. Drain
      * their native occurrences before the next source pool reset or tick. */
+    if (loop->notice_draw != NULL && loop->notice_state.returned) {
+        if (mc_client_notice_draw_retire(&loop->notice_draw, &loop->notice_cleanup) !=
+            MC_CLIENT_NOTICE_DRAW_OK)
+            return run_stop(loop, "completed Notice native retirement", 0);
+    }
+    loop->state.notice = NULL;
     if (loop->hud != NULL && loop->hud_state.returned) {
         if (mc_client_gui_ingame_draw_retire(&loop->hud, &loop->hud_cleanup) !=
             MC_CLIENT_GUI_INGAME_DRAW_OK)
@@ -797,10 +806,27 @@ static bool frame_body(mc_client_menu_loop *loop) {
         return run_stop(loop, "actual debug timing graph is not connected", 380);
     if (!nanoseconds(loop, &app->M, 387))
         return false;
-    if (mc_client_achievement_notice_draw(app->achievement_notice, &loop->notice) !=
-        MC_CLIENT_NOTICE_OK)
-        return stop(loop, "actual achievement notice draw dependency", "vu", "a",
-                    loop->notice.source_pc);
+    if (app->achievement_notice == NULL)
+        return run_stop(loop, "actual null AchievementNotice invocation", 397);
+    const mc_client_notice_draw_status notice_status =
+        mc_client_notice_draw_begin(app->achievement_notice, loop->graphics, loop->math,
+                                    app->display, &loop->notice_draw, &loop->notice_error);
+    if (loop->notice_draw != NULL) {
+        (void)mc_client_notice_draw_inspect(loop->notice_draw, &loop->notice_state);
+        loop->state.notice = &loop->notice_state;
+    }
+    if (notice_status != MC_CLIENT_NOTICE_DRAW_OK) {
+        const mc_client_notice_draw_error *failure =
+            loop->notice_draw == NULL ? &loop->notice_error : loop->notice_state.failure;
+        return stop(loop, failure->operation, failure->site.class_name, failure->site.method,
+                    failure->site.pc);
+    }
+    ++loop->state.notice_returns;
+    if (loop->notice_state.background_drawn)
+        ++loop->state.notice_draws;
+    loop->state.notice_text_returns += loop->notice_state.text_calls;
+    loop->state.notice_vertices +=
+        loop->notice_state.background_vertices + loop->notice_state.item.vertices_returned;
     thrd_yield();
     if (!key_down(loop, 65, &f7, 405) || (f7 && !display_update(loop, 411)))
         return false;
@@ -908,6 +934,10 @@ bool mc_client_menu_loop_inspect(const mc_client_menu_loop *loop, mc_client_menu
 }
 
 static bool retire_calls(mc_client_menu_loop *loop) {
+    if (mc_client_notice_draw_retire(&loop->notice_draw, &loop->notice_cleanup) !=
+        MC_CLIENT_NOTICE_DRAW_OK)
+        return false;
+    loop->state.notice = NULL;
     if (mc_client_gui_ingame_draw_retire(&loop->hud, &loop->hud_cleanup) !=
         MC_CLIENT_GUI_INGAME_DRAW_OK)
         return false;
