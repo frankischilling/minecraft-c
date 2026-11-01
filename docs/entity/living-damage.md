@@ -60,9 +60,12 @@ resources are enabled.
 
 The [LivingEntity overlay body](../client/living-overlays.md) now handles the
 hurt/death tint reached after damage. A development registered run passes in
-33.65 seconds before the framebuffer correction. The final run with the
+33.65 seconds before the framebuffer correction. The preceding run with the
 original SDK framebuffer request stops at the missing fire billboard body in
-23.78 seconds, after progressing past the overlay. These runs and the earlier
+23.78 seconds, after progressing past the overlay. The subsequent
+[fire billboard implementation](../client/burning-billboards.md) returns in
+the same registered profile; its later run after the rotation correction
+passes in 25.59 seconds. These runs and the earlier
 focus-release and missing-overlay failures remain separate records. General
 Canvas/focus transitions are still unfinished; a successful finite run does
 not establish reliable extended play.

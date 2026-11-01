@@ -777,7 +777,8 @@ static int mob_emit_state(mob_fixture *f, unsigned int index, const char *phase)
     return 0;
 }
 
-static int mob_frame(mob_fixture *f, unsigned int index) {
+static int mob_frame_with_lighting(mob_fixture *f, unsigned int index,
+                                   bool lighting_after_background) {
     mc_client_display *d = f->display;
     CHECK(mc_client_display_source_viewport(d, 256, 256, NULL));
     CHECK(mc_client_display_source_matrix_mode(d, GL_PROJECTION, NULL) &&
@@ -793,7 +794,7 @@ static int mob_frame(mob_fixture *f, unsigned int index) {
           mc_client_display_source_depth_test(d, true, NULL) &&
           mc_client_display_source_depth_function(d, GL_LEQUAL, NULL) &&
           mc_client_display_source_depth_mask(d, true, NULL));
-    CHECK(mc_client_display_source_lighting_enable(d, false, NULL) &&
+    CHECK((lighting_after_background || mc_client_display_source_lighting_enable(d, false, NULL)) &&
           mc_client_display_source_fog_enable(d, false, NULL) &&
           mc_client_display_source_blend_enable(d, false, NULL) &&
           mc_client_display_source_cull_test(d, false, NULL) &&
@@ -816,14 +817,20 @@ static int mob_frame(mob_fixture *f, unsigned int index) {
                                          GL_TRIANGLES, NULL));
     CHECK(mc_client_display_source_array(d, MC_CLIENT_SOURCE_VERTEX_ARRAY, false, NULL) &&
           mc_client_display_context_release(&lease, NULL));
-    CHECK(mc_client_display_source_texture_enable(d, true, NULL) &&
-          mc_client_display_source_alpha_test(d, true, NULL) &&
-          mc_client_display_source_alpha_function(d, GL_GREATER, .1f, NULL) &&
-          mc_client_display_source_rescale_normal(d, false, NULL) &&
-          ((index == 4 || index == 10 || index == 11) ||
-           mc_client_display_source_normalize(d, false, NULL)) &&
-          mc_client_display_source_color(d, .125f, .25f, .5f, .75f, NULL));
+    CHECK(
+        (!lighting_after_background || mc_client_display_source_lighting_enable(d, false, NULL)) &&
+        mc_client_display_source_texture_enable(d, true, NULL) &&
+        mc_client_display_source_alpha_test(d, true, NULL) &&
+        mc_client_display_source_alpha_function(d, GL_GREATER, .1f, NULL) &&
+        mc_client_display_source_rescale_normal(d, false, NULL) &&
+        ((index == 4 || index == 10 || index == 11) ||
+         mc_client_display_source_normalize(d, false, NULL)) &&
+        mc_client_display_source_color(d, .125f, .25f, .5f, .75f, NULL));
     return 0;
+}
+
+static int mob_frame(mob_fixture *f, unsigned int index) {
+    return mob_frame_with_lighting(f, index, false);
 }
 
 static int mob_pixels(mob_fixture *f, const char *directory, unsigned int index, bool baseline) {

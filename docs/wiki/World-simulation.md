@@ -1,5 +1,21 @@
 # World simulation
 
+## Burning billboards
+
+The Entity post body now renders actual fire layers from the terrain atlas,
+with real tessellator batches and checked failure prefixes. Windows and Linux
+each pass seven finite profiles and eight fresh-process controls. The matching
+Mesa comparison pairs exact geometry, stream, texture and entry identities
+while preserving the existing matrix bound.
+
+Fourteen prepared Windows images match the original byte for byte on the same
+GPU/driver. Linux matches all seven baselines but retains drawn-image
+differences. A later registered loaded-Zombie run returns after the fire body;
+general Canvas/focus and extended play remain unfinished.
+
+[Fire behavior and evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/burning-billboards.md)
+records the finite scope and the retained earlier failures.
+
 ## LivingEntity overlays and framebuffer
 
 Hurt/death tinting and Creeper packed-color redraws now execute the actual
@@ -12,7 +28,8 @@ Five Windows drawn images match exactly. Both Spider images retain one RGB
 pixel difference. Linux retains differences in six draws. Both hosts match all
 seven baseline images; complete image parity remains unqualified.
 [Overlay behavior and evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/living-overlays.md)
-records the finite scope. Fire, general focus and further gameplay work remain.
+records that checkpoint's finite scope. General focus and further gameplay
+work remain.
 
 ## Zombie environment damage
 
@@ -22,7 +39,8 @@ profiles, including a real periodic-fire Mob tick. Fatal death/drop and damage
 with a nonnull attacker remain unfinished. A fresh loaded Windows profile
 passes four World/HUD frames, model reuse and checked cleanup. The reached hurt
 overlay now runs. The final registered run with the original SDK framebuffer
-request gets past that overlay and stops at the missing fire billboard body.
+request gets past that overlay and stops at the then-missing fire billboard
+body. The later fire implementation returns from that child.
 General Canvas/focus transitions remain unfinished; earlier successes and
 failures stay recorded separately.
 
@@ -30,13 +48,13 @@ failures stay recorded separately.
 records the finite comparisons and remaining gameplay work. Single-player
 remains pre-playable.
 
-The client constructs all eleven default Mob kinds and runs their spawn
+The client constructs all eleven default Overworld Mob kinds and runs their spawn
 predicates and actual active-tick chains through genuine Living fields.
 Shared environment, action, movement and travel use real World queries; sight
 uses the World ray tracer. The loaded continuation completes 361 Chunk
 coordinates/28,880 samples, then 1,000 random-display samples/6,000 World draws.
 
-The client draws all eleven default Mob kinds, including Wolf, Zombie and
+The client draws all eleven default Overworld Mob kinds, including Wolf, Zombie and
 Skeleton with its genuine Bow. [Mob drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md) uses the actual TH/GV, concrete
 renderer/model, PS and NW owners. Four independent loaded Windows sessions
 for Spider/Slime/Squid/Creeper each return four World/HUD frames: delay,

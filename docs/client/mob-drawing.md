@@ -525,5 +525,15 @@ Creeper overlay predicate. See [the overlay guide](living-overlays.md) for
 source order, model/GL comparisons, native failure prefixes and the remaining
 one-pixel Spider image differences. The registered loaded-Zombie profile has a
 new successful run; the earlier focus and overlay failures remain retained.
-This does not qualify powered Creeper texture rendering, fire billboards or
-complete Player and gameplay rendering.
+Powered Creeper texture rendering and complete Player/gameplay rendering
+retain their separate unfinished work.
+
+## Burning billboards
+
+The shared Entity post body now draws actual terrain-atlas fire layers and
+retains source lighting, matrix, texture and tessellator order. See the
+[fire guide](burning-billboards.md) for seven normal profiles, eight native
+failure/cleanup controls, the strict matching-Mesa comparison and the separate
+fourteen-image Windows equality. A fresh loaded-Zombie run returns after the
+fire body. Linux draw-image differences, general focus and extended gameplay
+remain unqualified.

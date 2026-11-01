@@ -125,7 +125,8 @@ terminal admission independently of the source Path field.
 
 ## Reference controls
 
-The original package contains 62 authored scenarios across all eleven kinds.
+The original package contains 62 authored scenarios across all eleven default
+Overworld kinds. Ghast and Zombie Pigman are outside this qualified set.
 Native comparison now uses 52 complete final records, two callback failures,
 four source-null failures and four remaining drop/hurt prefixes. Four path
 scenarios use their retained original full final records instead of the earlier

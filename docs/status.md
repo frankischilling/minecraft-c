@@ -1,11 +1,13 @@
 # Development status
 
-The client constructs all eleven default [Mob kinds](entity/mob-construction.md),
+The client constructs all eleven default Overworld [Mob kinds](entity/mob-construction.md),
 runs their [spawn predicates](entity/mob-spawning.md), and dispatches their actual
 [active tick chains](entity/mob-active-tick.md) through genuine Living fields.
 Shared environment, action, movement and travel work uses real World queries;
 sight uses the existing World ray tracer. Finite returning and failure-prefix
 scenarios are qualified independently of original constructor entropy.
+Ghast and Zombie Pigman, the two additional Nether Mob types, remain in scope
+and retain unfinished construction, active behavior and drawing bodies.
 
 [Zombie NULL-attacker damage](entity/living-damage.md) now executes the real
 LivingEntity health, hurt-resistance, random and sound body. Windows and Linux
@@ -15,10 +17,14 @@ Zombie profile passes four World/HUD frames, model reuse and checked cleanup.
 The reached [hurt/color overlay body](client/living-overlays.md) now runs.
 Seven focused graphical regressions and the selected original overlay
 comparison pass on both hosts. The native SDK also requests the original
-default framebuffer format. The final loaded-Zombie run gets past the overlay
-and stops at the missing fire billboard body. Earlier passing and failing
-loaded runs retain their own source scope; general Canvas/focus transitions
-and extended play are still unfinished.
+default framebuffer format. The reached [fire billboard body](client/burning-billboards.md)
+now draws its real atlas layers and returns through loaded World/HUD frames.
+Both hosts pass seven finite fire profiles and eight failure/cleanup controls;
+the matching Mesa comparison retains its strict matrix limit. Fourteen
+prepared Windows images match the original exactly. Linux draw-image
+differences remain unqualified. Earlier passing and failing loaded runs retain
+their own source scope; general Canvas/focus transitions and extended play
+are still unfinished.
 
 The focused Windows profiles load a saved World, then construct and
 publish a declared Sheep, Pig, Cow or Chicken through the ordinary Entity APIs

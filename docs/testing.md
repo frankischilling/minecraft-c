@@ -1,5 +1,48 @@
 # Test scope and reproduction
 
+## Burning billboard qualification
+
+The current Windows source passes nineteen affected CTests, including the
+registered loaded-Zombie continuation. The first seventeen take 127.09 seconds;
+GL setup and loaded-Zombie take another 25.94 seconds. Linux Clang18 with
+ASan/UBSan passes fifteen affected CTests in 240.40 seconds. These selections
+cover the fire and overlay bodies, the four earlier Mob draw families, camera,
+lighting, SDK window and World-frame paths. Windows also exercises menu and
+World selection. They are focused regressions, not a full-suite result.
+
+Seven post-draw profiles and eight fresh-process controls pass 3,085 native
+checks on Windows MSVC Debug and Linux Clang18 ASan/UBSan. The matching Mesa
+comparison pairs 145,690 typed checks, 4,761 identity relations, fourteen entry
+operands, seventy slot/invocation results, thirteen actual shadow/fire batches
+and 2,784 raw words. Ten copied-observation corruptions and four original
+manifest corruptions are rejected. Matrices retain the existing four-ULP
+bound; words, colors, inputs and enums remain exact.
+
+The actual original ordinary, read-only JDI and independent unobserved runs
+return all seven body calls without GL errors. The native comparison reads
+those immutable observations and does not rerun the original JVM. The original
+archive/class/Code, authored inputs, observer ELF and tool/output fingerprints
+remain pinned separately from native compilation and execution.
+
+A separate matching-device Windows observation equals all fourteen native
+before/after RGBA files, without tolerance or discarded channels. It retains
+the actual SDK4.6/core3.3 context distinction and the frozen helper's late
+Linux-only metadata-export exception after all seven calls and fourteen
+readbacks. Its wrapper finishes class-origin metadata; no whole-main return
+or Windows live-batch matrix comparison is claimed.
+
+Linux matches all seven baseline images. Its drawn images retain
+84/4/37/19/64/18/7 differing pixels. These remain unresolved; the passing
+typed comparison does not qualify Linux draw-image parity. The native fixture
+now preserves incoming lighting through the authored background before
+disabling it, matching the source helper's preparation order.
+
+The earlier strict matrix failure remains retained. Correcting the float
+radian boundary makes the same comparison pass without widening its bound.
+A separate real-device SDK probe verifies the shared baseline cosine word;
+other NVIDIA angles/compositions retain driver differences. The
+[fire guide](client/burning-billboards.md) records body and gameplay limits.
+
 ## LivingEntity overlay qualification
 
 Windows MSVC Debug and Linux Clang18 ASan/UBSan each pass seven authored
@@ -15,7 +58,7 @@ Seven affected graphical CTests pass on each host without failures or skips:
 the overlay, four existing Mob-drawing tests, SDK window and GL setup. CTest
 takes 25.00 seconds on Windows and 132.35 seconds on Linux. Two additional
 Windows menu/World-frame regressions pass in 5.02 seconds. These are focused
-current-source results; the older 134/126 and 135-test cohorts below retain
+results for that checkpoint; the older 134/126 and 135-test cohorts below retain
 their historical scopes.
 
 The native SDK now requests the original default framebuffer format. A
@@ -25,12 +68,14 @@ matches the Slime draw; the other six draws differ at 51/5/14/14/14/51 pixels.
 No channels or mismatches are omitted. Original/native draw-image parity
 remains unqualified on both hosts.
 
-The final registered loaded-Zombie regression fails in 23.78 seconds at the
+At that checkpoint the registered loaded-Zombie regression fails in 23.78 seconds at the
 missing fire billboard child after progressing past the overlay. A prior
 33.65-second development run passed before the framebuffer correction; that
 success does not turn the final failure into a pass. Earlier focus-release
 and missing-overlay failures remain retained. No full current-source suite
-or reliable extended loaded-world run is claimed.
+or reliable extended loaded-world run is claimed for that checkpoint. The
+subsequent fire implementation returns in the registered profile; the earlier
+failure remains a separate result.
 
 The [overlay guide](client/living-overlays.md) and
 [reference packet](../tests/reference/client/living_overlay/README.md) describe

@@ -261,6 +261,22 @@ int main(int argc, char **argv) {
     CHECK(memcmp(display->source.projection, identity.column_major, sizeof(identity)) == 0);
 
     CHECK(mc_client_display_source_matrix_mode(display, GL_MODELVIEW, &error));
+    /* Actual SDK observations on Mesa25.2.8 and NVIDIA581.42 agree on
+     * this cosine word. Double-radian evaluation produces 0x3f6803ca. */
+    CHECK(mc_client_display_source_push(display, &error));
+    CHECK(mc_client_display_source_load_identity(display, &error) &&
+          mc_client_display_source_rotate(display, 18, 1, 0, 0, &error) &&
+          mc_client_display_source_rotate(display, -25, 0, 1, 0, &error));
+    float rotation_projection[16], rotation_modelview[16];
+    CHECK(mc_client_display_camera_matrices_inspect(display, rotation_projection,
+                                                    rotation_modelview));
+    uint32_t rotation_cosine_word;
+    memcpy(&rotation_cosine_word, &rotation_modelview[0], sizeof(rotation_cosine_word));
+    CHECK(rotation_cosine_word == UINT32_C(0x3f6803c9));
+    CHECK(mc_client_display_source_pop(display, &error) && display->source.depth == 0 &&
+          memcmp(&display->source.modelview, &logo_modelview, sizeof(logo_modelview)) == 0 &&
+          memcmp(rotation_projection, identity.column_major, sizeof(rotation_projection)) == 0);
+
     CHECK(mc_client_display_lists_generate(display, 1, 2, &range, &list, &error));
     CHECK(mc_client_display_lists_begin(display, list, &error));
     _mm_setcsr(0x9fc0u); /* Compilation copies only; the kernel runs at execution. */

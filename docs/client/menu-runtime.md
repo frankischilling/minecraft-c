@@ -63,7 +63,7 @@ the renderer and completes picking. Its healthy no-screen path now executes
 [gameplay input](gameplay-input.md) through1073 and the admitted
 [World/frame segment](renderer-ticking.md). The current finite loaded profile
 also returns through World scheduling, terrain and the qualified Mob drawing
-profiles described below. All eleven default Mob drawing bodies exist, but
+profiles described below. All eleven default Overworld Mob drawing bodies exist, but
 real simulation can still stop a loaded frame before it returns.
 Create, Rename and Delete retain the precise
 [unfinished prefixes](world-selection.md#transitions-and-lifetime).

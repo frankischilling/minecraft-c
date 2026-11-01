@@ -1,11 +1,12 @@
 # Client Mob spawning
 
-The client implements spawn predicates for the eleven default Mob kinds:
+The client implements spawn predicates for the eleven default Overworld Mob kinds:
 Spider, Zombie, Skeleton, Creeper, Slime, Pig, Sheep, Cow, Chicken, Wolf and
 Squid. Each call uses the actual Mob, its instance Random, its current bounds
 and its captured World. The caller supplies the application's actual
 MathHelper and World class namespaces. No substitute World or spawn answer is
-installed.
+installed. The Nether's Ghast and Zombie Pigman remain separate unfinished
+constructor/predicate bodies.
 
 ## Predicates
 

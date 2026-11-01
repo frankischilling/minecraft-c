@@ -2,10 +2,12 @@
 
 The client implements the actual Spider (`cn`), Zombie (`uz`), Skeleton (`fr`),
 Creeper (`gb`), Slime (`uw`), Pig (`wh`), Sheep (`dl`), Cow (`bx`), Chicken (`ww`),
-Wolf (`gi`) and Squid (`xt`) constructors. These cover the eleven default Mob
+Wolf (`gi`) and Squid (`xt`) constructors. These cover the eleven default Overworld Mob
 kinds. The public contract is
 [`mc/entity/mob/construction.h`](../../include/mc/entity/mob/construction.h).
-Nether Mob constructors, combat and drawing remain unfinished.
+The Nether adds Ghast (`bp`) and Zombie Pigman (`ya`), giving thirteen naturally
+spawning Mob types in Beta1.7.3. Both Nether constructors, combat and drawing
+remain unfinished. Unused registry entries such as Giant are outside that count.
 [Client paths and following](../world/pathfinding.md) have their own finite
 implementation and comparison scope.
 

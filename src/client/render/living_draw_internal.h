@@ -187,6 +187,27 @@ typedef struct mc_client_living_overlay_state {
     mc_client_model_runtime_state primary, pass_render[4];
 } mc_client_living_overlay_state;
 
+typedef struct mc_client_living_fire_state {
+    bool entered, lighting_disabled, block_static_returned, texture_field_read;
+    bool matrix_pushed, position_translated, scaled, texture_returned, nw_captured;
+    bool height_read, bounds_read, rotated, depth_translated, color_returned;
+    bool begin_attempted, begin_returned, draw_attempted, draw_returned;
+    bool matrix_popped, lighting_enabled, returned;
+    uintptr_t receiver_identity, actor_identity;
+    uintptr_t block_identity, bounds_identity, yaw_manager_identity, nw_identity;
+    uintptr_t nw_words_identity;
+    int32_t texture, atlas_x, atlas_y, layer;
+    int32_t nw_words_before_draw, nw_vertices_before_draw, nw_mode;
+    bool nw_writing_before_draw, nw_writing_after_draw;
+    float initial_uv[4], uv[4];
+    float width, scale, initial_height, remaining_height;
+    float initial_y_offset, y_offset, half_width, depth, view_yaw, z_offset;
+    size_t loop_tests, layers, vertex_attempts, vertices;
+    double last_vertex_arguments[5];
+    int32_t last_vertex_pc;
+    bool last_vertex_returned;
+} mc_client_living_fire_state;
+
 typedef struct mc_client_living_draw_state {
     bool returned, primary_event_returned, primary_render_returned;
     bool pass_attempted[4], pass_result[4], pass_render_returned[4];
@@ -218,6 +239,7 @@ typedef struct mc_client_living_draw_state {
     mc_client_living_draw_held_state held;
     mc_client_living_overlay_state hurt_overlay, color_overlay;
     bool overlay_state_restored;
+    mc_client_living_fire_state fire;
 } mc_client_living_draw_state;
 
 typedef struct mc_client_living_draw_error {

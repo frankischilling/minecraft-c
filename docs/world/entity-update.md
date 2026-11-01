@@ -10,7 +10,7 @@ These are Entity updates. World time, block and weather simulation are separate.
 `mc_world_runtime_update_entity` exposes `fd.a(Entity,boolean)`. True requires the
 actual radius-32 region to be present before backups or ticks; false bypasses
 that guard and tick but still performs bookkeeping. The real canonical Player
-and Item bodies run through their production APIs; all eleven Mob kinds now use
+and Item bodies run through their production APIs; all eleven default Overworld Mob kinds now use
 their actual [Living and concrete tick chains](../entity/mob-active-tick.md).
 The outer World is separate from the Entity's nullable construction World.
 

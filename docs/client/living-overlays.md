@@ -40,8 +40,10 @@ pixel control changes 5,870 pixels toward red while preserving
 Seven graphical CTests pass on each host, covering the overlay, existing Mob,
 animal, creature and remaining-Mob draws, GL setup and SDK window creation.
 Windows menu and World-frame regressions also pass. The final loaded Windows
-Zombie run reaches the missing fire billboard body after progressing past
-the overlay. Earlier successful loaded runs retain their own scope; general
+Zombie run at that checkpoint reaches the missing fire billboard body after
+progressing past the overlay. The subsequent
+[fire implementation](burning-billboards.md) returns from that body in a
+fresh registered run. Earlier loaded outcomes retain their own scope; general
 Canvas/focus transitions remain unfinished.
 
 The unchanged original has a separate seven-profile ordinary run and read-only
@@ -60,8 +62,8 @@ Prepared pixel comparisons remain separate from the typed/model qualification.
 See the [reference packet](../../tests/reference/client/living_overlay/README.md)
 for capture chronology, audit inputs and comparison limits. The source body is
 in `render/living_draw/overlay.c`; it is shared by the admitted Living renderers.
-Damage, death/drop behavior, powered Creeper rendering, fire rendering, complete
-Player rendering and a playable single-player session remain separate work.
+Damage, death/drop behavior, powered Creeper rendering, complete Player
+rendering and a playable single-player session remain separate work.
 
 ## Default framebuffer
 
@@ -78,13 +80,14 @@ storage. The native observed format now matches those attributes.
 [Derived evidence](../../tests/reference/client/living_overlay/framebuffer-evidence.json)
 and its authored probe retain the exact tools and external artifact fingerprints.
 
-Seven Windows baseline images match the original byte for byte. Five of seven
+At the preceding overlay checkpoint, seven Windows baseline images match the
+original byte for byte. Five of seven
 drawn images also match exactly after the framebuffer correction; both Spider
 images retain one RGB pixel difference. The full seven-image pixel comparison
 therefore remains unqualified. No channel is discarded and no image tolerance
 is used to turn those differences into a pass.
 
-The final Linux images also match all seven baselines, but six drawn images
+That checkpoint's Linux images also match all seven baselines, but six drawn images
 retain differences: 51 pixels for each Spider, five for Squid, and fourteen
 for each Creeper scene. Slime matches exactly. These Linux draw differences
 remain unresolved and are excluded from the passing typed/model claim.

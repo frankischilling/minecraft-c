@@ -445,8 +445,8 @@ bool mc_client_entity_post_draw_entered(mc_client_draw_scope *scope, mc_client_m
     e->state.burning = burning;
     if (burning) {
         ld_at(&f, "bw", "b", "(Lsn;DDDFF)V", 97);
-        return ld_fail(&f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED,
-                       "Postdraw actual burning billboard child");
+        if (!ld_fire(&f, x, y, z, partial))
+            return false;
     }
     ld_at(&f, "bw", "b", "(Lsn;DDDFF)V", 100);
     e->state.returned = true;

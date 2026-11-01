@@ -1810,8 +1810,8 @@
       "sha256": "ecbef425d369d1b8e72f1f61724eecc06c1de68e32a10722b34cab20d14a4933"
     },
     "tests/client/display/test_source_gl_setup.c": {
-      "bytes": 27349,
-      "sha256": "a9248525ef67bbc33b4921ab30c669ac6218b21589462ba53c269568cb395084"
+      "bytes": 28449,
+      "sha256": "463a727122cc2377fd81614007c692c4adfb1b3ee444959d0fcf564e10afe26a"
     },
     "tests/client/gui/test_gui_ingame.c": {
       "bytes": 29003,
@@ -3498,8 +3498,8 @@
       "sha256": "8082864077e00f02207426382d9801e256303a2ad262d8de51186be95a0d18fa"
     },
     "src/client/display/camera_surface.inc": {
-      "bytes": 8234,
-      "sha256": "7e7a36020aae77bc95c3f1b0675b5e9ec90b1aff17ce81aca66b698b3df87c19"
+      "bytes": 8441,
+      "sha256": "216f7771667b61df0750738d29375af49cd75d16f4429355b1a4923ce1945486"
     },
     "src/client/render_engine/ge_float.c": {
       "bytes": 4941,
@@ -5126,8 +5126,8 @@
       "sha256": "f9ae7355563558ceaac5b6b4573872e3f5ad63a86fba963aba32febe845b2759"
     },
     "cmake/client_mob_draw.cmake": {
-      "bytes": 3511,
-      "sha256": "cce27b29f7ffd5462721bdc6d5c9bc07a988b3e16675e15498110fb8538f122b"
+      "bytes": 3574,
+      "sha256": "2a1877fd94c4c74f11a58cac5e58a9220f9a28520e99195d02b9cf62bd2fc609"
     },
     "cmake/tests/client_legacy_clamp.cmake": {
       "bytes": 1057,
@@ -5150,20 +5150,20 @@
       "sha256": "4198dae72016ea5a85499677007137629c5c5255ce75b393e3500d018742505f"
     },
     "src/client/render/living_draw/internal.h": {
-      "bytes": 2954,
-      "sha256": "78ef716c072ca79fce282aa93729ef67f640609fadadae522dabb3f00b545ab0"
+      "bytes": 3011,
+      "sha256": "b8d16d8b0e07657089f43e3046ddfc9083d3bb68883aa54962b843f92bad5ab3"
     },
     "src/client/render/living_draw/shadow.c": {
-      "bytes": 22936,
-      "sha256": "24e42cd8cf8ada7679bb76d735ed6eb6b6670be9781264a37d36691f10180fc8"
+      "bytes": 22875,
+      "sha256": "fd6e0016a40eb1c67db992fbd5e5bbd05072461384b78ac84b34e632b69be22d"
     },
     "src/client/render/living_draw/sheep.c": {
       "bytes": 3671,
       "sha256": "11705021961392098f305bf25bcbda50d951ec1c75c391c9feb52791958b4b69"
     },
     "src/client/render/living_draw_internal.h": {
-      "bytes": 12911,
-      "sha256": "f791d77ed2e7ec62763cc2f71a538c7119ab958b3f83cdd103f7bb9729a47f35"
+      "bytes": 14048,
+      "sha256": "b59b6c9193776dc750da53cd29a1a83ebb4f2d7bb7f9219c5fb62f2a38775dcf"
     },
     "src/client/render/manager/draw.c": {
       "bytes": 16002,
@@ -5294,8 +5294,8 @@
       "sha256": "7b2afc68a55c94cd2b558b003c24109d73b09fbf1568aa4ce01234bfc1ca5c86"
     },
     "tests/client/render/test_creature_draw.c": {
-      "bytes": 82341,
-      "sha256": "c37cfa32ea482cdddabc7969fcf0c011115df15ea1792f38bff687ab0c473082"
+      "bytes": 82665,
+      "sha256": "184ac4234acbad67f810db0e868f59aa15df372e2f27ee4958bb6d3a7b3be08a"
     },
     "tests/entity/test_creeper_attack.c": {
       "bytes": 13931,
@@ -5504,6 +5504,42 @@
     "tests/tools/client/test_living_overlay_draw.py": {
       "bytes": 6768,
       "sha256": "d8233fe47a1b2e361af0e7946f37c8ffa3e003adfa8073b586377aef80f4b71f"
+    },
+    "src/client/render/living_draw/fire.c": {
+      "bytes": 11293,
+      "sha256": "21ac434b398f1b159d44707f34468c9f82960e5ab7c2acf9ed4ec3524a22bb2e"
+    },
+    "tests/client/render/test_burning_billboard_draw.c": {
+      "bytes": 26702,
+      "sha256": "e646c7c5a3919a88a3e74beae25bfbbfd93e245b8aeae375d2456947019d2059"
+    },
+    "tests/reference/client/burning_billboard/build.py": {
+      "bytes": 6137,
+      "sha256": "4deda1afea1db78f18cae016d50b503e341b6f6b3d0a57a508a75b11f50fb826"
+    },
+    "tests/reference/client/burning_billboard/capture.py": {
+      "bytes": 7989,
+      "sha256": "57e48fb6846b0d39a9b27466b23d652b6fcd30f9bfc92ad216c33216dd7ec508"
+    },
+    "tests/reference/client/burning_billboard/comparison.py": {
+      "bytes": 12321,
+      "sha256": "8c730ff24c780cfaa3da052694f8fd81e529fc77bc598fc01f6471e079cab2fa"
+    },
+    "tests/reference/client/burning_billboard/driver_observer.c": {
+      "bytes": 4681,
+      "sha256": "6c9a32494a8d6d1649a1b96fe075edbb1332f0b5eea70be35ce192b6a522095f"
+    },
+    "tests/reference/client/burning_billboard/original.py": {
+      "bytes": 16991,
+      "sha256": "b0e5bedf2e0ed15c9af97700e7a74f3e87f752b17ecc9e4c52e46b38c91e5a8d"
+    },
+    "tests/tools/client/test_burning_billboard_draw.py": {
+      "bytes": 20753,
+      "sha256": "1990c468dd07208c33f9350aa425c342b03df8025b63ac70cfbae3341197f642"
+    },
+    "tests/reference/client/burning_billboard/pixel_comparison.py": {
+      "bytes": 13983,
+      "sha256": "aee5bb2d484e75aabd4205a6bd125bacf46f12866976e6c07660dc67985913fd"
     }
   },
   "authorities": {

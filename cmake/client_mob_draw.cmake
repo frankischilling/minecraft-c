@@ -24,13 +24,14 @@ if(TARGET mc_client_entity_renderer)
         src/client/render/living_draw/wolf.c
         src/client/render/living_draw/held.c
         src/client/render/living_draw/shadow.c
+        src/client/render/living_draw/fire.c
         src/client/render/manager/draw.c
         src/client/render/manager/draw_owner.c)
     target_link_libraries(mc_client_entity_renderer PRIVATE
         mc_client_render_manager_cpu mc_math_classes)
     if(BUILD_TESTING AND TARGET mc_test_application_startup)
         get_target_property(_mc_mob_draw_links mc_test_application_startup LINK_LIBRARIES)
-        foreach(_mc_draw_kind IN ITEMS mob animal creature remaining_mob living_overlay)
+        foreach(_mc_draw_kind IN ITEMS mob animal creature remaining_mob living_overlay burning_billboard)
             set(_mc_draw_target "mc_test_${_mc_draw_kind}_draw")
             add_executable(${_mc_draw_target} "tests/client/render/test_${_mc_draw_kind}_draw.c")
             target_include_directories(${_mc_draw_target} PRIVATE src src/platform/time)

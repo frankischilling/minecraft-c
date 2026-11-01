@@ -466,8 +466,8 @@
       "sha256": "93226a41c97403c4e3e61a23f633b553fc6c96c3058e44d362bf01409dfdaff9"
     },
     "docs/parity.md": {
-      "bytes": 142473,
-      "sha256": "5adf75f866fb6ba1adb1b21523dd3a793ca05596649fe3db3614b3bd0c27b16d"
+      "bytes": 143516,
+      "sha256": "b5544f445125c12434815dd56a3a806b0231f4b5d3d451628d912b528973f506"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 64821,
-      "sha256": "f9658fe9b2e84a93564a0d819b3855fe5532a96cf3e19fb5b412683aae1dc0fa"
+      "bytes": 65277,
+      "sha256": "b1dc7d6da3b469141dfc1ac690096e9eefaa37017c0468c077d0f96b29542d7c"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 345446,
-      "sha256": "6c7da5b8c9dcfc0eb87668919931a193d027bffcbf0e83ea0d370f947165a34b"
+      "bytes": 347667,
+      "sha256": "0b75e925468865f4ea872e9e2b8c4a401b7b4c1ccbe4587adc6834eb280cdcce"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 28039,
@@ -854,8 +854,8 @@
       "sha256": "f8ece751b0b5c7af311e7bdcfbcaba816eeab10a80fe244a1135db9002d5db1e"
     },
     "docs/wiki/World-simulation.md": {
-      "bytes": 31341,
-      "sha256": "17d2d74bcf65e2d2d87cf16a34466dfb19a0d92498af23d98fc1a13d6fe35905"
+      "bytes": 32294,
+      "sha256": "29ba611ec6c70f68f2b11c692705948f7323889ab819444a17038c6a6ef7a527"
     },
     "docs/wiki/_Sidebar.md": {
       "bytes": 2090,
@@ -918,8 +918,8 @@
       "sha256": "7c93e5cb61a64732df1b197d191858d6b2673e21b2c658114376a56717cc6f85"
     },
     "docs/world/entity-update.md": {
-      "bytes": 5790,
-      "sha256": "712bb284bf3d98c9287f51361f0aede5fb5ab4676e8c1d2c444ad3fc94660c4d"
+      "bytes": 5808,
+      "sha256": "74c9c73c2b5ed7bd9766410b91d6c8040b1b5d14fc8f1b57b74cd1df5ed8faef"
     },
     "docs/world/falling.md": {
       "bytes": 4196,
@@ -5330,8 +5330,8 @@
       "sha256": "ecbef425d369d1b8e72f1f61724eecc06c1de68e32a10722b34cab20d14a4933"
     },
     "tests/client/display/test_source_gl_setup.c": {
-      "bytes": 27349,
-      "sha256": "a9248525ef67bbc33b4921ab30c669ac6218b21589462ba53c269568cb395084"
+      "bytes": 28449,
+      "sha256": "463a727122cc2377fd81614007c692c4adfb1b3ee444959d0fcf564e10afe26a"
     },
     "tests/client/gui/main_menu_probe.c": {
       "bytes": 18471,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 264502,
-      "sha256": "6df7b9b40a93380bcc7307e15122c4dc02705925737699cfb750c1beeeed9838"
+      "bytes": 266055,
+      "sha256": "9d4e37a6346ab60403f1ee0d94bce6058dfb8fd170428fbce6f8e7212e271aa5"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 355426,
-      "sha256": "b2f2d18075a95323fe63a9e22eb3ee80467e1c5566a21d009d0575a9efe4a405"
+      "bytes": 355934,
+      "sha256": "9bcdc51d05c8027d4aa777393b6f339d955eaf3344c37ce7097adfa44fb7c2be"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 260508,
-      "sha256": "ffaf2846a4048767377a8c0fb3ff50a7fdad41ab0f4468b8278a98863b3f73c6"
+      "bytes": 262061,
+      "sha256": "881706f05197a14a9332b4f3f81e5c893176d4cfe7b0b3c79bdfc066f83fa260"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9766,8 +9766,8 @@
       "sha256": "8252109ad38050a87780d39190b84c14a8c41f91bd3c772fea5ca7f90cad54cf"
     },
     "docs/client/menu-runtime.md": {
-      "bytes": 11972,
-      "sha256": "61607502fe31f7b212e4a4c95609eaae6e40c17c800d64d5fa794b4ccc7289cb"
+      "bytes": 11982,
+      "sha256": "e616599a02c53f92dde2363cf75ca78eb2800225d6c9016f42f4817bf3b4cfb5"
     },
     "src/client/display/source_texture_update.h": {
       "bytes": 1017,
@@ -11070,8 +11070,8 @@
       "sha256": "8082864077e00f02207426382d9801e256303a2ad262d8de51186be95a0d18fa"
     },
     "src/client/display/camera_surface.inc": {
-      "bytes": 8234,
-      "sha256": "7e7a36020aae77bc95c3f1b0675b5e9ec90b1aff17ce81aca66b698b3df87c19"
+      "bytes": 8441,
+      "sha256": "216f7771667b61df0750738d29375af49cd75d16f4429355b1a4923ce1945486"
     },
     "src/client/render_engine/ge_float.c": {
       "bytes": 4941,
@@ -13150,8 +13150,8 @@
       "sha256": "f60e2466c08dd4a1e7723b1e31d1d0e3824923fecdae5a68c2f359d88ff4f36c"
     },
     "docs/entity/mob-construction.md": {
-      "bytes": 7331,
-      "sha256": "7fdf55d881eee4b73aa04b37d579941e2c2edf70668b9c75d37fd980b5b1c8b6"
+      "bytes": 7518,
+      "sha256": "47c1e7f1caf37f94cb6b672f487eb24053578f9ed0bfac25c02d348738c9bf38"
     },
     "include/mc/entity/mob/construction.h": {
       "bytes": 5620,
@@ -13222,8 +13222,8 @@
       "sha256": "8745fb05d0a882b843126a6fbaa903e40782f6a230b1577c6332c6e59e3ff538"
     },
     "docs/entity/mob-spawning.md": {
-      "bytes": 4770,
-      "sha256": "05402fd3c30fb6b8e62c265fec84a4baf256e1213abc01f81b3898a5cf5116ce"
+      "bytes": 4874,
+      "sha256": "2fc40111fc2c6a1dbe07666dd39a82d1417ba4a34e909b7639000f261277df51"
     },
     "include/mc/entity/mob/spawning.h": {
       "bytes": 2862,
@@ -13526,8 +13526,8 @@
       "sha256": "8fdea803711cc1b8faec20e7150f04dee657205f065053e0a26f6a2943925cf2"
     },
     "docs/entity/mob-active-tick.md": {
-      "bytes": 11079,
-      "sha256": "b190aaa9f2d4e992609decc07368cd5acfde73b2e3dabded226b06fc4ecaef4f"
+      "bytes": 11153,
+      "sha256": "aac2e11db1bce6853853680116b870dd2608a24e5232672c6cfbfdd2e323df9b"
     },
     "include/mc/entity/mob/tick.h": {
       "bytes": 8538,
@@ -13802,16 +13802,16 @@
       "sha256": "f9ae7355563558ceaac5b6b4573872e3f5ad63a86fba963aba32febe845b2759"
     },
     "cmake/client_mob_draw.cmake": {
-      "bytes": 3511,
-      "sha256": "cce27b29f7ffd5462721bdc6d5c9bc07a988b3e16675e15498110fb8538f122b"
+      "bytes": 3574,
+      "sha256": "2a1877fd94c4c74f11a58cac5e58a9220f9a28520e99195d02b9cf62bd2fc609"
     },
     "cmake/tests/client_legacy_clamp.cmake": {
       "bytes": 1057,
       "sha256": "27d20d23a80e47adad633009cf0967cc975d83729b4272daa5e09a1042f10b42"
     },
     "docs/client/mob-drawing.md": {
-      "bytes": 33182,
-      "sha256": "8b359459805a7ed8e3c0a983be50384d08c26c53ef765c093ccabbf5862e3631"
+      "bytes": 33678,
+      "sha256": "22acd8ddfa856e0c0918df27bec2a677a8784cf2e3e7092aaa5b67620822bb03"
     },
     "include/mc/client/render/manager/draw.h": {
       "bytes": 5804,
@@ -13830,20 +13830,20 @@
       "sha256": "4198dae72016ea5a85499677007137629c5c5255ce75b393e3500d018742505f"
     },
     "src/client/render/living_draw/internal.h": {
-      "bytes": 2954,
-      "sha256": "78ef716c072ca79fce282aa93729ef67f640609fadadae522dabb3f00b545ab0"
+      "bytes": 3011,
+      "sha256": "b8d16d8b0e07657089f43e3046ddfc9083d3bb68883aa54962b843f92bad5ab3"
     },
     "src/client/render/living_draw/shadow.c": {
-      "bytes": 22936,
-      "sha256": "24e42cd8cf8ada7679bb76d735ed6eb6b6670be9781264a37d36691f10180fc8"
+      "bytes": 22875,
+      "sha256": "fd6e0016a40eb1c67db992fbd5e5bbd05072461384b78ac84b34e632b69be22d"
     },
     "src/client/render/living_draw/sheep.c": {
       "bytes": 3671,
       "sha256": "11705021961392098f305bf25bcbda50d951ec1c75c391c9feb52791958b4b69"
     },
     "src/client/render/living_draw_internal.h": {
-      "bytes": 12911,
-      "sha256": "f791d77ed2e7ec62763cc2f71a538c7119ab958b3f83cdd103f7bb9729a47f35"
+      "bytes": 14048,
+      "sha256": "b59b6c9193776dc750da53cd29a1a83ebb4f2d7bb7f9219c5fb62f2a38775dcf"
     },
     "src/client/render/manager/draw.c": {
       "bytes": 16002,
@@ -14046,8 +14046,8 @@
       "sha256": "7b2afc68a55c94cd2b558b003c24109d73b09fbf1568aa4ce01234bfc1ca5c86"
     },
     "tests/client/render/test_creature_draw.c": {
-      "bytes": 82341,
-      "sha256": "c37cfa32ea482cdddabc7969fcf0c011115df15ea1792f38bff687ab0c473082"
+      "bytes": 82665,
+      "sha256": "184ac4234acbad67f810db0e868f59aa15df372e2f27ee4958bb6d3a7b3be08a"
     },
     "tests/entity/test_creeper_attack.c": {
       "bytes": 13931,
@@ -14490,8 +14490,8 @@
       "sha256": "503cf315d128941b42a4b562564a238cb873d5d6b478438f4a678c052d3d6ee7"
     },
     "docs/entity/living-damage.md": {
-      "bytes": 4018,
-      "sha256": "c34a8ead3081b6d3a3cde8ed6f4b27526f0a9f39b0677ba780348bc241781d17"
+      "bytes": 4211,
+      "sha256": "f4d28f687497e600e3e8fe1f927b6fb4c241519c224b16709385e37b31b0b0ad"
     },
     "src/client/render/living_draw/overlay.c": {
       "bytes": 6794,
@@ -14574,8 +14574,120 @@
       "sha256": "d8233fe47a1b2e361af0e7946f37c8ffa3e003adfa8073b586377aef80f4b71f"
     },
     "docs/client/living-overlays.md": {
-      "bytes": 5501,
-      "sha256": "6beec7aefb0dbd931f134d010e7266d54230f46c3ba65f240f2455344c639bda"
+      "bytes": 5652,
+      "sha256": "1ec88072cad3a5ab4476e3449d6f1a02202e6537c10b6d01690fabcd61017d4d"
+    },
+    "docs/client/burning-billboards.md": {
+      "bytes": 4916,
+      "sha256": "bbe7fb8908731cc24a9ea68235cb62593180a78e4ffb3e4dbad737d99898e17a"
+    },
+    "src/client/render/living_draw/fire.c": {
+      "bytes": 11293,
+      "sha256": "21ac434b398f1b159d44707f34468c9f82960e5ab7c2acf9ed4ec3524a22bb2e"
+    },
+    "tests/client/render/test_burning_billboard_draw.c": {
+      "bytes": 26702,
+      "sha256": "e646c7c5a3919a88a3e74beae25bfbbfd93e245b8aeae375d2456947019d2059"
+    },
+    "tests/reference/client/burning_billboard/BurningBillboardJdi.java": {
+      "bytes": 16576,
+      "sha256": "fb40a1374ebf63c23300b935f33b20f64ef3f39d155518a1b2c2c76e840bb2d4"
+    },
+    "tests/reference/client/burning_billboard/BurningBillboardTarget.java": {
+      "bytes": 25133,
+      "sha256": "314052dcd38ae805f019ba2d715362c922ec57501856acc0d70e53f78bdb5394"
+    },
+    "tests/reference/client/burning_billboard/ConstructorJson.java": {
+      "bytes": 1571,
+      "sha256": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3"
+    },
+    "tests/reference/client/burning_billboard/README.md": {
+      "bytes": 8659,
+      "sha256": "f0dec07123cb2de0cf606f18785c69a044ca8862a2515874801ed5f538325519"
+    },
+    "tests/reference/client/burning_billboard/authored-geometry.json": {
+      "bytes": 14263,
+      "sha256": "51f0d12b87508684bf4ef3072d40f20beaf9a3bd964fd485c5bb9afce0dd85d8"
+    },
+    "tests/reference/client/burning_billboard/build.py": {
+      "bytes": 6137,
+      "sha256": "4deda1afea1db78f18cae016d50b503e341b6f6b3d0a57a508a75b11f50fb826"
+    },
+    "tests/reference/client/burning_billboard/capture.py": {
+      "bytes": 7989,
+      "sha256": "57e48fb6846b0d39a9b27466b23d652b6fcd30f9bfc92ad216c33216dd7ec508"
+    },
+    "tests/reference/client/burning_billboard/comparison.py": {
+      "bytes": 12321,
+      "sha256": "8c730ff24c780cfaa3da052694f8fd81e529fc77bc598fc01f6471e079cab2fa"
+    },
+    "tests/reference/client/burning_billboard/driver_observer.c": {
+      "bytes": 4681,
+      "sha256": "6c9a32494a8d6d1649a1b96fe075edbb1332f0b5eea70be35ce192b6a522095f"
+    },
+    "tests/reference/client/burning_billboard/helper-code-pins.json": {
+      "bytes": 17331,
+      "sha256": "644f2d08c00412e9a3c49450ac5d0224b10f02c366b72656650758711b28a96d"
+    },
+    "tests/reference/client/burning_billboard/original.py": {
+      "bytes": 16991,
+      "sha256": "b0e5bedf2e0ed15c9af97700e7a74f3e87f752b17ecc9e4c52e46b38c91e5a8d"
+    },
+    "tests/reference/client/burning_billboard/preparation.md": {
+      "bytes": 742,
+      "sha256": "c298a99d176e94e8f9037846012fdd2a1f2ddbd44dd0c351a0388ddf6ffe9938"
+    },
+    "tests/reference/client/burning_billboard/preparation.tsv": {
+      "bytes": 443,
+      "sha256": "9da6bcc9d0f7793cf3bbf575596a3dfd9b4f40e5a5ba30cad862742569415e0d"
+    },
+    "tests/reference/client/burning_billboard/profiles.tsv": {
+      "bytes": 327,
+      "sha256": "daa33ca13ba71c1e0447512885e77009277447a616439d5c6d942cea7259c997"
+    },
+    "tests/reference/client/burning_billboard/protocol.md": {
+      "bytes": 4065,
+      "sha256": "292a2bb739a33802cbde317ef896214491118d21183d0e3a52e45623650a141e"
+    },
+    "tests/reference/client/burning_billboard/provenance.json": {
+      "bytes": 67103,
+      "sha256": "dada3f2a877248efc24bd2c8381155cebc6099aeec29eec3b6edcc062a3ea194"
+    },
+    "tests/reference/client/burning_billboard/source-code-pins.json": {
+      "bytes": 1475102,
+      "sha256": "f268285aea364b0e9ac90b16db878a26fb2cc097a8f7d677016751d1e2f8d49f"
+    },
+    "tests/tools/client/test_burning_billboard_draw.py": {
+      "bytes": 20753,
+      "sha256": "1990c468dd07208c33f9350aa425c342b03df8025b63ac70cfbae3341197f642"
+    },
+    "tests/reference/client/burning_billboard/RotationProbe.java": {
+      "bytes": 3323,
+      "sha256": "e91a0ff7eb6d6e80cc82a86d0486dad146e082fbf6e1d870326a894bd5057e09"
+    },
+    "tests/reference/client/burning_billboard/WindowsBurningLauncher.java": {
+      "bytes": 2926,
+      "sha256": "d67630b3cb6ce70f37eaf1abd4b51b1a5b5e3a7fdb0841e1a08ab184dd5f53ae"
+    },
+    "tests/reference/client/burning_billboard/pixel_comparison.py": {
+      "bytes": 13983,
+      "sha256": "aee5bb2d484e75aabd4205a6bd125bacf46f12866976e6c07660dc67985913fd"
+    },
+    "tests/reference/client/burning_billboard/rotation-evidence.json": {
+      "bytes": 6394,
+      "sha256": "e09c1710e15d24225b4bd567dcf83867cb2f8e8cfcb9ba7c4fda36c2eb07d950"
+    },
+    "tests/reference/client/burning_billboard/windows-ordinary-evidence.json": {
+      "bytes": 23966,
+      "sha256": "fcbd7f15625c6d2e890fa8d7246d55255bbc070281b3f1db9360ba4754d3b759"
+    },
+    "tests/reference/client/burning_billboard/windows-pixel-protocol.md": {
+      "bytes": 5542,
+      "sha256": "7d6ef07a1f0cf0faef5415c7572e7e071318d5c9d997c21c64de61a366dad447"
+    },
+    "tests/reference/client/burning_billboard/windows-wrapper-code-pins.json": {
+      "bytes": 873,
+      "sha256": "4d127c959da7db301de0442e71ff94e5c62bdca785a19c6c318929d9fc842b6b"
     }
   },
   "self_metadata_excluded": true,

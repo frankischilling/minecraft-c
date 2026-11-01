@@ -81,8 +81,11 @@ bool mc_client_display_source_rotate(mc_client_display *display, float angle, fl
     x = camera_narrow((double)x / norm);
     y = camera_narrow((double)y / norm);
     z = camera_narrow((double)z / norm);
-    const double radians = (double)angle * (3.14159265358979323846 / 180.0);
-    const float c = camera_narrow(cos(radians)), s = camera_narrow(sin(radians));
+    /* The observed GLfloat rotation narrows the degree conversion before
+     * single-precision trigonometry. Keeping double radians changes the
+     * prepared basis and amplifies error in later cancelling rotations. */
+    const float radians = camera_narrow((double)angle * 3.14159265358979323846 / 180.0);
+    const float c = cosf(radians), s = sinf(radians);
     const float t = 1.0f - c;
     const float rotation[16] = {t * x * x + c,
                                 t * x * y + s * z,

@@ -55,6 +55,7 @@ bool ld_v_held(ld_frame *, float partial);
 bool ld_pass(ld_frame *, int32_t, float, bool *);
 bool ld_overlays(ld_frame *, float brightness, int32_t color, float partial);
 bool ld_shadow(ld_frame *, double, double, double, float, float);
+bool ld_fire(ld_frame *, double, double, double, float);
 void ld_registry_classify(ld_frame *, mc_registry_classes *, const mc_registry_error *);
 void ld_access_classify(ld_frame *, const mc_world_access_failure *);
 const mc_player_string *ld_fur_literal(void);
