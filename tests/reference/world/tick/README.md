@@ -43,8 +43,9 @@ remain real; the fixture does not replace them with empty Lists or a no-spawn
 result.
 
 The C scheduler reports success only when the reached source path returns.
-Concrete Mob initialization/construction, sleeping Player wake transitions, and
-nonempty random Chunk work remain explicit dependencies. The reusable
+All eleven default Overworld Mob constructors and selected nonempty random
+Chunk work now have separate native contracts. Sleeping wake, remaining Mob
+combat and further Block overrides retain their reached dependencies. The reusable
 scheduled drain dispatches through the existing concrete Block tick kernel;
 unimplemented Block descendants still fail at their reached entry. These
 observations do not qualify a complete loaded-player World tick. Spawn-list
@@ -67,3 +68,14 @@ Add `--client-jar <b1.7.3.jar> --library-dir <libraries> --java <JDK17/bin/java>
 to rebuild the authored helper and replay the unchanged original methods.
 `observations.json` contains the resulting rows; every native row reads the
 current World or owning queues.
+
+The current native suite completes nine spawning and nine random-Chunk
+continuations while preserving all eleven captured original rows. Its jockey
+case selects an authored seed through the independent full spawn oracle before
+one actual World tick. Four Spiders and one Skeleton are published, the genuine
+reciprocal mount survives the call, and all 361 Chunks and 28,880 samples return.
+The oracle accounts for Spider collision width, edge collision, every accepted
+Spider's jockey draw and the extra Skeleton. Random state, LCG work, actual Grass
+light gates, live relationship holds and checked terminal cycle retirement are
+asserted separately. Both Windows and sanitized Linux pass 11,313 native checks.
+These later authored controls remain distinct from an executed original jockey.

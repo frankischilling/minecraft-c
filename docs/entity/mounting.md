@@ -57,3 +57,11 @@ observes the one passenger continuation before that reset. The full Windows
 build passes. The focused fifteen-suite Windows and fourteen-suite Linux
 regressions cover existing Entity updates, publication, terminal ownership,
 Player ticks, damage, drop and placement alongside mounting.
+
+The scheduler's integrated jockey scenario also returns through complete
+spawning and random Chunk work. Four Spiders and one Skeleton retain their
+exact native relationship mirrors, then checked World retirement consumes the
+cycle. The independent input oracle accounts for Spider collision and chooses
+the declared seed before the single actual tick. The full scheduler suite
+passes 11,313 checks on Windows and sanitized Linux, including the unchanged
+eleven original prefix comparisons and nine complete random continuations.

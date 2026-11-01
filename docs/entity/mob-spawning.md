@@ -83,4 +83,14 @@ comparisons and use authored stored terrain for the later native loop. Positive
 Wolf group-limit8 and publication-false postspawn are not integrated reference
 cases. The original protected BG path-weight entries, controlled second/third
 light-query failures and unavailable Blank/provider construction seams remain
-separate from native parity. Mob NBT loading/saving also remains unfinished.
+separate from native parity. [Mob NBT](mob-nbt.md) has its own native loading
+and saving qualification. These spawning controls do not establish original
+Mob save correspondence.
+
+The current integrated jockey control completes the actual mounting and World
+continuation: four Spiders, one Skeleton, then 361 random Chunks and 28,880
+samples. Its independent oracle selects a declared input before the real tick
+and verifies the entire World Random stream, LCG, collision and publication
+sequence. Windows and Linux Clang ASan/UBSan each pass 11,313 scheduler checks,
+including all eleven preserved original prefixes. General mounted combat and
+executed original jockey comparisons remain separate.

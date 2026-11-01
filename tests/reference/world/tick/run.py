@@ -51,7 +51,7 @@ def main():
     spec.loader.exec_module(support)
     args.work_dir.mkdir(parents=True, exist_ok=True)
     output = Path(tempfile.mkdtemp(prefix="tick-", dir=args.work_dir.resolve()))
-    report = {"status": "FAIL", "scope": "11 unchanged-client scheduler prefixes; native authored-Chunk CQ false/true loops, publication/group/color/jockey contracts; eight complete 361-Chunk FD.n continuations with independent Random/LCG/Grass-draw oracles and retained null-Random failure prefix"}
+    report = {"status": "FAIL", "scope": "11 unchanged-client scheduler prefixes; native authored-Chunk CQ false/true loops, publication/group/color/jockey contracts; nine complete 361-Chunk FD.n continuations with independent Random/LCG/Grass-draw oracles and retained null-Random failure prefix"}
     inputs = [args.native.resolve(), Path(__file__).resolve(), support_path,
               HERE / "observations.json"]
     env = os.environ.copy()
@@ -63,7 +63,9 @@ def main():
 
     def run(command, prefix, timeout=100, empty_stderr=True):
         result = support.run_bounded(command, cwd=output, prefix=prefix, timeout=timeout, env=env)
-        need(result.returncode == 0, f"{prefix} exit {result.returncode}")
+        need(result.returncode == 0,
+             f"{prefix} exit {result.returncode}; retained output: {output}\n" +
+             result.stderr.decode("utf-8", errors="replace")[-12000:])
         need(not empty_stderr or not result.stderr, f"{prefix} nonempty stderr")
         return result
 
@@ -144,12 +146,20 @@ def main():
                 mob_rows[index])
             need(row is not None and int(row[1]) > 1,
                  "real rejected-predicate continuation contract: " + name)
-        need(mob_rows[8] == "MOB_LOOP jockey cn next=cq845:56 published=2 skeleton=fr random-checked=1",
-             "actual Skeleton publication before missing mount body")
+        need(mob_rows[8] == "MOB_LOOP jockey cn completed=1 group=4 published=5 skeleton=fr mounted=1 random-checked=1",
+             "actual Skeleton mounting and complete spawning/World continuation")
+        jockey_inputs = [line for line in text.splitlines() if line.startswith("JOCKEY_INPUT ")]
+        need(len(jockey_inputs) == 1 and re.fullmatch(
+            r"JOCKEY_INPUT seed=([0-9]+) candidates=([1-9][0-9]*) first-seed=([0-9]+) "
+            r"first-group=([0-9]+) first-publications=([0-9]+) group=4 publications=5 jockeys=1 "
+            r"independent-oracle=1 before-native=1", jockey_inputs[0]),
+            "declared complete jockey input selected by independent oracle before actual tick")
         random_rows = [line for line in text.splitlines()
-                       if line.startswith(("RANDOM_TICK publish ", "RANDOM_TICK reject "))]
+                       if line.startswith(("RANDOM_TICK publish ", "RANDOM_TICK reject ",
+                                           "RANDOM_TICK jockey "))]
         expected_random = [("publish", "wh"), *(('reject', name)
-            for name in ("cn", "uz", "fr", "gb", "uw")), ("publish", "uz"), ("publish", "dl")]
+            for name in ("cn", "uz", "fr", "gb", "uw")), ("publish", "uz"), ("publish", "dl"),
+            ("jockey", "cn")]
         need(len(random_rows) == len(expected_random), "native complete FD.n contract inventory")
         for line, (kind, name) in zip(random_rows, expected_random):
             row = re.fullmatch(
@@ -162,13 +172,16 @@ def main():
                  "independent weather/sample LCG accounting: " + kind + name)
             need(world_draws in (722, 723) and (world_draws == 722 or ambient == 361),
                  "mandatory per-Chunk and reached ambient Random accounting: " + kind + name)
-            need(block_draws == block_ticks * (0 if kind == "publish" and name == "uz" else 3),
+            # Both hostile publication fixtures author BlockLight0. Their
+            # Grass calls return before the light>=9 branch's three draws.
+            grass_draws = 0 if (kind, name) in {("publish", "uz"), ("jockey", "cn")} else 3
+            need(block_draws == block_ticks * grass_draws,
                  "reached actual Grass Random accounting: " + kind + name)
         prefix_rows = [line for line in text.splitlines() if line.startswith("RANDOM_TICK prefix ")]
         need(prefix_rows == ["RANDOM_TICK prefix fd195:470 chunk-held=1 world-holds=2 math-holds=2 source-preserved=1"],
              "retained typed null-Random prefix and exact cleanup without class/source reset")
         report.update(status="PASS", native=native.capture_report, observations=11,
-                      native_completed_spawn_contracts=9, native_completed_random_contracts=8,
+                      native_completed_spawn_contracts=9, native_completed_random_contracts=9,
                       native_retained_random_prefixes=1, original_replay=args.client_jar is not None)
     except BaseException as exc:
         report["error"] = {"type": type(exc).__name__, "message": str(exc)}

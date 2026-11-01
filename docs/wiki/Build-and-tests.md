@@ -192,7 +192,9 @@ checks 19 live methods and 2,138 checkpoints. Independent JVM/native constructor
 entropy is not equated.
 
 The World tests separately check false continuation, group counts, cumulative
-totals, Sheep colors and real Skeleton publication before the missing mount.
+totals, Sheep colors and real Skeleton publication/mounting. The current jockey
+control completes four Spiders, one Skeleton and the full random Chunk body,
+with independent Random/LCG checks and checked cycle retirement.
 The focused loaded profile reaches `fd.l:195`/`fd.n:207` and uses the normal
 terminal coordinator. Source-only cases and entropy boundaries are documented
 in [Mob spawning](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-spawning.md).

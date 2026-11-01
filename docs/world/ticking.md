@@ -9,8 +9,8 @@ Random yaw, actual position body and [spawn predicate](../entity/mob-spawning.md
 False results continue the attempt loop. True results enter actual publication,
 postspawn work and the virtual group limit. A focused loaded profile now passes
 spawning and completes the [random Chunk body](random-ticking.md): 361 coordinates
-and 28,880 samples return at `fd.n:994`, followed by `fd.l:198`. The next client
-dependency is ambience at `Minecraft.k:1311`. Gameplay remains unfinished.
+and 28,880 samples return at `fd.n:994`, followed by `fd.l:198`. Gameplay actions and remaining Mob combat branches retain their separate
+dependencies.
 
 The scheduler calls weather, tests sleeping Players, runs spawning, maintains
 the actual provider, updates sky subtraction and dispatches the live WorldAccess
@@ -31,7 +31,8 @@ in retained diagnostics. The current candidate stays owned through reached
 failure and is released at scheduler retirement. World/Chunk publications own
 their own occurrences. A first-constructor observation records actual source
 values before CQ773 without changing the attempt or Random stream.
-Skeleton jockey mounting and sleeping wake transitions remain unfinished.
+Skeleton jockey [mounting and riding](../entity/mounting.md) now run. Sleeping
+wake transitions remain unfinished.
 Random Chunk work now retains the actual Chunk local through cave sounds,
 weather, snow/ice and all eighty raw-byte samples per coordinate. Its selected
 concrete Block ticks and genuine Lightning constructor keep their own reached
@@ -49,7 +50,9 @@ This comparison qualifies the prefix rather than the later loop's behavior.
 Separate native contracts author stored terrain for all candidate Chunks and
 replay World Random independently. They check rejected attempts continuing,
 successful publication, per-Chunk group limits, cumulative totals, Sheep color
-and a real Skeleton publication before the unfinished jockey mount. These
+and real Skeleton publication/mounting. The jockey case completes four Spiders
+and one Skeleton, then the full 361-Chunk random body. Its authored seed is
+selected through an independent full-loop oracle before the actual tick. These
 are native contracts, separate from the eleven original observations.
 
 Scheduled drain implements actual `fd.a(Z)Z`. It checks the ordered/membership
@@ -65,7 +68,7 @@ native retirement. Sky callbacks
 iterate the live list, allowing self-removal and nested ticks. Retained failure
 receipts and source fields survive failure; cleanup does not replay source work.
 The client runtime keeps these diagnostics under its terminal tick record.
-After a completed scheduler, ambience `fd.q(III)` remains an explicit dependency.
+Following client ambience has its separate [random-display contract](random-display.md).
 
 Native terminal admission accepts the actual constructor-owned active Chunk
 coordinate Set after checking its shape, hashes and traversal membership. The

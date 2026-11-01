@@ -16,7 +16,10 @@ The inherited mount body, Skeleton riding continuation, Spider passenger offset
 and checked relationship-cycle retirement are implemented. Fifteen focused
 Windows suites pass in 1.33 seconds; fourteen corresponding Linux Clang
 ASan/UBSan suites pass in 2.08 seconds. Mounting completes 130 checks and
-Player drops complete 251. Extended natural play remains unqualified.
+Player drops complete 251. The integrated scheduler also completes four Spiders,
+one mounted Skeleton and the full 361-Chunk/28,880-sample random body. Windows
+and sanitized Linux each pass 11,313 scheduler checks with all eleven original
+prefix rows preserved. Extended natural play remains unqualified.
 
 Fresh Windows Release graphical placement and drop scenarios pass in 34.96 and
 23.28 seconds, completing 3,756 and 3,526 native checks. Both return through four

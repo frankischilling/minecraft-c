@@ -87,15 +87,15 @@ static bool spawn_chunks(fixture *f, size_t slot, uint8_t light) {
     return true;
 }
 
-static bool spawn_seed(mc_world_runtime *world, int32_t category, const char *target, bool jockey,
-                       int32_t *seed) {
+static bool spawn_seed_from(mc_world_runtime *world, int32_t category, const char *target,
+                            bool jockey, int32_t first_candidate, int32_t *seed) {
     mc_world_provider_fields dimension;
     const mc_biome *biome;
     if (mc_world_provider_fields_get(world->fields.t, &dimension) != MC_WORLD_PROVIDER_OK ||
         mc_world_chunk_manager_chunk(dimension.b, -3, -3, &biome, NULL) != MC_WORLD_PROVIDER_OK)
         return false;
     const mc_biome_spawn_list *list = mc_biome_spawn_list_get(biome, category);
-    for (int32_t candidate = 0; candidate < 1000000; ++candidate) {
+    for (int32_t candidate = first_candidate; candidate < 1000000; ++candidate) {
         mc_java_random random;
         mc_java_random_seed(&random, candidate);
         int32_t sum = 0, ticket;
@@ -140,6 +140,11 @@ static bool spawn_seed(mc_world_runtime *world, int32_t category, const char *ta
     return false;
 }
 
+static bool spawn_seed(mc_world_runtime *world, int32_t category, const char *target, bool jockey,
+                       int32_t *seed) {
+    return spawn_seed_from(world, category, target, jockey, 0, seed);
+}
+
 static bool tick_world_create(fixture *f, const char *root, size_t slot, size_t max_chunks) {
     bool ok = false;
     char path[8192];
@@ -180,14 +185,15 @@ cleanup:
 
 typedef struct spawn_oracle {
     mc_java_random random, first_random;
-    size_t calls, constructors, rejections, publications, first_calls;
+    size_t calls, constructors, rejections, publications, first_calls, jockeys;
     int32_t group, total, last_x, last_y, last_z;
     float last_yaw;
 
     struct {
         int32_t x, z, color;
         float yaw;
-    } published[4];
+        bool jockey;
+    } published[8];
 } spawn_oracle;
 
 static bool oracle_draw(spawn_oracle *o, int32_t bound, int32_t *out) {
@@ -223,7 +229,7 @@ static bool oracle_weight(mc_world_runtime *world, int32_t category, int32_t x, 
  * Core Random and HashSet have their own unchanged-original tests; this model
  * exercises CQ's use/order, rather than calling CQ or the predicate itself. */
 static bool oracle_spawn(mc_world_runtime *world, int32_t seed, int32_t category, const char *name,
-                         bool permit, bool jockey, spawn_oracle *o) {
+                         bool permit, spawn_oracle *o) {
     memset(o, 0, sizeof(*o));
     mc_java_random_seed(&o->random, seed);
     int32_t weight, ignored, x0, y0, z0;
@@ -260,9 +266,21 @@ static bool oracle_spawn(mc_world_runtime *world, int32_t seed, int32_t category
             o->last_yaw = mc_java_random_next_float(&o->random) * 360.0f;
             ++o->calls;
             bool eligible = permit;
-            for (size_t i = 0; i < o->publications && i < COUNT(o->published); ++i)
-                if (o->published[i].x == x && o->published[i].z == z)
+            /* The width1.4 Spider box crosses the adjoining all-stone Chunk
+             * from either edge cell. Its constructor/yaw already happened;
+             * LS's block-collision predicate then rejects this trial. */
+            if (strcmp(name, "cn") == 0 && (x == -48 || x == -33 || z == -48 || z == -33))
+                eligible = false;
+            for (size_t i = 0; i < o->publications && i < COUNT(o->published); ++i) {
+                const int32_t dx = x - o->published[i].x, dz = z - o->published[i].z;
+                /* Spider width1.4 overlaps neighboring integer cells in both
+                 * axes. Its Skeleton's width.6 overlaps only the same cell.
+                 * Other positive fixtures also use width.6; no actor moves
+                 * during this FD.l spawning/random-Chunk continuation. */
+                const int32_t radius = strcmp(name, "cn") == 0 && !o->published[i].jockey ? 1 : 0;
+                if (dx >= -radius && dx <= radius && dz >= -radius && dz <= radius)
                     eligible = false;
+            }
             if (!eligible)
                 ++o->rejections;
             else {
@@ -273,11 +291,17 @@ static bool oracle_spawn(mc_world_runtime *world, int32_t seed, int32_t category
                     o->published[index].z = z;
                     o->published[index].yaw = o->last_yaw;
                 }
-                if (jockey) {
-                    if (!oracle_draw(o, 100, &ignored) || ignored != 0)
+                if (strcmp(name, "cn") == 0) {
+                    if (!oracle_draw(o, 100, &ignored))
                         return false;
-                    ++o->publications; /* Genuine extra Skeleton, before mount. */
-                    return true;
+                    if (ignored == 0) {
+                        if (o->publications >= COUNT(o->published))
+                            return false;
+                        const size_t skeleton = o->publications++;
+                        o->published[skeleton] = o->published[index];
+                        o->published[skeleton].jockey = true;
+                        ++o->jockeys;
+                    }
                 }
                 if (strcmp(name, "dl") == 0) {
                     if (!oracle_draw(o, 100, &ignored))
@@ -505,9 +529,7 @@ static bool spawn_matches(mc_world_runtime *w, const mc_world_tick_state *s, con
         s->spawn_constructors != o->constructors || s->spawn_predicates != o->constructors ||
         s->spawn_rejections != o->rejections || s->spawn_publications != o->publications ||
         s->spawn_group_successes != o->group || s->spawn_total != o->total ||
-        s->spawn_random_calls != o->calls ||
-        (jockey && !mc_test_java_random_equal(w->fields.r, &o->random)) ||
-        s->spawn_entity == NULL || w->local_leases != 0)
+        s->spawn_random_calls != o->calls || s->spawn_entity == NULL || w->local_leases != 0)
         return false;
     mc_entity_snapshot entity;
     if (mc_entity_get_snapshot(s->spawn_entity, &entity) != MC_ENTITY_OK ||
@@ -522,19 +544,22 @@ static bool spawn_matches(mc_world_runtime *w, const mc_world_tick_state *s, con
         return false;
     if (jockey) {
         mc_entity_snapshot skeleton;
-        return s->source_pc == 80 && !s->spawning_returned && !s->random_returned &&
-               s->random == NULL && s->error->child_bytecode == 845 &&
-               s->error->descendant_bytecode == 56 && s->spawn_postspawn_pc == 56 &&
-               !s->spawn_postspawn_returned && s->spawn_jockey != NULL &&
-               w->entity_membership.count == 2 &&
-               w->entity_membership.entries[0] == s->spawn_entity &&
+        mc_entity *spider = w->entity_membership.entries[0];
+        return random != NULL && random_tick_matches(w, s, random) && s->spawning_returned &&
+               s->provider_returned && s->time_stored && s->scheduled_returned &&
+               s->random_chunk_count == 361 && s->spawn_candidates_visited == 289 &&
+               s->spawn_postspawn_pc == 83 && s->spawn_postspawn_returned &&
+               s->spawn_jockey != NULL && w->entity_membership.count == o->publications &&
                w->entity_membership.entries[1] == s->spawn_jockey &&
                mc_entity_get_snapshot(s->spawn_jockey, &skeleton) == MC_ENTITY_OK &&
                mc_entity_class_literal_inspect(skeleton.class_literal, &selected) == MC_ENTITY_OK &&
-               selected.kind == MC_ENTITY_CLASS_KIND_SKELETON && skeleton.base.x == entity.base.x &&
-               skeleton.base.y == entity.base.y && skeleton.base.z == entity.base.z &&
-               skeleton.base.yaw == entity.base.yaw && entity.base.aG == NULL &&
-               entity.base.aH == NULL && skeleton.base.aG == NULL && skeleton.base.aH == NULL;
+               selected.kind == MC_ENTITY_CLASS_KIND_SKELETON &&
+               skeleton.base.x == spider->base.x && skeleton.base.y == spider->base.y &&
+               skeleton.base.z == spider->base.z && skeleton.base.yaw == spider->base.yaw &&
+               spider->base.aG == s->spawn_jockey && spider->passenger_hold == s->spawn_jockey &&
+               spider->base.aH == NULL && skeleton.base.aG == NULL && skeleton.base.aH == spider &&
+               s->spawn_jockey->mount_hold == spider && s->spawn_jockey->base.private_d == 0 &&
+               s->spawn_jockey->base.private_e == 0;
     }
     return random != NULL && random_tick_matches(w, s, random) && s->spawning_returned &&
            s->provider_returned && s->time_stored && s->scheduled_returned &&
@@ -552,12 +577,22 @@ static bool published_matches(mc_world_runtime *w, const spawn_oracle *o, const 
         mc_entity *entity = w->entity_membership.entries[i];
         if (mc_entity_get_snapshot(entity, &fields) != MC_ENTITY_OK ||
             mc_entity_class_literal_inspect(fields.class_literal, &kind) != MC_ENTITY_OK ||
-            strcmp(kind.client_name, name) != 0 || fields.base.world != w ||
-            fields.base.x != (double)o->published[i].x + 0.5 ||
+            strcmp(kind.client_name, o->published[i].jockey ? "fr" : name) != 0 ||
+            fields.base.world != w || fields.base.x != (double)o->published[i].x + 0.5 ||
             fields.base.z != (double)o->published[i].z + 0.5 ||
             fields.base.yaw != o->published[i].yaw || !fields.base.bF || fields.base.bG != -3 ||
             fields.base.bH != 4 || fields.base.bI != -3)
             return false;
+        if (o->jockeys != 0) {
+            const bool passenger = o->published[i].jockey;
+            mc_entity *mount = passenger && i != 0 ? w->entity_membership.entries[i - 1] : NULL;
+            mc_entity *rider = !passenger && i + 1 < o->publications && o->published[i + 1].jockey
+                                   ? w->entity_membership.entries[i + 1]
+                                   : NULL;
+            if (fields.base.aH != mount || entity->mount_hold != mount || fields.base.aG != rider ||
+                entity->passenger_hold != rider)
+                return false;
+        }
         if (strcmp(name, "dl") == 0 && (!mc_mob_inspect(entity, &mob) || !mob.watcher_16_present ||
                                         (mob.watcher_16 & 15) != o->published[i].color))
             return false;
@@ -598,33 +633,59 @@ static bool spawn_positive_case(fixture *f, const char *root, size_t slot, const
     random_tick_oracle random = {0};
     mc_math_class_state math_before = {0};
     int32_t seed;
-    CHECK(tick_world_create(f, root, slot, jockey ? 1 : 512) &&
-          (jockey ? spawn_chunk(f, slot, -3, -3, true, 0)
-                  : spawn_chunks(f, slot, category == 1 ? 255 : 0)) &&
+    CHECK(tick_world_create(f, root, slot, 512) && spawn_chunks(f, slot, category == 1 ? 255 : 0) &&
           spawn_add_player(f, slot, &player));
     mc_world_runtime *w = f->worlds[slot];
     w->fields.N = category == 0;
     w->fields.O = category == 1;
     CHECK(spawn_seed(w, category, name, jockey, &seed) &&
-          oracle_spawn(w, seed, category, name, true, jockey, &oracle));
-    CHECK((jockey || oracle_random_tick(w, &oracle.random, category == 1 ? 15 : 0, &random)) &&
+          oracle_spawn(w, seed, category, name, true, &oracle));
+    if (jockey) {
+        /* Select a declared seed before the one actual tick. A first jockey
+         * alone does not guarantee four later Spider successes: independent
+         * width/collision/random modeling must establish this whole input.
+         * No native result, actor or World Random is retried or repaired. */
+        size_t candidates = 1;
+        const int32_t first_seed = seed, first_group = oracle.group;
+        const size_t first_publications = oracle.publications;
+        while (oracle.publications != 5 || oracle.jockeys != 1 || oracle.group != 4 ||
+               oracle.total < 6) {
+            CHECK(candidates < 10000 && seed < 999999 &&
+                  spawn_seed_from(w, category, name, true, seed + 1, &seed) &&
+                  oracle_spawn(w, seed, category, name, true, &oracle));
+            ++candidates;
+        }
+        printf("JOCKEY_INPUT seed=%d candidates=%zu first-seed=%d first-group=%d "
+               "first-publications=%zu "
+               "group=4 publications=5 jockeys=1 "
+               "independent-oracle=1 before-native=1\n",
+               seed, candidates, first_seed, first_group, first_publications);
+    }
+    CHECK(oracle_random_tick(w, &oracle.random, category == 1 ? 15 : 0, &random) &&
           mc_math_classes_state(tick_math, &math_before, NULL) == MC_MATH_CLASS_OK);
     const size_t baseline_bindings = w->persistent_bindings;
     mc_java_random_reseed(w->fields.r, seed);
-    CHECK(mc_world_runtime_tick_begin(w, tick_math, &call, NULL) ==
-              (jockey ? MC_WORLD_STORAGE_UNSUPPORTED_STATE : MC_WORLD_STORAGE_OK) &&
+    CHECK(mc_world_runtime_tick_begin(w, tick_math, &call, NULL) == MC_WORLD_STORAGE_OK &&
           mc_world_runtime_tick_inspect(call, &state) &&
-          spawn_matches(w, &state, &oracle, &random, name, jockey) &&
-          math_holds(&math_before, jockey ? 1u : 2u) &&
-          w->persistent_bindings == baseline_bindings + oracle.publications + (jockey ? 1u : 2u));
+          spawn_matches(w, &state, &oracle, &random, name, jockey) && math_holds(&math_before, 2) &&
+          w->persistent_bindings == baseline_bindings + oracle.publications + 2);
     if (jockey) {
-        CHECK(oracle.constructors == 1 && oracle.publications == 2 && oracle.group == 1 &&
-              oracle.total == 0 && oracle.calls == 12);
+        const bool published = published_matches(w, &oracle, name);
+        if (!published)
+            fprintf(stderr,
+                    "Jockey publication mismatch seed=%d expected=%zu actual=%zu "
+                    "group=%d total=%d jockeys=%zu\n",
+                    seed, oracle.publications, w->entity_membership.count, oracle.group,
+                    oracle.total, oracle.jockeys);
+        CHECK(oracle.publications == 5 && oracle.jockeys == 1 && oracle.group == 4 &&
+              oracle.total >= 6 && published);
         CHECK(mc_entity_retain(state.spawn_jockey) == MC_ENTITY_OK);
         external = state.spawn_jockey;
         CHECK(mc_world_runtime_tick_retire(&call, NULL) == MC_WORLD_STORAGE_OK &&
               w->entity_membership.entries[1] == external);
-        printf("MOB_LOOP jockey cn next=cq845:56 published=2 skeleton=fr random-checked=1\n");
+        printf("MOB_LOOP jockey cn completed=1 group=4 published=5 skeleton=fr mounted=1 "
+               "random-checked=1\n");
+        random_tick_row("jockey", name, &random);
     } else {
         CHECK(oracle.publications == 4 && oracle.group == 4 && oracle.total >= 6 &&
               published_matches(w, &oracle, name));
@@ -903,7 +964,7 @@ static bool tick_cases(fixture *f) {
     spawn_oracle oracle = {0};
     random_tick_oracle random = {0};
     CHECK(spawn_chunks(f, 0, 255) && spawn_seed(w, 1, "wh", false, &selected_seed) &&
-          oracle_spawn(w, selected_seed, 1, "wh", true, false, &oracle) &&
+          oracle_spawn(w, selected_seed, 1, "wh", true, &oracle) &&
           oracle_random_tick(w, &oracle.random, 15, &random));
     CHECK(mc_ws_path_join(mc_world_store_root(f->stores[0]), "region/r.-1.-1.mcr", &flat_path,
                           NULL) == MC_WORLD_STORAGE_OK &&
@@ -944,7 +1005,7 @@ static bool tick_cases(fixture *f) {
     w->fields.O = false;
     for (size_t i = 0; i < COUNT(hostile_names); ++i) {
         CHECK(spawn_seed(w, 0, hostile_names[i], false, &selected_seed) &&
-              oracle_spawn(w, selected_seed, 0, hostile_names[i], false, false, &oracle) &&
+              oracle_spawn(w, selected_seed, 0, hostile_names[i], false, &oracle) &&
               oracle_random_tick(w, &oracle.random, 15, &random));
         mc_java_random_reseed(w->fields.r, selected_seed);
         CHECK(mc_world_info_source_rain_time_set(w->fields.x, 20) == MC_WORLD_INFO_OK &&

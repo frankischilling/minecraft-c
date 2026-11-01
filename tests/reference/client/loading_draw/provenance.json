@@ -6402,8 +6402,8 @@
       "sha256": "ac857b1789a72524f5ff1a399cec8f7da287fd2c252168dc5d2306bd5ce797e7"
     },
     "tests/world/runtime/test_world_tick.c": {
-      "bytes": 63602,
-      "sha256": "730322c471bb90646f97edb7c69b611b619ebc5012cf1b99d9873202dd8ac597"
+      "bytes": 67285,
+      "sha256": "3d5d3e61b1a36c0dc60a5e710ab5a242d48a4caf1caa94d18bd1aedbccbbb0de"
     },
     "cmake/client_frustum.cmake": {
       "bytes": 1234,

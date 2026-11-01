@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 70229,
-      "sha256": "3bfc6d67467ec3238977e726836d0a467ad6970f2ddd460b44d00c89e5d0d71f"
+      "bytes": 70464,
+      "sha256": "3b7922cc75338c7fa32b2e895dfb0433f940a4e2c7458cc522a6ff99f975fbef"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -834,8 +834,8 @@
       "sha256": "b16302cab40b1aa56c0ab49bf30ef4f327772af19a61b47016a47d4d3669b46f"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 57496,
-      "sha256": "30cf965b8dfa68d2b43d48720b54ed92defcf3cae39a045279098d505d762ece"
+      "bytes": 57641,
+      "sha256": "807878481831887e1c893fd6f3db7ffa6f985c0f12b5702c5e45191457d678f4"
     },
     "docs/wiki/History.md": {
       "bytes": 34375,
@@ -6407,7 +6407,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 391884,
-      "sha256": "ddbb3e13906d64292b1fde0315d78bc01c88a56db16e9fc4395b897d44e8e6bd"
+      "sha256": "02de7cb6a7247e5bd030583b849aa16479051121d53c47481a24449f359eaa47"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6471,7 +6471,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 489451,
-      "sha256": "ff068a726a06ee361497602da83ef2b8ee4d3eb377373a2940e3f578e6cb6ad5"
+      "sha256": "9f15f30e954a402f7f6335353860063dc52abfe71ba3d2a9ed333771c9ac6c89"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6603,7 +6603,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 387698,
-      "sha256": "0e67c682b73b381d5ccf7a03025c43c52555e5b8e8ecdccb249fad4e73f5887b"
+      "sha256": "7b7e7b331de78692dd9ec8ebce603fe4dce56ee92c5b5168f79c1a88c3841824"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -10814,8 +10814,8 @@
       "sha256": "9ecabd1de621a1fd495186d01c3b99c8cd8e6dbe2e81317a0895fb1d0559dbab"
     },
     "docs/world/ticking.md": {
-      "bytes": 5223,
-      "sha256": "cdb300a1bb8c67cc69de6302f4b444910c80f0873c2e0e58c62d166acbe9fce7"
+      "bytes": 5427,
+      "sha256": "3b0ca3a5208995d35c97f41301cc42dfff3185fb2ff0f9699b667d565402a1ab"
     },
     "include/mc/client/world/renderer_focus.h": {
       "bytes": 3003,
@@ -11010,20 +11010,20 @@
       "sha256": "2fe480e5b65f5f79f5f5c2c24caac191dd7ae6d203e435d8f5dd710dca8c53ca"
     },
     "tests/reference/world/tick/run.py": {
-      "bytes": 11506,
-      "sha256": "213ca795319aaaef47372c95d3646a4b0a495970a84f26118d055bd141c0b9c3"
+      "bytes": 12453,
+      "sha256": "6533d786d66811578c1b9141b8329d405635919a7898f93c8a8399da39fda2ce"
     },
     "tests/reference/world/tick/source-pins.json": {
       "bytes": 1432,
       "sha256": "2f6d09ca61aac390dc1bd1dc9932c28bb810e7c4c2eea6328c408b7933eee21a"
     },
     "tests/world/runtime/test_world_tick.c": {
-      "bytes": 63602,
-      "sha256": "730322c471bb90646f97edb7c69b611b619ebc5012cf1b99d9873202dd8ac597"
+      "bytes": 67285,
+      "sha256": "3d5d3e61b1a36c0dc60a5e710ab5a242d48a4caf1caa94d18bd1aedbccbbb0de"
     },
     "tests/reference/world/tick/README.md": {
-      "bytes": 4022,
-      "sha256": "6afb4240c638678e0755a948be6ddb8e5ae313d96a99a9f150fddf053198548a"
+      "bytes": 4897,
+      "sha256": "6933008cf374b677f7db416c7bc68c75fede41c60c1c23187e6e79d5fdf17129"
     },
     "cmake/client_frustum.cmake": {
       "bytes": 1234,
@@ -13222,8 +13222,8 @@
       "sha256": "8745fb05d0a882b843126a6fbaa903e40782f6a230b1577c6332c6e59e3ff538"
     },
     "docs/entity/mob-spawning.md": {
-      "bytes": 4972,
-      "sha256": "b249cb762bba2588cd35da580fc020b3b4dc405a656271dd2348c6a5be5fad90"
+      "bytes": 5594,
+      "sha256": "06c095b865219e9c4cc57a49a1731fb07cdb0882371f6bf099cf6b13d71115fc"
     },
     "include/mc/entity/mob/spawning.h": {
       "bytes": 2862,
@@ -15586,8 +15586,8 @@
       "sha256": "6c1fe7d07124851ef099ffaac1915d517e6907dfafceb22b0fced75fe240f5d7"
     },
     "docs/entity/mounting.md": {
-      "bytes": 3331,
-      "sha256": "27be72c5bd56faeee87ff8e65726b2240dc71ffed00c4f37b8ae4f6390427daa"
+      "bytes": 3862,
+      "sha256": "932b14ff7449a8e16c4901ac494ff6ee33fd269c1615e415142cc7464c188a61"
     },
     "docs/entity/player-drop.md": {
       "bytes": 4369,
