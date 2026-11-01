@@ -1,5 +1,50 @@
 # Test scope and reproduction
 
+## Source Chunk output and World reload
+
+`storage.source_region_output` runs four fresh-process profiles over real
+region files: allocation/rewrite/growth/reuse, shared ownership, consumed-close
+cleanup failure and constructor limits. Six normal writes and six common
+abandon/cache-flush snapshots match unchanged original observations on each
+host. Windows MSVC and sanitized Linux have separate native reports and real
+clock intervals. The [region contract](world/region-output.md),
+[capture](../tests/reference/world/source_region_output/README.md) and
+[comparator](../tests/reference/world/source_region_output/comparison-README.md)
+describe the exact scope. Original caught return after diagnostic441 remains
+outside native completion credit.
+
+`world.source_saving` uses the actual source World constructor, Store-owned
+Chunks, Registry and Entity owners. Empty and Item/Chest Worlds perform two
+full saves. Independent decoding checks every Block byte, fresh typed records,
+metadata before late region growth and the second persisted Info size. Actual
+native retirement, a shared-cache flush and a newly constructed source World
+exercise reload from the same files. Session mismatch, opaque records, a late
+Item null Stack and null Chunk.m/l projections check retained unclosed streams
+and unchanged region bytes. Projection controls restore the same owners before
+cleanup; they do not alter native ownership ledgers.
+
+Build `mc_test_source_region_output` and `mc_test_source_world_saving`, then run:
+
+```text
+ctest --test-dir <build> -C Debug -R '^(storage.source_region_output|world.source_saving)$' --output-on-failure
+```
+
+These authored native Worlds do not establish an ordinary UI save session,
+natural generated-world restart or original whole-World equality. Null canonical
+Entity occurrences and embedded slice pointers are rejected by native admission;
+their source diagnostic branches have static review without runtime credit.
+Linux qualification enables ASan leak detection and UBSan halt-on-error.
+
+The final focused run builds twenty targets per host, including the ordinary
+client. Windows MSVC Debug and Linux Clang18 each pass seven World profiles
+with 581 native checks, all four region profiles and seventeen existing
+regressions. The region fixture reports 10,587 Windows and 10,435 Linux checks;
+their constructor byte budgets reflect each host's actual native owner sizes.
+All selected code/helper inputs and twenty products per host are hashed around
+qualification. The Windows fixture uses explicit CRT read/write sharing when
+copying a region that remains open. This test-only access does not change the
+production RandomAccessFile provider.
+
 ## Source metadata output
 
 Windows MSVC Debug and Linux Clang18 ASan/UBSan each build eighteen selected
@@ -31,8 +76,8 @@ including the client, remain byte-identical, retaining those execution results.
 All eighteen final products remain unchanged during qualification. Its 3,205
 recorded code, helper, Java and metadata inputs remain unchanged through the
 build/test phase. Later documentation and evidence annotations add no execution
-credit. The current project formatter checks 1,802 C/header/fragment files;
-8,698 current source-binding entries pass. Linux leak detection and UBSan
+credit. That metadata checkpoint checks 1,802 C/header/fragment files and
+8,698 source-binding entries. Linux leak detection and UBSan
 halt-on-error are enabled throughout.
 
 The registered original metadata test passes seven prepared scenarios in

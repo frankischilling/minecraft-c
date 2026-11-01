@@ -4,30 +4,35 @@
 #include "mc/world/runtime/runtime.h"
 #include "mc/world/runtime/saving/errors.h"
 
-/* Write one exact committed GAME Chunk held by the actual World Store.
- * Timestamp is an explicit native region-transport input. The concrete runtime
- * lifecycle uses its real platform clock; this entry does not sample a clock.
- * Hold the World, selected Info and exact Chunk through both session checks,
- * source field/List traversal, live Entity/TileEntity builds and region commit. Earlier q
- * changes survive failure; growth is published only after successful commit.
- * Every Item occurrence calls its actual Boolean serializer in slice/List
- * order, including duplicates and false/dead results. Other Entity types are
- * not implemented. Known records use current semantic fields and actual
- * Entity/Stack provenance. Unknown factory-NULL source records are preserved
- * by the Store's completed import journal, never placed in live containers.
- * Both completed live lists are required before lower composition/encoding.
+/* Write one exact committed GAME Chunk held by its actual World Store.
+ * Source Stores use the canonical ld owner: first session outside the catch,
+ * region stream16 before fresh root/Level24..44, serializer's second session,
+ * genuine field/List traversal, plain NBT57, explicit close61, then actual
+ * Info65/size74, late signed growth89 and Info store94. Timestamp is used only
+ * by the unchanged legacy native region transport; source QJ samples its own
+ * real clock at its reached commit423. No early source timestamp is sampled.
  *
- * The NBT operation ceiling combines all temporary record nodes/trees, list
- * pointer scratch and independent list/composed/encoded outputs while live.
- * Each storage serializer additionally charges its own current Entity/Stack
- * graph. World/Store/container/class graphs and their native ceilings remain
- * separate; this is not a whole-World/process heap bound or Java OOM timing.
+ * Source Entity occurrences call actual Boolean SN.c, including duplicate,
+ * dead and unnamed/Player false results; supported Item/FallingSand/Minecart
+ * writers use semantic fields without storage overlays. Missing live Mob
+ * writers remain explicit reached dependencies. Source Chest/Spawner/Piston
+ * output uses fresh semantic fields/direct Stack values. Intermediate native
+ * policy refuses unconsumed opaque Entity/TileEntity records before commit.
+ * Legacy stores keep their separate provenance/opaque preservation composers.
  *
- * Source e/f/g, their a arrays, h, m and l are read as current projections.
- * Fixed native spans must remain live under exclusive access. Source owner
- * admission and buffered checked transport are not original stream/OOM or
- * caught-Exception parity. Incomplete/retired containers cannot become saveable
- * through native teardown. Outputs/errors must be disjoint from all owners. */
+ * Earlier q changes survive failure. There is NO source serializer finally.
+ * The ld owner retains partial output and input trees, admits native terminal
+ * cleanup, and disables source continuation after failure. Native release ends
+ * codec state before freeing borrowed input; it never finishes/commits it.
+ * Complete per-attempt source/stream/tree causes are in source_chunk; legacy
+ * composition/encoding fields describe only operations actually reached there.
+ *
+ * Native operation limits charge overlapping new record/list/fresh-root trees
+ * and their scratch; concrete output/region and external owner graphs retain
+ * separate budgets. Fixed native shapes and immutable live input spans are
+ * admitted explicitly; Java mutable-NBT allocation/OOM/HashMap wire order and
+ * complete Throwable/printing behavior are not claimed. All input/output/error
+ * storage stays disjoint and owners remain exclusive through return. */
 mc_world_storage_status mc_world_runtime_write_game_chunk(mc_world_runtime *world,
                                                           mc_chunk_state *state, uint32_t timestamp,
                                                           uint32_t *growth,
@@ -48,8 +53,9 @@ mc_world_runtime_save_chunks_detailed(mc_world_runtime *world, bool force, bool 
  * dependencies. Named MapData values use actual dirty fields and names.
  * Empty Lists or a selected null Player omit retained Info.Player without mutating
  * it. Metadata uses its real clock and precedes Chunk SizeOnDisk growth.
- * Native checked transport/unknown-field policies remain in effect; original
- * caught file failures are not qualified. Info-bound COMPOSITION has no live
+ * Source metadata and Chunk output use their actual concrete owners; legacy
+ * checked transport/unknown-field policies remain separate. Reached missing
+ * Exception/IOException printing is an explicit dependency. Info-bound COMPOSITION has no live
  * Player List and retains its explicit unsupported metadata result. */
 mc_chunk_lifecycle_status mc_world_runtime_save_detailed(mc_world_runtime *world, bool force,
                                                          mc_world_runtime_lifecycle_error *error);

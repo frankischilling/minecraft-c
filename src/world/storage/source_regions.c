@@ -10,7 +10,7 @@ typedef struct source_region {
     mc_java_random_access *raf;
     int32_t offsets[1024], timestamps[1024];
     bool *free_sectors;
-    size_t sectors;
+    size_t sectors, sector_capacity, holds;
     int32_t growth;
     int64_t modified;
     uint32_t hash;
@@ -78,6 +78,17 @@ static mc_world_source_status diagnostic(mc_world_source_region_error *e, const 
     return e->source.status;
 }
 
+/* file_failure also serves reached source operations. At a native-only
+ * retirement boundary preserve its actual child cause without inventing a
+ * source throw/catch or diagnostic execution. */
+static void native_cleanup_scope(mc_world_source_region_error *e) {
+    e->source.source_exception = false;
+    e->source.native_policy = true;
+    e->source.exception_class = NULL;
+    e->source.caught_io = e->caught_io = false;
+    e->source.diagnostic_frontier = false;
+}
+
 mc_world_source_regions_options mc_world_source_regions_default_options(void) {
     return (mc_world_source_regions_options){268435456u, 67108864u, 8388608u};
 }
@@ -121,6 +132,11 @@ static mc_world_source_status region_release(source_region **slot,
     source_region *q = *slot;
     if (q == NULL)
         return MC_WORLD_SOURCE_OK;
+    if (q->holds > 1) {
+        --q->holds;
+        *slot = NULL;
+        return MC_WORLD_SOURCE_OK;
+    }
     mc_java_file_error fe;
     mc_java_file_status fs = mc_java_random_access_release(&q->raf, &fe);
     if (fs == MC_JAVA_FILE_OK)
@@ -240,6 +256,7 @@ mc_world_source_status mc_world_source_regions_release(mc_world_source_regions *
     }
     r->active = false;
     if (status != MC_WORLD_SOURCE_OK) {
+        native_cleanup_scope(&r->work);
         r->cleanup = r->work;
         if (e != NULL)
             *e = r->cleanup;
@@ -347,6 +364,7 @@ static mc_world_source_status construct_region(mc_world_source_regions *r,
     if (q == NULL)
         return result(e, MC_WORLD_SOURCE_ALLOCATION, "qj owner", "rj", "a", 125);
     r->pending = q;
+    q->holds = 1;
     q->file = r->file;
     r->file = NULL;
     mc_java_file_error fe;
@@ -423,6 +441,7 @@ static mc_world_source_status construct_region(mc_world_source_regions *r,
     if (q->free_sectors == NULL)
         return result(e, MC_WORLD_SOURCE_ALLOCATION, "qj sector free List", "qj", "<init>", 232);
     memset(q->free_sectors, 1, q->sectors * sizeof(*q->free_sectors));
+    q->sector_capacity = q->sectors;
     q->free_sectors[0] = q->free_sectors[1] = false;
     pc = 294;
     fs = mc_java_random_access_seek(q->raf, 0, &fe);
@@ -710,3 +729,5 @@ bool mc_world_source_regions_inspect(const mc_world_source_regions *r,
                                                r->pending == NULL ? NULL : r->pending->raf};
     return true;
 }
+
+#include "source_region_output.inc"

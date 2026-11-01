@@ -1,13 +1,14 @@
 # Development status
 
-Completed Info records now write through the [source SaveHandler](world/save-handler.md#metadata-output),
-using real File/FOS, streaming NBT/GZIP and the original ignored-Boolean backup
-rotation. Windows and sanitized Linux each pass 23 profiles and 1,294 checks;
-seven prepared transport scenarios match unchanged original calls on each host.
-Native failures retain checked cleanup without inventing source close or file
-rotation. The World metadata callback is connected; complete source Chunk and
-nonempty SavedData output, exception diagnostics and save/detach/reload remain
-unfinished. These results do not establish a playable save session.
+The source World now saves metadata and supported live Chunk records through
+its actual SaveHandler, loader and shared region cache. It writes fresh
+semantic records, explicitly closes the compressed stream, then adds region
+growth to live Info. Native tests cover full saves and new World reloads with
+Item and Chest contents. The [save contract](world/saving.md) distinguishes
+this route from legacy native storage and records its failure ownership.
+Remaining Mob writers, nonempty SavedData output, exception diagnostics and
+ordinary Save-and-quit remain unfinished. These tests do not establish a
+playable save session or complete original-world interoperability.
 
 The ordinary executable now owns a real [Frame and embedded Canvas](client/frame-canvas.md).
 Startup paints through native Graphics before attaching Display to the child.
@@ -99,8 +100,8 @@ explicit within `||`, preserving C precedence and every expected count. GCC13
 with the actual target flags rejects the original and accepts the correction.
 Rebuilt Windows and Clang18 creature comparisons each retain 3,722 native checks,
 366,155 selected original checks and twelve rejected comparator corruptions.
-Production and build configuration are unchanged; hosted results keep their
-separate commit scope in [draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
+Production and build configuration are unchanged; hosted results retain their
+recorded source scope.
 
 The preceding animal and hosted results below retain their published-commit scope.
 

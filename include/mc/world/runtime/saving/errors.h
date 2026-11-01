@@ -6,6 +6,7 @@
 #include "mc/world/runtime/entity_errors.h"
 #include "mc/world/runtime/tile_entities/errors.h"
 #include "mc/world/storage/chunk.h"
+#include "mc/world/storage/source_chunk_loader.h"
 #include "mc/world/storage/source_handler.h"
 
 typedef struct mc_world_player_metadata_error {
@@ -35,6 +36,7 @@ typedef struct mc_world_game_save_error {
     mc_stored_chunk_error composition;
     mc_nbt_error encoding;
     mc_world_player_metadata_error metadata;
+    mc_world_source_chunk_error source_chunk;
 } mc_world_game_save_error;
 
 typedef struct mc_world_runtime_lifecycle_error {

@@ -798,25 +798,6 @@ static mc_world_storage_status store_source_legacy(mc_world_storage_error *error
                        "is not source completion");
 }
 
-static mc_world_storage_status store_source_save_frontier(mc_world_store *store,
-                                                          mc_world_storage_error *error) {
-    mc_world_source_error source;
-    mc_world_source_status status = mc_world_store_source_check_session(store, &source);
-    if (status != MC_WORLD_SOURCE_OK)
-        return store_error(error,
-                           status == MC_WORLD_SOURCE_BUSY    ? MC_WORLD_STORAGE_BUSY
-                           : status == MC_WORLD_SOURCE_LIMIT ? MC_WORLD_STORAGE_LIMIT
-                           : status == MC_WORLD_SOURCE_ALLOCATION
-                               ? MC_WORLD_STORAGE_ALLOCATION_FAILED
-                           : status == MC_WORLD_SOURCE_FILE ? MC_WORLD_STORAGE_IO_ERROR
-                                                            : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                           source.operation);
-    source_result(&store->source->failure, MC_WORLD_SOURCE_UNIMPLEMENTED,
-                  "actual source ld.a rj.d/DeflaterOutputStream save transport", "ld", "a",
-                  "(Lfd;Llm;)V", 16);
-    return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, store->source->failure.operation);
-}
-
 static mc_world_storage_status store_source_checked_free(mc_world_store **slot,
                                                          mc_world_storage_error *error) {
     mc_world_source_status s = mc_world_store_source_release(slot, NULL);

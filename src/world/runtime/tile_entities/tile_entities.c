@@ -5631,3 +5631,5 @@ bool mc_live_tile_chunk_remove_held(mc_world_chunk *chunk, int32_t x, int32_t y,
 mc_registry_classes *mc_live_tile_tick_code_registry(const mc_tile_entity *tile) {
     return tile == NULL || tile->classes == NULL ? NULL : tile->classes->registry;
 }
+
+#include "source_save.inc"

@@ -1,5 +1,33 @@
 # World simulation
 
+## Source Chunk saving and reload
+
+The source World saves supported live Chunks through its actual loader and
+shared region cache. Fresh semantic NBT passes through DataOutputStream and
+zlib into the region's Chunk buffer. Explicit close commits the record; late
+growth accounting then updates live Info. Metadata retains its earlier place
+in the full-save sequence.
+
+Native controls save empty and Item/Chest Worlds twice, retire their owners,
+flush the shared region cache and load the same files through newly constructed
+source Worlds. Independent decoding checks Block arrays, typed records,
+timestamps and metadata growth ordering. Failure controls retain unclosed
+streams without an invented serializer finally. Four lower-region profiles
+pass on both hosts and have separate finite original comparisons.
+
+Windows MSVC Debug and Linux Clang18 ASan/UBSan each build twenty selected
+targets including the ordinary client. All seven World profiles pass with
+581 checks per host, alongside the region profiles and seventeen regressions.
+
+Remaining Mob writers, nonempty SavedData, exception printing, ordinary
+Save-and-quit and natural gameplay restart retain separate requirements.
+The earlier loaded-World focus failures remain unresolved by this storage work.
+
+[Chunk saving](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saving.md),
+[region output](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/region-output.md)
+and [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#source-chunk-output-and-world-reload)
+record the evidence and limits.
+
 ## Source metadata output
 
 Completed Info records now write through the real source SaveHandler, File/FOS
@@ -11,10 +39,9 @@ Windows and sanitized Linux each pass 23 profiles and 1,294 checks; seven
 prepared metadata transport scenarios match unchanged original calls on each
 host. Separate ordinary/read-only JDI observations, primitive payload checks
 and authored stream faults keep their declared scopes. The World metadata
-callback is connected, but complete Chunk/nonempty SavedData output,
-exception diagnostics, detach/reload and a playable save session remain
-unfinished. The two earlier private loaded-World focus failures below remain
-unresolved by this storage work.
+callback is connected. The Chunk route has its separate native scope above;
+nonempty SavedData output, exception diagnostics, ordinary detach and a
+playable save session remain unfinished.
 
 [SaveHandler contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/save-handler.md#metadata-output)
 and [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#source-metadata-output)
@@ -142,8 +169,8 @@ explicit within `||`, preserving C precedence and every expected count. GCC13
 with the actual target flags rejects the original and accepts the correction.
 Rebuilt Windows and Clang18 creature comparisons each retain 3,722 native checks,
 366,155 selected original checks and twelve rejected comparator corruptions.
-Production and build configuration are unchanged; hosted results keep their
-separate commit scope in [draft PR #52](https://github.com/frankischilling/minecraft-c/pull/52).
+Production and build configuration are unchanged; hosted results retain their
+recorded source scope.
 
 The preceding path checkpoint retains its own results below.
 

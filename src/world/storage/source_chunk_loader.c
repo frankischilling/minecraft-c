@@ -1,6 +1,7 @@
 #include "mc/world/storage/source_chunk_loader.h"
 #include "../../block/registry/runtime_internal.h"
 #include "../runtime/source_terminal_internal.h"
+#include "mc/core/java/java.h"
 #include "mc/world/dimension/world_provider.h"
 #include "mc/world/runtime/runtime.h"
 #include "source_game_stage.h"
@@ -15,6 +16,12 @@ struct mc_world_source_chunk_loader {
     mc_nbt_stream *reader;
     mc_nbt_document *document, *parsed_document;
     mc_world_info_name *dimension_name;
+    mc_world_source_region_output *output;
+    mc_nbt_tree *save_document, *save_entities, *save_tiles;
+    mc_world_source_chunk_save_state save;
+    mc_nbt_tag save_root, save_level, save_fields[11];
+    uint16_t save_names[11][16];
+    const mc_nbt_tag *save_children[11], *save_root_child;
 };
 
 static mc_world_source_status result(mc_world_source_error *e, mc_world_source_status status,
@@ -227,6 +234,25 @@ mc_world_source_status mc_world_source_chunk_loader_retain(mc_world_source_chunk
     return result(e, MC_WORLD_SOURCE_OK, NULL, NULL, -1);
 }
 
+static mc_world_source_status clear_output(mc_world_source_chunk_loader *l,
+                                           mc_world_source_chunk_error *e) {
+    const mc_world_source_status status =
+        mc_world_source_region_output_release(&l->output, &e->output);
+    if (status != MC_WORLD_SOURCE_OK) {
+        e->source = e->output.region.source;
+        return status;
+    }
+    /* Deflater may borrow this tree after a failed write: release codec first. */
+    mc_nbt_tree_free(l->save_document);
+    l->save_document = NULL;
+    mc_nbt_tree_free(l->save_entities);
+    l->save_entities = NULL;
+    mc_nbt_tree_free(l->save_tiles);
+    l->save_tiles = NULL;
+    l->save = (mc_world_source_chunk_save_state){0};
+    return MC_WORLD_SOURCE_OK;
+}
+
 static mc_world_source_status clear_input(mc_world_source_chunk_loader *l,
                                           mc_world_source_chunk_error *e) {
     mc_nbt_status ns = mc_nbt_stream_release(&l->reader, &e->input);
@@ -268,7 +294,9 @@ mc_world_source_status mc_world_source_chunk_loader_release(mc_world_source_chun
     l->state.active = true;
     l->state.retiring = true;
     l->state.phase = MC_WORLD_SOURCE_RETIRING;
-    mc_world_source_status status = clear_input(l, &l->cleanup);
+    mc_world_source_status status = clear_output(l, &l->cleanup);
+    if (status == MC_WORLD_SOURCE_OK)
+        status = clear_input(l, &l->cleanup);
     mc_java_file_error fe;
     if (status == MC_WORLD_SOURCE_OK) {
         mc_java_file_status fs = mc_java_file_release(&l->state.pending_file, &fe);
@@ -316,6 +344,11 @@ bool mc_world_source_chunk_loader_inspect(const mc_world_source_chunk_loader *l,
     out->document = l->document == NULL ? l->parsed_document : l->document;
     out->failure = &l->failure;
     out->cleanup = &l->cleanup;
+    out->save = l->save;
+    out->save.output = l->output;
+    out->save.document = l->save_document;
+    out->save.entity_records = l->save_entities;
+    out->save.tile_records = l->save_tiles;
     return true;
 }
 
@@ -413,6 +446,67 @@ mc_world_source_chunk_loader_terminal_inspect(const mc_world_source_chunk_loader
         if (status != MC_WORLD_STORAGE_OK)
             return status;
     }
+    if ((l->save_document != NULL &&
+         (l->save_document == l->save_entities || l->save_document == l->save_tiles)) ||
+        (l->save_entities != NULL && l->save_entities == l->save_tiles))
+        return storage_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "ld terminal aliased fresh tree owners");
+    if (l->save.entities_attached != (l->save_entities != NULL) ||
+        l->save.tiles_attached != (l->save_tiles != NULL) ||
+        (l->save.tiles_attached && !l->save.entities_attached) ||
+        (l->save_document != NULL && (!l->save.entities_attached || !l->save.tiles_attached)))
+        return storage_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "ld terminal fresh composition ownership prefix");
+    if (l->output != NULL) {
+        mc_world_source_region_output_state output;
+        if (!mc_world_source_region_output_inspect(l->output, &output))
+            return storage_result(error, MC_WORLD_STORAGE_BUSY, "ld terminal active output");
+        if (output.active || output.phase == MC_JAVA_OUTPUT_CONSTRUCTING)
+            return storage_result(error, MC_WORLD_STORAGE_BUSY, "ld terminal constructing output");
+        if (output.regions != NULL && output.regions != l->state.regions)
+            return storage_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                  "ld terminal output shared regions identity");
+        if (output.phase == MC_JAVA_OUTPUT_READY &&
+            (output.regions != l->state.regions || output.region_identity == NULL ||
+             output.region_holds == 0 || output.random_access == NULL ||
+             output.region_file == NULL ||
+             mc_java_file_namespace(output.region_file) != regions.files))
+            return storage_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                  "ld terminal READY output provenance");
+        if (output.region_identity == NULL &&
+            (output.random_access != NULL || output.region_file != NULL ||
+             output.region_holds != 0))
+            return storage_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                  "ld terminal output QJ occurrence");
+        if (output.region_file != NULL &&
+            mc_java_file_namespace(output.region_file) != regions.files)
+            return storage_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                  "ld terminal partial output File namespace");
+        if (output.region_file != NULL) {
+            status = terminal_loader_file(output.region_file, error);
+            if (status != MC_WORLD_STORAGE_OK)
+                return status;
+        }
+        if (output.random_access != NULL) {
+            mc_java_random_access_state raf;
+            if (!mc_java_random_access_inspect(output.random_access, &raf) || raf.active)
+                return storage_result(error, MC_WORLD_STORAGE_BUSY,
+                                      "ld terminal active output RAF");
+        }
+        if (output.phase != MC_JAVA_OUTPUT_RAW && output.phase != MC_JAVA_OUTPUT_READY &&
+            output.phase != MC_JAVA_OUTPUT_FAILED && output.phase != MC_JAVA_OUTPUT_RETIRING)
+            return storage_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                  "ld terminal output phase");
+        if (output.region_identity != NULL &&
+            (output.regions != l->state.regions || output.region_holds == 0 ||
+             (output.phase != MC_JAVA_OUTPUT_RETIRING &&
+              (output.random_access == NULL || output.region_file == NULL))))
+            return storage_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                  "ld terminal partial output QJ provenance");
+    } else if (l->save_document != NULL || l->save_entities != NULL || l->save_tiles != NULL) {
+        return storage_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "ld terminal orphan output document");
+    }
     /* Parsed documents and failed constructor children may remain owned.
      * Their reference counts are not invented World roots or exemptions.
      * Store admission separately inventories its shared classes/regions. */
@@ -443,8 +537,9 @@ mc_world_storage_status mc_world_source_chunk_loader_begin(mc_world_source_chunk
                                                            mc_world_storage_error *e) {
     if (l == NULL || world == NULL || out == NULL)
         return storage_result(e, MC_WORLD_STORAGE_INVALID_ARGUMENT, "ld read arguments");
-    if (l->state.active || l->state.retiring)
-        return storage_result(e, MC_WORLD_STORAGE_BUSY, "ld active read");
+    if (l->state.active || l->state.retiring || l->save.failed ||
+        (l->output != NULL && !l->save.source_returned))
+        return storage_result(e, MC_WORLD_STORAGE_BUSY, "ld active or incomplete source save/read");
     if (l->state.phase != MC_WORLD_SOURCE_READY) {
         if (l->failure.storage.status != MC_WORLD_STORAGE_OK) {
             if (e != NULL)
@@ -573,7 +668,8 @@ mc_world_source_chunk_loader_last_error(const mc_world_source_chunk_loader *l) {
 
 mc_world_storage_status mc_world_source_chunk_loader_prepare_normalizer(
     mc_world_source_chunk_loader *l, mc_world_runtime *world, mc_world_storage_error *e) {
-    if (l == NULL || world == NULL || l->state.phase != MC_WORLD_SOURCE_READY || l->state.active)
+    if (l == NULL || world == NULL || l->state.phase != MC_WORLD_SOURCE_READY || l->state.active ||
+        l->save.failed || (l->output != NULL && !l->save.source_returned))
         return storage_result(e, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "ld Chunk.i owner phase");
     if (mc_world_store_source_normalization_map(l->state.store) != NULL)
         return storage_result(e, MC_WORLD_STORAGE_OK, NULL);
@@ -624,3 +720,5 @@ mc_world_storage_status mc_world_source_chunk_loader_prepare_normalizer(
     *shared.ready = true;
     return storage_result(e, MC_WORLD_STORAGE_OK, NULL);
 }
+
+#include "source_chunk_save.inc"

@@ -42,8 +42,6 @@ store_source_write_record(mc_world_store *, const mc_world_info_record *, mc_wor
 static mc_world_storage_status store_source_legacy(mc_world_storage_error *error);
 static mc_world_storage_status store_source_native_admit(const mc_world_store *,
                                                          mc_world_storage_error *);
-static mc_world_storage_status store_source_save_frontier(mc_world_store *,
-                                                          mc_world_storage_error *);
 struct store_chunk;
 static mc_stored_chunk_status store_source_normalize(mc_world_store *, struct store_chunk *,
                                                      mc_world_storage_error *);

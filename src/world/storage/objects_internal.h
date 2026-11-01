@@ -3,6 +3,7 @@
 
 #include "mc/storage/nbt/tree.h"
 #include "mc/world/chunk/object.h"
+#include "mc/world/storage/source_handler.h"
 #include "mc/world/storage/store.h"
 
 /* GAME load keeps the existing stored state/data and retained NBT document.
@@ -128,23 +129,42 @@ typedef struct mc_world_store_game_save_view {
     mc_world_chunk *chunk;
     mc_chunk_state *state;
     mc_nbt_limits limits;
+    mc_java_output_options source_output;
 } mc_world_store_game_save_view;
 
 /* Concrete synchronous GAME save transport. The caller holds the actual World,
  * its Store binding and selected READY Info (when nonnull) exclusively through
  * end. Begin admits the SAME committed/source-enabled concrete Chunk and owns
  * one actual Store identity lease, then checks the session. NULL account uses
- * existing Store metadata. No source field reset, Entity/TileEntity traversal, class
- * use or callback occurs. A nested begin for this entry is BUSY. Failure balances
- * its temporary lease and preserves both outputs. All outputs/errors must be
- * disjoint from each other, owners, input trees and borrowed dependencies. */
+ * existing Store metadata on the legacy path. Source World saves supply their
+ * actual Info; source begin runs its real first session check and exposes the
+ * configured output bounds, while later stream/serializer work belongs to ld.
+ * No source field reset or Entity/TileEntity traversal occurs here. A nested begin for this entry
+ * is BUSY. Failure balances its temporary lease and preserves both outputs. All outputs/errors must
+ * be disjoint from each other, owners, input trees and borrowed dependencies. */
 mc_world_storage_status
 mc_world_store_game_save_begin(mc_world_store *store, mc_world_runtime *world,
                                mc_chunk_state *state, mc_world_info *account,
                                mc_world_store_game_save **out, mc_world_store_game_save_view *view,
                                mc_world_storage_error *error);
 
-/* Only the concrete high coordinator calls write: after its second actual
+/* Detailed first LD World.r result. This session check is outside LD's catch.
+ * Source callers use their concrete ld owner for all later construction/commit;
+ * this native Store lease does not select legacy source transport. */
+mc_world_storage_status
+mc_world_store_game_save_begin_detailed(mc_world_store *, mc_world_runtime *, mc_chunk_state *,
+                                        mc_world_info *, mc_world_store_game_save **,
+                                        mc_world_store_game_save_view *, mc_world_storage_error *,
+                                        mc_world_source_error *);
+/* Native intermediate safety policy only: refuse retained factory-NULL Entity
+ * records instead of dropping them in the fresh source composition. Reached
+ * stream/serializer prefix remains owned. No source PC or commit is invented. */
+mc_world_storage_status mc_world_store_game_save_source_records_admit(
+    const mc_world_store *, const mc_world_store_game_save *, mc_world_storage_error *);
+
+/* Legacy native preservation transport only; source Stores use the concrete
+ * ld API and are refused by this write entry. Only the concrete high
+ * coordinator calls write: after its second actual
  * shared-serializer session check, source prefix, q=false and genuine Entity
  * traversal, then actual TileEntity builder success. q may be true with zero emitted
  * records (dead/false results); it is not an admission shortcut. Dereference the

@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 336184,
-      "sha256": "b5fcd88e03fbe0cc4742131c7f52db7fb52aa83b82d2f6919fb18e4f70644057"
+      "bytes": 336349,
+      "sha256": "c711f9fcf3717a285ccb9ce9fb8bc2f26805a79dc09bcff3788d2fdbe5372da1"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -466,8 +466,8 @@
       "sha256": "93226a41c97403c4e3e61a23f633b553fc6c96c3058e44d362bf01409dfdaff9"
     },
     "docs/parity.md": {
-      "bytes": 145065,
-      "sha256": "dbbc21304d1b5fd97cf737b2b686968b25a5818a9a58dccba2d8701dd7004553"
+      "bytes": 146316,
+      "sha256": "91aa650c2d43009d7409d2441891ed8981f48bfee3b240b74b717c5004522746"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 66477,
-      "sha256": "7d6fc39683936a38593fb8af1847e06ae63b938c0b71c5ee871516358e1f905a"
+      "bytes": 66426,
+      "sha256": "4e8fa75af92cf0ce4632cbb54011a3b86f2f402415f0f21b051650adb5a9d9e0"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 355113,
-      "sha256": "0cc162d123041ee899ac4a70f84662cddec886fea195b72815714115a930f612"
+      "bytes": 357774,
+      "sha256": "157178c5bc1bf02d7461c92f3960672cc8a2f1bf46f7ed88757f320b76eb0cb0"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 28039,
@@ -854,8 +854,8 @@
       "sha256": "f8ece751b0b5c7af311e7bdcfbcaba816eeab10a80fe244a1135db9002d5db1e"
     },
     "docs/wiki/World-simulation.md": {
-      "bytes": 34471,
-      "sha256": "d064b4e61bd00f38b797f9fe4b0131f474519030e1b988082452430bcc95d678"
+      "bytes": 36025,
+      "sha256": "b9d273fad42bdd6aa9aa7974938981247aba670381ff9059cbc7cf5a1b18e605"
     },
     "docs/wiki/_Sidebar.md": {
       "bytes": 2090,
@@ -1034,16 +1034,16 @@
       "sha256": "6890c86f0c14a4561f7ff1aa1fd3d3752e1c5dd2f42459e81e4f00099a6e65bd"
     },
     "docs/world/save-handler.md": {
-      "bytes": 11015,
-      "sha256": "97cf06c52f4024b6a5610dae5bb10a64e835751c9e66f9a9d54b9e28ce502e93"
+      "bytes": 11096,
+      "sha256": "f3072e513db995f0e707649ceaad409a63bb4db741f1812fad114c50b3cc8a5b"
     },
     "docs/world/saved-data.md": {
       "bytes": 13468,
       "sha256": "e8b08430cf32377c555075a989e2a262837e2187e9125e597287600f2782c122"
     },
     "docs/world/saving.md": {
-      "bytes": 8932,
-      "sha256": "e31ac3a8e95861420c3de69df6c1b9a98bb9870631c88137b5db931c197b28f0"
+      "bytes": 10575,
+      "sha256": "a6ac4c9f56c27860b5c57c9f618bb753d9f8ab4cb6a492ea623ce20640979d28"
     },
     "docs/world/scheduling.md": {
       "bytes": 10792,
@@ -1798,12 +1798,12 @@
       "sha256": "63ee530684bbce45aae9247d1218eb317318027d965c0390f2d7e685135bb5a9"
     },
     "include/mc/world/runtime/saving/errors.h": {
-      "bytes": 2029,
-      "sha256": "57be90706c3c3375976eb5086dfc5b5cc9c93f912b9806bebe9c3367f9a8bdb6"
+      "bytes": 2125,
+      "sha256": "10cd7484b886327fa724616f5325875330acc32eb524978dafedb2fa1380f663"
     },
     "include/mc/world/runtime/saving/saving.h": {
-      "bytes": 4191,
-      "sha256": "124238af0d5eff24a46a28fed1f5734bbcd071ed7b87093eb73a4f91fc664ea7"
+      "bytes": 4591,
+      "sha256": "04dc8c54c280b00cc77d7a67b54db3275bfef5fdd786f1c20da0799e49961458"
     },
     "include/mc/world/runtime/scheduling.h": {
       "bytes": 2787,
@@ -1826,8 +1826,8 @@
       "sha256": "7534554dff416c82dda0b596152dadaadb5a39ad90f6a79100300c7aa70d5624"
     },
     "include/mc/world/runtime/tile_entities/tile_entities.h": {
-      "bytes": 39141,
-      "sha256": "412671c503d2ce5f5d46eaa40bc243b7866989cca7e252ed230a367abc59779a"
+      "bytes": 40414,
+      "sha256": "a4d49d645ffa76ea99106d5f289fe6d74eb9ab2795d9c8b2bfe0ee34aaeac3ea"
     },
     "include/mc/world/runtime/weather.h": {
       "bytes": 2009,
@@ -2006,8 +2006,8 @@
       "sha256": "9578e0cc7995e343ef20fb20ba5176b0a88c63648ca9a719329a465acfd1231e"
     },
     "scripts/development/format_code.py": {
-      "bytes": 3666,
-      "sha256": "6587d537f960c47cac2bb69ca629b801193320335bb2358ee400f36986672375"
+      "bytes": 3857,
+      "sha256": "7ef0dc6b4b2cef3a07894526206bb86aa5ca1bd64c7a0f3358fdcb33dc3db0e9"
     },
     "scripts/reference/binaries/inspect_jars.py": {
       "bytes": 7826,
@@ -5006,8 +5006,8 @@
       "sha256": "bdceab094d8f5b48adec40403592fd879ce1c58967165d272f1b78166185affb"
     },
     "src/world/runtime/runtime.c": {
-      "bytes": 51695,
-      "sha256": "d93e26a5d7b000d56878f99e64538a76cf79729d27e25c636de42f53103e17a8"
+      "bytes": 51801,
+      "sha256": "4122fca0af2682e46e26dcb6018d1f718520131bc3ccfdbacb079bbfbbeba9b9"
     },
     "src/world/runtime/runtime_internal.h": {
       "bytes": 6072,
@@ -5026,8 +5026,8 @@
       "sha256": "294e28f2463bfc774ae4d7e74d8ab8ca8336b6c429f6471723c102802b487207"
     },
     "src/world/runtime/saving/saving.c": {
-      "bytes": 14799,
-      "sha256": "a05de6526c4dbd914bdc501d463010abb3b2d5127f4320b1fe3fc638724fb2a3"
+      "bytes": 22690,
+      "sha256": "f3eed3adc200a258721fa14936b8625a3d64d911a3ca039218fe0e5631446826"
     },
     "src/world/runtime/saving/saving_internal.h": {
       "bytes": 203,
@@ -5086,8 +5086,8 @@
       "sha256": "297356b9101ba22b1c870779d7e66dd492436b48e7d70e32b7287aab9b7ad5cc"
     },
     "src/world/runtime/tile_entities/tile_entities.c": {
-      "bytes": 262957,
-      "sha256": "cd03f806d7eada9a39db94046215ee86a0f144e3bc5fb86a3a29ad9ca358cb0c"
+      "bytes": 262985,
+      "sha256": "ffe2cb721b572e6b329533cd792f90ed113db2579078ff270bb3985b6773ffda"
     },
     "src/world/runtime/tile_entities/tile_entities_internal.h": {
       "bytes": 1112,
@@ -5202,16 +5202,16 @@
       "sha256": "3a71fc1afcad9c6934c5d527636c6c08d2e2a5a58096fc01d473c30ccc0be392"
     },
     "src/world/storage/objects_internal.h": {
-      "bytes": 13957,
-      "sha256": "9d7079f612e4fc8fb5a62e0748e00579cf59e535ffa45d1ab7bdcbf3811ad058"
+      "bytes": 15362,
+      "sha256": "eaa87b0a21eaf18b208992686e57bd685a0015bc07db14de288e419ef257ff08"
     },
     "src/world/storage/regions.c": {
       "bytes": 15614,
       "sha256": "77a7c8269f4ea835186c6bc1afb45479ca09e73530d9eb0332307046d406976e"
     },
     "src/world/storage/source_handler_internal.h": {
-      "bytes": 2380,
-      "sha256": "e7165703a8052386d579d32636b6b13eaf764b3fdeadccb72a42d60611df1fc8"
+      "bytes": 2219,
+      "sha256": "d5e9e4deea584c752ebdd380010afab570c6fbffcfb3294da1fc792eec4fd372"
     },
     "src/world/storage/source_metadata.inc": {
       "bytes": 22027,
@@ -5222,12 +5222,12 @@
       "sha256": "c893d4830456d23265164eeec268ab167fbb570120f485b0c981f3276a61c09a"
     },
     "src/world/storage/store.c": {
-      "bytes": 127329,
-      "sha256": "6c0054973c60c0e94afeab529f61daf3c72cfc6351b7a19db332d1bc424fbd56"
+      "bytes": 130518,
+      "sha256": "116020b003364701039370553dc141c0c7fe756749ce4792cff166e5baf547e7"
     },
     "src/world/storage/store_source.inc": {
-      "bytes": 39523,
-      "sha256": "545146473d7f90b7a9319f1adfc5213f56ec2ba143cd726ce27b50ff901a99d4"
+      "bytes": 38311,
+      "sha256": "aa8d28fe67e89ab46f65002a7ba344b4ad00518af4aadd8d0d3a6cc8cc635bb1"
     },
     "src/world/terrain/caves.c": {
       "bytes": 17888,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 284928,
-      "sha256": "3c1388bc6f342bc942628f01a0d33e8c58faf2c17935cbd89ae4ff207b9f8914"
+      "bytes": 301032,
+      "sha256": "f05e65860fca8c292315c9d8f1e50ee84144a087f7ee350b826214828c656ccf"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 375895,
-      "sha256": "77db2f1fab3a702f5875d3861bf773d410b648bf49adf60c6db7d3881a8690d3"
+      "bytes": 393110,
+      "sha256": "fd38b08c5f0e56d21a94464707ec29b7390ca907301d4f17622e2b2f4c48edf5"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 280568,
-      "sha256": "20143ff9fcdd21af7ace8345d1a4ec9650104062e9150333eae9de742140efd0"
+      "bytes": 296672,
+      "sha256": "914d03dfb17346586abea1eb4abdc3d0dee44ab2bfc1879cc79b08d58958a914"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9966,8 +9966,8 @@
       "sha256": "d6d402a1d8f1e62c5d0016703d83cdfad2814aff7a87a6a3bc9319c56c33c73f"
     },
     "cmake/source_chunk_loader.cmake": {
-      "bytes": 355,
-      "sha256": "84954fd9bf751231c70361362cefa0011cb4381c2ccebf0bff2e22dedc3a4419"
+      "bytes": 418,
+      "sha256": "19ead5e5417f475adc09c47524258f21cf12ede2ebd2ab5c4e03c59a970ba29a"
     },
     "cmake/tests/source_regions.cmake": {
       "bytes": 569,
@@ -9998,8 +9998,8 @@
       "sha256": "abff1b81dac7d973550a818384a696d02df22c7a26211efe2a1116e4c0f2a4bb"
     },
     "include/mc/world/storage/source_chunk_loader.h": {
-      "bytes": 3543,
-      "sha256": "558876572f8d9a3a53a1c2d266000796aa848011f358075e533b41fdd43721d5"
+      "bytes": 7546,
+      "sha256": "e2564671d701c08116d2504f13a3e3e102f2f27bd14efc515e89b1f1af9ea6e9"
     },
     "include/mc/world/storage/source_regions.h": {
       "bytes": 2828,
@@ -10038,8 +10038,8 @@
       "sha256": "7a20e4a5979b0facd0835f0d5f3271e5d5e577e90e9a4cbf7435b62bff8c03a1"
     },
     "src/world/storage/source_chunk_loader.c": {
-      "bytes": 30638,
-      "sha256": "92d1f6223769c8afac788a04d2165a259282c8a9a2e0e9e76840b07c27dc814f"
+      "bytes": 36221,
+      "sha256": "44a1d048aadb52e14e9ec18c01a97b0875c30b41b752efd2027a77b591c3ff9a"
     },
     "src/world/storage/source_game_stage.h": {
       "bytes": 855,
@@ -10050,8 +10050,8 @@
       "sha256": "64ed7bc01656e0afb55d3b8bf922e4cfad390e4bf99c91e31cd4dc98209ced76"
     },
     "src/world/storage/source_regions.c": {
-      "bytes": 27728,
-      "sha256": "30d0c93ef64c780943162fa02f159b46d25d95968fb8cecfd7ffb245228e1851"
+      "bytes": 28464,
+      "sha256": "427f023f458febece5d272af15a846eb32bd08884799666d265fca0f7c8fef11"
     },
     "tests/client/world/test_load_world_foreign_loading.c": {
       "bytes": 11205,
@@ -12742,8 +12742,8 @@
       "sha256": "d58c19ab253958a4e469bb87c72b81b422be6b7f9d47c4e47ae1fc1ac840588b"
     },
     "docs/world/terminal-retirement.md": {
-      "bytes": 9639,
-      "sha256": "0c7a28a6fb299a2362f8642c9c2e0f05a4cd7c7b09345e8c5925357646a6e3ad"
+      "bytes": 10073,
+      "sha256": "af0acfc6e2442684bd79097459ecb644e01d7bf07b3ebe46760950e53aa343f5"
     },
     "src/client/gui/source_screen_transitions_terminal_internal.h": {
       "bytes": 1642,
@@ -14784,6 +14784,126 @@
     "cmake/tests/source_metadata_output_reference.cmake": {
       "bytes": 2018,
       "sha256": "7bb59d45553196b3f54efc7baba4b872b29b231631272a2001449bab03080f2f"
+    },
+    "include/mc/world/storage/source_region_output.h": {
+      "bytes": 4557,
+      "sha256": "fff860d4b22abcecc7cf999062059fb42c5e5f53beecf3023724cdc01d45da55"
+    },
+    "src/world/storage/source_region_output.inc": {
+      "bytes": 38630,
+      "sha256": "65eed65ef88d21289a3a923d53086e694960a2fa1d71a3ac79a5a21ed9bee2df"
+    },
+    "cmake/tests/source_region_output.cmake": {
+      "bytes": 1431,
+      "sha256": "0196031e2111e27dbc2298a34a2485019323878c53caaa6a399180a2593f896b"
+    },
+    "tests/tools/storage/source_region_output_scenarios.json": {
+      "bytes": 2383,
+      "sha256": "1cab76a330da5f2f14dce96a073158d18fd8e7fab8a981be91a132805011c57c"
+    },
+    "tests/tools/storage/test_source_region_output.py": {
+      "bytes": 17154,
+      "sha256": "cf74e82798dbd053981a441dc0f3dfafc2b139445b18e58198b34e703f43f505"
+    },
+    "tests/world/storage/test_source_region_output.c": {
+      "bytes": 30114,
+      "sha256": "5d16bc1a8e9f6b0a64a4e9d241983bd43e66f7fe94dbe351b4cbc8ec78e858c8"
+    },
+    "tests/world/storage/region_output_raf_native.c": {
+      "bytes": 1449,
+      "sha256": "6799a48818acb84d65d90085f3d9152ba6110321e4a2d6fc9172030f4446f579"
+    },
+    "cmake/tests/source_region_output_reference.cmake": {
+      "bytes": 1378,
+      "sha256": "7e343b192ec286e343fd9496c793b38cb3cdeb0d470ee920772be8fdc222a288"
+    },
+    "cmake/tests/source_world_saving.cmake": {
+      "bytes": 834,
+      "sha256": "76c7c5c2fc615d16f5cb93cc3572968cb1283e69248f0541922f4cc2333e2a20"
+    },
+    "src/world/runtime/tile_entities/source_save.inc": {
+      "bytes": 11082,
+      "sha256": "7c208dfdd8f8aa83f7c3ac8846f124719c3f786412f38b009ed3009b1ae85d6b"
+    },
+    "src/world/storage/source_chunk_save.inc": {
+      "bytes": 20115,
+      "sha256": "0e327b592a0e744cdad1aadc9ae9b738d7dc69a94e62587ff437ef68e7001794"
+    },
+    "tests/reference/world/source_region_output/ConstructorJson.java": {
+      "bytes": 1571,
+      "sha256": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3"
+    },
+    "tests/reference/world/source_region_output/RegionOutputJdi.java": {
+      "bytes": 13639,
+      "sha256": "959a42d39fd4c4c52523af1fd0f8c7affe9d789d2d9d13c934d69d05787d697c"
+    },
+    "tests/reference/world/source_region_output/RegionOutputTarget.java": {
+      "bytes": 10708,
+      "sha256": "a64a0d9a4d6378876607132e30a908c2ba1404c0e4f7ad4f1bd4043fb0c3dec9"
+    },
+    "tests/reference/world/source_region_output/audit_owner_trace.py": {
+      "bytes": 6130,
+      "sha256": "b2c80c035f65b0d394c38e7824f3186b9c4b830b14844579772b4d772f357630"
+    },
+    "tests/reference/world/source_region_output/capture.py": {
+      "bytes": 14836,
+      "sha256": "aeaab9da5803480a8d016e8f1ea40695bea58acb699645a9b756ae5245218a09"
+    },
+    "tests/reference/world/source_region_output/compare_native.py": {
+      "bytes": 16810,
+      "sha256": "22dedcc7bade65c0bf04b62eb5e37a141e87f670151db0f10bbc1172a6f29f7e"
+    },
+    "tests/reference/world/source_region_output/comparison-provenance.json": {
+      "bytes": 7810,
+      "sha256": "56ed5434971201c9c3a57ee335830ac35902ba41c2b2fd45848d1f946969eee5"
+    },
+    "tests/reference/world/source_region_output/helper-Code.json": {
+      "bytes": 14854,
+      "sha256": "2c4932bdad08232d7f901c0cf755606a1c4fa7a1bdaa646f0644f6d6e3eaf8d6"
+    },
+    "tests/reference/world/source_region_output/linux-comparison.json": {
+      "bytes": 8253,
+      "sha256": "d0898cf68173dde81e28cd19ec016d5b5aafb4a28e270560285d3b577934dd14"
+    },
+    "tests/reference/world/source_region_output/linux-owner-trace.json": {
+      "bytes": 5548,
+      "sha256": "69e5ce2a20b0880f6b9574109122c8088362b2ff38d2da2fd1088864bd20c5c3"
+    },
+    "tests/reference/world/source_region_output/linux-provenance.json": {
+      "bytes": 61793,
+      "sha256": "2e9e8d12e498aa202d983224ef04afe60ee4447ccade8b96b7e419184fc96b7d"
+    },
+    "tests/reference/world/source_region_output/original-Code.json": {
+      "bytes": 38952,
+      "sha256": "98e9dd4ff072562d9f73ff2dffd42744c13829264a6a55497c2b44e1849da184"
+    },
+    "tests/reference/world/source_region_output/provenance.json": {
+      "bytes": 83367,
+      "sha256": "59988b02c9a7d905b9c8db17728159240be8dc155fa42ed97cb288338e07593b"
+    },
+    "tests/reference/world/source_region_output/scenarios.json": {
+      "bytes": 2771,
+      "sha256": "ed669295eed966a1e78ce44f3700131e1ace37fb51e9dcdd5827f04aa53d4056"
+    },
+    "tests/reference/world/source_region_output/windows-comparison.json": {
+      "bytes": 8253,
+      "sha256": "fc31604a53c88cd51658318a35f25957c7ecd767bcfeb9fb87838ea3fc8ef0bd"
+    },
+    "tests/reference/world/source_region_output/windows-owner-trace.json": {
+      "bytes": 5548,
+      "sha256": "a6b2c65d046e51b87657d69acd62a117839b6a548daf3e7c51d2b8f972d08ed6"
+    },
+    "tests/tools/world/test_source_saving.py": {
+      "bytes": 21977,
+      "sha256": "db13cda364ef4aba729160ca8585843ac203c14f81262bffe2f9421ee7674572"
+    },
+    "tests/world/runtime/saving/test_source_saving.c": {
+      "bytes": 22360,
+      "sha256": "7bf8a68621a1dee80dee9c91d7d1928a8091825b610be3168dcaf1f08fb59233"
+    },
+    "tests/reference/world/source_region_output/loader-Code.json": {
+      "bytes": 112044,
+      "sha256": "b716302b43173127a1a5ad03c4b22be03b47cd6d1e5fe305eb8ae895de3933e9"
     }
   },
   "self_metadata_excluded": true,
@@ -17204,6 +17324,435 @@
             "docs/world/save-handler.md": {
               "bytes": 11015,
               "sha256": "852b67b819bdc6b5c18c4d299ae972895ba7d20e2e4b428ba2d16bcecc5c85e3"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "9355c54",
+      "role": "Current source region output input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 709474,
+        "sha256": "4cbaaea4f82caf0a9609e90fd1a20d2994891641973c8a5a9bb3cb4a63714c7e"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 3696,
+          "after_count": 3703,
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 336184,
+              "sha256": "b5fcd88e03fbe0cc4742131c7f52db7fb52aa83b82d2f6919fb18e4f70644057"
+            },
+            "scripts/development/format_code.py": {
+              "bytes": 3666,
+              "sha256": "6587d537f960c47cac2bb69ca629b801193320335bb2358ee400f36986672375"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 284928,
+              "sha256": "3c1388bc6f342bc942628f01a0d33e8c58faf2c17935cbd89ae4ff207b9f8914"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 375895,
+              "sha256": "77db2f1fab3a702f5875d3861bf773d410b648bf49adf60c6db7d3881a8690d3"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 280568,
+              "sha256": "20143ff9fcdd21af7ace8345d1a4ec9650104062e9150333eae9de742140efd0"
+            },
+            "cmake/source_chunk_loader.cmake": {
+              "bytes": 355,
+              "sha256": "84954fd9bf751231c70361362cefa0011cb4381c2ccebf0bff2e22dedc3a4419"
+            },
+            "src/world/storage/source_regions.c": {
+              "bytes": 27728,
+              "sha256": "30d0c93ef64c780943162fa02f159b46d25d95968fb8cecfd7ffb245228e1851"
+            }
+          },
+          "added": [
+            "include/mc/world/storage/source_region_output.h",
+            "src/world/storage/source_region_output.inc",
+            "cmake/tests/source_region_output.cmake",
+            "tests/tools/storage/source_region_output_scenarios.json",
+            "tests/tools/storage/test_source_region_output.py",
+            "tests/world/storage/test_source_region_output.c",
+            "tests/world/storage/region_output_raf_native.c"
+          ]
+        }
+      }
+    },
+    {
+      "from_commit": "9355c54",
+      "role": "Current source region output input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 712972,
+        "sha256": "731dbb63ed6634bfb19fec182c3089ab99b7df89a1159a984b8c0cf163606265"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 3703,
+          "after_count": 3703,
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 287449,
+              "sha256": "bbaa12c916c9ac005c3b7f09d9c82c7ed2b54daa2f004c22adb01550e6f9ef18"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 378587,
+              "sha256": "b34e6b267a13b87cb8a6256c0e9accffb1db693a958d8623995c38e3f0c55b07"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 283089,
+              "sha256": "479a7a2738f14af95c0783bb7fc97dd739f5cb299e78976164d58748307d0e9f"
+            },
+            "tests/tools/storage/test_source_region_output.py": {
+              "bytes": 14474,
+              "sha256": "34a409225ce86b585f6673ced1668714b8aaf8d33d6de014977410a2884b2c80"
+            },
+            "tests/world/storage/test_source_region_output.c": {
+              "bytes": 24144,
+              "sha256": "ada846a585b94c4c3e39ee5f3d0ae215921dd249e71f32a6cd9aa7b146ed3588"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "9355c54",
+      "role": "Current source region output input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 714528,
+        "sha256": "3270e6b4420d825cc46c9eb355383e362b612cc5895bdbb649a875dae71dc26a"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 3703,
+          "after_count": 3703,
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 288384,
+              "sha256": "115a0451c44aeaeb06a0f27ed0c98372f89c8749e454ac2e256521019f7ebd2d"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 379524,
+              "sha256": "ab834f5d106576d8eeef7179668da6336d905ae35b9a223a670640c477b2a750"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 284024,
+              "sha256": "52cedcfc521032e8cf93200efca55c747f1ac53561ea08797202715f384e2dd3"
+            },
+            "src/world/storage/source_region_output.inc": {
+              "bytes": 38566,
+              "sha256": "3124cc1cf0717e6b988705002be8a8610263db8e726411388606ec7719e4dc29"
+            },
+            "tests/world/storage/test_source_region_output.c": {
+              "bytes": 30082,
+              "sha256": "eddb546999c33690d8870d385128bad711b923f4299f492880e8996968d4425a"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "9355c54",
+      "role": "Current source region and World save input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 716078,
+        "sha256": "d141ef41db30b9c748b409cd471c395d19646be37279b3ef19d18ed092f030f9"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 3703,
+          "after_count": 3725,
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 336236,
+              "sha256": "788b79084b697503b8b3ab3e967dd2d421da68f88f338fd95d84b77f213b00f5"
+            },
+            "include/mc/world/runtime/saving/errors.h": {
+              "bytes": 2029,
+              "sha256": "57be90706c3c3375976eb5086dfc5b5cc9c93f912b9806bebe9c3367f9a8bdb6"
+            },
+            "include/mc/world/runtime/saving/saving.h": {
+              "bytes": 4191,
+              "sha256": "124238af0d5eff24a46a28fed1f5734bbcd071ed7b87093eb73a4f91fc664ea7"
+            },
+            "include/mc/world/runtime/tile_entities/tile_entities.h": {
+              "bytes": 39141,
+              "sha256": "412671c503d2ce5f5d46eaa40bc243b7866989cca7e252ed230a367abc59779a"
+            },
+            "scripts/development/format_code.py": {
+              "bytes": 3729,
+              "sha256": "1d09ffd20fe777f8aab55c0e2134231c1fba5419888a6a653ebb3ef63c7895df"
+            },
+            "src/world/runtime/runtime.c": {
+              "bytes": 51695,
+              "sha256": "d93e26a5d7b000d56878f99e64538a76cf79729d27e25c636de42f53103e17a8"
+            },
+            "src/world/runtime/saving/saving.c": {
+              "bytes": 14799,
+              "sha256": "a05de6526c4dbd914bdc501d463010abb3b2d5127f4320b1fe3fc638724fb2a3"
+            },
+            "src/world/runtime/tile_entities/tile_entities.c": {
+              "bytes": 262957,
+              "sha256": "cd03f806d7eada9a39db94046215ee86a0f144e3bc5fb86a3a29ad9ca358cb0c"
+            },
+            "src/world/storage/objects_internal.h": {
+              "bytes": 13957,
+              "sha256": "9d7079f612e4fc8fb5a62e0748e00579cf59e535ffa45d1ab7bdcbf3811ad058"
+            },
+            "src/world/storage/source_handler_internal.h": {
+              "bytes": 2380,
+              "sha256": "e7165703a8052386d579d32636b6b13eaf764b3fdeadccb72a42d60611df1fc8"
+            },
+            "src/world/storage/store.c": {
+              "bytes": 127329,
+              "sha256": "6c0054973c60c0e94afeab529f61daf3c72cfc6351b7a19db332d1bc424fbd56"
+            },
+            "src/world/storage/store_source.inc": {
+              "bytes": 39523,
+              "sha256": "545146473d7f90b7a9319f1adfc5213f56ec2ba143cd726ce27b50ff901a99d4"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 289313,
+              "sha256": "7089b119ef5daf49d952165b459ebb923e17e11f3290787ddf314c9c6d431acf"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 380455,
+              "sha256": "17deb1a6b340eef501a10258177ac0b9ad8fc2ea0f7d9d8e6c50e6a7ec606898"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 284953,
+              "sha256": "7be435d8cb06dbc838dfc1f9884a5a3ae640d5940472f944f95e0ab5cb8000cd"
+            },
+            "include/mc/world/storage/source_chunk_loader.h": {
+              "bytes": 3543,
+              "sha256": "558876572f8d9a3a53a1c2d266000796aa848011f358075e533b41fdd43721d5"
+            },
+            "src/world/storage/source_chunk_loader.c": {
+              "bytes": 30638,
+              "sha256": "92d1f6223769c8afac788a04d2165a259282c8a9a2e0e9e76840b07c27dc814f"
+            }
+          },
+          "added": [
+            "cmake/tests/source_region_output_reference.cmake",
+            "cmake/tests/source_world_saving.cmake",
+            "src/world/runtime/tile_entities/source_save.inc",
+            "src/world/storage/source_chunk_save.inc",
+            "tests/reference/world/source_region_output/ConstructorJson.java",
+            "tests/reference/world/source_region_output/RegionOutputJdi.java",
+            "tests/reference/world/source_region_output/RegionOutputTarget.java",
+            "tests/reference/world/source_region_output/audit_owner_trace.py",
+            "tests/reference/world/source_region_output/capture.py",
+            "tests/reference/world/source_region_output/compare_native.py",
+            "tests/reference/world/source_region_output/comparison-provenance.json",
+            "tests/reference/world/source_region_output/helper-Code.json",
+            "tests/reference/world/source_region_output/linux-comparison.json",
+            "tests/reference/world/source_region_output/linux-owner-trace.json",
+            "tests/reference/world/source_region_output/linux-provenance.json",
+            "tests/reference/world/source_region_output/original-Code.json",
+            "tests/reference/world/source_region_output/provenance.json",
+            "tests/reference/world/source_region_output/scenarios.json",
+            "tests/reference/world/source_region_output/windows-comparison.json",
+            "tests/reference/world/source_region_output/windows-owner-trace.json",
+            "tests/tools/world/test_source_saving.py",
+            "tests/world/runtime/saving/test_source_saving.c"
+          ]
+        }
+      }
+    },
+    {
+      "from_commit": "9355c54",
+      "role": "Current source region and World save input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 725450,
+        "sha256": "adf699a22fbaf97777dc542390fe4b4751467a45a740c897dafac9e35b7f0a2e"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 3725,
+          "after_count": 3726,
+          "previous": {
+            "docs/world/save-handler.md": {
+              "bytes": 11015,
+              "sha256": "97cf06c52f4024b6a5610dae5bb10a64e835751c9e66f9a9d54b9e28ce502e93"
+            },
+            "docs/world/saving.md": {
+              "bytes": 8932,
+              "sha256": "e31ac3a8e95861420c3de69df6c1b9a98bb9870631c88137b5db931c197b28f0"
+            },
+            "src/world/runtime/saving/saving.c": {
+              "bytes": 21543,
+              "sha256": "7bb162733c9a2835d890cf7dadff651941c02e4015a8c091cc201edf0983d048"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 297138,
+              "sha256": "625be9edd617f915ce9f0b961d924a883ea716152894d59f98d232d99b84b19e"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 389021,
+              "sha256": "d4d27d4cde961ffa9e4f0fbbbfdf54252f4c7c697e345183d3e9adf5e7a42f8c"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 292778,
+              "sha256": "abba2b9ccaa24ecb93863d61b85a7b5c1e2f0217c4f5f0f41a45d2a542521168"
+            },
+            "docs/world/terminal-retirement.md": {
+              "bytes": 9639,
+              "sha256": "0c7a28a6fb299a2362f8642c9c2e0f05a4cd7c7b09345e8c5925357646a6e3ad"
+            },
+            "tests/tools/world/test_source_saving.py": {
+              "bytes": 20976,
+              "sha256": "a6711fd1e723defe5f85542de0c41eb299d5ec95aa9d520e2c49bb635b55a133"
+            },
+            "tests/world/runtime/saving/test_source_saving.c": {
+              "bytes": 18760,
+              "sha256": "1fbba86272d09ca29c710f0f04780a3faddd78b59875167b2e83b4fbadcfca8a"
+            }
+          },
+          "added": [
+            "tests/reference/world/source_region_output/loader-Code.json"
+          ]
+        }
+      }
+    },
+    {
+      "from_commit": "9355c54",
+      "role": "Current source region and World save input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 728000,
+        "sha256": "cecd16651c5f814527ddf741b1f9fd7cc4ee8fe181cd970941a1f6410839eeac"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 3726,
+          "after_count": 3726,
+          "previous": {
+            "docs/parity.md": {
+              "bytes": 145065,
+              "sha256": "dbbc21304d1b5fd97cf737b2b686968b25a5818a9a58dccba2d8701dd7004553"
+            },
+            "docs/status.md": {
+              "bytes": 66477,
+              "sha256": "7d6fc39683936a38593fb8af1847e06ae63b938c0b71c5ee871516358e1f905a"
+            },
+            "docs/testing.md": {
+              "bytes": 355113,
+              "sha256": "0cc162d123041ee899ac4a70f84662cddec886fea195b72815714115a930f612"
+            },
+            "docs/wiki/World-simulation.md": {
+              "bytes": 34471,
+              "sha256": "d064b4e61bd00f38b797f9fe4b0131f474519030e1b988082452430bcc95d678"
+            },
+            "docs/world/saving.md": {
+              "bytes": 10553,
+              "sha256": "2313107071045fe9e54a815c53153ed2c3720bbdeaa25b8205b4bf9160fc6f76"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 298339,
+              "sha256": "04c391e756eec8157b56af909b768db4535459616459efa437e349b1237f89d6"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 390411,
+              "sha256": "ea4854ac7f0c1cbb0cbc9f8a84b943254fc87cab89abc26bc5eaab8ad313b94c"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 293979,
+              "sha256": "66588bb9ea60be21eb855d6630da4a9e4237da3c04194e39828f0cf28c24bf95"
+            },
+            "tests/world/runtime/saving/test_source_saving.c": {
+              "bytes": 22354,
+              "sha256": "b8218502ef5b3e20b0895cef6f48cd0804909af6a1279be57a8f0b5499a8a680"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "9355c54",
+      "role": "Current source region and World save input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 730226,
+        "sha256": "b44adb9d7c9778c43e1a2ed9fe098a150f12fd89c3a423f4ff816a473c4bde2a"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 3726,
+          "after_count": 3726,
+          "previous": {
+            "docs/status.md": {
+              "bytes": 66498,
+              "sha256": "2d0ff8aedbeaf239777127bc446451f3614b8c61a3b166df52d71a84e24473ac"
+            },
+            "docs/testing.md": {
+              "bytes": 357133,
+              "sha256": "9a7631c829c5f6c115347a135c01af35b7edda4c9f3d06e7ca3fa8345fd19672"
+            },
+            "docs/wiki/World-simulation.md": {
+              "bytes": 35869,
+              "sha256": "96bd29f22427ca833ba31bfe7fda90b78ac4b419cdaa06ac7249bb595fbd8d72"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 299080,
+              "sha256": "2dea578b3c771d93df307f575c00fc65d1e47be13c3baddf573773d135bfc094"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 391154,
+              "sha256": "eb85103641d40bdd29f899f8bdda98b0f4721ac1ecf6858d83563224637871de"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 294720,
+              "sha256": "3ba44988c04f39602d4643890ddacfb11e2f851d95b12a405d6c1b4ef3a9e212"
+            },
+            "tests/reference/world/source_region_output/comparison-provenance.json": {
+              "bytes": 7370,
+              "sha256": "8ba4b587a8d0926debd8e9bfb80ad9edb8ce3e283e3916afd82745667b898a4e"
+            },
+            "tests/reference/world/source_region_output/linux-comparison.json": {
+              "bytes": 8253,
+              "sha256": "c6be48112154cb242e68311437c045ecbfabc30dfad233a547385572b25cf993"
+            },
+            "tests/reference/world/source_region_output/windows-comparison.json": {
+              "bytes": 8253,
+              "sha256": "1fc1b824667b88605bf5757fae791c95553adab91ccbf253b884ac3363141de4"
+            }
+          },
+          "added": []
+        }
+      }
+    },
+    {
+      "from_commit": "9355c54",
+      "role": "Current source region and World save input admission only. Historical original observations and compiled products retain their preceding bindings.",
+      "previous_metadata": {
+        "bytes": 732566,
+        "sha256": "6a282d58c4eb5eb58f8bdc2cfb5c03175e5a35ce4909c745cb19242be08aa62f"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 3726,
+          "after_count": 3726,
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 300278,
+              "sha256": "48cb48bda491086352f281331e673334f3d59b54da60b3887607498da2fc100e"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 392354,
+              "sha256": "c6cfedef0c47d0b2058b640c3f798f194594106d90294c6d3f87f69454d7ade1"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 295918,
+              "sha256": "1ede9f3025b0a20141905ec7a29b1b418ca1864d91fd17b35f0850809788be65"
+            },
+            "tests/reference/world/source_region_output/loader-Code.json": {
+              "bytes": 115606,
+              "sha256": "95bfab2b84735aaa9f2c2bbe4fb1a360c1c6a58f23147f77bd144caeea3e96b0"
             }
           },
           "added": []

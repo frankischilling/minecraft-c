@@ -103,6 +103,13 @@ retires the remaining output slots in order. Extra independent File/FOS holds
 survive those releases. This cleanup admission does not credit a failed save
 as a successful source method.
 
+Chunk output admits the loader's known inactive graph, including a failed
+serializer with an open stream and partial owning record trees. Its audit
+checks actual namespace, region, File and stream identities without finishing
+compression or committing bytes. Final loader cleanup releases the codec
+before its borrowed input tree. The loader's failure latch prevents further
+source work; it does not prevent checked native teardown.
+
 Safe independent File, Info and document retains are not extra World roots.
 Shared File, logging, regions and class namespaces are kept live rather than
 closed by this audit. Later native descriptor close can still fail; checked

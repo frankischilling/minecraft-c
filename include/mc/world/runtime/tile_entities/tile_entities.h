@@ -414,6 +414,22 @@ mc_tile_entity_status mc_tile_entity_build(const mc_tile_entity *tile_entity,
                                            const mc_nbt_limits *limits, mc_nbt_document **out,
                                            mc_tile_entity_error *error);
 
+/* Fresh source ow.b/concrete writer result. Uses genuine current base/subtype
+ * fields and direct Stack id/Count/Damage with Slot, without unknown provenance
+ * overlays. Supported READY Chest/Spawner/Piston owners only; no source heap,
+ * mutable setter or HashMap wire-order claim. Tree/new scratch allocations obey
+ * the operation ceiling; supplying owner graphs have their separate budgets. */
+mc_tile_entity_status mc_tile_entity_build_source_nbt(const mc_tile_entity *, const mc_nbt_limits *,
+                                                      mc_nbt_tree **, mc_tile_entity_error *);
+/* Actual Map.values iteration and per-occurrence source writer, producing only
+ * the named fresh TileEntities list. Intermediate safety policy refuses any
+ * unconsumed opaque source records before commit rather than dropping them.
+ * Legacy provenance/opaque-record preservation remains a separate function. */
+mc_world_storage_status mc_live_tile_entities_build_source_records(const mc_world_chunk *,
+                                                                   const mc_nbt_limits *,
+                                                                   mc_nbt_tree **,
+                                                                   mc_live_tile_entity_error *);
+
 /* Native integration contract for the existing actual owners:
  * mc_world_runtime_classes: mc_tile_entity_classes *TileEntities;
  * mc_world_runtime: mc_tile_entity_list_ledger tile_entity_membership[2];

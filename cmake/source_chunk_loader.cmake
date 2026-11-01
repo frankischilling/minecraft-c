@@ -4,3 +4,4 @@ target_sources(mc_persistence PRIVATE
     src/world/storage/java_random_access.c
     src/world/storage/source_regions.c)
 target_sources(mc_simulation PRIVATE src/world/storage/source_chunk_loader.c)
+target_link_libraries(mc_persistence PRIVATE ZLIB::ZLIBSTATIC)

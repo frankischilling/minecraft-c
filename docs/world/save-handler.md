@@ -140,12 +140,13 @@ Java heap-allocation failure.
 
 Missing `Level` or `Blocks` data reaches an unfinished source `println` call;
 coordinate mismatch reaches the relocation diagnostic. These return typed
-failures rather than successful misses. The source chunk-save entry performs its real
-session check, then stops at bytecode 16 of `ld.a(fd,lm)`, where `rj.d` and its
-deflater/output ownership are still required. Region allocation/reuse for saving, the remaining
-named-data writes and the reached exception/printing methods remain explicit
-dependencies. Cache flush and native retirement do not establish source saving,
-reload or crash durability.
+failures rather than successful misses. The source Chunk-save entry uses
+the actual loader, fresh semantic records and concrete region output through
+close and late Info growth accounting. The [save contract](saving.md) and
+[region output contract](region-output.md) describe their order and native
+safety limits. Remaining live subtype writers, named-data writes and reached
+exception/printing methods retain explicit dependencies. Cache flush and
+native retirement do not establish ordinary Save-and-quit or crash durability.
 
 ## Focused qualification
 

@@ -1443,13 +1443,13 @@ static store_chunk *store_find_game_save(const mc_world_store *store,
     return NULL;
 }
 
-mc_world_storage_status
-mc_world_store_game_save_begin(mc_world_store *store, mc_world_runtime *world,
-                               mc_chunk_state *state, mc_world_info *account,
-                               mc_world_store_game_save **out, mc_world_store_game_save_view *view,
-                               mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_save_frontier(store, error);
+static mc_world_storage_status
+store_game_save_begin_actual(mc_world_store *store, mc_world_runtime *world, mc_chunk_state *state,
+                             mc_world_info *account, mc_world_store_game_save **out,
+                             mc_world_store_game_save_view *view, mc_world_storage_error *error,
+                             mc_world_source_error *session_error) {
+    if (session_error != NULL)
+        *session_error = (mc_world_source_error){0};
     if (store == NULL || world == NULL || state == NULL || out == NULL || view == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "GAME save arguments");
     store_chunk *entry = store_find_chunk(store, state);
@@ -1475,16 +1475,71 @@ mc_world_store_game_save_begin(mc_world_store *store, mc_world_runtime *world,
     mc_world_storage_status status = mc_world_store_lease_chunk(store, state, error);
     if (status != MC_WORLD_STORAGE_OK)
         return status;
-    status = mc_world_store_check_session(store, error);
+    if (store->source != NULL) {
+        mc_world_source_error checked;
+        const mc_world_source_status source = mc_world_store_source_check_session(store, &checked);
+        if (session_error != NULL)
+            *session_error = checked;
+        status = source == MC_WORLD_SOURCE_OK           ? MC_WORLD_STORAGE_OK
+                 : source == MC_WORLD_SOURCE_BUSY       ? MC_WORLD_STORAGE_BUSY
+                 : source == MC_WORLD_SOURCE_LIMIT      ? MC_WORLD_STORAGE_LIMIT
+                 : source == MC_WORLD_SOURCE_ALLOCATION ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+                 : source == MC_WORLD_SOURCE_FILE       ? MC_WORLD_STORAGE_IO_ERROR
+                                                        : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        store_error(error, status, source == MC_WORLD_SOURCE_OK ? NULL : checked.operation);
+    } else {
+        status = mc_world_store_check_session(store, error);
+    }
     if (status != MC_WORLD_STORAGE_OK) {
         (void)mc_world_store_release_chunk(store, state, NULL);
         return status;
     }
     entry->save = (mc_world_store_game_save){entry, world, account};
     entry->game_save_open = true;
-    const mc_world_store_game_save_view snapshot = {chunk, state, store->limits.nbt};
+    mc_world_store_game_save_view snapshot = {
+        .chunk = chunk, .state = state, .limits = store->limits.nbt};
+    if (store->source != NULL) {
+        snapshot.source_output = store->source->classes->options.output;
+        snapshot.source_output.max_owner_bytes = store->source->classes->options.max_owner_bytes;
+        if (snapshot.limits.max_allocation_bytes > store->source->classes->options.max_owner_bytes)
+            snapshot.limits.max_allocation_bytes = store->source->classes->options.max_owner_bytes;
+    }
     *out = &entry->save;
     *view = snapshot;
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status
+mc_world_store_game_save_begin(mc_world_store *store, mc_world_runtime *world,
+                               mc_chunk_state *state, mc_world_info *account,
+                               mc_world_store_game_save **out, mc_world_store_game_save_view *view,
+                               mc_world_storage_error *error) {
+    return store_game_save_begin_actual(store, world, state, account, out, view, error, NULL);
+}
+
+mc_world_storage_status mc_world_store_game_save_begin_detailed(
+    mc_world_store *store, mc_world_runtime *world, mc_chunk_state *state, mc_world_info *account,
+    mc_world_store_game_save **out, mc_world_store_game_save_view *view,
+    mc_world_storage_error *error, mc_world_source_error *session_error) {
+    return store_game_save_begin_actual(store, world, state, account, out, view, error,
+                                        session_error);
+}
+
+mc_world_storage_status
+mc_world_store_game_save_source_records_admit(const mc_world_store *store,
+                                              const mc_world_store_game_save *save,
+                                              mc_world_storage_error *error) {
+    store_chunk *entry = store_find_game_save(store, save);
+    if (store == NULL || store->source == NULL || entry == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                           "source save native record admission");
+    if (!store_chunk_entity_journal_complete(entry))
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "source save incomplete Entity import witness policy");
+    for (size_t i = 0; i < entry->entity_source_count; ++i)
+        if (!entry->entity_consumed[i])
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "source save unconsumed opaque Entity record policy");
     return store_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
@@ -1581,8 +1636,6 @@ mc_world_storage_status mc_world_store_game_save_write(
 mc_world_storage_status mc_world_store_game_save_end(mc_world_store *store,
                                                      mc_world_store_game_save *save,
                                                      mc_world_storage_error *error) {
-    if (store != NULL && store->source != NULL)
-        return store_source_legacy(error);
     store_chunk *entry = store_find_game_save(store, save);
     if (entry == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign GAME save");

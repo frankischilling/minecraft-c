@@ -275,16 +275,18 @@ static mc_chunk_callback_result save_main(void *owner, const mc_chunk_lifecycle_
                                           mc_chunk_state *chunk) {
     mc_world_runtime *runtime = owner;
     uint32_t growth = 0;
-    uint32_t timestamp;
+    uint32_t timestamp = 0;
     if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
-        int64_t millis;
-        if (mc_platform_current_time_millis(&millis) != MC_PLATFORM_MILLIS_OK) {
-            runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                          "World region wall clock");
-            lifecycle_cause(runtime, runtime->last_error);
-            return MC_CHUNK_CALLBACK_FATAL;
+        if (!mc_world_store_is_source(runtime->fields.w)) {
+            int64_t millis;
+            if (mc_platform_current_time_millis(&millis) != MC_PLATFORM_MILLIS_OK) {
+                runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "World region wall clock");
+                lifecycle_cause(runtime, runtime->last_error);
+                return MC_CHUNK_CALLBACK_FATAL;
+            }
+            timestamp = (uint32_t)(millis / INT64_C(1000));
         }
-        timestamp = (uint32_t)(millis / INT64_C(1000));
         mc_world_game_save_error frame;
         const mc_world_storage_status status =
             mc_world_runtime_write_game_chunk(runtime, chunk, timestamp, &growth, &frame);

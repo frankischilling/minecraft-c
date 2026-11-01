@@ -1,29 +1,58 @@
 # Live GAME Chunk saving
 
-The ordinary source Store now transports completed World Info records through
-its [source metadata writer](save-handler.md#metadata-output). It preserves the
-caller's first-Player selection, sampled LastPlayed and version rather than
-rebuilding them inside transport. The legacy storage path below retains its
-separate composition and preservation rules. Source Chunk saving still checks
-the genuine session token, then stops at `ld.a(fd,lm):16`; region output,
-fresh Chunk composition and the reached live serializers remain required.
+The source client Store writes metadata through its
+[SaveHandler](save-handler.md#metadata-output) and Chunks through the same
+World's loader and [shared region cache](region-output.md). The actual World
+save callback follows this route. Native tests save authored loaded Worlds,
+retire their owners, then reconstruct new source Worlds from those files.
+Ordinary menu Save-and-quit and complete gameplay retain separate requirements.
 
 [`saving/saving.h`](../../include/mc/world/runtime/saving/saving.h) writes one
 actual committed Chunk from its owning GAME World. It uses the same Store
-entry, header, arrays and source document; no replacement Chunk or opaque list
-stands in for live state. ItemEntity records use the actual semantic Boolean
-serializer and the current Entity/Stack provenance owners.
+entry, header and arrays. Source saves create fresh root, Level, Entity,
+TileEntity and Stack records from current semantic fields. Legacy native saves
+keep their separate provenance and opaque-record preservation rules.
 
 The runtime save and maintenance callbacks use this path. Legacy composition
 and passive opaque builders keep their separate behavior. The [full save
 route](full-save.md) also handles metadata and the actual empty named SavedData
-list. Player and named subtype serialization, restart and complete
-population/persistence remain unfinished.
+list. Broader Player, named subtype, natural restart and complete
+population/persistence qualification remain unfinished.
 
 The [populated Chunk comparison](../reference/population-persistence.md) exercises
-this path after genuine origin population, then directly reloads the four saved
+the legacy GAME Store path after genuine origin population, then directly reloads the four saved
 records. It checks complete typed NBT and raw disk preservation in the same held
 World. Full World metadata save and restart retain their separate scope.
+
+## Source loader and output
+
+The first session check precedes the loader's catch. The loader opens its
+actual region stream at LD16 before constructing root24, Level33 and attaching
+Level44. Serializer51 performs the second session check, snapshots current
+fields and resets q105, then visits Entities and TileEntities. Plain NBT57
+precedes explicit outer close61. Only afterward does the loader reload Info65,
+read SizeOnDisk74, consume signed region growth89 and store its wrapped long
+sum94. Source QJ samples its own timestamp during commit; the callback skips
+the legacy transport's earlier clock sample.
+
+Source Entity occurrences invoke the actual Boolean `SN.c` wrapper. Supported
+Item, FallingSand and Minecart writers use current semantic fields. Missing
+live Mob writers remain explicit dependencies. Source Chest, Spawner and
+Piston output uses direct subtype fields; Chest Stack values do not pass
+through the legacy storage overlay.
+
+Unconsumed opaque Entity or TileEntity records refuse source saving before
+commit. This native safety policy prevents silent data loss while those
+records lack semantic writers. It preserves the already opened stream and
+completed source effects. Legacy opaque preservation does not substitute for
+fresh source serialization.
+
+There is no serializer finally-close. The loader retains partial output and
+owning record trees after a failure. Native cleanup ends the codec before
+freeing input it may still borrow, without emitting pending bytes. A failed
+attempt blocks further loader reads and saves while permitting passive
+terminal inspection and native retirement. Reached exception-printing calls
+remain explicit diagnostic dependencies.
 
 ## Source order and effects
 
@@ -70,7 +99,7 @@ Failed imports and terminally retired containers remain ineligible for saving.
 An inactive completed Chunk can still retire after an ordinary unload while
 its World continues.
 
-The lower layer composes explicit live Entities and TileEntities over the
+The legacy lower layer composes explicit live Entities and TileEntities over the
 same stored baseline, preserving supported unknown root/Level children. It
 never calls simulation code. The actual TileEntity builder preserves the documented
 TileEntity/Stack provenance and consumed-record merge; an owned count-zero Map must
@@ -98,10 +127,10 @@ World/class owners and region/compression
 owners keep their separately documented budgets. This is not a process-wide
 or whole-graph heap guarantee.
 
-The independent result and buffered checked replacement do not reproduce the
+The legacy independent result and buffered checked replacement do not reproduce the
 original mutable compound allocation failures, early stream/file setup or
-caught-Exception/printStackTrace behavior. The runtime retains its existing real
-wall-clock sampling position; the direct API accepts an explicit transport
+caught-Exception/printStackTrace behavior. The legacy runtime retains its real
+wall-clock sampling position; the legacy direct API accepts an explicit transport
 timestamp. These limits are distinct from source field/List order and successful
 supported-domain values. Original/native whole-save replay, arbitrary array
 lengths, other Entity/TileEntity descendants and complete
