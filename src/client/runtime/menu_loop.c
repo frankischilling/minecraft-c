@@ -364,6 +364,19 @@ static bool tick(mc_client_menu_loop *loop) {
         loop->state.gameplay_mined_blocks += loop->gameplay.mined_blocks;
         loop->state.gameplay_hit_particles_constructed += loop->gameplay.hit_particles_constructed;
         loop->state.gameplay_hit_particles_appended += loop->gameplay.hit_particles_appended;
+        loop->state.gameplay_right_clicks += loop->gameplay.right_clicks;
+        loop->state.gameplay_block_uses += loop->gameplay.block_uses;
+        loop->state.gameplay_air_uses += loop->gameplay.air_uses;
+        loop->state.gameplay_placements_admitted += loop->gameplay.placements_admitted;
+        loop->state.gameplay_placed_blocks += loop->gameplay.placed_blocks;
+        loop->state.gameplay_placement_sounds += loop->gameplay.placement_sounds;
+        loop->state.gameplay_used_statistics += loop->gameplay.used_statistics;
+        loop->state.gameplay_stack_count_stores += loop->gameplay.stack_count_stores;
+        loop->state.gameplay_selected_slot_clears += loop->gameplay.selected_slot_clears;
+        loop->state.gameplay_equip_resets += loop->gameplay.equip_resets;
+        loop->state.gameplay_drop_calls += loop->gameplay.drop_calls;
+        loop->state.gameplay_drop_publications += loop->gameplay.drop_publications;
+        loop->state.gameplay_dropped_items += loop->gameplay.dropped_items;
     }
     if (app->active_world != NULL) {
         const bool returned = mc_client_world_tick_run(app, loop->math, &loop->world_tick);

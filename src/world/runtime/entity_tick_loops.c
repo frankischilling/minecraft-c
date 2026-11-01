@@ -125,8 +125,8 @@ bool wt_loops(wt_scope *s) {
                 skip = !mount->base.be && mount->base.aG == p;
                 if (!skip) {
                     at(s, 257);
-                    mount->base.aG = NULL;
-                    p->base.aH = NULL;
+                    (void)mc_entity_mount_passenger_store(mount, NULL);
+                    (void)mc_entity_mount_vehicle_store(p, NULL);
                 }
                 mc_entity_release(mount);
             }

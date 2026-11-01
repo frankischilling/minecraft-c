@@ -29,6 +29,8 @@ typedef struct mining_work {
 } mining_work;
 
 static fixture *mining_fixture;
+static int (*mining_extra_before_frame)(fixture *);
+static void (*mining_extra_after_frame)(fixture *, bool);
 
 static struct {
     fixture *fixture;
@@ -331,7 +333,11 @@ static bool mining_observed_frame(mc_client_menu_loop *loop) {
                          atomic_load(&f->app->o);
     if (capture && mining_save_entry() != 0)
         return false;
+    if (mining_extra_before_frame != NULL && mining_extra_before_frame(f) != 0)
+        return false;
     const bool returned = mc_client_menu_loop_frame(loop);
+    if (mining_extra_after_frame != NULL)
+        mining_extra_after_frame(f, returned);
     if (!returned && f != NULL && f->loop == loop && mc_client_menu_loop_inspect(loop, &f->state))
         mining_mob_diagnostics(f);
     if (capture && returned && f->app->active_world == NULL && f->app->h == NULL &&
@@ -596,6 +602,106 @@ static int mining_save(fixture *f, mining_work *work, size_t epoch, const char *
     return 0;
 }
 
+static void mining_pickup_diagnostics(const fixture *f, const mining_work *work, int32_t count,
+                                      double before_z) {
+    const mc_entity *player = f->app->h;
+    const mc_world_reference_list *list =
+        f->app->active_world == NULL ? NULL : f->app->active_world->fields.b;
+    const bool valid_list = list != NULL && list->count <= list->capacity && list->count <= 4096;
+    size_t dirt_count = 0, invalid_items = 0;
+    const mc_entity *dirt = NULL;
+    if (valid_list)
+        for (size_t i = 0; i < list->count; ++i) {
+            const mc_entity *entity = list->items[i];
+            if (entity == NULL || !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM))
+                continue;
+            mc_item_stack_fields stack;
+            if (entity->stack == NULL ||
+                mc_item_stack_fields_get(entity->stack, &stack) != MC_ITEM_STACK_OK) {
+                ++invalid_items;
+                continue;
+            }
+            if (stack.id == 3) {
+                if (dirt == NULL)
+                    dirt = entity;
+                if (!entity->base.be)
+                    ++dirt_count;
+            }
+        }
+    if (!work->forward_down && count == 1 && player != NULL && player->base.z > before_z &&
+        valid_list && dirt_count == 0 && invalid_items == 0)
+        return;
+    const mc_client_source_da *screen = f->app->r;
+    const char *screen_class = screen == NULL                                     ? "none"
+                               : screen->kind == MC_CLIENT_SCREEN_PAUSE           ? "oz"
+                               : screen->kind == MC_CLIENT_SCREEN_MAIN_MENU       ? "fu"
+                               : screen->kind == MC_CLIENT_SCREEN_WORLD_SELECTION ? "rq"
+                                                                                  : "da";
+    fprintf(stderr,
+            "[mining-pickup-diagnostic] forward-down=%d count=%" PRId32
+            " before-z=%.17g N=%d paused=%d screen=%" PRIuPTR " screen-class=%s "
+            "frames=%zu ticks=%" PRIu64 " tick-returns=%" PRId32 " timer-ticks=%" PRId32
+            " world-tick-returns=%" PRIu64 " mouse-events=%zu keyboard-events=%zu "
+            "list-valid=%d list=%" PRIuPTR " list-count=%zu live-dirt=%zu invalid-items=%zu\n",
+            (int)work->forward_down, count, before_z, (int)f->app->N, (int)atomic_load(&f->app->o),
+            (uintptr_t)screen, screen_class, work->frames, f->state.ticks,
+            f->state.clocks.tick_returns, f->state.clocks.timer_ticks, f->state.world_tick_returns,
+            f->state.mouse_events, f->state.keyboard_events, (int)valid_list, (uintptr_t)list,
+            list == NULL ? 0 : list->count, dirt_count, invalid_items);
+    if (player != NULL) {
+        fprintf(stderr,
+                "[mining-pickup-diagnostic] player=%" PRIuPTR " id=%" PRId32
+                " pos=%.17g,%.17g,%.17g motion=%.17g,%.17g,%.17g yaw=%.9g pitch=%.9g "
+                "dead=%d world-match=%d\n",
+                (uintptr_t)player, player->base.id, player->base.x, player->base.y, player->base.z,
+                player->base.velocity_x, player->base.velocity_y, player->base.velocity_z,
+                (double)player->base.yaw, (double)player->base.aT, (int)player->base.be,
+                (int)(player->base.world == f->app->active_world));
+        mc_local_player_snapshot local;
+        mc_movement_input_state input;
+        if (mc_local_player_get_snapshot(player, &local) == MC_ENTITY_OK &&
+            mc_movement_input_read_state(local.input, &input))
+            fprintf(stderr,
+                    "[mining-pickup-diagnostic] input=%" PRIuPTR " kind=%d forward=%.9g "
+                    "strafe=%.9g jump=%d sneak=%d key-count=%zu "
+                    "keys=%d%d%d%d%d%d%d%d%d%d living-af=%.9g living-ag=%.9g\n",
+                    (uintptr_t)local.input, (int)input.kind, (double)input.fields.forward,
+                    (double)input.fields.strafe, (int)input.fields.jump, (int)input.fields.sneak,
+                    input.key_count, (int)input.keys[0], (int)input.keys[1], (int)input.keys[2],
+                    (int)input.keys[3], (int)input.keys[4], (int)input.keys[5], (int)input.keys[6],
+                    (int)input.keys[7], (int)input.keys[8], (int)input.keys[9],
+                    (double)local.living.af, (double)local.living.ag);
+    }
+    mc_client_sdk_input_state sdk;
+    mc_client_sdk_bytes_state keys, read, queue;
+    if (mc_client_sdk_input_inspect(mc_client_display_inputs(f->app->display), &sdk) &&
+        mc_client_sdk_bytes_inspect(sdk.key_down, &keys) &&
+        mc_client_sdk_bytes_inspect(sdk.keyboard_read, &read) &&
+        mc_client_sdk_queue_inspect(sdk.keyboard_events, &queue))
+        fprintf(stderr,
+                "[mining-pickup-diagnostic] sdk-W17=%d sdk-S31=%d read-remaining=%zu "
+                "queued-bytes=%zu last-key=%" PRId32
+                " pressed=%d repeat=%d pending-native=%" PRIuPTR "\n",
+                keys.limit > 17 ? (int)keys.data[17] : -1,
+                keys.limit > 31 ? (int)keys.data[31] : -1, read.limit - read.position,
+                queue.position, sdk.current_key.key, (int)sdk.current_key.pressed,
+                (int)sdk.current_key.repeat, (uintptr_t)sdk.pending_native_event);
+    if (dirt != NULL) {
+        mc_item_stack_fields stack = {0};
+        const mc_item_stack_status status = mc_item_stack_fields_get(dirt->stack, &stack);
+        fprintf(stderr,
+                "[mining-pickup-diagnostic] dirt=%" PRIuPTR " id=%" PRId32
+                " in-world-list=1 pos=%.17g,%.17g,%.17g motion=%.17g,%.17g,%.17g dead=%d "
+                "world-match=%d stack=%" PRIuPTR " stack-status=%d stack-id=%" PRId32
+                " stack-count=%" PRId32 " stack-damage=%" PRId32 "\n",
+                (uintptr_t)dirt, dirt->base.id, dirt->base.x, dirt->base.y, dirt->base.z,
+                dirt->base.velocity_x, dirt->base.velocity_y, dirt->base.velocity_z,
+                (int)dirt->base.be, (int)(dirt->base.world == f->app->active_world),
+                (uintptr_t)dirt->stack, (int)status, stack.id, stack.count, stack.damage);
+    }
+    (void)fflush(stderr);
+}
+
 static int mining_run(fixture *f, mining_work *work) {
     CHECK(mc_client_menu_loop_create(f->bootstrap, &f->loop) &&
           mc_client_menu_loop_inspect(f->loop, &f->state) &&
@@ -699,6 +805,7 @@ static int mining_run(fixture *f, mining_work *work) {
             break;
         }
     }
+    mining_pickup_diagnostics(f, work, count, before_z);
     CHECK(!work->forward_down && count == 1 && f->app->h->base.z > before_z &&
           mining_items(f->app->active_world, &items, &item) == 0 && items == 0);
     const uint64_t carried_deadline = SDL_GetTicks() + 60000;
@@ -721,7 +828,10 @@ static int mining_run(fixture *f, mining_work *work) {
     return 0;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_MINING_FIXTURE_MAIN
+#define MC_MINING_FIXTURE_MAIN main
+#endif
+int MC_MINING_FIXTURE_MAIN(int argc, char **argv) {
     CHECK(argc == 3);
     fixture *f = calloc(1, sizeof(*f));
     mining_work *work = calloc(1, sizeof(*work));

@@ -34,6 +34,35 @@ static bool settings_read(client_application *app, mc_client_gameplay_input *cal
            pending(call, "actual gameplay Settings field access", pc);
 }
 
+static bool retire_drop(mc_client_gameplay_input *call) {
+    if (mc_local_player_drop_retire(&call->drop_call, &call->drop_cleanup) != MC_PLAYER_DROP_OK)
+        return false;
+    call->drop_state.player = call->drop_state.item = NULL;
+    call->drop_state.stack = NULL;
+    call->drop_state.error = call->drop_state.cleanup = NULL;
+    call->drop_error.publication = call->drop_cleanup.publication = NULL;
+    call->drop_error.statistic = call->drop_cleanup.statistic = NULL;
+    return true;
+}
+
+static bool drop(client_application *app, mc_client_gameplay_input *call) {
+    const mc_player_drop_status status = mc_local_player_drop_selected_begin(
+        app->registry, app->source_math_classes, app->h, &call->drop_call, &call->drop_error);
+    if (call->drop_call != NULL)
+        (void)mc_local_player_drop_inspect(call->drop_call, &call->drop_state);
+    if (status != MC_PLAYER_DROP_OK) {
+        const mc_player_drop_error *e = &call->drop_error;
+        if (e->site.class_name == NULL)
+            return pending(call, e->operation, 812);
+        return fail(call, e->operation, e->site.class_name, e->site.method, e->site.descriptor,
+                    e->site.pc);
+    }
+    ++call->drop_calls;
+    call->drop_publications += call->drop_state.publication_returned;
+    call->dropped_items += call->drop_state.inserted;
+    return retire_drop(call) || pending(call, call->drop_cleanup.operation, 812);
+}
+
 static bool binding(client_application *app, mc_client_gameplay_input *call, size_t index,
                     int32_t *out, unsigned int settings_pc, unsigned int code_pc) {
     mc_game_settings_state state;
@@ -123,23 +152,178 @@ static bool hit_fields(client_application *app, mc_client_gameplay_input *call,
     return true;
 }
 
-/* Actual Minecraft.a(I), with the empty-hand Block/miss closure. Unsupported
- * combat/use paths stop at their reached invocations after the actual swing. */
+static bool click_fail(mc_client_gameplay_input *call, const char *operation, unsigned int pc) {
+    return fail(call, operation, "net/minecraft/client/Minecraft", "a", "(I)V", pc);
+}
+
+static bool click_inventory(client_application *app, mc_client_gameplay_input *call,
+                            mc_inventory_player **out, unsigned int pc) {
+    mc_local_player_snapshot player;
+    if (mc_local_player_get_snapshot(app->h, &player) != MC_ENTITY_OK)
+        return click_fail(call, "actual click Player inventory field receiver", pc);
+    *out = player.player.c;
+    return true;
+}
+
+static bool click_current(client_application *app, mc_client_gameplay_input *call,
+                          mc_item_stack **out, unsigned int field_pc, unsigned int invoke_pc) {
+    mc_inventory_player *slots;
+    if (!click_inventory(app, call, &slots, field_pc))
+        return false;
+    if (slots == NULL)
+        return click_fail(call, "actual click null Inventory current invocation", invoke_pc);
+    const mc_item_stack *stack = NULL;
+    if (mc_inventory_player_current(slots, &stack, &call->current) != MC_INVENTORY_OK) {
+        const mc_inventory_site *site = &call->current.site;
+        return fail(call, call->current.operation, site->class_name, site->method, site->descriptor,
+                    (unsigned int)site->pc);
+    }
+    if (stack != NULL && mc_item_stack_retain((mc_item_stack *)stack) != MC_ITEM_STACK_OK)
+        return click_fail(call, "click local Stack native occurrence limit", invoke_pc);
+    *out = (mc_item_stack *)stack;
+    return true;
+}
+
+static void click_stacks_release(mc_client_gameplay_input *call) {
+    mc_item_stack_release(call->click_air_stack);
+    call->click_air_stack = NULL;
+    mc_item_stack_release(call->click_block_stack);
+    call->click_block_stack = NULL;
+    call->use_state.stack = NULL;
+    call->use_state.result_stack = NULL;
+}
+
+static bool retire_use(mc_client_gameplay_input *call) {
+    if (mc_client_singleplayer_use_retire(&call->use_call, &call->use_cleanup) !=
+        MC_SINGLEPLAYER_USE_OK)
+        return false;
+    call->use_state.error = NULL;
+    call->use_state.cleanup = NULL;
+    call->use_state.item = NULL;
+    /* Keep copied scalar diagnostics; only these views belonged to the ended
+     * controller occurrence. The outer input failure site remains unchanged. */
+    call->use_error.acquisition = NULL;
+    call->use_error.activation = NULL;
+    call->use_error.item = NULL;
+    call->use_cleanup.acquisition = NULL;
+    call->use_cleanup.activation = NULL;
+    call->use_cleanup.item = NULL;
+    return true;
+}
+
+static bool use(client_application *app, mc_client_gameplay_input *call, bool on_block,
+                mc_item_stack *stack, int32_t x, int32_t y, int32_t z, int32_t face) {
+    const unsigned int pc = on_block ? 239u : 350u;
+    if (app->controller == NULL)
+        return click_fail(call, "actual click null use controller invocation", pc);
+    const mc_singleplayer_use_status status =
+        on_block
+            ? mc_client_singleplayer_use_on_block_begin(app->controller, app->h, app->active_world,
+                                                        stack, x, y, z, face, &call->use_call,
+                                                        &call->use_error)
+            : mc_client_singleplayer_use_in_air_begin(app->controller, app->h, app->active_world,
+                                                      stack, &call->use_call, &call->use_error);
+    if (call->use_call != NULL)
+        (void)mc_client_singleplayer_use_inspect(call->use_call, &call->use_state);
+    if (status != MC_SINGLEPLAYER_USE_OK) {
+        const mc_singleplayer_use_error *e = &call->use_error;
+        if (e->site.class_name == NULL)
+            return click_fail(call, e->operation, pc);
+        return fail(call, e->operation, e->site.class_name, e->site.method, e->site.descriptor,
+                    (unsigned int)e->site.pc);
+    }
+    if (on_block)
+        ++call->block_uses;
+    else
+        ++call->air_uses;
+    call->placements_admitted += call->use_state.placement_admitted;
+    call->placed_blocks += call->use_state.setter_returned && call->use_state.placed;
+    call->placement_sounds += call->use_state.sound_returned;
+    call->stack_count_stores += call->use_state.count_stored;
+    call->used_statistics += call->use_state.statistic_returned;
+    if (!retire_use(call))
+        return click_fail(call, call->use_cleanup.operation, pc);
+    return true;
+}
+
+static bool click_swing(client_application *app, mc_client_gameplay_input *call, unsigned int pc) {
+    if (app->h == NULL)
+        return click_fail(call, "actual click null Player swing receiver", pc);
+    if (mc_local_player_swing(app->h, &call->swing) != MC_ENTITY_OK)
+        return click_fail(call, call->swing.operation, pc);
+    ++call->swing_calls;
+    return true;
+}
+
+static bool click_equip(client_application *app, mc_client_gameplay_input *call, bool block) {
+    const unsigned int field_pc = block ? 307u : 360u, invoke_pc = block ? 310u : 363u;
+    if (app->t == NULL)
+        return click_fail(call, "actual click null EntityRenderer held-item field", field_pc);
+    mc_client_entity_renderer_state renderer;
+    if (!mc_client_entity_renderer_inspect(app->t, &renderer))
+        return click_fail(call, "actual click EntityRenderer native field access", field_pc);
+    if (renderer.fields.c == NULL)
+        return click_fail(call, "actual click null held-item reset invocation", invoke_pc);
+    if (renderer.ra_occurrence == NULL ||
+        mc_client_held_item_identity(renderer.ra_occurrence) != renderer.fields.c)
+        return click_fail(call, "click canonical held-item native occurrence", invoke_pc);
+    if (mc_client_held_item_reset_equip(renderer.ra_occurrence,
+                                        block ? MC_CLIENT_HELD_ITEM_RESET_BLOCK_USE
+                                              : MC_CLIENT_HELD_ITEM_RESET_AIR_USE,
+                                        &call->equip) != MC_CLIENT_ENTITY_RENDERER_OK)
+        return fail(call, call->equip.operation, call->equip.site.class_name,
+                    call->equip.site.method, call->equip.site.descriptor,
+                    (unsigned int)call->equip.site.pc);
+    ++call->equip_resets;
+    return true;
+}
+
+static bool click_clear_slot(client_application *app, mc_client_gameplay_input *call) {
+    mc_inventory_player *array_owner, *index_owner;
+    mc_inventory_player_state array, index;
+    if (!click_inventory(app, call, &array_owner, 272))
+        return false;
+    if (!mc_inventory_player_read_state(array_owner, &array))
+        return click_fail(call, "actual click Inventory main array field receiver", 275);
+    if (!click_inventory(app, call, &index_owner, 282))
+        return false;
+    if (!mc_inventory_player_read_state(index_owner, &index))
+        return click_fail(call, "actual click Inventory selected field receiver", 285);
+    /* The main array was captured before evaluating the fresh selected index.
+     * No callback occurs between those source reads and the actual aastore. */
+    if (array.main_slots == NULL || index.selected < 0 || index.selected >= 36)
+        return click_fail(call, "actual click main array null/index at aastore", 289);
+    if (mc_inventory_player_set(array_owner, index.selected, NULL, &call->slot) != MC_INVENTORY_OK)
+        return click_fail(call, call->slot.operation, 289);
+    ++call->selected_slot_clears;
+    return true;
+}
+
+static bool click_air(client_application *app, mc_client_gameplay_input *call) {
+    if (!click_current(app, call, &call->click_air_stack, 326, 329))
+        return false;
+    if (call->click_air_stack == NULL)
+        return true;
+    if (!use(app, call, false, call->click_air_stack, 0, 0, 0, 0))
+        return false;
+    return !call->use_state.result || click_equip(app, call, false);
+}
+
+/* Actual Minecraft.a(I), including its Block use and fresh in-air fallback.
+ * Distinct combat and Item/Block overrides retain their reached dependencies. */
 static bool click(client_application *app, mc_client_gameplay_input *call, int32_t button) {
     if (button == 0 && app->W > 0)
         return true;
-    if (button == 0) {
-        if (app->h == NULL)
-            return fail(call, "actual click null Player swing receiver",
-                        "net/minecraft/client/Minecraft", "a", "(I)V", 20);
-        if (mc_local_player_swing(app->h, &call->swing) != MC_ENTITY_OK)
-            return fail(call, call->swing.operation, "net/minecraft/client/Minecraft", "a", "(I)V",
-                        20);
-        ++call->swing_calls;
-    }
+    if (button == 0 && !click_swing(app, call, 20))
+        return false;
+    if (button == 1)
+        ++call->right_clicks;
     if (app->y == NULL) {
         if (button == 0)
             app->W = 10; /* Canonical concrete OS is never the source PJ creative class. */
+        if (button == 1 && !click_air(app, call))
+            return false;
+        click_stacks_release(call);
         return true;
     }
     mc_entity_hit_result_view hit;
@@ -157,9 +341,35 @@ static bool click(client_application *app, mc_client_gameplay_input *call, int32
             ++call->left_clicks;
             return mine(app, call, MC_SINGLEPLAYER_MINING_START, x, y, z, face, 184, "(I)V");
         }
-        return fail(call, "actual Block activation/Stack placement controller invocation",
-                    "net/minecraft/client/Minecraft", "a", "(I)V", 239);
+        if (!click_current(app, call, &call->click_block_stack, 194, 197))
+            return false;
+        mc_item_stack_fields fields = {0};
+        if (call->click_block_stack != NULL &&
+            mc_item_stack_fields_get(call->click_block_stack, &fields) != MC_ITEM_STACK_OK)
+            return click_fail(call, "actual click captured Stack count field", 209);
+        const int32_t before = fields.count;
+        if (!use(app, call, true, call->click_block_stack, x, y, z, face))
+            return false;
+        const bool fallback = !call->use_state.result;
+        if (!fallback && !click_swing(app, call, 251))
+            return false;
+        if (call->click_block_stack == NULL)
+            return true; /* Actual return259, including activation with no Stack. */
+        if (mc_item_stack_fields_get(call->click_block_stack, &fields) != MC_ITEM_STACK_OK)
+            return click_fail(call, "actual click captured Stack count field", 262);
+        if (fields.count == 0) {
+            if (!click_clear_slot(app, call))
+                return false;
+        } else if (fields.count != before && !click_equip(app, call, true))
+            return false;
+        if (fallback && !click_air(app, call))
+            return false;
+        click_stacks_release(call);
+        return true;
     }
+    if (button == 1 && !click_air(app, call))
+        return false;
+    click_stacks_release(call);
     return true;
 }
 
@@ -204,7 +414,7 @@ static bool mouse_event(client_application *app, mc_client_screen_transitions *t
             ++call->click_timer_stores;
         }
         if (event->pressed && event->button == 1)
-            return pending(call, "actual right click is not connected", 488);
+            return click(app, call, 1);
         if (event->pressed && event->button == 2)
             return pending(call, "actual pick-block action is not connected", 513);
     } else if (!screen_result(call,
@@ -276,8 +486,8 @@ static bool key_event(client_application *app, mc_client_screen_transitions *tra
             return pending(call, "actual Inventory screen allocation is not connected", 778);
         if (!binding(app, call, 6, &code, 799, 802))
             return false;
-        if (event->key == code)
-            return pending(call, "actual Player drop action is not connected", 812);
+        if (event->key == code && !drop(app, call))
+            return false;
         if (app->active_world != NULL) {
             mc_world_runtime_fields world;
             if (mc_world_runtime_fields_get(app->active_world, &world) != MC_WORLD_STORAGE_OK)
@@ -339,8 +549,7 @@ static bool held_click(client_application *app, mc_client_gameplay_input *call, 
         _mm_cvtss_f32(_mm_div_ss(_mm_set_ss(timer.ticks_per_second), _mm_set_ss(4.0f)));
     /* The original fcmpl/iflt skips this arm for an unordered comparison. */
     if (elapsed >= delay && app->N) {
-        if (button != 0)
-            return pending(call, "actual held right click is not connected", click_pc);
+        call->source_pc = click_pc;
         if (!click(app, call, button))
             return false;
         app->ag = app->V;
@@ -460,7 +669,8 @@ bool mc_client_gameplay_input_run(client_application *app,
                                   mc_client_gameplay_input *call) {
     if (app == NULL || transitions == NULL || call == NULL || call->active || call->failed ||
         call->focus != NULL || call->screen.pending_receiver != NULL || call->mining_call != NULL ||
-        call->hit_renderer != NULL || call->hit_block_work)
+        call->use_call != NULL || call->drop_call != NULL || call->click_block_stack != NULL ||
+        call->click_air_stack != NULL || call->hit_renderer != NULL || call->hit_block_work)
         return false;
     memset(call, 0, sizeof(*call));
     call->active = true;
@@ -474,6 +684,11 @@ bool mc_client_gameplay_input_retire(mc_client_gameplay_input *call) {
         return false;
     if (!retire_hit(call))
         return false;
+    if (!retire_use(call))
+        return false;
+    if (!retire_drop(call))
+        return false;
+    click_stacks_release(call);
     if (mc_client_singleplayer_mining_retire(&call->mining_call, &call->mining_cleanup) !=
         MC_SINGLEPLAYER_MINING_OK)
         return false;

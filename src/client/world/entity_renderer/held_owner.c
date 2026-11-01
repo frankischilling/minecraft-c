@@ -300,3 +300,38 @@ bool mc_client_held_item_inspect(const mc_client_held_item *o, mc_client_held_it
     }
     return true;
 }
+
+mc_client_entity_renderer_status
+mc_client_held_item_reset_equip(mc_client_held_item *o, mc_client_held_item_equip_reset action,
+                                mc_client_entity_renderer_error *out) {
+    mc_client_entity_renderer_error local;
+    mc_client_entity_renderer_error *e = out == NULL ? &local : out;
+    mc_client_entity_renderer_error_init(e);
+    if ((unsigned int)action > MC_CLIENT_HELD_ITEM_RESET_AIR_USE)
+        return entity_renderer_fail(e, MC_CLIENT_ENTITY_RENDERER_INVALID_ARGUMENT,
+                                    "RA equip reset source method selector", NULL, -1, true);
+    const char *method = action == MC_CLIENT_HELD_ITEM_RESET_BLOCK_USE ? "b" : "c";
+    mc_client_entity_renderer_status status = MC_CLIENT_ENTITY_RENDERER_OK;
+    if (o == NULL || o->source == NULL)
+        status = entity_renderer_fail(e, MC_CLIENT_ENTITY_RENDERER_NULL_REFERENCE,
+                                      "actual RA equip reset null receiver", NULL, -1, false);
+    else if (o->active || o->draw_call != NULL || o->held_stack_token != NULL)
+        status = entity_renderer_fail(e, MC_CLIENT_ENTITY_RENDERER_BUSY,
+                                      "RA equip reset active/pending source owner", NULL, -1, true);
+    else if (o->source->phase == MC_CLIENT_ENTITY_RENDERER_CONSTRUCTING ||
+             o->source->phase == MC_CLIENT_ENTITY_RENDERER_RETIRING || o->holds == 0)
+        status = entity_renderer_fail(e, MC_CLIENT_ENTITY_RENDERER_INVALID_PHASE,
+                                      "RA equip reset live native source owner", NULL, -1, true);
+    else {
+        o->active = true;
+        o->source->c = 0.0f;
+        o->source->last_store = 2;
+        o->active = false;
+    }
+    const int32_t pc = status == MC_CLIENT_ENTITY_RENDERER_OK               ? 5
+                       : status == MC_CLIENT_ENTITY_RENDERER_NULL_REFERENCE ? 2
+                                                                            : -1;
+    e->site = (mc_client_graphics_site){"ra", method, "()V", pc};
+    e->ra_pc = pc;
+    return status;
+}

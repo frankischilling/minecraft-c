@@ -163,9 +163,9 @@ bool wt_update(wt_scope *s, mc_entity *entity, bool flag, bool wrapper) {
         const bool stale = passenger->base.be || passenger->base.aH != current;
         if (stale) {
             at(s, 463);
-            current->base.aG->base.aH = NULL;
+            (void)mc_entity_mount_vehicle_store(current->base.aG, NULL);
             at(s, 468);
-            current->base.aG = NULL;
+            (void)mc_entity_mount_passenger_store(current, NULL);
             mc_entity_release(passenger);
             ok = true;
             break;

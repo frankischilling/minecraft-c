@@ -25,6 +25,11 @@ typedef struct mc_client_menu_loop_state {
     uint64_t gameplay_left_clicks, gameplay_swing_calls, gameplay_click_timer_stores;
     uint64_t gameplay_mining_starts, gameplay_mining_progress_calls, gameplay_mined_blocks;
     uint64_t gameplay_hit_particles_constructed, gameplay_hit_particles_appended;
+    uint64_t gameplay_right_clicks, gameplay_block_uses, gameplay_air_uses;
+    uint64_t gameplay_placements_admitted, gameplay_placed_blocks, gameplay_placement_sounds;
+    uint64_t gameplay_used_statistics, gameplay_stack_count_stores;
+    uint64_t gameplay_selected_slot_clears, gameplay_equip_resets;
+    uint64_t gameplay_drop_calls, gameplay_drop_publications, gameplay_dropped_items;
     uint64_t notice_returns, notice_draws, notice_text_returns, notice_vertices;
     /* Native observations of completed source calls survive child retirement
      * and the next tick's fresh diagnostic record. They control no gameplay. */

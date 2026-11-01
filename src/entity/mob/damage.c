@@ -115,12 +115,17 @@ static bool sound(mc_entity *p, mc_registry_classes *registry, bool fatal,
     e->living_damage.sound_world_identity = (uintptr_t)world;
     const uint16_t name_pc = fatal ? 284u : 332u;
     living_at(e, name_pc);
-    child_at(e, "uz", fatal ? "i" : "j_", "()Ljava/lang/String;", 0);
-    const char *text = fatal ? "mob.zombiedeath" : "mob.zombiehurt";
+    const bool skeleton = mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SKELETON);
+    const char *declaring_class = skeleton ? "fr" : "uz";
+    child_at(e, declaring_class, fatal ? "i" : "j_", "()Ljava/lang/String;", 0);
+    /* FR.i and FR.j_ both return mob.skeletonhurt. Neither receiver is
+     * replaced; only its actual virtual String declaration differs here. */
+    const char *text = skeleton ? "mob.skeletonhurt" : fatal ? "mob.zombiedeath" : "mob.zombiehurt";
     const mc_registry_string *name = NULL;
     if (registry == NULL || registry->entities != p->classes)
         return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_REGISTRY,
-                           "Zombie damage actual code String namespace");
+                           skeleton ? "Skeleton damage actual code String namespace"
+                                    : "Zombie damage actual code String namespace");
     const mc_registry_status code =
         mc_registry_runtime_literal_ascii(registry, text, &name, &e->registry);
     if (code != MC_REGISTRY_OK)
@@ -129,8 +134,9 @@ static bool sound(mc_entity *p, mc_registry_classes *registry, bool fatal,
                            : code == MC_REGISTRY_ALLOCATION_FAILED ? MC_ENTITY_ALLOCATION_FAILED
                                                                    : MC_ENTITY_STATE_ERROR,
                            MC_ENTITY_EFFECT_CAUSE_REGISTRY,
-                           "Zombie damage actual code String literal");
-    child_at(e, "uz", fatal ? "i" : "j_", "()Ljava/lang/String;", 2);
+                           skeleton ? "Skeleton damage actual code String literal"
+                                    : "Zombie damage actual code String literal");
+    child_at(e, declaring_class, fatal ? "i" : "j_", "()Ljava/lang/String;", 2);
     e->living_damage.sound_name_returned = true;
     e->living_damage.sound_name_identity = (uintptr_t)name;
     e->living_damage.sound_literal = text;
@@ -271,16 +277,17 @@ static bool living(mc_entity *p, mc_registry_classes *registry, int32_t amount, 
     return true;
 }
 
-bool mc_mob_zombie_null_damage_entered(mc_entity *p, mc_registry_classes *registry, int32_t amount,
-                                       bool *out, mc_entity_effect_error *e) {
+bool mc_mob_monster_null_damage_entered(mc_entity *p, mc_registry_classes *registry, int32_t amount,
+                                        bool *out, mc_entity_effect_error *e) {
     /* This check is native structural admission, never a Source preflight of
      * future World/Random/target/health operands. The facade owns a live hold. */
     if (e == NULL)
         return false;
-    if (!mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ZOMBIE) || !mc_entity_has_mob(p) ||
-        p->classes->source != MC_ENTITY_CLIENT || out == NULL)
+    if ((!mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ZOMBIE) &&
+         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SKELETON)) ||
+        !mc_entity_has_mob(p) || p->classes->source != MC_ENTITY_CLIENT || out == NULL)
         return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_OWNER,
-                           "Zombie NULL damage entered canonical owner contract");
+                           "Monster NULL damage entered canonical owner contract");
     e->damage_arguments_stored = true;
     e->damage_source_identity = 0;
     e->damage_amount = amount;

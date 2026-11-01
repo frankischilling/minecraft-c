@@ -20,7 +20,7 @@ typedef enum mc_entity_effect_cause {
     MC_ENTITY_EFFECT_CAUSE_REGISTRY
 } mc_entity_effect_cause;
 
-/* Value-only receipt of the actually entered Zombie NULL-source GZ/LS body.
+/* Value-only receipt of the actually entered Zombie/Skeleton NULL-source GZ/LS body.
  * No identity here owns an occurrence or may be dereferenced after its graph
  * retires. The existing Entity/Registry/World children retain the full causes.
  * Exact Source exceptions are distinguished from native limits/frontiers. */
@@ -49,7 +49,7 @@ typedef struct mc_entity_living_damage_state {
 /* Passive reached-operation frames, independent of constructor diagnostics.
  * source_bytecode belongs to the requested effect; child fields name its
  * actual delegated source bodies. Successful calls return a fresh empty error,
- * except the additive receipt of a genuinely entered Zombie NULL damage body.
+ * except the additive receipt of a genuinely entered Zombie/Skeleton NULL damage body.
  * STATE_ERROR with an explicit unsupported cause is an unfinished reached
  * descendant, never an empty successful virtual or a synthesized Java Object. */
 typedef struct mc_entity_effect_error {
@@ -139,9 +139,9 @@ mc_entity_status mc_entity_effect_contact_portal(mc_entity *entity, mc_entity_ef
  * Mobs use the actual Byte0 sneaking flag and inherited SN push/walking leaves;
  * Spider and Wolf n return false. Chicken fall is its literal empty override;
  * other represented Living falls enter LS without Player statistics. Reached
- * canonical Zombie NULL-source damage executes its actual GZ/LS gates, health,
+ * canonical client Zombie/Skeleton NULL-source damage executes its actual GZ/LS gates, health,
  * direction and sound body. Other concrete Mob damage and Slime splitting
- * stop at explicit native dependencies; fatal Zombie NULL damage stops at its
+ * stop at explicit native dependencies; fatal Zombie/Skeleton NULL damage stops at its
  * actual death invocation after the reached death sound. No death is inferred.
  *
  * LocalPlayer fall executes gs->ls->sn in source order. A fall >=2 resolves
@@ -156,7 +156,7 @@ mc_entity_status mc_entity_effect_contact_portal(mc_entity *entity, mc_entity_ef
  * Context arguments borrow the same actual Registry namespace independently
  * of nullable World; they are inspected only at reached code statics. Errors
  * may borrow the reached statistic identity while its Registry stays live.
- * Zombie damage borrows the actual code String and exact WorldAccess producer
+ * Zombie/Skeleton damage borrows the actual code String and exact WorldAccess producer
  * receipt under this same held, exclusive graph contract. Its completed receipt
  * remains available on ordinary true/false returns; it owns no extra resources. */
 

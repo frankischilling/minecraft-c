@@ -679,6 +679,7 @@ static void destroy_entity(mc_entity *entity) {
         mc_mob_path_dispose(entity);
     }
     mc_nbt_tree_free(entity->storage_source);
+    mc_entity_mount_references_dispose(entity);
     mc_item_stack_release(entity->stack);
     mc_world_runtime_binding_release(entity->base.world);
     if (entity->watcher != NULL) {

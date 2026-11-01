@@ -53,7 +53,7 @@ These are reached dependencies, not successful empty implementations:
 | `ii.f_:97/109` | Other concrete attacks remain unfinished; Creeper attack and unseen-target bodies now run. |
 | `gb.a:108/134` | Actual World explosion, including QX rays, damage, drops and block effects. |
 | `ww.o:217` | Actual Item drop after egg sound and Egg static-field access. |
-| Living/Monster/Sheep/Wolf hurt entries | [Zombie NULL-attacker damage](living-damage.md) runs; other damage, death and drop work remains unfinished. |
+| Living/Monster/Sheep/Wolf hurt entries | [Zombie](living-damage.md) and [Skeleton](skeleton-damage.md) NULL-attacker damage run; other damage, death and drop work remains unfinished. |
 | Selected Wolf children | Owner following, selected-Item interest and other reached behavior still requiring its own body. |
 | Selected movement children | Mounting, contact attack, Slime splitting and other unimplemented subtype effects. |
 

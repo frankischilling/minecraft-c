@@ -116,9 +116,9 @@ static bool dismount(mc_active_scope *s, mc_player_tick_error *e) {
     }
     mc_entity_source_position(p, p->base.x, p->base.y, p->base.z);
     e->dismount_bytecode = 71;
-    p->base.aH->base.aG = NULL;
+    (void)mc_entity_mount_passenger_store(p->base.aH, NULL);
     e->dismount_bytecode = 76;
-    p->base.aH = NULL;
+    (void)mc_entity_mount_vehicle_store(p, NULL);
     okay = true;
 done:
     mc_entity_release(mount);

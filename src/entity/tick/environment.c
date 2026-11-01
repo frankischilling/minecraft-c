@@ -186,7 +186,7 @@ static bool base_body(mc_entity *entity, mc_registry_classes *classes,
         const bool dead = rider->base.be;
         mc_entity_release(rider);
         if (dead)
-            entity->base.aH = NULL;
+            (void)mc_entity_mount_vehicle_store(entity, NULL);
     }
     entity->base.bt = mc_java_i32_add(entity->base.bt, 1);
     entity->base.bi = entity->base.bj;

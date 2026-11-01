@@ -12,7 +12,9 @@ the actual Registry String and ordinary WorldAccess callbacks. A successful
 NULL-attacker hit preserves an existing Cow target when the original Monster
 branch returns before the target store.
 
-This implementation admits the canonical client Zombie only. Damage with a
+This section records the canonical client Zombie implementation and its
+observations. [Skeleton NULL-attacker damage](skeleton-damage.md) now enters the
+same inherited body through its own receiver and sound declarations. Damage with a
 nonnull attacker remains unfinished. Fatal damage plays its reached death
 sound, then stops at the actual death/drop invocation. It does not claim that
 the Zombie died or that an Item dropped. Other LivingEntity subclasses retain
@@ -70,5 +72,5 @@ focus-release and missing-overlay failures remain separate records. General
 Canvas/focus transitions are still unfinished; a successful finite run does
 not establish reliable extended play.
 These results do not establish complete combat, original/native full frames
-or a playable client. Item interactions, mining, placement and save/reload
-still need work.
+or a playable client. General Item/Block interactions, combat, Inventory UI and
+extended save/reload play still need work.

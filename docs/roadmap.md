@@ -26,10 +26,14 @@ focus/resize paths have separate returning profiles. Live Mob
 save/title/reselection now have bounded authored controls. The
 [selected-block path](client/block-selection.md) draws dirt and snow outlines
 from real picking results. The [empty-hand Dirt loop](client/mining.md) now
-connects mining, dropped-Item drawing, pickup, held-block drawing and two
-save/reselection steps in a passing Windows Release scenario. Complete
-right-click placement, tools, remaining Item/Block overrides and Inventory UI
-on that same ordinary input/World loop.
+connects mining, dropped-Item drawing, pickup and held-block drawing.
+[Collected-Dirt placement](client/placement.md) extends that ordinary input loop
+through right-button use, consumption and a fourth World load after three saves.
+[Skeleton NULL-attacker damage](entity/skeleton-damage.md) also closes the
+periodic-fire dispatch reached during that work. The configured drop key now removes one selected Item through the real Player
+action; Skeleton/Spider mounting has its actual riding and cleanup route.
+Complete tools, combat,
+remaining Item/Block overrides and Inventory UI on the same input/World loop.
 Remove the retained loader's eight-load session limit and qualify failed
 successor loads, default-Far settings and extended play. Existing movement,
 look and time bodies remain part of that real loop. Detailed evidence and

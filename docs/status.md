@@ -1,18 +1,43 @@
 # Development status
 
-The Windows Release [Dirt mining scenario](client/mining.md) now completes a
-fresh click, held break with cracks and real particles, dropped-Item drawing,
-save/title/reselection, keyboard approach and pickup, held-block HUD/hand
-drawing, and a second save/title/reselection. Independent disk decoding checks
-air, Inventory and every saved Item against live entry snapshots. Three final-source runs
-pass in 21.53, 22.39 and 19.46 seconds with checked native cleanup. A separate
-natural Mob tick failure after pickup remains unresolved. Focused mining, HUD and
-lighting controls also pass on Windows Debug and sanitized Linux.
+The Windows Release [collected-Dirt placement scenario](client/placement.md)
+now completes mining, dropped-Item drawing, keyboard pickup, held-block drawing,
+real right-button placement and three save/title transitions across four World
+loads. Independent disk decoding checks placed Dirt3/metadata0, empty Inventory
+and every saved Item against live entry snapshots. Three runs of the corrected code
+pass in 25.11, 25.98 and 28.37 seconds with checked native cleanup.
+
+The configured [Player drop key](entity/player-drop.md) now removes one selected
+Item and publishes it with the original pickup delay, throw operations and drop
+statistic. Empty-hand input creates no Item. Native controls include exact
+velocity words, Random progress and publication/statistic failure prefixes.
+A subsequent natural spawn reached [Skeleton-on-Spider mounting](entity/mounting.md).
+The inherited mount body, Skeleton riding continuation, Spider passenger offset
+and checked relationship-cycle retirement are implemented. Fifteen focused
+Windows suites pass in 1.33 seconds; fourteen corresponding Linux Clang
+ASan/UBSan suites pass in 2.08 seconds. Mounting completes 130 checks and
+Player drops complete 251. Extended natural play remains unqualified.
+
+Fresh Windows Release graphical placement and drop scenarios pass in 34.96 and
+23.28 seconds, completing 3,756 and 3,526 native checks. Both return through four
+World loads and three normal saves with independently decoded state and checked
+cleanup. The drop run verifies actual nonempty and empty-hand Q input, empty
+HUD/hand frames and saved/reloaded Dirt. Earlier native-focus and selected
+jockey failures remain separate evidence; these finite passes do not qualify
+stable unrestricted play.
+
+A newer natural tick failure exposed missing [Skeleton NULL-attacker
+damage](entity/skeleton-damage.md). Its exact World/environment frontier was
+reproduced before the dispatch fix; the public regression and unchanged Zombie
+controls now pass on Windows Debug and sanitized Linux. An older Mob failure
+without a nested cause remains unclassified. A separate pickup repeat exhausted
+its 180-frame bound before failure-only state diagnostics were added; later
+passes do not establish its cause or a fix.
 
 Selected dirt and snow outlines retain their separate four-profile qualification.
 The [selection and reselection contract](client/block-selection.md) records those
 scenarios, private Chunk lookup indexes and the eight-load session limit.
-Placement, tools, combat, Inventory UI, unrestricted reselection and extended
+Tools, general Block/Item use, combat, Inventory UI, unrestricted reselection and extended
 play remain unfinished or unqualified. The client is still pre-playable.
 
 The source World now saves metadata and supported live Chunk records through
@@ -79,7 +104,8 @@ returns from `Minecraft.k:1328`. These four actual renderers return through
 Sheep also executes its distinct fur model.
 Terminal
 cleanup releases genuine Path aliases, target cycles and Piston-only roots.
-A selected Spider jockey retains its separate unfinished mount.
+The selected Spider jockey now uses its separately tested
+[mount and riding body](entity/mounting.md).
 
 Single-player remains pre-playable. Mob combat, storage and remaining renderers,
 further Block overrides, remaining display particle kinds, sleeping wake transitions

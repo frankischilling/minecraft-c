@@ -2,8 +2,10 @@
 
 The client connects empty-hand survival mining to the existing SDK input,
 singleplayer controller, World mutation and Item owners. Dirt is the first
-complete interaction scenario. Tools, combat, right-click placement and the
-Inventory screen retain their own reached dependencies.
+complete interaction scenario. [Collected-Dirt placement](placement.md) continues
+that route through real right-button use and a further save/reselection.
+Tools, combat, broader Item/Block use and the Inventory screen retain their
+own reached dependencies.
 
 ## Source order
 

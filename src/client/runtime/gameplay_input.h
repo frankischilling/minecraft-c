@@ -6,8 +6,11 @@
 #include "../settings/source_input.h"
 #include "mc/client/controller/mining.h"
 #include "mc/client/controller/singleplayer_tick.h"
+#include "mc/client/controller/use.h"
 #include "mc/client/particles/effect_renderer.h"
 #include "mc/client/settings/game_option.h"
+#include "mc/client/world/entity_renderer.h"
+#include "mc/entity/player/drop.h"
 #include "mc/entity/player/input.h"
 
 typedef struct mc_client_gameplay_input {
@@ -18,6 +21,13 @@ typedef struct mc_client_gameplay_input {
     size_t mouse_events, keyboard_events, stale_mouse_events, hotbar_stores;
     size_t left_clicks, swing_calls, click_timer_stores, mining_starts, mining_progress_calls;
     size_t mined_blocks, hit_particles_constructed, hit_particles_appended;
+    size_t right_clicks, block_uses, air_uses, placements_admitted, placed_blocks;
+    size_t placement_sounds, used_statistics, stack_count_stores;
+    size_t selected_slot_clears, equip_resets;
+    size_t drop_calls, drop_publications, dropped_items;
+    mc_player_drop_call *drop_call;
+    mc_player_drop_state drop_state;
+    mc_player_drop_error drop_error, drop_cleanup;
     mc_client_sdk_input_error input;
     mc_player_input_error player;
     mc_inventory_selection_error inventory;
@@ -28,6 +38,13 @@ typedef struct mc_client_gameplay_input {
     mc_singleplayer_mining_call *mining_call;
     mc_singleplayer_mining_state mining_state;
     mc_singleplayer_mining_error mining_error, mining_cleanup;
+    mc_singleplayer_use_call *use_call;
+    mc_singleplayer_use_state use_state;
+    mc_singleplayer_use_error use_error, use_cleanup;
+    mc_item_stack *click_block_stack, *click_air_stack;
+    mc_inventory_current_error current;
+    mc_inventory_error slot;
+    mc_client_entity_renderer_error equip;
     mc_player_mining_error swing;
     mc_client_effect_renderer *hit_renderer;
     bool hit_block_work; /* This caller obtained a newly allocated DN block receipt. */
@@ -45,7 +62,8 @@ typedef struct mc_client_gameplay_input {
  * App, transitions and their whole graph stay live/exclusive on the video
  * thread through retirement. Report storage must be disjoint from that graph.
  * Empty-hand mining executes on the actual controller/World, including its
- * hit-particle call. Distinct tool/Block overrides, combat/use, inventory/chat
+ * hit-particle call, plus actual Block/Stack use and the Dirt placement path.
+ * Distinct tool/Block overrides, combat, inventory/chat
  * screens, fullscreen and sound reload retain their reached dependencies.
  * This segment alone does not establish a complete tick or playable frame. */
 bool mc_client_gameplay_input_run(client_application *, mc_client_screen_transitions *,

@@ -65,6 +65,29 @@ static bool same_registry_cause(const mc_registry_error *a, const mc_registry_er
            a->format_error.date_time == b->format_error.date_time;
 }
 
+/* JL active use is also reached by IZ's successful use wrapper. These are
+ * actual independent initializer latches on the same Registry, including the
+ * source translation/recipe dependencies they can reach. Inspect their exact
+ * immutable causes; a native failed-bootstrap status alone proves no Error. */
+static const mc_registry_error *other_initializer_cause(mc_registry_classes *classes,
+                                                        const mc_registry_error *error, bool cached,
+                                                        bool exception_only) {
+    const mc_registry_class_state *states[] = {&classes->statistics_state,
+                                               &classes->statistic_key_state,
+                                               &classes->statistic_base_state,
+                                               &classes->translation_state,
+                                               &classes->translation_wrapper_state,
+                                               &classes->achievements_state,
+                                               &classes->crafting_state,
+                                               &classes->smelting_state};
+    for (size_t i = 0; i < sizeof states / sizeof *states; ++i)
+        if (states[i]->phase == MC_REGISTRY_FAILED &&
+            same_registry_cause(error, &states[i]->failure, cached) &&
+            (!exception_only || registry_source_exception(states[i]->failure.status) != NULL))
+            return &states[i]->failure;
+    return NULL;
+}
+
 void mc_item_render_registry_classification(mc_registry_classes *classes,
                                             const mc_registry_error *error,
                                             mc_item_render_throwable *kind, const char **name) {
@@ -95,6 +118,8 @@ void mc_item_render_registry_classification(mc_registry_classes *classes,
                     break;
                 }
         }
+        if (first == NULL)
+            first = other_initializer_cause(classes, error, cached, false);
     }
     if (first != NULL && registry_source_exception(first->status) != NULL) {
         *kind = MC_ITEM_RENDER_SOURCE_ERROR;
@@ -120,6 +145,11 @@ void mc_item_render_registry_classification(mc_registry_classes *classes,
                 *name = "java/lang/NoClassDefFoundError";
                 return;
             }
+        if (other_initializer_cause(classes, first, true, true) != NULL) {
+            *kind = MC_ITEM_RENDER_SOURCE_ERROR;
+            *name = "java/lang/NoClassDefFoundError";
+            return;
+        }
     } else if (!cached && error->active_initializer_class == NULL) {
         *name = registry_source_exception(error->status);
         if (*name != NULL)

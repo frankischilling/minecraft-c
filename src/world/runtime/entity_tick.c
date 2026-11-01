@@ -60,7 +60,10 @@ bool wt_relationship(wt_scope *s, mc_entity *link, mc_entity *current, unsigned 
         *out = NULL;
         return true;
     }
-    bool proved = link == current;
+    bool proved =
+        link == current ||
+        (current != NULL && ((current->base.aH == link && current->mount_hold == link) ||
+                             (current->base.aG == link && current->passenger_hold == link)));
     for (size_t i = 0; !proved && i < s->parent_count; ++i) {
         if (!wt_work(s, caller))
             return false;

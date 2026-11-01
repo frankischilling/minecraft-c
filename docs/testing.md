@@ -5471,3 +5471,18 @@ separate successful loaded run. No full 136-test pass or reliable loaded-Zombie
 regression was claimed. The subsequent overlay qualification above records
 progress beyond that depth failure and the currently reached fire-rendering
 child. Canvas/focus and extended loaded-world execution remain unfinished.
+
+## Mutation-fixture preparation
+
+The population persistence and named-data corruption controls retain one encoded
+copy of their already validated original JSON tree. Every mutation decodes a
+fresh tree. Game identities remain explicit reference IDs; Python container
+sharing is not part of the observation format. Original collectors, complete
+projection/validation and existing rejection assertions are unchanged.
+
+On the same Windows Python host with both suites launched together, persistence
+falls from 20 tests in 56.153 seconds to 21 in 40.767 seconds. Named-data falls
+from 24 tests in 48.815 seconds to 25 in 41.487 seconds. Both final suites pass
+without failures or skips. Each adds a repeated-toggle control and a complete
+baseline-integrity check. These measurements cover local test preparation and
+execution; hosted job duration and gameplay performance require separate runs.

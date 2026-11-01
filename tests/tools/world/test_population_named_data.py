@@ -55,6 +55,10 @@ class NamedDataEvidence(unittest.TestCase):
         # Decode both lossless original documents and derive their expectations once.
         cls.cases = F.load_package(cls.path, D)
         cls.original = cls.cases["client"]["original"]
+        # Every mutation gets a new JSON tree; explicit game reference IDs,
+        # rather than Python container aliases, carry the observed ownership.
+        cls.original_json = json.dumps(cls.original, ensure_ascii=True, allow_nan=False,
+                                       separators=(",", ":"))
         cls.expected = cls.cases["client"]["expected"]
         cls.jar = cls.cases["client"]["jar"]
         cls.rows = A.all_boundaries(cls.original["named_data"])
@@ -62,10 +66,10 @@ class NamedDataEvidence(unittest.TestCase):
         cls.interval = cls.original["named_data"]["saves"][0]["epoch_ms"]
         cls.current_map = cls.rows[9]["map_data"][0]
         cls.named_raw = bytes.fromhex(M.file_entry(cls.saved_disk, A.NAMED_FILE)["hex"])
-        cls.logical = D.C.PUBLIC.strict_json(D.C.PUBLIC.unpack(cls.package["sides"]["client"]["original"], F.MAX_RECORD))
+        cls.logical_json = D.C.PUBLIC.unpack(cls.package["sides"]["client"]["original"], F.MAX_RECORD)
 
     def reject_original(self, edit, message=None):
-        value = copy.deepcopy(self.original)
+        value = json.loads(self.original_json)
         edit(value)
         assertion = self.assertRaisesRegex(FAILURES, message) if message else self.assertRaises(FAILURES)
         with assertion:
@@ -82,7 +86,7 @@ class NamedDataEvidence(unittest.TestCase):
                 F.load_package(path, D)
 
     def reject_logical(self, edit):
-        original = copy.deepcopy(self.logical)
+        original = json.loads(self.logical_json)
         edit(original)
         packed = D.C.PUBLIC.packed(F._json_bytes(original, F.MAX_RECORD))
         self.reject_package(lambda package: package["sides"]["client"].update(original=packed))
@@ -90,6 +94,15 @@ class NamedDataEvidence(unittest.TestCase):
     def numerical_states(self):
         return copy.deepcopy(self.original["population"]["states"] +
                              [row["state"]["numerical"] for row in self.rows])
+
+    def test_repeated_corruptions_leave_the_complete_baseline_unchanged(self):
+        def toggle_coordinate(value):
+            value["population"]["callbacks"]["operations"][0]["coordinates"][0] ^= 1
+        for _ in range(2):
+            # A shared mutable case would toggle back to the valid observation.
+            self.reject_original(toggle_coordinate)
+        self.assertEqual(json.dumps(self.original, ensure_ascii=True, allow_nan=False,
+                                    separators=(",", ":")), self.original_json)
 
     def test_both_originals_rederive_complete_state(self):
         self.assertEqual(set(self.cases), {"client", "server"})

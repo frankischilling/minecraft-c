@@ -102,14 +102,18 @@ class PersistenceEvidence(unittest.TestCase):
         # Decode and independently rederive both sides once, never from native output.
         cls.cases = FIXTURES.load_package(cls.path, DRIVER)
         cls.original = cls.cases["client"]["original"]
+        # Original observations are JSON trees. Decode a fresh mutable tree for
+        # each corruption without repeatedly walking its immutable scalar values
+        # through deepcopy. Game object aliases remain explicit reference IDs.
+        cls.original_json = json.dumps(cls.original, ensure_ascii=True, allow_nan=False,
+                                       separators=(",", ":"))
         cls.jar = cls.cases["client"]["jar"]
         cls.saved_disk = cls.original["persistence"]["cache_saves"][0]["after"]["disk"]
         cls.interval = cls.original["persistence"]["cache_saves"][0]["epoch_ms"]
-        cls.logical = DRIVER.C.PUBLIC.strict_json(
-            DRIVER.C.PUBLIC.unpack(cls.package["sides"]["client"]["original"]))
+        cls.logical_json = DRIVER.C.PUBLIC.unpack(cls.package["sides"]["client"]["original"])
 
     def reject_original(self, mutate, message=None):
-        value = copy.deepcopy(self.original)
+        value = json.loads(self.original_json)
         mutate(value)
         failures = (ValueError, DRIVER.C.PUBLIC.driver.Failure)
         assertion = self.assertRaisesRegex(failures, message) if message else self.assertRaises(failures)
@@ -129,7 +133,7 @@ class PersistenceEvidence(unittest.TestCase):
                 FIXTURES.load_package(path, DRIVER)
 
     def reject_logical(self, mutate, message=None):
-        original = copy.deepcopy(self.logical)
+        original = json.loads(self.logical_json)
         mutate(original)
         packed = DRIVER.C.PUBLIC.packed(json.dumps(original, separators=(",", ":")).encode("ascii"))
         self.reject_package(lambda value: value["sides"]["client"].update(original=packed), message)
@@ -152,6 +156,15 @@ class PersistenceEvidence(unittest.TestCase):
                 self.assertEqual(case["expected"]["block_map"]["length"], 256)
                 self.assertTrue(all(case["original"]["persistence"][key] is False
                                     for key in ("full_world_save", "unload", "world_restart")))
+
+    def test_repeated_corruptions_leave_the_complete_baseline_unchanged(self):
+        def toggle_coordinate(value):
+            value["population"]["callbacks"]["operations"][0]["coordinates"][0] ^= 1
+        for _ in range(2):
+            # Reusing one mutable tree would toggle back to the accepted input.
+            self.reject_original(toggle_coordinate)
+        self.assertEqual(json.dumps(self.original, ensure_ascii=True, allow_nan=False,
+                                    separators=(",", ":")), self.original_json)
 
     def test_complete_profile_and_call_schedule(self):
         mutations = {

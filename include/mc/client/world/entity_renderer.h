@@ -204,4 +204,19 @@ const mc_client_source_ra *mc_client_held_item_identity(const mc_client_held_ite
 bool mc_client_held_item_is_inactive_occurrences(const mc_client_held_item *, size_t expected);
 bool mc_client_held_item_is_final_inactive(const mc_client_held_item *);
 bool mc_client_held_item_inspect(const mc_client_held_item *, mc_client_held_item_state *);
+
+typedef enum mc_client_held_item_equip_reset {
+    MC_CLIENT_HELD_ITEM_RESET_BLOCK_USE,
+    MC_CLIENT_HELD_ITEM_RESET_AIR_USE
+} mc_client_held_item_equip_reset;
+
+/* Distinct actual RA.b()/c(): c=+0 at2, return5. The same source Stack,
+ * previous equip progress and selected-slot identity remain untouched. Keep
+ * this actual owner live/exclusive; entered source work, pending draw/held-parent work refuses
+ * the native entry before the source store. RAW/failed prefixes are valid
+ * prepared method receivers, as for RA.a(); constructing/retiring owners are
+ * refused. No per-tick body is invoked or constructor completion inferred. */
+mc_client_entity_renderer_status mc_client_held_item_reset_equip(mc_client_held_item *,
+                                                                 mc_client_held_item_equip_reset,
+                                                                 mc_client_entity_renderer_error *);
 #endif

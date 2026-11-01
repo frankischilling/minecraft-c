@@ -398,8 +398,8 @@
       "sha256": "22e9ae3c1a618c3cc785e41fa9a3b1bf3394835a6ca94583491a636715602d26"
     },
     "src/entity/entity_internal.h": {
-      "bytes": 3813,
-      "sha256": "d782667cd27fda359059a239329ade253222503bd21dd5c34fbc8310438b8d0c"
+      "bytes": 4227,
+      "sha256": "4384988717f783d9946c3d149a620669e7bc1b039d5726e3de8bac568f1c9fcd"
     },
     "src/entity/player/player_internal.h": {
       "bytes": 1952,

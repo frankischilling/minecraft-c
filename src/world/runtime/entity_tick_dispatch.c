@@ -68,7 +68,9 @@ static bool pose_kind(const mc_entity *p) {
     return mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ITEM) ||
            mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_FALLING_SAND) ||
            mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_MINECART) ||
-           mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER);
+           mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) ||
+           mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SPIDER) ||
+           mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SKELETON);
 }
 
 static bool position_passenger(wt_scope *s, mc_entity *mount) {
@@ -87,12 +89,15 @@ static bool position_passenger(wt_scope *s, mc_entity *mount) {
     const double x = mount->base.x, y_base = mount->base.y;
     s->error.mount_method = "m()D";
     const bool cart = mc_entity_is_kind(mount, MC_ENTITY_CLASS_KIND_MINECART);
-    s->error.mount_class = cart ? "yl" : "sn";
+    const bool spider = mc_entity_is_kind(mount, MC_ENTITY_CLASS_KIND_SPIDER);
+    s->error.mount_class = cart ? "yl" : spider ? "cn" : "sn";
     s->error.mount_bytecode = 4; /* First pending m()D floating instruction is f2d4. */
     if (!wt_fp(s, s->error.bytecode))
         goto done;
     const double height = wt_widen(mount->base.height);
-    const double mounted = cart ? wt_sub(wt_mul(height, 0.0), 0x1.333334p-2) : wt_mul(height, .75);
+    const double mounted = cart     ? wt_sub(wt_mul(height, 0.0), 0x1.333334p-2)
+                           : spider ? wt_sub(wt_mul(height, .75), .5)
+                                    : wt_mul(height, .75);
     const double first_y = wt_add(y_base, mounted);
     s->error.mount_method = "I()D";
     if (!wt_relationship(s, mount->base.aG, mount, 21, &offset_target))
@@ -159,14 +164,15 @@ bool wt_riding(wt_scope *s, mc_entity *p, unsigned int pc) {
     s->error.virtual_method = "s_()V";
     if (p == NULL)
         return wt_fail(s, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World null riding tick receiver");
-    if (!mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ITEM) ||
+    const bool skeleton = mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SKELETON);
+    if ((!mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ITEM) && !skeleton) ||
         p->classes->source != MC_ENTITY_CLIENT) {
         s->error.riding_class =
             mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) ? "gs" : "sn";
         return wt_fail(s, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                        "World actual non-Item riding/statistic tick dependency");
     }
-    s->error.riding_class = "sn";
+    s->error.riding_class = skeleton ? "ls" : "sn";
     s->error.riding_bytecode = 4;
     mc_entity *mount;
     if (!wt_relationship(s, p->base.aH, p, 4, &mount))
@@ -176,7 +182,11 @@ bool wt_riding(wt_scope *s, mc_entity *p, unsigned int pc) {
     const bool dead = mount->base.be;
     mc_entity_release(mount);
     if (dead) {
-        p->base.aH = NULL;
+        (void)mc_entity_mount_vehicle_store(p, NULL);
+        if (skeleton) {
+            p->mob->living.J = p->mob->living.K;
+            p->mob->living.K = 0.0f;
+        }
         return true;
     }
     p->base.velocity_x = 0.0;
@@ -187,8 +197,13 @@ bool wt_riding(wt_scope *s, mc_entity *p, unsigned int pc) {
         return false;
     s->error.virtual_class = "sn";
     s->error.virtual_method = "s_()V";
-    if (p->base.aH == NULL)
+    if (p->base.aH == NULL) {
+        if (skeleton) {
+            p->mob->living.J = p->mob->living.K;
+            p->mob->living.K = 0.0f;
+        }
         return true;
+    }
     s->error.riding_bytecode = 47;
     if (!wt_relationship(s, p->base.aH, p, 47, &mount))
         return false;
@@ -228,6 +243,10 @@ bool wt_riding(wt_scope *s, mc_entity *p, unsigned int pc) {
         _mm_cvtsd_ss(_mm_setzero_ps(), _mm_set_sd(wt_add(wt_widen(p->base.yaw), yaw))));
     p->base.aT = _mm_cvtss_f32(
         _mm_cvtsd_ss(_mm_setzero_ps(), _mm_set_sd(wt_add(wt_widen(p->base.aT), pitch))));
+    if (skeleton) {
+        p->mob->living.J = p->mob->living.K;
+        p->mob->living.K = 0.0f;
+    }
     s->error.riding_bytecode = 322;
     return true;
 }

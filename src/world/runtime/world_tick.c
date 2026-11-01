@@ -12,6 +12,7 @@
 #include "mc/core/math/math.h"
 #include "mc/entity/mob/construction.h"
 #include "mc/entity/mob/spawning.h"
+#include "mc/entity/mount/mount.h"
 #include "mc/world/runtime/entities.h"
 #include "mc/world/runtime/environment.h"
 #include "mc/world/runtime/random_tick.h"
@@ -655,7 +656,11 @@ static bool spawn_postspawn(mc_world_tick_call *c, mc_registry_classes *registry
                 return false;
             c->state.spawn_postspawn_pc = 56;
             c->error.descendant_bytecode = 56;
-            return spawn_error(c, 845, "World spawn Skeleton mount source body", true, NULL);
+            mc_entity_mount_error mount;
+            mc_entity *actors[] = {c->state.spawn_jockey, entity};
+            if (mc_entity_mount(c->state.spawn_jockey, entity, actors, 2, &mount) != MC_ENTITY_OK)
+                return spawn_error(c, 845, mount.operation, mount.native_policy,
+                                   mount.source_null ? "java/lang/NullPointerException" : NULL);
         }
     }
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SHEEP)) {

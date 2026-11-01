@@ -504,9 +504,11 @@ static bool instance_of(mc_entity *source, mc_entity_classes *classes, mc_entity
 
 static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_entity *source,
                    int32_t amount, bool *out, mc_entity_effect_error *error) {
-    if (source == NULL && mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ZOMBIE) &&
+    if (source == NULL &&
+        (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ZOMBIE) ||
+         mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SKELETON)) &&
         entity->classes->source == MC_ENTITY_CLIENT)
-        return mc_mob_zombie_null_damage_entered(entity, classes, amount, out, error);
+        return mc_mob_monster_null_damage_entered(entity, classes, amount, out, error);
     if (mc_entity_has_mob(entity)) {
         const mc_entity_class_kind kind = entity->class_literal->kind;
         error->damage_arguments_stored = true;

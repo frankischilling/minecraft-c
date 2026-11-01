@@ -53,6 +53,9 @@ struct mc_entity {
      * allocation is outside the direct constructor ledger; the pointer cell
      * remains part of the actual Entity header. Its lifetime follows Entity. */
     mc_nbt_tree *storage_source;
+    /* Native occurrences backing source aH/aG. Authored borrowed relationships
+     * may have NULL holds and require an independently live caller scope. */
+    struct mc_entity *mount_hold, *passenger_hold;
     /* A real embedded subobject of the Minecart native allocation, else NULL. */
     struct mc_minecart_entity_state *minecart;
     /* Actual embedded subobject of a dc allocation, never an invented Player. */
@@ -90,5 +93,9 @@ mc_entity_base_fields *mc_entity_runtime_fields(mc_entity *entity);
  * Stores current coordinates and mutates those same bounds in original order.
  * Caller owns reached native/source guards and leaves previous fields alone. */
 void mc_entity_source_position(mc_entity *entity, double x, double y, double z);
+
+mc_entity_status mc_entity_mount_vehicle_store(mc_entity *, mc_entity *);
+mc_entity_status mc_entity_mount_passenger_store(mc_entity *, mc_entity *);
+void mc_entity_mount_references_dispose(mc_entity *);
 
 #endif

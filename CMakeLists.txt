@@ -5606,3 +5606,6 @@ if(MC_BUILD_CLIENT)
 endif()
 
 include(cmake/client_mining.cmake)
+include(cmake/client_placement.cmake)
+include(cmake/player_drop.cmake)
+include(cmake/entity_mount.cmake)

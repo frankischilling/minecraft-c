@@ -41,7 +41,8 @@ and its group-limit jump remain distinct.
 Sheep postspawn draws its color from World Random and updates the actual typed
 watcher Byte. Spider postspawn makes its one-percent jockey draw. A selected
 jockey executes real Skeleton construction, pose and publication before the
-unfinished mount body stops at helper bytecode 56. Other kinds reach the
+[inherited mount body](mounting.md) at helper bytecode56. That body connects
+the actual reciprocal relationship and its native lifetime occurrences. Other kinds reach the
 postspawn return without an extra Random draw.
 
 The retained scheduler owns its current candidate and any reached jockey.

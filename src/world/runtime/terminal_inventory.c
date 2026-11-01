@@ -218,7 +218,7 @@ static mc_world_storage_status collect_entity(void *context, const void *slot, m
                    mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE))
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal missing PB child storage");
-        if (value->base.aG != NULL || value->base.aH != NULL)
+        if (value->base.aG != value->passenger_hold || value->base.aH != value->mount_hold)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal unqualified Entity child or relationship graph");
         if (value->mob != NULL && value->mob->tick_active)
@@ -300,14 +300,20 @@ static mc_world_storage_status collect_entity_references(terminal_collector *c,
      * Entity identities or the actual owning slots supplied to collect_entity. */
     for (size_t i = 0; i < c->entity_count; ++i) {
         mc_entity *entity = c->entities[i];
+        mc_world_storage_status status =
+            collect_entity(c, &entity->mount_hold, entity->mount_hold, error);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
+        status = collect_entity(c, &entity->passenger_hold, entity->passenger_hold, error);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
         if (entity->mob == NULL)
             continue;
         mc_entity *value;
         mc_entity_error child;
         if (mc_mob_look_target_get(entity, &value, &child) != MC_ENTITY_OK)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, child.operation);
-        mc_world_storage_status status =
-            collect_entity(c, &entity->mob->look_target_hold, value, error);
+        status = collect_entity(c, &entity->mob->look_target_hold, value, error);
         if (status != MC_WORLD_STORAGE_OK)
             return status;
         if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SLIME)) {
@@ -595,11 +601,13 @@ static mc_world_storage_status scan_mob(void *context, const void *slot, mc_enti
     (void)slot;
     (void)error;
     mob_graph_scan *scan = context;
-    if (entity != NULL && entity->mob != NULL &&
-        (entity->mob->tick_active || entity->mob->pending_ray != NULL ||
-         entity->mob->pending_path != NULL || entity->mob->living.private_b != NULL ||
-         entity->mob->creature_target != NULL || entity->mob->look_target_hold != NULL ||
-         entity->mob->creature_target_hold != NULL))
+    if (entity != NULL &&
+        (entity->mount_hold != NULL || entity->passenger_hold != NULL ||
+         (entity->mob != NULL &&
+          (entity->mob->tick_active || entity->mob->pending_ray != NULL ||
+           entity->mob->pending_path != NULL || entity->mob->living.private_b != NULL ||
+           entity->mob->creature_target != NULL || entity->mob->look_target_hold != NULL ||
+           entity->mob->creature_target_hold != NULL))))
         scan->needed = true;
     return MC_WORLD_STORAGE_OK;
 }
@@ -707,9 +715,10 @@ mc_world_storage_status mc_world_runtime_terminal_mob_graph_prepare(
         /* A surviving external owner may still inspect its source targets.
          * Never clear those fields to make shutdown pass. Ordinary externally
          * held leaf Entities retain the older container-retirement contract. */
-        else if (entry->holds != entry->occurrences && entity->mob != NULL &&
-                 (entity->mob->look_target_hold != NULL ||
-                  entity->mob->creature_target_hold != NULL))
+        else if (entry->holds != entry->occurrences &&
+                 (entity->mount_hold != NULL || entity->passenger_hold != NULL ||
+                  (entity->mob != NULL && (entity->mob->look_target_hold != NULL ||
+                                           entity->mob->creature_target_hold != NULL))))
             status = result(error, MC_WORLD_STORAGE_BUSY,
                             "World terminal external owner of Mob reference fields");
         else if (entity->holds == SIZE_MAX)
@@ -733,9 +742,11 @@ mc_world_storage_status mc_world_runtime_terminal_mob_graph_prepare(
 void mc_world_runtime_terminal_mob_graph_clear(mc_world_terminal_mob_graph *graph) {
     if (graph == NULL)
         return;
-    for (size_t i = 0; i < graph->collector.entity_count; ++i)
+    for (size_t i = 0; i < graph->collector.entity_count; ++i) {
+        mc_entity_mount_references_dispose(graph->collector.entities[i]);
         if (graph->collector.entities[i]->mob != NULL)
             mc_mob_references_dispose(graph->collector.entities[i]);
+    }
 }
 
 void mc_world_runtime_terminal_mob_graph_release(mc_world_terminal_mob_graph **slot) {
