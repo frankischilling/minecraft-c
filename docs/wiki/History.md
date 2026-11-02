@@ -1,5 +1,22 @@
 # History
 
+## Player-tick Workbench close and pickup-particle ownership
+
+The [automatic-close increment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench-auto-close.md)
+connects the real validity check to LocalPlayer close, screen replacement and
+the fresh default-Container store. Removal and distance scenarios close in one
+actual World tick, retain source Stack aliases, render later World/HUD/hand
+frames and save exact Inventory/Item NBT. Four Windows tests pass in 102.10
+seconds across five fresh processes, including the crafting regression.
+
+Original GS-only calls and native whole-World ticks retain distinct scopes.
+Authored WorldAccess controls prove interrupted suffix suppression and the
+successful fresh default read. Complete pickup particles now participate in
+the native ownership audit through their actual picked/target field slots;
+no particle age or source field is changed to obtain cleanup admission.
+Live-open Workbench terminal joining, extended play, original pixels, Linux
+SDK gameplay and FPS remain unfinished or unqualified.
+
 ## Workbench crafting and exact saved state
 
 The [Workbench increment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench.md) connects actual Table activation to the distinct `OO/IT`

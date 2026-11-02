@@ -6,6 +6,15 @@ real inherited `ID` layout, drawing and input bodies. `OO` owns its 3x3 `IT`
 Container; all 46 Slots use the existing Item, Font, cursor and tooltip owners.
 It has no Player-preview override. World ticks continue while it is open.
 
+The [automatic-close adapter](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench-auto-close.md)
+enters the whole LocalPlayer close synchronously at the actual Player-tick
+virtual call. Simulation uses a client-independent host; the client World tick
+calls the existing transition graph and keeps typed failure values through
+cleanup. Successful return still performs the fresh default-Container load
+at151. Native terminal collection separately follows each complete pickup
+particle's actual picked/target owning slots, preserving aliases and duplicate
+DN occurrences without changing source fields or advancing particles.
+
 Keyboard close first restores the Player's default Container. `OO.h` then
 retains the inherited close and its own direct Container close separately.
 Failed constructors keep their actual allocated prefixes. Native publication
@@ -22,7 +31,7 @@ icons delegate to their live Block receivers. The
 nonnull attackers and fatal death/drop remain explicit dependencies.
 
 The client remains pre-playable. Native cold-preview exception printing and
-continuation, distance/removal close and unrestricted crafting need further
+continuation and unrestricted crafting need further
 work. Original pixels, Linux SDK gameplay and FPS remain unqualified. The
 component and suite records below describe earlier checkpoints.
 

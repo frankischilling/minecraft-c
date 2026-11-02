@@ -604,6 +604,18 @@ static mc_effect_renderer_status terminal_report(mc_effect_renderer_error *error
     return status;
 }
 
+static bool terminal_pickup_actor(const mc_entity *actor, const mc_entity_classes *classes) {
+    if (actor == NULL)
+        return true;
+    if (actor->classes != classes || actor->holds == 0 || actor->phase != MC_ENTITY_READY)
+        return false;
+    bool particle = false;
+    return mc_entity_class_literal_is_assignable_from(
+               &classes->literals[MC_ENTITY_CLASS_KIND_PARTICLE], actor->class_literal,
+               &particle) == MC_ENTITY_OK &&
+           !particle;
+}
+
 mc_effect_renderer_status
 mc_client_effect_renderer_terminal_inspect(const mc_client_effect_renderer *r,
                                            mc_effect_renderer_terminal_view *out,
@@ -643,24 +655,30 @@ mc_client_effect_renderer_terminal_inspect(const mc_client_effect_renderer *r,
             const bool digging = mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE);
             const bool explosion =
                 mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE);
-            if ((explosion ? i != 0
-                 : digging ? i != 1
-                           : i != 2) ||
-                (!digging && !explosion &&
+            const bool pickup = mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE);
+            if ((pickup      ? i != 3
+                 : explosion ? i != 0
+                 : digging   ? i != 1
+                             : i != 2) ||
+                (!digging && !explosion && !pickup &&
                  !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE)) ||
                 particle->classes != r->classes || particle->holds == 0 ||
                 particle->base.world != r->world || !mc_particle_read(particle, &state) ||
                 state.phase != MC_ENTITY_READY ||
-                state.item_pc != (explosion ? 157u
-                                  : digging ? 80u
-                                            : 58u) ||
+                (pickup ? state.pickup_pc != 60u || state.pickup.q != 3 || state.pickup.a == NULL ||
+                              !terminal_pickup_actor(state.pickup.a, r->classes) ||
+                              !terminal_pickup_actor(state.pickup.o, r->classes)
+                        : state.item_pc != (explosion ? 157u
+                                            : digging ? 80u
+                                                      : 58u)) ||
                 (digging && (state.digging_block == NULL || state.digging_registry == NULL)))
-                return terminal_report(error, MC_EFFECT_RENDERER_UNSUPPORTED_PARTICLE,
-                                       "EffectRenderer terminal inspection canonical PB closure",
-                                       i);
+                return terminal_report(
+                    error, MC_EFFECT_RENDERER_UNSUPPORTED_PARTICLE,
+                    "EffectRenderer terminal inspection canonical particle closure", i);
             if (state.tick_active)
                 return terminal_report(error, MC_EFFECT_RENDERER_BUSY,
-                                       "EffectRenderer terminal inspection PB tick entered", i);
+                                       "EffectRenderer terminal inspection particle tick entered",
+                                       i);
         }
         if (list->size > SIZE_MAX - view.particle_occurrences)
             return terminal_report(error, MC_EFFECT_RENDERER_LIMIT,

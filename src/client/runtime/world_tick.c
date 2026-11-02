@@ -1,6 +1,7 @@
 #include "world_tick.h"
 
 #include "../application_state.h"
+#include "../gui/source_screen_transitions.h"
 #include "../world/render_global_internal.h"
 #include "mc/client/particles/effect_renderer.h"
 #include "mc/core/math/math.h"
@@ -20,6 +21,137 @@ static bool fields(mc_client_world_tick *call, mc_world_runtime *world,
                    mc_world_runtime_fields *out, unsigned int pc) {
     return mc_world_runtime_fields_get(world, out) == MC_WORLD_STORAGE_OK ||
            stop(call, "actual client World tick field receiver", pc);
+}
+
+static mc_entity_status close_status(mc_client_screen_status status) {
+    switch (status) {
+        case MC_CLIENT_SCREEN_OK:
+            return MC_ENTITY_OK;
+        case MC_CLIENT_SCREEN_INVALID_ARGUMENT:
+            return MC_ENTITY_INVALID_ARGUMENT;
+        case MC_CLIENT_SCREEN_INVALID_PHASE:
+            return MC_ENTITY_INVALID_PHASE;
+        case MC_CLIENT_SCREEN_BUSY:
+            return MC_ENTITY_BUSY;
+        case MC_CLIENT_SCREEN_LIMIT:
+            return MC_ENTITY_LIMIT;
+        case MC_CLIENT_SCREEN_ALLOCATION_FAILED:
+            return MC_ENTITY_ALLOCATION_FAILED;
+        default:
+            return MC_ENTITY_STATE_ERROR;
+    }
+}
+
+static mc_player_site close_site(mc_client_screen_site site) {
+    return (mc_player_site){site.class_name, site.method, site.descriptor, site.pc};
+}
+
+static bool close_native_status(mc_client_screen_status status) {
+    return status == MC_CLIENT_SCREEN_INVALID_ARGUMENT ||
+           status == MC_CLIENT_SCREEN_INVALID_PHASE || status == MC_CLIENT_SCREEN_BUSY ||
+           status == MC_CLIENT_SCREEN_LIMIT || status == MC_CLIENT_SCREEN_ALLOCATION_FAILED ||
+           status == MC_CLIENT_SCREEN_THREAD_FAILED;
+}
+
+static void close_access_capture(mc_client_world_tick *call, size_t index,
+                                 const mc_player_drop_error *drop) {
+    const mc_world_access_failure *failure = &call->close_publications[index].world_access_failure;
+    mc_client_world_tick_close_access *value = &call->close_access[index];
+    value->present =
+        failure->receiver != NULL || failure->render_global != NULL || failure->receipt != NULL;
+    value->source_exception =
+        mc_world_access_failure_source_exception(failure, &value->exception_class);
+    value->source_error = drop->source_error;
+    const mc_client_render_global_error *actual = failure->render_global;
+    if (actual == NULL)
+        return;
+    value->status = actual->status;
+    value->operation = actual->operation;
+    value->site = (mc_client_graphics_site){actual->source_class, actual->source_method,
+                                            actual->source_descriptor, (int32_t)actual->source_pc};
+    value->ancestor = actual->ancestor;
+    value->parent = actual->parent;
+    value->child = actual->child;
+    value->native_policy = actual->native_policy;
+    value->source_returned = actual->source_returned;
+}
+
+static void close_capture(mc_client_world_tick *call) {
+    mc_client_screen_error *screen = &call->close_screen;
+    if (screen->initialization != NULL)
+        (void)mc_screen_transition_initialization_capture(&call->close_receipts, screen,
+                                                          screen->initialization);
+    const mc_client_inventory_screen_error *inventory = screen->inventory;
+    if (inventory == NULL && screen->initialization != NULL)
+        inventory = screen->initialization->screen.inventory;
+    if (inventory == NULL)
+        return;
+    (void)mc_screen_transition_inventory_capture(&call->close_receipts, screen, inventory);
+    mc_client_inventory_screen_error *copy = &call->close_receipts.inventory;
+    mc_player_container_error *children[MC_CLIENT_WORLD_TICK_CLOSE_CHILDREN] = {
+        &copy->container, &copy->cleanup_container, &copy->inherited_close, &copy->direct_close};
+    for (size_t i = 0; i < MC_CLIENT_WORLD_TICK_CLOSE_CHILDREN; ++i) {
+        mc_player_drop_error *drop = &children[i]->drop;
+        if (drop->publication != NULL) {
+            call->close_publications[i] = *drop->publication;
+            drop->publication = &call->close_publications[i];
+            close_access_capture(call, i, drop);
+        }
+        if (drop->statistic != NULL) {
+            call->close_statistics[i] = *drop->statistic;
+            drop->statistic = &call->close_statistics[i];
+        }
+    }
+}
+
+typedef struct world_close_context {
+    client_application *app;
+    mc_client_world_tick *call;
+} world_close_context;
+
+static mc_entity_status player_close(void *context, mc_entity *player, mc_player_close_error *out) {
+    world_close_context *scope = context;
+    mc_client_world_tick *call = scope->call;
+    *out = (mc_player_close_error){0};
+    if (call->close_calls == SIZE_MAX) {
+        out->status = MC_ENTITY_LIMIT;
+        out->operation = "World tick native pending Player close receipt limit";
+        out->native_policy = true;
+        call->close_screen = (mc_client_screen_error){
+            .status = MC_CLIENT_SCREEN_LIMIT, .operation = out->operation, .native_policy = true};
+        return out->status;
+    }
+    ++call->close_calls;
+    if (scope->app->screen_transitions == NULL) {
+        out->status = MC_ENTITY_INVALID_PHASE;
+        out->operation = "World tick native Player close transition lease";
+        out->native_policy = true;
+        call->close_screen = (mc_client_screen_error){.status = MC_CLIENT_SCREEN_INVALID_PHASE,
+                                                      .operation = out->operation,
+                                                      .native_policy = true};
+        return out->status;
+    }
+    const mc_client_screen_status status = mc_client_screen_transitions_player_close(
+        scope->app->screen_transitions, player, &call->close_screen);
+    /* Native router admission failures have no source invocation site. Their
+     * status is explicit even when the transition's preentry error is empty. */
+    if (close_native_status(status))
+        call->close_screen.native_policy = true;
+    if (status == MC_CLIENT_SCREEN_OK)
+        ++call->close_returns;
+    else
+        close_capture(call);
+    const mc_client_screen_error *screen = &call->close_screen;
+    out->status = close_status(status);
+    out->operation = screen->operation;
+    out->site = close_site(screen->site);
+    out->parent_site = close_site(screen->parent_site);
+    out->native_policy = screen->native_policy;
+    out->source_exception = screen->source_exception;
+    out->source_error = screen->source_error;
+    out->exception_class = screen->exception_class;
+    out->source_returned = screen->source_returned;
+    return out->status;
 }
 
 static bool body(client_application *app, mc_math_classes *math, mc_client_world_tick *call) {
@@ -87,6 +219,8 @@ static bool body(client_application *app, mc_math_classes *math, mc_client_world
         mc_world_entity_tick_context context = {0};
         context.player.travel.code_registry = app->registry;
         context.player.travel.trig = mc_math_classes_table(math);
+        world_close_context close = {app, call};
+        context.player.close = (mc_player_close_host){&close, player_close};
         context.math = math;
         if (mc_world_runtime_tick_entities(app->active_world, &context, NULL, &call->entities) !=
             MC_WORLD_STORAGE_OK)
@@ -260,5 +394,13 @@ bool mc_client_world_tick_cleanup(mc_client_world_tick *call) {
     call->refresh_state.entity = NULL;
     call->refresh_error.acquisition = NULL;
     call->refresh_error.publication = NULL;
+    /* No close child rights belong to this record. Its router/Screen graph is
+     * still live here and retires only after this successful cleanup boundary.
+     * Keep owned typed values, but end every remaining producer borrow/token. */
+    call->close_receipts.inventory_source = NULL;
+    call->close_receipts.initialization_source = NULL;
+    call->close_receipts.initialization.screen.initialization = NULL;
+    for (size_t i = 0; i < MC_CLIENT_WORLD_TICK_CLOSE_CHILDREN; ++i)
+        call->close_publications[i].world_access_failure = (mc_world_access_failure){0};
     return true;
 }

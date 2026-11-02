@@ -8,6 +8,13 @@ and performs ordinary Save and Quit. Independent decoding checks the exact
 saved Inventory, every live Item and the placed Table. This does not establish
 unrestricted crafting or a fully playable client.
 
+[Automatic close](workbench-auto-close.md) also connects the actual Player
+tick to synchronous display replacement when the Table disappears or the
+Player moves too far away. Its original GS observations, native World-tick
+comparisons, failure controls and independent saves have separate finite
+scopes from the crafting scenario below. Native cleanup now counts the actor
+references held by complete pickup particles.
+
 ## Opening and screen behavior
 
 Crafting Table activation reads the actual World remote flag before using the

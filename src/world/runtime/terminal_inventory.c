@@ -3,6 +3,7 @@
 #include "../../entity/entity_internal.h"
 #include "../../entity/mob/internal.h"
 #include "../../entity/mob/references_internal.h"
+#include "../../entity/particles/particle_internal.h"
 #include "construction_internal.h"
 #include "mc/entity/particles/particle.h"
 #include "mc/world/dimension/world_provider.h"
@@ -172,6 +173,18 @@ static mc_world_storage_status increment(size_t *value, mc_world_storage_error *
     return MC_WORLD_STORAGE_OK;
 }
 
+static bool pickup_actor(const mc_entity *actor, const mc_entity_classes *classes) {
+    if (actor == NULL)
+        return true;
+    if (actor->classes != classes || actor->holds == 0 || actor->phase != MC_ENTITY_READY)
+        return false;
+    bool particle = false;
+    return mc_entity_class_literal_is_assignable_from(
+               &classes->literals[MC_ENTITY_CLASS_KIND_PARTICLE], actor->class_literal,
+               &particle) == MC_ENTITY_OK &&
+           !particle;
+}
+
 static mc_world_storage_status collect_entity(void *context, const void *slot, mc_entity *value,
                                               mc_world_storage_error *error) {
     terminal_collector *c = context;
@@ -200,30 +213,37 @@ static mc_world_storage_status collect_entity(void *context, const void *slot, m
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal canonical Entity Class identity");
         if (value->particle != NULL) {
-            /* PB owns no Entity reference fields. Its single World backedge
-             * is counted below once per identity, independently of how many
-             * genuine DN List occurrences point at it. Other particle child
-             * graphs remain outside this terminal closure. */
+            /* Each particle's World backedge is counted once per identity,
+             * independently of its genuine DN List occurrences. Complete EM
+             * additionally owns the two actor slots visited by the queued
+             * reference traversal below. */
             mc_particle_snapshot particle;
             const bool digging = mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE);
             const bool explosion =
                 mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE);
-            if ((!digging && !explosion &&
+            const bool pickup = mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE);
+            if ((!digging && !explosion && !pickup &&
                  !mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE)) ||
                 !mc_particle_read(value, &particle) || particle.phase != MC_ENTITY_READY ||
-                particle.item_pc != (explosion ? 157u
-                                     : digging ? 80u
-                                               : 58u) ||
+                (pickup ? particle.pickup_pc != 60u || particle.pickup.q != 3 ||
+                              particle.pickup.a == NULL ||
+                              !pickup_actor(particle.pickup.a, value->classes) ||
+                              !pickup_actor(particle.pickup.o, value->classes)
+                        : particle.item_pc != (explosion ? 157u
+                                               : digging ? 80u
+                                                         : 58u)) ||
                 (digging && (particle.digging_block == NULL || particle.digging_registry == NULL)))
                 return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                              "World terminal canonical complete PB child");
+                              "World terminal canonical complete particle child");
             if (particle.tick_active)
-                return result(error, MC_WORLD_STORAGE_BUSY, "World terminal PB tick still entered");
+                return result(error, MC_WORLD_STORAGE_BUSY,
+                              "World terminal particle tick still entered");
         } else if (mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) ||
                    mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE) ||
-                   mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE))
+                   mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE) ||
+                   mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE))
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                          "World terminal missing PB child storage");
+                          "World terminal missing particle child storage");
         if (value->base.aG != value->passenger_hold || value->base.aH != value->mount_hold)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal unqualified Entity child or relationship graph");
@@ -315,6 +335,18 @@ static mc_world_storage_status collect_entity_references(terminal_collector *c,
         status = collect_entity(c, &entity->passenger_hold, entity->passenger_hold, error);
         if (status != MC_WORLD_STORAGE_OK)
             return status;
+        if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE)) {
+            /* EM stores an independent native hold at each actual Source
+             * field. Visit these slots once per EM identity, even when a==o
+             * or several DN List slots retain this same EM. */
+            mc_pickup_particle_fields *pickup = &entity->particle->pickup;
+            status = collect_entity(c, &pickup->a, pickup->a, error);
+            if (status != MC_WORLD_STORAGE_OK)
+                return status;
+            status = collect_entity(c, &pickup->o, pickup->o, error);
+            if (status != MC_WORLD_STORAGE_OK)
+                return status;
+        }
         if (entity->mob == NULL)
             continue;
         mc_entity *value;

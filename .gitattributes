@@ -23,3 +23,4 @@ licenses/openal-soft/* text eol=lf
 tests/reference/client/held_item_geometry/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
 tests/reference/entity/held_item_attack/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
 tests/reference/entity/held_item_attack/HeldItemObservation.java -text whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/inventory/workbench_auto_close/entropy.py -text whitespace=trailing-space,space-before-tab,cr-at-eol,-blank-at-eof

@@ -1,6 +1,22 @@
 # Development status
 
-A finite Windows [Workbench scenario](client/workbench.md) now crafts a Table
+[Automatic Workbench close](client/workbench-auto-close.md) now runs from the
+actual Player tick for removed Tables and excessive distance. Four Windows
+client tests pass in 102.10 seconds, covering five fresh processes: two exact
+save scenarios, two callback/failure controls and the crafting regression.
+Native structural close rows match selected unchanged-original GS calls.
+The native ownership audit also handles complete live pickup particles and
+their retained actors. These finite checks do not establish unrestricted play
+or FPS equality.
+
+The final runtime passes all 631 Windows public tests in 361.32 seconds and
+all 626 Linux Clang 18 ASan/UBSan public tests in 208.75 seconds. All 4,298
+transferred files and 1,426 runtime files are checked across hosts; Windows
+also preserves 514 products and 823 assets. An earlier single Desktop-focus
+failure remains recorded alongside its passing recheck and final full cohort.
+Documentation/binding follow-ups keep their own checks.
+
+The preceding Windows [Workbench scenario](client/workbench.md) crafts a Table
 from four Logs, places and opens it, makes a Wooden Pickaxe, transfers Items
 with Shift, closes with leftover ingredients, and uses ordinary Save and Quit.
 The run passes 1,853 checks in 22.96 seconds. Independent decoding matches all
@@ -8,7 +24,7 @@ The run passes 1,853 checks in 22.96 seconds. Independent decoding matches all
 across 403 saved Chunks. Source inputs, assets and unrelated region bytes stay
 unchanged; all source windows close during checked cleanup.
 
-The same frozen runtime passes all 630 Windows public tests in 326.54 seconds
+That earlier frozen runtime passes all 630 Windows public tests in 326.54 seconds
 and all 625 sanitized Linux public tests in 189.95 seconds. The 4,275-file
 source copy matches across hosts. These results retain their finite test scope;
 they do not establish original pixels, extended play or FPS equality.

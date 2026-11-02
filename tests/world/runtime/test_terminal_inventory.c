@@ -5,8 +5,10 @@ int mc_terminal_inventory_publication_fixture_main(int argc, char **argv);
 #undef main
 
 #include "../../../src/core/java/random_profile_internal.h"
+#include "../../../src/entity/particles/particle_internal.h"
 #include "../../../src/world/chunk/object_state_internal.h"
 #include "../../../src/world/runtime/collision/boxes_internal.h"
+#include "../../../src/world/runtime/terminal_inventory_internal.h"
 #include "../../../src/world/runtime/tile_entities/piston_list_internal.h"
 #include "../../../src/world/runtime/tile_entities/tile_entities_internal.h"
 #include "mc/world/runtime/collision/class_entities.h"
@@ -292,6 +294,137 @@ static bool terminal_attempt(fixture *f, mc_entity *observed,
 static bool terminal_busy_reason(fixture *f, mc_entity *observed, const char *operation) {
     return terminal_attempt_checked(f, observed, NULL, MC_WORLD_STORAGE_BUSY, false, false, false,
                                     NULL, operation);
+}
+
+static bool terminal_em_attempt(fixture *f, mc_entity *observed, mc_entity *const slots[3],
+                                mc_entity *actor, const mc_world_terminal_entity_anchor *anchors,
+                                size_t count, mc_world_storage_status expected,
+                                mc_world_terminal_inventory *success) {
+    bool ok = false;
+    terminal_snapshot snapshot = {0};
+    mc_world_terminal_inventory out;
+    memset(&out, 0xa5, sizeof(out));
+    unsigned char sentinel[sizeof(out)];
+    memcpy(sentinel, &out, sizeof(out));
+    CHECK(terminal_snapshot_take(f, observed, &snapshot) &&
+          terminal_piece_save(&snapshot, slots, 3 * sizeof(*slots)));
+    mc_entity *nodes[] = {slots[0], slots[2], actor};
+    for (size_t i = 0; i < COUNT(nodes); ++i) {
+        CHECK(nodes[i] != NULL && terminal_piece_save(&snapshot, nodes[i], sizeof(*nodes[i])) &&
+              terminal_piece_save(&snapshot, nodes[i]->random, sizeof(*nodes[i]->random)));
+        if (nodes[i]->particle != NULL)
+            CHECK(terminal_piece_save(&snapshot, nodes[i]->particle, sizeof(*nodes[i]->particle)));
+    }
+    const mc_world_terminal_anchors owner = {anchors, count, NULL, 0};
+    mc_world_storage_error error;
+    CHECK(mc_world_runtime_terminal_admit_owned(f->worlds[0], &owner, NULL, &out, &error) ==
+              expected &&
+          error.status == expected && terminal_snapshot_same(f, &snapshot));
+    if (expected == MC_WORLD_STORAGE_OK && success != NULL)
+        *success = out;
+    if (expected != MC_WORLD_STORAGE_OK)
+        CHECK(memcmp(sentinel, &out, sizeof(out)) == 0);
+    ok = true;
+cleanup:
+    terminal_snapshot_drop(&snapshot);
+    return ok;
+}
+
+static bool terminal_em_controls(fixture *f, mc_entity *observed) {
+    bool ok = false;
+    mc_entity *actor = NULL, *a = NULL, *b = NULL, *extra = NULL;
+    mc_entity *slots[3] = {0};
+    struct mc_particle_state *storage = NULL;
+    mc_world_terminal_inventory baseline, inventory;
+    CHECK(terminal_attempt(f, observed, NULL, MC_WORLD_STORAGE_OK, false, false, false, &baseline));
+    CHECK(mc_falling_entity_allocate(f->entity_classes[0], &actor, NULL) == MC_ENTITY_OK &&
+          mc_falling_entity_construct_world(actor, f->worlds[0], NULL) == MC_ENTITY_OK &&
+          mc_pickup_particle_allocate(f->entity_classes[0], &a, NULL) == MC_ENTITY_OK &&
+          mc_pickup_particle_construct(a, f->worlds[0], actor, actor, -.5f, NULL) == MC_ENTITY_OK &&
+          mc_pickup_particle_allocate(f->entity_classes[0], &b, NULL) == MC_ENTITY_OK &&
+          mc_pickup_particle_construct(b, f->worlds[0], actor, NULL, -.5f, NULL) == MC_ENTITY_OK);
+    /* These three native owner slots retain actual constructor objects. They
+     * are trusted anchors, not extra Source fields or guessed hold exemptions.
+     * The separate DN test supplies actual layer3 List-slot coverage. */
+    slots[0] = a;
+    a = NULL;
+    CHECK(mc_entity_retain(slots[0]) == MC_ENTITY_OK);
+    slots[1] = slots[0];
+    slots[2] = b;
+    b = NULL;
+    mc_entity *picked = actor;
+    mc_entity_release(actor);
+    actor = NULL; /* Only the three actual EM.a/o occurrences now own it. */
+    storage = slots[0]->particle;
+    const mc_world_terminal_entity_anchor anchors[] = {{&slots[0]}, {&slots[1]}, {&slots[2]}};
+    CHECK(slots[0]->holds == 2 && slots[2]->holds == 1 && picked->holds == 3 &&
+          storage->pickup.a == picked && storage->pickup.o == picked &&
+          slots[2]->particle->pickup.a == picked && slots[2]->particle->pickup.o == NULL &&
+          terminal_em_attempt(f, observed, slots, picked, anchors, COUNT(anchors),
+                              MC_WORLD_STORAGE_OK, &inventory) &&
+          inventory.entities == baseline.entities + 3 &&
+          inventory.entity_occurrences == baseline.entity_occurrences + 6 &&
+          inventory.expected_world_bindings == baseline.expected_world_bindings + 3 &&
+          inventory.tile_entities == baseline.tile_entities &&
+          inventory.tile_entity_occurrences == baseline.tile_entity_occurrences);
+    CHECK(mc_entity_retain(picked) == MC_ENTITY_OK);
+    extra = picked;
+    CHECK(terminal_em_attempt(f, observed, slots, picked, anchors, COUNT(anchors),
+                              MC_WORLD_STORAGE_BUSY, NULL));
+    mc_entity_release(extra);
+    extra = NULL;
+    /* Equal values at distinct owning slots are legitimate. Repeating one
+     * physical slot, or omitting a real owning slot, cannot explain holds. */
+    const mc_world_terminal_entity_anchor repeated[] = {{&slots[0]}, {&slots[0]}, {&slots[2]}};
+    const mc_world_terminal_entity_anchor omitted[] = {{&slots[0]}, {&slots[2]}};
+    CHECK(terminal_em_attempt(f, observed, slots, picked, repeated, COUNT(repeated),
+                              MC_WORLD_STORAGE_UNSUPPORTED_STATE, NULL) &&
+          terminal_em_attempt(f, observed, slots, picked, omitted, COUNT(omitted),
+                              MC_WORLD_STORAGE_BUSY, NULL));
+    /* Declared malformed-native-input controls; restore each private input
+     * only after its passive refusal observations, for independent teardown. */
+    storage->pickup_pc = 59;
+    CHECK(terminal_em_attempt(f, observed, slots, picked, anchors, COUNT(anchors),
+                              MC_WORLD_STORAGE_UNSUPPORTED_STATE, NULL));
+    storage->pickup_pc = 60;
+    storage->pickup.q = 4;
+    CHECK(terminal_em_attempt(f, observed, slots, picked, anchors, COUNT(anchors),
+                              MC_WORLD_STORAGE_UNSUPPORTED_STATE, NULL));
+    storage->pickup.q = 3;
+    slots[0]->particle = NULL;
+    CHECK(terminal_em_attempt(f, observed, slots, picked, anchors, COUNT(anchors),
+                              MC_WORLD_STORAGE_UNSUPPORTED_STATE, NULL));
+    slots[0]->particle = storage;
+    CHECK(terminal_em_attempt(f, observed, slots, picked, anchors, COUNT(anchors),
+                              MC_WORLD_STORAGE_OK, &inventory) &&
+          storage->pickup.p == 0 && storage->pickup.q == 3 && !slots[0]->base.be &&
+          slots[0]->holds == 2 && slots[2]->holds == 1 && picked->holds == 3);
+    ok = true;
+cleanup:
+    if (storage != NULL && slots[0] != NULL) {
+        slots[0]->particle = storage;
+        storage->pickup_pc = 60;
+        storage->pickup.q = 3;
+    }
+    mc_entity_release(extra);
+    for (size_t i = 0; i < COUNT(slots); ++i)
+        mc_entity_release(slots[i]);
+    mc_entity_release(a);
+    mc_entity_release(b);
+    mc_entity_release(actor);
+    if (ok)
+        ok = terminal_attempt(f, observed, NULL, MC_WORLD_STORAGE_OK, false, false, false,
+                              &inventory) &&
+             inventory.entities == baseline.entities &&
+             inventory.entity_occurrences == baseline.entity_occurrences &&
+             inventory.tile_entities == baseline.tile_entities &&
+             inventory.tile_entity_occurrences == baseline.tile_entity_occurrences &&
+             inventory.expected_world_bindings == baseline.expected_world_bindings &&
+             inventory.piston_discard_required == baseline.piston_discard_required &&
+             inventory.paths == baseline.paths &&
+             inventory.path_occurrences == baseline.path_occurrences &&
+             inventory.path_arenas == baseline.path_arenas;
+    return ok;
 }
 
 static bool terminal_active_chunks(fixture *f) {
@@ -908,7 +1041,7 @@ int main(int argc, char **argv) {
           inventory.entities == 1 && inventory.entity_occurrences == 8 &&
           w->construction.phase == MC_WORLD_RUNTIME_READY && !w->entity_containers_retired &&
           !w->tile_entity_containers_retired && mc_world_provider_world(w->fields.t) == w);
-    CHECK(terminal_tile_and_piston_controls(f, root, entity));
+    CHECK(terminal_em_controls(f, entity) && terminal_tile_and_piston_controls(f, root, entity));
     result = 0;
 cleanup:
     mc_world_entity_list_view_release(&nearby);

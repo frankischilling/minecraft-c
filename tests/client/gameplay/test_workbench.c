@@ -1,13 +1,16 @@
 /* Real saved inputs -> UE recipes -> placed/opened OO -> IT crafting/close. */
 #include <stdbool.h>
 static int wb_statistics_controls(const void *, bool);
+#ifndef MC_WORLD_SELECTION_STATISTICS_CONTROLS
 #define MC_WORLD_SELECTION_STATISTICS_CONTROLS(f, initial) wb_statistics_controls((f), (initial))
+#endif
 int mc_workbench_included_inventory_main(int, char **);
 #define MC_INVENTORY_FIXTURE_MAIN mc_workbench_included_inventory_main
 #include "test_inventory.c"
 #undef MC_INVENTORY_FIXTURE_MAIN
 #include "client/gui/source_workbench_drawing.h"
 #include "client/gui/source_workbench_screen_internal.h"
+#include "client/particles/effect_renderer_internal.h"
 #include "client/render/model_graph_internal.h"
 
 typedef struct workbench_work {
@@ -596,7 +599,10 @@ static int wb_run(fixture *f) {
     return 0;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_WORKBENCH_FIXTURE_MAIN
+#define MC_WORKBENCH_FIXTURE_MAIN main
+#endif
+int MC_WORKBENCH_FIXTURE_MAIN(int argc, char **argv) {
     CHECK(argc == 3);
     fixture *f = calloc(1, sizeof(*f));
     workbench = calloc(1, sizeof(*workbench));
@@ -636,6 +642,57 @@ int main(int argc, char **argv) {
             fprintf(stderr, "Workbench cleanup refused: %s\n",
                     f->state.retirement_operation == NULL ? "unknown"
                                                           : f->state.retirement_operation);
+        /* Failure-only passive receipt. Terminal admission must account for
+         * actual remaining DN children; time/focus intervention cannot end
+         * their native rights after the source save/title has returned. */
+        mc_client_effect_renderer *effects = f->app == NULL ? NULL : f->app->effect_renderer;
+        mc_effect_renderer_error *diagnostic = calloc(1, sizeof(*diagnostic));
+        if (effects != NULL && diagnostic != NULL) {
+            mc_effect_renderer_terminal_view view = {0};
+            const mc_effect_renderer_status status =
+                mc_client_effect_renderer_terminal_inspect(effects, &view, diagnostic);
+            fprintf(stderr,
+                    "WORKBENCH_EFFECT_TERMINAL status=%d operation=%s layer=%zu index=%zu "
+                    "phase=%d entered=%d holds=%zu draw=%d tick=%d block=%d world=%p\n",
+                    (int)status, diagnostic->operation == NULL ? "-" : diagnostic->operation,
+                    diagnostic->layer, diagnostic->index, (int)effects->phase,
+                    (int)effects->entered, effects->holds, effects->draw_call != NULL,
+                    effects->tick_call != NULL, effects->block_call != NULL,
+                    (void *)effects->world);
+            if (effects->layers != NULL)
+                for (size_t layer = 0; layer < 4; ++layer) {
+                    const mc_effect_particle_list *list = effects->layers[layer];
+                    fprintf(stderr, "WORKBENCH_EFFECT_LIST layer=%zu size=%zu capacity=%zu\n",
+                            layer, list == NULL ? 0 : list->size,
+                            list == NULL ? 0 : list->capacity);
+                    if (list == NULL || list->size > list->capacity || list->elements == NULL)
+                        continue;
+                    for (size_t index = 0; index < list->size && index < 32; ++index) {
+                        const mc_entity *particle = list->elements[index];
+                        mc_particle_snapshot state = {0};
+                        const bool readable = mc_particle_read(particle, &state);
+                        fprintf(stderr,
+                                "WORKBENCH_EFFECT_PARTICLE layer=%zu index=%zu kind=%d "
+                                "phase=%d holds=%zu world=%p readable=%d particle-pc=%u "
+                                "item-pc=%u pickup-pc=%u tick-active=%d p=%d q=%d "
+                                "picked=%p picked-holds=%zu target=%p target-holds=%zu\n",
+                                layer, index,
+                                particle == NULL || particle->class_literal == NULL
+                                    ? -1
+                                    : (int)particle->class_literal->kind,
+                                particle == NULL ? -1 : (int)particle->phase,
+                                particle == NULL ? 0 : particle->holds,
+                                particle == NULL ? NULL : (void *)particle->base.world,
+                                (int)readable, state.particle_pc, state.item_pc, state.pickup_pc,
+                                (int)state.tick_active, state.pickup.p, state.pickup.q,
+                                (void *)state.pickup.a,
+                                state.pickup.a == NULL ? 0 : state.pickup.a->holds,
+                                (void *)state.pickup.o,
+                                state.pickup.o == NULL ? 0 : state.pickup.o->holds);
+                    }
+                }
+        }
+        free(diagnostic);
         result = 1;
     }
     mc_client_bootstrap_status closed = MC_CLIENT_BOOTSTRAP_BUSY;

@@ -34,8 +34,12 @@ typedef struct mc_effect_renderer_terminal_view {
 } mc_effect_renderer_terminal_view;
 
 /* Passive native inspection of this exact READY owner and its four distinct
- * Lists. Nonempty Lists admit only complete canonical PB objects in layer2,
- * bound to this same World and namespace. Every actual List slot remains an
+ * Lists. Nonempty Lists admit complete GY/QM/PB/EM in layers0/1/2/3, bound to
+ * this same World and namespace. EM retains its actual complete constructor
+ * and ordinary held READY actor fields; its age is never advanced or filtered.
+ * The World collector separately follows both actual EM.a/o owning slots once
+ * per distinct EM identity, including aliases and actors absent from World.b.
+ * Every actual List slot remains an
  * independent owning occurrence; no List is cleared and no hold allowance
  * is inferred. The returned slot is the actual owning World field, including
  * when NULL. Keep r live and exclusive; the view expires on its next mutation

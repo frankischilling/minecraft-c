@@ -2,6 +2,30 @@
 
 ## Current qualification
 
+The [automatic-close scenarios](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench-auto-close.md)
+pass four Windows CTests in 102.10 seconds across five fresh processes. Removal
+passes 747 checks in 19.38 seconds and distance passes 725 in 21.71 seconds.
+The callback failure/fresh-default pair passes 505/500 checks; the crafting
+regression passes 1,817 in 27.14 seconds. Exact source/harness inputs and 413
+imported assets remain unchanged per process. Seven selected ownership/tick
+tests pass after extending live pickup-particle terminal collection.
+
+The final runtime passes all 631 Windows public tests in 361.32 seconds and
+all 626 sanitized Linux public tests in 208.75 seconds. Windows preserves
+4,298 authored files, 514 products and 823 assets; the Linux copy preserves
+all 4,298 files and matches all 1,426 runtime sources. Linux uses Clang 18
+Debug ASan/UBSan, leak detection, halt-on-error and Xvfb/software GL. Formatting
+passes 1,982 C/header/fragments; ten current translation units also pass GCC
+syntax/shadow checks with their actual target arguments. An earlier RDP-focus
+failure, its passing isolated recheck and the final full pass remain distinct.
+Documentation/binding-only follow-ups receive separate checks.
+
+Storage measurements show 22,432 added
+bytes in the per-tick World record on x64 MSVC and no new allocation. They
+do not measure frame time or establish an FPS result.
+
+## Preceding crafting qualification
+
 The Workbench runtime passes all 630 Windows public tests in 326.54 seconds
 and all 625 Linux public tests in 189.95 seconds. The Windows snapshot keeps
 4,275 authored inputs, 512 products and 823 assets unchanged. Linux uses

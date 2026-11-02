@@ -6,6 +6,7 @@
 #include "../../../src/client/startup/game_directory.h"
 #include "../../../src/client/statistics/application.h"
 #include "../../../src/entity/player/active_internal.h"
+#include "../../../src/entity/player/container_interaction.h"
 #include "../../../src/item/stack/source_internal.h"
 #include "../../../src/platform/time/millis.h"
 #include "mc/entity/nbt/factory.h"
@@ -496,6 +497,174 @@ cleanup:
     return ok;
 }
 
+typedef struct close_probe {
+    mc_entity *player;
+    mc_container *active, *original_default, *replacement;
+    unsigned int mode;
+    size_t calls;
+    bool entered_before_prefix, prefix_returned;
+} close_probe;
+
+/* Authored whole-child port controls, independent of the real GUI adapter.
+ * The actual GS.r primitive supplies its source prefix; declared child
+ * completion/failure and a synchronous d mutation exercise GS.w_'s suffix. */
+static mc_entity_status tick_close_host(void *context, mc_entity *player,
+                                        mc_player_close_error *error) {
+    close_probe *probe = context;
+    ++probe->calls;
+    probe->entered_before_prefix =
+        player == probe->player && player->local_player->fields.player.e == probe->active &&
+        player->local_player->fields.player.d == probe->original_default &&
+        player->local_player->fields.player.r == 0.0;
+    if (probe->mode == 6 || probe->mode == 10) {
+        *error = (mc_player_close_error){
+            .status = probe->mode == 6 ? MC_ENTITY_STATE_ERROR : MC_ENTITY_WORLD_FAILED,
+            .operation = "authored whole-close child refusal before GS.r",
+            .site = probe->mode == 6 ? (mc_player_site){"fixture/Close", "invoke", "()V", 7}
+                                     : (mc_player_site){0},
+            .native_policy = probe->mode == 10,
+            .source_exception = probe->mode == 6,
+            .exception_class = probe->mode == 6 ? "java/lang/NullPointerException" : NULL};
+        return error->status;
+    }
+    mc_player_container_error prefix = {0};
+    const mc_entity_status status = mc_player_container_restore_default(player, &prefix);
+    probe->prefix_returned = status == MC_ENTITY_OK && prefix.site.pc == 8 &&
+                             player->local_player->fields.player.e == probe->original_default;
+    if (status != MC_ENTITY_OK) {
+        *error = (mc_player_close_error){.status = status,
+                                         .operation = prefix.operation,
+                                         .site = prefix.site,
+                                         .native_policy = prefix.native_policy,
+                                         .source_exception = prefix.source_exception,
+                                         .source_error = prefix.source_error,
+                                         .exception_class = prefix.exception_class};
+        return status;
+    }
+    if (probe->replacement != NULL)
+        player->local_player->fields.player.d = probe->replacement;
+    if (probe->mode == 8) {
+        *error =
+            (mc_player_close_error){.status = MC_ENTITY_STATE_ERROR,
+                                    .operation = "authored whole-close child Error after GS.r",
+                                    .site = {"fixture/Close", "display", "()V", 11},
+                                    .parent_site = {"oo", "h", "()V", 15},
+                                    .source_error = true,
+                                    .exception_class = "java/lang/ExceptionInInitializerError"};
+        return error->status;
+    }
+    *error = (mc_player_close_error){.site = {"dc", "r", "()V", 12}, .source_returned = true};
+    return MC_ENTITY_OK;
+}
+
+static bool automatic_close_cases(fixture *f, client_application *app, mc_entity *p,
+                                  mc_movement_input *input) {
+    bool ok = false;
+    mc_container *bench = NULL, *replacement = NULL;
+    mc_player_fields *v = &p->local_player->fields.player;
+    mc_container *original_default = v->d;
+    mc_registry_statistic_view statistics;
+    CHECK(mc_registry_classes_inspect_statistics(app->registry, &statistics, NULL) ==
+          MC_REGISTRY_OK);
+    for (unsigned int mode = 0; mode < 11; ++mode) {
+        CHECK(reset_tick(f, p, input) && reset_stats(app) && v->d == original_default);
+        const bool present = mode == 1 || mode == 2 || mode == 3;
+        f->states[0]->data->blocks[boxes_index(8, 0, 8)] = present ? 58 : 0;
+        CHECK(mc_container_workbench_create(MC_REGISTRY_CLIENT, app->registry, v->c, f->worlds[0],
+                                            8, 0, 8, NULL, &bench, NULL) == MC_INVENTORY_OK);
+        v->e = mode == 5 ? NULL : bench;
+        if (mode == 2 || mode == 3) {
+            const uint64_t bits =
+                mode == 2 ? UINT64_C(0x4021000000000000) : UINT64_C(0x4021000000000001);
+            double y;
+            memcpy(&y, &bits, sizeof(y));
+            CHECK(mc_entity_set_position(p, 8.5, y, 8.5) == MC_ENTITY_OK);
+        }
+        if (mode == 4)
+            f->worlds[0]->fields.B = true;
+        if (mode == 7 || mode == 8)
+            CHECK(mc_container_player_create_default(MC_REGISTRY_CLIENT, app->registry, v->c, NULL,
+                                                     &replacement, NULL) == MC_INVENTORY_OK);
+        close_probe probe = {.player = p,
+                             .active = bench,
+                             .original_default = original_default,
+                             .replacement = replacement,
+                             .mode = mode};
+        const mc_player_action_context context = {
+            .travel = {.code_registry = app->registry, .trig = &trig},
+            .close = {.context = &probe, .close = mode == 9 ? NULL : tick_close_host}};
+        mc_player_tick_error error;
+        const mc_entity_status status = mc_player_tick(p, &context, NULL, &error);
+        const bool no_close = mode == 1 || mode == 2 || mode == 4 || mode == 5;
+        const bool failed = mode == 6 || mode == 8 || mode == 9 || mode == 10;
+        const mc_entity_status expected_status = mode == 10 ? MC_ENTITY_WORLD_FAILED
+                                                 : failed   ? MC_ENTITY_STATE_ERROR
+                                                            : MC_ENTITY_OK;
+        if (status != expected_status)
+            fprintf(stderr, "automatic close mode%u status%d calls%zu gs%u dc%u: %s\n", mode,
+                    (int)status, probe.calls, error.player_bytecode, error.close_bytecode,
+                    error.operation == NULL ? "none" : error.operation);
+        CHECK(status == expected_status && probe.calls == (no_close || mode == 9 ? 0u : 1u) &&
+              f->worlds[0]->active_calls == 0 && f->worlds[0]->local_leases == 0);
+        if (!no_close && mode != 9)
+            CHECK(probe.entered_before_prefix &&
+                  probe.prefix_returned == (mode != 6 && mode != 10));
+        if (no_close)
+            CHECK(v->e == (mode == 5 ? NULL : bench) && v->d == original_default);
+        else if (mode == 6 || mode == 10)
+            CHECK(v->e == bench && v->d == original_default);
+        else if (mode == 8)
+            CHECK(v->e == original_default && v->d == replacement);
+        else
+            CHECK(v->e == (replacement == NULL ? original_default : replacement));
+        if (failed) {
+            CHECK(error.player_bytecode == 143 && v->r == 0.0 &&
+                  error.close_bytecode == (mode == 9 ? 9u : 0u) &&
+                  error.close_error.parent_site.pc == (mode == 8 ? 15u : 143u) &&
+                  strcmp(error.close_error.parent_site.class_name, mode == 8 ? "oo" : "gs") == 0 &&
+                  !error.close_error.source_returned);
+            if (mode == 6)
+                CHECK(error.close_error.source_exception && !error.close_error.source_error &&
+                      !error.close_error.native_policy && error.close_error.site.pc == 7 &&
+                      strcmp(error.close_error.exception_class, "java/lang/NullPointerException") ==
+                          0);
+            else if (mode == 8)
+                CHECK(!error.close_error.source_exception && error.close_error.source_error &&
+                      !error.close_error.native_policy && error.close_error.site.pc == 11 &&
+                      strcmp(error.close_error.exception_class,
+                             "java/lang/ExceptionInInitializerError") == 0);
+            else
+                CHECK(error.close_error.native_policy && !error.close_error.source_exception &&
+                      !error.close_error.source_error && error.close_error.exception_class == NULL);
+            if (mode == 10)
+                CHECK(error.close_error.site.class_name == NULL);
+        } else
+            CHECK(v->r != 0.0);
+        if (mode == 2 || mode == 3) {
+            const double dy = p->base.y - .5;
+            CHECK((dy * dy > 64.0) == (mode == 3));
+        }
+        int32_t play_time = -1;
+        CHECK(mc_client_stats_writer_value(app->stats_writer, statistics.named[5], &play_time,
+                                           NULL) == MC_CLIENT_STATS_OK &&
+              play_time == (failed ? 0 : 1));
+        /* All source observations are complete before independent fixture
+         * ownership is restored for checked native retirement. */
+        v->d = original_default;
+        v->e = original_default;
+        CHECK(mc_container_retire(&replacement, NULL) == MC_INVENTORY_OK &&
+              mc_container_retire(&bench, NULL) == MC_INVENTORY_OK);
+    }
+    ok = true;
+cleanup:
+    v->d = original_default;
+    v->e = original_default;
+    if (mc_container_retire(&replacement, NULL) != MC_INVENTORY_OK ||
+        mc_container_retire(&bench, NULL) != MC_INVENTORY_OK)
+        ok = false;
+    return ok;
+}
+
 static bool tick_cases(fixture *f, client_application *app, mc_entity *p,
                        mc_movement_input *input) {
     bool ok = false;
@@ -665,7 +834,7 @@ static bool tick_cases(fixture *f, client_application *app, mc_entity *p,
     }
     CHECK(input_fp_cases(p, input) && pushout_cases(f, p, input));
     if (!active_reference)
-        CHECK(second_corner_case(f, app, p, input));
+        CHECK(automatic_close_cases(f, app, p, input) && second_corner_case(f, app, p, input));
     ok = true;
 cleanup:
     if (stack != NULL) {

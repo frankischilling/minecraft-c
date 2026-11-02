@@ -1034,8 +1034,8 @@
       "sha256": "537b0eda61b3d90454aa7e776ed3a9ad459a0d290e072d10fee7bedd2e7ecf1b"
     },
     "src/client/particles/effect_renderer_internal.h": {
-      "bytes": 2198,
-      "sha256": "5c872731921b3ca60aa9d5ad56e7fb8065e92ac5843c1574c2dcfc7567d9896d"
+      "bytes": 2475,
+      "sha256": "078dd51bf3c2d20da6edfd9d0b5f703256aaf0382b6d3b4f258b1755e207cf1b"
     },
     "src/client/render/cx.c": {
       "bytes": 7819,
@@ -3086,8 +3086,8 @@
       "sha256": "8dcd5a3ec778e4a6f4108ecfc26a00474ffab2c27350bed8c1c9a7bc77202e4e"
     },
     "include/mc/entity/action/action.h": {
-      "bytes": 3239,
-      "sha256": "a35c35afdabc3b340cfa48e97361a0d1945d0f0f382284e52be8b2ffc854e4a4"
+      "bytes": 3468,
+      "sha256": "ce4816f7866cdc03a6b1386939384609161ebdf619545f9c10c8dfaf45fd7c8b"
     },
     "include/mc/entity/item/pickup.h": {
       "bytes": 1910,
@@ -3118,8 +3118,8 @@
       "sha256": "a208ab471d48a95f74efce7eb33d5411218b1c09c64fb66ff5d3b1abc91e9557"
     },
     "include/mc/entity/player/tick.h": {
-      "bytes": 2735,
-      "sha256": "6ecc84528d11f8c9947e24570f5e74fab0f13bc89e49778f84125cbb743802d6"
+      "bytes": 2774,
+      "sha256": "c4775552b88badf6026153420c29e0e9e07986dc300071eb439783622728915c"
     },
     "include/mc/entity/tick/environment.h": {
       "bytes": 3191,
@@ -3166,12 +3166,12 @@
       "sha256": "44c04d7f465a6fbdbea456db236456ca9a6fc4dcb586951a007d796234a2e412"
     },
     "src/client/runtime/world_tick.c": {
-      "bytes": 12918,
-      "sha256": "1433fc740e56b0995924629bf0ac6aeea3d53d589ef7be6962e4b9170d739200"
+      "bytes": 19758,
+      "sha256": "9b0fddc6bf48641bcdf25c549efd2d7f7268139f73a7a3017ed447ab7ab4d9e9"
     },
     "src/client/runtime/world_tick.h": {
-      "bytes": 3098,
-      "sha256": "9088d6cfa4b5044931a504ac884844d0b512d8870f648ebd2409d113b29d114d"
+      "bytes": 5168,
+      "sha256": "342f71ffdca3fb893d1e8f7a3446d3bc6b93754893f07c869d5346820a4cd2c8"
     },
     "src/client/view_slot.h": {
       "bytes": 946,
@@ -4402,8 +4402,8 @@
       "sha256": "2eb7b5f1bbd8639d0abfd43745668c79b43e852df44a66309ff107b85e2bf312"
     },
     "src/world/runtime/terminal_inventory.c": {
-      "bytes": 38670,
-      "sha256": "833aa861beff2ca58561b455473e3b82c1de7303e932066bf5e58073dfab08e9"
+      "bytes": 40432,
+      "sha256": "b51fd78ae0d410866752dd7e271afc319952b486001f2e6dedae2f45e2f51d07"
     },
     "src/world/runtime/terminal_inventory_internal.h": {
       "bytes": 6907,
@@ -4422,8 +4422,8 @@
       "sha256": "9e3b4f0f5f38d24360a92d772f194f5ad298557655fe95bd53d76aad928228ae"
     },
     "tests/world/runtime/test_terminal_inventory.c": {
-      "bytes": 51572,
-      "sha256": "d58c19ab253958a4e469bb87c72b81b422be6b7f9d47c4e47ae1fc1ac840588b"
+      "bytes": 58968,
+      "sha256": "c120e7790e19ca2b02217cbf76777b7e8c07303726da0d548a8278794f5ab804"
     },
     "src/client/gui/source_screen_transitions_terminal_internal.h": {
       "bytes": 1916,
@@ -6938,8 +6938,8 @@
       "sha256": "ba2fcd6926a18468bd1945464bc6cfe5a9d759d29fbf62775227ffadb5d447b9"
     },
     "cmake/client_workbench.cmake": {
-      "bytes": 5402,
-      "sha256": "6cf057564c59a56b3277ce3822e586d2e13cd90ad66bff81abd13709888f5f7c"
+      "bytes": 9708,
+      "sha256": "9454c4a7ab11be54fcc650fba457ebc7378887cf02563cbde89d6782f9df2bf3"
     },
     "src/client/gui/source_container_screen_internal.h": {
       "bytes": 3153,
@@ -6978,8 +6978,8 @@
       "sha256": "bb98f7ca5d89f75a3523ee145ee43ac45a18225c01a669033605d8183a80a53b"
     },
     "tests/client/gameplay/test_workbench.c": {
-      "bytes": 33684,
-      "sha256": "1ea5b1f1b6480ba3d88e930c828eb73e1a65eac6207f9becc2d3a1661e6e1af6"
+      "bytes": 37399,
+      "sha256": "56127e76c4896da31911d2838cfe840df5e818055b7bfbccfe7bc35f89391e6f"
     },
     "tests/client/gui/test_source_workbench.c": {
       "bytes": 16282,
@@ -7132,6 +7132,58 @@
     "tests/tools/entity/test_creeper_null_damage.py": {
       "bytes": 2503,
       "sha256": "fc2226a33c41a5401c1ae58c693c91fc010682376d8fe8f77c11461d9edd5c7c"
+    },
+    "include/mc/entity/player/close.h": {
+      "bytes": 814,
+      "sha256": "26f575ef51c9bae993362f6d41412c453d75a68f1bb3b314c09f681d1b4158eb"
+    },
+    "tests/client/gameplay/test_workbench_auto_close.c": {
+      "bytes": 29082,
+      "sha256": "d22222c67e6badf5ae9c9034e780bda482c51de097d71d24d6bd94c5113acbf5"
+    },
+    "tests/client/gameplay/test_workbench_auto_close_failures.c": {
+      "bytes": 20441,
+      "sha256": "b786c7a62b8172bf2d57eaa83e7dcc1b95580342a23ede1f394b2ccad65e1388"
+    },
+    "tests/reference/inventory/workbench_auto_close/audit.py": {
+      "bytes": 6896,
+      "sha256": "a2ea4dbeef0060e777e345174aa01dff650b8a2278a0a455475e8a4d5cbac94d"
+    },
+    "tests/reference/inventory/workbench_auto_close/capture.py": {
+      "bytes": 9437,
+      "sha256": "5dcbf9a294b9801122955dd8d96075c4e05286dd9d435bebba9a1daeffc403eb"
+    },
+    "tests/reference/inventory/workbench_auto_close/compare.py": {
+      "bytes": 5773,
+      "sha256": "97526c96eb907f4d58fc7fe6026ea44d7cada181d4489dcca44752edf96918ab"
+    },
+    "tests/reference/inventory/workbench_auto_close/entropy.py": {
+      "bytes": 6970,
+      "sha256": "3706bed6f651985e0e52ce7870f1c3293a6bc3dccb349b8df4d59f8a64e5a8af"
+    },
+    "tests/reference/inventory/workbench_auto_close/packet.py": {
+      "bytes": 8070,
+      "sha256": "c4638267ad2f2188bde018316b363d81845f66c86538863b9c7b09c948e5361c"
+    },
+    "tests/reference/inventory/workbench_auto_close/publish.py": {
+      "bytes": 5860,
+      "sha256": "bdd0011b5ab49acbff05a5c87d10e8c335353a5d4d1b7ac80d616f72e312931b"
+    },
+    "tests/reference/inventory/workbench_auto_close/sdk_compare.py": {
+      "bytes": 3359,
+      "sha256": "c062e36a3fefc1d16310ba710571485136089782fcf4be47b420644e856368d5"
+    },
+    "tests/reference/inventory/workbench_auto_close/test_packet.py": {
+      "bytes": 7827,
+      "sha256": "d87bb90ac47e038004edbb1163e64a6f0591335ec9978fd5643a674d9105e44e"
+    },
+    "tests/tools/client/test_workbench_auto_close_failures.py": {
+      "bytes": 8769,
+      "sha256": "04595dac79de9ee87bbe09be81cba1fab52a56e5295ddd377bae2bec21c8c167"
+    },
+    "tests/tools/client/test_workbench_auto_close_loop.py": {
+      "bytes": 15488,
+      "sha256": "a10444107139b956746139d21d4a08b5cc0317539d92a147cf8659dffd393df9"
     }
   },
   "authorities": {

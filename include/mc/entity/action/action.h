@@ -2,12 +2,16 @@
 #define MC_ENTITY_ACTION_ACTION_H
 #include "mc/entity/item/pickup.h"
 #include "mc/entity/living/travel.h"
+#include "mc/entity/player/close.h"
 #include "mc/entity/player/input.h"
 #include "mc/inventory/runtime/tick.h"
 
 typedef struct mc_player_action_context {
     mc_player_travel_context travel;
     const mc_inventory_tick_limits *inventory_limits;
+    /* Optional whole DC.r at GS.w_143; NULL preserves its reached frontier.
+     * Context and actual owners remain live/exclusive for the synchronous call. */
+    mc_player_close_host close;
 } mc_player_action_context;
 
 typedef struct mc_player_action_limits {

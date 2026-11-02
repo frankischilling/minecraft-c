@@ -11,6 +11,13 @@ have finite native scenarios. The Create World screen also completes a genuine
 seed 777 generation/save/title/reselection scenario. These scenarios include ordinary save/title
 transitions, reselection and independent decoding of saved state.
 
+[Automatic Workbench close](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench-auto-close.md)
+now runs from the actual Player tick when its Table disappears or the Player
+moves too far away. Four Windows client tests pass across five fresh processes,
+including exact saves and failure/fresh-default controls. Selected structural
+rows match unchanged-original GS calls. Native cleanup also counts the actors
+held by complete pickup particles.
+
 The configured E key now opens the actual nonpausing Player Inventory.
 Windows SDK profiles move saved Items, draw the full Player preview and held
 Dirt, close a carried Stack through real World publication, save exact
@@ -30,7 +37,7 @@ it has no executed-original damage comparison.
 Remaining Item/Block actions, broader combat and Inventory behavior, unrestricted
 reselection, default-Far performance and extended play remain unfinished or
 unqualified. Live-open Workbench terminal cleanup safely returns `BUSY`;
-distance/removal close, cold-preview print continuation, original pixels,
+cold-preview print continuation, original pixels,
 Linux SDK gameplay and FPS remain unqualified. A retained Windows Tiny scenario
 completes ten saved-World loads and saves, then preserves an eleventh conversion failure before storage
 acquisition. The loader has no fixed count limit, but old World graphs remain

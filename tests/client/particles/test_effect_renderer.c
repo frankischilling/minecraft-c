@@ -189,14 +189,50 @@ int main(void) {
     CHECK(actor->holds == 4);
     CHECK(mc_client_effect_renderer_add(renderer, a, &error) == MC_EFFECT_RENDERER_OK &&
           a->holds == 2);
-    CHECK(terminal_case(renderer, MC_EFFECT_RENDERER_UNSUPPORTED_PARTICLE) && a->holds == 2 &&
-          actor->holds == 4 && a->particle->pickup.p == 0 && !a->base.be);
+    /* A genuine live EM owns both aliased actor fields. Passive terminal
+     * inspection must expose its DN occurrence without aging it or releasing
+     * either actor hold merely to make native cleanup admissible. */
+    CHECK(terminal_case(renderer, MC_EFFECT_RENDERER_OK) && a->holds == 2 && actor->holds == 4 &&
+          a->particle->pickup.p == 0 && !a->base.be);
+    mc_effect_renderer_terminal_view em_view;
+    CHECK(mc_client_effect_renderer_terminal_inspect(renderer, &em_view, NULL) ==
+              MC_EFFECT_RENDERER_OK &&
+          em_view.particle_occurrences == 1 && em_view.lists[3] == renderer->layers[3] &&
+          renderer->layers[3]->elements[0] == a && a->particle->pickup.a == actor &&
+          a->particle->pickup.o == actor && a->particle->pickup.q == 3);
+    /* Declared malformed constructor/actor inputs must remain refused. */
+    a->particle->pickup_pc = 59;
+    CHECK(terminal_case(renderer, MC_EFFECT_RENDERER_UNSUPPORTED_PARTICLE) &&
+          a->particle->pickup_pc == 59 && actor->holds == 4);
+    a->particle->pickup_pc = 60;
+    a->particle->pickup.q = 4;
+    CHECK(terminal_case(renderer, MC_EFFECT_RENDERER_UNSUPPORTED_PARTICLE) &&
+          a->particle->pickup.q == 4 && actor->holds == 4);
+    a->particle->pickup.q = 3;
+    a->particle->pickup.o = b;
+    CHECK(terminal_case(renderer, MC_EFFECT_RENDERER_UNSUPPORTED_PARTICLE) &&
+          a->particle->pickup.o == b && actor->holds == 4 && b->holds == 1);
+    a->particle->pickup.o = actor;
+    CHECK(mc_client_effect_renderer_add(renderer, a, &error) == MC_EFFECT_RENDERER_OK &&
+          terminal_case(renderer, MC_EFFECT_RENDERER_OK) && a->holds == 3 && actor->holds == 4 &&
+          mc_client_effect_renderer_terminal_inspect(renderer, &em_view, NULL) ==
+              MC_EFFECT_RENDERER_OK &&
+          em_view.particle_occurrences == 2 && renderer->layers[3]->elements[0] == a &&
+          renderer->layers[3]->elements[1] == a && a->particle->pickup.p == 0);
+    CHECK(mc_client_effect_renderer_change_world(renderer, NULL, &error) == MC_EFFECT_RENDERER_OK &&
+          a->holds == 1 && actor->holds == 4 &&
+          mc_client_effect_renderer_add(renderer, a, &error) == MC_EFFECT_RENDERER_OK &&
+          a->holds == 2 && a->particle->pickup.p == 0);
     CHECK(mc_client_effect_renderer_particle(renderer, 3, 0) == a &&
           mc_client_effect_renderer_particle(renderer, 4, 0) == NULL &&
           mc_client_effect_renderer_particle(renderer, 3, 1) == NULL);
     CHECK(mc_client_effect_renderer_tick(renderer, &error) == MC_EFFECT_RENDERER_OK &&
           a->particle->pickup.p == 1 && !a->base.be && renderer->layers[3]->size == 1);
     CHECK(mc_client_effect_renderer_add(renderer, b, &error) == MC_EFFECT_RENDERER_OK);
+    CHECK(terminal_case(renderer, MC_EFFECT_RENDERER_OK) && actor->holds == 4 &&
+          mc_client_effect_renderer_terminal_inspect(renderer, &em_view, NULL) ==
+              MC_EFFECT_RENDERER_OK &&
+          em_view.particle_occurrences == 2 && b->particle->pickup.o == NULL);
     CHECK(mc_client_effect_renderer_tick(renderer, &error) == MC_EFFECT_RENDERER_OK &&
           a->particle->pickup.p == 2 && b->particle->pickup.p == 1 &&
           renderer->layers[3]->size == 2);

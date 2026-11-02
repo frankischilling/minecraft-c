@@ -39,6 +39,7 @@ typedef struct mc_player_tick_error {
     mc_player_statistic_error statistic;
     mc_client_stats_error writer;
     mc_client_notice_error notice;
+    mc_player_close_error close_error;
     mc_movement_input_error input;
     mc_world_storage_error world;
     mc_world_solid_support_error solid;

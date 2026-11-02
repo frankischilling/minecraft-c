@@ -1,5 +1,18 @@
 # Storage and original references
 
+The [automatic-close packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/inventory/workbench_auto_close/README.md)
+retains seven calls per ordinary/read-only debugger process: four actual GS
+ticks, two distance predicates and one separate direct close. Fifty-five
+publication tests pass. Two native structural rows match selected original
+owner, cursor, grid, Stack-alias and publication-order fields; native enclosing
+World/Item ticks and independent coordinates keep their own scope.
+
+The [native qualification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench-auto-close.md)
+records removal/distance saves with exact Inventory, all Items, terrain and
+unrelated regions, plus failure/fresh-default controls and checked shutdown.
+All 1,426 runtime files match the five passing Windows process receipts.
+Live pickup-particle ownership has separate real DN/GAME World regressions.
+
 The [Workbench evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench.md) separates original component observations from native
 gameplay. The Container packet retains 116 calls per ordinary/read-only
 debugger process; the native probe passes 39,702 checks. Its 30 corruption
@@ -20,7 +33,7 @@ the null-Camera suffix exception. Native print continuation is still missing.
 Real Pressure Plate bounds and Log/Slab icon delegation have bounded evidence;
 [Creeper null-attacker damage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/creeper-damage.md) has 182 native checks and 23 static-packet controls,
 with no executed-original damage capture. Live-open Workbench terminal joining,
-distance/removal close, unrestricted crafting, original pixels, Linux SDK
+unrestricted crafting, original pixels, Linux SDK
 gameplay and FPS remain unqualified. The following records retain their earlier
 checkpoint scopes.
 

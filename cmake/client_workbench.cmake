@@ -1,5 +1,7 @@
 include_guard(GLOBAL)
 option(MC_ENABLE_CLIENT_WORKBENCH_TESTS "Run genuine saved-World SDK crafting acceptance" OFF)
+option(MC_ENABLE_CLIENT_WORKBENCH_AUTO_CLOSE_TESTS
+    "Run saved-World SDK and authored automatic Workbench close acceptance" OFF)
 
 if(TARGET mc_client_source_screens)
     target_sources(mc_client_source_screens PRIVATE src/client/gui/source_workbench_screen.c)
@@ -25,6 +27,12 @@ if(BUILD_TESTING)
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/inventory/workbench_interaction/test_packet.py")
     set_tests_properties(tools.workbench_interaction_packet PROPERTIES
         LABELS "public;unit;tools;inventory" TIMEOUT 60)
+    add_test(NAME tools.workbench_auto_close_packet COMMAND Python3::Interpreter -B
+        -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/inventory/workbench_auto_close"
+        -p test_packet.py)
+    set_tests_properties(tools.workbench_auto_close_packet PROPERTIES
+        LABELS "public;unit;tools;inventory;client" TIMEOUT 60)
     if(TARGET mc_client_source_screens)
         add_executable(mc_test_source_workbench tests/client/gui/test_source_workbench.c)
         target_include_directories(mc_test_source_workbench PRIVATE src)
@@ -57,6 +65,67 @@ if(BUILD_TESTING)
 endif()
 
 if(BUILD_TESTING AND TARGET mc_test_world_selection_loop)
+    add_executable(mc_test_workbench_auto_close_failures
+        tests/client/gameplay/test_workbench_auto_close_failures.c
+        tests/client/world/test_load_world_foreign_loading.c
+        tests/client/world/test_render_global_entities.c
+        tests/client/world/test_refresh_entity.c
+        tests/client/world/test_renderer_focus.c)
+    target_include_directories(mc_test_workbench_auto_close_failures PRIVATE src src/platform/time)
+    target_link_libraries(mc_test_workbench_auto_close_failures PRIVATE
+        mc_client_runtime mc_client_saves mc_build_options)
+    if(CMAKE_CXX_COMPILER_LOADED)
+        set_property(TARGET mc_test_workbench_auto_close_failures PROPERTY LINKER_LANGUAGE CXX)
+    endif()
+    if(WIN32 AND TARGET OpenAL)
+        add_custom_command(TARGET mc_test_workbench_auto_close_failures POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
+                "$<TARGET_FILE_DIR:mc_test_workbench_auto_close_failures>")
+    endif()
+    if(WIN32 AND MC_ENABLE_CLIENT_WORKBENCH_AUTO_CLOSE_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS
+       AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
+        add_test(NAME client.workbench_auto_close_failures COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_workbench_auto_close_failures.py"
+            --executable "$<TARGET_FILE:mc_test_workbench_auto_close_failures>"
+            --assets "${MC_APPLICATION_STARTUP_IMPORTED_RESOURCES}"
+            --artifacts "${CMAKE_CURRENT_BINARY_DIR}/workbench-auto-close-failure-captures")
+        set_tests_properties(client.workbench_auto_close_failures PROPERTIES
+            LABELS "local;integration;client;input;graphics;inventory;ownership"
+            TIMEOUT 600 RESOURCE_LOCK mc_desktop_focus)
+    endif()
+    add_executable(mc_test_workbench_auto_close_loop
+        tests/client/gameplay/test_workbench_auto_close.c
+        tests/client/world/test_load_world_foreign_loading.c
+        tests/client/world/test_render_global_entities.c
+        tests/client/world/test_refresh_entity.c
+        tests/client/world/test_renderer_focus.c)
+    target_include_directories(mc_test_workbench_auto_close_loop PRIVATE src src/platform/time)
+    target_link_libraries(mc_test_workbench_auto_close_loop PRIVATE
+        mc_client_runtime mc_client_saves mc_build_options)
+    if(CMAKE_CXX_COMPILER_LOADED)
+        set_property(TARGET mc_test_workbench_auto_close_loop PROPERTY LINKER_LANGUAGE CXX)
+    endif()
+    if(WIN32 AND TARGET OpenAL)
+        add_custom_command(TARGET mc_test_workbench_auto_close_loop POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
+                "$<TARGET_FILE_DIR:mc_test_workbench_auto_close_loop>")
+    endif()
+    if(WIN32 AND MC_ENABLE_CLIENT_WORKBENCH_AUTO_CLOSE_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS
+       AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
+        foreach(_mc_auto_close_mode IN ITEMS removed distance)
+            add_test(NAME "client.workbench_auto_close_${_mc_auto_close_mode}"
+                COMMAND Python3::Interpreter -B
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_workbench_auto_close_loop.py"
+                --executable "$<TARGET_FILE:mc_test_workbench_auto_close_loop>"
+                --assets "${MC_APPLICATION_STARTUP_IMPORTED_RESOURCES}"
+                --artifacts "${CMAKE_CURRENT_BINARY_DIR}/workbench-auto-close-captures"
+                --mode "${_mc_auto_close_mode}")
+            set_tests_properties("client.workbench_auto_close_${_mc_auto_close_mode}" PROPERTIES
+                LABELS "local;integration;client;input;graphics;inventory;ownership"
+                TIMEOUT 420 RESOURCE_LOCK mc_desktop_focus)
+        endforeach()
+        unset(_mc_auto_close_mode)
+    endif()
     add_executable(mc_test_workbench_loop tests/client/gameplay/test_workbench.c
         tests/client/world/test_load_world_foreign_loading.c
         tests/client/world/test_render_global_entities.c
