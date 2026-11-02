@@ -375,7 +375,8 @@ mc_entity_status mc_pickup_particle_layer(const mc_entity *p, int32_t *out) {
 bool mc_particle_read(const mc_entity *p, mc_particle_snapshot *out) {
     if ((!mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE) &&
          !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) &&
-         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE)) ||
+         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE) &&
+         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE)) ||
         out == NULL || p->particle == NULL)
         return false;
     const bool item = !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE);

@@ -206,16 +206,22 @@ static mc_world_storage_status collect_entity(void *context, const void *slot, m
              * graphs remain outside this terminal closure. */
             mc_particle_snapshot particle;
             const bool digging = mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE);
-            if ((!digging && !mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE)) ||
+            const bool explosion =
+                mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE);
+            if ((!digging && !explosion &&
+                 !mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE)) ||
                 !mc_particle_read(value, &particle) || particle.phase != MC_ENTITY_READY ||
-                particle.item_pc != (digging ? 80u : 58u) ||
+                particle.item_pc != (explosion ? 157u
+                                     : digging ? 80u
+                                               : 58u) ||
                 (digging && (particle.digging_block == NULL || particle.digging_registry == NULL)))
                 return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                               "World terminal canonical complete PB child");
             if (particle.tick_active)
                 return result(error, MC_WORLD_STORAGE_BUSY, "World terminal PB tick still entered");
         } else if (mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) ||
-                   mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE))
+                   mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE) ||
+                   mc_entity_is_kind(value, MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE))
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal missing PB child storage");
         if (value->base.aG != value->passenger_hold || value->base.aH != value->mount_hold)

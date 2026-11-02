@@ -16,10 +16,11 @@ use Tiny render distance and authored saved inputs.
 - [Mining and pickup](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mining.md): fresh left click, held empty-hand Dirt break, cracks, destruction particles, dropped-Item drawing, save/reselection, keyboard pickup and held Dirt.
 - [Dirt placement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/placement.md): right-button use of collected Dirt, collision admission, terrain update, sound, consumption, statistic and swing, followed by another save/reselection.
 - [Player drops](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-drop.md): the configured drop key removes one selected Item, publishes a genuine dropped Item and increments the drop statistic. Empty-hand input creates no Item.
+- [Player attacks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-attack.md): Entity-target left click, empty-hand animal damage, score/kill callbacks and owned-Wolf alert pass 747 checks and five selected original rows on Windows and sanitized Linux. The qualified Windows SDK Sheep kill completes twenty death particles, actual age-21 removal, source autosave and checked cleanup in 1,230 checks. Held Item attacks and broader encounters remain unfinished or unqualified; six fresh Linux particle/renderer/packet regressions pass in 0.63 seconds, with the broad Linux full build/597 public tests passing in 166.82 seconds. Five corrected Windows focus profiles pass in 112.40 seconds. Separate Linux SDK and whole Windows focus stability remain unqualified; latest instrumented Slime/Cow/Wolf cases record foreign Remote Desktop foreground activation, while older owners remain unknown. Hosted qualification retains its exact tested-commit scope.
 - [Animal damage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/animal-damage.md): component and original CPU checks cover actual Wolf bites, health, hurt resistance, knockback, sound and failure prefixes.
 - [Animal death and drops](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/animal-death.md): finite native and original CPU checks cover attacker callbacks, Sheep/Pig/Cow/Chicken drops, real Item publication and failure cleanup. Complete graphical encounters remain unqualified.
 - [Saving](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-saving.md): normal leave and separately qualified session-lock failure, with independent disk checks and native cleanup.
-- [Selection](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/block-selection.md): Dirt and Snow outlines and finite saved-World reselection.
+- [Selection](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/block-selection.md): Dirt and Snow outlines; a retained Windows Tiny scenario completes ten saved-World loads and saves, then preserves an eleventh conversion failure before storage acquisition.
 
 Each linked contract records its exact verification scope and retained failures.
 Component tests, static original-bytecode identities, executed original
@@ -30,7 +31,8 @@ comparisons and native graphical scenarios provide separate evidence.
 The client remains pre-playable. General tools, combat, Inventory UI, remaining
 Item/Block overrides, broader vehicle behavior, focus/native-close behavior,
 unrestricted reselection and extended play still need work or qualification.
-The retained loader currently admits eight World loads per application session.
+The loader has no fixed session count limit. Old World graphs remain allocated
+until shutdown; reclaiming them during play remains unfinished.
 Linux loaded gameplay, default-Far performance and complete original pixel/audio
 and save-interoperability comparisons remain unqualified.
 

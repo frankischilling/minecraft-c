@@ -84,6 +84,7 @@ static bool enter(mc_entity *entity, mc_entity_effect_error *error) {
     if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE) &&
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
         !(mc_entity_has_mob(entity) && mc_entity_is_kind(entity, entity->class_literal->kind))) {

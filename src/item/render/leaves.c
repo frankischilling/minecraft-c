@@ -1,6 +1,8 @@
 #include "../../block/registry/registry_internal.h"
 #include "../stack/source_internal.h"
 #include "internal.h"
+#include "mc/block/registry/rendering.h"
+#include "mc/block/registry/runtime.h"
 #include <string.h>
 
 static mc_item_render_site at(const char *c, const char *m, const char *d, int32_t pc) {
@@ -183,6 +185,30 @@ static bool icon_entered(mc_registry_classes *classes, const mc_item *item, int3
     (void)damage; /* Actual GM.a(I) reads only bh. */
     if (!admit(classes, item, out, e))
         return false;
+    if (item->kind == MC_ITEM_WOOL_BLOCK) {
+        e->site = at("bi", "a", "(I)I", 0);
+        const mc_block *wool = NULL;
+        if (mc_registry_block_static_get(classes, "ac", &wool, &e->registry) != MC_REGISTRY_OK)
+            return registry_failed(classes, e);
+        e->site.pc = 5;
+        const mc_registry_status initialized =
+            mc_registry_block_class_initialize(classes, MC_BLOCK_WOOL);
+        if (initialized != MC_REGISTRY_OK) {
+            e->registry = classes->last_error;
+            return registry_failed(classes, e);
+        }
+        /* BI uses EE.d, the inverse dye-order mapping, before the virtual
+         * Block texture call. Preserve the captured actual UU.ac receiver. */
+        const int32_t metadata = (~damage) & 15;
+        e->site.pc = 8;
+        if (wool == NULL)
+            return source_null(e, "Wool Item icon null captured Block receiver");
+        const mc_registry_status status = mc_block_render_texture_metadata(wool, 2, metadata, out);
+        if (status != MC_REGISTRY_OK)
+            return fail(e, status, "Wool Item icon actual Block texture override");
+        e->site.pc = 11;
+        return true;
+    }
     if (item->kind != MC_ITEM_BASE && item->kind != MC_ITEM_BOW && item->kind != MC_ITEM_BLOCK)
         return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
                     "Item render actual icon override boundary");
@@ -213,7 +239,8 @@ bool mc_item_render_full_3d(mc_registry_classes *classes, const mc_item *item, b
     e->item_identity = (uintptr_t)item;
     if (!admit(classes, item, out, e))
         return false;
-    if (item->kind != MC_ITEM_BASE && item->kind != MC_ITEM_BOW && item->kind != MC_ITEM_BLOCK)
+    if (item->kind != MC_ITEM_BASE && item->kind != MC_ITEM_BOW && item->kind != MC_ITEM_BLOCK &&
+        item->kind != MC_ITEM_WOOL_BLOCK)
         return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
                     "Item render actual full3D override boundary");
     e->site = at("gm", "b", "()Z", 1);
@@ -233,7 +260,8 @@ bool mc_item_render_color(mc_registry_classes *classes, const mc_item *item, int
     if (!admit(classes, item, out, e))
         return false;
     e->site = at("gm", "f", "(I)I", 0);
-    if (item->kind != MC_ITEM_BASE && item->kind != MC_ITEM_BOW && item->kind != MC_ITEM_BLOCK)
+    if (item->kind != MC_ITEM_BASE && item->kind != MC_ITEM_BOW && item->kind != MC_ITEM_BLOCK &&
+        item->kind != MC_ITEM_WOOL_BLOCK)
         return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY, "Item actual metadata color override");
     *out = 16777215;
     e->site.pc = 2;
@@ -250,7 +278,8 @@ bool mc_item_render_rotate(mc_registry_classes *classes, const mc_item *item, bo
     if (!admit(classes, item, out, e))
         return false;
     e->site = at("gm", "c", "()Z", 0);
-    if (item->kind != MC_ITEM_BASE && item->kind != MC_ITEM_BOW && item->kind != MC_ITEM_BLOCK)
+    if (item->kind != MC_ITEM_BASE && item->kind != MC_ITEM_BOW && item->kind != MC_ITEM_BLOCK &&
+        item->kind != MC_ITEM_WOOL_BLOCK)
         return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
                     "Item actual rotating render override");
     *out = false;

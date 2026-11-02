@@ -441,6 +441,46 @@ class NamedDataEvidence(unittest.TestCase):
 
 
 class NamedReferenceGraphs(unittest.TestCase):
+    def test_complete_original_reference_walk_is_passive_and_checks_late_owners(self):
+        first = reference("r10", "java.util.ArrayList")
+        document = {"rows": [first, [None, 17, "text", first],
+                             {"last": reference("r11", "java.util.HashMap")}],
+                    "null": reference(None, None)}
+        before = json.dumps(document, sort_keys=True)
+        self.assertEqual(A.reference_classes(document), 2)
+        self.assertEqual(json.dumps(document, sort_keys=True), before)
+        document["rows"][-1]["last"]["ref"] = "r10"
+        with self.assertRaisesRegex(ValueError, "retains its actual class"):
+            A.reference_classes(document)
+        document["rows"][-1]["last"]["ref"] = "r11"
+        self.assertEqual(A.reference_classes(document), 2)
+        self.assertEqual(json.dumps(document, sort_keys=True), before)
+        document["null"]["class"] = "java.lang.Object"
+        with self.assertRaisesRegex(ValueError, "null reference pair"):
+            A.reference_classes(document)
+
+    def test_complete_original_reference_budget_counts_scalars_and_repeated_containers(self):
+        # Root + two child lists + 1,999,997 scalar occurrences reaches the
+        # exact bound. Reusing one list must still count both occurrences.
+        leaves = [None] * 999999
+        document = [leaves, [None] * 999998]
+        self.assertEqual(A.reference_classes(document), 0)
+        document[1] = leaves
+        with self.assertRaisesRegex(ValueError, "bounded complete observed JSON graph"):
+            A.reference_classes(document)
+        self.assertEqual(len(leaves), 999999)
+
+    def test_complete_original_reference_walk_revalidates_identity_and_class_types(self):
+        first = reference("r10", "java.util.ArrayList")
+        for identity in (True, 10, [], {}, "n10", "r", "r10x"):
+            with self.subTest(identity=identity), self.assertRaisesRegex(ValueError, "object identity"):
+                A.reference_classes([first, reference(identity, "java.util.ArrayList")])
+        for kind in (None, True, [], {}, "", "x" * 257):
+            with self.subTest(kind=kind), self.assertRaisesRegex(ValueError, "reference class"):
+                A.reference_classes([first, reference("r10", kind)])
+        for _ in range(2):
+            self.assertEqual(A.reference_classes([first, reference("r10", "java.util.ArrayList")]), 1)
+
     @staticmethod
     def manager():
         return {"object": reference("n0", "hc"), "handler_store": reference("n1", "mx"),

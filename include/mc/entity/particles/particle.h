@@ -29,8 +29,8 @@ typedef enum mc_particle_throwable {
  * initial state is captured immediately before the actual first float call,
  * never derived from its final state or supplied as constructor entropy. */
 typedef struct mc_particle_constructor_random {
-    double math_values[5];
-    float own_values[4];
+    double math_values[8]; /* XW's five, followed by GY's three when reached. */
+    float own_values[8];   /* XW's four, followed by GY's four when reached. */
     size_t math_count, own_count;
     bool own_initial_stored;
     uintptr_t own_identity;
@@ -168,5 +168,24 @@ mc_entity_status mc_digging_particle_tick(mc_entity *, mc_registry_classes *,
                                           const mc_entity_move_limits *,
                                           mc_item_particle_tick_error *);
 mc_entity_status mc_digging_particle_layer(const mc_entity *, int32_t *);
+
+/* Actual client GY: XW/SN construction, then three additional shared Math
+ * velocity jitters and four private Random floats for color, size and lifetime.
+ * The same constructor Random receipt contains the full eight/eight sequence.
+ * Nullable World and reached Math capture follow the existing XW ownership
+ * contract. No entropy input or retry is accepted. Error is required/disjoint. */
+mc_entity_status mc_explosion_particle_allocate(mc_entity_classes *, mc_entity **,
+                                                mc_entity_error *);
+mc_entity_status mc_explosion_particle_construct(mc_entity *, mc_world_runtime *, mc_math_classes *,
+                                                 double, double, double, double, double, double,
+                                                 mc_particle_error *);
+/* Actual GY.w_: postincrement expiry, animated atlas cell, upward acceleration,
+ * genuine SN movement, .9 damping and ground X/Z damping. Expiry continues the
+ * same body; zero lifetime reaches the source arithmetic exception after age/K.
+ * This does not use inherited XW gravity or PB/QM tick behavior. */
+mc_entity_status mc_explosion_particle_tick(mc_entity *, mc_registry_classes *,
+                                            const mc_entity_move_limits *,
+                                            mc_item_particle_tick_error *);
+mc_entity_status mc_explosion_particle_layer(const mc_entity *, int32_t *);
 
 #endif

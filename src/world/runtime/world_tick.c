@@ -24,6 +24,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef MC_WORLD_TICK_AUTOSAVE_TEST_OBSERVER
+/* The ordinary runtime has no observer call or storage. */
+void mc_test_attack_autosave_observe(mc_world_runtime *, int64_t, bool, bool);
+#endif
+
 typedef mc_world_chunk_candidate candidate;
 
 struct mc_world_tick_call {
@@ -1046,11 +1051,20 @@ static bool scheduler(mc_world_tick_call *c) {
     }
     if (remainder == 0) {
         at(c, 177, MC_WORLD_TICK_CHILD_SAVE, "fd", "a(Z,yb)V", 0);
+#ifdef MC_WORLD_TICK_AUTOSAVE_TEST_OBSERVER
+        mc_test_attack_autosave_observe(w, c->state.next_time, true, false);
+#endif
         if (mc_world_runtime_save_detailed(w, false, &c->lifecycle) != MC_CHUNK_LIFECYCLE_OK) {
+#ifdef MC_WORLD_TICK_AUTOSAVE_TEST_OBSERVER
+            mc_test_attack_autosave_observe(w, c->state.next_time, false, false);
+#endif
             c->error.lifecycle = &c->lifecycle;
             c->error.native_policy = true;
             return cause(c, c->lifecycle.cause);
         }
+#ifdef MC_WORLD_TICK_AUTOSAVE_TEST_OBSERVER
+        mc_test_attack_autosave_observe(w, c->state.next_time, false, true);
+#endif
     }
     at(c, 185, MC_WORLD_TICK_CHILD_NONE, "ei", "a(J)V", 2);
     if (mc_world_info_source_time_set(w->fields.x, c->state.next_time) != MC_WORLD_INFO_OK)

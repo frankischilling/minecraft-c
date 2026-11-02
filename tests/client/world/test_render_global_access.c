@@ -11,6 +11,7 @@
 #include "mc/world/runtime/presentation.h"
 #include "world/runtime/world_access_internal.h"
 
+#include "test_particle_distance.h"
 #include "test_sky_changed.h"
 
 /* Real GAME Worlds and a genuine cold native n owner exercise interface
@@ -143,6 +144,7 @@ int main(int argc, char **argv) {
     const size_t before_player_bindings = world->persistent_bindings;
     CHECK(mc_local_player_construct(player, world, NULL, session, 0, NULL, NULL) == MC_PLAYER_OK);
     CHECK(world->persistent_bindings == before_player_bindings + 1u);
+    CHECK(particle_distance_controls(render_classes, world, player));
     CHECK(mc_entity_cloak_url(player) == NULL && mc_entity_skin_url(player) != NULL);
     mc_world_entity_error publication = {0};
     bool insert_result = false;

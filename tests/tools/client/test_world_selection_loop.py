@@ -359,27 +359,30 @@ def reload_decode(evidence, stdout, process_first):
     rows = stdout.splitlines()
     saves = [line for line in rows if line.startswith("WORLD_SAVE_TITLE ")]
     phases = [line for line in rows if line.startswith("WORLD_RELOAD_PHASE ")]
-    if len(saves) != 3 or phases != [
-            "WORLD_RELOAD_PHASE epoch=1 folder=alpha save-title=1",
-            "WORLD_RELOAD_PHASE epoch=2 folder=alpha save-title=1",
-            "WORLD_RELOAD_PHASE epoch=3 folder=older save-title=1"]:
-        raise RuntimeError("Three actual ordered source save/title epochs required")
+    folders = ("alpha", "alpha", "older", "alpha", "older", "alpha", "older", "alpha", "older", "alpha")
+    count = len(folders)
+    if len(saves) != count or phases != [
+            f"WORLD_RELOAD_PHASE epoch={epoch} folder={folder} save-title=1"
+            for epoch, folder in enumerate(folders, 1)]:
+        raise RuntimeError("Ten actual ordered source save/title epochs required")
     suffix = (" distinct-os=1 distinct-load=1 distinct-handler=1 distinct-world=1 distinct-player=1"
               " distinct-input=1 n-ready=1 n-old-remove=1 n-th=1 n-k=1 n-cv=1 n-register=1"
               " n-rebuild=1 dn-replaced=1 previous-ready=1 returned=130 frame=1013")
     selections = [line for line in rows if line.startswith("WORLD_RELOAD_SELECT ")]
-    if selections != ["WORLD_RELOAD_SELECT epoch=2 folder=alpha" + suffix,
-                      "WORLD_RELOAD_SELECT epoch=3 folder=older" + suffix]:
+    if selections != [f"WORLD_RELOAD_SELECT epoch={epoch} folder={folder}" + suffix
+                      for epoch, folder in enumerate(folders, 1) if epoch > 1]:
         raise RuntimeError("Actual same/different source selection and renderer receipts required")
     if rows.count("WORLD_RELOAD_NOTICE terminal-prefix-retired=1 source-fields-unchanged=1") != 1:
         raise RuntimeError("Actual Notice call retirement must precede all-epoch terminal audit")
-    terminal = "WORLD_RELOAD_TERMINAL epochs=3 old-root-busy=1 all-worlds-ready=1 passive-invariant=1 released-root-retry=1 all-epoch-audit=1"
-    if rows.count(terminal) != 1 or rows.count("WORLD_RELOAD_IDENTITIES epochs=3 all-pairs-distinct=1 source-owners-live=1") != 1:
+    terminal = "WORLD_RELOAD_TERMINAL epochs=10 old-root-busy=1 all-worlds-ready=1 passive-invariant=1 released-root-retry=1 all-epoch-audit=1"
+    if rows.count(terminal) != 1 or rows.count("WORLD_RELOAD_IDENTITIES epochs=10 all-pairs-distinct=1 source-owners-live=1") != 1:
         raise RuntimeError("All-pairs genuine identities, predecessor root refusal and passive retry required")
+    if rows.count("WORLD_RELOAD_FAILED epoch=11 folder=bravo conversion=1 acquired-storage=0 preserved-prefix=1") != 1:
+        raise RuntimeError("Actual failed successor conversion prefix required")
     snapshots = [line for line in rows if line.startswith("WORLD_RELOAD_SNAPSHOT ")]
-    names = [f"{stage}-{epoch}" for epoch in range(1, 4) for stage in ("before", "after")]
-    if len(snapshots) != 6:
-        raise RuntimeError("Six actual raw disk snapshots required")
+    names = [f"{stage}-{epoch}" for epoch in range(1, count + 1) for stage in ("before", "after")]
+    if len(snapshots) != 2 * count:
+        raise RuntimeError("Twenty actual raw disk snapshots required")
     for row, name in zip(snapshots, names):
         found = re.fullmatch(rf"WORLD_RELOAD_SNAPSHOT phase={name} files=([1-9][0-9]*) bytes=([1-9][0-9]*) actual-file-copy=1", row)
         if found is None or not 0 < int(found[1]) <= 1024 or not 0 < int(found[2]) <= 16 * 1048576:
@@ -389,9 +392,8 @@ def reload_decode(evidence, stdout, process_first):
             raise RuntimeError("Actual snapshot inventory differs from copy receipt")
     reports = []
     source_chunks = {}
-    for epoch, (folder, display, marker) in enumerate((("alpha", "Alpha world", 57),
-                                                      ("alpha", "Alpha world", 57),
-                                                      ("older", "Old world", 56)), 1):
+    for epoch, folder in enumerate(folders, 1):
+        display, marker = ("Alpha world", 57) if folder == "alpha" else ("Old world", 56)
         stage_stdout = "\n".join([line for line in rows if line.startswith("WORLD_SAVE_TITLE_OPTIONS ")] +
                                   [saves[epoch - 1]])
         reports.append(save_title_decode(shots / f"before-{epoch}", evidence / "entries" / f"epoch-{epoch}",
@@ -404,15 +406,15 @@ def reload_decode(evidence, stdout, process_first):
             tuple(coordinate) for coordinate in report["pause_changed_chunks"] + report["changed_chunks"])
     def hashes(root):
         return {Path(key).as_posix(): value for key, value in snapshot(root).items()}
-    for previous, current, changed in ((evidence / "before", shots / "before-1", "alpha/session.lock"),
-                                       (shots / "after-1", shots / "before-2", "alpha/session.lock"),
-                                       (shots / "after-2", shots / "before-3", "older/session.lock")):
+    for epoch, folder in enumerate(folders, 1):
+        previous = evidence / "before" if epoch == 1 else shots / f"after-{epoch - 1}"
+        current, changed = shots / f"before-{epoch}", f"{folder}/session.lock"
         left, right = hashes(previous), hashes(current)
         if any(right.get(key) != value for key, value in left.items() if key != changed):
             raise RuntimeError("Source reopening changed existing disk bytes before Save")
         if set(right) - set(left) - {changed} or changed not in right or (current / changed).stat().st_size != 8:
             raise RuntimeError("Source reopening only creates/replaces actual session token")
-    if hashes(shots / "after-3") != hashes(evidence / "after"):
+    if hashes(shots / f"after-{count}") != hashes(evidence / "after"):
         raise RuntimeError("Native multi-epoch terminal cleanup wrote source save bytes")
     parser_path = Path(__file__).resolve().parents[1] / "world/test_source_saving.py"
     spec = importlib.util.spec_from_file_location("reload_independent_nbt", parser_path)
@@ -780,7 +782,7 @@ def main():
             elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature or remaining or save_title:
                 worlds = [
                     ("older", "Old world", 1303000000000, 19132),
-                    ("bravo", "", 1304000000000, 19132),
+                    ("bravo", "", 1304000000000, 0 if reload_cycle else 19132),
                     ("alpha", "Alpha world", 1304000000000,
                      19132 if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature or remaining or save_title else 0),
                 ]
@@ -937,7 +939,7 @@ def main():
               "full tick/World/HUD first compilation/reuse, actual V/RA/Bow receipts and checked "
               "cleanup passed; no original whole-frame parity credit")
     if all(mode == "reload-cycle" for mode in modes):
-        print("Native actual same/different World reload: three source UI epochs, actual entry snapshots, "
+        print("Native actual same/different World reload: ten source UI epochs, failed successor, actual entry snapshots, "
               "N/DN replacements, disk/player readback and all-epoch terminal ownership; no original parity claim")
     elif all(mode in ("save-title", "save-title-session") for mode in modes):
         print("Native visible save/title: real Escape/button1, actual source save and independent "

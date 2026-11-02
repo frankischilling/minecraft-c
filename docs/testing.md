@@ -1,5 +1,176 @@
 # Test scope and reproduction
 
+## Current targeted and public qualification
+
+The broad Linux snapshot builds fully and passes all 597 public tests in
+166.82 seconds under Xvfb/software OpenGL with display tests, Clang ASan/UBSan,
+leak detection and halt-on-error. The later held-Stack diagnostic/frontier
+correction has separate Windows/Linux 747-check component coverage. The
+asset-dependent Linux SDK death/autosave encounter remains unqualified.
+
+The latest Windows full run passes 593 of 602 public tests in 215.03 seconds.
+Its 3,293 selected execution inputs and 823 resource files remain unchanged.
+Two failures record actual foreign `msrdc.exe` foreground activation in the
+Slime and Cow profiles; the client correctly pauses. Seven other failures are
+source-binding rejections: the failure-only diagnostic fixture changed after
+the preceding binding refresh. The source declarations are now refreshed and
+audited across 9,789 entries and 4,050 files. The exact seven rejected tests
+all pass in a separate 13.29-second rerun, with comparisons and guards unchanged.
+The historical 593/602 run remains failed; this focused metadata resolution
+does not establish a new full passing result. Whole Windows graphical focus
+stability remains unqualified.
+
+The preceding 26-test regression selection passes 24 in 188.02 seconds, with
+2,693 selected execution inputs and 410 resources unchanged. Slime and Wolf
+failures both have actual Remote Desktop foreground owners: Slime game PID
+41924 versus `msrdc.exe` PID 24888, and Wolf game PID 38344 versus `msrdc.exe`
+PID 45416. The Slime receipt records class `TscShellContainerClass`, NULL
+game-thread focus/active windows, no SDL keyboard focus and visible nonminimized
+Frame/Canvas with correct parentage. Local attack passes in 12.65 seconds within
+that selection. A separate instrumented repeat passes 1,900 native checks.
+These owner receipts qualify only their instrumented failures; older
+uninstrumented foreground owners remain unknown. Focus behavior and the
+immutable-file predicate remain unchanged.
+
+Earlier Windows results retain their exact snapshot scopes:
+
+- The 21-test targeted selection passes in 74.09 seconds, with 2,693 selected
+  inputs and 410 resources unchanged.
+- The original broad run passes 601/602 in 294.30 seconds. Spider rendering and
+  cleanup return, then save-byte immutability fails. Independent decoding finds
+  Pause, World time 10 and 48 changed Chunk records. This is separate from the
+  qualified period-40 attack autosave.
+- Corrected actual-focus/frame guards and SDK acquisition retain every byte
+  predicate and do not resume Pause as a substitute. Five corrected tests pass
+  in 112.40 seconds: creatures 43.97, animals 33.12, Zombie 11.09, Wolf 11.33 and
+  attack 12.85 seconds.
+- A later parallel broad run passes 601/602 in 255.61 seconds. Its new guard
+  rejects actual Chicken focus loss with Pause, no native/keyboard focus and no
+  SDK grab. All 3,293 selected inputs and 823 resources remain unchanged.
+- Disjoint phases pass 541/541 nongraphics tests in 102.93 seconds, then 60/61
+  serial graphics tests in 310.19 seconds. Repeat fails with Pause and no
+  focus/grab. The same selected input/resource counts remain unchanged. The
+  local attack scenario is not invoked after that failed graphics gate.
+
+Selected hash inventories do not establish a complete environment audit.
+Hosted evidence applies only to the exact tested commit. Earlier original
+comparisons and finite graphical passes retain their own declared scopes.
+
+## Retained World reload ownership
+
+The loader allocates successive invocation records without a fixed load count.
+Terminal classification checks screen-node order against reciprocal Load links
+and the complete class count. Direct controller-owner slots avoid repeated
+screen-history searches. These ownership changes add no frame-loop work; no
+FPS or frame-time improvement has been measured. Old World graphs still remain
+allocated until shutdown. Reclaiming them during play remains necessary.
+
+A retained Windows Release Tiny run passes 7,037 native checks across ten
+World loads and ten ordinary Save and quit transitions. It reopens the same
+World, alternates two Worlds, then preserves a real eleventh conversion failure
+before acquiring storage. Independent replay of the saved decoder report
+checks all ten save stages, twenty raw disk snapshots and reopened stable
+Player fields. External-owner refusals preserve all World graphs for retry;
+checked cleanup closes both native windows without further save writes. The
+controller did not record execution-time executable/source hashes, so this
+retained result does not prove correspondence with the current executable.
+
+A separate hash-bracketed Windows Release snapshot passes nine tests in
+62.66 seconds. Reload completes 6,417 checks in 36.96 seconds; save/title passes
+in 17.94 seconds. All 1,539 selected execution inputs and 410 selected resource
+files remain unchanged. The inventory includes all runtime and CMake sources,
+the executable/DLLs, build metadata, four chosen fixture/decoder files and the
+local wrapper. Other test support files, imported icons and desktop/driver
+state are outside that inventory. Subsequent runtime changes need a fresh run.
+
+Seven earlier adjacent Windows screen/menu/World and terminal-inventory tests
+pass in 4.18 seconds. Another registered pair passes reload in 38.92 seconds
+and fails save/title in 4.95 seconds at its initial native Canvas focus check.
+The later passing snapshot preserves that failure. Linux ten-load graphics,
+failures after a successor acquires storage, unrestricted focus/reselection,
+default-Far performance and extended play remain unqualified. The
+[native receipt](../tests/reference/client/world_reload/native-validation.json)
+and [ownership contract](client/block-selection.md) record the finite scope.
+
+## Complete death loop and source autosave
+
+The Windows GY component passes 193 checks and seven exact original tick rows
+in 0.17 seconds. Its CPU draw component passes 115 checks and six original draws
+with 48 exact words per draw in 0.14 seconds. Eight packet tests pass in 0.18
+seconds; the three-test selection passes in 0.23 seconds. Constructor/Math
+entropy remains independent of the selected deterministic tick/draw comparison.
+Two existing RenderGlobal-access and sky-change controls pass in 0.35 seconds
+after preserving Java `dcmpl` NaN continuation into the particle-name comparison.
+
+The strengthened Windows SDK Sheep encounter passes 1,230 checks in 13.90
+seconds. Normal Timer ticks complete twenty distinct GY particles, real World
+removal at death age 21 and three further World/HUD frames. It then observes
+the real post-removal period-40 autosave: old World time 39, next time 40,
+24 eligible Chunks and return before the source time store. Independent NBT,
+region and entry/exit disk verification checks saved time 39 and Player Score
+14. Declared inputs and imported resources stay unchanged. The observer is
+compiled only into the test target; normal gameplay has no observer hook,
+autosave suppression or repaired time. The entry observer preserves cold
+EntityList phase/maps/counts across 380,628 bytes before and after its own work,
+with zero selected-slice calls at actual source entry. Direct NBT traversal and observer-owned IDs perform no early
+Registry initialization. The region mask permits only selected headers and
+exactly four length bytes plus declared record length at the new offset; old
+payloads and reused tail padding remain protected. The sixteen-case corruption
+suite passes in 0.91
+seconds; the two tests pass in 14.85 seconds with checked native cleanup.
+
+The earlier frozen Windows cohort passes twelve of thirteen tests in 101.48
+seconds with 2,669 selected execution inputs and 410 selected resources unchanged.
+Reload/save/title/menu pass, but the attack scenario stops at `ls.U:489` and
+`n.a:296` missing GY construction. After particle implementation, a 602-check
+native death/removal continuation returns but the old immutable-disk gate rejects
+a real autosave. These failures remain historical prefixes; the current strict
+audit validates the observed source saves without relaxing their content.
+
+The pre-GY Linux full build and sixteen focused ASan/UBSan tests pass in 27.76
+seconds. Six fresh Linux particle/renderer/packet controls pass in 0.63 seconds,
+including GY 193 checks/seven original ticks and draw 115 checks/six exact word
+sets. The broad Linux snapshot builds fully and all 597 public tests pass in 166.82
+seconds with display checks under Xvfb/software GL and ASan/UBSan. Its separate
+SDK encounter remains unqualified. The separate Windows focus failures above
+remain open; hosted validation keeps its exact tested-commit scope. [Explosion particle scope](entity/explosion-particle.md) records exact
+limits. No original full-frame/pixel, Wool pickup, save-restart or extended-play
+claim follows. No FPS, frame-time or hosted-speed result is claimed.
+
+## Player attacks and reached graphical dependencies
+
+Windows and Linux Clang ASan/UBSan `entity.player_attack` each pass 747
+authored checks and match five unchanged-original integer/Boolean rows. The
+held-Stack control records the correct `iz.a(sn):9` child frontier and requires
+unchanged target health/statistics before checked cleanup. Windows completes
+its component in 0.20 seconds (0.23 seconds for the enclosing test); Linux
+completes it in 0.28 seconds (0.30 seconds enclosing). Six
+packet tests reject corrupted semantic fields and packet shapes. All eleven
+canonical Overworld Mob classes have RAW/removed-flag picking controls with
+the unchanged 0.1 border; original reflection and method pins identify inherited
+LS/SN bodies. Wool inventory controls preserve white color, no-op shape,
+literal textures and bounds across sixteen metadata values. Original reflection
+identifies EE/UU inheritance; sixteen actual original color and BI Item-icon
+calls retain separate coverage, including inverse low-four-bit damage mapping
+and inherited GM leaf pins.
+
+The earlier bounded Windows SDK Sheep encounter passes 507 checks in 10.37 seconds; the
+inventory-Block regression passes alongside it in 0.05 seconds. The actual
+source ray finds the published health-1/score-7/color-0 Sheep. SDK left click
+executes fatal hurt, score/kill statistics and Wool publication; three World/HUD
+frames and visible Wool return before checked native cleanup closes both windows.
+All 1,393 selected runtime/harness inputs and 413 resources remain unchanged.
+Other Python helpers, toolchain and desktop state are outside this inventory.
+
+The earlier strict damage-dealt expectation of 1 failed. A read-only death-sound
+callback now samples one Player Y-velocity operand while the attack is active.
+Its word `bfb41205c28f5c29` is negative, requiring the original damage-2 bonus;
+actual victim health -1 and damage-dealt 2 agree. No Player field is repaired.
+Earlier dependency failures keep their own prefix scope. This finite encounter
+gives no original graphics, Wool pickup, save/reload or extended-combat result.
+[Player attack scope](entity/player-attack.md) records the implemented order,
+retained failures, entropy limits and remaining combat work.
+
 ## Animal death and retained Entity drops
 
 The native fatal Wolf regression first stopped at `ls.a:316` with health zero,
@@ -42,6 +213,23 @@ and keyboard focus, and SDK mouse capture before crediting any repeat frame.
 Every byte-continuity predicate remains. The rebuilt full selection test passes
 in 38.21 seconds in isolation. This diagnostic improvement and finite rerun do
 not establish stable focus under concurrency or replace the recorded broad failure.
+
+## Named-data identity validation cost
+
+One paired local Windows CPython 3.14.3 run changes from 25 validator tests in
+31.124 seconds to 28 tests in 27.436 seconds. Scans of the same client graph
+with 1,927 identities take 0.236 to 0.242 seconds before the change and 0.106
+to 0.112 seconds after it. The selected profiler call count falls from
+2,430,484 to 1,203,584. These local measurements do not establish hosted CI
+or gameplay/FPS performance.
+
+The validator queues containers instead of scalar leaves and validates each
+identity's syntax once. Every one of the 43,924 reference occurrences still
+receives its type and class-consistency checks. The graph budget still counts
+scalar leaves and repeated container occurrences. Three added controls verify
+passive traversal, late conflicting owners, exact budget boundaries, null
+pairs, repeated aliases and invalid identity/class types. No comparison field
+or corruption check was removed.
 
 ## Region-validator preparation cost
 

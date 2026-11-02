@@ -242,8 +242,8 @@ void mc_item_particle_tick_error_init(mc_item_particle_tick_error *e) {
     mc_entity_move_error_init(&e->movement);
 }
 
-static void movement_exception(mc_particle_error *e, const mc_entity_move_error *m,
-                               mc_registry_classes *registry) {
+void mc_particle_movement_exception(mc_particle_error *e, const mc_entity_move_error *m,
+                                    mc_registry_classes *registry) {
     if (m->source_null) {
         e->throwable = MC_PARTICLE_SOURCE_EXCEPTION;
         e->source_exception = true;
@@ -332,7 +332,7 @@ mc_entity_status mc_particle_tick_inherited(mc_entity *p, mc_entity_class_kind e
     e->status = mc_entity_move_in_context(p, registry, vx, vy, vz, limits, &error->movement);
     if (e->status != MC_ENTITY_OK) {
         (void)tick_fail(e, e->status, MC_PARTICLE_MOVEMENT, error->movement.operation, 77);
-        movement_exception(e, &error->movement, registry);
+        mc_particle_movement_exception(e, &error->movement, registry);
     } else {
         p->base.velocity_x = mc_travel_dmul(p->base.velocity_x, 0.9800000190734863);
         p->particle->item_native.tick_pc = 89;

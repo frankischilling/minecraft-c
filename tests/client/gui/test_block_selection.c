@@ -268,7 +268,7 @@ static int aim_case(fixture *f, aim_work *work, const char *directory, int32_t t
     printf("SELECTION_WORLD targeted=%zu outer-frames=%zu focus-recoveries=%zu returned-world-hud=1"
            " authored-rotation=1 actor-injected=0 source-fields-assigned=0\n",
            work->targeted, frames, work->focus_pauses);
-    CHECK(normal_terminal_retirement_controls(f, &work->external, true, false) == 0);
+    CHECK(normal_terminal_retirement_controls(f, &work->external, true, false, NULL) == 0);
     return 0;
 }
 

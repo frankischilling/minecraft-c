@@ -418,7 +418,7 @@ static int notice_tutorial(fixture *f, notice_test *t, const char *directory) {
            "actual-world-constructor=1 absent-openInventory=1 book=340 icon=59 "
            "returned-world-hud=1 timer-written=0 notice-written=0 native-actor-published=0\n",
            frames, active, refreshes, focus_pauses);
-    CHECK(normal_terminal_retirement_controls(f, &t->external, true, false) == 0);
+    CHECK(normal_terminal_retirement_controls(f, &t->external, true, false, NULL) == 0);
     return 0;
 }
 

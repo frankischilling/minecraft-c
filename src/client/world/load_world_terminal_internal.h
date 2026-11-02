@@ -25,6 +25,16 @@ mc_client_world_load_classes_terminal_validate(const mc_client_world_load_classe
                                                client_application *expected_app,
                                                size_t owned_call_count, mc_world_storage_error *);
 
+/* Passive exact newest-to-oldest ownership check. NULL newer means the actual
+ * class latest slot; otherwise both reciprocal links must match. Together with
+ * the complete namespace count/chain check, one call per node proves unique
+ * ownership in linear time without an allocation or a fixed session limit.
+ * Call owners must remain live, prepared, exclusive and disjoint from error. */
+mc_world_storage_status
+mc_client_world_load_terminal_follows(const mc_client_world_load_call *,
+                                      const mc_client_world_load_call *newer,
+                                      mc_world_storage_error *);
+
 /* Classify this actual prepared call without authorizing World destruction.
  * EMPTY_STORAGE requires no acquired or consumed World/Handler/Player/Input
  * graph and no captured Format-owned Handler. Owned non-Handler Format prefixes

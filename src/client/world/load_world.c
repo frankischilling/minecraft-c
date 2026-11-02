@@ -128,7 +128,7 @@ struct mc_client_world_load_call {
     source_save initial_save;
     source_leave *leaves, *active_leave;
     size_t leave_count;
-    mc_client_world_load_call *previous, *successor; /* Borrowed bounded LIFO epoch chain. */
+    mc_client_world_load_call *previous, *successor; /* Borrowed LIFO epoch chain. */
 };
 
 static mc_client_world_load_site site(const char *method, const char *descriptor, int pc) {
@@ -1054,7 +1054,7 @@ static mc_client_world_load_status load_begin(mc_client_world_load_classes *clas
                                               mc_client_world_load_call **out) {
     if (classes == NULL || out == NULL || *out != NULL)
         return MC_CLIENT_WORLD_LOAD_ARGUMENT;
-    if (previous != NULL && classes->calls >= 8)
+    if (classes->calls == SIZE_MAX)
         return MC_CLIENT_WORLD_LOAD_LIMIT;
     if (classes->active || classes->retiring ||
         (previous == NULL ? classes->calls != 0 : !epoch_admit(previous)))
@@ -1396,11 +1396,41 @@ mc_world_storage_status mc_client_world_load_classes_terminal_validate(
     if (classes->calls < owned_call_count)
         return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                          "Load terminal call occurrence deficit");
-    if (owned_call_count > 8)
-        return terminal_admission_result(error, MC_WORLD_STORAGE_LIMIT,
-                                         "Load terminal epoch bound");
+    const mc_client_world_load_call *call = classes->latest, *newer = NULL;
+    for (size_t i = 0; i < owned_call_count; ++i) {
+        if (call == NULL || call->classes != classes || call->successor != newer)
+            return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                             "Load terminal complete epoch chain");
+        newer = call;
+        call = call->previous;
+    }
+    if (call != NULL)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal epoch chain surplus");
     return owned_call_count == 0 ? terminal_empty_app(expected_app, error)
                                  : terminal_admission_result(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status
+mc_client_world_load_terminal_follows(const mc_client_world_load_call *call,
+                                      const mc_client_world_load_call *newer,
+                                      mc_world_storage_error *error) {
+    if (call == NULL)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                         "Load terminal ordered call required");
+    const mc_client_world_load_classes *classes = call->classes;
+    if (classes == NULL || !classes->retiring || !call->state.terminal_prepared)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal ordered prepared scope");
+    if (classes->active || call->state.active || (newer != NULL && newer->state.active))
+        return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
+                                         "Load terminal ordered operation entered");
+    if (call->successor != newer ||
+        (newer == NULL ? classes->latest != call
+                       : newer->classes != classes || newer->previous != call))
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal retained epoch order");
+    return terminal_admission_result(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
 mc_world_storage_status mc_client_world_load_terminal_classify(
@@ -1539,12 +1569,12 @@ mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
     if (call->state.active || classes->active || (app->startup != NULL && app->startup->active))
         return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
                                          "Load terminal owner operation entered");
-    if (!classes->retiring || classes->calls == 0 || classes->calls > 8 ||
-        !call->state.terminal_prepare_selected || !call->state.terminal_prepared ||
-        !call->state.source_returned || call->failure.status != MC_CLIENT_WORLD_LOAD_OK ||
-        call->state.app != app || call->state.world == NULL || call->state.player == NULL ||
-        call->state.input == NULL || call->state.handler == NULL || call->world_retired ||
-        call->cache_retired || call->failed_controller != NULL || call->failed_candidate != NULL ||
+    if (!classes->retiring || classes->calls == 0 || !call->state.terminal_prepare_selected ||
+        !call->state.terminal_prepared || !call->state.source_returned ||
+        call->failure.status != MC_CLIENT_WORLD_LOAD_OK || call->state.app != app ||
+        call->state.world == NULL || call->state.player == NULL || call->state.input == NULL ||
+        call->state.handler == NULL || call->world_retired || call->cache_retired ||
+        call->failed_controller != NULL || call->failed_candidate != NULL ||
         call->state.failed_player != NULL || call->prepare != NULL ||
         call->pending_loading != NULL || call->render_call != NULL || call->render_world_owned)
         return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,

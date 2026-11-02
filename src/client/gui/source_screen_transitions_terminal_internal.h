@@ -7,7 +7,7 @@
 /* Inspect every actual retained node/call after terminal preparation and verify
  * the namespace's exact call count. EMPTY_STORAGE is an explicit absence proof,
  * not a successful empty World audit. SELECTED_LOAD requires one or more actual
- * successful selected epochs within the native8-call bound; terminal_admit
+ * successful selected epochs in the complete retained chain; terminal_admit
  * below remains mandatory for every epoch before any World cleanup.
  * No source/cleanup/owner diagnostic mutation. out is required, error optional,
  * all output storage is disjoint, and failure preserves *out. */

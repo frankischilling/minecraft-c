@@ -1,3 +1,4 @@
+#include "../mob/internal.h"
 #include "internal.h"
 
 static mc_entity_hit_status pick_failure(mc_entity *receiver, mc_entity_hit_error *error,
@@ -9,7 +10,8 @@ static mc_entity_hit_status pick_failure(mc_entity *receiver, mc_entity_hit_erro
     if (error != NULL) {
         error->site.declaring_class = "sn";
         if (!border && receiver != NULL) {
-            if (mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
+            if (mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) ||
+                mc_entity_has_mob(receiver))
                 error->site.declaring_class = "ls";
             else if (mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_FALLING_SAND))
                 error->site.declaring_class = "ju";
@@ -36,6 +38,7 @@ static mc_entity_hit_status admit(mc_entity *receiver, bool output, mc_entity_hi
          !mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
          !mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_MINECART) &&
          !mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
+         !mc_entity_has_mob(receiver) &&
          !mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE)))
         return pick_failure(receiver, error, MC_ENTITY_HIT_UNSUPPORTED_SOURCE,
                             "Entity pick actual descendant frontier", true, border);
@@ -55,6 +58,7 @@ mc_entity_hit_status mc_entity_pickable(mc_entity *receiver, bool *out,
     if (status != MC_ENTITY_HIT_OK)
         return status;
     *out = (mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) ||
+            mc_entity_has_mob(receiver) ||
             mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_FALLING_SAND) ||
             mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_MINECART)) &&
            !receiver->base.be;

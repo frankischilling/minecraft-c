@@ -1,4 +1,6 @@
-/* Actual ordinary three-epoch source UI lifecycle. No gameplay-field repairs. */
+/* Actual ordinary ten-epoch source UI lifecycle. No gameplay-field repairs. */
+enum { RELOAD_EPOCHS = 10 };
+
 typedef struct reload_epoch {
     const mc_client_world_load_call *call;
     mc_world_runtime *world;
@@ -76,8 +78,8 @@ static int reload_entry_snapshot(size_t epoch, size_t frame_index, size_t *aggre
     const char *root =
         SDL_GetEnvironmentVariable(SDL_GetEnvironment(), "MC_WORLD_SAVE_TITLE_ENTRIES");
     char target[8192];
-    CHECK(source != NULL && root != NULL && epoch >= 1 && epoch <= 3 && frame_index < 64 &&
-          *aggregate <= 64u * 16u * 1048576u);
+    CHECK(source != NULL && root != NULL && epoch >= 1 && epoch <= RELOAD_EPOCHS &&
+          frame_index < 64 && *aggregate <= 64u * 16u * 1048576u);
     const int n =
         snprintf(target, sizeof(target), "%s/epoch-%zu/frame-%zu", root, epoch, frame_index);
     CHECK(n > 0 && (size_t)n < sizeof(target));
@@ -196,7 +198,7 @@ static int reload_choose(fixture *f, mc_client_source_da *title, const char *fol
     mc_world_storage_error block_error;
     CHECK(mc_world_runtime_block_get(current->world, 0, 127, 0, &marker, &block_error) ==
               MC_WORLD_STORAGE_OK &&
-          marker == (epoch == 3 ? 56 : 57));
+          marker == (!strcmp(folder, "older") ? 56 : 57));
     if (epoch == 2)
         CHECK(reload_player_observation(current->world, current->player, epoch) == 0);
     printf(
@@ -213,9 +215,9 @@ static int reload_audit(fixture *f, const reload_epoch *epochs, size_t count,
         const void *owner;
         size_t bytes;
         void *data;
-    } copies[28];
+    } copies[1 + 9 * RELOAD_EPOCHS];
 
-    CHECK(count == 3);
+    CHECK(count == RELOAD_EPOCHS);
     size_t used = 0, total = 0;
     copies[used++] = (struct copy){f->app, sizeof(*f->app), NULL};
     for (size_t i = 0; i < count; ++i) {
@@ -238,7 +240,7 @@ static int reload_audit(fixture *f, const reload_epoch *epochs, size_t count,
         copies[used++] = (struct copy){saved.failure, sizeof(*saved.failure), NULL};
         copies[used++] = (struct copy){saved.cleanup, sizeof(*saved.cleanup), NULL};
     }
-    CHECK(used == 28);
+    CHECK(used == 1 + 9 * RELOAD_EPOCHS);
     for (size_t i = 0; i < used; ++i) {
         CHECK(copies[i].owner != NULL && copies[i].bytes <= 16u * 1048576u - total);
         total += copies[i].bytes;
@@ -261,18 +263,20 @@ static int reload_audit(fixture *f, const reload_epoch *epochs, size_t count,
     if (expected != MC_WORLD_STORAGE_OK)
         CHECK(memcmp(sentinel, &inventory, sizeof(inventory)) == 0);
     else
-        CHECK(inventory.entities >= 3 && inventory.entity_occurrences >= 3);
+        CHECK(inventory.entities >= count && inventory.entity_occurrences >= count);
     return 0;
 }
 
-static int reload_cycle_controls(fixture *f, mc_client_source_da *initial,
-                                 const char *capture_path) {
-    reload_epoch epochs[3];
-    const char *folders[] = {"alpha", "alpha", "older"};
+static int reload_cycle_controls(fixture *f, mc_client_source_da *initial, const char *capture_path,
+                                 const mc_client_world_load_call **left_load) {
+    reload_epoch epochs[RELOAD_EPOCHS];
+    const char *folders[] = {"alpha", "alpha", "older", "alpha", "older",
+                             "alpha", "older", "alpha", "older", "alpha"};
+    _Static_assert(sizeof(folders) / sizeof(folders[0]) == RELOAD_EPOCHS, "reload folder count");
     CHECK(reload_capture_epoch(f, &epochs[0]) == 0);
     mc_client_render_global *n = f->app->g;
     mc_client_effect_renderer *dn = f->app->effect_renderer;
-    for (size_t i = 0; i < 3; ++i) {
+    for (size_t i = 0; i < RELOAD_EPOCHS; ++i) {
         if (i != 0)
             CHECK(reload_choose(f, f->app->r, folders[i], &epochs[i - 1], &epochs[i], i + 1) == 0);
         CHECK(f->app->g == n && f->app->effect_renderer == dn);
@@ -284,15 +288,54 @@ static int reload_cycle_controls(fixture *f, mc_client_source_da *initial,
               reload_snapshot(after) == 0);
         printf("WORLD_RELOAD_PHASE epoch=%zu folder=%s save-title=1\n", i + 1, folders[i]);
     }
-    for (size_t i = 0; i < 3; ++i)
+    for (size_t i = 0; i < RELOAD_EPOCHS; ++i)
         for (size_t j = 0; j < i; ++j)
             CHECK(epochs[i].call != epochs[j].call && epochs[i].world != epochs[j].world &&
                   epochs[i].player != epochs[j].player && epochs[i].handler != epochs[j].handler &&
                   epochs[i].input != epochs[j].input &&
                   epochs[i].controller != epochs[j].controller);
-    puts("WORLD_RELOAD_IDENTITIES epochs=3 all-pairs-distinct=1 source-owners-live=1");
+    puts("WORLD_RELOAD_IDENTITIES epochs=10 all-pairs-distinct=1 source-owners-live=1");
+    /* A real unsupported-conversion selection follows ten successful saves.
+     * Its failed call acquires no storage, while DN still owns the last World.
+     * Preserve that actual prefix and all predecessors for checked cleanup. */
+    mc_client_source_rq *failed_screen = NULL;
+    CHECK(open_selection(f, f->app->r, &failed_screen) == 0 &&
+          release_mouse(f, failed_screen) == 0);
+    int32_t failed_index = -1;
+    for (size_t i = 0; i < mc_client_save_list_size(failed_screen->fields.n); ++i)
+        if (filename_is(mc_client_save_list_at(failed_screen->fields.n, i), "bravo"))
+            failed_index = (int32_t)i;
+    CHECK(failed_index >= 0);
+    const mc_client_world_list_fields *list = &failed_screen->fields.o->fields;
+    const int32_t y = list->h + 4 - mc_java_float_to_i32(list->m) + failed_index * 36 + 8;
+    CHECK(y >= list->h && y <= list->i &&
+          push_mouse(f, &failed_screen->base, failed_screen->base.fields.c / 2, y, true) == 0 &&
+          transfer(f) == 0);
+    const uint64_t deadline = SDL_GetTicks() + 3000;
+    while (failed_screen->fields.m != failed_index && SDL_GetTicks() < deadline)
+        CHECK(frame(f) == 0);
+    CHECK(failed_screen->fields.m == failed_index && release_mouse(f, failed_screen) == 0 &&
+          push_button(f, &failed_screen->base, 1, true) == 0 &&
+          push_button(f, &failed_screen->base, 1, false) == 0 && transfer(f) == 0);
+    while (!f->state.failed && SDL_GetTicks() < deadline) {
+        (void)mc_client_menu_loop_frame(f->loop);
+        CHECK(mc_client_menu_loop_inspect(f->loop, &f->state));
+    }
+    mc_client_screen_transition_state transitions;
+    mc_client_world_load_state failed;
+    CHECK(f->state.failed &&
+          mc_client_screen_transitions_inspect(f->app->screen_transitions, &transitions) &&
+          transitions.world_load != NULL &&
+          transitions.world_load != epochs[RELOAD_EPOCHS - 1].call &&
+          mc_client_world_load_inspect(transitions.world_load, &failed) &&
+          !failed.source_returned && failed.needs_conversion && failed.conversion_checked &&
+          failed.failure->status == MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED && failed.handler == NULL &&
+          failed.world == NULL && failed.player == NULL && failed.input == NULL &&
+          f->app->active_world == NULL && f->app->h == NULL && f->app->i == NULL);
+    puts("WORLD_RELOAD_FAILED epoch=11 folder=bravo conversion=1 acquired-storage=0 "
+         "preserved-prefix=1");
     /* Retain a genuine predecessor root before true outer preparation. All
-     * three Worlds must remain READY when its passive audit refuses. */
+     * ten Worlds must remain READY when its passive audit refuses. */
     mc_client_achievement_notice *actual_notice = f->app->achievement_notice;
     const mc_client_achievement_notice_fields *notice_fields =
         mc_client_achievement_notice_fields_get(actual_notice);
@@ -308,15 +351,32 @@ static int reload_cycle_controls(fixture *f, mc_client_source_da *initial,
           f->state.retirement_world != NULL &&
           f->state.retirement_world->status == MC_WORLD_STORAGE_BUSY);
     puts("WORLD_RELOAD_NOTICE terminal-prefix-retired=1 source-fields-unchanged=1");
-    for (size_t i = 0; i < 3; ++i) {
+    for (size_t i = 0; i < RELOAD_EPOCHS; ++i) {
         mc_world_runtime_construction state;
         CHECK(mc_world_runtime_construction_get(epochs[i].world, &state) == MC_WORLD_STORAGE_OK &&
               state.phase == MC_WORLD_RUNTIME_READY);
     }
-    CHECK(reload_audit(f, epochs, 3, MC_WORLD_STORAGE_BUSY) == 0);
+    mc_world_storage_error ordered;
+    CHECK(mc_client_world_load_terminal_follows(transitions.world_load, NULL, &ordered) ==
+              MC_WORLD_STORAGE_OK &&
+          mc_client_world_load_terminal_follows(epochs[RELOAD_EPOCHS - 1].call,
+                                                transitions.world_load,
+                                                &ordered) == MC_WORLD_STORAGE_OK &&
+          mc_client_world_load_terminal_follows(epochs[0].call, epochs[1].call, &ordered) ==
+              MC_WORLD_STORAGE_OK &&
+          mc_client_world_load_terminal_follows(epochs[0].call, NULL, &ordered) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          mc_client_world_load_terminal_follows(epochs[0].call, epochs[0].call, &ordered) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          mc_client_world_load_terminal_follows(epochs[1].call, epochs[0].call, &ordered) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          mc_client_world_load_terminal_follows(epochs[0].call, epochs[2].call, &ordered) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE);
+    CHECK(reload_audit(f, epochs, RELOAD_EPOCHS, MC_WORLD_STORAGE_BUSY) == 0);
     mc_entity_release(epochs[0].player);
-    CHECK(reload_audit(f, epochs, 3, MC_WORLD_STORAGE_OK) == 0);
-    puts("WORLD_RELOAD_TERMINAL epochs=3 old-root-busy=1 all-worlds-ready=1 passive-invariant=1 "
+    CHECK(reload_audit(f, epochs, RELOAD_EPOCHS, MC_WORLD_STORAGE_OK) == 0);
+    *left_load = epochs[RELOAD_EPOCHS - 1].call;
+    puts("WORLD_RELOAD_TERMINAL epochs=10 old-root-busy=1 all-worlds-ready=1 passive-invariant=1 "
          "released-root-retry=1 all-epoch-audit=1");
     return 0;
 }

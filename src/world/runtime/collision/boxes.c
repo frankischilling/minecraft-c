@@ -295,6 +295,7 @@ static bool base_null_virtual(mc_entity *entity, mc_world_collision_error *frame
     if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE) &&
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SPIDER) &&

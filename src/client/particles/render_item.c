@@ -20,8 +20,10 @@ static bool item_failed(mc_client_effect_draw_call *c, unsigned int invocation,
     mc_effect_draw_fail(c, status, operation, invocation, native);
     c->state.particle_pc = pc;
     c->failure.child = (mc_client_graphics_site){
-        mc_entity_is_kind(c->current, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE) ? "qm" : "pb", "a",
-        "(Lnw;FFFFFF)V", (int32_t)pc};
+        mc_entity_is_kind(c->current, MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE) ? "xw"
+        : mc_entity_is_kind(c->current, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE) ? "qm"
+                                                                               : "pb",
+        "a", "(Lnw;FFFFFF)V", (int32_t)pc};
     if (!native && status == MC_EFFECT_DRAW_SOURCE_NULL) {
         c->failure.source_exception = true;
         c->failure.exception_class = "java/lang/NullPointerException";
@@ -88,16 +90,16 @@ void mc_effect_draw_item_free(mc_client_effect_draw_call *c) {
     c->item = NULL;
 }
 
-static bool item_brightness(mc_client_effect_draw_call *c, unsigned int invocation) {
-    if (!mc_effect_draw_capture_math(c, 139))
-        return item_failed(c, invocation, c->failure.status, c->failure.operation, 139, true);
+static bool item_brightness(mc_client_effect_draw_call *c, unsigned int invocation,
+                            unsigned int pc) {
+    if (!mc_effect_draw_capture_math(c, pc))
+        return item_failed(c, invocation, c->failure.status, c->failure.operation, pc, true);
     c->failure.entity_render = &c->item->brightness;
     const bool returned = mc_entity_render_brightness(c->current, c->math, c->state.partial,
                                                       &c->state.brightness, &c->item->brightness);
     if (!returned) {
         const mc_entity_render_error *e = &c->item->brightness;
-        item_failed(c, invocation, MC_EFFECT_DRAW_CHILD_FAILED, e->operation, 139,
-                    e->native_policy);
+        item_failed(c, invocation, MC_EFFECT_DRAW_CHILD_FAILED, e->operation, pc, e->native_policy);
         c->failure.source_exception = e->source_exception;
         c->failure.exception_class = e->exception_class;
         c->failure.throwable =
@@ -117,7 +119,7 @@ static bool item_brightness(mc_client_effect_draw_call *c, unsigned int invocati
             c->cleanup.native_policy = true;
             /* Native ownership admission takes precedence over the child's
              * Exception. Its complete typed Source cause stays in item. */
-            item_failed(c, invocation, status, c->cleanup.operation, 139, true);
+            item_failed(c, invocation, status, c->cleanup.operation, pc, true);
             c->failure.receipt_status = c->cleanup.receipt_status;
             c->failure.source_exception = false;
             c->failure.exception_class = NULL;
@@ -153,7 +155,7 @@ static bool item_graphics(mc_client_effect_draw_call *c, unsigned int invocation
     return false;
 }
 
-bool mc_effect_draw_item(mc_client_effect_draw_call *c, unsigned int invocation) {
+static bool billboard(mc_client_effect_draw_call *c, unsigned int invocation, bool sprite) {
     if (c->item == NULL) {
         mc_client_effect_renderer *owner = c->state.owner;
         if (owner->allocation_bytes > owner->max_allocation_bytes ||
@@ -175,16 +177,22 @@ bool mc_effect_draw_item(mc_client_effect_draw_call *c, unsigned int invocation)
     const int32_t icon_x = f->b % 16;
     if (!item_fp(c, invocation, 7))
         return false;
-    s->item_u0 = at_fdiv(at_fadd((float)icon_x, at_fdiv(f->c, 4.0f)), 16.0f);
-    s->item_u1 = at_fadd(s->item_u0, .015609375f);
+    s->item_u0 = sprite ? at_fdiv((float)icon_x, 16.0f)
+                        : at_fdiv(at_fadd((float)icon_x, at_fdiv(f->c, 4.0f)), 16.0f);
+    s->item_u1 = at_fadd(s->item_u0, sprite ? .0624375f : .015609375f);
     const int32_t icon_y = f->b / 16;
-    s->item_v0 = at_fdiv(at_fadd((float)icon_y, at_fdiv(f->d, 4.0f)), 16.0f);
-    s->item_v1 = at_fadd(s->item_v0, .015609375f);
+    s->item_v0 = sprite ? at_fdiv((float)icon_y, 16.0f)
+                        : at_fdiv(at_fadd((float)icon_y, at_fdiv(f->d, 4.0f)), 16.0f);
+    s->item_v1 = at_fadd(s->item_v0, sprite ? .0624375f : .015609375f);
     s->item_half_size = at_fmul(.1f, f->g);
 
-    static const int32_t sub[3] = {77, 101, 125}, widen[3] = {79, 103, 127};
-    static const int32_t mul[3] = {80, 104, 128}, add[3] = {81, 105, 129};
-    static const unsigned int origin_pc[3] = {82, 106, 130}, narrow_pc[3] = {86, 110, 134};
+    static const int32_t sub[2][3] = {{77, 101, 125}, {61, 85, 109}};
+    static const int32_t widen[2][3] = {{79, 103, 127}, {63, 87, 111}};
+    static const int32_t mul[2][3] = {{80, 104, 128}, {64, 88, 112}};
+    static const int32_t add[2][3] = {{81, 105, 129}, {65, 89, 113}};
+    static const unsigned int origin_pc[2][3] = {{82, 106, 130}, {66, 90, 114}};
+    static const unsigned int narrow_pc[2][3] = {{86, 110, 134}, {70, 94, 118}};
+    const size_t body = sprite ? 1u : 0u;
     for (size_t axis = 0; axis < 3; ++axis) {
         const mc_entity_base_fields *base = &c->current->base;
         const double previous = axis == 0 ? base->aJ : axis == 1 ? base->aK : base->aL;
@@ -192,59 +200,61 @@ bool mc_effect_draw_item(mc_client_effect_draw_call *c, unsigned int invocation)
         const double previous_again = axis == 0 ? base->aJ : axis == 1 ? base->aK : base->aL;
         mc_client_interpolation_error arithmetic;
         /* Fresh source previous operands surround the current coordinate read. */
-        if (!item_fp(c, invocation, (unsigned int)sub[axis]))
+        if (!item_fp(c, invocation, (unsigned int)sub[body][axis]))
             return false;
         double coordinate;
-        if (!mc_client_interpolation_double_nan_admit(current, previous_again, sub[axis],
+        if (!mc_client_interpolation_double_nan_admit(current, previous_again, sub[body][axis],
                                                       &arithmetic))
             return item_failed(c, invocation, MC_EFFECT_DRAW_UNSUPPORTED_NUMERIC,
                                "PB interpolation unmeasured signaling operands",
-                               (unsigned int)sub[axis], true);
+                               (unsigned int)sub[body][axis], true);
         const double delta = mc_client_interpolation_dsub(current, previous_again);
         const double partial = mc_client_interpolation_widen(s->partial);
-        if (!mc_client_interpolation_double_nan_admit(delta, partial, mul[axis], &arithmetic))
+        if (!mc_client_interpolation_double_nan_admit(delta, partial, mul[body][axis], &arithmetic))
             return item_failed(c, invocation, MC_EFFECT_DRAW_UNSUPPORTED_NUMERIC,
                                "PB interpolation unmeasured signaling operands",
-                               (unsigned int)mul[axis], true);
+                               (unsigned int)mul[body][axis], true);
         const double product = mc_client_interpolation_dmul(delta, partial);
-        if (!mc_client_interpolation_double_nan_admit(previous, product, add[axis], &arithmetic))
+        if (!mc_client_interpolation_double_nan_admit(previous, product, add[body][axis],
+                                                      &arithmetic))
             return item_failed(c, invocation, MC_EFFECT_DRAW_UNSUPPORTED_NUMERIC,
                                "PB interpolation unmeasured signaling operands",
-                               (unsigned int)add[axis], true);
+                               (unsigned int)add[body][axis], true);
         coordinate = mc_client_interpolation_dadd(previous, product);
-        (void)widen[axis]; /* Actual f2d argument is performed above before dmul. */
+        (void)widen[body][axis]; /* Actual f2d argument is performed above before dmul. */
         mc_particle_origin origin;
         if (mc_entity_particle_origin_read(c->state.owner->classes, &origin, &c->failure.entity) !=
             MC_ENTITY_OK)
             return item_failed(c, invocation, MC_EFFECT_DRAW_CHILD_FAILED,
-                               c->failure.entity.operation, origin_pc[axis], true);
+                               c->failure.entity.operation, origin_pc[body][axis], true);
         const double offset = axis == 0 ? origin.l : axis == 1 ? origin.m : origin.n;
-        if (!mc_client_interpolation_double_nan_admit(coordinate, offset,
-                                                      (int32_t)narrow_pc[axis] - 1, &arithmetic))
+        if (!mc_client_interpolation_double_nan_admit(
+                coordinate, offset, (int32_t)narrow_pc[body][axis] - 1, &arithmetic))
             return item_failed(c, invocation, MC_EFFECT_DRAW_UNSUPPORTED_NUMERIC,
                                "PB origin subtraction unmeasured signaling operands",
-                               narrow_pc[axis] - 1u, true);
+                               narrow_pc[body][axis] - 1u, true);
         s->item_center[axis] = at_narrow(mc_client_interpolation_dsub(coordinate, offset));
-        s->particle_pc = narrow_pc[axis];
+        s->particle_pc = narrow_pc[body][axis];
     }
     s->draw_x = at_widen(s->item_center[0]);
     s->draw_y = at_widen(s->item_center[1]);
     s->draw_z = at_widen(s->item_center[2]);
-    if (!item_brightness(c, invocation))
+    if (!item_brightness(c, invocation, sprite ? 123u : 139u))
         return false;
-    s->item_color[0] = at_fmul(s->brightness, f->i);
-    s->item_color[1] = at_fmul(s->brightness, f->j);
-    s->item_color[2] = at_fmul(s->brightness, f->k);
+    s->item_color[0] = sprite ? at_fmul(f->i, s->brightness) : at_fmul(s->brightness, f->i);
+    s->item_color[1] = sprite ? at_fmul(f->j, s->brightness) : at_fmul(s->brightness, f->j);
+    s->item_color[2] = sprite ? at_fmul(f->k, s->brightness) : at_fmul(s->brightness, f->k);
+    const unsigned int color_pc = sprite ? 150u : 166u;
     if (c->nw == NULL)
         return item_failed(c, invocation, MC_EFFECT_DRAW_SOURCE_NULL, "PB null NW color receiver",
-                           166, false);
+                           color_pc, false);
     if (!item_graphics(c, invocation,
                        mc_client_nw_color_float(c->nw, s->item_color[0], s->item_color[1],
                                                 s->item_color[2], &c->failure.graphics),
-                       166))
+                       color_pc))
         return false;
     s->color_set = true;
-    static const unsigned int calls[4] = {214, 262, 310, 358};
+    static const unsigned int calls[2][4] = {{214, 262, 310, 358}, {198, 246, 294, 342}};
     for (size_t i = 0; i < 4; ++i) {
         const bool right = i >= 2, top = i == 1 || i == 2;
         const float size = s->item_half_size;
@@ -258,25 +268,34 @@ bool mc_effect_draw_item(mc_client_effect_draw_call *c, unsigned int invocation)
                         : at_fsub(s->item_center[2], at_fmul(s->sin_yaw, size));
         z = top ? at_fadd(z, at_fmul(s->horizontal_x, size))
                 : at_fsub(z, at_fmul(s->horizontal_x, size));
-        const float u = right ? s->item_u1 : s->item_u0;
+        const float u = right != sprite ? s->item_u1 : s->item_u0;
         const float v = top ? s->item_v0 : s->item_v1;
         const float values[5] = {x, y, z, u, v};
         memcpy(s->item_vertices[i], values, sizeof(values));
         if (!item_graphics(c, invocation,
                            mc_client_nw_vertex_uv(c->nw, at_widen(x), at_widen(y), at_widen(z),
                                                   at_widen(u), at_widen(v), &c->failure.graphics),
-                           calls[i]))
+                           calls[body][i]))
             return false;
         ++s->item_vertices_returned;
-        s->particle_pc = calls[i];
+        s->particle_pc = calls[body][i];
     }
-    s->particle_pc = 361;
+    s->particle_pc = sprite ? 345u : 361u;
     s->item_particle_returned = true;
     /* Completed PB diagnostics are passive scalar values. Release pre-query
      * World occurrences before this working child may be reused for another PB. */
     if (mc_entity_render_worlds_release(&c->item->brightness) != MC_ENTITY_OK)
         return item_failed(c, invocation, MC_EFFECT_DRAW_CLEANUP_FAILED,
-                           "PB completed brightness World occurrence retirement", 361, true);
+                           "PB completed brightness World occurrence retirement", s->particle_pc,
+                           true);
     c->failure.entity_render = NULL;
     return true;
+}
+
+bool mc_effect_draw_item(mc_client_effect_draw_call *c, unsigned int invocation) {
+    return billboard(c, invocation, false);
+}
+
+bool mc_effect_draw_sprite(mc_client_effect_draw_call *c, unsigned int invocation) {
+    return billboard(c, invocation, true);
 }

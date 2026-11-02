@@ -204,6 +204,9 @@ bool mc_effect_draw_particle(mc_client_effect_draw_call *c, unsigned int invocat
     if (c->current == NULL)
         return mc_effect_draw_fail(c, MC_EFFECT_DRAW_SOURCE_NULL,
                                    "actual DN particle draw receiver", invocation, false);
+    if (mc_entity_is_kind(c->current, MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE) &&
+        c->current->particle != NULL)
+        return mc_effect_draw_sprite(c, invocation);
     if ((mc_entity_is_kind(c->current, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) ||
          mc_entity_is_kind(c->current, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE)) &&
         c->current->particle != NULL)

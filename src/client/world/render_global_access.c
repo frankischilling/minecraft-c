@@ -566,36 +566,36 @@ static mc_client_render_global_status effect_status(mc_effect_renderer_status st
     }
 }
 
-static bool slime_particle(mc_render_global_access *access, access_call *call, double x, double y,
-                           double z) {
+static access_particle *capture_particle(mc_render_global_access *access, access_call *call,
+                                         unsigned int receiver_pc) {
     const char *descriptor = "(Ljava/lang/String;DDDDDD)V";
     if (!budget(access, sizeof(access_particle))) {
         fail(&call->error, MC_CLIENT_RENDER_GLOBAL_LIMIT, "N reached particle capture ceiling", "a",
-             descriptor, 683, true);
-        return false;
+             descriptor, receiver_pc, true);
+        return NULL;
     }
     access_particle *p = calloc(1, sizeof(*p));
     if (p == NULL) {
         fail(&call->error, MC_CLIENT_RENDER_GLOBAL_ALLOCATION_FAILED,
-             "N reached particle capture allocation", "a", descriptor, 683, true);
-        return false;
+             "N reached particle capture allocation", "a", descriptor, receiver_pc, true);
+        return NULL;
     }
     call->particle = p;
     access->bytes += sizeof(*p);
-    /* Fresh N.t680, then the actual Minecraft.j field683. The initial guard
-     * above is a distinct Source read and does not supply this receiver. */
+    /* Fresh N.t then Minecraft.j. The initial guard is a distinct source read
+     * and does not supply the captured receiver for this constructor branch. */
     client_application *app = access->owner->fields.t;
     if (app == NULL) {
         fail(&call->error, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
-             "N particle null fresh Minecraft receiver", "a", descriptor, 683, false);
-        return false;
+             "N particle null fresh Minecraft receiver", "a", descriptor, receiver_pc, false);
+        return NULL;
     }
     mc_client_effect_renderer *receiver = app->effect_renderer;
     if (mc_client_application_render_borrow(app, &p->application_error) !=
         MC_CLIENT_APPLICATION_OWNER_OK) {
         fail(&call->error, MC_CLIENT_RENDER_GLOBAL_BUSY, "N particle actual App lifetime", "a",
-             descriptor, 683, true);
-        return false;
+             descriptor, receiver_pc, true);
+        return NULL;
     }
     p->application = app;
     if (receiver != NULL) {
@@ -605,12 +605,23 @@ static bool slime_particle(mc_render_global_access *access, access_call *call, d
             p->effects.operation = "N captured particle receiver lifetime";
             p->effects.native_policy = true;
             call->error.effects = &p->effects;
-            fail(&call->error, effect_status(held), p->effects.operation, "a", descriptor, 683,
-                 true);
-            return false;
+            fail(&call->error, effect_status(held), p->effects.operation, "a", descriptor,
+                 receiver_pc, true);
+            return NULL;
         }
         p->receiver = receiver;
     }
+    return p;
+}
+
+static bool slime_particle(mc_render_global_access *access, access_call *call, double x, double y,
+                           double z) {
+    const char *descriptor = "(Ljava/lang/String;DDDDDD)V";
+    access_particle *p = capture_particle(access, call, 683);
+    if (p == NULL)
+        return false;
+    client_application *app = p->application;
+    mc_client_effect_renderer *receiver = p->receiver;
     /* Actual RAW allocation686 precedes every constructor argument below. */
     const mc_entity_status allocated =
         mc_item_particle_allocate(app->entities, &p->candidate, &call->error.entity);
@@ -707,15 +718,83 @@ static bool slime_particle(mc_render_global_access *access, access_call *call, d
     return true;
 }
 
+static bool explosion_particle(mc_render_global_access *access, access_call *call, double x,
+                               double y, double z, double vx, double vy, double vz) {
+    const char *descriptor = "(Ljava/lang/String;DDDDDD)V";
+    access_particle *p = capture_particle(access, call, 293);
+    if (p == NULL)
+        return false;
+    client_application *app = p->application;
+    const mc_entity_status allocated =
+        mc_explosion_particle_allocate(app->entities, &p->candidate, &call->error.entity);
+    if (allocated != MC_ENTITY_OK) {
+        fail(&call->error, particle_status(allocated), call->error.entity.operation, "a",
+             descriptor, 296, true);
+        return false;
+    }
+    mc_world_runtime *world = access->owner->fields.k; /* Actual N.k301 after NEW296. */
+    if (world != NULL) {
+        if (!mc_world_runtime_binding_retain(world)) {
+            fail(&call->error,
+                 world->persistent_bindings == SIZE_MAX ? MC_CLIENT_RENDER_GLOBAL_LIMIT
+                                                        : MC_CLIENT_RENDER_GLOBAL_BUSY,
+                 "N captured explosion World lifetime", "a", descriptor, 301, true);
+            return false;
+        }
+        p->world = world;
+    }
+    call->error.particle = &p->error;
+    /* GY enters the actual XW ancestor, which captures Math only at164 after
+     * its five shared draws. N introduces no Registry or Item active use. */
+    const mc_entity_status constructed = mc_explosion_particle_construct_entered(
+        p->candidate, world, app->source_math_classes, x, y, z, vx, vy, vz, &p->math, &p->error);
+    if (constructed != MC_ENTITY_OK) {
+        call->source_exception_class =
+            p->error.throwable == MC_PARTICLE_SOURCE_EXCEPTION ? p->error.exception_class : NULL;
+        const mc_client_render_global_status status =
+            p->error.throwable == MC_PARTICLE_SOURCE_EXCEPTION &&
+                    p->error.exception_class != NULL &&
+                    strcmp(p->error.exception_class, "java/lang/NullPointerException") == 0
+                ? MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE
+                : particle_status(constructed);
+        fail(&call->error, status, p->error.operation, "a", descriptor, 315,
+             p->error.native_policy);
+        call->error.child = (mc_client_graphics_site){
+            p->error.source_class, p->error.source_method, p->error.source_descriptor,
+            p->error.source_class == NULL ? -1 : (int32_t)p->error.source_pc};
+        return false;
+    }
+    if (p->receiver == NULL) {
+        fail(&call->error, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
+             "N explosion null captured DN enqueue receiver", "a", descriptor, 318, false);
+        return false;
+    }
+    call->error.effects = &p->effects;
+    const mc_effect_renderer_status added =
+        mc_client_effect_renderer_add(p->receiver, p->candidate, &p->effects);
+    if (added != MC_EFFECT_RENDERER_OK) {
+        call->source_exception_class =
+            p->effects.source_exception ? p->effects.exception_class : NULL;
+        fail(&call->error, effect_status(added), p->effects.operation, "a", descriptor, 318,
+             p->effects.native_policy);
+        call->error.child =
+            (mc_client_graphics_site){"dn", p->effects.source_method, p->effects.source_descriptor,
+                                      (int32_t)p->effects.source_pc};
+        return false;
+    }
+    /* DN owns its List occurrence. Retire only the constructor-expression local. */
+    mc_entity_release(p->candidate);
+    p->candidate = NULL;
+    call->error.source_returned = true;
+    return true;
+}
+
 static mc_world_storage_status particle(void *context, mc_world_runtime *world,
                                         const mc_registry_string *name, double x, double y,
                                         double z, double vx, double vy, double vz,
                                         mc_world_storage_error *error,
                                         mc_world_access_failure *failure) {
     (void)world;
-    (void)vx;
-    (void)vy;
-    (void)vz;
     const char *descriptor = "(Ljava/lang/String;DDDDDD)V";
     mc_render_global_access *access = context;
     access_call *call = call_begin(access, descriptor, error, failure);
@@ -733,7 +812,7 @@ static mc_world_storage_status particle(void *context, mc_world_runtime *world,
     volatile double dx = camera->x - x, dy = camera->y - y, dz = camera->z - z;
     volatile double xx = dx * dx, yy = dy * dy, zz = dz * dz;
     volatile double xy = xx + yy, distance = xy + zz;
-    if (!(distance <= 256.0)) /* Actual dcmpl99 also returns at103 for NaN. */
+    if (distance > 256.0) /* dcmpl99; ifle104 also admits NaN. */
         return call_end(access, call, error, failure);
     if (name == NULL)
         fail(&call->error, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
@@ -768,6 +847,10 @@ static mc_world_storage_status particle(void *context, mc_world_runtime *world,
                     continue;
                 if (strcmp(kinds[i].name, "slime") == 0) {
                     (void)slime_particle(access, call, x, y, z);
+                    break;
+                }
+                if (strcmp(kinds[i].name, "explode") == 0) {
+                    (void)explosion_particle(access, call, x, y, z, vx, vy, vz);
                     break;
                 }
                 fail(&call->error, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,

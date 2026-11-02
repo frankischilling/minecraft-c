@@ -84,5 +84,11 @@ mc_entity_status mc_digging_particle_construct_entered(mc_entity *, mc_world_run
                                                        double, double, double, double, double,
                                                        double, const mc_block *, int32_t, int32_t,
                                                        mc_math_classes **, mc_particle_error *);
+mc_entity_status mc_explosion_particle_construct_entered(mc_entity *, mc_world_runtime *,
+                                                         mc_math_classes *, double, double, double,
+                                                         double, double, double, mc_math_classes **,
+                                                         mc_particle_error *);
+void mc_particle_movement_exception(mc_particle_error *, const mc_entity_move_error *,
+                                    mc_registry_classes *);
 
 #endif

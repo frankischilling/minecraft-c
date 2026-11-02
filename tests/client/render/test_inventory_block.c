@@ -5,6 +5,7 @@ int mc_inventory_faces_fixture_main(void);
 #include "test_render_blocks_faces.c"
 #undef main
 
+#include "block/registry/registry_internal.h"
 #include "client/render/item_overlay.h"
 #include "item/render/internal.h"
 #include "mc/item/registry/runtime.h"
@@ -31,6 +32,23 @@ static bool inventory_controls(void) {
     const mc_block_fields before = *mc_block_fields_get(dirt);
     CHECK(mc_block_render_inventory_shape(dirt) == MC_REGISTRY_OK &&
           memcmp(&before, mc_block_fields_get(dirt), sizeof before) == 0);
+    const mc_block *wool = NULL;
+    CHECK(mc_registry_block_get(f.registry, 35, &wool, NULL) == MC_REGISTRY_OK && wool != NULL &&
+          mc_block_render_bounds((mc_block *)(void *)wool, .125f, .25f, .375f, .75f, .875f, 1) ==
+              MC_REGISTRY_OK);
+    const mc_block_fields wool_before = *mc_block_fields_get(wool);
+    static const int32_t wool_textures[16] = {64,  210, 194, 178, 162, 146, 130, 114,
+                                              225, 209, 193, 177, 161, 145, 129, 113};
+    for (int32_t metadata = 0; metadata < 16; ++metadata) {
+        CHECK(mc_block_render_inventory_color(wool, metadata, &color) == MC_REGISTRY_OK &&
+              color == 0xffffff && mc_block_render_inventory_shape(wool) == MC_REGISTRY_OK &&
+              memcmp(&wool_before, mc_block_fields_get(wool), sizeof wool_before) == 0);
+        for (int32_t side = 0; side < 6; ++side)
+            CHECK(mc_block_render_texture_metadata(wool, side, metadata, &icon) == MC_REGISTRY_OK &&
+                  icon == wool_textures[metadata]);
+    }
+    CHECK(mc_block_render_texture_metadata(wool, 0, 16, &icon) == MC_REGISTRY_OK && icon == 226 &&
+          mc_block_render_inventory_color(wool, -1, &color) == MC_REGISTRY_OK && color == 0xffffff);
     const mc_item *item;
     const mc_registry_item_array *items;
     CHECK(mc_registry_item_c_get(f.registry, &items, NULL) == MC_REGISTRY_OK &&
@@ -44,6 +62,36 @@ static bool inventory_controls(void) {
     flag = true;
     CHECK(mc_item_render_rotate(f.registry, item, &flag, &item_error) && !flag);
     CHECK(mc_item_render_color(f.registry, item, 7, &color, &item_error) && color == 0xffffff);
+    const mc_item *wool_item = NULL;
+    CHECK(mc_registry_item_c_at(f.registry, items, 35, &wool_item, NULL) == MC_REGISTRY_OK &&
+          wool_item != NULL);
+    static const int32_t wool_item_icons[16] = {113, 129, 145, 161, 177, 193, 209, 225,
+                                                114, 130, 146, 162, 178, 194, 210, 64};
+    int32_t actual_wool_icons[16];
+    for (int32_t metadata = 0; metadata < 16; ++metadata) {
+        CHECK(mc_item_render_icon(f.registry, wool_item, metadata, &icon, &item_error) &&
+              item_error.returned && icon == wool_item_icons[metadata] &&
+              mc_item_render_color(f.registry, wool_item, metadata, &color, &item_error) &&
+              color == 0xffffff &&
+              mc_item_render_full_3d(f.registry, wool_item, &flag, &item_error) && !flag &&
+              mc_item_render_rotate(f.registry, wool_item, &flag, &item_error) && !flag);
+        actual_wool_icons[metadata] = icon;
+    }
+    printf("WOOL_ITEM_ICONS ");
+    for (size_t i = 0; i < 16; ++i)
+        printf("%d%c", actual_wool_icons[i], i == 15 ? '\n' : ',');
+    CHECK(mc_item_render_icon(f.registry, wool_item, -1, &icon, &item_error) && icon == 64 &&
+          mc_item_render_icon(f.registry, wool_item, 16, &icon, &item_error) && icon == 113);
+    mc_block *actual_ac = f.registry->blocks.named[34];
+    f.registry->blocks.named[34] = NULL;
+    icon = 87;
+    CHECK(!mc_item_render_icon(f.registry, wool_item, 0, &icon, &item_error) && icon == 87 &&
+          item_error.site.pc == 8 && strcmp(item_error.site.class_name, "bi") == 0 &&
+          item_error.source_exception &&
+          strcmp(item_error.exception_class, "java/lang/NullPointerException") == 0);
+    f.registry->blocks.named[34] = (mc_block *)(void *)dirt;
+    CHECK(mc_item_render_icon(f.registry, wool_item, 0, &icon, &item_error) && icon == 2);
+    f.registry->blocks.named[34] = actual_ac;
     CHECK(mc_client_render_classes_create(f.entities, f.profile, &f.models) == MC_CLIENT_MODEL_OK);
     mc_client_model_error model_error;
     CHECK(mc_client_render_blocks_active_use(f.models, &model_error));

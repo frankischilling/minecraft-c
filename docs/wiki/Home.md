@@ -13,8 +13,10 @@ transitions, reselection and independent decoding of saved state.
 
 Tools, combat, Inventory UI, remaining Item/Block actions, unrestricted
 reselection, default-Far performance and extended play remain unfinished or
-unqualified. The loader currently retains at most eight World loads per
-application session. Original assets must be imported locally; the runtime
+unqualified. A retained Windows Tiny scenario completes ten saved-World loads
+and saves, then preserves an eleventh conversion failure before storage
+acquisition. The loader has no fixed count limit, but old World graphs remain
+allocated until shutdown. Original assets must be imported locally; the runtime
 then needs no JVM.
 
 - [Client startup and controls](Startup)

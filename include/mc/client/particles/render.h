@@ -88,7 +88,8 @@ typedef struct mc_effect_draw_state {
     unsigned int particle_pc;
     bool brightness_returned, color_set;
     size_t pickup_draw_attempts, pickup_draw_returns, pickup_draw_retirements;
-    /* Actual selected PB body values; no sprite or atlas work is inferred. */
+    /* Actual PB/QM quarter-tile or XW full-tile billboard values. The reached
+     * concrete draw determines the atlas extent and vertex UV order. */
     bool item_particle_returned;
     float item_u0, item_u1, item_v0, item_v1, item_half_size;
     float item_center[3], item_color[3], item_vertices[4][5];

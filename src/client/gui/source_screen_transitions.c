@@ -30,6 +30,7 @@ typedef struct screen_node {
     mc_client_display_screen_call *display;
     mc_client_world_load_call *load;
     mc_client_singleplayer_controller *controller; /* Candidate or displaced owning occurrence. */
+    mc_client_singleplayer_controller **load_controller_slot; /* Actual owning slot, borrowed. */
 } screen_node;
 
 struct mc_client_screen_transitions {
@@ -43,6 +44,7 @@ struct mc_client_screen_transitions {
     mc_client_singleplayer_controller *controller;
     mc_client_world_load_classes *world_classes;
     mc_client_world_load_call *last_load;
+    screen_node *last_load_node;
     mc_client_world_load_call *leave_owner; /* Actual retained invocation owning world_leave. */
     mc_client_world_load_error world_leave;
     size_t leave_calls;
@@ -90,7 +92,7 @@ static mc_client_screen_status leave(mc_client_screen_transitions *r, mc_client_
 }
 
 static screen_node *node(mc_client_screen_transitions *r) {
-    if (r->node_count >= 4096) {
+    if (r->node_count == SIZE_MAX) {
         fail(r, MC_CLIENT_SCREEN_LIMIT, "native retained transition-record bound", NULL, NULL, NULL,
              0);
         return NULL;
@@ -326,6 +328,8 @@ static bool create_action(mc_client_screen_transitions *r, mc_client_source_fj *
     }
     mc_client_singleplayer_controller *candidate = n->controller;
     n->controller = r->controller;
+    if (r->last_load_node != NULL)
+        r->last_load_node->load_controller_slot = &n->controller;
     r->controller = candidate;
     r->app->controller = candidate;
     fj->last_pc = 130;
@@ -345,8 +349,11 @@ static bool create_action(mc_client_screen_transitions *r, mc_client_source_fj *
                                                   seed, &n->load)
                : mc_client_world_load_begin(r->world_classes, n->create_folder, n->create_name,
                                             seed, &n->load);
-    if (n->load != NULL)
+    if (n->load != NULL) {
+        n->load_controller_slot = &r->controller;
         r->last_load = n->load;
+        r->last_load_node = n;
+    }
     if (loaded != MC_CLIENT_WORLD_LOAD_OK) {
         (void)world_failure(r, loaded, n->load);
         r->failure.parent_site = (mc_client_screen_site){"fj", "a", "(Lke;)V", 149};
@@ -589,6 +596,8 @@ static bool select_body(mc_client_screen_transitions *r, mc_client_source_rq *rq
     }
     mc_client_singleplayer_controller *candidate = invocation->controller;
     invocation->controller = r->controller;
+    if (r->last_load_node != NULL)
+        r->last_load_node->load_controller_slot = &invocation->controller;
     r->controller = candidate;
     r->app->controller = candidate; /* Actual source ob/os replacement at c36. */
     if (rq->fields.n == NULL) {
@@ -635,8 +644,11 @@ static bool select_body(mc_client_screen_transitions *r, mc_client_source_rq *rq
     const mc_client_world_load_status loaded =
         reload ? mc_client_world_load_begin_after(r->last_load, folder, name, 0, &invocation->load)
                : mc_client_world_load_begin(r->world_classes, folder, name, 0, &invocation->load);
-    if (invocation->load != NULL)
+    if (invocation->load != NULL) {
+        invocation->load_controller_slot = &r->controller;
         r->last_load = invocation->load;
+        r->last_load_node = invocation;
+    }
     if (loaded != MC_CLIENT_WORLD_LOAD_OK)
         return world_failure(r, loaded, invocation->load);
     return display(r, NULL, "rq", "e", "(I)V", 88);
@@ -786,23 +798,6 @@ mc_client_screen_transitions_terminal_prepare(mc_client_screen_transitions *r,
     return MC_CLIENT_SCREEN_OK;
 }
 
-static mc_client_singleplayer_controller *const *
-controller_slot(const mc_client_screen_transitions *r,
-                const mc_client_singleplayer_controller *expected) {
-    mc_client_singleplayer_controller *const *slot = NULL;
-    size_t found = 0;
-    if (r->controller == expected) {
-        slot = &r->controller;
-        ++found;
-    }
-    for (const screen_node *n = r->nodes; n != NULL; n = n->next)
-        if (n->controller != NULL && n->controller == expected) {
-            slot = &n->controller;
-            ++found;
-        }
-    return found == 1 ? slot : NULL;
-}
-
 static bool inventory_add(mc_world_terminal_inventory *sum,
                           const mc_world_terminal_inventory *one) {
 #define ADD(field)                                                                                 \
@@ -859,7 +854,7 @@ mc_world_storage_status mc_client_screen_transitions_terminal_admit(
                 "screen terminal epoch admission requires actual selected storage", 0};
         return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
     }
-    /* All World audits remain passive; scratch is released between at most8
+    /* All World audits remain passive; scratch is released between retained
      * real epochs. No earlier World is destroyed if a later audit refuses. */
     for (const screen_node *n = r->nodes; n != NULL; n = n->next) {
         if (n->load == NULL)
@@ -872,8 +867,8 @@ mc_world_storage_status mc_client_screen_transitions_terminal_admit(
         mc_client_world_load_state state;
         if (!mc_client_world_load_inspect(n->load, &state))
             return MC_WORLD_STORAGE_BUSY;
-        mc_client_singleplayer_controller *const *slot = controller_slot(r, state.controller);
-        if (slot == NULL) {
+        mc_client_singleplayer_controller *const *slot = n->load_controller_slot;
+        if (slot == NULL || *slot != state.controller) {
             if (error != NULL)
                 *error = (mc_world_storage_error){
                     MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -924,6 +919,7 @@ mc_client_screen_transitions_terminal_classify(const mc_client_screen_transition
             "screen terminal classification prepared owner scope");
     size_t nodes = 0, loads = 0, selected = 0;
     bool last_load_found = r->last_load == NULL;
+    const mc_client_world_load_call *newer = NULL;
     for (const screen_node *n = r->nodes; n != NULL; n = n->next) {
         if (nodes == r->node_count)
             return terminal_classification_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -931,15 +927,18 @@ mc_client_screen_transitions_terminal_classify(const mc_client_screen_transition
         ++nodes;
         if (n->load == NULL)
             continue;
-        /* A Load call has one owning node slot, unlike counted equal Format
-         * captures. Do not replace a missing call with a duplicate pointer. */
-        for (const screen_node *prior = r->nodes; prior != n; prior = prior->next)
-            if (prior->load == n->load)
-                return terminal_classification_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                                      "screen terminal repeated Load owner");
-        if (++loads > 8)
-            return terminal_classification_result(error, MC_WORLD_STORAGE_LIMIT,
-                                                  "screen terminal epoch bound");
+        /* Nodes and Load links share their actual newest-to-oldest order.
+         * Reciprocal links reject missing, repeated or reordered owning slots
+         * without rescanning the preceding screen history for each Load. */
+        const mc_world_storage_status ordered =
+            mc_client_world_load_terminal_follows(n->load, newer, error);
+        if (ordered != MC_WORLD_STORAGE_OK)
+            return ordered;
+        if (newer == NULL && (n->load != r->last_load || n != r->last_load_node))
+            return terminal_classification_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                                  "screen terminal latest Load owner");
+        newer = n->load;
+        ++loads; /* loads <= nodes <= node_count, checked before each node. */
         if (n->load == r->last_load)
             last_load_found = true;
         mc_client_terminal_storage_scope scope;
@@ -954,7 +953,8 @@ mc_client_screen_transitions_terminal_classify(const mc_client_screen_transition
                 error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                 "screen terminal classification unknown Load scope");
     }
-    if (nodes != r->node_count || !last_load_found)
+    if (nodes != r->node_count || !last_load_found ||
+        (r->last_load == NULL && r->last_load_node != NULL))
         return terminal_classification_result(
             error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
             "screen terminal classification complete node ledger");
@@ -992,8 +992,11 @@ mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_tra
         if (loaded != MC_CLIENT_WORLD_LOAD_OK)
             return mc_screen_fail(e, world_status(loaded), "retained actual World-load prefix",
                                   NULL, NULL, NULL, 0);
-        if (load != NULL && r->last_load == load)
+        if (load != NULL && r->last_load == load) {
             r->last_load = NULL;
+            r->last_load_node = NULL;
+        }
+        n->load_controller_slot = NULL;
         if (load != NULL && r->leave_owner == load) {
             r->leave_owner = NULL;
             r->world_leave = (mc_client_world_load_error){0};

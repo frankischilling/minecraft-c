@@ -26,6 +26,51 @@ Whole GUI, plant climate/jitter, fluid pixels and unrestricted play retain
 separate verification limits. The earlier 54.99-second pass and current pass
 have different natural inputs; they are not a controlled speed comparison.
 
+The [empty-hand Player attack body](entity/player-attack.md) now connects the
+Entity-target left click, inherited controller call, Inventory damage, downward
+bonus, actual animal hurt/death, fresh held-Stack read, owned-Wolf alert and
+damage-dealt statistic. Fatal animal deaths also execute Player score/kill
+callbacks. Windows and Linux ASan/UBSan each pass 747 native checks and five
+unchanged-original selected-integer/Boolean rows; six packet tests pass. Eleven
+canonical Mob picking controls and inherited Wool drawing hooks retain separate
+reference scopes. An earlier bounded Windows SDK Sheep encounter passes 507 checks in 10.37
+seconds through real picking, fatal click, score/statistics, visible Wool,
+three World/HUD frames and checked cleanup. Its 1,393 selected inputs and 413
+resources remain unchanged. A read-only negative-Y sample derives damage 2
+without repairing Player fields; the earlier damage-1 fixture failure remains
+recorded. A preceding strengthened SDK run passes 1,230 checks in 13.90 seconds,
+including twenty distinct [GY particles](entity/explosion-particle.md), actual
+removal at death age 21 and a real post-removal period-40 autosave. Independent
+NBT/region/disk checks preserve old time 39 before the source next-time-40 store,
+24 eligible Chunks and Player Score 14. Its test-only observer is compiled out
+of the normal client. Its 380,628-byte cold EntityList audit prevents observer
+warmup, and strict record masks protect abandoned payloads/tail padding. All
+sixteen corruption controls pass; both tests finish in
+14.85 seconds.
+
+The broad Linux snapshot passes its full build and 597 public tests in 166.82
+seconds with Xvfb/software OpenGL, display tests, Clang ASan/UBSan, leak
+detection and halt-on-error. Later Windows/Linux component controls pass 747
+checks and five original rows. The Linux SDK death/autosave encounter remains
+unqualified.
+
+The latest full Windows run passes 593/602 in 215.03 seconds, with 3,293
+selected inputs and 823 resources unchanged. Two Slime/Cow failures record
+foreign Remote Desktop foreground activation and correct source Pause; seven
+source-binding gates reject metadata left stale after a diagnostic-fixture
+change. The refreshed declarations now pass their exact seven-test rerun in
+13.29 seconds, with comparisons/guards unchanged. The historical 593/602 run
+remains failed and no new full pass is inferred. The preceding 26-test
+selection passes 24 in 188.02 seconds, including the local attack in 12.65
+seconds; its Slime/Wolf failures also have actual `msrdc.exe` owners. Whole
+Windows focus stability remains unqualified. The earlier Spider/Chicken/repeat
+failures, isolated five-test pass and 1,900-check repeat pass retain their
+[documented snapshot scopes](testing.md#current-targeted-and-public-qualification).
+No focus behavior or byte predicate is relaxed. Hosted validation retains its
+exact tested-commit scope.
+Held Item damage/hit, other target overrides, Player death/respawn and full encounters remain
+unfinished or unqualified.
+
 The Windows Release [collected-Dirt placement scenario](client/placement.md)
 now completes mining, dropped-Item drawing, keyboard pickup, held-block drawing,
 real right-button placement and three save/title transitions across four World
@@ -65,7 +110,14 @@ passes do not establish its cause or a fix.
 
 Selected dirt and snow outlines retain their separate four-profile qualification.
 The [selection and reselection contract](client/block-selection.md) records those
-scenarios, private Chunk lookup indexes and the eight-load session limit.
+scenarios and private Chunk lookup indexes. The loader has no fixed session
+count limit. A hash-bracketed Windows Tiny snapshot passes 6,417 reload checks
+across ten loads and normal saves, then preserves an eleventh pre-storage
+conversion failure through checked cleanup. Its nine-test selection passes
+in 62.66 seconds with selected inputs unchanged; later runtime changes require
+fresh qualification. Terminal ownership checks use reciprocal load links and direct
+controller-owner slots instead of repeated history scans. Old World graphs
+still remain allocated until shutdown; this does not qualify unlimited play.
 Tools, general Block/Item use, combat, Inventory UI, unrestricted reselection and extended
 play remain unfinished or unqualified. The client is still pre-playable.
 

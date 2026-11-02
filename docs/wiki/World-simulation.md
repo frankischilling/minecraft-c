@@ -38,6 +38,81 @@ failures keep their own source and environment scope.
 and [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#source-chunk-output-and-world-reload)
 record the evidence and limits.
 
+## Player attacks
+
+The ordinary Entity-target left click now reaches the inherited controller and
+Player attack body. Empty-hand animal hurt/death, fresh held-Stack reads,
+owned-Wolf alerts and damage-dealt/kill statistics use real owners.
+Windows and Linux ASan/UBSan each pass 747 native checks and five selected
+original rows; six packet tests pass. The original rows preserve independent
+constructor/Math entropy. Eleven canonical Mob picking controls and Wool
+inventory hooks/icons retain separate native/original scopes. A Windows SDK
+Sheep encounter has an earlier 507-check pass in 10.37 seconds through actual picking,
+fatal click, score/statistics, visible Wool, three World/HUD frames and checked
+cleanup. Its 1,393 selected inputs and 413 resources remain unchanged, with
+other Python helpers, toolchain and desktop outside the inventory. A read-only
+negative-Y operand sample derives damage 2 without Player-field repairs. The
+earlier damage-1 fixture failure remains recorded. This gives no original
+graphics, pickup, save/reload or extended-combat qualification. The current
+strengthened Windows SDK run passes 1,230 checks in 13.90 seconds through twenty
+distinct GY particles, real removal at age 21 and source period-40 autosave.
+Independent NBT/region/disk verification checks old time 39 before the next-time-40
+store, 24 eligible Chunks and Player Score 14. Declared inputs/resources remain
+unchanged. Its passive observer compiles only into the test target. The paired
+autosave corruption test also passes; both finish in 14.85 seconds. Windows GY
+components match seven original ticks and six exact 48-word draws, with eight
+packet tests passing. Earlier missing-GY and immutable-disk/autosave failures
+retain their historical scopes.
+
+The current Windows full run passes 593/602 in 215.03 seconds, with 3,293
+selected inputs and 823 resources unchanged. Slime/Cow failures record actual
+Remote Desktop foreground activation. The seven stale source-binding gates
+now have refreshed declarations and a separate seven-test pass in 13.29 seconds,
+with comparisons and guards unchanged. The historical 593/602 run remains
+failed; no new full passing result is inferred. A preceding 26-test selection passes 24 in 188.02
+seconds, including attack in 12.65 seconds, and has instrumented Slime/Wolf
+`msrdc.exe` focus failures. Whole Windows focus stability remains unqualified;
+older uninstrumented owners remain unknown, with no byte/focus-behavior change.
+
+The broad Linux full build and 597 public tests pass in 166.82 seconds with
+Xvfb/software GL, display tests and Clang ASan/UBSan, leak detection and
+halt-on-error. Later 747-check controls have separate scope; the Linux SDK
+encounter remains unqualified. The
+[qualification record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#current-targeted-and-public-qualification)
+retains older failed and passing snapshots, including the isolated focus cohort
+and instrumented repeat. Hosted evidence keeps its exact tested-commit scope.
+[Particle frontier](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/explosion-particle.md)
+records the source scope.
+Held Item damage/hit, other target overrides, Monster kill achievements, Player
+death/respawn and graphical encounters remain unfinished or unqualified.
+[Player attack contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-attack.md)
+records the source order and evidence limits.
+
+## Repeated World selection
+
+The loader allocates each source load record as needed. Terminal ownership
+checks follow reciprocal Load links in screen-node order and use direct
+controller-owner slots. They avoid repeated history scans without changing
+World publication or the frame loop. Old World graphs remain allocated until
+shutdown; their reclamation during play remains unfinished.
+
+A hash-bracketed Windows Release Tiny snapshot passes 6,417 reload checks
+across ten loads and normal saves, followed by a preserved eleventh conversion
+failure before storage acquisition. Independent decoding checks every save
+and the reopened Player. External-owner refusals leave the graphs intact for
+retry, and checked cleanup writes no further save bytes. Nine selected tests
+pass in 62.66 seconds; 1,539 selected execution inputs and 410 selected resource
+files remain unchanged. This inventory excludes other test support files,
+imported icons and desktop/driver state. Later runtime changes need fresh
+qualification. The earlier retained 7,037-check pass lacked execution-time
+input hashes. A separate initial Canvas-focus failure remains recorded. These finite results
+do not qualify unrestricted focus/reselection, Linux ten-load graphics,
+original whole-session equality or default-Far performance.
+
+[Selection contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/block-selection.md)
+and [native evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/world_reload/native-validation.json)
+record the exact scope.
+
 ## Visible Save and quit
 
 The Windows Tiny scenario selects an authored saved World through the ordinary

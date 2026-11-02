@@ -15,7 +15,8 @@ mc_registry_status mc_block_render_inventory_color(const mc_block *block, int32_
     (void)metadata;
     if (!valid(block) || out == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
-    if (block->kind != MC_BLOCK_BASE && block->kind != MC_BLOCK_DIRT)
+    if (block->kind != MC_BLOCK_BASE && block->kind != MC_BLOCK_DIRT &&
+        block->kind != MC_BLOCK_WOOL)
         return MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
     *out = 0xffffff; /* Actual inherited uu.b(I)I. */
     return MC_REGISTRY_OK;
@@ -24,7 +25,8 @@ mc_registry_status mc_block_render_inventory_color(const mc_block *block, int32_
 mc_registry_status mc_block_render_inventory_shape(const mc_block *block) {
     if (!valid(block))
         return MC_REGISTRY_INVALID_ARGUMENT;
-    if (block->kind != MC_BLOCK_BASE && block->kind != MC_BLOCK_DIRT)
+    if (block->kind != MC_BLOCK_BASE && block->kind != MC_BLOCK_DIRT &&
+        block->kind != MC_BLOCK_WOOL)
         return MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
     return MC_REGISTRY_OK; /* Actual inherited uu.g()V has only return0. */
 }

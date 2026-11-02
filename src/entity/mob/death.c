@@ -4,6 +4,7 @@
 #include "../../block/registry/runtime_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../living/fields_internal.h"
+#include "../player/combat_callbacks_internal.h"
 #include "internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/entity/drop.h"
@@ -236,6 +237,31 @@ static bool callback(struct mc_mob_death_work *w, mc_entity *source, bool score,
         w->source = source;
         w->state.source_hold_acquired = true;
         w->state.source_identity = (uintptr_t)source;
+    }
+    if (mc_entity_is_kind(source, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
+        mc_player_site reached;
+        if (score)
+            w->state.score_callback_entered = true;
+        else
+            w->state.kill_callback_entered = true;
+        const bool returned = mc_player_death_callback(source, w->registry, w->actor,
+                                                       w->state.score, score, &reached, e);
+        w->state.child =
+            site(reached.class_name, reached.method, reached.descriptor, (int32_t)reached.pc);
+        if (!returned) {
+            w->state.status = e->status;
+            w->state.operation = e->operation;
+            w->state.native_policy = !e->living_damage.source_exception;
+            w->state.source_exception = e->living_damage.source_exception;
+            w->state.exception_class = e->living_damage.exception_class;
+            project(w, e);
+            return false;
+        }
+        if (score)
+            w->state.score_callback_returned = true;
+        else
+            w->state.kill_callback_returned = true;
+        return true;
     }
     if (!animal(source))
         return failure(w, e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,

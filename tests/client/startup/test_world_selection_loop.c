@@ -27,6 +27,7 @@
 #include "client/window/frame.h"
 #include "client/window/frame_platform.h"
 #include "client/world/load_world.h"
+#include "client/world/load_world_terminal_internal.h"
 #include "client/world/prepare_world.h"
 #include "client/world/render_global_access.h"
 #include "client/world/render_global_internal.h"
@@ -64,6 +65,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#endif
 
 static unsigned int checks;
 
@@ -642,6 +649,78 @@ static bool repeat_world_work(const mc_client_menu_loop_state *source) {
            source->random_display_random_calls == source->random_display_calls * UINT64_C(6000);
 }
 
+/* Failure-only OS observations. Never pump events, request focus, inspect
+ * window titles or change source/SDK state while identifying the real owner. */
+static void native_focus_receipt(fixture *f, const char *stage) {
+#ifdef _WIN32
+    SDL_Window *canvas = mc_client_display_window(f->app->display);
+    mc_client_source_frame *frame = mc_client_bootstrap_frame(f->bootstrap);
+    mc_client_frame_state host = {0};
+    SDL_Window *parent =
+        frame != NULL && mc_client_source_frame_inspect(frame, &host) ? host.frame_window : NULL;
+    HWND canvas_hwnd = canvas == NULL
+                           ? NULL
+                           : SDL_GetPointerProperty(SDL_GetWindowProperties(canvas),
+                                                    SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
+    HWND frame_hwnd = parent == NULL
+                          ? NULL
+                          : SDL_GetPointerProperty(SDL_GetWindowProperties(parent),
+                                                   SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
+    const HWND foreground = GetForegroundWindow(), focus = GetFocus(), active = GetActiveWindow();
+    DWORD foreground_pid = 0;
+    const DWORD foreground_thread =
+        foreground == NULL ? 0 : GetWindowThreadProcessId(foreground, &foreground_pid);
+    GUITHREADINFO gui = {0};
+    gui.cbSize = (DWORD)sizeof(gui);
+    const bool gui_read = foreground_thread != 0 && GetGUIThreadInfo(foreground_thread, &gui);
+    char class_name[128] = "unavailable", image[1024];
+    if (foreground != NULL && GetClassNameA(foreground, class_name, (int)sizeof(class_name)) == 0)
+        memcpy(class_name, "unavailable", sizeof("unavailable"));
+    const char *process_name = "unavailable";
+    HANDLE process = foreground_pid == 0
+                         ? NULL
+                         : OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, foreground_pid);
+    if (process != NULL) {
+        DWORD size = (DWORD)sizeof(image);
+        if (QueryFullProcessImageNameA(process, 0, image, &size)) {
+            process_name = strrchr(image, '\\');
+            process_name = process_name == NULL ? image : process_name + 1;
+        }
+        CloseHandle(process);
+    }
+    SDL_Window *keyboard = SDL_GetKeyboardFocus();
+    fprintf(stderr,
+            "WORLD_NATIVE_FOCUS stage=%s pid=%lu thread=%lu foreground=%p foreground-pid=%lu "
+            "foreground-thread=%lu foreground-class=\"%s\" foreground-process=\"%s\" "
+            "foreground-stable=%d gui-read=%d gui-active=%p gui-focus=%p gui-capture=%p "
+            "thread-focus=%p thread-active=%p frame=%p canvas=%p canvas-root=%p canvas-parent=%p "
+            "frame-visible=%d frame-iconic=%d canvas-visible=%d canvas-iconic=%d "
+            "canvas-style=%" PRIx64 " frame-flags=%" PRIx64 " canvas-flags=%" PRIx64
+            " sdl-keyboard=%" PRIu32 " frame-id=%" PRIu32 " canvas-id=%" PRIu32 "\n",
+            stage, (unsigned long)GetCurrentProcessId(), (unsigned long)GetCurrentThreadId(),
+            (void *)foreground, (unsigned long)foreground_pid, (unsigned long)foreground_thread,
+            class_name, process_name, GetForegroundWindow() == foreground, gui_read,
+            (void *)gui.hwndActive, (void *)gui.hwndFocus, (void *)gui.hwndCapture, (void *)focus,
+            (void *)active, (void *)frame_hwnd, (void *)canvas_hwnd,
+            canvas_hwnd == NULL ? NULL : (void *)GetAncestor(canvas_hwnd, GA_ROOT),
+            canvas_hwnd == NULL ? NULL : (void *)GetParent(canvas_hwnd),
+            frame_hwnd != NULL && IsWindowVisible(frame_hwnd),
+            frame_hwnd != NULL && IsIconic(frame_hwnd),
+            canvas_hwnd != NULL && IsWindowVisible(canvas_hwnd),
+            canvas_hwnd != NULL && IsIconic(canvas_hwnd),
+            canvas_hwnd == NULL ? UINT64_C(0)
+                                : (uint64_t)(uintptr_t)GetWindowLongPtrW(canvas_hwnd, GWL_STYLE),
+            parent == NULL ? UINT64_C(0) : (uint64_t)SDL_GetWindowFlags(parent),
+            canvas == NULL ? UINT64_C(0) : (uint64_t)SDL_GetWindowFlags(canvas),
+            keyboard == NULL ? 0u : SDL_GetWindowID(keyboard),
+            parent == NULL ? 0u : SDL_GetWindowID(parent),
+            canvas == NULL ? 0u : SDL_GetWindowID(canvas));
+#else
+    (void)f;
+    (void)stage;
+#endif
+}
+
 /* This immutable-save profile observes focused gameplay frames only. A
  * returned World/HUD draw can also have a later real OZ overlay, whose draw
  * saves source data. Such a frame must fail this profile rather than receive
@@ -656,7 +735,8 @@ static int repeat_focus_state(fixture *f, const char *stage) {
     const bool keyboard = SDL_GetKeyboardFocus() == mc_client_display_window(f->app->display);
     const bool focused = f->app->r == NULL && f->app->N && !atomic_load(&f->app->o) && active &&
                          keyboard && input.grabbed;
-    if (!focused)
+    if (!focused) {
+        native_focus_receipt(f, stage);
         fprintf(stderr,
                 "WORLD_REPEAT_FOCUS_FAILURE stage=%s screen=%d source-focus=%d paused=%d "
                 "display-active=%d keyboard-focus=%d sdk-grab=%d frames=%" PRIu64 " ticks=%" PRIu64
@@ -666,6 +746,7 @@ static int repeat_focus_state(fixture *f, const char *stage) {
                 f->state.ticks, f->state.source_class == NULL ? "none" : f->state.source_class,
                 f->state.source_method == NULL ? "none" : f->state.source_method,
                 f->state.source_pc, f->state.operation == NULL ? "none" : f->state.operation);
+    }
     CHECK(focused);
     return 0;
 }
@@ -1916,7 +1997,8 @@ static int loaded_terminal_admission_controls(fixture *f) {
 }
 
 static int normal_terminal_retirement_controls(fixture *f, mc_client_source_da **external,
-                                               bool selected_load, bool source_left) {
+                                               bool selected_load, bool source_left,
+                                               const mc_client_world_load_call *left_load) {
     mc_client_menu_loop_state source;
     client_application *app = f->app;
     mc_client_menu_loop *same_loop = f->loop;
@@ -1937,10 +2019,11 @@ static int normal_terminal_retirement_controls(fixture *f, mc_client_source_da *
         mc_client_world_load_state load;
         CHECK(controller != NULL && mc_client_screen_transitions_inspect(transitions, &retained) &&
               retained.world_load != NULL &&
-              mc_client_world_load_inspect(retained.world_load, &load) && load.source_returned &&
-              load.leave.started && load.leave.calls == 1 && load.leave.i_cleared &&
-              load.world != NULL && load.player != NULL && load.input != NULL && app->i == NULL &&
-              app->view_occurrence == NULL &&
+              mc_client_world_load_inspect(left_load == NULL ? retained.world_load : left_load,
+                                           &load) &&
+              load.source_returned && load.leave.started && load.leave.calls == 1 &&
+              load.leave.i_cleared && load.world != NULL && load.player != NULL &&
+              load.input != NULL && app->i == NULL && app->view_occurrence == NULL &&
               app->active_world == (load.leave.f_cleared ? NULL : load.world) &&
               app->h == (load.leave.h_cleared ? NULL : load.player));
     } else {
@@ -1965,8 +2048,10 @@ static int normal_terminal_retirement_controls(fixture *f, mc_client_source_da *
                      "Load terminal external effect occurrence") == 0 &&
               mc_client_screen_transitions_inspect(transitions, &retained) &&
               retained.world_load != NULL &&
-              mc_client_world_load_inspect(retained.world_load, &load) && load.world != NULL &&
-              load.player != NULL && load.leave.calls == 1 && load.leave.i_cleared &&
+              mc_client_world_load_inspect(left_load == NULL ? retained.world_load : left_load,
+                                           &load) &&
+              load.world != NULL && load.player != NULL && load.leave.calls == 1 &&
+              load.leave.i_cleared &&
               app->active_world == (load.leave.f_cleared ? NULL : load.world) &&
               app->h == (load.leave.h_cleared ? NULL : load.player) && app->i == NULL &&
               mc_client_effect_renderer_read(effects, &particles) &&
@@ -2536,7 +2621,8 @@ static int animal_returned_frame(fixture *f, const animal_profile *profile,
 
 static int animal_controls(fixture *f, const animal_profile *profile, const char *capture_path) {
     CHECK(repeat_statistics_controls(f, false) == 0 && f->app->r == NULL &&
-          !atomic_load(&f->app->o) && display_focus(f, true) == 0);
+          !atomic_load(&f->app->o) && display_focus(f, true) == 0 &&
+          repeat_focus_state(f, "animal-entry") == 0);
     printf("WORLD_ANIMAL_PROFILE profile=%s scopes=independent-loaded "
            "statistics-input=pre-bootstrap-unsent-file open-inventory=1 "
            "canonical=ep.f notice-inactive=1 native-integration-only=1\n",
@@ -2549,7 +2635,7 @@ static int animal_controls(fixture *f, const animal_profile *profile, const char
     const uint64_t draws_before = f->state.world_draws;
     const uint64_t started = SDL_GetTicks(), deadline = started + 60000;
     while (!control.reused && control.frames < 8 && SDL_GetTicks() < deadline) {
-        CHECK(display_focus(f, true) == 0);
+        CHECK(display_focus(f, true) == 0 && repeat_focus_state(f, "animal-before-frame") == 0);
         const bool returned = mc_client_menu_loop_frame(f->loop);
         CHECK(mc_client_menu_loop_inspect(f->loop, &f->state));
         if (!returned)
@@ -2557,7 +2643,8 @@ static int animal_controls(fixture *f, const animal_profile *profile, const char
                     f->state.source_class == NULL ? "native" : f->state.source_class,
                     f->state.source_method == NULL ? "frame" : f->state.source_method,
                     f->state.source_pc, f->state.operation == NULL ? "none" : f->state.operation);
-        CHECK(returned && animal_returned_frame(f, profile, &control) == 0);
+        CHECK(returned && repeat_focus_state(f, "animal-returned-frame") == 0 &&
+              animal_returned_frame(f, profile, &control) == 0);
         if (!control.reused)
             SDL_Delay(100);
     }
@@ -3048,7 +3135,8 @@ static int creature_controls(fixture *f, const creature_profile *profile,
                              const char *capture_path) {
     const animal_profile *p = &profile->actor;
     CHECK(repeat_statistics_controls(f, false) == 0 && f->app->r == NULL &&
-          !atomic_load(&f->app->o) && display_focus(f, true) == 0);
+          !atomic_load(&f->app->o) && display_focus(f, true) == 0 &&
+          repeat_focus_state(f, "creature-entry") == 0);
     printf("WORLD_CREATURE_PROFILE profile=%s scopes=independent-loaded "
            "statistics-input=pre-bootstrap-unsent-file open-inventory=1 "
            "canonical=ep.f notice-inactive=1 native-integration-only=1\n",
@@ -3061,7 +3149,7 @@ static int creature_controls(fixture *f, const creature_profile *profile,
     const uint64_t draws_before = f->state.world_draws;
     const uint64_t started = SDL_GetTicks(), deadline = started + 60000;
     while (!control.reused && control.frames < 8 && SDL_GetTicks() < deadline) {
-        CHECK(display_focus(f, true) == 0);
+        CHECK(display_focus(f, true) == 0 && repeat_focus_state(f, "creature-before-frame") == 0);
         const bool returned = mc_client_menu_loop_frame(f->loop);
         CHECK(mc_client_menu_loop_inspect(f->loop, &f->state));
         if (!returned) {
@@ -3071,7 +3159,8 @@ static int creature_controls(fixture *f, const creature_profile *profile,
                     f->state.source_pc, f->state.operation == NULL ? "none" : f->state.operation);
             creature_tick_diagnostics(f);
         }
-        CHECK(returned && creature_returned_frame(f, profile, &control) == 0);
+        CHECK(returned && repeat_focus_state(f, "creature-returned-frame") == 0 &&
+              creature_returned_frame(f, profile, &control) == 0);
         if (!control.reused)
             SDL_Delay(100);
     }
@@ -3445,7 +3534,8 @@ static int remaining_controls(fixture *f, const creature_profile *profile,
                               const char *capture_path) {
     const animal_profile *p = &profile->actor;
     CHECK(repeat_statistics_controls(f, false) == 0 && f->app->r == NULL &&
-          !atomic_load(&f->app->o) && display_focus(f, true) == 0);
+          !atomic_load(&f->app->o) && display_focus(f, true) == 0 &&
+          repeat_focus_state(f, "remaining-entry") == 0);
     printf("WORLD_REMAINING_PROFILE profile=%s scopes=independent-loaded "
            "statistics-input=pre-bootstrap-unsent-file open-inventory=1 "
            "canonical=ep.f notice-inactive=1 native-integration-only=1\n",
@@ -3458,7 +3548,7 @@ static int remaining_controls(fixture *f, const creature_profile *profile,
     const uint64_t draws_before = f->state.world_draws;
     const uint64_t started = SDL_GetTicks(), deadline = started + 60000;
     while (!control.reused && control.frames < 8 && SDL_GetTicks() < deadline) {
-        CHECK(display_focus(f, true) == 0);
+        CHECK(display_focus(f, true) == 0 && repeat_focus_state(f, "remaining-before-frame") == 0);
         const bool returned = mc_client_menu_loop_frame(f->loop);
         CHECK(mc_client_menu_loop_inspect(f->loop, &f->state));
         if (!returned) {
@@ -3468,7 +3558,8 @@ static int remaining_controls(fixture *f, const creature_profile *profile,
                     creature_diagnostic_text(f->state.operation));
             creature_tick_diagnostics(f);
         }
-        CHECK(returned && remaining_returned_frame(f, profile, &control) == 0);
+        CHECK(returned && repeat_focus_state(f, "remaining-returned-frame") == 0 &&
+              remaining_returned_frame(f, profile, &control) == 0);
         if (!control.reused)
             SDL_Delay(100);
     }
@@ -3526,14 +3617,20 @@ static int save_title_focus(fixture *f) {
     const uint64_t deadline = SDL_GetTicks() + 3000;
     do {
         mc_client_frame_error native = {0};
-        CHECK(SDL_RaiseWindow(host.frame_window) &&
-              mc_client_frame_native_focus(host.canvas_window, &native) &&
-              mc_client_sdk_display_process_messages(update, &error) == MC_CLIENT_SDK_UPDATE_OK &&
-              mc_client_sdk_display_active(update, &active, &error) == MC_CLIENT_SDK_UPDATE_OK);
+        const bool requested =
+            SDL_RaiseWindow(host.frame_window) &&
+            mc_client_frame_native_focus(host.canvas_window, &native) &&
+            mc_client_sdk_display_process_messages(update, &error) == MC_CLIENT_SDK_UPDATE_OK &&
+            mc_client_sdk_display_active(update, &active, &error) == MC_CLIENT_SDK_UPDATE_OK;
+        if (!requested)
+            native_focus_receipt(f, "native-focus-request");
+        CHECK(requested);
         if (active && SDL_GetKeyboardFocus() == host.canvas_window)
             break;
         SDL_Delay(1);
     } while (SDL_GetTicks() < deadline);
+    if (!active || SDL_GetKeyboardFocus() != host.canvas_window)
+        native_focus_receipt(f, "native-focus-timeout");
     CHECK(active && SDL_GetKeyboardFocus() == host.canvas_window);
     return 0;
 }
@@ -3617,13 +3714,22 @@ static void save_title_resume_diagnostics(fixture *f, const char *stage) {
         creature_tick_diagnostics(f);
 }
 
+static int immutable_unpaused(fixture *f, const char *stage) {
+    if (f->app->r != NULL || atomic_load(&f->app->o))
+        save_title_resume_diagnostics(f, stage);
+    CHECK(f->app->r == NULL && !atomic_load(&f->app->o));
+    return 0;
+}
+
 /* A returning g6 during a long load legitimately leaves r=NULL,N=false.
  * Acquire through the ordinary Mouse press at Minecraft.k442 -> g; that
  * source branch skips gameplay click work. No App/Timer/input field repair. */
 static int save_title_acquire(fixture *f, mc_world_runtime *world,
                               const mc_chunk_provider_fields *provider, size_t *eligible,
-                              int64_t *world_time) {
+                              int64_t *world_time, bool require_unpaused) {
     CHECK(f->app->r == NULL && !f->app->N && save_title_focus(f) == 0);
+    if (require_unpaused)
+        CHECK(immutable_unpaused(f, "immutable-acquisition-entry") == 0);
     const uint64_t left = f->state.gameplay_left_clicks, right = f->state.gameplay_right_clicks,
                    swings = f->state.gameplay_swing_calls,
                    stores = f->state.gameplay_click_timer_stores,
@@ -3636,8 +3742,12 @@ static int save_title_acquire(fixture *f, mc_world_runtime *world,
     /* k343 rejects every mouse event when real now-P>200ms. Let an actual
      * short source frame refresh its own P before offering this fresh tap. */
     do {
+        if (require_unpaused)
+            CHECK(immutable_unpaused(f, "immutable-acquisition-before-frame") == 0);
         CHECK(save_title_focus(f) == 0 && frame(f) == 0 &&
               save_title_eligibility(world, provider, eligible, world_time) == 0);
+        if (require_unpaused)
+            CHECK(immutable_unpaused(f, "immutable-acquisition-returned-frame") == 0);
         ++frames;
         int64_t now;
         CHECK(mc_platform_current_time_millis(&now) == MC_PLATFORM_MILLIS_OK);
@@ -3661,8 +3771,12 @@ static int save_title_acquire(fixture *f, mc_world_runtime *world,
     up.button.down = false;
     CHECK(SDL_PushEvent(&down) && SDL_PushEvent(&up) && transfer(f) == 0);
     do {
+        if (require_unpaused)
+            CHECK(immutable_unpaused(f, "immutable-acquisition-before-frame") == 0);
         CHECK(save_title_focus(f) == 0 && frame(f) == 0 &&
               save_title_eligibility(world, provider, eligible, world_time) == 0);
+        if (require_unpaused)
+            CHECK(immutable_unpaused(f, "immutable-acquisition-returned-frame") == 0);
         ++frames;
     } while (f->app->r == NULL && !f->app->N && frames < 64 && SDL_GetTicks() < deadline);
     mc_client_sdk_input_state input;
@@ -3688,6 +3802,19 @@ static int save_title_acquire(fixture *f, mc_world_runtime *world,
            "gameplay-clicks=0 mining=0 frames=%zu input-age=%" PRId64 "\n",
            f->state.mouse_events - mouse_before, frames, age);
     return 0;
+}
+
+/* These renderer profiles require immutable saves. Acquire the real source
+ * grab when loading released it; an unexpected Pause remains a failure rather
+ * than being resumed after its source save. No App or Timer field is repaired. */
+static int immutable_profile_focus(fixture *f) {
+    CHECK(immutable_unpaused(f, "immutable-loaded-entry") == 0 && display_focus(f, true) == 0);
+    if (!f->app->N) {
+        size_t eligible;
+        int64_t world_time;
+        CHECK(save_title_acquire(f, f->app->active_world, NULL, &eligible, &world_time, true) == 0);
+    }
+    return repeat_focus_state(f, "immutable-profile-entry");
 }
 
 /* Recover an actually published Pause through its real ID4 SDK button, or
@@ -3717,7 +3844,7 @@ static int save_title_resume(fixture *f, mc_world_runtime *world,
         CHECK(f->app->r != pause && f->state.mouse_events >= mouse_before + 2);
     }
     if (f->app->r == NULL && !f->app->N)
-        CHECK(save_title_acquire(f, world, provider, eligible, world_time) == 0);
+        CHECK(save_title_acquire(f, world, provider, eligible, world_time, false) == 0);
     if (f->app->r != NULL || !f->app->N)
         save_title_resume_diagnostics(f, "resume-postcondition");
     CHECK(f->app->r == NULL && f->app->N);
@@ -4107,6 +4234,7 @@ int main(int argc, char **argv) {
     const bool repeat_load = strcmp(argv[2], "repeat") == 0;
     const bool light_control = strcmp(argv[2], "load-light") == 0;
     const bool reload_cycle = strcmp(argv[2], "reload-cycle") == 0;
+    const mc_client_world_load_call *left_load = NULL;
     const bool save_title = reload_cycle || strcmp(argv[2], "save-title") == 0 ||
                             strcmp(argv[2], "save-title-session") == 0;
     /* A hidden loaded World opens Pause and its real draw saves metadata.
@@ -4397,12 +4525,14 @@ int main(int argc, char **argv) {
                     save_title_resume_diagnostics(&f, "initial-loaded-focus");
                 CHECK(display_active && !f.state.failed && f.state.render_returned);
             }
+            if (animals_load || creatures_load || remaining_load)
+                CHECK(immutable_unpaused(&f, "initial-immutable-loaded-frame") == 0);
             if (terminal_admission) {
                 CHECK(display_active && f.app->r == NULL);
                 puts("WORLD_TERMINAL_INPUT focused=1 pause-draw=0 immutable-inputs=1");
             }
             if (reload_cycle) {
-                CHECK(reload_cycle_controls(&f, initial, argv[3]) == 0);
+                CHECK(reload_cycle_controls(&f, initial, argv[3], &left_load) == 0);
                 goto loaded_draw_controls_done;
             }
             if (save_title) {
@@ -4565,6 +4695,10 @@ int main(int argc, char **argv) {
             memcpy(prefix_path + prefix_length, prefix_suffix, sizeof(prefix_suffix));
             CHECK(capture(&f, prefix_path) == 0);
             free(prefix_path);
+            /* End first-frame inspections before acquisition advances the
+             * ordinary loop and invalidates its borrowed draw receipts. */
+            if (animals_load || creatures_load || remaining_load)
+                CHECK(immutable_profile_focus(&f) == 0);
             if (light_control) {
                 CHECK(light_batch_controls(&f) == 0);
                 goto loaded_draw_controls_done;
@@ -4830,7 +4964,8 @@ int main(int argc, char **argv) {
     }
     if (!loading_world || terminal_admission || repeat_load || light_control || animals_load ||
         creatures_load || remaining_load || save_title) {
-        CHECK(normal_terminal_retirement_controls(&f, &external, loading_world, save_title) == 0);
+        CHECK(normal_terminal_retirement_controls(&f, &external, loading_world, save_title,
+                                                  left_load) == 0);
     } else {
         CHECK(!mc_client_menu_loop_retire(&f.loop) && f.loop != NULL && external != NULL);
         CHECK(mc_client_bootstrap_app(f.bootstrap) == f.app &&

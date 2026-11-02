@@ -63,6 +63,40 @@ static bool drop(client_application *app, mc_client_gameplay_input *call) {
     return retire_drop(call) || pending(call, call->drop_cleanup.operation, 812);
 }
 
+static bool retire_attack(mc_client_gameplay_input *call) {
+    if (mc_local_player_attack_retire(&call->attack_call, &call->attack_cleanup) != MC_ENTITY_OK)
+        return false;
+    call->attack_state.player = call->attack_state.target = NULL;
+    call->attack_state.error = NULL;
+    call->attack_error.effect.death.pending = call->attack_error.effect.death.active = false;
+    call->attack_error.effect.death.receiver = NULL;
+    call->attack_error.effect.death.drop_error = NULL;
+    call->attack_cleanup.effect.death.pending = call->attack_cleanup.effect.death.active = false;
+    call->attack_cleanup.effect.death.receiver = NULL;
+    call->attack_cleanup.effect.death.drop_error = NULL;
+    return true;
+}
+
+static bool attack(client_application *app, mc_client_gameplay_input *call, mc_entity *target) {
+    if (app->controller == NULL)
+        return fail(call, "actual attack null controller invocation",
+                    "net/minecraft/client/Minecraft", "a", "(I)V", 87);
+    const mc_entity_status status = mc_client_singleplayer_attack_begin(
+        app->controller, app->registry, app->source_math_classes, app->h, target,
+        &call->attack_call, &call->attack_error);
+    if (call->attack_call != NULL)
+        (void)mc_local_player_attack_inspect(call->attack_call, &call->attack_state);
+    if (status != MC_ENTITY_OK) {
+        const mc_player_attack_error *e = &call->attack_error;
+        return fail(call, e->operation, e->site.class_name, e->site.method, e->site.descriptor,
+                    e->site.pc);
+    }
+    ++call->attack_calls;
+    call->attack_hits += call->attack_state.damage_returned;
+    return retire_attack(call) || fail(call, call->attack_cleanup.operation,
+                                       "net/minecraft/client/Minecraft", "a", "(I)V", 87);
+}
+
 static bool binding(client_application *app, mc_client_gameplay_input *call, size_t index,
                     int32_t *out, unsigned int settings_pc, unsigned int code_pc) {
     mc_game_settings_state state;
@@ -330,11 +364,12 @@ static bool click(client_application *app, mc_client_gameplay_input *call, int32
     mc_entity_hit_kind_class_view kinds;
     if (!hit_fields(app, call, &hit, &kinds, "(I)V", 59))
         return false;
-    if (hit.fields.a == kinds.b)
-        return fail(call,
-                    button == 0 ? "actual Player attack controller invocation"
-                                : "actual Player Entity interaction controller invocation",
-                    "net/minecraft/client/Minecraft", "a", "(I)V", button == 0 ? 87u : 110u);
+    if (hit.fields.a == kinds.b) {
+        if (button == 0)
+            return attack(app, call, hit.fields.g);
+        return fail(call, "actual Player Entity interaction controller invocation",
+                    "net/minecraft/client/Minecraft", "a", "(I)V", 110u);
+    }
     if (hit.fields.a == kinds.a) {
         const int32_t x = hit.fields.b, y = hit.fields.c, z = hit.fields.d, face = hit.fields.e;
         if (button == 0) {
@@ -669,8 +704,9 @@ bool mc_client_gameplay_input_run(client_application *app,
                                   mc_client_gameplay_input *call) {
     if (app == NULL || transitions == NULL || call == NULL || call->active || call->failed ||
         call->focus != NULL || call->screen.pending_receiver != NULL || call->mining_call != NULL ||
-        call->use_call != NULL || call->drop_call != NULL || call->click_block_stack != NULL ||
-        call->click_air_stack != NULL || call->hit_renderer != NULL || call->hit_block_work)
+        call->use_call != NULL || call->drop_call != NULL || call->attack_call != NULL ||
+        call->click_block_stack != NULL || call->click_air_stack != NULL ||
+        call->hit_renderer != NULL || call->hit_block_work)
         return false;
     memset(call, 0, sizeof(*call));
     call->active = true;
@@ -687,6 +723,8 @@ bool mc_client_gameplay_input_retire(mc_client_gameplay_input *call) {
     if (!retire_use(call))
         return false;
     if (!retire_drop(call))
+        return false;
+    if (!retire_attack(call))
         return false;
     click_stacks_release(call);
     if (mc_client_singleplayer_mining_retire(&call->mining_call, &call->mining_cleanup) !=

@@ -268,7 +268,8 @@ static void add_entered(mc_client_effect_renderer *r, mc_entity *particle, mc_ef
              NULL, 0);
     else if (!mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE) &&
              !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) &&
-             !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE))
+             !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE) &&
+             !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE))
         fail(e, MC_EFFECT_RENDERER_UNSUPPORTED_PARTICLE, "EffectRenderer concrete c_ closure", "a",
              "(Lxw;)V", 1);
     else if (particle->phase != MC_ENTITY_READY)
@@ -279,6 +280,8 @@ static void add_entered(mc_client_effect_renderer *r, mc_entity *particle, mc_ef
          * call, independently of any max4000 List eviction. */
         e->entity = mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE)
                         ? mc_pickup_particle_layer(particle, &layer)
+                    : mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE)
+                        ? mc_explosion_particle_layer(particle, &layer)
                     : mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE)
                         ? mc_digging_particle_layer(particle, &layer)
                         : mc_item_particle_layer(particle, &layer);
@@ -398,8 +401,10 @@ mc_effect_renderer_status mc_client_effect_renderer_tick_in_context(
                 break;
             }
             const bool digging = mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE);
-            const bool item =
-                digging || mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE);
+            const bool explosion =
+                mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE);
+            const bool item = digging || explosion ||
+                              mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE);
             if (particle->classes != r->classes ||
                 (!item && !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE))) {
                 fail(e, MC_EFFECT_RENDERER_UNSUPPORTED_PARTICLE,
@@ -441,8 +446,9 @@ mc_effect_renderer_status mc_client_effect_renderer_tick_in_context(
             } else {
                 call->current = particle;
                 call->failure.entity =
-                    digging ? mc_digging_particle_tick(particle, registry, limits, &call->item)
-                            : mc_item_particle_tick(particle, registry, limits, &call->item);
+                    explosion ? mc_explosion_particle_tick(particle, registry, limits, &call->item)
+                    : digging ? mc_digging_particle_tick(particle, registry, limits, &call->item)
+                              : mc_item_particle_tick(particle, registry, limits, &call->item);
                 call->failure.particle = call->item.particle;
                 if (call->item.particle.cause == MC_PARTICLE_MOVEMENT)
                     call->failure.movement = &call->item.movement;
@@ -635,11 +641,19 @@ mc_client_effect_renderer_terminal_inspect(const mc_client_effect_renderer *r,
             const mc_entity *particle = list->elements[j];
             mc_particle_snapshot state;
             const bool digging = mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE);
-            if ((digging ? i != 1 : i != 2) ||
-                (!digging && !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE)) ||
+            const bool explosion =
+                mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE);
+            if ((explosion ? i != 0
+                 : digging ? i != 1
+                           : i != 2) ||
+                (!digging && !explosion &&
+                 !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE)) ||
                 particle->classes != r->classes || particle->holds == 0 ||
                 particle->base.world != r->world || !mc_particle_read(particle, &state) ||
-                state.phase != MC_ENTITY_READY || state.item_pc != (digging ? 80u : 58u) ||
+                state.phase != MC_ENTITY_READY ||
+                state.item_pc != (explosion ? 157u
+                                  : digging ? 80u
+                                            : 58u) ||
                 (digging && (state.digging_block == NULL || state.digging_registry == NULL)))
                 return terminal_report(error, MC_EFFECT_RENDERER_UNSUPPORTED_PARTICLE,
                                        "EffectRenderer terminal inspection canonical PB closure",

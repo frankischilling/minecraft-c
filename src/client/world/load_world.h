@@ -174,7 +174,8 @@ mc_client_world_load_status mc_client_world_load_leave(mc_client_world_load_call
                                                        mc_client_world_load_error *error);
 
 /* Actual next selected load after the previous same-class invocation's fully
- * returning source NULL change. Up to8 real retained epochs. Native completed
+ * returning source NULL change. Epochs are allocated as needed, with checked
+ * native count overflow. Native completed
  * child records end before source entry; no N/DN field is cleared or reset.
  * All World/Player/Input/Handler graphs and source failure prefixes stay owned.
  * Every returned call (success/failure) must be consumed in LIFO order. */

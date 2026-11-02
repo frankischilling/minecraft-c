@@ -1,9 +1,9 @@
 /* Native retained invocation epochs around genuine subsequent source loads. */
 static bool epoch_admit(const mc_client_world_load_call *previous) {
     return previous != NULL && previous->classes->latest == previous &&
-           previous->classes->calls < 8 && previous->successor == NULL && !previous->state.active &&
-           !previous->state.retiring && previous->state.source_returned &&
-           previous->failure.status == MC_CLIENT_WORLD_LOAD_OK &&
+           previous->classes->calls != SIZE_MAX && previous->successor == NULL &&
+           !previous->state.active && !previous->state.retiring &&
+           previous->state.source_returned && previous->failure.status == MC_CLIENT_WORLD_LOAD_OK &&
            previous->state.leave.source_returned && !previous->state.leave.failed &&
            previous->state.leave.i_cleared && previous->state.leave.f_cleared &&
            previous->state.leave.h_cleared && source_app_slots(previous);

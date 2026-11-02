@@ -1,5 +1,27 @@
 # Build and tests
 
+## Current qualification
+
+The latest Windows full run passes 593/602 in 215.03 seconds, with 3,293 selected
+inputs and 823 resources unchanged. Two Slime/Cow failures record foreign
+Remote Desktop foreground activation and correct Pause. Seven source-binding
+gates separately reject metadata stale after diagnostic-fixture changes;
+the declarations are now refreshed and the exact seven tests pass separately
+in 13.29 seconds with comparisons and guards unchanged. The historical
+593/602 run remains failed; no new full pass is inferred. The preceding 26-test selection passes
+24 in 188.02 seconds, including local attack in 12.65 seconds, with actual
+`msrdc.exe` owners for Slime/Wolf focus failures. Whole Windows focus stability
+remains unqualified; older uninstrumented owners remain unknown. Byte predicates
+and focus behavior are unchanged.
+
+The broad Linux full build and 597 public tests pass in 166.82 seconds with
+Xvfb/software GL, display tests, Clang ASan/UBSan, leak detection and halt-on-error.
+Later 747-check component controls retain separate source scope; the Linux SDK
+death/autosave encounter remains unqualified. Earlier broad Windows failures,
+isolated five-test and 1,900-check repeat passes retain their
+[exact qualification scopes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#current-targeted-and-public-qualification).
+Hosted validation applies only to its exact tested commit.
+
 ## Create World and block geometry
 
 The [Create World contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/create-world.md)
@@ -22,6 +44,14 @@ the completed sheared fatal return and distinct callback-failure scopes.
 add 2,709 native checks, 43 original CPU calls and 69 shared Entity-drop controls.
 The retained drop module also serves Falling Sand. Other concrete overrides,
 Player combat and Inventory UI remain unfinished.
+
+The named-data identity validator now queues containers and avoids repeated
+identity-syntax checks while retaining every reference occurrence type/class
+check and the complete graph budget. One local Windows CPython 3.14.3 pair
+changes from 25 tests in 31.124 seconds to 28 in 27.436 seconds. This measures
+validator preparation; no hosted CI or gameplay-speed result is claimed.
+[Measurement scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#named-data-identity-validation-cost)
+records the graph size, profiler count and retained checks.
 
 The region-writer validator retains every corruption check while avoiding
 redundant snapshot copies. One local Windows Python pair changes from 34 tests

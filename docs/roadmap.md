@@ -32,10 +32,21 @@ through right-button use, consumption and a fourth World load after three saves.
 [Skeleton NULL-attacker damage](entity/skeleton-damage.md) also closes the
 periodic-fire dispatch reached during that work. The configured drop key now removes one selected Item through the real Player
 action; Skeleton/Spider mounting has its actual riding and cleanup route.
-Complete tools, combat,
-remaining Item/Block overrides and Inventory UI on the same input/World loop.
-Remove the retained loader's eight-load session limit and qualify failed
-successor loads, default-Far settings and extended play. Existing movement,
+The [unarmed Player attack body](entity/player-attack.md) now connects ordinary
+left click through animal damage/death, owned-Wolf alerts and score/statistics.
+Windows and sanitized Linux component controls match five original
+integer/Boolean rows. The bounded Windows SDK Sheep kill returns through
+visible Wool and checked cleanup. The strengthened Windows run now completes
+the [explosion-particle](entity/explosion-particle.md) death-age-21 body, twenty
+real particles, actual removal and independently audited period-40 autosave.
+Qualify the remaining Linux saved-World SDK and extended sessions, and resolve
+Windows graphical focus stability. Extend held Item damage/hit,
+remaining target overrides, Player death/respawn and Inventory UI
+on the same input/World loop.
+The loader has no fixed session count limit, and a retained Windows Tiny
+scenario covers ten saves/reloads plus a successor conversion failure before
+storage acquisition. Reclaim superseded Worlds during play and qualify later
+successor failures, default-Far settings and extended play. Existing movement,
 look and time bodies remain part of that real loop. Detailed evidence and
 remaining limits are in [development status](status.md).
 

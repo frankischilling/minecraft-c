@@ -4,6 +4,7 @@
 #include "../gui/display_screen.h"
 #include "../gui/source_screen_events.h"
 #include "../settings/source_input.h"
+#include "mc/client/controller/attack.h"
 #include "mc/client/controller/mining.h"
 #include "mc/client/controller/singleplayer_tick.h"
 #include "mc/client/controller/use.h"
@@ -25,6 +26,10 @@ typedef struct mc_client_gameplay_input {
     size_t placement_sounds, used_statistics, stack_count_stores;
     size_t selected_slot_clears, equip_resets;
     size_t drop_calls, drop_publications, dropped_items;
+    size_t attack_calls, attack_hits;
+    mc_player_attack_call *attack_call;
+    mc_player_attack_state attack_state;
+    mc_player_attack_error attack_error, attack_cleanup;
     mc_player_drop_call *drop_call;
     mc_player_drop_state drop_state;
     mc_player_drop_error drop_error, drop_cleanup;

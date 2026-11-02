@@ -51,25 +51,36 @@ def ref(value, expected_class, *, nullable=False):
 
 
 def reference_classes(document):
-    pending, owners, count = [document], {}, 0
+    pending, owners, count = [document], {}, 1
     while pending:
         value = pending.pop()
-        count += 1
-        require(count <= 2000000, "bounded complete observed JSON graph")
         if type(value) is dict:
-            if set(value) == {"ref", "class"}:
+            if len(value) == 2 and "ref" in value and "class" in value:
                 if value["ref"] is None:
                     equal(value, {"ref": None, "class": None}, "actual null reference pair")
                 else:
                     require(type(value["class"]) is str and 1 <= len(value["class"]) <= 256,
                             "bounded actual reference class")
-                    identity = ref(value, value["class"])
+                    identity = value["ref"]
+                    require(type(identity) is str, "nonnull actual object identity")
                     if identity in owners:
                         equal(value["class"], owners[identity], "one actual identity retains its actual class")
-                    owners[identity] = value["class"]
-            pending.extend(value.values())
+                    else:
+                        ref(value, value["class"])
+                        owners[identity] = value["class"]
+            children = value.values()
         elif type(value) is list:
-            pending.extend(value)
+            children = value
+        else:
+            continue
+        # Every child occurrence counts, including scalar leaves and repeated
+        # container aliases. Only containers can contain another reference pair.
+        count += len(value)
+        require(count <= 2000000, "bounded complete observed JSON graph")
+        for child in children:
+            kind = type(child)
+            if kind is dict or kind is list:
+                pending.append(child)
     return len(owners)
 
 

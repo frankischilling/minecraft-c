@@ -30,16 +30,43 @@ ordinary source calls. Earlier App World and Player slots stay cleared after
 Save and quit; native cleanup does not restore them. Completed draw records
 are retired before source pool resets or terminal ownership audits.
 
-The Windows `client.world_reload_cycle` test selects one saved World, saves and
-quits, selects it again, then selects a different World. It checks three distinct
-World/Player/SaveHandler/input/controller graphs, independent before/after save
-decoding, and refusal to retire while an old Player has an external hold.
-Releasing that hold permits the complete ownership audit and cleanup.
+The Windows `client.world_reload_cycle` test now completes ten saved-World
+loads and ten ordinary Save and quit transitions. It first reopens the same
+World, then alternates two Worlds. Every World/Player/SaveHandler/input/controller
+graph is distinct and remains live. The test independently decodes every save,
+compares the reopened Player's stable fields and checks the actual N/DN World
+replacement calls. An eleventh selection enters the existing unsupported
+conversion body before acquiring storage. Its original failure prefix and the
+ten successful graphs survive until checked cleanup.
 
-The current native invocation owner admits at most eight loads per application
-session and retains old graphs until shutdown. Failed successor loads and
-unrestricted reselection remain unfinished. This is a finite integration
-checkpoint, not a complete playable session.
+There is no fixed load or screen-transition count limit. Each native record
+is allocated when needed; allocation failure and `size_t` overflow remain
+explicit errors before adding a record. Terminal classification follows the
+actual reciprocal load links in screen-node order, checks the complete class
+count and rejects skipped, repeated or reordered owners. This replaces a
+quadratic duplicate search. Each load also retains a pointer to its actual
+controller owning slot. Source controller replacement updates that pointer
+when it moves the old occurrence into the successor's node; terminal admission
+no longer scans every screen for each controller. Neither change adds work
+to the frame loop or changes source World publication.
+
+An extra old-Player hold still refuses the passive audit with every World
+READY. Releasing it permits a fresh audit and complete cleanup. Separate
+effect/controller/screen holds exercise later refusal and retry. Raw disk
+snapshots also prove that failed conversion and native cleanup write no save
+bytes after the tenth Save and quit. The
+[native validation record](../../tests/reference/client/world_reload/native-validation.json)
+records the retained and hash-bracketed snapshots separately. The latter passes
+6,417 native reload checks in 36.96 seconds. Its nine-test Windows selection
+passes in 62.66 seconds, with 1,539 selected execution inputs and 410 selected
+resource files unchanged. The inventory covers runtime/build inputs and four
+chosen harness files; it does not cover every support file, imported icons or
+desktop state. Subsequent runtime changes need fresh qualification.
+
+Old World graphs still remain allocated until shutdown. Reclaiming superseded
+Worlds during play, failures after a successor acquires storage, unrestricted
+reselection and extended play remain unfinished or unqualified. These native
+controls do not establish original whole-session or pixel equality.
 
 ## Chunk lookup
 
