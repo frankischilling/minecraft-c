@@ -223,6 +223,27 @@ done:
     return true;
 }
 
+static bool travel_effects_retire(mc_player_travel_error *travel) {
+    return mc_entity_effect_error_retire(&travel->effect) &&
+           mc_entity_effect_error_retire(&travel->movement.effect);
+}
+
+bool mc_mob_tick_error_retire(mc_mob_tick_error *error) {
+    if (error == NULL)
+        return false;
+    switch (error->child) {
+        case MC_MOB_TICK_CHILD_EFFECT:
+            return mc_entity_effect_error_retire(&error->detail.effect);
+        case MC_MOB_TICK_CHILD_ENVIRONMENT:
+            return mc_entity_effect_error_retire(&error->detail.environment.effect);
+        case MC_MOB_TICK_CHILD_ACTION:
+            return error->detail.action.child_kind == MC_PLAYER_ACTION_CHILD_PICKUP ||
+                   travel_effects_retire(&error->detail.action.travel);
+        default:
+            return true;
+    }
+}
+
 mc_entity_status mc_mob_tick_cleanup(mc_entity *p, mc_mob_tick_error *out) {
     mc_mob_tick_error *error = malloc(sizeof(*error));
     if (error == NULL) {
@@ -243,7 +264,8 @@ mc_entity_status mc_mob_tick_cleanup(mc_entity *p, mc_mob_tick_error *out) {
         error->status = MC_ENTITY_BUSY;
         error->native_policy = true;
         error->operation = "Mob cleanup while source tick entered";
-    } else if (p->mob->pending_ray != NULL || p->mob->pending_path != NULL) {
+    } else if (p->mob->pending_ray != NULL || p->mob->pending_path != NULL ||
+               p->mob->pending_death != NULL) {
         error->state.cleanup_pending = true;
         error->status = mc_entity_retain(p);
         if (error->status != MC_ENTITY_OK) {
@@ -263,8 +285,18 @@ mc_entity_status mc_mob_tick_cleanup(mc_entity *p, mc_mob_tick_error *out) {
             }
             if (drained)
                 (void)mt_path_cleanup_entered(p, error);
-            error->state.cleanup_pending =
-                p->mob->pending_ray != NULL || p->mob->pending_path != NULL;
+            if (drained && error->status == MC_ENTITY_OK && p->mob->pending_death != NULL) {
+                error->child = MC_MOB_TICK_CHILD_EFFECT;
+                error->status = mc_entity_effect_cleanup(p, &error->detail.effect);
+                if (error->status != MC_ENTITY_OK) {
+                    error->native_policy = true;
+                    error->operation = error->detail.effect.operation;
+                } else
+                    error->child = MC_MOB_TICK_CHILD_NONE;
+            }
+            error->state.cleanup_pending = p->mob->pending_ray != NULL ||
+                                           p->mob->pending_path != NULL ||
+                                           p->mob->pending_death != NULL;
             mc_entity_release(p); /* This cleanup's independent local occurrence. */
         }
     }

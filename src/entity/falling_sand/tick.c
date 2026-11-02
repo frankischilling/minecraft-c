@@ -67,9 +67,20 @@ bool mc_falling_entity_tick_error_retire(mc_falling_entity_tick_error *e) {
         e->cleanup_operation = "FallingSand active tick retirement";
         return false;
     }
-    if (!receipt(e, &s->mutation.world_access_failure, &s->mutation_receipt) ||
-        !receipt(e, &s->publication.world_access_failure, &s->publication_receipt))
+    if (!receipt(e, &s->mutation.world_access_failure, &s->mutation_receipt))
         return false;
+    mc_entity_drop_error cleanup;
+    const mc_entity_status drop_status = mc_entity_drop_retire(&s->drop, &cleanup);
+    if (drop_status != MC_ENTITY_OK) {
+        e->cleanup_status = drop_status;
+        e->cleanup_operation = cleanup.operation;
+        return false;
+    }
+    e->drop = NULL;
+    e->constructor = NULL;
+    e->publication = NULL;
+    e->item = NULL;
+    e->stack = NULL;
     if (!mc_world_placement_error_retire(&s->placement)) {
         e->cleanup_status = MC_ENTITY_BUSY;
         e->cleanup_operation = "FallingSand placement child retirement";
@@ -82,9 +93,6 @@ bool mc_falling_entity_tick_error_retire(mc_falling_entity_tick_error *e) {
     }
     s->registry_held = false;
     mc_world_access_failure_release(&s->mutation_receipt);
-    mc_world_access_failure_release(&s->publication_receipt);
-    mc_entity_release(s->item);
-    mc_item_stack_release(s->stack);
     if (s->entity_held)
         mc_entity_release(s->entity);
     for (size_t i = 0; i < s->world_count; ++i)
@@ -127,60 +135,28 @@ static bool set(mc_falling_entity_tick_error *e, unsigned int pc, int32_t x, int
  * the caller adds no launch velocity, inventory statistic or remote check. */
 static bool drop(mc_falling_entity_tick_error *e, unsigned int pc) {
     mc_falling_entity_tick_work *s = e->work;
-    mc_entity *p = s->entity;
-    const int32_t id = p->falling.a;
     e->bytecode = pc;
     e->drop_wrapper_bytecode = 4;
-    e->drop_method = "a(IIF)Lhl;";
-    e->drop_bytecode = 1;
-    e->child = MC_FALLING_TICK_CHILD_STACK;
-    e->stack_status = mc_item_stack_allocate(&s->stack);
-    e->stack = s->stack;
-    if (e->stack_status != MC_ITEM_STACK_OK)
-        return fail(e,
-                    e->stack_status == MC_ITEM_STACK_ALLOCATION_FAILED ? MC_ENTITY_ALLOCATION_FAILED
-                                                                       : MC_ENTITY_LIMIT,
-                    "FallingSand inherited drop Stack allocation");
-    e->drop_bytecode = 8;
-    e->stack_status = mc_item_stack_construct(s->stack, id, 1, 0);
-    if (e->stack_status != MC_ITEM_STACK_OK)
-        return fail(e, MC_ENTITY_STATE_ERROR, "FallingSand inherited drop Stack constructor");
-    e->drop_method = "a(Liz;F)Lhl;";
-    e->drop_bytecode = 0;
-    e->child = MC_FALLING_TICK_CHILD_CONSTRUCTOR;
-    mc_entity_status status = mc_item_entity_allocate(p->classes, &s->item, &s->constructor);
-    e->item = s->item;
-    if (status != MC_ENTITY_OK)
-        return fail(e, status, "FallingSand inherited drop Item allocation");
-    mc_world_runtime *w = p->base.world; /* sn4 before the coordinate arguments. */
-    if (w != NULL && !world(e, w))
-        return false;
-    const double x = p->base.x;
-    e->drop_bytecode = 18;
-    if (!fp(e))
-        return false;
-    const double y = mc_travel_dadd(p->base.y, 0.0);
-    const double z = p->base.z;
-    e->drop_bytecode = 24;
-    status = mc_item_entity_construct(s->item, w, x, y, z, s->stack, &s->constructor);
-    if (status != MC_ENTITY_OK)
-        return fail(e, status, "FallingSand inherited drop Item constructor");
-    e->drop_bytecode = 31;
-    status = mc_entity_item_pickup_delay_set(s->item, 10);
-    if (status != MC_ENTITY_OK)
-        return fail(e, status, "FallingSand inherited drop Item delay store");
-    w = p->base.world; /* Independent sn35 read, after the constructor. */
-    e->drop_bytecode = 39;
-    if (!world(e, w))
-        return false;
-    e->child = MC_FALLING_TICK_CHILD_PUBLICATION;
-    bool published = false;
-    const mc_world_storage_status inserted =
-        mc_world_runtime_insert_entity(w, s->item, &published, &s->publication);
-    if (!storage(e, inserted, "FallingSand inherited drop World.b(Item)")) {
-        (void)receipt(e, &s->publication.world_access_failure, &s->publication_receipt);
-        return false;
+    mc_entity_drop_error error;
+    const mc_entity_status status = mc_entity_drop_numeric_begin(
+        s->registry, s->entity, s->entity->falling.a, 1, 0.0f, &s->drop, &error);
+    mc_entity_drop_state state;
+    if (s->drop != NULL && mc_entity_drop_inspect(s->drop, &state)) {
+        e->drop = state.error;
+        e->constructor = &state.error->entity;
+        e->publication = state.error->publication;
+        e->stack = state.stack;
+        e->item = state.item;
+        e->stack_status = state.error->stack;
+        const bool stack_method = strcmp(state.error->site.descriptor, "(Liz;F)Lhl;") == 0;
+        e->drop_method = stack_method ? "a(Liz;F)Lhl;" : "a(IIF)Lhl;";
+        e->drop_bytecode = stack_method ? state.stack_pc : state.numeric_pc;
+        e->child = state.publication_entered ? MC_FALLING_TICK_CHILD_PUBLICATION
+                   : state.stack_constructed ? MC_FALLING_TICK_CHILD_CONSTRUCTOR
+                                             : MC_FALLING_TICK_CHILD_STACK;
     }
+    if (status != MC_ENTITY_OK)
+        return fail(e, status, error.operation);
     e->child = MC_FALLING_TICK_CHILD_NONE;
     return true;
 }
@@ -315,8 +291,6 @@ mc_entity_status mc_falling_entity_tick_in_context(mc_entity *p, mc_registry_cla
     e->predicate = &s->predicate;
     e->placement = &s->placement;
     e->effect = &s->effect;
-    e->constructor = &s->constructor;
-    e->publication = &s->publication;
     e->registry = &s->registry_error;
     mc_entity_move_error_init(&s->movement);
     mc_world_mutation_error_init(&s->mutation);

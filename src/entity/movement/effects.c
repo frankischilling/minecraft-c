@@ -1,6 +1,7 @@
 #include "mc/entity/movement/effects.h"
 
 #include "../mob/damage_internal.h"
+#include "../mob/death_internal.h"
 #include "effects_internal.h"
 
 #include "../../block/registry/registry_internal.h"
@@ -505,6 +506,12 @@ static bool instance_of(mc_entity *source, mc_entity_classes *classes, mc_entity
 
 static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_classes *math,
                    mc_entity *source, int32_t amount, bool *out, mc_entity_effect_error *error) {
+    if (mc_entity_effect_has_pending(entity)) {
+        (void)mc_mob_death_inspect(entity, &error->death);
+        fail(error, MC_ENTITY_BUSY, MC_ENTITY_EFFECT_CAUSE_OWNER,
+             "Entity damage pending native death cleanup", 0);
+        return false;
+    }
     if (source == NULL &&
         (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ZOMBIE) ||
          mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SKELETON)) &&
@@ -633,6 +640,61 @@ mc_entity_status mc_entity_effect_damage_with_math(mc_entity *entity, mc_registr
     }
     if (frame.status == MC_ENTITY_OK && !frame.living_damage.entered)
         mc_entity_effect_error_init(&frame);
+    return finish(&frame, error);
+}
+
+bool mc_entity_effect_has_pending(const mc_entity *entity) {
+    return mc_entity_has_mob(entity) && entity->mob->pending_death != NULL;
+}
+
+mc_entity_status mc_entity_effect_cleanup(mc_entity *entity, mc_entity_effect_error *error) {
+    mc_entity_effect_error frame;
+    mc_entity_effect_error_init(&frame);
+    if (enter(entity, &frame)) {
+        if (mc_entity_has_mob(entity))
+            (void)mc_mob_death_cleanup(entity, &frame);
+        mc_entity_release(entity);
+    }
+    return finish(&frame, error);
+}
+
+bool mc_entity_effect_error_retire(mc_entity_effect_error *error) {
+    if (error == NULL)
+        return false;
+    if (!error->death.pending)
+        return true;
+    mc_entity_effect_error cleanup;
+    mc_entity_effect_error_init(&cleanup);
+    if (mc_entity_effect_cleanup(error->death.receiver, &cleanup) != MC_ENTITY_OK) {
+        error->death.cleanup_status = cleanup.status;
+        error->death.cleanup_operation = cleanup.operation;
+        return false;
+    }
+    error->death.pending = error->death.active = false;
+    error->death.receiver = NULL;
+    error->death.drop_error = NULL;
+    error->death.cleanup_status = MC_ENTITY_OK;
+    error->death.cleanup_operation = NULL;
+    return true;
+}
+
+mc_entity_status mc_entity_effect_death_in_context(mc_entity *entity, mc_registry_classes *classes,
+                                                   mc_entity *source,
+                                                   mc_entity_effect_error *error) {
+    mc_entity_effect_error frame;
+    mc_entity_effect_error_init(&frame);
+    if (enter(entity, &frame)) {
+        frame.source_class = "ls";
+        if (mc_entity_effect_has_pending(entity)) {
+            (void)mc_mob_death_inspect(entity, &frame.death);
+            fail(&frame, MC_ENTITY_BUSY, MC_ENTITY_EFFECT_CAUSE_OWNER,
+                 "Entity death pending native child cleanup", 0);
+        } else {
+            (void)mc_mob_death_entered(entity, classes, source, &frame);
+            frame.source_bytecode = frame.death.death_pc;
+        }
+        mc_entity_release(entity);
+    }
     return finish(&frame, error);
 }
 

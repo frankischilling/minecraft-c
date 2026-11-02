@@ -34,7 +34,8 @@ unchanged-original CPU rows also match on both hosts.
 
 The original Wolf method now reaches the real [Sheep damage body](animal-damage.md)
 after its cooldown store. Nonfatal bites apply health, hurt timers, knockback
-and sound through the ordinary effect dispatcher. Fatal damage still stops
-at the actual LivingEntity death/drop invocation after its reached sound.
-These finite checks do not establish complete Wolf combat, death/drops, taming,
+and sound through the ordinary effect dispatcher. Fatal animal damage now
+enters the inherited [death and drop body](animal-death.md). Its separate packet
+includes an actual untamed Wolf bite that publishes wool from a killed Sheep.
+These finite checks do not establish complete Wolf combat, taming,
 original World behavior or extended-play stability.

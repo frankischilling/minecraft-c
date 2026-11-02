@@ -43,14 +43,8 @@
   "source_inputs_unchanged": true,
   "helper_unchanged": true,
   "owner_preparation": "Actual fd(wy,name,xa.a(0),23L), DL(fd) and GI(fd) constructors; authored post-construction state and actual Random.setSeed inputs. No uninitialized original owners, World body substitutions or post-call repairs.",
-  "scope": "Unchanged original DL/LS damage, knockback, concrete Sheep sounds and GI close bite; exact nonfatal returns, Random state, null failures and sound boundary. Native fatal row compares actual World sound checkpoint before LS.b(SN)316; actual original completed death retained separately.",
+  "scope": "Unchanged original DL/LS damage, knockback, concrete Sheep sounds and GI close bite; exact returns, Random state, null failures and sound boundary. Fatal row retains both the actual World sound checkpoint before LS.b(SN)316 and the actual completed sheared death. Current native replay compares its terminal state against that captured completion.",
   "intentional_outcome_pairs": [
-    {
-      "profile": 19,
-      "original": "NONE/true with complete actual death retained",
-      "native": "UNIMPLEMENTED before death",
-      "compare": "exact pre-death sound-checkpoint state"
-    },
     {
       "profile": 21,
       "original": "authored IllegalStateException from real World sound observer",

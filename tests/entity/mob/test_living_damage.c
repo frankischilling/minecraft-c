@@ -314,14 +314,23 @@ static bool living_gates_and_failures(living_fixture *f) {
           f->sheep->holds == f->target_holds && f->wolf->holds == f->source_holds);
     CHECK(living_reset(f));
     f->sheep->mob->living.Y = 4;
-    answer = true;
+    mc_entity_watch_record *wool = wolf_attack_flags(f->sheep);
+    CHECK(wool != NULL && wool->type == 0);
+    wool->byte_value = (int8_t)((uint8_t)wool->byte_value | 16u);
+    answer = false;
     CHECK(mc_entity_effect_damage_with_math(f->sheep, f->base.registry, f->base.math, f->wolf, 4,
-                                            &answer, &e) == MC_ENTITY_STATE_ERROR &&
-          answer && e.cause == MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL &&
-          e.living_damage.death_invoke_reached && e.living_damage.living_pc == 316 &&
+                                            &answer, &e) == MC_ENTITY_OK &&
+          answer && e.cause == MC_ENTITY_EFFECT_CAUSE_NONE &&
+          e.living_damage.death_invoke_reached && e.living_damage.living_pc == 363 &&
+          e.living_damage.returned && e.living_damage.result_stored && e.living_damage.result &&
           e.living_damage.sound_returned && e.living_damage.source_hold_released &&
-          f->sheep->mob->living.Y == 0 && !f->sheep->mob->living.ah && !f->sheep->base.be &&
-          f->sound_rows_count == 1 && !f->bad_callback);
+          e.death.entered && e.death.returned && e.death.death_pc == 57 && e.death.q_returned &&
+          e.death.q_pc == 31 && e.death.sheared_read && e.death.sheared && !e.death.color_read &&
+          !e.death.quantity_attempted && e.death.drops_attempted == 0 &&
+          e.death.source_hold_acquired && e.death.source_hold_released && !e.death.pending &&
+          e.death.receiver == NULL && e.death.drop_error == NULL && f->sheep->mob->living.Y == 0 &&
+          f->sheep->mob->living.ah && !f->sheep->base.be && f->sheep->holds == f->target_holds &&
+          f->wolf->holds == f->source_holds && f->sound_rows_count == 1 && !f->bad_callback);
     return true;
 }
 
@@ -453,8 +462,8 @@ static bool living_direct_failure_site(living_fixture *f) {
     return true;
 }
 
-/* Written before DL/LS nonnull-source admission. The old client reaches
- * GI195 -> actual Sheep DL.a3 and retains that unsupported child. */
+/* Retained regression for the original missing DL/LS nonnull-source body.
+ * The real GI195 caller now returns through actual Sheep DL.a3/LS damage. */
 static bool living_bite_red(living_fixture *f) {
     CHECK(wolf_attack_reset(&f->base, f->wolf, f->sheep, 38, true, 1, 0, 0));
     mc_mob_tick_error *e = calloc(1, sizeof(*e));
@@ -627,14 +636,15 @@ static bool living_reference_rows(living_fixture *f, const char *destination) {
                     : mc_entity_effect_damage_with_math(f->sheep, f->base.registry, f->base.math,
                                                         f->current_source, amount, &answer, &error);
             const char *scope = "RETURN", *exception = "NONE";
+            if (index == 19)
+                CHECK(status == MC_ENTITY_OK && answer && error.living_damage.returned &&
+                      error.living_damage.living_pc == 363 && error.death.returned &&
+                      error.death.death_pc == 57 && error.death.sheared &&
+                      error.death.drops_attempted == 0 && !error.death.pending &&
+                      error.death.receiver == NULL && error.death.drop_error == NULL &&
+                      f->sheep->mob->living.ah && !f->sheep->base.be);
             if (status != MC_ENTITY_OK) {
-                if (index == 19) {
-                    CHECK(error.living_damage.death_invoke_reached &&
-                          error.living_damage.living_pc == 316 &&
-                          error.cause == MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL);
-                    scope = "DEATH_ENTRY";
-                    exception = "UNIMPLEMENTED";
-                } else if (index == 21) {
+                if (index == 21) {
                     CHECK(status == MC_ENTITY_WORLD_FAILED &&
                           error.world.cause.status == MC_WORLD_STORAGE_IO_ERROR &&
                           error.living_damage.native_policy &&

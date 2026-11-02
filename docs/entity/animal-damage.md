@@ -69,17 +69,19 @@ completed stores and leaves the Boolean output unchanged. Native allocation,
 ownership and floating-point refusals remain distinct from an evidenced source
 exception. No failed call is replayed or rolled back during cleanup.
 
-A fatal hit reaches the actual death/drop invocation at `ls.a:316`, after the
-fatal sound when the full-hit branch requires it. That body remains unfinished.
-The preserved health and sound prefix does not establish completed death,
-Entity removal or an Item drop. Other Mob damage overrides, Player combat and
-complete combat remain outside this animal scope. Existing
+A fatal hit enters the actual [death and drop body](animal-death.md) at
+`ls.a:316`, after the fatal sound when the full-hit branch requires it.
+Death callbacks independently hold a reached attacker, including on a stronger
+repeated fatal hit that skipped direction. Failed death work remains on the
+victim until checked cleanup, independently of optional value diagnostics.
+Other Mob damage overrides, Player combat and complete combat remain outside
+this animal scope. Existing
 [Zombie](living-damage.md) and [Skeleton](skeleton-damage.md) NULL-attacker
 qualifications retain their own receiver and branch limits.
 
 ## Verification scope
 
-Windows MSVC Release and Linux Clang ASan/UBSan each pass 145 authored checks
+Windows MSVC Release and Linux Clang ASan/UBSan each pass 146 authored checks
 and 27 original comparison rows within the scopes below.
 The authored component uses real animal, Wolf, World, Registry, MathHelper and
 WorldAccess owners. It checks health and velocity words, repeated hits, NULL
@@ -95,9 +97,9 @@ tamed Wolf bite method. Actors remain component operands outside loaded
 Chunks. Their constructor entropy and ordinary World scheduling are outside
 the comparison.
 
-The fatal profile compares the read-only sound-callback checkpoint before
-`ls.a:316`. The original then completes its sheared-Sheep death; the native
-body retains its explicit death dependency. The throwing callback profile
+The fatal profile now compares the native completed sheared-Sheep death with
+the original completion. The earlier read-only original sound-callback
+checkpoint remains separately retained. The throwing callback profile
 likewise keeps the original `IllegalStateException` and the native adapter's
 I/O failure as distinct outcomes, while comparing their completed damage and
 sound state.
@@ -111,6 +113,6 @@ ctest --test-dir build -R '^entity\.living_damage$' --output-on-failure
 The public native controls and replay need no original archive, assets or JVM.
 Static source identities, original CPU observations and native replay retain
 their separate scopes. They do not establish a complete graphical Wolf
-encounter, native death/drop behavior or extended-play stability. Pig, Cow and
-Chicken use authored native sound controls; the original CPU packet's animal
-receiver is Sheep.
+encounter or extended-play stability. Pig, Cow and Chicken use authored native
+sound controls here; this damage packet's original receiver is Sheep. The
+separate death packet also observes actual fatal Pig, Cow and Chicken calls.

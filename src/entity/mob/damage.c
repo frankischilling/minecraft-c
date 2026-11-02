@@ -1,4 +1,5 @@
 #include "damage_internal.h"
+#include "death_internal.h"
 
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
@@ -445,10 +446,13 @@ static bool living_body(mc_entity *p, mc_registry_classes *registry, mc_math_cla
         living_at(e, 316);
         child_at(e, "ls", "b", "(Lsn;)V", 0);
         e->living_damage.death_invoke_reached = true;
-        return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
-                           "Living damage actual death/drop body");
-    }
-    if (full_hit && !sound(p, registry, false, e))
+        if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ZOMBIE) ||
+            mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SKELETON))
+            return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
+                               "Living damage actual death/drop body");
+        if (!mc_mob_death_entered(p, registry, source, e))
+            return false;
+    } else if (full_hit && !sound(p, registry, false, e))
         return false;
     living_at(e, 363);
     *out = true;

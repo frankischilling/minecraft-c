@@ -53,6 +53,11 @@ effects remain. The graphical client supplies that owner.
 
 ## Verification
 
+Falling Sand and [animal death](animal-death.md) share the retained inherited
+Entity drop module. It owns the exact Stack, Item, independently captured Worlds
+and failed publication receipt through checked retirement. Falling Sand keeps
+its own outer tick locations and the actual nested drop declaration and PC.
+
 Windows and Linux Clang ASan/UBSan each pass 112 authored actual-owner checks. They cover
 exact free-motion/damping words, unchanged private Random and base-tick state,
 age overflow, matching-Block removal after the first age, real floor collision

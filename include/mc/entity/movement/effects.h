@@ -3,6 +3,7 @@
 
 #include "mc/core/math/classes.h"
 #include "mc/entity/entity.h"
+#include "mc/entity/mob/death.h"
 #include "mc/entity/player/statistics.h"
 #include "mc/statistics/registry/registry.h"
 #include "mc/world/runtime/movement.h"
@@ -65,7 +66,10 @@ typedef struct mc_entity_living_damage_state {
 /* Passive reached-operation frames, independent of constructor diagnostics.
  * source_bytecode belongs to the requested effect; child fields name its
  * actual delegated source bodies. Successful calls return a fresh empty error,
- * except the additive receipt of a genuinely entered Living damage body.
+ * except the additive receipt of a genuinely entered Living damage/death body.
+ * Failed death work belongs to the actual victim, even with NULL error output;
+ * death's typed views borrow that work until checked cleanup. Value copies own
+ * no resources and must not be reused after their borrowed graph retires.
  * STATE_ERROR with an explicit unsupported cause is an unfinished reached
  * descendant, never an empty successful virtual or a synthesized Java Object. */
 typedef struct mc_entity_effect_error {
@@ -90,6 +94,7 @@ typedef struct mc_entity_effect_error {
     uintptr_t damage_source_identity;
     int32_t damage_amount;
     mc_entity_living_damage_state living_damage;
+    mc_mob_death_state death;
 } mc_entity_effect_error;
 
 /* Full passive initialization without a returned diagnostic copy. NULL is a no-op. */
@@ -121,6 +126,19 @@ mc_entity_status mc_entity_effect_fall_in_context(mc_entity *entity,
                                                   float distance, mc_entity_effect_error *error);
 mc_entity_status mc_entity_effect_attacked(mc_entity *entity, mc_entity_effect_error *error);
 mc_entity_status mc_entity_effect_dead(mc_entity *entity, mc_entity_effect_error *error);
+/* Actual inherited client LS.b(Entity) death body on Sheep/Pig/Cow/Chicken/Wolf.
+ * This does not invoke SN.K or reset health/death time. Failed native children
+ * remain owned by the same actor, independently of optional value diagnostics.
+ * Keep the actor/graph live and perform checked cleanup before retirement. */
+mc_entity_status mc_entity_effect_death_in_context(mc_entity *, mc_registry_classes *,
+                                                   mc_entity *source, mc_entity_effect_error *);
+bool mc_entity_effect_has_pending(const mc_entity *);
+mc_entity_status mc_entity_effect_cleanup(mc_entity *, mc_entity_effect_error *);
+/* Consume the borrowed pending death named by this value receipt while its
+ * graph is live. Success clears expired borrows and preserves the source cause.
+ * False leaves the remaining producer and cleanup cause available for retry.
+ * Copied receipts acquire no independent owner; their borrows expire together. */
+bool mc_entity_effect_error_retire(mc_entity_effect_error *);
 mc_entity_status mc_entity_effect_damage(mc_entity *entity, mc_entity *source, int32_t amount,
                                          bool *out, mc_entity_effect_error *error);
 mc_entity_status mc_entity_effect_damage_in_context(mc_entity *entity,
@@ -131,8 +149,11 @@ mc_entity_status mc_entity_effect_damage_in_context(mc_entity *entity,
  * borrowed/exclusive for this synchronous call and activated only at a reached
  * inherited LS knockback sqrt. The older context entry supplies NULL Math;
  * remote/dead/repeated branches do not inspect it. A nonnull source is retained
- * only at the first reached LS source-position read and kept through sound.
- * Item/Falling and skipped Living branches leave that argument unread. */
+ * at the first reached LS source-position read and kept through sound. Death
+ * callbacks independently retain a reached source occurrence, including on a
+ * stronger repeated fatal hit that skipped direction. Pending death cleanup
+ * retains that occurrence after a failed call. Item/Falling and skipped Living
+ * branches leave that argument unread. */
 mc_entity_status mc_entity_effect_damage_with_math(mc_entity *, mc_registry_classes *,
                                                    mc_math_classes *, mc_entity *source,
                                                    int32_t amount, bool *out,

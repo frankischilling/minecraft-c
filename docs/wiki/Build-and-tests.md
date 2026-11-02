@@ -8,16 +8,20 @@ initial saving, and the separate full-session acceptance scenario. The client
 remains pre-playable; finite menu or component tests do not qualify unrestricted
 gameplay.
 
-The current Windows Release lifecycle passes 2,844 native checks, with independent
-decoding of 375 saved Chunks and captured Player/WorldInfo state. The final focused
+The current Windows Release lifecycle passes 3,266 native checks, with independent
+decoding of 390 saved Chunks and captured Player/WorldInfo state. The final focused
 selection passes 22 Windows CTests and 20 Linux Clang ASan/UBSan CTests, plus a
 separate X11 SDK input check. Falling Sand passes 112 authored controls per host;
 Wolf attack passes 75 controls and 24 exact unchanged-original CPU comparisons.
 The newer [animal damage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/animal-damage.md)
-selection passes thirteen Windows tests and thirteen Linux Clang ASan/UBSan tests.
-Both hosts pass 145 authored checks and 27 original comparison rows, with
-separate fatal sound-checkpoint and callback-failure scopes. Fatal death/drop
-and other concrete hurt overrides remain unfinished.
+selection now passes seventeen Windows tests and sixteen Linux Clang ASan/UBSan
+tests, followed by a separate passing Linux terminal-inventory regression.
+Both hosts pass 146 authored checks and 27 original comparison rows, with
+the completed sheared fatal return and distinct callback-failure scopes.
+[Animal death and drops](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/animal-death.md)
+add 2,709 native checks, 43 original CPU calls and 69 shared Entity-drop controls.
+The retained drop module also serves Falling Sand. Other concrete overrides,
+Player combat and Inventory UI remain unfinished.
 
 The region-writer validator retains every corruption check while avoiding
 redundant snapshot copies. One local Windows Python pair changes from 34 tests

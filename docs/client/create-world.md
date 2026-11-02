@@ -12,7 +12,7 @@ text-field checks and 207 FJ checks. The full Windows Release run creates
 seed 777, completes all 289 terrain samples and its initial save at
 `Minecraft.a:339`, returns three World/HUD frames, saves to the title and
 reselects the actual generated World for three more frames. The current run
-passes 2,844 native checks in 66.93 seconds with independent disk decoding and
+passes 3,266 native checks in 49.82 seconds with independent disk decoding and
 checked cleanup. An earlier run passed 2,945 checks in 54.99 seconds before
 the diagnostic-only JU223 correction. [Run summaries](../../tests/reference/client/create_world/native-validation.json)
 retain their input scope. These results do not establish an executed-original
@@ -147,7 +147,8 @@ then spawn preparation, Player creation/publication and renderer/effect
 attachment. New World flag `s` selects the initial source save with its
 LoadingScreen at World-change339, before view publication347 and the final
 return. Subsequent save/title and reselection use the same retained epoch
-machinery as existing saves. Full acceptance of this continuation is pending.
+machinery as existing saves. The finite native lifecycle below qualifies this
+continuation; original whole-session comparison remains separate work.
 
 ## Evidence and commands
 
@@ -179,7 +180,7 @@ initial save, returned World/HUD frames, selected live save values and a
 distinct World/Player/controller/handler epoch through ordinary reselection.
 Its wrapper validates independently decoded saved metadata and region chunks,
 retains logs and captures, and checks source/resource continuity. The passing
-current run decodes four region files and 375 Chunks, compares every selected Player
+current run decodes four region files and 390 Chunks, compares every selected Player
 field and WorldInfo value to live pre-leave captures, and rejects three
 corrupted metadata copies. Both Frame and Canvas are absent after cleanup.
 No metadata, terrain, Player pose, statistics, Timer or Random input is supplied;

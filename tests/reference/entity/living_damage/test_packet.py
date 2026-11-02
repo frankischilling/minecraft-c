@@ -29,7 +29,7 @@ class LivingPacket(unittest.TestCase):
         cls.baseline = json.dumps(cls.packet, sort_keys=True)
         cls.expected = REPLAY.expected_rows(cls.packet)
         cls.native = copy.deepcopy(cls.expected)
-        cls.native[19].update(result=None, exception='UNIMPLEMENTED', completion=None)
+        cls.native[19] = REPLAY.comparison_row(cls.native[19])
         cls.native[21]['exception'] = 'IO'
 
     def tearDown(self):
@@ -38,43 +38,46 @@ class LivingPacket(unittest.TestCase):
 
     def test_unchanged_baseline_and_explicit_scope_pairs(self):
         self.assertEqual(len(rows(text(self.expected))), 27)
-        self.assertEqual(len(rows(text(self.native), native=True)), 27)
+        self.assertEqual(len(REPLAY.native_rows(text(self.native))), 27)
         REPLAY.compare(self.native, self.expected)
-        self.assertNotEqual(self.native[19]['exception'], self.expected[19]['exception'])
+        self.assertTrue(self.native[19]['state']['dying'])
+        self.assertFalse(self.expected[19]['state']['dying'])
+        self.assertEqual(self.native[19]['state'], self.expected[19]['completion']['state'])
         self.assertNotEqual(self.native[21]['exception'], self.expected[21]['exception'])
 
     def test_count_identity_schema_and_type_mutations(self):
         for value in (self.native[:-1], [self.native[1], self.native[0], *self.native[2:]]):
             with self.assertRaises(AssertionError):
-                rows(text(value), native=True)
+                REPLAY.native_rows(text(value))
         for key, value in (('case', False), ('profile', True), ('amount', True), ('step', 1),
                            ('exception', 'NPE'), ('scope', 'DEATH_ENTRY'), ('result', 1)):
             changed = copy.deepcopy(self.native)
             changed[0][key] = value
             with self.assertRaises(AssertionError):
-                rows(text(changed), native=True)
+                REPLAY.native_rows(text(changed))
         changed = copy.deepcopy(self.native)
         changed[0]['input'][0] = False
         with self.assertRaises(AssertionError):
-            rows(text(changed), native=True)
+            REPLAY.native_rows(text(changed))
 
     def test_exact_primitive_and_random_comparison(self):
-        for key in ('random', 'math_random', 'world_random', 'source_random', 'yaw', 'animation',
-                    'velocity', 'position', 'bounds', 'health', 'source_cooldown', 'attacked', 'dying'):
+        keys = ('random', 'math_random', 'world_random', 'source_random', 'yaw', 'animation',
+                'velocity', 'position', 'bounds', 'health', 'source_cooldown', 'attacked', 'dying')
+        for index, key in ((index, key) for index in (0, 19) for key in keys):
             changed = copy.deepcopy(self.native)
-            value = changed[0]['state'][key]
+            value = changed[index]['state'][key]
             if type(value) is str:
-                changed[0]['state'][key] = f'{int(value,16) ^ 1:0{len(value)}x}'
+                changed[index]['state'][key] = f'{int(value,16) ^ 1:0{len(value)}x}'
             elif type(value) is bool:
-                changed[0]['state'][key] = not value
+                changed[index]['state'][key] = not value
             elif type(value) is int:
-                changed[0]['state'][key] += 1
+                changed[index]['state'][key] += 1
             elif type(value[0]) is int:
                 value[0] += 1
             else:
                 value[0] = f'{int(value[0],16) ^ 1:0{len(value[0])}x}'
-            rows(text(changed), native=True)
-            with self.assertRaisesRegex(AssertionError, 'case0 field state'):
+            REPLAY.native_rows(text(changed))
+            with self.assertRaisesRegex(AssertionError, f'case{index} field state'):
                 REPLAY.compare(changed, self.expected)
 
     def test_sound_and_owner_mutations(self):
@@ -86,24 +89,25 @@ class LivingPacket(unittest.TestCase):
             else:
                 sound[key] = f'{int(sound[key],16)^1:08x}'
             with self.assertRaisesRegex(AssertionError, 'case0 field state'):
-                REPLAY.compare(rows(text(changed), native=True), self.expected)
+                REPLAY.compare(REPLAY.native_rows(text(changed)), self.expected)
         changed = copy.deepcopy(self.native)
         changed[0]['state']['source_unchanged'] = False
         with self.assertRaisesRegex(AssertionError, 'retained source owner'):
-            rows(text(changed), native=True)
+            REPLAY.native_rows(text(changed))
 
     def test_death_checkpoint_and_distinct_failure_categories(self):
-        for index, key, value in ((19, 'exception', 'NONE'), (19, 'result', True),
+        for index, key, value in ((19, 'exception', 'UNIMPLEMENTED'), (19, 'result', None),
+                                  (19, 'scope', 'DEATH_ENTRY'),
                                   (19, 'completion', self.expected[19]['completion']),
                                   (21, 'exception', 'CALLBACK')):
             changed = copy.deepcopy(self.native)
             changed[index][key] = value
             with self.assertRaises(AssertionError):
-                rows(text(changed), native=True)
+                REPLAY.native_rows(text(changed))
         changed = copy.deepcopy(self.native)
-        changed[19]['state']['dying'] = True
+        changed[19]['state']['dying'] = False
         with self.assertRaises(AssertionError):
-            REPLAY.compare(rows(text(changed), native=True), self.expected)
+            REPLAY.compare(REPLAY.native_rows(text(changed)), self.expected)
         changed = copy.deepcopy(self.expected)
         changed[19]['completion']['state']['dying'] = False
         with self.assertRaisesRegex(AssertionError, 'death completion'):

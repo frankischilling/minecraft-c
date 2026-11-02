@@ -14,6 +14,9 @@ bool mc_world_entity_tick_error_retire(mc_world_entity_tick_error *e) {
     if (e->child == MC_WORLD_ENTITY_TICK_CHILD_FALLING_SAND &&
         !mc_falling_entity_tick_error_retire(&e->child_error.falling))
         return false;
+    if (e->child == MC_WORLD_ENTITY_TICK_CHILD_MOB &&
+        !mc_mob_tick_error_retire(&e->child_error.mob))
+        return false;
     mc_world_entity_tick_error_init(e);
     return true;
 }

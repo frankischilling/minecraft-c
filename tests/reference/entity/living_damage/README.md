@@ -97,11 +97,14 @@ checkpoint inside the actual fatal sound callback, after both private Random
 draws and all sound arguments. The original then returns from World sound,
 enters `ls.b(sn)` at caller position 316 and completes the actual sheared
 Sheep death. Its result and complete after-state remain in `completion`.
-The native implementation stops explicitly at the death dependency at 316.
-Only the checkpoint state is compared. The comparator requires the original
-true return and dying flag after completion, while requiring the native
-UNIMPLEMENTED outcome and its unchanged pre-death dying flag. It does not
-label the original execution unsupported or claim native death/drop parity.
+The native implementation now completes that same sheared death and returns
+true from damage. Its ordinary `RETURN` row contains the actual terminal
+state. Replay compares every terminal primitive, Random state, owner predicate
+and sound argument against the original `completion.state`, including the
+dying flag set by death. The historical sound checkpoint remains unchanged;
+it is not presented as a native checkpoint. The original capture inputs and
+their pinned hashes also remain unchanged. The native runner validates its
+current terminal-row format separately from the pinned original capture reader.
 
 Profile 20 declares a NULL private Random during a fatal hit. The original
 throws at the first fatal sound Random invocation, before entering death.
@@ -113,7 +116,7 @@ it does not claim matching Throwable or callback implementations.
 
 These are finite Sheep and Wolf CPU observations. Other Living subclasses,
 Player armor, revenge/target selection, ordinary AI and World scheduling,
-native death/drop, complete combat, audio, GL and original pixels are outside
+Item drops, delayed death ticks, complete combat, audio, GL and original pixels are outside
 the packet. Static pins, original execution and native replay are separate
 evidence. A passing original capture alone establishes no native result.
 
@@ -140,7 +143,8 @@ inputs; changing them requires a new original capture.
 
 Seven control tests reject missing/reordered rows, type coercion, duplicate
 keys, changed inputs, one-bit primitive/Random/sound changes, owner predicate
-changes, invalid fatal/callback scope substitutions and corrupted Code pins.
+changes, one-bit fatal terminal-state changes, invalid fatal/callback scope
+substitutions and corrupted Code pins.
 The measured local run with the original archive passes all seven without
 skips. Without an archive, only the archive identity control explicitly skips.
 
@@ -170,4 +174,5 @@ add `--config Debug` and use the executable under `Debug/`. The runner creates
 declared native fixture resources and a separate World directory, invokes
 `EXE assets worlds --reference native.ndjson`, and retains the native rows,
 stdout/stderr, comparison receipt and immutable input/product hashes.
-Fatal and callback outcome pairs are recorded explicitly in that receipt.
+The fatal completion comparison and distinct callback outcome pair are recorded
+explicitly in that receipt.

@@ -218,7 +218,7 @@ static int fresh_ready(fixture *f, fresh_work *work, size_t epoch) {
     int64_t time = 0;
     for (size_t i = 0; i < 512 && SDL_GetTicks() < deadline; ++i) {
         CHECK(fresh_frame(f) == 0 && f->app->active_world != NULL && f->app->h != NULL);
-        if (f->app->r != NULL) {
+        if (f->app->r != NULL || !f->app->N) {
             CHECK(save_title_resume(f, f->app->active_world, NULL, recovered, &focus_pauses,
                                     &eligible, &time) == 0);
             continue;

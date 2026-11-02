@@ -1,6 +1,7 @@
 #ifndef MC_ENTITY_FALLING_SAND_TICK_H
 #define MC_ENTITY_FALLING_SAND_TICK_H
 
+#include "mc/entity/drop.h"
 #include "mc/entity/movement/movement.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/mutations.h"
@@ -41,6 +42,7 @@ typedef struct mc_falling_entity_tick_error {
     const mc_entity_error *constructor;
     const mc_world_entity_error *publication;
     const mc_registry_error *registry;
+    const mc_entity_drop_error *drop; /* Exact retained inherited SN call, borrowed. */
     mc_item_stack_status stack_status;
     mc_entity *item;      /* Same reached Item allocation, borrowed. */
     mc_item_stack *stack; /* Same reached Stack allocation, borrowed. */

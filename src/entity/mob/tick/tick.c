@@ -63,7 +63,8 @@ static mc_entity_status run(mc_entity *p, mc_registry_classes *registry, mc_math
         mt_fail(&s, MC_ENTITY_INVALID_PHASE, "Mob tick READY owner");
     else if (p->mob->tick_active)
         mt_fail(&s, MC_ENTITY_BUSY, "Mob tick already entered");
-    else if (p->mob->pending_ray != NULL || p->mob->pending_path != NULL) {
+    else if (p->mob->pending_ray != NULL || p->mob->pending_path != NULL ||
+             p->mob->pending_death != NULL) {
         e->state.cleanup_pending = true;
         mt_fail(&s, MC_ENTITY_BUSY, "Mob pending native child cleanup");
     } else {

@@ -11,7 +11,7 @@ import tempfile
 sys.dont_write_bytecode = True
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from capture_reference import SOURCES, digest, ensure, read_json, rows, strict_equal
+from capture_reference import SOURCES, digest, ensure, profiles, read_json, rows, state, strict_equal, unique_object
 from capture import capture, require_success
 
 
@@ -24,22 +24,58 @@ def expected_rows(packet):
     return rows('\n'.join('LIVING_DAMAGE ' + json.dumps(row) for row in packet['rows']))
 
 
+def native_rows(text):
+    """Validate current native returns without changing the pinned capture reader."""
+    found = [json.loads(line[len('LIVING_DAMAGE '):], object_pairs_hook=unique_object)
+             for line in text.splitlines() if line.startswith('LIVING_DAMAGE ')]
+    expected = [(index, step, profile) for index, profile in enumerate(profiles())
+                for step in range(3 if profile[0] == 2 else 1)]
+    keys = {'case', 'profile', 'step', 'input', 'amount', 'scope', 'result', 'exception', 'state', 'completion'}
+    ensure(len(found) == len(expected) == 27, 'exact Living row count')
+    for index, (row, (profile_index, step, profile)) in enumerate(zip(found, expected)):
+        ensure(type(row) is dict and set(row) == keys and type(row['case']) is int and row['case'] == index and
+               type(row['profile']) is int and row['profile'] == profile_index and type(row['step']) is int and row['step'] == step and
+               strict_equal(row['input'], profile), 'Living row identity/schema differs')
+        amount = (4, 3, 7)[step] if profile[0] == 2 else profile[1]
+        ensure(type(row['amount']) is int and row['amount'] == amount, 'Living amount input differs')
+        exception = 'NPE' if profile_index in (9, 10, 20) else 'IO' if profile_index == 21 else 'NONE'
+        scope = 'EXCEPTION' if exception != 'NONE' else 'RETURN'
+        ensure(row['exception'] == exception and row['scope'] == scope, 'Living source outcome category differs')
+        ensure(row['result'] is None if exception != 'NONE' or profile[0] == 1 else type(row['result']) is bool,
+               'Living actual result type')
+        if profile_index == 19:
+            ensure(row['result'] is True, 'Living native completed death return')
+        state(row['state'])
+        ensure(row['completion'] is None, 'Living native terminal-state scope differs')
+    return found
+
+
+def comparison_row(original):
+    if original['profile'] != 19:
+        return original
+    completion = original['completion']
+    ensure(original['scope'] == 'DEATH_ENTRY' and original['result'] is True and original['exception'] == 'NONE' and
+           original['state']['dying'] is False and type(completion) is dict and
+           set(completion) == {'result', 'exception', 'state'} and completion['result'] is True and
+           completion['exception'] == 'NONE' and completion['state']['dying'] is True,
+           'actual original death completion/checkpoint differs')
+    # The immutable original record contains TWO actual observations. Native
+    # emits its terminal state, so compare it to the captured completion,
+    # without relabeling the historical sound checkpoint as a native result.
+    return {**original, 'scope': 'RETURN', 'state': completion['state'], 'completion': None}
+
+
 def compare(actual, expected):
     ensure(len(actual) == len(expected), 'native/original Living row count differs')
     for index, (a, b) in enumerate(zip(actual, expected)):
-        for key in b:
-            # These are deliberately different executions, with an explicitly
-            # bounded common state checkpoint rather than Throwable parity.
-            if b['profile'] == 19 and key in ('result', 'exception', 'completion'):
-                continue
+        compared = comparison_row(b)
+        for key in compared:
+            # The throwing observer and native I/O adapter are deliberately
+            # distinct failures with a common reached-state boundary.
             if b['profile'] == 21 and key == 'exception':
                 continue
-            ensure(strict_equal(a.get(key), b[key]),
-                   f'native/original Living case{index} field {key} differs: native {a.get(key)!r}; original {b[key]!r}')
-        if b['profile'] == 19:
-            ensure(a['result'] is None and a['exception'] == 'UNIMPLEMENTED' and a['completion'] is None and
-                   b['result'] is True and b['exception'] == 'NONE' and b['completion']['state']['dying'] is True and
-                   a['state']['dying'] is False, 'actual original death completion/native death-entry limit differs')
+            ensure(strict_equal(a.get(key), compared[key]),
+                   f'native/original Living case{index} field {key} differs: native {a.get(key)!r}; original {compared[key]!r}')
         if b['profile'] == 21:
             ensure(a['exception'] == 'IO' and b['exception'] == 'CALLBACK', 'distinct actual World observer failure categories differ')
 
@@ -66,13 +102,17 @@ def main():
     inputs = [executable, HERE / 'run_native.py', HERE / 'finite.json', *[HERE / name for name in SOURCES], support,
               root / 'tests/entity/mob/test_living_damage.c', root / 'tests/world/runtime/test_world_random_tick.c',
               root / 'src/entity/mob/damage.c', root / 'src/entity/mob/damage_internal.h',
+              root / 'src/entity/mob/death.c', root / 'src/entity/mob/death_internal.h',
+              root / 'include/mc/entity/mob/death.h', root / 'src/entity/drop/drop.c',
+              root / 'include/mc/entity/drop.h',
               root / 'src/entity/mob/tick/wolf_attack.c', root / 'tests/support/java_random.h']
     inputs += sorted(path for path in (output / 'resources').rglob('*') if path.is_file())
     before = {str(path.resolve()): digest(path) for path in inputs}
     report = {'status': 'FAIL', 'input_before_sha256': before,
               'scope': '27 unchanged-original DL/LS and GI close-bite CPU observations over genuine fd/Sheep/Wolf. '
-                       'Exact primitive returns/state/Random histories, NPE prefixes. Fatal compares source sound checkpoint before '
-                       'LS.b(SN)316 only; original full death retained separately. Throwing original sound observer and native IO '
+                       'Exact primitive returns/state/Random histories, NPE prefixes and complete sheared Sheep fatal return. '
+                       'Fatal terminal state compares the original completion; its historical sound checkpoint remains separate. '
+                       'Throwing original sound observer and native IO '
                        'adapter compare completed state, with different failure categories preserved. Other overrides, World ticks, '
                        'whole combat/gameplay, GL and pixels excluded.'}
     try:
@@ -86,16 +126,19 @@ def main():
                'native Living normal completion')
         ensure(data_file.is_file() and data_file.stat().st_size <= 256 * 1024, 'bounded native Living primitive rows')
         native_text = data_file.read_text(encoding='utf-8')
-        actual = rows('\n'.join('LIVING_DAMAGE ' + line for line in native_text.splitlines()), native=True)
+        actual = native_rows('\n'.join('LIVING_DAMAGE ' + line for line in native_text.splitlines()))
         report['rows_sha256'] = digest(data_file)
         report['outcome_pairs'] = [{'case': index, 'native': a['exception'], 'original': b['exception'],
                                     'scope': b['scope']} for index, (a, b) in enumerate(zip(actual, expected))
-                                   if b['profile'] in (19, 21)]
+                                   if b['profile'] == 21]
+        report['fatal_comparison'] = {'profile': 19, 'native': 'actual terminal state',
+                                      'original': 'actual captured completion',
+                                      'historical_sound_checkpoint_preserved': True}
         report['mismatches'] = [{'case': index, 'native': a, 'original': b}
                                for index, (a, b) in enumerate(zip(actual, expected))
-                               if any(not strict_equal(a[key], b[key]) for key in b
-                                      if not (b['profile'] == 19 and key in ('result', 'exception', 'completion') or
-                                              b['profile'] == 21 and key == 'exception'))]
+                               if any(not strict_equal(a[key], value)
+                                      for key, value in comparison_row(b).items()
+                                      if not (b['profile'] == 21 and key == 'exception'))]
         compare(actual, expected)
         report.update(status='PASS', rows=27)
     finally:

@@ -642,7 +642,36 @@ static bool repeat_world_work(const mc_client_menu_loop_state *source) {
            source->random_display_random_calls == source->random_display_calls * UINT64_C(6000);
 }
 
+/* This immutable-save profile observes focused gameplay frames only. A
+ * returned World/HUD draw can also have a later real OZ overlay, whose draw
+ * saves source data. Such a frame must fail this profile rather than receive
+ * model/reuse credit or be resumed after its source writes have occurred. */
+static int repeat_focus_state(fixture *f, const char *stage) {
+    mc_client_sdk_update_error update;
+    mc_client_sdk_input_state input;
+    bool active = false;
+    CHECK(mc_client_sdk_display_active(mc_client_display_update_owner(f->app->display), &active,
+                                       &update) == MC_CLIENT_SDK_UPDATE_OK &&
+          mc_client_sdk_input_inspect(mc_client_display_inputs(f->app->display), &input));
+    const bool keyboard = SDL_GetKeyboardFocus() == mc_client_display_window(f->app->display);
+    const bool focused = f->app->r == NULL && f->app->N && !atomic_load(&f->app->o) && active &&
+                         keyboard && input.grabbed;
+    if (!focused)
+        fprintf(stderr,
+                "WORLD_REPEAT_FOCUS_FAILURE stage=%s screen=%d source-focus=%d paused=%d "
+                "display-active=%d keyboard-focus=%d sdk-grab=%d frames=%" PRIu64 " ticks=%" PRIu64
+                " source=%s.%s:%" PRId64 " operation=%s\n",
+                stage, f->app->r == NULL ? -1 : (int)f->app->r->kind, f->app->N,
+                atomic_load(&f->app->o), active, keyboard, input.grabbed, f->state.frames,
+                f->state.ticks, f->state.source_class == NULL ? "none" : f->state.source_class,
+                f->state.source_method == NULL ? "none" : f->state.source_method,
+                f->state.source_pc, f->state.operation == NULL ? "none" : f->state.operation);
+    CHECK(focused);
+    return 0;
+}
+
 static int repeat_returned_frame(fixture *f, repeat_render_control *control) {
+    CHECK(repeat_focus_state(f, "returned-frame") == 0);
     const mc_client_menu_loop_state *source = &f->state;
     const mc_client_world_frame_state *frame = source->world_frame;
     const mc_client_gui_ingame_draw_state *hud = source->hud;
@@ -4575,6 +4604,7 @@ int main(int argc, char **argv) {
                                                   &input_after) &&
                       mouse_after.source_c == mouse_before.source_c && f.app->N == source_grab &&
                       input_before.grabbed == input_after.grabbed);
+                CHECK(repeat_focus_state(&f, "restored-host") == 0);
                 puts("WORLD_FOCUS hidden-inactive=1 restored-active=1 component-preserved=1 "
                      "source-grab-preserved=1");
                 CHECK(repeat_sheep_input(&f) == 0);
@@ -4590,7 +4620,8 @@ int main(int argc, char **argv) {
                 const uint64_t repeat_deadline = repeat_started + 60000;
                 while (!render_control.reused && render_control.frames < 8 &&
                        SDL_GetTicks() < repeat_deadline) {
-                    CHECK(display_focus(&f, true) == 0);
+                    CHECK(display_focus(&f, true) == 0 &&
+                          repeat_focus_state(&f, "before-frame") == 0);
                     const bool returned = mc_client_menu_loop_frame(f.loop);
                     CHECK(mc_client_menu_loop_inspect(f.loop, &f.state));
                     if (!returned)

@@ -197,6 +197,10 @@ typedef struct mc_mob_tick_error {
 } mc_mob_tick_error;
 
 void mc_mob_tick_error_init(mc_mob_tick_error *);
+/* Retire borrowed pending effect descendants while their graph is live.
+ * This does not consume actor-owned ray/path work; use tick_cleanup for those.
+ * Failure preserves the original source error and failed cleanup projection. */
+bool mc_mob_tick_error_retire(mc_mob_tick_error *);
 /* Actual eleven canonical client Mob w_ declarations and their reached children.
  * The same Entity, Registry, Math and whole World graph stay live/exclusive
  * through synchronous callbacks and diagnosis. Actual source reference fields

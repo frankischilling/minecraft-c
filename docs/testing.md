@@ -1,5 +1,48 @@
 # Test scope and reproduction
 
+## Animal death and retained Entity drops
+
+The native fatal Wolf regression first stopped at `ls.a:316` with health zero,
+no dying flag and no wool Item. It now executes the actual death callbacks,
+Sheep drop, Item constructor and World/Chunk publication. Windows Release
+and Linux Clang18 ASan/UBSan each pass 2,709 authored animal-death checks,
+69 shared Entity-drop controls and 43 original comparison rows. The retained drop module also replaces Falling
+Sand's duplicate inherited drop body.
+
+The new unchanged-original capture constructs 38 real Items across 42 profiles
+and 43 calls. Read-only JDI validates 234 Random returns and 54 live method
+pins. Independent native/original audits preserve each process's actual Math
+stream and constructor entropy. Original publication exceptions and native
+I/O callback failures compare only their completed source state and remain
+different categories. Eight packet corruption controls pass with the supplied
+archive. [The death contract](entity/animal-death.md) records exact scope and
+reproduction commands.
+
+Failure work stays on the actual victim. Controls verify NULL error output,
+active/BUSY retirement, late reads, already-published Items and targets outside
+World membership. World error retirement follows the typed failed victim;
+terminal admission refuses its pending death before changing the graph.
+The late-watcher control exposed a stale diagnostic location after the first
+getter returned. Each fresh getter now records its own reached invocation
+before reading the watcher. The source failure and earlier prefix are retained.
+
+The complete Windows and Linux builds pass. The focused Windows selection
+passes seventeen tests in 25.03 seconds. Linux passes sixteen in 12.84 seconds
+and its terminal-inventory regression in a separate 0.52 seconds, with leak
+detection and sanitizer halt-on-error. Formatting checks 1,912 C source,
+header and fragment files. These results precede the broader hosted checks.
+
+The broader Windows public run passes 595 of 596 tests in 233.21 seconds.
+World selection returns its native rendering and cleanup receipts, then fails
+its immutable-file audit. Independent decoding finds metadata rotation and 48
+Chunk rewrites at World time 10, consistent with two real Pause drawing saves.
+The repeat fixture previously credited World/HUD returns beneath that overlay.
+It now requires no screen, source focus, an unpaused App, actual native active
+and keyboard focus, and SDK mouse capture before crediting any repeat frame.
+Every byte-continuity predicate remains. The rebuilt full selection test passes
+in 38.21 seconds in isolation. This diagnostic improvement and finite rerun do
+not establish stable focus under concurrency or replace the recorded broad failure.
+
 ## Region-validator preparation cost
 
 One paired local run of the region-writer Python tests changed from 34 tests in
@@ -48,14 +91,14 @@ its final fire timer is 601.
 ## Create World and reached natural interactions
 
 The [Create World lifecycle](client/create-world.md) now has a full native
-Windows Release scenario from empty saves. The current run passes 2,844 checks
-in 66.93 seconds, creates seed 777 with 289 preparation samples and the initial
+Windows Release scenario from empty saves. The current run passes 3,266 checks
+in 49.82 seconds, creates seed 777 with 289 preparation samples and the initial
 forced save, returns three World/HUD frames, saves to the title, and reselects
 the actual disk World for three more frames. Independent NBT decoding checks
-375 Chunks across three regions and the selected live Player/WorldInfo values.
+390 Chunks across four regions and the selected live Player/WorldInfo values.
 Three corrupted metadata copies are rejected. Both host windows close and
 native terminal cleanup returns. The [run summary](../tests/reference/client/create_world/native-validation.json)
-records its 1,388 bound inputs and 413 immutable imported-resource files.
+records its 1,394 bound inputs and 413 immutable imported-resource files.
 The earlier 54.99-second run has different natural inputs and an older diagnostic
 site; these are finite execution records, not a controlled speed comparison.
 
@@ -75,12 +118,11 @@ nonfatal [animal damage](entity/animal-damage.md) now returns through its actual
 LivingEntity body. Both hosts pass the Wolf component's 75
 authored checks and match all 24 unchanged-original CPU rows. These component
 results remain separate from the full Windows graphical lifecycle.
-The new damage selection passes thirteen Windows tests in 37.90 seconds and thirteen
-Linux Clang ASan/UBSan tests in 29.17 seconds, including the region validator.
-Animal damage passes 145 authored checks and 27 original comparison rows per
-host. The fatal sound checkpoint and original throwing-observer/native-I/O
-pair preserve their explicit narrower scopes. Fatal death/drop and other
-concrete hurt overrides remain unfinished.
+The preceding damage selection passed thirteen Windows tests in 37.90 seconds
+and thirteen Linux Clang ASan/UBSan tests in 29.17 seconds, including the region
+validator. Animal damage then passed 145 authored checks and 27 original rows
+per host, with a fatal sound checkpoint and distinct throwing-observer/native-I/O
+outcomes. That historical scope preceded the completed animal death body above.
 Original GUI/pixels, the full Linux native lifecycle, default-Far performance,
 unrestricted reselection and extended play remain unqualified.
 

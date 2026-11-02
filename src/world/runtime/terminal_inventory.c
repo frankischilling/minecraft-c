@@ -227,6 +227,8 @@ static mc_world_storage_status collect_entity(void *context, const void *slot, m
             return result(error, MC_WORLD_STORAGE_BUSY, "World terminal Mob ray cleanup pending");
         if (value->mob != NULL && value->mob->pending_path != NULL)
             return result(error, MC_WORLD_STORAGE_BUSY, "World terminal Mob path cleanup pending");
+        if (value->mob != NULL && value->mob->pending_death != NULL)
+            return result(error, MC_WORLD_STORAGE_BUSY, "World terminal Mob death cleanup pending");
         if (value->base.world != NULL && value->base.world != c->world)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal Entity bound outside admitted World");
@@ -605,9 +607,9 @@ static mc_world_storage_status scan_mob(void *context, const void *slot, mc_enti
         (entity->mount_hold != NULL || entity->passenger_hold != NULL ||
          (entity->mob != NULL &&
           (entity->mob->tick_active || entity->mob->pending_ray != NULL ||
-           entity->mob->pending_path != NULL || entity->mob->living.private_b != NULL ||
-           entity->mob->creature_target != NULL || entity->mob->look_target_hold != NULL ||
-           entity->mob->creature_target_hold != NULL))))
+           entity->mob->pending_path != NULL || entity->mob->pending_death != NULL ||
+           entity->mob->living.private_b != NULL || entity->mob->creature_target != NULL ||
+           entity->mob->look_target_hold != NULL || entity->mob->creature_target_hold != NULL))))
         scan->needed = true;
     return MC_WORLD_STORAGE_OK;
 }
