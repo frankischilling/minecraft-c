@@ -6407,7 +6407,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 427565,
-      "sha256": "76cafb7c7f80ee42160fff9d35dcca7b45f190163e7a4793c830b05bd1ebfb92"
+      "sha256": "a87e8551b0a01ff20c7ef68680b019b0e29ce04377375e0b7cce7466c2c84651"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6471,7 +6471,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 525133,
-      "sha256": "0f380040d31d40254d7f12d51b89c212d431fdc1d63fc354c8871bc4018cf613"
+      "sha256": "eba63b149234a30839b732629e696ed4b4ff1adc5b0d53964e99d68876bdee39"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6603,7 +6603,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 423379,
-      "sha256": "d06f022f69c0bfc1d8204ca232bd8eca5adea3994214032bf3bb81defce32f25"
+      "sha256": "c7773fd044c13016ed27486e6e4affd4ff498f83d52afbf038ae9f76b94fc98d"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -15266,8 +15266,8 @@
       "sha256": "875f2fc4dbb6075afef5c929335337f81124337c36c44d3204ced9a854ca6fbc"
     },
     "tests/client/render/test_inventory_block.c": {
-      "bytes": 59402,
-      "sha256": "f01188609ad6340131c0875498237439b702dff2ff42607e163b1ea3d8696174"
+      "bytes": 59554,
+      "sha256": "eb68137a5188c929f893cd1f0612330409daeb2bddc9b42e93e3061ec9656384"
     },
     "tests/entity/particles/test_digging.c": {
       "bytes": 10377,

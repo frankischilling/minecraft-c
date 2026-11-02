@@ -469,9 +469,10 @@ static mc_registry_status log_missing_stream(void *context, const char *name,
 static bool log_item_initializer_controls(fixture *f) {
     for (unsigned int mode = 0; mode < 2; ++mode) {
         size_t opens = 0;
-        const mc_registry_resources resources = {.context = &opens, .open = log_missing_stream};
+        const mc_registry_resources registry_resources = {.context = &opens,
+                                                          .open = log_missing_stream};
         const mc_registry_options options = {MC_REGISTRY_CLIENT, f->profile, f->materials, 0,
-                                             mode == 0 ? &resources : NULL};
+                                             mode == 0 ? &registry_resources : NULL};
         mc_registry_classes *registry = NULL;
         mc_registry_error first;
         CHECK(mc_registry_classes_allocate(&options, &registry, NULL) == MC_REGISTRY_OK &&
@@ -514,9 +515,10 @@ static bool log_item_initializer_controls(fixture *f) {
 static bool slab_item_initializer_controls(fixture *f) {
     for (unsigned int mode = 0; mode < 2; ++mode) {
         size_t opens = 0;
-        const mc_registry_resources resources = {.context = &opens, .open = log_missing_stream};
+        const mc_registry_resources registry_resources = {.context = &opens,
+                                                          .open = log_missing_stream};
         const mc_registry_options options = {MC_REGISTRY_CLIENT, f->profile, f->materials, 0,
-                                             mode == 0 ? &resources : NULL};
+                                             mode == 0 ? &registry_resources : NULL};
         mc_registry_classes *registry = NULL;
         mc_registry_error first;
         CHECK(mc_registry_classes_allocate(&options, &registry, NULL) == MC_REGISTRY_OK &&

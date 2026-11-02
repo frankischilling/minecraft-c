@@ -5902,8 +5902,8 @@
       "sha256": "875f2fc4dbb6075afef5c929335337f81124337c36c44d3204ced9a854ca6fbc"
     },
     "tests/client/render/test_inventory_block.c": {
-      "bytes": 59402,
-      "sha256": "f01188609ad6340131c0875498237439b702dff2ff42607e163b1ea3d8696174"
+      "bytes": 59554,
+      "sha256": "eb68137a5188c929f893cd1f0612330409daeb2bddc9b42e93e3061ec9656384"
     },
     "tests/entity/particles/test_digging.c": {
       "bytes": 10377,
