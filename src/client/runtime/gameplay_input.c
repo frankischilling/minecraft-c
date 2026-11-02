@@ -6,6 +6,7 @@
 #include "mc/core/java/java.h"
 #include "mc/entity/hit_result.h"
 #include "mc/world/runtime/construction.h"
+#include "mc/world/runtime/placement.h"
 #include "millis.h"
 
 #include <string.h>
@@ -245,16 +246,45 @@ static bool retire_use(mc_client_gameplay_input *call) {
     return true;
 }
 
+static mc_world_storage_status workbench(void *context, mc_entity *player, int32_t x, int32_t y,
+                                         int32_t z, mc_world_placement_error *error) {
+    mc_client_gameplay_input *call = context;
+    const mc_client_screen_status status = mc_client_screen_transitions_workbench(
+        call->transitions, player, x, y, z, &call->screen.screen);
+    if (status == MC_CLIENT_SCREEN_OK)
+        return MC_WORLD_STORAGE_OK;
+    const mc_client_screen_error *screen = &call->screen.screen;
+    error->status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+    error->operation = screen->operation;
+    error->native_policy = screen->native_policy;
+    error->source_exception = screen->source_exception ||
+                              screen->status == MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE ||
+                              screen->status == MC_CLIENT_SCREEN_SOURCE_INDEX ||
+                              screen->status == MC_CLIENT_SCREEN_SOURCE_ARITHMETIC;
+    error->source_error = screen->source_error;
+    error->exception_class =
+        screen->exception_class != NULL ? screen->exception_class
+        : screen->status == MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE
+            ? "java/lang/NullPointerException"
+        : screen->status == MC_CLIENT_SCREEN_SOURCE_INDEX ? "java/lang/IndexOutOfBoundsException"
+        : screen->status == MC_CLIENT_SCREEN_SOURCE_ARITHMETIC ? "java/lang/ArithmeticException"
+                                                               : NULL;
+    error->site = (mc_world_placement_site){screen->site.class_name, screen->site.method,
+                                            screen->site.descriptor, screen->site.pc};
+    return error->status;
+}
+
 static bool use(client_application *app, mc_client_gameplay_input *call, bool on_block,
                 mc_item_stack *stack, int32_t x, int32_t y, int32_t z, int32_t face) {
     const unsigned int pc = on_block ? 239u : 350u;
     if (app->controller == NULL)
         return click_fail(call, "actual click null use controller invocation", pc);
+    const mc_world_block_activation_context activation = {.context = call, .workbench = workbench};
     const mc_singleplayer_use_status status =
         on_block
-            ? mc_client_singleplayer_use_on_block_begin(app->controller, app->h, app->active_world,
-                                                        stack, x, y, z, face, &call->use_call,
-                                                        &call->use_error)
+            ? mc_client_singleplayer_use_on_block_with_context_begin(
+                  app->controller, app->h, app->active_world, stack, x, y, z, face, &activation,
+                  &call->use_call, &call->use_error)
             : mc_client_singleplayer_use_in_air_begin(app->controller, app->h, app->active_world,
                                                       stack, &call->use_call, &call->use_error);
     if (call->use_call != NULL)
@@ -710,6 +740,7 @@ bool mc_client_gameplay_input_run(client_application *app,
         call->hit_renderer != NULL || call->hit_block_work)
         return false;
     memset(call, 0, sizeof(*call));
+    call->transitions = transitions;
     call->active = true;
     const bool result = run(app, transitions, call);
     call->active = false;

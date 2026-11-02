@@ -20,7 +20,7 @@ struct mc_client_inventory_draw_call {
     mc_client_manager_draw_services services;
     mc_gui_mouse_position mouse;
     float partial;
-    mc_client_source_ue *owner;
+    mc_client_source_id *owner;
     const char *id_descriptor;
     bool screen_entered;
     mc_entity *players[24];
@@ -37,6 +37,7 @@ struct mc_client_inventory_draw_call {
 
 bool mc_inventory_draw_fail(mc_client_inventory_draw_call *, mc_client_screen_status, const char *,
                             const char *, const char *, const char *, unsigned int, bool);
+const char *mc_inventory_draw_descriptor(const mc_client_inventory_draw_call *, const char *);
 bool mc_inventory_draw_gl(mc_client_inventory_draw_call *, bool, const char *, unsigned int);
 bool mc_inventory_draw_fp(mc_client_inventory_draw_call *, const char *, unsigned int);
 mc_entity *mc_inventory_draw_player(mc_client_inventory_draw_call *, const char *, unsigned int);
@@ -49,5 +50,12 @@ bool mc_inventory_draw_gradient(mc_client_inventory_draw_call *, int32_t, int32_
 bool mc_inventory_draw_tile(mc_client_inventory_draw_call *, int32_t, int32_t, int32_t, int32_t,
                             int32_t, int32_t);
 bool mc_inventory_draw_background(mc_client_inventory_draw_call *);
+bool mc_workbench_draw_background(mc_client_inventory_draw_call *);
+bool mc_workbench_draw_foreground(mc_client_inventory_draw_call *);
+mc_client_screen_status mc_inventory_draw_begin_id(mc_client_source_id *, mc_client_screen_kind,
+                                                   mc_gui_mouse_position, float,
+                                                   const mc_client_manager_draw_services *,
+                                                   mc_client_inventory_draw_call **,
+                                                   mc_client_inventory_draw_error *);
 
 #endif

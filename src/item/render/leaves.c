@@ -286,6 +286,40 @@ static bool icon_entered(mc_registry_classes *classes, const mc_item *item, int3
         e->site.pc = 11;
         return true;
     }
+    if (resolved->icon == RENDER_GO) {
+        e->site = at("go", "a", "(I)I", 0);
+        const mc_block *block = NULL;
+        if (mc_registry_block_static_get(classes, "K", &block, &e->registry) != MC_REGISTRY_OK)
+            return registry_failed(classes, e);
+        /* GO captures live UU.K and passes its signed metadata unchanged to
+         * that actual receiver's virtual texture body. No VG active use or
+         * dye-order mapping occurs between the getstatic and invoke. */
+        e->site.pc = 5;
+        if (block == NULL)
+            return source_null(e, "Log Item icon null captured Block receiver");
+        const mc_registry_status status = mc_block_render_texture_metadata(block, 2, damage, out);
+        if (status != MC_REGISTRY_OK)
+            return fail(e, status, "Log Item icon actual Block texture override");
+        e->site.pc = 8;
+        return true;
+    }
+    if (resolved->icon == RENDER_EN) {
+        e->site = at("en", "a", "(I)I", 0);
+        const mc_block *block = NULL;
+        if (mc_registry_block_static_get(classes, "al", &block, &e->registry) != MC_REGISTRY_OK)
+            return registry_failed(classes, e);
+        /* EN captures actual UU.al before passing literal side2 and the
+         * unchanged signed metadata to its receiver's virtual texture body.
+         * The getstatic initializes UU, not the selected Block subclass. */
+        e->site.pc = 5;
+        if (block == NULL)
+            return source_null(e, "Slab Item icon null captured Block receiver");
+        const mc_registry_status status = mc_block_render_texture_metadata(block, 2, damage, out);
+        if (status != MC_REGISTRY_OK)
+            return fail(e, status, "Slab Item icon actual Block texture override");
+        e->site.pc = 8;
+        return true;
+    }
     if (resolved->icon != RENDER_GM) {
         e->site = at(body_class(resolved->icon), "a", "(I)I", 0);
         return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,

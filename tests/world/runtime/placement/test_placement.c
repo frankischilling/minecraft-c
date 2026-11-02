@@ -59,6 +59,46 @@ cleanup:
     return ok;
 }
 
+static bool workbench_activation_controls(fixture *f) {
+    bool ok = false;
+    const mc_block *table = NULL;
+    mc_world_placement_error e = {0};
+    mc_world_runtime *world = f->worlds[0];
+    const bool initial_remote = world->fields.B;
+    const size_t bindings = world->persistent_bindings;
+    CHECK(mc_registry_block_get(f->registry[0], 58, &table, NULL) == MC_REGISTRY_OK &&
+          table != NULL);
+    bool value = false;
+    CHECK(mc_world_block_activate(f->registry[0], table, NULL, 8, 64, 8, NULL, &value, &e) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          !value && !e.returned && e.source_exception && !e.native_policy &&
+          strcmp(e.site.class_name, "fi") == 0 && e.site.pc == 1 && !e.remote_read &&
+          mc_world_placement_error_retire(&e));
+    world->fields.B = true; /* Declared source input, before invocation. */
+    const mc_world_storage_status remote = mc_world_block_activate(
+        f->registry[0], table, world, INT32_MIN, INT32_MAX, -1, NULL, &value, &e);
+    const bool remote_valid = remote == MC_WORLD_STORAGE_OK && value && e.returned &&
+                              e.remote_read && e.remote && e.site.pc == 8 && !e.workbench_entered &&
+                              world->persistent_bindings == bindings + 1;
+    const bool remote_retired = mc_world_placement_error_retire(&e);
+    world->fields.B = false; /* Next declared input, after checked retirement. */
+    CHECK(remote_valid && remote_retired && world->persistent_bindings == bindings);
+    value = false;
+    const mc_world_storage_status local =
+        mc_world_block_activate(f->registry[0], table, world, 8, 64, 8, NULL, &value, &e);
+    const bool local_valid = local == MC_WORLD_STORAGE_UNSUPPORTED_STATE && !value && !e.returned &&
+                             e.remote_read && !e.remote && e.site.pc == 15 && e.source_exception &&
+                             !e.native_policy && !e.workbench_entered;
+    const bool local_retired = mc_world_placement_error_retire(&e);
+    world->fields.B = initial_remote;
+    CHECK(local_valid && local_retired && world->persistent_bindings == bindings);
+    ok = true;
+cleanup:
+    (void)mc_world_placement_error_retire(&e);
+    world->fields.B = initial_remote;
+    return ok;
+}
+
 static bool placement_world_controls(fixture *f) {
     bool ok = false, value = false;
     mc_world_placement_error e = {0};
@@ -275,8 +315,9 @@ int main(int argc, char **argv) {
               MC_ENTITY_OK &&
           mc_registry_classes_initialize_blocks(f->registry[0], NULL) == MC_REGISTRY_OK);
     CHECK(boxes_open_store(f, 0, root) && boxes_create_world(f, 0) && placement_leaf_controls(f) &&
-          placement_world_controls(f) && placement_overlap_controls(f) &&
-          placement_initializer_controls(root, 0) && placement_initializer_controls(root, 1));
+          placement_world_controls(f) && workbench_activation_controls(f) &&
+          placement_overlap_controls(f) && placement_initializer_controls(root, 0) &&
+          placement_initializer_controls(root, 1));
     result = 0;
 cleanup:
     if (!cleanup_fixture(f)) {

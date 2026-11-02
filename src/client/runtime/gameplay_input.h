@@ -16,6 +16,7 @@
 
 typedef struct mc_client_gameplay_input {
     bool active, returned, failed;
+    mc_client_screen_transitions *transitions;
     unsigned int source_pc;
     const char *operation;
     mc_client_screen_site site;

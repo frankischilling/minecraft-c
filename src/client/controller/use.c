@@ -23,6 +23,7 @@ struct mc_singleplayer_use_call {
     mc_item_use_state item_state;
     mc_item_use_error item_error, item_cleanup;
     mc_world_placement_error activation;
+    mc_world_block_activation_context activation_context;
     mc_registry_classes *registry;
     mc_world_runtime_acquisition_error *acquisition;
     mc_world_source_chunk_error *source;
@@ -248,9 +249,10 @@ static bool on_block(mc_singleplayer_use_call *c) {
         c->state.activation_entered = true;
         bool activated;
         c->error.activation = &c->activation;
-        if (mc_world_block_activate(c->registry, block, c->state.world, c->state.x, c->state.y,
-                                    c->state.z, c->state.player, &activated,
-                                    &c->activation) != MC_WORLD_STORAGE_OK) {
+        if (mc_world_block_activate_with_context(c->registry, block, c->state.world, c->state.x,
+                                                 c->state.y, c->state.z, c->state.player,
+                                                 &c->activation_context, &activated,
+                                                 &c->activation) != MC_WORLD_STORAGE_OK) {
             c->error.child =
                 (mc_player_site){c->activation.site.class_name, c->activation.site.method,
                                  c->activation.site.descriptor, c->activation.site.pc};
@@ -399,11 +401,11 @@ static mc_singleplayer_use_status admission(mc_singleplayer_use_error *out,
     return status;
 }
 
-static mc_singleplayer_use_status begin(mc_client_singleplayer_controller *controller,
-                                        mc_entity *player, mc_world_runtime *world,
-                                        mc_item_stack *stack, bool block, int32_t x, int32_t y,
-                                        int32_t z, int32_t face, mc_singleplayer_use_call **out,
-                                        mc_singleplayer_use_error *error) {
+static mc_singleplayer_use_status
+begin(mc_client_singleplayer_controller *controller, mc_entity *player, mc_world_runtime *world,
+      mc_item_stack *stack, bool block, int32_t x, int32_t y, int32_t z, int32_t face,
+      const mc_world_block_activation_context *context, mc_singleplayer_use_call **out,
+      mc_singleplayer_use_error *error) {
     if (controller == NULL || out == NULL || *out != NULL ||
         controller->fields.phase != MC_SINGLEPLAYER_CONTROLLER_READY)
         return admission(error, MC_SINGLEPLAYER_USE_ARGUMENT,
@@ -433,6 +435,8 @@ static mc_singleplayer_use_status begin(mc_client_singleplayer_controller *contr
                                            .active = true,
                                            .error = &c->error,
                                            .cleanup = &c->cleanup};
+    if (context != NULL)
+        c->activation_context = *context;
     *out = c;
     controller->fields.entered = true;
     c->state.returned = block ? on_block(c) : in_air(c);
@@ -447,13 +451,20 @@ mc_singleplayer_use_status mc_client_singleplayer_use_on_block_begin(
     mc_client_singleplayer_controller *c, mc_entity *p, mc_world_runtime *w, mc_item_stack *s,
     int32_t x, int32_t y, int32_t z, int32_t face, mc_singleplayer_use_call **out,
     mc_singleplayer_use_error *e) {
-    return begin(c, p, w, s, true, x, y, z, face, out, e);
+    return begin(c, p, w, s, true, x, y, z, face, NULL, out, e);
+}
+
+mc_singleplayer_use_status mc_client_singleplayer_use_on_block_with_context_begin(
+    mc_client_singleplayer_controller *c, mc_entity *p, mc_world_runtime *w, mc_item_stack *s,
+    int32_t x, int32_t y, int32_t z, int32_t face, const mc_world_block_activation_context *context,
+    mc_singleplayer_use_call **out, mc_singleplayer_use_error *e) {
+    return begin(c, p, w, s, true, x, y, z, face, context, out, e);
 }
 
 mc_singleplayer_use_status mc_client_singleplayer_use_in_air_begin(
     mc_client_singleplayer_controller *c, mc_entity *p, mc_world_runtime *w, mc_item_stack *s,
     mc_singleplayer_use_call **out, mc_singleplayer_use_error *e) {
-    return begin(c, p, w, s, false, 0, 0, 0, 0, out, e);
+    return begin(c, p, w, s, false, 0, 0, 0, 0, NULL, out, e);
 }
 
 bool mc_client_singleplayer_use_inspect(const mc_singleplayer_use_call *c,

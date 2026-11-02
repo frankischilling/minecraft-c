@@ -11,6 +11,17 @@ typedef struct mc_world_runtime_acquisition_error mc_world_runtime_acquisition_e
 typedef struct mc_world_collision_error mc_world_collision_error;
 typedef struct mc_world_spawn_collision_error mc_world_spawn_collision_error;
 typedef struct mc_world_placement_work mc_world_placement_work;
+typedef struct mc_world_placement_error mc_world_placement_error;
+
+/* Reached Player virtual children supplied by the enclosing client call.
+ * No callback runs for an inherited literal Block body or remote FI return.
+ * Context and its retained child graph stay live through checked retirement.
+ * A callback preserves this noncopyable diagnostic's work/ownership fields. */
+typedef struct mc_world_block_activation_context {
+    void *context;
+    mc_world_storage_status (*workbench)(void *, mc_entity *, int32_t, int32_t, int32_t,
+                                         mc_world_placement_error *);
+} mc_world_block_activation_context;
 
 typedef struct mc_world_placement_site {
     const char *class_name, *method, *descriptor;
@@ -21,13 +32,14 @@ typedef struct mc_world_placement_site {
  * private child frames, exact World/Registry occurrences, pooled collision box
  * and failed callback producers until checked retirement. No source work is
  * replayed by retirement. The whole enclosing graph stays live/exclusive. */
-typedef struct mc_world_placement_error {
+struct mc_world_placement_error {
     mc_world_storage_status status;
     const char *operation, *exception_class;
     mc_world_placement_site site, caller, wrapper;
     bool returned, value, native_policy, source_exception, source_error;
     bool existing_read, candidate_read, box_returned, box_ignored, collision_checked;
     bool existing_replaced, predicate_entered, predicate_returned;
+    bool remote_read, remote, workbench_entered, workbench_returned;
     int32_t existing_id, fresh_id;
     const mc_block *existing, *candidate;
     const mc_entity_bounds *box;
@@ -42,7 +54,7 @@ typedef struct mc_world_placement_error {
     mc_entity_status cleanup_bounds;
     size_t retained_producers;
     mc_world_placement_work *work;
-} mc_world_placement_error;
+};
 
 /* Actual client FD.a(IIIIZI)Z. Collision-box getter32 and the real Entity
  * collision test53 precede occupancy. ignore_entities discards the source box
@@ -69,6 +81,10 @@ mc_world_storage_status mc_world_block_activate(mc_registry_classes *code_regist
                                                 const mc_block *, mc_world_runtime *, int32_t x,
                                                 int32_t y, int32_t z, mc_entity *nullable_player,
                                                 bool *out, mc_world_placement_error *);
+mc_world_storage_status mc_world_block_activate_with_context(
+    mc_registry_classes *code_registry, const mc_block *, mc_world_runtime *, int32_t x, int32_t y,
+    int32_t z, mc_entity *nullable_player, const mc_world_block_activation_context *, bool *out,
+    mc_world_placement_error *);
 mc_world_storage_status mc_world_block_placed_face(mc_registry_classes *code_registry,
                                                    const mc_block *, mc_world_runtime *, int32_t x,
                                                    int32_t y, int32_t z, int32_t face,

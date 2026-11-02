@@ -3,6 +3,7 @@
 #include "../gui/loading_internal.h"
 #include "../gui/source_inventory_drawing.h"
 #include "../gui/source_screen_initialize.h"
+#include "../gui/source_workbench_drawing.h"
 #include "../window/canvas.h"
 #include "gameplay_input.h"
 #include "world_tick.h"
@@ -609,15 +610,21 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
                             loop->create_world_draw.screen.site.method,
                             loop->create_world_draw.screen.site.pc);
             loop->state.font_measurements += loop->create_world_draw.font_measurements;
-        } else if (drawn.kind == MC_CLIENT_SCREEN_INVENTORY) {
+        } else if (drawn.kind == MC_CLIENT_SCREEN_INVENTORY ||
+                   drawn.kind == MC_CLIENT_SCREEN_WORKBENCH) {
             const mc_client_manager_draw_services services = {.math = loop->math,
                                                               .graphics = loop->graphics,
                                                               .display = app->display,
                                                               .application_classes =
                                                                   app->source_namespace};
-            const mc_client_screen_status status = mc_client_source_inventory_draw_begin(
-                (mc_client_source_ue *)app->r, mouse, partial, &services, &loop->inventory_draw,
-                &loop->inventory_error);
+            const mc_client_screen_status status =
+                drawn.kind == MC_CLIENT_SCREEN_INVENTORY
+                    ? mc_client_source_inventory_draw_begin(
+                          (mc_client_source_ue *)app->r, mouse, partial, &services,
+                          &loop->inventory_draw, &loop->inventory_error)
+                    : mc_client_source_workbench_draw_begin(
+                          (mc_client_source_oo *)app->r, mouse, partial, &services,
+                          &loop->inventory_draw, &loop->inventory_error);
             if (loop->inventory_draw != NULL) {
                 (void)mc_client_source_inventory_draw_inspect(loop->inventory_draw,
                                                               &loop->inventory_state);

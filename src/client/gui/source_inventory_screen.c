@@ -6,15 +6,25 @@
 #include "../render/model_graph_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/statistics/achievements/achievements.h"
+#include "world/runtime/runtime_internal.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-static bool fail(mc_client_source_ue *o, mc_client_screen_error *e, mc_client_screen_status status,
+static bool fail(mc_client_source_id *o, mc_client_screen_error *e, mc_client_screen_status status,
                  const char *operation, const char *owner, const char *method,
                  const char *descriptor, unsigned int pc, bool native) {
     mc_screen_fail(e, status, operation, owner, method, descriptor, pc);
     e->native_policy = native;
+    e->source_exception = !native && (status == MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE ||
+                                      status == MC_CLIENT_SCREEN_SOURCE_INDEX ||
+                                      status == MC_CLIENT_SCREEN_SOURCE_ARITHMETIC);
+    e->source_error = false;
+    e->exception_class =
+        !e->source_exception                               ? NULL
+        : status == MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE ? "java/lang/NullPointerException"
+        : status == MC_CLIENT_SCREEN_SOURCE_INDEX ? "java/lang/ArrayIndexOutOfBoundsException"
+                                                  : "java/lang/ArithmeticException";
     if (o != NULL) {
         e->inventory = &o->detail;
         o->last_pc = pc;
@@ -23,12 +33,29 @@ static bool fail(mc_client_source_ue *o, mc_client_screen_error *e, mc_client_sc
     return false;
 }
 
-static void store(mc_client_source_ue *o, const char *owner, const char *descriptor,
+static void store(mc_client_source_id *o, const char *owner, const char *descriptor,
                   unsigned int pc) {
     if (o->base.store_count < sizeof(o->base.stores) / sizeof(o->base.stores[0]))
         o->base.stores[o->base.store_count++] =
             (mc_client_screen_site){owner, "<init>", descriptor, pc};
     o->last_pc = pc;
+}
+
+bool mc_screen_container_construct_locked(mc_client_source_id *o, mc_container *container,
+                                          mc_client_screen_error *e) {
+    if (!mc_screen_base_construct_locked(&o->base, e)) {
+        e->parent_site = (mc_client_screen_site){"id", "<init>", "(Ldw;)V", 1};
+        o->detail.child = e->parent_site;
+        return false;
+    }
+    o->id.a = 176;
+    store(o, "id", "(Ldw;)V", 8);
+    o->id.i = 166;
+    store(o, "id", "(Ldw;)V", 15);
+    o->id.j = container;
+    store(o, "id", "(Ldw;)V", 20);
+    o->last_pc = 23;
+    return true;
 }
 
 mc_client_screen_status mc_client_screen_inventory_allocate(mc_client_screen_classes *c,
@@ -47,7 +74,8 @@ mc_client_screen_status mc_client_screen_inventory_allocate(mc_client_screen_cla
                 fail(NULL, &e, MC_CLIENT_SCREEN_LIMIT, "UE native owner budget", NULL, NULL, NULL,
                      0, true);
             else {
-                mc_client_source_ue *o = calloc(1, sizeof(*o));
+                mc_client_source_ue *screen = calloc(1, sizeof(*screen));
+                mc_client_source_id *o = screen == NULL ? NULL : &screen->container;
                 if (o == NULL)
                     fail(NULL, &e, MC_CLIENT_SCREEN_ALLOCATION_FAILED, "UE RAW owner allocation",
                          NULL, NULL, NULL, 0, true);
@@ -55,9 +83,9 @@ mc_client_screen_status mc_client_screen_inventory_allocate(mc_client_screen_cla
                     o->base.classes = c;
                     o->base.holds = 1;
                     o->base.kind = MC_CLIENT_SCREEN_INVENTORY;
-                    mc_screen_memory_init(&o->base.memory, options, sizeof(*o));
+                    mc_screen_memory_init(&o->base.memory, options, sizeof(*screen));
                     ++c->holds;
-                    *out = o;
+                    *out = screen;
                 }
             }
         }
@@ -66,7 +94,7 @@ mc_client_screen_status mc_client_screen_inventory_allocate(mc_client_screen_cla
     return mc_screen_publish(&e, error);
 }
 
-static bool construct(mc_client_source_ue *o, mc_entity *player, mc_client_screen_error *e) {
+static bool construct(mc_client_source_id *o, mc_entity *player, mc_client_screen_error *e) {
     if (player == NULL)
         return fail(o, e, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE, "UE null Player.d receiver", "ue",
                     "<init>", "(Lgs;)V", 2, false);
@@ -90,16 +118,9 @@ static bool construct(mc_client_source_ue *o, mc_entity *player, mc_client_scree
                         NULL, NULL, NULL, 0, true);
         o->container_held = true;
     }
-    if (!mc_screen_base_construct_locked(&o->base, e)) {
-        e->parent_site = (mc_client_screen_site){"id", "<init>", "(Ldw;)V", 1};
+    o->detail.caller = (mc_client_screen_site){"ue", "<init>", "(Lgs;)V", 5};
+    if (!mc_screen_container_construct_locked(o, o->captured_container, e))
         return false;
-    }
-    o->id.a = 176;
-    store(o, "id", "(Ldw;)V", 8);
-    o->id.i = 166;
-    store(o, "id", "(Ldw;)V", 15);
-    o->id.j = o->captured_container;
-    store(o, "id", "(Ldw;)V", 20);
     o->base.fields.f = true;
     store(o, "ue", "(Lgs;)V", 10);
     mc_registry_classes *registry = o->base.classes->registry;
@@ -130,9 +151,10 @@ static bool construct(mc_client_source_ue *o, mc_entity *player, mc_client_scree
     return true;
 }
 
-mc_client_screen_status mc_client_screen_inventory_construct(mc_client_source_ue *o,
+mc_client_screen_status mc_client_screen_inventory_construct(mc_client_source_ue *screen,
                                                              mc_entity *player,
                                                              mc_client_screen_error *error) {
+    mc_client_source_id *o = screen == NULL ? NULL : &screen->container;
     mc_client_screen_error e = {0};
     if (o == NULL)
         fail(NULL, &e, MC_CLIENT_SCREEN_INVALID_ARGUMENT, "UE native constructor receiver", NULL,
@@ -140,8 +162,8 @@ mc_client_screen_status mc_client_screen_inventory_construct(mc_client_source_ue
     else if (mc_screen_lock(o->base.classes, &e)) {
         if (o->base.phase != MC_CLIENT_SCREEN_RAW || o->base.kind != MC_CLIENT_SCREEN_INVENTORY ||
             o->base.classes->retiring)
-            fail(o, &e, MC_CLIENT_SCREEN_INVALID_PHASE, "UE one-shot constructor", NULL, NULL, NULL,
-                 0, true);
+            fail(NULL, &e, MC_CLIENT_SCREEN_INVALID_PHASE, "UE one-shot constructor", NULL, NULL,
+                 NULL, 0, true);
         else {
             o->base.phase = MC_CLIENT_SCREEN_CONSTRUCTING;
             const bool returned = construct(o, player, &e);
@@ -156,7 +178,45 @@ mc_client_screen_status mc_client_screen_inventory_construct(mc_client_source_ue
     return mc_screen_publish(&e, error);
 }
 
-bool mc_screen_inventory_initialize_locked(mc_client_source_ue *o, mc_client_screen_error *e) {
+bool mc_screen_container_initialize_locked(mc_client_source_id *o, mc_client_screen_error *e) {
+    if (o->base.kind == MC_CLIENT_SCREEN_WORKBENCH) {
+        /* OO inherits actual ID.b: DA.b returns before these fresh reads. */
+        client_application *a = o->base.fields.b;
+        if (a == NULL)
+            return fail(o, e, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE,
+                        "ID initialize null Minecraft.h receiver", "id", "b", "()V", 8, false);
+        mc_entity *player = a->h;
+        mc_container *container = o->id.j;
+        if (player == NULL)
+            return fail(o, e, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE,
+                        "ID initialize null Player.e store receiver", "id", "b", "()V", 15, false);
+        if (!mc_entity_is_kind(player, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) ||
+            player->local_player == NULL)
+            return fail(o, e, MC_CLIENT_SCREEN_APP_FAILED,
+                        "ID initialize actual Player source storage", "id", "b", "()V", 15, true);
+        mc_screen_id_player_hold *hold = o->published_players;
+        while (hold != NULL && hold->player != player)
+            hold = hold->next;
+        if (hold == NULL) {
+            hold = mc_screen_allocate(&o->base.memory, sizeof(*hold));
+            if (hold == NULL)
+                return fail(o, e, o->base.memory.allocation_status,
+                            "ID native Player publication occurrence", "id", "b", "()V", 15, true);
+            o->detail.entity = mc_entity_retain(player);
+            if (o->detail.entity != MC_ENTITY_OK)
+                return fail(o, e, MC_CLIENT_SCREEN_BUSY,
+                            "ID native captured Player publication occurrence", "id", "b", "()V",
+                            15, true);
+            hold->player = player;
+            hold->next = o->published_players;
+            o->published_players = hold;
+        }
+        player->local_player->fields.player.e = container;
+        o->last_pc = 18;
+        e->source_returned = true;
+        e->site = (mc_client_screen_site){"id", "b", "()V", 18};
+        return true;
+    }
     mc_client_screen_list *list = (mc_client_screen_list *)o->base.fields.e;
     if (list == NULL)
         return fail(o, e, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE, "UE List.clear null receiver",
@@ -181,16 +241,18 @@ bool mc_screen_inventory_initialize_locked(mc_client_source_ue *o, mc_client_scr
     return true;
 }
 
-static bool cleanup_failure(mc_client_source_ue *o, mc_client_screen_error *e,
+static bool cleanup_failure(mc_client_source_id *o, mc_client_screen_error *e,
                             const char *operation) {
     mc_screen_fail(e, MC_CLIENT_SCREEN_BUSY, operation, NULL, NULL, NULL, 0);
     e->inventory = &o->detail;
     return false;
 }
 
-static bool retire_call(mc_client_source_ue *o, mc_client_screen_error *e) {
-    mc_inventory_screen_call *call = o->calls;
+static bool retire_one_call(mc_client_source_id *o, mc_inventory_screen_call *call,
+                            mc_client_screen_error *e) {
     if (call != NULL) {
+        const void *publication = call->failure.drop.publication;
+        const void *statistic = call->failure.drop.statistic;
         const mc_entity_status status = mc_player_container_retire(&call->call, &call->cleanup);
         /* A checked adapter retirement may discharge earlier children before a
          * later child refuses. Refresh only these borrowed diagnostic views;
@@ -202,8 +264,17 @@ static bool retire_call(mc_client_source_ue *o, mc_client_screen_error *e) {
                 : NULL;
         call->failure.drop.publication = drop == NULL ? NULL : drop->publication;
         call->failure.drop.statistic = drop == NULL ? NULL : drop->statistic;
-        o->detail.container.drop.publication = call->failure.drop.publication;
-        o->detail.container.drop.statistic = call->failure.drop.statistic;
+        if (o->detail.container.drop.publication == publication)
+            o->detail.container.drop.publication = call->failure.drop.publication;
+        if (o->detail.container.drop.statistic == statistic)
+            o->detail.container.drop.statistic = call->failure.drop.statistic;
+        mc_player_container_error *receipt = call == o->closed_parent   ? &o->detail.inherited_close
+                                             : call == o->closed_direct ? &o->detail.direct_close
+                                                                        : NULL;
+        if (receipt != NULL) {
+            receipt->drop.publication = call->failure.drop.publication;
+            receipt->drop.statistic = call->failure.drop.statistic;
+        }
         o->detail.cleanup_container = call->cleanup;
         if (status != MC_ENTITY_OK)
             return cleanup_failure(o, e, "Inventory source child native retirement");
@@ -217,9 +288,33 @@ static bool retire_call(mc_client_source_ue *o, mc_client_screen_error *e) {
     return true;
 }
 
-bool mc_screen_inventory_cleanup_locked(mc_client_source_ue *o, mc_client_screen_error *e) {
-    if (!retire_call(o, e))
+bool mc_screen_container_retirement_admit_locked(mc_client_source_id *o,
+                                                 mc_client_screen_error *e) {
+    if (!o->container_owned || o->captured_container == NULL)
+        return true;
+    if (o->constructor_player != NULL &&
+        (o->constructor_player->local_player == NULL ||
+         o->constructor_player->local_player->fields.player.e == o->captured_container))
+        return cleanup_failure(o, e, "OO owned Container still published in Player.e");
+    for (mc_screen_id_player_hold *hold = o->published_players; hold != NULL; hold = hold->next)
+        if (hold->player->local_player == NULL ||
+            hold->player->local_player->fields.player.e == o->captured_container)
+            return cleanup_failure(o, e, "OO owned Container still published in ID Player.e");
+    return true;
+}
+
+bool mc_screen_container_cleanup_locked(mc_client_source_id *o, mc_client_screen_error *e) {
+    if (!mc_screen_container_retirement_admit_locked(o, e))
         return false;
+    if (!retire_one_call(o, o->calls, e) || !retire_one_call(o, o->closed_direct, e) ||
+        !retire_one_call(o, o->closed_parent, e))
+        return false;
+    if (o->container_owned) {
+        if (mc_container_retire(&o->captured_container, &o->detail.cleanup_ownership) !=
+            MC_INVENTORY_OK)
+            return cleanup_failure(o, e, "OO owned Container native retirement");
+        o->container_owned = false;
+    }
     if (o->container_held) {
         if (mc_container_release(o->captured_container, &o->detail.cleanup_ownership) !=
             MC_INVENTORY_OK)
@@ -232,27 +327,42 @@ bool mc_screen_inventory_cleanup_locked(mc_client_source_ue *o, mc_client_screen
         o->constructor_player = NULL;
         o->player_held = false;
     }
+    if (o->world_held) {
+        mc_world_runtime_binding_release(o->constructor_world);
+        o->constructor_world = NULL;
+        o->world_held = false;
+    }
+    o->constructor_inventory = NULL;
+    while (o->published_players != NULL) {
+        mc_screen_id_player_hold *hold = o->published_players;
+        o->published_players = hold->next;
+        mc_entity_release(hold->player);
+        hold->player = NULL;
+    }
     return true;
 }
 
-bool mc_screen_inventory_terminal_prepare_locked(mc_client_source_ue *o,
+bool mc_screen_container_terminal_prepare_locked(mc_client_source_id *o,
                                                  mc_client_screen_error *e) {
     if (o->base.active_calls != 0 || o->base.phase == MC_CLIENT_SCREEN_CONSTRUCTING ||
         o->base.holds != 1)
         return cleanup_failure(o, e, "Inventory terminal active/external Screen occurrence");
+    if (!mc_screen_container_retirement_admit_locked(o, e))
+        return false;
     /* Native one-way latch: direct Screen entry must stop before the constructor
      * occurrences end. No source field, close callback or failure is changed. */
     o->base.phase = MC_CLIENT_SCREEN_RETIRING;
-    return mc_screen_inventory_cleanup_locked(o, e);
+    return mc_screen_container_cleanup_locked(o, e);
 }
 
-mc_client_source_da *mc_client_screen_inventory_base(mc_client_source_ue *o) {
-    return o == NULL ? NULL : &o->base;
+mc_client_source_da *mc_client_screen_inventory_base(mc_client_source_ue *screen) {
+    return screen == NULL ? NULL : &screen->container.base;
 }
 
-mc_client_screen_status mc_client_screen_inventory_inspect(mc_client_source_ue *o,
+mc_client_screen_status mc_client_screen_inventory_inspect(mc_client_source_ue *screen,
                                                            mc_client_inventory_screen_state *out,
                                                            mc_client_screen_error *error) {
+    mc_client_source_id *o = screen == NULL ? NULL : &screen->container;
     mc_client_screen_error e = {0};
     if (o == NULL || out == NULL)
         fail(NULL, &e, MC_CLIENT_SCREEN_INVALID_ARGUMENT, "UE native inspection", NULL, NULL, NULL,
@@ -262,7 +372,7 @@ mc_client_screen_status mc_client_screen_inventory_inspect(mc_client_source_ue *
                                                   .holds = o->base.holds,
                                                   .source_calls = o->source_calls,
                                                   .id = o->id,
-                                                  .ue = o->fields,
+                                                  .ue = screen->fields,
                                                   .constructor_player = o->constructor_player,
                                                   .constructor_container = o->captured_container,
                                                   .container_held = o->container_held,
@@ -281,7 +391,7 @@ static mc_client_screen_status release(mc_client_source_ue **slot, bool strict,
                                        mc_client_screen_error *e) {
     if (slot == NULL)
         return strict ? mc_client_screen_retire(NULL, e) : mc_client_screen_release(NULL, e);
-    mc_client_source_da *base = *slot == NULL ? NULL : &(*slot)->base;
+    mc_client_source_da *base = *slot == NULL ? NULL : &(*slot)->container.base;
     const mc_client_screen_status status =
         strict ? mc_client_screen_retire(&base, e) : mc_client_screen_release(&base, e);
     if (status == MC_CLIENT_SCREEN_OK)
@@ -299,7 +409,7 @@ mc_client_screen_status mc_client_screen_inventory_retire(mc_client_source_ue **
     return release(o, true, e);
 }
 
-static bool app(mc_client_source_ue *o, const char *method, const char *descriptor, unsigned int pc,
+static bool app(mc_client_source_id *o, const char *method, const char *descriptor, unsigned int pc,
                 client_application **out, mc_client_screen_error *e) {
     *out = o->base.fields.b;
     return *out != NULL ||
@@ -307,7 +417,7 @@ static bool app(mc_client_source_ue *o, const char *method, const char *descript
                 "id", method, descriptor, pc, false);
 }
 
-bool mc_screen_inventory_key_locked(mc_client_source_ue *o, int32_t key, mc_entity **player,
+bool mc_screen_container_key_locked(mc_client_source_id *o, int32_t key, mc_entity **player,
                                     mc_client_screen_error *e) {
     *player = NULL;
     client_application *a;
@@ -345,7 +455,7 @@ bool mc_screen_inventory_key_locked(mc_client_source_ue *o, int32_t key, mc_enti
     return true;
 }
 
-bool mc_screen_inventory_tick_locked(mc_client_source_ue *o, mc_entity **player,
+bool mc_screen_container_tick_locked(mc_client_source_id *o, mc_entity **player,
                                      mc_client_screen_error *e) {
     *player = NULL;
     client_application *a;
@@ -388,7 +498,7 @@ bool mc_screen_inventory_tick_locked(mc_client_source_ue *o, mc_entity **player,
     return true;
 }
 
-static mc_inventory_screen_call *source_call(mc_client_source_ue *o, mc_client_screen_error *e) {
+static mc_inventory_screen_call *source_call(mc_client_source_id *o, mc_client_screen_error *e) {
     if (o->source_calls == SIZE_MAX) {
         mc_screen_fail(e, MC_CLIENT_SCREEN_LIMIT, "Inventory source invocation count", NULL, NULL,
                        NULL, 0);
@@ -403,11 +513,16 @@ static mc_inventory_screen_call *source_call(mc_client_source_ue *o, mc_client_s
             e->inventory = &o->detail;
             return NULL;
         }
-        if (!retire_call(o, e))
+        if (!retire_one_call(o, call, e))
             return NULL;
         *call = (mc_inventory_screen_call){0};
     } else {
-        call = mc_screen_allocate(&o->base.memory, sizeof(*call));
+        if (o->spare_calls != NULL) {
+            call = o->spare_calls;
+            o->spare_calls = call->next;
+            *call = (mc_inventory_screen_call){0};
+        } else
+            call = mc_screen_allocate(&o->base.memory, sizeof(*call));
         if (call == NULL) {
             fail(o, e, o->base.memory.allocation_status, "Inventory retained source invocation",
                  NULL, NULL, NULL, 0, true);
@@ -419,9 +534,9 @@ static mc_inventory_screen_call *source_call(mc_client_source_ue *o, mc_client_s
     return call;
 }
 
-static bool container_failure(mc_client_source_ue *o, mc_inventory_screen_call *call,
-                              const char *method, const char *descriptor, unsigned int pc,
-                              mc_client_screen_error *e) {
+static bool container_failure(mc_client_source_id *o, mc_inventory_screen_call *call,
+                              const char *owner, const char *method, const char *descriptor,
+                              unsigned int pc, mc_client_screen_error *e) {
     o->detail.container = call->failure;
     o->detail.child =
         (mc_client_screen_site){call->failure.site.class_name, call->failure.site.method,
@@ -433,17 +548,42 @@ static bool container_failure(mc_client_source_ue *o, mc_inventory_screen_call *
         : exception != NULL && strcmp(exception, "java/lang/ArrayIndexOutOfBoundsException") == 0
             ? MC_CLIENT_SCREEN_SOURCE_INDEX
             : MC_CLIENT_SCREEN_APP_FAILED;
-    return fail(o, e, status, call->failure.operation, "id", method, descriptor, pc,
-                call->failure.native_policy);
+    (void)fail(o, e, status, call->failure.operation, owner, method, descriptor, pc,
+               call->failure.native_policy);
+    e->source_exception = call->failure.source_exception;
+    e->source_error = call->failure.source_error;
+    e->exception_class = call->failure.exception_class;
+    o->base.failure = *e;
+    return false;
 }
 
-bool mc_screen_inventory_closed_locked(mc_client_source_ue *o, mc_client_screen_error *e) {
+bool mc_screen_container_closed_locked(mc_client_source_id *o, mc_client_screen_error *e) {
+    if (o->base.kind == MC_CLIENT_SCREEN_WORKBENCH) {
+        if ((o->closed_parent != NULL && !o->closed_parent->returned) ||
+            (o->closed_direct != NULL && !o->closed_direct->returned))
+            return cleanup_failure(o, e, "OO retained failed close invocation");
+        if (!retire_one_call(o, o->closed_direct, e) || !retire_one_call(o, o->closed_parent, e))
+            return false;
+        /* Reuse the same two bounded records for a later genuine h call. */
+        if (o->closed_direct != NULL) {
+            o->closed_direct->next = o->spare_calls;
+            o->spare_calls = o->closed_direct;
+            o->closed_direct = NULL;
+        }
+        if (o->closed_parent != NULL) {
+            o->closed_parent->next = o->spare_calls;
+            o->spare_calls = o->closed_parent;
+            o->closed_parent = NULL;
+        }
+        o->inherited_closed_returned = o->direct_closed_returned = false;
+    }
     client_application *a;
     if (!app(o, "h", "()V", 4, &a, e))
         return false;
     if (a->h == NULL) {
         e->source_returned = true;
         o->last_pc = 10;
+        o->inherited_closed_returned = true;
         return true;
     }
     if (!app(o, "h", "()V", 15, &a, e))
@@ -470,16 +610,58 @@ bool mc_screen_inventory_closed_locked(mc_client_source_ue *o, mc_client_screen_
         return fail(o, e, MC_CLIENT_SCREEN_BUSY, "ID native captured Controller occurrence", NULL,
                     NULL, NULL, 0, true);
     call->controller = controller;
+    if (o->base.kind == MC_CLIENT_SCREEN_WORKBENCH) {
+        o->closed_parent = call;
+        o->calls = NULL;
+    }
     if (mc_player_container_close_begin(o->base.classes->registry, a->source_math_classes, player,
-                                        window, &call->call, &call->failure) != MC_ENTITY_OK)
-        return container_failure(o, call, "h", "()V", 32, e);
+                                        window, &call->call, &call->failure) != MC_ENTITY_OK) {
+        if (o->base.kind == MC_CLIENT_SCREEN_WORKBENCH)
+            o->detail.inherited_close = call->failure;
+        return container_failure(o, call, "id", "h", "()V", 32, e);
+    }
     call->returned = true;
+    if (o->base.kind == MC_CLIENT_SCREEN_WORKBENCH) {
+        o->detail.inherited_close = call->failure;
+    }
+    o->inherited_closed_returned = true;
     o->last_pc = 35;
     e->source_returned = true;
     return true;
 }
 
-static bool slot_failure(mc_client_source_ue *o, const mc_container_interaction_error *child,
+bool mc_screen_container_direct_close_locked(mc_client_source_id *o, mc_client_screen_error *e) {
+    if (o->base.kind != MC_CLIENT_SCREEN_WORKBENCH || !o->inherited_closed_returned)
+        return cleanup_failure(o, e, "OO direct close requires returned inherited child");
+    /* OO.h evaluates j before fresh b/h, independently of the earlier ID.h. */
+    mc_container *container = o->id.j;
+    client_application *a = o->base.fields.b;
+    if (a == NULL)
+        return fail(o, e, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE,
+                    "OO close null Minecraft.h receiver", "oo", "h", "()V", 12, false);
+    mc_entity *player = a->h;
+    mc_inventory_screen_call *call = source_call(o, e);
+    if (call == NULL)
+        return false;
+    o->closed_direct = call;
+    o->calls = NULL;
+    e->source_returned = false;
+    if (mc_player_container_direct_close_begin(o->base.classes->registry, a->source_math_classes,
+                                               player, container, &call->call,
+                                               &call->failure) != MC_ENTITY_OK) {
+        o->detail.direct_close = call->failure;
+        return container_failure(o, call, "oo", "h", "()V", 15, e);
+    }
+    call->returned = true;
+    o->detail.direct_close = call->failure;
+    o->direct_closed_returned = true;
+    o->last_pc = 18;
+    e->site = (mc_client_screen_site){"oo", "h", "()V", 18};
+    e->source_returned = true;
+    return true;
+}
+
+static bool slot_failure(mc_client_source_id *o, const mc_container_interaction_error *child,
                          const char *descriptor, unsigned int pc, mc_client_screen_error *e) {
     o->detail.container.interaction = *child;
     o->detail.child =
@@ -493,7 +675,7 @@ static bool slot_failure(mc_client_source_ue *o, const mc_container_interaction_
                 child->operation, "id", "a", descriptor, pc, child->native_policy);
 }
 
-static bool slot_hit(mc_client_source_ue *o, mc_inventory_slot *slot, int32_t x, int32_t y,
+static bool slot_hit(mc_client_source_id *o, mc_inventory_slot *slot, int32_t x, int32_t y,
                      bool *hit, mc_client_screen_error *e) {
     const int32_t left = mc_java_i32_sub(o->base.fields.c, o->id.a) / 2;
     const int32_t top = mc_java_i32_sub(o->base.fields.d, o->id.i) / 2;
@@ -515,7 +697,7 @@ static bool slot_hit(mc_client_source_ue *o, mc_inventory_slot *slot, int32_t x,
     return true;
 }
 
-static bool find_slot(mc_client_source_ue *o, int32_t x, int32_t y, mc_inventory_slot **out,
+static bool find_slot(mc_client_source_id *o, int32_t x, int32_t y, mc_inventory_slot **out,
                       mc_client_screen_error *e) {
     *out = NULL;
     for (int32_t index = 0;; index = mc_java_i32_add(index, 1)) {
@@ -546,7 +728,7 @@ static bool find_slot(mc_client_source_ue *o, int32_t x, int32_t y, mc_inventory
     }
 }
 
-bool mc_screen_inventory_mouse_after_base_locked(mc_client_source_ue *o, int32_t x, int32_t y,
+bool mc_screen_container_mouse_after_base_locked(mc_client_source_id *o, int32_t x, int32_t y,
                                                  int32_t button, mc_client_sdk_input *input,
                                                  mc_client_screen_error *e) {
     if (button != 0 && button != 1)
@@ -611,7 +793,7 @@ bool mc_screen_inventory_mouse_after_base_locked(mc_client_source_ue *o, int32_t
     if (mc_player_container_click_begin(o->base.classes->registry, a->source_math_classes, player,
                                         window, index, button, shift, &call->call,
                                         &call->failure) != MC_ENTITY_OK)
-        return container_failure(o, call, "a", "(III)V", 179, e);
+        return container_failure(o, call, "id", "a", "(III)V", 179, e);
     call->returned = true;
     o->last_pc = 183;
     e->source_returned = true;

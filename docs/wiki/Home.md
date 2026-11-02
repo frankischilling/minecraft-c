@@ -19,10 +19,20 @@ overlay and separate helmet/held-Item renderer children. Original Container
 and selected Inventory drawing observations keep their finite comparison
 scopes. See [Inventory behavior and evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/inventory.md).
 
-General tools, combat and Inventory rendering, remaining Item/Block actions, unrestricted
+The [Workbench scenario](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench.md) now crafts and places a Table, opens its actual 3x3 screen,
+makes and equips a Wooden Pickaxe, closes with leftover ingredients and performs
+ordinary Save and Quit. The Windows run checks all 40 Inventory cells, all three
+saved Items, 403 Chunks, the placed Table, unrelated region bytes and cleanup.
+Source inputs and imported assets remain unchanged. The reached
+[Creeper environmental-damage path](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/creeper-damage.md) has native controls and static evidence;
+it has no executed-original damage comparison.
+
+Remaining Item/Block actions, broader combat and Inventory behavior, unrestricted
 reselection, default-Far performance and extended play remain unfinished or
-unqualified. A retained Windows Tiny scenario completes ten saved-World loads
-and saves, then preserves an eleventh conversion failure before storage
+unqualified. Live-open Workbench terminal cleanup safely returns `BUSY`;
+distance/removal close, cold-preview print continuation, original pixels,
+Linux SDK gameplay and FPS remain unqualified. A retained Windows Tiny scenario
+completes ten saved-World loads and saves, then preserves an eleventh conversion failure before storage
 acquisition. The loader has no fixed count limit, but old World graphs remain
 allocated until shutdown. Original assets must be imported locally; the runtime
 then needs no JVM.

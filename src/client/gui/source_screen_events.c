@@ -275,13 +275,14 @@ static bool mouse(mc_client_source_da *o, const mc_client_sdk_mouse_event *event
     r->mouse_x = x;
     r->mouse_y = y;
     if (!down)
-        return o->kind == MC_CLIENT_SCREEN_INVENTORY || release_button(o, event->button, r, e);
+        return (o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_WORKBENCH) ||
+               release_button(o, event->button, r, e);
     if (!press(o, x, y, event->button, r, e))
         return false;
-    if (o->kind == MC_CLIENT_SCREEN_INVENTORY) {
+    if ((o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_WORKBENCH)) {
         if (input == NULL && o->fields.b != NULL)
             input = mc_client_display_inputs(o->fields.b->display);
-        return mc_screen_inventory_mouse_after_base_locked((mc_client_source_ue *)o, x, y,
+        return mc_screen_container_mouse_after_base_locked((mc_client_source_id *)o, x, y,
                                                            event->button, input, &e->screen);
     }
     return o->kind != MC_CLIENT_SCREEN_CREATE_WORLD ||
@@ -368,9 +369,9 @@ static bool key(mc_client_source_da *o, const mc_client_sdk_key_event *event,
         return mc_screen_create_world_key_locked(fj, (uint16_t)event->character, event->key, &hooks,
                                                  create_enter, &context, &e->screen);
     }
-    if (o->kind == MC_CLIENT_SCREEN_INVENTORY) {
+    if ((o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_WORKBENCH)) {
         mc_entity *player = NULL;
-        if (!mc_screen_inventory_key_locked((mc_client_source_ue *)o, event->key, &player,
+        if (!mc_screen_container_key_locked((mc_client_source_id *)o, event->key, &player,
                                             &e->screen))
             return false;
         return player == NULL || inventory_close(o, player, "(CI)V", 29, r, e);
@@ -515,8 +516,11 @@ mc_client_screen_status mc_client_screen_event_retire(mc_client_screen_event_err
     if (e == NULL)
         return MC_CLIENT_SCREEN_INVALID_ARGUMENT;
     mc_client_source_da *o = e->pending_receiver;
-    if (o == NULL)
+    if (o == NULL) {
+        e->screen.inventory = NULL;
+        e->screen.initialization = NULL;
         return MC_CLIENT_SCREEN_OK;
+    }
     if (!e->monitor_lost)
         return MC_CLIENT_SCREEN_BUSY; /* The source invocation has not returned yet. */
     mc_client_screen_error lock_error = {0};
@@ -527,6 +531,8 @@ mc_client_screen_status mc_client_screen_event_retire(mc_client_screen_event_err
     e->pending_receiver = NULL;
     e->monitor_lost = false;
     (void)mtx_unlock(&o->classes->mutex);
+    e->screen.inventory = NULL;
+    e->screen.initialization = NULL;
     return MC_CLIENT_SCREEN_OK;
 }
 
@@ -554,9 +560,9 @@ mc_client_screen_status mc_client_screen_tick_with_transitions(mc_client_source_
         mc_screen_pause_tick_locked((mc_client_source_oz *)o, &e->screen);
     else if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD)
         (void)mc_screen_create_world_tick_locked((mc_client_source_fj *)o, &e->screen);
-    else if (o->kind == MC_CLIENT_SCREEN_INVENTORY) {
+    else if ((o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_WORKBENCH)) {
         mc_entity *player = NULL;
-        if (mc_screen_inventory_tick_locked((mc_client_source_ue *)o, &player, &e->screen) &&
+        if (mc_screen_container_tick_locked((mc_client_source_id *)o, &player, &e->screen) &&
             (player == NULL || inventory_close(o, player, "()V", 37, NULL, e)))
             e->screen.source_returned = true;
     } else

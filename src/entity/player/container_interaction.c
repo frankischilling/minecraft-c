@@ -4,6 +4,7 @@
 #include "../../inventory/internal.h"
 #include "../../item/render/internal.h"
 #include "../../item/stack/source_internal.h"
+#include "../../world/runtime/runtime_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/item/registry/runtime.h"
 #include "player_internal.h"
@@ -18,6 +19,7 @@ struct mc_player_container_call {
     mc_container_interaction_call *interaction;
     mc_registry_classes *registry;
     mc_math_classes *math;
+    mc_world_runtime *close_world;
     mc_player_drop_call **drops;
     size_t drop_count, drop_capacity;
     bool player_held;
@@ -69,6 +71,29 @@ mc_entity_status mc_player_container_active_get(mc_entity *player, mc_container 
     return MC_ENTITY_OK;
 }
 
+mc_entity_status mc_player_container_restore_default(mc_entity *player,
+                                                     mc_player_container_error *out) {
+    mc_player_container_error e = {.site = {"gs", "r", "()V", 2}};
+    if (player == NULL) {
+        e.status = MC_ENTITY_STATE_ERROR;
+        e.operation = "Player close null actual default Container field receiver";
+        e.source_exception = true;
+        e.exception_class = "java/lang/NullPointerException";
+    } else if (player->local_player == NULL) {
+        e.status = MC_ENTITY_STATE_ERROR;
+        e.operation = "Player close actual represented Player storage";
+        e.native_policy = true;
+    } else {
+        mc_container *captured = player->local_player->fields.player.d;
+        e.site.pc = 5;
+        player->local_player->fields.player.e = captured;
+        e.site.pc = 8;
+    }
+    if (out != NULL)
+        *out = e;
+    return e.status;
+}
+
 static mc_inventory_status inventory(void *context, mc_entity *player, mc_inventory_player **out,
                                      mc_container_interaction_error *e) {
     mc_player_container_call *c = context;
@@ -103,6 +128,25 @@ static bool registry_failure(mc_player_container_call *c) {
     c->error.source_exception = kind == MC_ITEM_RENDER_SOURCE_EXCEPTION;
     c->error.source_error = kind == MC_ITEM_RENDER_SOURCE_ERROR;
     return fail(c, MC_ENTITY_STATE_ERROR, c->error.registry.message);
+}
+
+static mc_inventory_status world_remote(void *context, mc_world_runtime *world, bool *out,
+                                        mc_container_interaction_error *e) {
+    mc_player_container_call *c = context;
+    c->error.child = (mc_player_site){"it", "a", "(Lgs;)V", 9};
+    if (world == NULL) {
+        (void)null_reference(c, "Workbench actual null World.B field receiver");
+        return host_failure(c, e);
+    }
+    if (c->close_world == NULL) {
+        if (!mc_world_runtime_binding_retain(world)) {
+            (void)fail(c, MC_ENTITY_BUSY, "Workbench reached World occurrence");
+            return host_failure(c, e);
+        }
+        c->close_world = world;
+    }
+    *out = world->fields.B;
+    return MC_INVENTORY_OK;
 }
 
 static bool statistic(mc_player_container_call *c, mc_entity *player, const mc_statistic *value,
@@ -314,10 +358,56 @@ static mc_inventory_status drop(void *context, mc_entity *player, mc_item_stack 
     return host_failure(c, e);
 }
 
+static void entered(mc_player_container_call *c, int32_t slot, int32_t button, bool shift,
+                    bool close, bool direct) {
+    mc_entity *player = c->state.player;
+    const mc_container_interaction_host host = {.context = c,
+                                                .inventory = inventory,
+                                                .cursor_changed = cursor_changed,
+                                                .drop = drop,
+                                                .crafted = crafted,
+                                                .world_remote = world_remote};
+    const mc_inventory_status s =
+        close ? mc_container_close_begin(c->state.container, player, &host, &c->interaction,
+                                         &c->error.interaction)
+              : mc_container_click_begin(c->state.container, player, slot, button, shift, &host,
+                                         &c->interaction, &c->error.interaction);
+    (void)mc_container_interaction_inspect(c->interaction, &c->interaction_state);
+    c->state.result = c->interaction_state.result;
+    const mc_container_interaction_error *e = &c->error.interaction;
+    if (direct)
+        c->error.site = (mc_player_site){e->site.class_name, e->site.method, e->site.descriptor,
+                                         (unsigned int)e->site.pc};
+    if (s != MC_INVENTORY_OK && c->error.status == MC_ENTITY_OK) {
+        c->error.source_exception = e->source_exception;
+        c->error.source_error = e->source_error;
+        c->error.exception_class = e->exception_class;
+        c->error.child = (mc_player_site){e->site.class_name, e->site.method, e->site.descriptor,
+                                          (unsigned int)e->site.pc};
+        (void)fail(c,
+                   s == MC_INVENTORY_BUSY                ? MC_ENTITY_BUSY
+                   : s == MC_INVENTORY_LIMIT             ? MC_ENTITY_LIMIT
+                   : s == MC_INVENTORY_ALLOCATION_FAILED ? MC_ENTITY_ALLOCATION_FAILED
+                                                         : MC_ENTITY_STATE_ERROR,
+                   e->operation);
+    }
+    if (s == MC_INVENTORY_OK) {
+        if (!direct) {
+            if (close) {
+                c->error.site.pc = 13;
+                player->local_player->fields.player.e = player->local_player->fields.player.d;
+                c->state.active_container_restored = true;
+            }
+            c->error.site.pc = close ? 16 : 14;
+        }
+        c->state.returned = true;
+    }
+}
+
 static mc_entity_status begin(mc_registry_classes *registry, mc_math_classes *math,
                               mc_entity *player, int32_t window, int32_t slot, int32_t button,
-                              bool shift, bool close, mc_player_container_call **out,
-                              mc_player_container_error *error) {
+                              bool shift, bool close, mc_container *direct_container, bool direct,
+                              mc_player_container_call **out, mc_player_container_error *error) {
     if (out == NULL || *out != NULL) {
         if (error != NULL)
             *error = (mc_player_container_error){.status = MC_ENTITY_INVALID_ARGUMENT,
@@ -339,61 +429,41 @@ static mc_entity_status begin(mc_registry_classes *registry, mc_math_classes *ma
     c->state = (mc_player_container_state){.player = player,
                                            .window_id = window,
                                            .close = close,
+                                           .direct_target = direct,
                                            .active = true,
                                            .error = &c->error,
                                            .interaction = &c->interaction_state};
-    c->error.site =
-        (mc_player_site){"ob", "a", close ? "(ILgs;)V" : "(IIIZLgs;)Liz;", close ? 1 : 2};
-    if (player == NULL)
-        (void)null_reference(c, "Controller null Player active Container field receiver");
-    else if (storage(c, player)) {
-        c->state.container = player->local_player->fields.player.e;
-        c->error.status = mc_entity_retain(player);
-        if (c->error.status != MC_ENTITY_OK)
-            (void)fail(c, c->error.status, "Controller native Player occurrence");
+    if (direct) {
+        c->state.container = direct_container;
+        if (direct_container == NULL)
+            (void)null_reference(c, "Direct close null captured Container invocation receiver");
         else {
-            c->player_held = true;
-            c->error.site.pc = close ? 5 : 11;
-            if (c->state.container == NULL)
-                (void)null_reference(c, "Controller null current Container invocation receiver");
+            c->error.status = player == NULL ? MC_ENTITY_OK : mc_entity_retain(player);
+            if (c->error.status != MC_ENTITY_OK)
+                (void)fail(c, c->error.status, "Direct close native Player occurrence");
             else {
-                const mc_container_interaction_host host = {.context = c,
-                                                            .inventory = inventory,
-                                                            .cursor_changed = cursor_changed,
-                                                            .drop = drop,
-                                                            .crafted = crafted};
-                const mc_inventory_status s =
-                    close
-                        ? mc_container_close_begin(c->state.container, player, &host,
-                                                   &c->interaction, &c->error.interaction)
-                        : mc_container_click_begin(c->state.container, player, slot, button, shift,
-                                                   &host, &c->interaction, &c->error.interaction);
-                (void)mc_container_interaction_inspect(c->interaction, &c->interaction_state);
-                c->state.result = c->interaction_state.result;
-                if (s != MC_INVENTORY_OK && c->error.status == MC_ENTITY_OK) {
-                    const mc_container_interaction_error *e = &c->error.interaction;
-                    c->error.source_exception = e->source_exception;
-                    c->error.source_error = e->source_error;
-                    c->error.exception_class = e->exception_class;
-                    c->error.child = (mc_player_site){e->site.class_name, e->site.method,
-                                                      e->site.descriptor, (unsigned int)e->site.pc};
-                    (void)fail(c,
-                               s == MC_INVENTORY_BUSY                ? MC_ENTITY_BUSY
-                               : s == MC_INVENTORY_LIMIT             ? MC_ENTITY_LIMIT
-                               : s == MC_INVENTORY_ALLOCATION_FAILED ? MC_ENTITY_ALLOCATION_FAILED
-                                                                     : MC_ENTITY_STATE_ERROR,
-                               e->operation);
-                }
-                if (s == MC_INVENTORY_OK) {
-                    if (close) {
-                        c->error.site.pc = 13;
-                        player->local_player->fields.player.e =
-                            player->local_player->fields.player.d;
-                        c->state.active_container_restored = true;
-                    }
-                    c->error.site.pc = close ? 16 : 14;
-                    c->state.returned = true;
-                }
+                c->player_held = player != NULL;
+                entered(c, 0, 0, false, true, true);
+            }
+        }
+    } else {
+        c->error.site =
+            (mc_player_site){"ob", "a", close ? "(ILgs;)V" : "(IIIZLgs;)Liz;", close ? 1 : 2};
+        if (player == NULL)
+            (void)null_reference(c, "Controller null Player active Container field receiver");
+        else if (storage(c, player)) {
+            c->state.container = player->local_player->fields.player.e;
+            c->error.status = mc_entity_retain(player);
+            if (c->error.status != MC_ENTITY_OK)
+                (void)fail(c, c->error.status, "Controller native Player occurrence");
+            else {
+                c->player_held = true;
+                c->error.site.pc = close ? 5 : 11;
+                if (c->state.container == NULL)
+                    (void)null_reference(c,
+                                         "Controller null current Container invocation receiver");
+                else
+                    entered(c, slot, button, shift, close, false);
             }
         }
     }
@@ -408,14 +478,21 @@ mc_entity_status mc_player_container_click_begin(mc_registry_classes *r, mc_math
                                                  int32_t button, bool shift,
                                                  mc_player_container_call **out,
                                                  mc_player_container_error *error) {
-    return begin(r, m, p, window, slot, button, shift, false, out, error);
+    return begin(r, m, p, window, slot, button, shift, false, NULL, false, out, error);
 }
 
 mc_entity_status mc_player_container_close_begin(mc_registry_classes *r, mc_math_classes *m,
                                                  mc_entity *p, int32_t window,
                                                  mc_player_container_call **out,
                                                  mc_player_container_error *error) {
-    return begin(r, m, p, window, 0, 0, false, true, out, error);
+    return begin(r, m, p, window, 0, 0, false, true, NULL, false, out, error);
+}
+
+mc_entity_status mc_player_container_direct_close_begin(mc_registry_classes *r, mc_math_classes *m,
+                                                        mc_entity *p, mc_container *container,
+                                                        mc_player_container_call **out,
+                                                        mc_player_container_error *error) {
+    return begin(r, m, p, 0, 0, 0, false, true, container, true, out, error);
 }
 
 bool mc_player_container_inspect(const mc_player_container_call *c,
@@ -489,6 +566,7 @@ mc_entity_status mc_player_container_retire(mc_player_container_call **out,
         }
         return MC_ENTITY_BUSY;
     }
+    mc_world_runtime_binding_release(c->close_world);
     if (c->player_held)
         mc_entity_release(c->state.player);
     free(c->drops);

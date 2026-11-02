@@ -263,6 +263,11 @@ typedef struct mc_client_living_draw_state {
         int32_t copies;
         float bob, rotation, scale;
         size_t copies_returned, faces_returned;
+        bool billboard, icon_returned, color_returned;
+        int32_t icon, color;
+        float uv[4], brightness;
+        uintptr_t nw_identity;
+        size_t billboard_vertices_returned, billboard_quads_returned;
     } item;
 } mc_client_living_draw_state;
 

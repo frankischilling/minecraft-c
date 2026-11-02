@@ -1,5 +1,29 @@
 # Storage and original references
 
+The [Workbench evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench.md) separates original component observations from native
+gameplay. The Container packet retains 116 calls per ordinary/read-only
+debugger process; the native probe passes 39,702 checks. Its 30 corruption
+controls and the drawing packet's 46 controls preserve their separate scopes.
+Selected shared drawing prefixes do not establish complete native Workbench
+draw equality.
+
+The final Windows SDK capture, `workbench-ofs_rbpe`, passes 1,853 checks in
+22.96 seconds. It returns three Workbench frames over seven World ticks and
+three equipped-Pickaxe frames, then performs ordinary Save and Quit.
+Independent NBT decoding checks all 40 Inventory cells and all three saved
+Items at the paused save entry. The 403 saved Chunks include the placed Table;
+the original Dirt target and unrelated region bytes are checked separately.
+Cleanup completes with source inputs and imported assets unchanged.
+
+Cold original preview calls print the null-Engine exception and then escape
+the null-Camera suffix exception. Native print continuation is still missing.
+Real Pressure Plate bounds and Log/Slab icon delegation have bounded evidence;
+[Creeper null-attacker damage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/creeper-damage.md) has 182 native checks and 23 static-packet controls,
+with no executed-original damage capture. Live-open Workbench terminal joining,
+distance/removal close, unrestricted crafting, original pixels, Linux SDK
+gameplay and FPS remain unqualified. The following records retain their earlier
+checkpoint scopes.
+
 [Player Inventory evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/inventory.md) now includes 73 original controller projections with independent
 source entropy audits, two returned original Inventory draws per ordinary/JDI
 process and a strict comparison of 108 active quad words. Native zero-draw prefixes

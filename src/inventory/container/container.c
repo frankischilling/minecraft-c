@@ -15,8 +15,8 @@ static const char *constructor_desc(const mc_container *container) {
                : inv_class(container->side, "(Lix;Lfd;III)V", "(Lfx;Ldj;III)V");
 }
 
-static void constructor_frame(mc_inventory_error *error, const mc_container *container,
-                              int32_t pc) {
+static void constructor_frame(mc_inventory_error *error, mc_container *container, int32_t pc) {
+    container->constructor_pc = pc;
     const char *name = container_class(container);
     inv_frame(error, container->side, name, name, "<init>", constructor_desc(container), pc);
 }
@@ -57,18 +57,25 @@ static bool append(mc_container *container, inv_list *list, void *value,
     return true;
 }
 
-static bool slot_add(mc_container *container, mc_slot_kind kind,
-                     mc_slot_inventory_kind inventory_kind, void *inventory, int32_t index,
-                     int32_t x, int32_t y, int32_t armor, int32_t source_new, int32_t source_add,
-                     mc_inventory_error *error) {
+static inv_slot *slot_new(mc_container *container, mc_slot_kind kind, int32_t source_new,
+                          mc_inventory_error *error) {
+    container->constructor_pc = source_new;
     inv_slot *slot = inv_alloc(&container->budget, sizeof(*slot), error);
     if (slot == NULL) {
         constructor_frame(error, container, source_new);
-        return false;
+        return NULL;
     }
     slot->allocated_next = container->allocated_slots;
     slot->owner = container;
+    slot->state.kind = kind; /* Native immutable declaring-class identity. */
     container->allocated_slots = slot;
+    return slot;
+}
+
+static bool slot_publish(mc_container *container, inv_slot *slot, mc_slot_kind kind,
+                         mc_slot_inventory_kind inventory_kind, void *inventory, int32_t index,
+                         int32_t x, int32_t y, int32_t armor, mc_entity *player, int32_t source_add,
+                         mc_inventory_error *error) {
     slot->state.kind = kind;
     slot->state.armor_type = armor;
     slot->state.armor_container = kind == MC_SLOT_ARMOR ? container : NULL;
@@ -77,9 +84,10 @@ static bool slot_add(mc_container *container, mc_slot_kind kind,
     slot->state.inventory_index = index;
     slot->state.x = x;
     slot->state.y = y;
-    slot->state.player = kind == MC_SLOT_CRAFTING ? container->inventory->player : NULL;
+    slot->state.player = kind == MC_SLOT_CRAFTING ? player : NULL;
     slot->state.crafting_input = kind == MC_SLOT_CRAFTING ? container->crafting : NULL;
     slot->state.container_index = (int32_t)container->slots->size;
+    container->constructor_pc = source_add;
     if (!append(container, container->slots, slot, error)) {
         inv_frame(error, container->side, "dw", "cl", "a",
                   inv_class(container->side, "(Lgp;)V", "(Lel;)V"), 18);
@@ -93,6 +101,17 @@ static bool slot_add(mc_container *container, mc_slot_kind kind,
         return false;
     }
     return true;
+}
+
+static bool slot_add(mc_container *container, mc_slot_kind kind,
+                     mc_slot_inventory_kind inventory_kind, void *inventory, int32_t index,
+                     int32_t x, int32_t y, int32_t armor, int32_t source_new, int32_t source_add,
+                     mc_inventory_error *error) {
+    inv_slot *slot = slot_new(container, kind, source_new, error);
+    return slot != NULL &&
+           slot_publish(container, slot, kind, inventory_kind, inventory, index, x, y, armor,
+                        kind == MC_SLOT_CRAFTING ? container->inventory->player : NULL, source_add,
+                        error);
 }
 
 static void list_free(mc_container *container, inv_list *list, bool stacks) {
@@ -188,26 +207,15 @@ mc_inventory_status inv_container_notify(mc_container *container, mc_inventory_e
     return error->status;
 }
 
-static mc_inventory_status construct(mc_registry_side side, mc_registry_classes *classes,
-                                     mc_inventory_player *inventory, mc_container_kind kind,
-                                     bool local, mc_world_runtime *world, int32_t x, int32_t y,
-                                     int32_t z, const mc_inventory_limits *limits,
-                                     mc_container **out, mc_inventory_error *result) {
+static mc_inventory_status construct_entered(mc_container *container,
+                                             mc_inventory_player *inventory, bool local,
+                                             mc_world_runtime *world, int32_t x, int32_t y,
+                                             int32_t z, mc_inventory_error *result) {
     mc_inventory_error error = {0};
-    inv_budget budget;
-    if (!inv_side_valid(side) || classes == NULL || out == NULL || !inv_limits(limits, &budget) ||
-        (inventory != NULL && inventory->side != side)) {
-        error.status = MC_INVENTORY_INVALID_ARGUMENT;
-        error.operation = "Container constructor native admission";
-        return inv_finish(result, &error);
-    }
-    mc_container *container = inv_alloc(&budget, sizeof(*container), &error);
-    if (container == NULL)
-        return inv_finish(result, &error);
-    container->budget = budget;
-    container->side = side;
-    container->classes = classes;
-    container->kind = kind;
+    const mc_registry_side side = container->side;
+    const mc_container_kind kind = container->kind;
+    container->constructor_entered = true;
+    container->constructor_pc = 0;
     container->constructing = container->active = true;
     container->snapshots = list_new(container, 5, &error);
     if (container->snapshots == NULL)
@@ -227,12 +235,14 @@ static mc_inventory_status construct(mc_registry_side side, mc_registry_classes 
         goto base_failed;
     }
     const int32_t width = kind == MC_CONTAINER_PLAYER ? 2 : 3;
+    container->constructor_pc = 12;
     if (inv_crafting_new(side, container, width, width, &container->budget, &container->crafting,
                          &error) != MC_INVENTORY_OK) {
         constructor_frame(&error, container, 12);
         goto failed;
     }
     container->crafting->container_owned = true;
+    container->constructor_pc = 23;
     if (inv_result_new(side, &container->budget, &container->result, &error) != MC_INVENTORY_OK) {
         constructor_frame(&error, container, 23);
         goto failed;
@@ -246,6 +256,15 @@ static mc_inventory_status construct(mc_registry_side side, mc_registry_classes 
         container->y = y;
         container->z = z;
     }
+    /* IT allocates its actual YV at52 before reading IX.d at57. A failed
+     * argument read must retain that uninitialized child with the same IT. */
+    inv_slot *workbench_output = NULL;
+    if (kind == MC_CONTAINER_WORKBENCH) {
+        workbench_output = slot_new(container, MC_SLOT_CRAFTING, 52, &error);
+        if (workbench_output == NULL)
+            goto failed;
+    }
+    container->constructor_pc = kind == MC_CONTAINER_PLAYER ? 45 : 57;
     if (inventory == NULL) {
         error.status = MC_INVENTORY_NULL_REFERENCE;
         error.operation = "Container InventoryPlayer Player field";
@@ -260,10 +279,16 @@ static mc_inventory_status construct(mc_registry_side side, mc_registry_classes 
     container->inventory = inventory;
     ++inventory->containers;
     container->inventory_bound = true;
-    if (!slot_add(container, MC_SLOT_CRAFTING, MC_SLOT_INVENTORY_RESULT, container->result, 0,
-                  kind == MC_CONTAINER_PLAYER ? 144 : 124, kind == MC_CONTAINER_PLAYER ? 36 : 35,
-                  -1, kind == MC_CONTAINER_PLAYER ? 40 : 52, kind == MC_CONTAINER_PLAYER ? 65 : 76,
-                  &error))
+    if (kind == MC_CONTAINER_WORKBENCH) {
+        mc_entity *player = inventory->player; /* Actual IX.d57 argument capture. */
+        if (!slot_publish(container, workbench_output, MC_SLOT_CRAFTING, MC_SLOT_INVENTORY_RESULT,
+                          container->result, 0, 124, 35, -1, player, 76, &error))
+            goto failed;
+    } else if (!slot_add(container, MC_SLOT_CRAFTING, MC_SLOT_INVENTORY_RESULT, container->result,
+                         0, kind == MC_CONTAINER_PLAYER ? 144 : 124,
+                         kind == MC_CONTAINER_PLAYER ? 36 : 35, -1,
+                         kind == MC_CONTAINER_PLAYER ? 40 : 52,
+                         kind == MC_CONTAINER_PLAYER ? 65 : 76, &error))
         goto failed;
     for (int32_t row = 0; row < width; ++row)
         for (int32_t column = 0; column < width; ++column)
@@ -297,13 +322,82 @@ static mc_inventory_status construct(mc_registry_side side, mc_registry_classes 
     }
     container->constructing = container->active = false;
     container->constructed = true;
-    *out = container;
+    container->constructor_pc = kind == MC_CONTAINER_PLAYER ? 290 : 266;
     return inv_finish(result, &error);
 base_failed:
     constructor_frame(&error, container, 1);
 failed:
-    container_free(container);
+    container->constructing = container->active = false;
+    container->constructor_failed = true;
     return inv_finish(result, &error);
+}
+
+static mc_inventory_status allocate(mc_registry_side side, mc_registry_classes *classes,
+                                    mc_container_kind kind, const mc_inventory_limits *limits,
+                                    mc_container **out, mc_inventory_error *result) {
+    mc_inventory_error error = {0};
+    inv_budget budget;
+    if (!inv_side_valid(side) || classes == NULL || out == NULL || *out != NULL ||
+        !inv_limits(limits, &budget)) {
+        error.status = MC_INVENTORY_INVALID_ARGUMENT;
+        error.operation = "Container allocation native admission";
+    } else {
+        mc_container *container = inv_alloc(&budget, sizeof(*container), &error);
+        if (container != NULL) {
+            container->budget = budget;
+            container->side = side;
+            container->classes = classes;
+            container->kind = kind;
+            container->constructor_pc = -1;
+            *out = container;
+        }
+    }
+    return inv_finish(result, &error);
+}
+
+static mc_inventory_status construct(mc_registry_side side, mc_registry_classes *classes,
+                                     mc_inventory_player *inventory, mc_container_kind kind,
+                                     bool local, mc_world_runtime *world, int32_t x, int32_t y,
+                                     int32_t z, const mc_inventory_limits *limits,
+                                     mc_container **out, mc_inventory_error *result) {
+    mc_inventory_error error = {0};
+    if (out == NULL || (inventory != NULL && inventory->side != side)) {
+        error.status = MC_INVENTORY_INVALID_ARGUMENT;
+        error.operation = "Container constructor native admission";
+    } else {
+        mc_container *container = NULL;
+        if (allocate(side, classes, kind, limits, &container, &error) == MC_INVENTORY_OK) {
+            if (construct_entered(container, inventory, local, world, x, y, z, &error) ==
+                MC_INVENTORY_OK)
+                *out = container;
+            else
+                container_free(container);
+        }
+    }
+    return inv_finish(result, &error);
+}
+
+mc_inventory_status mc_container_workbench_allocate(mc_registry_side side,
+                                                    mc_registry_classes *classes,
+                                                    const mc_inventory_limits *limits,
+                                                    mc_container **out, mc_inventory_error *error) {
+    return allocate(side, classes, MC_CONTAINER_WORKBENCH, limits, out, error);
+}
+
+mc_inventory_status mc_container_workbench_construct(mc_container *container,
+                                                     mc_inventory_player *inventory,
+                                                     mc_world_runtime *world, int32_t x, int32_t y,
+                                                     int32_t z, mc_inventory_error *result) {
+    mc_inventory_error error = {0};
+    if (container == NULL || container->kind != MC_CONTAINER_WORKBENCH ||
+        container->constructor_entered || container->active ||
+        (inventory != NULL && inventory->side != container->side)) {
+        error.status = container != NULL && container->active ? MC_INVENTORY_BUSY
+                                                              : MC_INVENTORY_INVALID_ARGUMENT;
+        error.operation = "Workbench one source constructor native admission";
+        return inv_finish(result, &error);
+    }
+    return construct_entered(container, inventory, false, world, x, y, z, result);
 }
 
 mc_inventory_status mc_container_player_create(mc_registry_side side, mc_registry_classes *classes,
@@ -352,29 +446,34 @@ mc_inventory_status mc_container_player_create_default(
 bool mc_container_read_state(const mc_container *container, mc_container_state *out) {
     if (container == NULL || out == NULL)
         return false;
-    *out = (mc_container_state){.side = container->side,
-                                .kind = container->kind,
-                                .constructed = container->constructed,
-                                .active = container->active,
-                                .local = container->local,
-                                .window_id = container->window_id,
-                                .transaction = container->transaction,
-                                .slots = container->slots->size,
-                                .snapshots = container->snapshots->size,
-                                .listeners = container->listeners->size,
-                                .blocked_players = container->blocked_players->size,
-                                .allocation_bytes = container->budget.used,
-                                .slot_list = container->slots,
-                                .snapshot_list = container->snapshots,
-                                .listener_list = container->listeners,
-                                .blocked_player_set = container->blocked_players,
-                                .crafting = container->crafting,
-                                .result = container->result,
-                                .player_inventory = container->inventory,
-                                .world = container->world,
-                                .x = container->x,
-                                .y = container->y,
-                                .z = container->z};
+    *out = (mc_container_state){
+        .side = container->side,
+        .kind = container->kind,
+        .constructed = container->constructed,
+        .active = container->active,
+        .local = container->local,
+        .constructor_entered = container->constructor_entered,
+        .constructor_failed = container->constructor_failed,
+        .constructor_pc = container->constructor_pc,
+        .window_id = container->window_id,
+        .transaction = container->transaction,
+        .slots = container->slots == NULL ? 0 : container->slots->size,
+        .snapshots = container->snapshots == NULL ? 0 : container->snapshots->size,
+        .listeners = container->listeners == NULL ? 0 : container->listeners->size,
+        .blocked_players =
+            container->blocked_players == NULL ? 0 : container->blocked_players->size,
+        .allocation_bytes = container->budget.used,
+        .slot_list = container->slots,
+        .snapshot_list = container->snapshots,
+        .listener_list = container->listeners,
+        .blocked_player_set = container->blocked_players,
+        .crafting = container->crafting,
+        .result = container->result,
+        .player_inventory = container->inventory,
+        .world = container->world,
+        .x = container->x,
+        .y = container->y,
+        .z = container->z};
     return true;
 }
 

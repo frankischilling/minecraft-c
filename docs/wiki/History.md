@@ -1,9 +1,38 @@
 # History
 
-## Player Inventory and source Container interaction
+## Workbench crafting and exact saved state
 
-The configured Inventory key opens the actual nonpausing UE/ID screen with
-its existing Player Container and full Player preview. Windows SDK profiles
+The [Workbench increment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench.md) connects actual Table activation to the distinct `OO/IT`
+screen and 3x3 Container. The final Windows SDK capture, `workbench-ofs_rbpe`,
+passes 1,853 checks in 22.96 seconds. Real input crafts and places a Table,
+makes a Wooden Pickaxe, performs both Shift-transfer directions and closes
+with leftover ingredients. Three Workbench frames span seven World ticks;
+three later frames draw the equipped Pickaxe. The timing is not an FPS result.
+
+Independent decoding checks all 40 Inventory cells and all three saved Items
+against the actual paused save entry. The ordinary save contains 403 Chunks;
+the placed Table and its Dirt target are checked, an unrelated region retains
+its bytes, and checked cleanup completes. Source inputs and imported assets
+stay unchanged.
+
+The component comparison covers 116 original calls and 39,702 native checks.
+Container and drawing packets reject 30 and 46 corruptions respectively.
+Sequential recipes also reach real Pressure Plate bounds and live Log/Slab
+Item icon delegation. [Creeper damage without an attacker](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/creeper-damage.md) adds 182 native
+checks and 23 static-packet controls, with no executed-original damage result.
+
+The client remains pre-playable. Cold original preview calls print a null-Engine
+exception, then escape a distinct null-Camera exception; native printing and
+continuation remain unfinished. Live-open Workbench terminal cleanup returns
+`BUSY`. Distance/removal close, unrestricted crafting, original pixels, Linux
+SDK gameplay and FPS remain unqualified. Earlier suite results below retain
+their own source scope.
+
+## Preceding Player Inventory and source Container interaction
+
+At the preceding checkpoint, the configured Inventory key opens the actual
+nonpausing UE/ID screen with its existing Player Container and full Player
+preview. Windows SDK profiles
 move Dirt and Arrows, close a carried Stack through actual World publication,
 save exact Inventory/Item NBT and complete cleanup. The Pumpkin profile adds
 its HUD overlay and distinct helmet/held-Item children. Final scenarios pass

@@ -654,25 +654,60 @@ mc_world_storage_status mc_world_block_can_place(mc_registry_classes *registry,
     return finish(e, returned, returned && value, out);
 }
 
-mc_world_storage_status mc_world_block_activate(mc_registry_classes *registry,
-                                                const mc_block *block, mc_world_runtime *world,
-                                                int32_t x, int32_t y, int32_t z, mc_entity *player,
-                                                bool *out, mc_world_placement_error *e) {
-    (void)world;
-    (void)x;
-    (void)y;
-    (void)z;
-    (void)player;
+mc_world_storage_status mc_world_block_activate_with_context(
+    mc_registry_classes *registry, const mc_block *block, mc_world_runtime *world, int32_t x,
+    int32_t y, int32_t z, mc_entity *player, const mc_world_block_activation_context *context,
+    bool *out, mc_world_placement_error *e) {
     if (e == NULL || out == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     if (e->work != NULL)
         return MC_WORLD_STORAGE_BUSY;
     if (!block_entry(e, registry, block, "a", "(Lfd;IIILgs;)Z"))
         return e->status;
+    if (block->kind == MC_BLOCK_CRAFTING_TABLE) {
+        e->site = site("fi", "a", "(Lfd;IIILgs;)Z", 1);
+        if (!hold_world(e, world))
+            return finish(e, false, false, out);
+        e->remote_read = true;
+        e->remote = world->fields.B;
+        if (e->remote) {
+            e->site.pc = 8;
+            return finish(e, true, true, out);
+        }
+        e->site.pc = 15;
+        if (player == NULL) {
+            null_reference(e, "FI actual Player Workbench invocation null receiver");
+            return finish(e, false, false, out);
+        }
+        if (context == NULL || context->workbench == NULL) {
+            fail(e, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "FI reached Player Workbench display child",
+                 true);
+            return finish(e, false, false, out);
+        }
+        e->caller = e->site;
+        e->workbench_entered = true;
+        const mc_world_storage_status child =
+            context->workbench(context->context, player, x, y, z, e);
+        if (child != MC_WORLD_STORAGE_OK) {
+            e->status = child;
+            return finish(e, false, false, out);
+        }
+        e->workbench_returned = true;
+        e->site = site("fi", "a", "(Lfd;IIILgs;)Z", 19);
+        return finish(e, true, true, out);
+    }
     const bool returned = inherited(e, activation_class(block->kind));
     if (returned)
         e->site.pc = 1;
     return finish(e, returned, false, out);
+}
+
+mc_world_storage_status mc_world_block_activate(mc_registry_classes *registry,
+                                                const mc_block *block, mc_world_runtime *world,
+                                                int32_t x, int32_t y, int32_t z, mc_entity *player,
+                                                bool *out, mc_world_placement_error *e) {
+    return mc_world_block_activate_with_context(registry, block, world, x, y, z, player, NULL, out,
+                                                e);
 }
 
 mc_world_storage_status mc_world_block_placed_face(mc_registry_classes *registry,

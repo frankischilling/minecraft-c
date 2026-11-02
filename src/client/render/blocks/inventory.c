@@ -60,7 +60,9 @@ bool mc_cv_inventory(mc_cv_context *c, const mc_block *block, int32_t metadata, 
                           "inventory actual specialized Block geometry", 324, true);
     if (description.type == 16)
         metadata = 1;
-    if (mc_block_render_inventory_shape(block) != MC_REGISTRY_OK) {
+    /* Registry lookup exposes a const view; the actual Source Block receiver
+     * remains mutable and its virtual g() may replace its live bounds. */
+    if (mc_block_render_inventory_shape((mc_block *)(void *)block) != MC_REGISTRY_OK) {
         c->failure.child = (mc_client_graphics_site){"uu", "g", "()V", 0};
         return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
                           "inventory actual Block item-bound hook", 105, true);

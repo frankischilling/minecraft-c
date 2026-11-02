@@ -65,6 +65,8 @@ struct mc_container {
     inv_set *blocked_players;
     inv_slot *allocated_slots;
     bool active, constructing, constructed, local, inventory_bound;
+    bool constructor_entered, constructor_failed;
+    int32_t constructor_pc;
     bool interaction_active;
     size_t interaction_holds;
     int32_t window_id, x, y, z;

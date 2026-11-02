@@ -76,9 +76,12 @@ mc_client_screen_status mc_client_screen_handle_input(mc_client_source_da *, mc_
 mc_client_screen_status mc_client_screen_handle_input_with_transitions(
     mc_client_source_da *, mc_client_sdk_input *, mc_client_screen_transitions *,
     mc_client_screen_event_report *, mc_client_screen_event_error *);
-/* Complete native call cleanup after a monitor reacquisition failure. Reuse
- * error storage/retire the graph only after this consumes pending_receiver.
- * This performs no source input, action, initialization or field rollback. */
+/* Complete native call cleanup, including monitor reacquisition failures.
+ * Successful retirement ends inventory/initialization diagnostic borrows even
+ * when no pending monitor exists, preserving scalar source failure values.
+ * BUSY preserves all still-live views. Reuse error storage/retire the graph only
+ * after this consumes pending_receiver. No source input, action, initialization
+ * or field rollback is performed. */
 mc_client_screen_status mc_client_screen_event_retire(mc_client_screen_event_error *);
 /* Prepared-current-event controls and source callees. They do not claim SDK
  * next/poll completion. Mouse scaling reads actual da.c/d and App.d/e, with

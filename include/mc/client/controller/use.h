@@ -10,6 +10,7 @@ typedef struct mc_singleplayer_use_call mc_singleplayer_use_call;
 typedef struct mc_item_use_state mc_item_use_state;
 typedef struct mc_item_use_error mc_item_use_error;
 typedef struct mc_world_placement_error mc_world_placement_error;
+typedef struct mc_world_block_activation_context mc_world_block_activation_context;
 typedef struct mc_world_runtime_acquisition_error mc_world_runtime_acquisition_error;
 
 typedef enum mc_singleplayer_use_status {
@@ -76,6 +77,12 @@ mc_client_singleplayer_use_on_block_begin(mc_client_singleplayer_controller *, m
                                           mc_world_runtime *, mc_item_stack *, int32_t x, int32_t y,
                                           int32_t z, int32_t face, mc_singleplayer_use_call **,
                                           mc_singleplayer_use_error *);
+/* Same OB body, with its actual synchronous Player display child supplied by
+ * the enclosing client caller. Context lifetime includes checked retirement. */
+mc_singleplayer_use_status mc_client_singleplayer_use_on_block_with_context_begin(
+    mc_client_singleplayer_controller *, mc_entity *player, mc_world_runtime *, mc_item_stack *,
+    int32_t x, int32_t y, int32_t z, int32_t face, const mc_world_block_activation_context *,
+    mc_singleplayer_use_call **, mc_singleplayer_use_error *);
 mc_singleplayer_use_status
 mc_client_singleplayer_use_in_air_begin(mc_client_singleplayer_controller *, mc_entity *player,
                                         mc_world_runtime *, mc_item_stack *,

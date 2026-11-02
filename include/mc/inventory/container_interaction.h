@@ -19,7 +19,8 @@ typedef struct mc_container_interaction_error {
 /* Explicit reached source dependencies supplied by the simulation adapter.
  * inventory reads GS.c; cursor_changed invokes GS.b(Stack); drop invokes the
  * actual GS.a(Stack); crafted executes YV's IZ.b(World,Player)/achievement
- * prefix. They run synchronously, may mutate source fields and must preserve
+ * prefix; world_remote reads the actual captured IT.c World.B field. They
+ * run synchronously, may mutate source fields and must preserve
  * exact failed prefixes. A failed drop may retain work in its owning adapter.
  * context and all owners remain live through checked call retirement. */
 typedef struct mc_container_interaction_host {
@@ -32,6 +33,8 @@ typedef struct mc_container_interaction_host {
                                 mc_container_interaction_error *);
     mc_inventory_status (*crafted)(void *, mc_entity *, mc_item_stack *,
                                    mc_container_interaction_error *);
+    mc_inventory_status (*world_remote)(void *, mc_world_runtime *, bool *,
+                                        mc_container_interaction_error *);
 } mc_container_interaction_host;
 
 typedef struct mc_container_interaction_state {
@@ -41,6 +44,7 @@ typedef struct mc_container_interaction_state {
     const mc_container_interaction_error *error;
     int32_t slot, button;
     bool shift, close, active, returned, cursor_cleared;
+    bool workbench_remote_read, workbench_remote;
     size_t crafting_cells_cleared, drop_calls, shift_calls, steps;
     int32_t source_pc;
 } mc_container_interaction_state;
@@ -71,7 +75,7 @@ mc_inventory_status mc_inventory_slot_source_has(mc_inventory_slot *, bool *,
 mc_inventory_status mc_inventory_slot_source_background(mc_inventory_slot *, int32_t *,
                                                         mc_container_interaction_error *);
 
-/* Actual client DW.a(IIZ,GS) and virtual AA.a(GS) close. begin allocates one
+/* Actual client DW.a(IIZ,GS) and virtual AA/IT.a(GS) close. begin allocates one
  * owned invocation before source work; even a failed returned call must be
  * retired. Invalid buttons return before the GS.c field read. No mutation is
  * rolled back or replayed by retirement. Source Stack clones/splits retain

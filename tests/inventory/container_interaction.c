@@ -126,7 +126,11 @@ static mc_inventory_status crafted(void *context, mc_entity *player, mc_item_sta
 
 static bool create(fixture *f, mc_registry_classes *r) {
     *f = (fixture){0};
-    f->host = (mc_container_interaction_host){f, inventory, cursor_changed, drop, crafted};
+    f->host = (mc_container_interaction_host){.context = f,
+                                              .inventory = inventory,
+                                              .cursor_changed = cursor_changed,
+                                              .drop = drop,
+                                              .crafted = crafted};
     return mc_inventory_player_create(MC_REGISTRY_CLIENT, NULL, NULL, &f->inventory, NULL) ==
                MC_INVENTORY_OK &&
            mc_container_player_create(MC_REGISTRY_CLIENT, r, f->inventory, true, NULL,
@@ -155,6 +159,143 @@ static bool destroy(fixture *f) {
 static mc_inventory_status click(fixture *f, int32_t slot, int32_t button, bool shift,
                                  mc_container_interaction_error *e) {
     return mc_container_click_begin(f->container, NULL, slot, button, shift, &f->host, &f->call, e);
+}
+
+static bool create_workbench(fixture *f, mc_registry_classes *r) {
+    *f = (fixture){0};
+    f->host = (mc_container_interaction_host){.context = f,
+                                              .inventory = inventory,
+                                              .cursor_changed = cursor_changed,
+                                              .drop = drop,
+                                              .crafted = crafted};
+    return mc_inventory_player_create(MC_REGISTRY_CLIENT, NULL, NULL, &f->inventory, NULL) ==
+               MC_INVENTORY_OK &&
+           mc_container_workbench_create(MC_REGISTRY_CLIENT, r, f->inventory, NULL, 8, 64, 8, NULL,
+                                         &f->container, NULL) == MC_INVENTORY_OK;
+}
+
+static bool workbench_controls(mc_registry_classes *r) {
+    bool ok = false;
+    fixture f = {0};
+    mc_inventory_error inventory_error;
+    mc_container_state state;
+    mc_container_interaction_error error;
+    mc_container_interaction_state interaction;
+    CHECK(mc_container_workbench_allocate(MC_REGISTRY_CLIENT, r, NULL, &f.container,
+                                          &inventory_error) == MC_INVENTORY_OK &&
+          mc_container_read_state(f.container, &state) && !state.constructor_entered &&
+          !state.constructed && !state.active && state.constructor_pc == -1 && state.slots == 0 &&
+          state.slot_list == NULL && state.crafting == NULL && state.result == NULL);
+    CHECK(mc_container_retain(f.container, NULL) == MC_INVENTORY_OK &&
+          mc_container_retire(&f.container, NULL) == MC_INVENTORY_BUSY &&
+          mc_container_release(f.container, NULL) == MC_INVENTORY_OK);
+    CHECK(mc_container_workbench_construct(f.container, NULL, NULL, 5, -3, 9, &inventory_error) ==
+              MC_INVENTORY_NULL_REFERENCE &&
+          inventory_error.frame_count == 1 && inventory_error.frames[0].pc == 57 &&
+          strcmp(inventory_error.frames[0].class_name, "it") == 0);
+    CHECK(mc_container_read_state(f.container, &state) && state.constructor_entered &&
+          state.constructor_failed && !state.constructed && !state.active &&
+          state.constructor_pc == 57 && state.slots == 0 && state.snapshots == 0 &&
+          state.crafting != NULL && state.result != NULL && state.world == NULL && state.x == 5 &&
+          state.y == -3 && state.z == 9 && f.container->allocated_slots != NULL &&
+          f.container->allocated_slots->state.kind == MC_SLOT_CRAFTING &&
+          f.container->allocated_slots->state.inventory == NULL && !f.container->inventory_bound);
+    CHECK(mc_container_workbench_construct(f.container, NULL, NULL, 0, 0, 0, NULL) ==
+              MC_INVENTORY_INVALID_ARGUMENT &&
+          f.container->constructor_pc == 57);
+    CHECK(destroy(&f));
+
+    CHECK(mc_inventory_player_create(MC_REGISTRY_CLIENT, NULL, NULL, &f.inventory, NULL) ==
+          MC_INVENTORY_OK);
+    static const size_t budgets[] = {256, 512, 1024, 2048, 4096, 8192, 16384, 32768};
+    size_t retained_failures = 0, completed = 0;
+    for (size_t i = 0; i < sizeof(budgets) / sizeof(budgets[0]); ++i) {
+        const mc_inventory_limits limits = {budgets[i], 65536};
+        const mc_inventory_status allocated = mc_container_workbench_allocate(
+            MC_REGISTRY_CLIENT, r, &limits, &f.container, &inventory_error);
+        if (allocated == MC_INVENTORY_OK) {
+            const mc_inventory_status status = mc_container_workbench_construct(
+                f.container, f.inventory, NULL, 8, 64, 8, &inventory_error);
+            CHECK(mc_container_read_state(f.container, &state) && state.constructor_entered &&
+                  !state.active);
+            if (status == MC_INVENTORY_OK) {
+                ++completed;
+                CHECK(state.constructed && !state.constructor_failed &&
+                      state.constructor_pc == 266 && state.slots == 46 && state.snapshots == 46 &&
+                      state.world == NULL);
+            } else {
+                ++retained_failures;
+                CHECK(status == MC_INVENTORY_LIMIT && state.constructor_failed &&
+                      !state.constructed && state.constructor_pc >= 1 &&
+                      inventory_error.frame_count != 0);
+            }
+            CHECK(mc_container_retire(&f.container, NULL) == MC_INVENTORY_OK &&
+                  f.inventory->containers == 0);
+        } else
+            CHECK(allocated == MC_INVENTORY_LIMIT && f.container == NULL);
+    }
+    CHECK(retained_failures != 0 && completed != 0);
+    CHECK(destroy(&f));
+    CHECK(mc_container_workbench_create(MC_REGISTRY_CLIENT, r, NULL, NULL, 8, 64, 8, NULL,
+                                        &f.container,
+                                        &inventory_error) == MC_INVENTORY_NULL_REFERENCE &&
+          f.container == NULL && inventory_error.frames[0].pc == 57);
+
+    static const int32_t source_slots[] = {10, 36, 37, 45, 1, 9};
+    for (size_t i = 0; i < sizeof(source_slots) / sizeof(source_slots[0]); ++i) {
+        CHECK(create_workbench(&f, r));
+        f.a = stack(3, 5, 0);
+        CHECK(f.a != NULL);
+        const int32_t source = source_slots[i];
+        if (source < 10)
+            CHECK(mc_inventory_crafting_set(f.container->crafting, source - 1, f.a, NULL) ==
+                  MC_INVENTORY_OK);
+        else
+            CHECK(mc_inventory_player_set(f.inventory, source < 37 ? source - 1 : source - 37, f.a,
+                                          NULL) == MC_INVENTORY_OK);
+        CHECK(click(&f, source, 0, true, &error) == MC_INVENTORY_OK && fields(f.a, 3, 0) &&
+              fields(f.inventory->main_slots[source >= 10 && source < 37 ? 0 : 9], 3, 5));
+        CHECK(mc_container_interaction_take_result(f.call, &f.returned) == MC_INVENTORY_OK &&
+              fields(f.returned, 3, 5) && f.returned != f.a &&
+              mc_container_interaction_inspect(f.call, &interaction) &&
+              interaction.shift_calls == 1 && !interaction.workbench_remote_read);
+        CHECK(destroy(&f));
+    }
+
+    CHECK(create_workbench(&f, r));
+    CHECK(click(&f, 46, 0, true, &error) == MC_INVENTORY_INDEX_OUT_OF_BOUNDS &&
+          error.source_exception && error.site.pc == 106 && error.child.pc == 7 &&
+          strcmp(error.child.class_name, "it") == 0 && !f.inventory->changed);
+    CHECK(destroy(&f));
+
+    CHECK(create_workbench(&f, r));
+    f.a = stack(17, 2, 0);
+    CHECK(f.a != NULL &&
+          mc_inventory_crafting_set(f.container->crafting, 0, f.a, NULL) == MC_INVENTORY_OK);
+    CHECK(click(&f, 0, 0, true, &error) == MC_INVENTORY_OK && f.crafted == 1 &&
+          f.crafted_count == 0 && f.observed_ingredient && fields(f.a, 17, 1) &&
+          fields(f.inventory->main_slots[8], 5, 4));
+    CHECK(destroy(&f));
+
+    CHECK(create_workbench(&f, r));
+    f.a = stack(3, 7, 0);
+    f.b = stack(17, 2, 0);
+    CHECK(f.a != NULL && f.b != NULL &&
+          mc_inventory_player_source_cursor_store(f.inventory, f.a, &(mc_entity *){0}, NULL) ==
+              MC_INVENTORY_OK &&
+          mc_inventory_crafting_set(f.container->crafting, 0, f.b, NULL) == MC_INVENTORY_OK);
+    CHECK(mc_container_close_begin(f.container, NULL, &f.host, &f.call, &error) ==
+              MC_INVENTORY_NULL_REFERENCE &&
+          error.source_exception && strcmp(error.site.class_name, "it") == 0 &&
+          error.site.pc == 9 && f.drops == 1 && f.inventory->cursor == NULL &&
+          f.container->crafting->slots[0] == f.b &&
+          mc_container_interaction_inspect(f.call, &interaction) && interaction.cursor_cleared &&
+          !interaction.workbench_remote_read && interaction.crafting_cells_cleared == 0);
+    CHECK(destroy(&f));
+    ok = true;
+cleanup:
+    (void)destroy(&f);
+    return ok;
 }
 
 static bool controls(mc_registry_classes *r) {
@@ -415,7 +556,7 @@ int main(int argc, char **argv) {
                                          mc_resource_files_source(files)};
     if (mc_registry_classes_allocate(&options, &classes, NULL) != MC_REGISTRY_OK ||
         mc_registry_classes_initialize_statistics(classes, NULL) != MC_REGISTRY_OK ||
-        !controls(classes))
+        !controls(classes) || !workbench_controls(classes))
         goto cleanup;
     printf("Container interaction kernel controls passed: %u\n", checks);
     result = 0;

@@ -1,0 +1,1512 @@
+{
+  "schema": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "scope": "132 actual ordinary VG17/FI58 registered-Block scalar calls; independent JDI-process target results agree. UU.g retains its own exact primitive before/after state. No source field is modified for these queries.",
+  "declaration-source": "captured WorkbenchDrawingTarget.scalars() literals, frozen before execution",
+  "signed-metadata": [
+    -2147483648,
+    -17,
+    -1,
+    0,
+    1,
+    2,
+    3,
+    15,
+    16,
+    2147483647
+  ],
+  "signed-sides": [
+    -2147483648,
+    -1,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    2147483647
+  ],
+  "rows": [
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        -2147483648
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        -17
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        -1
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        0
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        1
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        2
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        3
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        15
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        16
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        2147483647
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "g()V",
+      "owner": "uu",
+      "arguments": [],
+      "return": null,
+      "before": {
+        "bB": "3f19999a",
+        "bm": 20,
+        "bn": 17,
+        "bo": "40000000",
+        "bp": "41200000",
+        "bq": true,
+        "br": true,
+        "bs": "0000000000000000",
+        "bt": "0000000000000000",
+        "bu": "0000000000000000",
+        "bv": "3ff0000000000000",
+        "bw": "3ff0000000000000",
+        "bx": "3ff0000000000000",
+        "bz": "3f800000"
+      },
+      "after": {
+        "bB": "3f19999a",
+        "bm": 20,
+        "bn": 17,
+        "bo": "40000000",
+        "bp": "41200000",
+        "bq": true,
+        "br": true,
+        "bs": "0000000000000000",
+        "bt": "0000000000000000",
+        "bu": "0000000000000000",
+        "bv": "3ff0000000000000",
+        "bw": "3ff0000000000000",
+        "bx": "3ff0000000000000",
+        "bz": "3f800000"
+      }
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -2147483648,
+        -2147483648
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -2147483648,
+        -17
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -2147483648,
+        -1
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -2147483648,
+        0
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -2147483648,
+        1
+      ],
+      "return": 116
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -2147483648,
+        2
+      ],
+      "return": 117
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -2147483648,
+        3
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -2147483648,
+        15
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -2147483648,
+        16
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -2147483648,
+        2147483647
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -1,
+        -2147483648
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -1,
+        -17
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -1,
+        -1
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -1,
+        0
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -1,
+        1
+      ],
+      "return": 116
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -1,
+        2
+      ],
+      "return": 117
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -1,
+        3
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -1,
+        15
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -1,
+        16
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        -1,
+        2147483647
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        0,
+        -2147483648
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        0,
+        -17
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        0,
+        -1
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        0,
+        0
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        0,
+        1
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        0,
+        2
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        0,
+        3
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        0,
+        15
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        0,
+        16
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        0,
+        2147483647
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        1,
+        -2147483648
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        1,
+        -17
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        1,
+        -1
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        1,
+        0
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        1,
+        1
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        1,
+        2
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        1,
+        3
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        1,
+        15
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        1,
+        16
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        1,
+        2147483647
+      ],
+      "return": 21
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2,
+        -2147483648
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2,
+        -17
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2,
+        -1
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2,
+        0
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2,
+        1
+      ],
+      "return": 116
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2,
+        2
+      ],
+      "return": 117
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2,
+        3
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2,
+        15
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2,
+        16
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2,
+        2147483647
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        3,
+        -2147483648
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        3,
+        -17
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        3,
+        -1
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        3,
+        0
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        3,
+        1
+      ],
+      "return": 116
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        3,
+        2
+      ],
+      "return": 117
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        3,
+        3
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        3,
+        15
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        3,
+        16
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        3,
+        2147483647
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        4,
+        -2147483648
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        4,
+        -17
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        4,
+        -1
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        4,
+        0
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        4,
+        1
+      ],
+      "return": 116
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        4,
+        2
+      ],
+      "return": 117
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        4,
+        3
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        4,
+        15
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        4,
+        16
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        4,
+        2147483647
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        5,
+        -2147483648
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        5,
+        -17
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        5,
+        -1
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        5,
+        0
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        5,
+        1
+      ],
+      "return": 116
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        5,
+        2
+      ],
+      "return": 117
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        5,
+        3
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        5,
+        15
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        5,
+        16
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        5,
+        2147483647
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        6,
+        -2147483648
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        6,
+        -17
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        6,
+        -1
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        6,
+        0
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        6,
+        1
+      ],
+      "return": 116
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        6,
+        2
+      ],
+      "return": 117
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        6,
+        3
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        6,
+        15
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        6,
+        16
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        6,
+        2147483647
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2147483647,
+        -2147483648
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2147483647,
+        -17
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2147483647,
+        -1
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2147483647,
+        0
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2147483647,
+        1
+      ],
+      "return": 116
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2147483647,
+        2
+      ],
+      "return": 117
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2147483647,
+        3
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2147483647,
+        15
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2147483647,
+        16
+      ],
+      "return": 20
+    },
+    {
+      "id": 17,
+      "class": "vg",
+      "method": "a(II)I",
+      "owner": "vg",
+      "arguments": [
+        2147483647,
+        2147483647
+      ],
+      "return": 20
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        -2147483648
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        -17
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        -1
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        0
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        1
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        2
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        3
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        15
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        16
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "b(I)I",
+      "owner": "uu",
+      "arguments": [
+        2147483647
+      ],
+      "return": 16777215
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "g()V",
+      "owner": "uu",
+      "arguments": [],
+      "return": null,
+      "before": {
+        "bB": "3f19999a",
+        "bm": 59,
+        "bn": 58,
+        "bo": "40200000",
+        "bp": "41480000",
+        "bq": true,
+        "br": true,
+        "bs": "0000000000000000",
+        "bt": "0000000000000000",
+        "bu": "0000000000000000",
+        "bv": "3ff0000000000000",
+        "bw": "3ff0000000000000",
+        "bx": "3ff0000000000000",
+        "bz": "3f800000"
+      },
+      "after": {
+        "bB": "3f19999a",
+        "bm": 59,
+        "bn": 58,
+        "bo": "40200000",
+        "bp": "41480000",
+        "bq": true,
+        "br": true,
+        "bs": "0000000000000000",
+        "bt": "0000000000000000",
+        "bu": "0000000000000000",
+        "bv": "3ff0000000000000",
+        "bw": "3ff0000000000000",
+        "bx": "3ff0000000000000",
+        "bz": "3f800000"
+      }
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "a(I)I",
+      "owner": "fi",
+      "arguments": [
+        -2147483648
+      ],
+      "return": 59
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "a(I)I",
+      "owner": "fi",
+      "arguments": [
+        -1
+      ],
+      "return": 59
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "a(I)I",
+      "owner": "fi",
+      "arguments": [
+        0
+      ],
+      "return": 4
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "a(I)I",
+      "owner": "fi",
+      "arguments": [
+        1
+      ],
+      "return": 43
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "a(I)I",
+      "owner": "fi",
+      "arguments": [
+        2
+      ],
+      "return": 60
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "a(I)I",
+      "owner": "fi",
+      "arguments": [
+        3
+      ],
+      "return": 59
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "a(I)I",
+      "owner": "fi",
+      "arguments": [
+        4
+      ],
+      "return": 60
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "a(I)I",
+      "owner": "fi",
+      "arguments": [
+        5
+      ],
+      "return": 59
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "a(I)I",
+      "owner": "fi",
+      "arguments": [
+        6
+      ],
+      "return": 59
+    },
+    {
+      "id": 58,
+      "class": "fi",
+      "method": "a(I)I",
+      "owner": "fi",
+      "arguments": [
+        2147483647
+      ],
+      "return": 59
+    }
+  ]
+}

@@ -19,6 +19,8 @@ mc_client_screen_status mc_screen_fail(mc_client_screen_error *e, mc_client_scre
     e->operation = operation;
     e->site = (mc_client_screen_site){cl, method, descriptor, pc};
     e->native_policy = true;
+    e->source_exception = e->source_error = false;
+    e->exception_class = NULL;
     return status;
 }
 

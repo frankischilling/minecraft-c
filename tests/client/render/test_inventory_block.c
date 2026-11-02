@@ -271,11 +271,8 @@ static bool inherited_item_controls(mc_registry_classes *registry) {
     static const struct {
         mc_item_kind kind;
         const char *icon_owner;
-    } overrides[] = {{MC_ITEM_DYE, "km"},
-                     {MC_ITEM_LOG_BLOCK, "go"},
-                     {MC_ITEM_SLAB_BLOCK, "en"},
-                     {MC_ITEM_SAPLING_BLOCK, "mr"},
-                     {MC_ITEM_LEAVES_BLOCK, "uy"}};
+    } overrides[] = {
+        {MC_ITEM_DYE, "km"}, {MC_ITEM_SAPLING_BLOCK, "mr"}, {MC_ITEM_LEAVES_BLOCK, "uy"}};
 
     for (size_t i = 0; i < sizeof(overrides) / sizeof(overrides[0]); ++i) {
         mc_item *raw = NULL;
@@ -294,6 +291,269 @@ static bool inherited_item_controls(mc_registry_classes *registry) {
         else
             CHECK(mc_item_render_color(registry, raw, 0, &value, &error) && value == 0xffffff &&
                   strcmp(error.site.class_name, "gm") == 0);
+    }
+    return true;
+}
+
+static bool log_item_getter_controls(fixture *f) {
+    static const int32_t metadata[] = {INT32_MIN, -17, -1, 0, 1, 2, 3, 15, 16, INT32_MAX};
+    static const int32_t wool_textures[16] = {64,  210, 194, 178, 162, 146, 130, 114,
+                                              225, 209, 193, 177, 161, 145, 129, 113};
+    const mc_registry_item_array *items = NULL;
+    const mc_item *item = NULL;
+    CHECK(mc_registry_item_c_get(f->registry, &items, NULL) == MC_REGISTRY_OK &&
+          mc_registry_item_c_at(f->registry, items, 17, &item, NULL) == MC_REGISTRY_OK &&
+          item != NULL && item->kind == MC_ITEM_LOG_BLOCK);
+    mc_item *raw = NULL;
+    CHECK(mc_registry_item_allocate(f->registry, MC_ITEM_LOG_BLOCK, &raw) == MC_REGISTRY_OK &&
+          raw != NULL && raw->phase == MC_ITEM_RAW);
+    raw->fields.bh = -909;
+    raw->ck_a = INT32_MIN;
+    const mc_item before = *raw;
+    mc_block *actual_k = f->registry->blocks.named[16];
+    CHECK(actual_k != NULL && actual_k->kind == MC_BLOCK_LOG &&
+          strcmp(mc_registry_block_static_name(16), "K") == 0);
+    const size_t bytes = f->registry->allocation_bytes;
+    mc_item_render_error error;
+    for (size_t i = 0; i < sizeof(metadata) / sizeof(metadata[0]); ++i) {
+        const int32_t expected = metadata[i] == 1 ? 116 : metadata[i] == 2 ? 117 : 20;
+        int32_t icon = -777;
+        CHECK(mc_item_render_icon(f->registry, item, metadata[i], &icon, &error) &&
+              icon == expected && error.returned && error.site.pc == 8 &&
+              strcmp(error.site.class_name, "go") == 0);
+        CHECK(mc_item_render_icon(f->registry, raw, metadata[i], &icon, &error) &&
+              icon == expected && error.returned && error.site.pc == 8 && !error.source_exception &&
+              error.throwable == MC_ITEM_RENDER_NO_THROWABLE &&
+              memcmp(raw, &before, sizeof(before)) == 0 && f->registry->allocation_bytes == bytes);
+    }
+    /* K is a fresh source static capture, independent of the m[17] cell. */
+    mc_block *actual_m17 = f->registry->blocks.m[17];
+    f->registry->blocks.m[17] = NULL;
+    int32_t icon = -777;
+    const bool named_only = mc_item_render_icon(f->registry, item, 1, &icon, &error);
+    f->registry->blocks.m[17] = actual_m17;
+    CHECK(named_only && icon == 116);
+    f->registry->blocks.named[16] = NULL;
+    icon = -777;
+    const bool null_k = mc_item_render_icon(f->registry, item, INT32_MIN, &icon, &error);
+    f->registry->blocks.named[16] = actual_k;
+    CHECK(!null_k && icon == -777 && !error.returned && error.site.pc == 5 &&
+          strcmp(error.site.class_name, "go") == 0 && error.status == MC_REGISTRY_NULL_REFERENCE &&
+          error.source_exception && !error.native_policy &&
+          error.throwable == MC_ITEM_RENDER_SOURCE_EXCEPTION &&
+          strcmp(error.exception_class, "java/lang/NullPointerException") == 0);
+    const mc_block *wool = NULL, *dirt = NULL, *bed = NULL;
+    CHECK(mc_registry_block_get(f->registry, 35, &wool, NULL) == MC_REGISTRY_OK && wool != NULL &&
+          mc_registry_block_get(f->registry, 3, &dirt, NULL) == MC_REGISTRY_OK && dirt != NULL &&
+          mc_registry_block_get(f->registry, 26, &bed, NULL) == MC_REGISTRY_OK && bed != NULL);
+    f->registry->blocks.named[16] = (mc_block *)(void *)wool;
+    for (int32_t m = 0; m < 16; ++m) {
+        /* Unlike BI.a, GO passes metadata through without EE.d inversion. */
+        icon = -777;
+        const bool returned = mc_item_render_icon(f->registry, item, m, &icon, &error);
+        CHECK(returned && icon == wool_textures[m] && error.site.pc == 8);
+    }
+    CHECK(mc_item_render_icon(f->registry, item, 16, &icon, &error) && icon == 226);
+    f->registry->blocks.named[16] = (mc_block *)(void *)dirt;
+    CHECK(mc_item_render_icon(f->registry, item, INT32_MAX, &icon, &error) &&
+          icon == dirt->fields.bm && error.site.pc == 8);
+    f->registry->blocks.named[16] = (mc_block *)(void *)bed;
+    icon = -777;
+    const bool frontier = mc_item_render_icon(f->registry, item, 0, &icon, &error);
+    f->registry->blocks.named[16] = actual_k;
+    CHECK(!frontier && icon == -777 && !error.returned && error.site.pc == 5 &&
+          strcmp(error.site.class_name, "go") == 0 &&
+          error.status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY && error.native_policy &&
+          error.throwable == MC_ITEM_RENDER_NO_THROWABLE && error.exception_class == NULL);
+    CHECK(mc_item_render_icon(f->registry, item, 2, &icon, &error) && icon == 117 &&
+          error.site.pc == 8 && f->registry->blocks.named[16] == actual_k &&
+          memcmp(raw, &before, sizeof(before)) == 0);
+    return true;
+}
+
+static bool slab_item_getter_controls(fixture *f) {
+    static const int32_t metadata[] = {INT32_MIN, -17, -1, 0, 1, 2, 3, 15, 16, INT32_MAX};
+    const mc_registry_item_array *items = NULL;
+    const mc_item *item = NULL;
+    CHECK(mc_registry_item_c_get(f->registry, &items, NULL) == MC_REGISTRY_OK &&
+          mc_registry_item_c_at(f->registry, items, 44, &item, NULL) == MC_REGISTRY_OK &&
+          item != NULL && item->kind == MC_ITEM_SLAB_BLOCK);
+    mc_item *raw = NULL;
+    CHECK(mc_registry_item_allocate(f->registry, MC_ITEM_SLAB_BLOCK, &raw) == MC_REGISTRY_OK &&
+          raw != NULL && raw->phase == MC_ITEM_RAW);
+    raw->fields.bh = -909;
+    raw->ck_a = INT32_MIN;
+    const mc_item before = *raw;
+    mc_block *actual_al = f->registry->blocks.named[43];
+    CHECK(actual_al != NULL && actual_al->kind == MC_BLOCK_SLAB && actual_al->fields.bn == 44 &&
+          strcmp(mc_registry_block_static_name(43), "al") == 0);
+    const mc_block actual_before = *actual_al;
+    const mc_registry_class_state declaring = f->registry->block_states[MC_BLOCK_SLAB];
+    const size_t bytes = f->registry->allocation_bytes;
+    mc_item_render_error error;
+    for (size_t i = 0; i < sizeof(metadata) / sizeof(metadata[0]); ++i) {
+        const int32_t expected = metadata[i] == 0   ? 5
+                                 : metadata[i] == 1 ? 192
+                                 : metadata[i] == 2 ? 4
+                                 : metadata[i] == 3 ? 16
+                                                    : 6;
+        int32_t icon = -777;
+        CHECK(mc_item_render_icon(f->registry, item, metadata[i], &icon, &error) &&
+              icon == expected && error.returned && error.site.pc == 8 &&
+              strcmp(error.site.class_name, "en") == 0);
+        CHECK(mc_item_render_icon(f->registry, raw, metadata[i], &icon, &error) &&
+              icon == expected && error.returned && error.site.pc == 8 && !error.source_exception &&
+              error.throwable == MC_ITEM_RENDER_NO_THROWABLE &&
+              memcmp(raw, &before, sizeof(before)) == 0 &&
+              memcmp(actual_al, &actual_before, sizeof(actual_before)) == 0 &&
+              memcmp(&declaring, &f->registry->block_states[MC_BLOCK_SLAB], sizeof(declaring)) ==
+                  0 &&
+              f->registry->allocation_bytes == bytes);
+    }
+    /* EN loads the named singleton, independently of the ordinary m[44] cell. */
+    mc_block *actual_m44 = f->registry->blocks.m[44];
+    f->registry->blocks.m[44] = NULL;
+    int32_t icon = -777;
+    const bool named_only = mc_item_render_icon(f->registry, item, 1, &icon, &error);
+    f->registry->blocks.m[44] = actual_m44;
+    CHECK(named_only && icon == 192);
+    f->registry->blocks.named[43] = NULL;
+    icon = -777;
+    const bool null_al = mc_item_render_icon(f->registry, item, INT32_MIN, &icon, &error);
+    f->registry->blocks.named[43] = actual_al;
+    CHECK(!null_al && icon == -777 && !error.returned && error.site.pc == 5 &&
+          strcmp(error.site.class_name, "en") == 0 && error.status == MC_REGISTRY_NULL_REFERENCE &&
+          error.source_exception && !error.native_policy &&
+          error.throwable == MC_ITEM_RENDER_SOURCE_EXCEPTION &&
+          strcmp(error.exception_class, "java/lang/NullPointerException") == 0);
+    const mc_block *wool = NULL, *dirt = NULL, *bed = NULL;
+    CHECK(mc_registry_block_get(f->registry, 35, &wool, NULL) == MC_REGISTRY_OK && wool != NULL &&
+          mc_registry_block_get(f->registry, 3, &dirt, NULL) == MC_REGISTRY_OK && dirt != NULL &&
+          mc_registry_block_get(f->registry, 26, &bed, NULL) == MC_REGISTRY_OK && bed != NULL);
+    f->registry->blocks.named[43] = (mc_block *)(void *)wool;
+    CHECK(mc_item_render_icon(f->registry, item, 2, &icon, &error) && icon == 194 &&
+          mc_item_render_icon(f->registry, item, 16, &icon, &error) && icon == 226);
+    /* A fresh different receiver must use its live signed field, not the Slab
+     * Item id, its ck.a field, the original singleton or a cached texture. */
+    const int32_t original_bm = dirt->fields.bm;
+    f->registry->blocks.named[43] = (mc_block *)(void *)dirt;
+    static const int32_t textures[] = {INT32_MIN, -1, INT32_MAX};
+    for (size_t i = 0; i < sizeof(textures) / sizeof(textures[0]); ++i) {
+        ((mc_block *)(void *)dirt)->fields.bm = textures[i];
+        CHECK(mc_item_render_icon(f->registry, raw, metadata[i], &icon, &error) &&
+              icon == textures[i] && error.returned && error.site.pc == 8);
+    }
+    ((mc_block *)(void *)dirt)->fields.bm = original_bm;
+    f->registry->blocks.named[43] = (mc_block *)(void *)bed;
+    icon = -777;
+    const bool frontier = mc_item_render_icon(f->registry, item, 0, &icon, &error);
+    f->registry->blocks.named[43] = actual_al;
+    CHECK(!frontier && icon == -777 && !error.returned && error.site.pc == 5 &&
+          strcmp(error.site.class_name, "en") == 0 &&
+          error.status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY && error.native_policy &&
+          error.throwable == MC_ITEM_RENDER_NO_THROWABLE && error.exception_class == NULL);
+    CHECK(mc_item_render_icon(f->registry, item, 3, &icon, &error) && icon == 16 &&
+          error.site.pc == 8 && f->registry->blocks.named[43] == actual_al &&
+          memcmp(raw, &before, sizeof(before)) == 0);
+    return true;
+}
+
+static mc_registry_status log_missing_stream(void *context, const char *name,
+                                             mc_java_properties_input *out) {
+    (void)name;
+    (void)out;
+    ++*(size_t *)context;
+    return MC_REGISTRY_NULL_REFERENCE; /* Actual absent Class resource stream. */
+}
+
+static bool log_item_initializer_controls(fixture *f) {
+    for (unsigned int mode = 0; mode < 2; ++mode) {
+        size_t opens = 0;
+        const mc_registry_resources resources = {.context = &opens, .open = log_missing_stream};
+        const mc_registry_options options = {MC_REGISTRY_CLIENT, f->profile, f->materials, 0,
+                                             mode == 0 ? &resources : NULL};
+        mc_registry_classes *registry = NULL;
+        mc_registry_error first;
+        CHECK(mc_registry_classes_allocate(&options, &registry, NULL) == MC_REGISTRY_OK &&
+              mc_registry_classes_bind_entities(registry, f->entities, NULL) == MC_REGISTRY_OK &&
+              mc_registry_classes_initialize_items(registry, &first) ==
+                  (mode == 0 ? MC_REGISTRY_NULL_REFERENCE : MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY));
+        /* Starting with GM lets its tool Block lookup initialize UU while GM
+         * is already entered. UU's recursive GM use then returns normally,
+         * so it publishes GO before the real statistics/Translation failure.
+         * Starting with UU instead fails inside GM before publishing GO.
+         * Inspection does not re-enter either erroneous declaring class. */
+        CHECK(registry->blocks_phase == MC_REGISTRY_FAILED && registry->items.c != NULL &&
+              registry->items.c->elements != NULL && registry->items.c->length > 17);
+        const mc_item *item = registry->items.c->elements[17];
+        CHECK(item != NULL && item->kind == MC_ITEM_LOG_BLOCK &&
+              item->phase == MC_ITEM_CONSTRUCTED && opens == (mode == 0 ? 1u : 0u));
+        for (unsigned int attempt = 0; attempt < 2; ++attempt) {
+            mc_item_render_error error;
+            int32_t icon = -777;
+            CHECK(!mc_item_render_icon(registry, item, 1, &icon, &error) && icon == -777 &&
+                  !error.returned && error.site.pc == 0 &&
+                  strcmp(error.site.class_name, "go") == 0 &&
+                  error.status == MC_REGISTRY_FAILED_INITIALIZATION && !error.source_exception &&
+                  error.native_policy == (mode != 0) &&
+                  error.throwable ==
+                      (mode == 0 ? MC_ITEM_RENDER_SOURCE_ERROR : MC_ITEM_RENDER_NO_THROWABLE) &&
+                  opens == (mode == 0 ? 1u : 0u) && first.message == error.registry.message &&
+                  first.active_initializer_pc == error.registry.active_initializer_pc);
+            if (mode == 0)
+                CHECK(error.exception_class != NULL &&
+                      strcmp(error.exception_class, "java/lang/NoClassDefFoundError") == 0);
+            else
+                CHECK(error.exception_class == NULL);
+        }
+        CHECK(mc_registry_classes_free(registry, NULL) == MC_REGISTRY_OK);
+    }
+    return true;
+}
+
+static bool slab_item_initializer_controls(fixture *f) {
+    for (unsigned int mode = 0; mode < 2; ++mode) {
+        size_t opens = 0;
+        const mc_registry_resources resources = {.context = &opens, .open = log_missing_stream};
+        const mc_registry_options options = {MC_REGISTRY_CLIENT, f->profile, f->materials, 0,
+                                             mode == 0 ? &resources : NULL};
+        mc_registry_classes *registry = NULL;
+        mc_registry_error first;
+        CHECK(mc_registry_classes_allocate(&options, &registry, NULL) == MC_REGISTRY_OK &&
+              mc_registry_classes_bind_entities(registry, f->entities, NULL) == MC_REGISTRY_OK &&
+              mc_registry_classes_initialize_items(registry, &first) ==
+                  (mode == 0 ? MC_REGISTRY_NULL_REFERENCE : MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY));
+        /* This real recursive initialization publishes EN before the later
+         * statistics/Translation failure. Its getstatic must now observe UU's
+         * cached failure, without re-entering the failed dependency. */
+        CHECK(registry->blocks_phase == MC_REGISTRY_FAILED && registry->items.c != NULL &&
+              registry->items.c->elements != NULL && registry->items.c->length > 44);
+        const mc_item *item = registry->items.c->elements[44];
+        CHECK(item != NULL && item->kind == MC_ITEM_SLAB_BLOCK &&
+              item->phase == MC_ITEM_CONSTRUCTED);
+        const mc_item before = *item;
+        for (unsigned int attempt = 0; attempt < 2; ++attempt) {
+            mc_item_render_error error;
+            int32_t icon = -777;
+            CHECK(!mc_item_render_icon(registry, item, 2, &icon, &error) && icon == -777 &&
+                  !error.returned && error.site.pc == 0 &&
+                  strcmp(error.site.class_name, "en") == 0 &&
+                  error.status == MC_REGISTRY_FAILED_INITIALIZATION && !error.source_exception &&
+                  error.native_policy == (mode != 0) &&
+                  error.throwable ==
+                      (mode == 0 ? MC_ITEM_RENDER_SOURCE_ERROR : MC_ITEM_RENDER_NO_THROWABLE) &&
+                  opens == (mode == 0 ? 1u : 0u) && registry->blocks_phase == MC_REGISTRY_FAILED &&
+                  memcmp(item, &before, sizeof(before)) == 0 &&
+                  first.message == error.registry.message &&
+                  first.active_initializer_class == error.registry.active_initializer_class &&
+                  first.active_initializer_pc == error.registry.active_initializer_pc);
+            if (mode == 0)
+                CHECK(error.exception_class != NULL &&
+                      strcmp(error.exception_class, "java/lang/NoClassDefFoundError") == 0);
+            else
+                CHECK(error.exception_class == NULL);
+        }
+        CHECK(mc_registry_classes_free(registry, NULL) == MC_REGISTRY_OK);
     }
     return true;
 }
@@ -369,7 +629,213 @@ static bool pumpkin_getter_controls(fixture *f) {
           mc_block_render_inventory_color(grass, 0, &unchanged) ==
               MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY &&
           unchanged == -777 &&
-          mc_block_render_inventory_shape(grass) == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY);
+          mc_block_render_inventory_shape((mc_block *)(void *)grass) ==
+              MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY);
+    return true;
+}
+
+static bool pressure_bounds(const mc_block *block, const uint64_t expected[6]) {
+    const double values[] = {block->fields.bs, block->fields.bt, block->fields.bu,
+                             block->fields.bv, block->fields.bw, block->fields.bx};
+    for (size_t i = 0; i < 6; ++i)
+        CHECK(double_bits(values[i]) == expected[i]);
+    return true;
+}
+
+static void pressure_expected_shape(mc_block *expected) {
+    expected->fields.bs = 0.0;
+    expected->fields.bt = .375;
+    expected->fields.bu = 0.0;
+    expected->fields.bv = 1.0;
+    expected->fields.bw = .625;
+    expected->fields.bx = 1.0;
+}
+
+static bool pressure_plate_getter_controls(fixture *f) {
+    static const uint64_t constructor_bounds[] = {
+        UINT64_C(0x3fb0000000000000), 0,
+        UINT64_C(0x3fb0000000000000), UINT64_C(0x3fee000000000000),
+        UINT64_C(0x3fa0000000000000), UINT64_C(0x3fee000000000000)};
+    static const uint64_t inventory_bounds[] = {0,
+                                                UINT64_C(0x3fd8000000000000),
+                                                0,
+                                                UINT64_C(0x3ff0000000000000),
+                                                UINT64_C(0x3fe4000000000000),
+                                                UINT64_C(0x3ff0000000000000)};
+    static const int32_t metadata[] = {INT32_MIN, -1, 0, 1, 2, INT32_MAX};
+    static const int32_t sides[] = {INT32_MIN, -1, 0, 1, 2, 3, 4, 5, 6, INT32_MAX};
+    static const int32_t textures[] = {INT32_MIN, -17, 0, 4, INT32_MAX};
+    static const int32_t ids[] = {70, 72};
+    for (size_t i = 0; i < sizeof(ids) / sizeof(ids[0]); ++i) {
+        const mc_block *read = NULL;
+        CHECK(mc_registry_block_get(f->registry, ids[i], &read, NULL) == MC_REGISTRY_OK &&
+              read != NULL && read->kind == MC_BLOCK_PRESSURE_PLATE &&
+              read->phase == MC_BLOCK_CONSTRUCTED && strcmp(read->constructor_class, "bv") == 0 &&
+              read->subtype.bv.a == (i == 0 ? f->registry->pressure_b : f->registry->pressure_a) &&
+              read->fields.bm == (i == 0 ? 1 : 4) && pressure_bounds(read, constructor_bounds));
+        mc_block *plate = (mc_block *)(void *)read;
+        const mc_block original = *plate;
+        mc_block_render_description description;
+        CHECK(mc_block_render_describe(plate, &description) == MC_REGISTRY_OK &&
+              description.type == 0);
+        for (size_t m = 0; m < sizeof(metadata) / sizeof(metadata[0]); ++m) {
+            int32_t color = -777;
+            CHECK(mc_block_render_inventory_color(plate, metadata[m], &color) == MC_REGISTRY_OK &&
+                  color == 0xffffff);
+            for (size_t s = 0; s < sizeof(sides) / sizeof(sides[0]); ++s) {
+                int32_t texture = -777;
+                CHECK(mc_block_render_texture_metadata(plate, sides[s], metadata[m], &texture) ==
+                          MC_REGISTRY_OK &&
+                      texture == original.fields.bm &&
+                      mc_registry_block_texture_side(f->registry, plate, sides[s], &texture) ==
+                          MC_REGISTRY_OK &&
+                      texture == original.fields.bm &&
+                      memcmp(plate, &original, sizeof(original)) == 0);
+            }
+        }
+        mc_block expected = original;
+        pressure_expected_shape(&expected);
+        CHECK(mc_block_render_inventory_shape(plate) == MC_REGISTRY_OK &&
+              pressure_bounds(plate, inventory_bounds) &&
+              memcmp(plate, &expected, sizeof(expected)) == 0 &&
+              mc_block_render_inventory_shape(plate) == MC_REGISTRY_OK &&
+              memcmp(plate, &expected, sizeof(expected)) == 0);
+        for (size_t t = 0; t < sizeof(textures) / sizeof(textures[0]); ++t) {
+            /* Independently authored fields before each source invocation;
+             * BV.g must overwrite every bound and preserve the live texture. */
+            CHECK(mc_block_render_bounds(plate, -.125f, .25f, .375f, .75f, 1.25f, 1.5f) ==
+                  MC_REGISTRY_OK);
+            plate->fields.bm = textures[t];
+            expected = *plate;
+            pressure_expected_shape(&expected);
+            CHECK(mc_block_render_inventory_shape(plate) == MC_REGISTRY_OK &&
+                  pressure_bounds(plate, inventory_bounds) &&
+                  memcmp(plate, &expected, sizeof(expected)) == 0);
+            for (size_t m = 0; m < sizeof(metadata) / sizeof(metadata[0]); ++m) {
+                int32_t color = -777, texture = -777;
+                CHECK(mc_block_render_inventory_color(plate, metadata[m], &color) ==
+                          MC_REGISTRY_OK &&
+                      color == 0xffffff &&
+                      mc_block_render_texture_metadata(plate, INT32_MIN, metadata[m], &texture) ==
+                          MC_REGISTRY_OK &&
+                      texture == textures[t] &&
+                      mc_block_render_texture_metadata(plate, INT32_MAX, metadata[m], &texture) ==
+                          MC_REGISTRY_OK &&
+                      texture == textures[t] && memcmp(plate, &expected, sizeof(expected)) == 0);
+            }
+        }
+        /* Teardown of the independent input preparation, after all returns. */
+        plate->fields = original.fields;
+        CHECK(memcmp(plate, &original, sizeof(original)) == 0);
+    }
+    mc_block *raw = NULL;
+    CHECK(mc_registry_block_allocate(f->registry, MC_BLOCK_PRESSURE_PLATE, &raw) ==
+              MC_REGISTRY_OK &&
+          raw != NULL && raw->phase == MC_BLOCK_RAW);
+    raw->fields.bm = INT32_MIN;
+    raw->fields.br = true;
+    mc_block expected = *raw;
+    pressure_expected_shape(&expected);
+    const size_t bytes = f->registry->allocation_bytes;
+    const mc_registry_class_state declaring = f->registry->block_states[MC_BLOCK_PRESSURE_PLATE];
+    CHECK(mc_block_render_inventory_shape(raw) == MC_REGISTRY_OK &&
+          pressure_bounds(raw, inventory_bounds) && memcmp(raw, &expected, sizeof(expected)) == 0 &&
+          raw->phase == MC_BLOCK_RAW && bytes == f->registry->allocation_bytes &&
+          memcmp(&declaring, &f->registry->block_states[MC_BLOCK_PRESSURE_PLATE],
+                 sizeof(declaring)) == 0);
+    CHECK(mc_block_render_inventory_shape(NULL) == MC_REGISTRY_INVALID_ARGUMENT);
+    return true;
+}
+
+static bool slab_block_getter_controls(fixture *f) {
+    static const int32_t ids[] = {43, 44};
+    static const int32_t metadata[] = {INT32_MIN, -1, 0, 1, 2, 3, 4, INT32_MAX};
+    for (size_t i = 0; i < sizeof(ids) / sizeof(ids[0]); ++i) {
+        const mc_block *read = NULL;
+        CHECK(mc_registry_block_get(f->registry, ids[i], &read, NULL) == MC_REGISTRY_OK &&
+              read != NULL && read->kind == MC_BLOCK_SLAB && read->subtype.ys.b == (i == 0) &&
+              read->fields.bs == 0 && read->fields.bt == 0 && read->fields.bu == 0 &&
+              read->fields.bv == 1 && read->fields.bw == (i == 0 ? 1.0 : .5) &&
+              read->fields.bx == 1);
+        mc_block *block = (mc_block *)(void *)read;
+        const mc_block original = *block;
+        for (unsigned int prepared = 0; prepared < 2; ++prepared) {
+            if (prepared != 0)
+                CHECK(mc_block_render_bounds(block, -.125f, .25f, .375f, .75f, 1.25f, 1.5f) ==
+                      MC_REGISTRY_OK);
+            const mc_block before = *block;
+            for (size_t m = 0; m < sizeof(metadata) / sizeof(metadata[0]); ++m) {
+                int32_t color = -777;
+                CHECK(
+                    mc_block_render_inventory_color(block, metadata[m], &color) == MC_REGISTRY_OK &&
+                    color == 0xffffff && mc_block_render_inventory_shape(block) == MC_REGISTRY_OK &&
+                    memcmp(block, &before, sizeof(before)) == 0);
+            }
+        }
+        /* Independent native input preparation ends after all source returns. */
+        block->fields = original.fields;
+        CHECK(memcmp(block, &original, sizeof(original)) == 0);
+    }
+    mc_block *raw = NULL;
+    CHECK(mc_registry_block_allocate(f->registry, MC_BLOCK_SLAB, &raw) == MC_REGISTRY_OK &&
+          raw != NULL && raw->phase == MC_BLOCK_RAW &&
+          mc_block_render_bounds(raw, -.25f, .125f, .5f, .625f, .875f, 1.25f) == MC_REGISTRY_OK);
+    raw->fields.bm = INT32_MIN;
+    raw->subtype.ys.b = true;
+    const mc_block before = *raw;
+    const size_t bytes = f->registry->allocation_bytes;
+    const mc_registry_class_state declaring = f->registry->block_states[MC_BLOCK_SLAB];
+    int32_t color = -777;
+    CHECK(mc_block_render_inventory_color(raw, INT32_MIN, &color) == MC_REGISTRY_OK &&
+          color == 0xffffff && mc_block_render_inventory_shape(raw) == MC_REGISTRY_OK &&
+          raw->phase == MC_BLOCK_RAW && memcmp(raw, &before, sizeof(before)) == 0 &&
+          f->registry->allocation_bytes == bytes &&
+          memcmp(&declaring, &f->registry->block_states[MC_BLOCK_SLAB], sizeof(declaring)) == 0);
+    return true;
+}
+
+static bool crafting_getter_controls(fixture *f) {
+    static const int32_t ids[] = {5, 17, 58};
+    static const int32_t metadata[] = {INT32_MIN, -1, 0, 1, 2, 3, INT32_MAX};
+    static const int32_t sides[] = {INT32_MIN, -1, 0, 1, 2, 3, 4, 5, 6, INT32_MAX};
+    for (size_t i = 0; i < sizeof(ids) / sizeof(ids[0]); ++i) {
+        const mc_block *block = NULL;
+        CHECK(mc_registry_block_get(f->registry, ids[i], &block, NULL) == MC_REGISTRY_OK &&
+              block != NULL);
+        const mc_block_fields before = block->fields;
+        for (size_t m = 0; m < sizeof(metadata) / sizeof(metadata[0]); ++m) {
+            int32_t color = -777;
+            CHECK(mc_block_render_inventory_color(block, metadata[m], &color) == MC_REGISTRY_OK &&
+                  color == 0xffffff &&
+                  mc_block_render_inventory_shape((mc_block *)(void *)block) == MC_REGISTRY_OK &&
+                  memcmp(&before, &block->fields, sizeof(before)) == 0);
+            for (size_t s = 0; s < sizeof(sides) / sizeof(sides[0]); ++s) {
+                int32_t texture = -777;
+                const int32_t expected = ids[i] == 5    ? 4
+                                         : ids[i] == 17 ? (sides[s] == 0 || sides[s] == 1 ? 21
+                                                           : metadata[m] == 1             ? 116
+                                                           : metadata[m] == 2             ? 117
+                                                                                          : 20)
+                                                        : (sides[s] == 0                    ? 4
+                                                           : sides[s] == 1                  ? 43
+                                                           : sides[s] == 2 || sides[s] == 4 ? 60
+                                                                                            : 59);
+                CHECK(mc_block_render_texture_metadata(block, sides[s], metadata[m], &texture) ==
+                          MC_REGISTRY_OK &&
+                      texture == expected);
+            }
+        }
+    }
+    const mc_block *table = NULL;
+    CHECK(mc_registry_block_get(f->registry, 58, &table, NULL) == MC_REGISTRY_OK);
+    mc_block *planks = f->registry->blocks.named[4];
+    /* Declared singleton input: FI's bottom reaches current UU.y. Restore
+     * only after the call, without repairing an in-flight source receiver. */
+    f->registry->blocks.named[4] = NULL;
+    int32_t unchanged = -777;
+    const mc_registry_status status = mc_block_render_texture_metadata(table, 0, 0, &unchanged);
+    f->registry->blocks.named[4] = planks;
+    CHECK(status == MC_REGISTRY_NULL_REFERENCE && unchanged == -777);
     return true;
 }
 
@@ -386,7 +852,8 @@ static bool inventory_controls(void) {
     CHECK(mc_registry_classes_allocate(&options, &f.registry, NULL) == MC_REGISTRY_OK);
     CHECK(mc_registry_classes_bind_entities(f.registry, f.entities, NULL) == MC_REGISTRY_OK);
     CHECK(mc_registry_classes_initialize_blocks(f.registry, NULL) == MC_REGISTRY_OK);
-    CHECK(pumpkin_getter_controls(&f));
+    CHECK(pumpkin_getter_controls(&f) && pressure_plate_getter_controls(&f) &&
+          slab_block_getter_controls(&f) && crafting_getter_controls(&f));
     const mc_block *dirt = NULL;
     CHECK(mc_registry_block_get(f.registry, 3, &dirt, NULL) == MC_REGISTRY_OK && dirt != NULL);
     int32_t color = 0, icon = -1;
@@ -394,7 +861,7 @@ static bool inventory_controls(void) {
     CHECK(mc_block_render_bounds((mc_block *)(void *)dirt, .125f, .25f, .375f, .75f, .875f, 1) ==
           MC_REGISTRY_OK);
     const mc_block_fields before = *mc_block_fields_get(dirt);
-    CHECK(mc_block_render_inventory_shape(dirt) == MC_REGISTRY_OK &&
+    CHECK(mc_block_render_inventory_shape((mc_block *)(void *)dirt) == MC_REGISTRY_OK &&
           memcmp(&before, mc_block_fields_get(dirt), sizeof before) == 0);
     const mc_block *wool = NULL;
     CHECK(mc_registry_block_get(f.registry, 35, &wool, NULL) == MC_REGISTRY_OK && wool != NULL &&
@@ -405,7 +872,8 @@ static bool inventory_controls(void) {
                                               225, 209, 193, 177, 161, 145, 129, 113};
     for (int32_t metadata = 0; metadata < 16; ++metadata) {
         CHECK(mc_block_render_inventory_color(wool, metadata, &color) == MC_REGISTRY_OK &&
-              color == 0xffffff && mc_block_render_inventory_shape(wool) == MC_REGISTRY_OK &&
+              color == 0xffffff &&
+              mc_block_render_inventory_shape((mc_block *)(void *)wool) == MC_REGISTRY_OK &&
               memcmp(&wool_before, mc_block_fields_get(wool), sizeof wool_before) == 0);
         for (int32_t side = 0; side < 6; ++side)
             CHECK(mc_block_render_texture_metadata(wool, side, metadata, &icon) == MC_REGISTRY_OK &&
@@ -418,7 +886,9 @@ static bool inventory_controls(void) {
     CHECK(mc_registry_item_c_get(f.registry, &items, NULL) == MC_REGISTRY_OK &&
           mc_registry_item_c_at(f.registry, items, 3, &item, NULL) == MC_REGISTRY_OK &&
           item != NULL);
-    CHECK(inherited_item_controls(f.registry));
+    CHECK(inherited_item_controls(f.registry) && log_item_getter_controls(&f) &&
+          slab_item_getter_controls(&f) && log_item_initializer_controls(&f) &&
+          slab_item_initializer_controls(&f));
     mc_item_render_error item_error;
     CHECK(mc_item_render_icon(f.registry, item, 7, &icon, &item_error) && item_error.returned &&
           icon == 2);
@@ -505,6 +975,19 @@ static bool inventory_controls(void) {
               strcmp(f.context->failure.source_descriptor, "(Luu;IF)V") == 0 &&
               memcmp(&before, mc_block_fields_get(dirt), sizeof before) == 0);
     }
+    const mc_block *plate_read = NULL;
+    CHECK(mc_registry_block_get(f.registry, 72, &plate_read, NULL) == MC_REGISTRY_OK &&
+          plate_read != NULL && plate_read->fields.bt == 0.0 && plate_read->fields.bw == .03125);
+    mc_block plate_expected = *plate_read;
+    pressure_expected_shape(&plate_expected);
+    mc_client_render_blocks_construct_fields(&f.fields, NULL, false);
+    f.fields.b = false; /* Actual CV field suppresses only the earlier GL color call. */
+    *f.context = (mc_cv_context){
+        .fields = &f.fields, .registry = f.registry, .models = f.models, .graphics = f.graphics};
+    CHECK(!mc_cv_inventory(f.context, plate_read, INT32_MIN, .75f) && f.context->failed &&
+          !f.context->returned && f.context->source_pc == 114 && f.context->inventory_faces == 0 &&
+          !f.nw->fields.w && f.nw->fields.h == 0 &&
+          memcmp(plate_read, &plate_expected, sizeof(plate_expected)) == 0);
     CHECK(mc_client_render_engine_classes_release(f.graphics) == MC_CLIENT_RENDER_ENGINE_OK);
     CHECK(mc_client_render_classes_free(f.models) == MC_CLIENT_MODEL_OK);
     CHECK(mc_registry_classes_free(f.registry, NULL) == MC_REGISTRY_OK);

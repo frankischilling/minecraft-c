@@ -36,6 +36,8 @@ typedef struct mc_client_inventory_draw_state {
     size_t slots_drawn, item_draws, overlay_draws, font_measurements;
     unsigned int source_pc;
     mc_client_source_ue *receiver;
+    mc_client_source_da *screen_receiver;
+    bool workbench, id_returned;
     const mc_client_manager_draw_state *preview;
     const mc_client_inventory_draw_error *failure;
 } mc_client_inventory_draw_state;

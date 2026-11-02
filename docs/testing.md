@@ -2,6 +2,31 @@
 
 ## Current targeted and public qualification
 
+The Workbench runtime passes all 630 Windows public tests in 326.54 seconds
+and all 625 Linux public tests in 189.95 seconds. Windows snapshots keep all
+4,275 authored inputs, 512 built products and 823 assets unchanged. The Linux
+Clang 18 Debug run uses ASan/UBSan, leak detection and halt-on-error under
+Xvfb/software OpenGL. All 4,275 copied files match between hosts. Formatting
+passes for 1,979 C/header/fragments; source bindings cover 10,391 entries in
+4,274 files. Later documentation and proof metadata updates leave production
+source unchanged and receive separate binding-sensitive checks.
+
+The [Workbench SDK](client/workbench.md) passes 1,853 checks in 22.96 seconds
+on Windows MSVC Release: real crafting, placement/activation, both Shift
+transfers, close drops, three equipped-Pickaxe frames, ordinary save, exact
+Inventory/Item NBT and cleanup. Independent decoding checks 403 saved Chunks,
+the placed Table and unchanged unrelated region bytes. The same runtime passes
+the preceding Inventory SDK profiles in 16.71 seconds with 705 checks and
+22.75 seconds with 828 checks for Pumpkin armor. Selected source inputs and
+assets remain unchanged. These are finite acceptance timings, not FPS results.
+
+Full Windows Release and Linux Clang 18 Debug ASan/UBSan builds pass. The
+15-test component selection passes on Windows in 1.69 seconds and sanitized
+Linux in 4.34 seconds, covering the Workbench original projection, lifecycle,
+Container, getters, activation, geometry, Creeper damage and packet controls.
+Original/native completed draws retain their distinct scopes. The historical
+full-suite results below describe their earlier checkpoints.
+
 The frozen runtime passes all 611 Windows public tests in 280.15 seconds and
 all 606 Linux public tests in 145.58 seconds. Windows snapshots confirm all
 4,105 source inputs, 499 built products and 823 assets unchanged across the run.

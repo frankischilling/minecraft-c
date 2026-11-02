@@ -14,6 +14,7 @@ struct mc_client_inventory_screen_error {
     mc_player_statistic_error statistic;
     mc_player_container_error container;
     mc_player_container_error cleanup_container;
+    mc_player_container_error inherited_close, direct_close;
     mc_inventory_error ownership;
     mc_inventory_error cleanup_ownership;
     mc_client_model_status cleanup_model;

@@ -59,7 +59,8 @@ typedef enum mc_client_screen_kind {
     MC_CLIENT_SCREEN_WORLD_SELECTION,
     MC_CLIENT_SCREEN_PAUSE,
     MC_CLIENT_SCREEN_CREATE_WORLD,
-    MC_CLIENT_SCREEN_INVENTORY
+    MC_CLIENT_SCREEN_INVENTORY,
+    MC_CLIENT_SCREEN_WORKBENCH
 } mc_client_screen_kind;
 
 typedef enum mc_client_screen_class_phase {
@@ -86,6 +87,8 @@ typedef struct mc_client_screen_error {
     const char *operation;
     mc_client_screen_site site;
     bool native_policy, source_returned;
+    bool source_exception, source_error;
+    const char *exception_class;
     mc_java_random_profile_status random;
     mc_player_status string;
     mc_registry_error registry;

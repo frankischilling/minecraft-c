@@ -31,6 +31,8 @@ typedef struct mc_container_state {
     mc_registry_side side;
     mc_container_kind kind;
     bool constructed, active, local;
+    bool constructor_entered, constructor_failed;
+    int32_t constructor_pc;
     int32_t window_id;
     int16_t transaction;
     size_t slots, snapshots, listeners, blocked_players, allocation_bytes;
@@ -56,6 +58,20 @@ mc_inventory_status mc_container_workbench_create(mc_registry_side side,
                                                   mc_world_runtime *world, int32_t x, int32_t y,
                                                   int32_t z, const mc_inventory_limits *limits,
                                                   mc_container **out, mc_inventory_error *error);
+/* Actual NEW IT storage and one entered IT.<init> invocation. Allocation
+ * performs no source constructor/class active use. out starts NULL. Source
+ * construction accepts nullable Inventory/World unchanged, retains every
+ * reached prefix on failure and cannot be retried/replayed. Inspect or hold
+ * the same RAW/failed object, then retire it with the ordinary checked API.
+ * Registry and argument owners remain live/exclusive through retirement.
+ * The existing create factory still publishes only a completed Container
+ * and frees its failed prefix; these source-lifetime entries do not weaken it. */
+mc_inventory_status mc_container_workbench_allocate(mc_registry_side, mc_registry_classes *,
+                                                    const mc_inventory_limits *, mc_container **,
+                                                    mc_inventory_error *);
+mc_inventory_status mc_container_workbench_construct(mc_container *, mc_inventory_player *,
+                                                     mc_world_runtime *, int32_t, int32_t, int32_t,
+                                                     mc_inventory_error *);
 mc_inventory_status mc_container_player_create_default(
     mc_registry_side side, mc_registry_classes *classes, mc_inventory_player *inventory,
     const mc_inventory_limits *limits, mc_container **out, mc_inventory_error *error);

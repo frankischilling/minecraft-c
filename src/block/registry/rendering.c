@@ -16,17 +16,28 @@ mc_registry_status mc_block_render_inventory_color(const mc_block *block, int32_
     if (!valid(block) || out == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (block->kind != MC_BLOCK_BASE && block->kind != MC_BLOCK_DIRT &&
-        block->kind != MC_BLOCK_WOOL && block->kind != MC_BLOCK_PUMPKIN)
+        block->kind != MC_BLOCK_WOOL && block->kind != MC_BLOCK_PUMPKIN &&
+        block->kind != MC_BLOCK_LOG && block->kind != MC_BLOCK_CRAFTING_TABLE &&
+        block->kind != MC_BLOCK_PRESSURE_PLATE && block->kind != MC_BLOCK_SLAB)
         return MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
     *out = 0xffffff; /* Actual inherited uu.b(I)I. */
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_block_render_inventory_shape(const mc_block *block) {
+mc_registry_status mc_block_render_inventory_shape(mc_block *block) {
     if (!valid(block))
         return MC_REGISTRY_INVALID_ARGUMENT;
+    if (block->kind == MC_BLOCK_PRESSURE_PLATE) {
+        /* BV.g()V invokes inherited UU.a(FFFFFF)V at34. These exact binary32
+         * operands are the .5 +/- (.5,.125,.5) results, widened by its six
+         * ordered field stores. This source mutation survives rendering. */
+        mc_registry_block_bounds(block, 0.0f, .375f, 0.0f, 1.0f, .625f, 1.0f);
+        return MC_REGISTRY_OK;
+    }
     if (block->kind != MC_BLOCK_BASE && block->kind != MC_BLOCK_DIRT &&
-        block->kind != MC_BLOCK_WOOL && block->kind != MC_BLOCK_PUMPKIN)
+        block->kind != MC_BLOCK_WOOL && block->kind != MC_BLOCK_PUMPKIN &&
+        block->kind != MC_BLOCK_LOG && block->kind != MC_BLOCK_CRAFTING_TABLE &&
+        block->kind != MC_BLOCK_SLAB)
         return MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
     return MC_REGISTRY_OK; /* Actual inherited uu.g()V has only return0. */
 }
@@ -256,7 +267,7 @@ mc_registry_status mc_block_render_texture_metadata(const mc_block *block, int32
             t = (m & 3) == 1 ? 63 : (m & 3) == 2 ? 79 : t;
             break;
         case MC_BLOCK_LOG:
-            t = side <= 1 ? 21 : m == 1 ? 116 : m == 2 ? 117 : 20;
+            t = side == 0 || side == 1 ? 21 : m == 1 ? 116 : m == 2 ? 117 : 20;
             break;
         case MC_BLOCK_LEAVES:
             t = (m & 3) == 1 ? t + 80 : t;

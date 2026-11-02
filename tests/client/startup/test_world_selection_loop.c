@@ -384,6 +384,9 @@ typedef struct fixture {
 #define MC_WORLD_SELECTION_OPEN_INVENTORY_EXPECTED(initial) 1
 #endif
 static int repeat_statistics_controls(fixture *f, bool initial) {
+#ifdef MC_WORLD_SELECTION_STATISTICS_CONTROLS
+    return MC_WORLD_SELECTION_STATISTICS_CONTROLS(f, initial);
+#else
     mc_registry_achievement_view achievements;
     CHECK(f->app->stats_writer != NULL && f->app->achievement_notice != NULL &&
           mc_registry_classes_inspect_achievements(f->app->registry, &achievements, NULL) ==
@@ -414,6 +417,7 @@ static int repeat_statistics_controls(fixture *f, bool initial) {
     CHECK(notice != NULL && notice->a == f->app && notice->f == NULL && notice->g == 0 &&
           !notice->i && notice->d == NULL && notice->e == NULL);
     return 0;
+#endif
 }
 
 /* Declared native caller input after a completely returned loaded frame. The

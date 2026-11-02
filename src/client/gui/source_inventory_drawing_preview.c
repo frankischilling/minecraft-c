@@ -2,10 +2,15 @@
 #include "source_inventory_drawing_internal.h"
 
 bool mc_inventory_draw_background(mc_client_inventory_draw_call *c) {
-    mc_client_source_ue *o = c->owner;
+    mc_client_source_ue *o = c->state.receiver;
+    mc_client_source_id *id = c->owner;
+    if (id->base.kind != MC_CLIENT_SCREEN_INVENTORY || o == NULL || &o->container != id)
+        return mc_inventory_draw_fail(c, MC_CLIENT_SCREEN_INVALID_ARGUMENT,
+                                      "UE preview actual concrete receiver", NULL, NULL, NULL, 0,
+                                      true);
     mc_client_display *d = c->services.display;
     mc_client_texture texture;
-    if (!mc_inventory_draw_texture(c, o->base.fields.b->render_engine, "/gui/inventory.png", "ue",
+    if (!mc_inventory_draw_texture(c, id->base.fields.b->render_engine, "/gui/inventory.png", "ue",
                                    9, &texture))
         return false;
 #define GL(expr, pc)                                                                               \
@@ -15,15 +20,15 @@ bool mc_inventory_draw_background(mc_client_inventory_draw_call *c) {
     } while (0)
     GL(mc_client_display_source_color(d, 1, 1, 1, 1, &c->error.display), 17);
     /* The JI receiver is independently loaded after lookup/color. */
-    if (o->base.fields.b->render_engine == NULL)
+    if (id->base.fields.b->render_engine == NULL)
         return mc_inventory_draw_fail(c, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE,
                                       "UE actual fresh JI bind null receiver", "ue", "a", "(F)V",
                                       28, false);
     if (mc_java_i32_narrow((int64_t)texture) >= 0)
         GL(mc_client_display_source_bind_id(d, texture, &c->error.display), 28);
-    const int32_t x = mc_java_i32_sub(o->base.fields.c, o->id.a) / 2;
-    const int32_t y = mc_java_i32_sub(o->base.fields.d, o->id.i) / 2;
-    if (!mc_inventory_draw_tile(c, x, y, 0, 0, o->id.a, o->id.i))
+    const int32_t x = mc_java_i32_sub(id->base.fields.c, id->id.a) / 2;
+    const int32_t y = mc_java_i32_sub(id->base.fields.d, id->id.i) / 2;
+    if (!mc_inventory_draw_tile(c, x, y, 0, 0, id->id.a, id->id.i))
         return false;
     c->state.background_returned = true;
     GL(mc_client_display_source_rescale_normal(d, true, &c->error.display), 75);
@@ -52,7 +57,7 @@ bool mc_inventory_draw_background(mc_client_inventory_draw_call *c) {
     const float dy = at_fsub((float)mc_java_i32_sub(mc_java_i32_add(y, 75), 50), o->fields.m);
     GL(mc_client_display_source_rotate(d, 135, 0, 1, 0, &c->error.display), 194);
     if (!mc_client_lighting_enable(
-            c->services.graphics, o->base.fields.b->entities, c->services.math, d,
+            c->services.graphics, id->base.fields.b->entities, c->services.math, d,
             (mc_client_graphics_site){"ue", "a", "(F)V", 197}, &c->error.lighting))
         return mc_inventory_draw_fail(c, MC_CLIENT_SCREEN_TEXTURE_FAILED,
                                       c->error.lighting.operation, "ue", "a", "(F)V", 197,
@@ -96,7 +101,7 @@ bool mc_inventory_draw_background(mc_client_inventory_draw_call *c) {
         return false;
     GL(mc_client_display_source_translate(d, 0, p->base.offset, 0, &c->error.display), 321);
     mc_client_render_manager *store = NULL;
-    mc_client_render_classes *models = o->base.fields.b->render_classes;
+    mc_client_render_classes *models = id->base.fields.b->render_classes;
     if (models == NULL || mc_client_render_manager_static_get(
                               models->th, &store, &c->error.manager) != MC_CLIENT_MANAGER_OK)
         return mc_inventory_draw_fail(c, MC_CLIENT_SCREEN_APP_FAILED, "UE actual TH.a active use",
@@ -111,14 +116,14 @@ bool mc_inventory_draw_background(mc_client_inventory_draw_call *c) {
     c->store_manager = store;
     store->fields.i = 180;
     mc_client_render_manager *draw = NULL;
-    models = o->base.fields.b->render_classes;
+    models = id->base.fields.b->render_classes;
     if (models == NULL || mc_client_render_manager_static_get(
                               models->th, &draw, &c->error.manager) != MC_CLIENT_MANAGER_OK)
         return mc_inventory_draw_fail(c, MC_CLIENT_SCREEN_APP_FAILED,
                                       "UE independent TH.a draw load", "ue", "a", "(F)V", 332,
                                       true);
     /* A null actor is an actual source operand. TH owns its reached failure. */
-    mc_entity *actor = o->base.fields.b->h;
+    mc_entity *actor = id->base.fields.b->h;
     const mc_client_manager_status draw_status = mc_client_render_manager_coordinates_draw_begin(
         draw, actor, 0, 0, 0, 0, 1, &c->services, NULL, &c->preview, &c->error.player);
     if (c->preview != NULL) {

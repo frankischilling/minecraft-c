@@ -38,18 +38,19 @@ bool mc_inventory_draw_texture(mc_client_inventory_draw_call *c, mc_client_rende
     }
     if (path[n] != 0)
         return mc_inventory_draw_fail(c, MC_CLIENT_SCREEN_LIMIT, "Inventory texture literal bound",
-                                      owner, "a", "(F)V", pc, true);
+                                      owner, "a", mc_inventory_draw_descriptor(c, owner), pc, true);
     if (engine == NULL)
         return mc_inventory_draw_fail(c, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE,
-                                      "Inventory actual JI null receiver", owner, "a", "(F)V", pc,
-                                      false);
+                                      "Inventory actual JI null receiver", owner, "a",
+                                      mc_inventory_draw_descriptor(c, owner), pc, false);
     const bool pending_on_entry = mc_client_texture_lookup_pending(engine);
     if (mc_client_render_engine_texture(engine, c->services.display, NULL,
                                         (mc_texture_pack_text){units, n, false}, out,
                                         &c->error.texture) != MC_CLIENT_LOOKUP_OK) {
         if (!pending_on_entry && mc_client_texture_lookup_pending(engine))
             c->pending_lookup = engine;
-        c->error.screen.parent_site = (mc_client_screen_site){owner, "a", "(F)V", pc};
+        c->error.screen.parent_site =
+            (mc_client_screen_site){owner, "a", mc_inventory_draw_descriptor(c, owner), pc};
         return mc_inventory_draw_fail(
             c, MC_CLIENT_SCREEN_TEXTURE_FAILED, c->error.texture.operation,
             c->error.texture.site.class_name, c->error.texture.site.method,

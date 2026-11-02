@@ -1,5 +1,31 @@
 # Systems and subsystems
 
+The [Workbench path](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench.md) uses actual Table activation, LocalPlayer screen construction
+and synchronous display replacement. Distinct `UE` and `OO` screens share the
+real inherited `ID` layout, drawing and input bodies. `OO` owns its 3x3 `IT`
+Container; all 46 Slots use the existing Item, Font, cursor and tooltip owners.
+It has no Player-preview override. World ticks continue while it is open.
+
+Keyboard close first restores the Player's default Container. `OO.h` then
+retains the inherited close and its own direct Container close separately.
+Failed constructors keep their actual allocated prefixes. Native publication
+records retain every Player that receives the owned `IT`; retirement returns
+`BUSY` before mutation while a Player still publishes it. Live-open terminal
+joining remains unfinished. Successful input retirement ends borrowed
+diagnostic views while preserving scalar failure sites and exception types.
+
+The Windows SDK scenario returns through crafting, placement, Shift transfers,
+close/drop, equipped-Pickaxe drawing and exact saved-state checks. Reached
+Pressure Plate inventory bounds mutate the real shared Block, and Log/Slab
+icons delegate to their live Block receivers. The
+[Creeper environmental-damage extension](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/creeper-damage.md) uses the inherited Monster/Living body;
+nonnull attackers and fatal death/drop remain explicit dependencies.
+
+The client remains pre-playable. Native cold-preview exception printing and
+continuation, distance/removal close and unrestricted crafting need further
+work. Original pixels, Linux SDK gameplay and FPS remain unqualified. The
+component and suite records below describe earlier checkpoints.
+
 The client now draws eight default Mob kinds: Sheep, Pig, Cow, Chicken,
 Spider, Slime, Squid and Creeper. [Mob drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md) uses the actual TH/GV, concrete
 renderer/model, PS and NW owners. Four independent loaded Windows sessions

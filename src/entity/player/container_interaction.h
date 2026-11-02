@@ -24,7 +24,7 @@ typedef struct mc_player_container_state {
     const mc_item_stack *result;
     const mc_player_container_error *error;
     const mc_container_interaction_state *interaction;
-    bool close, active, returned, active_container_restored;
+    bool close, active, returned, active_container_restored, direct_target;
     int32_t window_id;
     size_t drop_calls;
 } mc_player_container_state;
@@ -33,6 +33,9 @@ typedef struct mc_player_container_state {
  * Caller keeps the actual Player and returned Container alive/exclusive. */
 mc_entity_status mc_player_container_default_get(mc_entity *, mc_container **);
 mc_entity_status mc_player_container_active_get(mc_entity *, mc_container **);
+/* Entered actual GS.r()V: read d2, store e5, return8. No display, phase gate,
+ * allocation or Container work; caller keeps the actual source graph live. */
+mc_entity_status mc_player_container_restore_default(mc_entity *, mc_player_container_error *);
 
 /* Actual singleplayer OB forwarding. window_id is the actual ignored source
  * argument. The current Player.e receiver is captured when reached, never
@@ -49,6 +52,16 @@ mc_entity_status mc_player_container_close_begin(mc_registry_classes *, mc_math_
                                                  mc_entity *player, int32_t window_id,
                                                  mc_player_container_call **,
                                                  mc_player_container_error *);
+/* Enter the supplied actual Container's virtual close directly, as OO.h15.
+ * The caller owns its enclosing invocation site. No OB frame, Player.e read,
+ * window-id read or e=d store is inserted. NULL Player reaches DW's GS.c1;
+ * NULL Container fails the caller's invocation before the virtual body.
+ * Child drops and the reached IT World occurrence retain the same checked
+ * ownership contract as the controller adapters above. */
+mc_entity_status mc_player_container_direct_close_begin(mc_registry_classes *, mc_math_classes *,
+                                                        mc_entity *player, mc_container *,
+                                                        mc_player_container_call **,
+                                                        mc_player_container_error *);
 bool mc_player_container_inspect(const mc_player_container_call *, mc_player_container_state *);
 /* Read-only reached GS child; borrowed views end at checked retirement. */
 bool mc_player_container_drop_inspect(const mc_player_container_call *, size_t,

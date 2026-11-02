@@ -1,5 +1,26 @@
 # Development status
 
+A finite Windows [Workbench scenario](client/workbench.md) now crafts a Table
+from four Logs, places and opens it, makes a Wooden Pickaxe, transfers Items
+with Shift, closes with leftover ingredients, and uses ordinary Save and Quit.
+The run passes 1,853 checks in 22.96 seconds. Independent decoding matches all
+40 Inventory cells, every live Item, the placed Table and material totals
+across 403 saved Chunks. Source inputs, assets and unrelated region bytes stay
+unchanged; all source windows close during checked cleanup.
+
+The same frozen runtime passes all 630 Windows public tests in 326.54 seconds
+and all 625 sanitized Linux public tests in 189.95 seconds. The 4,275-file
+source copy matches across hosts. These results retain their finite test scope;
+they do not establish original pixels, extended play or FPS equality.
+
+The new original evidence covers 116 Workbench interaction calls, complete
+Workbench drawing, Pressure Plate inventory bounds and the cold/warm Player
+preview contrast. A real cold preview prints one exception and escapes with
+another; native caught printing/continuation remains unfinished. A live-open
+Workbench terminal join safely refuses while the Player still publishes its
+Container. Those limits, original pixels, Linux SDK gameplay, unrestricted
+play and FPS remain separate from the passing finite crafting scenario.
+
 The configured Inventory key now opens the real [Player Inventory](client/inventory.md).
 The finite Windows SDK profiles keep World ticks running, move Dirt and Arrows
 with actual left/right clicks, draw the Player and carried Item, close with
@@ -14,7 +35,7 @@ The original Container comparison covers 73 calls with independent entropy
 audits. Original drawing observes two complete Inventory calls per process;
 native entered quad kernels match 108 active words while each process audits
 its own inactive backing. Complete native SDK frames and native zero-draw CPU
-prefixes retain separate scopes. The Linux sanitized public suite passes all
+prefixes retain separate scopes. That preceding Inventory increment's Linux suite passes all
 615 tests. Windows passes 618 of 620 in its initial broad run, then both
 isolated follow-ups after updating an obsolete input frontier expectation.
 The initial run remains failed; unrestricted Inventory rendering, graphical

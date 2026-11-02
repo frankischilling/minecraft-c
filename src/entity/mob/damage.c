@@ -138,6 +138,9 @@ static bool sound(mc_entity *p, mc_registry_classes *registry, bool fatal,
     } else if (zombie) {
         declaring_class = "uz";
         text = fatal ? "mob.zombiedeath" : "mob.zombiehurt";
+    } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_CREEPER)) {
+        declaring_class = "gb";
+        text = fatal ? "mob.creeperdeath" : "mob.creeper";
     } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SHEEP)) {
         declaring_class = "dl";
         text = "mob.sheep";
@@ -446,6 +449,13 @@ static bool living_body(mc_entity *p, mc_registry_classes *registry, mc_math_cla
         living_at(e, 316);
         child_at(e, "ls", "b", "(Lsn;)V", 0);
         e->living_damage.death_invoke_reached = true;
+        if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_CREEPER)) {
+            /* GB.b starts with its actual inherited LS death invocation.
+             * Its later Skeleton-killer record branch has not been reached. */
+            child_at(e, "gb", "b", "(Lsn;)V", 2);
+            return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
+                               "Living damage actual Creeper death/drop body");
+        }
         if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ZOMBIE) ||
             mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SKELETON))
             return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
@@ -477,7 +487,8 @@ bool mc_mob_monster_null_damage_entered(mc_entity *p, mc_registry_classes *regis
     if (e == NULL)
         return false;
     if ((!mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ZOMBIE) &&
-         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SKELETON)) ||
+         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SKELETON) &&
+         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_CREEPER)) ||
         !mc_entity_has_mob(p) || p->classes->source != MC_ENTITY_CLIENT || out == NULL)
         return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_OWNER,
                            "Monster NULL damage entered canonical owner contract");

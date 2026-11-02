@@ -56,15 +56,15 @@ static int inventory_field(fixture *f, int32_t index, int32_t id, int32_t count)
 }
 
 static int inventory_receipt(fixture *f, mc_client_source_ue *screen, bool cursor_expected) {
-    CHECK(f->app->r == &screen->base && !f->app->N && !atomic_load(&f->app->o) &&
+    CHECK(f->app->r == &screen->container.base && !f->app->N && !atomic_load(&f->app->o) &&
           f->state.inventory != NULL && f->state.inventory->returned &&
           f->state.inventory->receiver == screen && f->state.inventory->background_returned &&
           f->state.inventory->preview_returned && f->state.inventory->pose_restored &&
           f->state.inventory->foreground_returned && f->state.inventory->mouse_stored &&
           f->state.inventory->slots_drawn == 45 &&
           f->state.inventory->cursor_drawn == cursor_expected &&
-          screen->id.j == f->app->h->local_player->fields.player.d &&
-          f->app->h->local_player->fields.player.e == screen->id.j);
+          screen->container.id.j == f->app->h->local_player->fields.player.d &&
+          f->app->h->local_player->fields.player.e == screen->container.id.j);
     const mc_client_manager_draw_state *preview = f->state.inventory->preview;
     CHECK(preview != NULL && preview->returned && preview->living != NULL &&
           preview->living->primary_event_returned && preview->living->primary_render_returned &&
@@ -107,14 +107,16 @@ static int inventory_wait(fixture *f, bool open, mc_client_source_ue **screen) {
 static int inventory_click(fixture *f, mc_client_source_ue *o, int32_t slot, bool right,
                            bool carried) {
     mc_container_slot_state fields;
-    CHECK(mc_container_slot_read(o->id.j, slot, &fields, NULL) == MC_INVENTORY_OK);
-    const int32_t x = mc_java_i32_sub(o->base.fields.c, o->id.a) / 2 + fields.x + 8;
-    const int32_t y = mc_java_i32_sub(o->base.fields.d, o->id.i) / 2 + fields.y + 8;
+    CHECK(mc_container_slot_read(o->container.id.j, slot, &fields, NULL) == MC_INVENTORY_OK);
+    const int32_t x =
+        mc_java_i32_sub(o->container.base.fields.c, o->container.id.a) / 2 + fields.x + 8;
+    const int32_t y =
+        mc_java_i32_sub(o->container.base.fields.d, o->container.id.i) / 2 + fields.y + 8;
     SDL_Window *window = mc_client_display_window(f->app->display);
     int width, height;
     CHECK(SDL_GetWindowSize(window, &width, &height));
-    const float native_x = (float)((int64_t)x * width / o->base.fields.c);
-    const float native_y = (float)((int64_t)y * height / o->base.fields.d);
+    const float native_x = (float)((int64_t)x * width / o->container.base.fields.c);
+    const float native_y = (float)((int64_t)y * height / o->container.base.fields.d);
     SDL_WarpMouseInWindow(window, native_x, native_y);
     SDL_Event motion = {0};
     motion.type = SDL_EVENT_MOUSE_MOTION;
@@ -133,11 +135,11 @@ static int inventory_click(fixture *f, mc_client_source_ue *o, int32_t slot, boo
         CHECK(SDL_PushEvent(&event));
     }
     CHECK(transfer(f) == 0);
-    const size_t calls = o->source_calls;
+    const size_t calls = o->container.source_calls;
     const uint64_t deadline = SDL_GetTicks() + 15000;
-    while (o->source_calls == calls && SDL_GetTicks() < deadline)
+    while (o->container.source_calls == calls && SDL_GetTicks() < deadline)
         CHECK(inventory_frame(f) == 0);
-    CHECK(o->source_calls > calls && inventory_receipt(f, o, carried) == 0);
+    CHECK(o->container.source_calls > calls && inventory_receipt(f, o, carried) == 0);
     if (!carried)
         CHECK(f->state.inventory->tooltip_drawn);
     return 0;
@@ -167,7 +169,7 @@ static int inventory_run(fixture *f, mining_work *work) {
     CHECK(f->state.ticks >= ticks_before + 3 && draws >= 3 &&
           mc_world_info_fields_get(f->app->active_world->fields.x, &after) == MC_WORLD_INFO_OK &&
           mc_java_i64_sub(after.value.time, before.value.time) >= 3 && player == f->app->h &&
-          container == first->id.j);
+          container == first->container.id.j);
     const uint64_t inventory_world_ticks =
         (uint64_t)mc_java_i64_sub(after.value.time, before.value.time);
     CHECK(mining_capture(f, work, "inventory-open.png") == 0);
@@ -193,7 +195,7 @@ static int inventory_run(fixture *f, mining_work *work) {
     CHECK(mining_capture(f, work, "inventory-held-dirt.png") == 0);
     mc_client_source_ue *second = NULL;
     CHECK(inventory_key(f, SDL_SCANCODE_E) == 0 && inventory_wait(f, true, &second) == 0 &&
-          second != first && second->id.j == container &&
+          second != first && second->container.id.j == container &&
           inventory_click(f, second, 37, false, true) == 0 && inventory_field(f, 1, 0, 0) == 0);
     const mc_item_stack *carried = NULL;
     CHECK(mc_inventory_player_source_cursor_get(player->local_player->fields.player.c, &carried,
@@ -229,7 +231,10 @@ static int inventory_run(fixture *f, mining_work *work) {
     return 0;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_INVENTORY_FIXTURE_MAIN
+#define MC_INVENTORY_FIXTURE_MAIN main
+#endif
+int MC_INVENTORY_FIXTURE_MAIN(int argc, char **argv) {
     CHECK(argc == 3 || (argc == 4 && strcmp(argv[3], "--helmet") == 0));
     inventory_helmet = argc == 4;
     fixture *f = calloc(1, sizeof(*f));

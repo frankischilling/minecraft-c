@@ -1,7 +1,7 @@
 #ifndef MC_ENTITY_MOB_DAMAGE_INTERNAL_H
 #define MC_ENTITY_MOB_DAMAGE_INTERNAL_H
 #include "mc/entity/movement/effects.h"
-/* Closed canonical client Zombie/Skeleton, NULL attacker only. Both actual
+/* Closed canonical client Zombie/Skeleton/Creeper, NULL attacker only. These actual
  * receivers inherit GZ -> LS damage; their sound overrides stay distinct.
  * The real effect facade
  * holds the actor; the caller holds the live Registry/World graph exclusively.

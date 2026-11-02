@@ -378,8 +378,8 @@ static bool da_body(mc_client_source_da *o, mc_client_screen_initialization *r, 
             r->failure.caller = site(true, 45);
             return false;
         }
-    } else if (o->kind == MC_CLIENT_SCREEN_INVENTORY) {
-        if (!mc_screen_inventory_initialize_locked((mc_client_source_ue *)o, &r->failure.screen)) {
+    } else if ((o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_WORKBENCH)) {
+        if (!mc_screen_container_initialize_locked((mc_client_source_id *)o, &r->failure.screen)) {
             r->failure.entry = site(true, 45);
             r->failure.caller = site(true, 45);
             return false;

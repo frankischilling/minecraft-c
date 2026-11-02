@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "context": "real LWJGL Display.create; ordinary and read-only-JDI; no Pbuffer fallback",
+  "physical-size": [
+    854,
+    480
+  ],
+  "constructor-graph": "genuine KQ/Settings/Session/Engine/Font/FD/DC/TH; actual TH.frame(World,Engine,Font,Player,Settings,.375), canonical TH HL-class BB lookup; real HL full constructors",
+  "world-seed": 23,
+  "world-publication": "actual constructor World; Item has actual World pointer but is not inserted into World Entity list by helper; brightness reads execute in real BB parent",
+  "stack-id": 280,
+  "metadata": 0,
+  "counts": [
+    1,
+    2,
+    6,
+    21
+  ],
+  "animation": "actual constructor default0",
+  "item-position": [
+    8.5,
+    64,
+    8.5
+  ],
+  "item-entropy": "independent actual unchanged HL shared Math entropy and private Random; no phase/yaw/velocity/age writes",
+  "render-position": [
+    1.25,
+    2.5,
+    -3.75
+  ],
+  "yaw": 35,
+  "partial": 0.375,
+  "manager-yaw": "actual TH.frame result, no helper write",
+  "projection": {
+    "ortho": [
+      -4,
+      4,
+      -4,
+      4,
+      -16,
+      16
+    ],
+    "modelview": "identity; texture enabled, white current color before first call"
+  },
+  "renderer-random": "actual BB source setSeed187 at7 per draw; no helper writes/rebinding; actual copy nextFloat returns observed",
+  "selected-prefix": "actual BB673 begin,681 normal,703/726/749/771 vertices; original draw776 returns; Native entered prefix completes0draws",
+  "scope": "Item280 only; Block flat join and full World traversal/OO close/drop caller are not executed. Local geometry comparison is independent of bob/spin/matrix entropy; raw originals retained.",
+  "superseded-prepare": {
+    "path": ".local\\item-billboard-prepared-1",
+    "status": "PREPARED only; no GL executed",
+    "reason": "preflight fixed qualified LWJGL declaring-owner split in final live-Code pin lookup",
+    "capture-sha256": "e6823df33a186b26d148dbadde606a6c600e1d8da07ac2ce19a65f4e2c8c4251",
+    "reused": false
+  },
+  "historical-failed-cohorts": [
+    {
+      "path": ".local\\item-billboard-prepared-2",
+      "status": "FAIL",
+      "classification": "authored GL-state probe buffer size, before original BB parent entry",
+      "reason": "LWJGL2 glGetFloat demands16remainingfloats for any query; CURRENT_COLOR probe initially supplied4",
+      "source-BB-calls": 0,
+      "capture-sha256": "6422a97ab0338c9437e7da89c49b870c9cbd71825408935c5ffb1641b7f632f7",
+      "stderr-sha256": "497637bf0b8f4c08f9f10e6ff6f2cd55ab1ac067b7799441a918ea968075427e",
+      "reused": false
+    }
+  ]
+}

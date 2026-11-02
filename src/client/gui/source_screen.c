@@ -150,6 +150,9 @@ bool mc_screen_instance_hold_locked(mc_client_source_da *o, mc_client_screen_err
 }
 
 static bool prepare_final(mc_client_source_da *o, mc_client_screen_error *e) {
+    if ((o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_WORKBENCH) &&
+        !mc_screen_container_retirement_admit_locked((mc_client_source_id *)o, e))
+        return false;
     o->phase = MC_CLIENT_SCREEN_RETIRING;
     bool ready = true;
     if (o->kind == MC_CLIENT_SCREEN_MAIN_MENU)
@@ -160,8 +163,8 @@ static bool prepare_final(mc_client_source_da *o, mc_client_screen_error *e) {
         ready = mc_screen_pause_cleanup_locked((mc_client_source_oz *)o, e);
     else if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD)
         ready = mc_screen_create_world_cleanup_locked((mc_client_source_fj *)o, e);
-    else if (o->kind == MC_CLIENT_SCREEN_INVENTORY)
-        ready = mc_screen_inventory_cleanup_locked((mc_client_source_ue *)o, e);
+    else if ((o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_WORKBENCH))
+        ready = mc_screen_container_cleanup_locked((mc_client_source_id *)o, e);
     if (ready)
         ready = mc_screen_button_release_locked(&o->selected_cleanup, e);
     if (ready)
@@ -235,15 +238,22 @@ mc_client_screen_status mc_client_screen_closed(mc_client_source_da *o,
         mc_screen_fail(&e, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE, "actual screen h null receiver",
                        "da", "h", "()V", 0);
         e.native_policy = false;
+        e.source_exception = true;
+        e.exception_class = "java/lang/NullPointerException";
     } else if (mc_screen_lock(o->classes, &e)) {
-        if (o->classes->retiring)
+        if (o->classes->retiring || o->phase == MC_CLIENT_SCREEN_RETIRING)
             mc_screen_fail(&e, MC_CLIENT_SCREEN_BUSY, "screen close live source receiver", "da",
                            "h", "()V", 0);
         else if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD)
             (void)mc_screen_create_world_closed_locked((mc_client_source_fj *)o, &e);
         else if (o->kind == MC_CLIENT_SCREEN_INVENTORY)
-            (void)mc_screen_inventory_closed_locked((mc_client_source_ue *)o, &e);
-        else
+            (void)mc_screen_container_closed_locked((mc_client_source_id *)o, &e);
+        else if (o->kind == MC_CLIENT_SCREEN_WORKBENCH) {
+            if (mc_screen_container_closed_locked((mc_client_source_id *)o, &e))
+                (void)mc_screen_container_direct_close_locked((mc_client_source_id *)o, &e);
+            else
+                e.parent_site = (mc_client_screen_site){"oo", "h", "()V", 1};
+        } else
             e.source_returned = true;
         mtx_unlock(&o->classes->mutex);
     }
@@ -270,9 +280,14 @@ mc_client_screen_status mc_client_screen_pauses_game(mc_client_source_da *o, boo
             case MC_CLIENT_SCREEN_PAUSE:
             case MC_CLIENT_SCREEN_CREATE_WORLD:
             case MC_CLIENT_SCREEN_INVENTORY:
-                *out = o->kind != MC_CLIENT_SCREEN_INVENTORY;
+            case MC_CLIENT_SCREEN_WORKBENCH:
+                *out =
+                    o->kind != MC_CLIENT_SCREEN_INVENTORY && o->kind != MC_CLIENT_SCREEN_WORKBENCH;
                 e.site = (mc_client_screen_site){
-                    o->kind == MC_CLIENT_SCREEN_INVENTORY ? "id" : "da", "c", "()Z", 1};
+                    (o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_WORKBENCH)
+                        ? "id"
+                        : "da",
+                    "c", "()Z", 1};
                 e.source_returned = true;
                 break;
             default:
@@ -367,11 +382,14 @@ mc_client_screen_status mc_client_screen_inspect(mc_client_source_da *o,
         v.store_count = o->store_count;
         memcpy(v.stores, o->stores, sizeof(v.stores));
         v.failure = o->failure;
-        if (o->kind == MC_CLIENT_SCREEN_INVENTORY) {
-            const mc_client_source_ue *inventory = (const mc_client_source_ue *)o;
+        if ((o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_WORKBENCH)) {
+            const mc_client_source_id *inventory = (const mc_client_source_id *)o;
             v.id = inventory->id;
-            v.ue = inventory->fields;
             v.last_pc = inventory->last_pc;
+            if (o->phase == MC_CLIENT_SCREEN_RETIRING)
+                v.id.j = NULL;
+            if (o->kind == MC_CLIENT_SCREEN_INVENTORY)
+                v.ue = ((const mc_client_source_ue *)o)->fields;
         }
         if (o->kind == MC_CLIENT_SCREEN_MAIN_MENU) {
             const mc_client_source_fu *m = (const mc_client_source_fu *)o;

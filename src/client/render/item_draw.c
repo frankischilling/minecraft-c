@@ -2,7 +2,9 @@
 
 #include "block/registry/runtime_internal.h"
 #include "blocks/internal.h"
+#include "item/render/internal.h"
 #include "item/stack/source_internal.h"
+#include "item_billboard.h"
 #include "item_renderer_internal.h"
 #include "mc/core/java/java.h"
 
@@ -11,6 +13,10 @@ static const uint16_t terrain_units[] = {'/', 't', 'e', 'r', 'r', 'a',
                                          'i', 'n', '.', 'p', 'n', 'g'};
 static const mc_player_string terrain = {SIZE_MAX, sizeof terrain_units / sizeof *terrain_units,
                                          terrain_units};
+static const uint16_t item_units[] = {'/', 'g', 'u', 'i', '/', 'i', 't',
+                                      'e', 'm', 's', '.', 'p', 'n', 'g'};
+static const mc_player_string item_texture = {SIZE_MAX, sizeof item_units / sizeof *item_units,
+                                              item_units};
 
 static void item_at(ld_frame *f, int32_t pc) {
     ld_at(f, "bb", "a", item_descriptor, pc);
@@ -99,6 +105,173 @@ static bool item_inventory(ld_frame *f, mc_client_render_blocks *fields, const m
     return true;
 }
 
+static bool billboard_registry_failure(ld_frame *f, mc_registry_classes *registry,
+                                       const char *operation) {
+    f->error->selected_child = MC_CLIENT_LIVING_DRAW_CHILD_REGISTRY;
+    ld_registry_classify(f, registry, &f->error->detail.registry);
+    return ld_fail(f, MC_CLIENT_LIVING_DRAW_CHILD_FAILED, operation);
+}
+
+static bool billboard_prefix_result(ld_frame *f, const mc_client_item_billboard_context *c,
+                                    bool returned) {
+    if (returned)
+        return true;
+    item_at(f, (int32_t)c->source_pc);
+    if (c->source_exception)
+        return ld_null(f, c->error.operation);
+    f->error->detail.graphics = c->error;
+    return ld_graphics(f, false);
+}
+
+static bool item_billboard(ld_frame *f, const mc_client_item_renderer_fields *bb,
+                           mc_item_stack *stack, int32_t copies, float partial) {
+    mc_client_living_draw_error *e = f->error;
+    e->state.item.billboard = true;
+    e->state.item.scale = .5f;
+    item_at(f, 367);
+    if (!ld_display(f, mc_client_display_source_scale(f->scope->model.display, .5f, .5f, .5f,
+                                                      &e->detail.display)))
+        return false;
+    item_at(f, 372);
+    if (stack == NULL)
+        return ld_null(f, "Item billboard null captured Stack icon receiver");
+    int32_t icon;
+    if (!ld_item_result(f, mc_item_stack_render_icon(f->renderer->parent->classes->registry, stack,
+                                                     &icon, &e->detail.item)))
+        return false;
+    e->state.item.icon_returned = true;
+    e->state.item.icon = icon;
+    item_at(f, 379);
+    int32_t id;
+    e->detail.stack = mc_item_stack_source_id_get(stack, &id);
+    if (e->detail.stack != MC_ITEM_STACK_OK) {
+        e->selected_child = MC_CLIENT_LIVING_DRAW_CHILD_STACK;
+        return ld_fail(f, MC_CLIENT_LIVING_DRAW_CHILD_FAILED, "Item billboard current Stack ID");
+    }
+    item_at(f, id < 256 ? 391 : 400);
+    if (!ld_texture(f, id < 256 ? &terrain : &item_texture, id < 256 ? 391 : 400))
+        return false;
+    item_at(f, 403);
+    mc_client_item_billboard_context prefix = {0};
+    if (!ld_graphics(f, mc_client_nw_active_use(f->scope->model.graphics, e->site, &prefix.nw,
+                                                &e->detail.graphics)))
+        return false;
+    e->state.item.nw_identity = (uintptr_t)prefix.nw;
+    if (!billboard_prefix_result(f, &prefix, mc_client_item_billboard_uv_capture(&prefix, icon)))
+        return false;
+    memcpy(e->state.item.uv, prefix.uv, sizeof(prefix.uv));
+    if (bb->a) { /* Fresh actual BB.a485, after all four captured UV locals. */
+        mc_registry_classes *registry = f->renderer->parent->classes->registry;
+        const mc_registry_item_array *array = NULL;
+        const mc_item *color_item = NULL;
+        item_at(f, 492);
+        if (mc_registry_item_c_get(registry, &array, &e->detail.registry) != MC_REGISTRY_OK)
+            return billboard_registry_failure(f, registry, "Item billboard actual GM.c active use");
+        item_at(f, 497);
+        e->detail.stack = mc_item_stack_source_id_get(stack, &id);
+        if (e->detail.stack != MC_ITEM_STACK_OK) {
+            e->selected_child = MC_CLIENT_LIVING_DRAW_CHILD_STACK;
+            return ld_fail(f, MC_CLIENT_LIVING_DRAW_CHILD_FAILED,
+                           "Item billboard color current Stack ID");
+        }
+        item_at(f, 500);
+        if (mc_registry_item_c_at(registry, array, id, &color_item, &e->detail.registry) !=
+            MC_REGISTRY_OK)
+            return billboard_registry_failure(f, registry, "Item billboard actual GM.c aaload");
+        item_at(f, 503);
+        int32_t metadata;
+        e->detail.stack = mc_item_stack_source_damage_get(stack, &metadata);
+        if (e->detail.stack != MC_ITEM_STACK_OK) {
+            e->selected_child = MC_CLIENT_LIVING_DRAW_CHILD_STACK;
+            return ld_fail(f, MC_CLIENT_LIVING_DRAW_CHILD_FAILED,
+                           "Item billboard actual Stack metadata");
+        }
+        item_at(f, 506);
+        if (color_item == NULL)
+            return ld_null(f, "Item billboard null captured color Item receiver");
+        int32_t color;
+        if (!ld_item_result(
+                f, mc_item_render_color(registry, color_item, metadata, &color, &e->detail.item)))
+            return false;
+        item_at(f, 523);
+        if (!ld_fp(f))
+            return false;
+        const float red = at_fdiv((float)(((uint32_t)color >> 16u) & 255u), 255.0f);
+        const float green = at_fdiv((float)(((uint32_t)color >> 8u) & 255u), 255.0f);
+        const float blue = at_fdiv((float)((uint32_t)color & 255u), 255.0f);
+        item_at(f, 556);
+        float brightness;
+        if (!ld_brightness(f, partial, &brightness))
+            return false;
+        e->state.item.color = color;
+        e->state.item.brightness = brightness;
+        item_at(f, 565);
+        if (!ld_fp(f))
+            return false;
+        item_at(f, 577);
+        if (!ld_display(f, mc_client_display_source_color(
+                               f->scope->model.display, at_fmul(red, brightness),
+                               at_fmul(green, brightness), at_fmul(blue, brightness), 1.0f,
+                               &e->detail.display)))
+            return false;
+        e->state.item.color_returned = true;
+    }
+    for (int32_t copy = 0; copy < copies; ++copy) {
+        if (!ld_work(f))
+            return false;
+        item_at(f, 590);
+        if (!ld_display(f,
+                        mc_client_display_source_push(f->scope->model.display, &e->detail.display)))
+            return false;
+        if (copy > 0) {
+            float offset[3];
+            static const int32_t random_pc[] = {602, 618, 634};
+            for (size_t i = 0; i < 3; ++i) {
+                item_at(f, random_pc[i]);
+                if (bb->f == NULL)
+                    return ld_null(f, "Item billboard actual copy Random receiver");
+                const float value = mc_java_random_next_float(bb->f);
+                item_at(f, random_pc[i] + 3);
+                if (!ld_fp(f))
+                    return false;
+                offset[i] = at_fmul(at_fsub(at_fmul(value, 2.0f), 1.0f), .3f);
+            }
+            item_at(f, 652);
+            if (!ld_display(f, mc_client_display_source_translate(f->scope->model.display,
+                                                                  offset[0], offset[1], offset[2],
+                                                                  &e->detail.display)))
+                return false;
+        }
+        item_at(f, 661);
+        mc_client_render_manager *manager = ld_manager(f, 661);
+        if (manager == NULL)
+            return false;
+        item_at(f, 664);
+        if (!ld_fp(f))
+            return false;
+        const float angle = at_fsub(180.0f, manager->fields.i);
+        item_at(f, 668);
+        if (!ld_display(f, mc_client_display_source_rotate(f->scope->model.display, angle, 0, 1, 0,
+                                                           &e->detail.display)))
+            return false;
+        const bool prefix_returned = mc_client_item_billboard_entered(&prefix);
+        e->state.item.billboard_vertices_returned += prefix.vertices;
+        if (!billboard_prefix_result(f, &prefix, prefix_returned))
+            return false;
+        item_at(f, 776);
+        if (!ld_graphics(
+                f, mc_client_nw_draw(prefix.nw, f->scope->model.display, &e->detail.graphics)))
+            return false;
+        ++e->state.item.billboard_quads_returned;
+        item_at(f, 779);
+        if (!ld_display(f,
+                        mc_client_display_source_pop(f->scope->model.display, &e->detail.display)))
+            return false;
+        ++e->state.item.copies_returned;
+    }
+    return true;
+}
+
 bool mc_client_item_draw_entered(mc_client_draw_scope *scope, mc_client_managed_renderer *renderer,
                                  mc_entity *actor, double x, double y, double z, float yaw,
                                  float partial, mc_client_graphics_site caller,
@@ -182,20 +355,24 @@ bool mc_client_item_draw_entered(mc_client_draw_scope *scope, mc_client_managed_
         error->selected_child = MC_CLIENT_LIVING_DRAW_CHILD_STACK;
         return ld_fail(&f, MC_CLIENT_LIVING_DRAW_CHILD_FAILED, "Item captured Stack ID read");
     }
-    if (id >= 256)
-        return ld_fail(&f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED, "Item actual billboard branch");
+    bool billboard = id >= 256;
     const mc_block *block;
-    if (!block_at(&f, stack, 151, &block))
-        return false;
-    item_at(&f, 152);
-    if (block == NULL)
-        return ld_null(&f, "Item Block render-type null receiver");
-    mc_block_render_description description;
-    if (mc_block_render_describe(block, &description) != MC_REGISTRY_OK)
-        return ld_fail(&f, MC_CLIENT_LIVING_DRAW_STATE, "Item actual Block render type");
-    if (!mc_cv_inventory_type_3d(description.type))
-        return ld_fail(&f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED,
-                       "Item actual Block billboard branch");
+    if (!billboard) {
+        if (!block_at(&f, stack, 151, &block))
+            return false;
+        item_at(&f, 152);
+        if (block == NULL)
+            return ld_null(&f, "Item Block render-type null receiver");
+        mc_block_render_description description;
+        if (mc_block_render_describe(block, &description) != MC_REGISTRY_OK)
+            return ld_fail(&f, MC_CLIENT_LIVING_DRAW_STATE, "Item actual Block render type");
+        billboard = !mc_cv_inventory_type_3d(description.type);
+    }
+    if (billboard) {
+        if (!item_billboard(&f, bb, stack, copies, partial))
+            return false;
+        goto suffix;
+    }
     item_at(&f, 166);
     if (!ld_display(&f, mc_client_display_source_rotate(scope->model.display, rotation, 0, 1, 0,
                                                         &error->detail.display)))
@@ -261,6 +438,7 @@ bool mc_client_item_draw_entered(mc_client_draw_scope *scope, mc_client_managed_
             return false;
         ++error->state.item.copies_returned;
     }
+suffix:
     item_at(&f, 790);
     if (!ld_display(&f, mc_client_display_source_rescale_normal(scope->model.display, false,
                                                                 &error->detail.display)))

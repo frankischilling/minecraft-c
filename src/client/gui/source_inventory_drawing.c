@@ -12,16 +12,21 @@ bool mc_inventory_draw_fail(mc_client_inventory_draw_call *c, mc_client_screen_s
     return false;
 }
 
+const char *mc_inventory_draw_descriptor(const mc_client_inventory_draw_call *c,
+                                         const char *owner) {
+    if (strcmp(owner, "ue") == 0 || strcmp(owner, "oo") == 0)
+        return "(F)V";
+    if (strcmp(owner, "ub") == 0)
+        return "(IIIIII)V";
+    return c->id_descriptor == NULL ? "(IIF)V" : c->id_descriptor;
+}
+
 bool mc_inventory_draw_gl(mc_client_inventory_draw_call *c, bool ok, const char *owner,
                           unsigned int pc) {
     if (ok)
         return true;
-    const char *descriptor = strcmp(owner, "ue") == 0   ? "(F)V"
-                             : strcmp(owner, "ub") == 0 ? "(IIIIII)V"
-                             : c->id_descriptor == NULL ? "(IIF)V"
-                                                        : c->id_descriptor;
     return mc_inventory_draw_fail(c, MC_CLIENT_SCREEN_TEXTURE_FAILED, c->error.display.operation,
-                                  owner, "a", descriptor, pc, true);
+                                  owner, "a", mc_inventory_draw_descriptor(c, owner), pc, true);
 }
 
 bool mc_inventory_draw_fp(mc_client_inventory_draw_call *c, const char *owner, unsigned int pc) {
@@ -29,7 +34,7 @@ bool mc_inventory_draw_fp(mc_client_inventory_draw_call *c, const char *owner, u
         return true;
     return mc_inventory_draw_fail(c, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY,
                                   "Inventory strict native floating environment", owner, "a",
-                                  strcmp(owner, "ue") == 0 ? "(F)V" : "(IIIIII)V", pc, true);
+                                  mc_inventory_draw_descriptor(c, owner), pc, true);
 }
 
 bool mc_inventory_draw_player_capture(mc_client_inventory_draw_call *c, const char *owner,
@@ -129,7 +134,7 @@ static bool capture_item_arguments(mc_client_inventory_draw_call *c, unsigned in
 
 static bool item(mc_client_inventory_draw_call *c, const item_arguments *arguments,
                  const mc_item_stack *stack, int32_t x, int32_t y, unsigned int pc) {
-    mc_client_source_ue *o = c->owner;
+    mc_client_source_id *o = c->owner;
     if (arguments->renderer == NULL)
         return mc_inventory_draw_fail(c, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE,
                                       "ID actual BB GUI null receiver", "id", "a", c->id_descriptor,
@@ -153,7 +158,7 @@ static bool item(mc_client_inventory_draw_call *c, const item_arguments *argumen
 
 static bool overlay(mc_client_inventory_draw_call *c, const item_arguments *arguments,
                     const mc_item_stack *stack, int32_t x, int32_t y, unsigned int pc) {
-    mc_client_source_ue *o = c->owner;
+    mc_client_source_id *o = c->owner;
     if (arguments->renderer == NULL)
         return mc_inventory_draw_fail(c, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE,
                                       "ID actual BB overlay null receiver", "id", "a",
@@ -246,7 +251,9 @@ static bool cursor(mc_client_inventory_draw_call *c, mc_inventory_player *invent
 }
 
 static bool foreground(mc_client_inventory_draw_call *c) {
-    mc_client_source_ue *o = c->owner;
+    if (c->owner->base.kind == MC_CLIENT_SCREEN_WORKBENCH)
+        return mc_workbench_draw_foreground(c);
+    mc_client_source_id *o = c->owner;
     mc_player_string *literal = NULL;
     if (!mc_screen_lock(o->base.classes, &c->error.screen))
         return false;
@@ -333,7 +340,7 @@ failed: {
 }
 
 static bool body(mc_client_inventory_draw_call *c) {
-    mc_client_source_ue *o = c->owner;
+    mc_client_source_id *o = c->owner;
     if (o->base.fields.b == NULL)
         return mc_inventory_draw_fail(c, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE,
                                       "DA actual background App null receiver", "da", "a", "(I)V",
@@ -347,7 +354,8 @@ static bool body(mc_client_inventory_draw_call *c) {
         return false;
     c->state.origin_x = mc_java_i32_sub(o->base.fields.c, o->id.a) / 2;
     c->state.origin_y = mc_java_i32_sub(o->base.fields.d, o->id.i) / 2;
-    if (!mc_inventory_draw_background(c))
+    if (!(o->base.kind == MC_CLIENT_SCREEN_INVENTORY ? mc_inventory_draw_background(c)
+                                                     : mc_workbench_draw_background(c)))
         return false;
     mc_client_display *d = c->services.display;
 #define GL(expr, pc)                                                                               \
@@ -464,22 +472,32 @@ static bool body(mc_client_inventory_draw_call *c) {
                                       "(IIF)V", 41, true);
     GL(mc_client_display_source_lighting_enable(d, true, &c->error.display), 481);
     GL(mc_client_display_source_depth_test(d, true, &c->error.display), 487);
-    if (!mc_inventory_draw_fp(c, "ue", 9))
-        return false;
-    o->fields.l = (float)c->mouse.x;
-    o->fields.m = (float)c->mouse.y;
-    c->state.mouse_stored = true;
-    c->state.source_pc = o->last_pc = 19;
+    c->state.id_returned = true;
+    if (o->base.kind == MC_CLIENT_SCREEN_INVENTORY) {
+        if (!mc_inventory_draw_fp(c, "ue", 9))
+            return false;
+        /* The admitted genuine UE begins with this exact ID subobject. */
+        mc_client_source_ue *ue = c->state.receiver;
+        ue->fields.l = (float)c->mouse.x;
+        ue->fields.m = (float)c->mouse.y;
+        c->state.mouse_stored = true;
+        c->state.source_pc = o->last_pc = 19;
+        c->error.screen.site = (mc_client_screen_site){"ue", "a", "(IIF)V", 19};
+    } else {
+        c->state.source_pc = o->last_pc = 490;
+        c->error.screen.site = (mc_client_screen_site){"id", "a", "(IIF)V", 490};
+    }
     c->state.returned = c->error.screen.source_returned = true;
-    c->error.screen.site = (mc_client_screen_site){"ue", "a", "(IIF)V", 19};
 #undef GL
     return true;
 }
 
-mc_client_screen_status mc_client_source_inventory_draw_begin(
-    mc_client_source_ue *o, mc_gui_mouse_position mouse, float partial,
-    const mc_client_manager_draw_services *services, mc_client_inventory_draw_call **out,
-    mc_client_inventory_draw_error *error) {
+mc_client_screen_status mc_inventory_draw_begin_id(mc_client_source_id *o,
+                                                   mc_client_screen_kind expected,
+                                                   mc_gui_mouse_position mouse, float partial,
+                                                   const mc_client_manager_draw_services *services,
+                                                   mc_client_inventory_draw_call **out,
+                                                   mc_client_inventory_draw_error *error) {
     if (o == NULL || out == NULL || *out != NULL || services == NULL) {
         mc_client_inventory_draw_error e = {0};
         mc_screen_fail(&e.screen, MC_CLIENT_SCREEN_INVALID_ARGUMENT,
@@ -500,7 +518,9 @@ mc_client_screen_status mc_client_source_inventory_draw_begin(
     *out = c;
     c->owner = o;
     c->id_descriptor = "(IIF)V";
-    c->state.receiver = o;
+    c->state.screen_receiver = &o->base;
+    if (expected == MC_CLIENT_SCREEN_INVENTORY && o->base.kind == MC_CLIENT_SCREEN_INVENTORY)
+        c->state.receiver = (mc_client_source_ue *)o;
     c->state.hovered_slot = -1;
     c->state.failure = &c->error;
     c->services = *services;
@@ -508,7 +528,8 @@ mc_client_screen_status mc_client_source_inventory_draw_begin(
     c->partial = partial;
     if (!mc_screen_lock(o->base.classes, &c->error.screen))
         goto done;
-    if (o->base.kind != MC_CLIENT_SCREEN_INVENTORY || o->base.phase != MC_CLIENT_SCREEN_READY ||
+    if ((expected != MC_CLIENT_SCREEN_INVENTORY && expected != MC_CLIENT_SCREEN_WORKBENCH) ||
+        o->base.kind != expected || o->base.phase != MC_CLIENT_SCREEN_READY ||
         o->base.active_calls != 0 || o->base.last_initialization == NULL) {
         mc_inventory_draw_fail(c, MC_CLIENT_SCREEN_INVALID_PHASE,
                                "Inventory initialized exclusive draw owner", NULL, NULL, NULL, 0,
@@ -518,6 +539,8 @@ mc_client_screen_status mc_client_source_inventory_draw_begin(
     }
     ++o->base.active_calls;
     c->screen_entered = true;
+    if (o->base.kind == MC_CLIENT_SCREEN_WORKBENCH)
+        c->state.workbench = true;
     mtx_unlock(&o->base.classes->mutex);
     c->state.active = true;
     (void)body(c);
@@ -526,6 +549,14 @@ done:
     if (error != NULL)
         *error = c->error;
     return c->error.screen.status;
+}
+
+mc_client_screen_status mc_client_source_inventory_draw_begin(
+    mc_client_source_ue *o, mc_gui_mouse_position mouse, float partial,
+    const mc_client_manager_draw_services *services, mc_client_inventory_draw_call **out,
+    mc_client_inventory_draw_error *error) {
+    return mc_inventory_draw_begin_id(o == NULL ? NULL : &o->container, MC_CLIENT_SCREEN_INVENTORY,
+                                      mouse, partial, services, out, error);
 }
 
 bool mc_client_source_inventory_draw_inspect(const mc_client_inventory_draw_call *c,

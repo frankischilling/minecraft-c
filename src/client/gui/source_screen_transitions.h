@@ -58,6 +58,13 @@ mc_client_screen_status mc_client_screen_transitions_close(mc_client_screen_tran
  * allocation precede the fresh App.h constructor argument. */
 mc_client_screen_status mc_client_screen_transitions_inventory(mc_client_screen_transitions *,
                                                                mc_client_screen_error *);
+/* Actual DC.a(III)V: capture DC.b1, NEW OO4 before fresh Inventory9/World13,
+ * enter OO constructor19 and display the exact receiver through captured
+ * Minecraft22. Keep constructor/display failures until native retirement. */
+mc_client_screen_status mc_client_screen_transitions_workbench(mc_client_screen_transitions *,
+                                                               mc_entity *actual_player, int32_t x,
+                                                               int32_t y, int32_t z,
+                                                               mc_client_screen_error *);
 /* Actual DC.r: GS.r publishes e=d before reading DC.b and synchronously
  * displaying NULL. No additional DA Escape focus call is inserted. */
 mc_client_screen_status mc_client_screen_transitions_player_close(mc_client_screen_transitions *,

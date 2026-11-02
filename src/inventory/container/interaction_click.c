@@ -170,9 +170,11 @@ static bool merge(mc_container_interaction_call *c, mc_item_stack *incoming, int
 
 static bool transfer(mc_container_interaction_call *c, int32_t index, mc_item_stack **out) {
     ++c->state.shift_calls;
-    if (c->state.container->kind != MC_CONTAINER_PLAYER)
+    const bool workbench = c->state.container->kind == MC_CONTAINER_WORKBENCH;
+    if (!workbench && c->state.container->kind != MC_CONTAINER_PLAYER)
         return inv_interaction_fail(&c->error, MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,
-                                    "Container concrete non-AA Shift body");
+                                    "Container concrete Shift body");
+    c->error.child = (mc_inventory_site){workbench ? "it" : "aa", "a", "(I)Liz;", 7};
     inv_slot *s;
     if (!slot(c, index, &s))
         return false;
@@ -189,8 +191,11 @@ static bool transfer(mc_container_interaction_call *c, int32_t index, mc_item_st
     mc_item_stack *copy;
     if (!inv_interaction_clone(c, value, &copy))
         return false;
-    if (!merge(c, value, index >= 9 && index < 36 ? 36 : 9, index >= 36 && index < 45 ? 36 : 45,
-               index == 0))
+    const int32_t main_first = workbench ? 10 : 9;
+    const int32_t hotbar_first = workbench ? 37 : 36;
+    const int32_t last = workbench ? 46 : 45;
+    if (!merge(c, value, index >= main_first && index < hotbar_first ? hotbar_first : main_first,
+               index >= hotbar_first && index < last ? hotbar_first : last, index == 0))
         return false;
     int32_t remaining, original;
     if (!count(c, value, &remaining))
@@ -561,6 +566,48 @@ bool inv_interaction_close_body(mc_container_interaction_call *c) {
         if (!inv_interaction_cursor_put(c, inventory, NULL))
             return false;
         c->state.cursor_cleared = true;
+    }
+    if (c->state.container->kind == MC_CONTAINER_WORKBENCH) {
+        c->error.site = (mc_inventory_site){"it", "a", "(Lgs;)V", 9};
+        mc_world_runtime *world = c->state.container->world; /* Actual IT.c6 capture. */
+        if (world == NULL)
+            return inv_interaction_null(&c->error,
+                                        "Workbench close null captured World.B receiver");
+        if (c->host.world_remote == NULL)
+            return inv_interaction_fail(&c->error, MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,
+                                        "Workbench close actual World.B field dependency");
+        bool remote;
+        if (c->host.world_remote(c->host.context, world, &remote, &c->error) != MC_INVENTORY_OK)
+            return false;
+        c->state.workbench_remote_read = true;
+        c->state.workbench_remote = remote;
+        if (remote) {
+            c->error.site.pc = 15;
+            return true;
+        }
+        for (int32_t i = 0; i < 9; ++i) {
+            c->error.site.pc = 29;
+            mc_inventory_crafting *grid = c->state.container->crafting;
+            if (grid == NULL)
+                return inv_interaction_null(&c->error,
+                                            "Workbench close fresh null Crafting getter receiver");
+            c->error.dependency = (mc_inventory_site){"mq", "a", "()I", 4};
+            if (grid->slots == NULL)
+                return inv_interaction_null(&c->error,
+                                            "Workbench close null Crafting array length receiver");
+            const mc_item_stack *value = NULL;
+            if (!inv_interaction_inventory(&c->error, mc_inventory_crafting_borrow_slot(
+                                                          grid, i, &value, &c->error.inventory)) ||
+                !inv_interaction_hold(c, (mc_item_stack *)value))
+                return false;
+            if (value != NULL) {
+                c->error.site.pc = 39;
+                if (!drop(c, (mc_item_stack *)value))
+                    return false;
+            }
+        }
+        c->error.site.pc = 48;
+        return true;
     }
     if (c->state.container->kind != MC_CONTAINER_PLAYER)
         return inv_interaction_fail(&c->error, MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,

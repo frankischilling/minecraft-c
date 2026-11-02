@@ -2,6 +2,32 @@
 
 ## Current qualification
 
+The Workbench runtime passes all 630 Windows public tests in 326.54 seconds
+and all 625 Linux public tests in 189.95 seconds. The Windows snapshot keeps
+4,275 authored inputs, 512 products and 823 assets unchanged. Linux uses
+Clang 18 Debug ASan/UBSan, leak detection and halt-on-error with Xvfb/software
+OpenGL; all 4,275 copied files match between hosts. Formatting passes for
+1,979 C/header/fragments and bindings cover 10,391 entries in 4,274 files.
+Documentation/proof-only updates after those runs have separate binding
+checks and leave production source unchanged.
+
+The [Workbench SDK](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench.md)
+passes 1,853 checks in 22.96 seconds on Windows MSVC Release. It completes
+crafting, placement/activation, Shift transfers, close drops, three equipped
+Pickaxe frames, ordinary Save and Quit, exact NBT and cleanup. Independent
+decoding checks all 40 Inventory cells, every live Item, the Table and 403
+saved Chunks; unrelated region bytes, source inputs and assets stay unchanged.
+The same runtime passes the ordinary Inventory SDK in 16.71 seconds with 705
+checks and Pumpkin armor in 22.75 seconds with 828 checks.
+
+Full Windows Release and Linux Clang 18 Debug ASan/UBSan builds pass. The
+15-test component selection passes in 1.69 seconds on Windows and 4.34 seconds
+on sanitized Linux. These results keep original/runtime, graphical/zero-draw
+CPU prefix and static-only evidence separate. They do not qualify original
+pixels, unrestricted play, Linux SDK gameplay, global focus stability or FPS.
+
+## Preceding Inventory qualification
+
 The Inventory runtime passes the full Windows MSVC Release build and the full
 Linux Clang 18 Debug ASan/UBSan build. Linux passes all 615 public tests in
 204.09 seconds under Xvfb/software OpenGL, with leak detection and halt-on-error.

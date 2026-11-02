@@ -94,78 +94,86 @@ int main(void) {
     const int32_t mod_count = list->mod_count;
     error = (mc_client_screen_error){0};
     CHECK(mc_screen_lock(classes, &error));
-    const bool cleared = mc_screen_inventory_initialize_locked(screen, &error);
+    const bool cleared = mc_screen_container_initialize_locked(&screen->container, &error);
     mtx_unlock(&classes->mutex);
     CHECK(cleared && list->size == 0 && list->mod_count == mod_count + 1 &&
-          screen->base.phase == MC_CLIENT_SCREEN_FAILED && screen->base.fields.f &&
-          player->local_player->fields.player.d == NULL &&
+          screen->container.base.phase == MC_CLIENT_SCREEN_FAILED &&
+          screen->container.base.fields.f && player->local_player->fields.player.d == NULL &&
           player->local_player->fields.player.e == NULL);
     mc_entity *close_player = NULL;
     error = (mc_client_screen_error){0};
     CHECK(mc_screen_lock(classes, &error));
-    const bool escaped = mc_screen_inventory_key_locked(screen, 1, &close_player, &error);
+    const bool escaped =
+        mc_screen_container_key_locked(&screen->container, 1, &close_player, &error);
     mtx_unlock(&classes->mutex);
     CHECK(!escaped && error.status == MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE &&
           !error.native_policy && error.site.pc == 26 && close_player == NULL);
     error = (mc_client_screen_error){0};
     CHECK(mc_screen_lock(classes, &error));
-    const bool keyed = mc_screen_inventory_key_locked(screen, 18, &close_player, &error);
+    const bool keyed =
+        mc_screen_container_key_locked(&screen->container, 18, &close_player, &error);
     mtx_unlock(&classes->mutex);
     CHECK(!keyed && error.status == MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE && error.site.pc == 10);
     CHECK(mc_client_screen_closed(mc_client_screen_inventory_base(screen), &error) ==
               MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE &&
           !error.native_policy && strcmp(error.site.class_name, "id") == 0 && error.site.pc == 4);
-    const mc_client_screen_error source_failure = screen->base.failure;
+    const mc_client_screen_error source_failure = screen->container.base.failure;
     /* Attach an actual failed OB invocation as native retained work on this
      * constructor prefix. No READY/source continuation is fabricated. */
     mc_client_singleplayer_controller *controller = NULL;
     CHECK(mc_client_singleplayer_controller_allocate(entities, profile, 0, &controller, NULL) ==
               MC_SINGLEPLAYER_CONTROLLER_OK &&
           mc_client_singleplayer_controller_retain(controller) == MC_SINGLEPLAYER_CONTROLLER_OK);
-    screen->calls = mc_screen_allocate(&screen->base.memory, sizeof(*screen->calls));
-    CHECK(screen->calls != NULL);
-    screen->calls->controller = controller;
-    CHECK(mc_player_container_close_begin(NULL, NULL, player, 0, &screen->calls->call,
-                                          &screen->calls->failure) == MC_ENTITY_STATE_ERROR &&
-          screen->calls->failure.source_exception && screen->calls->failure.site.pc == 5 &&
-          player->holds == holds + 2);
-    mc_player_container_call *failed_call = screen->calls->call;
+    screen->container.calls =
+        mc_screen_allocate(&screen->container.base.memory, sizeof(*screen->container.calls));
+    CHECK(screen->container.calls != NULL);
+    screen->container.calls->controller = controller;
+    CHECK(mc_player_container_close_begin(NULL, NULL, player, 0, &screen->container.calls->call,
+                                          &screen->container.calls->failure) ==
+              MC_ENTITY_STATE_ERROR &&
+          screen->container.calls->failure.source_exception &&
+          screen->container.calls->failure.site.pc == 5 && player->holds == holds + 2);
+    mc_player_container_call *failed_call = screen->container.calls->call;
     error = (mc_client_screen_error){0};
     CHECK(mc_screen_lock(classes, &error));
-    ++screen->base.active_calls;
-    const bool active_prepared = mc_screen_inventory_terminal_prepare_locked(screen, &error);
-    --screen->base.active_calls;
+    ++screen->container.base.active_calls;
+    const bool active_prepared =
+        mc_screen_container_terminal_prepare_locked(&screen->container, &error);
+    --screen->container.base.active_calls;
     mtx_unlock(&classes->mutex);
     CHECK(!active_prepared && error.status == MC_CLIENT_SCREEN_BUSY &&
-          screen->base.phase == MC_CLIENT_SCREEN_FAILED && screen->calls->call == failed_call &&
-          player->holds == holds + 2);
+          screen->container.base.phase == MC_CLIENT_SCREEN_FAILED &&
+          screen->container.calls->call == failed_call && player->holds == holds + 2);
     mc_client_source_da *external = mc_client_screen_inventory_base(screen);
     CHECK(mc_client_screen_retain(external, &error) == MC_CLIENT_SCREEN_OK);
     error = (mc_client_screen_error){0};
     CHECK(mc_screen_lock(classes, &error));
-    const bool external_prepared = mc_screen_inventory_terminal_prepare_locked(screen, &error);
+    const bool external_prepared =
+        mc_screen_container_terminal_prepare_locked(&screen->container, &error);
     mtx_unlock(&classes->mutex);
     CHECK(!external_prepared && error.status == MC_CLIENT_SCREEN_BUSY &&
-          screen->calls->call == failed_call && player->holds == holds + 2);
+          screen->container.calls->call == failed_call && player->holds == holds + 2);
     CHECK(mc_client_screen_release(&external, &error) == MC_CLIENT_SCREEN_OK && external == NULL);
     error = (mc_client_screen_error){0};
     CHECK(mc_screen_lock(classes, &error));
-    const bool prepared = mc_screen_inventory_terminal_prepare_locked(screen, &error);
+    const bool prepared = mc_screen_container_terminal_prepare_locked(&screen->container, &error);
     mtx_unlock(&classes->mutex);
     mc_singleplayer_controller_snapshot controller_state;
     CHECK(prepared && error.status == MC_CLIENT_SCREEN_OK &&
-          screen->base.phase == MC_CLIENT_SCREEN_RETIRING && screen->calls->call == NULL &&
-          screen->calls->controller == NULL && !screen->player_held && !screen->container_held &&
-          player->holds == holds && screen->calls->failure.source_exception &&
-          screen->calls->failure.site.pc == 5 &&
+          screen->container.base.phase == MC_CLIENT_SCREEN_RETIRING &&
+          screen->container.calls->call == NULL && screen->container.calls->controller == NULL &&
+          !screen->container.player_held && !screen->container.container_held &&
+          player->holds == holds && screen->container.calls->failure.source_exception &&
+          screen->container.calls->failure.site.pc == 5 &&
           mc_client_singleplayer_controller_read(controller, &controller_state) &&
           controller_state.native_holds == 1);
-    CHECK(screen->base.failure.status == source_failure.status &&
-          screen->base.failure.operation == source_failure.operation &&
-          screen->base.failure.site.class_name == source_failure.site.class_name &&
-          screen->base.failure.site.pc == source_failure.site.pc && screen->base.fields.e == list &&
-          screen->base.fields.f && screen->id.a == 176 && screen->id.i == 166 &&
-          screen->id.j == NULL && player->phase == MC_ENTITY_RAW &&
+    CHECK(screen->container.base.failure.status == source_failure.status &&
+          screen->container.base.failure.operation == source_failure.operation &&
+          screen->container.base.failure.site.class_name == source_failure.site.class_name &&
+          screen->container.base.failure.site.pc == source_failure.site.pc &&
+          screen->container.base.fields.e == list && screen->container.base.fields.f &&
+          screen->container.id.a == 176 && screen->container.id.i == 166 &&
+          screen->container.id.j == NULL && player->phase == MC_ENTITY_RAW &&
           player->local_player->fields.player.d == NULL &&
           player->local_player->fields.player.e == NULL);
     CHECK(mc_client_screen_inventory_inspect(screen, &state, &error) == MC_CLIENT_SCREEN_OK &&
@@ -178,10 +186,10 @@ int main(void) {
                                      &event_error) == MC_CLIENT_SCREEN_BUSY);
     error = (mc_client_screen_error){0};
     CHECK(mc_screen_lock(classes, &error));
-    const bool repeated = mc_screen_inventory_terminal_prepare_locked(screen, &error);
+    const bool repeated = mc_screen_container_terminal_prepare_locked(&screen->container, &error);
     mtx_unlock(&classes->mutex);
     CHECK(repeated && player->holds == holds &&
-          screen->base.failure.site.pc == source_failure.site.pc);
+          screen->container.base.failure.site.pc == source_failure.site.pc);
     CHECK(mc_client_screen_inventory_retire(&screen, &error) == MC_CLIENT_SCREEN_OK &&
           screen == NULL && player->holds == holds && player->phase == MC_ENTITY_RAW);
     CHECK(mc_client_singleplayer_controller_free(&controller, NULL) ==
