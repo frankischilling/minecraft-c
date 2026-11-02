@@ -5,6 +5,7 @@
 #include "../../world/runtime/runtime_internal.h"
 #include "../living/fields_internal.h"
 #include "../movement/effects_internal.h"
+#include "../player/tick_math_internal.h"
 #include "internal.h"
 #include "mc/core/java/java.h"
 #include "references_internal.h"
@@ -69,14 +70,23 @@ static float damage_i2f(int32_t a) {
     return _mm_cvtss_f32(_mm_cvtsi32_ss(_mm_setzero_ps(), a));
 }
 
-static bool shared_draw(mc_entity *p, mc_entity_effect_error *e) {
-    living_at(e, 251);
+static void counter(uint64_t *value, mc_entity_effect_error *e) {
+    if (*value == UINT64_MAX)
+        e->living_damage.counters_saturated = true;
+    else
+        ++*value;
+}
+
+static bool shared_draw_at(mc_entity *p, uint16_t pc, double *out, mc_entity_effect_error *e) {
+    living_at(e, pc);
     child_at(e, "java/lang/Math", "random", "()D", 0);
-    ++e->living_damage.shared_attempts;
-    const mc_java_random_profile_status status =
-        mc_java_math_random(p->classes->profile, &e->living_damage.shared_value);
+    counter(&e->living_damage.shared_attempts, e);
+    double value;
+    const mc_java_random_profile_status status = mc_java_math_random(p->classes->profile, &value);
     if (status == MC_JAVA_RANDOM_PROFILE_OK) {
-        ++e->living_damage.shared_calls;
+        counter(&e->living_damage.shared_calls, e);
+        e->living_damage.shared_value = value;
+        *out = value;
         return true;
     }
     const mc_entity_status result =
@@ -86,7 +96,7 @@ static bool shared_draw(mc_entity *p, mc_entity_effect_error *e) {
                                                              : MC_ENTITY_PROFILE_FAILED;
     e->entity = (mc_entity_error){.status = result,
                                   .operation = "Living damage actual Math.random",
-                                  .bytecode = 251,
+                                  .bytecode = pc,
                                   .profile = status};
     return damage_fail(e, result, MC_ENTITY_EFFECT_CAUSE_RANDOM,
                        "Living damage actual Math.random");
@@ -116,16 +126,43 @@ static bool sound(mc_entity *p, mc_registry_classes *registry, bool fatal,
     const uint16_t name_pc = fatal ? 284u : 332u;
     living_at(e, name_pc);
     const bool skeleton = mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SKELETON);
-    const char *declaring_class = skeleton ? "fr" : "uz";
+    const bool zombie = mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ZOMBIE);
+    const char *declaring_class = NULL, *text = NULL;
+    const char *volume_class = "ls";
+    uint16_t volume_pc = 1;
+    float volume = 1.0f;
+    if (skeleton) {
+        declaring_class = "fr";
+        text = "mob.skeletonhurt";
+    } else if (zombie) {
+        declaring_class = "uz";
+        text = fatal ? "mob.zombiedeath" : "mob.zombiehurt";
+    } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SHEEP)) {
+        declaring_class = "dl";
+        text = "mob.sheep";
+    } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_PIG)) {
+        declaring_class = "wh";
+        text = fatal ? "mob.pigdeath" : "mob.pig";
+    } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_COW)) {
+        declaring_class = volume_class = "bx";
+        text = "mob.cowhurt";
+        volume = .4f;
+        volume_pc = 2;
+    } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_CHICKEN)) {
+        declaring_class = "ww";
+        text = "mob.chickenhurt";
+    } else
+        return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
+                           "Living damage actual concrete sound declaration");
     child_at(e, declaring_class, fatal ? "i" : "j_", "()Ljava/lang/String;", 0);
     /* FR.i and FR.j_ both return mob.skeletonhurt. Neither receiver is
      * replaced; only its actual virtual String declaration differs here. */
-    const char *text = skeleton ? "mob.skeletonhurt" : fatal ? "mob.zombiedeath" : "mob.zombiehurt";
     const mc_registry_string *name = NULL;
     if (registry == NULL || registry->entities != p->classes)
         return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_REGISTRY,
                            skeleton ? "Skeleton damage actual code String namespace"
-                                    : "Zombie damage actual code String namespace");
+                           : zombie ? "Zombie damage actual code String namespace"
+                                    : "Living damage actual concrete String namespace");
     const mc_registry_status code =
         mc_registry_runtime_literal_ascii(registry, text, &name, &e->registry);
     if (code != MC_REGISTRY_OK)
@@ -135,14 +172,14 @@ static bool sound(mc_entity *p, mc_registry_classes *registry, bool fatal,
                                                                    : MC_ENTITY_STATE_ERROR,
                            MC_ENTITY_EFFECT_CAUSE_REGISTRY,
                            skeleton ? "Skeleton damage actual code String literal"
-                                    : "Zombie damage actual code String literal");
+                           : zombie ? "Zombie damage actual code String literal"
+                                    : "Living damage actual concrete String literal");
     child_at(e, declaring_class, fatal ? "i" : "j_", "()Ljava/lang/String;", 2);
     e->living_damage.sound_name_returned = true;
     e->living_damage.sound_name_identity = (uintptr_t)name;
     e->living_damage.sound_literal = text;
     living_at(e, fatal ? 288u : 336u);
-    child_at(e, "ls", "k", "()F", 1);
-    const float volume = 1.0f; /* Actual inherited LS.k fconst1/return1. */
+    child_at(e, volume_class, "k", "()F", volume_pc);
     e->living_damage.volume_returned = true;
     e->living_damage.volume = volume;
     if (!private_draw(p, fatal ? 295u : 343u, 0, e) || !private_draw(p, fatal ? 302u : 350u, 1, e))
@@ -187,8 +224,144 @@ static bool sound(mc_entity *p, mc_registry_classes *registry, bool fatal,
     return true;
 }
 
-static bool living(mc_entity *p, mc_registry_classes *registry, int32_t amount, bool *out,
-                   mc_entity_effect_error *e) {
+static void knockback_at(mc_entity_effect_error *e, uint16_t pc) {
+    e->living_damage.knockback_pc = pc;
+    child_at(e, "ls", "a", "(Lsn;IDD)V", pc);
+}
+
+/* Actual inherited LS.a(SN,int,DD)V. Its source/amount operands are unused.
+ * The same caller Math namespace is activated at9, before any velocity store;
+ * no World field is consulted to discover another Math implementation. */
+static bool knockback(mc_entity *p, mc_math_classes *math, double dx, double dz,
+                      mc_entity_effect_error *e) {
+    e->living_damage.knockback_entered = true;
+    knockback_at(e, 2);
+    if (!damage_fp(e))
+        return false;
+    const double squared = at_add(at_mul(dx, dx), at_mul(dz, dz));
+    knockback_at(e, 9);
+    if (math == NULL) {
+        e->math = (mc_math_class_error){.status = MC_MATH_CLASS_INVALID_ARGUMENT,
+                                        .operation = "Living knockback absent MathHelper namespace",
+                                        .source_pc = -1};
+        return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_MATH,
+                           "Living knockback actual MathHelper namespace");
+    }
+    if (mc_math_classes_ensure(math, &e->math) != MC_MATH_CLASS_OK) {
+        const mc_entity_status status =
+            e->math.status == MC_MATH_CLASS_LIMIT               ? MC_ENTITY_LIMIT
+            : e->math.status == MC_MATH_CLASS_ALLOCATION_FAILED ? MC_ENTITY_ALLOCATION_FAILED
+            : e->math.status == MC_MATH_CLASS_BUSY              ? MC_ENTITY_BUSY
+            : e->math.status == MC_MATH_CLASS_UNSUPPORTED_FP    ? MC_ENTITY_UNSUPPORTED_FP
+                                                                : MC_ENTITY_STATE_ERROR;
+        return damage_fail(e, status, MC_ENTITY_EFFECT_CAUSE_MATH,
+                           "Living knockback actual MathHelper active use");
+    }
+    const float length = at_root(squared);
+    e->living_damage.knockback_length = length;
+    knockback_at(e, 26);
+    if (!damage_fp(e))
+        return false;
+    p->base.velocity_x = at_div(p->base.velocity_x, 2.0);
+    p->base.velocity_y = at_div(p->base.velocity_y, 2.0);
+    p->base.velocity_z = at_div(p->base.velocity_z, 2.0);
+    p->base.velocity_x =
+        at_sub(p->base.velocity_x, at_mul(at_div(dx, at_widen(length)), at_widen(.4f)));
+    p->base.velocity_y = at_add(p->base.velocity_y, .4000000059604645);
+    p->base.velocity_z =
+        at_sub(p->base.velocity_z, at_mul(at_div(dz, at_widen(length)), at_widen(.4f)));
+    /* Actual dcmpl110/ifle111: unordered Y skips the cap. */
+    if (p->base.velocity_y > .4000000059604645)
+        p->base.velocity_y = .4000000059604645;
+    knockback_at(e, 121);
+    e->living_damage.knockback_returned = true;
+    return true;
+}
+
+static bool source_direction(mc_entity *p, mc_math_classes *math, mc_entity *source,
+                             bool *source_held, mc_entity_effect_error *e) {
+    mc_entity_living_damage_state *r = &e->living_damage;
+    r->direction_entered = true;
+    living_at(e, 144);
+    child_at(e, "ls", "a", "(Lsn;I)Z", 144);
+    /* Admission occurs only where Source first dereferences the nonnull SN.
+     * The caller supplies an independently live canonical owner; identity-only
+     * receipts neither prove that lifetime nor create a target relationship. */
+    if (source->classes != p->classes || source->holds == 0 || source->phase != MC_ENTITY_READY ||
+        source->class_literal == NULL || !mc_entity_is_kind(source, source->class_literal->kind))
+        return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_OWNER,
+                           "Living damage reached canonical source owner");
+    const mc_entity_status held = mc_entity_retain(source);
+    if (held != MC_ENTITY_OK) {
+        e->entity = (mc_entity_error){
+            .status = held, .operation = "Living damage source local occurrence", .bytecode = 144};
+        return damage_fail(e, held, MC_ENTITY_EFFECT_CAUSE_OWNER,
+                           "Living damage source local occurrence");
+    }
+    *source_held = true;
+    r->source_hold_acquired = true;
+    r->source_read = true;
+    r->source_identity = (uintptr_t)source;
+    const double source_x = source->base.x;
+    const double own_x = p->base.x;
+    living_at(e, 151);
+    if (!damage_fp(e))
+        return false;
+    double dx = at_sub(source_x, own_x);
+    r->direction_x = dx;
+    const double source_z = source->base.z; /* Independent source155 and self159 reads. */
+    const double own_z = p->base.z;
+    double dz = at_sub(source_z, own_z);
+    r->direction_z = dz;
+    for (;;) {
+        living_at(e, 169);
+        if (!damage_fp(e))
+            return false;
+        /* dcmpg179 exits on NaN. Diagnostic saturation never controls this
+         * original unbounded retry, nor changes its four Math.random calls. */
+        if (!(at_add(at_mul(dx, dx), at_mul(dz, dz)) < .0001))
+            break;
+        counter(&r->direction_iterations, e);
+        r->direction_draw_mask = 0;
+        if (!shared_draw_at(p, 183, &r->direction_draws[0], e))
+            return false;
+        r->direction_draw_mask |= 1u;
+        if (!shared_draw_at(p, 186, &r->direction_draws[1], e))
+            return false;
+        r->direction_draw_mask |= 2u;
+        living_at(e, 189);
+        if (!damage_fp(e))
+            return false;
+        dx = at_mul(at_sub(r->direction_draws[0], r->direction_draws[1]), .01);
+        r->direction_x = dx;
+        if (!shared_draw_at(p, 196, &r->direction_draws[2], e))
+            return false;
+        r->direction_draw_mask |= 4u;
+        if (!shared_draw_at(p, 199, &r->direction_draws[3], e))
+            return false;
+        r->direction_draw_mask |= 8u;
+        living_at(e, 202);
+        if (!damage_fp(e))
+            return false;
+        dz = at_mul(at_sub(r->direction_draws[2], r->direction_draws[3]), .01);
+        r->direction_z = dz;
+    }
+    living_at(e, 217);
+    child_at(e, "java/lang/Math", "atan2", "(DD)D", 0);
+    r->atan2_value = mc_player_tick_atan2(dz, dx);
+    const double degrees = at_div(at_mul(r->atan2_value, 180.0), 3.1415927410125732);
+    const float narrowed = at_narrow(degrees);
+    mc_entity_living_fields(p)->ac = at_fsub(narrowed, p->base.yaw);
+    living_at(e, 244);
+    if (!knockback(p, math, dx, dz, e))
+        return false;
+    r->direction_returned = true;
+    return true;
+}
+
+static bool living_body(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
+                        mc_entity *source, int32_t amount, bool *out, bool *source_held,
+                        mc_entity_effect_error *e) {
     mc_living_entity_fields *v = mc_entity_living_fields(p);
     living_at(e, 4);
     child_at(e, "ls", "a", "(Lsn;I)Z", 4);
@@ -253,13 +426,18 @@ static bool living(mc_entity *p, mc_registry_classes *registry, int32_t amount, 
         living_at(e, 136);
         mc_entity_effect_attacked_entered(p);
         e->living_damage.attacked_returned = true;
-        if (!shared_draw(p, e))
-            return false;
-        const double twice =
-            _mm_cvtsd_f64(_mm_mul_sd(_mm_set_sd(e->living_damage.shared_value), _mm_set_sd(2.0)));
-        const int32_t direction = mc_java_i32_mul(mc_java_double_to_i32(twice), 180);
-        v->ac = damage_i2f(direction);
-        living_at(e, 264);
+        if (source != NULL) {
+            if (!source_direction(p, math, source, source_held, e))
+                return false;
+        } else {
+            double shared;
+            if (!shared_draw_at(p, 251, &shared, e))
+                return false;
+            const double twice = _mm_cvtsd_f64(_mm_mul_sd(_mm_set_sd(shared), _mm_set_sd(2.0)));
+            const int32_t direction = mc_java_i32_mul(mc_java_double_to_i32(twice), 180);
+            v->ac = damage_i2f(direction);
+            living_at(e, 264);
+        }
     }
     if (v->Y <= 0) {
         if (full_hit && !sound(p, registry, true, e))
@@ -275,6 +453,17 @@ static bool living(mc_entity *p, mc_registry_classes *registry, int32_t amount, 
     living_at(e, 363);
     *out = true;
     return true;
+}
+
+static bool living(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
+                   mc_entity *source, int32_t amount, bool *out, mc_entity_effect_error *e) {
+    bool source_held = false;
+    const bool returned = living_body(p, registry, math, source, amount, out, &source_held, e);
+    if (source_held) {
+        mc_entity_release(source);
+        e->living_damage.source_hold_released = true;
+    }
+    return returned;
 }
 
 bool mc_mob_monster_null_damage_entered(mc_entity *p, mc_registry_classes *registry, int32_t amount,
@@ -298,7 +487,7 @@ bool mc_mob_monster_null_damage_entered(mc_entity *p, mc_registry_classes *regis
     bool answer = false;
     /* The symbolic II.a invokespecial resolves inherited LS directly: there
      * is no II declaration, entered body or intermediate return to credit. */
-    if (!living(p, registry, amount, &answer, e))
+    if (!living(p, registry, NULL, NULL, amount, &answer, e))
         return false;
     e->living_damage.living_returned = true;
     uint16_t pc = 40;
@@ -321,6 +510,48 @@ bool mc_mob_monster_null_damage_entered(mc_entity *p, mc_registry_classes *regis
     }
     e->source_bytecode = e->living_damage.wrapper_pc = pc;
     child_at(e, "gz", "a", "(Lsn;I)Z", pc);
+    e->living_damage.returned = true;
+    e->living_damage.result_stored = true;
+    e->living_damage.result = answer;
+    *out = answer;
+    return true;
+}
+
+bool mc_mob_living_damage_entered(mc_entity *p, mc_registry_classes *registry,
+                                  mc_math_classes *math, mc_entity *source, int32_t amount,
+                                  bool *out, mc_entity_effect_error *e) {
+    if (e == NULL)
+        return false;
+    if (p == NULL || !mc_entity_has_mob(p) || p->classes->source != MC_ENTITY_CLIENT ||
+        p->phase != MC_ENTITY_READY || out == NULL ||
+        (!mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SHEEP) &&
+         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_PIG) &&
+         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_COW) &&
+         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_CHICKEN)))
+        return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_OWNER,
+                           "Living damage entered canonical animal owner contract");
+    const bool sheep = mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SHEEP);
+    e->damage_arguments_stored = true;
+    e->damage_source_identity = (uintptr_t)source;
+    e->damage_amount = amount;
+    e->source_class = sheep ? "dl" : "ls";
+    e->source_bytecode = e->damage_bytecode = sheep ? 3 : 4;
+    e->living_damage.entered = true;
+    e->living_damage.wrapper_pc = sheep ? 3 : 0;
+    bool answer = false;
+    if (!living(p, registry, math, source, amount, &answer, e)) {
+        if (!sheep)
+            e->source_bytecode = e->living_bytecode;
+        return false;
+    }
+    e->living_damage.living_returned = true;
+    if (sheep) {
+        /* DL invokes symbolic BG.a3; BG and II have no declaration. The SAME
+         * source argument enters LS directly, with no shearing/taming body. */
+        e->source_bytecode = e->living_damage.wrapper_pc = 6;
+        child_at(e, "dl", "a", "(Lsn;I)Z", 6);
+    } else
+        e->source_bytecode = e->living_bytecode;
     e->living_damage.returned = true;
     e->living_damage.result_stored = true;
     e->living_damage.result = answer;

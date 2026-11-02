@@ -325,8 +325,9 @@ static void damage_receipt(const mc_entity_effect_error *e) {
     fprintf(output,
             "{\"entered\":%s,\"living_returned\":%s,\"returned\":%s,\"result_stored\":%s,"
             "\"result\":%s,\"full_hit\":%s,\"wrapper_pc\":%u,\"living_pc\":%u,\"health_pc\":%u,"
-            "\"native_policy\":%s,\"source_exception\":%s,\"shared_attempts\":%u,\"shared_calls\":%"
-            "u,\"private_attempts\":%u,\"private_calls\":%u,\"shared_value\":{\"D\":\"%016" PRIx64
+            "\"native_policy\":%s,\"source_exception\":%s,\"shared_attempts\":%" PRIu64
+            ",\"shared_calls\":%" PRIu64
+            ",\"private_attempts\":%u,\"private_calls\":%u,\"shared_value\":{\"D\":\"%016" PRIx64
             "\"},\"private_values\":[{\"F\":\"%08" PRIx32 "\"},{\"F\":\"%08" PRIx32
             "\"}],\"status_returned\":%s,\"attacked_returned\":%s,\"sound_arguments_stored\":%s,"
             "\"sound_returned\":%s,\"death_invoke_reached\":%s,\"sound_world\":\"%016" PRIxPTR

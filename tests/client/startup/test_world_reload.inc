@@ -161,7 +161,7 @@ static int reload_choose(fixture *f, mc_client_source_da *title, const char *fol
     const uint64_t deadline = SDL_GetTicks() + 10000;
     mc_client_screen_transition_state transitions;
     do {
-        CHECK(frame(f) == 0 &&
+        CHECK(display_focus(f, true) == 0 && frame(f) == 0 &&
               mc_client_screen_transitions_inspect(f->app->screen_transitions, &transitions));
         if (f->app->active_world != NULL && transitions.world_load != previous->call)
             break;

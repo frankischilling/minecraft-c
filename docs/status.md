@@ -5,7 +5,7 @@ and seed fields, derives a valid folder through the real SaveFormat lookup,
 and enters ordinary generation. The Windows seed 777 scenario completes 289
 terrain samples, its initial forced save, three World/HUD frames, ordinary
 Save and Quit, and reselection for three more frames. The current run passes
-3,132 native checks in 94.50 seconds, with independent decoding of 447 saved Chunks and
+2,844 native checks in 66.93 seconds, with independent decoding of 375 saved Chunks and
 the selected live Player/WorldInfo values, then checked cleanup. RO/FJ model controls,
 SDK control-character input, plant/fluid geometry and a minimized Snow cascade
 pass on Windows and sanitized Linux. The direct plant helper matches 125
@@ -13,7 +13,11 @@ unchanged-original CPU rows on both hosts. The reached [Falling Sand tick](entit
 and a mixed-Entity diagnostic-ownership fix complete this finite lifecycle.
 The reached [Wolf attack](entity/wolf-attack.md) now preserves pounce and bite
 routing. Both hosts pass 75 native controls and 24 exact unchanged-original
-CPU comparisons; non-NULL LivingEntity damage remains unfinished.
+CPU comparisons. Client [animal damage](entity/animal-damage.md) now preserves
+nonfatal health, timers, knockback, sound and late attacker holds. Both hosts
+pass 145 authored checks and 27 original comparison rows with separate fatal
+sound-checkpoint and callback-failure scopes. Fatal death/drop and other
+concrete hurt overrides remain unfinished.
 Whole GUI, plant climate/jitter, fluid pixels and unrestricted play retain
 separate verification limits. The earlier 54.99-second pass and current pass
 have different natural inputs; they are not a controlled speed comparison.

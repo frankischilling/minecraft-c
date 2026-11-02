@@ -1,20 +1,65 @@
 # Test scope and reproduction
 
+## Region-validator preparation cost
+
+One paired local run of the region-writer Python tests changed from 34 tests in
+33.674 seconds to 35 tests in 28.366 seconds. The host ran native Windows
+CPython 3.14.3 on an Intel Core i9-10900F at 2.80 GHz, with 10 cores and 20 logical
+processors. This was a single pair of runs, without controlled background load
+or a repeated statistical benchmark; it does not establish hosted CI speed.
+
+The validator now borrows read-only snapshot arrays, copies only fields needed
+for the closed-handle and timestamp comparisons, and compares identical files
+in bulk. All corruption cases remain. The added control checks that audit and
+comparison leave every input field unchanged and reject a changed byte outside
+the permitted timestamp slots. Under cProfile, recursive deep-copy calls fell
+from 54.3 million to 23,516. All 316 typed state validations remained; integer
+checks increased from 36.225 million to 36.227 million with the new control.
+These measurements concern test validation work, not gameplay performance.
+
+## Native desktop ownership and animal tick continuation
+
+The asset-dependent World scenarios now share a CTest desktop resource with the
+menu and SDK window checks. CPU tests can continue in parallel. The first
+592-test Windows run passed 584 tests and failed eight: three obsolete Cow
+damage expectations stopped one Mob test, and competing native windows broke
+seven graphical tests. A separate two-test run reproduced the focus collision.
+The corrected eight-test graphical cohort passes in 181.70 seconds with every
+assertion retained. This is a focused rerun, not a fresh all-592 qualification.
+
+Focus-required load frames request real native focus. A valid loaded but
+ungrabbed World can acquire input through the actual Mouse press and
+`Minecraft.k:442` focus call. The fixture waits for ordinary source ticks
+before offering input within the original 200 ms rule; it never changes the
+Timer, source clock field or focus Boolean. It checks the grab, released
+button and unchanged gameplay counters. Earlier isolated focus failures remain
+recorded; these finite passes do not establish unrestricted focus stability.
+
+Cow suffocation, drowning and lava profiles now complete their actual damage
+and full Mob ticks. Windows and Linux each pass 113,945 native checks against
+a fresh 62-case unchanged-original capture and its separate read-only JDI run.
+The comparison checks 19,838 typed values, 14,558 identity relations and 75
+presentation events. The three Cow profiles check each process's own exact
+shared-Math draw and direction without equating independent constructor
+entropy. Their earlier damage-entry records remain separate evidence. Lava's
+later weak fire hit still resets the idle counter before damage suppression;
+its final fire timer is 601.
+
 ## Create World and reached natural interactions
 
 The [Create World lifecycle](client/create-world.md) now has a full native
-Windows Release scenario from empty saves. The current run passes 3,132 checks
-in 94.50 seconds, creates seed 777 with 289 preparation samples and the initial
+Windows Release scenario from empty saves. The current run passes 2,844 checks
+in 66.93 seconds, creates seed 777 with 289 preparation samples and the initial
 forced save, returns three World/HUD frames, saves to the title, and reselects
 the actual disk World for three more frames. Independent NBT decoding checks
-447 Chunks across four regions and the selected live Player/WorldInfo values.
+375 Chunks across three regions and the selected live Player/WorldInfo values.
 Three corrupted metadata copies are rejected. Both host windows close and
 native terminal cleanup returns. The [run summary](../tests/reference/client/create_world/native-validation.json)
 records its 1,388 bound inputs and 413 immutable imported-resource files.
 The earlier 54.99-second run has different natural inputs and an older diagnostic
 site; these are finite execution records, not a controlled speed comparison.
 
-The final selection passes all 22 Windows CTests, including ordinary save/title.
+The preceding creation selection passes all 22 Windows CTests, including ordinary save/title.
 All 20 corresponding Linux Clang ASan/UBSan CTests pass in 14.33 seconds,
 followed by a separate X11 SDK input check. RO/FJ model tests complete 42/207
 checks. Crossed-plant replay matches
@@ -26,9 +71,16 @@ its failed constructor/publication/placement prefixes through checked cleanup.
 
 A later natural Wolf attack failed at the previously missing concrete body.
 The [Wolf component](entity/wolf-attack.md) now executes pounce and bite routing;
-non-NULL LivingEntity hurt remains a reached dependency. Both hosts pass its 75
+nonfatal [animal damage](entity/animal-damage.md) now returns through its actual
+LivingEntity body. Both hosts pass the Wolf component's 75
 authored checks and match all 24 unchanged-original CPU rows. These component
 results remain separate from the full Windows graphical lifecycle.
+The new damage selection passes thirteen Windows tests in 37.90 seconds and thirteen
+Linux Clang ASan/UBSan tests in 29.17 seconds, including the region validator.
+Animal damage passes 145 authored checks and 27 original comparison rows per
+host. The fatal sound checkpoint and original throwing-observer/native-I/O
+pair preserve their explicit narrower scopes. Fatal death/drop and other
+concrete hurt overrides remain unfinished.
 Original GUI/pixels, the full Linux native lifecycle, default-Far performance,
 unrestricted reselection and extended play remain unqualified.
 

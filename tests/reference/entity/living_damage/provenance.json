@@ -1,0 +1,62 @@
+{
+  "status": "CAPTURED_ORIGINAL",
+  "rows": 27,
+  "profiles": 25,
+  "platform": "Windows x64",
+  "java_version": "openjdk version \"17.0.17\" 2025-10-21\nOpenJDK Runtime Environment Temurin-17.0.17+10 (build 17.0.17+10)\nOpenJDK 64-Bit Server VM Temurin-17.0.17+10 (build 17.0.17+10, mixed mode, sharing)\n",
+  "javac_version": "javac 17.0.17\n",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "execution_flags": [
+    "-Xint",
+    "-Xverify:all",
+    "-Xmx256m",
+    "-Djava.awt.headless=true",
+    "-Djava.security.manager=allow",
+    "--add-opens=java.base/java.util=ALL-UNNAMED",
+    "--add-opens=java.base/java.lang=ALL-UNNAMED"
+  ],
+  "helper_sha256": {
+    "LivingDamageObservation$1.class": "4889e42061a3c1487ee008b1732cc5ed40007c196fe654d9f44a83cca5cab3b7",
+    "LivingDamageObservation$Observer.class": "775472e1c29d39693619b8aa219dae8ecc5b68848a983c3a89166c7cf7b1cdb5",
+    "LivingDamageObservation.class": "53cc0f43800ecc0a8f48c26b2b3db30c195a1e17737acfada185518c9a75e34c"
+  },
+  "original_receipt": {
+    "exit": 0,
+    "timeout_seconds": 60,
+    "timed_out": false,
+    "pipe_capture_complete": true,
+    "reader_errors": {},
+    "output_overflow": false,
+    "stdout_bytes": 24000,
+    "stderr_bytes": 402,
+    "stdout_sha256": "d98da326629734204717f7c5ade50eec93f51a040e796b6d6c454c91911b8072",
+    "stderr_sha256": "d1cabb45699c477b5d32f5920b1b10e2f5babcd111b22f59dde8f5d2d9660a13",
+    "stdout_limit": 4194304,
+    "stderr_limit": 1048576
+  },
+  "finite_sha256": "98715d3630d0595005c114398e1bc9ffcf7e244e10d5b7f1a3170f163816e188",
+  "external_attempts": {
+    "network": 0,
+    "native_links": 0,
+    "writes": 0
+  },
+  "source_inputs_unchanged": true,
+  "helper_unchanged": true,
+  "owner_preparation": "Actual fd(wy,name,xa.a(0),23L), DL(fd) and GI(fd) constructors; authored post-construction state and actual Random.setSeed inputs. No uninitialized original owners, World body substitutions or post-call repairs.",
+  "scope": "Unchanged original DL/LS damage, knockback, concrete Sheep sounds and GI close bite; exact nonfatal returns, Random state, null failures and sound boundary. Native fatal row compares actual World sound checkpoint before LS.b(SN)316; actual original completed death retained separately.",
+  "intentional_outcome_pairs": [
+    {
+      "profile": 19,
+      "original": "NONE/true with complete actual death retained",
+      "native": "UNIMPLEMENTED before death",
+      "compare": "exact pre-death sound-checkpoint state"
+    },
+    {
+      "profile": 21,
+      "original": "authored IllegalStateException from real World sound observer",
+      "native": "authored native IO adapter failure",
+      "compare": "exact already-completed damage/sound state; no Throwable identity parity"
+    }
+  ],
+  "native_replay": "Separate acceptance; not established by original capture."
+}

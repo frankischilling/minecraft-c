@@ -82,7 +82,8 @@ if(TARGET mc_client_application_startup AND TARGET mc_client_source_screen_drawi
                     --client "$<TARGET_FILE:minecraft-client>"
                     --assets "${MC_APPLICATION_STARTUP_IMPORTED_RESOURCES}")
                 set_tests_properties(client.source_menu_loop PROPERTIES
-                    LABELS "public;integration;client;input;graphics;ownership" TIMEOUT 210)
+                    LABELS "public;integration;client;input;graphics;ownership" TIMEOUT 210
+                    RESOURCE_LOCK mc_desktop_focus)
             endif()
         endif()
     endif()

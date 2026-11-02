@@ -29,11 +29,12 @@ The native component passes 75 authored checks on Windows and Linux Clang
 ASan/UBSan. It covers boundary
 and NaN skips, Random hit/miss, airborne return, exact pounce words, zero-XZ
 NaNs, late NULL/Math/FP/bounds failures, actual Item damage despite a preexisting
-cooldown, the tame Byte cast and the reached Sheep damage dependency. The 24
+cooldown, the tame Byte cast and actual nonfatal Sheep damage. The 24
 unchanged-original CPU rows also match on both hosts.
 
-The original Wolf method's non-hit paths now return during natural play.
-Non-NULL LivingEntity hurt remains unfinished: a close Sheep target retains
-the real `dl.a(sn,int):3` frontier after the Wolf's cooldown store. These finite
-checks do not establish complete Wolf combat, death/drops, taming, original
-World/AI equivalence or extended-play stability.
+The original Wolf method now reaches the real [Sheep damage body](animal-damage.md)
+after its cooldown store. Nonfatal bites apply health, hurt timers, knockback
+and sound through the ordinary effect dispatcher. Fatal damage still stops
+at the actual LivingEntity death/drop invocation after its reached sound.
+These finite checks do not establish complete Wolf combat, death/drops, taming,
+original World behavior or extended-play stability.

@@ -76,6 +76,13 @@ if(BUILD_TESTING AND TARGET mc_client_runtime)
                 --mode remaining-zombie)
             set_tests_properties(client.world_selection_zombie PROPERTIES
                 LABELS "public;integration;client;input;graphics;entities;ownership" TIMEOUT 300)
+            # These scenarios require ownership of the same foreground desktop.
+            # Keep CPU tests parallel while preventing competing client windows.
+            set_tests_properties(client.world_selection_loop client.world_save_title
+                client.world_reload_cycle client.world_selection_light
+                client.world_selection_animals client.world_selection_creatures
+                client.world_selection_wolf client.world_selection_zombie PROPERTIES
+                RESOURCE_LOCK mc_desktop_focus)
         endif()
     endif()
 endif()

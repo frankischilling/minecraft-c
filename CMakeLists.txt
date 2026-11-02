@@ -1829,7 +1829,8 @@ if(BUILD_TESTING)
                     --executable "$<TARGET_FILE:mc_test_display_sdk_${kind}>" --kind ${kind}
                     --work-dir "${CMAKE_CURRENT_BINARY_DIR}/display-sdk-${kind}")
                 set_tests_properties(client.display_sdk_${kind} PROPERTIES
-                    LABELS "public;integration;client;graphics;ownership" TIMEOUT 240)
+                    LABELS "public;integration;client;graphics;ownership" TIMEOUT 240
+                    RESOURCE_LOCK mc_desktop_focus)
             endforeach()
         endif()
         add_executable(mc_test_client_display tests/client/display/test_display.c)
@@ -5612,3 +5613,4 @@ include(cmake/entity_mount.cmake)
 include(cmake/client_create_world.cmake)
 include(cmake/tests/client_render_blocks_special.cmake)
 include(cmake/entity_falling_tick.cmake)
+include(cmake/entity_living_damage.cmake)

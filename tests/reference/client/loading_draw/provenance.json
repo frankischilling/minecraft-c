@@ -2,8 +2,8 @@
   "scope": "Current authored real-owner loading draw/update/yield/retirement controls; native results are recorded separately for their exact tested snapshots.",
   "native_sources": {
     "CMakeLists.txt": {
-      "bytes": 337583,
-      "sha256": "7b2d5cb213c287a50058382e79fefafa400755dfc5a1fc6f1a0d8ea3eb8c4380"
+      "bytes": 337676,
+      "sha256": "eb9d431a7f44e1dc45af9412b8d603038adaa720990c2474cb493194001b4354"
     },
     "cmake/client_controllers.cmake": {
       "bytes": 1093,
@@ -438,8 +438,8 @@
       "sha256": "58339fe3230b4a56ea4f36865ec1e2714bfda0b7a9e5ce66e3474d2e8ed80e76"
     },
     "include/mc/entity/movement/effects.h": {
-      "bytes": 9677,
-      "sha256": "f772bcb218b352d0a8a201752d1fb8cfd82df054bfb3a6cd50a1e909c45b382e"
+      "bytes": 11497,
+      "sha256": "379d622a759e8c47a54bbcf1646c28e4019999e38074e9e5fff6a5b6e5720166"
     },
     "include/mc/entity/movement/environment.h": {
       "bytes": 5179,
@@ -2526,8 +2526,8 @@
       "sha256": "ffeff1e593667e16efd2d0ec820aac3de624807991fc709fee291826f05b09e8"
     },
     "src/entity/movement/effects.c": {
-      "bytes": 30551,
-      "sha256": "8c402718eeea3a5be00677ed2c1581428bc15caccaf6f5ed28d1438db1336445"
+      "bytes": 31510,
+      "sha256": "649234f5ab76b19347961906d4faee6f439bf91be32e487258ef9f453aea9c39"
     },
     "src/entity/movement/environment.c": {
       "bytes": 18491,
@@ -5614,8 +5614,8 @@
       "sha256": "78321bb335d5f90fc5e419fa97ead8dd8ac486dc148be73f3abf4dab4ebf6253"
     },
     "cmake/client_runtime.cmake": {
-      "bytes": 5456,
-      "sha256": "123a625df92a11a727d9a5da30ecf04179f3bc611fd76732642823f52bf37772"
+      "bytes": 5507,
+      "sha256": "8ec373219169882754c502432757affc4bd74ae895784b8cf77d98d1d008dfad"
     },
     "cmake/client_source_screen_drawing.cmake": {
       "bytes": 589,
@@ -5706,8 +5706,8 @@
       "sha256": "a2de1a7a93eeb45db5eef8ddfc9b1ceef1d75b321d1603e5dec205159fe749f5"
     },
     "cmake/tests/client_world_selection_loop.cmake": {
-      "bytes": 5943,
-      "sha256": "34d629c5a0c099ffdd477484d7c45181056147ef4ad8fb3e6ac9aa06e48a7156"
+      "bytes": 6473,
+      "sha256": "a5fbc2f1219c5b23b53f33e788255a2f0bf3aeecb58758409085bedc6a4d1334"
     },
     "cmake/tests/platform_date_format.cmake": {
       "bytes": 2244,
@@ -5774,8 +5774,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 285289,
-      "sha256": "d72cc7617473184e8907021cbfddeb83206f91eb16c74315bb49784344885485"
+      "bytes": 291555,
+      "sha256": "e7ff9941a3a64ea2c04b7c608ef289f6310e4db091e25c1c02dd903c0905c254"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -7454,8 +7454,8 @@
       "sha256": "6ff2cdb9b217afe224f54ff503640b4f376c94407c4bb1d78546dc90935deb2d"
     },
     "tests/entity/test_mob_tick.c": {
-      "bytes": 90161,
-      "sha256": "eb1a95488f0d1dd394762501ab54d51c72f341e157adef1e9ad4894f8f5b1eed"
+      "bytes": 94408,
+      "sha256": "0e07f7cb54070c4e89a8453dc38e2f8ae6d7a70164b9fd186b2a9a32e8071522"
     },
     "cmake/world_path.cmake": {
       "bytes": 1082,
@@ -7766,20 +7766,20 @@
       "sha256": "26637fb384220afd6a9922c5d42abe53337fcc3d41880d4da83ac4720acc49d1"
     },
     "src/entity/mob/damage.c": {
-      "bytes": 14781,
-      "sha256": "b03c6ba41ba81e519c84278b5b34f2ed1847eb78f3fdd1b367f8a2999e100453"
+      "bytes": 25321,
+      "sha256": "40448f025114f993a9f1cc59e97ef5762edd5a884be75692c61a7a4cdd8efacd"
     },
     "src/entity/mob/damage_internal.h": {
-      "bytes": 858,
-      "sha256": "12960f486a663f03d0dc66b61560ab65fad8a0f6921869596dfa715b8793f5b7"
+      "bytes": 1699,
+      "sha256": "a5dc3ed7c4ada32a7385f39a0c23148509578b69dbf5bdc68df39c2485f8f727"
     },
     "src/entity/movement/effects_internal.h": {
       "bytes": 341,
       "sha256": "d08df50f54a8b34f02c0849db6a94e8789372d5507d6eefc874f1084a0e1d8e6"
     },
     "tests/entity/test_zombie_null_damage.c": {
-      "bytes": 29202,
-      "sha256": "a8545ccb4152094eb028d790ce2d983fba3b4b30d7275e412f3e0e5130102b16"
+      "bytes": 29229,
+      "sha256": "7bc7c096c14c700b101ab91b661655696e100df82c0147c261fe47bcedeeaf16"
     },
     "tests/entity/zombie_damage_transport.inc": {
       "bytes": 10954,
@@ -8202,8 +8202,8 @@
       "sha256": "4a44d4ed7bf83c831b58ede09a9df798dc7d739213d5c6a70f2159868cbc62ab"
     },
     "tests/client/startup/test_world_reload.inc": {
-      "bytes": 17101,
-      "sha256": "1a65c9512cc42f79da74e1ee3fdae6d18cbca7d621726b3415ce7a1fe2184d12"
+      "bytes": 17132,
+      "sha256": "e2579eb429443c23e6a37c26a9d21fbef023371d86feb1ce322c904c25c12fb4"
     },
     "src/world/cache/acquire_internal.h": {
       "bytes": 362,
@@ -8582,8 +8582,8 @@
       "sha256": "81ce24d003fbded78a0393fd9b23db773879cff00bc870d2c430193e2f37aa98"
     },
     "src/entity/mob/tick/wolf_attack.c": {
-      "bytes": 6460,
-      "sha256": "b077251be7c9b3309182cb1b8cb1a51939c9f14897743f92d88ca03adfc2284e"
+      "bytes": 6685,
+      "sha256": "0eab8872005664aa34a06390f01db9e7aa81825f7be2faafaee3aa5e12045642"
     },
     "tests/client/gameplay/test_create_world.c": {
       "bytes": 37938,
@@ -8610,8 +8610,8 @@
       "sha256": "c19a8e15a9d642d0a2e42fcecb6357a682edeb84c494e64d1ac5aad621df704d"
     },
     "tests/entity/test_wolf_attack.c": {
-      "bytes": 24076,
-      "sha256": "35973d781cf1d8ebc50f54f4b8141b113a576706770c52e4077588c39bbbdefa"
+      "bytes": 24009,
+      "sha256": "acf86a848c8bcd71054f201fb6ed7e2b72adca5e9d02ff498a45637b7ee3865f"
     },
     "tests/reference/client/create_world/test_verify.py": {
       "bytes": 5973,
@@ -8664,6 +8664,30 @@
     "tests/tools/entity/test_wolf_attack.py": {
       "bytes": 2739,
       "sha256": "a31b23fc9e7e8d638b47ea919d21c21fd340f2c6062dbacb7f819358a5f270e2"
+    },
+    "cmake/entity_living_damage.cmake": {
+      "bytes": 1918,
+      "sha256": "688c58a1260697b36cce665ea42884711f1ac1762fe00bb19984b02fc6eb5c31"
+    },
+    "tests/entity/mob/test_living_damage.c": {
+      "bytes": 39878,
+      "sha256": "f839a5411fdc463ee0568a31d5b4314495c4e8c7364d2e3703040067aed45804"
+    },
+    "tests/reference/entity/living_damage/capture_reference.py": {
+      "bytes": 14538,
+      "sha256": "64e62b63a8e3ddbf518d4b5083a8108a76fd9aba72ccc364be438dfc02f6a757"
+    },
+    "tests/reference/entity/living_damage/run_native.py": {
+      "bytes": 6758,
+      "sha256": "ef553bc5c9f523d72f082b5878f656b0d4ff17e6a804d4c08b2c8b8cf5bf07ce"
+    },
+    "tests/reference/entity/living_damage/test_packet.py": {
+      "bytes": 7032,
+      "sha256": "fdd6a6d245a8eb48e716ac2c751665722bcd9c2ace821588510026e9fb99a638"
+    },
+    "tests/tools/entity/test_living_damage.py": {
+      "bytes": 2524,
+      "sha256": "a0d8fef8a05997c2f3daf7c0835080afcc5d2233e77f65964e47927ce4df93a8"
     }
   },
   "actual_source_method": {

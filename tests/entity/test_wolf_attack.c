@@ -4,6 +4,9 @@ int mc_wolf_attack_world_fixture_main(int, char **);
 #define main mc_wolf_attack_world_fixture_main
 #include "../world/runtime/test_world_random_tick.c"
 #undef main
+#ifdef MC_WOLF_ATTACK_BODY_MAIN_NAME
+#define main MC_WOLF_ATTACK_BODY_MAIN_NAME
+#endif
 #include "../support/java_random.h"
 #include "entity/mob/tick/internal.h"
 #include <math.h>
@@ -203,14 +206,11 @@ static bool wolf_attack_bites(random_fixture *f, mc_entity *p, mc_entity *sheep,
     CHECK(wolf_attack_reset(f, p, sheep, 38, true, 0, 0, 0));
     CHECK(mt_wolf_tame_component(p, f->registry, f->math, NULL, false, e) == MC_ENTITY_OK);
     const int32_t health = sheep->mob->living.Y;
-    CHECK(mt_wolf_attack_component(p, f->registry, f->math, NULL, sheep, 1.f, e) ==
-              MC_ENTITY_STATE_ERROR &&
-          e->site.pc == 195 && e->child == MC_MOB_TICK_CHILD_EFFECT && !e->state.returned &&
-          !e->state.attack.returned && p->mob->living.ae == 20 && sheep->mob->living.Y == health &&
-          e->detail.effect.damage_arguments_stored &&
-          e->detail.effect.damage_source_identity == (uintptr_t)p &&
-          e->detail.effect.damage_amount == 2 && e->detail.effect.damage_bytecode == 3 &&
-          !strcmp(e->child_site.class_name, "dl") && e->child_site.pc == 3);
+    CHECK(mt_wolf_attack_component(p, f->registry, f->math, NULL, sheep, 1.f, e) == MC_ENTITY_OK &&
+          wolf_returned(e) && e->child == MC_MOB_TICK_CHILD_NONE && p->mob->living.ae == 20 &&
+          sheep->mob->living.Y == health - 2 && sheep->mob->living.Z == health &&
+          sheep->mob->living.au == 2 && sheep->mob->living.aa == 10 &&
+          sheep->mob->living.ab == 10 && sheep->base.by == sheep->mob->living.E && sheep->base.bb);
     /* The source attack cooldown store also precedes a failed tame getter. */
     mc_entity_watch_record *flags = wolf_attack_flags(p);
     CHECK(flags != NULL);
@@ -221,7 +221,7 @@ static bool wolf_attack_bites(random_fixture *f, mc_entity *p, mc_entity *sheep,
     const bool wrong_prefix =
         wrong == MC_ENTITY_STATE_ERROR && e->source_exception && e->site.pc == 184 &&
         !strcmp(e->exception_class, "java/lang/ClassCastException") && e->child_site.pc == 19 &&
-        p->mob->living.ae == 20 && sheep->mob->living.Y == health;
+        p->mob->living.ae == 20 && sheep->mob->living.Y == health - 2;
     flags->type = type;
     CHECK(wrong_prefix);
     passed = true;

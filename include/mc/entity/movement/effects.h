@@ -1,6 +1,7 @@
 #ifndef MC_ENTITY_MOVEMENT_EFFECTS_H
 #define MC_ENTITY_MOVEMENT_EFFECTS_H
 
+#include "mc/core/math/classes.h"
 #include "mc/entity/entity.h"
 #include "mc/entity/player/statistics.h"
 #include "mc/statistics/registry/registry.h"
@@ -17,10 +18,11 @@ typedef enum mc_entity_effect_cause {
     MC_ENTITY_EFFECT_CAUSE_WORLD,
     MC_ENTITY_EFFECT_CAUSE_STATISTIC,
     MC_ENTITY_EFFECT_CAUSE_RANDOM,
-    MC_ENTITY_EFFECT_CAUSE_REGISTRY
+    MC_ENTITY_EFFECT_CAUSE_REGISTRY,
+    MC_ENTITY_EFFECT_CAUSE_MATH
 } mc_entity_effect_cause;
 
-/* Value-only receipt of the actually entered Zombie/Skeleton NULL-source GZ/LS body.
+/* Value-only receipt of an actually entered canonical Living damage body.
  * No identity here owns an occurrence or may be dereferenced after its graph
  * retires. The existing Entity/Registry/World children retain the full causes.
  * Exact Source exceptions are distinguished from native limits/frontiers. */
@@ -35,7 +37,9 @@ typedef struct mc_entity_living_damage_state {
         uint16_t pc;
     } child_site;
 
-    uint8_t shared_attempts, shared_calls, private_attempts, private_calls;
+    uint64_t shared_attempts, shared_calls;
+    uint8_t private_attempts, private_calls;
+    bool counters_saturated;
     double shared_value;
     float private_values[2];
     bool status_returned, attacked_returned;
@@ -44,12 +48,24 @@ typedef struct mc_entity_living_damage_state {
     uintptr_t sound_world_identity, sound_name_identity;
     const char *sound_literal;
     float volume, pitch;
+    /* The source retry is unbounded. Diagnostic counters saturate rather than
+     * wrapping or controlling that loop; only its last four draw values are
+     * retained. The mask identifies successful draws of the latest retry. */
+    bool direction_entered, direction_returned, source_read;
+    bool source_hold_acquired, source_hold_released;
+    uintptr_t source_identity;
+    uint64_t direction_iterations;
+    uint8_t direction_draw_mask;
+    double direction_draws[4], direction_x, direction_z, atan2_value;
+    bool knockback_entered, knockback_returned;
+    uint16_t knockback_pc;
+    float knockback_length;
 } mc_entity_living_damage_state;
 
 /* Passive reached-operation frames, independent of constructor diagnostics.
  * source_bytecode belongs to the requested effect; child fields name its
  * actual delegated source bodies. Successful calls return a fresh empty error,
- * except the additive receipt of a genuinely entered Zombie/Skeleton NULL damage body.
+ * except the additive receipt of a genuinely entered Living damage body.
  * STATE_ERROR with an explicit unsupported cause is an unfinished reached
  * descendant, never an empty successful virtual or a synthesized Java Object. */
 typedef struct mc_entity_effect_error {
@@ -67,6 +83,7 @@ typedef struct mc_entity_effect_error {
     mc_entity_error entity;
     mc_world_movement_error world;
     mc_player_statistic_error statistic_error;
+    mc_math_class_error math;
     /* Actual evaluated operands at a reached, unfinished Mob hurt body.
      * The identity is comparison-only and owns no Entity occurrence. */
     bool damage_arguments_stored;
@@ -110,6 +127,16 @@ mc_entity_status mc_entity_effect_damage_in_context(mc_entity *entity,
                                                     mc_registry_classes *code_registry,
                                                     mc_entity *source, int32_t amount, bool *out,
                                                     mc_entity_effect_error *error);
+/* Same actual dispatch with the caller's exact MathHelper namespace. Math is
+ * borrowed/exclusive for this synchronous call and activated only at a reached
+ * inherited LS knockback sqrt. The older context entry supplies NULL Math;
+ * remote/dead/repeated branches do not inspect it. A nonnull source is retained
+ * only at the first reached LS source-position read and kept through sound.
+ * Item/Falling and skipped Living branches leave that argument unread. */
+mc_entity_status mc_entity_effect_damage_with_math(mc_entity *, mc_registry_classes *,
+                                                   mc_math_classes *, mc_entity *source,
+                                                   int32_t amount, bool *out,
+                                                   mc_entity_effect_error *);
 mc_entity_status mc_entity_effect_fire_damage(mc_entity *entity, int32_t amount,
                                               mc_entity_effect_error *error);
 mc_entity_status mc_entity_effect_fire_damage_in_context(mc_entity *entity,
@@ -139,10 +166,14 @@ mc_entity_status mc_entity_effect_contact_portal(mc_entity *entity, mc_entity_ef
  * Mobs use the actual Byte0 sneaking flag and inherited SN push/walking leaves;
  * Spider and Wolf n return false. Chicken fall is its literal empty override;
  * other represented Living falls enter LS without Player statistics. Reached
- * canonical client Zombie/Skeleton NULL-source damage executes its actual GZ/LS gates, health,
- * direction and sound body. Other concrete Mob damage and Slime splitting
- * stop at explicit native dependencies; fatal Zombie/Skeleton NULL damage stops at its
- * actual death invocation after the reached death sound. No death is inferred.
+ * canonical client Zombie/Skeleton NULL-source damage executes its actual GZ/LS
+ * gates, health, direction and sound body. Client Sheep/Pig/Cow/Chicken execute
+ * their actual inherited LS damage, including the nonnull-source direction
+ * retry, atan2, knockback and concrete sound. Sheep's DL wrapper resolves LS
+ * directly. Knockback requires the explicit Math context above. Fatal Living
+ * damage stops at actual LS death invocation316 after any reached death sound.
+ * GZ nonnull-source, Wolf/Slime hurt overrides and Slime splitting remain
+ * explicit dependencies. No successful health/death substitute is supplied.
  *
  * LocalPlayer fall executes gs->ls->sn in source order. A fall >=2 resolves
  * actual jl.n and computes the Java-rounded amount, then explicitly stops at

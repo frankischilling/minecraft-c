@@ -17,8 +17,9 @@ observations. [Skeleton NULL-attacker damage](skeleton-damage.md) now enters the
 same inherited body through its own receiver and sound declarations. Damage with a
 nonnull attacker remains unfinished. Fatal damage plays its reached death
 sound, then stops at the actual death/drop invocation. It does not claim that
-the Zombie died or that an Item dropped. Other LivingEntity subclasses retain
-their explicit missing damage bodies.
+the Zombie died or that an Item dropped. [Animal damage](animal-damage.md) now
+executes the inherited NULL and non-NULL-attacker body for client Sheep, Pig,
+Cow and Chicken. Other concrete overrides retain their explicit dependencies.
 
 ## Verification
 

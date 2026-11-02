@@ -12,9 +12,9 @@ text-field checks and 207 FJ checks. The full Windows Release run creates
 seed 777, completes all 289 terrain samples and its initial save at
 `Minecraft.a:339`, returns three World/HUD frames, saves to the title and
 reselects the actual generated World for three more frames. The current run
-passes 3,132 native checks in 94.50 seconds with independent disk decoding and
+passes 2,844 native checks in 66.93 seconds with independent disk decoding and
 checked cleanup. An earlier run passed 2,945 checks in 54.99 seconds before
-the diagnostic-only JU223 correction. [Both run summaries](../../tests/reference/client/create_world/native-validation.json)
+the diagnostic-only JU223 correction. [Run summaries](../../tests/reference/client/create_world/native-validation.json)
 retain their input scope. These results do not establish an executed-original
 GUI comparison, a controlled performance comparison or a complete playable session.
 
@@ -179,7 +179,7 @@ initial save, returned World/HUD frames, selected live save values and a
 distinct World/Player/controller/handler epoch through ordinary reselection.
 Its wrapper validates independently decoded saved metadata and region chunks,
 retains logs and captures, and checks source/resource continuity. The passing
-current run decodes four region files and 447 Chunks, compares every selected Player
+current run decodes four region files and 375 Chunks, compares every selected Player
 field and WorldInfo value to live pre-leave captures, and rejects three
 corrupted metadata copies. Both Frame and Canvas are absent after cleanup.
 No metadata, terrain, Player pose, statistics, Timer or Random input is supplied;

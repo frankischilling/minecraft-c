@@ -135,13 +135,16 @@ bool mt_wolf_attack(mc_mob_tick_scope *s, mc_entity *target, float distance) {
     at(s, 195);
     s->error->child = MC_MOB_TICK_CHILD_EFFECT;
     bool answer = false;
-    const mc_entity_status status = mc_entity_effect_damage_in_context(
-        target, s->registry, s->entity, tamed ? 4 : 2, &answer, &s->error->detail.effect);
+    const mc_entity_status status = mc_entity_effect_damage_with_math(
+        target, s->registry, s->math, s->entity, tamed ? 4 : 2, &answer, &s->error->detail.effect);
     if (status != MC_ENTITY_OK) {
         const mc_entity_effect_error *child = &s->error->detail.effect;
         s->error->child_site =
-            (mc_mob_site){child->source_class, "a", "(Lsn;I)Z", (int32_t)child->damage_bytecode};
-        if (child->cause == MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE) {
+            (mc_mob_site){child->source_class, "a", "(Lsn;I)Z", (int32_t)child->source_bytecode};
+        if (child->living_damage.entered && child->living_damage.source_exception) {
+            s->error->source_exception = true;
+            s->error->exception_class = child->living_damage.exception_class;
+        } else if (child->cause == MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE) {
             s->error->source_exception = true;
             s->error->exception_class = "java/lang/NullPointerException";
         }

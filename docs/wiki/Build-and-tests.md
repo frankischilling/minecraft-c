@@ -8,12 +8,22 @@ initial saving, and the separate full-session acceptance scenario. The client
 remains pre-playable; finite menu or component tests do not qualify unrestricted
 gameplay.
 
-The current Windows Release lifecycle passes 3,132 native checks, with independent
-decoding of 447 saved Chunks and captured Player/WorldInfo state. The final focused
+The current Windows Release lifecycle passes 2,844 native checks, with independent
+decoding of 375 saved Chunks and captured Player/WorldInfo state. The final focused
 selection passes 22 Windows CTests and 20 Linux Clang ASan/UBSan CTests, plus a
 separate X11 SDK input check. Falling Sand passes 112 authored controls per host;
 Wolf attack passes 75 controls and 24 exact unchanged-original CPU comparisons.
-Close-range LivingEntity damage remains unfinished.
+The newer [animal damage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/animal-damage.md)
+selection passes thirteen Windows tests and thirteen Linux Clang ASan/UBSan tests.
+Both hosts pass 145 authored checks and 27 original comparison rows, with
+separate fatal sound-checkpoint and callback-failure scopes. Fatal death/drop
+and other concrete hurt overrides remain unfinished.
+
+The region-writer validator retains every corruption check while avoiding
+redundant snapshot copies. One local Windows Python pair changes from 34 tests
+in 33.67 seconds to 35 in 28.37 seconds. [Testing details](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#region-validator-preparation-cost)
+record hardware, profiler evidence and measurement limits; this is not a hosted
+CI or gameplay-speed result.
 
 The [crossed-plant packet](https://github.com/frankischilling/minecraft-c/tree/feature/normal-population/tests/reference/client/render_blocks_special)
 compares 125 exact unchanged-original CPU rows on Windows and Linux ASan/UBSan.

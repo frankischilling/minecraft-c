@@ -3564,9 +3564,106 @@ static int save_title_eligibility(mc_world_runtime *world, const mc_chunk_provid
     return 0;
 }
 
-/* Recover only an actually published source Pause, through its real ID4 SDK
- * button. These screens stay retained by the transition owner, so the later
- * controlled Escape must allocate a different Pause. No flag/clock repair. */
+/* Failure-only observations of the same live SDK/source owners. */
+static void save_title_resume_diagnostics(fixture *f, const char *stage) {
+    mc_client_sdk_input_state input = {0};
+    bool active = false;
+    mc_client_sdk_update_error update;
+    const bool input_read =
+        mc_client_sdk_input_inspect(mc_client_display_inputs(f->app->display), &input);
+    const mc_client_sdk_update_status queried = mc_client_sdk_display_active(
+        mc_client_display_update_owner(f->app->display), &active, &update);
+    fprintf(stderr,
+            "WORLD_SAVE_TITLE_INPUT_FAILURE stage=%s %s.%s:%" PRId64
+            " operation=%s failed=%d render-returned=%d screen=%d source-focus=%d "
+            "display-query=%d display-active=%d input-read=%d grabbed=%d "
+            "frames=%" PRIu64 " ticks=%" PRIu64 " mouse-events=%zu keyboard-events=%zu\n",
+            stage, creature_diagnostic_text(f->state.source_class),
+            creature_diagnostic_text(f->state.source_method), f->state.source_pc,
+            creature_diagnostic_text(f->state.operation), f->state.failed, f->state.render_returned,
+            f->app->r == NULL ? -1 : (int)f->app->r->kind, f->app->N, (int)queried, active,
+            input_read, input.grabbed, f->state.frames, f->state.ticks, f->state.mouse_events,
+            f->state.keyboard_events);
+    if (f->state.failed)
+        creature_tick_diagnostics(f);
+}
+
+/* A returning g6 during a long load legitimately leaves r=NULL,N=false.
+ * Acquire through the ordinary Mouse press at Minecraft.k442 -> g; that
+ * source branch skips gameplay click work. No App/Timer/input field repair. */
+static int save_title_acquire(fixture *f, mc_world_runtime *world,
+                              const mc_chunk_provider_fields *provider, size_t *eligible,
+                              int64_t *world_time) {
+    CHECK(f->app->r == NULL && !f->app->N && save_title_focus(f) == 0);
+    const uint64_t left = f->state.gameplay_left_clicks, right = f->state.gameplay_right_clicks,
+                   swings = f->state.gameplay_swing_calls,
+                   stores = f->state.gameplay_click_timer_stores,
+                   starts = f->state.gameplay_mining_starts,
+                   progress = f->state.gameplay_mining_progress_calls,
+                   mined = f->state.gameplay_mined_blocks;
+    const uint64_t ticks_before = f->state.ticks, deadline = SDL_GetTicks() + 60000;
+    size_t frames = 0;
+    int64_t age = INT64_MAX;
+    /* k343 rejects every mouse event when real now-P>200ms. Let an actual
+     * short source frame refresh its own P before offering this fresh tap. */
+    do {
+        CHECK(save_title_focus(f) == 0 && frame(f) == 0 &&
+              save_title_eligibility(world, provider, eligible, world_time) == 0);
+        ++frames;
+        int64_t now;
+        CHECK(mc_platform_current_time_millis(&now) == MC_PLATFORM_MILLIS_OK);
+        age = mc_java_i64_sub(now, f->app->P);
+    } while ((f->state.ticks == ticks_before || age > 100) && frames < 64 &&
+             SDL_GetTicks() < deadline);
+    CHECK(f->app->r == NULL && !f->app->N && f->state.ticks > ticks_before && age <= 100);
+    SDL_Window *window = mc_client_display_window(f->app->display);
+    int width, height;
+    CHECK(SDL_GetWindowSize(window, &width, &height));
+    const size_t mouse_before = f->state.mouse_events;
+    SDL_Event down = {0};
+    down.type = SDL_EVENT_MOUSE_BUTTON_DOWN;
+    down.button.windowID = SDL_GetWindowID(window);
+    down.button.button = SDL_BUTTON_LEFT;
+    down.button.down = true;
+    down.button.x = (float)(width / 2);
+    down.button.y = (float)(height / 2);
+    SDL_Event up = down;
+    up.type = SDL_EVENT_MOUSE_BUTTON_UP;
+    up.button.down = false;
+    CHECK(SDL_PushEvent(&down) && SDL_PushEvent(&up) && transfer(f) == 0);
+    do {
+        CHECK(save_title_focus(f) == 0 && frame(f) == 0 &&
+              save_title_eligibility(world, provider, eligible, world_time) == 0);
+        ++frames;
+    } while (f->app->r == NULL && !f->app->N && frames < 64 && SDL_GetTicks() < deadline);
+    mc_client_sdk_input_state input;
+    mc_client_sdk_input_error error;
+    bool held = true;
+    if (f->app->r != NULL || !f->app->N)
+        save_title_resume_diagnostics(f, "mouse-acquisition");
+    /* setGrabbed/resetMouse may consume the unread release. Both native
+     * records still establish released backend state before this source tap. */
+    CHECK(f->app->r == NULL && f->app->N && f->state.mouse_events > mouse_before &&
+          mc_client_sdk_input_inspect(mc_client_display_inputs(f->app->display), &input) &&
+          input.grabbed &&
+          mc_client_sdk_mouse_button_down(mc_client_display_inputs(f->app->display), 0, &held,
+                                          &error) == MC_CLIENT_SDK_INPUT_OK &&
+          !held && f->state.gameplay_left_clicks == left &&
+          f->state.gameplay_right_clicks == right && f->state.gameplay_swing_calls == swings &&
+          f->state.gameplay_click_timer_stores == stores &&
+          f->state.gameplay_mining_starts == starts &&
+          f->state.gameplay_mining_progress_calls == progress &&
+          f->state.gameplay_mined_blocks == mined);
+    printf("WORLD_SAVE_TITLE_ACQUIRE sdk-mouse-press=1 source=k442-g "
+           "mouse-events=%zu native-release=1 source-focus=1 sdk-grab=1 "
+           "gameplay-clicks=0 mining=0 frames=%zu input-age=%" PRId64 "\n",
+           f->state.mouse_events - mouse_before, frames, age);
+    return 0;
+}
+
+/* Recover an actually published Pause through its real ID4 SDK button, or
+ * acquire an ungrabbed World through the real Mouse input above. Retained
+ * screens let the later controlled Escape prove a distinct allocation. */
 static int save_title_resume(fixture *f, mc_world_runtime *world,
                              const mc_chunk_provider_fields *provider,
                              mc_client_source_da *recovered[4], size_t *focus_pauses,
@@ -3590,6 +3687,10 @@ static int save_title_resume(fixture *f, mc_world_runtime *world,
         } while (f->app->r == pause && frames < 64 && SDL_GetTicks() < deadline);
         CHECK(f->app->r != pause && f->state.mouse_events >= mouse_before + 2);
     }
+    if (f->app->r == NULL && !f->app->N)
+        CHECK(save_title_acquire(f, world, provider, eligible, world_time) == 0);
+    if (f->app->r != NULL || !f->app->N)
+        save_title_resume_diagnostics(f, "resume-postcondition");
     CHECK(f->app->r == NULL && f->app->N);
     return 0;
 }
@@ -4117,11 +4218,18 @@ int main(int argc, char **argv) {
         bool stopped = false, loaded_frame = false;
         const uint64_t select_deadline = SDL_GetTicks() + 3000;
         while (!stopped && !loaded_frame && SDL_GetTicks() < select_deadline) {
+            /* These profiles require a focused native World host. Maintain
+             * that real input precondition while driving selection/loading,
+             * as the SDK gameplay fixtures do before each frame. */
+            if (focused_load)
+                CHECK(display_focus(&f, true) == 0);
             stopped = !mc_client_menu_loop_frame(f.loop);
             CHECK(mc_client_menu_loop_inspect(f.loop, &f.state));
             loaded_frame = loading_world && loaded_draw_reached(&f.state);
             SDL_Delay(1);
         }
+        if (stopped)
+            save_title_resume_diagnostics(&f, "initial-load-frame-failed");
         CHECK((stopped && f.state.failed && f.state.source_class != NULL) ||
               (loaded_frame && !f.state.failed));
         mc_client_screen_transition_state transitions;
@@ -4255,8 +4363,11 @@ int main(int argc, char **argv) {
                       f.state.world_frame->sky != NULL &&
                       f.state.world_frame->sky->cleanup == NULL);
             }
-            if (focused_load)
+            if (focused_load) {
+                if (!display_active || f.state.failed || !f.state.render_returned)
+                    save_title_resume_diagnostics(&f, "initial-loaded-focus");
                 CHECK(display_active && !f.state.failed && f.state.render_returned);
+            }
             if (terminal_admission) {
                 CHECK(display_active && f.app->r == NULL);
                 puts("WORLD_TERMINAL_INPUT focused=1 pause-draw=0 immutable-inputs=1");

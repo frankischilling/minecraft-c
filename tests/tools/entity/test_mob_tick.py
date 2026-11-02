@@ -18,6 +18,7 @@ from test_mob_construction import RESOURCES
 ROOT = Path(__file__).resolve().parents[3]
 REFERENCE = ROOT / "tests/reference/entity/mob_tick"
 KINDS = ("cn", "uz", "fr", "gb", "uw", "wh", "dl", "bx", "ww", "gi", "xt")
+COMPLETED_DAMAGE = {40: 1, 42: 2, 44: 4}
 
 
 def need(value, message):
@@ -134,6 +135,26 @@ def random_word(seed_input, advances):
     for _ in range(advances):
         state = (state * 0x5deece66d + 11) & ((1 << 48) - 1)
     return f"{state:012x}"
+
+
+def lcg_word(state, advances):
+    value = int(state, 16)
+    need(0 <= value < (1 << 48), "actual 48-bit Random observation")
+    for _ in range(advances):
+        value = (value * 0x5deece66d + 11) & ((1 << 48) - 1)
+    return f"{value:012x}"
+
+
+def null_damage_math(before, after, label):
+    # These streams retain their independent constructor contexts. One actual
+    # Math.random consumes two LCG steps; its first bit selects 0 or180. Check
+    # each process's real words rather than equating or replacing its entropy.
+    next_state = lcg_word(before["math_seed"], 1)
+    direction = "43340000" if int(next_state, 16) >> 47 else "00000000"
+    need(after["math_seed"] == lcg_word(before["math_seed"], 2) and
+         after["fields"]["ls.ac"] == {"F": direction},
+         f"one actual NULL-source Math draw and direction word: {label}")
+    return {"F": direction}
 
 
 REFERENCE_FIELDS = frozenset(("sn.aG", "sn.aH", "sn.aI", "sn.aW", "sn.bs", "sn.bD", "ls.b", "ii.a", "ii.d"))
@@ -258,7 +279,7 @@ def source_state(state):
     return result
 
 
-def compare_entity_fields(actual, expected, actual_model, expected_model, label):
+def compare_entity_fields(actual, expected, actual_model, expected_model, label, direction_words=None):
     expected_fields = {key: scalar(value) for key, value in expected["fields"].items()}
     need(set(actual["fields"]) == set(expected_fields), f"complete declared field inventory: {label}")
     count = 0
@@ -266,7 +287,10 @@ def compare_entity_fields(actual, expected, actual_model, expected_model, label)
         if key == "sn.aD":
             continue  # Namespace-local numerical Entity ID, independently checked stable.
         candidate = actual["fields"][key]
-        if key in REFERENCE_FIELDS or (isinstance(value, dict) and "class" in value):
+        if key == "ls.ac" and direction_words is not None:
+            need(candidate == direction_words[0] and value == direction_words[1],
+                 f"independently checked shared-Math direction fields: {label}")
+        elif key in REFERENCE_FIELDS or (isinstance(value, dict) and "class" in value):
             need(reference_symbol(candidate, actual_model, label + "/native/" + key) ==
                  reference_symbol(value, expected_model, label + "/original/" + key),
                  f"actual reference class/role/alias differs: {label}/{key}")
@@ -282,10 +306,15 @@ def compare_entity_fields(actual, expected, actual_model, expected_model, label)
     return count + 2
 
 
-def compare_states(native, original, label):
+def compare_states(native, original, label, null_damage_before=None):
     original = source_state(original)
     actual_model, expected_model, count = compare_role_models(native, original, label)
-    count += compare_entity_fields(native, original, actual_model, expected_model, label)
+    directions = None
+    if null_damage_before is not None:
+        directions = (null_damage_math(null_damage_before[0], native, label + "/native"),
+                      null_damage_math(null_damage_before[1], original, label + "/original"))
+        count += 2
+    count += compare_entity_fields(native, original, actual_model, expected_model, label, directions)
     for key in ("own_seed", "world_seed", "box_cursor", "vector_cursor", "loaded_entities", "players", "cache_size"):
         need(native[key] == original[key], f"actual original {label}/{key} differs")
         count += 1
@@ -339,8 +368,19 @@ def comparator_controls(states):
         compare_states(replacement, after, "fresh-same-value-" + suffix)
         reject("replaced_" + suffix + "_between_states", lambda candidate=replacement:
                compare_identity_transition(before, candidate, before, after, "replaced-" + suffix))
+    hurt_before, hurt_after = states[40]["before"], states[40]["after"]
+    null_damage_math(hurt_before, hurt_after, "completed-hurt-control-baseline")
+    wrong_direction = copy.deepcopy(hurt_after)
+    wrong_direction["fields"]["ls.ac"] = {"F": "00000000" if
+        hurt_after["fields"]["ls.ac"] == {"F": "43340000"} else "43340000"}
+    reject("wrong_completed_hurt_direction", lambda:
+           null_damage_math(hurt_before, wrong_direction, "wrong-hurt-direction"))
+    extra_draw = copy.deepcopy(hurt_after)
+    extra_draw["math_seed"] = lcg_word(hurt_after["math_seed"], 2)
+    reject("extra_completed_hurt_math_draw", lambda:
+           null_damage_math(hurt_before, extra_draw, "extra-hurt-Math-draw"))
     return {"rejected": passed, "count": len(passed),
-            "scope": "Copied observation mutations only: wrong same-class target, wrong class, split aliases and fresh same-class/same-value bounds/Random/watcher replacements must fail the actual comparison path; no mutated evidence executes a Mob body."}
+            "scope": "Copied observation mutations only: wrong same-class target, wrong class, split aliases, fresh same-class/same-value bounds/Random/watcher replacements, a wrong completed-hurt direction and an extra shared Math draw must fail the actual comparison path; no mutated evidence executes a Mob body."}
 
 
 def observer_rows(values):
@@ -376,10 +416,10 @@ def compare_original(data, original, profiles, states, results, events):
              "unchanged original Mob/caller/publication identity")
         before, after, result = states[index]["before"], states[index]["after"], results[index]
         count += compare_states(before, row["before"], f"before{index}")
-        # The frozen table described the prior native frontier. These four
-        # now enter real FD/FW/DH and compare the separately retained complete
-        # original final state; their old prefixes remain independent evidence.
-        mode = "full" if index in (47, 48, 49, 50) else modes[index]["comparison"]
+        # The frozen qualification table retains the earlier native frontiers.
+        # These paths and three Cow hurt cases now finish their real children.
+        # Actual original complete records remain separate from old prefixes.
+        mode = "full" if index in (*COMPLETED_DAMAGE, 47, 48, 49, 50) else modes[index]["comparison"]
         if mode == "prefix":
             prefix = choose_prefix(data["prefix_records"], index, modes[index])
             need(result["outcome"] == -1 and not result["returned"] and result["native_policy"] and
@@ -403,9 +443,6 @@ def compare_original(data, original, profiles, states, results, events):
             if index == 34:
                 need(result["drop"]["stored"] and [result["drop"]["item_id"], result["drop"]["count"]] == args,
                      "actual Egg field/count arguments before the missing drop child")
-            elif index in (40, 42, 44):
-                need(args[0] is None and result["damage"]["stored"] and result["damage"]["source_null"] and
-                     result["damage"]["amount"] == args[1], "actual damage null-source and amount arguments")
             else:
                 path = result["path"]
                 roles = prefix["state"]["reference_roles"]
@@ -420,7 +457,8 @@ def compare_original(data, original, profiles, states, results, events):
                          "actual winning wander coordinates and range before path invocation")
             paired["child_prefix"].append(index)
         else:
-            count += compare_states(after, row["after"], f"after{index}")
+            count += compare_states(after, row["after"], f"after{index}",
+                                    (before, row["before"]) if index in COMPLETED_DAMAGE else None)
             identity_count += compare_identity_transition(before, after, row["before"], row["after"],
                                                          f"tick-identities{index}")
             need(result["outcome"] == row["outcome"] and events[index] == observer_rows(row["events"]),
@@ -463,12 +501,21 @@ def compare_original(data, original, profiles, states, results, events):
         else:
             need(path["kind"] == 1 and [path["x"], path["y"], path["z"], path["range"]] == args[1:],
                  "same actual winning coordinate/range operands through completed path child")
+    for index, amount in COMPLETED_DAMAGE.items():
+        prefix = choose_prefix(data["prefix_records"], index, modes[index])
+        selected[index] = prefix
+        need(prefix["arguments"] == [None, amount] and results[index]["outcome"] == 1 and
+             results[index]["returned"] and not results[index]["damage"]["stored"] and
+             results[index]["hurt_sound_callback"]["count"] == 1,
+             "old actual hurt entry operands retained separately from completed native tick")
     summary = {"profiles": len(original), "typed_state_comparisons": count,
         "reference_identity_relations": identity_count,
         **{key + "_profiles": len(value) for key, value in paired.items()}, "cases": paired,
         "events": sum(map(len, events.values())), "actual_ray_argument_words": 12, "child_argument_profiles": 8,
         "completed_former_path_prefix_profiles": 4,
-        "scope": "Full-return and source/controlled-callback failures compare their actual complete states. The four former path prefixes now execute real FD/FW/DH and compare the original full final fields, streams, pools and events. Missing egg/hurt descendants compare their failed after-state to actual suspended invocation-entry data. Every actor/secondary object reference retains its class, logical roles, aliases and before/after identity relations. A DH role names the actual observed II.a class/identity; frozen source data contains no DH internals here, so its array/cursor graph inside Mob ticks is not claimed as paired evidence. Direct Path tests pair those bodies separately. JDI prefix continuity uses the same JDI VM tick-entry state. Constructor entropy remains independent; namespace-local Entity IDs are not equated. Controlled native callback IO pairs reached effects without Java Throwable equivalence."}
+        "completed_former_damage_prefix_profiles": 3,
+        "separately_checked_shared_math_direction_profiles": 3,
+        "scope": "Full-return and source/controlled-callback failures compare their actual complete states. Four former path prefixes execute real FD/FW/DH. Three Cow hurt prefixes now finish actual damage and full ticks: final deterministic fields, private/World streams, pools and events pair exactly, while each process's independent shared-Math stream and NULL-source direction word are checked against its own exact one-draw oracle without rebinding entropy or equating the two direction words. The old hurt-entry records and evaluated arguments remain separate evidence. Missing egg output compares its failed after-state to the actual suspended invocation entry. Every actor/secondary object reference retains class, roles, aliases and cross-phase identity relations. A DH role identifies the actual II.a object; this frozen packet contains no DH internals, which direct Path tests pair separately. Constructor entropy and namespace-local Entity IDs remain independent. Controlled native callback IO pairs reached effects without Java Throwable equivalence."}
     return summary, source_after, selected
 
 
@@ -495,8 +542,32 @@ def read_native(path, profiles):
             need(phase["kind"] == profiles[index]["kind"] and phase["scene"] == profiles[index]["scene"],
                  "actual Mob kind/profile identity")
             reference_locations(phase, f"actual-native{index}/{phase['phase']}")
-        need(before["fields"]["sn.aD"] == after["fields"]["sn.aD"] and
-             before["math_seed"] == after["math_seed"], "active tick cannot recreate its Entity or consume shared Math")
+        need(before["fields"]["sn.aD"] == after["fields"]["sn.aD"],
+             "active tick cannot recreate its Entity")
+        if index in COMPLETED_DAMAGE:
+            amount = COMPLETED_DAMAGE[index]
+            null_damage_math(before, after, f"native-completed-damage{index}")
+            fields, result = after["fields"], results[index]
+            need(result["outcome"] == 1 and result["returned"] and
+                 all(result[key] for key in ("environment_returned", "action_returned", "behavior_returned")) and
+                 result["living_pc"] == 528 and result["damage"] ==
+                 {"stored": False, "source_null": False, "amount": 0},
+                 "completed hurt tick carries no retained failed effect receipt")
+            need(fields["ls.Y"] == before["fields"]["ls.Y"] - amount and
+                 fields["ls.Z"] == before["fields"]["ls.Y"] and fields["ls.au"] == amount and
+                 fields["sn.by"] == 19 and fields["ls.aa"] == 9 and fields["ls.ab"] == 10 and
+                 fields["ls.av"] == (0 if index == 44 else 1) and
+                 fields["sn.bv"] == (601 if index == 44 else -1) and
+                 fields["sn.bz"] == (0 if index == 42 else 300) and
+                 fields["sn.bb"] is True and fields["sn.be"] is False and
+                 result["sounds"] == 1 and result["particles"] == (8 if index == 42 else 0),
+                 "actual completed Cow health, timers, hurt flag and presentation counts")
+            need(after["own_seed"] == random_word(int(profiles[index]["own_seed"]),
+                 (51 if index == 42 else 3) + result["concrete_random_calls"]),
+                 "independent full environment plus concrete-body Random progression")
+        else:
+            need(before["math_seed"] == after["math_seed"],
+                 "other declared active ticks preserve the shared Math stream")
         for phase in (before, after):
             need(path_roles(phase)["reference_roles"] == phase["reference_roles"],
                  "native actual Path roles must be emitted from the genuine held field")
@@ -540,6 +611,41 @@ def read_native(path, profiles):
          following[0]["other_alias_source_index_failure"] and following[0]["failed_prefix_cleanup_without_repair"],
          "real World/Mob following shares one cursor and preserves the finished-alias source failure")
     return states, results, controls
+
+
+def completed_damage_events(states, results, events):
+    def f32(value):
+        return struct.unpack('>f', struct.pack('>f', value))[0]
+    observations = []
+    for index, amount in COMPLETED_DAMAGE.items():
+        before, after, result = states[index]['before'], states[index]['after'], results[index]
+        prior = 49 if index == 42 else 0 if index == 44 else 1
+        first = int(lcg_word(before['own_seed'], prior + 1), 16) >> 24
+        second = int(lcg_word(before['own_seed'], prior + 2), 16) >> 24
+        pitch = struct.pack('>f', f32(f32(f32(first / 16777216 - second / 16777216) * f32(.2)) + 1)).hex()
+        callback = result['hurt_sound_callback']
+        need(callback == {'count': 1, 'health': before['fields']['ls.Y'] - amount,
+             'previous_health': before['fields']['ls.Y'], 'resistance': 20, 'timer': 10,
+             'duration': 10, 'own_seed': lcg_word(before['own_seed'], prior + 2), 'pitch': pitch},
+             f'actual Cow hurt callback prefix and exact pitch/Random state{index}')
+        need(len(events[index]) == (9 if index == 42 else 1), 'completed hurt observer count')
+        if index == 42:
+            need(all(line.split()[0] == 'MOB_PARTICLE' and line.split()[3] == 'bubble'
+                     for line in events[index][:-1]), 'eight actual bubbles precede drowning hurt sound')
+        values = events[index][-1].split()
+        need(values[:4] == ['MOB_SOUND', str(index), '8' if index == 42 else '0', 'mob.cowhurt'] and
+             values[-2:] == ['3ecccccd', pitch], 'actual Cow hurt sound/volume/pitch words')
+        fields = before['fields']
+        x = fields['sn.aM']['D']
+        z = fields['sn.aO']['D']
+        y = struct.unpack('>d', bytes.fromhex(fields['sn.aN']['D']))[0]
+        offset = struct.unpack('>f', bytes.fromhex(fields['sn.bf']['F']))[0]
+        need(values[4:7] == [x, struct.pack('>d', y - offset).hex(), z],
+             'hurt sound uses actual Entity position before later movement')
+        observations.append({'case': index, 'amount': amount, 'callback': callback,
+                             'math_before': before['math_seed'], 'math_after': after['math_seed'],
+                             'direction': after['fields']['ls.ac'], 'full_tick_returned': True})
+    return observations
 
 
 def main():
@@ -593,6 +699,7 @@ def main():
             need(values[0] in ("MOB_SOUND", "MOB_PARTICLE") and int(values[1]) in events and
                  int(values[2]) == len(events[int(values[1])]), "actual ordered Mob presentation event")
             events[int(values[1])].append(line)
+        report['completed_damage_callbacks'] = completed_damage_events(states, results, events)
         if args.observations:
             data, original = source_records(args.observations)
             summary, full_after, prefixes = compare_original(data, original, profiles, states, results, events)

@@ -44,6 +44,7 @@ void mc_entity_effect_error_init(mc_entity_effect_error *error) {
     error->watcher_index = -1;
     error->statistic_error.writer.index = SIZE_MAX;
     error->statistic_error.writer.text_offset = SIZE_MAX;
+    error->math.source_pc = -1;
     mc_world_movement_error_init(&error->world);
     error->registry = error->world.registry;
 }
@@ -337,8 +338,8 @@ static bool base_fall(mc_entity *entity, mc_entity_effect_error *error) {
     return true; /* Genuine inherited b(F)/a(F) return15. */
 }
 
-static bool damage(mc_entity *, mc_registry_classes *, mc_entity *, int32_t, bool *,
-                   mc_entity_effect_error *);
+static bool damage(mc_entity *, mc_registry_classes *, mc_math_classes *, mc_entity *, int32_t,
+                   bool *, mc_entity_effect_error *);
 
 static bool fall(mc_entity *entity, mc_registry_classes *classes, float distance,
                  mc_entity_effect_error *error) {
@@ -377,7 +378,7 @@ static bool fall(mc_entity *entity, mc_registry_classes *classes, float distance
     if (amount > 0) {
         bool ordinary;
         error->living_bytecode = 22;
-        if (!damage(entity, classes, NULL, amount, &ordinary, error))
+        if (!damage(entity, classes, NULL, NULL, amount, &ordinary, error))
             return false;
         /* This is unreachable until the genuine statistic and Living damage
          * descendants exist. Do not claim the later landed sound as complete. */
@@ -502,13 +503,19 @@ static bool instance_of(mc_entity *source, mc_entity_classes *classes, mc_entity
            answer;
 }
 
-static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_entity *source,
-                   int32_t amount, bool *out, mc_entity_effect_error *error) {
+static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_classes *math,
+                   mc_entity *source, int32_t amount, bool *out, mc_entity_effect_error *error) {
     if (source == NULL &&
         (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ZOMBIE) ||
          mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SKELETON)) &&
         entity->classes->source == MC_ENTITY_CLIENT)
         return mc_mob_monster_null_damage_entered(entity, classes, amount, out, error);
+    if (entity->classes->source == MC_ENTITY_CLIENT &&
+        (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SHEEP) ||
+         mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PIG) ||
+         mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_COW) ||
+         mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_CHICKEN)))
+        return mc_mob_living_damage_entered(entity, classes, math, source, amount, out, error);
     if (mc_entity_has_mob(entity)) {
         const mc_entity_class_kind kind = entity->class_literal->kind;
         error->damage_arguments_stored = true;
@@ -611,21 +618,28 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_entity *s
     return true;
 }
 
-mc_entity_status mc_entity_effect_damage_in_context(mc_entity *entity, mc_registry_classes *classes,
-                                                    mc_entity *source, int32_t amount, bool *out,
-                                                    mc_entity_effect_error *error) {
+mc_entity_status mc_entity_effect_damage_with_math(mc_entity *entity, mc_registry_classes *classes,
+                                                   mc_math_classes *math, mc_entity *source,
+                                                   int32_t amount, bool *out,
+                                                   mc_entity_effect_error *error) {
     mc_entity_effect_error frame;
     mc_entity_effect_error_init(&frame);
     if (out == NULL)
         fail(&frame, MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_EFFECT_CAUSE_OWNER,
              "Entity damage output", 0);
     else if (enter(entity, &frame)) {
-        (void)damage(entity, classes, source, amount, out, &frame);
+        (void)damage(entity, classes, math, source, amount, out, &frame);
         mc_entity_release(entity);
     }
     if (frame.status == MC_ENTITY_OK && !frame.living_damage.entered)
         mc_entity_effect_error_init(&frame);
     return finish(&frame, error);
+}
+
+mc_entity_status mc_entity_effect_damage_in_context(mc_entity *entity, mc_registry_classes *classes,
+                                                    mc_entity *source, int32_t amount, bool *out,
+                                                    mc_entity_effect_error *error) {
+    return mc_entity_effect_damage_with_math(entity, classes, NULL, source, amount, out, error);
 }
 
 mc_entity_status mc_entity_effect_damage(mc_entity *entity, mc_entity *source, int32_t amount,
@@ -644,7 +658,7 @@ mc_entity_status mc_entity_effect_fire_damage_in_context(mc_entity *entity,
          * inherits sn/lq immunity1 and, when false, damage call10. */
         if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) || !entity->base.bC) {
             bool ordinary;
-            if (!damage(entity, classes, NULL, amount, &ordinary, &frame))
+            if (!damage(entity, classes, NULL, NULL, amount, &ordinary, &frame))
                 frame.fire_bytecode = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) ? 3 : 10;
         }
         mc_entity_release(entity);

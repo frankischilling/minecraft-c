@@ -50,10 +50,10 @@ These are reached dependencies, not successful empty implementations:
 
 | Source boundary | Pending work |
 |---|---|
-| `ii.f_:97/109` | Other concrete attacks remain unfinished; Creeper attack and unseen-target bodies now run. |
+| `ii.f_:97/109` | Creeper attack and unseen-target bodies and Wolf pounce/bite routing now run; other concrete attacks retain their own limits. |
 | `gb.a:108/134` | Actual World explosion, including QX rays, damage, drops and block effects. |
 | `ww.o:217` | Actual Item drop after egg sound and Egg static-field access. |
-| Living/Monster/Sheep/Wolf hurt entries | [Zombie](living-damage.md) and [Skeleton](skeleton-damage.md) NULL-attacker damage run; other damage, death and drop work remains unfinished. |
+| Living/Monster/Sheep/Wolf hurt entries | [Animal damage](animal-damage.md) runs for Sheep/Pig/Cow/Chicken; [Zombie](living-damage.md) and [Skeleton](skeleton-damage.md) retain their NULL-attacker qualification. Other concrete overrides, death and drop work remain unfinished. |
 | Selected Wolf children | Owner following, selected-Item interest and other reached behavior still requiring its own body. |
 | Selected movement children | Mounting, contact attack, Slime splitting and other unimplemented subtype effects. |
 
@@ -127,10 +127,17 @@ terminal admission independently of the source Path field.
 
 The original package contains 62 authored scenarios across all eleven default
 Overworld kinds. Ghast and Zombie Pigman are outside this qualified set.
-Native comparison now uses 52 complete final records, two callback failures,
-four source-null failures and four remaining drop/hurt prefixes. Four path
+Native comparison now uses 55 complete final records, two callback failures,
+four source-null failures and the remaining Egg-drop prefix. Four path
 scenarios use their retained original full final records instead of the earlier
-entry-prefix observations. Prefix observations include
+entry-prefix observations. Three Cow damage profiles now complete their full
+ticks, with exact deterministic state and separate per-process shared-Math
+draw/direction checks. Windows and Linux each pass 113,945 native checks,
+19,838 typed comparisons, 14,558 identity relations and 75 events. Eight
+comparator corruptions and thirteen native controls retain their own scope.
+The reference package's qualification table and entry observations remain a
+frozen capture baseline; the current native comparator explicitly upgrades
+these seven completed children. Prefix observations include
 typed inherited and concrete fields, bounds, watchers, actual streams, pool
 cursors, secondary Entities, reference roles, arguments, source frames and events
 already emitted before that child. Later source effects are not copied into a

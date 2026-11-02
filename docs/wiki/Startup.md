@@ -12,10 +12,11 @@ use Tiny render distance and authored saved inputs.
 
 ## Qualified interaction paths
 
-- [Create World](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/create-world.md): actual name/seed fields, normal seed 777 generation and initial save, World/HUD frames, ordinary save/title and reselection with independent decoding of 447 Chunks and captured Player/WorldInfo values.
+- [Create World](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/create-world.md): actual name/seed fields, normal seed 777 generation and initial save, World/HUD frames, ordinary save/title and reselection with independent decoding of 375 Chunks and captured Player/WorldInfo values.
 - [Mining and pickup](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mining.md): fresh left click, held empty-hand Dirt break, cracks, destruction particles, dropped-Item drawing, save/reselection, keyboard pickup and held Dirt.
 - [Dirt placement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/placement.md): right-button use of collected Dirt, collision admission, terrain update, sound, consumption, statistic and swing, followed by another save/reselection.
 - [Player drops](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-drop.md): the configured drop key removes one selected Item, publishes a genuine dropped Item and increments the drop statistic. Empty-hand input creates no Item.
+- [Animal damage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/animal-damage.md): component and original CPU checks cover actual Wolf bites, health, hurt resistance, knockback, sound and failure prefixes. Fatal death/drop and complete graphical encounters remain unqualified.
 - [Saving](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-saving.md): normal leave and separately qualified session-lock failure, with independent disk checks and native cleanup.
 - [Selection](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/block-selection.md): Dirt and Snow outlines and finite saved-World reselection.
 

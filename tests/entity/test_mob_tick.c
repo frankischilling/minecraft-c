@@ -339,7 +339,27 @@ typedef struct mob_fixture {
     mc_entity_watcher *owned_watcher;
     mc_entity_bounds *owned_bounds;
     mc_path *control_path_hold;
+    /* Authored observer values from an actually reached hurt-sound callback,
+     * separate from the empty effect error after a successful environment. */
+    size_t hurt_callbacks;
+    int32_t hurt_health, hurt_previous_health, hurt_resistance, hurt_timer, hurt_duration;
+    uint64_t hurt_random;
+    float hurt_pitch;
 } mob_fixture;
+
+static bool completed_damage_case(const mob_fixture *f) {
+    return !f->native_only && (f->input.id == 40 || f->input.id == 42 || f->input.id == 44);
+}
+
+static uint64_t test_lcg_steps(uint64_t state, size_t count) {
+    for (size_t i = 0; i < count; ++i)
+        state = (state * UINT64_C(0x5deece66d) + UINT64_C(11)) & UINT64_C(0xffffffffffff);
+    return state;
+}
+
+static int32_t completed_damage_amount(unsigned int id) {
+    return id == 40 ? 1 : id == 42 ? 2 : 4;
+}
 
 static const char *const mob_names[] = {"cn", "uz", "fr", "gb", "uw", "wh",
                                         "dl", "bx", "ww", "gi", "xt"};
@@ -626,6 +646,28 @@ static mc_world_storage_status mob_sound(void *context, mc_world_runtime *world,
             " %016" PRIx64 " %016" PRIx64 " %016" PRIx64 " %08" PRIx32 " %08" PRIx32 "\n", dbits(x),
             dbits(y), dbits(z), fbits(volume), fbits(pitch));
     ++f->sounds;
+    if (completed_damage_case(f)) {
+        const mc_living_entity_fields *v = &f->actor->mob->living;
+        mc_registry_string_view text = {0};
+        static const char expected[] = "mob.cowhurt";
+        if (!mc_registry_string_read(name, &text) || text.length != sizeof(expected) - 1 ||
+            volume != .4f || f->hurt_callbacks != 0 ||
+            v->Y != 10 - completed_damage_amount(f->input.id) || v->Z != 10 ||
+            f->actor->base.by != 20 || v->aa != 10 || v->ab != 10)
+            f->callback_bad = true;
+        if (!f->callback_bad)
+            for (size_t i = 0; i < text.length; ++i)
+                if (text.units[i] != (uint16_t)expected[i])
+                    f->callback_bad = true;
+        ++f->hurt_callbacks;
+        f->hurt_health = v->Y;
+        f->hurt_previous_health = v->Z;
+        f->hurt_resistance = f->actor->base.by;
+        f->hurt_timer = v->aa;
+        f->hurt_duration = v->ab;
+        f->hurt_random = f->actor->random->state;
+        f->hurt_pitch = pitch;
+    }
     if (!strcmp(f->input.callback, "fail_sound")) {
         *error = (mc_world_storage_error){MC_WORLD_STORAGE_IO_ERROR,
                                           "authored Mob sound observer failure", 0};
@@ -750,6 +792,7 @@ static bool tick_call_context(mob_fixture *f, const mc_mob_tick_limits *limits,
     const uint64_t shared_u = atomic_load(&f->base.profile->uniquifier);
     const uint64_t shared_math =
         f->base.profile->math ? atomic_load(&f->base.profile->math->state) : 0;
+    const uint64_t private_random = f->actor->random == NULL ? 0 : f->actor->random->state;
     const unsigned int shared_phase = atomic_load(&f->base.profile->holder_phase);
     const size_t bindings = f->base.world->persistent_bindings;
     f->actor_holds = f->actor->holds;
@@ -817,11 +860,15 @@ static bool tick_call_context(mob_fixture *f, const mc_mob_tick_limits *limits,
                                                          : NULL;
     fprintf(output,
             ",\"drop\":{\"stored\":%s,\"item_id\":%d,\"count\":%d},\"damage\":{\"stored\":%s,"
-            "\"source_null\":%s,\"amount\":%d}}\n",
+            "\"source_null\":%s,\"amount\":%d},\"hurt_sound_callback\":{\"count\":%zu,"
+            "\"health\":%d,\"previous_health\":%d,\"resistance\":%d,\"timer\":%d,"
+            "\"duration\":%d,\"own_seed\":\"%012" PRIx64 "\",\"pitch\":\"%08" PRIx32 "\"}}\n",
             s->drop.stored ? "true" : "false", s->drop.item_id, s->drop.count,
             damage && damage->damage_arguments_stored ? "true" : "false",
             damage && damage->damage_source_identity == 0 ? "true" : "false",
-            damage ? damage->damage_amount : 0);
+            damage ? damage->damage_amount : 0, f->hurt_callbacks, f->hurt_health,
+            f->hurt_previous_health, f->hurt_resistance, f->hurt_timer, f->hurt_duration,
+            f->hurt_random, fbits(f->hurt_pitch));
     CHECK(fflush(output) == 0 && fflush(f->events) == 0 && !f->callback_bad &&
           source_inputs_intact(f) && (status == MC_ENTITY_OK) == expected_success &&
           s->returned == expected_success && !f->actor->mob->tick_active);
@@ -836,7 +883,9 @@ static bool tick_call_context(mob_fixture *f, const mc_mob_tick_limits *limits,
           f->base.world->active_calls == 0 && f->base.world->local_leases == 0 &&
           atomic_load(&f->base.profile->uniquifier) == shared_u &&
           atomic_load(&f->base.profile->holder_phase) == shared_phase &&
-          (!f->base.profile->math || atomic_load(&f->base.profile->math->state) == shared_math));
+          (!f->base.profile->math ||
+           atomic_load(&f->base.profile->math->state) ==
+               test_lcg_steps(shared_math, completed_damage_case(f) ? 2u : 0u)));
     mc_mob_state after;
     CHECK(mc_mob_inspect(f->actor, &after) && after.phase == MC_ENTITY_READY &&
           !memcmp(after.failure, &constructor_failure, sizeof(constructor_failure)) &&
@@ -859,11 +908,40 @@ static bool tick_call_context(mob_fixture *f, const mc_mob_tick_limits *limits,
         CHECK(s->path_calls == 1 && s->path_returned && s->path_store_completed &&
               s->path_waypoints > 0 && current_path && path_state.holds == 1 &&
               path_state.arena_holds == 1 && !s->cleanup_pending);
-    if (!f->native_only && (f->input.id == 40 || f->input.id == 42 || f->input.id == 44))
-        CHECK(damage && damage->damage_arguments_stored && damage->damage_source_identity == 0 &&
-              damage->damage_amount == (f->input.id == 40   ? 1
-                                        : f->input.id == 42 ? 2
-                                                            : 4));
+    if (completed_damage_case(f)) {
+        const mc_living_entity_fields *v = &f->actor->mob->living;
+        const int32_t amount = completed_damage_amount(f->input.id);
+        const size_t prior_draws = f->input.id == 44 ? 0u : f->input.id == 42 ? 49u : 1u;
+        uint64_t own = test_lcg_steps(private_random, prior_draws);
+        own = test_lcg_steps(own, 1);
+        volatile float first_draw = (float)(own >> 24u) / 16777216.0f;
+        own = test_lcg_steps(own, 1);
+        volatile float second_draw = (float)(own >> 24u) / 16777216.0f;
+        volatile float difference = first_draw - second_draw;
+        volatile float scaled = difference * .2f;
+        const float pitch = scaled + 1.0f;
+        const float direction = (test_lcg_steps(shared_math, 1) >> 47u) != 0 ? 180.0f : 0.0f;
+        /* Lava movement later reaches SN.c1923 -> SN.a(I)10 -> LS.a.
+         * Its weak1 hit resets av14, then returns59 because au is already4.
+         * No second sound/Math draw/health subtraction occurs. SN.c1938 then
+         * advances the actual fire timer from600 to601. */
+        CHECK(v->av == (f->input.id == 44 ? 0 : 1));
+        CHECK(f->actor->base.bv == (f->input.id == 44 ? 601 : -1) &&
+              f->actor->base.bz == (f->input.id == 42 ? 0 : 300));
+        CHECK(expected_success && status == MC_ENTITY_OK && damage == NULL &&
+              f->error->child == MC_MOB_TICK_CHILD_NONE && f->sounds == 1 &&
+              f->particles == (f->input.id == 42 ? 8u : 0u) && f->hurt_callbacks == 1 &&
+              f->hurt_health == before.living.Y - amount &&
+              f->hurt_previous_health == before.living.Y && f->hurt_resistance == 20 &&
+              f->hurt_timer == 10 && f->hurt_duration == 10 && f->hurt_random == own &&
+              fbits(f->hurt_pitch) == fbits(pitch) && v->Y == before.living.Y - amount &&
+              v->Z == before.living.Y && v->au == amount && f->actor->base.by == 19 && v->aa == 9 &&
+              v->ab == 10 && fbits(v->ac) == fbits(direction) && f->actor->base.bb &&
+              !f->actor->base.be &&
+              f->actor->random->state ==
+                  test_lcg_steps(private_random,
+                                 (f->input.id == 42 ? 51u : 3u) + s->concrete_random_calls));
+    }
     CHECK(cleanup_checks(f));
     return true;
 }
@@ -1759,13 +1837,15 @@ static bool profile_returns(const tick_profile *p) {
         return false;
     /* Source call sites outside this finite native child closure. The optional
      * comparison pairs actual JDI invocation prefixes, not source full return. */
-    const char *const boundaries[] = {"egg",        "drowning",    "lava",        "null_own",
-                                      "null_world", "null_bounds", "null_watcher"};
+    const char *const boundaries[] = {"egg", "null_own", "null_world", "null_bounds",
+                                      "null_watcher"};
     for (size_t i = 0; i < COUNT(boundaries); ++i)
         if (!strcmp(p->scene, boundaries[i]))
-            return !strcmp(p->kind, "xt") && !strcmp(p->scene, "drowning");
-    if (!strcmp(p->scene, "eye_block") && !strcmp(p->kind, "bx"))
-        return false;
+            return false;
+    if (!strcmp(p->scene, "drowning"))
+        return !strcmp(p->kind, "bx") || !strcmp(p->kind, "xt");
+    if (!strcmp(p->scene, "lava"))
+        return !strcmp(p->kind, "bx");
     return true;
 }
 
