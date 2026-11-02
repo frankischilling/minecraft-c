@@ -71,11 +71,26 @@ typedef struct mc_held_bow_error {
  *
  * Success completes only this fragment through pop967. Parent may THEN reach
  * RA return970; its RA/App/Stack/Item/lookup/guard chain remains parent-owned.
+ * Native work scope may be NULL for the independently retained first-person
+ * RA parent; the same fixed six groups still execute without a TH call or
+ * fabricated manager work. Nonnull scopes keep their exact reached quota.
  * Failure leaves real matrices, rescale, NW batch/backing/color/normal exactly
  * as the selected child left them. There is no abort/reset/pop/cleanup API. */
 bool entity_renderer_held_bow_draw(mc_client_draw_scope *, int32_t actual_icon,
                                    mc_client_tessellator *captured_nw,
                                    mc_client_render_engine_classes *actual_graphics,
                                    mc_client_display *actual_display, mc_held_bow_error *);
+
+/* Entered CPU geometry component of the same production groups. A genuine
+ * graphics namespace and its real captured NW remain caller-owned; NULL NW
+ * fails only at that selected group's begin invocation. This computes the
+ * original icon coordinates and emits all vertices/normals of batch0..5 using
+ * the SAME body as the complete GL route. It executes no GL, NW.draw, matrix
+ * operation or source cleanup and leaves the actual NW batch open. Success
+ * certifies only this entered component, never the surrounding RA return. */
+bool entity_renderer_held_item_geometry_batch(int32_t actual_icon, unsigned int batch,
+                                              mc_client_tessellator *captured_nw,
+                                              mc_client_render_engine_classes *,
+                                              mc_held_bow_error *);
 
 #endif

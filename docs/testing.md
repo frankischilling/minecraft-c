@@ -2,13 +2,24 @@
 
 ## Current targeted and public qualification
 
-The broad Linux snapshot builds fully and passes all 597 public tests in
+The frozen runtime passes all 611 Windows public tests in 280.15 seconds and
+all 606 Linux public tests in 145.58 seconds. Windows snapshots confirm all
+4,105 source inputs, 499 built products and 823 assets unchanged across the run.
+The Linux full build and public suite use Xvfb/software OpenGL and Clang 18
+ASan/UBSan with leak detection and halt-on-error, after a test-only `size_t`
+cast fix. The 4,105-file source archive matches on both hosts.
+Formatting passes for 1,932 files, and the binding audit covers 9,921 entries
+in 4,104 files. These are finite suite results, not a claim of global graphical
+focus stability. Hosted checks apply to their exact tested commit; SDK,
+full playable client and FPS qualification remain separate.
+
+The historical broad Linux snapshot builds fully and passes all 597 public tests in
 166.82 seconds under Xvfb/software OpenGL with display tests, Clang ASan/UBSan,
 leak detection and halt-on-error. The later held-Stack diagnostic/frontier
 correction has separate Windows/Linux 747-check component coverage. The
 asset-dependent Linux SDK death/autosave encounter remains unqualified.
 
-The latest Windows full run passes 593 of 602 public tests in 215.03 seconds.
+The historical Windows full run passed 593 of 602 public tests in 215.03 seconds.
 Its 3,293 selected execution inputs and 823 resource files remain unchanged.
 Two failures record actual foreign `msrdc.exe` foreground activation in the
 Slime and Cow profiles; the client correctly pauses. Seven other failures are
@@ -16,8 +27,8 @@ source-binding rejections: the failure-only diagnostic fixture changed after
 the preceding binding refresh. The source declarations are now refreshed and
 audited across 9,789 entries and 4,050 files. The exact seven rejected tests
 all pass in a separate 13.29-second rerun, with comparisons and guards unchanged.
-The historical 593/602 run remains failed; this focused metadata resolution
-does not establish a new full passing result. Whole Windows graphical focus
+The historical 593/602 run remains failed; its focused metadata resolution
+did not itself establish a full passing result. Whole Windows graphical focus
 stability remains unqualified.
 
 The preceding 26-test regression selection passes 24 in 188.02 seconds, with
@@ -137,11 +148,72 @@ remain open; hosted validation keeps its exact tested-commit scope. [Explosion p
 limits. No original full-frame/pixel, Wool pickup, save-restart or extended-play
 claim follows. No FPS, frame-time or hosted-speed result is claimed.
 
+## Held Item attacks and direct extrusion
+
+The Windows component selection passes eight tests in 17.75 seconds. The
+native held-attack harness executes all 422 declared deterministic cases and
+three lethal Cow cases on genuine owners, passing 37,416 checks. The
+[packet](../tests/reference/entity/held_item_attack/README.md) identifies all
+38 actual Item Classes and inventories 202 original IDs. Its ten corruption
+tests protect typed fields, ordering, overflow/break/Saddle boundaries and
+per-process Cow Random/sound/drop/publication audits. The older five unarmed
+rows remain unchanged. The current Player attack component passes 1,804 checks,
+including 1,056 checks in twelve new callback/order controls; direct Item combat
+passes 588 checks. These authored controls retain their separate original
+comparison scopes. A later six-test current core selection passes in 4.14 seconds.
+The full Windows build completes all 370 steps. The final 611/606 public suites
+above qualify the frozen runtime on their respective hosts.
+
+The [geometry packet](../tests/reference/client/held_item_geometry/README.md)
+observes real original RA/NW execution with genuine App/Engine/Font/Player/Stack
+constructors and a hidden Pbuffer. Read-only JDI captures all six flushes for
+five Swords and Bow, with live Code pins and ordinary completion checks.
+Native CPU execution of the same production emission kernel matches all 36
+groups and 19,008 words. Eight geometry corruption tests pass. The actual
+Font-used initial buffer is retained; zero inactive color/reserved words give
+this full-word comparison its finite prior-state scope.
+
+The damaged-Item overlay comparison now passes nine original profiles with
+24 rectangles and 576 exact active XYZ/color words. The original completes
+24 GL draws; native CPU controls execute entered numeric/rectangle prefixes
+and zero completed draws. Each process checks inactive words against its own
+prior backing, retaining all 1,152 raw words and genuine stale Font UV contents.
+The [fixture and scope](client/gui-ingame.md#damaged-item-overlay) include eight
+live original Code pins and eight passing packet corruption controls. The
+Windows `client.inventory_block`, `tools.item_durability_overlay_packet` and
+`client.item_durability_overlay_cpu` selection passes in 0.76 seconds.
+
+The same frozen runtime passes the Windows SDK Dirt profile in 14.20 seconds
+with 1,446 checks and the Iron Sword break profile in 16.74 seconds with 3,631
+checks. The isolated unarmed profile passes in 13.22 seconds with 2,106 checks.
+Each observes three hand frames before and after the actual click, twenty GY
+particles, removal at death age 21, a real post-death autosave and cleanup.
+Independent decoding matches all 40 live Inventory slots to the NBT at every
+actual save entry and in the final disk image. These latest three runs publish
+Wool without picking it up. A separate earlier 13.38-second Sword pass proves
+actual Wool pickup and its slot-0 clone; that result is not combined with the
+latest run's counts.
+
+Earlier GUI-color, Dirt-hand, maximum-durability, focus/Pause and unconsumed-click
+failures remain failed historical runs. A later conservation assertion wrongly
+counted an unrelated distant Seed Item, ID 295, after correct Wool publication.
+The observer now follows only the actual active `GS.d` Sheep producer. It does
+not require conservation across unrelated World Items. Sixteen public Inventory
+corruption controls run in CI and reject incorrect saved-slot observations.
+The passing public suite does not resolve unrestricted focus stability or the
+separate Linux saved-World SDK encounter.
+
+The geometry packet optimization replaces only a three-row `deepcopy` in the
+comparison tests. It preserves eight tests and 478 comparison calls, with source,
+captured helpers and fixtures unchanged. A paired run decreases from 11.352 to
+10.662 seconds, about 6.1%; this measures the packet tests, not client FPS.
+Hosted checks apply to their exact tested commit.
+
 ## Player attacks and reached graphical dependencies
 
-Windows and Linux Clang ASan/UBSan `entity.player_attack` each pass 747
+Earlier Windows and Linux Clang ASan/UBSan `entity.player_attack` snapshots each pass 747
 authored checks and match five unchanged-original integer/Boolean rows. The
-held-Stack control records the correct `iz.a(sn):9` child frontier and requires
+held-Stack control recorded the correct `iz.a(sn):9` child frontier and required
 unchanged target health/statistics before checked cleanup. Windows completes
 its component in 0.20 seconds (0.23 seconds for the enclosing test); Linux
 completes it in 0.28 seconds (0.30 seconds enclosing). Six
@@ -1633,8 +1705,7 @@ follow-up accepts that result only after a genuine false CX query, complete
 checked teardown and no N execution, while still comparing all 30 ordinary rows
 exactly. It reports five original occlusion rows as uncredited. This does not
 provide Linux occlusion coverage. Hosted Windows has display tests disabled;
-the local strict run supplies the supported-device evidence above. New hosted
-qualification remains pending.
+the local strict run supplies the supported-device evidence above. Hosted checks apply to their exact tested commit.
 
 Current source implements [N terrain submission](client/terrain-submission.md),
 including its outer/subset methods, recenter/JO, TG buffers and ARB query paths.
@@ -1664,8 +1735,7 @@ admission priority. Cleanup retains its own cause without overwriting the
 immutable source failure.
 
 The initial [hosted submission run](https://github.com/frankischilling/minecraft-c/actions/runs/40958303944)
-built all three compiler profiles but failed new fixture cases. Follow-up hosted
-qualification is pending. This local result includes no ALL build or local
+built all three compiler profiles but failed new fixture cases. Hosted checks apply to their exact tested commit. This local result includes no ALL build or local
 Linux runtime suite. The 35-row N device cohort does not qualify an issued-query
 N path or a 17-entry issued-query case; standalone ARB controls remain separate.
 
@@ -1967,7 +2037,7 @@ Fixes preserve all original rows and their acceptance rules. The preceding
 `b1bb968` hosted run 40886849939 failed both Linux builds at the new missing
 RenderGlobal sky-callback initializer; Windows and formatting passed. Named
 callback slots now compile in both full local Linux graphs, with the concrete
-sky callback still absent. New hosted results remain pending.
+sky callback still absent. Hosted checks apply to their exact tested commit.
 
 Formatting checks 1504 C/header/fragment files. Explicit LF formatting keeps
 raw-byte source pins stable. GL3 fog setup, sky/terrain drawing, concrete Mobs,

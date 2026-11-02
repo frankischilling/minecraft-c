@@ -2,19 +2,66 @@
 
 ## Current qualification
 
-The latest Windows full run passes 593/602 in 215.03 seconds, with 3,293 selected
+The frozen runtime passes all 611 Windows public tests in 280.15 seconds and
+all 606 Linux public tests in 145.58 seconds. Windows snapshots confirm all
+4,105 source inputs, 499 built products and 823 assets unchanged across the run.
+The Linux full build and public suite use Xvfb/software OpenGL and Clang 18
+ASan/UBSan with leak detection and halt-on-error, after a test-only `size_t`
+cast fix. The 4,105-file source archive matches on both hosts.
+Formatting passes for 1,932 files, and the binding audit covers 9,921 entries
+in 4,104 files. These are finite suite results, not a claim of global graphical
+focus stability. Hosted checks apply to their exact tested commit; SDK,
+full playable client and FPS qualification remain separate.
+
+The same frozen runtime passes the Windows SDK Dirt profile in 14.20 seconds
+with 1,446 checks and the Iron Sword break profile in 16.74 seconds with 3,631
+checks. The isolated unarmed profile passes in 13.22 seconds with 2,106 checks.
+Each observes three hand frames before and after the actual click, twenty GY
+particles, removal at death age 21, a real post-death autosave and cleanup.
+Independent decoding matches all 40 live Inventory slots to the NBT at every
+actual save entry and in the final disk image. These latest three runs publish
+Wool without picking it up. A separate earlier 13.38-second Sword pass proves
+actual Wool pickup and its slot-0 clone; that result is not combined with the
+latest run's counts.
+
+The held Item component selection passes eight Windows tests in 17.75 seconds.
+It includes 425 genuine attacks/37,416 checks, 422 exact selected original rows,
+three Cow deaths with per-process entropy audits, and all 19,008 direct original
+Sword/Bow geometry words. The attack and geometry packets pass ten and eight
+corruption tests. Twelve additional Windows callback/order controls retain the
+five original unarmed rows unchanged. A later six-test core selection passes
+in 4.14 seconds. These earlier component selections retain their own scope. The
+[component record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#held-item-attacks-and-direct-extrusion)
+keeps these results separate from the historical full runs below.
+The damaged-Item bar now passes nine profiles and 576 active XYZ/color words.
+The original completes 24 draws; native CPU prefixes complete zero. Each
+process validates its own inactive backing without a fabricated clear. The
+three-test Windows selection passes in 0.76 seconds, including eight packet
+controls. Its [fixture](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/item_durability_overlay/finite.json)
+and [provenance](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/item_durability_overlay/provenance.json)
+retain the exact comparison scope.
+
+Sixteen public Inventory corruption controls run in CI. The producer observer
+tracks only the actual active `GS.d` Sheep producer; its failed predecessor
+counted an unrelated distant Seed Item, ID 295, after correct Wool publication.
+The geometry test-only optimization replaces a three-row `deepcopy` and keeps
+eight tests/478 comparison calls, source, captured helpers and fixtures intact.
+Paired elapsed time decreases from 11.352 to 10.662 seconds, about 6.1%; this
+measures packet tests and provides no client FPS result.
+
+The historical Windows full run passed 593/602 in 215.03 seconds, with 3,293 selected
 inputs and 823 resources unchanged. Two Slime/Cow failures record foreign
 Remote Desktop foreground activation and correct Pause. Seven source-binding
 gates separately reject metadata stale after diagnostic-fixture changes;
 the declarations are now refreshed and the exact seven tests pass separately
 in 13.29 seconds with comparisons and guards unchanged. The historical
-593/602 run remains failed; no new full pass is inferred. The preceding 26-test selection passes
+593/602 run remains failed; the focused rerun did not itself establish a full pass. The preceding 26-test selection passes
 24 in 188.02 seconds, including local attack in 12.65 seconds, with actual
 `msrdc.exe` owners for Slime/Wolf focus failures. Whole Windows focus stability
 remains unqualified; older uninstrumented owners remain unknown. Byte predicates
 and focus behavior are unchanged.
 
-The broad Linux full build and 597 public tests pass in 166.82 seconds with
+The historical broad Linux full build and 597 public tests pass in 166.82 seconds with
 Xvfb/software GL, display tests, Clang ASan/UBSan, leak detection and halt-on-error.
 Later 747-check component controls retain separate source scope; the Linux SDK
 death/autosave encounter remains unqualified. Earlier broad Windows failures,
@@ -322,8 +369,7 @@ All 2,319 C/helper/build inputs remain unchanged. The loaded Windows suite keeps
 saves/resources and 72 focus histories intact, then reaches clouds963.
 
 The preceding [published particle checkpoint](https://github.com/frankischilling/minecraft-c/actions/runs/41120338107)
-passes all four hosted jobs and 1,578 tests. Hosted weather qualification remains
-pending. The following particle results describe that preceding increment.
+passes all four hosted jobs and 1,578 tests. Hosted checks apply to their exact tested commit. The following particle results describe that preceding increment.
 
 The [particle selection](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particle-rendering.md#qualification)
 builds all 45 targets on Windows MSVC Debug and Linux Clang18 ASan/UBSan.

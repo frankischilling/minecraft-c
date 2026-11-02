@@ -223,11 +223,17 @@ static bool item_color(mc_client_item_gui_call *c, int32_t active_pc, int32_t in
         return registry_failure(c, "GUI Item actual GM.c aaload", index_pc);
     if (c->state.color_item == NULL)
         return null_reference(c, "actual GUI Item null color Item", invoke_pc);
-    if (c->state.color_item->kind != MC_ITEM_BASE && c->state.color_item->kind != MC_ITEM_BOW &&
-        c->state.color_item->kind != MC_ITEM_BLOCK)
-        return fail(c, MC_CLIENT_ITEM_GUI_UNIMPLEMENTED, "GUI Item color declaring-class proof",
-                    raw_descriptor, invoke_pc, true);
-    c->state.color = 16777215; /* Actual inherited GM.f(int). */
+    if (!mc_item_render_color(c->registry, c->state.color_item, c->state.metadata, &c->state.color,
+                              &c->failure.item)) {
+        c->failure.child =
+            (mc_client_graphics_site){c->failure.item.site.class_name, c->failure.item.site.method,
+                                      c->failure.item.site.descriptor, c->failure.item.site.pc};
+        c->failure.source_exception = c->failure.item.source_exception;
+        c->failure.exception_class = c->failure.item.exception_class;
+        c->failure.throwable = c->failure.item.throwable;
+        return fail(c, MC_CLIENT_ITEM_GUI_ITEM_FAILED, c->failure.item.operation, raw_descriptor,
+                    invoke_pc, c->failure.item.native_policy);
+    }
     c->state.color_returned = true;
     return true;
 }
@@ -443,20 +449,8 @@ static bool body(mc_client_item_gui_call *c) {
         if (!lookup(c, c->state.id < 256 ? "/terrain.png" : "/gui/items.png",
                     c->state.id < 256 ? 237 : 250, c->state.id < 256 ? 240 : 253))
             return false;
-        if (mc_registry_item_c_get(c->registry, &c->state.item_array, &c->failure.registry) !=
-            MC_REGISTRY_OK)
-            return registry_failure(c, "GUI Item actual GM.c active use", 256);
-        if (mc_registry_item_c_at(c->registry, c->state.item_array, c->state.id,
-                                  &c->state.color_item, &c->failure.registry) != MC_REGISTRY_OK)
-            return registry_failure(c, "GUI Item actual GM.c aaload", 260);
-        if (c->state.color_item == NULL)
-            return null_reference(c, "actual GUI Item null color Item", 263);
-        if (c->state.color_item->kind != MC_ITEM_BASE && c->state.color_item->kind != MC_ITEM_BOW &&
-            c->state.color_item->kind != MC_ITEM_BLOCK)
-            return fail(c, MC_CLIENT_ITEM_GUI_UNIMPLEMENTED, "GUI Item color declaring-class proof",
-                        raw_descriptor, 263, true);
-        c->state.color = 16777215; /* Actual GM.f(int), inherited by QZ. */
-        c->state.color_returned = true;
+        if (!item_color(c, 256, 260, 263))
+            return false;
         if (!fp(c, 280))
             return false;
         for (size_t i = 0; i < 3; ++i) {

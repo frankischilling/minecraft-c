@@ -82,6 +82,23 @@ reentry, captured-array identity and nullable source-cell controls. The
 [Dungeon caller](../world/population/dungeon.md) has separate whole-call native
 contracts and finite original helper comparisons.
 
+## Combat and rendering reads
+
+The [combat dispatch](combat.md) now resolves all 38 actual client Item kinds
+to GM/DQ/QD/SA bodies. The late Stack wrappers capture `gm.c` separately at each
+source use, then reload the current Stack ID before indexing. The damage
+receiver, later hit receiver and durability maximum can therefore come from
+different source reads. An earlier capture does not replace a later source reload.
+
+Renderer dispatch also distinguishes method bodies from constructor fields.
+Inherited GM icon/color/full3D/rotate leaves use their actual field or literal
+body. DQ/QD/LA/CS full3D methods return true, and CS rotate returns true, even
+when the inherited `GM.bi` field differs. Wool BI keeps its metadata mapping.
+The KM/GO/EN/MR/UY icon overrides and UY color remain named dependencies.
+The [original inventory](../../tests/reference/entity/held_item_attack/item-inventory.json)
+records all 202 IDs, declaring methods and scalar observations; it does not
+turn those remaining overrides into native successes.
+
 ## Failures, observations and lifetime
 
 Each declaring class retains its own phase, source position and first failure.

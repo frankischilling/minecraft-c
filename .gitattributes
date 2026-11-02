@@ -18,3 +18,8 @@
 .clang-format text eol=lf
 LICENSE text eol=lf
 licenses/openal-soft/* text eol=lf
+
+# Preserve the exact byte-pinned capture inputs and reference packet files.
+tests/reference/client/held_item_geometry/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/entity/held_item_attack/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/entity/held_item_attack/HeldItemObservation.java -text whitespace=trailing-space,space-before-tab,cr-at-eol

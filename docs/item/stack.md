@@ -28,10 +28,21 @@ allocation ceiling includes the live item/source graph and each simultaneous
 scratch, encoded-buffer and codec allocation. It does not measure whole-world
 memory or reproduce writes into an original mutable compound.
 
+The separate [combat body](combat.md) now implements source durability on the
+same live Stack. It performs independent Item lookups for damageability and
+maximum damage, with the wrapped damage store between them. Breaking requires
+damage strictly greater than the maximum. The broken statistic precedes the
+count decrement, negative clamp and damage reset. A later Player Inventory
+clear does not alter the retained Stack's count or add an Inventory dirty store.
+The source's post-break Player hook is empty and produces no modern break effects.
+
 `item.stack` exercises 93 native contracts, including failed reads, self-borrowed
 source replacement, aliases, split wrapping, container overlays and document
 independence. The GCC 13.3 and Clang 18.1 Linux runs pass with address, leak and
 undefined-behavior checks enabled. Native Windows MSVC 19.51 passes the same
-checks without sanitizers. Original comparisons and gameplay/container
-integration remain unverified. See the
+checks without sanitizers. Those state-record checks retain their original scope;
+the newer held attack packet separately compares the reached combat mutations.
+The frozen Windows Iron-Sword-break SDK scenario also exercises source clearing
+and independently matches every actual save against all 40 live Inventory slots.
+Broader gameplay/container integration remains unverified. See the
 [source evidence and verification scope](../reference/state-records.md).

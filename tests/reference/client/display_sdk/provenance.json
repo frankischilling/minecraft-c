@@ -1902,8 +1902,8 @@
       "sha256": "3bf0180c5e8839fafea0718f66fbb996a1d50f9bcd018abc04af6afb0997adef"
     },
     "tests/client/statistics/test_player_dispatch.c": {
-      "bytes": 35628,
-      "sha256": "5d38f5164c41f34212b8512fd5a0c72b33107fc55991c50980a4031638d94094"
+      "bytes": 35900,
+      "sha256": "2428bee854c5c097134fe063dea2bf10b31205441823d7886c11cc5ef09f7e9a"
     },
     "tests/client/texture_effects/fixtures.h": {
       "bytes": 4506,
@@ -4658,8 +4658,8 @@
       "sha256": "1ad79072782b8ec19226dba1ef079acd7f01d455b39e227d4a5a617e6f1bc344"
     },
     "include/mc/client/world/held_item_draw.h": {
-      "bytes": 3724,
-      "sha256": "edab9c4de8de1957c0f529c887f13e1d566b94bfe38bb8e612c35e1a033b4432"
+      "bytes": 3920,
+      "sha256": "0df8dac9b74fc2e66a246ae815cdf402eff1f2257428ea5e01815688ddbaf584"
     },
     "src/client/render/model_draw.c": {
       "bytes": 19859,
@@ -4674,8 +4674,8 @@
       "sha256": "eb5ab3b1cbb831ae07689979ece538dc612584bd154da4f1ab9de2488d755dd9"
     },
     "src/client/world/entity_renderer/held_item_draw.c": {
-      "bytes": 35248,
-      "sha256": "e64a4d6c46270c3458a7ca2831255d0daac671a083dd14d03a34f0a2d5a5e722"
+      "bytes": 35687,
+      "sha256": "6afb8ab5774f70dd8b63bc4e07ccb62fffffde1090d3c7a4fe38ccfbded9c14e"
     },
     "src/client/world/entity_renderer/held_item_draw_internal.h": {
       "bytes": 1412,
@@ -5198,8 +5198,8 @@
       "sha256": "18b390218e57b7a9a2f61c0979260afda3eee840a2d69c00dd3f2971bed311b9"
     },
     "src/entity/render/leaves.c": {
-      "bytes": 34194,
-      "sha256": "c4f0617df54ff1d45b0ac997a0c8d7e2f3de43008ef293f0ab28150ed00dab19"
+      "bytes": 34647,
+      "sha256": "5cc73075698a649206a2d890981f76fb6f3ea25bed053bed26afeb9b8d8b1278"
     },
     "src/world/runtime/block_normal_internal.h": {
       "bytes": 3982,
@@ -5362,12 +5362,12 @@
       "sha256": "ac844efa1fb21c81ba865c2432c8d79e3803f94dd18f3aa8b60f16e89c851793"
     },
     "src/client/world/entity_renderer/held_bow_geometry.c": {
-      "bytes": 12130,
-      "sha256": "cae17562bad6f8d0dd92f3924d3ba2fdf25cab525b92d55b2348416bfb167994"
+      "bytes": 13356,
+      "sha256": "1553ae6c0a40410960d40252fcafc6a97dba60f0593d805882e5a4d1287baa83"
     },
     "src/client/world/entity_renderer/held_bow_geometry_internal.h": {
-      "bytes": 3768,
-      "sha256": "a326a61ac8bbab5f1df7fa48ae839078ae26c74e78a48ee36db0e5a553991d74"
+      "bytes": 4851,
+      "sha256": "6fea106f4445f596739d04d963ea5b4ae73275cf269e66eb15942d9285b14475"
     },
     "src/client/world/entity_renderer/held_stack_guard_internal.h": {
       "bytes": 726,
@@ -5390,8 +5390,8 @@
       "sha256": "98d80249c72bd2e743ab7b3408310096ff93a1bb34ce3df2dd88b4295b2b7d31"
     },
     "src/item/render/leaves.c": {
-      "bytes": 15525,
-      "sha256": "033a0e4232f87f0effd1992b27772988465e7856b592240e9d493657d1b806e1"
+      "bytes": 20479,
+      "sha256": "271c2cf62bc6d15f13a85e11022083acb5f5f8aaff7dcb364b44b350b7f01ed2"
     },
     "tests/client/render/test_remaining_mob_draw.c": {
       "bytes": 100487,
@@ -5902,8 +5902,8 @@
       "sha256": "d06662e486fabc14193d2937fed0b4e4f8b77fde3a1d173245706ac858716ae2"
     },
     "src/client/render/item_gui.c": {
-      "bytes": 28194,
-      "sha256": "1b156ec3818b520845423598b248dce149c5016b452fb68adcc3b5a28d04e7df"
+      "bytes": 27638,
+      "sha256": "73dc5949319afef6416597abfda5cae3bad878f6bc5248aba61ed2f849681bb2"
     },
     "src/client/render/item_gui.h": {
       "bytes": 4794,
@@ -6062,8 +6062,8 @@
       "sha256": "9e5e57a69022ca7e5f6c357f0cbd87c44ff7b11fef85508f6880bd5cbbc0e6a6"
     },
     "src/client/world/entity_renderer/held_block.inc": {
-      "bytes": 13248,
-      "sha256": "538aea3dbe96ca1564de29fd0a3ad146a7a129722211cc05b9ff490aebcc9b30"
+      "bytes": 18530,
+      "sha256": "3d5a81e02587d1869c99cd7d1def6c35c38c7fb9fb23f561e5fe13a122785cdd"
     },
     "src/client/world/render_global_auxiliary.inc": {
       "bytes": 15098,
@@ -6094,8 +6094,8 @@
       "sha256": "875f2fc4dbb6075afef5c929335337f81124337c36c44d3204ced9a854ca6fbc"
     },
     "tests/client/render/test_inventory_block.c": {
-      "bytes": 9647,
-      "sha256": "72610110b72f756e0bd102a3ca46527a5b882fcbacf2a31ea20cab9e17a056a5"
+      "bytes": 26343,
+      "sha256": "7034c2ef6f4315b12011957935e15435e25294e45f1b2517ac88ea3a6ca62643"
     },
     "tests/entity/particles/test_digging.c": {
       "bytes": 10377,
@@ -6126,16 +6126,16 @@
       "sha256": "4fe0d2d93e250c89139ff50dc548b1f1132a47e937a31fa5fecdbaf9e1116a64"
     },
     "src/client/gui/gui_ingame_slots.inc": {
-      "bytes": 11333,
-      "sha256": "c4a59a4e4beafcb053cf8212d558bb02435fb741b04dda53a2008a09ae1a0152"
+      "bytes": 11406,
+      "sha256": "fe2c265d415491ed64d12c9964503531d93afe24f50dff8b15c5750a7b58239f"
     },
     "src/client/render/item_overlay.c": {
-      "bytes": 7954,
-      "sha256": "1b3f53cec3590f1d4ec2f77f44eb7012e9a9a3ca34f0e9fcafccd466aaafa027"
+      "bytes": 17555,
+      "sha256": "d1a2c6a3fc7d904a9d9fda666989c53992e0222768d26ccf9abc42a5cc828d06"
     },
     "src/client/render/item_overlay.h": {
-      "bytes": 1363,
-      "sha256": "4d07004e3781ff798bbc02ddd7f7ba73491bbd7671e95ba7f8e2b652e8f3ceb9"
+      "bytes": 2569,
+      "sha256": "534e3d77417a9791ec791994b4d9a914e826d95144b454ca34d7a338d3f599fd"
     },
     "tests/reference/client/mining/verify.py": {
       "bytes": 10907,
@@ -6518,8 +6518,8 @@
       "sha256": "1481b597ea894db9c33d6aa812e8fdb77ce228e6e48bbe478f9be67731829dba"
     },
     "cmake/player_attack.cmake": {
-      "bytes": 3573,
-      "sha256": "0718934b48ca51a45e89e93ce76e085a40d4df742cc7565c58ae55873f991deb"
+      "bytes": 9056,
+      "sha256": "5b8d4a21c9362fd8ded8bddc8b961e188746f25fc5d2ef62e1a306fab2afc0ac"
     },
     "cmake/tests/explosion_draw.cmake": {
       "bytes": 1010,
@@ -6530,8 +6530,8 @@
       "sha256": "07d6f51ab6d12cf5273008f44ee77bf3c9458339ca27af468ebcb8d25c2bb2bd"
     },
     "include/mc/entity/player/attack.h": {
-      "bytes": 2847,
-      "sha256": "4fd5410817bffd175ecd4223bc5721c4a1157a8ac3181ac51ff005b54dabb1c6"
+      "bytes": 3216,
+      "sha256": "3d962a1abe2ca8a1e438b705dbecb6baa8e9f86b125e3fc00b8b0fb7ad252dcd"
     },
     "src/client/controller/attack.c": {
       "bytes": 1327,
@@ -6542,8 +6542,8 @@
       "sha256": "f5e3fa8e9f296f1043b995766a592b71addb659590c2bb42bd8d66f03fe805ec"
     },
     "src/entity/player/attack.c": {
-      "bytes": 23951,
-      "sha256": "4fd552e156e30b53f1b7d2295d0410e3e6472055772c34dcbc81f737cc3ba98b"
+      "bytes": 29721,
+      "sha256": "43d555c23e0c817c985c2aa7914f6e0e202e81b0667f97aeef69903620956e3b"
     },
     "src/entity/player/combat_callbacks.c": {
       "bytes": 4451,
@@ -6554,12 +6554,12 @@
       "sha256": "36becbf8d8b86c0b9d785c7ce5f64259b9c051f1b6a5de18ec9c3ce683e1ada6"
     },
     "tests/client/gameplay/test_attack.c": {
-      "bytes": 19776,
-      "sha256": "a2f83f91b1e685e188052a7bbcda7a0255fe50a042f69366fa6c085ee1bfc5cc"
+      "bytes": 49611,
+      "sha256": "cf989c7263f3588f4d72e2351581c191c4330bf62f2dca48fedbc862379bec7b"
     },
     "tests/client/gameplay/test_attack_autosave.inc": {
-      "bytes": 21120,
-      "sha256": "24b424d8f7ae5edfe4bb4f4e359128c124c2820fcaf29b23d49a86add3971a62"
+      "bytes": 24397,
+      "sha256": "4937e5098215d38d6672fc89f4f8cc2fea3cfe965a2a334da6133e3eba8dc462"
     },
     "tests/client/particles/test_explosion_draw.c": {
       "bytes": 10165,
@@ -6574,8 +6574,8 @@
       "sha256": "7862134b9cde5fd03b9bf874d4b95771602bb09fd0778377ad332450090223de"
     },
     "tests/entity/player/test_attack.c": {
-      "bytes": 22313,
-      "sha256": "708fb1c499edbb2e6a98b3eacf0bdbf7cf7021ec735c78737f496900039882ae"
+      "bytes": 35244,
+      "sha256": "cc537651c8b1a3766bcbc97b5fd730814f83277ec2f24a7ddab76293a775ddc4"
     },
     "tests/reference/entity/explosion_particle/audit.py": {
       "bytes": 4931,
@@ -6614,8 +6614,8 @@
       "sha256": "e41eb382d1d92e916a6d9119d041519712b02165b53656a3ced44734fdfc840c"
     },
     "tests/tools/client/test_attack_loop.py": {
-      "bytes": 8581,
-      "sha256": "24ae37086eab493f4b3c544213f0509e62e63849a87cf99deb612c15eb0169c7"
+      "bytes": 19487,
+      "sha256": "489711a1a1a69b63361c7589a43374d2d5406c5d41ddc69191685789c4732366"
     },
     "tests/tools/client/test_explosion_draw.py": {
       "bytes": 2151,
@@ -6628,6 +6628,110 @@
     "tests/tools/entity/test_player_attack.py": {
       "bytes": 2227,
       "sha256": "d7d9b5b02224ca88238807b2dc703ff9d452b3655724dd5e9e266cc6e46d5de9"
+    },
+    "include/mc/item/combat/combat.h": {
+      "bytes": 3405,
+      "sha256": "3e06acf401d00a1fb8e844030fc0937f244969d0adeb8cc7d5da0644a219aa15"
+    },
+    "src/inventory/player/source_internal.h": {
+      "bytes": 1188,
+      "sha256": "6262ce2a3a6578cbf56612f7b00ec963d3596115ba980858bc1196788e529d55"
+    },
+    "src/item/combat/combat.c": {
+      "bytes": 20587,
+      "sha256": "2107610b9c5cfaffac633b1ad287c7b7a7934abd78eeb59c0af699510e9ba6dc"
+    },
+    "tests/client/render/test_held_item_geometry.c": {
+      "bytes": 11276,
+      "sha256": "edf66022c4142668da932f9ff35b58a5f4bd2949245db82875c7f60b8b0d73ad"
+    },
+    "tests/entity/player/test_held_attack.c": {
+      "bytes": 17719,
+      "sha256": "fb1f59e5677bf9ad5113298b623fe87d532a5188fe49b59875470426dc0b1285"
+    },
+    "tests/inventory/player/test_source_set.c": {
+      "bytes": 8359,
+      "sha256": "a8728e61c367c02810c7e5045f7285d5f6391695b91b26648d99b7111cef4c03"
+    },
+    "tests/item/combat/test_combat.c": {
+      "bytes": 13480,
+      "sha256": "a09a69319067719916d917cdae919e04bc652a9b0eef6dcac7901a3a6ba180e3"
+    },
+    "tests/reference/client/held_item_geometry/audit.py": {
+      "bytes": 6335,
+      "sha256": "25a9e5ecc7a17b23c0f7048d82777fa33cac4e52cae583e3815a84ff3f9f16c6"
+    },
+    "tests/reference/client/held_item_geometry/capture_reference.py": {
+      "bytes": 8076,
+      "sha256": "e646e87655630583d413b53be911093a0f78ea7a41318dc8fa501ccf019489eb"
+    },
+    "tests/reference/client/held_item_geometry/compare.py": {
+      "bytes": 2293,
+      "sha256": "abcb1f436ed7d82b701fb2bdc069f347e4513752b4c3aca0045a7d08f372c8ee"
+    },
+    "tests/reference/client/held_item_geometry/test_packet.py": {
+      "bytes": 6330,
+      "sha256": "d25ef398a3c2b7a01ecbdd3750bfc10731fcc901c4138ccf8d5698c23f274b41"
+    },
+    "tests/reference/client/item_durability_overlay/audit.py": {
+      "bytes": 7888,
+      "sha256": "3c3cfaea8279dc9842d1c0cdc9fadf07c2c6b2e0460732b37f1f2b7de2171fe1"
+    },
+    "tests/reference/client/item_durability_overlay/capture_reference.py": {
+      "bytes": 7317,
+      "sha256": "b9757bec408944c2f33f63015bf2ba0376eedd3dc8168a4352db41070d06c1cf"
+    },
+    "tests/reference/client/item_durability_overlay/compare.py": {
+      "bytes": 4665,
+      "sha256": "4ae6eae625c5a1e19996fee12ef07bdeb727ebbe75275605324ef096391c7a57"
+    },
+    "tests/reference/client/item_durability_overlay/test_packet.py": {
+      "bytes": 5101,
+      "sha256": "9ba1f5c8b0a89037c655020e10fa412a5743e58949e332a89749f8653cb209c7"
+    },
+    "tests/reference/entity/held_item_attack/audit.py": {
+      "bytes": 5229,
+      "sha256": "15797321821c4a3635b41961ea32a122f377fe3bd4ce13ee3c44a00a15ecf7d1"
+    },
+    "tests/reference/entity/held_item_attack/audit_research.py": {
+      "bytes": 5523,
+      "sha256": "d54427857d893c38991985dc308699777fe03699955fd97ab2c8529f8eb4a3be"
+    },
+    "tests/reference/entity/held_item_attack/capture_reference.py": {
+      "bytes": 7100,
+      "sha256": "bf66be4c888820eb644ff18390c4aed045848e6752e775f08f56b87715526ca3"
+    },
+    "tests/reference/entity/held_item_attack/compare.py": {
+      "bytes": 3976,
+      "sha256": "598f6b3dbe49c5ac72f0d1f0cc5fa101ce585137d6417d709fa1c76ed0c28c92"
+    },
+    "tests/reference/entity/held_item_attack/cow.py": {
+      "bytes": 5932,
+      "sha256": "9e2705741660050095ebe366cfbebe848bfc37b67c3bbbe6d75a640b7018f77d"
+    },
+    "tests/reference/entity/held_item_attack/test_packet.py": {
+      "bytes": 8014,
+      "sha256": "cb68c4275a120cfdad82ce08b2e5a84a79fe0511268ac0db93a8e04ca6a297ac"
+    },
+    "tests/tools/client/test_attack_inventory.py": {
+      "bytes": 11527,
+      "sha256": "f9ba4612eaaa0717bbf394630cfe6fec19bdbee263251b0a448d4d60bb4449e9"
+    },
+    "tests/tools/client/test_held_item_geometry.py": {
+      "bytes": 2160,
+      "sha256": "a934a8881c196f33ad00ee5f240a9944a97cd46f5a7b2df5f08ad9424f7fce79"
+    },
+    "tests/tools/client/test_item_durability_overlay.py": {
+      "bytes": 3235,
+      "sha256": "44da87ce69a1f378f5bed320c3a453f7673c19c3a98ca724deb8562a38b060bc"
+    },
+    "tests/tools/entity/test_held_item_attack.py": {
+      "bytes": 5617,
+      "sha256": "240e9dd3ae947a7a6b9d7266f4b33739dc66713fff4228a85aacb2304c75f9a6"
+    },
+    "tests/tools/item/test_combat.py": {
+      "bytes": 1567,
+      "sha256": "a7bcdc72ea39c18ca8fbe0ff106831b4fba50a1ee76d4d41591c3b93139addff"
     }
   },
   "authorities": {

@@ -22,7 +22,8 @@ static bool fp(mc_held_bow_error *e, unsigned int pc) {
 }
 
 static bool work(mc_held_bow_error *e) {
-    return mc_client_draw_work_step(e->native_scope, &e->capture_failure) ||
+    return e->native_scope == NULL ||
+           mc_client_draw_work_step(e->native_scope, &e->capture_failure) ||
            failed(e, MC_HELD_BOW_CAPTURE_FAILED, e->capture_failure.operation);
 }
 
@@ -127,12 +128,9 @@ static float back(float thickness) {
     return mc_travel_fsub(0.0f, thickness);
 }
 
-bool entity_renderer_held_bow_draw(mc_client_draw_scope *scope, int32_t icon,
-                                   mc_client_tessellator *nw,
-                                   mc_client_render_engine_classes *graphics,
-                                   mc_client_display *display, mc_held_bow_error *e) {
-    if (e == NULL)
-        return false;
+static void initialize(mc_client_draw_scope *scope, int32_t icon, mc_client_tessellator *nw,
+                       mc_client_render_engine_classes *graphics, mc_client_display *display,
+                       mc_held_bow_error *e) {
     memset(e, 0, sizeof(*e));
     e->site.pc = -1;
     e->state.strip = -1;
@@ -141,13 +139,13 @@ bool entity_renderer_held_bow_draw(mc_client_draw_scope *scope, int32_t icon,
     e->state.graphics = graphics;
     e->state.display = display;
     e->native_scope = scope;
-    /* Native live-context contract, not a substitute Source RA admission. */
-    if (graphics == NULL || display == NULL)
-        return failed(e, MC_HELD_BOW_ARGUMENT, "Bow native context tuple required");
+}
+
+static bool coordinates(mc_held_bow_error *e) {
     /* Positive divisor16 cannot trigger C/Java INT_MIN/-1 overflow. C17 signed
      * / and % truncate toward zero exactly as Java idiv/irem. Multiplication
      * still uses the established Java wrapping kernel. Never floor-mod icons. */
-    e->state.remainder16 = icon % 16;
+    e->state.remainder16 = e->state.icon % 16;
     e->state.column_pixels = mc_java_i32_mul(e->state.remainder16, 16);
     if (!fp(e, 143))
         return false;
@@ -155,14 +153,119 @@ bool entity_renderer_held_bow_draw(mc_client_draw_scope *scope, int32_t icon,
     at(e, 149);
     e->state.u1 = mc_travel_fdiv(mc_travel_fadd(i2f(e->state.column_pixels), 15.99f), 256.0f);
     at(e, 166);
-    e->state.quotient16 = icon / 16;
+    e->state.quotient16 = e->state.icon / 16;
     e->state.row_pixels = mc_java_i32_mul(e->state.quotient16, 16);
     e->state.v0 = mc_travel_fdiv(mc_travel_fadd(i2f(e->state.row_pixels), 0.0f), 256.0f);
     at(e, 182);
     e->state.v1 = mc_travel_fdiv(mc_travel_fadd(i2f(e->state.row_pixels), 15.99f), 256.0f);
     at(e, 199);
     e->state.span = 1.0f;
+    return true;
+}
 
+/* Same entered NW groups for both RA callers. The CPU component entry below
+ * supplies an actual selected group, without executing GL or inventing draw. */
+static bool emit_batch(mc_held_bow_error *e, unsigned int batch) {
+    const float u0 = e->state.u0, u1 = e->state.u1, v0 = e->state.v0, v1 = e->state.v1;
+    const float span = e->state.span, thickness = e->state.thickness;
+    if (batch == 0)
+        return begin(e, 0, 268) && normal(e, 0, 0, 1, 275) && vertex(e, 0, 0, 0, u1, v1, 288) &&
+               vertex(e, span, 0, 0, u0, v1, 303) && vertex(e, span, 1, 0, u0, v0, 318) &&
+               vertex(e, 0, 1, 0, u1, v0, 331);
+    if (batch == 1)
+        return begin(e, 1, 339) && normal(e, 0, 0, -1, 347) &&
+               vertex(e, 0, 1, back(thickness), u1, v0, 364) &&
+               vertex(e, span, 1, back(thickness), u0, v0, 383) &&
+               vertex(e, span, 0, back(thickness), u0, v1, 402) &&
+               vertex(e, 0, 0, back(thickness), u1, v1, 419);
+    static const unsigned int begins[] = {427, 558, 691, 828};
+    static const unsigned int normals[] = {435, 565, 698, 836};
+    static const unsigned int conversions[] = {450, 580, 713, 851};
+    static const unsigned int vertices[4][4] = {
+        {495, 510, 525, 544}, {628, 642, 657, 677}, {757, 774, 795, 814}, {894, 909, 928, 949}};
+    const size_t group = batch - 2u;
+    if (!begin(e, (unsigned int)group + 2u, begins[group]))
+        return false;
+    const float nx = group == 0 ? -1.0f : group == 1 ? 1.0f : 0.0f;
+    const float ny = group == 2 ? 1.0f : group == 3 ? -1.0f : 0.0f;
+    if (!normal(e, nx, ny, 0, normals[group]))
+        return false;
+    for (int32_t strip = 0; strip < 16; ++strip) {
+        e->state.strip = strip;
+        at(e, conversions[group]);
+        if (!work(e))
+            return false;
+        if (!fp(e, conversions[group]))
+            return false;
+        const float fraction = mc_travel_fdiv(i2f(strip), 16.0f);
+        e->state.fraction = fraction;
+        const float hi = group < 2 ? u1 : v1, lo = group < 2 ? u0 : v0;
+        const float difference = mc_travel_fsub(lo, hi);
+        const float product = mc_travel_fmul(difference, fraction);
+        const float interpolated = mc_travel_fadd(hi, product);
+        const float uv = mc_travel_fsub(interpolated, .001953125f);
+        e->state.strip_uv = uv;
+        float position = mc_travel_fmul(span, fraction);
+        if (group == 1 || group == 2)
+            position = mc_travel_fadd(position, .0625f);
+        e->state.strip_position = position;
+        const unsigned int *p = vertices[group];
+        if (group == 0) {
+            if (!vertex(e, position, 0, back(thickness), uv, v1, p[0]) ||
+                !vertex(e, position, 0, 0, uv, v1, p[1]) ||
+                !vertex(e, position, 1, 0, uv, v0, p[2]) ||
+                !vertex(e, position, 1, back(thickness), uv, v0, p[3]))
+                return false;
+        } else if (group == 1) {
+            if (!vertex(e, position, 1, back(thickness), uv, v0, p[0]) ||
+                !vertex(e, position, 1, 0, uv, v0, p[1]) ||
+                !vertex(e, position, 0, 0, uv, v1, p[2]) ||
+                !vertex(e, position, 0, back(thickness), uv, v1, p[3]))
+                return false;
+        } else if (group == 2) {
+            if (!vertex(e, 0, position, 0, u1, uv, p[0]) ||
+                !vertex(e, span, position, 0, u0, uv, p[1]) ||
+                !vertex(e, span, position, back(thickness), u0, uv, p[2]) ||
+                !vertex(e, 0, position, back(thickness), u1, uv, p[3]))
+                return false;
+        } else {
+            if (!vertex(e, span, position, 0, u0, uv, p[0]) ||
+                !vertex(e, 0, position, 0, u1, uv, p[1]) ||
+                !vertex(e, 0, position, back(thickness), u1, uv, p[2]) ||
+                !vertex(e, span, position, back(thickness), u0, uv, p[3]))
+                return false;
+        }
+    }
+    return true;
+}
+
+bool entity_renderer_held_item_geometry_batch(int32_t icon, unsigned int batch,
+                                              mc_client_tessellator *nw,
+                                              mc_client_render_engine_classes *graphics,
+                                              mc_held_bow_error *e) {
+    if (e == NULL)
+        return false;
+    initialize(NULL, icon, nw, graphics, NULL, e);
+    if (graphics == NULL || batch >= 6)
+        return failed(e, MC_HELD_BOW_ARGUMENT, "Held Item entered geometry group/context");
+    if (!coordinates(e))
+        return false;
+    e->state.thickness = .0625f;
+    return emit_batch(e, batch);
+}
+
+bool entity_renderer_held_bow_draw(mc_client_draw_scope *scope, int32_t icon,
+                                   mc_client_tessellator *nw,
+                                   mc_client_render_engine_classes *graphics,
+                                   mc_client_display *display, mc_held_bow_error *e) {
+    if (e == NULL)
+        return false;
+    initialize(scope, icon, nw, graphics, display, e);
+    /* Parent owns the real context tuple and its complete retained graph. */
+    if (graphics == NULL || display == NULL)
+        return failed(e, MC_HELD_BOW_ARGUMENT, "Bow native context tuple required");
+    if (!coordinates(e))
+        return false;
 #define DISPLAY(pc, expression)                                                                    \
     do {                                                                                           \
         at(e, pc);                                                                                 \
@@ -179,81 +282,10 @@ bool entity_renderer_held_bow_draw(mc_client_draw_scope *scope, int32_t icon,
     DISPLAY(252, mc_client_display_source_rotate(display, 335.0f, 0.0f, 0.0f, 1.0f, &e->display));
     DISPLAY(260, mc_client_display_source_translate(display, -.9375f, -.0625f, 0.0f, &e->display));
     e->state.thickness = .0625f;
-    const float u0 = e->state.u0, u1 = e->state.u1, v0 = e->state.v0, v1 = e->state.v1;
-    const float span = e->state.span, thickness = e->state.thickness;
-    if (!begin(e, 0, 268) || !normal(e, 0, 0, 1, 275) || !vertex(e, 0, 0, 0, u1, v1, 288) ||
-        !vertex(e, span, 0, 0, u0, v1, 303) || !vertex(e, span, 1, 0, u0, v0, 318) ||
-        !vertex(e, 0, 1, 0, u1, v0, 331) || !draw(e, 335))
-        return false;
-    if (!begin(e, 1, 339) || !normal(e, 0, 0, -1, 347) ||
-        !vertex(e, 0, 1, back(thickness), u1, v0, 364) ||
-        !vertex(e, span, 1, back(thickness), u0, v0, 383) ||
-        !vertex(e, span, 0, back(thickness), u0, v1, 402) ||
-        !vertex(e, 0, 0, back(thickness), u1, v1, 419) || !draw(e, 423))
-        return false;
-
-    static const unsigned int begins[] = {427, 558, 691, 828};
-    static const unsigned int normals[] = {435, 565, 698, 836};
-    static const unsigned int conversions[] = {450, 580, 713, 851};
-    static const unsigned int draws[] = {554, 687, 824, 959};
-    static const unsigned int vertices[4][4] = {
-        {495, 510, 525, 544}, {628, 642, 657, 677}, {757, 774, 795, 814}, {894, 909, 928, 949}};
-    for (size_t group = 0; group < 4; ++group) {
-        if (!begin(e, (unsigned int)group + 2u, begins[group]))
+    static const unsigned int draws[] = {335, 423, 554, 687, 824, 959};
+    for (unsigned int batch = 0; batch < 6; ++batch)
+        if (!emit_batch(e, batch) || !draw(e, draws[batch]))
             return false;
-        const float nx = group == 0 ? -1.0f : group == 1 ? 1.0f : 0.0f;
-        const float ny = group == 2 ? 1.0f : group == 3 ? -1.0f : 0.0f;
-        if (!normal(e, nx, ny, 0, normals[group]))
-            return false;
-        for (int32_t strip = 0; strip < 16; ++strip) {
-            e->state.strip = strip;
-            at(e, conversions[group]);
-            if (!work(e))
-                return false;
-            if (!fp(e, conversions[group]))
-                return false;
-            const float fraction = mc_travel_fdiv(i2f(strip), 16.0f);
-            e->state.fraction = fraction;
-            const float hi = group < 2 ? u1 : v1, lo = group < 2 ? u0 : v0;
-            const float difference = mc_travel_fsub(lo, hi);
-            const float product = mc_travel_fmul(difference, fraction);
-            const float interpolated = mc_travel_fadd(hi, product);
-            const float uv = mc_travel_fsub(interpolated, .001953125f);
-            e->state.strip_uv = uv;
-            float position = mc_travel_fmul(span, fraction);
-            if (group == 1 || group == 2)
-                position = mc_travel_fadd(position, .0625f);
-            e->state.strip_position = position;
-            const unsigned int *p = vertices[group];
-            if (group == 0) {
-                if (!vertex(e, position, 0, back(thickness), uv, v1, p[0]) ||
-                    !vertex(e, position, 0, 0, uv, v1, p[1]) ||
-                    !vertex(e, position, 1, 0, uv, v0, p[2]) ||
-                    !vertex(e, position, 1, back(thickness), uv, v0, p[3]))
-                    return false;
-            } else if (group == 1) {
-                if (!vertex(e, position, 1, back(thickness), uv, v0, p[0]) ||
-                    !vertex(e, position, 1, 0, uv, v0, p[1]) ||
-                    !vertex(e, position, 0, 0, uv, v1, p[2]) ||
-                    !vertex(e, position, 0, back(thickness), uv, v1, p[3]))
-                    return false;
-            } else if (group == 2) {
-                if (!vertex(e, 0, position, 0, u1, uv, p[0]) ||
-                    !vertex(e, span, position, 0, u0, uv, p[1]) ||
-                    !vertex(e, span, position, back(thickness), u0, uv, p[2]) ||
-                    !vertex(e, 0, position, back(thickness), u1, uv, p[3]))
-                    return false;
-            } else {
-                if (!vertex(e, span, position, 0, u0, uv, p[0]) ||
-                    !vertex(e, 0, position, 0, u1, uv, p[1]) ||
-                    !vertex(e, 0, position, back(thickness), u1, uv, p[2]) ||
-                    !vertex(e, span, position, back(thickness), u0, uv, p[3]))
-                    return false;
-            }
-        }
-        if (!draw(e, draws[group]))
-            return false;
-    }
     /* Unreachable after any failed begin/normal/vertex/draw. No finally-style
      * state repair is supplied. Parent still owns RA's push0 and this pop967. */
     DISPLAY(964, mc_client_display_source_rescale_normal(display, false, &e->display));

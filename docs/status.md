@@ -48,19 +48,60 @@ warmup, and strict record masks protect abandoned payloads/tail padding. All
 sixteen corruption controls pass; both tests finish in
 14.85 seconds.
 
-The broad Linux snapshot passes its full build and 597 public tests in 166.82
+The [held Item component](item/combat.md) now resolves all 38 actual Item Classes
+to GM/DQ/QD/SA behavior and preserves separate Item-array/Stack reloads,
+durability/statistic order and source Inventory clearing. The Windows component
+selection passes eight tests in 17.75 seconds: 425 genuine attacks/37,416 checks,
+422 exact selected rows plus three independently audited Cow deaths, and
+19,008 direct original Sword/Bow geometry words. The ten attack-packet and eight
+geometry-packet corruption tests pass. The damaged-Item overlay has a passing nine-profile,
+24-rectangle/576-active-word comparison and eight packet controls; its
+three-test Windows selection passes in 0.76 seconds. The original completes
+24 draws while the native CPU prefixes complete zero, with each own inactive
+backing checked unchanged.
+
+The frozen runtime passes all 611 Windows public tests in 280.15 seconds and
+all 606 Linux public tests in 145.58 seconds. Windows snapshots confirm all
+4,105 source inputs, 499 built products and 823 assets unchanged across the run.
+The Linux full build and public suite use Xvfb/software OpenGL and Clang 18
+ASan/UBSan with leak detection and halt-on-error, after a test-only `size_t`
+cast fix. The 4,105-file source archive matches on both hosts.
+Formatting passes for 1,932 files, and the binding audit covers 9,921 entries
+in 4,104 files. These are finite suite results, not a claim of global graphical
+focus stability. Hosted checks apply to their exact tested commit; SDK,
+full playable client and FPS qualification remain separate.
+
+The same frozen runtime passes the Windows SDK Dirt profile in 14.20 seconds
+with 1,446 checks and the Iron Sword break profile in 16.74 seconds with 3,631
+checks. The isolated unarmed profile passes in 13.22 seconds with 2,106 checks.
+Each observes three hand frames before and after the actual click, twenty GY
+particles, removal at death age 21, a real post-death autosave and cleanup.
+Independent decoding matches all 40 live Inventory slots to the NBT at every
+actual save entry and in the final disk image. These latest three runs publish
+Wool without picking it up. A separate earlier 13.38-second Sword pass proves
+actual Wool pickup and its slot-0 clone; that result is not combined with the
+latest run's counts.
+
+Earlier GUI-color, Dirt-hand, maximum-durability, focus/Pause and unconsumed-click
+failures remain historical failures. A failed all-World conservation assertion
+counted an unrelated distant Seed Item, ID 295; the observer now follows only
+the actual active `GS.d` Sheep producer. Sixteen public Inventory corruption
+controls run in CI. These finite native scenarios establish no original
+whole-frame, unrestricted-play or FPS claim.
+
+The preceding broad Linux snapshot passes its full build and 597 public tests in 166.82
 seconds with Xvfb/software OpenGL, display tests, Clang ASan/UBSan, leak
 detection and halt-on-error. Later Windows/Linux component controls pass 747
 checks and five original rows. The Linux SDK death/autosave encounter remains
 unqualified.
 
-The latest full Windows run passes 593/602 in 215.03 seconds, with 3,293
+The historical full Windows run passed 593/602 in 215.03 seconds, with 3,293
 selected inputs and 823 resources unchanged. Two Slime/Cow failures record
 foreign Remote Desktop foreground activation and correct source Pause; seven
 source-binding gates reject metadata left stale after a diagnostic-fixture
 change. The refreshed declarations now pass their exact seven-test rerun in
 13.29 seconds, with comparisons/guards unchanged. The historical 593/602 run
-remains failed and no new full pass is inferred. The preceding 26-test
+remains failed; that focused rerun did not itself establish a full pass. The preceding 26-test
 selection passes 24 in 188.02 seconds, including the local attack in 12.65
 seconds; its Slime/Wolf failures also have actual `msrdc.exe` owners. Whole
 Windows focus stability remains unqualified. The earlier Spider/Chicken/repeat
@@ -68,7 +109,7 @@ failures, isolated five-test pass and 1,900-check repeat pass retain their
 [documented snapshot scopes](testing.md#current-targeted-and-public-qualification).
 No focus behavior or byte predicate is relaxed. Hosted validation retains its
 exact tested-commit scope.
-Held Item damage/hit, other target overrides, Player death/respawn and full encounters remain
+Other target overrides, Player death/respawn and unrestricted encounters remain
 unfinished or unqualified.
 
 The Windows Release [collected-Dirt placement scenario](client/placement.md)
@@ -578,8 +619,7 @@ The preceding [published particle checkpoint](https://github.com/frankischilling
 passes all four hosted jobs: Windows 498, GCC 540 and Clang 540 tests, 1,578 total.
 Its Windows cache records 1,125 hits and 300 misses; configure/build/test steps take
 81/193/345 seconds. The earlier queued start was runner waiting time. This does
-not establish a workload-controlled speedup. Hosted qualification of the weather
-increment remains pending.
+not establish a workload-controlled speedup. Hosted checks apply to their exact tested commit.
 
 ## Preceding particle checkpoint
 
@@ -712,7 +752,7 @@ with 35 exact rows. All eight focused MSVC Debug CTests pass in 4.51 seconds,
 zero failures/skips. The loaded-World UI separately passes 704 checks in
 12.69 seconds, preserves all 72 focus histories/resources/saves and reaches
 frontier 496. Its inspected back buffer shows real authored grass terrain and
-Sky without HUD. Hosted qualification is pending; no whole-frame correspondence
+Sky without HUD. Hosted checks apply to their exact tested commit; no whole-frame correspondence
 or playable-client result is claimed.
 
 At the previous [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797),

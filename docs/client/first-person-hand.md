@@ -24,7 +24,8 @@ Source exceptions retain the reached stack and matrix; native retirement
 releases occurrences without inventing a pop or undoing GL effects.
 
 The [held body](../../src/client/world/entity_renderer/held_item_draw.c)
-implements the empty-slot and ordinary held-block routes of `ra.a(F)V`.
+implements the empty-slot, ordinary held-block and ordinary non-Map Item routes
+of `ra.a(F)V`.
 It interpolates equipped height
 and Player pitch, enables standard lighting under the actual rotation, queries
 World brightness and performs the swing transforms. The actual Engine chooses
@@ -37,6 +38,46 @@ burning, suffocation and water predicates, then restores alpha testing. Reached
 fire, inside-block and water drawing remain explicit dependencies. A nonempty
 ordinary Block uses the genuine Stack, source transforms, atlas and six-face CV
 inventory body. Unsupported Item/render families keep their reached draw child.
+
+## Held Item leaves and extrusion
+
+The Item method table now identifies the actual declaring bodies for all 38
+runtime kinds. Inherited GM icon/color/full3D/rotate calls retain their source
+field or literal behavior. DQ/QD/LA/CS full3D and CS rotate are literal-true
+bodies, independent of `GM.bi`. BI Wool preserves its inverse low-four-bit
+metadata icon. Other specialized metadata icons and UY color remain named
+dependencies; a registered kind does not imply every override is complete.
+
+The non-Block child of `RA.a(LS,IZ)` performs its real push, fresh Stack ID,
+RA App/Engine read, item-atlas lookup/bind, captured NW and actual LivingEntity
+icon query before extrusion. The first-person route reuses the existing
+production extrusion kernel also used for Skeleton's Bow. The same arithmetic
+and NW begin/normal/vertex groups supply both the full draw and CPU controls.
+Each icon emits 264 source vertices in 66 quads, converted to 396 packed
+vertices across six batches. Source failures retain the entered child and
+matrix prefix; cleanup does not invent the source pop.
+
+The [direct original packet](../../tests/reference/client/held_item_geometry/README.md)
+observes wooden/stone/iron/diamond/golden Sword icons 64 through 68 and Bow 21.
+Genuine original App, RenderEngine, Font, Player, Stack, RA and NW constructors
+run on a hidden Pbuffer. Ordinary and read-only-JDI execution return all six
+calls and retain 36 actual flush buffers. All 19,008 raw words match the native
+CPU entry exactly, with eight corruption tests passing.
+
+The original Font has already used the singleton NW. Its 18 nonzero stale
+coordinate/UV words are retained. The source overwrites active geometry, and
+the observed inactive color/reserved words remain zero. Full-word equality
+has that finite prior-state scope. It provides direct Sword evidence without
+borrowing a complete-App claim from the older RAW-App Bow packet. It does not
+qualify a full first-person frame or original pixels. The
+[damaged-Item HUD bar](gui-ingame.md#damaged-item-overlay) now has a passing
+selected CPU comparison with its own inactive-buffer scope and zero completed
+native prefix draws. The frozen Windows SDK profiles separately pass three
+before/after hand frames for held Dirt and the Iron Sword break. The Sword
+changes from icon 66 with 66 faces/264 source vertices to an empty hand after
+source Inventory clearing. These native scenarios do not establish original
+whole-frame or pixel equality; the [qualification record](../testing.md#held-item-attacks-and-direct-extrusion)
+retains exact counts and prior failures.
 
 ## Arm geometry and reuse
 

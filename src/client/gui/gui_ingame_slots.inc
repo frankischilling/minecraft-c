@@ -221,6 +221,7 @@ static bool item_slot(mc_client_gui_ingame_draw_call *c, int32_t index, int32_t 
     c->item_overlays[c->overlay_count++] = overlay;
     *overlay = (mc_client_item_overlay_context){.owner = renderer,
                                                 .registry = a->registry,
+                                                .graphics = c->graphics,
                                                 .font = font,
                                                 .display = c->display,
                                                 .stack = stack,

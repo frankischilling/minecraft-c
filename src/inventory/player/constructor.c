@@ -1,4 +1,5 @@
 #include "../internal.h"
+#include "source_internal.h"
 
 static mc_inventory_error player_admit(const mc_inventory_player *inventory, const void *out) {
     mc_inventory_error error = {0};
@@ -147,6 +148,57 @@ mc_inventory_status mc_inventory_player_set(mc_inventory_player *inventory, int3
             error.mutation_reached = true;
         }
     }
+    return inv_finish(result, &error);
+}
+
+mc_inventory_status mc_inventory_player_source_set(mc_inventory_player *inventory, int32_t slot,
+                                                   mc_item_stack *value,
+                                                   mc_inventory_error *result) {
+    mc_inventory_error error = {0};
+    if (inventory == NULL || !inv_side_valid(inventory->side)) {
+        error.status = MC_INVENTORY_INVALID_ARGUMENT;
+        error.operation = "Player inventory source setter native owner";
+        return inv_finish(result, &error);
+    }
+    if (inventory->active) {
+        error.status = MC_INVENTORY_BUSY;
+        error.operation = "Player inventory source setter active owner";
+        return inv_finish(result, &error);
+    }
+    if (inventory->side != MC_REGISTRY_CLIENT) {
+        error.status = MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY;
+        error.operation = "Player inventory source setter client scope";
+        return inv_finish(result, &error);
+    }
+    inventory->active = true;
+    mc_item_stack **slots = inventory->main_slots; /* Actual captured IX.a at1. */
+    int32_t index = slot, length = 36;             /* Actual constructor array descriptor. */
+    if (slots == NULL) {
+        error.status = MC_INVENTORY_NULL_REFERENCE;
+        error.operation = "actual ix.a setter null main array length";
+        inv_frame(&error, MC_REGISTRY_CLIENT, "ix", "fx", "a", "(ILiz;)V", 7);
+    } else {
+        if (index >= length) {
+            index = mc_java_i32_sub(index, length); /* arraylength13, isub14. */
+            slots = inventory->armor_slots;
+            length = 4;
+        }
+        if (slots == NULL) {
+            error.status = MC_INVENTORY_NULL_REFERENCE;
+            error.operation = "actual ix.a setter null selected array store";
+            inv_frame(&error, MC_REGISTRY_CLIENT, "ix", "fx", "a", "(ILiz;)V", 24);
+        } else if (index < 0 || index >= length)
+            player_index(&error, inventory, "a", "(ILiz;)V", "(ILfy;)V", 24);
+        else if (inv_hold(value, &error) != MC_INVENTORY_OK)
+            inv_frame(&error, MC_REGISTRY_CLIENT, "ix", "fx", "a", "(ILiz;)V", 24);
+        else {
+            mc_item_stack *old = slots[(size_t)index];
+            slots[(size_t)index] = value;
+            mc_item_stack_release(old);
+            error.mutation_reached = true;
+        }
+    }
+    inventory->active = false;
     return inv_finish(result, &error);
 }
 

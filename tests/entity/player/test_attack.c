@@ -7,6 +7,7 @@
 #include "entity/mob/internal.h"
 #include "entity/mob/references_internal.h"
 #include "inventory/internal.h"
+#include "item/stack/source_internal.h"
 #include "mc/entity/hit_result.h"
 #include "mc/entity/player/attack.h"
 #include "mc/world/runtime/world_access.h"
@@ -16,6 +17,15 @@
 
 #include <limits.h>
 #include <xmmintrin.h>
+
+typedef enum attack_sound_action {
+    ATTACK_SOUND_NONE,
+    ATTACK_SOUND_SELECT_ONE,
+    ATTACK_SOUND_REPLACE_ZERO,
+    ATTACK_SOUND_NULL_ITEMS,
+    ATTACK_SOUND_DIRT_ITEM,
+    ATTACK_SOUND_NULL_WRITER
+} attack_sound_action;
 
 typedef struct attack_fixture {
     fixture base;
@@ -28,6 +38,9 @@ typedef struct attack_fixture {
     size_t sounds, added, active_refusals;
     bool fail_added, install_stack;
     mc_item_stack *late_stack;
+    attack_sound_action sound_action;
+    bool sound_action_done;
+    mc_item *replacement_item;
 } attack_fixture;
 
 static mc_world_storage_status attack_sound(void *context, mc_world_runtime *world,
@@ -49,6 +62,28 @@ static mc_world_storage_status attack_sound(void *context, mc_world_runtime *wor
                                                     0, f->late_stack, NULL) != MC_INVENTORY_OK) {
         *error = (mc_world_storage_error){MC_WORLD_STORAGE_LIMIT, "authored late Stack failure", 0};
         return MC_WORLD_STORAGE_LIMIT;
+    }
+    /* Authored source callbacks deliberately change operands between the
+     * completed first damage lookup and the Player's later fresh lookup. */
+    if (world == f->base.world && f->sound_action != ATTACK_SOUND_NONE && !f->sound_action_done) {
+        f->sound_action_done = true;
+        mc_inventory_player *inventory = f->base.player->local_player->fields.player.c;
+        mc_inventory_status status = MC_INVENTORY_OK;
+        if (f->sound_action == ATTACK_SOUND_SELECT_ONE)
+            status = mc_inventory_player_select_hotbar(inventory, 1, NULL);
+        else if (f->sound_action == ATTACK_SOUND_REPLACE_ZERO)
+            status = mc_inventory_player_set(inventory, 0, f->late_stack, NULL);
+        else if (f->sound_action == ATTACK_SOUND_NULL_ITEMS)
+            f->base.app.registry->items.c = NULL;
+        else if (f->sound_action == ATTACK_SOUND_DIRT_ITEM)
+            f->base.app.registry->items.c->elements[267] = f->replacement_item;
+        else if (f->sound_action == ATTACK_SOUND_NULL_WRITER)
+            f->base.app.stats_writer = NULL;
+        if (status != MC_INVENTORY_OK) {
+            *error = (mc_world_storage_error){MC_WORLD_STORAGE_LIMIT,
+                                              "authored held-attack sound mutation", 0};
+            return MC_WORLD_STORAGE_LIMIT;
+        }
     }
     *error = (mc_world_storage_error){0};
     return MC_WORLD_STORAGE_OK;
@@ -87,7 +122,8 @@ static bool mob(attack_fixture *f, mc_entity_class_kind kind, double x, mc_entit
     return true;
 }
 
-static bool prepare(attack_fixture *f, const char *resources, const char *directory, bool sheep) {
+static bool prepare_kind(attack_fixture *f, const char *resources, const char *directory,
+                         mc_entity_class_kind kind, bool fatal) {
     memset(f, 0, sizeof(*f));
     CHECK(setup(&f->base, resources, directory, true));
     CHECK(mc_math_classes_create(SIZE_MAX, &f->math, NULL) == MC_MATH_CLASS_OK);
@@ -102,7 +138,7 @@ static bool prepare(attack_fixture *f, const char *resources, const char *direct
     CHECK(acquisition != NULL && f->chunk != NULL &&
           mc_chunk_cache_publish(acquisition->cache, 0, 0, f->chunk));
     CHECK(mc_entity_set_position(f->base.player, .5, 64.0, .5) == MC_ENTITY_OK &&
-          mob(f, sheep ? MC_ENTITY_CLASS_KIND_SHEEP : MC_ENTITY_CLASS_KIND_COW, 1.5, &f->victim));
+          mob(f, kind, 1.5, &f->victim));
     f->base.player->base.velocity_y = 0.0;
     f->base.player->local_player->fields.player.g = 3;
     f->victim->base.velocity_x = f->victim->base.velocity_y = f->victim->base.velocity_z = 0.0;
@@ -122,9 +158,11 @@ static bool prepare(attack_fixture *f, const char *resources, const char *direct
     f->victim->base.be = true;
     CHECK(mc_entity_pickable(f->victim, &pickable, NULL) == MC_ENTITY_HIT_OK && !pickable);
     f->victim->base.be = false;
-    if (sheep) {
+    if (fatal) {
         f->victim->mob->living.Y = 1;
         f->victim->mob->living.T = 7;
+    }
+    if (kind == MC_ENTITY_CLASS_KIND_SHEEP) {
         CHECK(mc_mob_sheep_set_color(f->victim, 0, NULL) == MC_MOB_OK);
     }
     const mc_world_access_callbacks callbacks = {.sound = attack_sound,
@@ -132,6 +170,11 @@ static bool prepare(attack_fixture *f, const char *resources, const char *direct
     CHECK(mc_world_access_create(&callbacks, f, &f->access, NULL) == MC_WORLD_STORAGE_OK &&
           mc_world_runtime_add_world_access(f->base.world, f->access, NULL) == MC_WORLD_STORAGE_OK);
     return true;
+}
+
+static bool prepare(attack_fixture *f, const char *resources, const char *directory, bool sheep) {
+    return prepare_kind(f, resources, directory,
+                        sheep ? MC_ENTITY_CLASS_KIND_SHEEP : MC_ENTITY_CLASS_KIND_COW, sheep);
 }
 
 static bool cleanup(attack_fixture *f) {
@@ -325,13 +368,14 @@ static bool controls(const char *resources) {
     }
     mc_item_stack *held = NULL;
     CHECK(mc_item_stack_allocate(&held) == MC_ITEM_STACK_OK &&
-          mc_item_stack_construct(held, 3, 1, 0) == MC_ITEM_STACK_OK &&
+          mc_item_stack_construct(held, 0, 1, 0) == MC_ITEM_STACK_OK &&
           mc_inventory_player_set(inventory, 0, held, NULL) == MC_INVENTORY_OK);
     CHECK(mc_local_player_attack_begin(f->base.app.registry, f->math, f->base.player, f->victim,
                                        &f->call, NULL) == MC_ENTITY_STATE_ERROR &&
           mc_local_player_attack_inspect(f->call, &state) && !state.damage_returned &&
           !state.fresh_stack_read && state.first_stack_identity == (uintptr_t)held &&
-          state.error->site.pc == 5 && strcmp(state.error->child.class_name, "iz") == 0 &&
+          state.error->source_exception && state.error->site.pc == 5 &&
+          strcmp(state.error->child.class_name, "iz") == 0 &&
           strcmp(state.error->child.descriptor, "(Lsn;)I") == 0 && state.error->child.pc == 9 &&
           f->victim->mob->living.Y == 10 && f->sounds == 0 && f->added == 0 &&
           mc_local_player_attack_retire(&f->call, NULL) == MC_ENTITY_OK &&
@@ -353,13 +397,14 @@ static bool controls(const char *resources) {
 
     CHECK(prepare(f, resources, "fresh-stack", false));
     CHECK(mc_item_stack_allocate(&f->late_stack) == MC_ITEM_STACK_OK &&
-          mc_item_stack_construct(f->late_stack, 3, 1, 0) == MC_ITEM_STACK_OK);
+          mc_item_stack_construct(f->late_stack, 32000, 1, 0) == MC_ITEM_STACK_OK);
     f->install_stack = true;
     CHECK(mc_local_player_attack_begin(f->base.app.registry, f->math, f->base.player, f->victim,
                                        &f->call, NULL) == MC_ENTITY_STATE_ERROR &&
           mc_local_player_attack_inspect(f->call, &state) && state.damage_returned &&
           state.first_stack_identity == 0 &&
           state.fresh_stack_identity == (uintptr_t)f->late_stack && state.error->site.pc == 54 &&
+          state.error->source_exception && state.error->child.pc == 7 &&
           f->victim->mob->living.Y == 9);
     int32_t value;
     CHECK(stat(f, 17, &value) && value == 0 && cleanup(f));
@@ -414,10 +459,203 @@ static bool controls(const char *resources) {
     return true;
 }
 
-int main(int argc, char **argv) {
+static bool order_stack(int32_t id, int32_t count, int32_t damage, mc_item_stack **out) {
+    CHECK(mc_item_stack_allocate(out) == MC_ITEM_STACK_OK &&
+          mc_item_stack_construct(*out, id, count, damage) == MC_ITEM_STACK_OK &&
+          mc_item_stack_source_animation_set(*out, 5) == MC_ITEM_STACK_OK);
+    return true;
+}
+
+static bool order_fields(mc_item_stack *stack, int32_t count, int32_t damage) {
+    mc_item_stack_fields fields;
+    CHECK(mc_item_stack_fields_get(stack, &fields) == MC_ITEM_STACK_OK && fields.count == count &&
+          fields.damage == damage && fields.animation == 5);
+    return true;
+}
+
+static bool order_value(attack_fixture *f, const mc_statistic *statistic, int32_t expected) {
+    int32_t value = INT_MIN;
+    CHECK(statistic != NULL &&
+          mc_client_stats_writer_value(f->base.app.stats_writer, statistic, &value, NULL) ==
+              MC_CLIENT_STATS_OK &&
+          value == expected);
+    return true;
+}
+
+static bool held_order_controls(const char *resources) {
+    enum {
+        SELECT_FRESH,
+        REPLACE_FRESH,
+        NULL_FRESH_ARRAY,
+        REPLACE_FRESH_ITEM,
+        NULL_USED_ARRAY,
+        NULL_BROKEN_ARRAY,
+        NULL_BROKEN_WRITER,
+        NULL_USED_WRITER,
+        BROKEN_THEN_NULL_USED,
+        NULL_USED_ELEMENT,
+        ZERO_DIRT_NULL_USED,
+        MAXIMUM_EQUALITY,
+        ORDER_CASES
+    };
+
+    static const char *const names[ORDER_CASES] = {
+        "held-order-select",        "held-order-replace",     "held-order-null-items",
+        "held-order-replace-item",  "held-order-null-E",      "held-order-null-F",
+        "held-order-broken-writer", "held-order-used-writer", "held-order-broken-null-E",
+        "held-order-null-E-value",  "held-order-zero-dirt-E", "held-order-max-equality"};
+    attack_fixture *f = calloc(1, sizeof(*f));
+    CHECK(f != NULL);
+    const size_t checks_before = checks;
+    for (size_t mode = 0; mode < ORDER_CASES; ++mode) {
+        CHECK(prepare(f, resources, names[mode], false));
+        /* Every source Sword hit remains nonfatal; no Random-dependent Cow
+         * leather count enters these ordering/failure controls. */
+        f->victim->mob->living.Y = 20;
+        mc_registry_classes *registry = f->base.app.registry;
+        mc_inventory_player *inventory = f->base.player->local_player->fields.player.c;
+        mc_registry_item_array *items = registry->items.c;
+        mc_item *sword = items->elements[267];
+        CHECK(sword != NULL && sword->kind == MC_ITEM_SWORD && sword->subtype.qd.a == 8 &&
+              sword->fields.a == 250);
+        mc_statistic **used_array = registry->statistics.E;
+        mc_statistic **broken_array = registry->statistics.F;
+        const mc_statistic *used = used_array[267], *broken = broken_array[267];
+        CHECK(order_value(f, used, 0) && order_value(f, broken, 0));
+        mc_client_stats_writer *writer = f->base.app.stats_writer;
+        const bool dirt = mode == REPLACE_FRESH || mode == ZERO_DIRT_NULL_USED;
+        const bool crossing = mode == NULL_BROKEN_ARRAY || mode == NULL_BROKEN_WRITER ||
+                              mode == BROKEN_THEN_NULL_USED || mode == NULL_USED_ELEMENT;
+        const int32_t initial_damage = mode == ZERO_DIRT_NULL_USED                        ? 17
+                                       : crossing                                         ? 250
+                                       : mode == SELECT_FRESH || mode == MAXIMUM_EQUALITY ? 249
+                                                                                          : 0;
+        mc_item_stack *first = NULL;
+        CHECK(order_stack(dirt ? 3 : 267, mode == ZERO_DIRT_NULL_USED ? 0 : 1, initial_damage,
+                          &first) &&
+              mc_inventory_player_set(inventory, 0, first, NULL) == MC_INVENTORY_OK);
+        if (mode == SELECT_FRESH || mode == REPLACE_FRESH) {
+            CHECK(order_stack(mode == SELECT_FRESH ? 3 : 267, 1, mode == SELECT_FRESH ? 17 : 250,
+                              &f->late_stack));
+            if (mode == SELECT_FRESH) {
+                CHECK(mc_inventory_player_set(inventory, 1, f->late_stack, NULL) ==
+                      MC_INVENTORY_OK);
+                f->sound_action = ATTACK_SOUND_SELECT_ONE;
+            } else
+                f->sound_action = ATTACK_SOUND_REPLACE_ZERO;
+        } else if (mode == NULL_FRESH_ARRAY)
+            f->sound_action = ATTACK_SOUND_NULL_ITEMS;
+        else if (mode == REPLACE_FRESH_ITEM) {
+            f->replacement_item = items->elements[3];
+            f->sound_action = ATTACK_SOUND_DIRT_ITEM;
+        } else if (mode == NULL_BROKEN_WRITER || mode == NULL_USED_WRITER)
+            f->sound_action = ATTACK_SOUND_NULL_WRITER;
+        if (mode == NULL_USED_ARRAY || mode == BROKEN_THEN_NULL_USED || mode == ZERO_DIRT_NULL_USED)
+            registry->statistics.E = NULL;
+        if (mode == NULL_BROKEN_ARRAY)
+            registry->statistics.F = NULL;
+        if (mode == NULL_USED_ELEMENT)
+            used_array[267] = NULL;
+
+        const mc_entity_status status = mc_local_player_attack_begin(
+            registry, f->math, f->base.player, f->victim, &f->call, NULL);
+        /* Restore only after the failed/successful source invocation ended.
+         * This permits independent observation and checked fixture retirement;
+         * no source work is retried, repaired or rolled back. */
+        registry->items.c = items;
+        items->elements[267] = sword;
+        registry->statistics.E = used_array;
+        registry->statistics.F = broken_array;
+        used_array[267] = (mc_statistic *)used;
+        f->base.app.stats_writer = writer;
+        mc_player_attack_state state;
+        CHECK(mc_local_player_attack_inspect(f->call, &state));
+        const bool failed = mode == NULL_FRESH_ARRAY || mode == NULL_USED_ARRAY ||
+                            mode == NULL_BROKEN_ARRAY || mode == NULL_BROKEN_WRITER ||
+                            mode == NULL_USED_WRITER || mode == BROKEN_THEN_NULL_USED;
+        const bool cleared =
+            mode == REPLACE_FRESH || mode == NULL_USED_ELEMENT || mode == ZERO_DIRT_NULL_USED;
+        const bool hit_failed =
+            mode == NULL_FRESH_ARRAY || mode == NULL_BROKEN_ARRAY || mode == NULL_BROKEN_WRITER;
+        const bool used_returned =
+            mode == REPLACE_FRESH || mode == NULL_USED_ELEMENT || mode == MAXIMUM_EQUALITY;
+        const int32_t damage = dirt ? 1 : 8;
+        CHECK(status == (failed ? MC_ENTITY_STATE_ERROR : MC_ENTITY_OK) &&
+              state.returned == !failed && state.damage_returned && state.damage_result &&
+              state.fresh_stack_read && state.first_stack_identity == (uintptr_t)first &&
+              state.fresh_stack_identity ==
+                  (uintptr_t)(mode == SELECT_FRESH || mode == REPLACE_FRESH ? f->late_stack
+                                                                            : first) &&
+              state.item_hit_returned == !hit_failed && state.item_used_returned == used_returned &&
+              state.clear_returned == cleared && state.exhausted_stack == cleared &&
+              state.destroy_returned == cleared && state.statistic_returned == !failed &&
+              state.alert_entered == !failed && state.damage == damage &&
+              f->victim->mob->living.Y == 20 - damage && f->victim->base.by == 20 &&
+              f->sounds == 1 && f->added == 0 && !inventory->changed &&
+              f->sound_action_done == (f->sound_action != ATTACK_SOUND_NONE));
+        const mc_item_stack *current = NULL;
+        CHECK(mc_inventory_player_current(inventory, &current, NULL) == MC_INVENTORY_OK &&
+              current == (cleared                ? NULL
+                          : mode == SELECT_FRESH ? f->late_stack
+                                                 : first));
+        if (cleared)
+            CHECK(state.clear_inventory_identity == (uintptr_t)inventory &&
+                  state.cleared_slot == 0);
+        const int32_t final_count = mode == ZERO_DIRT_NULL_USED || mode == BROKEN_THEN_NULL_USED ||
+                                            mode == NULL_USED_ELEMENT
+                                        ? 0
+                                        : 1;
+        const int32_t final_damage = mode == NULL_USED_ARRAY || mode == NULL_USED_WRITER       ? 1
+                                     : mode == NULL_BROKEN_ARRAY || mode == NULL_BROKEN_WRITER ? 251
+                                     : mode == BROKEN_THEN_NULL_USED || mode == NULL_USED_ELEMENT
+                                         ? 0
+                                     : mode == MAXIMUM_EQUALITY ? 250
+                                                                : initial_damage;
+        CHECK(order_fields(first, final_count, final_damage));
+        if (f->late_stack != NULL)
+            CHECK(order_fields(f->late_stack, mode == REPLACE_FRESH ? 0 : 1,
+                               mode == REPLACE_FRESH ? 0 : 17));
+        CHECK(order_value(f, broken,
+                          mode == REPLACE_FRESH || mode == BROKEN_THEN_NULL_USED ||
+                                  mode == NULL_USED_ELEMENT
+                              ? 1
+                              : 0) &&
+              order_value(f, used, mode == REPLACE_FRESH || mode == MAXIMUM_EQUALITY ? 1 : 0));
+        int32_t dealt = -1;
+        CHECK(stat(f, 17, &dealt) && dealt == (failed ? 0 : damage));
+        if (failed) {
+            CHECK(state.error->source_exception && !state.error->native_policy &&
+                  state.error->site.pc == 54 && !state.exhausted_stack &&
+                  strcmp(state.error->exception_class, "java/lang/NullPointerException") == 0);
+            if (mode == NULL_FRESH_ARRAY)
+                CHECK(state.error->child.pc == 7 && !state.item_hit_returned);
+            else if (mode == NULL_USED_ARRAY || mode == BROKEN_THEN_NULL_USED)
+                CHECK(state.error->child.pc == 27 && state.item_hit_returned);
+            else if (mode == NULL_USED_WRITER)
+                CHECK(state.error->child.pc == 29 && state.error->statistic.site.pc == 90 &&
+                      state.item_hit_returned);
+            else
+                CHECK(state.error->child.pc == 11 && state.error->combat.site.pc == 3 &&
+                      state.error->combat.child.pc == (mode == NULL_BROKEN_ARRAY ? 47 : 49) &&
+                      state.error->combat.damage_stored && !state.error->combat.count_read &&
+                      !state.error->combat.damage_reset);
+        }
+        mc_item_stack_release(first);
+        CHECK(cleanup(f));
+    }
+    printf("Player held ordering: %u scenarios, %zu checks\n", (unsigned int)ORDER_CASES,
+           checks - checks_before);
+    free(f);
+    return true;
+}
+
+#ifndef MC_PLAYER_ATTACK_MAIN
+#define MC_PLAYER_ATTACK_MAIN main
+#endif
+int MC_PLAYER_ATTACK_MAIN(int argc, char **argv) {
     if (argc != 3 || CD(argv[2]) != 0 || !mc_math_trig_init(&trig))
         return 2;
-    if (!reference_profiles(argv[1]) || !controls(argv[1]))
+    if (!reference_profiles(argv[1]) || !controls(argv[1]) || !held_order_controls(argv[1]))
         return 1;
     printf("PASS: %zu Player attack source-order/ownership checks\n", checks);
     return 0;

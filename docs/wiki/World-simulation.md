@@ -64,17 +64,17 @@ components match seven original ticks and six exact 48-word draws, with eight
 packet tests passing. Earlier missing-GY and immutable-disk/autosave failures
 retain their historical scopes.
 
-The current Windows full run passes 593/602 in 215.03 seconds, with 3,293
+The historical Windows full run passed 593/602 in 215.03 seconds, with 3,293
 selected inputs and 823 resources unchanged. Slime/Cow failures record actual
 Remote Desktop foreground activation. The seven stale source-binding gates
 now have refreshed declarations and a separate seven-test pass in 13.29 seconds,
 with comparisons and guards unchanged. The historical 593/602 run remains
-failed; no new full passing result is inferred. A preceding 26-test selection passes 24 in 188.02
+failed; the focused rerun did not itself establish a full pass. A preceding 26-test selection passes 24 in 188.02
 seconds, including attack in 12.65 seconds, and has instrumented Slime/Wolf
 `msrdc.exe` focus failures. Whole Windows focus stability remains unqualified;
 older uninstrumented owners remain unknown, with no byte/focus-behavior change.
 
-The broad Linux full build and 597 public tests pass in 166.82 seconds with
+The historical broad Linux full build and 597 public tests pass in 166.82 seconds with
 Xvfb/software GL, display tests and Clang ASan/UBSan, leak detection and
 halt-on-error. Later 747-check controls have separate scope; the Linux SDK
 encounter remains unqualified. The
@@ -83,8 +83,43 @@ retains older failed and passing snapshots, including the isolated focus cohort
 and instrumented repeat. Hosted evidence keeps its exact tested-commit scope.
 [Particle frontier](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/explosion-particle.md)
 records the source scope.
-Held Item damage/hit, other target overrides, Monster kill achievements, Player
-death/respawn and graphical encounters remain unfinished or unqualified.
+The [held Item component](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/combat.md)
+now covers all 38 actual Item Classes with separate Item-array/Stack reloads,
+DQ/QD durability, SA Saddle behavior and source Inventory clearing. Its original
+inventory records 202 IDs. The Windows eight-test component selection passes
+in 17.75 seconds with 425 genuine attacks and 37,416 checks. The 422 fixed rows
+and three lethal Cow rows retain their separate entropy audits. Direct original
+Sword/Bow geometry supplies 36 NW buffers and 19,008 exact words; ten attack-
+packet and eight geometry-packet corruption tests pass.
+
+The same frozen runtime passes the Windows SDK Dirt profile in 14.20 seconds
+with 1,446 checks and the Iron Sword break profile in 16.74 seconds with 3,631
+checks. The isolated unarmed profile passes in 13.22 seconds with 2,106 checks.
+Each observes three hand frames before and after the actual click, twenty GY
+particles, removal at death age 21, a real post-death autosave and cleanup.
+Independent decoding matches all 40 live Inventory slots to the NBT at every
+actual save entry and in the final disk image. These latest three runs publish
+Wool without picking it up. A separate earlier 13.38-second Sword pass proves
+actual Wool pickup and its slot-0 clone; that result is not combined with the
+latest run's counts.
+
+The frozen runtime passes 611 Windows public tests in 280.15 seconds and 606
+sanitized Linux public tests in 145.58 seconds. Sixteen public Inventory
+corruption controls run in CI. Earlier GUI-color, Dirt-hand,
+maximum-durability, focus/Pause and unconsumed-click failures remain historical.
+A failed all-World conservation assertion counted an unrelated distant Seed
+Item, ID 295; the observer now follows only the actual active `GS.d` Sheep
+producer. Other target overrides, Monster kill achievements, Player
+death/respawn and unrestricted encounters remain unfinished or unqualified.
+These results establish no global focus stability, original whole-frame or FPS
+qualification. Hosted checks apply to their exact tested commit.
+The damaged-Item bar now passes its nine-profile, 24-rectangle comparison over
+576 active XYZ/color words. The original completes 24 draws while the native
+CPU prefixes complete zero. Each process checks its own inactive backing;
+raw stale Font UV/normal words are retained. Eight packet controls and the
+three-test Windows selection pass in 0.76 seconds. The
+[overlay reference](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/item-registry.md#damaged-item-overlay-reference)
+lists the eight actually entered original Code pins and exact limits.
 [Player attack contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-attack.md)
 records the source order and evidence limits.
 

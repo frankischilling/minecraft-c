@@ -653,8 +653,14 @@ bool mc_entity_render_item_icon(mc_entity *p, mc_registry_classes *classes, mc_i
                                 int32_t *out, mc_entity_render_error *e) {
     if (!start(p, out, e, "ls", "c", "(Liz;)I"))
         return false;
-    if (!mc_entity_has_mob(p))
+    const bool player = mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_PLAYER) ||
+                        mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER);
+    if (!mc_entity_has_mob(p) && !player)
         return fail(e, MC_ENTITY_STATE_ERROR, "Entity icon unsupported virtual declaration");
+    /* Original GS.c delegates to this SAME LS.c body at invokespecial2.
+     * DC inherits that wrapper; no Inventory/Player field is substituted. */
+    if (player)
+        e->parent = site("gs", "c", "(Liz;)I", 2);
     e->site.pc = 1;
     if (stack == NULL)
         return exception(e, "java/lang/NullPointerException",
@@ -677,7 +683,7 @@ bool mc_entity_render_item_icon(mc_entity *p, mc_registry_classes *classes, mc_i
                     e->item.operation);
     }
     e->selected_child = MC_ENTITY_RENDER_CHILD_NONE;
-    e->site.pc = 4;
+    e->site = player ? site("gs", "c", "(Liz;)I", 5) : site("ls", "c", "(Liz;)I", 4);
     return true;
 }
 

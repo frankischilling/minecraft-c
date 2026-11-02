@@ -40,7 +40,14 @@ visible Wool and checked cleanup. The strengthened Windows run now completes
 the [explosion-particle](entity/explosion-particle.md) death-age-21 body, twenty
 real particles, actual removal and independently audited period-40 autosave.
 Qualify the remaining Linux saved-World SDK and extended sessions, and resolve
-Windows graphical focus stability. Extend held Item damage/hit,
+Windows graphical focus stability. Held Item damage/hit and source durability
+have all-38-Class component coverage, with direct original Sword/Bow geometry
+and the damaged-Item overlay comparison. Frozen Windows SDK Dirt and Iron Sword
+break scenarios now complete the click, hand frames, death/removal and exact
+live-Inventory/NBT autosave checks. The full public suites pass on Windows and
+sanitized Linux; these finite results do not qualify unrestricted play or FPS.
+Hosted checks apply to their exact tested commit. Extend the held scenarios
+and Linux saved-World SDK coverage, then address
 remaining target overrides, Player death/respawn and Inventory UI
 on the same input/World loop.
 The loader has no fixed session count limit, and a retained Windows Tiny

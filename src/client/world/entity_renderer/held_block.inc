@@ -1,4 +1,4 @@
-/* Nonempty RA.a(F) branch and its actual RA.a(LS,IZ) Block child. The same
+/* Nonempty RA.a(F) branch and its actual RA.a(LS,IZ) child. The same
  * retained RA draw owns every reached Engine/Registry/brightness occurrence. */
 static bool held_registry(mc_client_held_item_draw_call *c, unsigned int pc) {
     if (c->item_registry_held)
@@ -80,6 +80,99 @@ static bool held_child_fail(mc_client_held_item_draw_call *c, const char *operat
         operation, 1074, !source_null);
 }
 
+/* Entered RA.a(LS,IZ)75 after its real push0. The parent already owns the
+ * actual RA/Player/Stack/Registry/graphics graph through checked retirement. */
+static bool held_flat_child(mc_client_held_item_draw_call *c) {
+    c->state.flat_item = true;
+    int32_t id;
+    c->failure.stack = mc_item_stack_source_id_get(c->state.stack, &id);
+    if (c->failure.stack != MC_ITEM_STACK_OK)
+        return held_child_fail(c, "held Item second Stack ID read", 76, false);
+    const bool terrain = id < 256;
+    const unsigned int app_pc = terrain ? 92u : 113u;
+    const unsigned int lookup_pc = terrain ? 97u : 118u;
+    const unsigned int bind_pc = terrain ? 100u : 121u;
+    client_application *application = c->state.owner->source->a; /* Fresh RA.a89/110. */
+    if (application == NULL)
+        return held_child_fail(c, "held Item App.p null receiver", app_pc, true);
+    c->engine = application->render_engine;
+    if (c->engine == NULL)
+        return held_child_fail(c, "held Item captured Engine lookup null receiver", lookup_pc,
+                               true);
+    if (mc_client_render_engine_retain(c->engine) != MC_CLIENT_RENDER_ENGINE_OK) {
+        c->engine = NULL;
+        return held_child_fail(c, "held Item captured Engine native occurrence", lookup_pc, false);
+    }
+    static const uint16_t terrain_key[] = {'/', 't', 'e', 'r', 'r', 'a',
+                                           'i', 'n', '.', 'p', 'n', 'g'};
+    static const uint16_t items_key[] = {'/', 'g', 'u', 'i', '/', 'i', 't',
+                                         'e', 'm', 's', '.', 'p', 'n', 'g'};
+    const mc_texture_pack_text key =
+        terrain
+            ? (mc_texture_pack_text){terrain_key, sizeof terrain_key / sizeof *terrain_key, false}
+            : (mc_texture_pack_text){items_key, sizeof items_key / sizeof *items_key, false};
+    const bool foreign = mc_client_texture_lookup_pending(c->engine);
+    mc_client_texture texture;
+    const mc_client_texture_lookup_status looked = mc_client_render_engine_texture(
+        c->engine, device(c), NULL, key, &texture, &c->download.lookup);
+    c->failure.texture = &c->download.lookup;
+    c->lookup_owned = !foreign && mc_client_texture_lookup_pending(c->engine);
+    if (looked != MC_CLIENT_LOOKUP_OK) {
+        (void)held_child_fail(c, c->download.lookup.operation, lookup_pc,
+                              c->download.lookup.status == MC_CLIENT_LOOKUP_NULL_REFERENCE);
+        c->failure.native_policy = c->download.lookup.native_policy;
+        return false;
+    }
+    if (!mc_client_display_source_bind_id(device(c), texture, &c->failure.display))
+        return held_child_fail(c, c->failure.display.operation, bind_pc, false);
+    ++c->state.gl_calls;
+    const mc_client_graphics_site capture = {"ra", "a", "(Lls;Liz;)V", 124};
+    if (!mc_client_nw_active_use(graphics(c), capture, &c->item_nw, &c->failure.graphics)) {
+        (void)held_child_fail(c, c->failure.graphics.operation, 124, false);
+        c->failure.native_policy = c->failure.graphics.native_policy;
+        return false;
+    }
+    /* The actual LS receiver is evaluated after the captured NW local, and
+     * its real virtual icon call sees the same captured Stack at130. */
+    c->item_icon_error = calloc(1, sizeof(*c->item_icon_error));
+    if (c->item_icon_error == NULL)
+        return held_child_fail(c, "held Item icon diagnostic allocation", 130, false);
+    c->failure.item_icon_error = c->item_icon_error;
+    if (!mc_entity_render_item_icon(c->state.player, c->item_registry,
+                                    (mc_item_stack *)c->state.stack, &c->state.item_icon,
+                                    c->item_icon_error)) {
+        const bool null =
+            c->item_icon_error->source_exception && c->item_icon_error->exception_class != NULL &&
+            strcmp(c->item_icon_error->exception_class, "java/lang/NullPointerException") == 0;
+        (void)held_child_fail(c, c->item_icon_error->operation, 130, null);
+        c->failure.native_policy = c->item_icon_error->native_policy;
+        return false;
+    }
+    c->state.item_icon_returned = true;
+    c->item_geometry = calloc(1, sizeof(*c->item_geometry));
+    if (c->item_geometry == NULL)
+        return held_child_fail(c, "held Item geometry diagnostic allocation", 133, false);
+    c->failure.item_geometry = c->item_geometry;
+    const bool returned = entity_renderer_held_bow_draw(NULL, c->state.item_icon, c->item_nw,
+                                                        graphics(c), device(c), c->item_geometry);
+    if (c->item_geometry->state.rescale_enabled)
+        c->state.rescale_enabled = !c->item_geometry->state.rescale_disabled;
+    if (!returned) {
+        const mc_held_bow_error *e = c->item_geometry;
+        c->failure.graphics = e->graphics;
+        c->failure.display = e->display;
+        const unsigned int pc = e->site.pc < 0 ? 133u : (unsigned int)e->site.pc;
+        (void)held_child_fail(c, e->operation, pc, e->source_null_invocation);
+        if (e->status == MC_HELD_BOW_GRAPHICS)
+            c->failure.native_policy = e->graphics.native_policy;
+        return false;
+    }
+    c->state.item_geometry_returned = true;
+    c->state.faces = 66;
+    c->state.vertices = 264;
+    return true; /* The shared source fragment already popped RA's push0 at967. */
+}
+
 static bool held_block_child(mc_client_held_item_draw_call *c) {
     if (!gl(c, mc_client_display_source_push(device(c), &c->failure.display), 1074))
         return false;
@@ -88,7 +181,7 @@ static bool held_block_child(mc_client_held_item_draw_call *c) {
     if (c->failure.stack != MC_ITEM_STACK_OK)
         return held_child_fail(c, "held Block actual Stack ID read", 4, false);
     if (id >= 256)
-        return held_child_fail(c, "held actual non-Block geometry", 75, false);
+        return held_flat_child(c);
     mc_registry_block_m_view array;
     if (mc_registry_block_m_get(c->item_registry, &array, &c->failure.registry) != MC_REGISTRY_OK)
         return held_child_fail(c, "held Block actual UU.m active use", 13, false);
@@ -101,9 +194,10 @@ static bool held_block_child(mc_client_held_item_draw_call *c) {
     if (block == NULL)
         return held_child_fail(c, "held Block render-type null receiver", 21, true);
     mc_block_render_description description;
-    if (mc_block_render_describe(block, &description) != MC_REGISTRY_OK ||
-        !mc_cv_inventory_type_3d(description.type))
-        return held_child_fail(c, "held actual Block billboard geometry", 24, false);
+    if (mc_block_render_describe(block, &description) != MC_REGISTRY_OK)
+        return held_child_fail(c, "held Block actual render-type body", 21, false);
+    if (!mc_cv_inventory_type_3d(description.type))
+        return held_flat_child(c);
     client_application *a = app(c, 1074);
     if (a == NULL)
         return held_child_fail(c, "held Block App.p null receiver", 37, true);

@@ -11,6 +11,7 @@
 #include "../../render_engine/texture_lookup.h"
 #include "block/registry/runtime_internal.h"
 #include "entity/render/internal.h"
+#include "held_bow_geometry_internal.h"
 #include "held_item_draw_internal.h"
 #include "internal.h"
 #include "item/render/internal.h"
@@ -41,7 +42,10 @@ struct mc_client_held_item_draw_call {
     mc_registry_classes *item_registry;
     mc_item_render_error item_error;
     mc_entity_render_error *item_brightness;
+    mc_entity_render_error *item_icon_error;
     mc_cv_context *inventory;
+    mc_held_bow_error *item_geometry;
+    mc_client_tessellator *item_nw;
     bool item_registry_held;
     bool owner_held, entered, math_held, world_held, stack_held, lookup_owned;
 };
@@ -697,7 +701,7 @@ bool mc_client_held_item_draw_inspect(const mc_client_held_item_draw_call *c,
     if (c == NULL || out == NULL)
         return false;
     *out = c->state;
-    if (!c->state.block_item) {
+    if (!c->state.block_item && !c->state.flat_item) {
         out->faces = c->model.faces;
         out->vertices = c->model.vertices;
     }
@@ -743,6 +747,9 @@ mc_client_held_item_draw_retire(mc_client_held_item_draw_call **slot,
     if (c->item_brightness != NULL &&
         mc_entity_render_worlds_release(c->item_brightness) != MC_ENTITY_OK)
         return cleanup_failed(c, error, "held Block brightness World occurrence cleanup");
+    if (c->item_icon_error != NULL &&
+        mc_entity_render_worlds_release(c->item_icon_error) != MC_ENTITY_OK)
+        return cleanup_failed(c, error, "held Item icon World occurrence cleanup");
     if (c->renderer != NULL && mc_client_managed_renderer_release(
                                    &c->renderer, &c->cleanup.manager) != MC_CLIENT_MANAGER_OK)
         return cleanup_failed(c, error, "held draw DS occurrence cleanup");
@@ -784,7 +791,9 @@ mc_client_held_item_draw_retire(mc_client_held_item_draw_call **slot,
         }
     }
     free(c->item_brightness);
+    free(c->item_icon_error);
     free(c->inventory);
+    free(c->item_geometry);
     free(c);
     *slot = NULL;
     return admission(error, MC_CLIENT_HELD_ITEM_DRAW_OK, NULL);

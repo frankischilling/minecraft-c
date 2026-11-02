@@ -134,6 +134,65 @@ static int attack_autosave_tree(const mc_nbt_tag *root, const char *path) {
     return 0;
 }
 
+typedef struct attack_inventory_snapshot {
+    mc_inventory_player *owner;
+    mc_item_stack *const *main_slots, *const *armor_slots;
+    const mc_item_stack *cursor, *stacks[40];
+    mc_item_stack_fields fields[40];
+    int32_t selected;
+    bool changed;
+} attack_inventory_snapshot;
+
+static int attack_inventory_snapshot_read(mc_entity *player, attack_inventory_snapshot *out) {
+    mc_local_player_snapshot local;
+    mc_inventory_player_state inventory;
+    CHECK(mc_local_player_get_snapshot(player, &local) == MC_ENTITY_OK &&
+          mc_inventory_player_read_state(local.player.c, &inventory) &&
+          inventory.main_slots != NULL && inventory.armor_slots != NULL);
+    *out = (attack_inventory_snapshot){.owner = local.player.c,
+                                       .main_slots = inventory.main_slots,
+                                       .armor_slots = inventory.armor_slots,
+                                       .cursor = inventory.cursor,
+                                       .selected = inventory.selected,
+                                       .changed = inventory.changed};
+    for (size_t i = 0; i < 40; ++i) {
+        out->stacks[i] = i < 36 ? inventory.main_slots[i] : inventory.armor_slots[i - 36];
+        if (out->stacks[i] != NULL)
+            CHECK(mc_item_stack_fields_get(out->stacks[i], &out->fields[i]) == MC_ITEM_STACK_OK);
+    }
+    return 0;
+}
+
+static int attack_inventory_snapshot_same(const attack_inventory_snapshot *before,
+                                          const attack_inventory_snapshot *after) {
+    CHECK(before->owner == after->owner && before->main_slots == after->main_slots &&
+          before->armor_slots == after->armor_slots && before->cursor == after->cursor &&
+          before->selected == after->selected && before->changed == after->changed);
+    for (size_t i = 0; i < 40; ++i)
+        CHECK(before->stacks[i] == after->stacks[i] &&
+              memcmp(&before->fields[i], &after->fields[i], sizeof(before->fields[i])) == 0);
+    return 0;
+}
+
+static int attack_inventory_snapshot_receipt(size_t event, const attack_inventory_snapshot *raw) {
+    char line[2048];
+    int length = snprintf(line, sizeof(line), "ATTACK_INVENTORY_SAVE event=%zu slots=", event);
+    CHECK(length > 0 && (size_t)length < sizeof(line));
+    size_t used = (size_t)length, slots = 0;
+    for (size_t i = 0; i < 40; ++i) {
+        if (raw->stacks[i] == NULL)
+            continue;
+        const mc_item_stack_fields *fields = &raw->fields[i];
+        length = snprintf(line + used, sizeof(line) - used, "%s%zu:%d:%d:%d", slots == 0 ? "" : ",",
+                          i < 36 ? i : i - 36 + 100, fields->id, fields->count, fields->damage);
+        CHECK(length > 0 && (size_t)length < sizeof(line) - used);
+        used += (size_t)length;
+        ++slots;
+    }
+    CHECK(printf("%s%s\n", line, slots == 0 ? "-" : "") > 0);
+    return 0;
+}
+
 static int attack_autosave_entity(mc_entity *entity, bool conditional, const char *path,
                                   bool *present) {
     CHECK(entity != NULL && entity->random != NULL);
@@ -268,8 +327,13 @@ static int attack_autosave_entry(mc_world_runtime *world, int64_t next_time) {
     CHECK(attack_autosave_path(event, "", path) == 0 && SDL_CreateDirectory(path) &&
           attack_autosave_disk(event, "before") == 0);
     bool present = false;
+    attack_inventory_snapshot inventory_before, inventory_after;
+    CHECK(attack_inventory_snapshot_read(f->app->h, &inventory_before) == 0);
     CHECK(attack_autosave_path(event, "player.nbt", path) == 0 &&
           attack_autosave_entity(f->app->h, false, path, &present) == 0 && present);
+    CHECK(attack_inventory_snapshot_read(f->app->h, &inventory_after) == 0 &&
+          attack_inventory_snapshot_same(&inventory_before, &inventory_after) == 0 &&
+          attack_inventory_snapshot_receipt(event, &inventory_before) == 0);
     /* Exercise the formerly active Boolean-save admission with the genuine
      * unnamed Player, even if this partial save selects no Entity-bearing
      * Chunk. No record is expected; a cold EntityList must remain cold. This

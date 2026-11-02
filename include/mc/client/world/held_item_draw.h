@@ -43,7 +43,9 @@ typedef struct mc_client_held_item_draw_error {
     const struct mc_client_model_draw_error *model;
     const struct mc_item_render_error *item;
     const struct mc_entity_render_error *item_brightness;
+    const struct mc_entity_render_error *item_icon_error;
     const struct mc_cv_context *inventory;
+    const struct mc_held_bow_error *item_geometry;
 } mc_client_held_item_draw_error;
 
 typedef struct mc_client_held_item_draw_state {
@@ -54,6 +56,8 @@ typedef struct mc_client_held_item_draw_state {
     bool water_read, water, alpha_restored;
     bool skin_returned, renderer_returned, pose_returned, arm_returned;
     bool block_item, item_color_returned, item_rotate_returned, block_inventory_returned;
+    bool flat_item, item_icon_returned, item_geometry_returned;
+    int32_t item_icon;
     unsigned int faces, vertices;
     unsigned int source_pc, gl_calls, matrix_pushes, matrix_pops;
     float partial, equipped, pitch, brightness, swing;

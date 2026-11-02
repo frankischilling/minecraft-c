@@ -37,6 +37,16 @@ Held-button checks retain the original short-circuit order and Timer rate.
 The non-mining path executes the real controller reset; it does not replace
 unfinished mining with a successful no-op.
 
+The Entity-target left-click branch now calls inherited `OB.b` and the actual
+[Player attack](../entity/player-attack.md), including held Item damage/hit,
+late Stack reloads, source Inventory clearing and statistics. The
+[Item combat contract](../item/combat.md) covers all 38 actual Item Classes.
+The frozen Windows SDK profiles pass for unarmed, held Dirt and an Iron Sword
+break, including before/after hand frames, the actual click, twenty death
+particles, removal and independently checked autosave. Their finite counts and
+retained failures are in the [qualification record](../testing.md#held-item-attacks-and-direct-extrusion).
+Right-button Entity interaction and general Item use keep their separate scopes.
+
 ## Controller and lifetime
 
 The actual single-player `os.c()V` copies f to g without float arithmetic,

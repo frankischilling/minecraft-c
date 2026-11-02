@@ -180,12 +180,89 @@ static bool admit(mc_registry_classes *classes, const mc_item *item, const void 
     return true;
 }
 
+typedef enum render_body {
+    RENDER_NONE = 0,
+    RENDER_GM,
+    RENDER_DQ,
+    RENDER_QD,
+    RENDER_LA,
+    RENDER_CS,
+    RENDER_KM,
+    RENDER_BI,
+    RENDER_GO,
+    RENDER_EN,
+    RENDER_MR,
+    RENDER_UY
+} render_body;
+
+typedef struct render_methods {
+    render_body icon, color, full_3d, rotate;
+} render_methods;
+
+/* Actual supplied-client getMethod declarations for every represented Item
+ * class. Constructor GM.bi is independent of the DQ/QD/LA/CS literal bodies.
+ * Unimplemented metadata/color overrides remain their own source frontiers;
+ * an additional kind has no inherited body until independently verified. */
+static const render_methods methods[MC_ITEM_KIND_COUNT] = {
+    [MC_ITEM_BASE] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_SHOVEL] = {RENDER_GM, RENDER_GM, RENDER_DQ, RENDER_GM},
+    [MC_ITEM_PICKAXE] = {RENDER_GM, RENDER_GM, RENDER_DQ, RENDER_GM},
+    [MC_ITEM_AXE] = {RENDER_GM, RENDER_GM, RENDER_DQ, RENDER_GM},
+    [MC_ITEM_FLINT_AND_STEEL] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_FOOD] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_BOW] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_COAL] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_SWORD] = {RENDER_GM, RENDER_GM, RENDER_QD, RENDER_GM},
+    [MC_ITEM_HOE] = {RENDER_GM, RENDER_GM, RENDER_LA, RENDER_GM},
+    [MC_ITEM_SEEDS] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_ARMOR] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_PAINTING] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_SIGN] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_DOOR] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_BUCKET] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_MINECART] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_SADDLE] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_REDSTONE] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_SNOWBALL] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_BOAT] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_BLOCK_PLACER] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_EGG] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_FISHING_ROD] = {RENDER_GM, RENDER_GM, RENDER_CS, RENDER_CS},
+    [MC_ITEM_DYE] = {RENDER_KM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_BED] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_SHEARS] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_RECORD] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_SOUP] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_COOKIE] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_MAP] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_BLOCK] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_WOOL_BLOCK] = {RENDER_BI, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_LOG_BLOCK] = {RENDER_GO, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_SLAB_BLOCK] = {RENDER_EN, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_SAPLING_BLOCK] = {RENDER_MR, RENDER_GM, RENDER_GM, RENDER_GM},
+    [MC_ITEM_LEAVES_BLOCK] = {RENDER_UY, RENDER_UY, RENDER_GM, RENDER_GM},
+    [MC_ITEM_PISTON_BLOCK] = {RENDER_GM, RENDER_GM, RENDER_GM, RENDER_GM}};
+
+static const render_methods *item_methods(const mc_item *item) {
+    return (unsigned int)item->kind < (unsigned int)MC_ITEM_KIND_COUNT ? &methods[item->kind]
+                                                                       : NULL;
+}
+
+static const char *body_class(render_body body) {
+    static const char *const names[] = {NULL, "gm", "dq", "qd", "la", "cs",
+                                        "km", "bi", "go", "en", "mr", "uy"};
+    return names[body];
+}
+
 static bool icon_entered(mc_registry_classes *classes, const mc_item *item, int32_t damage,
                          int32_t *out, mc_item_render_error *e) {
-    (void)damage; /* Actual GM.a(I) reads only bh. */
     if (!admit(classes, item, out, e))
         return false;
-    if (item->kind == MC_ITEM_WOOL_BLOCK) {
+    const render_methods *resolved = item_methods(item);
+    if (resolved == NULL || resolved->icon == RENDER_NONE)
+        return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
+                    "Item render unresolved icon declaration");
+    if (resolved->icon == RENDER_BI) {
         e->site = at("bi", "a", "(I)I", 0);
         const mc_block *wool = NULL;
         if (mc_registry_block_static_get(classes, "ac", &wool, &e->registry) != MC_REGISTRY_OK)
@@ -209,9 +286,11 @@ static bool icon_entered(mc_registry_classes *classes, const mc_item *item, int3
         e->site.pc = 11;
         return true;
     }
-    if (item->kind != MC_ITEM_BASE && item->kind != MC_ITEM_BOW && item->kind != MC_ITEM_BLOCK)
+    if (resolved->icon != RENDER_GM) {
+        e->site = at(body_class(resolved->icon), "a", "(I)I", 0);
         return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
                     "Item render actual icon override boundary");
+    }
     e->site = at("gm", "a", "(I)I", 1);
     *out = item->fields.bh;
     e->site.pc = 4;
@@ -239,13 +318,22 @@ bool mc_item_render_full_3d(mc_registry_classes *classes, const mc_item *item, b
     e->item_identity = (uintptr_t)item;
     if (!admit(classes, item, out, e))
         return false;
-    if (item->kind != MC_ITEM_BASE && item->kind != MC_ITEM_BOW && item->kind != MC_ITEM_BLOCK &&
-        item->kind != MC_ITEM_WOOL_BLOCK)
+    const render_methods *resolved = item_methods(item);
+    if (resolved == NULL || resolved->full_3d == RENDER_NONE)
+        return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
+                    "Item render unresolved full3D declaration");
+    if (resolved->full_3d == RENDER_GM) {
+        e->site = at("gm", "b", "()Z", 1);
+        *out = item->fields.bi;
+        e->site.pc = 4;
+    } else if (resolved->full_3d == RENDER_DQ || resolved->full_3d == RENDER_QD ||
+               resolved->full_3d == RENDER_LA || resolved->full_3d == RENDER_CS) {
+        e->site = at(body_class(resolved->full_3d), "b", "()Z", 0);
+        *out = true; /* Actual DQ/QD/LA/CS literal1, independent of GM.bi. */
+        e->site.pc = 1;
+    } else
         return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
                     "Item render actual full3D override boundary");
-    e->site = at("gm", "b", "()Z", 1);
-    *out = item->fields.bi;
-    e->site.pc = 4;
     e->returned = true;
     return true;
 }
@@ -259,9 +347,12 @@ bool mc_item_render_color(mc_registry_classes *classes, const mc_item *item, int
     e->item_identity = (uintptr_t)item;
     if (!admit(classes, item, out, e))
         return false;
-    e->site = at("gm", "f", "(I)I", 0);
-    if (item->kind != MC_ITEM_BASE && item->kind != MC_ITEM_BOW && item->kind != MC_ITEM_BLOCK &&
-        item->kind != MC_ITEM_WOOL_BLOCK)
+    const render_methods *resolved = item_methods(item);
+    if (resolved == NULL || resolved->color == RENDER_NONE)
+        return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
+                    "Item render unresolved color declaration");
+    e->site = at(body_class(resolved->color), "f", "(I)I", 0);
+    if (resolved->color != RENDER_GM)
         return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY, "Item actual metadata color override");
     *out = 16777215;
     e->site.pc = 2;
@@ -277,12 +368,15 @@ bool mc_item_render_rotate(mc_registry_classes *classes, const mc_item *item, bo
     e->item_identity = (uintptr_t)item;
     if (!admit(classes, item, out, e))
         return false;
-    e->site = at("gm", "c", "()Z", 0);
-    if (item->kind != MC_ITEM_BASE && item->kind != MC_ITEM_BOW && item->kind != MC_ITEM_BLOCK &&
-        item->kind != MC_ITEM_WOOL_BLOCK)
+    const render_methods *resolved = item_methods(item);
+    if (resolved == NULL || resolved->rotate == RENDER_NONE)
         return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
-                    "Item actual rotating render override");
-    *out = false;
+                    "Item render unresolved rotating declaration");
+    e->site = at(body_class(resolved->rotate), "c", "()Z", 0);
+    if (resolved->rotate != RENDER_GM && resolved->rotate != RENDER_CS)
+        return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
+                    "Item render actual rotating override boundary");
+    *out = resolved->rotate == RENDER_CS; /* CS literal1; inherited GM literal0. */
     e->site.pc = 1;
     e->returned = true;
     return true;

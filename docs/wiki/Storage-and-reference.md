@@ -172,6 +172,41 @@ See [testing](https://github.com/frankischilling/minecraft-c/blob/feature/normal
 the [parity matrix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md) and
 [World simulation](https://github.com/frankischilling/minecraft-c/wiki/World-simulation) for current evidence and remaining work.
 
+## Held Item reference packets
+
+The [held attack packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/entity/held_item_attack/README.md)
+contains 422 exact selected original rows and three independently audited
+health-10 Cow deaths. It records all 38 runtime Item Classes and a 202-ID method
+inventory, while preserving the earlier 32 Dirt/Wool observations and five
+unarmed rows. Each process audits its actual Cow Random, sound, Leather quantity
+and ordered publication. Raw quantities differ between processes and remain
+recorded; only the declared fixed fields compare across independent entropy.
+
+The [direct geometry packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/held_item_geometry/README.md)
+uses genuine original App, Engine, Font, Player, Stack, RA and NW constructors
+on a hidden Pbuffer. Ordinary/read-only-JDI execution supplies all 36 actual
+Sword/Bow flush buffers and 19,008 raw words. The Font-used initial buffer is
+retained; the observed inactive color/reserved slots are zero. Full-word
+comparison has this finite prior-state scope and makes no original pixel or
+whole-frame claim. The
+[reference map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/item-registry.md#held-attack-and-renderer-references)
+separates these completed prepared scenes from the older suspended initializer
+projection. Current native/SDK results and exact-commit hosted scopes are in the
+[combat contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/combat.md).
+
+The [durability-overlay fixture](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/item_durability_overlay/finite.json)
+and [provenance](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/item_durability_overlay/provenance.json)
+add nine profiles and eight actually entered original Code pins. The original
+completes 24 draws; native CPU prefixes complete zero and compare 576 active
+XYZ/color words. Each process independently validates its actual inactive
+backing, with all 1,152 raw words retained. Eight packet controls and a three-test
+Windows selection pass in 0.76 seconds. The frozen Windows SDK Dirt and Sword
+break scenarios separately pass their native graphical paths and post-death
+autosaves. Independent decoding matches all 40 live Inventory slots at each
+actual save entry and in the final disk image; sixteen public corruption tests
+protect this comparison in CI. The native scenarios do not expand the original
+packet's completed-draw or pixel scope.
+
 <a id="storage-foundation-checkpoint"></a>
 <a id="lifecycle-qualification"></a>
 <a id="normal-generation-checkpoint"></a>

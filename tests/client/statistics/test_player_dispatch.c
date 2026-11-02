@@ -19,6 +19,9 @@
 
 static size_t checks;
 static mc_math_trig trig;
+#ifndef MC_PLAYER_STATISTICS_WORLD_SEED
+#define MC_PLAYER_STATISTICS_WORLD_SEED INT64_C(5143)
+#endif
 #define CHECK(c)                                                                                   \
     do {                                                                                           \
         ++checks;                                                                                  \
@@ -137,8 +140,10 @@ static bool setup(fixture *f, const char *resources, const char *directory, bool
     CHECK(mc_world_runtime_allocate_world(MC_WORLD_RUNTIME_CLIENT_DIRECT_METADATA,
                                           f->app.world_classes, &limits, &f->world,
                                           NULL) == MC_WORLD_STORAGE_OK);
-    const mc_world_runtime_world_arguments args = {
-        .store = f->store, .name = f->name, .seed = 5143, .dimension = f->dimension};
+    const mc_world_runtime_world_arguments args = {.store = f->store,
+                                                   .name = f->name,
+                                                   .seed = MC_PLAYER_STATISTICS_WORLD_SEED,
+                                                   .dimension = f->dimension};
     CHECK(mc_world_runtime_construct_world(f->world, &args, NULL) == MC_WORLD_STORAGE_OK);
     CHECK(mc_local_player_allocate(f->app.entities, &f->player, NULL) == MC_ENTITY_OK);
     CHECK(mc_local_player_construct(f->player, f->world, &f->app, f->app.session, 0, NULL, NULL) ==

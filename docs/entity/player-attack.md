@@ -3,7 +3,7 @@
 The client Entity-target left-click branch now calls the actual inherited
 `ob.b(gs,sn)` controller body and `gs.d(sn)` Player attack body. The ordinary
 input owner retains a failed invocation for checked cleanup. Empty-hand
-animal attacks pass 747 native checks and match five selected unchanged-original
+animal attacks have an earlier 747-check component snapshot matching five selected unchanged-original
 rows on Windows and Linux with sanitizers. A bounded Windows SDK Sheep encounter
 also returns through kill, visible Wool drawing and checked cleanup. This is
 not complete combat or playable-client qualification.
@@ -19,9 +19,10 @@ work. Health, hurt timers, knockback, sound and fatal drops use the existing
 animal damage/death owners.
 
 After damage returns, Player reads its current held Stack again. This fresh
-read is separate from the initial Inventory damage read. A nonempty held Item
-reaches explicit damage/hit override dependencies; tool damage and durability
-are not substituted with empty-hand behavior. A Living target then receives
+read is separate from the initial Inventory damage read. The
+[held Item bodies](../item/combat.md) now resolve all 38 actual Item Classes to
+GM, DQ, QD or SA behavior. Item-array captures, Stack ID reads, durability and
+statistics preserve their separate source order. A Living target then receives
 an alive check. Only a still-living target enters the attack ally-alert call.
 The damage-dealt statistic follows for Living targets, including resisted and
 fatal hits. Fatal animal damage first executes the Player score and kill
@@ -92,8 +93,8 @@ These rows compare selected deterministic integers and Booleans. Original
 constructor and shared Math entropy remain independent; no velocity-word,
 complete Random, full World graph or pixel correspondence is claimed.
 
-Windows and Linux Clang ASan/UBSan each complete 747 authored checks and match
-the five original rows. The final held-Stack control verifies the reached
+Earlier Windows and Linux Clang ASan/UBSan snapshots each complete 747 authored checks and match
+the five original rows. The historical final held-Stack control verified the reached
 `iz.a(sn):9` frontier before any target hurt or statistic change, then checked
 cleanup. Windows completes the component in 0.20 seconds and Linux in 0.28
 seconds; their enclosing tests take 0.23 and 0.30 seconds. Earlier 743-check
@@ -125,8 +126,9 @@ observer captures source entry/exit: old time 39, next time 40, 24 eligible
 Chunks and save return before the time store. Independent NBT/region/disk
 verification passes, including saved time 39 and Player Score 14. The observer
 is compiled out of the normal client. Its phase/maps/counts audit preserves
-380,628 cold EntityList snapshot bytes before and after observation; only the
-actual save initializes that Registry. The strict region gate protects
+380,628 cold EntityList snapshot bytes before and after observation. The
+observer cannot initialize that Registry; actual source active uses retain
+their original order. The strict region gate protects
 abandoned payloads and reused tail padding outside each new record. Declared
 execution inputs/resources stay
 unchanged, and both native windows close through checked cleanup. The paired
@@ -143,13 +145,13 @@ Clang ASan/UBSan, leak detection and halt-on-error. Its source scope precedes th
 later 747-check component diagnostic/frontier control; the Linux SDK encounter
 remains unqualified.
 
-The latest Windows full run passes 593/602 in 215.03 seconds with 3,293 selected
+The historical Windows full run passed 593/602 in 215.03 seconds with 3,293 selected
 inputs and 823 resources unchanged. Slime/Cow failures record actual foreign
 Remote Desktop foreground activation; seven source-binding gates reject metadata
 stale after diagnostic-fixture changes. Their declarations are now refreshed;
 the exact seven tests pass separately in 13.29 seconds with comparisons and
-guards unchanged. The historical 593/602 result remains failed; no new full
-passing result is inferred.
+guards unchanged. The historical 593/602 result remains failed; that focused
+rerun did not itself establish a full passing result.
 A preceding 26-test run passes 24 in 188.02 seconds, including local attack in
 12.65 seconds, and has instrumented Slime/Wolf `msrdc.exe` focus failures.
 Whole Windows focus stability remains unqualified. Earlier uninstrumented
@@ -157,12 +159,46 @@ owners remain unknown. The [qualification record](../testing.md#current-targeted
 retains the older broad failures, isolated passes, exact owner receipts and
 unchanged byte predicates. Hosted evidence keeps its exact tested-commit scope.
 
-These bounded encounters establish no original graphical equality, Wool pickup,
-save/reload or extended combat result. The
+Those earlier bounded encounters establish no original graphical equality, Wool
+pickup, save/reload or extended combat result. The
 [packet provenance](../../tests/reference/entity/player_attack/provenance.json)
 records source pins and the original observation scope.
 
-Held Item damage/hit/durability, remaining target hurt/death overrides, Monster
+The newer [held Item packet](../../tests/reference/entity/held_item_attack/README.md)
+adds 422 exact selected rows and three independently audited lethal Cow rows
+without changing those five unarmed observations. The Windows component
+selection passes eight tests in 17.75 seconds, including 425 genuine attack
+calls and 37,416 checks. Source damage, DQ/QD durability, SA Saddle behavior,
+late Stack/Item-array reads and real Inventory clearing are implemented. Ten
+attack-packet and eight geometry-packet corruption tests pass. Twelve Windows callback/order
+controls also pass with the five unarmed rows unchanged. The reached
+[damaged-Item overlay](../client/gui-ingame.md#damaged-item-overlay) now has a
+passing selected CPU comparison: nine profiles, 24 entered rectangle prefixes
+and 576 active words, with each process's inactive backing validated separately.
+The original completes 24 draws; the native CPU prefixes complete zero. Eight
+overlay packet controls and the three-test selection pass in 0.76 seconds.
+The same frozen runtime passes the Windows SDK Dirt profile in 14.20 seconds
+with 1,446 checks and the Iron Sword break profile in 16.74 seconds with 3,631
+checks. The isolated unarmed profile passes in 13.22 seconds with 2,106 checks.
+Each observes three hand frames before and after the actual click, twenty GY
+particles, removal at death age 21, a real post-death autosave and cleanup.
+Independent decoding matches all 40 live Inventory slots to the NBT at every
+actual save entry and in the final disk image. These latest three runs publish
+Wool without picking it up. A separate earlier 13.38-second Sword pass proves
+actual Wool pickup and its slot-0 clone; that result is not combined with the
+latest run's counts.
+
+The frozen runtime passes all 611 Windows public tests in 280.15 seconds and
+all 606 sanitized Linux public tests in 145.58 seconds. Earlier GUI-color,
+Dirt-hand, maximum-durability, focus/Pause and unconsumed-click failures remain
+historical failures. A failed all-World conservation check counted an unrelated
+distant Seed Item, ID 295; the observer now follows only the actual active
+`GS.d` Sheep producer. Sixteen public Inventory corruption controls run in CI.
+These passing finite scenarios do not establish global focus stability or a
+Linux saved-World SDK pass. Hosted checks apply to their exact tested commit.
+
+Remaining target hurt/death overrides, Monster
 kill achievements, Player damage/death/respawn, right-button Entity interaction,
 Inventory UI and extended natural encounters remain unfinished or unqualified.
-The input connection alone does not prove a successful graphical encounter.
+The qualified native encounters do not establish unrestricted combat or original
+whole-frame/pixel equality.

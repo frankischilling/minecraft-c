@@ -88,3 +88,61 @@ python scripts/reference/item/project_registry_prefix.py --capture-dir .local/fr
 Keep complete raw snapshots and lifecycle receipts with any exported fixture.
 The earlier [Block-only observation](block-registry.md) retains its separate
 checkpoint, capture tools, provenance and fixture unchanged.
+
+## Held attack and renderer references
+
+The later [held attack packet](../../tests/reference/entity/held_item_attack/README.md)
+uses ordinary completed original App, World, Player and Stack constructors.
+Its prepared warm registry has 202 nonnull Item IDs across 38 runtime Classes.
+It records every actual Class's combat and rendering method owners, plus all
+22 direct GM IDs, 20 tools/Swords, durability boundaries and Saddle cases.
+The 422 deterministic rows retain the earlier 32 Dirt/Wool observations. Three
+additional health-10 Cow deaths audit each process's actual private Random,
+sound pitch, Leather quantity and ordered publication before comparing fixed
+fields. Actual random outcomes remain recorded. The five unarmed rows are unchanged.
+
+The [direct geometry packet](../../tests/reference/client/held_item_geometry/README.md)
+records five Sword icons and Bow through genuine original App/RenderEngine/Font,
+Player, Stack, RA and NW owners on a hidden Pbuffer. Ordinary/read-only-JDI
+execution supplies 36 actual flush buffers and 19,008 exact words. The actual
+Font-used initial buffer remains intact; captured inactive color/reserved slots
+are zero. The full-word comparison has that finite prior-state scope. It does
+not infer Sword observations from the older RAW-App Bow capture.
+
+The [native combat contract](../item/combat.md) and
+[first-person hand contract](../client/first-person-hand.md#held-item-leaves-and-extrusion)
+separate these new component observations from the older suspended initializer
+projection, complete graphical encounters, original pixels and hosted results.
+
+## Damaged Item overlay reference
+
+The [overlay fixture](../../tests/reference/client/item_durability_overlay/finite.json)
+and [capture provenance](../../tests/reference/client/item_durability_overlay/provenance.json)
+cover nine genuine original BB overlay calls. Eight damaged profiles complete
+three rectangles each; the pristine profile draws none. The original supplies
+24 actual NW draws, 1,152 raw words and 16 actual `Math.round(D)J` returns.
+The native CPU comparison matches 576 active XYZ/color words from entered
+rectangle prefixes with zero completed native draws. Each process separately
+validates its own inactive prior backing. Raw stale Font UV words remain intact.
+
+Read-only JDI pins these eight actually entered original methods against the
+untouched archive:
+
+| Client method | Observed role |
+| --- | --- |
+| `bb.b(Lsj;Lji;Liz;II)V` | Overlay predicate and damaged-Item body |
+| `bb.a(Lnw;IIIII)V` | Private colored-rectangle helper |
+| `nw.a()V` | Actual original draw |
+| `iz.g()Z` | Damaged predicate and initial damage operand |
+| `iz.e()Z` | Damageability lookup |
+| `iz.h()I` | Independent raw damage reads |
+| `iz.j()I` | Independent maximum-damage lookups |
+| `gm.f()I` | Actual maximum field body |
+
+The three-test Windows selection passes in 0.76 seconds, including eight packet
+corruption controls. This selected CPU scope does not establish native completed
+GL-draw, full HUD/frame or pixel equality. The separate frozen Windows SDK Dirt
+and Iron-Sword-break scenarios now pass their native graphical paths and
+exact-live-Inventory autosave audits. Their
+[qualification record](../testing.md#held-item-attacks-and-direct-extrusion)
+does not expand the original packet's finite projection.

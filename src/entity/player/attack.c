@@ -3,7 +3,9 @@
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
 #include "../../inventory/internal.h"
+#include "../../inventory/player/source_internal.h"
 #include "../../item/render/internal.h"
+#include "../../item/stack/source_internal.h"
 #include "../living/fields_internal.h"
 #include "../mob/internal.h"
 #include "../mob/references_internal.h"
@@ -98,6 +100,13 @@ static bool registry_failure(mc_player_attack_call *c) {
     return fail(c, MC_ENTITY_STATE_ERROR, c->error.registry.message);
 }
 
+static bool combat_failure(mc_player_attack_call *c) {
+    const mc_item_combat_error *e = &c->error.combat;
+    c->error.source_exception = e->source_exception || e->source_error;
+    c->error.exception_class = e->exception_class;
+    return fail(c, e->status, e->operation);
+}
+
 /* IX.a(SN) uses f_(c), rather than IX.b's hotbar-only branch. Its main and
  * armor descriptors have the actual constructor lengths36/4. Keep the null,
  * signed index and source array-choice order visible, including bad inputs. */
@@ -145,18 +154,90 @@ static bool inventory_damage(mc_player_attack_call *c) {
     const mc_registry_item_array *array = NULL;
     if (mc_registry_item_c_get(c->registry, &array, &c->error.registry) != MC_REGISTRY_OK)
         return registry_failure(c);
-    mc_item_stack_fields fields;
-    if (mc_item_stack_fields_get(c->first_stack, &fields) != MC_ITEM_STACK_OK)
+    int32_t id;
+    c->error.stack = mc_item_stack_source_id_get(c->first_stack, &id);
+    if (c->error.stack != MC_ITEM_STACK_OK)
         return fail(c, MC_ENTITY_STATE_ERROR, "Player attack actual first Stack id field");
     const mc_item *item = NULL;
     child(c, "iz", "a", "(Lsn;)I", 7);
-    if (mc_registry_item_c_at(c->registry, array, fields.id, &item, &c->error.registry) !=
-        MC_REGISTRY_OK)
+    if (mc_registry_item_c_at(c->registry, array, id, &item, &c->error.registry) != MC_REGISTRY_OK)
         return registry_failure(c);
     child(c, "iz", "a", "(Lsn;)I", 9);
     if (item == NULL)
         return null_reference(c, "Stack attack null Item damage receiver");
-    return fail(c, MC_ENTITY_STATE_ERROR, "Player attack actual Item damage override");
+    if (mc_item_combat_damage(c->registry, item, c->state.target, &c->state.damage,
+                              &c->error.combat) != MC_ENTITY_OK)
+        return combat_failure(c);
+    return true;
+}
+
+static bool used_statistic(mc_player_attack_call *c) {
+    child(c, "iz", "a", "(Lls;Lgs;)V", 20);
+    if (mc_registry_classes_initialize_statistics(c->registry, &c->error.registry) !=
+        MC_REGISTRY_OK)
+        return registry_failure(c);
+    mc_statistic *const *captured = c->registry->statistics.E;
+    child(c, "iz", "a", "(Lls;Lgs;)V", 24);
+    int32_t id;
+    c->error.stack = mc_item_stack_source_id_get(c->fresh_stack, &id);
+    if (c->error.stack != MC_ITEM_STACK_OK)
+        return fail(c, MC_ENTITY_STATE_ERROR, "Attack hit late Stack id field");
+    child(c, "iz", "a", "(Lls;Lgs;)V", 27);
+    if (captured == NULL)
+        return null_reference(c, "Attack hit null captured used-statistic array");
+    if (id < 0 || id >= 32000)
+        return source_exception(c, "java/lang/ArrayIndexOutOfBoundsException",
+                                "Attack hit used-statistic signed index");
+    const mc_statistic *statistic = captured[id];
+    child(c, "iz", "a", "(Lls;Lgs;)V", 29);
+    if (mc_local_player_add_statistic(c->state.player, statistic, 1, &c->error.statistic) !=
+        MC_PLAYER_STATISTIC_OK) {
+        const mc_player_statistic_error *e = &c->error.statistic;
+        if (e->status == MC_PLAYER_STATISTIC_NULL_REFERENCE ||
+            (e->status == MC_PLAYER_STATISTIC_WRITER_FAILED &&
+             e->writer.status == MC_CLIENT_STATS_SOURCE_EXCEPTION &&
+             e->writer.exception == MC_CLIENT_STATS_NULL_REFERENCE))
+            return null_reference(c, "Attack hit actual used-statistic invocation");
+        return fail(c, mc_player_statistic_entity_status(e),
+                    "Attack hit actual used-statistic invocation");
+    }
+    c->state.item_used_returned = true;
+    return true;
+}
+
+static bool clear_selected(mc_player_attack_call *c) {
+    child(c, "gs", "H", "()V", 1);
+    mc_entity *p = c->state.player;
+    mc_inventory_player *destination = p->local_player->fields.player.c;
+    c->state.clear_inventory_identity = (uintptr_t)destination;
+    /* H captures its invocation receiver before independently reading the
+     * current Inventory and selected field. Do not reuse GS.G's earlier slot. */
+    child(c, "gs", "H", "()V", 8);
+    mc_inventory_player *current = p->local_player->fields.player.c;
+    if (current == NULL)
+        return null_reference(c, "Player H null fresh Inventory selected-field receiver");
+    c->state.cleared_slot = current->selected;
+    child(c, "gs", "H", "()V", 12);
+    if (destination == NULL)
+        return null_reference(c, "Player H null captured Inventory setter receiver");
+    const mc_inventory_status status =
+        mc_inventory_player_source_set(destination, c->state.cleared_slot, NULL, &c->error.slots);
+    if (status != MC_INVENTORY_OK) {
+        const mc_inventory_error *e = &c->error.slots;
+        if (e->frame_count != 0 && status == MC_INVENTORY_NULL_REFERENCE)
+            return null_reference(c, e->operation);
+        if (e->frame_count != 0 && status == MC_INVENTORY_INDEX_OUT_OF_BOUNDS)
+            return source_exception(c, "java/lang/ArrayIndexOutOfBoundsException", e->operation);
+        return fail(c,
+                    status == MC_INVENTORY_BUSY                ? MC_ENTITY_BUSY
+                    : status == MC_INVENTORY_LIMIT             ? MC_ENTITY_LIMIT
+                    : status == MC_INVENTORY_ALLOCATION_FAILED ? MC_ENTITY_ALLOCATION_FAILED
+                                                               : MC_ENTITY_STATE_ERROR,
+                    e->operation);
+    }
+    c->state.clear_returned = true;
+    child(c, "gs", "H", "()V", 15);
+    return true;
 }
 
 static bool fresh_stack(mc_player_attack_call *c) {
@@ -190,7 +271,45 @@ static bool fresh_stack(mc_player_attack_call *c) {
         return true;
     at(c, 54);
     child(c, "iz", "a", "(Lls;Lgs;)V", 0);
-    return fail(c, MC_ENTITY_STATE_ERROR, "Player attack actual fresh Stack hit body");
+    if (!registry(c))
+        return false;
+    const mc_registry_item_array *array = NULL;
+    if (mc_registry_item_c_get(c->registry, &array, &c->error.registry) != MC_REGISTRY_OK)
+        return registry_failure(c);
+    int32_t id;
+    child(c, "iz", "a", "(Lls;Lgs;)V", 4);
+    c->error.stack = mc_item_stack_source_id_get(c->fresh_stack, &id);
+    if (c->error.stack != MC_ITEM_STACK_OK)
+        return fail(c, MC_ENTITY_STATE_ERROR, "Attack hit fresh Stack id field");
+    const mc_item *item = NULL;
+    child(c, "iz", "a", "(Lls;Lgs;)V", 7);
+    if (mc_registry_item_c_at(c->registry, array, id, &item, &c->error.registry) != MC_REGISTRY_OK)
+        return registry_failure(c);
+    child(c, "iz", "a", "(Lls;Lgs;)V", 11);
+    if (item == NULL)
+        return null_reference(c, "Attack hit null actual Item receiver");
+    if (mc_item_combat_hit(c->registry, item, c->fresh_stack, c->state.target, c->state.player,
+                           &c->state.item_hit_result, &c->error.combat) != MC_ENTITY_OK)
+        return combat_failure(c);
+    c->state.item_hit_returned = true;
+    if (c->state.item_hit_result && !used_statistic(c))
+        return false;
+    child(c, "iz", "a", "(Lls;Lgs;)V", 32);
+    at(c, 58);
+    int32_t count;
+    c->error.stack = mc_item_stack_source_count_get(c->fresh_stack, &count);
+    if (c->error.stack != MC_ITEM_STACK_OK)
+        return fail(c, MC_ENTITY_STATE_ERROR, "Player attack late Stack count field");
+    if (count <= 0) {
+        c->state.exhausted_stack = true;
+        at(c, 66);
+        child(c, "iz", "a", "(Lgs;)V", 0); /* Actual literal return; no break effects. */
+        c->state.destroy_returned = true;
+        at(c, 70);
+        if (!clear_selected(c))
+            return false;
+    }
+    return true;
 }
 
 static mc_entity_watch_record *watch(mc_player_attack_call *c, mc_entity *wolf, int32_t key,

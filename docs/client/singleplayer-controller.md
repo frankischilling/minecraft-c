@@ -6,6 +6,16 @@ inherited `ob.b(World)` body, performs the yaw preparation and supplies the two
 actual empty World/final-Player hooks. Application World entry, mining, item use
 and controller ticking remain separate work.
 
+The inherited Entity-target `ob.b(gs,sn)` body also delegates to the actual
+[Player attack](../entity/player-attack.md). Its held branch now uses the
+38-Class [Item combat dispatch](../item/combat.md), source durability and
+fresh Inventory/Stack reads. The frozen Windows SDK unarmed, held-Dirt and
+Iron-Sword-break profiles complete the actual click, before/after hand drawing,
+Sheep death/removal and independently audited autosave. The
+[qualification record](../testing.md#held-item-attacks-and-direct-extrusion)
+keeps these finite scenarios separate from broader controller behavior and
+original frame equality.
+
 The native owner retains its client Entity classes and borrows their bound
 Random profile, which must outlive those classes and the controller. Source
 construction stores inherited `b=false` and the borrowed application, followed

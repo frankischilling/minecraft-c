@@ -71,6 +71,43 @@ intact. The parent retires a successful HUD immediately and keeps its scalar
 receipt. It retires completed World drawing before the next frame's pool reset
 and tick. The native cleanup does not replay source work.
 
+## Damaged Item overlay
+
+The Item overlay now implements the damage predicate at `bb.b:91` and the
+damaged-Item body at `97..288`, including its private `bb.a(NW,IIIII)` rectangle
+helper. Independent Stack `h()` and maximum `j()` reads feed two
+`Math.round(D)J` calls. The runtime body preserves the three colored rectangles
+and source GL state order.
+
+The [original fixture](../../tests/reference/client/item_durability_overlay/finite.json)
+and [provenance](../../tests/reference/client/item_durability_overlay/provenance.json)
+record nine profiles, 24 completed original rectangle draws and eight live
+Code pins. Native CPU controls execute the numeric and entered-rectangle
+prefixes with zero completed draws. Their strict comparison matches all 576
+active XYZ/color words; it does not equate those prefixes with the original
+completed GL draws.
+
+Both processes retain all 1,152 raw words and independently check inactive
+UV/normal/reserved slots against their own actual prior backing. Genuine Font
+drawing leaves stale UV contents. Neither the observation nor runtime clears
+them to fabricate equality. Eight packet corruption controls pass, and the
+three-test Windows selection passes in 0.76 seconds. These remain selected CPU
+component results. The frozen Windows SDK Dirt and Iron-Sword-break scenarios
+separately pass their native GUI encounters, hand frames, actual click, death
+and autosave. Every actual save is independently checked against all 40 live
+Inventory slots. The [qualification record](../testing.md#held-item-attacks-and-direct-extrusion)
+keeps those native results separate from original completed-draw, full-HUD/frame
+and pixel comparisons.
+
+The overlay tests need no original archive or Display:
+
+```sh
+ctest --test-dir build-windows --output-on-failure -R '^(tools.item_durability_overlay_packet|client.item_durability_overlay_cpu)$'
+```
+
+Use the appropriate build directory and `-C Debug` for a multi-configuration
+build. The passing three-test selection also includes `client.inventory_block`.
+
 ## Parent frame
 
 After World return1013, `px.b(F)V` reads performance Settings again. The limited

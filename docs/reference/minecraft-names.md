@@ -202,6 +202,17 @@ shared class. ItemBlock subtypes retain their placement metadata and names.
 | `MC_ITEM_LEAVES_BLOCK` | `uy` | `nd` | Leaves ItemBlock subtype setting placed metadata bit8 |
 | `MC_ITEM_PISTON_BLOCK` | `qr` | `kc` | Piston-base ItemBlock subtype returning placement metadata7 |
 
+The client combat method map resolves these 38 kinds to the declaring GM,
+DQ, QD or SA body. DQ is the shared tool ancestor of WC/AU/TA, rather than an
+extra registered kind. Its stored damage and QD's Sword damage remain distinct
+fields. The [combat contract](../item/combat.md) records the source wrappers,
+durability and Saddle behavior. The
+[original 202-ID inventory](../../tests/reference/entity/held_item_attack/item-inventory.json)
+also records each actual runtime Class, immediate superclass and combat/render
+method owner. Constructor `GM.bi` is distinct from the literal-true full3D
+methods declared by DQ/QD/LA/CS. These client observations do not qualify the
+server aliases merely because they occupy the same semantic row.
+
 `BLOCK_PLACER` is the direct Item subclass used for sugar cane, cake and repeater
 placement. It is distinct from the actual ItemBlock class and does not imply
 that every instance is a sugar cane item. Protected legacy names remain literal:
