@@ -15,6 +15,9 @@ typedef struct mc_client_screen_classes mc_client_screen_classes;
 typedef struct mc_client_screen_list mc_client_screen_list;
 typedef struct mc_client_screen_initialization mc_client_screen_initialization;
 typedef struct mc_client_screen_init_error mc_client_screen_init_error;
+typedef struct mc_client_inventory_screen_error mc_client_inventory_screen_error;
+typedef struct mc_entity mc_entity;
+typedef struct mc_container mc_container;
 
 typedef enum mc_client_screen_status {
     MC_CLIENT_SCREEN_OK,
@@ -55,7 +58,8 @@ typedef enum mc_client_screen_kind {
     MC_CLIENT_SCREEN_MAIN_MENU,
     MC_CLIENT_SCREEN_WORLD_SELECTION,
     MC_CLIENT_SCREEN_PAUSE,
-    MC_CLIENT_SCREEN_CREATE_WORLD
+    MC_CLIENT_SCREEN_CREATE_WORLD,
+    MC_CLIENT_SCREEN_INVENTORY
 } mc_client_screen_kind;
 
 typedef enum mc_client_screen_class_phase {
@@ -94,11 +98,14 @@ typedef struct mc_client_screen_error {
     mc_client_screen_site first_class_site;
     mc_java_random_profile_status first_class_random;
     const mc_client_screen_init_error *initialization;
+    const mc_client_inventory_screen_error *inventory;
 } mc_client_screen_error;
 
 /* Actual virtual DA.h(): ordinary screens return; FJ disables keyboard repeat.
  * A synchronous enclosing input call may still hold this exact old receiver. */
 mc_client_screen_status mc_client_screen_closed(mc_client_source_da *, mc_client_screen_error *);
+mc_client_screen_status mc_client_screen_pauses_game(mc_client_source_da *, bool *,
+                                                     mc_client_screen_error *);
 
 /* A String reference, not a copied label. NULL is kind NULL; Registry String
  * views borrow the exact configured Registry held by this screen namespace.
@@ -143,6 +150,15 @@ typedef struct mc_client_screen_fu_fields {
     mc_client_source_ke *l;
 } mc_client_screen_fu_fields;
 
+typedef struct mc_client_screen_id_fields {
+    int32_t a, i;
+    struct mc_container *j;
+} mc_client_screen_id_fields;
+
+typedef struct mc_client_screen_ue_fields {
+    float l, m;
+} mc_client_screen_ue_fields;
+
 typedef struct mc_client_screen_state {
     mc_client_screen_phase phase;
     size_t holds, arena_bytes, allocations, allocation_attempts;
@@ -150,6 +166,8 @@ typedef struct mc_client_screen_state {
     mc_client_screen_kind kind;
     mc_client_screen_da_fields da;
     mc_client_screen_fu_fields fu;
+    mc_client_screen_id_fields id;
+    mc_client_screen_ue_fields ue;
     unsigned int last_pc, store_count;
     mc_client_screen_site stores[16];
     mc_client_screen_exception caught_exception;

@@ -1,4 +1,5 @@
 #include "client/application_state.h"
+#include "client/render/blocks/internal.h"
 #include "client/render/manager/draw_internal.h"
 #include "client/world/entity_renderer/internal.h"
 #include "entity/player/player_internal.h"
@@ -209,13 +210,13 @@ static bool icon(mc_client_draw_scope *scope, mc_held_stack_parent_error *e) {
     return returned;
 }
 
-static bool atlas(mc_client_draw_scope *scope, mc_held_stack_parent_error *e) {
+static bool atlas(mc_client_draw_scope *scope, mc_held_stack_parent_error *e, bool block) {
     const bool terrain_branch = e->state.terrain_atlas;
-    const int32_t app_pc = terrain_branch ? 89 : 110;
-    const int32_t engine_pc = terrain_branch ? 92 : 113;
-    const int32_t key_pc = terrain_branch ? 95 : 116;
-    const int32_t lookup_pc = terrain_branch ? 97 : 118;
-    const int32_t bind_pc = terrain_branch ? 100 : 121;
+    const int32_t app_pc = block ? 34 : terrain_branch ? 89 : 110;
+    const int32_t engine_pc = block ? 37 : terrain_branch ? 92 : 113;
+    const int32_t key_pc = block ? 40 : terrain_branch ? 95 : 116;
+    const int32_t lookup_pc = block ? 42 : terrain_branch ? 97 : 118;
+    const int32_t bind_pc = block ? 45 : terrain_branch ? 100 : 121;
     at(e, app_pc);
     e->state.application = e->state.ra->a; /* Fresh actual RA.a. */
     e->state.application_read = true;
@@ -267,6 +268,91 @@ static bool atlas(mc_client_draw_scope *scope, mc_held_stack_parent_error *e) {
     if (!mc_client_display_source_bind_id(scope->model.display, e->state.texture, &e->display))
         return fail(e, MC_HELD_STACK_PARENT_DISPLAY_FAILED, e->display.operation);
     e->state.bind_returned = true;
+    return true;
+}
+
+static bool block_inventory(mc_client_draw_scope *scope, mc_held_stack_parent_error *e) {
+    e->state.terrain_atlas = true;
+    if (!atlas(scope, e, true))
+        return false;
+    at(e, 49);
+    mc_client_render_blocks *fields = e->state.ra->e;
+    mc_registry_classes *classes = registry(scope, e);
+    if (classes == NULL)
+        return false;
+    at(e, 52);
+    if (mc_registry_block_m_get(classes, &e->state.blocks, &e->registry) != MC_REGISTRY_OK)
+        return registry_failed(e);
+    int32_t id;
+    bool read = false;
+    if (!stack_id(e, 56, &id, &read))
+        return false;
+    at(e, 59);
+    if (mc_registry_block_m_at(&e->state.blocks, id, &e->state.block, &e->registry) !=
+        MC_REGISTRY_OK)
+        return registry_failed(e);
+    at(e, 61);
+    if (mc_item_stack_source_damage_get(e->state.stack, &e->state.block_metadata) !=
+        MC_ITEM_STACK_OK)
+        return fail(e, MC_HELD_STACK_PARENT_STACK_FAILED, "RA actual Block metadata field");
+    at(e, 66);
+    if (e->state.actor == NULL)
+        return source_null(e, "RA null Living brightness invocation receiver");
+    const bool bright = mc_entity_render_brightness(e->state.actor, scope->model.math, 1.0f,
+                                                    &e->state.block_brightness, &e->entity);
+    if (!bright) {
+        e->child = (mc_client_graphics_site){e->entity.site.class_name, e->entity.site.method,
+                                             e->entity.site.descriptor, e->entity.site.pc};
+        e->exception_class = e->entity.exception_class;
+        e->source_exception = e->entity.source_exception;
+        e->throwable = e->entity.throwable == MC_ENTITY_RENDER_SOURCE_EXCEPTION
+                           ? MC_HELD_STACK_PARENT_EXCEPTION
+                       : e->entity.throwable == MC_ENTITY_RENDER_SOURCE_ERROR
+                           ? MC_HELD_STACK_PARENT_ERROR
+                           : MC_HELD_STACK_PARENT_NO_THROWABLE;
+        fail(e, MC_HELD_STACK_PARENT_ENTITY_FAILED, e->entity.operation);
+    }
+    if (!mc_client_draw_entity_queries(scope, &e->entity, &e->capture_failure))
+        return capture_failed(e);
+    e->state.entity_queries_published = true;
+    for (size_t i = 0; i < 2; ++i)
+        if (e->entity.world_reads[i] != NULL &&
+            !mc_client_draw_adopt_world(scope, &e->entity.world_reads[i], &e->capture_failure))
+            return capture_failed(e);
+    e->state.entity_worlds_adopted = true;
+    if (!bright)
+        return false;
+    at(e, 69);
+    if (fields == NULL)
+        return source_null(e, "RA null captured CV inventory invocation receiver");
+    e->inventory = mc_client_draw_inventory_workspace(scope, &e->capture_failure);
+    if (e->inventory == NULL)
+        return capture_failed(e);
+    *e->inventory = (mc_cv_context){.fields = fields,
+                                    .registry = classes,
+                                    .models = e->state.hand->context.services->models,
+                                    .graphics = scope->model.graphics,
+                                    .display = scope->model.display};
+    e->selected = MC_HELD_STACK_PARENT_CHILD_INVENTORY;
+    if (!mc_cv_inventory(e->inventory, e->state.block, e->state.block_metadata,
+                         e->state.block_brightness)) {
+        const mc_client_render_global_error *v = &e->inventory->failure;
+        e->child = (mc_client_graphics_site){v->source_class, v->source_method,
+                                             v->source_descriptor, (int32_t)v->source_pc};
+        if (!v->native_policy && v->status == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE)
+            return source_null(e, v->operation);
+        if (!v->native_policy && v->status == MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED) {
+            e->graphics = v->graphics;
+            graphics_classify(e, &e->graphics);
+        }
+        return fail(e, MC_HELD_STACK_PARENT_GEOMETRY_FAILED, v->operation);
+    }
+    e->state.block_inventory_returned = true;
+    at(e, 967);
+    if (!mc_client_display_source_pop(scope->model.display, &e->display))
+        return fail(e, MC_HELD_STACK_PARENT_DISPLAY_FAILED, e->display.operation);
+    at(e, 970);
+    e->state.source_returned = true;
     return true;
 }
 
@@ -331,14 +417,17 @@ bool entity_renderer_held_stack_entered(mc_client_draw_scope *scope, mc_client_h
         at(e, 21);
         if (e->state.block == NULL)
             return source_null(e, "RA null captured UU.b() invoke receiver");
-        /* Held Bow path: no fabricated Block shape or CV result. */
-        return fail(e, MC_HELD_STACK_PARENT_UNIMPLEMENTED,
-                    "RA reached actual non-Bow UU.b()/CV.a branch");
+        mc_block_render_description description;
+        if (mc_block_render_describe(e->state.block, &description) != MC_REGISTRY_OK)
+            return fail(e, MC_HELD_STACK_PARENT_UNIMPLEMENTED,
+                        "RA actual Block render-type declaration");
+        if (mc_cv_inventory_type_3d(description.type))
+            return block_inventory(scope, e);
     }
     if (!stack_id(e, 76, &e->state.id76, &e->state.id76_read))
         return false;
     e->state.terrain_atlas = e->state.id76 < 256;
-    if (!atlas(scope, e))
+    if (!atlas(scope, e, false))
         return false;
     at(e, 124);
     if (!mc_client_draw_capture_graphics(scope, &e->capture_failure))

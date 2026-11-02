@@ -14,6 +14,7 @@
 #include "../render_engine/texture_lookup.h"
 #include "bitmap_font.h"
 #include "gui_ingame_internal.h"
+#include "gui_ingame_pumpkin.h"
 #include "item/stack/source_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/client/controller/singleplayer.h"
@@ -41,11 +42,11 @@ struct mc_client_gui_ingame_draw_call {
     mc_entity *players[12];
     mc_world_runtime *worlds[4];
     mc_game_settings *settings[8];
-    mc_client_render_engine *engines[3];
-    mc_client_texture_lookup_error textures[3], texture_cleanup;
+    mc_client_render_engine *engines[4];
+    mc_client_texture_lookup_error textures[4], texture_cleanup;
     mc_client_singleplayer_controller *controller;
     size_t player_count, world_count, settings_count, engine_count;
-    bool lookup_owned[3], owner_held, graphics_held, math_held, flag;
+    bool lookup_owned[4], owner_held, graphics_held, math_held, flag;
     mc_item_stack *slot_stacks[9];
     mc_registry_classes *slot_registries[9];
     mc_client_bitmap_font *slot_fonts[18];
@@ -388,6 +389,86 @@ static bool vignette(mc_client_gui_ingame_draw_call *c, float value) {
     return true;
 }
 
+static bool pumpkin_failed(mc_client_gui_ingame_draw_call *c, unsigned int pc) {
+    c->state.pumpkin_pc = pc;
+    /* The parent invocation and actual helper instruction remain separate
+     * from typed NW/Engine/Display producer errors held in the same call. */
+    return child_fail(c, c->failure.status, c->failure.operation, 147, "uq", "a", "(II)V", pc,
+                      c->failure.native_policy);
+}
+
+static bool pumpkin_gl(mc_client_gui_ingame_draw_call *c, bool ok, unsigned int pc) {
+    c->state.pumpkin_pc = pc;
+    return gl(c, ok, pc) || pumpkin_failed(c, pc);
+}
+
+/* Actual UQ.a(II)V. Restoration belongs only to the returned source suffix;
+ * a failed lookup/begin/draw retains every preceding GL/NW publication. */
+static bool pumpkin_overlay(mc_client_gui_ingame_draw_call *c) {
+    c->state.pumpkin_entered = true;
+    if (!pumpkin_gl(c, mc_client_display_source_depth_test(c->display, false, &c->failure.display),
+                    3) ||
+        !pumpkin_gl(c, mc_client_display_source_depth_mask(c->display, false, &c->failure.display),
+                    7) ||
+        !pumpkin_gl(
+            c, mc_client_display_source_blend_function(c->display, 770, 771, &c->failure.display),
+            16) ||
+        !pumpkin_gl(c, mc_client_display_source_color(c->display, 1, 1, 1, 1, &c->failure.display),
+                    23) ||
+        !pumpkin_gl(c, mc_client_display_source_alpha_test(c->display, false, &c->failure.display),
+                    29))
+        return false;
+    /* g is captured at36; a null captured App is dereferenced by p at39. */
+    if (!texture(c, "%blur%/misc/pumpkinblur.png", 39, 44, 47))
+        return pumpkin_failed(c, (unsigned int)c->failure.site.pc);
+    c->state.pumpkin_pc = 50;
+    if (!mc_client_nw_active_use(c->graphics, (mc_client_graphics_site){"uq", "a", "(II)V", 50},
+                                 &c->nw, &c->failure.graphics)) {
+        (void)fail(c, MC_CLIENT_GUI_INGAME_DRAW_CHILD_FAILED, c->failure.graphics.operation, 147,
+                   c->failure.graphics.native_policy);
+        return pumpkin_failed(c, 50);
+    }
+    mc_client_gui_pumpkin_geometry geometry;
+    const bool emitted = mc_client_gui_pumpkin_geometry_entered(
+        c->nw, c->state.resolution.width, c->state.resolution.height, &geometry);
+    c->state.pumpkin_pc = geometry.source_pc;
+    c->state.pumpkin_vertices = geometry.vertices;
+    c->state.vertices += geometry.vertices;
+    c->state.pumpkin_word_count = geometry.word_count;
+    memcpy(c->state.pumpkin_words, geometry.words, sizeof(c->state.pumpkin_words));
+    if (!emitted) {
+        if (geometry.source_null_invocation)
+            (void)fail(c, MC_CLIENT_GUI_INGAME_DRAW_SOURCE_NULL,
+                       "actual pumpkin null captured NW invocation receiver", 147, false);
+        else {
+            c->failure.graphics = geometry.graphics;
+            (void)fail(c, MC_CLIENT_GUI_INGAME_DRAW_CHILD_FAILED, geometry.graphics.operation, 147,
+                       geometry.graphics.native_policy);
+        }
+        return pumpkin_failed(c, geometry.source_pc);
+    }
+    c->state.pumpkin_pc = 107;
+    if (!mc_client_nw_draw(c->nw, c->display, &c->failure.graphics)) {
+        (void)fail(c, MC_CLIENT_GUI_INGAME_DRAW_CHILD_FAILED, c->failure.graphics.operation, 147,
+                   c->failure.graphics.native_policy);
+        return pumpkin_failed(c, 107);
+    }
+    ++c->state.textured_quads;
+    if (!pumpkin_gl(c, mc_client_display_source_depth_mask(c->display, true, &c->failure.display),
+                    111) ||
+        !pumpkin_gl(c, mc_client_display_source_depth_test(c->display, true, &c->failure.display),
+                    117) ||
+        !pumpkin_gl(c, mc_client_display_source_alpha_test(c->display, true, &c->failure.display),
+                    123) ||
+        !pumpkin_gl(c, mc_client_display_source_color(c->display, 1, 1, 1, 1, &c->failure.display),
+                    130))
+        return false;
+    c->state.pumpkin_pc = 133;
+    c->state.pumpkin_returned = true;
+    c->state.source_pc = 147;
+    return true;
+}
+
 static bool stack_item(mc_client_gui_ingame_draw_call *c, mc_item_stack *stack,
                        const mc_item **out) {
     client_application *a = c->state.owner->fields.g;
@@ -670,9 +751,8 @@ static bool body(mc_client_gui_ingame_draw_call *c) {
         if (block_fields == NULL)
             return fail(c, MC_CLIENT_GUI_INGAME_DRAW_SOURCE_NULL,
                         "actual Block.bb null bn receiver", 136, false);
-        if (helmet_fields.id == block_fields->bn)
-            return fail(c, MC_CLIENT_GUI_INGAME_DRAW_DEPENDENCY, "actual pumpkin overlay", 147,
-                        true);
+        if (helmet_fields.id == block_fields->bn && !pumpkin_overlay(c))
+            return false;
     }
     mc_entity *p = player(c, 154, 157);
     mc_local_player_snapshot fields;

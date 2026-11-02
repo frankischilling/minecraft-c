@@ -2,11 +2,16 @@
 
 The default source loop executes `Minecraft.k` through picking, the admitted
 chunk-provider branch, the single-player controller tick and healthy Player
-screen checks. With no screen, it executes gameplay input through bytecode
-1073. The [World segment](renderer-ticking.md) now handles paused ticks and
-composes renderer/entity work and ordered weather/spawn scheduling before the
-missing Biome spawn-list selection at `cq.a:290`. Dynamic
-terrain drawing and a playable frame remain unfinished.
+screen checks. It executes gameplay input through bytecode 1073 and returns
+World/HUD frames for the documented finite saved-World and Create World
+profiles. The [World segment](renderer-ticking.md) describes tick scheduling
+and its verification limits; a fully playable client remains unfinished.
+
+The configured Inventory binding now reaches actual UE allocation,
+construction and display at `Minecraft.k778/786/789`. The
+[Player Inventory](inventory.md) reuses the existing Container, preserves
+the source input flag and keeps World ticks running. E/Escape and dead-Player
+screen ticks use the actual close/display route and retained native cleanup.
 
 ## Source order
 

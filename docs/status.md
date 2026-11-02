@@ -1,5 +1,25 @@
 # Development status
 
+The configured Inventory key now opens the real [Player Inventory](client/inventory.md).
+The finite Windows SDK profiles keep World ticks running, move Dirt and Arrows
+with actual left/right clicks, draw the Player and carried Item, close with
+E/Escape, publish a carried Stack on close, and use ordinary Save and Quit.
+Independent NBT decoding checks the exact saved Inventory and dropped Dirt,
+including an unchanged unrelated region. The Pumpkin profile also renders its
+HUD overlay and two separate helmet/held-Item children. Both profiles complete
+checked cleanup. Final runs pass in 16.42 and 13.24 seconds; these timings do
+not measure FPS or a controlled speed improvement.
+
+The original Container comparison covers 73 calls with independent entropy
+audits. Original drawing observes two complete Inventory calls per process;
+native entered quad kernels match 108 active words while each process audits
+its own inactive backing. Complete native SDK frames and native zero-draw CPU
+prefixes retain separate scopes. The Linux sanitized public suite passes all
+615 tests. Windows passes 618 of 620 in its initial broad run, then both
+isolated follow-ups after updating an obsolete input frontier expectation.
+The initial run remains failed; unrestricted Inventory rendering, graphical
+focus stability and a fully playable client remain unqualified.
+
 The source [Create World screen](client/create-world.md) now edits actual name
 and seed fields, derives a valid folder through the real SaveFormat lookup,
 and enters ordinary generation. The Windows seed 777 scenario completes 289
@@ -21,7 +41,8 @@ completed sheared fatal return and distinct callback-failure scopes. The
 dying state, concrete drops and actual Item publication. Its new controls cover
 2,709 native checks and 43 original calls; the shared Entity drop module adds
 69 controls and also serves Falling Sand. Other concrete hurt/drop overrides,
-Player combat and Inventory UI remain unfinished.
+general Player combat and Inventory compatibility remain unfinished beyond the
+finite scenarios documented here.
 Whole GUI, plant climate/jitter, fluid pixels and unrestricted play retain
 separate verification limits. The earlier 54.99-second pass and current pass
 have different natural inputs; they are not a controlled speed comparison.

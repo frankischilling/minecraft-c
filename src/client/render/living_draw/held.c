@@ -41,6 +41,10 @@ static bool part_failed(ld_frame *f) {
     return ld_fail(f, MC_CLIENT_LIVING_DRAW_CHILD_FAILED, part->operation);
 }
 
+bool ld_part_result(ld_frame *f, bool ok) {
+    return ok || part_failed(f);
+}
+
 static bool registry_failed(ld_frame *f, mc_registry_classes *classes) {
     mc_client_living_draw_error *e = f->error;
     e->selected_child = MC_CLIENT_LIVING_DRAW_CHILD_REGISTRY;
@@ -80,6 +84,10 @@ static bool item_failed(ld_frame *f) {
                    item->status == MC_REGISTRY_LIMIT ? MC_CLIENT_LIVING_DRAW_LIMIT
                                                      : MC_CLIENT_LIVING_DRAW_CHILD_FAILED,
                    item->operation);
+}
+
+bool ld_item_result(ld_frame *f, bool ok) {
+    return ok || item_failed(f);
 }
 
 static bool held_failed(ld_frame *f, mc_held_stack_parent_error *held) {
@@ -124,6 +132,29 @@ static mc_registry_classes *registry(ld_frame *f) {
     if (classes == NULL)
         ld_fail(f, MC_CLIENT_LIVING_DRAW_STATE, "Living held actual Registry association");
     return classes;
+}
+
+bool ld_held_item(ld_frame *f, mc_item_stack *stack, int32_t manager_pc, int32_t invoke_pc) {
+    mc_client_living_draw_error *e = f->error;
+    mc_client_render_manager *manager = ld_manager(f, manager_pc);
+    if (manager == NULL)
+        return false;
+    const mc_client_source_ra *source = manager->fields.f;
+    mc_client_held_item *hand;
+    if (!mc_client_draw_capture_hand(f->scope, manager, source, &hand, &e->capture_failure))
+        return capture_failed(f);
+    e->site.pc = invoke_pc;
+    if (source == NULL)
+        return ld_null(f, "Player layer null captured RA invoke receiver");
+    mc_held_stack_parent_error *held = mc_client_draw_held_workspace(f->scope, &e->capture_failure);
+    if (held == NULL)
+        return capture_failed(f);
+    e->detail.held = held;
+    e->selected_child = MC_CLIENT_LIVING_DRAW_CHILD_HELD;
+    if (!entity_renderer_held_stack_entered(f->scope, hand, f->actor, stack, e->site, held))
+        return held_failed(f, held);
+    e->selected_child = MC_CLIENT_LIVING_DRAW_CHILD_NONE;
+    return true;
 }
 
 bool ld_v_held(ld_frame *f, float partial) {

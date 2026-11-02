@@ -298,6 +298,81 @@ static bool inherited_item_controls(mc_registry_classes *registry) {
     return true;
 }
 
+static bool pumpkin_getter_controls(fixture *f) {
+    static const int32_t metadata[] = {INT32_MIN, -1, 0, 1, 2, 3, 4, 15, 16, INT32_MAX};
+    /* The original FC metadata orientation table, without metadata masking. */
+    static const int32_t front_side[] = {-9, -9, 3, 4, 2, 5, -9, -9, -9, -9};
+    static const int32_t sides[] = {INT32_MIN, -1, 0, 1, 2, 3, 4, 5, 6, INT32_MAX};
+
+    static const struct {
+        int32_t base, side, unlit_front, lit_front;
+    } wrapped[] = {{INT32_MAX, -2147483633, -2147483632, -2147483631},
+                   {INT32_MIN, -2147483632, -2147483631, -2147483630},
+                   {-17, -1, 0, 1},
+                   {0, 16, 17, 18},
+                   {102, 118, 119, 120}};
+
+    for (int32_t lit = 0; lit < 2; ++lit) {
+        const mc_block *read = NULL;
+        CHECK(mc_registry_block_get(f->registry, lit == 0 ? 86 : 91, &read, NULL) ==
+                  MC_REGISTRY_OK &&
+              read != NULL && read->kind == MC_BLOCK_PUMPKIN &&
+              strcmp(read->constructor_class, "fc") == 0 && read->fields.bm == 102 &&
+              read->subtype.fc.a == (lit != 0));
+        mc_block *pumpkin = (mc_block *)(void *)read;
+        CHECK(mc_block_render_bounds(pumpkin, .125f, .25f, .375f, .75f, .875f, 1) ==
+              MC_REGISTRY_OK);
+        const mc_block_fields before = pumpkin->fields;
+        for (size_t m = 0; m < sizeof(metadata) / sizeof(metadata[0]); ++m) {
+            int32_t color = -777;
+            CHECK(mc_block_render_inventory_color(pumpkin, metadata[m], &color) == MC_REGISTRY_OK &&
+                  color == 0xffffff && mc_block_render_inventory_shape(pumpkin) == MC_REGISTRY_OK &&
+                  memcmp(&before, &pumpkin->fields, sizeof(before)) == 0);
+            for (size_t s = 0; s < sizeof(sides) / sizeof(sides[0]); ++s) {
+                int32_t texture = -777;
+                const int32_t expected = sides[s] == 0 || sides[s] == 1 ? 102
+                                         : sides[s] == front_side[m]    ? 119 + lit
+                                                                        : 118;
+                CHECK(mc_block_render_texture_metadata(pumpkin, sides[s], metadata[m], &texture) ==
+                          MC_REGISTRY_OK &&
+                      texture == expected);
+                /* FC.a(I) deliberately ignores its lit flag and metadata. */
+                const int32_t side_only = sides[s] == 0 || sides[s] == 1 ? 102
+                                          : sides[s] == 3                ? 119
+                                                                         : 118;
+                CHECK(mc_registry_block_texture_side(f->registry, pumpkin, sides[s], &texture) ==
+                          MC_REGISTRY_OK &&
+                      texture == side_only);
+            }
+        }
+        for (size_t n = 0; n < sizeof(wrapped) / sizeof(wrapped[0]); ++n) {
+            /* Declared live source field inputs, prepared between calls. */
+            pumpkin->fields.bm = wrapped[n].base;
+            int32_t texture = -777;
+            CHECK(mc_block_render_texture_metadata(pumpkin, 0, 0, &texture) == MC_REGISTRY_OK &&
+                  texture == wrapped[n].base);
+            CHECK(mc_block_render_texture_metadata(pumpkin, -1, 0, &texture) == MC_REGISTRY_OK &&
+                  texture == wrapped[n].side);
+            CHECK(mc_block_render_texture_metadata(pumpkin, 3, 0, &texture) == MC_REGISTRY_OK &&
+                  texture == (lit == 0 ? wrapped[n].unlit_front : wrapped[n].lit_front));
+            CHECK(mc_registry_block_texture_side(f->registry, pumpkin, 3, &texture) ==
+                      MC_REGISTRY_OK &&
+                  texture == wrapped[n].unlit_front);
+        }
+        pumpkin->fields.bm = before.bm;
+        CHECK(memcmp(&before, &pumpkin->fields, sizeof(before)) == 0 &&
+              pumpkin->subtype.fc.a == (lit != 0));
+    }
+    const mc_block *grass = NULL;
+    int32_t unchanged = -777;
+    CHECK(mc_registry_block_get(f->registry, 2, &grass, NULL) == MC_REGISTRY_OK && grass != NULL &&
+          mc_block_render_inventory_color(grass, 0, &unchanged) ==
+              MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY &&
+          unchanged == -777 &&
+          mc_block_render_inventory_shape(grass) == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY);
+    return true;
+}
+
 static bool inventory_controls(void) {
     fixture f = {0};
     CHECK(mc_materials_create(&f.materials));
@@ -311,6 +386,7 @@ static bool inventory_controls(void) {
     CHECK(mc_registry_classes_allocate(&options, &f.registry, NULL) == MC_REGISTRY_OK);
     CHECK(mc_registry_classes_bind_entities(f.registry, f.entities, NULL) == MC_REGISTRY_OK);
     CHECK(mc_registry_classes_initialize_blocks(f.registry, NULL) == MC_REGISTRY_OK);
+    CHECK(pumpkin_getter_controls(&f));
     const mc_block *dirt = NULL;
     CHECK(mc_registry_block_get(f.registry, 3, &dirt, NULL) == MC_REGISTRY_OK && dirt != NULL);
     int32_t color = 0, icon = -1;

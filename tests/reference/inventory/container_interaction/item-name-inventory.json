@@ -1,0 +1,5363 @@
+{
+  "schema": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "scope": "Actual getMethod(a,IZ) reflection on all202 Items/38 runtime classes; genuine Stack metadata0/15 names and identities; actual NH.b translation and JDK trim values. No completed tooltip/Inventory draw claim.",
+  "rows": [
+    {
+      "id": 1,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.stone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Stone",
+          "trimmed": "Stone"
+        },
+        {
+          "damage": 15,
+          "value": "tile.stone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Stone",
+          "trimmed": "Stone"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.grass",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Grass",
+          "trimmed": "Grass"
+        },
+        {
+          "damage": 15,
+          "value": "tile.grass",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Grass",
+          "trimmed": "Grass"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.dirt",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Dirt",
+          "trimmed": "Dirt"
+        },
+        {
+          "damage": 15,
+          "value": "tile.dirt",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Dirt",
+          "trimmed": "Dirt"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.stonebrick",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Cobblestone",
+          "trimmed": "Cobblestone"
+        },
+        {
+          "damage": 15,
+          "value": "tile.stonebrick",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Cobblestone",
+          "trimmed": "Cobblestone"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.wood",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wooden Planks",
+          "trimmed": "Wooden Planks"
+        },
+        {
+          "damage": 15,
+          "value": "tile.wood",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wooden Planks",
+          "trimmed": "Wooden Planks"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "class": "mr",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.sapling",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sapling",
+          "trimmed": "Sapling"
+        },
+        {
+          "damage": 15,
+          "value": "tile.sapling",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sapling",
+          "trimmed": "Sapling"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.bedrock",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bedrock",
+          "trimmed": "Bedrock"
+        },
+        {
+          "damage": 15,
+          "value": "tile.bedrock",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bedrock",
+          "trimmed": "Bedrock"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.water",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Water",
+          "trimmed": "Water"
+        },
+        {
+          "damage": 15,
+          "value": "tile.water",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Water",
+          "trimmed": "Water"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.water",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Water",
+          "trimmed": "Water"
+        },
+        {
+          "damage": 15,
+          "value": "tile.water",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Water",
+          "trimmed": "Water"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.lava",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Lava",
+          "trimmed": "Lava"
+        },
+        {
+          "damage": 15,
+          "value": "tile.lava",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Lava",
+          "trimmed": "Lava"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.lava",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Lava",
+          "trimmed": "Lava"
+        },
+        {
+          "damage": 15,
+          "value": "tile.lava",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Lava",
+          "trimmed": "Lava"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.sand",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sand",
+          "trimmed": "Sand"
+        },
+        {
+          "damage": 15,
+          "value": "tile.sand",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sand",
+          "trimmed": "Sand"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.gravel",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Gravel",
+          "trimmed": "Gravel"
+        },
+        {
+          "damage": 15,
+          "value": "tile.gravel",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Gravel",
+          "trimmed": "Gravel"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.oreGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Gold Ore",
+          "trimmed": "Gold Ore"
+        },
+        {
+          "damage": 15,
+          "value": "tile.oreGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Gold Ore",
+          "trimmed": "Gold Ore"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.oreIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Ore",
+          "trimmed": "Iron Ore"
+        },
+        {
+          "damage": 15,
+          "value": "tile.oreIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Ore",
+          "trimmed": "Iron Ore"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.oreCoal",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Coal Ore",
+          "trimmed": "Coal Ore"
+        },
+        {
+          "damage": 15,
+          "value": "tile.oreCoal",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Coal Ore",
+          "trimmed": "Coal Ore"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "class": "go",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.log",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wood",
+          "trimmed": "Wood"
+        },
+        {
+          "damage": 15,
+          "value": "tile.log",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wood",
+          "trimmed": "Wood"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "class": "uy",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.leaves",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Leaves",
+          "trimmed": "Leaves"
+        },
+        {
+          "damage": 15,
+          "value": "tile.leaves",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Leaves",
+          "trimmed": "Leaves"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.sponge",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sponge",
+          "trimmed": "Sponge"
+        },
+        {
+          "damage": 15,
+          "value": "tile.sponge",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sponge",
+          "trimmed": "Sponge"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.glass",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Glass",
+          "trimmed": "Glass"
+        },
+        {
+          "damage": 15,
+          "value": "tile.glass",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Glass",
+          "trimmed": "Glass"
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.oreLapis",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Lapis Lazuli Ore",
+          "trimmed": "Lapis Lazuli Ore"
+        },
+        {
+          "damage": 15,
+          "value": "tile.oreLapis",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Lapis Lazuli Ore",
+          "trimmed": "Lapis Lazuli Ore"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.blockLapis",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Lapis Lazuli Block",
+          "trimmed": "Lapis Lazuli Block"
+        },
+        {
+          "damage": 15,
+          "value": "tile.blockLapis",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Lapis Lazuli Block",
+          "trimmed": "Lapis Lazuli Block"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.dispenser",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Dispenser",
+          "trimmed": "Dispenser"
+        },
+        {
+          "damage": 15,
+          "value": "tile.dispenser",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Dispenser",
+          "trimmed": "Dispenser"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.sandStone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sandstone",
+          "trimmed": "Sandstone"
+        },
+        {
+          "damage": 15,
+          "value": "tile.sandStone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sandstone",
+          "trimmed": "Sandstone"
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.musicBlock",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Note Block",
+          "trimmed": "Note Block"
+        },
+        {
+          "damage": 15,
+          "value": "tile.musicBlock",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Note Block",
+          "trimmed": "Note Block"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.bed",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bed",
+          "trimmed": "Bed"
+        },
+        {
+          "damage": 15,
+          "value": "tile.bed",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bed",
+          "trimmed": "Bed"
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.goldenRail",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Powered Rail",
+          "trimmed": "Powered Rail"
+        },
+        {
+          "damage": 15,
+          "value": "tile.goldenRail",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Powered Rail",
+          "trimmed": "Powered Rail"
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.detectorRail",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Detector Rail",
+          "trimmed": "Detector Rail"
+        },
+        {
+          "damage": 15,
+          "value": "tile.detectorRail",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Detector Rail",
+          "trimmed": "Detector Rail"
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "class": "qr",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.pistonStickyBase",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sticky Piston",
+          "trimmed": "Sticky Piston"
+        },
+        {
+          "damage": 15,
+          "value": "tile.pistonStickyBase",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sticky Piston",
+          "trimmed": "Sticky Piston"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.web",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Cobweb",
+          "trimmed": "Cobweb"
+        },
+        {
+          "damage": 15,
+          "value": "tile.web",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Cobweb",
+          "trimmed": "Cobweb"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.tallgrass",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "",
+          "trimmed": ""
+        },
+        {
+          "damage": 15,
+          "value": "tile.tallgrass",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "",
+          "trimmed": ""
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.deadbush",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "",
+          "trimmed": ""
+        },
+        {
+          "damage": 15,
+          "value": "tile.deadbush",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "",
+          "trimmed": ""
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "class": "qr",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.pistonBase",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Piston",
+          "trimmed": "Piston"
+        },
+        {
+          "damage": 15,
+          "value": "tile.pistonBase",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Piston",
+          "trimmed": "Piston"
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": null,
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "",
+          "trimmed": ""
+        },
+        {
+          "damage": 15,
+          "value": null,
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "",
+          "trimmed": ""
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "class": "bi",
+      "owner": "bi",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.cloth.white",
+          "exception": "none",
+          "same-repeat": false,
+          "same-noarg": false,
+          "translated": "Wool",
+          "trimmed": "Wool"
+        },
+        {
+          "damage": 15,
+          "value": "tile.cloth.black",
+          "exception": "none",
+          "same-repeat": false,
+          "same-noarg": false,
+          "translated": "Black Wool",
+          "trimmed": "Black Wool"
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": null,
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "",
+          "trimmed": ""
+        },
+        {
+          "damage": 15,
+          "value": null,
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "",
+          "trimmed": ""
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.flower",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Flower",
+          "trimmed": "Flower"
+        },
+        {
+          "damage": 15,
+          "value": "tile.flower",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Flower",
+          "trimmed": "Flower"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.rose",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Rose",
+          "trimmed": "Rose"
+        },
+        {
+          "damage": 15,
+          "value": "tile.rose",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Rose",
+          "trimmed": "Rose"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.mushroom",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Mushroom",
+          "trimmed": "Mushroom"
+        },
+        {
+          "damage": 15,
+          "value": "tile.mushroom",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Mushroom",
+          "trimmed": "Mushroom"
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.mushroom",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Mushroom",
+          "trimmed": "Mushroom"
+        },
+        {
+          "damage": 15,
+          "value": "tile.mushroom",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Mushroom",
+          "trimmed": "Mushroom"
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.blockGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Block of Gold",
+          "trimmed": "Block of Gold"
+        },
+        {
+          "damage": 15,
+          "value": "tile.blockGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Block of Gold",
+          "trimmed": "Block of Gold"
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.blockIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Block of Iron",
+          "trimmed": "Block of Iron"
+        },
+        {
+          "damage": 15,
+          "value": "tile.blockIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Block of Iron",
+          "trimmed": "Block of Iron"
+        }
+      ]
+    },
+    {
+      "id": 43,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.stoneSlab",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "",
+          "trimmed": ""
+        },
+        {
+          "damage": 15,
+          "value": "tile.stoneSlab",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "",
+          "trimmed": ""
+        }
+      ]
+    },
+    {
+      "id": 44,
+      "class": "en",
+      "owner": "en",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.stoneSlab.stone",
+          "exception": "none",
+          "same-repeat": false,
+          "same-noarg": false,
+          "translated": "Stone Slab",
+          "trimmed": "Stone Slab"
+        },
+        {
+          "damage": 15,
+          "value": null,
+          "exception": "java.lang.ArrayIndexOutOfBoundsException",
+          "same-repeat": null,
+          "same-noarg": null,
+          "translated": null,
+          "trimmed": null
+        }
+      ]
+    },
+    {
+      "id": 45,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.brick",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bricks",
+          "trimmed": "Bricks"
+        },
+        {
+          "damage": 15,
+          "value": "tile.brick",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bricks",
+          "trimmed": "Bricks"
+        }
+      ]
+    },
+    {
+      "id": 46,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.tnt",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "TNT",
+          "trimmed": "TNT"
+        },
+        {
+          "damage": 15,
+          "value": "tile.tnt",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "TNT",
+          "trimmed": "TNT"
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.bookshelf",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bookshelf",
+          "trimmed": "Bookshelf"
+        },
+        {
+          "damage": 15,
+          "value": "tile.bookshelf",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bookshelf",
+          "trimmed": "Bookshelf"
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.stoneMoss",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Moss Stone",
+          "trimmed": "Moss Stone"
+        },
+        {
+          "damage": 15,
+          "value": "tile.stoneMoss",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Moss Stone",
+          "trimmed": "Moss Stone"
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.obsidian",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Obsidian",
+          "trimmed": "Obsidian"
+        },
+        {
+          "damage": 15,
+          "value": "tile.obsidian",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Obsidian",
+          "trimmed": "Obsidian"
+        }
+      ]
+    },
+    {
+      "id": 50,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.torch",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Torch",
+          "trimmed": "Torch"
+        },
+        {
+          "damage": 15,
+          "value": "tile.torch",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Torch",
+          "trimmed": "Torch"
+        }
+      ]
+    },
+    {
+      "id": 51,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.fire",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Fire",
+          "trimmed": "Fire"
+        },
+        {
+          "damage": 15,
+          "value": "tile.fire",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Fire",
+          "trimmed": "Fire"
+        }
+      ]
+    },
+    {
+      "id": 52,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.mobSpawner",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Monster Spawner",
+          "trimmed": "Monster Spawner"
+        },
+        {
+          "damage": 15,
+          "value": "tile.mobSpawner",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Monster Spawner",
+          "trimmed": "Monster Spawner"
+        }
+      ]
+    },
+    {
+      "id": 53,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.stairsWood",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wooden Stairs",
+          "trimmed": "Wooden Stairs"
+        },
+        {
+          "damage": 15,
+          "value": "tile.stairsWood",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wooden Stairs",
+          "trimmed": "Wooden Stairs"
+        }
+      ]
+    },
+    {
+      "id": 54,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.chest",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Chest",
+          "trimmed": "Chest"
+        },
+        {
+          "damage": 15,
+          "value": "tile.chest",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Chest",
+          "trimmed": "Chest"
+        }
+      ]
+    },
+    {
+      "id": 55,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.redstoneDust",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Redstone Dust",
+          "trimmed": "Redstone Dust"
+        },
+        {
+          "damage": 15,
+          "value": "tile.redstoneDust",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Redstone Dust",
+          "trimmed": "Redstone Dust"
+        }
+      ]
+    },
+    {
+      "id": 56,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.oreDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Ore",
+          "trimmed": "Diamond Ore"
+        },
+        {
+          "damage": 15,
+          "value": "tile.oreDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Ore",
+          "trimmed": "Diamond Ore"
+        }
+      ]
+    },
+    {
+      "id": 57,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.blockDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Block of Diamond",
+          "trimmed": "Block of Diamond"
+        },
+        {
+          "damage": 15,
+          "value": "tile.blockDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Block of Diamond",
+          "trimmed": "Block of Diamond"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.workbench",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Crafting Table",
+          "trimmed": "Crafting Table"
+        },
+        {
+          "damage": 15,
+          "value": "tile.workbench",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Crafting Table",
+          "trimmed": "Crafting Table"
+        }
+      ]
+    },
+    {
+      "id": 59,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.crops",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Crops",
+          "trimmed": "Crops"
+        },
+        {
+          "damage": 15,
+          "value": "tile.crops",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Crops",
+          "trimmed": "Crops"
+        }
+      ]
+    },
+    {
+      "id": 60,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.farmland",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Farmland",
+          "trimmed": "Farmland"
+        },
+        {
+          "damage": 15,
+          "value": "tile.farmland",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Farmland",
+          "trimmed": "Farmland"
+        }
+      ]
+    },
+    {
+      "id": 61,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.furnace",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Furnace",
+          "trimmed": "Furnace"
+        },
+        {
+          "damage": 15,
+          "value": "tile.furnace",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Furnace",
+          "trimmed": "Furnace"
+        }
+      ]
+    },
+    {
+      "id": 62,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.furnace",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Furnace",
+          "trimmed": "Furnace"
+        },
+        {
+          "damage": 15,
+          "value": "tile.furnace",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Furnace",
+          "trimmed": "Furnace"
+        }
+      ]
+    },
+    {
+      "id": 63,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.sign",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sign",
+          "trimmed": "Sign"
+        },
+        {
+          "damage": 15,
+          "value": "tile.sign",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sign",
+          "trimmed": "Sign"
+        }
+      ]
+    },
+    {
+      "id": 64,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.doorWood",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wooden Door",
+          "trimmed": "Wooden Door"
+        },
+        {
+          "damage": 15,
+          "value": "tile.doorWood",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wooden Door",
+          "trimmed": "Wooden Door"
+        }
+      ]
+    },
+    {
+      "id": 65,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.ladder",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Ladder",
+          "trimmed": "Ladder"
+        },
+        {
+          "damage": 15,
+          "value": "tile.ladder",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Ladder",
+          "trimmed": "Ladder"
+        }
+      ]
+    },
+    {
+      "id": 66,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.rail",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Rail",
+          "trimmed": "Rail"
+        },
+        {
+          "damage": 15,
+          "value": "tile.rail",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Rail",
+          "trimmed": "Rail"
+        }
+      ]
+    },
+    {
+      "id": 67,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.stairsStone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Stone Stairs",
+          "trimmed": "Stone Stairs"
+        },
+        {
+          "damage": 15,
+          "value": "tile.stairsStone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Stone Stairs",
+          "trimmed": "Stone Stairs"
+        }
+      ]
+    },
+    {
+      "id": 68,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.sign",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sign",
+          "trimmed": "Sign"
+        },
+        {
+          "damage": 15,
+          "value": "tile.sign",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sign",
+          "trimmed": "Sign"
+        }
+      ]
+    },
+    {
+      "id": 69,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.lever",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Lever",
+          "trimmed": "Lever"
+        },
+        {
+          "damage": 15,
+          "value": "tile.lever",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Lever",
+          "trimmed": "Lever"
+        }
+      ]
+    },
+    {
+      "id": 70,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.pressurePlate",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Pressure Plate",
+          "trimmed": "Pressure Plate"
+        },
+        {
+          "damage": 15,
+          "value": "tile.pressurePlate",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Pressure Plate",
+          "trimmed": "Pressure Plate"
+        }
+      ]
+    },
+    {
+      "id": 71,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.doorIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Door",
+          "trimmed": "Iron Door"
+        },
+        {
+          "damage": 15,
+          "value": "tile.doorIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Door",
+          "trimmed": "Iron Door"
+        }
+      ]
+    },
+    {
+      "id": 72,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.pressurePlate",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Pressure Plate",
+          "trimmed": "Pressure Plate"
+        },
+        {
+          "damage": 15,
+          "value": "tile.pressurePlate",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Pressure Plate",
+          "trimmed": "Pressure Plate"
+        }
+      ]
+    },
+    {
+      "id": 73,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.oreRedstone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Redstone Ore",
+          "trimmed": "Redstone Ore"
+        },
+        {
+          "damage": 15,
+          "value": "tile.oreRedstone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Redstone Ore",
+          "trimmed": "Redstone Ore"
+        }
+      ]
+    },
+    {
+      "id": 74,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.oreRedstone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Redstone Ore",
+          "trimmed": "Redstone Ore"
+        },
+        {
+          "damage": 15,
+          "value": "tile.oreRedstone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Redstone Ore",
+          "trimmed": "Redstone Ore"
+        }
+      ]
+    },
+    {
+      "id": 75,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.notGate",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Redstone Torch",
+          "trimmed": "Redstone Torch"
+        },
+        {
+          "damage": 15,
+          "value": "tile.notGate",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Redstone Torch",
+          "trimmed": "Redstone Torch"
+        }
+      ]
+    },
+    {
+      "id": 76,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.notGate",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Redstone Torch",
+          "trimmed": "Redstone Torch"
+        },
+        {
+          "damage": 15,
+          "value": "tile.notGate",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Redstone Torch",
+          "trimmed": "Redstone Torch"
+        }
+      ]
+    },
+    {
+      "id": 77,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.button",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Button",
+          "trimmed": "Button"
+        },
+        {
+          "damage": 15,
+          "value": "tile.button",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Button",
+          "trimmed": "Button"
+        }
+      ]
+    },
+    {
+      "id": 78,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.snow",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Snow",
+          "trimmed": "Snow"
+        },
+        {
+          "damage": 15,
+          "value": "tile.snow",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Snow",
+          "trimmed": "Snow"
+        }
+      ]
+    },
+    {
+      "id": 79,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.ice",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Ice",
+          "trimmed": "Ice"
+        },
+        {
+          "damage": 15,
+          "value": "tile.ice",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Ice",
+          "trimmed": "Ice"
+        }
+      ]
+    },
+    {
+      "id": 80,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.snow",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Snow",
+          "trimmed": "Snow"
+        },
+        {
+          "damage": 15,
+          "value": "tile.snow",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Snow",
+          "trimmed": "Snow"
+        }
+      ]
+    },
+    {
+      "id": 81,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.cactus",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Cactus",
+          "trimmed": "Cactus"
+        },
+        {
+          "damage": 15,
+          "value": "tile.cactus",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Cactus",
+          "trimmed": "Cactus"
+        }
+      ]
+    },
+    {
+      "id": 82,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.clay",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Clay",
+          "trimmed": "Clay"
+        },
+        {
+          "damage": 15,
+          "value": "tile.clay",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Clay",
+          "trimmed": "Clay"
+        }
+      ]
+    },
+    {
+      "id": 83,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.reeds",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sugar cane",
+          "trimmed": "Sugar cane"
+        },
+        {
+          "damage": 15,
+          "value": "tile.reeds",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sugar cane",
+          "trimmed": "Sugar cane"
+        }
+      ]
+    },
+    {
+      "id": 84,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.jukebox",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Jukebox",
+          "trimmed": "Jukebox"
+        },
+        {
+          "damage": 15,
+          "value": "tile.jukebox",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Jukebox",
+          "trimmed": "Jukebox"
+        }
+      ]
+    },
+    {
+      "id": 85,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.fence",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Fence",
+          "trimmed": "Fence"
+        },
+        {
+          "damage": 15,
+          "value": "tile.fence",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Fence",
+          "trimmed": "Fence"
+        }
+      ]
+    },
+    {
+      "id": 86,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.pumpkin",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Pumpkin",
+          "trimmed": "Pumpkin"
+        },
+        {
+          "damage": 15,
+          "value": "tile.pumpkin",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Pumpkin",
+          "trimmed": "Pumpkin"
+        }
+      ]
+    },
+    {
+      "id": 87,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.hellrock",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Netherrack",
+          "trimmed": "Netherrack"
+        },
+        {
+          "damage": 15,
+          "value": "tile.hellrock",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Netherrack",
+          "trimmed": "Netherrack"
+        }
+      ]
+    },
+    {
+      "id": 88,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.hellsand",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Soul Sand",
+          "trimmed": "Soul Sand"
+        },
+        {
+          "damage": 15,
+          "value": "tile.hellsand",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Soul Sand",
+          "trimmed": "Soul Sand"
+        }
+      ]
+    },
+    {
+      "id": 89,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.lightgem",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Glowstone",
+          "trimmed": "Glowstone"
+        },
+        {
+          "damage": 15,
+          "value": "tile.lightgem",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Glowstone",
+          "trimmed": "Glowstone"
+        }
+      ]
+    },
+    {
+      "id": 90,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.portal",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Portal",
+          "trimmed": "Portal"
+        },
+        {
+          "damage": 15,
+          "value": "tile.portal",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Portal",
+          "trimmed": "Portal"
+        }
+      ]
+    },
+    {
+      "id": 91,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.litpumpkin",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Jack 'o' Lantern",
+          "trimmed": "Jack 'o' Lantern"
+        },
+        {
+          "damage": 15,
+          "value": "tile.litpumpkin",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Jack 'o' Lantern",
+          "trimmed": "Jack 'o' Lantern"
+        }
+      ]
+    },
+    {
+      "id": 92,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.cake",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Cake",
+          "trimmed": "Cake"
+        },
+        {
+          "damage": 15,
+          "value": "tile.cake",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Cake",
+          "trimmed": "Cake"
+        }
+      ]
+    },
+    {
+      "id": 93,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.diode",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "",
+          "trimmed": ""
+        },
+        {
+          "damage": 15,
+          "value": "tile.diode",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "",
+          "trimmed": ""
+        }
+      ]
+    },
+    {
+      "id": 94,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.diode",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "",
+          "trimmed": ""
+        },
+        {
+          "damage": 15,
+          "value": "tile.diode",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "",
+          "trimmed": ""
+        }
+      ]
+    },
+    {
+      "id": 95,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.lockedchest",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Locked chest",
+          "trimmed": "Locked chest"
+        },
+        {
+          "damage": 15,
+          "value": "tile.lockedchest",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Locked chest",
+          "trimmed": "Locked chest"
+        }
+      ]
+    },
+    {
+      "id": 96,
+      "class": "ck",
+      "owner": "ck",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "tile.trapdoor",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Trapdoor",
+          "trimmed": "Trapdoor"
+        },
+        {
+          "damage": 15,
+          "value": "tile.trapdoor",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Trapdoor",
+          "trimmed": "Trapdoor"
+        }
+      ]
+    },
+    {
+      "id": 256,
+      "class": "wc",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.shovelIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Shovel",
+          "trimmed": "Iron Shovel"
+        },
+        {
+          "damage": 15,
+          "value": "item.shovelIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Shovel",
+          "trimmed": "Iron Shovel"
+        }
+      ]
+    },
+    {
+      "id": 257,
+      "class": "au",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.pickaxeIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Pickaxe",
+          "trimmed": "Iron Pickaxe"
+        },
+        {
+          "damage": 15,
+          "value": "item.pickaxeIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Pickaxe",
+          "trimmed": "Iron Pickaxe"
+        }
+      ]
+    },
+    {
+      "id": 258,
+      "class": "ta",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.hatchetIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Axe",
+          "trimmed": "Iron Axe"
+        },
+        {
+          "damage": 15,
+          "value": "item.hatchetIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Axe",
+          "trimmed": "Iron Axe"
+        }
+      ]
+    },
+    {
+      "id": 259,
+      "class": "ye",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.flintAndSteel",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Flint and Steel",
+          "trimmed": "Flint and Steel"
+        },
+        {
+          "damage": 15,
+          "value": "item.flintAndSteel",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Flint and Steel",
+          "trimmed": "Flint and Steel"
+        }
+      ]
+    },
+    {
+      "id": 260,
+      "class": "yw",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.apple",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Apple",
+          "trimmed": "Apple"
+        },
+        {
+          "damage": 15,
+          "value": "item.apple",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Apple",
+          "trimmed": "Apple"
+        }
+      ]
+    },
+    {
+      "id": 261,
+      "class": "qz",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.bow",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bow",
+          "trimmed": "Bow"
+        },
+        {
+          "damage": 15,
+          "value": "item.bow",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bow",
+          "trimmed": "Bow"
+        }
+      ]
+    },
+    {
+      "id": 262,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.arrow",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Arrow",
+          "trimmed": "Arrow"
+        },
+        {
+          "damage": 15,
+          "value": "item.arrow",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Arrow",
+          "trimmed": "Arrow"
+        }
+      ]
+    },
+    {
+      "id": 263,
+      "class": "rx",
+      "owner": "rx",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.coal",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": false,
+          "translated": "Coal",
+          "trimmed": "Coal"
+        },
+        {
+          "damage": 15,
+          "value": "item.coal",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": false,
+          "translated": "Coal",
+          "trimmed": "Coal"
+        }
+      ]
+    },
+    {
+      "id": 264,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.emerald",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond",
+          "trimmed": "Diamond"
+        },
+        {
+          "damage": 15,
+          "value": "item.emerald",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond",
+          "trimmed": "Diamond"
+        }
+      ]
+    },
+    {
+      "id": 265,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.ingotIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Ingot",
+          "trimmed": "Iron Ingot"
+        },
+        {
+          "damage": 15,
+          "value": "item.ingotIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Ingot",
+          "trimmed": "Iron Ingot"
+        }
+      ]
+    },
+    {
+      "id": 266,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.ingotGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Gold Ingot",
+          "trimmed": "Gold Ingot"
+        },
+        {
+          "damage": 15,
+          "value": "item.ingotGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Gold Ingot",
+          "trimmed": "Gold Ingot"
+        }
+      ]
+    },
+    {
+      "id": 267,
+      "class": "qd",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.swordIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Sword",
+          "trimmed": "Iron Sword"
+        },
+        {
+          "damage": 15,
+          "value": "item.swordIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Sword",
+          "trimmed": "Iron Sword"
+        }
+      ]
+    },
+    {
+      "id": 268,
+      "class": "qd",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.swordWood",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wooden Sword",
+          "trimmed": "Wooden Sword"
+        },
+        {
+          "damage": 15,
+          "value": "item.swordWood",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wooden Sword",
+          "trimmed": "Wooden Sword"
+        }
+      ]
+    },
+    {
+      "id": 269,
+      "class": "wc",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.shovelWood",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wooden Shovel",
+          "trimmed": "Wooden Shovel"
+        },
+        {
+          "damage": 15,
+          "value": "item.shovelWood",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wooden Shovel",
+          "trimmed": "Wooden Shovel"
+        }
+      ]
+    },
+    {
+      "id": 270,
+      "class": "au",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.pickaxeWood",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wooden Pickaxe",
+          "trimmed": "Wooden Pickaxe"
+        },
+        {
+          "damage": 15,
+          "value": "item.pickaxeWood",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wooden Pickaxe",
+          "trimmed": "Wooden Pickaxe"
+        }
+      ]
+    },
+    {
+      "id": 271,
+      "class": "ta",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.hatchetWood",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wooden Axe",
+          "trimmed": "Wooden Axe"
+        },
+        {
+          "damage": 15,
+          "value": "item.hatchetWood",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wooden Axe",
+          "trimmed": "Wooden Axe"
+        }
+      ]
+    },
+    {
+      "id": 272,
+      "class": "qd",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.swordStone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Stone Sword",
+          "trimmed": "Stone Sword"
+        },
+        {
+          "damage": 15,
+          "value": "item.swordStone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Stone Sword",
+          "trimmed": "Stone Sword"
+        }
+      ]
+    },
+    {
+      "id": 273,
+      "class": "wc",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.shovelStone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Stone Shovel",
+          "trimmed": "Stone Shovel"
+        },
+        {
+          "damage": 15,
+          "value": "item.shovelStone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Stone Shovel",
+          "trimmed": "Stone Shovel"
+        }
+      ]
+    },
+    {
+      "id": 274,
+      "class": "au",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.pickaxeStone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Stone Pickaxe",
+          "trimmed": "Stone Pickaxe"
+        },
+        {
+          "damage": 15,
+          "value": "item.pickaxeStone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Stone Pickaxe",
+          "trimmed": "Stone Pickaxe"
+        }
+      ]
+    },
+    {
+      "id": 275,
+      "class": "ta",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.hatchetStone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Stone Axe",
+          "trimmed": "Stone Axe"
+        },
+        {
+          "damage": 15,
+          "value": "item.hatchetStone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Stone Axe",
+          "trimmed": "Stone Axe"
+        }
+      ]
+    },
+    {
+      "id": 276,
+      "class": "qd",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.swordDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Sword",
+          "trimmed": "Diamond Sword"
+        },
+        {
+          "damage": 15,
+          "value": "item.swordDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Sword",
+          "trimmed": "Diamond Sword"
+        }
+      ]
+    },
+    {
+      "id": 277,
+      "class": "wc",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.shovelDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Shovel",
+          "trimmed": "Diamond Shovel"
+        },
+        {
+          "damage": 15,
+          "value": "item.shovelDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Shovel",
+          "trimmed": "Diamond Shovel"
+        }
+      ]
+    },
+    {
+      "id": 278,
+      "class": "au",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.pickaxeDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Pickaxe",
+          "trimmed": "Diamond Pickaxe"
+        },
+        {
+          "damage": 15,
+          "value": "item.pickaxeDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Pickaxe",
+          "trimmed": "Diamond Pickaxe"
+        }
+      ]
+    },
+    {
+      "id": 279,
+      "class": "ta",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.hatchetDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Axe",
+          "trimmed": "Diamond Axe"
+        },
+        {
+          "damage": 15,
+          "value": "item.hatchetDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Axe",
+          "trimmed": "Diamond Axe"
+        }
+      ]
+    },
+    {
+      "id": 280,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.stick",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Stick",
+          "trimmed": "Stick"
+        },
+        {
+          "damage": 15,
+          "value": "item.stick",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Stick",
+          "trimmed": "Stick"
+        }
+      ]
+    },
+    {
+      "id": 281,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.bowl",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bowl",
+          "trimmed": "Bowl"
+        },
+        {
+          "damage": 15,
+          "value": "item.bowl",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bowl",
+          "trimmed": "Bowl"
+        }
+      ]
+    },
+    {
+      "id": 282,
+      "class": "bz",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.mushroomStew",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Mushroom Stew",
+          "trimmed": "Mushroom Stew"
+        },
+        {
+          "damage": 15,
+          "value": "item.mushroomStew",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Mushroom Stew",
+          "trimmed": "Mushroom Stew"
+        }
+      ]
+    },
+    {
+      "id": 283,
+      "class": "qd",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.swordGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden Sword",
+          "trimmed": "Golden Sword"
+        },
+        {
+          "damage": 15,
+          "value": "item.swordGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden Sword",
+          "trimmed": "Golden Sword"
+        }
+      ]
+    },
+    {
+      "id": 284,
+      "class": "wc",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.shovelGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden Shovel",
+          "trimmed": "Golden Shovel"
+        },
+        {
+          "damage": 15,
+          "value": "item.shovelGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden Shovel",
+          "trimmed": "Golden Shovel"
+        }
+      ]
+    },
+    {
+      "id": 285,
+      "class": "au",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.pickaxeGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden Pickaxe",
+          "trimmed": "Golden Pickaxe"
+        },
+        {
+          "damage": 15,
+          "value": "item.pickaxeGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden Pickaxe",
+          "trimmed": "Golden Pickaxe"
+        }
+      ]
+    },
+    {
+      "id": 286,
+      "class": "ta",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.hatchetGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden Axe",
+          "trimmed": "Golden Axe"
+        },
+        {
+          "damage": 15,
+          "value": "item.hatchetGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden Axe",
+          "trimmed": "Golden Axe"
+        }
+      ]
+    },
+    {
+      "id": 287,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.string",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "String",
+          "trimmed": "String"
+        },
+        {
+          "damage": 15,
+          "value": "item.string",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "String",
+          "trimmed": "String"
+        }
+      ]
+    },
+    {
+      "id": 288,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.feather",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Feather",
+          "trimmed": "Feather"
+        },
+        {
+          "damage": 15,
+          "value": "item.feather",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Feather",
+          "trimmed": "Feather"
+        }
+      ]
+    },
+    {
+      "id": 289,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.sulphur",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Gunpowder",
+          "trimmed": "Gunpowder"
+        },
+        {
+          "damage": 15,
+          "value": "item.sulphur",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Gunpowder",
+          "trimmed": "Gunpowder"
+        }
+      ]
+    },
+    {
+      "id": 290,
+      "class": "la",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.hoeWood",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wooden Hoe",
+          "trimmed": "Wooden Hoe"
+        },
+        {
+          "damage": 15,
+          "value": "item.hoeWood",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wooden Hoe",
+          "trimmed": "Wooden Hoe"
+        }
+      ]
+    },
+    {
+      "id": 291,
+      "class": "la",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.hoeStone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Stone Hoe",
+          "trimmed": "Stone Hoe"
+        },
+        {
+          "damage": 15,
+          "value": "item.hoeStone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Stone Hoe",
+          "trimmed": "Stone Hoe"
+        }
+      ]
+    },
+    {
+      "id": 292,
+      "class": "la",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.hoeIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Hoe",
+          "trimmed": "Iron Hoe"
+        },
+        {
+          "damage": 15,
+          "value": "item.hoeIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Hoe",
+          "trimmed": "Iron Hoe"
+        }
+      ]
+    },
+    {
+      "id": 293,
+      "class": "la",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.hoeDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Hoe",
+          "trimmed": "Diamond Hoe"
+        },
+        {
+          "damage": 15,
+          "value": "item.hoeDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Hoe",
+          "trimmed": "Diamond Hoe"
+        }
+      ]
+    },
+    {
+      "id": 294,
+      "class": "la",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.hoeGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden Hoe",
+          "trimmed": "Golden Hoe"
+        },
+        {
+          "damage": 15,
+          "value": "item.hoeGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden Hoe",
+          "trimmed": "Golden Hoe"
+        }
+      ]
+    },
+    {
+      "id": 295,
+      "class": "rk",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.seeds",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Seeds",
+          "trimmed": "Seeds"
+        },
+        {
+          "damage": 15,
+          "value": "item.seeds",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Seeds",
+          "trimmed": "Seeds"
+        }
+      ]
+    },
+    {
+      "id": 296,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.wheat",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wheat",
+          "trimmed": "Wheat"
+        },
+        {
+          "damage": 15,
+          "value": "item.wheat",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wheat",
+          "trimmed": "Wheat"
+        }
+      ]
+    },
+    {
+      "id": 297,
+      "class": "yw",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.bread",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bread",
+          "trimmed": "Bread"
+        },
+        {
+          "damage": 15,
+          "value": "item.bread",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bread",
+          "trimmed": "Bread"
+        }
+      ]
+    },
+    {
+      "id": 298,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.helmetCloth",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Leather Cap",
+          "trimmed": "Leather Cap"
+        },
+        {
+          "damage": 15,
+          "value": "item.helmetCloth",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Leather Cap",
+          "trimmed": "Leather Cap"
+        }
+      ]
+    },
+    {
+      "id": 299,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.chestplateCloth",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Leather Tunic",
+          "trimmed": "Leather Tunic"
+        },
+        {
+          "damage": 15,
+          "value": "item.chestplateCloth",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Leather Tunic",
+          "trimmed": "Leather Tunic"
+        }
+      ]
+    },
+    {
+      "id": 300,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.leggingsCloth",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Leather Pants",
+          "trimmed": "Leather Pants"
+        },
+        {
+          "damage": 15,
+          "value": "item.leggingsCloth",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Leather Pants",
+          "trimmed": "Leather Pants"
+        }
+      ]
+    },
+    {
+      "id": 301,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.bootsCloth",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Leather Boots",
+          "trimmed": "Leather Boots"
+        },
+        {
+          "damage": 15,
+          "value": "item.bootsCloth",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Leather Boots",
+          "trimmed": "Leather Boots"
+        }
+      ]
+    },
+    {
+      "id": 302,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.helmetChain",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Chain Helmet",
+          "trimmed": "Chain Helmet"
+        },
+        {
+          "damage": 15,
+          "value": "item.helmetChain",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Chain Helmet",
+          "trimmed": "Chain Helmet"
+        }
+      ]
+    },
+    {
+      "id": 303,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.chestplateChain",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Chain Chestplate",
+          "trimmed": "Chain Chestplate"
+        },
+        {
+          "damage": 15,
+          "value": "item.chestplateChain",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Chain Chestplate",
+          "trimmed": "Chain Chestplate"
+        }
+      ]
+    },
+    {
+      "id": 304,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.leggingsChain",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Chain Leggings",
+          "trimmed": "Chain Leggings"
+        },
+        {
+          "damage": 15,
+          "value": "item.leggingsChain",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Chain Leggings",
+          "trimmed": "Chain Leggings"
+        }
+      ]
+    },
+    {
+      "id": 305,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.bootsChain",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Chain Boots",
+          "trimmed": "Chain Boots"
+        },
+        {
+          "damage": 15,
+          "value": "item.bootsChain",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Chain Boots",
+          "trimmed": "Chain Boots"
+        }
+      ]
+    },
+    {
+      "id": 306,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.helmetIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Helmet",
+          "trimmed": "Iron Helmet"
+        },
+        {
+          "damage": 15,
+          "value": "item.helmetIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Helmet",
+          "trimmed": "Iron Helmet"
+        }
+      ]
+    },
+    {
+      "id": 307,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.chestplateIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Chestplate",
+          "trimmed": "Iron Chestplate"
+        },
+        {
+          "damage": 15,
+          "value": "item.chestplateIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Chestplate",
+          "trimmed": "Iron Chestplate"
+        }
+      ]
+    },
+    {
+      "id": 308,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.leggingsIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Leggings",
+          "trimmed": "Iron Leggings"
+        },
+        {
+          "damage": 15,
+          "value": "item.leggingsIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Leggings",
+          "trimmed": "Iron Leggings"
+        }
+      ]
+    },
+    {
+      "id": 309,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.bootsIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Boots",
+          "trimmed": "Iron Boots"
+        },
+        {
+          "damage": 15,
+          "value": "item.bootsIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Boots",
+          "trimmed": "Iron Boots"
+        }
+      ]
+    },
+    {
+      "id": 310,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.helmetDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Helmet",
+          "trimmed": "Diamond Helmet"
+        },
+        {
+          "damage": 15,
+          "value": "item.helmetDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Helmet",
+          "trimmed": "Diamond Helmet"
+        }
+      ]
+    },
+    {
+      "id": 311,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.chestplateDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Chestplate",
+          "trimmed": "Diamond Chestplate"
+        },
+        {
+          "damage": 15,
+          "value": "item.chestplateDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Chestplate",
+          "trimmed": "Diamond Chestplate"
+        }
+      ]
+    },
+    {
+      "id": 312,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.leggingsDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Leggings",
+          "trimmed": "Diamond Leggings"
+        },
+        {
+          "damage": 15,
+          "value": "item.leggingsDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Leggings",
+          "trimmed": "Diamond Leggings"
+        }
+      ]
+    },
+    {
+      "id": 313,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.bootsDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Boots",
+          "trimmed": "Diamond Boots"
+        },
+        {
+          "damage": 15,
+          "value": "item.bootsDiamond",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Diamond Boots",
+          "trimmed": "Diamond Boots"
+        }
+      ]
+    },
+    {
+      "id": 314,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.helmetGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden Helmet",
+          "trimmed": "Golden Helmet"
+        },
+        {
+          "damage": 15,
+          "value": "item.helmetGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden Helmet",
+          "trimmed": "Golden Helmet"
+        }
+      ]
+    },
+    {
+      "id": 315,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.chestplateGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden Chestplate",
+          "trimmed": "Golden Chestplate"
+        },
+        {
+          "damage": 15,
+          "value": "item.chestplateGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden Chestplate",
+          "trimmed": "Golden Chestplate"
+        }
+      ]
+    },
+    {
+      "id": 316,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.leggingsGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden Leggings",
+          "trimmed": "Golden Leggings"
+        },
+        {
+          "damage": 15,
+          "value": "item.leggingsGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden Leggings",
+          "trimmed": "Golden Leggings"
+        }
+      ]
+    },
+    {
+      "id": 317,
+      "class": "wa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.bootsGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden boots",
+          "trimmed": "Golden boots"
+        },
+        {
+          "damage": 15,
+          "value": "item.bootsGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden boots",
+          "trimmed": "Golden boots"
+        }
+      ]
+    },
+    {
+      "id": 318,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.flint",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Flint",
+          "trimmed": "Flint"
+        },
+        {
+          "damage": 15,
+          "value": "item.flint",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Flint",
+          "trimmed": "Flint"
+        }
+      ]
+    },
+    {
+      "id": 319,
+      "class": "yw",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.porkchopRaw",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Raw Porkchop",
+          "trimmed": "Raw Porkchop"
+        },
+        {
+          "damage": 15,
+          "value": "item.porkchopRaw",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Raw Porkchop",
+          "trimmed": "Raw Porkchop"
+        }
+      ]
+    },
+    {
+      "id": 320,
+      "class": "yw",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.porkchopCooked",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Cooked Porkchop",
+          "trimmed": "Cooked Porkchop"
+        },
+        {
+          "damage": 15,
+          "value": "item.porkchopCooked",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Cooked Porkchop",
+          "trimmed": "Cooked Porkchop"
+        }
+      ]
+    },
+    {
+      "id": 321,
+      "class": "ym",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.painting",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Painting",
+          "trimmed": "Painting"
+        },
+        {
+          "damage": 15,
+          "value": "item.painting",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Painting",
+          "trimmed": "Painting"
+        }
+      ]
+    },
+    {
+      "id": 322,
+      "class": "yw",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.appleGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden Apple",
+          "trimmed": "Golden Apple"
+        },
+        {
+          "damage": 15,
+          "value": "item.appleGold",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Golden Apple",
+          "trimmed": "Golden Apple"
+        }
+      ]
+    },
+    {
+      "id": 323,
+      "class": "vc",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.sign",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sign",
+          "trimmed": "Sign"
+        },
+        {
+          "damage": 15,
+          "value": "item.sign",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sign",
+          "trimmed": "Sign"
+        }
+      ]
+    },
+    {
+      "id": 324,
+      "class": "hu",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.doorWood",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wooden Door",
+          "trimmed": "Wooden Door"
+        },
+        {
+          "damage": 15,
+          "value": "item.doorWood",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Wooden Door",
+          "trimmed": "Wooden Door"
+        }
+      ]
+    },
+    {
+      "id": 325,
+      "class": "bc",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.bucket",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bucket",
+          "trimmed": "Bucket"
+        },
+        {
+          "damage": 15,
+          "value": "item.bucket",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bucket",
+          "trimmed": "Bucket"
+        }
+      ]
+    },
+    {
+      "id": 326,
+      "class": "bc",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.bucketWater",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Water Bucket",
+          "trimmed": "Water Bucket"
+        },
+        {
+          "damage": 15,
+          "value": "item.bucketWater",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Water Bucket",
+          "trimmed": "Water Bucket"
+        }
+      ]
+    },
+    {
+      "id": 327,
+      "class": "bc",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.bucketLava",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Lava bucket",
+          "trimmed": "Lava bucket"
+        },
+        {
+          "damage": 15,
+          "value": "item.bucketLava",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Lava bucket",
+          "trimmed": "Lava bucket"
+        }
+      ]
+    },
+    {
+      "id": 328,
+      "class": "rl",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.minecart",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Minecart",
+          "trimmed": "Minecart"
+        },
+        {
+          "damage": 15,
+          "value": "item.minecart",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Minecart",
+          "trimmed": "Minecart"
+        }
+      ]
+    },
+    {
+      "id": 329,
+      "class": "sa",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.saddle",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Saddle",
+          "trimmed": "Saddle"
+        },
+        {
+          "damage": 15,
+          "value": "item.saddle",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Saddle",
+          "trimmed": "Saddle"
+        }
+      ]
+    },
+    {
+      "id": 330,
+      "class": "hu",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.doorIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Door",
+          "trimmed": "Iron Door"
+        },
+        {
+          "damage": 15,
+          "value": "item.doorIron",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Iron Door",
+          "trimmed": "Iron Door"
+        }
+      ]
+    },
+    {
+      "id": 331,
+      "class": "ie",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.redstone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Redstone",
+          "trimmed": "Redstone"
+        },
+        {
+          "damage": 15,
+          "value": "item.redstone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Redstone",
+          "trimmed": "Redstone"
+        }
+      ]
+    },
+    {
+      "id": 332,
+      "class": "dm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.snowball",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Snowball",
+          "trimmed": "Snowball"
+        },
+        {
+          "damage": 15,
+          "value": "item.snowball",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Snowball",
+          "trimmed": "Snowball"
+        }
+      ]
+    },
+    {
+      "id": 333,
+      "class": "vd",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.boat",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Boat",
+          "trimmed": "Boat"
+        },
+        {
+          "damage": 15,
+          "value": "item.boat",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Boat",
+          "trimmed": "Boat"
+        }
+      ]
+    },
+    {
+      "id": 334,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.leather",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Leather",
+          "trimmed": "Leather"
+        },
+        {
+          "damage": 15,
+          "value": "item.leather",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Leather",
+          "trimmed": "Leather"
+        }
+      ]
+    },
+    {
+      "id": 335,
+      "class": "bc",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.milk",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Milk",
+          "trimmed": "Milk"
+        },
+        {
+          "damage": 15,
+          "value": "item.milk",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Milk",
+          "trimmed": "Milk"
+        }
+      ]
+    },
+    {
+      "id": 336,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.brick",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Brick",
+          "trimmed": "Brick"
+        },
+        {
+          "damage": 15,
+          "value": "item.brick",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Brick",
+          "trimmed": "Brick"
+        }
+      ]
+    },
+    {
+      "id": 337,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.clay",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Clay",
+          "trimmed": "Clay"
+        },
+        {
+          "damage": 15,
+          "value": "item.clay",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Clay",
+          "trimmed": "Clay"
+        }
+      ]
+    },
+    {
+      "id": 338,
+      "class": "lv",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.reeds",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sugar Canes",
+          "trimmed": "Sugar Canes"
+        },
+        {
+          "damage": 15,
+          "value": "item.reeds",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sugar Canes",
+          "trimmed": "Sugar Canes"
+        }
+      ]
+    },
+    {
+      "id": 339,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.paper",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Paper",
+          "trimmed": "Paper"
+        },
+        {
+          "damage": 15,
+          "value": "item.paper",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Paper",
+          "trimmed": "Paper"
+        }
+      ]
+    },
+    {
+      "id": 340,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.book",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Book",
+          "trimmed": "Book"
+        },
+        {
+          "damage": 15,
+          "value": "item.book",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Book",
+          "trimmed": "Book"
+        }
+      ]
+    },
+    {
+      "id": 341,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.slimeball",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Slimeball",
+          "trimmed": "Slimeball"
+        },
+        {
+          "damage": 15,
+          "value": "item.slimeball",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Slimeball",
+          "trimmed": "Slimeball"
+        }
+      ]
+    },
+    {
+      "id": 342,
+      "class": "rl",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.minecartChest",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Minecart with Chest",
+          "trimmed": "Minecart with Chest"
+        },
+        {
+          "damage": 15,
+          "value": "item.minecartChest",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Minecart with Chest",
+          "trimmed": "Minecart with Chest"
+        }
+      ]
+    },
+    {
+      "id": 343,
+      "class": "rl",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.minecartFurnace",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Minecart with Furnace",
+          "trimmed": "Minecart with Furnace"
+        },
+        {
+          "damage": 15,
+          "value": "item.minecartFurnace",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Minecart with Furnace",
+          "trimmed": "Minecart with Furnace"
+        }
+      ]
+    },
+    {
+      "id": 344,
+      "class": "mo",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.egg",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Egg",
+          "trimmed": "Egg"
+        },
+        {
+          "damage": 15,
+          "value": "item.egg",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Egg",
+          "trimmed": "Egg"
+        }
+      ]
+    },
+    {
+      "id": 345,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.compass",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Compass",
+          "trimmed": "Compass"
+        },
+        {
+          "damage": 15,
+          "value": "item.compass",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Compass",
+          "trimmed": "Compass"
+        }
+      ]
+    },
+    {
+      "id": 346,
+      "class": "cs",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.fishingRod",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Fishing Rod",
+          "trimmed": "Fishing Rod"
+        },
+        {
+          "damage": 15,
+          "value": "item.fishingRod",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Fishing Rod",
+          "trimmed": "Fishing Rod"
+        }
+      ]
+    },
+    {
+      "id": 347,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.clock",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Clock",
+          "trimmed": "Clock"
+        },
+        {
+          "damage": 15,
+          "value": "item.clock",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Clock",
+          "trimmed": "Clock"
+        }
+      ]
+    },
+    {
+      "id": 348,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.yellowDust",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Glowstone Dust",
+          "trimmed": "Glowstone Dust"
+        },
+        {
+          "damage": 15,
+          "value": "item.yellowDust",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Glowstone Dust",
+          "trimmed": "Glowstone Dust"
+        }
+      ]
+    },
+    {
+      "id": 349,
+      "class": "yw",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.fishRaw",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Raw Fish",
+          "trimmed": "Raw Fish"
+        },
+        {
+          "damage": 15,
+          "value": "item.fishRaw",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Raw Fish",
+          "trimmed": "Raw Fish"
+        }
+      ]
+    },
+    {
+      "id": 350,
+      "class": "yw",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.fishCooked",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Cooked Fish",
+          "trimmed": "Cooked Fish"
+        },
+        {
+          "damage": 15,
+          "value": "item.fishCooked",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Cooked Fish",
+          "trimmed": "Cooked Fish"
+        }
+      ]
+    },
+    {
+      "id": 351,
+      "class": "km",
+      "owner": "km",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.dyePowder.black",
+          "exception": "none",
+          "same-repeat": false,
+          "same-noarg": false,
+          "translated": "Ink Sac",
+          "trimmed": "Ink Sac"
+        },
+        {
+          "damage": 15,
+          "value": "item.dyePowder.white",
+          "exception": "none",
+          "same-repeat": false,
+          "same-noarg": false,
+          "translated": "Bone Meal",
+          "trimmed": "Bone Meal"
+        }
+      ]
+    },
+    {
+      "id": 352,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.bone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bone",
+          "trimmed": "Bone"
+        },
+        {
+          "damage": 15,
+          "value": "item.bone",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bone",
+          "trimmed": "Bone"
+        }
+      ]
+    },
+    {
+      "id": 353,
+      "class": "gm",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.sugar",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sugar",
+          "trimmed": "Sugar"
+        },
+        {
+          "damage": 15,
+          "value": "item.sugar",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Sugar",
+          "trimmed": "Sugar"
+        }
+      ]
+    },
+    {
+      "id": 354,
+      "class": "lv",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.cake",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Cake",
+          "trimmed": "Cake"
+        },
+        {
+          "damage": 15,
+          "value": "item.cake",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Cake",
+          "trimmed": "Cake"
+        }
+      ]
+    },
+    {
+      "id": 355,
+      "class": "lp",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.bed",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bed",
+          "trimmed": "Bed"
+        },
+        {
+          "damage": 15,
+          "value": "item.bed",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Bed",
+          "trimmed": "Bed"
+        }
+      ]
+    },
+    {
+      "id": 356,
+      "class": "lv",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.diode",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Redstone Repeater",
+          "trimmed": "Redstone Repeater"
+        },
+        {
+          "damage": 15,
+          "value": "item.diode",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Redstone Repeater",
+          "trimmed": "Redstone Repeater"
+        }
+      ]
+    },
+    {
+      "id": 357,
+      "class": "qk",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.cookie",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Cookie",
+          "trimmed": "Cookie"
+        },
+        {
+          "damage": 15,
+          "value": "item.cookie",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Cookie",
+          "trimmed": "Cookie"
+        }
+      ]
+    },
+    {
+      "id": 358,
+      "class": "wr",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.map",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Map",
+          "trimmed": "Map"
+        },
+        {
+          "damage": 15,
+          "value": "item.map",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Map",
+          "trimmed": "Map"
+        }
+      ]
+    },
+    {
+      "id": 359,
+      "class": "bl",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.shears",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Shears",
+          "trimmed": "Shears"
+        },
+        {
+          "damage": 15,
+          "value": "item.shears",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Shears",
+          "trimmed": "Shears"
+        }
+      ]
+    },
+    {
+      "id": 2256,
+      "class": "tr",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.record",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Music Disc",
+          "trimmed": "Music Disc"
+        },
+        {
+          "damage": 15,
+          "value": "item.record",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Music Disc",
+          "trimmed": "Music Disc"
+        }
+      ]
+    },
+    {
+      "id": 2257,
+      "class": "tr",
+      "owner": "gm",
+      "samples": [
+        {
+          "damage": 0,
+          "value": "item.record",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Music Disc",
+          "trimmed": "Music Disc"
+        },
+        {
+          "damage": 15,
+          "value": "item.record",
+          "exception": "none",
+          "same-repeat": true,
+          "same-noarg": true,
+          "translated": "Music Disc",
+          "trimmed": "Music Disc"
+        }
+      ]
+    }
+  ],
+  "resolved_methods": {
+    "au": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "bc": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "bi": {
+      "owner": "bi",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 37,
+      "code_sha256": "c1aed2c7bcdc188ac21f4ce8c7ccd660bef7ec12b8f4bc210cc5b824d6735fac"
+    },
+    "bl": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "bz": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "ck": {
+      "owner": "ck",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 12,
+      "code_sha256": "5618128217f4eacc2da398b30d2b943f71c009a0728f2f44852bc5579260f9e7"
+    },
+    "cs": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "dm": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "en": {
+      "owner": "en",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 34,
+      "code_sha256": "7bc183e205e9ac361a3aed5a1e67d53b730490b7093dd6ef3ea9903c30d03122"
+    },
+    "gm": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "go": {
+      "owner": "ck",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 12,
+      "code_sha256": "5618128217f4eacc2da398b30d2b943f71c009a0728f2f44852bc5579260f9e7"
+    },
+    "hu": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "ie": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "km": {
+      "owner": "km",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 34,
+      "code_sha256": "c60e0ef679bb0a8d8349e03d36e9da3501a0acf15c5c749b2ec1c383e4b71c87"
+    },
+    "la": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "lp": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "lv": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "mo": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "mr": {
+      "owner": "ck",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 12,
+      "code_sha256": "5618128217f4eacc2da398b30d2b943f71c009a0728f2f44852bc5579260f9e7"
+    },
+    "qd": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "qk": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "qr": {
+      "owner": "ck",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 12,
+      "code_sha256": "5618128217f4eacc2da398b30d2b943f71c009a0728f2f44852bc5579260f9e7"
+    },
+    "qz": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "rk": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "rl": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "rx": {
+      "owner": "rx",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 14,
+      "code_sha256": "896cc6317dbcfb4f554e76fae7fe0ecda4f228804692ece36b05fb672255c69e"
+    },
+    "sa": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "ta": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "tr": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "uy": {
+      "owner": "ck",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 12,
+      "code_sha256": "5618128217f4eacc2da398b30d2b943f71c009a0728f2f44852bc5579260f9e7"
+    },
+    "vc": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "vd": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "wa": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "wc": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "wr": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "ye": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "ym": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    },
+    "yw": {
+      "owner": "gm",
+      "name": "a",
+      "descriptor": "(Liz;)Ljava/lang/String;",
+      "access": 1,
+      "code_bytes": 5,
+      "code_sha256": "2b68d74b09e3e8e1135cbbe206b9b058097f34d51fe454b547b2bfd1042af4fb"
+    }
+  }
+}

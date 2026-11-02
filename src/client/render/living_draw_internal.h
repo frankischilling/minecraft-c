@@ -77,6 +77,7 @@ bool mc_client_draw_entity_queries(mc_client_draw_scope *, mc_entity_render_erro
                                    mc_client_manager_error *);
 /* Actual canonical Minecraft.w; Root captures reached App/Settings owners. */
 bool mc_client_draw_debug_flag(mc_client_draw_scope *, bool *, mc_client_manager_error *);
+bool mc_client_draw_name_flag(mc_client_draw_scope *, bool *, mc_client_manager_error *);
 
 typedef enum mc_client_living_draw_status {
     MC_CLIENT_LIVING_DRAW_OK,
@@ -245,6 +246,16 @@ typedef struct mc_client_living_draw_state {
     mc_client_living_overlay_state hurt_overlay, color_overlay;
     bool overlay_state_restored;
     mc_client_living_fire_state fire;
+
+    struct {
+        bool entered, initial_stack_returned, sneaking_returned, sneaking;
+        bool wrapper_returned, layers_entered, layers_returned;
+        bool name_checked, name_enabled, name_self, name_returned;
+        bool cape_attempted, cape_textured, cape_returned;
+        bool armor_attempted[4], armor_selected[4];
+        uintptr_t initial_stack_identity, armor_stack_identities[4];
+        unsigned int held_flag_stores, sneak_flag_stores, cleared_flag_stores;
+    } player;
 
     struct {
         bool entered, stack_captured, matrix_pushed, rescale_enabled, returned;

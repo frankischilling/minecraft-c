@@ -21,7 +21,8 @@ static bool overlay_pass(ld_frame *f, int32_t pass, float partial, bool *out) {
          * execute anew; a previously selected pass is never replayed. */
         ld_at(f, "gv", "b", "(Lls;IF)Z", 4);
         e->parent = e->site;
-        if (!ld_pass(f, pass, partial, out))
+        if (strcmp(f->renderer->source_class, "ds") == 0 ? !ld_player_pass(f, pass, partial, out)
+                                                         : !ld_pass(f, pass, partial, out))
             return false;
         ld_at(f, "gv", "b", "(Lls;IF)Z", 7);
     }

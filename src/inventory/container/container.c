@@ -67,6 +67,7 @@ static bool slot_add(mc_container *container, mc_slot_kind kind,
         return false;
     }
     slot->allocated_next = container->allocated_slots;
+    slot->owner = container;
     container->allocated_slots = slot;
     slot->state.kind = kind;
     slot->state.armor_type = armor;
@@ -165,7 +166,14 @@ mc_inventory_status inv_container_notify(mc_container *container, mc_inventory_e
         mc_item_stack *output = NULL;
         if (mc_crafting_manager_find_matching(container->side, view.a, container->crafting, &output,
                                               error) == MC_INVENTORY_OK) {
-            mc_inventory_result_set(result, 0, output, error);
+            if (result != NULL && result->slots == NULL) {
+                *error = (mc_inventory_error){
+                    .status = MC_INVENTORY_NULL_REFERENCE,
+                    .operation = "Container captured Result null source array store receiver"};
+                inv_frame(error, container->side, "wl", "of", "a",
+                          inv_class(container->side, "(ILiz;)V", "(ILfy;)V"), 6);
+            } else
+                mc_inventory_result_set(result, 0, output, error);
             mc_item_stack_release(output);
             if (error->status != MC_INVENTORY_OK)
                 inv_frame(error, container->side, container_class(container),
@@ -320,7 +328,8 @@ mc_inventory_status mc_container_retire(mc_container **owner, mc_inventory_error
     mc_inventory_error error = {0};
     if (owner == NULL)
         error.status = MC_INVENTORY_INVALID_ARGUMENT;
-    else if (*owner != NULL && (*owner)->active) {
+    else if (*owner != NULL && ((*owner)->active || (*owner)->interaction_active ||
+                                (*owner)->interaction_holds != 0)) {
         error.status = MC_INVENTORY_BUSY;
         error.operation = "Container operation active";
     } else {

@@ -73,6 +73,7 @@ bool ld_age(ld_frame *f, float partial, float *out) {
             strcmp(f->renderer->source_class, "yx") != 0 &&
             strcmp(f->renderer->source_class, "mj") != 0 &&
             strcmp(f->renderer->source_class, "m") != 0 &&
+            strcmp(f->renderer->source_class, "ds") != 0 &&
             strcmp(f->renderer->source_class, "v") != 0)
             return ld_fail(f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED,
                            "Living actual concrete animation body");

@@ -1,0 +1,4900 @@
+{
+  "schema": 1,
+  "ordinary_stdout": "16 achievements\r\n151 recipes\r\nINVENTORY_DRAW_DEVICE {\"display-created\":true,\"pbuffer\":false,\"width\":854,\"height\":480,\"vendor\":\"NVIDIA Corporation\",\"renderer\":\"NVIDIA GeForce RTX 3060/PCIe/SSE2\",\"version\":\"4.6.0 NVIDIA 581.42\"}\r\nINVENTORY_DRAW_OWNERS {\"app\":\"kq\",\"world\":\"fd\",\"player\":\"dc\",\"inventory\":\"ix\",\"container\":\"aa\",\"screen\":\"ue\",\"engine\":\"ji\",\"packs\":\"ik\",\"font\":\"sj\",\"manager\":\"th\",\"renderer\":\"ds\",\"model\":\"fh\",\"view-player-same\":true,\"world-member\":false,\"open-stat\":1,\"input\":\"lr\",\"input-settings-same\":true,\"input-key-count\":10,\"source-sneaking-before\":false,\"skin-url\":\"http://s3.amazonaws.com/MinecraftSkins/InventoryDrawing.png\",\"cape-url\":null,\"downloads-before\":0,\"raw-allocations\":0}\r\nINVENTORY_DRAW_INITIAL {\"nw-static\":{\"b\":true,\"c\":false},\"nw\":{\"A\":10,\"B\":2097152,\"h\":0,\"i\":\"3fee000000000000\",\"j\":\"3fee000000000000\",\"k\":0,\"l\":false,\"m\":true,\"n\":false,\"o\":0,\"p\":0,\"q\":false,\"r\":7,\"s\":\"0000000000000000\",\"t\":\"0000000000000000\",\"u\":\"0000000000000000\",\"v\":0,\"w\":false,\"x\":false,\"z\":0},\"words\":[\"00000000\",\"40ffae14\",\"00000000\",\"3f700000\",\"3f7ffae1\",\"00000000\",\"00000000\",\"00000000\",\"40ffae14\",\"40ffae14\",\"00000000\",\"3f7ffae1\",\"3f7ffae1\",\"00000000\",\"00000000\",\"00000000\",\"40ffae14\",\"00000000\",\"00000000\",\"3f7ffae1\",\"3f700000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"40ffae14\",\"00000000\",\"3f700000\",\"3f7ffae1\",\"00000000\",\"00000000\",\"00000000\",\"40ffae14\",\"00000000\",\"00000000\",\"3f7ffae1\",\"3f700000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"3f700000\",\"3f700000\",\"00000000\",\"00000000\",\"00000000\"],\"pose\":{\"H\":\"00000000\",\"aS\":\"00000000\",\"aT\":\"00000000\",\"bE\":\"00000000\",\"manager-i\":\"00000000\",\"mouse-x\":\"00000000\",\"mouse-y\":\"00000000\"}}\r\nINVENTORY_DRAW_INPUT {\"profile\":0,\"mouse\":[-30,-40],\"partial\":\"3ec00000\",\"pose\":{\"H\":\"00000000\",\"aS\":\"00000000\",\"aT\":\"00000000\",\"bE\":\"00000000\",\"manager-i\":\"00000000\",\"mouse-x\":\"00000000\",\"mouse-y\":\"00000000\"},\"models\":[{\"role\":\"a\",\"class\":\"fh\",\"held\":false,\"sneak\":false},{\"role\":\"g\",\"class\":\"fh\",\"held\":false,\"sneak\":false},{\"role\":\"h\",\"class\":\"fh\",\"held\":false,\"sneak\":false}],\"gl\":{\"modelview\":[\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"c4fa0000\",\"3f800000\"],\"projection\":[\"3b997ae7\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"bc088889\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"ba83126f\",\"00000000\",\"bf800000\",\"3f800000\",\"c0000000\",\"3f800000\"],\"modelview-depth\":1,\"projection-depth\":1,\"matrix-mode\":5888,\"lighting\":false,\"light0\":false,\"light1\":false,\"color-material\":false,\"rescale-normal\":false,\"texture\":true,\"depth\":false,\"alpha\":false,\"blend\":false}}\r\nINVENTORY_DRAW_RETURN {\"profile\":0,\"pose\":{\"H\":\"00000000\",\"aS\":\"00000000\",\"aT\":\"00000000\",\"bE\":\"00000000\",\"manager-i\":\"43340000\",\"mouse-x\":\"c1f00000\",\"mouse-y\":\"c2200000\"},\"models\":[{\"role\":\"a\",\"class\":\"fh\",\"held\":false,\"sneak\":false},{\"role\":\"g\",\"class\":\"fh\",\"held\":false,\"sneak\":false},{\"role\":\"h\",\"class\":\"fh\",\"held\":false,\"sneak\":false}],\"gl\":{\"modelview\":[\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"c4fa0000\",\"3f800000\"],\"projection\":[\"3b997ae7\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"bc088889\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"ba83126f\",\"00000000\",\"bf800000\",\"3f800000\",\"c0000000\",\"3f800000\"],\"modelview-depth\":1,\"projection-depth\":1,\"matrix-mode\":5888,\"lighting\":true,\"light0\":false,\"light1\":false,\"color-material\":false,\"rescale-normal\":false,\"texture\":true,\"depth\":true,\"alpha\":true,\"blend\":false},\"gl-error\":0,\"nw\":{\"A\":10,\"B\":2097152,\"h\":0,\"i\":\"3feff33340000000\",\"j\":\"3fdfccccc0000000\",\"k\":-804253680,\"l\":false,\"m\":false,\"n\":false,\"o\":0,\"p\":0,\"q\":false,\"r\":7,\"s\":\"0000000000000000\",\"t\":\"0000000000000000\",\"u\":\"0000000000000000\",\"v\":8323072,\"w\":false,\"x\":false,\"z\":0},\"last-words\":[\"be900000\",\"bf080000\",\"3e900000\",\"3f7f999a\",\"3e81999a\",\"c0101010\",\"007f0000\",\"00000000\",\"3e900000\",\"bf080000\",\"3e900000\",\"3f606666\",\"3e81999a\",\"c0101010\",\"007f0000\",\"00000000\",\"3e900000\",\"3d000000\",\"3e900000\",\"3f606666\",\"3efe6666\",\"d0101010\",\"007f0000\",\"00000000\",\"be900000\",\"bf080000\",\"3e900000\",\"3f7f999a\",\"3e81999a\",\"c0101010\",\"00000000\",\"00000000\",\"3e900000\",\"3d000000\",\"3e900000\",\"3f606666\",\"3efe6666\",\"d0101010\",\"00000000\",\"00000000\",\"be900000\",\"3d000000\",\"3e900000\",\"3f7f999a\",\"3efe6666\",\"d0101010\",\"007f0000\",\"00000000\"],\"default-active-same\":true,\"downloads-after\":0}\r\nINVENTORY_DRAW_INPUT {\"profile\":1,\"mouse\":[-60,-70],\"partial\":\"3ec00000\",\"pose\":{\"H\":\"00000000\",\"aS\":\"00000000\",\"aT\":\"00000000\",\"bE\":\"00000000\",\"manager-i\":\"43340000\",\"mouse-x\":\"c1f00000\",\"mouse-y\":\"c2200000\"},\"models\":[{\"role\":\"a\",\"class\":\"fh\",\"held\":false,\"sneak\":false},{\"role\":\"g\",\"class\":\"fh\",\"held\":false,\"sneak\":false},{\"role\":\"h\",\"class\":\"fh\",\"held\":false,\"sneak\":false}],\"gl\":{\"modelview\":[\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"c4fa0000\",\"3f800000\"],\"projection\":[\"3b997ae7\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"bc088889\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"ba83126f\",\"00000000\",\"bf800000\",\"3f800000\",\"c0000000\",\"3f800000\"],\"modelview-depth\":1,\"projection-depth\":1,\"matrix-mode\":5888,\"lighting\":true,\"light0\":false,\"light1\":false,\"color-material\":false,\"rescale-normal\":false,\"texture\":true,\"depth\":true,\"alpha\":true,\"blend\":false}}\r\nINVENTORY_DRAW_RETURN {\"profile\":1,\"pose\":{\"H\":\"00000000\",\"aS\":\"00000000\",\"aT\":\"00000000\",\"bE\":\"00000000\",\"manager-i\":\"43340000\",\"mouse-x\":\"c2700000\",\"mouse-y\":\"c28c0000\"},\"models\":[{\"role\":\"a\",\"class\":\"fh\",\"held\":false,\"sneak\":false},{\"role\":\"g\",\"class\":\"fh\",\"held\":false,\"sneak\":false},{\"role\":\"h\",\"class\":\"fh\",\"held\":false,\"sneak\":false}],\"gl\":{\"modelview\":[\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"c4fa0000\",\"3f800000\"],\"projection\":[\"3b997ae7\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"bc088889\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"ba83126f\",\"00000000\",\"bf800000\",\"3f800000\",\"c0000000\",\"3f800000\"],\"modelview-depth\":1,\"projection-depth\":1,\"matrix-mode\":5888,\"lighting\":true,\"light0\":false,\"light1\":false,\"color-material\":false,\"rescale-normal\":false,\"texture\":true,\"depth\":true,\"alpha\":true,\"blend\":false},\"gl-error\":0,\"nw\":{\"A\":10,\"B\":2097152,\"h\":0,\"i\":\"0000000000000000\",\"j\":\"0000000000000000\",\"k\":-804253680,\"l\":false,\"m\":false,\"n\":false,\"o\":0,\"p\":0,\"q\":false,\"r\":7,\"s\":\"0000000000000000\",\"t\":\"0000000000000000\",\"u\":\"0000000000000000\",\"v\":8323072,\"w\":false,\"x\":false,\"z\":0},\"last-words\":[\"42fa0000\",\"434b0000\",\"00000000\",\"00000000\",\"3f260000\",\"c0101010\",\"007f0000\",\"00000000\",\"43968000\",\"434b0000\",\"00000000\",\"3f300000\",\"3f260000\",\"c0101010\",\"007f0000\",\"00000000\",\"43968000\",\"42140000\",\"00000000\",\"3f300000\",\"00000000\",\"d0101010\",\"007f0000\",\"00000000\",\"42fa0000\",\"434b0000\",\"00000000\",\"00000000\",\"3f260000\",\"c0101010\",\"00000000\",\"00000000\",\"43968000\",\"42140000\",\"00000000\",\"3f300000\",\"00000000\",\"d0101010\",\"00000000\",\"00000000\",\"42fa0000\",\"42140000\",\"00000000\",\"00000000\",\"00000000\",\"d0101010\",\"007f0000\",\"00000000\"],\"default-active-same\":true,\"downloads-after\":0}\r\nINVENTORY_DRAW_COMPLETE {\"profiles\":2,\"display-created\":true,\"network\":0,\"links\":[\"C:\\\\Users\\\\admin\\\\minecraft\\\\.local\\\\inventory-drawing-prepared-3\\\\natives\\\\lwjgl64.dll\",\"awt\",\"awt\",\"awt\",\"awt\",\"awt\",\"awt\",\"awt\",\"freetype\",\"fontmanager\"],\"game-substitution\":false,\"random-rebinding\":false,\"raw-allocations\":0,\"nw-clears\":0,\"source-input-attachments\":1,\"player-field-repairs\":0,\"world-field-repairs\":0}\r\n",
+  "ordinary_stderr": "WARNING: A terminally deprecated method in java.lang.System has been called\nWARNING: System::setSecurityManager has been called by InventoryDrawingTarget (file:/C:/Users/admin/minecraft/.local/inventory-drawing-prepared-3/classes/)\nWARNING: Please consider reporting this to the maintainers of InventoryDrawingTarget\nWARNING: System::setSecurityManager will be removed in a future release\n",
+  "jdi_stdout": "16 achievements\r\n151 recipes\r\nINVENTORY_DRAW_DEVICE {\"display-created\":true,\"pbuffer\":false,\"width\":854,\"height\":480,\"vendor\":\"NVIDIA Corporation\",\"renderer\":\"NVIDIA GeForce RTX 3060/PCIe/SSE2\",\"version\":\"4.6.0 NVIDIA 581.42\"}\r\nINVENTORY_DRAW_OWNERS {\"app\":\"kq\",\"world\":\"fd\",\"player\":\"dc\",\"inventory\":\"ix\",\"container\":\"aa\",\"screen\":\"ue\",\"engine\":\"ji\",\"packs\":\"ik\",\"font\":\"sj\",\"manager\":\"th\",\"renderer\":\"ds\",\"model\":\"fh\",\"view-player-same\":true,\"world-member\":false,\"open-stat\":1,\"input\":\"lr\",\"input-settings-same\":true,\"input-key-count\":10,\"source-sneaking-before\":false,\"skin-url\":\"http://s3.amazonaws.com/MinecraftSkins/InventoryDrawing.png\",\"cape-url\":null,\"downloads-before\":0,\"raw-allocations\":0}\r\nINVENTORY_DRAW_INITIAL {\"nw-static\":{\"b\":true,\"c\":false},\"nw\":{\"A\":10,\"B\":2097152,\"h\":0,\"i\":\"3fee000000000000\",\"j\":\"3fee000000000000\",\"k\":0,\"l\":false,\"m\":true,\"n\":false,\"o\":0,\"p\":0,\"q\":false,\"r\":7,\"s\":\"0000000000000000\",\"t\":\"0000000000000000\",\"u\":\"0000000000000000\",\"v\":0,\"w\":false,\"x\":false,\"z\":0},\"words\":[\"00000000\",\"40ffae14\",\"00000000\",\"3f700000\",\"3f7ffae1\",\"00000000\",\"00000000\",\"00000000\",\"40ffae14\",\"40ffae14\",\"00000000\",\"3f7ffae1\",\"3f7ffae1\",\"00000000\",\"00000000\",\"00000000\",\"40ffae14\",\"00000000\",\"00000000\",\"3f7ffae1\",\"3f700000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"40ffae14\",\"00000000\",\"3f700000\",\"3f7ffae1\",\"00000000\",\"00000000\",\"00000000\",\"40ffae14\",\"00000000\",\"00000000\",\"3f7ffae1\",\"3f700000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"3f700000\",\"3f700000\",\"00000000\",\"00000000\",\"00000000\"],\"pose\":{\"H\":\"00000000\",\"aS\":\"00000000\",\"aT\":\"00000000\",\"bE\":\"00000000\",\"manager-i\":\"00000000\",\"mouse-x\":\"00000000\",\"mouse-y\":\"00000000\"}}\r\nINVENTORY_DRAW_INPUT {\"profile\":0,\"mouse\":[-30,-40],\"partial\":\"3ec00000\",\"pose\":{\"H\":\"00000000\",\"aS\":\"00000000\",\"aT\":\"00000000\",\"bE\":\"00000000\",\"manager-i\":\"00000000\",\"mouse-x\":\"00000000\",\"mouse-y\":\"00000000\"},\"models\":[{\"role\":\"a\",\"class\":\"fh\",\"held\":false,\"sneak\":false},{\"role\":\"g\",\"class\":\"fh\",\"held\":false,\"sneak\":false},{\"role\":\"h\",\"class\":\"fh\",\"held\":false,\"sneak\":false}],\"gl\":{\"modelview\":[\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"c4fa0000\",\"3f800000\"],\"projection\":[\"3b997ae7\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"bc088889\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"ba83126f\",\"00000000\",\"bf800000\",\"3f800000\",\"c0000000\",\"3f800000\"],\"modelview-depth\":1,\"projection-depth\":1,\"matrix-mode\":5888,\"lighting\":false,\"light0\":false,\"light1\":false,\"color-material\":false,\"rescale-normal\":false,\"texture\":true,\"depth\":false,\"alpha\":false,\"blend\":false}}\r\nINVENTORY_DRAW_RETURN {\"profile\":0,\"pose\":{\"H\":\"00000000\",\"aS\":\"00000000\",\"aT\":\"00000000\",\"bE\":\"00000000\",\"manager-i\":\"43340000\",\"mouse-x\":\"c1f00000\",\"mouse-y\":\"c2200000\"},\"models\":[{\"role\":\"a\",\"class\":\"fh\",\"held\":false,\"sneak\":false},{\"role\":\"g\",\"class\":\"fh\",\"held\":false,\"sneak\":false},{\"role\":\"h\",\"class\":\"fh\",\"held\":false,\"sneak\":false}],\"gl\":{\"modelview\":[\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"c4fa0000\",\"3f800000\"],\"projection\":[\"3b997ae7\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"bc088889\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"ba83126f\",\"00000000\",\"bf800000\",\"3f800000\",\"c0000000\",\"3f800000\"],\"modelview-depth\":1,\"projection-depth\":1,\"matrix-mode\":5888,\"lighting\":true,\"light0\":false,\"light1\":false,\"color-material\":false,\"rescale-normal\":false,\"texture\":true,\"depth\":true,\"alpha\":true,\"blend\":false},\"gl-error\":0,\"nw\":{\"A\":10,\"B\":2097152,\"h\":0,\"i\":\"3feff33340000000\",\"j\":\"3fdfccccc0000000\",\"k\":-804253680,\"l\":false,\"m\":false,\"n\":false,\"o\":0,\"p\":0,\"q\":false,\"r\":7,\"s\":\"0000000000000000\",\"t\":\"0000000000000000\",\"u\":\"0000000000000000\",\"v\":8323072,\"w\":false,\"x\":false,\"z\":0},\"last-words\":[\"be900000\",\"bf080000\",\"3e900000\",\"3f7f999a\",\"3e81999a\",\"c0101010\",\"007f0000\",\"00000000\",\"3e900000\",\"bf080000\",\"3e900000\",\"3f606666\",\"3e81999a\",\"c0101010\",\"007f0000\",\"00000000\",\"3e900000\",\"3d000000\",\"3e900000\",\"3f606666\",\"3efe6666\",\"d0101010\",\"007f0000\",\"00000000\",\"be900000\",\"bf080000\",\"3e900000\",\"3f7f999a\",\"3e81999a\",\"c0101010\",\"00000000\",\"00000000\",\"3e900000\",\"3d000000\",\"3e900000\",\"3f606666\",\"3efe6666\",\"d0101010\",\"00000000\",\"00000000\",\"be900000\",\"3d000000\",\"3e900000\",\"3f7f999a\",\"3efe6666\",\"d0101010\",\"007f0000\",\"00000000\"],\"default-active-same\":true,\"downloads-after\":0}\r\nINVENTORY_DRAW_INPUT {\"profile\":1,\"mouse\":[-60,-70],\"partial\":\"3ec00000\",\"pose\":{\"H\":\"00000000\",\"aS\":\"00000000\",\"aT\":\"00000000\",\"bE\":\"00000000\",\"manager-i\":\"43340000\",\"mouse-x\":\"c1f00000\",\"mouse-y\":\"c2200000\"},\"models\":[{\"role\":\"a\",\"class\":\"fh\",\"held\":false,\"sneak\":false},{\"role\":\"g\",\"class\":\"fh\",\"held\":false,\"sneak\":false},{\"role\":\"h\",\"class\":\"fh\",\"held\":false,\"sneak\":false}],\"gl\":{\"modelview\":[\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"c4fa0000\",\"3f800000\"],\"projection\":[\"3b997ae7\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"bc088889\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"ba83126f\",\"00000000\",\"bf800000\",\"3f800000\",\"c0000000\",\"3f800000\"],\"modelview-depth\":1,\"projection-depth\":1,\"matrix-mode\":5888,\"lighting\":true,\"light0\":false,\"light1\":false,\"color-material\":false,\"rescale-normal\":false,\"texture\":true,\"depth\":true,\"alpha\":true,\"blend\":false}}\r\nINVENTORY_DRAW_RETURN {\"profile\":1,\"pose\":{\"H\":\"00000000\",\"aS\":\"00000000\",\"aT\":\"00000000\",\"bE\":\"00000000\",\"manager-i\":\"43340000\",\"mouse-x\":\"c2700000\",\"mouse-y\":\"c28c0000\"},\"models\":[{\"role\":\"a\",\"class\":\"fh\",\"held\":false,\"sneak\":false},{\"role\":\"g\",\"class\":\"fh\",\"held\":false,\"sneak\":false},{\"role\":\"h\",\"class\":\"fh\",\"held\":false,\"sneak\":false}],\"gl\":{\"modelview\":[\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"3f800000\",\"00000000\",\"00000000\",\"00000000\",\"c4fa0000\",\"3f800000\"],\"projection\":[\"3b997ae7\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"bc088889\",\"00000000\",\"00000000\",\"00000000\",\"00000000\",\"ba83126f\",\"00000000\",\"bf800000\",\"3f800000\",\"c0000000\",\"3f800000\"],\"modelview-depth\":1,\"projection-depth\":1,\"matrix-mode\":5888,\"lighting\":true,\"light0\":false,\"light1\":false,\"color-material\":false,\"rescale-normal\":false,\"texture\":true,\"depth\":true,\"alpha\":true,\"blend\":false},\"gl-error\":0,\"nw\":{\"A\":10,\"B\":2097152,\"h\":0,\"i\":\"0000000000000000\",\"j\":\"0000000000000000\",\"k\":-804253680,\"l\":false,\"m\":false,\"n\":false,\"o\":0,\"p\":0,\"q\":false,\"r\":7,\"s\":\"0000000000000000\",\"t\":\"0000000000000000\",\"u\":\"0000000000000000\",\"v\":8323072,\"w\":false,\"x\":false,\"z\":0},\"last-words\":[\"42fa0000\",\"434b0000\",\"00000000\",\"00000000\",\"3f260000\",\"c0101010\",\"007f0000\",\"00000000\",\"43968000\",\"434b0000\",\"00000000\",\"3f300000\",\"3f260000\",\"c0101010\",\"007f0000\",\"00000000\",\"43968000\",\"42140000\",\"00000000\",\"3f300000\",\"00000000\",\"d0101010\",\"007f0000\",\"00000000\",\"42fa0000\",\"434b0000\",\"00000000\",\"00000000\",\"3f260000\",\"c0101010\",\"00000000\",\"00000000\",\"43968000\",\"42140000\",\"00000000\",\"3f300000\",\"00000000\",\"d0101010\",\"00000000\",\"00000000\",\"42fa0000\",\"42140000\",\"00000000\",\"00000000\",\"00000000\",\"d0101010\",\"007f0000\",\"00000000\"],\"default-active-same\":true,\"downloads-after\":0}\r\nINVENTORY_DRAW_COMPLETE {\"profiles\":2,\"display-created\":true,\"network\":0,\"links\":[\"C:\\\\Users\\\\admin\\\\minecraft\\\\.local\\\\inventory-drawing-prepared-3\\\\natives\\\\lwjgl64.dll\",\"awt\",\"awt\",\"awt\",\"awt\",\"awt\",\"awt\",\"awt\",\"freetype\",\"fontmanager\"],\"game-substitution\":false,\"random-rebinding\":false,\"raw-allocations\":0,\"nw-clears\":0,\"source-input-attachments\":1,\"player-field-repairs\":0,\"world-field-repairs\":0}\r\n",
+  "jdi_stderr": "WARNING: A terminally deprecated method in java.lang.System has been called\nWARNING: System::setSecurityManager has been called by InventoryDrawingTarget (file:/C:/Users/admin/minecraft/.local/inventory-drawing-prepared-3/classes/)\nWARNING: Please consider reporting this to the maintainers of InventoryDrawingTarget\nWARNING: System::setSecurityManager will be removed in a future release\n",
+  "events": [
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "ue.a(IIF)V",
+      "receiver": 2007,
+      "arguments": [
+        -30,
+        -40,
+        "3ec00000"
+      ],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 0
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "id.a(IIF)V",
+      "receiver": 2007,
+      "arguments": [
+        -30,
+        -40,
+        "3ec00000"
+      ],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 0
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "nw-begin",
+      "profile": 0,
+      "kind": "gradient",
+      "state": {
+        "nw.A": 10,
+        "nw.B": 2097152,
+        "nw.h": 0,
+        "nw.i": "3fee000000000000",
+        "nw.j": "3fee000000000000",
+        "nw.k": 0,
+        "nw.l": false,
+        "nw.m": true,
+        "nw.n": false,
+        "nw.o": 0,
+        "nw.p": 0,
+        "nw.q": false,
+        "nw.r": 7,
+        "nw.s": "0000000000000000",
+        "nw.t": "0000000000000000",
+        "nw.u": "0000000000000000",
+        "nw.v": 0,
+        "nw.w": false,
+        "nw.x": false,
+        "nw.z": 0
+      },
+      "words": [
+        "00000000",
+        "40ffae14",
+        "00000000",
+        "3f700000",
+        "3f7ffae1",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40ffae14",
+        "40ffae14",
+        "00000000",
+        "3f7ffae1",
+        "3f7ffae1",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40ffae14",
+        "00000000",
+        "00000000",
+        "3f7ffae1",
+        "3f700000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40ffae14",
+        "00000000",
+        "3f700000",
+        "3f7ffae1",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40ffae14",
+        "00000000",
+        "00000000",
+        "3f7ffae1",
+        "3f700000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f700000",
+        "3f700000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "frames": [
+        {
+          "class": "nw",
+          "method": "b",
+          "descriptor": "()V",
+          "pc": 0
+        },
+        {
+          "class": "ub",
+          "method": "a",
+          "descriptor": "(IIIIII)V",
+          "pc": 154
+        },
+        {
+          "class": "da",
+          "method": "a",
+          "descriptor": "(I)V",
+          "pc": 25
+        },
+        {
+          "class": "da",
+          "method": "i",
+          "descriptor": "()V",
+          "pc": 2
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 1
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "nw-draw",
+      "profile": 0,
+      "kind": "gradient",
+      "state": {
+        "nw.A": 10,
+        "nw.B": 2097152,
+        "nw.h": 6,
+        "nw.i": "3fee000000000000",
+        "nw.j": "3fee000000000000",
+        "nw.k": -804253680,
+        "nw.l": true,
+        "nw.m": false,
+        "nw.n": false,
+        "nw.o": 48,
+        "nw.p": 4,
+        "nw.q": false,
+        "nw.r": 7,
+        "nw.s": "0000000000000000",
+        "nw.t": "0000000000000000",
+        "nw.u": "0000000000000000",
+        "nw.v": 0,
+        "nw.w": true,
+        "nw.x": false,
+        "nw.z": 0
+      },
+      "words": [
+        "43d58000",
+        "00000000",
+        "00000000",
+        "3f700000",
+        "3f7ffae1",
+        "c0101010",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f7ffae1",
+        "3f7ffae1",
+        "c0101010",
+        "00000000",
+        "00000000",
+        "00000000",
+        "43700000",
+        "00000000",
+        "3f7ffae1",
+        "3f700000",
+        "d0101010",
+        "00000000",
+        "00000000",
+        "43d58000",
+        "00000000",
+        "00000000",
+        "3f700000",
+        "3f7ffae1",
+        "c0101010",
+        "00000000",
+        "00000000",
+        "00000000",
+        "43700000",
+        "00000000",
+        "3f7ffae1",
+        "3f700000",
+        "d0101010",
+        "00000000",
+        "00000000",
+        "43d58000",
+        "43700000",
+        "00000000",
+        "3f700000",
+        "3f700000",
+        "d0101010",
+        "00000000",
+        "00000000"
+      ],
+      "prior": [
+        "00000000",
+        "40ffae14",
+        "00000000",
+        "3f700000",
+        "3f7ffae1",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40ffae14",
+        "40ffae14",
+        "00000000",
+        "3f7ffae1",
+        "3f7ffae1",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40ffae14",
+        "00000000",
+        "00000000",
+        "3f7ffae1",
+        "3f700000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40ffae14",
+        "00000000",
+        "3f700000",
+        "3f7ffae1",
+        "00000000",
+        "00000000",
+        "00000000",
+        "40ffae14",
+        "00000000",
+        "00000000",
+        "3f7ffae1",
+        "3f700000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f700000",
+        "3f700000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ],
+      "frames": [
+        {
+          "class": "nw",
+          "method": "a",
+          "descriptor": "()V",
+          "pc": 0
+        },
+        {
+          "class": "ub",
+          "method": "a",
+          "descriptor": "(IIIIII)V",
+          "pc": 227
+        },
+        {
+          "class": "da",
+          "method": "a",
+          "descriptor": "(I)V",
+          "pc": 25
+        },
+        {
+          "class": "da",
+          "method": "i",
+          "descriptor": "()V",
+          "pc": 2
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 1
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "nw-return",
+      "profile": 0,
+      "kind": "gradient"
+    },
+    {
+      "event": "ue-phase",
+      "profile": 0,
+      "pc": 0,
+      "pose": {
+        "H": "00000000",
+        "aS": "00000000",
+        "aT": "00000000",
+        "bE": "00000000",
+        "manager-i": "00000000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      },
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "ue.a(F)V",
+      "receiver": 2007,
+      "arguments": [
+        "3ec00000"
+      ],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "nw-begin",
+      "profile": 0,
+      "kind": "tile",
+      "state": {
+        "nw.A": 10,
+        "nw.B": 2097152,
+        "nw.h": 0,
+        "nw.i": "3fee000000000000",
+        "nw.j": "3fee000000000000",
+        "nw.k": -804253680,
+        "nw.l": true,
+        "nw.m": false,
+        "nw.n": false,
+        "nw.o": 0,
+        "nw.p": 0,
+        "nw.q": false,
+        "nw.r": 7,
+        "nw.s": "0000000000000000",
+        "nw.t": "0000000000000000",
+        "nw.u": "0000000000000000",
+        "nw.v": 0,
+        "nw.w": false,
+        "nw.x": false,
+        "nw.z": 0
+      },
+      "words": [
+        "43d58000",
+        "00000000",
+        "00000000",
+        "3f700000",
+        "3f7ffae1",
+        "c0101010",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f7ffae1",
+        "3f7ffae1",
+        "c0101010",
+        "00000000",
+        "00000000",
+        "00000000",
+        "43700000",
+        "00000000",
+        "3f7ffae1",
+        "3f700000",
+        "d0101010",
+        "00000000",
+        "00000000",
+        "43d58000",
+        "00000000",
+        "00000000",
+        "3f700000",
+        "3f7ffae1",
+        "c0101010",
+        "00000000",
+        "00000000",
+        "00000000",
+        "43700000",
+        "00000000",
+        "3f7ffae1",
+        "3f700000",
+        "d0101010",
+        "00000000",
+        "00000000",
+        "43d58000",
+        "43700000",
+        "00000000",
+        "3f700000",
+        "3f700000",
+        "d0101010",
+        "00000000",
+        "00000000"
+      ],
+      "frames": [
+        {
+          "class": "nw",
+          "method": "b",
+          "descriptor": "()V",
+          "pc": 0
+        },
+        {
+          "class": "ub",
+          "method": "b",
+          "descriptor": "(IIIIII)V",
+          "pc": 15
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 70
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "nw-draw",
+      "profile": 0,
+      "kind": "tile",
+      "state": {
+        "nw.A": 10,
+        "nw.B": 2097152,
+        "nw.h": 6,
+        "nw.i": "0000000000000000",
+        "nw.j": "0000000000000000",
+        "nw.k": -804253680,
+        "nw.l": false,
+        "nw.m": true,
+        "nw.n": false,
+        "nw.o": 48,
+        "nw.p": 4,
+        "nw.q": false,
+        "nw.r": 7,
+        "nw.s": "0000000000000000",
+        "nw.t": "0000000000000000",
+        "nw.u": "0000000000000000",
+        "nw.v": 0,
+        "nw.w": true,
+        "nw.x": false,
+        "nw.z": 0
+      },
+      "words": [
+        "42fa0000",
+        "434b0000",
+        "00000000",
+        "00000000",
+        "3f260000",
+        "c0101010",
+        "00000000",
+        "00000000",
+        "43968000",
+        "434b0000",
+        "00000000",
+        "3f300000",
+        "3f260000",
+        "c0101010",
+        "00000000",
+        "00000000",
+        "43968000",
+        "42140000",
+        "00000000",
+        "3f300000",
+        "00000000",
+        "d0101010",
+        "00000000",
+        "00000000",
+        "42fa0000",
+        "434b0000",
+        "00000000",
+        "00000000",
+        "3f260000",
+        "c0101010",
+        "00000000",
+        "00000000",
+        "43968000",
+        "42140000",
+        "00000000",
+        "3f300000",
+        "00000000",
+        "d0101010",
+        "00000000",
+        "00000000",
+        "42fa0000",
+        "42140000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "d0101010",
+        "00000000",
+        "00000000"
+      ],
+      "prior": [
+        "43d58000",
+        "00000000",
+        "00000000",
+        "3f700000",
+        "3f7ffae1",
+        "c0101010",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f7ffae1",
+        "3f7ffae1",
+        "c0101010",
+        "00000000",
+        "00000000",
+        "00000000",
+        "43700000",
+        "00000000",
+        "3f7ffae1",
+        "3f700000",
+        "d0101010",
+        "00000000",
+        "00000000",
+        "43d58000",
+        "00000000",
+        "00000000",
+        "3f700000",
+        "3f7ffae1",
+        "c0101010",
+        "00000000",
+        "00000000",
+        "00000000",
+        "43700000",
+        "00000000",
+        "3f7ffae1",
+        "3f700000",
+        "d0101010",
+        "00000000",
+        "00000000",
+        "43d58000",
+        "43700000",
+        "00000000",
+        "3f700000",
+        "3f700000",
+        "d0101010",
+        "00000000",
+        "00000000"
+      ],
+      "frames": [
+        {
+          "class": "nw",
+          "method": "a",
+          "descriptor": "()V",
+          "pc": 0
+        },
+        {
+          "class": "ub",
+          "method": "b",
+          "descriptor": "(IIIIII)V",
+          "pc": 168
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 70
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "nw-return",
+      "profile": 0,
+      "kind": "tile"
+    },
+    {
+      "event": "ue-phase",
+      "profile": 0,
+      "pc": 347,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      },
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "th.a(Lsn;DDDFF)V",
+      "receiver": 2011,
+      "arguments": [
+        {
+          "class": "dc",
+          "id": 2010
+        },
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000",
+        "00000000",
+        "3f800000"
+      ],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 0
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "ds.a(Lsn;DDDFF)V",
+      "receiver": 1975,
+      "arguments": [
+        {
+          "class": "dc",
+          "id": 2010
+        },
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000",
+        "00000000",
+        "3f800000"
+      ],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 0
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "ds.a(Lgs;DDDFF)V",
+      "receiver": 1975,
+      "arguments": [
+        {
+          "class": "dc",
+          "id": 2010
+        },
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000",
+        "00000000",
+        "3f800000"
+      ],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 0
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "dc.t()Z",
+      "receiver": 2010,
+      "arguments": [],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "dc",
+          "method": "t",
+          "descriptor": "()Z",
+          "pc": 0
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 55
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "dc.t()Z",
+      "receiver": 2010,
+      "primary-part": false,
+      "return-value": false,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "dc.t()Z",
+      "receiver": 2010,
+      "arguments": [],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "dc",
+          "method": "t",
+          "descriptor": "()Z",
+          "pc": 0
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 80
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "dc.t()Z",
+      "receiver": 2010,
+      "primary-part": false,
+      "return-value": false,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "gv.a(Lls;DDDFF)V",
+      "receiver": 1975,
+      "arguments": [
+        {
+          "class": "dc",
+          "id": 2010
+        },
+        "0000000000000000",
+        "bff9eb8520000000",
+        "0000000000000000",
+        "00000000",
+        "3f800000"
+      ],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 0
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "fh.a(FFFFFF)V",
+      "receiver": 2014,
+      "arguments": [
+        "00000000",
+        "00000000",
+        "3f800000",
+        "41d79237",
+        "c19fa720",
+        "3d800000"
+      ],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 0
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "ps.a(F)V",
+      "receiver": 2015,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 19
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "ps.d(F)V",
+      "receiver": 2015,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "d",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 25
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 19
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "ps.d(F)V",
+      "receiver": 2015,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "ps.a(F)V",
+      "receiver": 2015,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "ps.a(F)V",
+      "receiver": 2016,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 28
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "ps.d(F)V",
+      "receiver": 2016,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "d",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 25
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 28
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "ps.d(F)V",
+      "receiver": 2016,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "ps.a(F)V",
+      "receiver": 2016,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "ps.a(F)V",
+      "receiver": 2018,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 37
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "ps.d(F)V",
+      "receiver": 2018,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "d",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 25
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 37
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "ps.d(F)V",
+      "receiver": 2018,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "ps.a(F)V",
+      "receiver": 2018,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "ps.a(F)V",
+      "receiver": 2019,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 46
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "ps.d(F)V",
+      "receiver": 2019,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "d",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 25
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 46
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "ps.d(F)V",
+      "receiver": 2019,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "ps.a(F)V",
+      "receiver": 2019,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "ps.a(F)V",
+      "receiver": 2020,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 55
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "ps.d(F)V",
+      "receiver": 2020,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "d",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 25
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 55
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "ps.d(F)V",
+      "receiver": 2020,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "ps.a(F)V",
+      "receiver": 2020,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "ps.a(F)V",
+      "receiver": 2021,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 64
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "ps.d(F)V",
+      "receiver": 2021,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "d",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 25
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 64
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "ps.d(F)V",
+      "receiver": 2021,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "ps.a(F)V",
+      "receiver": 2021,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "ps.a(F)V",
+      "receiver": 2017,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 73
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "ps.d(F)V",
+      "receiver": 2017,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "d",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 25
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 73
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "ps.d(F)V",
+      "receiver": 2017,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "ps.a(F)V",
+      "receiver": 2017,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "fh.a(FFFFFF)V",
+      "receiver": 2014,
+      "primary-part": false,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "gv.a(Lls;DDDFF)V",
+      "receiver": 1975,
+      "primary-part": false,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "ds.a(Lgs;DDDFF)V",
+      "receiver": 1975,
+      "primary-part": false,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "ds.a(Lsn;DDDFF)V",
+      "receiver": 1975,
+      "primary-part": false,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "entry",
+      "profile": 0,
+      "method": "bw.b(Lsn;DDDFF)V",
+      "receiver": 1975,
+      "arguments": [
+        {
+          "class": "dc",
+          "id": 2010
+        },
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000",
+        "00000000",
+        "3f800000"
+      ],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "bw",
+          "method": "b",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 0
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 39
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "bw.b(Lsn;DDDFF)V",
+      "receiver": 1975,
+      "primary-part": false,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "th.a(Lsn;DDDFF)V",
+      "receiver": 2011,
+      "primary-part": false,
+      "return-value": null,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "ue-phase",
+      "profile": 0,
+      "pc": 350,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      },
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 350
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "ue-phase",
+      "profile": 0,
+      "pc": 361,
+      "pose": {
+        "H": "41d79237",
+        "aS": "42579237",
+        "aT": "c19fa720",
+        "bE": "00000000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      },
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 361
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "ue-phase",
+      "profile": 0,
+      "pc": 397,
+      "pose": {
+        "H": "00000000",
+        "aS": "00000000",
+        "aT": "00000000",
+        "bE": "00000000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      },
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 397
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "ue-phase",
+      "profile": 0,
+      "pc": 400,
+      "pose": {
+        "H": "00000000",
+        "aS": "00000000",
+        "aT": "00000000",
+        "bE": "00000000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      },
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 400
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "ue-phase",
+      "profile": 0,
+      "pc": 403,
+      "pose": {
+        "H": "00000000",
+        "aS": "00000000",
+        "aT": "00000000",
+        "bE": "00000000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      },
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 403
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "ue-phase",
+      "profile": 0,
+      "pc": 408,
+      "pose": {
+        "H": "00000000",
+        "aS": "00000000",
+        "aT": "00000000",
+        "bE": "00000000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      },
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 408
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "ue.a(F)V",
+      "receiver": 2007,
+      "primary-part": false,
+      "return-value": null,
+      "pose": {
+        "H": "00000000",
+        "aS": "00000000",
+        "aT": "00000000",
+        "bE": "00000000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "id.a(IIF)V",
+      "receiver": 2007,
+      "primary-part": false,
+      "return-value": null,
+      "pose": {
+        "H": "00000000",
+        "aS": "00000000",
+        "aT": "00000000",
+        "bE": "00000000",
+        "manager-i": "43340000",
+        "mouse-x": "00000000",
+        "mouse-y": "00000000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 0,
+      "method": "ue.a(IIF)V",
+      "receiver": 2007,
+      "primary-part": false,
+      "return-value": null,
+      "pose": {
+        "H": "00000000",
+        "aS": "00000000",
+        "aT": "00000000",
+        "bE": "00000000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      }
+    },
+    {
+      "event": "entry",
+      "profile": 1,
+      "method": "ue.a(IIF)V",
+      "receiver": 2007,
+      "arguments": [
+        -60,
+        -70,
+        "3ec00000"
+      ],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 0
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 1,
+      "method": "id.a(IIF)V",
+      "receiver": 2007,
+      "arguments": [
+        -60,
+        -70,
+        "3ec00000"
+      ],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 0
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "nw-begin",
+      "profile": 1,
+      "kind": "gradient",
+      "state": {
+        "nw.A": 10,
+        "nw.B": 2097152,
+        "nw.h": 0,
+        "nw.i": "3feff33340000000",
+        "nw.j": "3fdfccccc0000000",
+        "nw.k": -804253680,
+        "nw.l": false,
+        "nw.m": false,
+        "nw.n": false,
+        "nw.o": 0,
+        "nw.p": 0,
+        "nw.q": false,
+        "nw.r": 7,
+        "nw.s": "0000000000000000",
+        "nw.t": "0000000000000000",
+        "nw.u": "0000000000000000",
+        "nw.v": 8323072,
+        "nw.w": false,
+        "nw.x": false,
+        "nw.z": 0
+      },
+      "words": [
+        "be900000",
+        "bf080000",
+        "3e900000",
+        "3f7f999a",
+        "3e81999a",
+        "c0101010",
+        "007f0000",
+        "00000000",
+        "3e900000",
+        "bf080000",
+        "3e900000",
+        "3f606666",
+        "3e81999a",
+        "c0101010",
+        "007f0000",
+        "00000000",
+        "3e900000",
+        "3d000000",
+        "3e900000",
+        "3f606666",
+        "3efe6666",
+        "d0101010",
+        "007f0000",
+        "00000000",
+        "be900000",
+        "bf080000",
+        "3e900000",
+        "3f7f999a",
+        "3e81999a",
+        "c0101010",
+        "00000000",
+        "00000000",
+        "3e900000",
+        "3d000000",
+        "3e900000",
+        "3f606666",
+        "3efe6666",
+        "d0101010",
+        "00000000",
+        "00000000",
+        "be900000",
+        "3d000000",
+        "3e900000",
+        "3f7f999a",
+        "3efe6666",
+        "d0101010",
+        "007f0000",
+        "00000000"
+      ],
+      "frames": [
+        {
+          "class": "nw",
+          "method": "b",
+          "descriptor": "()V",
+          "pc": 0
+        },
+        {
+          "class": "ub",
+          "method": "a",
+          "descriptor": "(IIIIII)V",
+          "pc": 154
+        },
+        {
+          "class": "da",
+          "method": "a",
+          "descriptor": "(I)V",
+          "pc": 25
+        },
+        {
+          "class": "da",
+          "method": "i",
+          "descriptor": "()V",
+          "pc": 2
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 1
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "nw-draw",
+      "profile": 1,
+      "kind": "gradient",
+      "state": {
+        "nw.A": 10,
+        "nw.B": 2097152,
+        "nw.h": 6,
+        "nw.i": "3feff33340000000",
+        "nw.j": "3fdfccccc0000000",
+        "nw.k": -804253680,
+        "nw.l": true,
+        "nw.m": false,
+        "nw.n": false,
+        "nw.o": 48,
+        "nw.p": 4,
+        "nw.q": false,
+        "nw.r": 7,
+        "nw.s": "0000000000000000",
+        "nw.t": "0000000000000000",
+        "nw.u": "0000000000000000",
+        "nw.v": 8323072,
+        "nw.w": true,
+        "nw.x": false,
+        "nw.z": 0
+      },
+      "words": [
+        "43d58000",
+        "00000000",
+        "00000000",
+        "3f7f999a",
+        "3e81999a",
+        "c0101010",
+        "007f0000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f606666",
+        "3e81999a",
+        "c0101010",
+        "007f0000",
+        "00000000",
+        "00000000",
+        "43700000",
+        "00000000",
+        "3f606666",
+        "3efe6666",
+        "d0101010",
+        "007f0000",
+        "00000000",
+        "43d58000",
+        "00000000",
+        "00000000",
+        "3f7f999a",
+        "3e81999a",
+        "c0101010",
+        "00000000",
+        "00000000",
+        "00000000",
+        "43700000",
+        "00000000",
+        "3f606666",
+        "3efe6666",
+        "d0101010",
+        "00000000",
+        "00000000",
+        "43d58000",
+        "43700000",
+        "00000000",
+        "3f7f999a",
+        "3efe6666",
+        "d0101010",
+        "007f0000",
+        "00000000"
+      ],
+      "prior": [
+        "be900000",
+        "bf080000",
+        "3e900000",
+        "3f7f999a",
+        "3e81999a",
+        "c0101010",
+        "007f0000",
+        "00000000",
+        "3e900000",
+        "bf080000",
+        "3e900000",
+        "3f606666",
+        "3e81999a",
+        "c0101010",
+        "007f0000",
+        "00000000",
+        "3e900000",
+        "3d000000",
+        "3e900000",
+        "3f606666",
+        "3efe6666",
+        "d0101010",
+        "007f0000",
+        "00000000",
+        "be900000",
+        "bf080000",
+        "3e900000",
+        "3f7f999a",
+        "3e81999a",
+        "c0101010",
+        "00000000",
+        "00000000",
+        "3e900000",
+        "3d000000",
+        "3e900000",
+        "3f606666",
+        "3efe6666",
+        "d0101010",
+        "00000000",
+        "00000000",
+        "be900000",
+        "3d000000",
+        "3e900000",
+        "3f7f999a",
+        "3efe6666",
+        "d0101010",
+        "007f0000",
+        "00000000"
+      ],
+      "frames": [
+        {
+          "class": "nw",
+          "method": "a",
+          "descriptor": "()V",
+          "pc": 0
+        },
+        {
+          "class": "ub",
+          "method": "a",
+          "descriptor": "(IIIIII)V",
+          "pc": 227
+        },
+        {
+          "class": "da",
+          "method": "a",
+          "descriptor": "(I)V",
+          "pc": 25
+        },
+        {
+          "class": "da",
+          "method": "i",
+          "descriptor": "()V",
+          "pc": 2
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 1
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "nw-return",
+      "profile": 1,
+      "kind": "gradient"
+    },
+    {
+      "event": "ue-phase",
+      "profile": 1,
+      "pc": 0,
+      "pose": {
+        "H": "00000000",
+        "aS": "00000000",
+        "aT": "00000000",
+        "bE": "00000000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      },
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 1,
+      "method": "ue.a(F)V",
+      "receiver": 2007,
+      "arguments": [
+        "3ec00000"
+      ],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "nw-begin",
+      "profile": 1,
+      "kind": "tile",
+      "state": {
+        "nw.A": 10,
+        "nw.B": 2097152,
+        "nw.h": 0,
+        "nw.i": "3feff33340000000",
+        "nw.j": "3fdfccccc0000000",
+        "nw.k": -804253680,
+        "nw.l": true,
+        "nw.m": false,
+        "nw.n": false,
+        "nw.o": 0,
+        "nw.p": 0,
+        "nw.q": false,
+        "nw.r": 7,
+        "nw.s": "0000000000000000",
+        "nw.t": "0000000000000000",
+        "nw.u": "0000000000000000",
+        "nw.v": 8323072,
+        "nw.w": false,
+        "nw.x": false,
+        "nw.z": 0
+      },
+      "words": [
+        "43d58000",
+        "00000000",
+        "00000000",
+        "3f7f999a",
+        "3e81999a",
+        "c0101010",
+        "007f0000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f606666",
+        "3e81999a",
+        "c0101010",
+        "007f0000",
+        "00000000",
+        "00000000",
+        "43700000",
+        "00000000",
+        "3f606666",
+        "3efe6666",
+        "d0101010",
+        "007f0000",
+        "00000000",
+        "43d58000",
+        "00000000",
+        "00000000",
+        "3f7f999a",
+        "3e81999a",
+        "c0101010",
+        "00000000",
+        "00000000",
+        "00000000",
+        "43700000",
+        "00000000",
+        "3f606666",
+        "3efe6666",
+        "d0101010",
+        "00000000",
+        "00000000",
+        "43d58000",
+        "43700000",
+        "00000000",
+        "3f7f999a",
+        "3efe6666",
+        "d0101010",
+        "007f0000",
+        "00000000"
+      ],
+      "frames": [
+        {
+          "class": "nw",
+          "method": "b",
+          "descriptor": "()V",
+          "pc": 0
+        },
+        {
+          "class": "ub",
+          "method": "b",
+          "descriptor": "(IIIIII)V",
+          "pc": 15
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 70
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "nw-draw",
+      "profile": 1,
+      "kind": "tile",
+      "state": {
+        "nw.A": 10,
+        "nw.B": 2097152,
+        "nw.h": 6,
+        "nw.i": "0000000000000000",
+        "nw.j": "0000000000000000",
+        "nw.k": -804253680,
+        "nw.l": false,
+        "nw.m": true,
+        "nw.n": false,
+        "nw.o": 48,
+        "nw.p": 4,
+        "nw.q": false,
+        "nw.r": 7,
+        "nw.s": "0000000000000000",
+        "nw.t": "0000000000000000",
+        "nw.u": "0000000000000000",
+        "nw.v": 8323072,
+        "nw.w": true,
+        "nw.x": false,
+        "nw.z": 0
+      },
+      "words": [
+        "42fa0000",
+        "434b0000",
+        "00000000",
+        "00000000",
+        "3f260000",
+        "c0101010",
+        "007f0000",
+        "00000000",
+        "43968000",
+        "434b0000",
+        "00000000",
+        "3f300000",
+        "3f260000",
+        "c0101010",
+        "007f0000",
+        "00000000",
+        "43968000",
+        "42140000",
+        "00000000",
+        "3f300000",
+        "00000000",
+        "d0101010",
+        "007f0000",
+        "00000000",
+        "42fa0000",
+        "434b0000",
+        "00000000",
+        "00000000",
+        "3f260000",
+        "c0101010",
+        "00000000",
+        "00000000",
+        "43968000",
+        "42140000",
+        "00000000",
+        "3f300000",
+        "00000000",
+        "d0101010",
+        "00000000",
+        "00000000",
+        "42fa0000",
+        "42140000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "d0101010",
+        "007f0000",
+        "00000000"
+      ],
+      "prior": [
+        "43d58000",
+        "00000000",
+        "00000000",
+        "3f7f999a",
+        "3e81999a",
+        "c0101010",
+        "007f0000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "3f606666",
+        "3e81999a",
+        "c0101010",
+        "007f0000",
+        "00000000",
+        "00000000",
+        "43700000",
+        "00000000",
+        "3f606666",
+        "3efe6666",
+        "d0101010",
+        "007f0000",
+        "00000000",
+        "43d58000",
+        "00000000",
+        "00000000",
+        "3f7f999a",
+        "3e81999a",
+        "c0101010",
+        "00000000",
+        "00000000",
+        "00000000",
+        "43700000",
+        "00000000",
+        "3f606666",
+        "3efe6666",
+        "d0101010",
+        "00000000",
+        "00000000",
+        "43d58000",
+        "43700000",
+        "00000000",
+        "3f7f999a",
+        "3efe6666",
+        "d0101010",
+        "007f0000",
+        "00000000"
+      ],
+      "frames": [
+        {
+          "class": "nw",
+          "method": "a",
+          "descriptor": "()V",
+          "pc": 0
+        },
+        {
+          "class": "ub",
+          "method": "b",
+          "descriptor": "(IIIIII)V",
+          "pc": 168
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 70
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "nw-return",
+      "profile": 1,
+      "kind": "tile"
+    },
+    {
+      "event": "ue-phase",
+      "profile": 1,
+      "pc": 347,
+      "pose": {
+        "H": "41dca42d",
+        "aS": "425ca42d",
+        "aT": "c1bf87f8",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      },
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 1,
+      "method": "th.a(Lsn;DDDFF)V",
+      "receiver": 2011,
+      "arguments": [
+        {
+          "class": "dc",
+          "id": 2010
+        },
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000",
+        "00000000",
+        "3f800000"
+      ],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 0
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 1,
+      "method": "ds.a(Lsn;DDDFF)V",
+      "receiver": 1975,
+      "arguments": [
+        {
+          "class": "dc",
+          "id": 2010
+        },
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000",
+        "00000000",
+        "3f800000"
+      ],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 0
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 1,
+      "method": "ds.a(Lgs;DDDFF)V",
+      "receiver": 1975,
+      "arguments": [
+        {
+          "class": "dc",
+          "id": 2010
+        },
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000",
+        "00000000",
+        "3f800000"
+      ],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 0
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 1,
+      "method": "dc.t()Z",
+      "receiver": 2010,
+      "arguments": [],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "dc",
+          "method": "t",
+          "descriptor": "()Z",
+          "pc": 0
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 55
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 1,
+      "method": "dc.t()Z",
+      "receiver": 2010,
+      "primary-part": false,
+      "return-value": false,
+      "pose": {
+        "H": "41dca42d",
+        "aS": "425ca42d",
+        "aT": "c1bf87f8",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      }
+    },
+    {
+      "event": "entry",
+      "profile": 1,
+      "method": "dc.t()Z",
+      "receiver": 2010,
+      "arguments": [],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "dc",
+          "method": "t",
+          "descriptor": "()Z",
+          "pc": 0
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 80
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 1,
+      "method": "dc.t()Z",
+      "receiver": 2010,
+      "primary-part": false,
+      "return-value": false,
+      "pose": {
+        "H": "41dca42d",
+        "aS": "425ca42d",
+        "aT": "c1bf87f8",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      }
+    },
+    {
+      "event": "entry",
+      "profile": 1,
+      "method": "gv.a(Lls;DDDFF)V",
+      "receiver": 1975,
+      "arguments": [
+        {
+          "class": "dc",
+          "id": 2010
+        },
+        "0000000000000000",
+        "bff9eb8520000000",
+        "0000000000000000",
+        "00000000",
+        "3f800000"
+      ],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 0
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 1,
+      "method": "fh.a(FFFFFF)V",
+      "receiver": 2014,
+      "arguments": [
+        "00000000",
+        "00000000",
+        "3f800000",
+        "41dca42d",
+        "c1bf87f8",
+        "3d800000"
+      ],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 0
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "entry",
+      "profile": 1,
+      "method": "ps.a(F)V",
+      "receiver": 2015,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 19
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 1,
+      "method": "ps.a(F)V",
+      "receiver": 2015,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41dca42d",
+        "aS": "425ca42d",
+        "aT": "c1bf87f8",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      }
+    },
+    {
+      "event": "entry",
+      "profile": 1,
+      "method": "ps.a(F)V",
+      "receiver": 2016,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 28
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 1,
+      "method": "ps.a(F)V",
+      "receiver": 2016,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41dca42d",
+        "aS": "425ca42d",
+        "aT": "c1bf87f8",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      }
+    },
+    {
+      "event": "entry",
+      "profile": 1,
+      "method": "ps.a(F)V",
+      "receiver": 2018,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 37
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 1,
+      "method": "ps.a(F)V",
+      "receiver": 2018,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41dca42d",
+        "aS": "425ca42d",
+        "aT": "c1bf87f8",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      }
+    },
+    {
+      "event": "entry",
+      "profile": 1,
+      "method": "ps.a(F)V",
+      "receiver": 2019,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 46
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 1,
+      "method": "ps.a(F)V",
+      "receiver": 2019,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41dca42d",
+        "aS": "425ca42d",
+        "aT": "c1bf87f8",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      }
+    },
+    {
+      "event": "entry",
+      "profile": 1,
+      "method": "ps.a(F)V",
+      "receiver": 2020,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 55
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 1,
+      "method": "ps.a(F)V",
+      "receiver": 2020,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41dca42d",
+        "aS": "425ca42d",
+        "aT": "c1bf87f8",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      }
+    },
+    {
+      "event": "entry",
+      "profile": 1,
+      "method": "ps.a(F)V",
+      "receiver": 2021,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 64
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 1,
+      "method": "ps.a(F)V",
+      "receiver": 2021,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41dca42d",
+        "aS": "425ca42d",
+        "aT": "c1bf87f8",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      }
+    },
+    {
+      "event": "entry",
+      "profile": 1,
+      "method": "ps.a(F)V",
+      "receiver": 2017,
+      "arguments": [
+        "3d800000"
+      ],
+      "primary-part": true,
+      "frames": [
+        {
+          "class": "ps",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 0
+        },
+        {
+          "class": "fh",
+          "method": "a",
+          "descriptor": "(FFFFFF)V",
+          "pc": 73
+        },
+        {
+          "class": "gv",
+          "method": "a",
+          "descriptor": "(Lls;DDDFF)V",
+          "pc": 297
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lgs;DDDFF)V",
+          "pc": 112
+        },
+        {
+          "class": "ds",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 14
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 24
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 1,
+      "method": "ps.a(F)V",
+      "receiver": 2017,
+      "primary-part": true,
+      "return-value": null,
+      "pose": {
+        "H": "41dca42d",
+        "aS": "425ca42d",
+        "aT": "c1bf87f8",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 1,
+      "method": "fh.a(FFFFFF)V",
+      "receiver": 2014,
+      "primary-part": false,
+      "return-value": null,
+      "pose": {
+        "H": "41dca42d",
+        "aS": "425ca42d",
+        "aT": "c1bf87f8",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 1,
+      "method": "gv.a(Lls;DDDFF)V",
+      "receiver": 1975,
+      "primary-part": false,
+      "return-value": null,
+      "pose": {
+        "H": "41dca42d",
+        "aS": "425ca42d",
+        "aT": "c1bf87f8",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 1,
+      "method": "ds.a(Lgs;DDDFF)V",
+      "receiver": 1975,
+      "primary-part": false,
+      "return-value": null,
+      "pose": {
+        "H": "41dca42d",
+        "aS": "425ca42d",
+        "aT": "c1bf87f8",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 1,
+      "method": "ds.a(Lsn;DDDFF)V",
+      "receiver": 1975,
+      "primary-part": false,
+      "return-value": null,
+      "pose": {
+        "H": "41dca42d",
+        "aS": "425ca42d",
+        "aT": "c1bf87f8",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      }
+    },
+    {
+      "event": "entry",
+      "profile": 1,
+      "method": "bw.b(Lsn;DDDFF)V",
+      "receiver": 1975,
+      "arguments": [
+        {
+          "class": "dc",
+          "id": 2010
+        },
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000",
+        "00000000",
+        "3f800000"
+      ],
+      "primary-part": false,
+      "frames": [
+        {
+          "class": "bw",
+          "method": "b",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 0
+        },
+        {
+          "class": "th",
+          "method": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "pc": 39
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 347
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 1,
+      "method": "bw.b(Lsn;DDDFF)V",
+      "receiver": 1975,
+      "primary-part": false,
+      "return-value": null,
+      "pose": {
+        "H": "41dca42d",
+        "aS": "425ca42d",
+        "aT": "c1bf87f8",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 1,
+      "method": "th.a(Lsn;DDDFF)V",
+      "receiver": 2011,
+      "primary-part": false,
+      "return-value": null,
+      "pose": {
+        "H": "41dca42d",
+        "aS": "425ca42d",
+        "aT": "c1bf87f8",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      }
+    },
+    {
+      "event": "ue-phase",
+      "profile": 1,
+      "pc": 350,
+      "pose": {
+        "H": "41dca42d",
+        "aS": "425ca42d",
+        "aT": "c1bf87f8",
+        "bE": "3f800000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      },
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 350
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "ue-phase",
+      "profile": 1,
+      "pc": 361,
+      "pose": {
+        "H": "41dca42d",
+        "aS": "425ca42d",
+        "aT": "c1bf87f8",
+        "bE": "00000000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      },
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 361
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "ue-phase",
+      "profile": 1,
+      "pc": 397,
+      "pose": {
+        "H": "00000000",
+        "aS": "00000000",
+        "aT": "00000000",
+        "bE": "00000000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      },
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 397
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "ue-phase",
+      "profile": 1,
+      "pc": 400,
+      "pose": {
+        "H": "00000000",
+        "aS": "00000000",
+        "aT": "00000000",
+        "bE": "00000000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      },
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 400
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "ue-phase",
+      "profile": 1,
+      "pc": 403,
+      "pose": {
+        "H": "00000000",
+        "aS": "00000000",
+        "aT": "00000000",
+        "bE": "00000000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      },
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 403
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "ue-phase",
+      "profile": 1,
+      "pc": 408,
+      "pose": {
+        "H": "00000000",
+        "aS": "00000000",
+        "aT": "00000000",
+        "bE": "00000000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      },
+      "frames": [
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(F)V",
+          "pc": 408
+        },
+        {
+          "class": "id",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 32
+        },
+        {
+          "class": "ue",
+          "method": "a",
+          "descriptor": "(IIF)V",
+          "pc": 4
+        }
+      ]
+    },
+    {
+      "event": "return",
+      "profile": 1,
+      "method": "ue.a(F)V",
+      "receiver": 2007,
+      "primary-part": false,
+      "return-value": null,
+      "pose": {
+        "H": "00000000",
+        "aS": "00000000",
+        "aT": "00000000",
+        "bE": "00000000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 1,
+      "method": "id.a(IIF)V",
+      "receiver": 2007,
+      "primary-part": false,
+      "return-value": null,
+      "pose": {
+        "H": "00000000",
+        "aS": "00000000",
+        "aT": "00000000",
+        "bE": "00000000",
+        "manager-i": "43340000",
+        "mouse-x": "c1f00000",
+        "mouse-y": "c2200000"
+      }
+    },
+    {
+      "event": "return",
+      "profile": 1,
+      "method": "ue.a(IIF)V",
+      "receiver": 2007,
+      "primary-part": false,
+      "return-value": null,
+      "pose": {
+        "H": "00000000",
+        "aS": "00000000",
+        "aT": "00000000",
+        "bE": "00000000",
+        "manager-i": "43340000",
+        "mouse-x": "c2700000",
+        "mouse-y": "c28c0000"
+      }
+    }
+  ],
+  "live_Code": {
+    "bw.b(Lsn;DDDFF)V": {
+      "code_bytes": 101,
+      "code_sha256": "bc23b5d571cdc016cce59ac4f047a80f4e344bcd1d6c96637a4c9d3d64e9f1b2"
+    },
+    "dc.t()Z": {
+      "code_bytes": 23,
+      "code_sha256": "f0d1bb7f208925c1f87ef2352418c6e84fddebed4daa310c7f7a6f31b6bd7b37"
+    },
+    "ds.a(Lgs;DDDFF)V": {
+      "code_bytes": 164,
+      "code_sha256": "67ad6153c0398e40ec8a84a8511d1568ca554b6fa0f0f4859d5c343e40d08ce5"
+    },
+    "ds.a(Lsn;DDDFF)V": {
+      "code_bytes": 18,
+      "code_sha256": "1806ae98792b45bc99ed470ec91de09508a14b166e11830cbb3abb0a273f1722"
+    },
+    "fh.a(FFFFFF)V": {
+      "code_bytes": 77,
+      "code_sha256": "2eefdb1ea52dd4c0f70c328535ab98e4ad076e420fcc9d2f8c4783d3694e0656"
+    },
+    "gv.a(Lls;DDDFF)V": {
+      "code_bytes": 770,
+      "code_sha256": "e5dcae93f40afe48f07f0793fabc606d11d2de226d25234f29ef268776e3e216"
+    },
+    "id.a(IIF)V": {
+      "code_bytes": 491,
+      "code_sha256": "1e3a713f681a0a57c19563577e07c6e4be94c1fbc5242cdec73ce0e17a7b82fe"
+    },
+    "nw.a()V": {
+      "code_bytes": 415,
+      "code_sha256": "6b22ea3c837c5afb9713209d9dea8c5bde822ffa4e6cef179f8c5e87be1b1218"
+    },
+    "nw.b()V": {
+      "code_bytes": 7,
+      "code_sha256": "d7add7c81bcc22173876373c4aac713d8813d179d45410481d5e5332262981e3"
+    },
+    "ps.a(F)V": {
+      "code_bytes": 248,
+      "code_sha256": "9a980fd68c6b0458288a198fe460baa978d797ec3d61d46341fbf7ff833b7dc3"
+    },
+    "ps.d(F)V": {
+      "code_bytes": 59,
+      "code_sha256": "11cbde1c3553f363667a046e50b1b90a27a18659c4af6ee2c53af851be0a240a"
+    },
+    "th.a(Lsn;DDDFF)V": {
+      "code_bytes": 43,
+      "code_sha256": "151fc920d1dd1a7bd587ccdab7ebf560faadd956ddf7e9915904c70e4dcbad40"
+    },
+    "ue.a(F)V": {
+      "code_bytes": 409,
+      "code_sha256": "07c133644686f1eb98de0c93813a4647fdd21d964be5d8263237cc36f8bfb320"
+    },
+    "ue.a(IIF)V": {
+      "code_bytes": 20,
+      "code_sha256": "2342af0902657dd99fa402da623232f3d2114d1c83dc7d0e765a099237227294"
+    }
+  }
+}

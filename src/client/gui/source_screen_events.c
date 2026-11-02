@@ -6,6 +6,7 @@
 #include "mc/core/java/java.h"
 #include "source_clipboard.h"
 #include "source_create_world_internal.h"
+#include "source_inventory_screen_internal.h"
 #include "source_pause_screen_internal.h"
 #include "source_screen_internal.h"
 #include "source_screen_transitions.h"
@@ -251,7 +252,8 @@ static bool release_button(mc_client_source_da *o, int32_t which, mc_client_scre
 }
 
 static bool mouse(mc_client_source_da *o, const mc_client_sdk_mouse_event *event,
-                  mc_client_screen_event_report *r, mc_client_screen_event_error *e) {
+                  mc_client_sdk_input *input, mc_client_screen_event_report *r,
+                  mc_client_screen_event_error *e) {
     const bool down = event->pressed;
     if (o->fields.b == NULL) {
         fail(e, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE, "da mouse null App width receiver", "da",
@@ -273,9 +275,15 @@ static bool mouse(mc_client_source_da *o, const mc_client_sdk_mouse_event *event
     r->mouse_x = x;
     r->mouse_y = y;
     if (!down)
-        return release_button(o, event->button, r, e);
+        return o->kind == MC_CLIENT_SCREEN_INVENTORY || release_button(o, event->button, r, e);
     if (!press(o, x, y, event->button, r, e))
         return false;
+    if (o->kind == MC_CLIENT_SCREEN_INVENTORY) {
+        if (input == NULL && o->fields.b != NULL)
+            input = mc_client_display_inputs(o->fields.b->display);
+        return mc_screen_inventory_mouse_after_base_locked((mc_client_source_ue *)o, x, y,
+                                                           event->button, input, &e->screen);
+    }
     return o->kind != MC_CLIENT_SCREEN_CREATE_WORLD ||
            mc_screen_create_world_mouse_after_base_locked((mc_client_source_fj *)o, x, y,
                                                           event->button, &e->screen);
@@ -285,6 +293,40 @@ typedef struct create_key_context {
     mc_client_screen_event_report *report;
     mc_client_screen_event_error *error;
 } create_key_context;
+
+static bool inventory_close(mc_client_source_da *o, mc_entity *player, const char *descriptor,
+                            unsigned int pc, mc_client_screen_event_report *r,
+                            mc_client_screen_event_error *e) {
+    if (r != NULL) {
+        r->action = MC_CLIENT_SCREEN_ACTION_CLOSE;
+        r->pending = (mc_client_screen_site){"id", "a", descriptor, pc};
+    }
+    if (o->transitions == NULL) {
+        fail(e, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY, "ID actual DC.r transition owner", "id",
+             "a", descriptor, pc, true);
+        return false;
+    }
+    if (mc_entity_retain(player) != MC_ENTITY_OK) {
+        fail(e, MC_CLIENT_SCREEN_BUSY, "ID captured Player native occurrence", NULL, NULL, NULL, 0,
+             true);
+        return false;
+    }
+    mc_client_screen_classes *classes = o->classes;
+    mc_client_screen_transitions *router = o->transitions;
+    mtx_unlock(&classes->mutex);
+    const mc_client_screen_status status =
+        mc_client_screen_transitions_player_close(router, player, &e->screen);
+    mc_entity_release(player);
+    if (mtx_lock(&classes->mutex) != thrd_success) {
+        e->monitor_lost = true;
+        fail(e, MC_CLIENT_SCREEN_THREAD_FAILED, "ID close source-call monitor reacquisition", NULL,
+             NULL, NULL, 0, true);
+        return false;
+    }
+    if (status == MC_CLIENT_SCREEN_OK && r != NULL)
+        r->pending = (mc_client_screen_site){0};
+    return status == MC_CLIENT_SCREEN_OK;
+}
 
 static bool create_enter(void *context, mc_client_source_fj *fj, mc_client_source_ke *button,
                          mc_client_screen_error *error) {
@@ -325,6 +367,13 @@ static bool key(mc_client_source_da *o, const mc_client_sdk_key_event *event,
                                                   .clipboard = mc_client_screen_clipboard_read};
         return mc_screen_create_world_key_locked(fj, (uint16_t)event->character, event->key, &hooks,
                                                  create_enter, &context, &e->screen);
+    }
+    if (o->kind == MC_CLIENT_SCREEN_INVENTORY) {
+        mc_entity *player = NULL;
+        if (!mc_screen_inventory_key_locked((mc_client_source_ue *)o, event->key, &player,
+                                            &e->screen))
+            return false;
+        return player == NULL || inventory_close(o, player, "(CI)V", 29, r, e);
     }
     if (!(o->kind == MC_CLIENT_SCREEN_MAIN_MENU) && event->key == 1) {
         r->action = MC_CLIENT_SCREEN_ACTION_CLOSE;
@@ -378,7 +427,7 @@ mc_client_screen_status mc_client_screen_mouse_event_with_transitions(
         return e->screen.status;
     o->transitions = router;
     r->mouse_events = 1;
-    return finish(o, mouse(o, event, r, e), r, e);
+    return finish(o, mouse(o, event, NULL, r, e), r, e);
 }
 
 mc_client_screen_status mc_client_screen_mouse_event(mc_client_source_da *o,
@@ -432,7 +481,7 @@ mc_client_screen_status mc_client_screen_handle_input_with_transitions(
         if (!next)
             break;
         ++r->mouse_events;
-        if (!mouse(o, &event, r, e))
+        if (!mouse(o, &event, input, r, e))
             goto done;
     }
     for (;;) {
@@ -481,13 +530,15 @@ mc_client_screen_status mc_client_screen_event_retire(mc_client_screen_event_err
     return MC_CLIENT_SCREEN_OK;
 }
 
-mc_client_screen_status mc_client_screen_tick(mc_client_source_da *o,
-                                              mc_client_screen_event_error *e) {
+mc_client_screen_status mc_client_screen_tick_with_transitions(mc_client_source_da *o,
+                                                               mc_client_screen_transitions *router,
+                                                               mc_client_screen_event_error *e) {
     if (e == NULL)
         return MC_CLIENT_SCREEN_INVALID_ARGUMENT;
     *e = (mc_client_screen_event_error){0};
     if (!admit(o, e))
         return e->screen.status;
+    o->transitions = router;
     if (o->kind == MC_CLIENT_SCREEN_MAIN_MENU) {
         if (FLT_RADIX != 2 || FLT_MANT_DIG != 24 || sizeof(float) != 4 ||
             fegetround() != FE_TONEAREST)
@@ -503,12 +554,25 @@ mc_client_screen_status mc_client_screen_tick(mc_client_source_da *o,
         mc_screen_pause_tick_locked((mc_client_source_oz *)o, &e->screen);
     else if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD)
         (void)mc_screen_create_world_tick_locked((mc_client_source_fj *)o, &e->screen);
-    else
+    else if (o->kind == MC_CLIENT_SCREEN_INVENTORY) {
+        mc_entity *player = NULL;
+        if (mc_screen_inventory_tick_locked((mc_client_source_ue *)o, &player, &e->screen) &&
+            (player == NULL || inventory_close(o, player, "()V", 37, NULL, e)))
+            e->screen.source_returned = true;
+    } else
         e->screen.source_returned = true;
+    if (e->monitor_lost)
+        return e->screen.status;
     --o->active_calls;
+    o->transitions = NULL;
     e->pending_receiver = NULL;
     (void)mtx_unlock(&o->classes->mutex);
     return e->screen.status;
+}
+
+mc_client_screen_status mc_client_screen_tick(mc_client_source_da *o,
+                                              mc_client_screen_event_error *e) {
+    return mc_client_screen_tick_with_transitions(o, NULL, e);
 }
 
 mc_client_screen_status mc_client_screen_particles_tick(mc_client_source_du *o,

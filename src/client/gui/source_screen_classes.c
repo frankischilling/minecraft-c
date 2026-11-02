@@ -1,3 +1,4 @@
+#include "source_inventory_screen_internal.h"
 #include "source_screen_internal.h"
 
 #include <stdlib.h>
@@ -162,6 +163,8 @@ mc_client_screen_status mc_client_screen_classes_retain(mc_client_screen_classes
 
 bool mc_screen_class_final_locked(mc_client_screen_classes *c, mc_client_screen_error *e) {
     c->retiring = true;
+    if (!mc_screen_inventory_classes_cleanup_locked(c, e))
+        return false;
     if (c->registry_held) {
         e->registry.status = mc_registry_classes_release(c->registry, &e->registry);
         if (e->registry.status != MC_REGISTRY_OK) {

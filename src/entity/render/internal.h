@@ -87,6 +87,7 @@ bool mc_entity_render_brightness(mc_entity *, mc_math_classes *, float partial, 
                                  mc_entity_render_error *);
 bool mc_entity_render_swing(mc_entity *, float partial, float *, mc_entity_render_error *);
 bool mc_entity_render_riding(mc_entity *, bool *, mc_entity_render_error *);
+bool mc_entity_render_player_sneaking(mc_entity *, bool *, mc_entity_render_error *);
 bool mc_entity_render_burning(mc_entity *, bool *, mc_entity_render_error *);
 bool mc_entity_render_half_height(mc_entity *, float *, mc_entity_render_error *);
 bool mc_entity_render_texture(mc_entity *, const mc_player_string **, mc_entity_render_error *);

@@ -176,11 +176,44 @@ mc_held_stack_parent_error *mc_client_draw_held_workspace(mc_client_draw_scope *
         return NULL;
     mc_client_render_manager_draw_call *c = scope->owner;
     if (c->held_workspace != NULL) {
-        owner_fail(e, MC_CLIENT_MANAGER_BUSY, "Draw held Stack workspace already used");
-        return NULL;
+        /* DS has two genuine RA children: Block helmet and held Item. The
+         * first returned source call keeps its charged diagnostics/owners,
+         * while its completed native guard retires before the next child. */
+        if (c->held_second != NULL || !c->executing || !c->state.active ||
+            c->renderer_hold == NULL || strcmp(c->renderer_hold->source_class, "ds") != 0 ||
+            c->held_workspace->caller.pc != 96 || !c->held_workspace->state.source_returned ||
+            c->held_workspace->status != MC_HELD_STACK_PARENT_OK ||
+            c->held_guard_token != c->held_workspace || c->held_guard == NULL || c->pending_list) {
+            owner_fail(e, MC_CLIENT_MANAGER_BUSY, "Draw held Stack workspace already used");
+            return NULL;
+        }
+        for (size_t i = 0; i < c->owner_count; ++i)
+            if (c->owners[i].pending_lookup != NULL) {
+                owner_fail(e, MC_CLIENT_MANAGER_BUSY,
+                           "Draw completed held child still owns lookup");
+                return NULL;
+            }
+        mc_client_entity_renderer_error guard;
+        if (entity_renderer_held_stack_guard_discharge(c->held_guard, c, c->held_workspace,
+                                                       &guard) != MC_CLIENT_ENTITY_RENDERER_OK) {
+            owner_fail(e, MC_CLIENT_MANAGER_BUSY, "Draw completed held child guard retirement");
+            e->hand = guard;
+            return NULL;
+        }
+        c->held_workspace->state.guard_discharged = true;
+        c->held_guard = NULL;
+        c->held_guard_token = NULL;
+        c->held_second = manager_draw_allocate_bytes(c, sizeof(*c->held_second), e);
+        if (c->held_second != NULL) {
+            c->state.held = c->held_second;
+            c->state.held_calls[c->state.held_call_count++] = c->held_second;
+        }
+        return c->held_second;
     }
     c->held_workspace = manager_draw_allocate_bytes(c, sizeof(*c->held_workspace), e);
     c->state.held = c->held_workspace;
+    if (c->held_workspace != NULL)
+        c->state.held_calls[c->state.held_call_count++] = c->held_workspace;
     return c->held_workspace;
 }
 
@@ -356,7 +389,7 @@ bool mc_client_draw_held_guard_begin(mc_client_draw_scope *scope, mc_client_held
     mc_client_manager_error error;
     if (!scope_valid(scope, &error) || hand == NULL || token == NULL ||
         find_owner(scope->owner, MANAGER_DRAW_HAND, hand) == NULL ||
-        token != scope->owner->held_workspace)
+        (token != scope->owner->held_workspace && token != scope->owner->held_second))
         return held_guard_failure(out, MC_CLIENT_ENTITY_RENDERER_INVALID_ARGUMENT,
                                   "Held Stack actual Parent/RA/charged workspace");
     mc_client_render_manager_draw_call *c = scope->owner;
@@ -885,6 +918,74 @@ bool mc_client_draw_debug_flag(mc_client_draw_scope *scope, bool *out, mc_client
     return true;
 }
 
+static bool name_fail(mc_client_manager_error *e, mc_client_manager_status status,
+                      const char *operation, int32_t pc, bool native) {
+    (void)manager_fail(e, status, operation, "net/minecraft/client/Minecraft", "t", "()Z", pc,
+                       native);
+    return false;
+}
+
+bool mc_client_draw_name_flag(mc_client_draw_scope *scope, bool *out, mc_client_manager_error *e) {
+    if (!scope_valid(scope, e))
+        return false;
+    if (out == NULL)
+        return owner_fail(e, MC_CLIENT_MANAGER_INVALID_ARGUMENT, "Draw name scalar output");
+    mc_client_render_manager_draw_call *c = scope->owner;
+    mc_client_application_classes *classes = scope->application_classes;
+    if (classes == NULL)
+        return name_fail(e, MC_CLIENT_MANAGER_UNIMPLEMENTED_DEPENDENCY,
+                         "Draw reached canonical Minecraft namespace", 0, true);
+    if (c->application_classes_hold == NULL) {
+        const mc_client_application_owner_status status =
+            mc_client_application_classes_retain(classes);
+        if (status != MC_CLIENT_APPLICATION_OWNER_OK)
+            return name_fail(e,
+                             status == MC_CLIENT_APPLICATION_OWNER_LIMIT
+                                 ? MC_CLIENT_MANAGER_LIMIT
+                                 : MC_CLIENT_MANAGER_INVALID_PHASE,
+                             "Draw actual Minecraft class occurrence", 0, true);
+        c->application_classes_hold = classes;
+    }
+    const mc_client_application_owner_status activated =
+        mc_client_application_classes_active_use(classes, &c->application_error);
+    if (activated != MC_CLIENT_APPLICATION_OWNER_OK)
+        return name_fail(e,
+                         activated == MC_CLIENT_APPLICATION_OWNER_LIMIT ? MC_CLIENT_MANAGER_LIMIT
+                         : activated == MC_CLIENT_APPLICATION_OWNER_ALLOCATION_FAILED
+                             ? MC_CLIENT_MANAGER_ALLOCATION_FAILED
+                             : MC_CLIENT_MANAGER_CLASS_ERRONEOUS,
+                         "Draw actual Minecraft class active use", 0, true);
+    mc_client_application_class_state state;
+    if (!mc_client_application_classes_inspect(classes, &state))
+        return name_fail(e, MC_CLIENT_MANAGER_BUSY, "Draw canonical Minecraft first static read", 0,
+                         true);
+    if (state.a == NULL) {
+        *out = true;
+        return true;
+    }
+    /* Actual second getstatic6, not the nonnull test's captured App. */
+    if (!mc_client_application_classes_inspect(classes, &state))
+        return name_fail(e, MC_CLIENT_MANAGER_BUSY, "Draw canonical Minecraft fresh static read", 6,
+                         true);
+    client_application *app = state.a;
+    if (app == NULL)
+        return name_fail(e, MC_CLIENT_MANAGER_NULL_REFERENCE, "Draw name null fresh Minecraft", 9,
+                         false);
+    if (!capture_application(c, app, e))
+        return false;
+    mc_game_settings *settings = app->settings; /* Source z9. */
+    if (!mc_client_draw_capture_settings(scope, settings, e))
+        return false;
+    if (settings == NULL)
+        return name_fail(e, MC_CLIENT_MANAGER_NULL_REFERENCE, "Draw name null Settings", 12, false);
+    mc_game_settings_state values;
+    if (!mc_game_settings_read_state(settings, &values))
+        return name_fail(e, MC_CLIENT_MANAGER_SETTINGS_FAILED, "Draw actual name Settings fields",
+                         12, true);
+    *out = !values.values.hide_gui;
+    return true;
+}
+
 static bool capture_receipt(mc_client_render_manager_draw_call *c, const mc_world_access_failure *v,
                             mc_client_manager_error *e) {
     if (v->receipt == NULL)
@@ -987,7 +1088,7 @@ static bool capture_detail(mc_client_render_manager_draw_call *c, mc_client_livi
         case MC_CLIENT_LIVING_DRAW_CHILD_PART:
             return !v->part.pending_list || capture_pending_list(c, &v->part, e);
         case MC_CLIENT_LIVING_DRAW_CHILD_HELD:
-            if (v->held != c->held_workspace || v->held == NULL)
+            if ((v->held != c->held_workspace && v->held != c->held_second) || v->held == NULL)
                 return owner_fail(e, MC_CLIENT_MANAGER_INVALID_PHASE,
                                   "Draw actual charged held Stack diagnostic identity");
             return capture_entity_children(c, &v->held->entity, e);
@@ -1011,6 +1112,7 @@ bool manager_draw_capture_children(mc_client_render_manager_draw_call *c,
     return capture_entity_children(c, &c->brightness, e) &&
            (c->held_workspace == NULL ||
             capture_entity_children(c, &c->held_workspace->entity, e)) &&
+           (c->held_second == NULL || capture_entity_children(c, &c->held_second->entity, e)) &&
            capture_detail(c, c->living.selected_child, &c->living.detail, e) &&
            (!c->living.caught.active ||
             capture_detail(c, c->living.caught.selected_child, &c->living.caught.detail, e)) &&
@@ -1046,6 +1148,9 @@ static bool release_neutral_worlds(mc_client_render_manager_draw_call *c) {
         return false;
     if (c->held_workspace != NULL &&
         mc_entity_render_worlds_release(&c->held_workspace->entity) != MC_ENTITY_OK)
+        return false;
+    if (c->held_second != NULL &&
+        mc_entity_render_worlds_release(&c->held_second->entity) != MC_ENTITY_OK)
         return false;
     mc_client_living_draw_error *leaves[] = {&c->living, &c->post};
     for (size_t i = 0; i < 2; ++i) {
@@ -1273,6 +1378,8 @@ mc_client_render_manager_draw_retire(mc_client_render_manager_draw_call **slot,
     c->inventory_workspace_count = 0;
     manager_draw_free_bytes(c, c->held_workspace, sizeof(*c->held_workspace));
     c->held_workspace = NULL;
+    manager_draw_free_bytes(c, c->held_second, sizeof(*c->held_second));
+    c->held_second = NULL;
     manager_draw_free_bytes(c, c->queries, c->query_capacity * sizeof(*c->queries));
     c->queries = NULL;
     c->query_count = c->query_capacity = 0;

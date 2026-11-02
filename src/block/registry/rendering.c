@@ -16,7 +16,7 @@ mc_registry_status mc_block_render_inventory_color(const mc_block *block, int32_
     if (!valid(block) || out == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (block->kind != MC_BLOCK_BASE && block->kind != MC_BLOCK_DIRT &&
-        block->kind != MC_BLOCK_WOOL)
+        block->kind != MC_BLOCK_WOOL && block->kind != MC_BLOCK_PUMPKIN)
         return MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
     *out = 0xffffff; /* Actual inherited uu.b(I)I. */
     return MC_REGISTRY_OK;
@@ -26,7 +26,7 @@ mc_registry_status mc_block_render_inventory_shape(const mc_block *block) {
     if (!valid(block))
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (block->kind != MC_BLOCK_BASE && block->kind != MC_BLOCK_DIRT &&
-        block->kind != MC_BLOCK_WOOL)
+        block->kind != MC_BLOCK_WOOL && block->kind != MC_BLOCK_PUMPKIN)
         return MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
     return MC_REGISTRY_OK; /* Actual inherited uu.g()V has only return0. */
 }
@@ -283,12 +283,21 @@ mc_registry_status mc_block_render_texture_metadata(const mc_block *block, int32
             t = side == 1 ? t - (m > 0 ? 1 : 0) : 2;
             break;
         case MC_BLOCK_PUMPKIN: {
-            int32_t front = t + 17 + (block->subtype.fc.a ? 1 : 0);
-            t = side <= 1 ? t
-                : ((m == 2 && side == 2) || (m == 3 && side == 5) || (m == 0 && side == 3) ||
-                   (m == 1 && side == 4))
+            /* Actual FC.a(II)I: only faces1/0 return early. Java additions
+             * wrap in the original +1,+16,optional+1 order; metadata is not
+             * masked and negative sides reach the ordinary side result. */
+            if (side == 1 || side == 0) {
+                t = block->fields.bm;
+                break;
+            }
+            int32_t front = mc_java_i32_add(block->fields.bm, 1);
+            front = mc_java_i32_add(front, 16);
+            if (block->subtype.fc.a)
+                front = mc_java_i32_add(front, 1);
+            t = ((m == 2 && side == 2) || (m == 3 && side == 5) || (m == 0 && side == 3) ||
+                 (m == 1 && side == 4))
                     ? front
-                    : t + 16;
+                    : mc_java_i32_add(block->fields.bm, 16);
             break;
         }
         case MC_BLOCK_CROPS:

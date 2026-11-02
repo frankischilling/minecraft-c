@@ -40,6 +40,19 @@ bool ld_texture_engine(ld_frame *, mc_client_render_engine *, const mc_player_st
                        mc_client_graphics_site caller, mc_client_graphics_site lookup_site,
                        mc_client_graphics_site bind_site);
 bool ld_skin(ld_frame *);
+bool ld_download(ld_frame *, const mc_player_string *, const mc_player_string *,
+                 mc_client_graphics_site caller, bool *textured);
+bool ld_player_prepare(ld_frame *, double *y);
+bool ld_player_finish(ld_frame *);
+bool ld_player_pass(ld_frame *, int32_t pass, float partial, bool *);
+bool ld_player_layers(ld_frame *, float partial);
+bool ld_player_name(ld_frame *, double x, double y, double z);
+bool ld_player_translate(ld_frame *, double x, double y, double z);
+bool ld_player_rotation(ld_frame *, float age, float body_yaw, float partial);
+bool ld_player_prescale(ld_frame *, float partial);
+bool ld_part_result(ld_frame *, bool);
+bool ld_item_result(ld_frame *, bool);
+bool ld_held_item(ld_frame *, mc_item_stack *, int32_t manager_pc, int32_t invoke_pc);
 bool ld_brightness(ld_frame *, float, float *);
 bool ld_sheep_pass(ld_frame *, int32_t, float, bool *);
 bool ld_pig_pass(ld_frame *, int32_t, float, bool *);

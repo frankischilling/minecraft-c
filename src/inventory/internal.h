@@ -20,6 +20,7 @@ typedef struct inv_set {
 
 typedef struct inv_slot {
     struct inv_slot *allocated_next;
+    mc_container *owner; /* Native owner, independent of every source Slot field. */
     mc_container_slot_state state;
 } inv_slot;
 
@@ -64,6 +65,8 @@ struct mc_container {
     inv_set *blocked_players;
     inv_slot *allocated_slots;
     bool active, constructing, constructed, local, inventory_bound;
+    bool interaction_active;
+    size_t interaction_holds;
     int32_t window_id, x, y, z;
     int16_t transaction;
 };

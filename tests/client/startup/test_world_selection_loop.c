@@ -380,6 +380,9 @@ typedef struct fixture {
 /* This continuation uses an existing-player statistic read by the genuine
  * pre-bootstrap CJ constructor. The fresh absent-entry tutorial has its own
  * retained vu.a108 draw dependency and is not a Mob-rendering success. */
+#ifndef MC_WORLD_SELECTION_OPEN_INVENTORY_EXPECTED
+#define MC_WORLD_SELECTION_OPEN_INVENTORY_EXPECTED(initial) 1
+#endif
 static int repeat_statistics_controls(fixture *f, bool initial) {
     mc_registry_achievement_view achievements;
     CHECK(f->app->stats_writer != NULL && f->app->achievement_notice != NULL &&
@@ -397,7 +400,7 @@ static int repeat_statistics_controls(fixture *f, bool initial) {
           present &&
           mc_client_stats_writer_value(f->app->stats_writer, inventory, &value, NULL) ==
               MC_CLIENT_STATS_OK &&
-          value == 1);
+          value == MC_WORLD_SELECTION_OPEN_INVENTORY_EXPECTED(initial));
     if (initial) {
         /* CJ loads the real unsent Map through xi.a(Map): its c store at7 sets
          * dirty before applying the entries to both actual Maps. */
@@ -1403,15 +1406,16 @@ static int gameplay_controls(fixture *f) {
     CHECK(mc_client_gameplay_input_run(f->app, f->app->screen_transitions, call) &&
           call->stale_mouse_events >= 1 &&
           mc_inventory_player_read_state(player.player.c, &slots) && slots.selected == 7);
-    CHECK(gameplay_key(f, SDL_SCANCODE_E, true) == 0 &&
+    /* Use the reached fullscreen frontier to qualify an unread keyboard tail. */
+    CHECK(gameplay_key(f, SDL_SCANCODE_F11, true) == 0 &&
           gameplay_key(f, SDL_SCANCODE_3, true) == 0 &&
           gameplay_key(f, SDL_SCANCODE_3, false) == 0 &&
-          gameplay_key(f, SDL_SCANCODE_E, false) == 0 && gameplay_poll(f) == 0);
+          gameplay_key(f, SDL_SCANCODE_F11, false) == 0 && gameplay_poll(f) == 0);
     CHECK(!mc_client_gameplay_input_run(f->app, f->app->screen_transitions, call) && call->failed &&
-          call->keyboard_events == 1 && call->site.pc == 778 &&
+          call->keyboard_events == 1 && call->site.pc == 587 &&
           mc_inventory_player_read_state(player.player.c, &slots) && slots.selected == 7);
     const char *operation = call->operation;
-    CHECK(mc_client_gameplay_input_retire(call) && call->failed && call->site.pc == 778 &&
+    CHECK(mc_client_gameplay_input_retire(call) && call->failed && call->site.pc == 587 &&
           call->operation == operation); /* Preserve diagnostics through cleanup. */
     memset(call, 0, sizeof(*call));
     CHECK(mc_client_gameplay_input_run(f->app, f->app->screen_transitions, call) &&

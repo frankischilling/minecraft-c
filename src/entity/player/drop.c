@@ -246,12 +246,17 @@ static bool velocity(mc_player_drop_call *c) {
     if (!random_float(c, 225, &first) || !fp(c, 230))
         return false;
     const float angle = mul(mul(first, 3.1415927f), 2.0f);
+    c->state.perturbation_angle = angle;
     if (!random_float(c, 241, &second) || !fp(c, 244))
         return false;
     const float spread = mul(.02f, second);
+    c->state.perturbation_spread = spread;
+    c->state.perturbation_spread_returned = true;
     if (!fp(c, 255))
         return false;
     const double cosine = mc_math_native_double_cos((double)angle);
+    c->state.perturbation_cosine = cosine;
+    c->state.perturbation_cosine_returned = true;
     item->velocity_x = dadd(item->velocity_x, dmul(cosine, (double)spread));
     if (!random_float(c, 275, &first) || !random_float(c, 282, &second) || !fp(c, 285))
         return false;
@@ -259,6 +264,8 @@ static bool velocity(mc_player_drop_call *c) {
     if (!fp(c, 302))
         return false;
     const double sine = mc_math_native_double_sin((double)angle);
+    c->state.perturbation_sine = sine;
+    c->state.perturbation_sine_returned = true;
     item->velocity_z = dadd(item->velocity_z, dmul(sine, (double)spread));
     return true;
 }

@@ -1,5 +1,6 @@
 #ifndef MC_CLIENT_GUI_SOURCE_SCREEN_INTERNAL_H
 #define MC_CLIENT_GUI_SOURCE_SCREEN_INTERNAL_H
+#include "source_inventory_screen.h"
 #include "source_screen.h"
 #include <threads.h>
 
@@ -48,6 +49,12 @@ struct mc_client_screen_classes {
     mc_screen_literal *literals;
     unsigned int last_pc, last_store_pc;
     mc_client_screen_error failure;
+    mc_client_screen_class_phase inventory_phase;
+    mc_client_render_classes *inventory_models;
+    mc_client_item_renderer *inventory_renderer, *inventory_pending;
+    unsigned int inventory_pc, inventory_store_pc;
+    mc_client_screen_error inventory_failure;
+    mc_client_inventory_screen_error inventory_detail;
 };
 
 struct mc_client_source_da {

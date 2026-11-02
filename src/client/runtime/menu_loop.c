@@ -1,6 +1,7 @@
 #include "menu_loop.h"
 #include "../gui/achievement_notice_draw.h"
 #include "../gui/loading_internal.h"
+#include "../gui/source_inventory_drawing.h"
 #include "../gui/source_screen_initialize.h"
 #include "../window/canvas.h"
 #include "gameplay_input.h"
@@ -98,6 +99,9 @@ struct mc_client_menu_loop {
     int32_t second_frames;
     mc_client_source_screen_draw_error draw;
     mc_client_pause_draw_error pause_draw;
+    mc_client_inventory_draw_call *inventory_draw;
+    mc_client_inventory_draw_state inventory_state;
+    mc_client_inventory_draw_error inventory_error, inventory_cleanup;
     mc_client_overlay_setup_state menu_projection;
     mc_client_overlay_setup_error menu_projection_error;
     mc_client_create_world_draw_error create_world_draw;
@@ -339,7 +343,8 @@ static bool tick(mc_client_menu_loop *loop) {
                 return stop(loop, "actual null screen-particle receiver",
                             "net/minecraft/client/Minecraft", "k", 310);
             if (mc_client_screen_particles_tick(state.da.h, &loop->events) != MC_CLIENT_SCREEN_OK ||
-                mc_client_screen_tick(app->r, &loop->events) != MC_CLIENT_SCREEN_OK)
+                mc_client_screen_tick_with_transitions(app->r, loop->transitions, &loop->events) !=
+                    MC_CLIENT_SCREEN_OK)
                 return screen_failure(loop);
         }
     }
@@ -604,6 +609,26 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
                             loop->create_world_draw.screen.site.method,
                             loop->create_world_draw.screen.site.pc);
             loop->state.font_measurements += loop->create_world_draw.font_measurements;
+        } else if (drawn.kind == MC_CLIENT_SCREEN_INVENTORY) {
+            const mc_client_manager_draw_services services = {.math = loop->math,
+                                                              .graphics = loop->graphics,
+                                                              .display = app->display,
+                                                              .application_classes =
+                                                                  app->source_namespace};
+            const mc_client_screen_status status = mc_client_source_inventory_draw_begin(
+                (mc_client_source_ue *)app->r, mouse, partial, &services, &loop->inventory_draw,
+                &loop->inventory_error);
+            if (loop->inventory_draw != NULL) {
+                (void)mc_client_source_inventory_draw_inspect(loop->inventory_draw,
+                                                              &loop->inventory_state);
+                loop->state.inventory = &loop->inventory_state;
+            }
+            if (status != MC_CLIENT_SCREEN_OK)
+                return stop(loop, loop->inventory_error.screen.operation,
+                            loop->inventory_error.screen.site.class_name,
+                            loop->inventory_error.screen.site.method,
+                            loop->inventory_error.screen.site.pc);
+            loop->state.font_measurements += loop->inventory_state.font_measurements;
         } else if (drawn.kind == MC_CLIENT_SCREEN_PAUSE) {
             if (!mc_client_source_pause_draw((mc_client_source_oz *)app->r, loop->renderer,
                                              &projection, mouse, partial, loop->math,
@@ -712,6 +737,12 @@ bool mc_client_menu_loop_create(mc_client_bootstrap *bootstrap, mc_client_menu_l
 static bool retire_completed_draws(mc_client_menu_loop *loop) {
     /* Completed frame receipts stay inspectable through that frame. Drain
      * their native occurrences before the next source pool reset or tick. */
+    if (loop->inventory_draw != NULL && loop->inventory_state.returned) {
+        if (mc_client_source_inventory_draw_retire(&loop->inventory_draw,
+                                                   &loop->inventory_cleanup) != MC_CLIENT_SCREEN_OK)
+            return run_stop(loop, "completed Inventory draw native retirement", 0);
+        loop->state.inventory = NULL;
+    }
     if (loop->notice_draw != NULL && loop->notice_state.returned) {
         if (mc_client_notice_draw_retire(&loop->notice_draw, &loop->notice_cleanup) !=
             MC_CLIENT_NOTICE_DRAW_OK)
@@ -956,14 +987,8 @@ static bool frame_body(mc_client_menu_loop *loop) {
         remote = world.B;
     }
     if (!remote && app->r != NULL) {
-        mc_client_screen_state screen;
-        if (!screen_state(loop, &screen))
-            return false;
-        if (screen.kind != MC_CLIENT_SCREEN_MAIN_MENU &&
-            screen.kind != MC_CLIENT_SCREEN_WORLD_SELECTION &&
-            screen.kind != MC_CLIENT_SCREEN_PAUSE && screen.kind != MC_CLIENT_SCREEN_CREATE_WORLD)
-            return run_stop(loop, "actual screen pause virtual route is not connected", 546);
-        pauses = true;
+        if (mc_client_screen_pauses_game(app->r, &pauses, &loop->screen) != MC_CLIENT_SCREEN_OK)
+            return run_stop(loop, loop->screen.operation, 546);
     }
     atomic_store(&app->o, pauses);
     if (!fps(loop))
@@ -1001,6 +1026,10 @@ bool mc_client_menu_loop_inspect(const mc_client_menu_loop *loop, mc_client_menu
 }
 
 static bool retire_calls(mc_client_menu_loop *loop) {
+    if (mc_client_source_inventory_draw_retire(&loop->inventory_draw, &loop->inventory_cleanup) !=
+        MC_CLIENT_SCREEN_OK)
+        return false;
+    loop->state.inventory = NULL;
     if (mc_client_notice_draw_retire(&loop->notice_draw, &loop->notice_cleanup) !=
         MC_CLIENT_NOTICE_DRAW_OK)
         return false;

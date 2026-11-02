@@ -1,5 +1,13 @@
 # Storage and original references
 
+[Player Inventory evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/inventory.md) now includes 73 original controller projections with independent
+source entropy audits, two returned original Inventory draws per ordinary/JDI
+process and a strict comparison of 108 active quad words. Native zero-draw prefixes
+keep their own inactive-backing audits. Two Windows SDK profiles separately
+verify live cursor-close publication, exact saved Player/Item NBT and unchanged
+unrelated region bytes. These do not establish whole-frame or unrestricted
+Inventory parity.
+
 The client now draws eight default Mob kinds: Sheep, Pig, Cow, Chicken,
 Spider, Slime, Squid and Creeper. [Mob drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md) uses the actual TH/GV, concrete
 renderer/model, PS and NW owners. Four independent loaded Windows sessions

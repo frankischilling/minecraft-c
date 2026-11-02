@@ -8,6 +8,7 @@
 #include "mc/client/render/manager/manager.h"
 
 typedef struct mc_client_draw_scope mc_client_draw_scope;
+typedef struct mc_cv_context mc_cv_context;
 
 typedef enum mc_held_stack_parent_status {
     MC_HELD_STACK_PARENT_OK,
@@ -42,7 +43,8 @@ typedef enum mc_held_stack_parent_child {
     MC_HELD_STACK_PARENT_CHILD_LOOKUP,
     MC_HELD_STACK_PARENT_CHILD_GRAPHICS,
     MC_HELD_STACK_PARENT_CHILD_DISPLAY,
-    MC_HELD_STACK_PARENT_CHILD_GEOMETRY
+    MC_HELD_STACK_PARENT_CHILD_GEOMETRY,
+    MC_HELD_STACK_PARENT_CHILD_INVENTORY
 } mc_held_stack_parent_child;
 
 typedef struct mc_held_stack_parent_state {
@@ -59,8 +61,11 @@ typedef struct mc_held_stack_parent_state {
     mc_client_tessellator *nw;
     mc_client_texture texture;
     int32_t id4, id17, id76, icon;
+    int32_t block_metadata;
+    float block_brightness;
+    bool block_inventory_returned;
     unsigned int source_pc;
-    bool guard_acquired, source_entered, push_returned;
+    bool guard_acquired, guard_discharged, source_entered, push_returned;
     bool id4_read, block_array_read, id17_read, block_read, id76_read;
     bool application_read, engine_read, key_loaded, terrain_atlas;
     bool lookup_attempted, lookup_entered, lookup_returned;
@@ -101,6 +106,7 @@ typedef struct mc_held_stack_parent_error {
     mc_client_graphics_error graphics;
     mc_client_display_error display;
     mc_held_bow_error geometry;
+    mc_cv_context *inventory;
 } mc_held_stack_parent_error;
 
 /* Entered body. Parent has already retained exact TH.f hand via

@@ -6,6 +6,7 @@
 #include "../player/player_internal.h"
 #include "../player/tick_math_internal.h"
 #include "internal.h"
+#include "mc/client/input/movement_input.h"
 #include "mc/core/java/java.h"
 #include <string.h>
 
@@ -249,6 +250,23 @@ bool mc_entity_render_riding(mc_entity *p, bool *out, mc_entity_render_error *e)
     }
     *out = ((int32_t)flags & 4) != 0;
     e->site.pc = 20;
+    return true;
+}
+
+bool mc_entity_render_player_sneaking(mc_entity *p, bool *out, mc_entity_render_error *e) {
+    if (!start(p, out, e, "dc", "t", "()Z"))
+        return false;
+    if (!mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) || p->local_player == NULL)
+        return fail(e, MC_ENTITY_STATE_ERROR, "Player render actual LocalPlayer virtual body");
+    e->site.pc = 4;
+    if (p->local_player->fields.input == NULL)
+        return exception(e, "java/lang/NullPointerException",
+                         "Player render null input field receiver");
+    mc_movement_input_state input;
+    if (!mc_movement_input_read_state(p->local_player->fields.input, &input))
+        return fail(e, MC_ENTITY_STATE_ERROR, "Player render actual Input storage");
+    *out = input.fields.sneak && !p->local_player->fields.player.u;
+    e->site.pc = 22;
     return true;
 }
 

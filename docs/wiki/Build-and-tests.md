@@ -2,16 +2,36 @@
 
 ## Current qualification
 
-The frozen runtime passes all 611 Windows public tests in 280.15 seconds and
-all 606 Linux public tests in 145.58 seconds. Windows snapshots confirm all
-4,105 source inputs, 499 built products and 823 assets unchanged across the run.
-The Linux full build and public suite use Xvfb/software OpenGL and Clang 18
-ASan/UBSan with leak detection and halt-on-error, after a test-only `size_t`
-cast fix. The 4,105-file source archive matches on both hosts.
-Formatting passes for 1,932 files, and the binding audit covers 9,921 entries
-in 4,104 files. These are finite suite results, not a claim of global graphical
-focus stability. Hosted checks apply to their exact tested commit; SDK,
-full playable client and FPS qualification remain separate.
+The Inventory runtime passes the full Windows MSVC Release build and the full
+Linux Clang 18 Debug ASan/UBSan build. Linux passes all 615 public tests in
+204.09 seconds under Xvfb/software OpenGL, with leak detection and halt-on-error.
+Windows initially passes 618 of 620 public tests in 295.95 seconds. Its source
+snapshot keeps all 4,175 inputs, 507 built products and 823 assets unchanged.
+An old input test expected the former E-key Inventory frontier; it now uses the
+remaining F11 fullscreen frontier. A separate save/title test records lost
+Display focus without a specific foreground-owner receipt. Both isolated
+follow-ups pass in 53.72 seconds. All 620 named tests have passing results
+across those selections; the initial broad run remains failed.
+
+The final Windows Inventory SDK profiles pass in 16.42 seconds with 741 checks
+and 13.24 seconds with 806 checks for Pumpkin armor. They use real E/Escape
+keys and left/right clicks, retain World ticks, draw the actual Player and held
+Dirt, publish the carried six-Dirt Stack on close, save exact Inventory/Item
+NBT and complete checked cleanup. Original Container comparison covers 73
+calls; native quad kernels match 108 active words and audit 84 inactive words
+against each process's own backing. See the
+[Inventory contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/inventory.md).
+
+Formatting passes for 1,965 C/header/fragments, and source bindings cover
+10,141 entries in 4,174 files. Test/documentation-only changes after the broad
+runs retain separate synchronization checks. These results do not qualify
+original pixels, global graphical focus stability, Linux SDK gameplay,
+unrestricted play or FPS. Hosted checks apply only to their exact commit.
+
+The preceding held-Item runtime passed all 611 Windows public tests in
+280.15 seconds and all 606 Linux public tests in 145.58 seconds. Its 4,105-file
+source archive matched on both hosts. The following held-Item SDK and component
+results retain that earlier source scope.
 
 The same frozen runtime passes the Windows SDK Dirt profile in 14.20 seconds
 with 1,446 checks and the Iron Sword break profile in 16.74 seconds with 3,631
@@ -90,7 +110,7 @@ the completed sheared fatal return and distinct callback-failure scopes.
 [Animal death and drops](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/animal-death.md)
 add 2,709 native checks, 43 original CPU calls and 69 shared Entity-drop controls.
 The retained drop module also serves Falling Sand. Other concrete overrides,
-Player combat and Inventory UI remain unfinished.
+broader Player combat and Inventory compatibility remain unfinished.
 
 The named-data identity validator now queues containers and avoids repeated
 identity-syntax checks while retaining every reference occurrence type/class

@@ -54,6 +54,15 @@ mc_client_screen_status mc_client_screen_transitions_pause(mc_client_screen_tran
 mc_client_screen_status mc_client_screen_transitions_close(mc_client_screen_transitions *,
                                                            mc_client_source_da *,
                                                            mc_client_screen_error *);
+/* Actual Minecraft.k778/786/789. ID's superclass initializer and UE RAW
+ * allocation precede the fresh App.h constructor argument. */
+mc_client_screen_status mc_client_screen_transitions_inventory(mc_client_screen_transitions *,
+                                                               mc_client_screen_error *);
+/* Actual DC.r: GS.r publishes e=d before reading DC.b and synchronously
+ * displaying NULL. No additional DA Escape focus call is inserted. */
+mc_client_screen_status mc_client_screen_transitions_player_close(mc_client_screen_transitions *,
+                                                                  mc_entity *,
+                                                                  mc_client_screen_error *);
 bool mc_client_screen_transitions_inspect(const mc_client_screen_transitions *,
                                           mc_client_screen_transition_state *);
 /* Passive native borrow of this owner's SAME retained screen namespace.
@@ -63,8 +72,11 @@ mc_client_screen_classes *
 mc_client_screen_transitions_classes(const mc_client_screen_transitions *);
 /* Native one-way admission/prefix ending before outer dispatcher retirement.
  * Reject active entry, latch this transition graph and its actual World-load
- * class admission, and terminal_prepare every retained load. Keep all nodes,
- * screens, controller, App borrows and full World/Player/Input/handler graphs.
+ * class admission, end Inventory Screen admission and retire its native child
+ * and constructor occurrences, then terminal_prepare every retained load. Keep
+ * all nodes, screens, controller, App borrows and full World/Input/handler graphs.
+ * Inventory source identities remain stored for diagnostics but their borrows
+ * end at this latch; its inspectors hide retired Player/Container views.
  * No complete load/World retirement, global dispatcher action or source call.
  * NULL receiver/error is INVALID_ARGUMENT. Failures retain the same graph and
  * remaining rights for idempotent retry. A legacy retire already entered cannot

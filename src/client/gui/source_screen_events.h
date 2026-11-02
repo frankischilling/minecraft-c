@@ -54,6 +54,9 @@ typedef struct mc_client_screen_event_error {
  * the literal no-op. Input drain is the distinct da.e()V entry below. */
 mc_client_screen_status mc_client_screen_tick(mc_client_source_da *,
                                               mc_client_screen_event_error *);
+mc_client_screen_status mc_client_screen_tick_with_transitions(mc_client_source_da *,
+                                                               mc_client_screen_transitions *,
+                                                               mc_client_screen_event_error *);
 /* Actual du.a()V completes its empty List loop. A reached kw update remains
  * explicit. Native Minecraft.k order is da.e293, fresh r/h -> du.a310, then
  * fresh r -> da.a317. Screen tick and input drain are never interchangeable. */

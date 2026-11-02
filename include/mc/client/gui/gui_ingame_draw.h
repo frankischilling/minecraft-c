@@ -67,11 +67,15 @@ typedef struct mc_client_gui_ingame_draw_error {
 
 typedef struct mc_client_gui_ingame_draw_state {
     bool active, returned, projection_returned, fancy, vignette_returned;
+    bool pumpkin_entered, pumpkin_returned;
     bool hotbar_returned, crosshair_returned, blinking, random_seeded;
     bool stats_enabled, stats_returned, water, slots_returned, chat_returned;
     unsigned int source_pc, gl_calls, textured_quads, vertices;
     unsigned int heart_backgrounds, heart_foregrounds, armor_icons, empty_slots;
     unsigned int item_slots, item_overlays, animated_slots, item_faces;
+    unsigned int pumpkin_pc, pumpkin_vertices;
+    size_t pumpkin_word_count;
+    int32_t pumpkin_words[48]; /* Actual NW backing copied before UQ.a(II) draw107. */
     mc_scaled_resolution resolution;
     float partial, brightness, vignette;
     int32_t mouse_x, mouse_y, health, previous_health, armor, selected;

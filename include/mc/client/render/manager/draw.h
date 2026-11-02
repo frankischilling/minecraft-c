@@ -74,9 +74,12 @@ typedef struct mc_client_manager_draw_state {
     const mc_client_managed_renderer *renderer;
     const void *renderer_identity;
     const mc_client_living_draw_state *living, *post_draw;
-    /* Actual charged one-use RA parent workspace; borrowed until checked
-     * retirement. N copies scalar observations before this view expires. */
+    /* Actual charged one-use RA workspaces; DS can enter its Block helmet and
+     * held Item calls. Earlier completed children remain borrowed/live through
+     * Parent retirement. held identifies the most recent child. */
     const mc_held_stack_parent_error *held;
+    const mc_held_stack_parent_error *held_calls[2];
+    size_t held_call_count;
     const mc_client_manager_draw_error *failure, *cleanup;
 } mc_client_manager_draw_state;
 

@@ -276,6 +276,62 @@ mc_inventory_status mc_inventory_player_name(const mc_inventory_player *inventor
     return inv_finish(result, &error);
 }
 
+mc_inventory_status mc_inventory_player_source_get(const mc_inventory_player *inventory,
+                                                   int32_t index, const mc_item_stack **out,
+                                                   mc_inventory_error *result) {
+    mc_inventory_error error = player_admit(inventory, out);
+    if (error.status == MC_INVENTORY_OK) {
+        mc_item_stack *const *slots = inventory->main_slots;
+        int32_t length = 36;
+        if (slots == NULL) {
+            error.status = MC_INVENTORY_NULL_REFERENCE;
+            error.operation = "Inventory source getter null main array length";
+            inv_frame(&error, inventory->side, "ix", "fx", "f_", "(I)Liz;", 7);
+        } else {
+            if (index >= length) {
+                index = mc_java_i32_sub(index, length);
+                slots = inventory->armor_slots;
+                length = 4;
+            }
+            if (slots == NULL) {
+                error.status = MC_INVENTORY_NULL_REFERENCE;
+                error.operation = "Inventory source getter null selected array";
+            } else if (index < 0 || index >= length) {
+                error.status = MC_INVENTORY_INDEX_OUT_OF_BOUNDS;
+                error.operation = "Inventory source getter selected signed index";
+            } else
+                *out = slots[index];
+            if (error.status != MC_INVENTORY_OK)
+                inv_frame(&error, inventory->side, "ix", "fx", "f_", "(I)Liz;", 23);
+        }
+    }
+    return inv_finish(result, &error);
+}
+
+mc_inventory_status mc_inventory_player_source_cursor_get(const mc_inventory_player *inventory,
+                                                          const mc_item_stack **out,
+                                                          mc_inventory_error *result) {
+    mc_inventory_error error = player_admit(inventory, out);
+    if (error.status == MC_INVENTORY_OK)
+        *out = inventory->cursor;
+    return inv_finish(result, &error);
+}
+
+mc_inventory_status mc_inventory_player_source_cursor_store(mc_inventory_player *inventory,
+                                                            mc_item_stack *value,
+                                                            mc_entity **notify_player,
+                                                            mc_inventory_error *result) {
+    mc_inventory_error error = player_admit(inventory, notify_player);
+    if (error.status == MC_INVENTORY_OK && inv_hold(value, &error) == MC_INVENTORY_OK) {
+        mc_item_stack *old = inventory->cursor;
+        inventory->cursor = value;
+        mc_item_stack_release(old);
+        error.mutation_reached = true;
+        *notify_player = inventory->player;
+    }
+    return inv_finish(result, &error);
+}
+
 mc_inventory_status mc_inventory_player_limit(const mc_inventory_player *inventory, int32_t *out,
                                               mc_inventory_error *result) {
     mc_inventory_error error = player_admit(inventory, out);

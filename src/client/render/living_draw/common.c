@@ -352,7 +352,12 @@ bool ld_skin(ld_frame *f) {
         return false;
     if (!ld_capture(f, mc_client_draw_capture_string(f->scope, fallback, &e->detail.capture)))
         return false;
-    const mc_client_graphics_site caller = ld_site("gv", "a", "(Lls;DDDFF)V", 254);
+    return ld_download(f, url, fallback, ld_site("gv", "a", "(Lls;DDDFF)V", 254), NULL);
+}
+
+bool ld_download(ld_frame *f, const mc_player_string *url, const mc_player_string *fallback,
+                 mc_client_graphics_site caller, bool *textured) {
+    mc_client_living_draw_error *e = f->error;
     const mc_client_graphics_site parent = e->parent;
     e->parent = caller;
     ld_at(f, "bw", "a", "(Ljava/lang/String;Ljava/lang/String;)Z", 4);
@@ -398,6 +403,8 @@ bool ld_skin(ld_frame *f) {
                                                             &e->detail.display)))
             return false;
     }
+    if (textured != NULL)
+        *textured = (int32_t)texture >= 0;
     e->site = caller;
     e->parent = parent;
     return true;

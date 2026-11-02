@@ -1,4 +1,5 @@
 #include "source_create_world_internal.h"
+#include "source_inventory_screen_internal.h"
 #include "source_pause_screen_internal.h"
 #include "source_screen_internal.h"
 #include "source_world_selection_internal.h"
@@ -159,6 +160,8 @@ static bool prepare_final(mc_client_source_da *o, mc_client_screen_error *e) {
         ready = mc_screen_pause_cleanup_locked((mc_client_source_oz *)o, e);
     else if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD)
         ready = mc_screen_create_world_cleanup_locked((mc_client_source_fj *)o, e);
+    else if (o->kind == MC_CLIENT_SCREEN_INVENTORY)
+        ready = mc_screen_inventory_cleanup_locked((mc_client_source_ue *)o, e);
     if (ready)
         ready = mc_screen_button_release_locked(&o->selected_cleanup, e);
     if (ready)
@@ -238,8 +241,45 @@ mc_client_screen_status mc_client_screen_closed(mc_client_source_da *o,
                            "h", "()V", 0);
         else if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD)
             (void)mc_screen_create_world_closed_locked((mc_client_source_fj *)o, &e);
+        else if (o->kind == MC_CLIENT_SCREEN_INVENTORY)
+            (void)mc_screen_inventory_closed_locked((mc_client_source_ue *)o, &e);
         else
             e.source_returned = true;
+        mtx_unlock(&o->classes->mutex);
+    }
+    return mc_screen_publish(&e, error);
+}
+
+mc_client_screen_status mc_client_screen_pauses_game(mc_client_source_da *o, bool *out,
+                                                     mc_client_screen_error *error) {
+    mc_client_screen_error e = {0};
+    if (o == NULL || out == NULL)
+        mc_screen_fail(&e, MC_CLIENT_SCREEN_INVALID_ARGUMENT,
+                       "screen pause-query native owner/output", NULL, NULL, NULL, 0);
+    else if (mc_screen_lock(o->classes, &e)) {
+        if (o->classes->retiring || o->phase == MC_CLIENT_SCREEN_RETIRING) {
+            mc_screen_fail(&e, MC_CLIENT_SCREEN_BUSY, "screen pause-query native retirement", NULL,
+                           NULL, NULL, 0);
+            mtx_unlock(&o->classes->mutex);
+            return mc_screen_publish(&e, error);
+        }
+        switch (o->kind) {
+            case MC_CLIENT_SCREEN_BASE:
+            case MC_CLIENT_SCREEN_MAIN_MENU:
+            case MC_CLIENT_SCREEN_WORLD_SELECTION:
+            case MC_CLIENT_SCREEN_PAUSE:
+            case MC_CLIENT_SCREEN_CREATE_WORLD:
+            case MC_CLIENT_SCREEN_INVENTORY:
+                *out = o->kind != MC_CLIENT_SCREEN_INVENTORY;
+                e.site = (mc_client_screen_site){
+                    o->kind == MC_CLIENT_SCREEN_INVENTORY ? "id" : "da", "c", "()Z", 1};
+                e.source_returned = true;
+                break;
+            default:
+                mc_screen_fail(&e, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY,
+                               "screen unresolved pause-query declaration", NULL, NULL, NULL, 0);
+                break;
+        }
         mtx_unlock(&o->classes->mutex);
     }
     return mc_screen_publish(&e, error);
@@ -327,6 +367,12 @@ mc_client_screen_status mc_client_screen_inspect(mc_client_source_da *o,
         v.store_count = o->store_count;
         memcpy(v.stores, o->stores, sizeof(v.stores));
         v.failure = o->failure;
+        if (o->kind == MC_CLIENT_SCREEN_INVENTORY) {
+            const mc_client_source_ue *inventory = (const mc_client_source_ue *)o;
+            v.id = inventory->id;
+            v.ue = inventory->fields;
+            v.last_pc = inventory->last_pc;
+        }
         if (o->kind == MC_CLIENT_SCREEN_MAIN_MENU) {
             const mc_client_source_fu *m = (const mc_client_source_fu *)o;
             v.fu = m->fields;
@@ -348,6 +394,7 @@ mc_client_screen_status mc_client_screen_inspect(mc_client_source_da *o,
             v.da.h = NULL;
             v.da.e = NULL;
             v.fu.l = NULL;
+            v.id.j = NULL;
         }
         *out = v;
         (void)mtx_unlock(&o->classes->mutex);

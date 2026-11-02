@@ -517,8 +517,9 @@ static bool key_event(client_application *app, mc_client_screen_transitions *tra
         int32_t code;
         if (!binding(app, call, 5, &code, 768, 771))
             return false;
-        if (event->key == code)
-            return pending(call, "actual Inventory screen allocation is not connected", 778);
+        if (event->key == code && !screen_result(call, mc_client_screen_transitions_inventory(
+                                                           transitions, &call->screen.screen)))
+            return false;
         if (!binding(app, call, 6, &code, 799, 802))
             return false;
         if (event->key == code && !drop(app, call))

@@ -1,0 +1,334 @@
+{
+  "schema": 1,
+  "status": "QUALIFIED_FINITE_NATIVE_SCENARIOS",
+  "platform": "Windows x64; MSVC Release; actual source SDK input; imported user-supplied assets",
+  "scope": "Two native Inventory SDK/save profiles plus independent CPU/original component evidence; no original pixel, whole-frame, FPS, unrestricted Item, global-focus or Linux SDK claim.",
+  "runtime_source_files": 1416,
+  "runtime_source_snapshot_sha256": "695c02ff6b01686e432cda30615115a6f55c2a872d07d9162945f2d6e1b7a529",
+  "sdk_seconds": {
+    "ordinary": 16.42,
+    "pumpkin_helmet": 13.24
+  },
+  "sdk_profiles": [
+    {
+      "helmet": false,
+      "receipt": "INVENTORY_SDK draws=3 world-ticks=15 same-player=1 same-container=1 slots=45 left-right=1 tooltip=1 held-dirt=1 cursor-close-drop=1 dirt-count=6 ordinary-save=1 helmet=0",
+      "checks": 741,
+      "source_inputs_unchanged": true,
+      "assets_unchanged": true,
+      "saved_inventory": [
+        9,
+        [
+          10,
+          [
+            {
+              "Slot": [
+                1,
+                0
+              ],
+              "id": [
+                2,
+                3
+              ],
+              "Count": [
+                1,
+                1
+              ],
+              "Damage": [
+                2,
+                0
+              ]
+            },
+            {
+              "Slot": [
+                1,
+                10
+              ],
+              "id": [
+                2,
+                262
+              ],
+              "Count": [
+                1,
+                10
+              ],
+              "Damage": [
+                2,
+                0
+              ]
+            }
+          ]
+        ]
+      ],
+      "saved_cursor_drop": {
+        "chunk": [
+          0,
+          0
+        ],
+        "entity": {
+          "id": [
+            8,
+            "Item"
+          ],
+          "Pos": [
+            9,
+            [
+              6,
+              [
+                4602274142835111151,
+                4634212812657262592,
+                4608685299396683166
+              ]
+            ]
+          ],
+          "Motion": [
+            9,
+            [
+              6,
+              [
+                13781539446100189362,
+                9223372036854775808,
+                4586573996826259036
+              ]
+            ]
+          ],
+          "Rotation": [
+            9,
+            [
+              5,
+              [
+                1133804896,
+                0
+              ]
+            ]
+          ],
+          "FallDistance": [
+            5,
+            0
+          ],
+          "Fire": [
+            2,
+            -1
+          ],
+          "Air": [
+            2,
+            300
+          ],
+          "OnGround": [
+            1,
+            1
+          ],
+          "Health": [
+            2,
+            5
+          ],
+          "Age": [
+            2,
+            9
+          ],
+          "Item": [
+            10,
+            {
+              "id": [
+                2,
+                3
+              ],
+              "Count": [
+                1,
+                6
+              ],
+              "Damage": [
+                2,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "saved_chunks": 401,
+      "captures": {
+        "inventory-open.png": "bd57f822572994cbc77b98bcd64160a5d9890c1ebf7fdfe99cb2aac8ec20d673",
+        "inventory-moved.png": "7dc01a6daaf64c1d3d1ced3c601275a7bf3bcc675250016c682edff91f7d251a",
+        "inventory-held-dirt.png": "a11f9134a0b0820b03c4e89c46775eff0366e8225770e63e2cc1b60a667001a1"
+      }
+    },
+    {
+      "helmet": true,
+      "receipt": "INVENTORY_SDK draws=3 world-ticks=10 same-player=1 same-container=1 slots=45 left-right=1 tooltip=1 held-dirt=1 cursor-close-drop=1 dirt-count=6 ordinary-save=1 helmet=1",
+      "checks": 806,
+      "source_inputs_unchanged": true,
+      "assets_unchanged": true,
+      "saved_inventory": [
+        9,
+        [
+          10,
+          [
+            {
+              "Slot": [
+                1,
+                0
+              ],
+              "id": [
+                2,
+                3
+              ],
+              "Count": [
+                1,
+                1
+              ],
+              "Damage": [
+                2,
+                0
+              ]
+            },
+            {
+              "Slot": [
+                1,
+                10
+              ],
+              "id": [
+                2,
+                262
+              ],
+              "Count": [
+                1,
+                10
+              ],
+              "Damage": [
+                2,
+                0
+              ]
+            },
+            {
+              "Slot": [
+                1,
+                103
+              ],
+              "id": [
+                2,
+                86
+              ],
+              "Count": [
+                1,
+                1
+              ],
+              "Damage": [
+                2,
+                0
+              ]
+            }
+          ]
+        ]
+      ],
+      "saved_cursor_drop": {
+        "chunk": [
+          0,
+          0
+        ],
+        "entity": {
+          "id": [
+            8,
+            "Item"
+          ],
+          "Pos": [
+            9,
+            [
+              6,
+              [
+                4602332647767991510,
+                4634259682214478040,
+                4605691788955997292
+              ]
+            ]
+          ],
+          "Motion": [
+            9,
+            [
+              6,
+              [
+                13793855888735739445,
+                13819763482302248369,
+                4598195088496183904
+              ]
+            ]
+          ],
+          "Rotation": [
+            9,
+            [
+              5,
+              [
+                1117808025,
+                0
+              ]
+            ]
+          ],
+          "FallDistance": [
+            5,
+            1059463466
+          ],
+          "Fire": [
+            2,
+            -1
+          ],
+          "Air": [
+            2,
+            300
+          ],
+          "OnGround": [
+            1,
+            0
+          ],
+          "Health": [
+            2,
+            5
+          ],
+          "Age": [
+            2,
+            5
+          ],
+          "Item": [
+            10,
+            {
+              "id": [
+                2,
+                3
+              ],
+              "Count": [
+                1,
+                6
+              ],
+              "Damage": [
+                2,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "saved_chunks": 389,
+      "captures": {
+        "inventory-open.png": "c32fc63bccdfb8e69322bcc2e9add2519c9161cd7da147a788ec231b5fae8772",
+        "inventory-moved.png": "eacfdd52eae0e162cf4b1bfa68a8e2f026cd40b9b0d120ffe20a56bb2ee80846",
+        "inventory-held-dirt.png": "6dd260b0a129fc7519c1cbc66fcbbabb9058eb5fedb2e0cdb6ea37069759e737"
+      }
+    }
+  ],
+  "component_evidence": {
+    "container_selected_original_calls": 73,
+    "container_native_checks": 22017,
+    "item_name_original_scalar_cases": 404,
+    "item_name_native_checks": 3139,
+    "container_packet_corruption_controls": 24,
+    "drawing_packet_corruption_controls": 31,
+    "original_completed_inventory_calls_per_process": 2,
+    "original_selected_completed_nw_draws": 4,
+    "native_quad_completed_draws": 0,
+    "quad_active_words_compared": 108,
+    "inactive_words_audited_per_process": 84
+  },
+  "limits": [
+    "Broad Windows/Linux increment tests are recorded separately.",
+    "Only the declared SDK click/cursor-close/save sequences qualify frontend interaction; other Shift/crafting/armor branches have finite component evidence.",
+    "Original complete draws and native entered quad prefixes are distinct scopes."
+  ]
+}

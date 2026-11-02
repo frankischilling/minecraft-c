@@ -52,6 +52,7 @@ struct mc_client_render_manager_draw_call {
     mc_client_held_item *held_guard;
     const void *held_guard_token;
     mc_held_stack_parent_error *held_workspace;
+    mc_held_stack_parent_error *held_second;
     mc_cv_context *inventory_workspaces[4];
     size_t inventory_workspace_count;
     mc_client_manager_draw_query *queries;

@@ -61,6 +61,7 @@ typedef struct mc_client_menu_loop_state {
     const struct mc_client_world_frame_state *world_frame;
     const struct mc_client_gui_ingame_draw_state *hud;
     const struct mc_client_notice_draw_state *notice;
+    const struct mc_client_inventory_draw_state *inventory;
 } mc_client_menu_loop_state;
 
 /* Native frame composition for the genuine constructed, initialized no-World

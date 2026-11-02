@@ -11,7 +11,15 @@ have finite native scenarios. The Create World screen also completes a genuine
 seed 777 generation/save/title/reselection scenario. These scenarios include ordinary save/title
 transitions, reselection and independent decoding of saved state.
 
-Tools, combat, Inventory UI, remaining Item/Block actions, unrestricted
+The configured E key now opens the actual nonpausing Player Inventory.
+Windows SDK profiles move saved Items, draw the full Player preview and held
+Dirt, close a carried Stack through real World publication, save exact
+Inventory/Item NBT and finish cleanup. A second profile adds the Pumpkin HUD
+overlay and separate helmet/held-Item renderer children. Original Container
+and selected Inventory drawing observations keep their finite comparison
+scopes. See [Inventory behavior and evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/inventory.md).
+
+General tools, combat and Inventory rendering, remaining Item/Block actions, unrestricted
 reselection, default-Far performance and extended play remain unfinished or
 unqualified. A retained Windows Tiny scenario completes ten saved-World loads
 and saves, then preserves an eleventh conversion failure before storage

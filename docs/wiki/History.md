@@ -1,5 +1,23 @@
 # History
 
+## Player Inventory and source Container interaction
+
+The configured Inventory key opens the actual nonpausing UE/ID screen with
+its existing Player Container and full Player preview. Windows SDK profiles
+move Dirt and Arrows, close a carried Stack through actual World publication,
+save exact Inventory/Item NBT and complete cleanup. The Pumpkin profile adds
+its HUD overlay and distinct helmet/held-Item children. Final scenarios pass
+in 16.42 and 13.24 seconds; these are acceptance timings, not FPS measurements.
+
+Original evidence covers 73 selected Container calls and two complete Inventory
+draws per ordinary/JDI process. Native quad prefixes match 108 active words;
+each process audits 84 inactive words against its own backing. Source/native
+completed-draw scopes remain distinct. The Linux sanitized public suite passes
+615 tests. The Windows broad run passes 618 of 620, followed by two passing
+isolated cases after replacing an obsolete E-key frontier expectation with
+F11. The original broad failure and unqualified focus stability remain
+recorded. See [Inventory evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/inventory.md) for inputs and limits.
+
 ## Creature drawing, Slime particles and Creeper components
 
 The client now draws eight default Mob kinds: Sheep, Pig, Cow, Chicken,

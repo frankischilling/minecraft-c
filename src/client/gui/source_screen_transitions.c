@@ -1,4 +1,5 @@
 #include "source_screen_transitions.h"
+#include "../../entity/player/player_internal.h"
 #include "../application_state.h"
 #include "../startup/application_startup_internal.h"
 #include "../startup/application_startup_menu.h"
@@ -11,6 +12,7 @@
 #include "mc/statistics/registry/registry.h"
 #include "mc/world/runtime/construction.h"
 #include "source_create_world_internal.h"
+#include "source_inventory_screen_internal.h"
 #include "source_pause_screen_internal.h"
 #include "source_screen_transitions_terminal_internal.h"
 #include "source_world_list.h"
@@ -26,6 +28,7 @@ typedef struct screen_node {
     mc_client_source_oz *pause;
     mc_client_source_fu *menu;
     mc_client_source_fj *create;
+    mc_client_source_ue *inventory;
     mc_world_info_name *create_folder, *create_name;
     mc_client_display_screen_call *display;
     mc_client_world_load_call *load;
@@ -432,6 +435,59 @@ mc_client_screen_status mc_client_screen_transitions_close(mc_client_screen_tran
     return leave(r, e);
 }
 
+mc_client_screen_status mc_client_screen_transitions_inventory(mc_client_screen_transitions *r,
+                                                               mc_client_screen_error *e) {
+    if (!enter(r, e))
+        return r == NULL || e == NULL ? MC_CLIENT_SCREEN_INVALID_ARGUMENT : e->status;
+    screen_node *n = node(r);
+    if (n != NULL) {
+        if (mc_client_screen_inventory_allocate(r->classes, r->app->render_classes, NULL,
+                                                &n->inventory,
+                                                &r->failure) == MC_CLIENT_SCREEN_OK) {
+            ++r->screens;
+            mc_entity *player = r->app->h; /* Actual constructor operand read at783. */
+            if (mc_client_screen_inventory_construct(n->inventory, player, &r->failure) ==
+                MC_CLIENT_SCREEN_OK)
+                (void)display(r, mc_client_screen_inventory_base(n->inventory),
+                              "net/minecraft/client/Minecraft", "k", "()V", 789);
+            else
+                r->failure.parent_site =
+                    (mc_client_screen_site){"net/minecraft/client/Minecraft", "k", "()V", 786};
+        } else
+            r->failure.parent_site =
+                (mc_client_screen_site){"net/minecraft/client/Minecraft", "k", "()V", 778};
+    }
+    return leave(r, e);
+}
+
+mc_client_screen_status mc_client_screen_transitions_player_close(mc_client_screen_transitions *r,
+                                                                  mc_entity *player,
+                                                                  mc_client_screen_error *e) {
+    if (!enter(r, e))
+        return r == NULL || e == NULL ? MC_CLIENT_SCREEN_INVALID_ARGUMENT : e->status;
+    if (player == NULL || player->local_player == NULL ||
+        !mc_entity_is_kind(player, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
+        fail(r, MC_CLIENT_SCREEN_INVALID_ARGUMENT, "DC.r native concrete receiver", NULL, NULL,
+             NULL, 0);
+    else if (mc_entity_retain(player) != MC_ENTITY_OK)
+        fail(r, MC_CLIENT_SCREEN_BUSY, "DC.r native Player occurrence", NULL, NULL, NULL, 0);
+    else {
+        player->local_player->fields.player.e = player->local_player->fields.player.d; /* GS.r5. */
+        client_application *actual = player->local_player->fields.minecraft;           /* DC.b5. */
+        if (actual == NULL) {
+            fail(r, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE, "DC.r null Minecraft display receiver",
+                 "dc", "r", "()V", 9);
+            r->failure.native_policy = false;
+        } else if (actual != r->app)
+            fail(r, MC_CLIENT_SCREEN_INVALID_ARGUMENT, "DC.r actual Minecraft router identity",
+                 "dc", "r", "()V", 9);
+        else
+            (void)display(r, NULL, "dc", "r", "()V", 9);
+        mc_entity_release(player);
+    }
+    return leave(r, e);
+}
+
 static void pause_action(mc_client_screen_transitions *r, mc_client_source_ke *button) {
     const int32_t id = button->fields.f;
     if (id == 0 || id == 5 || id == 6) {
@@ -742,6 +798,20 @@ mc_client_screen_transitions_classes(const mc_client_screen_transitions *r) {
     return r == NULL ? NULL : r->classes;
 }
 
+static bool inventory_terminal_prefix(mc_client_screen_transitions *r, mc_client_screen_error *e) {
+    if (!mc_screen_lock(r->classes, e))
+        return false;
+    bool ready = true;
+    for (screen_node *n = r->nodes; n != NULL; n = n->next) {
+        if (n->inventory != NULL && !mc_screen_inventory_terminal_prepare_locked(n->inventory, e)) {
+            ready = false;
+            break;
+        }
+    }
+    mtx_unlock(&r->classes->mutex);
+    return ready;
+}
+
 mc_client_screen_status
 mc_client_screen_transitions_terminal_prepare(mc_client_screen_transitions *r,
                                               mc_client_screen_error *e) {
@@ -769,6 +839,10 @@ mc_client_screen_transitions_terminal_prepare(mc_client_screen_transitions *r,
     if (r->terminal_prepared)
         return MC_CLIENT_SCREEN_OK;
     r->active = true;
+    if (!inventory_terminal_prefix(r, e)) {
+        r->active = false;
+        return e->status;
+    }
     for (screen_node *n = r->nodes; n != NULL; n = n->next) {
         if (n->load != NULL &&
             mc_client_world_load_terminal_records(n->load) != MC_CLIENT_WORLD_LOAD_OK) {
@@ -985,6 +1059,8 @@ mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_tra
         return mc_screen_fail(e, MC_CLIENT_SCREEN_BUSY, "active native screen graph", NULL, NULL,
                               NULL, 0);
     r->retiring = true;
+    if (!inventory_terminal_prefix(r, e))
+        return e->status;
     while (r->nodes != NULL) {
         screen_node *n = r->nodes;
         mc_client_world_load_call *load = n->load;
@@ -1016,6 +1092,13 @@ mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_tra
         const mc_client_screen_status pause = mc_client_screen_pause_retire(&n->pause, e);
         if (pause != MC_CLIENT_SCREEN_OK)
             return pause;
+        if (base != NULL && r->app->r == base)
+            r->app->r = NULL;
+        base = mc_client_screen_inventory_base(n->inventory);
+        const mc_client_screen_status inventory =
+            mc_client_screen_inventory_retire(&n->inventory, e);
+        if (inventory != MC_CLIENT_SCREEN_OK)
+            return inventory;
         if (base != NULL && r->app->r == base)
             r->app->r = NULL;
         base = mc_client_screen_create_world_base(n->create);

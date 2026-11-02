@@ -28,15 +28,18 @@ static bool body_try(ld_frame *f, double x, double y, double z, float partial) {
                           at_fmul(at_fsub(f->actor->base.yaw, f->actor->base.aU), partial));
     s->pitch =
         at_fadd(f->actor->base.aV, at_fmul(at_fsub(f->actor->base.aT, f->actor->base.aV), partial));
+    const bool player = strcmp(f->renderer->source_class, "ds") == 0;
     ld_at(f, "gv", "b", "(Lls;DDD)V", 8);
-    if (!ld_display(f, mc_client_display_source_translate(f->scope->model.display, at_narrow(x),
-                                                          at_narrow(y), at_narrow(z),
-                                                          &e->detail.display)))
+    if (player ? !ld_player_translate(f, x, y, z)
+               : !ld_display(f, mc_client_display_source_translate(
+                                    f->scope->model.display, at_narrow(x), at_narrow(y),
+                                    at_narrow(z), &e->detail.display)))
         return false;
     gv(f, 147);
     if (!ld_age(f, partial, &s->age))
         return false;
-    if (!ld_rotation(f, s->age, s->body_yaw, partial))
+    if (player ? !ld_player_rotation(f, s->age, s->body_yaw, partial)
+               : !ld_rotation(f, s->age, s->body_yaw, partial))
         return false;
     s->scale = .0625f;
     gv(f, 169);
@@ -48,7 +51,7 @@ static bool body_try(ld_frame *f, double x, double y, double z, float partial) {
                                                       &e->detail.display)))
         return false;
     gv(f, 184);
-    if (!ld_prescale(f, partial))
+    if (player ? !ld_player_prescale(f, partial) : !ld_prescale(f, partial))
         return false;
     gv(f, 197);
     if (!ld_display(
@@ -91,7 +94,8 @@ static bool body_try(ld_frame *f, double x, double y, double z, float partial) {
             return false;
         s->pass_attempted[(size_t)pass] = true;
         bool selected;
-        if (!ld_pass(f, pass, partial, &selected))
+        if (player ? !ld_player_pass(f, pass, partial, &selected)
+                   : !ld_pass(f, pass, partial, &selected))
             return false;
         s->pass_result[(size_t)pass] = selected;
         if (!selected)
@@ -115,6 +119,8 @@ static bool body_try(ld_frame *f, double x, double y, double z, float partial) {
     }
     gv(f, 365);
     if (strcmp(f->renderer->source_class, "v") == 0 && !ld_v_held(f, partial))
+        return false;
+    if (player && !ld_player_layers(f, partial))
         return false;
     /* Other admitted renderers inherit the actual empty base held helper. */
     gv(f, 371);
@@ -146,6 +152,13 @@ static bool tail(ld_frame *f, double x, double y, double z) {
     if (!ld_display(f, mc_client_display_source_pop(f->scope->model.display, &e->detail.display)))
         return false;
     e->state.matrix_popped = true;
+    if (strcmp(f->renderer->source_class, "ds") == 0) {
+        e->parent = ld_site("gv", "a", "(Lls;DDDFF)V", 766);
+        if (!ld_player_name(f, x, y, z))
+            return false;
+        gv(f, 769);
+        return true;
+    }
     ld_at(f, "gv", "a", "(Lls;DDD)V", 0);
     bool debug;
     if (!mc_client_draw_debug_flag(f->scope, &debug, &e->detail.capture)) {
@@ -189,15 +202,29 @@ bool mc_client_living_draw_entered(mc_client_draw_scope *scope, mc_client_manage
     const bool squid = strcmp(r->source_class, "es") == 0;
     const bool wolf = strcmp(r->source_class, "we") == 0;
     const bool biped = strcmp(r->source_class, "v") == 0;
+    const bool player = strcmp(r->source_class, "ds") == 0;
     const bool creature = strcmp(r->source_class, "yx") == 0 ||
                           strcmp(r->source_class, "mj") == 0 || strcmp(r->source_class, "m") == 0;
     if (strcmp(r->source_class, "xy") != 0 && strcmp(r->source_class, "me") != 0 && !cow &&
-        !chicken && !squid && !creature && !wolf && !biped) {
+        !chicken && !squid && !creature && !wolf && !biped && !player) {
         ld_at(&f, r->source_class, "a", "(Lsn;DDDFF)V", 0);
         return ld_fail(&f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED,
                        "Living actual concrete renderer body");
     }
-    if (wolf) {
+    if (player) {
+        ld_at(&f, "ds", "a", "(Lsn;DDDFF)V", 2);
+        if (actor != NULL && !mc_entity_is_kind(actor, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
+            !mc_entity_is_kind(actor, MC_ENTITY_CLASS_KIND_PLAYER)) {
+            e->throwable = MC_CLIENT_LIVING_DRAW_EXCEPTION;
+            e->source_exception = true;
+            e->exception_class = "java/lang/ClassCastException";
+            return ld_fail(&f, MC_CLIENT_LIVING_DRAW_SOURCE_EXCEPTION,
+                           "Player renderer actual GS checkcast");
+        }
+        if (!ld_player_prepare(&f, &y))
+            return false;
+        e->parent = ld_site("ds", "a", "(Lgs;DDDFF)V", 112);
+    } else if (wolf) {
         ld_at(&f, "we", "a", "(Lsn;DDDFF)V", 2);
         if (!ld_cast_actor(&f, MC_ENTITY_CLASS_KIND_WOLF, "Wolf renderer actual GI checkcast"))
             return false;
@@ -283,5 +310,7 @@ bool mc_client_living_draw_entered(mc_client_draw_scope *scope, mc_client_manage
         }
         return false;
     }
-    return tail(&f, x, y, z);
+    if (!tail(&f, x, y, z))
+        return false;
+    return !player || ld_player_finish(&f);
 }

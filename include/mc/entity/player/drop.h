@@ -48,6 +48,10 @@ typedef struct mc_player_drop_state {
     bool publication_entered, publication_returned, inserted, statistic_returned;
     size_t random_draws;
     float draws[4];
+    /* Observed reached GS perturbation locals; no repeated Math calls. */
+    float perturbation_angle, perturbation_spread;
+    double perturbation_cosine, perturbation_sine;
+    bool perturbation_spread_returned, perturbation_cosine_returned, perturbation_sine_returned;
     double x, y, z, velocity_x, velocity_y, velocity_z;
     unsigned int source_pc;
     const mc_player_drop_error *error, *cleanup;

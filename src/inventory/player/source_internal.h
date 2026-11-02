@@ -17,5 +17,16 @@
  * effects are preserved on failure. Server source dispatch remains separate. */
 mc_inventory_status mc_inventory_player_source_set(mc_inventory_player *, int32_t slot,
                                                    mc_item_stack *value, mc_inventory_error *error);
+mc_inventory_status mc_inventory_player_source_get(const mc_inventory_player *, int32_t slot,
+                                                   const mc_item_stack **,
+                                                   mc_inventory_error *error);
+mc_inventory_status mc_inventory_player_source_cursor_get(const mc_inventory_player *,
+                                                          const mc_item_stack **,
+                                                          mc_inventory_error *);
+/* Exact cursor field4 followed by fresh IX.d6 capture. The enclosing concrete
+ * caller must invoke actual GS.b(Stack) at IX10 after a successful store. */
+mc_inventory_status mc_inventory_player_source_cursor_store(mc_inventory_player *, mc_item_stack *,
+                                                            mc_entity **notify_player,
+                                                            mc_inventory_error *);
 
 #endif
