@@ -17,14 +17,16 @@
 
 _Static_assert(MC_BLOCK_KIND_COUNT == 69, "audit ew normal-cube virtual descendants");
 
-static mc_client_chunk_cache_error empty_error(const char *method, const char *descriptor) {
-    return (mc_client_chunk_cache_error){.method = method,
-                                         .descriptor = descriptor,
-                                         .registry = {.initializer_pc = -1,
-                                                      .block_id = -1,
-                                                      .constructor_pc = -1,
-                                                      .active_initializer_pc = -1,
-                                                      .item_argument = -1}};
+static void init_error(mc_client_chunk_cache_error *error, const char *method,
+                       const char *descriptor) {
+    static const mc_client_chunk_cache_error empty = {.registry = {.initializer_pc = -1,
+                                                                   .block_id = -1,
+                                                                   .constructor_pc = -1,
+                                                                   .active_initializer_pc = -1,
+                                                                   .item_argument = -1}};
+    memcpy(error, &empty, sizeof(*error));
+    error->method = method;
+    error->descriptor = descriptor;
 }
 
 static bool fail(mc_client_chunk_cache_error *e, mc_client_chunk_cache_status status,
@@ -156,7 +158,8 @@ mc_client_chunk_cache_status mc_client_chunk_cache_create_with_limits(
     mc_client_chunk_cache_error *error) {
     (void)y0;
     (void)y1;
-    mc_client_chunk_cache_error e = empty_error("<init>", "(Lfd;IIIIII)V");
+    mc_client_chunk_cache_error e;
+    init_error(&e, "<init>", "(Lfd;IIIIII)V");
     if (out == NULL || *out != NULL) {
         fail(&e, MC_CLIENT_CHUNK_CACHE_INVALID_ARGUMENT, "ew native output slot", 0, true);
         return copy_error(error, &e);
@@ -265,7 +268,8 @@ bool mc_client_chunk_cache_inspect(const mc_client_chunk_cache *c,
 
 mc_client_chunk_cache_status mc_client_chunk_cache_retire(mc_client_chunk_cache **slot,
                                                           mc_client_chunk_cache_error *error) {
-    mc_client_chunk_cache_error e = empty_error(NULL, NULL);
+    mc_client_chunk_cache_error e;
+    init_error(&e, NULL, NULL);
     if (slot == NULL) {
         fail(&e, MC_CLIENT_CHUNK_CACHE_INVALID_ARGUMENT, "ew native retirement slot", 0, true);
         return copy_error(error, &e);
@@ -417,7 +421,8 @@ static bool block_child(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t 
 mc_client_chunk_cache_status mc_client_chunk_cache_block(mc_client_chunk_cache *c, int32_t x,
                                                          int32_t y, int32_t z, int32_t *out,
                                                          mc_client_chunk_cache_error *error) {
-    mc_client_chunk_cache_error e = empty_error("a", "(III)I");
+    mc_client_chunk_cache_error e;
+    init_error(&e, "a", "(III)I");
     if (!enter(c, out != NULL, &e))
         return copy_error(error, &e);
     int32_t value;
@@ -429,7 +434,8 @@ mc_client_chunk_cache_status mc_client_chunk_cache_block(mc_client_chunk_cache *
 mc_client_chunk_cache_status mc_client_chunk_cache_metadata(mc_client_chunk_cache *c, int32_t x,
                                                             int32_t y, int32_t z, int32_t *out,
                                                             mc_client_chunk_cache_error *error) {
-    mc_client_chunk_cache_error e = empty_error("e", "(III)I");
+    mc_client_chunk_cache_error e;
+    init_error(&e, "e", "(III)I");
     if (!enter(c, out != NULL, &e))
         return copy_error(error, &e);
     if (y < 0 || y >= 128)
@@ -450,7 +456,8 @@ mc_client_chunk_cache_status mc_client_chunk_cache_tile_entity(mc_client_chunk_c
                                                                int32_t y, int32_t z,
                                                                mc_tile_entity **out,
                                                                mc_client_chunk_cache_error *error) {
-    mc_client_chunk_cache_error e = empty_error("b", "(III)Low;");
+    mc_client_chunk_cache_error e;
+    init_error(&e, "b", "(III)Low;");
     if (!enter(c, out != NULL, &e))
         return copy_error(error, &e);
     mc_client_chunk_cache_occurrence *cell = cell_at(c, x, z, 26, 29, &e);
@@ -599,7 +606,8 @@ mc_client_chunk_cache_status mc_client_chunk_cache_light(mc_client_chunk_cache *
                                                          int32_t y, int32_t z, bool neighbors,
                                                          int32_t *out,
                                                          mc_client_chunk_cache_error *error) {
-    mc_client_chunk_cache_error e = empty_error("a", "(IIIZ)I");
+    mc_client_chunk_cache_error e;
+    init_error(&e, "a", "(IIIZ)I");
     if (!enter(c, out != NULL, &e))
         return copy_error(error, &e);
     int32_t value;
@@ -648,8 +656,8 @@ static bool table_read(const float *table, int32_t level, unsigned int pc, float
 static mc_client_chunk_cache_status brightness(mc_client_chunk_cache *c, int32_t x, int32_t y,
                                                int32_t z, bool minimum, int32_t lower, float *out,
                                                mc_client_chunk_cache_error *error) {
-    mc_client_chunk_cache_error e =
-        empty_error(minimum ? "a" : "c", minimum ? "(IIII)F" : "(III)F");
+    mc_client_chunk_cache_error e;
+    init_error(&e, minimum ? "a" : "c", minimum ? "(IIII)F" : "(III)F");
     if (!enter(c, out != NULL, &e))
         return copy_error(error, &e);
     mc_world_provider *dimension = NULL;
@@ -695,7 +703,8 @@ mc_client_chunk_cache_min_brightness(mc_client_chunk_cache *c, int32_t x, int32_
 mc_client_chunk_cache_status mc_client_chunk_cache_material(mc_client_chunk_cache *c, int32_t x,
                                                             int32_t y, int32_t z, mc_material **out,
                                                             mc_client_chunk_cache_error *error) {
-    mc_client_chunk_cache_error e = empty_error("f", "(III)Lln;");
+    mc_client_chunk_cache_error e;
+    init_error(&e, "f", "(III)Lln;");
     if (!enter(c, out != NULL, &e))
         return copy_error(error, &e);
     int32_t id;
@@ -726,7 +735,8 @@ static bool normal_block(const mc_block *block) {
 static mc_client_chunk_cache_status predicate(mc_client_chunk_cache *c, int32_t x, int32_t y,
                                               int32_t z, bool normal, bool *out,
                                               mc_client_chunk_cache_error *error) {
-    mc_client_chunk_cache_error e = empty_error(normal ? "h" : "g", "(III)Z");
+    mc_client_chunk_cache_error e;
+    init_error(&e, normal ? "h" : "g", "(III)Z");
     if (!enter(c, out != NULL, &e))
         return copy_error(error, &e);
     mc_registry_block_m_view array;
@@ -767,7 +777,8 @@ mc_client_chunk_cache_status mc_client_chunk_cache_normal_cube(mc_client_chunk_c
 mc_client_chunk_cache_status mc_client_chunk_cache_manager(mc_client_chunk_cache *c,
                                                            mc_world_chunk_manager **out,
                                                            mc_client_chunk_cache_error *error) {
-    mc_client_chunk_cache_error e = empty_error("a", "()Lxv;");
+    mc_client_chunk_cache_error e;
+    init_error(&e, "a", "()Lxv;");
     if (!enter(c, out != NULL, &e))
         return copy_error(error, &e);
     if (c->state.d == NULL)

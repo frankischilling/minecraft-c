@@ -1,5 +1,10 @@
 #include "interaction_internal.h"
 
+static bool slot_admit(const inv_slot *slot, mc_container_interaction_error *e) {
+    return slot == NULL || slot->owner == NULL || !slot->owner->terminal_sealed ||
+           inv_interaction_fail(e, MC_INVENTORY_BUSY, "Slot terminal sealed source invocation");
+}
+
 static void slot_at(mc_container_interaction_error *e, bool nested, const char *owner,
                     const char *method, const char *descriptor, int32_t pc) {
     mc_inventory_site *s = nested ? &e->child : &e->site;
@@ -49,6 +54,11 @@ mc_inventory_status mc_inventory_slot_source_get(mc_inventory_slot *slot, const 
                                                  mc_container_interaction_error *error) {
     mc_container_interaction_error e;
     mc_container_interaction_error_init(&e);
+    if (!slot_admit(slot, &e)) {
+        if (error != NULL)
+            *error = e;
+        return e.status;
+    }
     if (out == NULL)
         (void)inv_interaction_fail(&e, MC_INVENTORY_INVALID_ARGUMENT, "Slot native getter output");
     else
@@ -62,6 +72,11 @@ mc_inventory_status mc_inventory_slot_source_has(mc_inventory_slot *slot, bool *
                                                  mc_container_interaction_error *error) {
     mc_container_interaction_error e;
     mc_container_interaction_error_init(&e);
+    if (!slot_admit(slot, &e)) {
+        if (error != NULL)
+            *error = e;
+        return e.status;
+    }
     e.site = (mc_inventory_site){"gp", "b", "()Z", 1};
     const mc_item_stack *stack = NULL;
     if (out == NULL)
@@ -79,6 +94,11 @@ mc_inventory_status mc_inventory_slot_source_background(mc_inventory_slot *slot,
                                                         mc_container_interaction_error *error) {
     mc_container_interaction_error e;
     mc_container_interaction_error_init(&e);
+    if (!slot_admit(slot, &e)) {
+        if (error != NULL)
+            *error = e;
+        return e.status;
+    }
     e.site = (mc_inventory_site){"gp", "e", "()I", 0};
     if (out == NULL)
         (void)inv_interaction_fail(&e, MC_INVENTORY_INVALID_ARGUMENT, "Slot native icon output");

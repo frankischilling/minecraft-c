@@ -1,5 +1,40 @@
 # History
 
+## World query performance and held tools
+
+Scalar reads now avoid full successful acquisition diagnostics. Nested reads
+of an exclusively owned cache use its live map without consulting a stale
+index or repeating whole-map validation. Controlled Windows CPU benchmarks
+record all samples and preservation checks; gameplay FPS remains unqualified.
+Held tools now execute speed, harvesting, wear, breakage and ordered statistics.
+Windows comparisons match 19,594 six-result mining rows, 2,331 destruction rows
+and six original controller scenarios. Details: [query measurements](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/world-queries.md)
+and [held Item mining](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/mining.md).
+
+One valid matched Windows Tiny sky-view pair measures 5.37 to 19.95 FPS and
+p95 host frame time of 625.66 to 109.69 ms. A later three-round cohort contains
+two invalid baseline intervals and has no aggregate speedup result. The public
+toolkit's current-client run passes at 20.88 FPS. All 632 Linux sanitizer public
+tests pass; Windows public attempts pass 633/637 and 636/637 with unexplained
+actor zero-draw assertions. Isolated passes and separately observed external
+Remote Desktop focus losses keep their own scopes.
+
+## Native shutdown with an open Workbench
+
+The [native terminal route](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench-open-shutdown.md)
+now keeps the same IT alive through a sealed Player owner after real Frame
+close. Source e/j, cursor, grid, result, statistics and Random state stay
+unchanged. No Source close, drop, e=d repair or forced World save runs.
+Ordinary Screen retirement still refuses a published owned Container.
+
+Four fresh Windows processes pass in 68.52 seconds. Clean closure passes
+1,975 checks; actual Container, Player and World hold profiles pass 1,934,
+2,092 and 2,166 checks. Each blocked profile releases only its actual hold
+before retrying. The stopped save tree stays unchanged and both windows end
+through checked cleanup. The complete original shutdown handlers, Java GC
+timing, multiple live-Workbench epochs, Linux SDK gameplay and FPS remain
+unqualified.
+
 ## Player-tick Workbench close and pickup-particle ownership
 
 The [automatic-close increment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench-auto-close.md)

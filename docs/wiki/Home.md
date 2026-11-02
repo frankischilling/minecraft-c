@@ -1,5 +1,19 @@
 # minecraft-c
 
+[World query CPU measurements](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/world-queries.md)
+now cover faster block, metadata and light reads with unchanged query results,
+Random state and ownership. These cached-query measurements do not establish
+gameplay FPS improvement. [Held Item mining](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/mining.md)
+now runs speed, harvesting, wear, breakage and statistics through the actual
+single-player controller, with finite original comparisons.
+
+A separate matched Tiny sky-view pair measures 5.37 to 19.95 FPS, with p95
+host frame time falling from 625.66 to 109.69 ms. The complete longer repeat
+also retains rejected baseline intervals; general FPS and Windows desktop
+stability remain unqualified. The same runtime passes all 632 Linux sanitizer
+public tests. Windows public cohorts retain their 633/637 and 636/637 results
+and unexplained zero-draw assertions.
+
 minecraft-c is a C17 implementation of Minecraft Beta 1.7.3 for x86-64 Windows
 and Linux. Single-player is the current priority. Multiplayer and a dedicated
 headless server remain part of the target. Usernames are local; account
@@ -17,6 +31,12 @@ moves too far away. Four Windows client tests pass across five fresh processes,
 including exact saves and failure/fresh-default controls. Selected structural
 rows match unchanged-original GS calls. Native cleanup also counts the actors
 held by complete pickup particles.
+
+[Native shutdown with an open Workbench](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench-open-shutdown.md)
+passes four Windows profiles for clean closure and actual Container, Player
+and World hold retries. The same Container survives through a sealed Player
+owner, with Source fields and stopped save bytes unchanged. Ordinary Screen
+retirement retains its BUSY check; cleanup adds no Source close or save.
 
 The configured E key now opens the actual nonpausing Player Inventory.
 Windows SDK profiles move saved Items, draw the full Player preview and held
@@ -36,8 +56,7 @@ it has no executed-original damage comparison.
 
 Remaining Item/Block actions, broader combat and Inventory behavior, unrestricted
 reselection, default-Far performance and extended play remain unfinished or
-unqualified. Live-open Workbench terminal cleanup safely returns `BUSY`;
-cold-preview print continuation, original pixels,
+unqualified. Complete Source shutdown, GC timing, cold-preview print continuation, original pixels,
 Linux SDK gameplay and FPS remain unqualified. A retained Windows Tiny scenario
 completes ten saved-World loads and saves, then preserves an eleventh conversion failure before storage
 acquisition. The loader has no fixed count limit, but old World graphs remain

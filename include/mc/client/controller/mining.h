@@ -10,6 +10,7 @@ struct mc_world_mutation_error;
 struct mc_player_statistic_error;
 struct mc_sound_error;
 struct mc_sound_manager_report;
+struct mc_item_mining_destroy_error;
 
 typedef struct mc_singleplayer_mining_call mc_singleplayer_mining_call;
 
@@ -48,6 +49,8 @@ typedef struct mc_singleplayer_mining_error {
     const struct mc_player_statistic_error *statistic;
     const struct mc_sound_error *sound;
     const struct mc_sound_manager_report *sound_report;
+    const struct mc_item_mining_destroy_error *tool;
+    const mc_inventory_error *slots;
 } mc_singleplayer_mining_error;
 
 typedef struct mc_singleplayer_mining_state {
@@ -61,6 +64,10 @@ typedef struct mc_singleplayer_mining_state {
     bool active, returned, changed_coordinate, progress_stored, sound_returned;
     bool auxiliary_returned, removal_returned, removed, harvest_allowed;
     bool statistic_returned, drop_returned, cooldown_stored;
+    bool tool_returned, item_used_returned, exhausted_stack, destroy_callback_returned;
+    bool clear_returned;
+    int32_t count_after, cleared_slot;
+    uintptr_t held_stack_identity;
 } mc_singleplayer_mining_state;
 
 /* Actual OS start/progress/destroy bodies on the same canonical controller.
@@ -69,7 +76,9 @@ typedef struct mc_singleplayer_mining_state {
  * exclusive through retirement, including failed WorldAccess/particle children.
  * Once allocated, *out receives the receipt even on failure. Prior source
  * stores, sound/particle/publication/file effects are never rolled back.
- * Nonempty tools and distinct Block hook overrides retain reached frontiers.
+ * Held tools run actual Item destruction/durability and used/broken statistics;
+ * exact count==0 invokes the literal Stack callback before fresh Player H.
+ * Distinct Block hook overrides retain reached frontiers.
  * Destroy's Boolean return is state.removed, and is meaningful only on success. */
 mc_singleplayer_mining_status mc_client_singleplayer_mining_begin(
     mc_client_singleplayer_controller *, mc_singleplayer_mining_action, int32_t x, int32_t y,

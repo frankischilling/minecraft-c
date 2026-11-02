@@ -1,5 +1,23 @@
 # Storage and original references
 
+The [held Item mining packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/item/mining/README.md)
+records unchanged-original speed, harvesting, destruction and controller calls,
+with method fingerprints and captured result hashes. Original archives and
+private process artifacts remain local. The [query CPU benchmark record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/world_queries_windows.json)
+contains authored-corpus fingerprints and raw timing samples, with no original
+assets or private paths. It measures finite queries, not whole-game parity.
+The [matched frame record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/client_frames_windows.json)
+separately retains raw timing rows, validity and common scene settings. Failed
+intervals remain recorded and do not enter an aggregate speedup claim.
+
+The [open-Workbench native receipt](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/workbench_open_shutdown/native-validation.json)
+separately binds four Windows SDK processes to the runtime. Actual Frame stop
+leaves the Workbench's cursor, grid, result, Source aliases, statistics and
+Random state unchanged through native ownership transfer and declared hold
+retries. The selected save tree stays unchanged through final cleanup. This
+packet contains native observations; it does not claim executed-original
+shutdown, GC timing, original pixels or FPS equality.
+
 The [automatic-close packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/inventory/workbench_auto_close/README.md)
 retains seven calls per ordinary/read-only debugger process: four actual GS
 ticks, two distance predicates and one separate direct close. Fifty-five
@@ -32,7 +50,8 @@ Cold original preview calls print the null-Engine exception and then escape
 the null-Camera suffix exception. Native print continuation is still missing.
 Real Pressure Plate bounds and Log/Slab icon delegation have bounded evidence;
 [Creeper null-attacker damage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/creeper-damage.md) has 182 native checks and 23 static-packet controls,
-with no executed-original damage capture. Live-open Workbench terminal joining,
+with no executed-original damage capture. Open-Workbench native shutdown has
+its own four-profile qualification; complete Source shutdown, GC timing,
 unrestricted crafting, original pixels, Linux SDK
 gameplay and FPS remain unqualified. The following records retain their earlier
 checkpoint scopes.

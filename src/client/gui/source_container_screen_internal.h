@@ -26,6 +26,7 @@ typedef struct mc_client_source_id {
     mc_entity *constructor_player;
     mc_container *captured_container;
     bool player_held, container_held, container_owned;
+    bool terminal_handoff_done; /* Native one-way owner move; never a Source close. */
     unsigned int last_pc;
     size_t source_calls;
     mc_inventory_screen_call *calls;
@@ -50,6 +51,14 @@ bool mc_screen_container_initialize_locked(mc_client_source_id *, mc_client_scre
 bool mc_screen_container_cleanup_locked(mc_client_source_id *, mc_client_screen_error *);
 bool mc_screen_container_retirement_admit_locked(mc_client_source_id *, mc_client_screen_error *);
 bool mc_screen_container_terminal_prepare_locked(mc_client_source_id *, mc_client_screen_error *);
+struct mc_client_bootstrap_terminal_scope;
+/* Trusted selected-root transfer only, after the router proves the exact
+ * retained epoch and constructor/publication ledger. The scope is revalidated;
+ * ordinary Screen retirement still refuses a published owned IT. */
+bool mc_screen_container_terminal_handoff_locked(mc_client_source_id *,
+                                                 const struct mc_client_bootstrap_terminal_scope *,
+                                                 mc_entity *, mc_registry_classes *,
+                                                 mc_world_runtime *, mc_client_screen_error *);
 bool mc_screen_container_closed_locked(mc_client_source_id *, mc_client_screen_error *);
 bool mc_screen_container_key_locked(mc_client_source_id *, int32_t, mc_entity **,
                                     mc_client_screen_error *);

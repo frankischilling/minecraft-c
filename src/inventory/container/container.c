@@ -124,7 +124,7 @@ static void list_free(mc_container *container, inv_list *list, bool stacks) {
     inv_free(&container->budget, list);
 }
 
-static void container_free(mc_container *container) {
+void inv_container_free(mc_container *container) {
     if (container == NULL)
         return;
     inv_crafting_free(container->crafting);
@@ -152,7 +152,7 @@ mc_inventory_status inv_container_notify(mc_container *container, mc_inventory_e
                                       .operation = "Crafting null Container handler"};
         return error->status;
     }
-    if (container->active && !container->constructing) {
+    if (container->terminal_sealed || (container->active && !container->constructing)) {
         *error = (mc_inventory_error){.status = MC_INVENTORY_BUSY,
                                       .operation = "Container matching already active"};
         return error->status;
@@ -361,7 +361,10 @@ static mc_inventory_status construct(mc_registry_side side, mc_registry_classes 
                                      int32_t z, const mc_inventory_limits *limits,
                                      mc_container **out, mc_inventory_error *result) {
     mc_inventory_error error = {0};
-    if (out == NULL || (inventory != NULL && inventory->side != side)) {
+    if (inventory != NULL && inventory->terminal_sealed) {
+        error.status = MC_INVENTORY_BUSY;
+        error.operation = "Container terminal sealed IX binding";
+    } else if (out == NULL || (inventory != NULL && inventory->side != side)) {
         error.status = MC_INVENTORY_INVALID_ARGUMENT;
         error.operation = "Container constructor native admission";
     } else {
@@ -371,7 +374,7 @@ static mc_inventory_status construct(mc_registry_side side, mc_registry_classes 
                 MC_INVENTORY_OK)
                 *out = container;
             else
-                container_free(container);
+                inv_container_free(container);
         }
     }
     return inv_finish(result, &error);
@@ -389,6 +392,12 @@ mc_inventory_status mc_container_workbench_construct(mc_container *container,
                                                      mc_world_runtime *world, int32_t x, int32_t y,
                                                      int32_t z, mc_inventory_error *result) {
     mc_inventory_error error = {0};
+    if ((container != NULL && container->terminal_sealed) ||
+        (inventory != NULL && inventory->terminal_sealed)) {
+        error.status = MC_INVENTORY_BUSY;
+        error.operation = "Workbench terminal sealed constructor binding";
+        return inv_finish(result, &error);
+    }
     if (container == NULL || container->kind != MC_CONTAINER_WORKBENCH ||
         container->constructor_entered || container->active ||
         (inventory != NULL && inventory->side != container->side)) {
@@ -422,12 +431,12 @@ mc_inventory_status mc_container_retire(mc_container **owner, mc_inventory_error
     mc_inventory_error error = {0};
     if (owner == NULL)
         error.status = MC_INVENTORY_INVALID_ARGUMENT;
-    else if (*owner != NULL && ((*owner)->active || (*owner)->interaction_active ||
-                                (*owner)->interaction_holds != 0)) {
+    else if (*owner != NULL && ((*owner)->terminal_sealed || (*owner)->active ||
+                                (*owner)->interaction_active || (*owner)->interaction_holds != 0)) {
         error.status = MC_INVENTORY_BUSY;
         error.operation = "Container operation active";
     } else {
-        container_free(*owner);
+        inv_container_free(*owner);
         *owner = NULL;
     }
     return inv_finish(result, &error);

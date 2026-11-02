@@ -1,4 +1,6 @@
 #include "mc/item/combat/combat.h"
+#include "mc/block/registry/runtime.h"
+#include "mc/item/mining/destroy.h"
 
 #include "../../block/registry/registry_internal.h"
 #include "../../entity/entity_internal.h"
@@ -324,6 +326,180 @@ mc_entity_status mc_item_stack_combat_damage(mc_registry_classes *classes, mc_it
     mc_item_combat_error e;
     mc_item_combat_error_init(&e);
     (void)durability(classes, stack, amount, attacker, false, &e);
+    if (error != NULL)
+        *error = e;
+    return e.status;
+}
+
+mc_entity_status mc_item_mining_destroy(mc_registry_classes *classes, const mc_item *item,
+                                        mc_item_stack *stack, int32_t block_id, int32_t x,
+                                        int32_t y, int32_t z, mc_entity *player, bool *out,
+                                        mc_item_combat_error *error) {
+    (void)x;
+    (void)y;
+    (void)z; /* None of the actual resolved bodies reads these coordinates. */
+    mc_item_combat_error e;
+    mc_item_combat_error_init(&e);
+    e.site = site("gm", "a", "(Liz;IIIILls;)Z", 0);
+    if (out == NULL)
+        (void)fail(&e, MC_ENTITY_INVALID_ARGUMENT, "Item mining destroy native output");
+    else if (item_admit(classes, item, &e)) {
+        const combat_body body = bodies[item->kind];
+        if (body == BODY_DQ || body == BODY_QD) {
+            e.site = site(body == BODY_DQ ? "dq" : "qd", "a", "(Liz;IIIILls;)Z", 4);
+            if (durability(classes, stack, body == BODY_DQ ? 1 : 2, player, true, &e)) {
+                *out = true;
+                e.site.pc = 8;
+            }
+        } else if (item->kind == MC_ITEM_SHEARS) {
+            const mc_block *leaves = NULL, *cobweb = NULL;
+            bool damage = false, ready = true;
+            e.site = site("bl", "a", "(Liz;IIIILls;)Z", 1);
+            if (mc_registry_block_static_get(classes, "L", &leaves, &e.registry) != MC_REGISTRY_OK)
+                ready = registry_failed(classes, &e);
+            else {
+                e.site.pc = 4;
+                if (leaves == NULL)
+                    ready = null_reference(&e, "Shears mining null Leaves Block ID receiver");
+                else if (block_id == leaves->fields.bn)
+                    damage = true;
+                else {
+                    e.site.pc = 11;
+                    if (mc_registry_block_static_get(classes, "X", &cobweb, &e.registry) !=
+                        MC_REGISTRY_OK)
+                        ready = registry_failed(classes, &e);
+                    else {
+                        e.site.pc = 14;
+                        if (cobweb == NULL)
+                            ready =
+                                null_reference(&e, "Shears mining null Cobweb Block ID receiver");
+                        else
+                            damage = block_id == cobweb->fields.bn;
+                    }
+                }
+            }
+            if (ready && damage) {
+                e.site.pc = 24;
+                ready = durability(classes, stack, 1, player, true, &e);
+            }
+            if (ready) {
+                *out = false; /* Actual invokespecial GM.a37, then return40. */
+                e.site.pc = 40;
+            }
+        } else {
+            *out = false;
+            e.site.pc = 1;
+        }
+    }
+    if (error != NULL)
+        *error = e;
+    return e.status;
+}
+
+static bool mining_destroy_fail(mc_item_mining_destroy_error *e, mc_entity_status status,
+                                const char *operation) {
+    e->status = status;
+    e->operation = operation;
+    e->native_policy = !e->source_exception && !e->source_error;
+    return false;
+}
+
+static bool mining_destroy_null(mc_item_mining_destroy_error *e, const char *operation) {
+    e->source_exception = true;
+    e->exception_class = "java/lang/NullPointerException";
+    return mining_destroy_fail(e, MC_ENTITY_STATE_ERROR, operation);
+}
+
+static bool mining_destroy_registry(mc_registry_classes *classes, mc_item_mining_destroy_error *e,
+                                    mc_registry_status status) {
+    if (status == MC_REGISTRY_OK)
+        return true;
+    mc_item_render_throwable throwable;
+    mc_item_render_registry_classification(classes, &e->registry, &throwable, &e->exception_class);
+    e->source_exception = throwable == MC_ITEM_RENDER_SOURCE_EXCEPTION;
+    e->source_error = throwable == MC_ITEM_RENDER_SOURCE_ERROR;
+    return mining_destroy_fail(e, registry_status(status), e->registry.message);
+}
+
+mc_entity_status mc_item_stack_mining_destroy(mc_registry_classes *classes, mc_item_stack *stack,
+                                              int32_t block_id, int32_t x, int32_t y, int32_t z,
+                                              mc_entity *player,
+                                              mc_item_mining_destroy_error *error) {
+    mc_item_mining_destroy_error e = {.native_policy = true};
+    e.site = site("iz", "a", "(IIIILgs;)V", 0);
+    const mc_registry_item_array *array = NULL;
+    const mc_item *item = NULL;
+    int32_t id = 0;
+    bool ready = stack != NULL || mining_destroy_null(&e, "Mining destroy null Stack receiver");
+    if (ready)
+        ready = mining_destroy_registry(classes, &e,
+                                        mc_registry_item_c_get(classes, &array, &e.registry));
+    if (ready) {
+        e.site.pc = 4;
+        e.stack = mc_item_stack_source_id_get(stack, &id);
+        ready = e.stack == MC_ITEM_STACK_OK ||
+                mining_destroy_fail(&e, MC_ENTITY_STATE_ERROR, "Mining destroy live Stack ID");
+    }
+    if (ready) {
+        e.site.pc = 7;
+        ready = mining_destroy_registry(
+            classes, &e, mc_registry_item_c_at(classes, array, id, &item, &e.registry));
+    }
+    if (ready) {
+        e.site.pc = 16;
+        if (mc_item_mining_destroy(classes, item, stack, block_id, x, y, z, player, &e.item_result,
+                                   &e.item) != MC_ENTITY_OK) {
+            e.source_exception = e.item.source_exception;
+            e.source_error = e.item.source_error;
+            e.exception_class = e.item.exception_class;
+            ready = mining_destroy_fail(&e, e.item.status, e.item.operation);
+        } else
+            e.item_returned = true;
+    }
+    if (ready && e.item_result) {
+        e.site.pc = 28;
+        ready = mining_destroy_registry(
+            classes, &e, mc_registry_classes_initialize_statistics(classes, &e.registry));
+        mc_statistic *const *captured = ready ? classes->statistics.E : NULL;
+        if (ready) {
+            e.site.pc = 32;
+            e.stack = mc_item_stack_source_id_get(stack, &id);
+            ready = e.stack == MC_ITEM_STACK_OK ||
+                    mining_destroy_fail(&e, MC_ENTITY_STATE_ERROR,
+                                        "Mining destroy used-statistic late Stack ID");
+        }
+        if (ready) {
+            e.site.pc = 35;
+            if (captured == NULL)
+                ready = mining_destroy_null(&e, "Mining destroy null used-statistic array");
+            else if (id < 0 || id >= 32000) {
+                e.source_exception = true;
+                e.exception_class = "java/lang/ArrayIndexOutOfBoundsException";
+                ready = mining_destroy_fail(&e, MC_ENTITY_STATE_ERROR,
+                                            "Mining destroy used-statistic signed array index");
+            }
+        }
+        if (ready) {
+            e.site.pc = 37;
+            if (player == NULL)
+                ready = mining_destroy_null(&e, "Mining destroy null Player statistic receiver");
+            else if (mc_local_player_add_statistic(player, captured[id], 1, &e.statistic) !=
+                     MC_PLAYER_STATISTIC_OK) {
+                e.source_exception =
+                    e.statistic.status == MC_PLAYER_STATISTIC_NULL_REFERENCE ||
+                    (e.statistic.status == MC_PLAYER_STATISTIC_WRITER_FAILED &&
+                     e.statistic.writer.status == MC_CLIENT_STATS_SOURCE_EXCEPTION &&
+                     e.statistic.writer.exception == MC_CLIENT_STATS_NULL_REFERENCE);
+                if (e.source_exception)
+                    e.exception_class = "java/lang/NullPointerException";
+                ready = mining_destroy_fail(&e, mc_player_statistic_entity_status(&e.statistic),
+                                            e.statistic.operation);
+            } else
+                e.used_statistic_returned = true;
+        }
+    }
+    if (ready)
+        e.site.pc = 40;
     if (error != NULL)
         *error = e;
     return e.status;

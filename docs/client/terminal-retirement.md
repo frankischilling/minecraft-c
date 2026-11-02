@@ -8,6 +8,18 @@ shutdown now follows the prefix with checked dispatcher retirement and a
 passive storage classification before its destructive cleanup tail. Complete
 Format/App/shared-service admission remains unfinished.
 
+The selected menu now also ends bootstrap getters before a checked
+[live Workbench handoff](workbench-open-shutdown.md). Its actual IT allocation
+moves from Screen ownership to a sealed Player owner, preserving Source e/j
+and its lifetime across later World-audit BUSY returns. Ordinary Screen
+retirement keeps its existing refusal. Four Windows profiles qualify clean
+closure and real Container, Player and World hold retries; this adds no Source
+close, drop or save call and does not establish original shutdown or GC timing.
+After menu retirement, a private passive Frame snapshot comes from the actual
+still-owned bootstrap Frame/App/startup association. It preserves the closed
+getters and never dereferences the consumed menu's terminal token. Its pointer
+members remain borrowed inspection views until those bootstrap owners end.
+
 The prefix is available through
 [RenderGlobal](../../include/mc/client/world/render_global.h),
 [World loading](../../src/client/world/load_world.h),

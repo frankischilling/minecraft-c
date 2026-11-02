@@ -29,6 +29,12 @@ Fontconfig development headers and a real sans font support the native default-f
 constructor. These are system inputs; the project downloads its pinned FreeType
 source separately. See [font dependency and license setup](dependencies.md#native-default-font-rasterizer).
 
+Optional [performance tools](performance/world-queries.md) include a portable
+fixed-work CPU query target (`MC_BUILD_BENCHMARKS=ON`) and a Windows Ninja/MSVC
+frame observer. The latter reuses a built SDK test configuration and locally
+imported assets, writes a separate executable, and retains every measurement
+attempt. Neither tool adds timing thresholds to CTest.
+
 The list follows [SDL's Linux build notes](https://github.com/libsdl-org/SDL/blob/release-3.4.18/docs/README-linux.md).
 Other distributions use their corresponding packages. Configure and build with:
 

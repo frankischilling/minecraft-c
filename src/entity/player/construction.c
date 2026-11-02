@@ -1,5 +1,6 @@
 #include "nbt_internal.h"
 #include "player_internal.h"
+#include "terminal_inventory.h"
 
 #include "../../world/runtime/runtime_internal.h"
 #include "../../world/runtime/spawn_internal.h"
@@ -335,11 +336,18 @@ void mc_local_player_dispose(mc_entity *entity) {
     mc_local_player_snapshot *s = &entity->local_player->fields;
     /* Drop this field's native occurrence hold, without a source input reset. */
     (void)mc_movement_input_retire(&s->input, NULL);
-    /* Constructor aliases d/e own one Container, with a borrowed inventory
-     * back-link. Native teardown is quiescent; no source close/drop is called. */
-    (void)mc_container_retire(&s->player.d, NULL);
-    s->player.e = NULL;
-    (void)mc_inventory_player_retire(&s->player.c, NULL);
+    if (mc_local_player_terminal_sealed(entity)) {
+        /* The checked terminal protocol reserved these native owners before
+         * zero-hold destruction. This infallible branch leaves Source d/e/c
+         * intact until the dead Player allocation itself ends. */
+        mc_player_terminal_inventory_dispose(entity);
+    } else {
+        /* Constructor aliases d/e own one Container, with a borrowed inventory
+         * back-link. Native teardown is quiescent; no source close/drop is called. */
+        (void)mc_container_retire(&s->player.d, NULL);
+        s->player.e = NULL;
+        (void)mc_inventory_player_retire(&s->player.c, NULL);
+    }
     mc_player_string_release((mc_player_string *)s->skin_url);
     mc_player_string_release((mc_player_string *)s->player.l);
     mc_player_string_release((mc_player_string *)s->player.n);

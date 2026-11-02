@@ -91,7 +91,9 @@ bool mc_client_menu_loop_retire_completed_draws(mc_client_menu_loop *);
 /* End this loop's source admission and drain its owned call/World-load prefix,
  * retaining screens, App, full Worlds/Players/Inputs/handlers and all services.
  * This one-way operation performs no World container/cache/provider teardown
- * and does not end shared TH/LL classes. Repeated calls retry the same slots;
+ * and does not end shared TH/LL classes. Bootstrap getters end before a trusted
+ * live Workbench native owner handoff; Source fields and the same IT remain
+ * live through any later BUSY. Repeated calls retry the same slots;
  * success means only this prefix completed. Before complete retire, the outer
  * owner must separately end dispatcher admissions/captures and admit every
  * World graph. Do not use this as source World clearing or resume frames after

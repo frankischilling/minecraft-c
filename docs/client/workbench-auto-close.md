@@ -179,6 +179,7 @@ Existing keyboard-close crafting and save results remain documented in
 [Workbench crafting](workbench.md). Those results alone do not verify this
 Player-tick caller.
 
-Live-open terminal joining remains separate unfinished work. This connection
-does not qualify unrestricted Containers, original pixels, Linux SDK gameplay,
-extended play or FPS.
+[Native shutdown with an open Workbench](workbench-open-shutdown.md) now has its
+own ownership transfer and four Windows profiles. This connection does not
+qualify unrestricted Containers, original pixels, Linux SDK gameplay, extended
+play or FPS.

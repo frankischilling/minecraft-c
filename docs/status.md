@@ -1,5 +1,33 @@
 # Development status
 
+[World query hot paths](performance/world-queries.md) now avoid full success
+diagnostic construction and repeated whole-map validation during owned nested
+reads. Controlled Windows CPU workloads preserve values, Random state, payloads,
+cache/pending order and holds. Median indexed Block reads fall from 203.84 to
+29.17 ns; the 289-Chunk nested workload falls from 1549.16 to 81.55 ns.
+These measurements do not establish gameplay FPS improvement.
+
+A separate [matched Windows frame pair](performance/world-queries.md#matched-windows-frame-intervals)
+measures 5.37 FPS before and 19.95 FPS after in the declared Tiny sky-view scene.
+p95 host frame time falls from 625.66 to 109.69 ms. A larger repeat has rejected
+baseline intervals and supplies no aggregate speedup. General FPS remains open.
+
+[Held Item mining](item/mining.md) now executes speed, harvest, wear, breakage
+and statistics instead of stopping on nonempty tools. Windows matches 19,594
+six-result mining rows, 2,331 Item/Stack destruction rows and six original
+controller scenarios, including exact-zero clearing and negative-count retention.
+Broader Block hooks, original rendered frames and unrestricted play remain open.
+
+The frozen runtime passes all 632 Linux Clang 18 ASan/UBSan public tests in
+173.49 seconds. All 4,338 transferred files and 520 executables stay unchanged;
+all 1,434 runtime files match Windows. Windows public attempts pass 633/637 in
+226.45 seconds and 636/637 in 250.01 seconds, with unchanged source/products/assets.
+Zero-draw assertions move between actor profiles; their failing value and cause
+remain unconfirmed. Those profiles pass unchanged in isolated diagnostic runs.
+Separate bounded load tests capture external Remote Desktop foreground loss,
+which does not explain the original zero-draw failures. Full desktop stability
+and a uniformly passing Windows public cohort remain unqualified.
+
 [Automatic Workbench close](client/workbench-auto-close.md) now runs from the
 actual Player tick for removed Tables and excessive distance. Four Windows
 client tests pass in 102.10 seconds, covering five fresh processes: two exact

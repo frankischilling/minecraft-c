@@ -474,7 +474,7 @@ mc_entity_status mc_inventory_player_insert(mc_inventory_player *inventory, mc_i
         fail(&frame, MC_ENTITY_INVALID_ARGUMENT, "Inventory insertion native arguments");
     else if (inventory->side != MC_REGISTRY_CLIENT)
         fail(&frame, MC_ENTITY_STATE_ERROR, "Inventory insertion actual client class");
-    else if (inventory->active)
+    else if (inventory->active || inventory->terminal_sealed)
         fail(&frame, MC_ENTITY_BUSY, "Inventory insertion active owner");
     else {
         inventory->active = true;

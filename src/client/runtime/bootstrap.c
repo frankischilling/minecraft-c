@@ -10,6 +10,7 @@
 #include "../startup/application_startup_internal.h"
 #include "../startup/application_startup_menu.h"
 #include "../window/frame.h"
+#include "bootstrap_terminal_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/client/world/frustum.h"
 #include "mc/core/java/logging.h"
@@ -56,6 +57,9 @@ struct mc_client_bootstrap {
     mc_client_source_frame *frame;
     mc_client_frame_error frame_error;
     bool retiring, startup_returned;
+    mc_client_menu_loop *menu;
+    bool terminal_begun;
+    mc_client_bootstrap_terminal_scope terminal_scope;
 };
 
 static const char *text(const char *value) {
@@ -413,6 +417,65 @@ mc_client_bootstrap_open_standalone(const mc_client_application_options *o,
 
 #undef OPEN_OWNER
 
+bool mc_client_bootstrap_bind_menu(mc_client_bootstrap *context, mc_client_menu_loop *menu) {
+    if (context == NULL || menu == NULL || context->retiring || context->menu != NULL ||
+        !context->startup_returned || context->app == NULL || context->startup == NULL ||
+        context->startup->app != context->app || context->app->startup != context->startup)
+        return false;
+    context->menu = menu;
+    return true;
+}
+
+void mc_client_bootstrap_unbind_menu(mc_client_bootstrap *context,
+                                     const mc_client_menu_loop *menu) {
+    if (context != NULL && context->menu == menu)
+        context->menu = NULL;
+}
+
+static bool terminal_scope_matches(const mc_client_bootstrap_terminal_scope *,
+                                   const client_application *);
+
+const mc_client_bootstrap_terminal_scope *
+mc_client_bootstrap_terminal_begin(mc_client_bootstrap *context, const mc_client_menu_loop *menu) {
+    if (context == NULL || context->menu != menu || context->app == NULL ||
+        context->startup == NULL || context->startup->active ||
+        context->startup->app != context->app || context->app->startup != context->startup ||
+        !mc_client_menu_loop_terminal_scope_matches(menu, context, context->app))
+        return NULL;
+    context->retiring = true;
+    context->terminal_begun = true;
+    context->terminal_scope =
+        (mc_client_bootstrap_terminal_scope){context, menu, terminal_scope_matches};
+    return &context->terminal_scope;
+}
+
+static bool terminal_scope_matches(const mc_client_bootstrap_terminal_scope *scope,
+                                   const client_application *app) {
+    if (scope == NULL || scope->owner == NULL)
+        return false;
+    const mc_client_bootstrap *context = scope->owner;
+    return scope == &context->terminal_scope && context->terminal_begun && context->retiring &&
+           context->menu != NULL && context->menu == scope->menu && context->app == app &&
+           context->startup != NULL && !context->startup->active && context->startup->app == app &&
+           app != NULL && app->startup == context->startup &&
+           mc_client_menu_loop_terminal_scope_matches(context->menu, context, app);
+}
+
+bool mc_client_bootstrap_terminal_frame_inspect(const mc_client_bootstrap *context,
+                                                mc_client_frame_state *out) {
+    if (context == NULL || out == NULL || !context->retiring || !context->terminal_begun ||
+        context->frame == NULL || context->app == NULL || context->startup == NULL ||
+        context->startup->active || context->startup->app != context->app ||
+        context->app->startup != context->startup)
+        return false;
+    mc_client_frame_state state;
+    if (!mc_client_source_frame_inspect(context->frame, &state) || state.active ||
+        state.app != context->app)
+        return false;
+    *out = state;
+    return true;
+}
+
 mc_client_bootstrap_status mc_client_bootstrap_terminal_dispatchers(mc_client_bootstrap *context) {
     if (context == NULL || context->app == NULL || context->startup == NULL)
         return MC_CLIENT_BOOTSTRAP_INVALID_ARGUMENT;
@@ -602,6 +665,8 @@ mc_client_bootstrap_status mc_client_bootstrap_close(mc_client_bootstrap **slot)
     if (context == NULL)
         return MC_CLIENT_BOOTSTRAP_OK;
     context->retiring = true;
+    if (context->menu != NULL)
+        return MC_CLIENT_BOOTSTRAP_BUSY;
     mc_client_bootstrap_status status = close_startup(context);
     if (status != MC_CLIENT_BOOTSTRAP_OK)
         return status;

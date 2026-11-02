@@ -1411,15 +1411,15 @@ mc_world_storage_status mc_client_world_load_classes_terminal_validate(
                                  : terminal_admission_result(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
-mc_world_storage_status
-mc_client_world_load_terminal_follows(const mc_client_world_load_call *call,
-                                      const mc_client_world_load_call *newer,
-                                      mc_world_storage_error *error) {
+static mc_world_storage_status terminal_follows(const mc_client_world_load_call *call,
+                                                const mc_client_world_load_call *newer,
+                                                bool prepared, mc_world_storage_error *error) {
     if (call == NULL)
         return terminal_admission_result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                                          "Load terminal ordered call required");
     const mc_client_world_load_classes *classes = call->classes;
-    if (classes == NULL || !classes->retiring || !call->state.terminal_prepared)
+    if (classes == NULL || !classes->retiring || (prepared && !call->state.terminal_prepared) ||
+        call->state.app != classes->app)
         return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                          "Load terminal ordered prepared scope");
     if (classes->active || call->state.active || (newer != NULL && newer->state.active))
@@ -1431,6 +1431,20 @@ mc_client_world_load_terminal_follows(const mc_client_world_load_call *call,
         return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                          "Load terminal retained epoch order");
     return terminal_admission_result(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status
+mc_client_world_load_terminal_follows(const mc_client_world_load_call *call,
+                                      const mc_client_world_load_call *newer,
+                                      mc_world_storage_error *error) {
+    return terminal_follows(call, newer, true, error);
+}
+
+mc_world_storage_status
+mc_client_world_load_terminal_owned_follows(const mc_client_world_load_call *call,
+                                            const mc_client_world_load_call *newer,
+                                            mc_world_storage_error *error) {
+    return terminal_follows(call, newer, false, error);
 }
 
 mc_world_storage_status mc_client_world_load_terminal_classify(

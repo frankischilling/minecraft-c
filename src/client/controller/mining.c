@@ -4,6 +4,9 @@
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
 #include "../../entity/player/player_internal.h"
+#include "../../inventory/internal.h"
+#include "../../inventory/player/source_internal.h"
+#include "../../item/stack/source_internal.h"
 #include "../../world/runtime/mutation/mutation_internal.h"
 #include "../application_state.h"
 #include "mc/block/registry/runtime.h"
@@ -11,6 +14,7 @@
 #include "mc/client/sound/sound_manager.h"
 #include "mc/core/java/java.h"
 #include "mc/entity/player/statistics.h"
+#include "mc/item/mining/destroy.h"
 #include "mc/statistics/registry/registry.h"
 #include "mc/world/runtime/auxiliary.h"
 #include "mc/world/runtime/blocks.h"
@@ -31,6 +35,9 @@ struct mc_singleplayer_mining_call {
     mc_sound_error sound;
     mc_sound_manager_report sound_report;
     mc_step_sound_name sound_name;
+    mc_item_stack *held_stack;
+    mc_item_mining_destroy_error tool;
+    mc_inventory_error slots;
 };
 
 static bool failed(mc_singleplayer_mining_call *call, mc_singleplayer_mining_status status,
@@ -289,6 +296,65 @@ static bool harvest(mc_singleplayer_mining_call *call, const mc_block *block,
     return true;
 }
 
+static bool clear_held(mc_singleplayer_mining_call *call, mc_entity *player) {
+    if (player == NULL)
+        return failed(call, MC_SINGLEPLAYER_MINING_SOURCE_NULL,
+                      "actual os.b null fresh Player H receiver", "os", "b", 120, false);
+    if (!mc_entity_is_kind(player, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) ||
+        player->local_player == NULL)
+        return failed(call, MC_SINGLEPLAYER_MINING_PLAYER, "mining H canonical Player storage",
+                      "os", "b", 120, true);
+    /* GS.H captures its Inventory setter receiver before rereading its
+     * current Inventory and selected field. Do not reuse earlier GS.G input. */
+    mc_inventory_player *destination = player->local_player->fields.player.c;
+    mc_inventory_player *current = player->local_player->fields.player.c;
+    if (current == NULL)
+        return failed(call, MC_SINGLEPLAYER_MINING_SOURCE_NULL,
+                      "actual gs.H null Inventory selected-field receiver", "os", "b", 120, false);
+    call->state.cleared_slot = current->selected;
+    if (destination == NULL)
+        return failed(call, MC_SINGLEPLAYER_MINING_SOURCE_NULL,
+                      "actual gs.H null captured Inventory setter receiver", "os", "b", 120, false);
+    call->error.slots = &call->slots;
+    const mc_inventory_status status =
+        mc_inventory_player_source_set(destination, call->state.cleared_slot, NULL, &call->slots);
+    if (status != MC_INVENTORY_OK)
+        return failed(call, MC_SINGLEPLAYER_MINING_PLAYER, call->slots.operation, "os", "b", 120,
+                      call->slots.frame_count == 0 || (status != MC_INVENTORY_NULL_REFERENCE &&
+                                                       status != MC_INVENTORY_INDEX_OUT_OF_BOUNDS));
+    call->state.clear_returned = true;
+    return true;
+}
+
+static bool destroy_held(mc_singleplayer_mining_call *call) {
+    client_application *value = app(call, "os", "b", 87);
+    if (value == NULL)
+        return false;
+    call->error.tool = &call->tool;
+    if (mc_item_stack_mining_destroy(value->registry, call->held_stack, call->state.block_id,
+                                     call->state.x, call->state.y, call->state.z, value->h,
+                                     &call->tool) != MC_ENTITY_OK)
+        return failed(call, MC_SINGLEPLAYER_MINING_PLAYER, call->tool.operation, "os", "b", 90,
+                      call->tool.native_policy);
+    call->state.tool_returned = true;
+    call->state.item_used_returned = call->tool.used_statistic_returned;
+    if (mc_item_stack_source_count_get(call->held_stack, &call->state.count_after) !=
+        MC_ITEM_STACK_OK)
+        return failed(call, MC_SINGLEPLAYER_MINING_PLAYER, "mining late captured Stack count read",
+                      "os", "b", 95, true);
+    /* OS uses ifne98, unlike the Player attack's count<=0 exhaustion test. */
+    if (call->state.count_after != 0)
+        return true;
+    call->state.exhausted_stack = true;
+    value = app(call, "os", "b", 107);
+    if (value == NULL)
+        return false;
+    (void)value->h; /* IZ.a(GS)110 is the literal return and ignores this argument. */
+    call->state.destroy_callback_returned = true;
+    value = app(call, "os", "b", 117);
+    return value != NULL && clear_held(call, value->h);
+}
+
 static bool destroy(mc_singleplayer_mining_call *call) {
     mc_world_runtime *target = world(call, "os", "b", 4, 10);
     if (target == NULL || !query(call, target, false, &call->state.block_id, "os", "b", 10))
@@ -315,6 +381,13 @@ static bool destroy(mc_singleplayer_mining_call *call) {
     if (mc_inventory_player_current(snapshot.player.c, &stack, &call->inventory) != MC_INVENTORY_OK)
         return failed(call, MC_SINGLEPLAYER_MINING_PLAYER, call->inventory.operation, "os", "b", 48,
                       call->inventory.native_policy);
+    if (stack != NULL) {
+        if (mc_item_stack_retain((mc_item_stack *)stack) != MC_ITEM_STACK_OK)
+            return failed(call, MC_SINGLEPLAYER_MINING_LIMIT, "mining captured Stack occurrence",
+                          "os", "b", 48, true);
+        call->held_stack = (mc_item_stack *)stack;
+        call->state.held_stack_identity = (uintptr_t)stack;
+    }
     value = app(call, "os", "b", 57);
     if (value == NULL)
         return false;
@@ -330,9 +403,8 @@ static bool destroy(mc_singleplayer_mining_call *call) {
         MC_ENTITY_OK)
         return failed(call, MC_SINGLEPLAYER_MINING_PLAYER, call->player.operation, "os", "b", 66,
                       call->player.native_policy);
-    if (stack != NULL)
-        return failed(call, MC_SINGLEPLAYER_MINING_DEPENDENCY,
-                      "actual Stack mining durability virtual", "os", "b", 90, true);
+    if (call->held_stack != NULL && !destroy_held(call))
+        return false;
     if (removed && call->state.harvest_allowed) {
         value = app(call, "os", "b", 143);
         if (value == NULL || !block_get(call, value, call->state.block_id, &block, "os", "b", 138))
@@ -583,6 +655,7 @@ mc_client_singleplayer_mining_retire(mc_singleplayer_mining_call **slot,
         MC_SINGLEPLAYER_CONTROLLER_OK)
         return admission_result(error, MC_SINGLEPLAYER_MINING_BUSY,
                                 "mining controller occurrence retirement");
+    mc_item_stack_release(call->held_stack);
     free(call->mutation);
     free(call);
     *slot = NULL;

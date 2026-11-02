@@ -7,6 +7,7 @@
 #include "item/stack/source_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/item/combat/combat.h"
+#include "mc/item/mining/destroy.h"
 
 #include <limits.h>
 
@@ -202,6 +203,115 @@ static bool durability_controls(fixture *f) {
     return true;
 }
 
+static bool destroy_row(fixture *f, int32_t id, int32_t block, int32_t count, int32_t damage) {
+    mc_item_stack *stack = NULL;
+    CHECK(stack_create(id, count, damage, &stack));
+    bool result = true;
+    mc_item_combat_error error;
+    CHECK(mc_item_mining_destroy(f->app.registry, actual_item(f, id), stack, block, -3, 64, 7, NULL,
+                                 &result, &error) == MC_ENTITY_OK);
+    mc_item_stack_fields after;
+    CHECK(mc_item_stack_fields_get(stack, &after) == MC_ITEM_STACK_OK && after.id == id &&
+          after.animation == 5);
+    printf("DESTROY\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", id, block, count, damage, result ? 1 : 0,
+           after.count, after.damage, after.animation);
+    mc_item_stack_release(stack);
+    return true;
+}
+
+static bool mining_destroy_controls(fixture *f) {
+    const mc_registry_item_array *array = NULL;
+    CHECK(mc_registry_item_c_get(f->app.registry, &array, NULL) == MC_REGISTRY_OK && array != NULL);
+    const int32_t blocks[] = {1, 18, 30, 35, 0, -1};
+    for (size_t id = 0; id < array->length; ++id)
+        if (array->elements[id] != NULL)
+            for (size_t b = 0; b < sizeof(blocks) / sizeof(*blocks); ++b)
+                CHECK(destroy_row(f, (int32_t)id, blocks[b], 2, 0));
+    for (size_t id = 0; id < array->length; ++id) {
+        const mc_item *item = array->elements[id];
+        if (item == NULL ||
+            (!tool(item->kind) && item->kind != MC_ITEM_SWORD && item->kind != MC_ITEM_SHEARS))
+            continue;
+        const int32_t maximum = item->fields.a, step = item->kind == MC_ITEM_SWORD ? 2 : 1;
+        const int32_t damages[] = {
+            maximum - step, maximum - step + 1, maximum, maximum + 1, -1, INT_MAX, INT_MIN};
+        const int32_t counts[] = {1, 0, -3, 2, INT_MIN};
+        for (size_t d = 0; d < sizeof(damages) / sizeof(*damages); ++d)
+            for (size_t n = 0; n < sizeof(counts) / sizeof(*counts); ++n)
+                CHECK(destroy_row(f, (int32_t)id, item->kind == MC_ITEM_SHEARS ? 18 : 1, counts[n],
+                                  damages[d]));
+    }
+    const int32_t ids[] = {270, 274, 278, 268, 359, 3};
+    const int32_t wrapper_blocks[] = {1, 18, 30, 35};
+    const int32_t counts[] = {1, 0, -3, 2};
+    for (size_t i = 0; i < sizeof(ids) / sizeof(*ids); ++i) {
+        const int32_t id = ids[i], maximum = actual_item(f, id)->fields.a;
+        const int32_t damages[] = {0, maximum, maximum - 1, INT_MAX};
+        for (size_t b = 0; b < sizeof(wrapper_blocks) / sizeof(*wrapper_blocks); ++b)
+            for (size_t d = 0; d < sizeof(damages) / sizeof(*damages); ++d)
+                for (size_t n = 0; n < sizeof(counts) / sizeof(*counts); ++n) {
+                    mc_item_stack *stack = NULL;
+                    CHECK(stack_create(id, counts[n], damages[d], &stack));
+                    const mc_statistic *used = f->app.registry->statistics.E[id];
+                    const mc_statistic *broken = f->app.registry->statistics.F[id];
+                    int32_t before_used, after_used, before_broken = -1, after_broken = -1;
+                    CHECK(mc_client_stats_writer_value(f->app.stats_writer, used, &before_used,
+                                                       NULL) == MC_CLIENT_STATS_OK);
+                    if (broken != NULL)
+                        CHECK(mc_client_stats_writer_value(f->app.stats_writer, broken,
+                                                           &before_broken,
+                                                           NULL) == MC_CLIENT_STATS_OK);
+                    mc_item_mining_destroy_error error;
+                    CHECK(mc_item_stack_mining_destroy(f->app.registry, stack, wrapper_blocks[b],
+                                                       -3, 64, 7, f->player,
+                                                       &error) == MC_ENTITY_OK);
+                    CHECK(mc_client_stats_writer_value(f->app.stats_writer, used, &after_used,
+                                                       NULL) == MC_CLIENT_STATS_OK);
+                    if (broken != NULL)
+                        CHECK(mc_client_stats_writer_value(f->app.stats_writer, broken,
+                                                           &after_broken,
+                                                           NULL) == MC_CLIENT_STATS_OK);
+                    mc_item_stack_fields after;
+                    CHECK(mc_item_stack_fields_get(stack, &after) == MC_ITEM_STACK_OK &&
+                          after.id == id && after.animation == 5);
+                    printf("STACK_DESTROY\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", id,
+                           wrapper_blocks[b], counts[n], damages[d], after.count, after.damage,
+                           after.animation, mc_java_i32_sub(after_used, before_used),
+                           broken == NULL ? -1 : mc_java_i32_sub(after_broken, before_broken));
+                    mc_item_stack_release(stack);
+                }
+    }
+    mc_item_stack *stack = NULL;
+    mc_item_mining_destroy_error e;
+    CHECK(stack_create(270, 2, 0, &stack) &&
+          mc_item_stack_mining_destroy(f->app.registry, stack, 1, 0, 0, 0, NULL, &e) ==
+              MC_ENTITY_STATE_ERROR &&
+          e.source_exception && !e.native_policy && e.site.pc == 37 && e.item_returned &&
+          e.item_result && !e.used_statistic_returned && fields(stack, 2, 1));
+    mc_item_stack_release(stack);
+    stack = NULL;
+    CHECK(stack_create(270, 1, 59, &stack));
+    mc_statistic **used = f->app.registry->statistics.E;
+    f->app.registry->statistics.E = NULL;
+    const mc_entity_status status =
+        mc_item_stack_mining_destroy(f->app.registry, stack, 1, 0, 0, 0, f->player, &e);
+    f->app.registry->statistics.E = used;
+    CHECK(status == MC_ENTITY_STATE_ERROR && e.source_exception && e.site.pc == 35 &&
+          e.item.break_selected && e.item.statistic_returned && !e.used_statistic_returned &&
+          fields(stack, 0, 0));
+    mc_item_stack_release(stack);
+    stack = NULL;
+    CHECK(stack_create(359, 1, 0, &stack));
+    f->app.registry->statistics.E = NULL;
+    const mc_entity_status shears =
+        mc_item_stack_mining_destroy(f->app.registry, stack, 18, 0, 0, 0, NULL, &e);
+    f->app.registry->statistics.E = used;
+    CHECK(shears == MC_ENTITY_OK && e.item_returned && !e.item_result &&
+          !e.used_statistic_returned && fields(stack, 1, 1));
+    mc_item_stack_release(stack);
+    return true;
+}
+
 static mc_entity_watch_record *pig_record(mc_entity *pig) {
     for (mc_entity_watch_node *node = pig->watcher->map->head; node != NULL; node = node->next)
         if (node->key == 16)
@@ -269,7 +379,8 @@ int main(int argc, char **argv) {
         return 2;
     fixture *f = calloc(1, sizeof(*f));
     if (f == NULL || !setup(f, argv[1], "item-combat", true) || !dispatch_controls(f) ||
-        !durability_controls(f) || !saddle_controls(f) || !teardown(f))
+        !durability_controls(f) || !mining_destroy_controls(f) || !saddle_controls(f) ||
+        !teardown(f))
         return 1;
     free(f);
     printf("PASS: %zu Item combat source-order/ownership checks\n", checks);

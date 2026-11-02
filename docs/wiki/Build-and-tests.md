@@ -1,6 +1,35 @@
 # Build and tests
 
+`MC_BUILD_BENCHMARKS=ON` adds the optional `mc_benchmark_world_queries` target.
+Its [asset-independent runner](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/world-queries.md)
+compares fixed public queries and retains raw samples and state checks outside
+timing. It needs a Release build, no original assets and no display. Timing
+thresholds are excluded from CTest; these measurements do not establish FPS.
+The public mining and tool tests also replay hash-bound original speed,
+harvest, destruction and controller observations without Java.
+
+The Windows-only `scripts/benchmarks/client_frames.py` toolkit builds an
+observer from an existing Release Ninja/MSVC SDK configuration and compares
+ordinary source frames in one authored save. Use a Visual Studio developer
+shell and locally imported assets. Its [recorded frame intervals](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/world-queries.md#matched-windows-frame-intervals)
+include a valid matched pair and every failed attempt in the longer repeat.
+The public toolkit smoke passes; general gameplay FPS remains unqualified.
+
 ## Current qualification
+
+The [open-Workbench shutdown profiles](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench-open-shutdown.md)
+pass four fresh Windows MSVC Release processes in 68.52 seconds. Clean,
+Container, Player and World hold cases pass 1,975, 1,934, 2,092 and 2,166
+checks. The selected Source state and stopped save-tree bytes stay unchanged;
+releasing only the actual blocker permits full cleanup. Public local Inventory
+and genuine Player/OO controls pass 96 and 229 checks. These are native
+ownership results, not original shutdown, GC timing or FPS comparisons.
+
+The previous close/crafting selection also passes on this runtime: four
+Windows CTests across five processes in 103.80 seconds. The full Windows build
+and all 1,990 C/header/fragment formatting checks pass.
+
+## Preceding automatic-close checkpoint
 
 The [automatic-close scenarios](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench-auto-close.md)
 pass four Windows CTests in 102.10 seconds across five fresh processes. Removal

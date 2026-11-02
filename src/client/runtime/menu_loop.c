@@ -5,6 +5,7 @@
 #include "../gui/source_screen_initialize.h"
 #include "../gui/source_workbench_drawing.h"
 #include "../window/canvas.h"
+#include "bootstrap_terminal_internal.h"
 #include "gameplay_input.h"
 #include "world_tick.h"
 
@@ -56,6 +57,7 @@
 struct mc_client_menu_loop {
     mc_client_bootstrap *bootstrap; /* Actual creator, borrowed through checked retirement. */
     client_application *app;
+    bool terminal_calls_retired;
     mc_gui_main_menu *renderer;
     mc_client_assets *assets;
     mc_client_render_engine_classes *graphics;
@@ -724,7 +726,8 @@ bool mc_client_menu_loop_create(mc_client_bootstrap *bootstrap, mc_client_menu_l
                                  &loop->renderer, &error) ||
         !millis(NULL, &loop->last_second) ||
         mc_client_screen_transitions_create(app, &loop->transitions, &loop->screen) !=
-            MC_CLIENT_SCREEN_OK) {
+            MC_CLIENT_SCREEN_OK ||
+        !mc_client_bootstrap_bind_menu(bootstrap, loop)) {
         fprintf(stderr, "Client menu renderer setup failed: %s\n",
                 error.operation == NULL ? "native Settings/assets/clock prerequisite"
                                         : error.operation);
@@ -1112,12 +1115,24 @@ bool mc_client_menu_loop_terminal_prepare(mc_client_menu_loop *loop) {
     loop->state.terminal_prepare_selected = true;
     if (loop->state.terminal_prepared)
         return true;
-    if (!retire_calls(loop) ||
-        (loop->transitions != NULL && mc_client_screen_transitions_terminal_prepare(
-                                          loop->transitions, &loop->screen) != MC_CLIENT_SCREEN_OK))
+    if (!retire_calls(loop))
+        return false;
+    loop->terminal_calls_retired = true;
+    const mc_client_bootstrap_terminal_scope *scope =
+        mc_client_bootstrap_terminal_begin(loop->bootstrap, loop);
+    if (scope == NULL || (loop->transitions != NULL &&
+                          mc_client_screen_transitions_terminal_prepare_root(
+                              loop->transitions, scope, &loop->screen) != MC_CLIENT_SCREEN_OK))
         return false;
     loop->state.terminal_prepared = true;
     return true;
+}
+
+bool mc_client_menu_loop_terminal_scope_matches(const mc_client_menu_loop *loop,
+                                                const mc_client_bootstrap *bootstrap,
+                                                const client_application *app) {
+    return loop != NULL && loop->bootstrap == bootstrap && loop->app == app && !loop->active &&
+           loop->retiring && loop->state.terminal_prepare_selected && loop->terminal_calls_retired;
 }
 
 bool mc_client_menu_loop_retire(mc_client_menu_loop **slot) {
@@ -1141,6 +1156,7 @@ bool mc_client_menu_loop_retire(mc_client_menu_loop **slot) {
         return false;
     mc_gui_main_menu_free(loop->renderer);
     mc_client_assets_free(loop->assets);
+    mc_client_bootstrap_unbind_menu(loop->bootstrap, loop);
     free(loop);
     *slot = NULL;
     return true;

@@ -1,7 +1,8 @@
 #include "../internal.h"
 #include "source_internal.h"
 
-static mc_inventory_error player_admit(const mc_inventory_player *inventory, const void *out) {
+static mc_inventory_error player_admit(const mc_inventory_player *inventory, const void *out,
+                                       bool owning) {
     mc_inventory_error error = {0};
     if (inventory == NULL) {
         error.status = MC_INVENTORY_NULL_REFERENCE;
@@ -9,11 +10,14 @@ static mc_inventory_error player_admit(const mc_inventory_player *inventory, con
     } else if (out == NULL) {
         error.status = MC_INVENTORY_INVALID_ARGUMENT;
         error.operation = "Player inventory output";
+    } else if (owning && inventory->terminal_sealed) {
+        error.status = MC_INVENTORY_BUSY;
+        error.operation = "Inventory terminal sealed operation";
     }
     return error;
 }
 
-static void player_free(mc_inventory_player *inventory) {
+void inv_player_free(mc_inventory_player *inventory) {
     if (inventory == NULL)
         return;
     if (inventory->main_slots != NULL)
@@ -52,14 +56,14 @@ mc_inventory_status mc_inventory_player_create(mc_registry_side side, mc_entity 
             inv_alloc(&inventory->local_budget, 36u * sizeof(*inventory->main_slots), &error);
     if (error.status != MC_INVENTORY_OK) {
         inv_frame(&error, side, "ix", "fx", "<init>", inv_class(side, "(Lgs;)V", "(Lem;)V"), 7);
-        player_free(inventory);
+        inv_player_free(inventory);
         return inv_finish(result, &error);
     }
     inventory->armor_slots =
         inv_alloc(&inventory->local_budget, 4u * sizeof(*inventory->armor_slots), &error);
     if (inventory->armor_slots == NULL) {
         inv_frame(&error, side, "ix", "fx", "<init>", inv_class(side, "(Lgs;)V", "(Lem;)V"), 15);
-        player_free(inventory);
+        inv_player_free(inventory);
         return inv_finish(result, &error);
     }
     inventory->selected = 0;
@@ -74,11 +78,12 @@ mc_inventory_status mc_inventory_player_retire(mc_inventory_player **owner,
     mc_inventory_error error = {0};
     if (owner == NULL)
         error.status = MC_INVENTORY_INVALID_ARGUMENT;
-    else if (*owner != NULL && ((*owner)->containers != 0 || (*owner)->active)) {
+    else if (*owner != NULL &&
+             ((*owner)->containers != 0 || (*owner)->active || (*owner)->terminal_sealed)) {
         error.status = MC_INVENTORY_BUSY;
         error.operation = "Player inventory retained by concrete Container";
     } else {
-        player_free(*owner);
+        inv_player_free(*owner);
         *owner = NULL;
     }
     return inv_finish(result, &error);
@@ -112,7 +117,7 @@ static void player_index(mc_inventory_error *error, const mc_inventory_player *i
 mc_inventory_status mc_inventory_player_borrow(const mc_inventory_player *inventory, int32_t slot,
                                                const mc_item_stack **out,
                                                mc_inventory_error *result) {
-    mc_inventory_error error = player_admit(inventory, out);
+    mc_inventory_error error = player_admit(inventory, out, false);
     if (error.status == MC_INVENTORY_OK) {
         mc_item_stack **cell = player_cell(inventory, slot);
         if (cell == NULL)
@@ -126,7 +131,7 @@ mc_inventory_status mc_inventory_player_borrow(const mc_inventory_player *invent
 
 mc_inventory_status mc_inventory_player_get(mc_inventory_player *inventory, int32_t slot,
                                             mc_item_stack **out, mc_inventory_error *result) {
-    mc_inventory_error error = player_admit(inventory, out);
+    mc_inventory_error error = player_admit(inventory, out, true);
     const mc_item_stack *value = NULL;
     if (error.status == MC_INVENTORY_OK &&
         mc_inventory_player_borrow(inventory, slot, &value, &error) == MC_INVENTORY_OK)
@@ -136,7 +141,7 @@ mc_inventory_status mc_inventory_player_get(mc_inventory_player *inventory, int3
 
 mc_inventory_status mc_inventory_player_set(mc_inventory_player *inventory, int32_t slot,
                                             mc_item_stack *value, mc_inventory_error *result) {
-    mc_inventory_error error = player_admit(inventory, inventory);
+    mc_inventory_error error = player_admit(inventory, inventory, true);
     if (error.status == MC_INVENTORY_OK) {
         mc_item_stack **cell = player_cell(inventory, slot);
         if (cell == NULL)
@@ -160,7 +165,7 @@ mc_inventory_status mc_inventory_player_source_set(mc_inventory_player *inventor
         error.operation = "Player inventory source setter native owner";
         return inv_finish(result, &error);
     }
-    if (inventory->active) {
+    if (inventory->active || inventory->terminal_sealed) {
         error.status = MC_INVENTORY_BUSY;
         error.operation = "Player inventory source setter active owner";
         return inv_finish(result, &error);
@@ -205,7 +210,7 @@ mc_inventory_status mc_inventory_player_source_set(mc_inventory_player *inventor
 mc_inventory_status mc_inventory_player_split(mc_inventory_player *inventory, int32_t slot,
                                               int32_t amount, mc_item_stack **out,
                                               mc_inventory_error *result) {
-    mc_inventory_error error = player_admit(inventory, out);
+    mc_inventory_error error = player_admit(inventory, out, true);
     if (error.status != MC_INVENTORY_OK)
         return inv_finish(result, &error);
     mc_item_stack **cell = player_cell(inventory, slot);
@@ -252,7 +257,7 @@ mc_inventory_status mc_inventory_player_split(mc_inventory_player *inventory, in
 
 mc_inventory_status mc_inventory_player_size(const mc_inventory_player *inventory, int32_t *out,
                                              mc_inventory_error *result) {
-    mc_inventory_error error = player_admit(inventory, out);
+    mc_inventory_error error = player_admit(inventory, out, false);
     if (error.status == MC_INVENTORY_OK)
         *out = 40;
     return inv_finish(result, &error);
@@ -260,7 +265,7 @@ mc_inventory_status mc_inventory_player_size(const mc_inventory_player *inventor
 
 mc_inventory_status mc_inventory_player_changed(mc_inventory_player *inventory,
                                                 mc_inventory_error *result) {
-    mc_inventory_error error = player_admit(inventory, inventory);
+    mc_inventory_error error = player_admit(inventory, inventory, true);
     if (error.status == MC_INVENTORY_OK) {
         inventory->changed = true;
         error.mutation_reached = true;
@@ -270,7 +275,7 @@ mc_inventory_status mc_inventory_player_changed(mc_inventory_player *inventory,
 
 mc_inventory_status mc_inventory_player_name(const mc_inventory_player *inventory, const char **out,
                                              mc_inventory_error *result) {
-    mc_inventory_error error = player_admit(inventory, out);
+    mc_inventory_error error = player_admit(inventory, out, false);
     if (error.status == MC_INVENTORY_OK)
         *out = "Inventory";
     return inv_finish(result, &error);
@@ -279,7 +284,7 @@ mc_inventory_status mc_inventory_player_name(const mc_inventory_player *inventor
 mc_inventory_status mc_inventory_player_source_get(const mc_inventory_player *inventory,
                                                    int32_t index, const mc_item_stack **out,
                                                    mc_inventory_error *result) {
-    mc_inventory_error error = player_admit(inventory, out);
+    mc_inventory_error error = player_admit(inventory, out, false);
     if (error.status == MC_INVENTORY_OK) {
         mc_item_stack *const *slots = inventory->main_slots;
         int32_t length = 36;
@@ -311,7 +316,7 @@ mc_inventory_status mc_inventory_player_source_get(const mc_inventory_player *in
 mc_inventory_status mc_inventory_player_source_cursor_get(const mc_inventory_player *inventory,
                                                           const mc_item_stack **out,
                                                           mc_inventory_error *result) {
-    mc_inventory_error error = player_admit(inventory, out);
+    mc_inventory_error error = player_admit(inventory, out, false);
     if (error.status == MC_INVENTORY_OK)
         *out = inventory->cursor;
     return inv_finish(result, &error);
@@ -321,7 +326,7 @@ mc_inventory_status mc_inventory_player_source_cursor_store(mc_inventory_player 
                                                             mc_item_stack *value,
                                                             mc_entity **notify_player,
                                                             mc_inventory_error *result) {
-    mc_inventory_error error = player_admit(inventory, notify_player);
+    mc_inventory_error error = player_admit(inventory, notify_player, true);
     if (error.status == MC_INVENTORY_OK && inv_hold(value, &error) == MC_INVENTORY_OK) {
         mc_item_stack *old = inventory->cursor;
         inventory->cursor = value;
@@ -334,7 +339,7 @@ mc_inventory_status mc_inventory_player_source_cursor_store(mc_inventory_player 
 
 mc_inventory_status mc_inventory_player_limit(const mc_inventory_player *inventory, int32_t *out,
                                               mc_inventory_error *result) {
-    mc_inventory_error error = player_admit(inventory, out);
+    mc_inventory_error error = player_admit(inventory, out, false);
     if (error.status == MC_INVENTORY_OK)
         *out = 64;
     return inv_finish(result, &error);

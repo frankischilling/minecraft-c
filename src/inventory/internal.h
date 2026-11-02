@@ -31,14 +31,14 @@ struct mc_inventory_crafting {
     mc_item_stack **slots;
     int32_t width;
     size_t size;
-    bool active, container_owned;
+    bool active, container_owned, terminal_sealed;
 };
 
 struct mc_inventory_result {
     inv_budget local_budget, *budget;
     mc_registry_side side;
     mc_item_stack **slots;
-    bool container_owned;
+    bool container_owned, terminal_sealed;
 };
 
 struct mc_inventory_player {
@@ -48,7 +48,7 @@ struct mc_inventory_player {
     mc_item_stack **main_slots, **armor_slots;
     mc_item_stack *cursor;
     int32_t selected;
-    bool changed, active;
+    bool changed, active, terminal_sealed;
     size_t containers;
 };
 
@@ -67,7 +67,7 @@ struct mc_container {
     bool active, constructing, constructed, local, inventory_bound;
     bool constructor_entered, constructor_failed;
     int32_t constructor_pc;
-    bool interaction_active;
+    bool interaction_active, terminal_sealed;
     size_t interaction_holds;
     int32_t window_id, x, y, z;
     int16_t transaction;
@@ -86,6 +86,9 @@ mc_inventory_status inv_stack(mc_inventory_error *error, mc_item_stack_status st
 bool inv_limits(const mc_inventory_limits *options, inv_budget *out);
 void *inv_alloc(inv_budget *budget, size_t bytes, mc_inventory_error *error);
 void inv_free(inv_budget *budget, void *data);
+bool inv_allocation_bytes(const void *data, size_t payload, size_t *out);
+void inv_player_free(mc_inventory_player *inventory);
+void inv_container_free(mc_container *container);
 mc_inventory_status inv_hold(mc_item_stack *value, mc_inventory_error *error);
 mc_inventory_status inv_publish_hold(const mc_item_stack *value, mc_item_stack **out,
                                      mc_inventory_error *error);

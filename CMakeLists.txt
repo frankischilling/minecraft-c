@@ -491,6 +491,7 @@ add_library(mc_inventory STATIC
     src/inventory/crafting/inventory.c
     src/inventory/crafting/result.c
     src/inventory/player/constructor.c
+    src/inventory/player/terminal.c
     src/inventory/container/container.c
     src/item/recipes/matching.c)
 target_link_libraries(mc_inventory PUBLIC mc_registry mc_item PRIVATE mc_build_options)
@@ -747,6 +748,7 @@ add_library(mc_simulation STATIC
     src/entity/mob/construction.c
     src/entity/mob/nbt.c
     src/entity/player/construction.c
+    src/entity/player/terminal_inventory.c
     src/entity/player/input.c
     src/entity/player/session.c
     src/entity/player/strings.c
@@ -2004,6 +2006,16 @@ if(BUILD_TESTING)
     add_executable(mc_test_crafting tests/inventory/crafting/test_crafting.c
         tests/item/recipes/test_matching.c)
     target_link_libraries(mc_test_crafting PRIVATE mc_inventory mc_resources mc_build_options)
+
+    add_executable(mc_test_inventory_terminal tests/inventory/test_terminal_inventory.c)
+    target_link_libraries(mc_test_inventory_terminal PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_build_options)
+    add_test(NAME inventory.terminal_owner COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/inventory/test_terminal_inventory.py"
+        --executable "$<TARGET_FILE:mc_test_inventory_terminal>" --scope inventory
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/inventory-terminal-contracts")
+    set_tests_properties(inventory.terminal_owner PROPERTIES
+        LABELS "public;integration;inventory;ownership" TIMEOUT 90)
 
     add_executable(mc_crafting_probe tests/inventory/crafting/trace_crafting.c)
     target_link_libraries(mc_crafting_probe PRIVATE mc_inventory mc_resources mc_build_options)

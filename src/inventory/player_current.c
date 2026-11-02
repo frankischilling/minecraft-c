@@ -22,7 +22,7 @@ mc_inventory_status mc_inventory_player_current(mc_inventory_player *inventory,
     if (inventory == NULL || out == NULL || !inv_side_valid(inventory->side))
         return current_result(error, MC_INVENTORY_INVALID_ARGUMENT,
                               "Player current Stack native owner/output", true);
-    if (inventory->active)
+    if (inventory->active || inventory->terminal_sealed)
         return current_result(error, MC_INVENTORY_BUSY, "Player current Stack active inventory",
                               true);
     if (inventory->side != MC_REGISTRY_CLIENT)

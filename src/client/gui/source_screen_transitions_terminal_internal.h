@@ -4,6 +4,25 @@
 #include "../world/load_world_terminal_internal.h"
 #include "source_screen_transitions.h"
 
+typedef struct mc_client_bootstrap_terminal_scope mc_client_bootstrap_terminal_scope;
+
+/* Selected whole-root native preparation only. The exact embedded bootstrap
+ * scope must freshly match this router's App and its inactive, selected menu
+ * owner; bootstrap getters have already ended. The router borrows that same
+ * token through retirement and refuses another token on retry.
+ *
+ * Release known UE/closed-OO occurrences before a live OO handoff. The latter
+ * checks its actual retained Load/Player/World/Registry/IX and publication
+ * ledger, retires reached native children, and transfers only its actual IT
+ * owning slot to the sealed Player sidecar. No source close, store, drop or
+ * save runs. Ordinary preparation/Screen retirement keep their BUSY guard.
+ * Checked native progress is one-way; failure keeps every remaining right
+ * live for retry and never supplies a hold-count exemption. */
+mc_client_screen_status
+mc_client_screen_transitions_terminal_prepare_root(mc_client_screen_transitions *,
+                                                   const mc_client_bootstrap_terminal_scope *,
+                                                   mc_client_screen_error *);
+
 /* Inspect every actual retained node/call after terminal preparation and verify
  * the namespace's exact call count. EMPTY_STORAGE is an explicit absence proof,
  * not a successful empty World audit. SELECTED_LOAD requires one or more actual

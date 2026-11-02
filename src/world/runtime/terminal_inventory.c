@@ -4,6 +4,7 @@
 #include "../../entity/mob/internal.h"
 #include "../../entity/mob/references_internal.h"
 #include "../../entity/particles/particle_internal.h"
+#include "../../entity/player/terminal_inventory.h"
 #include "construction_internal.h"
 #include "mc/entity/particles/particle.h"
 #include "mc/world/dimension/world_provider.h"
@@ -212,6 +213,16 @@ static mc_world_storage_status collect_entity(void *context, const void *slot, m
             canonical != value->class_literal)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal canonical Entity Class identity");
+        if (mc_local_player_terminal_sealed(value)) {
+            mc_player_terminal_inventory_error inventory_error;
+            const mc_entity_status admitted = mc_player_terminal_inventory_admit(
+                value, c->world->classes->registry, c->world, &inventory_error);
+            if (admitted != MC_ENTITY_OK)
+                return result(error,
+                              admitted == MC_ENTITY_BUSY ? MC_WORLD_STORAGE_BUSY
+                                                         : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              inventory_error.operation);
+        }
         if (value->particle != NULL) {
             /* Each particle's World backedge is counted once per identity,
              * independently of its genuine DN List occurrences. Complete EM
@@ -774,7 +785,7 @@ mc_world_storage_status mc_world_runtime_terminal_mob_graph_prepare(
      * keep target-only nodes and cycles alive until the caller's joint commit
      * has consumed every source reference field and container root. */
     for (size_t i = 0; i < c->entity_count; ++i)
-        (void)mc_entity_retain(c->entities[i]);
+        mc_entity_terminal_pin(c->entities[i]);
     *out = graph;
     return result(error, MC_WORLD_STORAGE_OK, NULL);
 }

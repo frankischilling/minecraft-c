@@ -20,7 +20,7 @@ static mc_inventory_status selection_admit(mc_inventory_player *inventory,
         inventory->armor_slots == NULL)
         return selection_result(error, MC_INVENTORY_INVALID_ARGUMENT,
                                 "Player selection actual native owner");
-    if (inventory->active)
+    if (inventory->active || inventory->terminal_sealed)
         return selection_result(error, MC_INVENTORY_BUSY, "Player selection active native owner");
     if (inventory->side != MC_REGISTRY_CLIENT)
         return selection_result(error, MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,

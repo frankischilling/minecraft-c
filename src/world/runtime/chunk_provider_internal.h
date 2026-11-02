@@ -150,9 +150,11 @@ mc_world_storage_status mc_chunk_provider_cache_eligible(const mc_chunk_provider
                                                          mc_world_storage_error *);
 
 /* Private owned-adapter operations. A false get means use the unchanged generic
- * coordinator. Every raw mutation/callback scope forces nested gets through
- * that coordinator; depth-zero completion rebuilds only after full validation.
- * Export discards the opaque index permanently, including from inside a scope. */
+ * coordinator. Within an owned mutation/callback scope, a nested hit reads the
+ * bounded live map linearly, never its stale index, and retains generic-call
+ * accounting. A miss enters the coordinator. Depth-zero completion rebuilds
+ * only after full validation. Raw export discards the owner permanently,
+ * including from inside a scope; caller-mutable caches always remain generic. */
 void mc_chunk_provider_cache_export(mc_chunk_provider *);
 void mc_chunk_provider_cache_mutation_begin(mc_chunk_provider *);
 void mc_chunk_provider_cache_mutation_end(mc_chunk_provider *);

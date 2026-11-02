@@ -2,6 +2,8 @@ include_guard(GLOBAL)
 option(MC_ENABLE_CLIENT_WORKBENCH_TESTS "Run genuine saved-World SDK crafting acceptance" OFF)
 option(MC_ENABLE_CLIENT_WORKBENCH_AUTO_CLOSE_TESTS
     "Run saved-World SDK and authored automatic Workbench close acceptance" OFF)
+option(MC_ENABLE_CLIENT_WORKBENCH_OPEN_SHUTDOWN_TESTS
+    "Run saved-World SDK open Workbench native shutdown acceptance" OFF)
 
 if(TARGET mc_client_source_screens)
     target_sources(mc_client_source_screens PRIVATE src/client/gui/source_workbench_screen.c)
@@ -11,6 +13,12 @@ if(TARGET mc_client_source_screen_drawing)
 endif()
 
 if(BUILD_TESTING)
+    add_test(NAME tools.workbench_open_shutdown_packet COMMAND Python3::Interpreter -B
+        -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/workbench_open_shutdown"
+        -p test_packet.py)
+    set_tests_properties(tools.workbench_open_shutdown_packet PROPERTIES
+        LABELS "public;unit;tools;inventory;client;ownership" TIMEOUT 60)
     add_test(NAME block.pressure_plate_inventory_packet COMMAND Python3::Interpreter -B
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/block/pressure_plate_inventory/test_packet.py")
     set_tests_properties(block.pressure_plate_inventory_packet PROPERTIES
@@ -34,6 +42,22 @@ if(BUILD_TESTING)
     set_tests_properties(tools.workbench_auto_close_packet PROPERTIES
         LABELS "public;unit;tools;inventory;client" TIMEOUT 60)
     if(TARGET mc_client_source_screens)
+        add_executable(mc_test_player_terminal_inventory
+            tests/entity/player/test_terminal_inventory.c)
+        target_include_directories(mc_test_player_terminal_inventory PRIVATE
+            src src/core/java src/platform/time)
+        target_link_libraries(mc_test_player_terminal_inventory PRIVATE
+            mc_client_source_screens mc_client_source_screen_events mc_client_application_owner
+            mc_simulation mc_resources mc_persistence mc_c_atomics mc_math_classes mc_build_options)
+        if(CMAKE_CXX_COMPILER_LOADED)
+            set_property(TARGET mc_test_player_terminal_inventory PROPERTY LINKER_LANGUAGE CXX)
+        endif()
+        add_test(NAME entity.player_terminal_inventory COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/inventory/test_terminal_inventory.py"
+            --executable "$<TARGET_FILE:mc_test_player_terminal_inventory>" --scope player
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/player-terminal-contracts")
+        set_tests_properties(entity.player_terminal_inventory PROPERTIES
+            LABELS "public;integration;entity;client;inventory;ownership" TIMEOUT 90)
         add_executable(mc_test_source_workbench tests/client/gui/test_source_workbench.c)
         target_include_directories(mc_test_source_workbench PRIVATE src)
         target_link_libraries(mc_test_source_workbench PRIVATE mc_client_source_screens
@@ -65,6 +89,39 @@ if(BUILD_TESTING)
 endif()
 
 if(BUILD_TESTING AND TARGET mc_test_world_selection_loop)
+    add_executable(mc_test_workbench_open_shutdown
+        tests/client/gameplay/test_workbench_open_shutdown.c
+        tests/client/world/test_load_world_foreign_loading.c
+        tests/client/world/test_render_global_entities.c
+        tests/client/world/test_refresh_entity.c
+        tests/client/world/test_renderer_focus.c)
+    target_include_directories(mc_test_workbench_open_shutdown PRIVATE src src/platform/time)
+    target_link_libraries(mc_test_workbench_open_shutdown PRIVATE
+        mc_client_runtime mc_client_saves mc_build_options)
+    if(CMAKE_CXX_COMPILER_LOADED)
+        set_property(TARGET mc_test_workbench_open_shutdown PROPERTY LINKER_LANGUAGE CXX)
+    endif()
+    if(WIN32 AND TARGET OpenAL)
+        add_custom_command(TARGET mc_test_workbench_open_shutdown POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
+                "$<TARGET_FILE_DIR:mc_test_workbench_open_shutdown>")
+    endif()
+    if(WIN32 AND MC_ENABLE_CLIENT_WORKBENCH_OPEN_SHUTDOWN_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS
+       AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
+        foreach(_mc_shutdown_profile IN ITEMS clean container player world)
+            add_test(NAME "client.workbench_open_shutdown_${_mc_shutdown_profile}"
+                COMMAND Python3::Interpreter -B
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_workbench_open_shutdown.py"
+                --executable "$<TARGET_FILE:mc_test_workbench_open_shutdown>"
+                --assets "${MC_APPLICATION_STARTUP_IMPORTED_RESOURCES}"
+                --artifacts "${CMAKE_CURRENT_BINARY_DIR}/workbench-open-shutdown-captures"
+                --profile "${_mc_shutdown_profile}")
+            set_tests_properties("client.workbench_open_shutdown_${_mc_shutdown_profile}" PROPERTIES
+                LABELS "local;integration;client;input;graphics;inventory;ownership"
+                TIMEOUT 420 RESOURCE_LOCK mc_desktop_focus)
+        endforeach()
+        unset(_mc_shutdown_profile)
+    endif()
     add_executable(mc_test_workbench_auto_close_failures
         tests/client/gameplay/test_workbench_auto_close_failures.c
         tests/client/world/test_load_world_foreign_loading.c

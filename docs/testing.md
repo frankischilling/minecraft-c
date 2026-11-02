@@ -1,5 +1,31 @@
 # Test scope and reproduction
 
+The [World query CPU benchmark](performance/world-queries.md) has an optional
+`mc_benchmark_world_queries` target and an asset-independent runner. Its
+recorded Windows A/B samples verify values and complete declared state outside
+timing, with no timing thresholds in CTest. It does not measure FPS.
+[Held Item mining](item/mining.md) adds public `item.mining`, `item.combat`,
+`client.mining_controller`, `client.mining_tools` and `tools.item_mining_packet`
+coverage for speed, harvest, destruction and statistics, with original packet
+comparisons and separate native ownership/failure controls.
+
+The same frozen runtime passes 632/632 Linux Clang 18 ASan/UBSan public tests in
+173.49 seconds, with 4,338 source files and 520 executables unchanged and all
+1,434 runtime files matching Windows. Windows passes 633/637 in 226.45 seconds
+and 636/637 in 250.01 seconds; each keeps 4,338 sources, 520 products and 823
+assets unchanged. The first cohort fails light/Spider/Wolf/Zombie scenarios;
+the second passes those and fails Chicken's zero-draw compound assertion.
+Unchanged isolated probes pass. Two separate 370-test CPU load cohorts pass,
+while two native scenarios lose foreground to Remote Desktop before their
+renderer assertions. The original zero-draw failure remains unexplained;
+no assertion or backend behavior is changed to conceal it.
+
+The [Windows frame toolkit](performance/world-queries.md#matched-windows-frame-intervals)
+records a separate valid matched pair and the complete failed longer repeat.
+Its public build/run smoke passes strict focus, camera, source-screen, ownership
+and cleanup checks at 20.88 FPS. This qualifies the declared finite scene and tool,
+not global graphical stability or extended gameplay.
+
 ## Current targeted and public qualification
 
 The Workbench runtime passes all 630 Windows public tests in 326.54 seconds

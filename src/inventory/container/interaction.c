@@ -15,6 +15,14 @@ static mc_inventory_status begin(mc_container *container, mc_entity *player, int
         }
         return MC_INVENTORY_INVALID_ARGUMENT;
     }
+    if (container != NULL && container->terminal_sealed) {
+        if (error != NULL) {
+            mc_container_interaction_error_init(error);
+            (void)inv_interaction_fail(error, MC_INVENTORY_BUSY,
+                                       "Container terminal sealed invocation");
+        }
+        return MC_INVENTORY_BUSY;
+    }
     mc_container_interaction_call *c = calloc(1, sizeof(*c));
     if (c == NULL) {
         if (error != NULL) {

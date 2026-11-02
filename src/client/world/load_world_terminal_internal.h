@@ -35,6 +35,17 @@ mc_client_world_load_terminal_follows(const mc_client_world_load_call *,
                                       const mc_client_world_load_call *newer,
                                       mc_world_storage_error *);
 
+/* Same passive reciprocal ownership proof before Load child cleanup. The
+ * namespace must already have ended new call admission, and its exact count
+ * and complete chain must separately pass classes_terminal_validate. This
+ * permits the selected root to identify actual live Screen/Player/World
+ * owners before retiring reached Screen children that may lease a Load's
+ * World. It neither classifies a selected epoch nor admits destruction. */
+mc_world_storage_status
+mc_client_world_load_terminal_owned_follows(const mc_client_world_load_call *,
+                                            const mc_client_world_load_call *newer,
+                                            mc_world_storage_error *);
+
 /* Classify this actual prepared call without authorizing World destruction.
  * EMPTY_STORAGE requires no acquired or consumed World/Handler/Player/Input
  * graph and no captured Format-owned Handler. Owned non-Handler Format prefixes

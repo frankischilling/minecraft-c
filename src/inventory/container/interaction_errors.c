@@ -57,7 +57,10 @@ mc_inventory_status mc_container_retain(mc_container *c, mc_inventory_error *err
     mc_inventory_error e = {0};
     if (c == NULL)
         e.status = MC_INVENTORY_INVALID_ARGUMENT;
-    else if (c->interaction_holds == SIZE_MAX) {
+    else if (c->terminal_sealed) {
+        e.status = MC_INVENTORY_BUSY;
+        e.operation = "Container terminal sealed native retain";
+    } else if (c->interaction_holds == SIZE_MAX) {
         e.status = MC_INVENTORY_LIMIT;
         e.operation = "Container native hold bound";
     } else

@@ -2,6 +2,7 @@
 #include "../../block/registry/registry_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/inventory/mining.h"
+#include "mc/world/runtime/construction.h"
 #include "player_internal.h"
 
 #include <string.h>
@@ -68,8 +69,8 @@ static bool harvest_body(mc_entity *player, const mc_block *block, bool *out,
                           "b", "(Luu;)Z", 5, false);
         return false;
     }
-    const mc_inventory_status status =
-        mc_inventory_player_can_harvest(inventory, block, out, &e->inventory);
+    const mc_inventory_status status = mc_inventory_player_can_harvest(
+        inventory, mc_world_runtime_registry(player->base.world), block, out, &e->inventory);
     if (status != MC_INVENTORY_OK) {
         (void)mining_fail(e, MC_ENTITY_STATE_ERROR, e->inventory.operation, "gs", "b", "(Luu;)Z", 5,
                           status != MC_INVENTORY_NULL_REFERENCE &&
@@ -92,7 +93,7 @@ static bool speed_body(mc_entity *player, mc_registry_classes *registry, const m
     }
     float speed;
     const mc_inventory_status status =
-        mc_inventory_player_mining_speed(inventory, block, &speed, &e->inventory);
+        mc_inventory_player_mining_speed(inventory, registry, block, &speed, &e->inventory);
     if (status != MC_INVENTORY_OK) {
         (void)mining_fail(e, MC_ENTITY_STATE_ERROR, e->inventory.operation, "gs", "a", "(Luu;)F", 5,
                           status != MC_INVENTORY_NULL_REFERENCE &&

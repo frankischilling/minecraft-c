@@ -98,4 +98,10 @@ mc_entity_status mc_entity_mount_vehicle_store(mc_entity *, mc_entity *);
 mc_entity_status mc_entity_mount_passenger_store(mc_entity *, mc_entity *);
 void mc_entity_mount_references_dispose(mc_entity *);
 
+/* Trusted World joint-commit pin only, after fresh canonical graph validation
+ * and a checked holds < SIZE_MAX for every reached Entity. This consumes no
+ * Source admission right and can pin a natively sealed Player. The same graph
+ * stays exclusive until all temporary occurrences are released. */
+void mc_entity_terminal_pin(mc_entity *);
+
 #endif

@@ -807,54 +807,86 @@ typedef enum acquisition_operation {
     ACQUISITION_MARK_DROP
 } acquisition_operation;
 
+/* Keep the descendant diagnostic frame off the callback-free owned-hit stack.
+ * These are the project's supported compilers; the fallback remains C17. */
+#if defined(_MSC_VER)
+#define MC_RUNTIME_ACQUISITION_NOINLINE __declspec(noinline)
+#elif defined(__GNUC__) || defined(__clang__)
+#define MC_RUNTIME_ACQUISITION_NOINLINE __attribute__((noinline))
+#else
+#define MC_RUNTIME_ACQUISITION_NOINLINE
+#endif
+
+static MC_RUNTIME_ACQUISITION_NOINLINE mc_chunk_acquire_status
+acquire_entered(mc_world_runtime *runtime, int32_t x, int32_t z, mc_chunk_state **out,
+                acquisition_operation operation, mc_world_runtime_acquisition_error *error,
+                bool clear_success) {
+    mc_world_runtime_acquisition_error frame;
+    acquisition_error_init(&frame);
+    mc_world_runtime_acquisition_error *previous = runtime->acquisition_error;
+    mc_world_runtime_lifecycle_error *previous_lifecycle = runtime->lifecycle_error;
+    runtime->acquisition_error = &frame;
+    runtime->lifecycle_error = NULL;
+    mc_chunk_provider_cache_mutation_begin(runtime->fields.v);
+    switch (operation) {
+        case ACQUISITION_ACQUIRE:
+            frame.status = mc_chunk_acquire(&runtime->acquisition, x, z, out);
+            break;
+        case ACQUISITION_GET:
+            frame.status = mc_chunk_acquire_get(&runtime->acquisition, x, z, out);
+            break;
+        case ACQUISITION_POPULATE:
+            frame.status = mc_chunk_acquire_populate(&runtime->acquisition, x, z);
+            break;
+        case ACQUISITION_MARK_DROP:
+            frame.status = mc_chunk_acquire_mark_drop(&runtime->acquisition, x, z);
+            break;
+    }
+    mc_chunk_provider_cache_mutation_end(runtime->fields.v);
+    runtime->acquisition_error = previous;
+    runtime->lifecycle_error = previous_lifecycle;
+    --runtime->active_calls;
+    if (error != NULL) {
+        if (frame.status == MC_CHUNK_ACQUIRE_OK) {
+            if (clear_success)
+                acquisition_error_init(error);
+        } else
+            *error = frame;
+    }
+    return frame.status;
+}
+
+#undef MC_RUNTIME_ACQUISITION_NOINLINE
+
 static mc_chunk_acquire_status acquire_attempt(mc_world_runtime *runtime, int32_t x, int32_t z,
                                                mc_chunk_state **out,
                                                acquisition_operation operation,
-                                               mc_world_runtime_acquisition_error *error) {
-    mc_world_runtime_acquisition_error frame;
-    acquisition_error_init(&frame);
-    frame.status = enter_acquire(runtime, &frame.cause);
-    if (frame.status == MC_CHUNK_ACQUIRE_OK) {
-        mc_world_runtime_acquisition_error *previous = runtime->acquisition_error;
-        mc_world_runtime_lifecycle_error *previous_lifecycle = runtime->lifecycle_error;
-        runtime->acquisition_error = &frame;
-        runtime->lifecycle_error = NULL;
-        const bool owned_get = operation == ACQUISITION_GET &&
-                               mc_chunk_provider_cache_get(runtime->fields.v, &runtime->acquisition,
-                                                           x, z, out, &frame.status);
-        if (!owned_get) {
-            mc_chunk_provider_cache_mutation_begin(runtime->fields.v);
-            switch (operation) {
-                case ACQUISITION_ACQUIRE:
-                    frame.status = mc_chunk_acquire(&runtime->acquisition, x, z, out);
-                    break;
-                case ACQUISITION_GET:
-                    frame.status = mc_chunk_acquire_get(&runtime->acquisition, x, z, out);
-                    break;
-                case ACQUISITION_POPULATE:
-                    frame.status = mc_chunk_acquire_populate(&runtime->acquisition, x, z);
-                    break;
-                case ACQUISITION_MARK_DROP:
-                    frame.status = mc_chunk_acquire_mark_drop(&runtime->acquisition, x, z);
-                    break;
-            }
-            mc_chunk_provider_cache_mutation_end(runtime->fields.v);
-        }
-        runtime->acquisition_error = previous;
-        runtime->lifecycle_error = previous_lifecycle;
+                                               mc_world_runtime_acquisition_error *error,
+                                               bool clear_success) {
+    mc_world_storage_error cause = {0};
+    mc_chunk_acquire_status status = enter_acquire(runtime, &cause);
+    if (status == MC_CHUNK_ACQUIRE_OK) {
+        /* This checked adapter has no Source/user callbacks. A miss is probed
+         * exactly once, then the already-held cold coordinator owns the call.
+         * Do not initialize descendant diagnostics before a common cache hit. */
+        if (operation != ACQUISITION_GET ||
+            !mc_chunk_provider_cache_get(runtime->fields.v, &runtime->acquisition, x, z, out,
+                                         &status))
+            return acquire_entered(runtime, x, z, out, operation, error, clear_success);
         --runtime->active_calls;
     }
-    if (frame.status == MC_CHUNK_ACQUIRE_OK)
-        acquisition_error_init(&frame);
-    if (error != NULL)
-        *error = frame;
-    return frame.status;
+    if (error != NULL && (clear_success || status != MC_CHUNK_ACQUIRE_OK)) {
+        acquisition_error_init(error);
+        error->status = status;
+        error->cause = cause;
+    }
+    return status;
 }
 
 mc_chunk_acquire_status mc_world_runtime_acquire(mc_world_runtime *runtime, int32_t x, int32_t z,
                                                  mc_chunk_state **out) {
     const mc_chunk_acquire_status status =
-        acquire_attempt(runtime, x, z, out, ACQUISITION_ACQUIRE, NULL);
+        acquire_attempt(runtime, x, z, out, ACQUISITION_ACQUIRE, NULL, true);
     if (status == MC_CHUNK_ACQUIRE_OK)
         mc_chunk_provider_cache_export(runtime->fields.v);
     return status;
@@ -871,16 +903,22 @@ mc_chunk_acquire_status mc_world_runtime_get(mc_world_runtime *runtime, int32_t 
 mc_chunk_acquire_status mc_world_runtime_get_detailed(mc_world_runtime *runtime, int32_t x,
                                                       int32_t z, mc_chunk_state **out,
                                                       mc_world_runtime_acquisition_error *error) {
-    return acquire_attempt(runtime, x, z, out, ACQUISITION_GET, error);
+    return acquire_attempt(runtime, x, z, out, ACQUISITION_GET, error, true);
+}
+
+mc_chunk_acquire_status mc_world_runtime_get_failure(mc_world_runtime *runtime, int32_t x,
+                                                     int32_t z, mc_chunk_state **out,
+                                                     mc_world_runtime_acquisition_error *error) {
+    return acquire_attempt(runtime, x, z, out, ACQUISITION_GET, error, false);
 }
 
 mc_chunk_acquire_status mc_world_runtime_populate(mc_world_runtime *runtime, int32_t x, int32_t z) {
-    return acquire_attempt(runtime, x, z, NULL, ACQUISITION_POPULATE, NULL);
+    return acquire_attempt(runtime, x, z, NULL, ACQUISITION_POPULATE, NULL, true);
 }
 
 mc_chunk_acquire_status mc_world_runtime_mark_drop(mc_world_runtime *runtime, int32_t x,
                                                    int32_t z) {
-    return acquire_attempt(runtime, x, z, NULL, ACQUISITION_MARK_DROP, NULL);
+    return acquire_attempt(runtime, x, z, NULL, ACQUISITION_MARK_DROP, NULL, true);
 }
 
 static mc_chunk_lifecycle_status enter_lifecycle(mc_world_runtime *runtime,

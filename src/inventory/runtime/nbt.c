@@ -180,7 +180,7 @@ mc_inventory_nbt_status mc_inventory_player_read_nbt(mc_inventory_player *invent
         fail(&e, MC_INVENTORY_NBT_NULL_REFERENCE, "Inventory NBT actual receiver");
     else if (inventory->side != MC_REGISTRY_CLIENT)
         fail(&e, MC_INVENTORY_NBT_INVALID_ARGUMENT, "Inventory NBT actual client class");
-    else if (inventory->active)
+    else if (inventory->active || inventory->terminal_sealed)
         fail(&e, MC_INVENTORY_NBT_BUSY, "Inventory NBT active native owner");
     else {
         inventory->active = true;
@@ -224,7 +224,7 @@ mc_inventory_nbt_status mc_inventory_player_build_nbt(mc_inventory_player *inven
         fail(&e, MC_INVENTORY_NBT_INVALID_ARGUMENT, "Inventory NBT writer native arguments");
     else if (inventory->side != MC_REGISTRY_CLIENT)
         fail(&e, MC_INVENTORY_NBT_INVALID_ARGUMENT, "Inventory NBT writer actual client class");
-    else if (inventory->active)
+    else if (inventory->active || inventory->terminal_sealed)
         fail(&e, MC_INVENTORY_NBT_BUSY, "Inventory NBT writer active native owner");
     else if (limits.max_allocation_bytes < sizeof(*b))
         fail(&e, MC_INVENTORY_NBT_LIMIT, "Inventory NBT writer native scratch budget");

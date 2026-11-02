@@ -2,8 +2,10 @@
 
 #include "../../entity/living/fields_internal.h"
 #include "../../entity/player/player_internal.h"
+#include "../../entity/player/terminal_inventory.h"
 #include "../application_state.h"
 #include "../render/model_graph_internal.h"
+#include "../runtime/bootstrap_terminal_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/statistics/achievements/achievements.h"
 #include "world/runtime/runtime_internal.h"
@@ -352,6 +354,77 @@ bool mc_screen_container_terminal_prepare_locked(mc_client_source_id *o,
     /* Native one-way latch: direct Screen entry must stop before the constructor
      * occurrences end. No source field, close callback or failure is changed. */
     o->base.phase = MC_CLIENT_SCREEN_RETIRING;
+    return mc_screen_container_cleanup_locked(o, e);
+}
+
+static bool handoff_failure(mc_client_source_id *o, mc_client_screen_error *e,
+                            const char *operation) {
+    (void)cleanup_failure(o, e, operation);
+    e->native_policy = true;
+    return false;
+}
+
+bool mc_screen_container_terminal_handoff_locked(mc_client_source_id *o,
+                                                 const mc_client_bootstrap_terminal_scope *scope,
+                                                 mc_entity *player, mc_registry_classes *registry,
+                                                 mc_world_runtime *world,
+                                                 mc_client_screen_error *e) {
+    if (!mc_client_bootstrap_terminal_scope_matches(scope, o->base.fields.b))
+        return handoff_failure(o, e, "OO native selected terminal root scope");
+    if (o->base.kind != MC_CLIENT_SCREEN_WORKBENCH || o->base.active_calls != 0 ||
+        o->base.holds != 1 || o->base.phase == MC_CLIENT_SCREEN_CONSTRUCTING)
+        return handoff_failure(o, e, "OO terminal handoff active/external Screen occurrence");
+    if (o->terminal_handoff_done) {
+        /* The actual Player may already have been consumed by a later native
+         * tail. Never revisit ended constructor/publication borrows on retry. */
+        if (o->base.phase != MC_CLIENT_SCREEN_RETIRING || o->container_owned ||
+            o->captured_container != NULL || o->container_held)
+            return handoff_failure(o, e, "OO terminal completed handoff owner slots");
+        return mc_screen_container_cleanup_locked(o, e);
+    }
+    if (player == NULL || player->local_player == NULL || registry != o->base.classes->registry ||
+        !o->container_owned || o->container_held || o->captured_container == NULL ||
+        o->id.j != o->captured_container || !o->player_held || o->constructor_player != player ||
+        !o->world_held || o->constructor_world != world || player->base.world != world ||
+        player->local_player->fields.minecraft != o->base.fields.b ||
+        o->constructor_inventory != player->local_player->fields.player.c ||
+        player->local_player->fields.player.e != o->captured_container ||
+        o->published_players == NULL)
+        return handoff_failure(o, e, "OO terminal exact constructor and published Player owner");
+    size_t publications = 0;
+    for (const mc_screen_id_player_hold *hold = o->published_players; hold != NULL;
+         hold = hold->next) {
+        if (publications == o->base.memory.allocations || hold->player != player)
+            return handoff_failure(o, e, "OO terminal exact Player publication ledger");
+        ++publications;
+    }
+    /* The genuine root has ended Source production. Revoke this Screen's
+     * direct entry before checked child cleanup; a later BUSY keeps the same
+     * still-owned IT and native terminal progress, without Source replay. */
+    o->base.phase = MC_CLIENT_SCREEN_RETIRING;
+    if (!retire_one_call(o, o->calls, e) || !retire_one_call(o, o->closed_direct, e) ||
+        !retire_one_call(o, o->closed_parent, e)) {
+        e->native_policy = true;
+        return false;
+    }
+    mc_player_terminal_inventory_error adopted = {0};
+    const mc_entity_status status = mc_player_terminal_inventory_adopt(
+        player, registry, world, &o->captured_container, &adopted);
+    o->detail.entity = status;
+    o->detail.cleanup_ownership = adopted.inventory;
+    if (status != MC_ENTITY_OK) {
+        (void)handoff_failure(o, e, adopted.operation);
+        if (status == MC_ENTITY_LIMIT)
+            e->status = MC_CLIENT_SCREEN_LIMIT;
+        else if (status == MC_ENTITY_ALLOCATION_FAILED)
+            e->status = MC_CLIENT_SCREEN_ALLOCATION_FAILED;
+        return false;
+    }
+    o->container_owned = false;
+    o->terminal_handoff_done = true;
+    /* Only native owner slots moved. Source j/e/c/d/r remain untouched, and
+     * the exact Load Player occurrence protects the sealed sidecar while the
+     * constructor/publication Player and World occurrences end below. */
     return mc_screen_container_cleanup_locked(o, e);
 }
 

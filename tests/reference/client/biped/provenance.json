@@ -90,8 +90,8 @@
       "sha256": "a154b4a5c23d6b0b53e004f311316a9bacda389046f5e6651d7d7aac96592a8f"
     },
     "include/mc/entity/entity.h": {
-      "bytes": 8689,
-      "sha256": "2efbee4630c8e9a20ba0fbb071d9482bac4e3215b8413b1354c98df8102ec2ac"
+      "bytes": 8923,
+      "sha256": "99ed142cabfc9ebd714f9eabcbe389f0c992941f921d593415ac9fa2a8f41b7a"
     },
     "include/mc/entity/errors.h": {
       "bytes": 1058,

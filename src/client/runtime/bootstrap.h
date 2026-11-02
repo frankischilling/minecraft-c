@@ -9,7 +9,7 @@
 
 typedef struct mc_client_bootstrap mc_client_bootstrap;
 typedef struct mc_client_source_frame mc_client_source_frame;
-/* Borrow expires at the first close attempt, like the App getter. */
+/* Borrow expires at the first close or selected menu terminal attempt. */
 mc_client_source_frame *mc_client_bootstrap_frame(mc_client_bootstrap *);
 typedef struct mc_client_render_engine_classes mc_client_render_engine_classes;
 
@@ -44,7 +44,8 @@ mc_client_bootstrap_open_standalone(const mc_client_application_options *, mc_cl
  * cancellation/join, manager/graphics terminal retirement and App callback-cycle
  * teardown retain their real dependencies on BUSY or failure. Retry while *slot
  * remains nonnull; success consumes/nulls it. No source J/o store is synthesized.
- * All borrowed getters expire at the first close attempt. A live transition
+ * All borrowed getters expire at the first close or selected menu terminal
+ * attempt. A live menu or transition
  * lease returns BUSY before startup/global fallback destruction; keep that
  * same owner graph for explicit terminal preparation and cleanup retry. */
 mc_client_bootstrap_status mc_client_bootstrap_close(mc_client_bootstrap **slot);

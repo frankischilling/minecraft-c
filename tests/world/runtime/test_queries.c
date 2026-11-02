@@ -116,17 +116,29 @@ static bool same_registry(const mc_registry_error *a, const mc_registry_error *b
            a->format_error.date_time == b->format_error.date_time;
 }
 
+static bool empty_site(const mc_world_population_site *site) {
+    return site->provider_class == NULL && site->method == NULL && site->bytecode == 0 &&
+           site->world_bytecode == 0 && site->selector_class == NULL &&
+           site->selector_method == NULL && site->selector_bytecode == 0 && site->iteration == 0 &&
+           !site->native_boundary;
+}
+
 static bool cleared(const mc_world_query_error *e) {
     const mc_registry_error registry = {.initializer_pc = -1,
                                         .block_id = -1,
                                         .constructor_pc = -1,
                                         .active_initializer_pc = -1,
                                         .item_argument = -1};
+    const mc_registry_error population_registry = {0};
     return e->status == MC_WORLD_STORAGE_OK && e->operation == NULL && e->bytecode == 0 &&
            e->provider_bytecode == 0 && e->chunk_bytecode == 0 &&
            e->acquisition == MC_CHUNK_ACQUIRE_OK && e->cause.status == MC_WORLD_STORAGE_OK &&
            e->cause.operation == NULL && e->cause.system_error == 0 &&
-           same_registry(&e->registry, &registry);
+           same_registry(&e->registry, &registry) && e->source_chunk == NULL &&
+           !e->population.reached && empty_site(&e->population.current) &&
+           empty_site(&e->population.origin) && e->population.cause.status == MC_WORLD_STORAGE_OK &&
+           e->population.cause.operation == NULL && e->population.cause.system_error == 0 &&
+           same_registry(&e->population.registry, &population_registry);
 }
 
 static bool failure_is(mc_world_runtime *w, const mc_world_query_error *e, unsigned int pc,
@@ -506,6 +518,67 @@ static bool column_case(fixture *f, size_t side, const uint8_t *column, int32_t 
     for (int32_t y = 0; y < 128; ++y)
         blocks[block_index(y)] = saved[y];
     CHECK(status == MC_WORLD_STORAGE_OK && value == expected && cleared(&e));
+    ok = true;
+cleanup:
+    return ok;
+}
+
+static bool failure_diagnostics(fixture *f, size_t side) {
+    bool ok = false;
+    mc_world_runtime *world = f->worlds[side];
+    mc_world_runtime_acquisition_error detail;
+    unsigned char before[sizeof(detail)];
+    mc_world_storage_error cause;
+    mc_chunk_state *chunk = NULL;
+    int32_t value = 777;
+    const size_t calls = world->active_calls;
+    const size_t leases = world->local_leases;
+    memset(&detail, 0xa5, sizeof(detail));
+    memcpy(before, &detail, sizeof(detail));
+    CHECK(mc_world_runtime_get_failure(world, 0, 0, &chunk, &detail) == MC_CHUNK_ACQUIRE_OK &&
+          chunk == f->normal[side][0] && memcmp(before, &detail, sizeof(detail)) == 0);
+    CHECK(mc_world_runtime_block_get_failure(world, 8, 64, 8, &value, &cause, &detail) ==
+              MC_WORLD_STORAGE_OK &&
+          value == 1 && memcmp(before, &detail, sizeof(detail)) == 0);
+    CHECK(mc_world_runtime_block_get_failure(world, 8, -1, 8, &value, &cause, &detail) ==
+              MC_WORLD_STORAGE_OK &&
+          value == 0 && memcmp(before, &detail, sizeof(detail)) == 0);
+
+    value = 777;
+    CHECK(mc_world_runtime_block_get_failure(NULL, 8, 64, 8, &value, &cause, &detail) ==
+              MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+          value == 777 && detail.status == MC_CHUNK_ACQUIRE_OK && detail.batch.index == SIZE_MAX &&
+          detail.load_entity.index == SIZE_MAX &&
+          detail.tile_entity.tile_entity.item_index == SIZE_MAX &&
+          detail.registry.initializer_pc == -1 && detail.source_chunk == NULL);
+    memset(&detail, 0xa5, sizeof(detail));
+    mc_chunk_provider *provider = world->fields.v;
+    world->fields.v = NULL;
+    const mc_world_storage_status missing =
+        mc_world_runtime_block_get_failure(world, 8, 64, 8, &value, &cause, &detail);
+    world->fields.v = provider;
+    CHECK(missing == MC_WORLD_STORAGE_UNSUPPORTED_STATE && value == 777 &&
+          detail.status == MC_CHUNK_ACQUIRE_OK && detail.batch.index == SIZE_MAX &&
+          detail.load_entity.index == SIZE_MAX && detail.registry.initializer_pc == -1);
+
+    const size_t capacity = chunk->data->blocks_capacity;
+    chunk->data->blocks_capacity = 0;
+    memset(&detail, 0xa5, sizeof(detail));
+    const mc_world_storage_status payload =
+        mc_world_runtime_block_get_failure(world, 8, 64, 8, &value, &cause, &detail);
+    chunk->data->blocks_capacity = capacity;
+    CHECK(payload == MC_WORLD_STORAGE_UNSUPPORTED_STATE && value == 777 &&
+          detail.status == MC_CHUNK_ACQUIRE_OK && detail.batch.index == SIZE_MAX &&
+          detail.load_entity.index == SIZE_MAX && detail.registry.initializer_pc == -1);
+
+    memset(&detail, 0xa5, sizeof(detail));
+    CHECK(mc_world_runtime_get_failure(NULL, 0, 0, &chunk, &detail) ==
+              MC_CHUNK_ACQUIRE_INVALID_ARGUMENT &&
+          detail.status == MC_CHUNK_ACQUIRE_INVALID_ARGUMENT &&
+          detail.cause.status == MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+          detail.registry.initializer_pc == -1 && detail.batch.index == SIZE_MAX &&
+          detail.load_entity.index == SIZE_MAX && detail.source_chunk == NULL);
+    CHECK(world->active_calls == calls && world->local_leases == leases);
     ok = true;
 cleanup:
     return ok;
@@ -1899,8 +1972,9 @@ int main(int argc, char **argv) {
         CHECK(mc_world_runtime_classes_bind_registry(f->classes[side], f->registry[side], NULL) ==
               MC_REGISTRY_OK);
         CHECK(create_world(f, side));
-        CHECK(cold_paths(f, side) && capture_and_pending(f, side) && top_contracts(f, side) &&
-              light_and_height(f, side) && plant_flag(f, side) && denied_native_policy(f, side));
+        CHECK(cold_paths(f, side) && capture_and_pending(f, side) && failure_diagnostics(f, side) &&
+              top_contracts(f, side) && light_and_height(f, side) && plant_flag(f, side) &&
+              denied_native_policy(f, side));
     }
     for (size_t side = 0; side < 2; ++side)
         CHECK(prefixes_and_admission(f, side));

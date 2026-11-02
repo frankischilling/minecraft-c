@@ -127,25 +127,50 @@ bool mc_chunk_provider_cache_get(mc_chunk_provider *provider,
     if (provider == NULL)
         return false;
     mc_source_owned_cache *owner = provider->owned_cache;
-    if (owner == NULL || owner->mutation_depth != 0) {
+    if (owner == NULL) {
         ++provider->cache_generic_gets;
         return false;
     }
+    const bool mutating = owner->mutation_depth != 0;
     const mc_chunk_cache *cache = &provider->cache;
     if (context == NULL || context->cache != cache || context->world != provider->world ||
         cache->entries != owner->entries || cache->insertions != owner->insertions ||
         cache->capacity != owner->capacity ||
-        cache->insertion_capacity != owner->insertion_capacity || cache->count != owner->count ||
-        cache->insertion_count != owner->insertion_count) {
+        cache->insertion_capacity != owner->insertion_capacity || cache->count > cache->capacity ||
+        cache->insertion_count > cache->insertion_capacity ||
+        (!mutating &&
+         (cache->count != owner->count || cache->insertion_count != owner->insertion_count))) {
         owned_cache_discard(provider);
         ++provider->cache_generic_gets;
         return false;
     }
+    if (mutating)
+        ++provider->cache_generic_gets;
     if (out == NULL || !mc_chunk_acquire_validate_without_cache(context)) {
         *status = MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
         return true;
     }
     const int32_t key = mc_chunk_cache_key(x, z);
+    if (mutating) {
+        /* Only this implementation owns the backing, but its index snapshot
+         * may precede a completed publish/unpublish or synchronous reentry.
+         * Read the live bounded map in ordinary lookup order instead. Raw
+         * exports already discard this owner permanently. A miss still enters
+         * the unchanged coordinator; no callback or pending edit occurs here. */
+        for (size_t index = 0; index < cache->count; ++index) {
+            const mc_chunk_cache_entry *entry = &cache->entries[index];
+            if (entry->key != key)
+                continue;
+            if (entry->chunk == NULL || (!entry->chunk->blank && entry->chunk->data == NULL)) {
+                *status = MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
+                return true;
+            }
+            *out = entry->chunk;
+            *status = MC_CHUNK_ACQUIRE_OK;
+            return true;
+        }
+        return false;
+    }
     size_t slot = owned_cache_hash(key, owner->slots_count - 1);
     for (size_t inspected = 0; inspected < owner->slots_count; ++inspected) {
         const uint32_t word = owner->slots[slot];

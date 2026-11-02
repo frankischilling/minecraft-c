@@ -1,5 +1,21 @@
 # Systems and subsystems
 
+[Scalar World queries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/world-queries.md)
+keep complete failure receipts off successful reads. Nested source-owned cache
+hits scan the live bounded map while its index may be stale. Raw export still
+disables acceleration permanently. Caller-owned caches retain full validation.
+[Held Item mining](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/mining.md)
+shares the existing durability primitive with combat and preserves separate
+Item, Stack, Inventory and controller ordering.
+
+The [open-Workbench terminal route](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench-open-shutdown.md)
+uses the actual bootstrap/menu association and complete retained Load ledger
+before moving the same native IT owner from Screen to Player. The sealed
+Inventory graph refuses new holds and mutations while preserving passive
+Source aliases across later BUSY returns. A fresh exact World audit still
+precedes the destructive tail; final Player disposal frees IT, AA and IX
+before its World binding ends. This performs no Source close or save.
+
 The [Workbench path](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench.md) uses actual Table activation, LocalPlayer screen construction
 and synchronous display replacement. Distinct `UE` and `OO` screens share the
 real inherited `ID` layout, drawing and input bodies. `OO` owns its 3x3 `IT`
@@ -19,8 +35,8 @@ Keyboard close first restores the Player's default Container. `OO.h` then
 retains the inherited close and its own direct Container close separately.
 Failed constructors keep their actual allocated prefixes. Native publication
 records retain every Player that receives the owned `IT`; retirement returns
-`BUSY` before mutation while a Player still publishes it. Live-open terminal
-joining remains unfinished. Successful input retirement ends borrowed
+`BUSY` before mutation while a Player still publishes it. The selected root
+can instead use the checked native transfer above. Successful input retirement ends borrowed
 diagnostic views while preserving scalar failure sites and exception types.
 
 The Windows SDK scenario returns through crafting, placement, Shift transfers,

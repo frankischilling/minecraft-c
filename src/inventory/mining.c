@@ -1,5 +1,8 @@
 #include "mc/inventory/mining.h"
 #include "internal.h"
+#include "mc/item/mining/mining.h"
+
+#include <xmmintrin.h>
 
 static mc_inventory_status mining_error(mc_inventory_error *e, mc_inventory_status status,
                                         const char *operation, bool harvest, int32_t pc) {
@@ -17,6 +20,11 @@ static bool mining_admit(mc_inventory_player *inventory, const void *out, bool h
                            harvest, 0);
         return false;
     }
+    if (inventory->terminal_sealed) {
+        e->status = MC_INVENTORY_BUSY;
+        e->operation = "Inventory terminal sealed mining invocation";
+        return false;
+    }
     if (inventory->active) {
         (void)mining_error(e, MC_INVENTORY_BUSY, "Inventory mining entered owner", harvest, 0);
         return false;
@@ -31,28 +39,35 @@ static bool mining_admit(mc_inventory_player *inventory, const void *out, bool h
 }
 
 mc_inventory_status mc_inventory_player_mining_speed(mc_inventory_player *inventory,
+                                                     mc_registry_classes *registry,
                                                      const mc_block *block, float *out,
                                                      mc_inventory_error *error) {
     mc_inventory_error e = {0};
     if (!mining_admit(inventory, out, false, &e))
         return inv_finish(error, &e);
-    (void)block; /* The empty selected-cell arm never dereferences its argument. */
     if (inventory->main_slots == NULL)
         (void)mining_error(&e, MC_INVENTORY_NULL_REFERENCE, "actual ix.a null main array", false,
                            10);
     else if (inventory->selected < 0 || inventory->selected >= 36)
         (void)mining_error(&e, MC_INVENTORY_INDEX_OUT_OF_BOUNDS, "actual ix.a main array index",
                            false, 10);
-    else if (inventory->main_slots[(size_t)inventory->selected] != NULL)
-        (void)mining_error(&e, MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,
-                           "actual iz.a(Block) mining speed virtual", false, 25);
-    else
+    else if (inventory->main_slots[(size_t)inventory->selected] != NULL) {
+        /* The source deliberately reloads its live array and selected cell
+         * after the first nonnull test. IZ then performs its own Item lookup. */
+        const mc_item_stack *stack = inventory->main_slots[(size_t)inventory->selected];
+        float speed;
+        if (mc_item_stack_mining_speed(registry, stack, block, &speed, &e) == MC_INVENTORY_OK)
+            *out = _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(1.0f), _mm_set_ss(speed)));
+        else
+            inv_frame(&e, MC_REGISTRY_CLIENT, "ix", "fx", "a", "(Luu;)F", 25);
+    } else
         *out = 1.0f;
     inventory->active = false;
     return inv_finish(error, &e);
 }
 
 mc_inventory_status mc_inventory_player_can_harvest(mc_inventory_player *inventory,
+                                                    mc_registry_classes *registry,
                                                     const mc_block *block, bool *out,
                                                     mc_inventory_error *error) {
     mc_inventory_error e = {0};
@@ -85,10 +100,12 @@ mc_inventory_status mc_inventory_player_can_harvest(mc_inventory_player *invento
             else if (index < 0 || index >= (inventory->selected >= 36 ? 4 : 36))
                 (void)mining_error(&e, MC_INVENTORY_INDEX_OUT_OF_BOUNDS,
                                    "actual ix.f_ selected array index", true, 17);
-            else if (array[(size_t)index] != NULL)
-                (void)mining_error(&e, MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,
-                                   "actual iz.b(Block) harvest virtual", true, 27);
-            else
+            else if (array[(size_t)index] != NULL) {
+                const mc_item_stack *stack = array[(size_t)index];
+                if (mc_item_stack_mining_harvest(registry, stack, block, out, &e) !=
+                    MC_INVENTORY_OK)
+                    inv_frame(&e, MC_REGISTRY_CLIENT, "ix", "fx", "b", "(Luu;)Z", 27);
+            } else
                 *out = false;
         }
     }

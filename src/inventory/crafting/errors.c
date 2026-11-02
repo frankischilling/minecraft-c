@@ -98,6 +98,18 @@ void inv_free(inv_budget *budget, void *data) {
     free(header);
 }
 
+/* Passive extent check for the known native-owned graph. This does not admit
+ * arbitrary addresses or change the ordinary allocation header/budget. */
+bool inv_allocation_bytes(const void *data, size_t payload, size_t *out) {
+    if (data == NULL || payload > SIZE_MAX - sizeof(inv_header))
+        return false;
+    const inv_header *header = (const inv_header *)data - 1;
+    if (header->bytes != sizeof(*header) + payload)
+        return false;
+    *out = header->bytes;
+    return true;
+}
+
 mc_inventory_status inv_hold(mc_item_stack *value, mc_inventory_error *error) {
     return value == NULL
                ? MC_INVENTORY_OK

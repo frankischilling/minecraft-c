@@ -1,6 +1,7 @@
 #ifndef MC_ENTITY_PLAYER_INTERNAL_H
 #define MC_ENTITY_PLAYER_INTERNAL_H
 
+#include "../../inventory/player/terminal_internal.h"
 #include "../entity_internal.h"
 #include "mc/entity/player/player.h"
 
@@ -20,6 +21,7 @@ struct mc_player_nbt_coordinate;
 typedef struct mc_local_player_state {
     mc_local_player_snapshot fields;
     struct mc_player_nbt_coordinate *nbt_coordinates;
+    mc_inventory_player_terminal terminal_inventory;
 } mc_local_player_state;
 
 typedef struct mc_local_player_object {

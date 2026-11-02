@@ -143,6 +143,9 @@ mc_entity_status mc_falling_entity_construct_world(mc_entity *raw, mc_world_runt
 mc_entity_status mc_falling_entity_construct(mc_entity *raw, mc_world_runtime *world, double x,
                                              double y, double z, int32_t id,
                                              mc_entity_error *error);
+/* A LocalPlayer whose native terminal Inventory owner is sealed refuses new
+ * holds with BUSY. Existing release and passive snapshots remain available;
+ * this native admission rule does not change its Source construction phase. */
 mc_entity_status mc_entity_retain(mc_entity *entity);
 void mc_entity_release(mc_entity *entity);
 mc_entity_status mc_entity_get_snapshot(const mc_entity *entity, mc_entity_snapshot *out);

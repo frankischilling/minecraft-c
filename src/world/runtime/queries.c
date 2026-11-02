@@ -16,13 +16,11 @@ typedef struct query_chunk {
     bool leased;
 } query_chunk;
 
-static mc_world_query_error empty_error(void) {
-    return (mc_world_query_error){.registry = {.initializer_pc = -1,
-                                               .block_id = -1,
-                                               .constructor_pc = -1,
-                                               .active_initializer_pc = -1,
-                                               .item_argument = -1}};
-}
+static const mc_world_query_error empty_error = {.registry = {.initializer_pc = -1,
+                                                              .block_id = -1,
+                                                              .constructor_pc = -1,
+                                                              .active_initializer_pc = -1,
+                                                              .item_argument = -1}};
 
 static bool fail(mc_world_query_error *error, mc_world_storage_status status,
                  const char *operation) {
@@ -50,7 +48,7 @@ static bool registry_fail(mc_world_runtime *world, mc_world_query_error *error,
 
 static bool registry_null(mc_world_runtime *world, mc_world_query_error *error,
                           const char *operation) {
-    mc_registry_error cause = empty_error().registry;
+    mc_registry_error cause = empty_error.registry;
     cause.status = MC_REGISTRY_NULL_REFERENCE;
     cause.message = operation;
     return registry_fail(world, error, &cause, operation);
@@ -72,13 +70,15 @@ static mc_world_storage_status finish(mc_world_runtime *world, query_chunk *chun
                                       mc_world_query_error *frame, mc_world_query_error *error) {
     if (chunk->leased)
         (void)mc_world_store_release_chunk(chunk->store, chunk->state, NULL);
-    if (frame->status == MC_WORLD_STORAGE_OK)
-        *frame = empty_error();
-    else
+    if (frame->status != MC_WORLD_STORAGE_OK)
         world->last_error = frame->cause;
     mc_world_runtime_call_leave(world);
-    if (error != NULL)
-        *error = *frame;
+    if (error != NULL) {
+        if (frame->status == MC_WORLD_STORAGE_OK)
+            *error = empty_error;
+        else
+            *error = *frame;
+    }
     return frame->status;
 }
 
@@ -100,10 +100,10 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, query_chunk *
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                     "World query replacement provider binding");
     mc_world_runtime_acquisition_error detail;
-    error->acquisition = mc_world_runtime_get_detailed(world, mc_java_i32_shr(x, 4),
-                                                       mc_java_i32_shr(z, 4), &out->state, &detail);
-    error->source_chunk = detail.source_chunk;
+    error->acquisition = mc_world_runtime_get_failure(world, mc_java_i32_shr(x, 4),
+                                                      mc_java_i32_shr(z, 4), &out->state, &detail);
     if (error->acquisition != MC_CHUNK_ACQUIRE_OK) {
+        error->source_chunk = detail.source_chunk;
         error->population = detail.population;
         error->registry = detail.registry;
         if (detail.cause.status != MC_WORLD_STORAGE_OK)
@@ -144,7 +144,7 @@ static bool nibble(const mc_world_chunk_nibble *owner, int32_t x, int32_t y, int
 static bool top_material(mc_world_runtime *world, int32_t id, mc_material **out,
                          mc_world_query_error *error) {
     mc_registry_classes *classes = mc_world_runtime_registry(world);
-    mc_registry_error cause = empty_error().registry;
+    mc_registry_error cause = empty_error.registry;
     error->bytecode = id == 0 ? 41u : 47u;
     if (classes == NULL) {
         cause.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
@@ -174,7 +174,7 @@ static bool top_material(mc_world_runtime *world, int32_t id, mc_material **out,
 mc_world_storage_status mc_world_runtime_top_solid_liquid(mc_world_runtime *world, int32_t x,
                                                           int32_t z, int32_t *out,
                                                           mc_world_query_error *error) {
-    mc_world_query_error frame = empty_error();
+    mc_world_query_error frame = empty_error;
     if (!admit(world, out != NULL, &frame)) {
         if (error != NULL)
             *error = frame;
@@ -235,7 +235,7 @@ mc_world_storage_status mc_world_runtime_saved_light(mc_world_runtime *world,
                                                      const mc_world_light_type *type, int32_t x,
                                                      int32_t y, int32_t z, int32_t *out,
                                                      mc_world_query_error *error) {
-    mc_world_query_error frame = empty_error();
+    mc_world_query_error frame = empty_error;
     if (world != NULL && !same_type_class(world->classes, type)) {
         (void)fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World query Light class");
         if (error != NULL)
@@ -310,7 +310,7 @@ done:
 mc_world_storage_status mc_world_runtime_plant_light(mc_world_runtime *world, int32_t x, int32_t y,
                                                      int32_t z, int32_t *out,
                                                      mc_world_query_error *error) {
-    mc_world_query_error frame = empty_error();
+    mc_world_query_error frame = empty_error;
     if (!admit(world, out != NULL, &frame)) {
         if (error != NULL)
             *error = frame;
@@ -350,7 +350,7 @@ static bool block_light_static(mc_world_runtime *world, const char *name, unsign
                                unsigned int field_pc, int32_t *out, mc_world_query_error *error) {
     error->bytecode = capture_pc;
     mc_registry_classes *classes = mc_world_runtime_registry(world);
-    mc_registry_error cause = empty_error().registry;
+    mc_registry_error cause = empty_error.registry;
     if (classes == NULL) {
         cause.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
         cause.message = "World block-light Registry binding";
@@ -464,7 +464,7 @@ static bool block_light_value(mc_world_runtime *world, int32_t x, int32_t y, int
 mc_world_storage_status mc_world_runtime_block_light(mc_world_runtime *world, int32_t x, int32_t y,
                                                      int32_t z, int32_t *out,
                                                      mc_world_query_error *error) {
-    mc_world_query_error frame = empty_error();
+    mc_world_query_error frame = empty_error;
     if (!admit(world, out != NULL, &frame)) {
         if (error != NULL)
             *error = frame;
@@ -480,7 +480,7 @@ mc_world_storage_status mc_world_runtime_block_light(mc_world_runtime *world, in
 mc_world_storage_status mc_world_runtime_sky_visible(mc_world_runtime *world, int32_t x, int32_t y,
                                                      int32_t z, bool *out,
                                                      mc_world_query_error *error) {
-    mc_world_query_error frame = empty_error();
+    mc_world_query_error frame = empty_error;
     if (!admit(world, out != NULL, &frame)) {
         if (error != NULL)
             *error = frame;

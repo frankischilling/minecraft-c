@@ -646,10 +646,16 @@ mc_entity_status mc_falling_entity_construct(mc_entity *raw, mc_world_runtime *w
 mc_entity_status mc_entity_retain(mc_entity *entity) {
     if (entity == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
+    if (entity->local_player != NULL && entity->local_player->terminal_inventory.sealed)
+        return MC_ENTITY_BUSY;
     if (entity->holds == SIZE_MAX)
         return MC_ENTITY_LIMIT;
     ++entity->holds;
     return MC_ENTITY_OK;
+}
+
+void mc_entity_terminal_pin(mc_entity *entity) {
+    ++entity->holds;
 }
 
 static void destroy_entity(mc_entity *entity) {

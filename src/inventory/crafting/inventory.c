@@ -11,19 +11,27 @@ static void grid_frame(mc_inventory_error *error, const mc_inventory_crafting *g
     inv_frame(error, grid->side, "mq", "hz", method, grid_desc(grid->side, client, server), pc);
 }
 
-static mc_inventory_error grid_admit(const mc_inventory_crafting *grid, const void *out) {
-    return inv_error(grid == NULL  ? MC_INVENTORY_NULL_REFERENCE
-                     : out == NULL ? MC_INVENTORY_INVALID_ARGUMENT
-                                   : MC_INVENTORY_OK,
-                     grid == NULL  ? "Crafting inventory null receiver"
-                     : out == NULL ? "Crafting inventory output"
-                                   : NULL,
+static mc_inventory_error grid_admit(const mc_inventory_crafting *grid, const void *out,
+                                     bool owning) {
+    return inv_error(grid == NULL                      ? MC_INVENTORY_NULL_REFERENCE
+                     : out == NULL                     ? MC_INVENTORY_INVALID_ARGUMENT
+                     : owning && grid->terminal_sealed ? MC_INVENTORY_BUSY
+                                                       : MC_INVENTORY_OK,
+                     grid == NULL                      ? "Crafting inventory null receiver"
+                     : out == NULL                     ? "Crafting inventory output"
+                     : owning && grid->terminal_sealed ? "Crafting terminal sealed operation"
+                                                       : NULL,
                      MC_REGISTRY_CLIENT, NULL, NULL, NULL, NULL, -1);
 }
 
 mc_inventory_status inv_crafting_new(mc_registry_side side, mc_container *handler, int32_t width,
                                      int32_t height, inv_budget *budget,
                                      mc_inventory_crafting **out, mc_inventory_error *error) {
+    if (handler != NULL && handler->terminal_sealed) {
+        *error = (mc_inventory_error){.status = MC_INVENTORY_BUSY,
+                                      .operation = "Crafting terminal sealed handler"};
+        return error->status;
+    }
     mc_inventory_crafting *grid = inv_alloc(budget, sizeof(*grid), error);
     if (grid == NULL)
         return error->status;
@@ -92,7 +100,8 @@ mc_inventory_status mc_inventory_crafting_retire(mc_inventory_crafting **owner,
     mc_inventory_error error = {0};
     if (owner == NULL)
         error.status = MC_INVENTORY_INVALID_ARGUMENT;
-    else if (*owner != NULL && ((*owner)->active || (*owner)->container_owned)) {
+    else if (*owner != NULL &&
+             ((*owner)->active || (*owner)->container_owned || (*owner)->terminal_sealed)) {
         error.status = MC_INVENTORY_BUSY;
         error.operation = "Crafting inventory retained by concrete Container";
     } else {
@@ -104,7 +113,7 @@ mc_inventory_status mc_inventory_crafting_retire(mc_inventory_crafting **owner,
 
 mc_inventory_status mc_inventory_crafting_size(const mc_inventory_crafting *grid, int32_t *out,
                                                mc_inventory_error *result) {
-    mc_inventory_error error = grid_admit(grid, out);
+    mc_inventory_error error = grid_admit(grid, out, false);
     if (error.status == MC_INVENTORY_OK)
         *out = (int32_t)grid->size;
     return inv_finish(result, &error);
@@ -112,7 +121,7 @@ mc_inventory_status mc_inventory_crafting_size(const mc_inventory_crafting *grid
 
 mc_inventory_status mc_inventory_crafting_width(const mc_inventory_crafting *grid, int32_t *out,
                                                 mc_inventory_error *result) {
-    mc_inventory_error error = grid_admit(grid, out);
+    mc_inventory_error error = grid_admit(grid, out, false);
     if (error.status == MC_INVENTORY_OK)
         *out = grid->width;
     return inv_finish(result, &error);
@@ -121,7 +130,7 @@ mc_inventory_status mc_inventory_crafting_width(const mc_inventory_crafting *gri
 mc_inventory_status mc_inventory_crafting_borrow_slot(const mc_inventory_crafting *grid,
                                                       int32_t slot, const mc_item_stack **out,
                                                       mc_inventory_error *result) {
-    mc_inventory_error error = grid_admit(grid, out);
+    mc_inventory_error error = grid_admit(grid, out, false);
     if (error.status == MC_INVENTORY_OK) {
         if (slot >= (int32_t)grid->size)
             *out = NULL;
@@ -138,7 +147,7 @@ mc_inventory_status mc_inventory_crafting_borrow_slot(const mc_inventory_craftin
 mc_inventory_status mc_inventory_crafting_borrow_xy(const mc_inventory_crafting *grid, int32_t x,
                                                     int32_t y, const mc_item_stack **out,
                                                     mc_inventory_error *result) {
-    mc_inventory_error error = grid_admit(grid, out);
+    mc_inventory_error error = grid_admit(grid, out, false);
     if (error.status == MC_INVENTORY_OK) {
         if (x < 0 || x >= grid->width)
             *out = NULL;
@@ -154,7 +163,7 @@ mc_inventory_status mc_inventory_crafting_borrow_xy(const mc_inventory_crafting 
 
 mc_inventory_status mc_inventory_crafting_get(mc_inventory_crafting *grid, int32_t slot,
                                               mc_item_stack **out, mc_inventory_error *result) {
-    mc_inventory_error error = grid_admit(grid, out);
+    mc_inventory_error error = grid_admit(grid, out, true);
     const mc_item_stack *stack = NULL;
     if (error.status == MC_INVENTORY_OK &&
         mc_inventory_crafting_borrow_slot(grid, slot, &stack, &error) == MC_INVENTORY_OK)
@@ -164,7 +173,7 @@ mc_inventory_status mc_inventory_crafting_get(mc_inventory_crafting *grid, int32
 
 mc_inventory_status mc_inventory_crafting_get_xy(mc_inventory_crafting *grid, int32_t x, int32_t y,
                                                  mc_item_stack **out, mc_inventory_error *result) {
-    mc_inventory_error error = grid_admit(grid, out);
+    mc_inventory_error error = grid_admit(grid, out, true);
     const mc_item_stack *stack = NULL;
     if (error.status == MC_INVENTORY_OK &&
         mc_inventory_crafting_borrow_xy(grid, x, y, &stack, &error) == MC_INVENTORY_OK)
@@ -184,7 +193,7 @@ static mc_inventory_status notify(mc_inventory_crafting *grid, int32_t pc, const
 
 mc_inventory_status mc_inventory_crafting_set(mc_inventory_crafting *grid, int32_t slot,
                                               mc_item_stack *value, mc_inventory_error *result) {
-    mc_inventory_error error = grid_admit(grid, grid);
+    mc_inventory_error error = grid_admit(grid, grid, true);
     if (error.status == MC_INVENTORY_OK) {
         if (grid->active) {
             error.status = MC_INVENTORY_BUSY;
@@ -208,7 +217,7 @@ mc_inventory_status mc_inventory_crafting_set(mc_inventory_crafting *grid, int32
 mc_inventory_status mc_inventory_crafting_split(mc_inventory_crafting *grid, int32_t slot,
                                                 int32_t amount, mc_item_stack **out,
                                                 mc_inventory_error *result) {
-    mc_inventory_error error = grid_admit(grid, out);
+    mc_inventory_error error = grid_admit(grid, out, true);
     if (error.status != MC_INVENTORY_OK)
         return inv_finish(result, &error);
     if (grid->active) {
@@ -265,7 +274,7 @@ mc_inventory_status mc_inventory_crafting_split(mc_inventory_crafting *grid, int
 
 mc_inventory_status mc_inventory_crafting_name(const mc_inventory_crafting *grid, const char **out,
                                                mc_inventory_error *result) {
-    mc_inventory_error error = grid_admit(grid, out);
+    mc_inventory_error error = grid_admit(grid, out, false);
     if (error.status == MC_INVENTORY_OK)
         *out = "Crafting";
     return inv_finish(result, &error);
@@ -273,7 +282,7 @@ mc_inventory_status mc_inventory_crafting_name(const mc_inventory_crafting *grid
 
 mc_inventory_status mc_inventory_crafting_limit(const mc_inventory_crafting *grid, int32_t *out,
                                                 mc_inventory_error *result) {
-    mc_inventory_error error = grid_admit(grid, out);
+    mc_inventory_error error = grid_admit(grid, out, false);
     if (error.status == MC_INVENTORY_OK)
         *out = 64;
     return inv_finish(result, &error);
@@ -281,7 +290,7 @@ mc_inventory_status mc_inventory_crafting_limit(const mc_inventory_crafting *gri
 
 mc_inventory_status mc_inventory_crafting_changed(mc_inventory_crafting *grid,
                                                   mc_inventory_error *result) {
-    mc_inventory_error error = grid_admit(grid, grid);
+    mc_inventory_error error = grid_admit(grid, grid, true);
     return inv_finish(result, &error);
 }
 
@@ -289,7 +298,7 @@ mc_inventory_status mc_inventory_crafting_usable(const mc_inventory_crafting *gr
                                                  const void *player, bool *out,
                                                  mc_inventory_error *result) {
     (void)player;
-    mc_inventory_error error = grid_admit(grid, out);
+    mc_inventory_error error = grid_admit(grid, out, false);
     if (error.status == MC_INVENTORY_OK)
         *out = true;
     return inv_finish(result, &error);

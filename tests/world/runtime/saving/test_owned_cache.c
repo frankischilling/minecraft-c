@@ -60,6 +60,133 @@ static int oc_get(source_save_fixture *s, size_t coordinate, mc_chunk_state **ou
     return 0;
 }
 
+static bool oc_registry_empty(const mc_registry_error *e) {
+    return e->status == MC_REGISTRY_OK && e->message == NULL && e->initializer_pc == -1 &&
+           e->block_id == -1 && e->constructor_class == NULL && e->constructor_pc == -1 &&
+           e->profile_status == MC_JAVA_RANDOM_PROFILE_OK && e->active_initializer_class == NULL &&
+           e->active_initializer_pc == -1 && e->item_argument == -1 &&
+           e->format_error.status == MC_JAVA_FORMAT_OK && e->format_error.offset == 0 &&
+           e->format_error.length == 0 && e->format_error.value == 0 &&
+           e->format_error.flags == 0 && e->format_error.conversion == 0 &&
+           !e->format_error.date_time;
+}
+
+static bool oc_load_empty(const mc_world_entity_load_error *e) {
+    /* Existing initializer tests own the complete Entity-NBT active-arm schema.
+     * Check its canonical selector and sentinel here without reading inactive
+     * unions or requiring any compiler's padding representation. */
+    return e->index == SIZE_MAX && e->factory.status == MC_ENTITY_NBT_OK &&
+           e->factory.late_hook == MC_ENTITY_NBT_LATE_NONE && e->factory.index == SIZE_MAX &&
+           e->factory.operation == NULL && e->factory.field == NULL &&
+           e->provenance.status == MC_ENTITY_NBT_OK &&
+           e->provenance.late_hook == MC_ENTITY_NBT_LATE_NONE && e->provenance.index == SIZE_MAX &&
+           e->provenance.operation == NULL && e->provenance.field == NULL &&
+           e->insertion.status == MC_WORLD_STORAGE_OK && e->insertion.operation == NULL &&
+           e->native.status == MC_WORLD_STORAGE_OK && e->native.operation == NULL &&
+           e->native.system_error == 0;
+}
+
+static bool oc_acquisition_empty_children(const mc_world_runtime_acquisition_error *e) {
+    const mc_live_tile_entity_error *t = &e->tile_entity;
+    return oc_registry_empty(&e->registry) && e->source_chunk == NULL &&
+           e->activation_bytecode == 0 && e->activation_world_bytecode == 0 &&
+           e->load_bytecode == 0 && e->load_builder_bytecode == 0 && e->batch.index == SIZE_MAX &&
+           e->batch.publication.status == MC_WORLD_STORAGE_OK &&
+           e->batch.publication.operation == NULL && oc_load_empty(&e->load_entity) &&
+           !e->population.reached && t->status == MC_WORLD_STORAGE_OK && t->operation == NULL &&
+           t->bytecode == 0 && t->chunk_bytecode == 0 && t->world_access_bytecode == 0 &&
+           t->initializer_bytecode == 0 && t->cause.status == MC_WORLD_STORAGE_OK &&
+           t->cause.operation == NULL && t->cause.system_error == 0 &&
+           oc_registry_empty(&t->registry) && t->tile_entity.status == MC_TILE_ENTITY_OK &&
+           t->tile_entity.field == NULL && t->tile_entity.item_index == SIZE_MAX &&
+           oc_registry_empty(&t->tile_entity.registry) && t->entity.status == MC_ENTITY_OK &&
+           t->entity.operation == NULL && t->publication.status == MC_WORLD_STORAGE_OK &&
+           t->publication.operation == NULL && t->batch.index == SIZE_MAX &&
+           t->batch.publication.status == MC_WORLD_STORAGE_OK &&
+           t->batch.publication.operation == NULL && oc_load_empty(&t->load_entity);
+}
+
+static bool oc_diagnostics_equal(const mc_world_runtime_acquisition_error *a,
+                                 const mc_world_runtime_acquisition_error *b) {
+    return a->status == b->status && a->cause.status == b->cause.status &&
+           a->cause.operation == b->cause.operation &&
+           a->cause.system_error == b->cause.system_error && oc_acquisition_empty_children(a) &&
+           oc_acquisition_empty_children(b);
+}
+
+static int oc_diagnostics(source_save_fixture *s, mc_chunk_state *expected) {
+    mc_world_runtime *world = s->game.worlds[0];
+    mc_chunk_provider_cache_observation before, after;
+    const size_t active = world->active_calls;
+    mc_world_runtime_acquisition_error *outer = world->acquisition_error;
+    mc_world_runtime_lifecycle_error *lifecycle = world->lifecycle_error;
+    const mc_world_storage_error last = world->last_error;
+    mc_world_runtime_acquisition_error first, second;
+    mc_chunk_state *got = NULL;
+    memset(&first, 0xa5, sizeof(first));
+    memset(&second, 0x5a, sizeof(second));
+    VERIFY(oc_observe(world, &before) == 0 && before.owned);
+    VERIFY(mc_world_runtime_get_detailed(world, 0, 0, &got, &first) == MC_CHUNK_ACQUIRE_OK &&
+           got == expected);
+    VERIFY(mc_world_runtime_get_detailed(world, 0, 0, &got, &second) == MC_CHUNK_ACQUIRE_OK &&
+           got == expected);
+    VERIFY(oc_diagnostics_equal(&first, &second));
+    /* Every named canonical field must replace unrelated previous values,
+     * including descendants which this cached read did not execute. C padding
+     * and inactive union storage are outside this diagnostic value contract. */
+    VERIFY(first.status == MC_CHUNK_ACQUIRE_OK && first.cause.status == MC_WORLD_STORAGE_OK &&
+           first.cause.operation == NULL && first.source_chunk == NULL &&
+           first.registry.initializer_pc == -1 && first.registry.constructor_pc == -1 &&
+           first.registry.active_initializer_pc == -1 && first.registry.block_id == -1 &&
+           first.registry.item_argument == -1 && first.batch.index == SIZE_MAX &&
+           first.load_entity.index == SIZE_MAX && first.tile_entity.batch.index == SIZE_MAX &&
+           first.tile_entity.load_entity.index == SIZE_MAX &&
+           first.tile_entity.tile_entity.item_index == SIZE_MAX &&
+           mc_world_runtime_get_detailed(world, 0, 0, &got, NULL) == MC_CHUNK_ACQUIRE_OK &&
+           got == expected);
+    unsigned char untouched[sizeof(second)];
+    memset(&second, 0xa5, sizeof(second));
+    memcpy(untouched, &second, sizeof(second));
+    VERIFY(mc_world_runtime_get_failure(world, 0, 0, &got, &second) == MC_CHUNK_ACQUIRE_OK &&
+           got == expected && memcmp(untouched, &second, sizeof(second)) == 0);
+    memset(&second, 0x5a, sizeof(second));
+    const mc_chunk_acquire_status invalid =
+        mc_world_runtime_get_detailed(world, 0, 0, NULL, &second);
+    first.status = MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
+    VERIFY(invalid == first.status && oc_diagnostics_equal(&first, &second));
+    memset(&second, 0xa5, sizeof(second));
+    VERIFY(mc_world_runtime_get_failure(world, 0, 0, NULL, &second) == invalid &&
+           oc_diagnostics_equal(&first, &second));
+    got = &world->fallback;
+    world->active_calls = SIZE_MAX; /* Native admission limit, not a Source field. */
+    const mc_chunk_acquire_status limited =
+        mc_world_runtime_get_detailed(world, 0, 0, &got, &second);
+    world->active_calls = active;
+    VERIFY(limited == MC_CHUNK_ACQUIRE_LIMIT && got == &world->fallback &&
+           second.cause.status == MC_WORLD_STORAGE_LIMIT &&
+           strcmp(second.cause.operation, "runtime acquisition call hold") == 0);
+    first.status = limited;
+    first.cause = second.cause;
+    VERIFY(oc_diagnostics_equal(&first, &second));
+    memset(&second, 0xa5, sizeof(second));
+    world->active_calls = SIZE_MAX;
+    const mc_chunk_acquire_status private_limited =
+        mc_world_runtime_get_failure(world, 0, 0, &got, &second);
+    world->active_calls = active;
+    VERIFY(private_limited == limited && got == &world->fallback);
+    VERIFY(oc_diagnostics_equal(&first, &second) && oc_observe(world, &after) == 0 && after.owned &&
+           after.hits == before.hits + 4 && after.misses == before.misses &&
+           after.generic_gets == before.generic_gets && after.raw_exports == before.raw_exports &&
+           after.rebuilds == before.rebuilds && after.map_count == before.map_count &&
+           after.insertion_count == before.insertion_count && world->active_calls == active &&
+           world->acquisition_error == outer && world->lifecycle_error == lifecycle &&
+           world->last_error.status == last.status &&
+           world->last_error.operation == last.operation);
+    puts("OWNED_CACHE_DIAGNOSTICS poison-reset=1 descendant-sentinels=1 nullable-output=1 "
+         "invalid-output=1 hold-limit=1 one-probe=1 scopes-restored=1 failure-only=1");
+    return 0;
+}
+
 static int oc_stop(source_save_fixture *s) {
     fixture *f = &s->game;
     mc_chunk_provider_fields raw = {0};
@@ -108,6 +235,7 @@ static int oc_owned(source_save_fixture *s) {
            states[0] != states[1] && states[1] != states[2] && states[0] != states[2]);
     VERIFY(oc_observe(world, &after) == 0 && after.owned && after.map_count == 3 &&
            after.insertion_count == 3 && after.hits >= hit.hits + 1 && after.mutation_depth == 0);
+    VERIFY(oc_diagnostics(s, states[0]) == 0);
     mc_chunk_provider_fields raw = {0};
     VERIFY(mc_chunk_provider_bind_fields(world->fields.v, &raw, &s->error) == MC_WORLD_STORAGE_OK &&
            mc_chunk_cache_validate(raw.cache) && oc_observe(world, &after) == 0 && !after.owned &&
@@ -230,6 +358,67 @@ static bool oc_callback_check(bool value, const char *expression, int line) {
 
 #define OC_CALLBACK(x) oc_callback_check((x), #x, __LINE__)
 
+static bool oc_callback_live_reads(oc_callback_state *state, mc_world_runtime *world) {
+    mc_chunk_provider_fields fields = {0};
+    mc_chunk_provider_cache_observation before = {0}, after = {0};
+    mc_world_runtime_acquisition_error detail;
+    unsigned char untouched[sizeof(detail)];
+    mc_chunk_state *got = NULL;
+    bool ok = OC_CALLBACK(
+        mc_chunk_provider_internal_fields(world->fields.v, &fields, NULL) == MC_WORLD_STORAGE_OK &&
+        mc_chunk_provider_cache_observe(world->fields.v, &before) && before.map_count == 2 &&
+        before.insertion_count == 2 &&
+        (state->export_inside ? !before.owned : before.owned && before.mutation_depth > 0));
+    if (!ok)
+        return false;
+    memset(&detail, 0xa5, sizeof(detail));
+    memcpy(untouched, &detail, sizeof(detail));
+    ok = OC_CALLBACK(mc_world_runtime_get_failure(world, 2, 2, &got, &detail) ==
+                         MC_CHUNK_ACQUIRE_OK &&
+                     got == state->nested && memcmp(untouched, &detail, sizeof(detail)) == 0);
+
+    /* A completed same-key publication changes the live map while the outer
+     * provider scope's index and count snapshot still precede both loads. */
+    const bool replaced = mc_chunk_cache_publish(fields.cache, 0, 0, state->nested);
+    const mc_chunk_acquire_status replacement =
+        mc_world_runtime_get_failure(world, 0, 0, &got, &detail);
+    const bool saw_replacement = replacement == MC_CHUNK_ACQUIRE_OK && got == state->nested &&
+                                 memcmp(untouched, &detail, sizeof(detail)) == 0;
+    const bool restored = mc_chunk_cache_publish(fields.cache, 0, 0, state->outer);
+    const mc_chunk_acquire_status original =
+        mc_world_runtime_get_failure(world, 0, 0, &got, &detail);
+    ok = OC_CALLBACK(replaced && saw_replacement && restored && original == MC_CHUNK_ACQUIRE_OK &&
+                     got == state->outer && memcmp(untouched, &detail, sizeof(detail)) == 0) &&
+         ok;
+
+    mc_chunk_data *data = state->outer->data;
+    state->outer->data = NULL;
+    got = state->nested;
+    const mc_chunk_acquire_status invalid =
+        mc_world_runtime_get_failure(world, 0, 0, &got, &detail);
+    state->outer->data = data;
+    ok = OC_CALLBACK(invalid == MC_CHUNK_ACQUIRE_INVALID_ARGUMENT && got == state->nested &&
+                     detail.status == invalid && oc_acquisition_empty_children(&detail)) &&
+         ok;
+    const mc_chunk_acquire_status missing_output =
+        mc_world_runtime_get_failure(world, 0, 0, NULL, &detail);
+    ok = OC_CALLBACK(missing_output == MC_CHUNK_ACQUIRE_INVALID_ARGUMENT &&
+                     detail.status == missing_output && oc_acquisition_empty_children(&detail) &&
+                     mc_chunk_provider_cache_observe(world->fields.v, &after) &&
+                     after.map_count == before.map_count &&
+                     after.insertion_count == before.insertion_count + 2 &&
+                     after.generic_gets == before.generic_gets + 5 && after.hits == before.hits &&
+                     after.misses == before.misses && after.rebuilds == before.rebuilds &&
+                     after.raw_exports == before.raw_exports && after.owned == before.owned &&
+                     after.mutation_depth == before.mutation_depth) &&
+         ok;
+    if (ok)
+        printf("OWNED_CACHE_MUTATION live-count=1 replacement=1 restored=1 invalid-request=1 "
+               "missing-output=1 no-index-read=1 no-rebuild=1 generic-accounting=1 export=%d\n",
+               state->export_inside);
+    return ok;
+}
+
 static mc_world_storage_status oc_added(void *owner, mc_world_runtime *world, mc_entity *entity,
                                         mc_world_storage_error *error) {
     oc_callback_state *state = owner;
@@ -258,6 +447,8 @@ static mc_world_storage_status oc_added(void *owner, mc_world_runtime *world, mc
             after.generic_gets >= before.generic_gets + 2 && after.rebuilds == before.rebuilds &&
             (state->export_inside ? !after.owned && after.index_capacity == 0
                                   : after.owned && after.mutation_depth == before.mutation_depth));
+    if (ok)
+        ok = oc_callback_live_reads(state, world);
     if (!ok) {
         state->failed = true;
         *error = (mc_world_storage_error){MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -280,7 +471,7 @@ static int oc_callback(source_save_fixture *s, bool export_inside) {
     mc_chunk_state *got = NULL;
     VERIFY(oc_observe(world, &before) == 0 && before.owned && oc_get(s, 0, &got) == 0 &&
            !state.failed && state.calls == 1 && got == state.outer &&
-           oc_observe(world, &after) == 0 && after.map_count == 2 && after.insertion_count == 2 &&
+           oc_observe(world, &after) == 0 && after.map_count == 2 && after.insertion_count == 4 &&
            after.mutation_depth == 0 &&
            (export_inside
                 ? !after.owned && after.index_capacity == 0 && after.rebuilds == before.rebuilds

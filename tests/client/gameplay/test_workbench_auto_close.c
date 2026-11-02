@@ -225,28 +225,137 @@ static int auto_world_ready(fixture *f) {
     return 1;
 }
 
+typedef struct auto_input_observation {
+    mc_client_sdk_input_state input;
+    mc_client_sdk_bytes_state read, queue;
+    bool press_unread, release_unread, press_queued, release_queued;
+} auto_input_observation;
+
+static bool auto_input_record(const uint8_t *record, uint64_t nanos, bool pressed) {
+    if (nanos == 0 || record[0] != 1 || record[1] != (pressed ? 1 : 0))
+        return false;
+    uint64_t timestamp = 0;
+    for (size_t i = 14; i < 22; ++i)
+        timestamp = (timestamp << 8) | record[i];
+    return timestamp == nanos;
+}
+
+static int auto_input_observe(fixture *f, uint64_t press, uint64_t release,
+                              auto_input_observation *out) {
+    *out = (auto_input_observation){0};
+    CHECK(mc_client_sdk_input_inspect(mc_client_display_inputs(f->app->display), &out->input) &&
+          !out->input.active && mc_client_sdk_bytes_inspect(out->input.mouse_read, &out->read) &&
+          mc_client_sdk_queue_inspect(out->input.mouse_events, &out->queue) &&
+          out->read.position <= out->read.limit && out->read.limit <= out->read.capacity &&
+          out->read.position % 22 == 0 && out->read.limit % 22 == 0 &&
+          out->queue.position <= out->queue.limit && out->queue.limit <= out->queue.capacity &&
+          out->queue.position % 22 == 0);
+    /* Inspect only live ByteBuffer ranges. Never advance a source position,
+     * poll/clear either queue or change the timestamp of a retained event. */
+    for (size_t i = out->read.position; i < out->read.limit; i += 22) {
+        out->press_unread |= auto_input_record(out->read.data + i, press, true);
+        out->release_unread |= auto_input_record(out->read.data + i, release, false);
+    }
+    for (size_t i = 0; i < out->queue.position; i += 22) {
+        out->press_queued |= auto_input_record(out->queue.data + i, press, true);
+        out->release_queued |= auto_input_record(out->queue.data + i, release, false);
+    }
+    return 0;
+}
+
+static int auto_input_receipt(fixture *f, const char *stage, unsigned int attempt, uint64_t press,
+                              uint64_t release) {
+    auto_input_observation state;
+    CHECK(auto_input_observe(f, press, release, &state) == 0);
+    mc_entity_hit_result_view hit = {0};
+    mc_entity_hit_kind_class_view kinds = {0};
+    const bool represented =
+        f->app->y != NULL && mc_entity_hit_result_inspect(f->app->y, &hit) == MC_ENTITY_HIT_OK &&
+        mc_entity_hit_kind_class_inspect(f->app->entities, &kinds) == MC_ENTITY_HIT_OK;
+    const int kind = !represented              ? -1
+                     : hit.fields.a == kinds.a ? 0
+                     : hit.fields.a == kinds.b ? 1
+                                               : 2;
+    const mc_entity *player = f->app->h;
+    printf("WORKBENCH_AUTO_QUEUE stage=%s attempt=%u read=%zu/%zu/%zu queue=%zu/%zu/%zu "
+           "full=%zu current-button=%" PRId32 " current-pressed=%d current-nanos=%" PRId64
+           " press=%" PRIu64 " release=%" PRIu64 " press-unread=%d release-unread=%d "
+           "press-queued=%d release-queued=%d hit=%d hit-x=%" PRId32 " hit-y=%" PRId32
+           " hit-z=%" PRId32 " hit-face=%" PRId32 " player=%d x=%.17g y=%.17g z=%.17g "
+           "yaw=%.9g pitch=%.9g\n",
+           stage, attempt, state.read.position, state.read.limit, state.read.capacity,
+           state.queue.position, state.queue.limit, state.queue.capacity,
+           state.input.source_queue_full_results, state.input.current_mouse.button,
+           (int)state.input.current_mouse.pressed, state.input.current_mouse.nanos, press, release,
+           (int)state.press_unread, (int)state.release_unread, (int)state.press_queued,
+           (int)state.release_queued, kind, hit.fields.b, hit.fields.c, hit.fields.d, hit.fields.e,
+           player != NULL, player == NULL ? 0.0 : player->base.x,
+           player == NULL ? 0.0 : player->base.y, player == NULL ? 0.0 : player->base.z,
+           player == NULL ? 0.0 : (double)player->base.yaw,
+           player == NULL ? 0.0 : (double)player->base.aT);
+    CHECK(fflush(stdout) == 0);
+    return 0;
+}
+
 static int auto_open(fixture *f, mc_client_source_id **out) {
     const uint64_t deadline = SDL_GetTicks() + 60000;
     for (unsigned int attempt = 0; attempt < 12 && SDL_GetTicks() < deadline; ++attempt) {
         if (f->app->r != NULL || !f->app->N)
             CHECK(auto_resume(f) == 0);
+        CHECK(auto_input_receipt(f, "before-drain", attempt + 1, 0, 0) == 0);
+        /* Native focus/setup motion may precede the tap in both original SDK
+         * buffers. Let actual source frames consume that history before
+         * appending one new tap. A batch of motion is not a tap receipt. */
+        auto_input_observation empty;
+        CHECK(auto_input_observe(f, 0, 0, &empty) == 0);
+        while ((empty.read.position != empty.read.limit || empty.queue.position != 0) &&
+               SDL_GetTicks() < deadline) {
+            CHECK(inventory_frame(f) == 0);
+            if (f->app->r != NULL || !f->app->N)
+                CHECK(auto_resume(f) == 0);
+            CHECK(auto_input_observe(f, 0, 0, &empty) == 0);
+        }
+        CHECK(auto_input_receipt(f, "before-tap", attempt + 1, 0, 0) == 0);
+        CHECK(empty.read.position == empty.read.limit && empty.queue.position == 0);
         CHECK(wb_hit(f, 58, 2));
+        uint64_t timestamps[2];
         for (unsigned int i = 0; i < 2; ++i) {
             SDL_Event event = {0};
             event.type = i == 0 ? SDL_EVENT_MOUSE_BUTTON_DOWN : SDL_EVENT_MOUSE_BUTTON_UP;
+            timestamps[i] = SDL_GetTicksNS();
+            event.common.timestamp = timestamps[i];
             event.button.windowID = SDL_GetWindowID(mc_client_display_window(f->app->display));
             event.button.button = SDL_BUTTON_RIGHT;
             event.button.down = i == 0;
             CHECK(SDL_PushEvent(&event));
         }
         CHECK(transfer(f) == 0);
+        CHECK(auto_input_receipt(f, "transferred", attempt + 1, timestamps[0], timestamps[1]) == 0);
         const size_t events = f->state.mouse_events;
         const uint64_t clicks = f->state.gameplay_right_clicks;
         size_t frames = 0;
-        bool opened = false;
-        for (unsigned int i = 0; i < 64 && SDL_GetTicks() < deadline; ++i) {
+        bool opened = false, press_consumed = false, release_consumed = false;
+        while (SDL_GetTicks() < deadline) {
+            auto_input_observation before, after;
+            CHECK(auto_input_observe(f, timestamps[0], timestamps[1], &before) == 0);
+            const size_t before_events = f->state.mouse_events;
+            const size_t unread = (before.read.limit - before.read.position) / 22;
             CHECK(inventory_frame(f) == 0);
             ++frames;
+            CHECK(auto_input_observe(f, timestamps[0], timestamps[1], &after) == 0);
+            /* A complete gameplay Mouse.next loop drains its prior read range
+             * before Display.update refills it. The cumulative source counter
+             * proves that actual drain, even if a later motion is current. */
+            if (unread != 0 && f->state.mouse_events - before_events >= unread) {
+                press_consumed |= before.press_unread;
+                release_consumed |= before.release_unread;
+            }
+            if (after.input.current_mouse.button == 1) {
+                press_consumed |= after.input.current_mouse.pressed &&
+                                  (uint64_t)after.input.current_mouse.nanos == timestamps[0];
+                release_consumed |= !after.input.current_mouse.pressed &&
+                                    (uint64_t)after.input.current_mouse.nanos == timestamps[1];
+            }
             if (f->app->r != NULL && f->app->r->kind == MC_CLIENT_SCREEN_WORKBENCH) {
                 opened = true;
                 break;
@@ -257,21 +366,26 @@ static int auto_open(fixture *f, mc_client_source_id **out) {
                 CHECK(auto_resume(f) == 0);
                 break;
             }
-            if (f->state.mouse_events > events)
-                break; /* Retry only after this actual SDK tap was consumed. */
+            if (f->state.gameplay_right_clicks > clicks || release_consumed)
+                break; /* Motion-only batches never authorize another tap. */
         }
         int64_t now;
         CHECK(mc_platform_current_time_millis(&now) == MC_PLATFORM_MILLIS_OK);
         const mc_client_gameplay_input *input = f->state.gameplay_input;
         printf("WORKBENCH_AUTO_INPUT attempt=%u frames=%zu mouse-events=%zu right-clicks=%" PRIu64
-               " stale-last-tick=%zu opened=%d source-focus=%d input-age=%" PRId64 "\n",
+               " stale-last-tick=%zu opened=%d source-focus=%d input-age=%" PRId64
+               " press-consumed=%d release-consumed=%d\n",
                attempt + 1, frames, f->state.mouse_events - events,
                f->state.gameplay_right_clicks - clicks,
                input == NULL ? 0 : input->stale_mouse_events, (int)opened, (int)f->app->N,
-               mc_java_i64_sub(now, f->app->P));
+               mc_java_i64_sub(now, f->app->P), (int)press_consumed, (int)release_consumed);
         CHECK(fflush(stdout) == 0);
+        CHECK(auto_input_receipt(f, "after-tap", attempt + 1, timestamps[0], timestamps[1]) == 0);
         if (opened)
             return wb_wait(f, MC_CLIENT_SCREEN_WORKBENCH, out);
+        /* Never leave an unobserved tap pending and add another one. A later
+         * ordinary frame could otherwise open a Workbench after setup ended. */
+        CHECK(f->state.gameplay_right_clicks > clicks || release_consumed);
     }
     fprintf(stderr, "Automatic-close setup did not open actual picked Workbench\n");
     return 1;

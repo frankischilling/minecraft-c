@@ -1,7 +1,7 @@
 include_guard(GLOBAL)
 option(MC_ENABLE_CLIENT_MINING_TESTS "Run the native saved-World mining/pickup cycle" OFF)
 
-target_sources(mc_inventory PRIVATE src/inventory/mining.c)
+target_sources(mc_inventory PRIVATE src/inventory/mining.c src/item/mining/mining.c)
 target_sources(mc_simulation PRIVATE src/entity/player/mining.c
     src/entity/particles/digging.c src/world/runtime/auxiliary.c)
 target_sources(mc_client_singleplayer_controller PRIVATE src/client/controller/mining.c)
@@ -11,6 +11,30 @@ if(TARGET mc_client_render_global)
 endif()
 
 if(BUILD_TESTING)
+    add_test(NAME tools.item_mining_packet COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/item/mining/test_packet.py")
+    set_tests_properties(tools.item_mining_packet PROPERTIES
+        LABELS "public;unit;tools;item;inventory;reference" TIMEOUT 60)
+    add_executable(mc_test_item_mining tests/item/mining/test_mining.c)
+    target_include_directories(mc_test_item_mining PRIVATE src src/platform/time)
+    target_link_libraries(mc_test_item_mining PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_build_options)
+    add_test(NAME item.mining COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/item/test_mining.py"
+        --executable "$<TARGET_FILE:mc_test_item_mining>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/item-mining-controls")
+    set_tests_properties(item.mining PROPERTIES
+        LABELS "public;unit;item;inventory;reference" TIMEOUT 180)
+    add_executable(mc_test_mining_tools tests/client/controller/test_mining_tools.c)
+    target_include_directories(mc_test_mining_tools PRIVATE src src/core/java src/platform/time)
+    target_link_libraries(mc_test_mining_tools PRIVATE
+        mc_client_singleplayer_controller mc_resources mc_c_atomics mc_build_options)
+    add_test(NAME client.mining_tools COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_mining_tools.py"
+        --executable "$<TARGET_FILE:mc_test_mining_tools>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/mining-tools-controls")
+    set_tests_properties(client.mining_tools PROPERTIES
+        LABELS "public;integration;client;item;world;ownership;reference" TIMEOUT 180)
     add_executable(mc_test_mining_controller tests/client/controller/test_mining.c)
     target_include_directories(mc_test_mining_controller PRIVATE src src/platform/time)
     target_link_libraries(mc_test_mining_controller PRIVATE

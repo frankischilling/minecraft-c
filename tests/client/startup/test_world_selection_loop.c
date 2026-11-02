@@ -19,6 +19,7 @@
 #include "client/input/mouse_helper.h"
 #include "client/render/manager/internal.h"
 #include "client/render/tile_entity_renderer/internal.h"
+#include "client/runtime/bootstrap_terminal_internal.h"
 #include "client/runtime/gameplay_input.h"
 #include "client/runtime/menu_loop.h"
 #include "client/runtime/world_tick.h"
@@ -1731,7 +1732,7 @@ static int terminal_prepare_controls(fixture *f, mc_client_source_da *external) 
               prepared.initial_screen == transitions_before.initial_screen &&
               prepared.slot_handed_off == transitions_before.slot_handed_off &&
               prepared.world_load == transitions_before.world_load);
-        CHECK(mc_client_bootstrap_app(f->bootstrap) == app && f->app == app &&
+        CHECK(mc_client_bootstrap_app(f->bootstrap) == NULL && f->app == app &&
               app->native_lifetime_phase == MC_CLIENT_APPLICATION_LIFETIME_REGISTERED &&
               app->constructor_phase == MC_CLIENT_APP_READY && app->startup == startup &&
               app->screen_transitions == transitions && app->r == shown &&
@@ -1741,10 +1742,10 @@ static int terminal_prepare_controls(fixture *f, mc_client_source_da *external) 
               app->t == entity_renderer && app->controller == controller &&
               app->render_classes == models && app->registry == registry &&
               app->entities == entities && app->profile == profile &&
-              mc_client_bootstrap_resources(f->bootstrap) == resources &&
-              mc_client_bootstrap_class_files(f->bootstrap) == files &&
-              mc_client_bootstrap_math(f->bootstrap) == math &&
-              mc_client_bootstrap_graphics(f->bootstrap) == graphics &&
+              mc_client_bootstrap_resources(f->bootstrap) == NULL &&
+              mc_client_bootstrap_class_files(f->bootstrap) == NULL &&
+              mc_client_bootstrap_math(f->bootstrap) == NULL &&
+              mc_client_bootstrap_graphics(f->bootstrap) == NULL &&
               atomic_load(&app->J) == source_running && atomic_load(&app->o) == source_paused &&
               app->active_world == NULL && app->h == NULL && app->i == NULL);
         CHECK(mc_client_display_window(display) == window && SDL_GetWindowID(window) == window_id &&
@@ -3650,17 +3651,37 @@ static int save_title_host(fixture *f, const char *stage, bool focus, uint32_t *
     mc_client_display_parent_state parent;
     mc_client_canvas_state canvas;
     mc_client_mouse_helper_state helper;
-    CHECK(f->app != NULL && frame != NULL && mc_client_source_frame_inspect(frame, &host) &&
-          !host.active && !host.failed && host.app == f->app && host.canvas != NULL &&
-          f->app->m == host.canvas && host.frame_window != NULL && host.canvas_window != NULL &&
+    if (frame != NULL) {
+        mc_client_frame_state unavailable = {0}, preserved;
+        unavailable.app = f->app;
+        memcpy(&preserved, &unavailable, sizeof(preserved));
+        CHECK(!mc_client_bootstrap_terminal_frame_inspect(f->bootstrap, &unavailable) &&
+              memcmp(&unavailable, &preserved, sizeof(unavailable)) == 0);
+        CHECK(mc_client_source_frame_inspect(frame, &host));
+    } else {
+        /* The selected terminal root ended getter admission. The Frame and
+         * App are still owned by this actual bootstrap until its later close;
+         * inspect that live owner directly without reviving an expired borrow
+         * or the already consumed menu's scope. No focus or Source pump runs. */
+        CHECK(!focus && f->loop == NULL && mc_client_bootstrap_app(f->bootstrap) == NULL &&
+              mc_client_bootstrap_resources(f->bootstrap) == NULL &&
+              mc_client_bootstrap_class_files(f->bootstrap) == NULL &&
+              mc_client_bootstrap_trig(f->bootstrap) == NULL &&
+              mc_client_bootstrap_math(f->bootstrap) == NULL &&
+              mc_client_bootstrap_graphics(f->bootstrap) == NULL &&
+              mc_client_bootstrap_terminal_frame_inspect(f->bootstrap, &host));
+    }
+    const client_application *app = host.app;
+    CHECK(app != NULL && app == f->app && !host.active && !host.failed && host.canvas != NULL &&
+          app->m == host.canvas && host.frame_window != NULL && host.canvas_window != NULL &&
           host.frame_window != host.canvas_window &&
           mc_client_source_canvas_inspect(host.canvas, &canvas) && canvas.peer_bound &&
           !canvas.active && canvas.graphics == 0 && canvas.width == 854 && canvas.height == 480 &&
-          mc_client_display_stage_parent_inspect(f->app->display, &parent) &&
+          mc_client_display_stage_parent_inspect(app->display, &parent) &&
           parent.parent == host.canvas && parent.listener_parent == host.canvas &&
           parent.borrowed_window && parent.window == host.canvas_window &&
-          mc_client_display_window(f->app->display) == host.canvas_window &&
-          mc_client_mouse_helper_inspect(f->app->C, &helper) &&
+          mc_client_display_window(app->display) == host.canvas_window &&
+          mc_client_mouse_helper_inspect(app->C, &helper) &&
           helper.phase == MC_CLIENT_MOUSE_HELPER_READY && helper.source_c == host.canvas &&
           !helper.active);
     const uint32_t actual_frame = SDL_GetWindowID(host.frame_window),

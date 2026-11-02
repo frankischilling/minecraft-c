@@ -27,7 +27,21 @@ def main():
                            capture_output=True, timeout=180)
     (output / 'stdout.txt').write_bytes(child.stdout)
     (output / 'stderr.txt').write_bytes(child.stderr)
-    print(child.stdout.decode('utf-8'), end='')
+    if child.returncode:
+        raise RuntimeError(f'Native Item combat failed: {output}: ' + child.stderr.decode('utf-8'))
+    lines = child.stdout.decode('utf-8').splitlines()
+    actual = [line for line in lines if line.startswith(('DESTROY\t', 'STACK_DESTROY\t'))]
+    packet = Path(__file__).resolve().parents[2] / 'reference/item/mining'
+    sys.path.insert(0, str(packet))
+    from packet import read_destroy_packet
+    expected, _ = read_destroy_packet(packet)
+    if actual != expected:
+        for i, (native, original) in enumerate(zip(actual, expected)):
+            if native != original:
+                raise AssertionError(f'Destruction row {i}: native={native!r}, original={original!r}')
+        raise AssertionError(f'Destruction row count native={len(actual)}, original={len(expected)}')
+    print(f'PASS: {len(actual)} exact original Item/Stack destruction rows')
+    print(lines[-1] if lines else 'No native output')
     print(child.stderr.decode('utf-8'), end='', file=sys.stderr)
     if child.returncode or b'Item combat source-order/ownership checks' not in child.stdout:
         raise RuntimeError(f'Native Item combat failed: {output}')

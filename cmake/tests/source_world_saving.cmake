@@ -25,3 +25,11 @@ if(BUILD_TESTING AND TARGET mc_simulation)
     set_tests_properties(world.source_owned_cache PROPERTIES
         LABELS "public;integration;world;storage;ownership;filesystem" TIMEOUT 300)
 endif()
+
+option(MC_BUILD_BENCHMARKS "Build optional fixed-work CPU benchmarks" OFF)
+if(MC_BUILD_BENCHMARKS AND BUILD_TESTING AND TARGET mc_simulation)
+    add_executable(mc_benchmark_world_queries tests/benchmarks/world_queries.c)
+    target_include_directories(mc_benchmark_world_queries PRIVATE src)
+    target_link_libraries(mc_benchmark_world_queries PRIVATE
+        mc_simulation mc_persistence mc_c_atomics mc_build_options)
+endif()

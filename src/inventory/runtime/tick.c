@@ -269,7 +269,7 @@ mc_inventory_tick_status mc_inventory_player_tick(mc_inventory_player *inventory
     else if (inventory->side != MC_REGISTRY_CLIENT)
         mc_inventory_tick_fail(&e, MC_INVENTORY_TICK_NAMESPACE,
                                "Inventory tick actual client ix owner");
-    else if (inventory->active)
+    else if (inventory->active || inventory->terminal_sealed)
         mc_inventory_tick_fail(&e, MC_INVENTORY_TICK_BUSY, "Inventory tick already active");
     else if (enter(&s, classes, limits, &e)) {
         inventory->active = true;

@@ -10,6 +10,61 @@
 #include "mc/entity/player/statistics.h"
 #include "mc/inventory/mining.h"
 
+static bool held_pickaxe_start(fixture *f, mc_entity *player) {
+    const mc_chunk_acquire_context *acquisition = mc_world_runtime_acquisition(f->world);
+    CHECK(acquisition != NULL && acquisition->cache->count == 0);
+    uint8_t *blocks = calloc(MC_CHUNK_BLOCKS, 1);
+    CHECK(blocks != NULL);
+    blocks[((size_t)3 * 16u + 5u) * 128u + 64u] = 1;
+    mc_world_chunk *chunk = NULL;
+    CHECK(mc_world_store_create_generated(f->store, f->world, 0, 0, 0, &blocks, MC_CHUNK_BLOCKS,
+                                          &chunk, NULL) == MC_WORLD_STORAGE_OK &&
+          blocks == NULL);
+    mc_chunk_state *state = mc_world_chunk_state(chunk);
+    CHECK(state != NULL && mc_chunk_cache_publish(acquisition->cache, 0, 0, state));
+    CHECK(mc_entity_set_position(player, 0.5, 64.0, 0.5) == MC_ENTITY_OK);
+    player->base.aX = true;
+    mc_item_stack *pickaxe = NULL;
+    CHECK(mc_item_stack_allocate(&pickaxe) == MC_ITEM_STACK_OK &&
+          mc_item_stack_construct(pickaxe, 270, 1, 0) == MC_ITEM_STACK_OK &&
+          mc_inventory_player_set(player->local_player->fields.player.c, 0, pickaxe, NULL) ==
+              MC_INVENTORY_OK);
+    client_application *app = calloc(1, sizeof(*app));
+    CHECK(app != NULL);
+    app->active_world = f->world;
+    app->h = player;
+    app->registry = f->registry;
+    mc_client_singleplayer_controller *controller = NULL;
+    CHECK(mc_client_singleplayer_controller_allocate(f->entities, f->profile, 0, &controller,
+                                                     NULL) == MC_SINGLEPLAYER_CONTROLLER_OK &&
+          mc_client_singleplayer_controller_construct(controller, app, NULL) ==
+              MC_SINGLEPLAYER_CONTROLLER_OK);
+    mc_singleplayer_mining_call *call = NULL;
+    mc_singleplayer_mining_error error;
+    mc_singleplayer_mining_state result;
+    const size_t holds = player->holds;
+    CHECK(mc_client_singleplayer_mining_begin(controller, MC_SINGLEPLAYER_MINING_START, 3, 64, 5, 1,
+                                              &call, &error) == MC_SINGLEPLAYER_MINING_OK &&
+          mc_client_singleplayer_mining_inspect(call, &result) && result.returned &&
+          result.block_id == 1 && result.strength == 2.0f / 1.5f / 30.0f &&
+          !result.removal_returned && !result.progress_stored && player->holds == holds);
+    mc_item_stack_fields fields;
+    CHECK(mc_item_stack_fields_get(pickaxe, &fields) == MC_ITEM_STACK_OK && fields.id == 270 &&
+          fields.count == 1 && fields.damage == 0 &&
+          mc_client_singleplayer_mining_retire(&call, NULL) == MC_SINGLEPLAYER_MINING_OK &&
+          mc_client_singleplayer_controller_free(&controller, NULL) ==
+              MC_SINGLEPLAYER_CONTROLLER_OK &&
+          mc_inventory_player_set(player->local_player->fields.player.c, 0, NULL, NULL) ==
+              MC_INVENTORY_OK);
+    mc_item_stack_release(pickaxe);
+    free(app);
+    CHECK(mc_chunk_cache_init(acquisition->cache, acquisition->cache->entries,
+                              acquisition->cache->capacity, acquisition->cache->insertions,
+                              acquisition->cache->insertion_capacity) &&
+          mc_world_store_retire_chunk(f->store, state, NULL) == MC_WORLD_STORAGE_OK);
+    return true;
+}
+
 static bool inherited_harvest_controls(fixture *f, mc_entity *player) {
     client_application *app = calloc(1, sizeof(*app));
     CHECK(app != NULL);
@@ -114,8 +169,8 @@ static bool mining_controls(fixture *f) {
     CHECK(mc_local_player_can_harvest(player, dirt, &allowed, &player_error) == MC_ENTITY_OK &&
           allowed && player_error.harvest && player->holds == holds);
     mc_inventory_error inventory_error;
-    CHECK(mc_inventory_player_mining_speed(snapshot.player.c, dirt, &value, &inventory_error) ==
-              MC_INVENTORY_OK &&
+    CHECK(mc_inventory_player_mining_speed(snapshot.player.c, f->registry, dirt, &value,
+                                           &inventory_error) == MC_INVENTORY_OK &&
           value == 1.0f);
     CHECK(mc_local_player_swing(player, &player_error) == MC_ENTITY_OK && player_error.returned &&
           player->local_player->fields.player.k == -1 && player->local_player->fields.player.j &&
@@ -154,6 +209,7 @@ static bool mining_controls(fixture *f) {
           call == NULL);
     CHECK(mc_client_singleplayer_controller_free(&controller, NULL) ==
           MC_SINGLEPLAYER_CONTROLLER_OK);
+    CHECK(held_pickaxe_start(f, player));
     CHECK(inherited_harvest_controls(f, player));
     mc_entity_release(player);
     return true;

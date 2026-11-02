@@ -118,14 +118,31 @@ static void capture_acquisition(mc_world_light_operation_error *frame,
         .source_chunk = detail->source_chunk};
 }
 
+static void capture_acquisition_success(mc_world_light_operation_error *frame) {
+    /* init_error leaves the unreached child zeroed. The first completed GET
+     * changes its descendants to the canonical acquisition baseline; later
+     * successes keep that same value. Failures exit immediately after their
+     * full receipt is captured, so the batch sentinel distinguishes these
+     * two live success states without another per-voxel diagnostic copy. */
+    if (frame->acquisition.batch.index != SIZE_MAX) {
+        mc_live_tile_entities_error_init(&frame->acquisition.tile_entity);
+        mc_world_entity_load_error_init(&frame->acquisition.load_entity);
+        mc_world_entity_batch_error_init(&frame->acquisition.batch);
+    }
+}
+
 static bool block_get(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int32_t *out,
                       mc_world_light_operation_error *frame) {
     mc_world_runtime_acquisition_error detail;
     mc_world_storage_error cause = {0};
     const mc_world_storage_status status =
-        mc_world_runtime_block_get_detailed(world, x, y, z, out, &cause, &detail);
+        mc_world_runtime_block_get_failure(world, x, y, z, out, &cause, &detail);
+    if (status == MC_WORLD_STORAGE_OK) {
+        capture_acquisition_success(frame);
+        return true;
+    }
     capture_acquisition(frame, &detail);
-    return status == MC_WORLD_STORAGE_OK || storage_failed(frame, cause);
+    return storage_failed(frame, cause);
 }
 
 /* Capture the actual separate getter result and protect a normal Chunk across
@@ -147,9 +164,9 @@ static bool acquire(mc_world_runtime *world, int32_t chunk_x, int32_t chunk_z, l
                       "World propagation replacement provider binding");
     mc_world_runtime_acquisition_error detail;
     mc_chunk_acquire_status status =
-        mc_world_runtime_get_detailed(world, chunk_x, chunk_z, &out->state, &detail);
-    capture_acquisition(frame, &detail);
+        mc_world_runtime_get_failure(world, chunk_x, chunk_z, &out->state, &detail);
     if (status != MC_CHUNK_ACQUIRE_OK) {
+        capture_acquisition(frame, &detail);
         if (frame->acquisition.cause.status != MC_WORLD_STORAGE_OK)
             return storage_failed(frame, frame->acquisition.cause);
         return failed(frame,
@@ -158,6 +175,7 @@ static bool acquire(mc_world_runtime *world, int32_t chunk_x, int32_t chunk_z, l
                           : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World propagation getter acquisition");
     }
+    capture_acquisition_success(frame);
     frame->provider_bytecode = 0;
     if (out->state == NULL)
         return failed(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,

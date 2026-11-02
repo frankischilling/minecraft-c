@@ -1,6 +1,7 @@
 #include "source_screen_transitions.h"
 #include "../../entity/player/player_internal.h"
 #include "../application_state.h"
+#include "../runtime/bootstrap_terminal_internal.h"
 #include "../startup/application_startup_internal.h"
 #include "../startup/application_startup_menu.h"
 #include "../world/load_world.h"
@@ -48,6 +49,7 @@ struct mc_client_screen_transitions {
     size_t node_count, screens, calls;
     bool active, retiring, slot_handed_off;
     bool terminal_prepare_selected, terminal_prepared;
+    const mc_client_bootstrap_terminal_scope *terminal_root; /* Exact borrowed root authority. */
     mc_client_singleplayer_controller *controller;
     mc_client_world_load_classes *world_classes;
     mc_client_world_load_call *last_load;
@@ -1000,15 +1002,162 @@ static bool inventory_terminal_prefix(mc_client_screen_transitions *r, mc_client
     return ready;
 }
 
-mc_client_screen_status
-mc_client_screen_transitions_terminal_prepare(mc_client_screen_transitions *r,
-                                              mc_client_screen_error *e) {
+static bool root_failure(mc_client_screen_error *e, const char *operation) {
+    mc_screen_fail(e, MC_CLIENT_SCREEN_BUSY, operation, NULL, NULL, NULL, 0);
+    e->native_policy = true;
+    return false;
+}
+
+static bool root_epoch_ledger(mc_client_screen_transitions *r, mc_client_screen_error *e) {
+    size_t nodes = 0, loads = 0;
+    const mc_client_world_load_call *newer = NULL;
+    for (const screen_node *n = r->nodes; n != NULL; n = n->next) {
+        if (nodes++ == r->node_count)
+            return root_failure(e, "OO terminal complete transition node ledger");
+        if (n->load == NULL)
+            continue;
+        if (newer == NULL && (n != r->last_load_node || n->load != r->last_load))
+            return root_failure(e, "OO terminal actual latest Load owner");
+        mc_world_storage_error error;
+        if (mc_client_world_load_terminal_owned_follows(n->load, newer, &error) !=
+            MC_WORLD_STORAGE_OK)
+            return root_failure(e, error.operation);
+        newer = n->load;
+        ++loads;
+    }
+    if (nodes != r->node_count || loads == 0)
+        return root_failure(e, "OO terminal represented retained epoch graph");
+    mc_world_storage_error error;
+    if (mc_client_world_load_classes_terminal_validate(r->world_classes, r->app, loads, &error) !=
+        MC_WORLD_STORAGE_OK)
+        return root_failure(e, error.operation);
+    return true;
+}
+
+static bool root_screen_epoch(mc_client_screen_transitions *r, const screen_node *owner,
+                              mc_client_world_load_state *out, mc_client_screen_error *e) {
+    const mc_client_source_id *screen = &owner->workbench->container;
+    if (owner->constructor_player == NULL ||
+        owner->constructor_player != screen->constructor_player ||
+        screen->base.classes != r->classes || screen->base.fields.b != r->app)
+        return root_failure(e, "OO terminal actual DC constructor and App occurrence");
+    size_t matches = 0;
+    for (const screen_node *n = r->nodes; n != NULL; n = n->next) {
+        if (n->load == NULL)
+            continue;
+        mc_client_world_load_state state;
+        if (!mc_client_world_load_inspect(n->load, &state))
+            return root_failure(e, "OO terminal actual retained Load inspection");
+        if (state.player != screen->constructor_player || state.world != screen->constructor_world)
+            continue;
+        if (state.app != r->app || state.active || !state.source_returned ||
+            !state.world_constructed || !state.world_published || !state.player_published ||
+            !state.input_published || !state.view_published || state.player == NULL ||
+            state.world == NULL)
+            return root_failure(e, "OO terminal completed selected epoch Player and World");
+        *out = state;
+        ++matches;
+    }
+    return matches == 1 || root_failure(e, "OO terminal unique actual Player World epoch");
+}
+
+static bool root_inventory_terminal_prefix(mc_client_screen_transitions *r,
+                                           mc_client_screen_error *e) {
+    if (!mc_screen_lock(r->classes, e))
+        return false;
+    bool ready = false, live = false;
+    size_t nodes = 0;
+    for (const screen_node *n = r->nodes; n != NULL; n = n->next) {
+        if (nodes++ == r->node_count) {
+            (void)root_failure(e, "OO terminal bounded transition node ledger");
+            goto done;
+        }
+        if (n->workbench != NULL) {
+            mc_client_source_id *screen = &n->workbench->container;
+            mc_client_screen_error probe = {0};
+            if (screen->terminal_handoff_done ||
+                !mc_screen_container_retirement_admit_locked(screen, &probe))
+                live = true;
+        }
+    }
+    if (nodes != r->node_count) {
+        (void)root_failure(e, "OO terminal complete transition node ledger");
+        goto done;
+    }
+    if (live && !root_epoch_ledger(r, e))
+        goto done;
+    /* Known retained UE captures must end before the exact AA/IT/IX proof.
+     * No caller supplies a guessed allowance for those old AA holds. */
+    for (screen_node *n = r->nodes; n != NULL; n = n->next)
+        if (n->inventory != NULL && !prepare_inventory_screen(r, &n->inventory->container, e))
+            goto done;
+    /* Likewise, old closed/failed OO owners still bind that same IX. Keep
+     * genuinely published ITs for the separate exact-root handoff below. */
+    for (screen_node *n = r->nodes; n != NULL; n = n->next) {
+        if (n->workbench == NULL) {
+            if (n->constructor_player != NULL) {
+                mc_entity_release(n->constructor_player);
+                n->constructor_player = NULL;
+            }
+            continue;
+        }
+        mc_client_source_id *screen = &n->workbench->container;
+        mc_client_screen_error probe = {0};
+        if (screen->terminal_handoff_done ||
+            !mc_screen_container_retirement_admit_locked(screen, &probe)) {
+            continue;
+        }
+        if (!prepare_inventory_screen(r, screen, e))
+            goto done;
+        if (n->constructor_player != NULL) {
+            mc_entity_release(n->constructor_player);
+            n->constructor_player = NULL;
+        }
+    }
+    for (screen_node *n = r->nodes; n != NULL; n = n->next) {
+        if (n->workbench == NULL)
+            continue;
+        mc_client_source_id *screen = &n->workbench->container;
+        if (!screen->terminal_handoff_done && !screen->container_owned)
+            continue;
+        mc_client_world_load_state epoch = {0};
+        if (!screen->terminal_handoff_done && !root_screen_epoch(r, n, &epoch, e))
+            goto done;
+        const bool copied =
+            mc_screen_transition_inventory_capture(&r->receipts, &r->failure, &screen->detail);
+        const bool prepared = mc_screen_container_terminal_handoff_locked(
+            screen, r->terminal_root, epoch.player, r->app->registry, epoch.world, e);
+        if (copied)
+            mc_screen_transition_inventory_after(&r->receipts, &screen->detail);
+        if (!prepared)
+            goto done;
+        if (n->constructor_player != NULL) {
+            mc_entity_release(n->constructor_player);
+            n->constructor_player = NULL;
+        }
+    }
+    ready = true;
+done:
+    mtx_unlock(&r->classes->mutex);
+    return ready;
+}
+
+static mc_client_screen_status terminal_prepare(mc_client_screen_transitions *r,
+                                                const mc_client_bootstrap_terminal_scope *scope,
+                                                mc_client_screen_error *e) {
     if (e == NULL)
         return MC_CLIENT_SCREEN_INVALID_ARGUMENT;
     *e = (mc_client_screen_error){0};
     if (r == NULL)
         return mc_screen_fail(e, MC_CLIENT_SCREEN_INVALID_ARGUMENT,
                               "native screen terminal preparation receiver", NULL, NULL, NULL, 0);
+    if (scope != NULL &&
+        (!mc_client_bootstrap_terminal_scope_matches(scope, r->app) ||
+         r->app->screen_transitions != r || r->classes == NULL || r->world_classes == NULL ||
+         (r->terminal_root != NULL && r->terminal_root != scope))) {
+        (void)root_failure(e, "screen terminal actual bootstrap root authority");
+        return e->status;
+    }
     if (r->active)
         return mc_screen_fail(e, MC_CLIENT_SCREEN_BUSY, "active native screen terminal preparation",
                               NULL, NULL, NULL, 0);
@@ -1024,10 +1173,12 @@ mc_client_screen_transitions_terminal_prepare(mc_client_screen_transitions *r,
                                   0);
     }
     r->retiring = r->terminal_prepare_selected = true;
+    if (scope != NULL)
+        r->terminal_root = scope;
     if (r->terminal_prepared)
         return MC_CLIENT_SCREEN_OK;
     r->active = true;
-    if (!inventory_terminal_prefix(r, e)) {
+    if (!(scope == NULL ? inventory_terminal_prefix(r, e) : root_inventory_terminal_prefix(r, e))) {
         r->active = false;
         return e->status;
     }
@@ -1058,6 +1209,25 @@ mc_client_screen_transitions_terminal_prepare(mc_client_screen_transitions *r,
     r->terminal_prepared = true;
     r->active = false;
     return MC_CLIENT_SCREEN_OK;
+}
+
+mc_client_screen_status
+mc_client_screen_transitions_terminal_prepare(mc_client_screen_transitions *r,
+                                              mc_client_screen_error *e) {
+    return terminal_prepare(r, NULL, e);
+}
+
+mc_client_screen_status
+mc_client_screen_transitions_terminal_prepare_root(mc_client_screen_transitions *r,
+                                                   const mc_client_bootstrap_terminal_scope *scope,
+                                                   mc_client_screen_error *e) {
+    if (scope == NULL) {
+        if (e == NULL)
+            return MC_CLIENT_SCREEN_INVALID_ARGUMENT;
+        (void)root_failure(e, "screen terminal selected bootstrap scope required");
+        return e->status;
+    }
+    return terminal_prepare(r, scope, e);
 }
 
 static bool inventory_add(mc_world_terminal_inventory *sum,

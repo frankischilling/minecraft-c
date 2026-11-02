@@ -1,6 +1,7 @@
 #include "../internal.h"
 
-static mc_inventory_error result_admit(const mc_inventory_result *inventory, const void *out) {
+static mc_inventory_error result_admit(const mc_inventory_result *inventory, const void *out,
+                                       bool owning) {
     mc_inventory_error error = {0};
     if (inventory == NULL) {
         error.status = MC_INVENTORY_NULL_REFERENCE;
@@ -8,6 +9,9 @@ static mc_inventory_error result_admit(const mc_inventory_result *inventory, con
     } else if (out == NULL) {
         error.status = MC_INVENTORY_INVALID_ARGUMENT;
         error.operation = "Result inventory output";
+    } else if (owning && inventory->terminal_sealed) {
+        error.status = MC_INVENTORY_BUSY;
+        error.operation = "Inventory terminal sealed operation";
     }
     return error;
 }
@@ -72,7 +76,7 @@ mc_inventory_status mc_inventory_result_retire(mc_inventory_result **owner,
     mc_inventory_error error = {0};
     if (owner == NULL)
         error.status = MC_INVENTORY_INVALID_ARGUMENT;
-    else if (*owner != NULL && (*owner)->container_owned) {
+    else if (*owner != NULL && ((*owner)->container_owned || (*owner)->terminal_sealed)) {
         error.status = MC_INVENTORY_BUSY;
         error.operation = "Result inventory retained by concrete Container";
     } else {
@@ -85,7 +89,7 @@ mc_inventory_status mc_inventory_result_retire(mc_inventory_result **owner,
 mc_inventory_status mc_inventory_result_borrow(const mc_inventory_result *inventory, int32_t slot,
                                                const mc_item_stack **out,
                                                mc_inventory_error *result) {
-    mc_inventory_error error = result_admit(inventory, out);
+    mc_inventory_error error = result_admit(inventory, out, false);
     if (error.status == MC_INVENTORY_OK) {
         if (slot != 0)
             result_index(&error, inventory, inv_class(inventory->side, "f_", "d_"), "(I)Liz;",
@@ -98,7 +102,7 @@ mc_inventory_status mc_inventory_result_borrow(const mc_inventory_result *invent
 
 mc_inventory_status mc_inventory_result_get(mc_inventory_result *inventory, int32_t slot,
                                             mc_item_stack **out, mc_inventory_error *result) {
-    mc_inventory_error error = result_admit(inventory, out);
+    mc_inventory_error error = result_admit(inventory, out, true);
     const mc_item_stack *value = NULL;
     if (error.status == MC_INVENTORY_OK &&
         mc_inventory_result_borrow(inventory, slot, &value, &error) == MC_INVENTORY_OK)
@@ -108,7 +112,7 @@ mc_inventory_status mc_inventory_result_get(mc_inventory_result *inventory, int3
 
 mc_inventory_status mc_inventory_result_set(mc_inventory_result *inventory, int32_t slot,
                                             mc_item_stack *value, mc_inventory_error *result) {
-    mc_inventory_error error = result_admit(inventory, inventory);
+    mc_inventory_error error = result_admit(inventory, inventory, true);
     if (error.status == MC_INVENTORY_OK) {
         if (slot != 0)
             result_index(&error, inventory, "a", "(ILiz;)V", "(ILfy;)V", 6);
@@ -126,7 +130,7 @@ mc_inventory_status mc_inventory_result_split(mc_inventory_result *inventory, in
                                               int32_t amount, mc_item_stack **out,
                                               mc_inventory_error *result) {
     (void)amount;
-    mc_inventory_error error = result_admit(inventory, out);
+    mc_inventory_error error = result_admit(inventory, out, true);
     if (error.status == MC_INVENTORY_OK) {
         if (slot != 0)
             result_index(&error, inventory, "a", "(II)Liz;", "(II)Lfy;", 5);
@@ -141,7 +145,7 @@ mc_inventory_status mc_inventory_result_split(mc_inventory_result *inventory, in
 
 mc_inventory_status mc_inventory_result_size(const mc_inventory_result *inventory, int32_t *out,
                                              mc_inventory_error *result) {
-    mc_inventory_error error = result_admit(inventory, out);
+    mc_inventory_error error = result_admit(inventory, out, false);
     if (error.status == MC_INVENTORY_OK)
         *out = 1;
     return inv_finish(result, &error);
@@ -149,7 +153,7 @@ mc_inventory_status mc_inventory_result_size(const mc_inventory_result *inventor
 
 mc_inventory_status mc_inventory_result_name(const mc_inventory_result *inventory, const char **out,
                                              mc_inventory_error *result) {
-    mc_inventory_error error = result_admit(inventory, out);
+    mc_inventory_error error = result_admit(inventory, out, false);
     if (error.status == MC_INVENTORY_OK)
         *out = "Result";
     return inv_finish(result, &error);
@@ -157,7 +161,7 @@ mc_inventory_status mc_inventory_result_name(const mc_inventory_result *inventor
 
 mc_inventory_status mc_inventory_result_limit(const mc_inventory_result *inventory, int32_t *out,
                                               mc_inventory_error *result) {
-    mc_inventory_error error = result_admit(inventory, out);
+    mc_inventory_error error = result_admit(inventory, out, false);
     if (error.status == MC_INVENTORY_OK)
         *out = 64;
     return inv_finish(result, &error);
@@ -165,7 +169,7 @@ mc_inventory_status mc_inventory_result_limit(const mc_inventory_result *invento
 
 mc_inventory_status mc_inventory_result_changed(mc_inventory_result *inventory,
                                                 mc_inventory_error *result) {
-    mc_inventory_error error = result_admit(inventory, inventory);
+    mc_inventory_error error = result_admit(inventory, inventory, true);
     return inv_finish(result, &error);
 }
 
@@ -173,7 +177,7 @@ mc_inventory_status mc_inventory_result_usable(const mc_inventory_result *invent
                                                const void *player, bool *out,
                                                mc_inventory_error *result) {
     (void)player;
-    mc_inventory_error error = result_admit(inventory, out);
+    mc_inventory_error error = result_admit(inventory, out, false);
     if (error.status == MC_INVENTORY_OK)
         *out = true;
     return inv_finish(result, &error);

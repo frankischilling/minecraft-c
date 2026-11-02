@@ -58,9 +58,11 @@ Native construction has separate allocation and constructor entry so a failed
 native cleanup remain distinct. Each actual Player receiving the `ID.b` store
 has a retained native publication record. Retiring an owned Workbench Container
 while one of those Players still publishes it returns `BUSY` before consuming
-rights or changing admission. Joining terminal cleanup while Workbench remains
-open is unfinished. Ordinary source close restores the default field naturally;
-native cleanup does not repair it.
+rights or changing admission. The selected whole-client
+[native shutdown route](workbench-open-shutdown.md) instead transfers the same
+IT to a sealed Player owner and keeps it alive until final Player disposal.
+Ordinary source close restores the default field naturally; native cleanup
+does not repair it.
 
 Successful native input retirement ends its borrowed Inventory and screen-init
 diagnostic views. Scalar failure sites and Source exception types remain
@@ -179,9 +181,9 @@ Cold-prefix printing and continuation remain separate unfinished fidelity work.
 
 The bounded native crafting, placement, close/drop and exact-save scenario
 passes. Original pixels, unrestricted container behavior, Linux SDK gameplay,
-global focus stability, FPS and the live-open terminal join remain unfinished
-or unqualified. Eligibility close after distance or Table removal also needs
-its separate composed caller qualification. The broader client remains pre-playable.
+global focus stability and FPS remain unfinished or unqualified. Native shutdown
+with an open Workbench and eligibility close after distance or Table removal
+have their separate bounded qualifications. The broader client remains pre-playable.
 
 Enable `MC_ENABLE_CLIENT_WORKBENCH_TESTS` with the existing imported-resource
 and display options, then run:

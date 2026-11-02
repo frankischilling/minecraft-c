@@ -310,6 +310,10 @@ int main(int argc, char **argv) {
     more = true;
     CHECK(mc_world_runtime_light_drain(world, 0, &more, &light) == MC_WORLD_STORAGE_LIMIT && more);
     CHECK(light.drain_bytecode == 82 && light.region_bytecode == 79);
+    CHECK(light.acquisition.batch.index == 0 && light.acquisition.load_entity.index == 0 &&
+          light.acquisition.tile_entity.tile_entity.item_index == 0 &&
+          light.acquisition.registry.initializer_pc == -1 &&
+          light.acquisition.tile_entity.registry.initializer_pc == 0);
     CHECK(mc_world_runtime_fields_get(world, &fields) == MC_WORLD_STORAGE_OK && fields.M == 0);
     CHECK(mc_world_runtime_light_list_get(world, &list, NULL) == MC_WORLD_STORAGE_OK &&
           list.count == 0);
@@ -362,6 +366,11 @@ int main(int argc, char **argv) {
     CHECK(mc_world_runtime_saved_light_set(world, sky, 1, 110, 1, 7, &light) ==
           MC_WORLD_STORAGE_UNSUPPORTED_STATE);
     CHECK(light.setter_bytecode == 121 && light.world_access_bytecode == 121);
+    CHECK(light.acquisition.status == MC_CHUNK_ACQUIRE_OK &&
+          light.acquisition.batch.index == SIZE_MAX &&
+          light.acquisition.load_entity.index == SIZE_MAX &&
+          light.acquisition.tile_entity.tile_entity.item_index == SIZE_MAX &&
+          light.acquisition.tile_entity.registry.initializer_pc == -1);
     CHECK(mc_world_runtime_saved_light(world, sky, 1, 110, 1, &value, NULL) ==
               MC_WORLD_STORAGE_OK &&
           value == 7);
@@ -373,6 +382,11 @@ int main(int argc, char **argv) {
           more);
     CHECK(light.drain_bytecode == 82 && light.region_bytecode == 575 &&
           light.setter_bytecode == 121);
+    CHECK(light.acquisition.status == MC_CHUNK_ACQUIRE_OK &&
+          light.acquisition.batch.index == SIZE_MAX &&
+          light.acquisition.load_entity.index == SIZE_MAX &&
+          light.acquisition.tile_entity.tile_entity.item_index == SIZE_MAX &&
+          light.acquisition.tile_entity.registry.initializer_pc == -1);
     CHECK(mc_world_runtime_fields_get(world, &fields) == MC_WORLD_STORAGE_OK && fields.M == 0);
     CHECK(mc_world_runtime_light_list_get(world, &list, NULL) == MC_WORLD_STORAGE_OK &&
           list.count == 0);
