@@ -13,6 +13,7 @@ int mc_inventory_faces_fixture_main(void);
 #include "mc/item/registry/runtime.h"
 #include <inttypes.h>
 
+#include "inventory_family_controls.inc"
 #include "leaf_inventory_controls.inc"
 
 typedef struct durability_rectangle {
@@ -631,11 +632,9 @@ static bool pumpkin_getter_controls(fixture *f) {
     const mc_block *grass = NULL;
     int32_t unchanged = -777;
     CHECK(mc_registry_block_get(f->registry, 2, &grass, NULL) == MC_REGISTRY_OK && grass != NULL &&
-          mc_block_render_inventory_color(grass, 0, &unchanged) ==
-              MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY &&
-          unchanged == -777 &&
-          mc_block_render_inventory_shape((mc_block *)(void *)grass) ==
-              MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY);
+          mc_block_render_inventory_color(grass, 0, &unchanged) == MC_REGISTRY_OK &&
+          unchanged == 0xffffff &&
+          mc_block_render_inventory_shape((mc_block *)(void *)grass) == MC_REGISTRY_OK);
     return true;
 }
 
@@ -1006,11 +1005,17 @@ static bool inventory_controls(void) {
     static const uint8_t language[] = "stat.mineBlock=Mine %1$s\nstat.useItem=Use %1$s\n"
                                       "stat.breakItem=Break %1$s\nstat.craftItem=Craft %1$s\n";
     resources r = {.streams = {{language, sizeof language - 1, 0, false}, {0}, {0}}};
-    const mc_registry_resources api = {&r, open_resource, close_resource, ready_resource};
+    inventory_resource_preparation preparation = {.input = &r};
+    const mc_registry_resources api = {&preparation, inventory_resource_open,
+                                       inventory_resource_close, inventory_resource_ready};
     const mc_registry_options options = {MC_REGISTRY_CLIENT, f.profile, f.materials, 0, &api};
     CHECK(mc_registry_classes_allocate(&options, &f.registry, NULL) == MC_REGISTRY_OK);
+    preparation.registry = f.registry;
     CHECK(mc_registry_classes_bind_entities(f.registry, f.entities, NULL) == MC_REGISTRY_OK);
     CHECK(mc_registry_classes_initialize_blocks(f.registry, NULL) == MC_REGISTRY_OK);
+    CHECK(preparation.raw_base != NULL && preparation.raw_base->phase == MC_BLOCK_RAW &&
+          preparation.raw_base->kind == MC_BLOCK_BASE &&
+          inventory_family_controls(&f, preparation.raw_base));
     CHECK(pumpkin_getter_controls(&f) && pressure_plate_getter_controls(&f) &&
           slab_block_getter_controls(&f) && crafting_getter_controls(&f) &&
           item_block_scale_controls(&f));

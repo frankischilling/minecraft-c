@@ -1,5 +1,26 @@
 # Build and tests
 
+The integrated runtime passes 644/644 Windows Release public tests in 267.67
+seconds and 639/639 Linux Clang 18 ASan/UBSan public tests in 143.27 seconds.
+Both preserve 4,425 sources and 525 products; Windows preserves 823 assets.
+All 1,441 runtime files match across hosts. Linux uses Xvfb/software GL with
+leak detection and halt-on-error. All 15 changed C translation units pass
+strict GCC 13 syntax checks; formatting covers 2,010 C/header/fragment files.
+The final documentation/binding follow-up has separate verification.
+
+`client.inventory_block` matches 13,098 original behavior rows and the retained
+17 Leaf rows. TallGrass tint and controller comparisons match 28 and 192 rows.
+The asset-independent packets keep their own corruption controls.
+`MC_ENABLE_CLIENT_SAND_HARVEST_TESTS=ON` and
+`MC_ENABLE_CLIENT_TALL_GRASS_HARVEST_TESTS=ON` add separate Windows desktop
+scenes with imported assets and display tests enabled. Both reach actual
+mining, Item drawing/pickup, held rendering, Inventory and checked cleanup.
+
+`MC_BUILD_BENCHMARKS=ON` also builds `mc_benchmark_light_drain`. Its
+[fixed-work runner](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/light_drain.md)
+compares public drains and retains every sample with state/ownership receipts.
+The recorded 6.76% median CPU reduction is separate from frame-time testing.
+
 The [concrete harvest tests](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/block-harvest.md)
 match 63 original controller scenarios and 208 rows. Four failure-prefix controls
 bring the native run to 67 processes and 6,158 checks. The original packet has

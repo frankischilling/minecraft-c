@@ -1,23 +1,13 @@
 #ifndef MC_BLOCK_REGISTRY_LEAF_COLOR_INTERNAL_H
 #define MC_BLOCK_REGISTRY_LEAF_COLOR_INTERNAL_H
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "world_color_ops_internal.h"
 
 /* BK.b(Lxp;III)I's single source body. Each adapter operates on its actual
  * XP/namespace and owns diagnostics. In particular, channel must resolve XP.a
  * afresh: the sampling callback may replace the World's Dimension. */
-typedef struct mc_leaf_color_ops {
-    bool (*metadata)(void *, int32_t, int32_t, int32_t, unsigned int, int32_t *);
-    bool (*climate)(void *, int32_t, int32_t, unsigned int, unsigned int);
-    bool (*channel)(void *, bool, unsigned int, unsigned int, unsigned int, double *);
-    bool (*constant)(void *, bool, unsigned int, int32_t *);
-    bool (*lookup)(void *, double, double, unsigned int, int32_t *);
-    void (*pc)(void *, unsigned int);
-} mc_leaf_color_ops;
-
-static inline bool mc_leaf_world_color(const mc_leaf_color_ops *ops, void *context, int32_t x,
-                                       int32_t y, int32_t z, int32_t *out) {
+static inline bool mc_leaf_world_color(const mc_block_world_color_ops *ops, void *context,
+                                       int32_t x, int32_t y, int32_t z, int32_t *out) {
     int32_t metadata, value;
     if (!ops->metadata(context, x, y, z, 5, &metadata))
         return false;

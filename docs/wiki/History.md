@@ -1,5 +1,14 @@
 # History
 
+## Inventory Blocks, TallGrass and Light drains
+
+Block inventory method resolution now covers all 69 represented kinds.
+TallGrass World/particle tint and controller comparisons match the original
+reference, and finite Windows Sand/Seeds scenes reach drawing, pickup, held
+rendering and Inventory. A separate Light-drain CPU comparison records a
+6.76% median reduction across 42 samples with unchanged work/state receipts.
+The detailed evidence and remaining limits live in the repository documentation.
+
 ## Concrete harvesting and provider presence
 
 Leaves, Snow-layer and Ice now run their original Player-harvest overrides

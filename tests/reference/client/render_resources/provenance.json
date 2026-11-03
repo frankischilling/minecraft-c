@@ -2398,8 +2398,8 @@
       "sha256": "bd86f25eaafe3c6ee22b1c68a3e58488d7559ba573c6d7dc6d0ed067a94af741"
     },
     "include/mc/block/registry/rendering.h": {
-      "bytes": 4122,
-      "sha256": "fecfb5cb7f4decce0d1ba2ac834c2e988c595dbff6863296df9891b3d2082f02"
+      "bytes": 4197,
+      "sha256": "1ea19965448e51fa289ce58c8d6b651848f6f69d7e3aa403357f0347cf943dc0"
     },
     "include/mc/client/world/source_chunk_renderer.h": {
       "bytes": 1231,
@@ -3682,8 +3682,8 @@
       "sha256": "789971109a78ca0e3ac09ef994768ea28032cace641c51364912a231b92796f3"
     },
     "cmake/client_render_block_colors.cmake": {
-      "bytes": 2159,
-      "sha256": "10cad07f3c1ef9bbc3c7afa5ba216d258179c4f5948bb5057af6031683e50a3c"
+      "bytes": 2937,
+      "sha256": "d49673f21603189cd5a816319ff36edc62dca6f64fa244e47ccc55723d1b63df"
     },
     "cmake/tests/client_render_blocks_ao.cmake": {
       "bytes": 1224,
@@ -3714,8 +3714,8 @@
       "sha256": "46892989c96a5aaa4d28feec0afcd17f37387708328a95b8771a83501ebbeb0f"
     },
     "src/client/render/blocks/color.c": {
-      "bytes": 12098,
-      "sha256": "e9791abc362ad816f78de7dbaae8ddc993b1d982a8ab0f18d1ed4778a3c4137f"
+      "bytes": 10295,
+      "sha256": "6397ad38d06a748110b5096a526e9c8167233fc4c81b3202b325071e6e2de261"
     },
     "src/client/render/blocks/faces.c": {
       "bytes": 24623,
@@ -3758,8 +3758,8 @@
       "sha256": "1f55b83e4c976161ae903ccdec6aedc659c6faf383d6de865872d5ad0c61a09b"
     },
     "tests/client/world/test_render_block_colors.c": {
-      "bytes": 25557,
-      "sha256": "b1414b612047bbc051842e5e4205b9bd5830a4fc50801edb872df7593c52bb02"
+      "bytes": 42542,
+      "sha256": "479124260969755b09c88bfcfdf70eda35dd96d94e02cf59dc980b6bb64353f9"
     },
     "tests/reference/client/render_block_colors/capture_reference.py": {
       "bytes": 7023,
@@ -4530,8 +4530,8 @@
       "sha256": "6fa3029e5dad62d7ee36f1f38cbe7b803e79710d813559081f8a48224bc85c90"
     },
     "tests/client/gui/test_gui_ingame_draw.c": {
-      "bytes": 48725,
-      "sha256": "377d2e37e9a19b9f9d21fa1ff05c5b650f1e07e3bf5b3a392f7682969d9d49d0"
+      "bytes": 49894,
+      "sha256": "44248e122e60ba5517e19f15f11a795bd8dbb1e921e8dc790c4c5df23515cf6e"
     },
     "tests/reference/client/gui_ingame_draw/capture_reference.py": {
       "bytes": 10396,
@@ -5478,8 +5478,8 @@
       "sha256": "7e343b192ec286e343fd9496c793b38cb3cdeb0d470ee920772be8fdc222a288"
     },
     "cmake/tests/source_world_saving.cmake": {
-      "bytes": 2101,
-      "sha256": "0a263ebbcfcd261735c6a9a6842bfd014e027edae152b33ad069c131656a2543"
+      "bytes": 2373,
+      "sha256": "ea22a51f286e274dda40d38caee159195e5d3ebb644e786d7f756ae748e57a2a"
     },
     "src/world/runtime/tile_entities/source_save.inc": {
       "bytes": 11082,
@@ -5830,8 +5830,8 @@
       "sha256": "c379275ccb554ef787eabcc2af7eb69d38b252499806156abc16b5bb1aa53733"
     },
     "cmake/client_mining.cmake": {
-      "bytes": 8943,
-      "sha256": "66a6a4e4137ddbff9cef6b4afa593bdad358e267ea809f142f308ccd25863270"
+      "bytes": 9430,
+      "sha256": "1e8353a20fd556550d74c42095651e5417d7939a365c5976df8fd3804685fef4"
     },
     "include/mc/client/controller/mining.h": {
       "bytes": 4008,
@@ -5878,8 +5878,8 @@
       "sha256": "0ad497a56441085dbd07fee1f7afd7312680841b458d5a237ac434e42dbc549a"
     },
     "src/entity/particles/digging.c": {
-      "bytes": 20788,
-      "sha256": "2ec920c84b092a12f90748ae0e7e7039b6ea3ecca6d9b16be428799423952e6f"
+      "bytes": 21340,
+      "sha256": "5be1f4d6fb246072c68027b523aa1480678e54ccc67492360404573cdbffdc4b"
     },
     "src/entity/player/mining.c": {
       "bytes": 9001,
@@ -5902,8 +5902,8 @@
       "sha256": "875f2fc4dbb6075afef5c929335337f81124337c36c44d3204ced9a854ca6fbc"
     },
     "tests/client/render/test_inventory_block.c": {
-      "bytes": 68815,
-      "sha256": "3f1710bdce7fd3a3bced75ea959f40c5546ae3a1498d4fbf4c605c9cc7f3a454"
+      "bytes": 69180,
+      "sha256": "07a4b3eeaea1424831faf68ae1b1e4c6ac3a9dd56fcbfb1c3f3eae86325bfc59"
     },
     "tests/entity/particles/test_digging.c": {
       "bytes": 15805,
@@ -6566,8 +6566,8 @@
       "sha256": "9761a3538055c4dbb79b0f418a15b9a938a58cefd1638a6d78d7858e5101cd3e"
     },
     "src/client/gui/source_inventory_drawing.h": {
-      "bytes": 2926,
-      "sha256": "14e9dbec1f9ed1ae4528ded9fda1a051d3c2bf6926937bfa856c2003d780dcc0"
+      "bytes": 3005,
+      "sha256": "df7acf00b8a25ab72127f04f8e93e3560e67dcdf4ae18f3373b7c897fbc33df5"
     },
     "src/client/gui/source_inventory_drawing_internal.h": {
       "bytes": 3160,
@@ -7042,8 +7042,8 @@
       "sha256": "d2c9e6b851179ac4dafd794d7609172ec16896cbc9a4751539ce40fbae194fd2"
     },
     "tests/benchmarks/world_queries.c": {
-      "bytes": 20137,
-      "sha256": "6c16bbd3b57770f2bbdd5d0053e2d3218b85db1c8dc30c36f65378aa3eb7fcb6"
+      "bytes": 20229,
+      "sha256": "8a471ecbbded3c9fe7cca7a9840aaba47e7c689a3b06492b1075c7de1a15bf1a"
     },
     "tests/client/controller/test_mining_tools.c": {
       "bytes": 7931,
@@ -7067,11 +7067,11 @@
     },
     "tests/reference/client/workbench_open_shutdown/packet.py": {
       "bytes": 23677,
-      "sha256": "e2f25a2f361de2201878a2d052747918d7c43afd46ce7c6749de4588a2a4b9d2"
+      "sha256": "ad35d359fb1066046ebfd4461387b99fe6df994caad5f1dd028e87dbdf6ba5ef"
     },
     "tests/reference/client/workbench_open_shutdown/test_packet.py": {
       "bytes": 9801,
-      "sha256": "bfcea9e051db237f02613487c2f19febaab493f55cf71010118e6705b2df6d2e"
+      "sha256": "351e19cd10a55beabfcadb8bf70960e19c491d93a3775660b6f4c7aed95e85de"
     },
     "tests/reference/item/mining/capture_reference.py": {
       "bytes": 5373,
@@ -7110,8 +7110,8 @@
       "sha256": "d828d422a3ad34616a58cd59f226d4ed942dc5cc9f90d88b70a6732b935cc677"
     },
     "src/block/registry/leaf_color_internal.h": {
-      "bytes": 1823,
-      "sha256": "edcb99c08d0c30fbd6dbc230a680885953954f00103bc322a592190084d21db6"
+      "bytes": 1358,
+      "sha256": "c85fe09d94a435dbba44201169eac4724961572d387306b98d086439de952e8b"
     },
     "src/client/render/blocks/inventory_color.h": {
       "bytes": 571,
@@ -7126,12 +7126,12 @@
       "sha256": "7ab247205a6b003d83893510102750483ef3f552f340a1d9d799873cfd44e210"
     },
     "tests/client/controller/test_block_harvest.c": {
-      "bytes": 21068,
-      "sha256": "a9351c061a9df43890429f8bbf095e1f36aed374964404a3ab805dc559f453ed"
+      "bytes": 21086,
+      "sha256": "f33a26f8b981eaa2c572c29382257cc0c43041af2d2a6f2d3d1ea0baeb575d69"
     },
     "tests/client/gameplay/test_leaf_harvest.c": {
-      "bytes": 18867,
-      "sha256": "de5ed91e4b3063c1cd7bb8e123c4435e084253d94a97c50b80c6e27067be64af"
+      "bytes": 19077,
+      "sha256": "81138794751e4859e5ee9e73612bd3e4188ea3f61f0a862faf6636b1e957b9ac"
     },
     "tests/client/render/leaf_inventory_controls.inc": {
       "bytes": 8939,
@@ -7168,6 +7168,106 @@
     "tests/tools/client/test_leaf_harvest.py": {
       "bytes": 11635,
       "sha256": "949acd47925c349c7dfa0ba5da64952449db5816c9b7bef27b06969c55ab25b9"
+    },
+    "cmake/client_sand_harvest.cmake": {
+      "bytes": 1798,
+      "sha256": "24adee040a5d75a1429f975b4063c38ad4690068b6137089e44cf454dc7028c5"
+    },
+    "cmake/client_tall_grass_harvest.cmake": {
+      "bytes": 2835,
+      "sha256": "aef9959ad3f51bad1dc45e9d52ef69ed348d6b0340e920c13dbbc084f363e1e1"
+    },
+    "src/block/registry/tall_grass_color_internal.h": {
+      "bytes": 1656,
+      "sha256": "9f11ddbc81802efcb1a8ca919a3f3bb9647946045c93312f5a97d76eb18ecfd7"
+    },
+    "src/block/registry/world_color_ops_internal.h": {
+      "bytes": 792,
+      "sha256": "e0ddd35abcc84a5d980d0ae37f804cf6b971262b221c541637237004c44a3b61"
+    },
+    "src/world/runtime/saved_light_internal.h": {
+      "bytes": 1045,
+      "sha256": "ecf3dfddf9cc685f1bb060bb9e8a3aa16fcb5e505b41b81865da0993800e5749"
+    },
+    "tests/benchmarks/light_drain.c": {
+      "bytes": 17112,
+      "sha256": "b2f38a629b0f616655c6418230be0154312d54919dc1773c8c9a10fdf1dab9d5"
+    },
+    "tests/client/gameplay/test_sand_harvest.c": {
+      "bytes": 19392,
+      "sha256": "43c31d580156cae592486ad8769a4ac34a2e67bceba18616073538457b0cf8a9"
+    },
+    "tests/client/gameplay/test_tall_grass_harvest.c": {
+      "bytes": 50173,
+      "sha256": "e627f7de4c3a9baafc4fa66df40462cb7924c694c94dc2e638b29898fdd4e63f"
+    },
+    "tests/client/render/inventory_family_controls.inc": {
+      "bytes": 10562,
+      "sha256": "b17e8f091e9403d22b04897a5731f85ac9e51e421d2f0f2ac9101bd156089675"
+    },
+    "tests/reference/block/tall_grass_harvest/capture_reference.py": {
+      "bytes": 7437,
+      "sha256": "3813d68cb68c8ee12d4646b2db25bcfcf3912c65fbc79759fd5fb0b2ce3da819"
+    },
+    "tests/reference/block/tall_grass_harvest/packet.py": {
+      "bytes": 10926,
+      "sha256": "8f20bc950a70351d1ce573dcdf86f54e7a2f2c4a2d1ef846b951ad3b43a5756f"
+    },
+    "tests/reference/block/tall_grass_harvest/test_packet.py": {
+      "bytes": 5080,
+      "sha256": "844259e05410097f4c61c29c792c8bb81422c283692bfe6be53a0cd04b6c5c0e"
+    },
+    "tests/reference/client/block_inventory/capture_reference.py": {
+      "bytes": 7371,
+      "sha256": "ff783d0132f26c77ced455a233a872033b2218da1829d5e87901b14fc68b725a"
+    },
+    "tests/reference/client/block_inventory/packet.py": {
+      "bytes": 6731,
+      "sha256": "4ae7846f85bf83515e438a96f7f105666ad0670538089e43c0ff350c327f9b28"
+    },
+    "tests/reference/client/block_inventory/run_native.py": {
+      "bytes": 3935,
+      "sha256": "c09c1813b64eae6ffe5f69f5a8c8d97afc58d5462e8d8b3e3ec657a3296e90c3"
+    },
+    "tests/reference/client/block_inventory/test_packet.py": {
+      "bytes": 3079,
+      "sha256": "0df4150d96f58daec2255dc9b258db0a0da29103d09599a2f0ab1cc085455bf2"
+    },
+    "tests/reference/client/tall_grass_tint/capture_reference.py": {
+      "bytes": 7016,
+      "sha256": "7a1e489a25a48c3a7e72db3fb51a96e116853e9f8b38f281dc192cb5e2c220bf"
+    },
+    "tests/reference/client/tall_grass_tint/inputs.py": {
+      "bytes": 1106,
+      "sha256": "cce71865392733564978c2889089c9cdc31ec69a7409247b65e88019c2f96d86"
+    },
+    "tests/reference/client/tall_grass_tint/packet.py": {
+      "bytes": 8198,
+      "sha256": "526bb404f1c65d974d0d5c50490dd1effae1a0e2e08deb733564d0f62cef4589"
+    },
+    "tests/reference/client/tall_grass_tint/run_native.py": {
+      "bytes": 3344,
+      "sha256": "92571e8a91450950a4470e1054ac35be49ea77d02550898d545f982ba97a2084"
+    },
+    "tests/reference/client/tall_grass_tint/test_packet.py": {
+      "bytes": 4629,
+      "sha256": "740accd6d49093f9d1d10226550127faa3c6a5c57d81a9c0f8691624fd0f24d4"
+    },
+    "tests/tools/client/test_sand_harvest.py": {
+      "bytes": 11001,
+      "sha256": "313403360fdac37a0697e49f50e4455a7113e99b3da31ce0e5a84a9201cf77af"
+    },
+    "tests/tools/client/test_tall_grass_harvest.py": {
+      "bytes": 17632,
+      "sha256": "5c4df6e54bf1b17f4c55779a4261c51323d2e37a1c626340a22977ad9f29acb1"
+    },
+    "tests/tools/client/test_tall_grass_harvest_controller.py": {
+      "bytes": 2876,
+      "sha256": "4802ed1f2f7c763537392188b01f9be03fc709ec8faac433f277275383e50401"
+    },
+    "tests/tools/world/benchmark_light_drain.py": {
+      "bytes": 11139,
+      "sha256": "30264294b4f296f2fa00c519402275b22397ff37ad6bcdbe1835603af6a6f970"
     }
   },
   "source_suppliers": {

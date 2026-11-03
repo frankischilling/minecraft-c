@@ -328,7 +328,7 @@ static int leaf_run(fixture *f, mining_work *work) {
     return 0;
 }
 
-static int leaf_quit(fixture *f, uint32_t frame_id) {
+static int leaf_stop(fixture *f, uint32_t frame_id, const char *snapshot) {
     SDL_Event event = {0};
     event.type = SDL_EVENT_WINDOW_CLOSE_REQUESTED;
     event.window.windowID = frame_id;
@@ -344,11 +344,18 @@ static int leaf_quit(fixture *f, uint32_t frame_id) {
     CHECK(mc_client_menu_loop_inspect(f->loop, &f->state));
     if (!f->state.failed)
         CHECK(mc_client_menu_loop_frame(f->loop));
-    CHECK(reload_snapshot("leaf-stopped") == 0);
+    CHECK(reload_snapshot(snapshot) == 0);
     return 0;
 }
 
-int main(int argc, char **argv) {
+static int leaf_quit(fixture *f, uint32_t frame_id) {
+    return leaf_stop(f, frame_id, "leaf-stopped");
+}
+
+#ifndef MC_LEAF_FIXTURE_MAIN
+#define MC_LEAF_FIXTURE_MAIN main
+#endif
+int MC_LEAF_FIXTURE_MAIN(int argc, char **argv) {
     CHECK(argc == 3);
     fixture *f = calloc(1, sizeof(*f));
     mining_work *work = calloc(1, sizeof(*work));

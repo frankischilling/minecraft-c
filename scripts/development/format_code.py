@@ -76,6 +76,7 @@ def main():
                  "src/world/storage/chunk_lookup.inc",
                  "tests/client/startup/test_world_reload.inc",
                  "tests/client/gameplay/test_attack_autosave.inc",
+                 "tests/client/render/inventory_family_controls.inc",
                  "tests/world/runtime/collision/selected_getter_cases.inc",
                  "src/client/settings/source_input.inc",
                  "src/world/saved_data/source_storage.inc",

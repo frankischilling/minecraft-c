@@ -225,7 +225,7 @@ static bool null_failure(const mc_singleplayer_mining_error *error) {
 }
 
 static bool exercise(fixture *f, const harvest_input *p) {
-    CHECK(p->mode == 1 && (p->block == 18 || p->block == 78 || p->block == 79));
+    CHECK(p->mode == 1 && (p->block == 18 || p->block == 31 || p->block == 78 || p->block == 79));
     uint8_t *blocks = calloc(MC_CHUNK_BLOCKS, 1);
     CHECK(blocks != NULL);
     const size_t column = ((size_t)3 * 16u + 5u) * 128u;

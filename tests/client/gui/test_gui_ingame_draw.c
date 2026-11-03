@@ -496,9 +496,27 @@ static int hud_failures(fixture *runtime, client_application *app, mc_entity *pl
           mc_item_stack_construct(first_dirt, 3, 1, 0) == MC_ITEM_STACK_OK);
     CHECK(mc_inventory_player_set(player->local_player->fields.player.c, 0, first_dirt, NULL) ==
           MC_INVENTORY_OK);
+    mc_item_stack *grass = NULL;
+    CHECK(mc_item_stack_allocate(&grass) == MC_ITEM_STACK_OK &&
+          mc_item_stack_construct(grass, 2, 1, 0) == MC_ITEM_STACK_OK);
+    CHECK(mc_inventory_player_set(player->local_player->fields.player.c, 1, grass, NULL) ==
+          MC_INVENTORY_OK);
+    CHECK(mc_client_gui_ingame_draw_begin(app->v, runtime->graphics, math, app->display, .375f,
+                                          false, 17, 23, &call,
+                                          &error) == MC_CLIENT_GUI_INGAME_DRAW_OK);
+    CHECK(mc_client_gui_ingame_draw_inspect(call, &state) && state.returned &&
+          state.stats_returned && state.slots_returned && state.item_slots == 2 &&
+          state.item_overlays == 2 && state.item_faces == 12);
+    CHECK(mc_client_gui_ingame_draw_retire(&call, &error) == MC_CLIENT_GUI_INGAME_DRAW_OK);
+    CHECK(mc_inventory_player_set(player->local_player->fields.player.c, 1, NULL, NULL) ==
+          MC_INVENTORY_OK);
+    mc_item_stack_release(grass);
+
+    /* Cactus's type13 geometry is still a real dependency after ordinary cube
+     * colors/bounds have returned. Exercise that failure after the Dirt slot. */
     mc_item_stack *stack = NULL;
     CHECK(mc_item_stack_allocate(&stack) == MC_ITEM_STACK_OK &&
-          mc_item_stack_construct(stack, 2, 1, 0) == MC_ITEM_STACK_OK);
+          mc_item_stack_construct(stack, 81, 1, 0) == MC_ITEM_STACK_OK);
     CHECK(mc_inventory_player_set(player->local_player->fields.player.c, 1, stack, NULL) ==
           MC_INVENTORY_OK);
     CHECK(mc_client_gui_ingame_draw_begin(app->v, runtime->graphics, math, app->display, .375f,
@@ -537,12 +555,12 @@ static int hud_failures(fixture *runtime, client_application *app, mc_entity *pl
               state.failure->item_inventory.native_policy &&
               state.failure->item_inventory.status ==
                   MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY &&
-              state.failure->item_inventory.source_pc == 14 &&
-              state.failure->item_inventory.site.pc == 14 &&
+              state.failure->item_inventory.source_pc == 324 &&
+              state.failure->item_inventory.site.pc == 324 &&
               strcmp(state.failure->item_inventory.site.class_name, "cv") == 0 &&
               strcmp(state.failure->item_inventory.site.descriptor, "(Luu;IF)V") == 0 &&
               state.failure->item_inventory.depth == 1 &&
-              state.failure->item_inventory.frames[0].pc == 14 &&
+              state.failure->item_inventory.frames[0].pc == 324 &&
               state.failure->item_inventory.faces == 0);
     }
     int32_t measured = -1;

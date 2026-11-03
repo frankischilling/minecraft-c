@@ -1,6 +1,7 @@
 #include "../../block/registry/leaf_color_internal.h"
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
+#include "../../block/registry/tall_grass_color_internal.h"
 #include "../../client/render_engine/internal.h"
 #include "../../world/runtime/acquisition_internal.h"
 #include "../construction_internal.h"
@@ -147,13 +148,15 @@ typedef struct digging_color_context {
     mc_client_render_engine *engine;
     mc_digging_color_error *child;
     mc_particle_error *error;
+    const char *source_class;
+    mc_client_colorizer_kind colorizer;
 } digging_color_context;
 
 static bool color_fail(digging_color_context *c, const char *operation, unsigned int pc,
                        bool native, const char *exception) {
     mc_particle_error *e = c->error;
     (void)digging_fail(e, MC_ENTITY_STATE_ERROR, operation, "b", "(Lxp;III)I", pc, native);
-    e->source_class = "bk";
+    e->source_class = c->source_class;
     e->item_pc = 23; /* Enclosing actual QM.a invocation. */
     e->exception_class = native ? NULL : exception;
     c->child->failed = true;
@@ -168,7 +171,7 @@ static bool color_metadata(void *context, int32_t x, int32_t y, int32_t z, unsig
     d->child = MC_DIGGING_COLOR_NONE;
     d->site = (mc_client_graphics_site){"fd", "e", "(III)I", 0};
     if (c->world == NULL)
-        return color_fail(c, "BK actual XP metadata null receiver", pc, false,
+        return color_fail(c, "Block color actual XP metadata null receiver", pc, false,
                           "java/lang/NullPointerException");
     d->child = MC_DIGGING_COLOR_METADATA;
     d->acquisition_reached = true;
@@ -182,7 +185,7 @@ static bool color_manager(digging_color_context *c, unsigned int pc, mc_world_ch
     mc_digging_color_error *d = c->child;
     d->child = MC_DIGGING_COLOR_NONE;
     if (c->world == NULL)
-        return color_fail(c, "BK actual XP manager null receiver", pc, false,
+        return color_fail(c, "Block color actual XP manager null receiver", pc, false,
                           "java/lang/NullPointerException");
     d->child = MC_DIGGING_COLOR_MANAGER;
     const mc_world_storage_status status =
@@ -201,7 +204,7 @@ static bool color_climate(void *context, int32_t x, int32_t z, unsigned int mana
         return false;
     c->child->child = MC_DIGGING_COLOR_NONE;
     if (manager == NULL)
-        return color_fail(c, "BK actual cached manager null receiver", sample_pc, false,
+        return color_fail(c, "Block color actual cached manager null receiver", sample_pc, false,
                           "java/lang/NullPointerException");
     c->child->child = MC_DIGGING_COLOR_CLIMATE;
     mc_biome_reference_array *ignored = NULL;
@@ -228,17 +231,17 @@ static bool color_channel(void *context, bool rainfall, unsigned int manager_pc,
         return false;
     c->child->child = MC_DIGGING_COLOR_CHANNEL;
     if (manager == NULL)
-        return color_fail(c, "BK actual climate field null receiver", field_pc, false,
+        return color_fail(c, "Block color actual climate field null receiver", field_pc, false,
                           "java/lang/NullPointerException");
     mc_world_chunk_manager_fields fields;
     if (mc_world_chunk_manager_fields_get(manager, &fields) != MC_WORLD_PROVIDER_OK)
-        return color_fail(c, "BK actual climate native fields", field_pc, true, NULL);
+        return color_fail(c, "Block color actual climate native fields", field_pc, true, NULL);
     const mc_biome_double_buffer *array = rainfall ? fields.b : fields.a;
     if (array == NULL || array->data == NULL)
-        return color_fail(c, "BK actual climate array", load_pc, false,
+        return color_fail(c, "Block color actual climate array", load_pc, false,
                           "java/lang/NullPointerException");
     if (array->length == 0)
-        return color_fail(c, "BK actual climate array index0", load_pc, false,
+        return color_fail(c, "Block color actual climate array index0", load_pc, false,
                           "java/lang/ArrayIndexOutOfBoundsException");
     memcpy(out, &array->data[0], sizeof(*out));
     return true;
@@ -252,10 +255,10 @@ static bool color_read(digging_color_context *c, mc_client_colorizer_read_kind r
      * It is consulted only after the reached XP metadata/climate operations. */
     mc_client_render_engine_classes *graphics = c->engine == NULL ? NULL : c->engine->classes;
     if (graphics == NULL || graphics->colorizer_read == NULL)
-        return color_fail(c, "BK actual colorizer native namespace", pc, true, NULL);
+        return color_fail(c, "Block color actual colorizer native namespace", pc, true, NULL);
     d->child = MC_DIGGING_COLOR_COLORIZER;
-    if (graphics->colorizer_read(graphics, MC_CLIENT_COLORIZER_FOLIAGE, read, temperature, rainfall,
-                                 out, &d->colorizer) == MC_CLIENT_COLORIZER_OK)
+    if (graphics->colorizer_read(graphics, c->colorizer, read, temperature, rainfall, out,
+                                 &d->colorizer) == MC_CLIENT_COLORIZER_OK)
         return true;
     const mc_client_colorizer_error *e = &d->colorizer;
     d->site = e->site;
@@ -290,8 +293,8 @@ static void color_pc(void *context, unsigned int pc) {
     c->child->block_pc = pc;
 }
 
-static const mc_leaf_color_ops color_ops = {color_metadata, color_climate, color_channel,
-                                            color_constant, color_lookup,  color_pc};
+static const mc_block_world_color_ops color_ops = {color_metadata, color_climate, color_channel,
+                                                   color_constant, color_lookup,  color_pc};
 
 mc_entity_status mc_digging_particle_tint_entered(mc_entity *p, mc_client_render_engine *engine,
                                                   int32_t x, int32_t y, int32_t z,
@@ -320,20 +323,26 @@ mc_entity_status mc_digging_particle_tint_entered(mc_entity *p, mc_client_render
         return digging_fail(e, MC_ENTITY_STATE_ERROR, "QM actual Block color null receiver", "a",
                             "(III)Lqm;", 23, false);
     int32_t value = 16777215;
-    if (block->kind == MC_BLOCK_LEAVES) {
+    if (block->kind == MC_BLOCK_LEAVES || block->kind == MC_BLOCK_TALL_GRASS) {
         if (color == NULL)
             return digging_fail(e, MC_ENTITY_STATE_ERROR, "QM native retained color child", "a",
                                 "(III)Lqm;", 23, true);
         color->reached = true;
         color->failed = false;
         color->acquisition_reached = false;
-        digging_color_context context = {p->base.world, engine, color, e};
-        if (!mc_leaf_world_color(&color_ops, &context, x, y, z, &value))
+        const bool leaves = block->kind == MC_BLOCK_LEAVES;
+        digging_color_context context = {p->base.world,
+                                         engine,
+                                         color,
+                                         e,
+                                         leaves ? "bk" : "ru",
+                                         leaves ? MC_CLIENT_COLORIZER_FOLIAGE
+                                                : MC_CLIENT_COLORIZER_GRASS};
+        if (!(leaves ? mc_leaf_world_color(&color_ops, &context, x, y, z, &value)
+                     : mc_tall_grass_world_color(&color_ops, &context, x, y, z, &value)))
             return e->status;
         color->value = value;
-    } else if (block->kind == MC_BLOCK_TALL_GRASS)
-        return digging_fail(e, MC_ENTITY_STATE_ERROR, "QM specialized Block World color child", "a",
-                            "(III)Lqm;", 23, true);
+    }
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u)
         return digging_fail(e, MC_ENTITY_UNSUPPORTED_FP, "QM tint floating controls", "a",
                             "(III)Lqm;", 45, true);

@@ -1,5 +1,21 @@
 # minecraft-c
 
+The current runtime passes all 644 Windows Release public tests and all 639
+Linux Clang ASan/UBSan public tests. Sources/products remain unchanged and all
+1,441 runtime files match across hosts. Finite Windows gameplay scenes pass;
+unrestricted single-player play, desktop stability and general FPS remain open.
+
+[Block inventory rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/block-inventory.md)
+now resolves color and bounds methods for all 69 represented Block kinds.
+[TallGrass harvesting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/tall-grass-harvest.md)
+includes real Seed drops, drawing, pickup, held rendering and Inventory in a
+finite Windows source-input scene. Sand has its own complete scene.
+
+The [Light-drain comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/light_drain.md)
+retains 42 CPU samples: median drain time falls from 3.2821 to 3.0601 ms
+(6.76%), with the declared work/state checks unchanged. Gameplay FPS remains
+unqualified for this optimization.
+
 [Leaves, Snow-layer and Ice harvesting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/block-harvest.md)
 now matches 63 complete original controller scenarios. The Windows Leaf/Shears
 scene also returns actual mining, tinted particles and the dropped Leaf Item,

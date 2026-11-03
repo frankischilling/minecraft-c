@@ -1,6 +1,31 @@
 # Development status
 
-The expanded runtime passes all 634 Linux Clang 18 ASan/UBSan public tests in
+The integrated runtime passes all 644 Windows Release public tests in 267.67
+seconds and all 639 Linux Clang 18 ASan/UBSan public tests in 143.27 seconds.
+Both runs preserve 4,425 sources and 525 products; Windows also preserves 823
+assets. All 1,441 runtime files match across hosts. Linux uses Xvfb/software
+OpenGL, leak detection and halt-on-error. Documentation and binding follow-ups
+have separate checks; full single-player play and general FPS remain unfinished.
+
+[Block inventory colors and bounds](client/block-inventory.md) now resolve
+the original methods for all 69 represented Block kinds. The native comparison
+matches 13,098 original behavior rows, including textures for 57 cube receivers.
+Specialized inventory geometry still has explicit limits.
+
+[TallGrass harvesting](client/tall-grass-harvest.md) now shares its original
+World tint with destruction particles. Direct tint and controller comparisons
+match 28 and 192 original rows. The Windows source-input scene reaches an actual
+Seed drop, drawing, pickup, held rendering, Inventory and checked cleanup.
+Sand has a separate complete mining, drawing, pickup and Inventory scene.
+These finite scenarios do not establish unrestricted single-player play.
+
+The [Light-drain CPU comparison](../tests/benchmarks/light_drain.md) retains
+42 samples with unchanged work, state and ownership receipts. Reusing the
+canonical query diagnostic inside propagation reduces median drain time from
+3.2821 to 3.0601 ms (6.76%) on the recorded Windows machine. This result does
+not measure frame times or FPS.
+
+The preceding runtime passes all 634 Linux Clang 18 ASan/UBSan public tests in
 169.24 seconds. All 4,374 copied files and 522 executables stay unchanged;
 all 1,438 runtime files match Windows. The Windows Release public cohort passes
 638/639 in 215.48 seconds, preserving 4,374 sources, 522 products and 823 assets.

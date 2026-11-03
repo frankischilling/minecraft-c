@@ -19,6 +19,16 @@ if(BUILD_TESTING AND TARGET mc_test_chunk_cache)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/render-block-colors")
     set_tests_properties(client.render_block_colors PROPERTIES
         LABELS "public;integration;client;world;ownership;replay" TIMEOUT 120)
+    add_test(NAME client.tall_grass_tint COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/tall_grass_tint/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_render_block_colors>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/tall-grass-tint-reference")
+    set_tests_properties(client.tall_grass_tint PROPERTIES
+        LABELS "public;integration;client;world;ownership;replay" TIMEOUT 120)
+    add_test(NAME tools.tall_grass_tint_packet COMMAND Python3::Interpreter -B -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/tall_grass_tint" -p test_packet.py)
+    set_tests_properties(tools.tall_grass_tint_packet PROPERTIES
+        LABELS "public;unit;tools;client;world;reference" TIMEOUT 60)
 endif()
 
 if(BUILD_TESTING AND TARGET mc_client_application_owner)

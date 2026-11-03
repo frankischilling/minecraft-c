@@ -1,5 +1,13 @@
 # Storage and original references
 
+The [Block inventory packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/block_inventory/README.md)
+records 96 registered original receivers and their declaring methods across
+the complete class hierarchy. Native replay matches 13,098 behavior rows.
+The TallGrass [tint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/tall_grass_tint/README.md)
+and [harvest](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/block/tall_grass_harvest/README.md)
+packets retain two agreeing guarded original runs, with 28 and 192 selected
+native rows. Supplemental direct calls remain separate from controller coverage.
+
 The [concrete harvest packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/block/harvest/README.md)
 records 92 unchanged-original calls in two matching guarded VMs: 63 complete
 controller removals and 29 supplemental direct calls. Native replay matches

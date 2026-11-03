@@ -1,3 +1,6 @@
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 /* Reuse genuine World/Registry/Chunk setup; the included main is not run. */
 #define MC_PICKING_BODY_MAIN_NAME mc_color_picking_fixture_main
 int mc_color_picking_fixture_main(int argc, char **argv);
@@ -9,6 +12,7 @@ int mc_color_picking_fixture_main(int argc, char **argv);
 #include "client/world/chunk_cache_internal.h"
 #include "entity/particles/digging_color_internal.h"
 #include "entity/particles/particle_internal.h"
+#include "mc/client/particles/effect_renderer.h"
 #include "world/chunk/object_internal.h"
 #include "world/runtime/terminal_inventory_internal.h"
 #include "world/storage/objects_internal.h"
@@ -452,13 +456,298 @@ static bool color_particle_controls(picking_fixture *p) {
     return true;
 }
 
+static bool tall_dn_controls(picking_fixture *p, mc_client_render_engine *engine,
+                             mc_client_render_engine_classes *graphics) {
+    mc_client_effect_renderer *effects = NULL;
+    mc_effect_renderer_error *error = calloc(1, sizeof(*error));
+    CHECK(error != NULL);
+    CHECK(mc_client_effect_renderer_allocate(p->base.entities, NULL, &effects, error) ==
+          MC_EFFECT_RENDERER_OK);
+    CHECK(mc_client_effect_renderer_construct(effects, p->base.world, engine, error) ==
+          MC_EFFECT_RENDERER_OK);
+    mc_effect_renderer_snapshot before, after;
+    CHECK(mc_client_effect_renderer_read(effects, &before) && before.random != NULL);
+    mc_java_random expected = *before.random;
+    int32_t ignored;
+    for (size_t i = 0; i < 64; ++i)
+        CHECK(mc_java_random_next_bounded(&expected, 6, &ignored));
+    const uint64_t world_random = p->base.world->fields.r->state;
+    CHECK(mc_client_effect_renderer_destroy_block(effects, p->base.registry, p->math, 8, 64, 8, 31,
+                                                  0, error) == MC_EFFECT_RENDERER_OK);
+    const mc_effect_block_state *work = error->block;
+    CHECK(work != NULL && work->returned && work->constructed == 64 && work->appended == 64 &&
+          work->color != NULL && !work->color->failed && work->color->block_pc == 145 &&
+          (uint32_t)work->color->value == UINT32_C(0xa500da82));
+    for (size_t i = 0; i < 64; ++i) {
+        mc_entity *particle = mc_client_effect_renderer_particle(effects, 1, i);
+        CHECK(particle != NULL && color_float_bits(particle->particle->fields.i) == 0 &&
+              color_float_bits(particle->particle->fields.j) == UINT32_C(0x3f03501d) &&
+              color_float_bits(particle->particle->fields.k) == UINT32_C(0x3e9c9c9e));
+    }
+    CHECK(mc_client_effect_renderer_read(effects, &after) &&
+          after.random->state == expected.state && p->base.world->fields.r->state == world_random);
+    CHECK(mc_client_effect_renderer_block_cleanup(effects, error) == MC_EFFECT_RENDERER_OK);
+    CHECK(mc_client_effect_renderer_change_world(effects, p->base.world, error) ==
+          MC_EFFECT_RENDERER_OK);
+    CHECK(mc_client_colorizer_set(graphics, MC_CLIENT_COLORIZER_GRASS, NULL, NULL, NULL) ==
+          MC_CLIENT_COLORIZER_OK);
+    CHECK(mc_java_random_next_bounded(&expected, 6, &ignored));
+    CHECK(mc_client_effect_renderer_destroy_block(effects, p->base.registry, p->math, 8, 64, 8, 31,
+                                                  0, error) == MC_EFFECT_RENDERER_ENTITY_FAILED);
+    work = error->block;
+    CHECK(work != NULL && !work->returned && work->constructed == 1 && work->appended == 0 &&
+          work->source_pc == 160 && work->candidate != NULL &&
+          work->candidate->phase == MC_ENTITY_READY && work->color != NULL && work->color->failed &&
+          work->color->block_pc == 142 && error->source_exception && !error->native_policy &&
+          strcmp(error->particle.source_class, "ia") == 0 && error->particle.source_pc == 35 &&
+          work->color->colorizer.array.status == MC_CLIENT_COLOR_ARRAY_NULL_REFERENCE &&
+          work->candidate->particle->fields.i == .6f &&
+          work->candidate->particle->fields.j == .6f && work->candidate->particle->fields.k == .6f);
+    CHECK(mc_client_effect_renderer_read(effects, &after) &&
+          after.random->state == expected.state && p->base.world->fields.r->state == world_random);
+    CHECK(mc_client_effect_renderer_block_cleanup(effects, error) == MC_EFFECT_RENDERER_OK);
+    CHECK(mc_client_effect_renderer_free(&effects) == MC_EFFECT_RENDERER_OK && effects == NULL);
+    free(error);
+    puts("TINT_CONTROL\tDN64_AND_RETAINED_IA_FAILURE\t1");
+    return true;
+}
+
+static bool tall_observe(picking_fixture *p, const char *profiles) {
+    FILE *input = fopen(profiles, "r");
+    CHECK(input != NULL);
+    mc_client_render_engine_classes *graphics = NULL;
+    mc_client_default_font *font = NULL;
+    mc_game_settings *settings = NULL;
+    mc_client_render_engine *engine = NULL;
+    mc_particle_error *e = calloc(1, sizeof(*e));
+    mc_digging_color_error *d = calloc(1, sizeof(*d));
+    mc_cv_context *cv = calloc(1, sizeof(*cv));
+    CHECK(e != NULL && d != NULL && cv != NULL);
+    CHECK(mc_client_render_engine_classes_create(NULL, &graphics) == MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_default_font_create(32u * 1024u * 1024u, &font) == MC_CLIENT_FONT_OK);
+    CHECK(mc_game_settings_create_defaults(NULL, &settings, NULL) == MC_GAME_SETTINGS_OK);
+    CHECK(mc_client_render_engine_allocate(graphics, font, NULL, &engine) ==
+          MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_render_engine_construct(engine, NULL, settings, NULL) ==
+          MC_CLIENT_RENDER_ENGINE_OK);
+    mc_client_color_array *grass = NULL, *foliage = NULL, *empty = NULL;
+    const mc_client_graphics_site prepared = {"fixture", "palette", "()V", -1};
+    CHECK(mc_client_color_array_create(65536, NULL, prepared, &grass, NULL) ==
+          MC_CLIENT_COLOR_ARRAY_OK);
+    CHECK(mc_client_color_array_create(65536, NULL, prepared, &foliage, NULL) ==
+          MC_CLIENT_COLOR_ARRAY_OK);
+    CHECK(mc_client_color_array_create(0, NULL, prepared, &empty, NULL) ==
+          MC_CLIENT_COLOR_ARRAY_OK);
+    for (size_t i = 0; i < 65536; ++i) {
+        CHECK(mc_client_color_array_write(grass, i, UINT32_C(0xa5000000) | (uint32_t)i) ==
+              MC_CLIENT_COLOR_ARRAY_OK);
+        CHECK(mc_client_color_array_write(foliage, i, UINT32_C(0x5a000000) | (uint32_t)i) ==
+              MC_CLIENT_COLOR_ARRAY_OK);
+    }
+    mc_world_chunk_manager *manager = NULL;
+    CHECK(mc_world_runtime_chunk_manager(p->base.world, &manager, NULL) == MC_WORLD_STORAGE_OK &&
+          manager != NULL);
+    mc_biome_reference_array *primed = NULL;
+    CHECK(mc_world_chunk_manager_cached(manager, 0, 0, 1, 1, &primed, NULL) ==
+          MC_WORLD_PROVIDER_OK);
+    const mc_block *block = NULL;
+    CHECK(mc_registry_block_get(p->base.registry, 31, &block, NULL) == MC_REGISTRY_OK &&
+          block != NULL);
+    /* This reused fixture deliberately constructs a four-entry provider. Prove
+     * its real cold-GET admission limit before arranging this separate corpus's
+     * caller-owned Map input. No phase, capacity, hold or Source count is fixed. */
+    mc_world_runtime_acquisition_error *limit = calloc(1, sizeof(*limit));
+    CHECK(limit != NULL && p->provider.cache->count == 4 && p->provider.cache->capacity == 4);
+    mc_chunk_state *unreached = NULL;
+    const mc_chunk_acquire_status bounded =
+        mc_world_runtime_get_detailed(p->base.world, 43, 43, &unreached, limit);
+    if (bounded != MC_CHUNK_ACQUIRE_LIMIT)
+        fprintf(stderr, "TallGrass fixture cold GET status=%d cause=%d operation=%s\n",
+                (int)bounded, (int)limit->cause.status,
+                limit->cause.operation == NULL ? "none" : limit->cause.operation);
+    CHECK(bounded == MC_CHUNK_ACQUIRE_LIMIT && limit->status == bounded && unreached == NULL &&
+          limit->source_chunk == NULL);
+    free(limit);
+    puts("TINT_CONTROL\tFOUR_CHUNK_BUDGET_LIMIT\t1");
+    /* Keep the actual original 0,0 Chunk visible; the three other genuine
+     * fixture Chunks remain live in their Store/World owners. Two far saved
+     * Chunks can now enter normally within the same unmodified native limit.
+     * Restore the original Map with the same APIs before fixture retirement. */
+    CHECK(mc_chunk_cache_init(p->provider.cache, p->provider.cache->entries,
+                              p->provider.cache->capacity, p->provider.cache->insertions,
+                              p->provider.cache->insertion_capacity));
+    CHECK(mc_chunk_cache_publish(p->provider.cache, 0, 0, p->chunks[0]));
+    mc_chunk_state *extra[2] = {NULL, NULL};
+    unsigned int rows = 0;
+    int32_t a[8];
+    while (fscanf(input,
+                  "INPUT\t%" SCNd32 "\t%" SCNd32 "\t%" SCNd32 "\t%" SCNd32 "\t%" SCNd32 "\t%" SCNd32
+                  "\t%" SCNd32 "\t%" SCNd32 "\n",
+                  &a[0], &a[1], &a[2], &a[3], &a[4], &a[5], &a[6], &a[7]) == 8) {
+        CHECK(a[0] == (int32_t)rows && a[1] >= 0 && a[1] <= 1);
+        const int32_t x = a[3], y = a[4], z = a[5], fault = a[6], palette = a[7];
+        mc_chunk_state *chunk = NULL;
+        mc_world_runtime_acquisition_error *acquisition = calloc(1, sizeof(*acquisition));
+        CHECK(acquisition != NULL);
+        const mc_chunk_acquire_status acquire_status = mc_world_runtime_get_detailed(
+            p->base.world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &chunk, acquisition);
+        if (acquire_status != MC_CHUNK_ACQUIRE_OK)
+            fprintf(stderr,
+                    "TallGrass fixture row=%" PRId32 " Chunk=%" PRId32 ",%" PRId32
+                    " status=%d cause=%d operation=%s\n",
+                    a[0], mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), (int)acquire_status,
+                    (int)acquisition->cause.status,
+                    acquisition->cause.operation == NULL ? "none" : acquisition->cause.operation);
+        free(acquisition);
+        CHECK(acquire_status == MC_CHUNK_ACQUIRE_OK);
+        if (x == 700)
+            extra[0] = chunk;
+        if (x == -700)
+            extra[1] = chunk;
+        bool changed;
+        CHECK(mc_world_runtime_metadata_set_quiet(p->base.world, x, y, z, a[2], &changed, NULL) ==
+              MC_WORLD_STORAGE_OK);
+        mc_world_chunk_manager_fields fields;
+        CHECK(mc_world_chunk_manager_fields_get(manager, &fields) == MC_WORLD_PROVIDER_OK &&
+              fields.noise_backed != NULL);
+        mc_biome_manager *m = fields.noise_backed;
+        CHECK(mc_biome_double_buffer_resize(m->memory, &m->a, 3) == MC_BIOME_OK);
+        CHECK(mc_biome_double_buffer_resize(m->memory, &m->b, 3) == MC_BIOME_OK);
+        CHECK(mc_biome_double_buffer_resize(m->memory, &m->c, 3) == MC_BIOME_OK);
+        for (size_t i = 0; i < 3; ++i) {
+            m->a.data[i] = 9.0 - (double)i;
+            m->b.data[i] = -1.0 - (double)i;
+            m->c.data[i] = 6.0 - (double)i;
+        }
+        if (palette == 1) {
+            CHECK(mc_client_colorizer_set(graphics, MC_CLIENT_COLORIZER_GRASS, grass, NULL, NULL) ==
+                  MC_CLIENT_COLORIZER_OK);
+            CHECK(mc_client_colorizer_set(graphics, MC_CLIENT_COLORIZER_FOLIAGE, foliage, NULL,
+                                          NULL) == MC_CLIENT_COLORIZER_OK);
+        } else if (palette == 2 || palette == 3)
+            CHECK(mc_client_colorizer_set(graphics, MC_CLIENT_COLORIZER_GRASS,
+                                          palette == 2 ? NULL : empty, NULL,
+                                          NULL) == MC_CLIENT_COLORIZER_OK);
+        mc_entity *particle = NULL;
+        CHECK(mc_digging_particle_allocate(p->base.entities, &particle, NULL) == MC_ENTITY_OK);
+        CHECK(mc_digging_particle_construct(particle, fault == 1 ? NULL : p->base.world,
+                                            p->base.registry, p->math, 8, 64, 8, 0, 0, 0, block, 0,
+                                            7, e) == MC_ENTITY_OK);
+        const double *before_a = m->a.data, *before_b = m->b.data;
+        mc_world_chunk_manager_game_fields game;
+        CHECK(mc_world_chunk_manager_game_fields_get(manager, &game) == MC_WORLD_PROVIDER_OK);
+        const mc_biome_reference_array *before_d = game.d;
+        const uint64_t before_random = p->base.world->fields.r->state;
+        mc_world_provider *dimension = p->base.world->fields.t, *unbound = NULL;
+        if (fault == 2)
+            p->base.world->fields.t = NULL;
+        if (fault == 3) {
+            CHECK(mc_world_provider_create(0, NULL, &unbound, NULL) == MC_WORLD_PROVIDER_OK);
+            p->base.world->fields.t = unbound;
+        }
+        int32_t value = INT32_C(0x12345678);
+        const char *status = "OK";
+        bool same = false;
+        if (a[1] == 0) {
+            mc_client_render_blocks render = {.c = fault == 1 ? NULL : p->base.world};
+            memset(cv, 0, sizeof(*cv));
+            cv->fields = &render;
+            cv->world = p->base.world;
+            cv->registry = p->base.registry;
+            cv->graphics = graphics;
+            cv->models = p->models;
+            CHECK(mc_cv_push(cv, "i", "(Luu;III)Z"));
+            if (!mc_cv_block_color(cv, block, x, y, z, 28, &value)) {
+                CHECK(!cv->failure.native_policy);
+                status = palette == 3 ? "INDEX" : "NULL";
+                CHECK(cv->failure.source_pc == (fault == 1   ? 5u
+                                                : fault == 2 ? 98u
+                                                : fault == 3 ? 108u
+                                                             : 35u));
+            }
+        } else {
+            const mc_entity_status result =
+                mc_digging_particle_tint_entered(particle, engine, x, y, z, d, e);
+            if (result == MC_ENTITY_OK)
+                same = true;
+            else {
+                CHECK(e->source_exception && !e->native_policy && d->failed);
+                status = strcmp(e->exception_class, "java/lang/ArrayIndexOutOfBoundsException") == 0
+                             ? "INDEX"
+                             : "NULL";
+                CHECK(e->source_pc == (fault == 1   ? 5u
+                                       : fault == 2 ? 98u
+                                       : fault == 3 ? 108u
+                                                    : 35u));
+                CHECK(strcmp(e->source_class, fault == 0 ? "ia" : "ru") == 0);
+                CHECK(d->block_pc == (fault == 1   ? 5u
+                                      : fault == 2 ? 98u
+                                      : fault == 3 ? 108u
+                                                   : 142u));
+            }
+        }
+        p->base.world->fields.t = dimension;
+        if (unbound != NULL)
+            mc_world_provider_release(unbound);
+        mc_client_colorizer_state gs, fs;
+        CHECK(mc_client_colorizer_inspect(graphics, MC_CLIENT_COLORIZER_GRASS, &gs));
+        CHECK(mc_client_colorizer_inspect(graphics, MC_CLIENT_COLORIZER_FOLIAGE, &fs));
+        CHECK(mc_world_chunk_manager_game_fields_get(manager, &game) == MC_WORLD_PROVIDER_OK);
+        uint32_t bits;
+        memcpy(&bits, &value, sizeof(bits));
+        printf("TINT\t%" PRId32 "\t%" PRId32 "\t%" PRId32 "\t%" PRId32 "\t%" PRId32 "\t%" PRId32
+               "\t%" PRId32 "\t%" PRId32 "\t%s\t%08" PRIx32 "\t%08" PRIx32 "\t%08" PRIx32
+               "\t%08" PRIx32 "\t%u\t%u\t%u\t",
+               a[0], a[1], a[2], x, y, z, fault, palette, status, bits,
+               color_float_bits(particle->particle->fields.i),
+               color_float_bits(particle->particle->fields.j),
+               color_float_bits(particle->particle->fields.k), same ? 1u : 0u,
+               gs.a != NULL ? 1u : 0u, fs.a != NULL ? 1u : 0u);
+        color_values(&m->a);
+        putchar('\t');
+        color_values(&m->b);
+        printf("\t%u\t%u\t%u\t%u\n", m->a.data == before_a ? 1u : 0u,
+               m->b.data == before_b ? 1u : 0u, game.d == before_d ? 1u : 0u,
+               p->base.world->fields.r->state == before_random ? 1u : 0u);
+        mc_entity_release(particle);
+        ++rows;
+    }
+    CHECK(feof(input) && fclose(input) == 0 && rows == 28);
+    CHECK(tall_dn_controls(p, engine, graphics));
+    CHECK(mc_chunk_cache_init(p->provider.cache, p->provider.cache->entries,
+                              p->provider.cache->capacity, p->provider.cache->insertions,
+                              p->provider.cache->insertion_capacity));
+    for (int32_t x = 0; x < 2; ++x)
+        for (int32_t z = 0; z < 2; ++z)
+            CHECK(mc_chunk_cache_publish(p->provider.cache, x, z, p->chunks[(size_t)(x * 2 + z)]));
+    CHECK(mc_world_runtime_entity_containers_validate(p->base.world, NULL) == MC_WORLD_STORAGE_OK);
+    for (size_t i = 0; i < 2; ++i) {
+        CHECK(extra[i] != NULL);
+        mc_world_chunk *actual = mc_world_store_chunk_object(p->base.store, extra[i]);
+        CHECK(actual != NULL && mc_world_chunk_entities_validate(actual));
+        mc_world_chunk_containers_release(actual);
+        CHECK(mc_world_store_retire_chunk(p->base.store, extra[i], NULL) == MC_WORLD_STORAGE_OK);
+    }
+    CHECK(mc_client_color_array_release(&grass, NULL) == MC_CLIENT_COLOR_ARRAY_OK);
+    CHECK(mc_client_color_array_release(&foliage, NULL) == MC_CLIENT_COLOR_ARRAY_OK);
+    CHECK(mc_client_color_array_release(&empty, NULL) == MC_CLIENT_COLOR_ARRAY_OK);
+    CHECK(mc_client_render_engine_release(engine) == MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_default_font_release(font) == MC_CLIENT_FONT_OK);
+    CHECK(mc_game_settings_retire(&settings, NULL) == MC_GAME_SETTINGS_OK);
+    CHECK(mc_client_render_engine_classes_release(graphics) == MC_CLIENT_RENDER_ENGINE_OK);
+    free(cv);
+    free(d);
+    free(e);
+    return true;
+}
+
 int main(int argc, char **argv) {
-    if (argc != 3)
+    if (argc != 3 && argc != 4)
         return 1;
     picking_fixture *f = calloc(1, sizeof(*f));
     if (f == NULL || !picking_open(f, argv[1]) || !picking_case_open(f, argv[2]) ||
-        !colors_observe(f) || !color_particle_controls(f) || !picking_case_close(f) ||
-        !picking_close(f))
+        !(argc == 4 ? tall_observe(f, argv[3]) : colors_observe(f) && color_particle_controls(f)) ||
+        !picking_case_close(f) || !picking_close(f))
         return 1;
     free(f);
     printf("%u source Block color checks passed\n", checks);

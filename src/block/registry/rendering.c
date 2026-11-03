@@ -10,38 +10,142 @@ static bool valid(const mc_block *block) {
            (unsigned int)block->kind < (unsigned int)MC_BLOCK_KIND_COUNT;
 }
 
+/* Complete declaring-method resolution for the 69 represented kinds. The
+ * pinned client archive has only BK.b(I)I besides UU.b(I)I, and only the five
+ * named g()V overrides below besides UU.g()V. Missing/new kinds never acquire
+ * a guessed inherited body. Leaf color requires the client's actual JH owner. */
+typedef enum inventory_body {
+    INVENTORY_INVALID,
+    INVENTORY_UU,
+    INVENTORY_BK,
+    INVENTORY_BV,
+    INVENTORY_JQ,
+    INVENTORY_OI,
+    INVENTORY_OQ,
+    INVENTORY_UM
+} inventory_body;
+
+typedef struct inventory_methods {
+    inventory_body color, shape;
+} inventory_methods;
+
+static const inventory_methods inventory_method[MC_BLOCK_KIND_COUNT] = {
+    [MC_BLOCK_BASE] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_STONE] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_GRASS] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_DIRT] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_SAPLING] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_FLOWING_FLUID] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_STILL_FLUID] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_SAND] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_GRAVEL] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_ORE] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_LOG] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_LEAVES] = {INVENTORY_BK, INVENTORY_UU},
+    [MC_BLOCK_SPONGE] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_GLASS] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_DISPENSER] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_SANDSTONE] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_NOTE_BLOCK] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_BED] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_RAIL] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_DETECTOR_RAIL] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_PISTON_BASE] = {INVENTORY_UU, INVENTORY_JQ},
+    [MC_BLOCK_COBWEB] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_TALL_GRASS] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_DEAD_BUSH] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_PISTON_HEAD] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_WOOL] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_MOVING_PISTON] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_FLOWER] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_MUSHROOM] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_MINERAL_STORAGE] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_SLAB] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_TNT] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_BOOKSHELF] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_OBSIDIAN] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_TORCH] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_FIRE] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_MOB_SPAWNER] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_STAIRS] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_CHEST] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_REDSTONE] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_CRAFTING_TABLE] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_CROPS] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_FARMLAND] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_FURNACE] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_SIGN] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_DOOR] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_LADDER] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_LEVER] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_PRESSURE_PLATE] = {INVENTORY_UU, INVENTORY_BV},
+    [MC_BLOCK_REDSTONE_ORE] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_REDSTONE_TORCH] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_BUTTON] = {INVENTORY_UU, INVENTORY_OI},
+    [MC_BLOCK_SNOW_LAYER] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_ICE] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_SNOW_BLOCK] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_CACTUS] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_CLAY] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_SUGAR_CANE] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_JUKEBOX] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_FENCE] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_PUMPKIN] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_NETHERRACK] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_SOUL_SAND] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_GLOWSTONE] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_PORTAL] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_CAKE] = {INVENTORY_UU, INVENTORY_UM},
+    [MC_BLOCK_REPEATER] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_LOCKED_CHEST] = {INVENTORY_UU, INVENTORY_UU},
+    [MC_BLOCK_TRAPDOOR] = {INVENTORY_UU, INVENTORY_OQ},
+};
+
 mc_registry_status mc_block_render_inventory_color(const mc_block *block, int32_t metadata,
                                                    int32_t *out) {
     (void)metadata;
     if (!valid(block) || out == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
-    if (block->kind != MC_BLOCK_BASE && block->kind != MC_BLOCK_DIRT &&
-        block->kind != MC_BLOCK_WOOL && block->kind != MC_BLOCK_PUMPKIN &&
-        block->kind != MC_BLOCK_LOG && block->kind != MC_BLOCK_CRAFTING_TABLE &&
-        block->kind != MC_BLOCK_PRESSURE_PLATE && block->kind != MC_BLOCK_SLAB)
-        return MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
-    *out = 0xffffff; /* Actual inherited uu.b(I)I. */
-    return MC_REGISTRY_OK;
+    switch (inventory_method[block->kind].color) {
+        case INVENTORY_UU:
+            *out = 0xffffff; /* UU.b(I)I: ldc0, ireturn2; no receiver/metadata read. */
+            return MC_REGISTRY_OK;
+        case INVENTORY_BK:
+            return MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
+        default:
+            return MC_REGISTRY_INVALID_ARGUMENT;
+    }
 }
 
 mc_registry_status mc_block_render_inventory_shape(mc_block *block) {
     if (!valid(block))
         return MC_REGISTRY_INVALID_ARGUMENT;
-    if (block->kind == MC_BLOCK_PRESSURE_PLATE) {
-        /* BV.g()V invokes inherited UU.a(FFFFFF)V at34. These exact binary32
-         * operands are the .5 +/- (.5,.125,.5) results, widened by its six
-         * ordered field stores. This source mutation survives rendering. */
-        mc_registry_block_bounds(block, 0.0f, .375f, 0.0f, 1.0f, .625f, 1.0f);
-        return MC_REGISTRY_OK;
+    switch (inventory_method[block->kind].shape) {
+        case INVENTORY_UU:
+            return MC_REGISTRY_OK; /* UU.g()V is literal return0; retain live bounds. */
+        case INVENTORY_BV:
+            /* BV.g: .5 +/- (.5,.125,.5), virtual bound setter34. */
+            mc_registry_block_bounds(block, 0.0f, .375f, 0.0f, 1.0f, .625f, 1.0f);
+            return MC_REGISTRY_OK;
+        case INVENTORY_JQ:
+            /* JQ.g: literal unit bounds, virtual bound setter7. */
+            mc_registry_block_bounds(block, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+            return MC_REGISTRY_OK;
+        case INVENTORY_OI:
+            /* OI.g: .5 +/- (.1875,.125,.125), virtual bound setter34. */
+            mc_registry_block_bounds(block, .3125f, .375f, .375f, .6875f, .625f, .625f);
+            return MC_REGISTRY_OK;
+        case INVENTORY_OQ:
+            /* OQ.g: .5 +/- .1875/2, virtual bound setter20. */
+            mc_registry_block_bounds(block, 0.0f, .40625f, 0.0f, 1.0f, .59375f, 1.0f);
+            return MC_REGISTRY_OK;
+        case INVENTORY_UM:
+            /* UM.g: .0625 inset and .5 height, virtual bound setter17. */
+            mc_registry_block_bounds(block, .0625f, 0.0f, .0625f, .9375f, .5f, .9375f);
+            return MC_REGISTRY_OK;
+        default:
+            return MC_REGISTRY_INVALID_ARGUMENT;
     }
-    if (block->kind != MC_BLOCK_BASE && block->kind != MC_BLOCK_DIRT &&
-        block->kind != MC_BLOCK_WOOL && block->kind != MC_BLOCK_PUMPKIN &&
-        block->kind != MC_BLOCK_LOG && block->kind != MC_BLOCK_CRAFTING_TABLE &&
-        block->kind != MC_BLOCK_SLAB && block->kind != MC_BLOCK_LEAVES)
-        return MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
-    /* BK and NR declare no g()V; their UU body, like the other selected
-     * inherited receivers, is literal return0 and retains all live bounds. */
-    return MC_REGISTRY_OK;
 }
 
 mc_registry_status mc_block_render_describe(const mc_block *block,

@@ -9,6 +9,7 @@
 #include "lighting_internal.h"
 #include "mc/core/java/java.h"
 #include "runtime_internal.h"
+#include "saved_light_internal.h"
 #include "world_access_internal.h"
 
 #include <limits.h>
@@ -345,7 +346,7 @@ static bool saved_set(mc_world_runtime *world, const mc_world_light_type *type, 
 
 static bool saved(mc_world_runtime *world, const mc_world_light_type *type, int32_t x, int32_t y,
                   int32_t z, int32_t *out, mc_world_light_operation_error *frame) {
-    if (mc_world_runtime_saved_light(world, type, x, y, z, out, &frame->query) !=
+    if (mc_world_runtime_saved_light_canonical(world, type, x, y, z, out, &frame->query) !=
         MC_WORLD_STORAGE_OK)
         return storage_failed(frame, frame->query.cause);
     return true;

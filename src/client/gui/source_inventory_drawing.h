@@ -33,6 +33,7 @@ typedef struct mc_client_inventory_draw_state {
     bool active, returned, background_returned, preview_returned, pose_restored;
     bool foreground_returned, cursor_drawn, tooltip_drawn, mouse_stored;
     int32_t origin_x, origin_y, hovered_slot;
+    /* item_draws counts returned BB GUI calls, including NULL Stack calls. */
     size_t slots_drawn, item_draws, overlay_draws, font_measurements;
     unsigned int source_pc;
     mc_client_source_ue *receiver;

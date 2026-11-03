@@ -2,6 +2,7 @@
 
 #include "../../../block/registry/leaf_color_internal.h"
 #include "../../../block/registry/registry_internal.h"
+#include "../../../block/registry/tall_grass_color_internal.h"
 
 #include <emmintrin.h>
 #include <float.h>
@@ -152,8 +153,15 @@ static void leaf_pc(void *c, unsigned int pc) {
     mc_cv_pc(c, pc);
 }
 
-static const mc_leaf_color_ops leaf_ops = {leaf_metadata, leaf_climate, leaf_channel,
-                                           leaf_constant, leaf_lookup,  leaf_pc};
+static bool tall_lookup(void *c, double temperature, double rainfall, unsigned int pc,
+                        int32_t *out) {
+    return lookup(c, MC_CLIENT_COLORIZER_GRASS, temperature, rainfall, pc, out);
+}
+
+static const mc_block_world_color_ops leaf_ops = {leaf_metadata, leaf_climate, leaf_channel,
+                                                  leaf_constant, leaf_lookup,  leaf_pc};
+static const mc_block_world_color_ops tall_ops = {leaf_metadata, leaf_climate, leaf_channel,
+                                                  NULL,          tall_lookup,  leaf_pc};
 
 bool mc_cv_block_color(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y, int32_t z,
                        unsigned int caller_pc, int32_t *out) {
@@ -182,67 +190,16 @@ bool mc_cv_block_color(mc_cv_context *c, const mc_block *block, int32_t x, int32
     } else if (block->kind == MC_BLOCK_LEAVES) {
         if (!mc_leaf_world_color(&leaf_ops, c, x, y, z, &value))
             return false;
-    } else {
-        int32_t metadata = 0;
-        if (block->kind != MC_BLOCK_GRASS && !mc_cv_metadata(c, x, y, z, 5, &metadata))
+    } else if (block->kind == MC_BLOCK_TALL_GRASS) {
+        if (!mc_tall_grass_world_color(&tall_ops, c, x, y, z, &value))
             return false;
-        if (block->kind == MC_BLOCK_TALL_GRASS && metadata == 0) {
-            value = 16777215;
-            mc_cv_pc(c, 19);
-        } else {
-            const bool grass = block->kind == MC_BLOCK_GRASS;
-            const bool tall = block->kind == MC_BLOCK_TALL_GRASS;
-            if (tall) {
-                int64_t hash = mc_java_i32_add(
-                    mc_java_i32_add(mc_java_i32_mul(x, 3129871), mc_java_i32_mul(z, 6129781)), y);
-                hash = mc_java_i64_add(mc_java_i64_mul(mc_java_i64_mul(hash, hash), 42317861),
-                                       mc_java_i64_mul(hash, 11));
-                x = mc_java_i32_narrow(mc_java_i64_add(x, mc_java_i64_shr(hash, 14) & 31));
-                /* RU also offsets local Y at79. It has no source effect and
-                 * is not an operand of any subsequent reached operation. */
-                z = mc_java_i32_narrow(mc_java_i64_add(z, mc_java_i64_shr(hash, 24) & 31));
-            }
-            double temperature, rainfall;
-            if (!climate(c, x, z,
-                         grass  ? 1u
-                         : tall ? 98u
-                                : 37u,
-                         grass  ? 11u
-                         : tall ? 108u
-                                : 47u) ||
-                !channel(c, false,
-                         grass  ? 16u
-                         : tall ? 113u
-                                : 52u,
-                         grass  ? 21u
-                         : tall ? 118u
-                                : 57u,
-                         grass  ? 25u
-                         : tall ? 122u
-                                : 61u,
-                         &temperature) ||
-                !channel(c, true,
-                         grass  ? 29u
-                         : tall ? 126u
-                                : 65u,
-                         grass  ? 34u
-                         : tall ? 131u
-                                : 70u,
-                         grass  ? 38u
-                         : tall ? 135u
-                                : 74u,
-                         &rainfall) ||
-                !lookup(c,
-                        block->kind == MC_BLOCK_LEAVES ? MC_CLIENT_COLORIZER_FOLIAGE
-                                                       : MC_CLIENT_COLORIZER_GRASS,
-                        temperature, rainfall,
-                        grass  ? 45u
-                        : tall ? 142u
-                               : 81u,
-                        &value))
-                return false;
-            mc_cv_pc(c, grass ? 48u : tall ? 145u : 84u);
-        }
+    } else {
+        double temperature, rainfall;
+        if (!climate(c, x, z, 1, 11) || !channel(c, false, 16, 21, 25, &temperature) ||
+            !channel(c, true, 29, 34, 38, &rainfall) ||
+            !lookup(c, MC_CLIENT_COLORIZER_GRASS, temperature, rainfall, 45, &value))
+            return false;
+        mc_cv_pc(c, 48);
     }
     *out = value;
     mc_cv_pop(c);

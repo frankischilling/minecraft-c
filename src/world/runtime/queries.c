@@ -8,6 +8,7 @@
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
 #include "runtime_internal.h"
+#include "saved_light_internal.h"
 
 typedef struct query_chunk {
     mc_chunk_state *state;
@@ -231,80 +232,97 @@ static bool same_type_class(const mc_world_runtime_classes *classes,
                             (type == &classes->light_types[0] || type == &classes->light_types[1]));
 }
 
-mc_world_storage_status mc_world_runtime_saved_light(mc_world_runtime *world,
-                                                     const mc_world_light_type *type, int32_t x,
-                                                     int32_t y, int32_t z, int32_t *out,
-                                                     mc_world_query_error *error) {
-    mc_world_query_error frame = empty_error;
+static mc_world_storage_status saved_light(mc_world_runtime *world, const mc_world_light_type *type,
+                                           int32_t x, int32_t y, int32_t z, int32_t *out,
+                                           mc_world_query_error *frame) {
     if (world != NULL && !same_type_class(world->classes, type)) {
-        (void)fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World query Light class");
-        if (error != NULL)
-            *error = frame;
-        return frame.status;
+        (void)fail(frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World query Light class");
+        return frame->status;
     }
-    if (!admit(world, out != NULL, &frame)) {
-        if (error != NULL)
-            *error = frame;
-        return frame.status;
-    }
+    if (!admit(world, out != NULL, frame))
+        return frame->status;
     query_chunk chunk = {0};
     int32_t value = 0;
     y = y < 0 ? 0 : y >= 128 ? 127 : y;
     if (x < -32000000 || x >= 32000000 || z < -32000000 || z > 32000000) {
-        frame.bytecode = 54;
+        frame->bytecode = 54;
         if (type == NULL)
-            (void)fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+            (void)fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                        "World saved-light type receiver");
         else
             value = type->fields.c;
         goto done;
     }
-    frame.bytecode = 74;
-    frame.provider_bytecode = 6;
+    frame->bytecode = 74;
+    frame->provider_bytecode = 6;
     bool present;
     if (mc_world_runtime_chunk_provider_contains(world, mc_java_i32_shr(x, 4),
                                                  mc_java_i32_shr(z, 4), &present,
-                                                 &frame.cause) != MC_WORLD_STORAGE_OK) {
-        (void)storage_fail(&frame, &frame.cause);
+                                                 &frame->cause) != MC_WORLD_STORAGE_OK) {
+        (void)storage_fail(frame, &frame->cause);
         goto done;
     }
-    frame.provider_bytecode = 0;
+    frame->provider_bytecode = 0;
     if (!present)
         goto done;
-    frame.bytecode = 87;
-    if (!acquire(world, x, z, &chunk, &frame))
+    frame->bytecode = 87;
+    if (!acquire(world, x, z, &chunk, frame))
         goto done;
-    frame.bytecode = 105;
+    frame->bytecode = 105;
     if (chunk.state->blank)
         goto done;
     const mc_world_light_type *selected;
-    frame.chunk_bytecode = 1;
-    if (mc_world_runtime_light_type_get(world->classes, MC_LIGHT_SKY, &selected, &frame.cause) !=
+    frame->chunk_bytecode = 1;
+    if (mc_world_runtime_light_type_get(world->classes, MC_LIGHT_SKY, &selected, &frame->cause) !=
         MC_WORLD_STORAGE_OK) {
-        (void)storage_fail(&frame, &frame.cause);
+        (void)storage_fail(frame, &frame->cause);
         goto done;
     }
     if (type == selected) {
-        frame.chunk_bytecode = 15;
+        frame->chunk_bytecode = 15;
         (void)nibble(chunk.object->f, (int32_t)((uint32_t)x & 15u), y, (int32_t)((uint32_t)z & 15u),
-                     &value, &frame);
+                     &value, frame);
         goto done;
     }
-    frame.chunk_bytecode = 20;
-    if (mc_world_runtime_light_type_get(world->classes, MC_LIGHT_BLOCK, &selected, &frame.cause) !=
+    frame->chunk_bytecode = 20;
+    if (mc_world_runtime_light_type_get(world->classes, MC_LIGHT_BLOCK, &selected, &frame->cause) !=
         MC_WORLD_STORAGE_OK) {
-        (void)storage_fail(&frame, &frame.cause);
+        (void)storage_fail(frame, &frame->cause);
         goto done;
     }
     if (type == selected) {
-        frame.chunk_bytecode = 34;
+        frame->chunk_bytecode = 34;
         (void)nibble(chunk.object->g, (int32_t)((uint32_t)x & 15u), y, (int32_t)((uint32_t)z & 15u),
-                     &value, &frame);
+                     &value, frame);
     }
 done:
-    if (frame.status == MC_WORLD_STORAGE_OK)
+    if (frame->status == MC_WORLD_STORAGE_OK)
         *out = value;
-    return finish(world, &chunk, &frame, error);
+    return finish(world, &chunk, frame, NULL);
+}
+
+mc_world_storage_status mc_world_runtime_saved_light(mc_world_runtime *world,
+                                                     const mc_world_light_type *type, int32_t x,
+                                                     int32_t y, int32_t z, int32_t *out,
+                                                     mc_world_query_error *error) {
+    mc_world_query_error frame = empty_error;
+    const mc_world_storage_status status = saved_light(world, type, x, y, z, out, &frame);
+    if (error != NULL)
+        *error = status == MC_WORLD_STORAGE_OK ? empty_error : frame;
+    return status;
+}
+
+mc_world_storage_status mc_world_runtime_saved_light_canonical(mc_world_runtime *world,
+                                                               const mc_world_light_type *type,
+                                                               int32_t x, int32_t y, int32_t z,
+                                                               int32_t *out,
+                                                               mc_world_query_error *error) {
+    const mc_world_storage_status status = saved_light(world, type, x, y, z, out, error);
+    /* Only these PCs become noncanonical on a successful saved-light query.
+     * All other successful writes retain their initial zero/sentinel values. */
+    if (status == MC_WORLD_STORAGE_OK)
+        error->bytecode = error->provider_bytecode = error->chunk_bytecode = 0;
+    return status;
 }
 
 mc_world_storage_status mc_world_runtime_plant_light(mc_world_runtime *world, int32_t x, int32_t y,

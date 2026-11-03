@@ -10,6 +10,7 @@
 #include "../../../src/world/runtime/chunk_provider_internal.h"
 #include "../../../src/world/runtime/construction_internal.h"
 #include "../../../src/world/runtime/runtime_internal.h"
+#include "../../../src/world/runtime/saved_light_internal.h"
 #include "../../../src/world/storage/files.h"
 #include "../../../src/world/storage/objects_internal.h"
 
@@ -705,6 +706,8 @@ static bool light_and_height(fixture *f, size_t side) {
     chunk->g->a[index] = UINT8_C(0x4e);
     int32_t value = 777;
     mc_world_query_error e;
+    mc_world_query_error reused = cold_error;
+    memset(&e, 0xa5, sizeof(e));
     mc_world_storage_status status[4];
     int32_t values[4] = {777, 777, 777, 777};
     bool frames = true;
@@ -712,6 +715,11 @@ static bool light_and_height(fixture *f, size_t side) {
         status[i] = mc_world_runtime_saved_light(w, f->types[side][i / 2u], 8,
                                                  64 + (int32_t)(i % 2u), 8, &values[i], &e);
         frames = frames && cleared(&e);
+        int32_t reused_value = 777;
+        const mc_world_storage_status reused_status = mc_world_runtime_saved_light_canonical(
+            w, f->types[side][i / 2u], 8, 64 + (int32_t)(i % 2u), 8, &reused_value, &reused);
+        frames =
+            frames && reused_status == status[i] && reused_value == values[i] && cleared(&reused);
     }
     chunk->f->a[index] = old_sky;
     chunk->g->a[index] = old_block;
@@ -719,6 +727,39 @@ static bool light_and_height(fixture *f, size_t side) {
           status[2] == MC_WORLD_STORAGE_OK && status[3] == MC_WORLD_STORAGE_OK && values[0] == 3 &&
           values[1] == 12 && values[2] == 14 && values[3] == 4 &&
           !mc_world_runtime_chunk_light_seen(f->classes[side]));
+    /* The private receipt is genuinely canonical after repeated successful
+     * Sky/Block reads. Reuse it across presence/border/nullable successes,
+     * then compare the first real Nibble failure with the public receipt. */
+    CHECK(mc_world_runtime_saved_light_canonical(w, f->types[side][0], 32000000, 64, 8, &value,
+                                                 &reused) == MC_WORLD_STORAGE_OK &&
+          value == 15 && cleared(&reused));
+    CHECK(mc_world_runtime_saved_light_canonical(w, NULL, 40, 64, 8, &value, &reused) ==
+              MC_WORLD_STORAGE_OK &&
+          value == 0 && cleared(&reused));
+    CHECK(mc_world_runtime_saved_light_canonical(w, NULL, 8, 64, 8, &value, &reused) ==
+              MC_WORLD_STORAGE_OK &&
+          value == 0 && cleared(&reused));
+    mc_world_chunk_nibble *failure_sky = chunk->f;
+    chunk->f = NULL;
+    int32_t private_value = 777, public_value = 777;
+    const mc_world_storage_status private_failure = mc_world_runtime_saved_light_canonical(
+        w, f->types[side][0], 8, 64, 8, &private_value, &reused);
+    const mc_world_storage_status public_failure =
+        mc_world_runtime_saved_light(w, f->types[side][0], 8, 64, 8, &public_value, &e);
+    chunk->f = failure_sky;
+    CHECK(private_failure == public_failure && private_value == 777 && public_value == 777 &&
+          failure_is(w, &reused, 105, 15, MC_REGISTRY_OK) && reused.status == e.status &&
+          reused.operation == e.operation && reused.provider_bytecode == e.provider_bytecode &&
+          reused.acquisition == e.acquisition && same_cause(&reused.cause, &e.cause) &&
+          same_registry(&reused.registry, &e.registry) && !reused.population.reached &&
+          empty_site(&reused.population.current) && empty_site(&reused.population.origin) &&
+          same_cause(&reused.population.cause, &e.population.cause) &&
+          same_registry(&reused.population.registry, &e.population.registry) &&
+          reused.source_chunk == e.source_chunk && e.source_chunk == NULL && w->active_calls == 0 &&
+          w->local_leases == 0);
+    /* A caller starts a fresh receipt after failure. Public success still
+     * clears the entire poisoned diagnostic, independently of private reuse. */
+    memset(&e, 0xa5, sizeof(e));
     const size_t low = block_index(0) / 2u, high = block_index(127) / 2u;
     const uint8_t old_low = chunk->f->a[low], old_high = chunk->f->a[high];
     chunk->f->a[low] = 6;

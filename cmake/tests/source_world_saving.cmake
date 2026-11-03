@@ -32,4 +32,8 @@ if(MC_BUILD_BENCHMARKS AND BUILD_TESTING AND TARGET mc_simulation)
     target_include_directories(mc_benchmark_world_queries PRIVATE src)
     target_link_libraries(mc_benchmark_world_queries PRIVATE
         mc_simulation mc_persistence mc_c_atomics mc_build_options)
+    add_executable(mc_benchmark_light_drain tests/benchmarks/light_drain.c)
+    target_include_directories(mc_benchmark_light_drain PRIVATE src)
+    target_link_libraries(mc_benchmark_light_drain PRIVATE
+        mc_simulation mc_persistence mc_c_atomics mc_build_options)
 endif()

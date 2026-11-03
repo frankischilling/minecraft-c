@@ -51,11 +51,12 @@ mc_registry_status mc_block_render_texture_metadata(const mc_block *block, int32
 mc_registry_status mc_block_render_color(const mc_block *block,
                                          const mc_block_render_access *access, int32_t x, int32_t y,
                                          int32_t z, uint32_t *out);
-/* Actual metadata-only inventory color and item-bound hook. Closed declaring
- * class dispatch admits UU, Dirt, Wool, Pumpkin, Log, Slab and Crafting Table's
- * inherited UU bodies. Pressure Plate inherits its color but BV.g mutates
- * all six bounds through UU.a(FFFFFF)V; callers hold mutable actual storage.
- * Other overrides remain explicit dependencies. No World/climate lookup occurs. */
+/* Actual metadata-only inventory color and item-bound hook, resolved over the
+ * closed represented Block kinds. Non-Leaf colors inherit UU's literal white;
+ * Leaf's BK/JH body requires its actual client graphics namespace and remains
+ * an explicit dependency here. Shape runs UU's no-op or the actual Pressure
+ * Plate/Piston/Button/Trapdoor/Cake bound setter. No initializer, World/climate
+ * query or new FP gate occurs; inherited shapes retain all live bounds. */
 mc_registry_status mc_block_render_inventory_color(const mc_block *, int32_t, int32_t *);
 mc_registry_status mc_block_render_inventory_shape(mc_block *);
 mc_registry_status mc_block_render_side(const mc_block *block, const mc_block_render_access *access,

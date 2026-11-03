@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "rows": 28,
+  "columns": [
+    "tag",
+    "index",
+    "mode",
+    "metadata",
+    "x",
+    "y",
+    "z",
+    "fault",
+    "palette",
+    "status",
+    "color32",
+    "red32",
+    "green32",
+    "blue32",
+    "same_return",
+    "grass_array_present",
+    "foliage_array_present",
+    "temperature64",
+    "rainfall64",
+    "same_temperature_array",
+    "same_rainfall_array",
+    "same_cached_biomes",
+    "world_random_unchanged"
+  ],
+  "mode": {
+    "0": "direct original RU on actual FD XP",
+    "1": "actual QM.a after real QM constructor"
+  },
+  "fault": {
+    "0": "normal",
+    "1": "null XP/particle World",
+    "2": "null actual World Dimension",
+    "3": "actual unbound original RH Dimension with null manager"
+  },
+  "palette": {
+    "0": "no setter, original cold/zero state follows row order",
+    "1": "actual IA/JH setters with 65536 declared full-width values",
+    "2": "actual IA setter stores null",
+    "3": "actual IA setter stores empty array"
+  },
+  "preparation": "Actual quiet metadata setter; genuine saved six-Chunk fixture; real QM constructor metadata7; manager primed then declared three-cell a/b/c arrays before each invocation. Constructor/default entropy/movement/render are not compared."
+}

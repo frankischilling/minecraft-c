@@ -81,11 +81,15 @@ if(BUILD_TESTING)
             set_property(TARGET mc_test_inventory_block PROPERTY LINKER_LANGUAGE CXX)
         endif()
         add_test(NAME client.inventory_block COMMAND Python3::Interpreter -B
-            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/leaf_inventory/run_native.py"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/block_inventory/run_native.py"
             --executable "$<TARGET_FILE:mc_test_inventory_block>"
-            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/leaf-inventory-controls")
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/block-inventory-controls")
         set_tests_properties(client.inventory_block PROPERTIES
             LABELS "public;unit;client;graphics;ownership;reference" TIMEOUT 60)
+        add_test(NAME tools.block_inventory_packet COMMAND Python3::Interpreter -B -m unittest discover
+            -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/block_inventory" -p test_packet.py)
+        set_tests_properties(tools.block_inventory_packet PROPERTIES
+            LABELS "public;unit;tools;client;graphics;reference" TIMEOUT 60)
         unset(_face_links)
     endif()
     if(TARGET mc_test_item_particle)
@@ -143,3 +147,5 @@ if(BUILD_TESTING)
 endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/client_leaf_harvest.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/client_sand_harvest.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/client_tall_grass_harvest.cmake")

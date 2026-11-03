@@ -1,6 +1,56 @@
 # Test scope and reproduction
 
-The expanded runtime passes all 634 Linux Clang 18 Debug ASan/UBSan public tests
+The final integrated runtime passes 644/644 Windows MSVC Release public tests
+in 267.67 seconds and 639/639 Linux Clang 18 Debug ASan/UBSan public tests in
+143.27 seconds. Both retain 4,425 unchanged source inputs and 525 unchanged
+products; Windows also retains 823 assets. All 1,441 runtime files match across
+hosts. Linux uses Xvfb/software GL, leak detection and halt-on-error. Subsequent
+documentation/source-binding changes are checked separately and do not change
+the tested runtime or C test sources.
+
+The Block inventory comparison runs as `client.inventory_block` and retains
+13,098 original behavior rows, 17 Leaf rows and native admission/ownership
+controls. `client.tall_grass_tint` compares 28 direct World/particle rows;
+`client.tall_grass_harvest_controller` compares 192 rows from 68 complete
+original controller profiles. Their separate packet tests reject changed
+observations and incomplete reference bindings.
+
+The opt-in Windows `client.sand_harvest` and `client.tall_grass_harvest` scenes
+use real source input for mining, dropped-Item drawing, pickup, held rendering
+and Inventory. They independently decode typed NBT and check stopped save
+bytes through native cleanup. See [inventory rendering](client/block-inventory.md)
+and [TallGrass harvesting](client/tall-grass-harvest.md) for the exact scene
+requirements and retained failure history. These scenes require imported assets
+and a desktop; public CPU comparisons do not replace them.
+
+The optional `mc_benchmark_light_drain` target and
+[runner](../tests/benchmarks/light_drain.md) measure complete public drains
+with matching work/state receipts outside timing. The retained Windows A/B
+record has 21 samples per variant and a 6.76% median CPU reduction. It supplies
+no gameplay FPS claim or timing threshold in CTest.
+
+Initial integration runs pass 643/644 Windows public tests in 279.25 seconds
+and 638/639 Linux Clang ASan/UBSan tests in 156.44 seconds, with unchanged
+sources/products and matching runtime files. Both fail the same HUD cleanup
+fixture: it expects Grass inventory color to remain unimplemented. A targeted
+observation instead returns a complete HUD with both cube Items and 12 faces.
+The corrected test asserts that success, then uses the still-unsupported Cactus
+geometry to exercise actual failed-child cleanup and repeated Font refusal.
+All detailed failure/ownership assertions remain; the retained CV failure PC
+is 324. Separate Windows and sanitized Linux HUD rechecks pass.
+
+Fresh current-source Windows scenes pass 496 Leaf checks, 1,486 TallGrass checks
+and 853 Sand checks. Each retains 1,939 selected inputs and 413 assets, with
+independent typed NBT and equal stopped/closed save copies. The current TallGrass
+run punches three plants, publishes 192 destruction particles and reaches one
+Seed, three held frames and three Inventory frames. Four Workbench shutdown
+profiles pass 8,328 checks in 58.53 seconds; all 57 public packet controls and
+private/cohort-log audits pass. One mixed-cohort Sand run fails its SDL-focus
+gate during pickup and still completes checked cleanup. Its unchanged isolated
+recheck passes in 9.76 seconds. The focus-loss cause remains unproven; these
+finite passes do not establish uniform desktop stability or original pixels.
+
+The preceding runtime passes all 634 Linux Clang 18 Debug ASan/UBSan public tests
 in 169.24 seconds, with leak detection and halt-on-error under Xvfb/software GL.
 All 4,374 copied files and 522 executables remain unchanged; all 1,438 runtime
 files match Windows. Windows Release passes 638/639 public tests in 215.48 seconds,

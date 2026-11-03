@@ -335,7 +335,10 @@ static int bench_run(source_save_fixture *s, bool mutation, unsigned int chunk_c
     return 0;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_WORLD_QUERIES_ENTRY
+#define MC_WORLD_QUERIES_ENTRY main
+#endif
+int MC_WORLD_QUERIES_ENTRY(int argc, char **argv) {
     VERIFY(argc == 4);
     const bool mutation = strcmp(argv[2], "mutation") == 0;
     const unsigned int chunk_count = strcmp(argv[3], "289") == 0   ? 289u

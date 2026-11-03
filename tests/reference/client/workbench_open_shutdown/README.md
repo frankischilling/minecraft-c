@@ -6,21 +6,24 @@ source window. The native shutdown path transfers the same live IT owner to the
 Player's terminal record. It preserves source screen, Container and Stack
 identities while completing checked C cleanup.
 
-`native-validation.json` records the fresh frozen-source cohort after a portable
-test-fixture identifier correction. Production includes held-tool
-mining/destruction, Leaves/Snow-layer/Ice harvest and QM Leaf World-color
-integration. The test helper waits for actual serial input consumption during
-Table opening. Four tests pass in 60.97 seconds, with
-1,856 / 1,970 / 2,191 / 2,308 native checks. Their measured CTest times are
-13.81 / 15.97 / 15.58 / 15.57 seconds in clean / Container / Player / World order.
+`native-validation.json` records the fresh frozen-source cohort with TallGrass
+World/particle color, inherited Block inventory color/bounds families and
+saved-light query receipt reuse. Held-tool mining/destruction,
+Leaves/Snow-layer/Ice harvest and QM Leaf World-color integration remain in the
+captured production sources. The test helper waits for actual serial input
+consumption during Table opening. The selected harness includes the Grass HUD
+success case and the separate Cactus geometry dependency control. Four tests
+pass in 58.53 seconds, with 1,958 / 1,971 / 2,274 / 2,125 native checks. Their
+measured CTest times are 14.41 / 14.72 / 15.23 / 14.14 seconds in clean /
+Container / Player / World order.
 The Container profile
 refuses before transfer; the Player and World profiles refuse at the later World
 audit. Each releases only its declared existing hold and retries. All four end
 with both source windows absent. The selected save tree stays byte-for-byte
 equal to its stopped snapshot through every native phase.
 
-The receipt binds all 1,438 runtime source files and 487 selected harness/CMake
-files. Each process recorded 1,927 selected inputs and 413 imported-resource
+The receipt binds all 1,441 runtime source files and 495 selected harness/CMake
+files. Each process recorded 1,938 selected inputs and 413 imported-resource
 files unchanged. Native executable and DLL hashes describe the captured
 snapshot; the public audit does not require those binaries or assets. Toolchain
 and Desktop state were outside that continuity check.
@@ -32,8 +35,8 @@ separate historical failures. `packet.py --private-root <build-directory>` can
 recheck the exact projection against those retained private reports. Its
 optional `--cohort-log <log-file>` checks the measured CTest times.
 The earlier four-profile PASS receipts and their captures, including the
-100.70-second and 62.22-second cohorts, remain private historical evidence. A separate
-intervening selection passed five of seven
+100.70-second, 62.22-second, 60.97-second and 105.22-second cohorts, remain
+private historical evidence. A separate intervening selection passed five of seven
 tests: all three public regression cases passed, while two SDK profiles failed
 during SDK setup, before terminal preparation. Its 131.58-second elapsed time is separate from the
 current four-profile result; the clean-profile root cause remains unconfirmed.

@@ -1,5 +1,16 @@
 # Systems and subsystems
 
+World rendering and destruction particles share the original TallGrass color
+body through small adapters. The captured World, fresh climate-manager reads,
+wrapped coordinate hash and actual IA colorizer remain in source order.
+Block inventory colors and bounds use a closed method-family table; specialized
+geometry retains its explicit implementation limits.
+
+Propagation and public saved-light queries use one body. Propagation reuses its
+canonical successful diagnostic, restores changed PCs after each read and exits
+with the complete receipt on failure. Public calls keep their full reset.
+Values, Chunk GETs, leases and callback order are unchanged.
+
 Provider presence is packed-key membership, independently of Chunk payload
 validity and GET counters. Only an unexported owned cache outside mutation
 uses the existing index; other cases retain live linear membership.

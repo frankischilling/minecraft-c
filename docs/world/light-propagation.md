@@ -108,7 +108,36 @@ and a positive final check count, with bounded output capture. These tests need
 neither original assets nor a JDK.
 
 Finite controlled original comparisons and exact tested build results belong in
-the [development status](../status.md). Full startup still needs its real
-progress owner and post-grid provider maintenance, followed by Player
-publication, ticking, controls and gameplay. Lighting alone does not establish
-a playable client or complete server behavior.
+the [development status](../status.md). Startup progress, provider maintenance,
+Player publication and gameplay have separate coverage there. Lighting alone
+does not establish unrestricted play or complete server behavior.
+
+## Saved-light query diagnostics
+
+Propagation reuses its own canonical successful query receipt for saved-light
+reads. A private wrapper shares the same source body and admission with the
+public query. Each successful read restores its changed source PCs; the first
+failure retains the complete reached receipt and immediately exits the outer
+operation. Reentrant operations own separate frames. Public callers retain
+the complete successful diagnostic reset.
+
+This avoids repeated diagnostic initialization and publication without caching
+saved values, retaining a Chunk across reads, skipping a GET or changing callback
+order. The original region budget, queue behavior, leases and active class uses
+remain unchanged.
+
+The [optional CPU benchmark](../../tests/benchmarks/light_drain.md) submits 500
+distinct eight-cell SKY regions in nine real saved Chunks. One timed public
+drain processes the original 499-region budget, including 27,944 saved-light
+queries and 37,924 successful GETs. A controlled Windows comparison changes only
+the query/propagation objects over the frozen earlier library closure, using one
+shared benchmark object. Across 42 retained samples, median time falls from
+3.2821 to 3.0601 ms, a 6.76% reduction. Baseline outliers remain in the record;
+the larger mean reduction is not a general speedup estimate.
+
+All declared queue, value, listener, Random, hold and allocation checks pass,
+including a real callback failure after successful reads, raw export and later
+native work exhaustion. The original propagation controls pass 1,479 checks per
+variant with identical Chunk snapshots; updated query controls pass 6,301 checks.
+These finite CPU results do not establish a gameplay FPS effect. The later
+render-stage partition lost native focus and contributes no timing attribution.
