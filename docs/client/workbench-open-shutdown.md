@@ -54,12 +54,12 @@ callback sets `J=false` before native terminal preparation.
 
 | Profile | Actual blocker and retry | Checks | Seconds |
 | --- | --- | ---: | ---: |
-| Clean | Same-container transfer and complete checked cleanup | 1,843 | 15.33 |
-| Container | Extra `IT` hold refuses transfer; release permits retry | 2,014 | 16.01 |
-| Player | Extra Player hold refuses the later World audit | 2,239 | 15.78 |
-| World | Extra World binding refuses the later World audit | 2,281 | 15.07 |
+| Clean | Same-container transfer and complete checked cleanup | 1,856 | 13.81 |
+| Container | Extra `IT` hold refuses transfer; release permits retry | 1,970 | 15.97 |
+| Player | Extra Player hold refuses the later World audit | 2,191 | 15.58 |
+| World | Extra World binding refuses the later World audit | 2,308 | 15.57 |
 
-The refreshed four CTests pass in 62.22 seconds, totaling 8,377 checks. Each
+The refreshed four CTests pass in 60.97 seconds, totaling 8,325 checks. Each
 process keeps all 1,927 selected
 inputs and 413 imported assets unchanged. It compares 97 Inventory, cursor,
 grid, result and snapshot Stack roles, Player/Screen aliases, statistics,
@@ -70,7 +70,7 @@ cleanup, including the unrelated region. Both native windows are absent after
 checked bootstrap retirement. Native screenshots are inspected separately;
 there is no original-pixel comparison.
 
-Earlier four-profile cohorts pass in 65.44, 66.43, 68.52 and 100.70 seconds. Their separate
+Earlier four-profile cohorts pass in 65.44, 66.43, 68.52, 100.70 and 62.22 seconds. Their separate
 entropy, check counts and source bindings remain recorded. The final cohort
 also includes passive Frame inspection through the still-owned bootstrap
 after getters and the menu have ended. This retains the original Frame,
@@ -93,6 +93,13 @@ one timestamped tap and observes its actual consumption before retrying.
 It retains the 12-attempt/60-second bound without an unrelated render-frame
 limit. The final four-profile cohort above uses that helper. Queue, picking
 and Player observations remain passive; no runtime input behavior changes.
+
+The test-only GCC portability refresh also retains a separate three-of-four
+cohort: World stops during `save_title_focus` because SDL keyboard focus is
+NULL and display activity is false, despite its own stable foreground and
+native Canvas focus. Its cause remains unconfirmed. The World recheck passes
+unchanged in 17.34 seconds; the fresh complete cohort above passes afterward.
+Those observations do not establish uniform desktop focus stability.
 
 Enable `MC_ENABLE_CLIENT_WORKBENCH_OPEN_SHUTDOWN_TESTS` with the existing
 imported-resource and display options, then run:

@@ -24,7 +24,7 @@ cost and linear mutation controls remain recorded. Its three-round frame cohort
 is invalidated by foreground loss and concurrent selected-test edits; it supplies
 no FPS gain claim.
 
-The real Leaf/Shears scene now passes in 7.64 seconds with 467 native checks:
+The real Leaf/Shears scene now passes in 7.56 seconds with 469 native checks:
 actual input, 64 tinted destruction particles, exact wear/statistics, same-Item
 World/Chunk publication and returned dropped-Item drawing, strict NBT and checked
 native cleanup. Its 1,928 selected inputs, 413 assets and stopped 12-file save

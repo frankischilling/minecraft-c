@@ -167,11 +167,13 @@ static int bench_run(source_save_fixture *s, bool mutation, unsigned int chunk_c
             const unsigned int y = 8u + (i * 17u) % 104u;
             const size_t offset = ((size_t)x * 16u + z) * 128u + y;
             expected[mode][i] =
-                mode == 0 ? (int32_t)chunk->data->blocks[offset]
-                : mode == 1
-                    ? (int32_t)((chunk->data->metadata[offset / 2u] >> ((y & 1u) * 4u)) & 15u)
-                : mode == 2
-                    ? (int32_t)((chunk->data->skylight[offset / 2u] >> ((y & 1u) * 4u)) & 15u)
+                mode == 0   ? (int32_t)chunk->data->blocks[offset]
+                : mode == 1 ? (int32_t)(((unsigned int)chunk->data->metadata[offset / 2u] >>
+                                         ((y & 1u) * 4u)) &
+                                        15u)
+                : mode == 2 ? (int32_t)(((unsigned int)chunk->data->skylight[offset / 2u] >>
+                                         ((y & 1u) * 4u)) &
+                                        15u)
                 : mode == 3 ? chunk->x
                 : mode == 4 ? 1
                             : 0;

@@ -7,7 +7,7 @@ bring the native run to 67 processes and 6,158 checks. The original packet has
 Leaf inventory controls pass 2,863 checks and 17 original color/shape rows.
 `MC_ENABLE_CLIENT_LEAF_HARVEST_TESTS=ON` adds the local Windows SDK scene when
 display tests and imported resources are enabled. Its declared scene passes
-467 checks in 7.64 seconds, with strict NBT, returned Item drawing and cleanup.
+469 checks in 7.56 seconds, with strict NBT, returned Item drawing and cleanup.
 
 The CPU query observer now also measures provider presence hits/misses and
 accepts 1, 289, 410 or 512 loaded Chunks. The additional recorded comparison
@@ -39,9 +39,16 @@ failure records Remote Desktop foreground loss and the source Pause screen;
 earlier zero-draw assertions remain separately unconfirmed. The unchanged
 Creature recheck also loses foreground, during Creeper after Slime passes.
 
+Those full public suites precede a test-only GCC portability follow-up.
+Runtime bytes remain unchanged. The follow-up removes a shadowed test local
+and makes benchmark setup nibble extraction explicitly unsigned, outside
+timing. All 19 changed C translation units pass strict GCC syntax checks;
+Windows and sanitized Clang rebuilds and the color replay pass. Fresh Leaf
+and four-profile Workbench SDK captures bind the updated test sources.
+
 The [open-Workbench shutdown profiles](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench-open-shutdown.md)
-pass four fresh Windows MSVC Release processes in 62.22 seconds. Clean,
-Container, Player and World hold cases pass 1,843, 2,014, 2,239 and 2,281
+pass four fresh Windows MSVC Release processes in 60.97 seconds. Clean,
+Container, Player and World hold cases pass 1,856, 1,970, 2,191 and 2,308
 checks. The selected Source state and stopped save-tree bytes stay unchanged;
 releasing only the actual blocker permits full cleanup. Public local Inventory
 and genuine Player/OO controls pass 96 and 229 checks. These are native

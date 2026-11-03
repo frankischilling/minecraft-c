@@ -11,6 +11,13 @@ An unchanged Creature recheck passes Slime and then records the same external
 foreground loss during Creeper. Neither attempt establishes uniform desktop
 stability.
 
+Those full public suites precede a test-only GCC portability follow-up.
+Runtime bytes remain unchanged. The follow-up removes a shadowed test local
+and makes benchmark setup nibble extraction explicitly unsigned, outside
+timing. All 19 changed C translation units pass strict GCC syntax checks;
+Windows and sanitized Clang rebuilds and the color replay pass. Fresh Leaf
+and four-profile Workbench SDK captures bind the updated test sources.
+
 [Concrete Block harvesting](client/block-harvest.md) adds
 `client.block_harvest` and `tools.block_harvest_packet`. The Windows Release
 controller comparison matches 63 original scenarios and 208 exact rows;

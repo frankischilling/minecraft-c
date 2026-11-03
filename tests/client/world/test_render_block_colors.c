@@ -331,7 +331,7 @@ static bool color_particle_controls(picking_fixture *p) {
           state.phase == MC_CLIENT_COLORIZER_RAW);
     mc_entity_release(particle);
     particle = NULL;
-    block_color_fixture fixture = {.picking = p};
+    block_color_fixture color_fixture = {.picking = p};
     const uint64_t world_random = p->base.world->fields.r->state;
     /* Source integer/float bits: original BK/JH color ints and QM's three
      * i2f/fdiv/fmul sequences, with constructor RGB 0x3f19999a. */
@@ -343,7 +343,8 @@ static bool color_particle_controls(picking_fixture *p) {
     memset(untouched, 0xa5, sizeof(untouched));
     for (uint8_t metadata = 1; metadata <= 16; ++metadata) {
         const uint8_t actual = metadata & 15u;
-        CHECK(color_metadata(&fixture, actual) && color_particle(p, p->base.world, &particle, e));
+        CHECK(color_metadata(&color_fixture, actual) &&
+              color_particle(p, p->base.world, &particle, e));
         mc_world_provider *dimension = p->base.world->fields.t;
         if (metadata == 1)
             p->base.world->fields.t = NULL; /* Pine must not reach the manager. */
@@ -387,7 +388,7 @@ static bool color_particle_controls(picking_fixture *p) {
               MC_CLIENT_COLOR_ARRAY_OK);
     CHECK(mc_client_colorizer_set(graphics, MC_CLIENT_COLORIZER_FOLIAGE, palette, NULL, NULL) ==
           MC_CLIENT_COLORIZER_OK);
-    CHECK(color_metadata(&fixture, 0) && color_particle(p, p->base.world, &particle, e));
+    CHECK(color_metadata(&color_fixture, 0) && color_particle(p, p->base.world, &particle, e));
     CHECK(mc_digging_particle_tint_entered(particle, engine, 8, 64, 8, d, e) == MC_ENTITY_OK &&
           (uint32_t)d->value == UINT32_C(0xa53f81c7) &&
           color_float_bits(particle->particle->fields.i) == UINT32_C(0x3e17caff) &&
@@ -407,7 +408,7 @@ static bool color_particle_controls(picking_fixture *p) {
           particle->particle->fields.k == .6f);
     mc_entity_release(particle);
     particle = NULL;
-    CHECK(color_metadata(&fixture, 2) && color_particle(p, p->base.world, &particle, e));
+    CHECK(color_metadata(&color_fixture, 2) && color_particle(p, p->base.world, &particle, e));
     CHECK(mc_digging_particle_tint_entered(particle, engine, 8, 64, 8, d, e) == MC_ENTITY_OK &&
           d->value == 8431445);
     mc_entity_release(particle);
@@ -416,7 +417,7 @@ static bool color_particle_controls(picking_fixture *p) {
           MC_CLIENT_COLOR_ARRAY_OK);
     CHECK(mc_client_colorizer_set(graphics, MC_CLIENT_COLORIZER_FOLIAGE, empty, NULL, NULL) ==
           MC_CLIENT_COLORIZER_OK);
-    CHECK(color_metadata(&fixture, 0) && color_particle(p, p->base.world, &particle, e));
+    CHECK(color_metadata(&color_fixture, 0) && color_particle(p, p->base.world, &particle, e));
     CHECK(mc_digging_particle_tint_entered(particle, engine, 8, 64, 8, d, e) ==
               MC_ENTITY_STATE_ERROR &&
           d->colorizer.array.status == MC_CLIENT_COLOR_ARRAY_INDEX_OUT_OF_RANGE &&
@@ -426,7 +427,7 @@ static bool color_particle_controls(picking_fixture *p) {
           particle->particle->fields.k == .6f);
     mc_entity_release(particle);
     particle = NULL;
-    CHECK(color_metadata(&fixture, 2) && color_particle(p, p->base.world, &particle, e));
+    CHECK(color_metadata(&color_fixture, 2) && color_particle(p, p->base.world, &particle, e));
     const unsigned int controls = _mm_getcsr();
     _mm_setcsr(controls | 0x2000u);
     const mc_entity_status fp = mc_digging_particle_tint_entered(particle, engine, 8, 64, 8, d, e);

@@ -85,7 +85,7 @@ NULL palettes, failed class initialization and floating-point prefixes.
 
 ## Windows SDK qualification
 
-`client.leaf_harvest` passes in 7.64 seconds with 467 native checks. The authored
+`client.leaf_harvest` passes in 7.56 seconds with 469 native checks. The authored
 scene selects surviving Shears and a Leaf of subtype 2. Actual SDL/source input
 removes the target, publishes all 64 destruction particles, wears the Shears by
 one without used/broken statistics, and publishes one Leaf Item with metadata 2

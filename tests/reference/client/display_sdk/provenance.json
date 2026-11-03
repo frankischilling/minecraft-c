@@ -3950,8 +3950,8 @@
       "sha256": "1f55b83e4c976161ae903ccdec6aedc659c6faf383d6de865872d5ad0c61a09b"
     },
     "tests/client/world/test_render_block_colors.c": {
-      "bytes": 25507,
-      "sha256": "90b8046ea15c5b675bb97411424d57978fcdf37974488444acb67df3d3e5bee4"
+      "bytes": 25557,
+      "sha256": "b1414b612047bbc051842e5e4205b9bd5830a4fc50801edb872df7593c52bb02"
     },
     "tests/reference/client/render_block_colors/capture_reference.py": {
       "bytes": 7023,
@@ -7234,8 +7234,8 @@
       "sha256": "d2c9e6b851179ac4dafd794d7609172ec16896cbc9a4751539ce40fbae194fd2"
     },
     "tests/benchmarks/world_queries.c": {
-      "bytes": 19985,
-      "sha256": "8d64ee7de85ccf6ff35d9855fd7c782541d379287caf6263b7e1ab9611bee391"
+      "bytes": 20137,
+      "sha256": "6c16bbd3b57770f2bbdd5d0053e2d3218b85db1c8dc30c36f65378aa3eb7fcb6"
     },
     "tests/client/controller/test_mining_tools.c": {
       "bytes": 7931,
@@ -7259,11 +7259,11 @@
     },
     "tests/reference/client/workbench_open_shutdown/packet.py": {
       "bytes": 23677,
-      "sha256": "aaaa6f2701492ac5ac1416b393b9529b86c5f55c8c29e5c80a1efe1c701dc724"
+      "sha256": "e2f25a2f361de2201878a2d052747918d7c43afd46ce7c6749de4588a2a4b9d2"
     },
     "tests/reference/client/workbench_open_shutdown/test_packet.py": {
       "bytes": 9801,
-      "sha256": "7817f09bea12fa548abc08b9c6b5f9ed40c43292883b59651409459084516c9f"
+      "sha256": "bfcea9e051db237f02613487c2f19febaab493f55cf71010118e6705b2df6d2e"
     },
     "tests/reference/item/mining/capture_reference.py": {
       "bytes": 5373,

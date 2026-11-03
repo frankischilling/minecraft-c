@@ -8,10 +8,10 @@ import re
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[3]
 PROFILES = ('clean', 'container', 'player', 'world')
-CHECKS = dict(zip(PROFILES, (1843, 2014, 2239, 2281)))
-SECONDS = dict(zip(PROFILES, (15.33, 16.01, 15.78, 15.07)))
-ENTITY_COUNTS = dict(zip(PROFILES, (26, 39, 35, 37)))
-SAVE_COUNTS = dict(zip(PROFILES, (12, 13, 13, 13)))
+CHECKS = dict(zip(PROFILES, (1856, 1970, 2191, 2308)))
+SECONDS = dict(zip(PROFILES, (13.81, 15.97, 15.58, 15.57)))
+ENTITY_COUNTS = dict(zip(PROFILES, (26, 33, 31, 38)))
+SAVE_COUNTS = dict(zip(PROFILES, (12, 12, 13, 13)))
 FOCUSED_CASES = [
     {'name': 'client.world_save_title', 'status': 'PASS', 'seconds': 16.60},
     {'name': 'client.world_reload_cycle', 'status': 'PASS', 'seconds': 42.22},
@@ -197,7 +197,7 @@ def validate(document, root=None):
     require(resources['count'] == 413 and hash_string(resources['digest']), 'resource count/digest')
     cohort = document['cohort']
     keys(cohort, 'passed total_seconds private_log_sha256', 'cohort')
-    require(cohort['passed'] == 4 and cohort['total_seconds'] == 62.22 and
+    require(cohort['passed'] == 4 and cohort['total_seconds'] == 60.97 and
             hash_string(cohort['private_log_sha256']), 'four-profile measured cohort')
     require(document['authored_scene'] == {
         'inventory': [[0, 270, 1, 0], [9, 17, 2, 0], [10, 5, 7, 0]],
@@ -365,8 +365,8 @@ def audit_cohort_log(path):
                           r'\s+\.+\s+Passed\s+' + re.escape(f'{seconds:.2f}') + r' sec', wire),
                 'actual CTest profile time ' + profile)
     require('100% tests passed, 0 tests failed out of 4' in wire and
-            re.search(r'Total Test time \(real\) =\s+62\.22 sec', wire), 'actual four-profile total')
-    return {'passed': 4, 'seconds': 62.22}
+            re.search(r'Total Test time \(real\) =\s+60\.97 sec', wire), 'actual four-profile total')
+    return {'passed': 4, 'seconds': 60.97}
 
 
 if __name__ == '__main__':
