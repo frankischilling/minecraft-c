@@ -1,0 +1,10 @@
+{
+  "scope": "Actual singleton NW constructed by untouched static initialization. Initial s/t/u use actual b(DDD), then declared c(FFF) calls. No reflective field stores, Unsafe, replacement source class, RNG or phase repairs.",
+  "format": "TSV index,name,building,initial-s64,initial-t64,initial-u64,calls; calls use three raw binary32 hex words separated by commas, steps by semicolons.",
+  "profiles": 36,
+  "calls": 106,
+  "building": "0 retains ordinary nonbuilding state; 1 invokes genuine b() begin, then zero-vertex a() draw. No vertex or GL call is made.",
+  "other_state": "All unrelated primitive fields, NIO positions/limits/capacities, backing-array length/content hash and actual buffer identities checked unchanged around each additive call.",
+  "store_order": "Read-only JDI modification watchpoints observe current translations before each s8/t19/u30 store and actual valueToBe, checked against ordinary returned rows.",
+  "limits": "Finite JDK17 x64 interpreter observations, not native implementation validation, Cactus rendering completion, frame scheduling, pixels, audio or FPS. JDI controller transport is local debugger infrastructure, separate from zero game-source network attempts."
+}

@@ -1,9 +1,17 @@
 # minecraft-c
 
-The current runtime passes all 644 Windows Release public tests and all 639
-Linux Clang ASan/UBSan public tests. Sources/products remain unchanged and all
-1,441 runtime files match across hosts. Finite Windows gameplay scenes pass;
-unrestricted single-player play, desktop stability and general FPS remain open.
+[Specialized Block Items](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/inventory-geometry.md)
+now reach Cactus, Stairs, Fence and Piston inventory rendering. Native geometry
+matches 7,596 active words across 216 original batches; Piston textures match
+34,612 rows. Native HUD controls draw all six registered specialized Items.
+World rendering, original pixels, unrestricted play and general FPS retain
+their separate unfinished scopes.
+
+The current runtime passes all 646 Linux Clang ASan/UBSan public tests. Windows
+passes 650/651, with a recorded foreground-loss failure; that unchanged scene
+passes in isolation. Sources/products remain unchanged and all 1,441 runtime
+files match across hosts. Finite Windows gameplay scenes pass; unrestricted
+single-player play, desktop stability and general FPS remain open.
 
 [Block inventory rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/block-inventory.md)
 now resolves color and bounds methods for all 69 represented Block kinds.

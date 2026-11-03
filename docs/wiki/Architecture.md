@@ -1,5 +1,12 @@
 # Systems and subsystems
 
+Specialized inventory shapes share per-face plumbing while retaining their
+actual bounds, texture overload, offsets and call order. Cactus uses genuine
+additive Tessellator translation; Stairs keeps its second bounds and Fence
+resets only on successful fallthrough. Piston texture queries use the existing
+lazy Direction owner. Native source-frame bounds stop malformed cyclic Stair
+aliases without unbounded C recursion.
+
 World rendering and destruction particles share the original TallGrass color
 body through small adapters. The captured World, fresh climate-manager reads,
 wrapped coordinate hash and actual IA colorizer remain in source order.

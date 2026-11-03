@@ -1,3 +1,4 @@
+#include "../../entity/player/tick_math_internal.h"
 #include "../display/source_surface.h"
 #include "context_internal.h"
 #include "internal.h"
@@ -136,6 +137,27 @@ bool mc_client_nw_translation(mc_client_tessellator *o, double x, double y, doub
     o->last_store_pc = 7;
     memcpy(&o->fields.u, &z, sizeof(z));
     o->last_store_pc = 13;
+    return leave(o, true, e);
+}
+
+bool mc_client_nw_translation_add(mc_client_tessellator *o, float x, float y, float z,
+                                  mc_client_graphics_error *e) {
+    if (!enter(o, e))
+        return false;
+    if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
+        mc_client_graphics_fail(e, MC_CLIENT_GRAPHICS_UNSUPPORTED_FP,
+                                "nw additive translation floating environment",
+                                site("c", "(FFF)V", 6), true);
+        return leave(o, false, e);
+    }
+    /* Original c(FFF) widens each operand before its binary64 addition.
+     * Preserve the three ordered stores, including outside an active batch. */
+    o->fields.s = at_add(o->fields.s, at_widen(x));
+    o->last_store_pc = 8;
+    o->fields.t = at_add(o->fields.t, at_widen(y));
+    o->last_store_pc = 19;
+    o->fields.u = at_add(o->fields.u, at_widen(z));
+    o->last_store_pc = 30;
     return leave(o, true, e);
 }
 

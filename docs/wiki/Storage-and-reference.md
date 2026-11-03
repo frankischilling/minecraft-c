@@ -1,5 +1,13 @@
 # Storage and original references
 
+The [inventory geometry packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/inventory_geometry)
+retains paired ordinary/read-only JDI observations of 216 actual batches in
+both immediate and GL_COMPILE modes. CPU data agrees exactly; deferred device
+state remains separate. Additive Tessellator translation has 106 original
+calls and 318 ordered store observations. Piston texture observations retain
+34,612 rows, including six individual NaN-bound scenes and real lazy Direction
+initialization. Original game classes/assets remain external private inputs.
+
 The [Block inventory packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/block_inventory/README.md)
 records 96 registered original receivers and their declaring methods across
 the complete class hierarchy. Native replay matches 13,098 behavior rows.

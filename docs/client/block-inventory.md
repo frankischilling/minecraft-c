@@ -5,9 +5,10 @@ The client resolves the original inventory color and shape methods for all
 Gravel, ores, Glass, Snow, Clay and storage blocks continue through the common
 renderer instead of stopping at a missing inherited method.
 
-This completes these two method families, not every Block rendering path.
-The existing inventory geometry supports type0 cubes and the type16 entry;
-Piston metadata textures and specialized geometry still have explicit limits.
+These two method families cover the represented kinds. The separate
+[inventory geometry](inventory-geometry.md) body supports all five types in
+the original 3D Item predicate, including Cactus, Stairs, Fence and Piston
+base textures. Other World rendering paths retain their own limits.
 
 ## Original methods and native ownership
 

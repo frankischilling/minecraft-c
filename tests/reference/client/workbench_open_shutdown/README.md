@@ -6,24 +6,24 @@ source window. The native shutdown path transfers the same live IT owner to the
 Player's terminal record. It preserves source screen, Container and Stack
 identities while completing checked C cleanup.
 
-`native-validation.json` records the fresh frozen-source cohort with TallGrass
-World/particle color, inherited Block inventory color/bounds families and
-saved-light query receipt reuse. Held-tool mining/destruction,
-Leaves/Snow-layer/Ice harvest and QM Leaf World-color integration remain in the
-captured production sources. The test helper waits for actual serial input
-consumption during Table opening. The selected harness includes the Grass HUD
-success case and the separate Cactus geometry dependency control. Four tests
-pass in 58.53 seconds, with 1,958 / 1,971 / 2,274 / 2,125 native checks. Their
-measured CTest times are 14.41 / 14.72 / 15.23 / 14.14 seconds in clean /
-Container / Player / World order.
+`native-validation.json` records the fresh current-source cohort. Captured
+production includes Cactus, Stairs and Fence inventory geometry, additive NW
+translation and Piston texture getters. The test helper waits for actual serial
+input consumption during Table opening. The selected harness includes completed
+HUD Block Item draws and cleanup after an actual nullable Stair source failure.
+The Inventory geometry fixture queries actual current color before recording its
+inputs. Four tests pass in 61.78 seconds, with 1,930 / 1,943 / 2,184 / 2,134 native checks.
+Their measured CTest times are 15.84 / 16.48 / 14.66 / 14.78 seconds in clean /
+Container / Player / World order. These SDK scenes qualify the Workbench
+terminal flow; other geometry and getter comparisons have their own coverage.
 The Container profile
 refuses before transfer; the Player and World profiles refuse at the later World
 audit. Each releases only its declared existing hold and retries. All four end
 with both source windows absent. The selected save tree stays byte-for-byte
 equal to its stopped snapshot through every native phase.
 
-The receipt binds all 1,441 runtime source files and 495 selected harness/CMake
-files. Each process recorded 1,938 selected inputs and 413 imported-resource
+The receipt binds all 1,441 runtime source files and 502 selected harness/CMake
+files. Each process recorded 1,945 selected inputs and 413 imported-resource
 files unchanged. Native executable and DLL hashes describe the captured
 snapshot; the public audit does not require those binaries or assets. Toolchain
 and Desktop state were outside that continuity check.
@@ -35,7 +35,8 @@ separate historical failures. `packet.py --private-root <build-directory>` can
 recheck the exact projection against those retained private reports. Its
 optional `--cohort-log <log-file>` checks the measured CTest times.
 The earlier four-profile PASS receipts and their captures, including the
-100.70-second, 62.22-second, 60.97-second and 105.22-second cohorts, remain
+100.70-second, 62.22-second, 60.97-second, 105.22-second, 58.53-second and
+82.19-second cohorts, remain
 private historical evidence. A separate intervening selection passed five of seven
 tests: all three public regression cases passed, while two SDK profiles failed
 during SDK setup, before terminal preparation. Its 131.58-second elapsed time is separate from the
@@ -58,6 +59,15 @@ with its own process. A focused World rerun then passed in 17.34 seconds before
 the current complete cohort. Both intervals and their artifact hashes remain
 separate private evidence. Their bounded observations do not establish a root
 cause or qualify unrestricted Desktop/input timing.
+
+A separate cohort passed all four profiles in 62.96 seconds before the final
+source formatting changes. Its capture and log remain private historical
+evidence; the current receipt binds the later formatted-source cohort.
+
+The preceding 82.19-second cohort used identical production sources and native
+binaries. Its selected geometry fixture preceded the explicit current-color
+query. That cohort remains separate private evidence; the current packet binds
+the corrected fixture bytes as well as the production snapshot.
 
 Run the Java-free public audit and corruption controls with:
 

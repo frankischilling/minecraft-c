@@ -1,11 +1,22 @@
 # Build and tests
 
-The integrated runtime passes 644/644 Windows Release public tests in 267.67
-seconds and 639/639 Linux Clang 18 ASan/UBSan public tests in 143.27 seconds.
-Both preserve 4,425 sources and 525 products; Windows preserves 823 assets.
+`client.inventory_geometry`, `client.nw_translation` and
+`client.piston_inventory_texture` cover the new Item geometry and texture
+bodies. Hidden-display comparisons execute complete native calls, compare all
+7,596 active submitted words and audit own-prior inactive words. Original
+immediate and GL_COMPILE cohorts retain separate device scopes. The packet's
+19 integrity controls use bounded role coverage across every batch; their
+primary loop passes in 3.732 seconds after a redundant exhaustive negative
+loop was stopped at 243.92 seconds. No positive geometry comparison is reduced.
+
+The integrated runtime passes 646/646 Linux Clang 18 ASan/UBSan public tests in
+148.54 seconds. Windows Release passes 650/651 in 290.25 seconds; World selection
+records Remote Desktop holding foreground, lost SDL focus and the source Pause
+screen. Its unchanged isolated recheck passes in 38.44 seconds. Both broad runs
+preserve 4,488 sources and 528 products; Windows preserves 823 assets.
 All 1,441 runtime files match across hosts. Linux uses Xvfb/software GL with
-leak detection and halt-on-error. All 15 changed C translation units pass
-strict GCC 13 syntax checks; formatting covers 2,010 C/header/fragment files.
+leak detection and halt-on-error. All eight changed C translation units pass
+strict GCC 13 syntax checks; formatting covers 2,013 C/header/fragment files.
 The final documentation/binding follow-up has separate verification.
 
 `client.inventory_block` matches 13,098 original behavior rows and the retained

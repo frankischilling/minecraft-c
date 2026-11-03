@@ -3,6 +3,8 @@ int mc_hud_startup_fixture_main(int argc, char **argv);
 #define main mc_hud_startup_fixture_main
 #include "../startup/test_application_startup.c"
 #undef main
+#include "block/registry/registry_internal.h"
+#include "block/registry/runtime_internal.h"
 #include "client/display/camera_surface.h"
 #include "client/display/fog_surface.h"
 #include "client/display/world_frame_surface.h"
@@ -512,19 +514,59 @@ static int hud_failures(fixture *runtime, client_application *app, mc_entity *pl
           MC_INVENTORY_OK);
     mc_item_stack_release(grass);
 
-    /* Cactus's type13 geometry is still a real dependency after ordinary cube
-     * colors/bounds have returned. Exercise that failure after the Dirt slot. */
+    static const int32_t shape_ids[] = {81, 53, 67, 85, 29, 33};
+    static const unsigned int shape_faces[] = {12, 18, 18, 30, 12, 12};
+    for (size_t shape = 0; shape < sizeof(shape_ids) / sizeof(*shape_ids); ++shape) {
+        mc_item_stack *shape_stack = NULL;
+        CHECK(mc_item_stack_allocate(&shape_stack) == MC_ITEM_STACK_OK &&
+              mc_item_stack_construct(shape_stack, shape_ids[shape], 1, 0) == MC_ITEM_STACK_OK);
+        CHECK(mc_inventory_player_set(player->local_player->fields.player.c, 1, shape_stack,
+                                      NULL) == MC_INVENTORY_OK);
+        CHECK(mc_client_gui_ingame_draw_begin(app->v, runtime->graphics, math, app->display, .375f,
+                                              false, 17, 23, &call,
+                                              &error) == MC_CLIENT_GUI_INGAME_DRAW_OK);
+        CHECK(mc_client_gui_ingame_draw_inspect(call, &state) && state.returned &&
+              state.stats_returned && state.slots_returned && state.item_slots == 2 &&
+              state.item_overlays == 2 && state.item_faces == shape_faces[shape]);
+        CHECK(mc_client_gui_ingame_draw_retire(&call, &error) == MC_CLIENT_GUI_INGAME_DRAW_OK);
+        CHECK(mc_inventory_player_set(player->local_player->fields.player.c, 1, NULL, NULL) ==
+              MC_INVENTORY_OK);
+        mc_item_stack_release(shape_stack);
+    }
+    puts("HUD_CONTROL specialized_block_slots");
+
+    /* Author the actual Stairs source reference before the draw. Its real
+     * side-texture method throws after the first bounds/translate/begin/normal
+     * prefix, independently of which inventory geometry families are complete. */
+    mc_registry_block_m_view blocks;
+    const mc_block *stairs_read = NULL;
+    CHECK(app->registry == runtime->services.registry &&
+          mc_registry_block_m_get(app->registry, &blocks, NULL) == MC_REGISTRY_OK &&
+          mc_registry_block_m_at(&blocks, 53, &stairs_read, NULL) == MC_REGISTRY_OK &&
+          stairs_read != NULL && stairs_read->kind == MC_BLOCK_STAIRS &&
+          stairs_read->phase == MC_BLOCK_CONSTRUCTED && stairs_read->fields.bn == 53);
+    mc_block *stairs = (mc_block *)(void *)stairs_read;
+    mc_block *stair_source = stairs->subtype.ss.a;
+    CHECK(stair_source != NULL && stairs->fields.bs == 0 && stairs->fields.bt == 0 &&
+          stairs->fields.bu == .5 && stairs->fields.bv == 1 && stairs->fields.bw == .5 &&
+          stairs->fields.bx == 1);
+    const double prior_stair_bounds[] = {stairs->fields.bs, stairs->fields.bt, stairs->fields.bu,
+                                         stairs->fields.bv, stairs->fields.bw, stairs->fields.bx};
+    stairs->subtype.ss.a = NULL;
     mc_item_stack *stack = NULL;
     CHECK(mc_item_stack_allocate(&stack) == MC_ITEM_STACK_OK &&
-          mc_item_stack_construct(stack, 81, 1, 0) == MC_ITEM_STACK_OK);
+          mc_item_stack_construct(stack, 53, 1, 0) == MC_ITEM_STACK_OK);
     CHECK(mc_inventory_player_set(player->local_player->fields.player.c, 1, stack, NULL) ==
           MC_INVENTORY_OK);
     CHECK(mc_client_gui_ingame_draw_begin(app->v, runtime->graphics, math, app->display, .375f,
                                           false, 17, 23, &call,
-                                          &error) == MC_CLIENT_GUI_INGAME_DRAW_DEPENDENCY);
+                                          &error) == MC_CLIENT_GUI_INGAME_DRAW_SOURCE_NULL);
     CHECK(mc_client_gui_ingame_draw_inspect(call, &state) && state.source_pc == 1015 &&
           state.failure->child.pc == 118 && state.failure->item != NULL &&
           state.failure->item->status == MC_CLIENT_ITEM_GUI_GRAPHICS_FAILED &&
+          state.failure->item->source_exception && !state.failure->item->native_policy &&
+          state.failure->item->throwable == MC_ITEM_RENDER_SOURCE_EXCEPTION &&
+          strcmp(state.failure->item->exception_class, "java/lang/NullPointerException") == 0 &&
           state.stats_returned && !state.slots_returned && state.item_slots == 1 &&
           state.item_overlays == 1 && state.item_faces == 6 &&
           !state.failure->item_inventory.valid && !state.returned);
@@ -532,6 +574,14 @@ static int hud_failures(fixture *runtime, client_application *app, mc_entity *pl
     const char *item_operation = item_failure->operation;
     const int32_t item_pc = item_failure->site.pc;
     CHECK(item_failure->inventory != NULL);
+    mc_client_nw_state failed_nw;
+    CHECK(stairs->subtype.ss.a == NULL && stairs->fields.bs == 0 && stairs->fields.bt == 0 &&
+          stairs->fields.bu == 0 && stairs->fields.bv == 1 && stairs->fields.bw == 1 &&
+          stairs->fields.bx == .5 && mc_client_nw_inspect(runtime->graphics, &failed_nw) &&
+          failed_nw.a != NULL && failed_nw.fields.w && failed_nw.fields.n &&
+          failed_nw.fields.h == 0 && failed_nw.fields.o == 0 && failed_nw.fields.p == 0 &&
+          failed_nw.last_store_pc == 59);
+    puts("HUD_CONTROL stair_source_null_retains_batch");
     /* Use the actual split Font call scope used by measure_view. This keeps
      * a genuine source receiver entered while HUD cleanup first retires its
      * failed Item/CV child, then reaches the still-active Font occurrence.
@@ -548,20 +598,39 @@ static int hud_failures(fixture *runtime, client_application *app, mc_entity *pl
         CHECK(mc_client_gui_ingame_draw_inspect(call, &state) &&
               state.failure->item == item_failure &&
               state.failure->item->status == MC_CLIENT_ITEM_GUI_GRAPHICS_FAILED &&
+              state.failure->item->source_exception && !state.failure->item->native_policy &&
+              state.failure->item->throwable == MC_ITEM_RENDER_SOURCE_EXCEPTION &&
+              strcmp(state.failure->item->exception_class, "java/lang/NullPointerException") == 0 &&
               state.failure->item->operation == item_operation &&
               state.failure->item->site.pc == item_pc && state.failure->item->inventory == NULL &&
               state.failure->item_inventory.valid && state.failure->item_inventory.failed &&
               !state.failure->item_inventory.returned &&
-              state.failure->item_inventory.native_policy &&
-              state.failure->item_inventory.status ==
-                  MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY &&
-              state.failure->item_inventory.source_pc == 324 &&
-              state.failure->item_inventory.site.pc == 324 &&
-              strcmp(state.failure->item_inventory.site.class_name, "cv") == 0 &&
-              strcmp(state.failure->item_inventory.site.descriptor, "(Luu;IF)V") == 0 &&
-              state.failure->item_inventory.depth == 1 &&
-              state.failure->item_inventory.frames[0].pc == 324 &&
+              !state.failure->item_inventory.native_policy &&
+              state.failure->item_inventory.status == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE &&
+              state.failure->item_inventory.source_pc == 5 &&
+              state.failure->item_inventory.site.pc == 5 &&
+              strcmp(state.failure->item_inventory.site.class_name, "ss") == 0 &&
+              strcmp(state.failure->item_inventory.site.method, "a") == 0 &&
+              strcmp(state.failure->item_inventory.site.descriptor, "(I)I") == 0 &&
+              state.failure->item_inventory.child.pc == 5 &&
+              strcmp(state.failure->item_inventory.child.class_name, "ss") == 0 &&
+              state.failure->item_inventory.depth == 2 &&
+              strcmp(state.failure->item_inventory.frames[0].class_name, "cv") == 0 &&
+              strcmp(state.failure->item_inventory.frames[0].method, "a") == 0 &&
+              strcmp(state.failure->item_inventory.frames[0].descriptor, "(Luu;IF)V") == 0 &&
+              state.failure->item_inventory.frames[0].pc == 836 &&
+              strcmp(state.failure->item_inventory.frames[1].class_name, "ss") == 0 &&
+              strcmp(state.failure->item_inventory.frames[1].method, "a") == 0 &&
+              strcmp(state.failure->item_inventory.frames[1].descriptor, "(I)I") == 0 &&
+              state.failure->item_inventory.frames[1].pc == 5 &&
               state.failure->item_inventory.faces == 0);
+        mc_client_nw_state retained_nw;
+        CHECK(stairs->subtype.ss.a == NULL && stairs->fields.bs == 0 && stairs->fields.bt == 0 &&
+              stairs->fields.bu == 0 && stairs->fields.bv == 1 && stairs->fields.bw == 1 &&
+              stairs->fields.bx == .5 && mc_client_nw_inspect(runtime->graphics, &retained_nw) &&
+              retained_nw.a == failed_nw.a && retained_nw.fields.w && retained_nw.fields.n &&
+              retained_nw.fields.h == 0 && retained_nw.fields.o == 0 && retained_nw.fields.p == 0 &&
+              retained_nw.last_store_pc == 59);
     }
     int32_t measured = -1;
     mc_client_bitmap_font_measure_entered(app->font_renderer, measure_text, &measured, font_call);
@@ -570,6 +639,28 @@ static int hud_failures(fixture *runtime, client_application *app, mc_entity *pl
           measured == 4);
     CHECK(mc_client_gui_ingame_draw_retire(&call, &error) == MC_CLIENT_GUI_INGAME_DRAW_OK);
     puts("HUD_CONTROL item_cleanup_refusal_retry");
+    /* A separate real zero-vertex draw ends the reached source batch only
+     * after failure retirement. Native cleanup does not repair that state. */
+    mc_client_graphics_error batch_error;
+    mc_client_nw_state closed_nw;
+    CHECK(stairs->subtype.ss.a == NULL &&
+          mc_client_nw_draw((mc_client_tessellator *)(void *)failed_nw.a, app->display,
+                            &batch_error) &&
+          batch_error.status == MC_CLIENT_GRAPHICS_OK &&
+          mc_client_nw_inspect(runtime->graphics, &closed_nw) && closed_nw.a == failed_nw.a &&
+          !closed_nw.fields.w && closed_nw.fields.n && closed_nw.fields.h == 0 &&
+          closed_nw.fields.o == 0 && closed_nw.fields.p == 0 && closed_nw.last_store_pc == 20 &&
+          stairs->fields.bx == .5);
+    puts("HUD_CONTROL stair_empty_batch_teardown");
+    stairs->subtype.ss.a = stair_source;
+    mc_registry_block_bounds(stairs, (float)prior_stair_bounds[0], (float)prior_stair_bounds[1],
+                             (float)prior_stair_bounds[2], (float)prior_stair_bounds[3],
+                             (float)prior_stair_bounds[4], (float)prior_stair_bounds[5]);
+    CHECK(stairs->subtype.ss.a == stair_source && stairs->fields.bs == prior_stair_bounds[0] &&
+          stairs->fields.bt == prior_stair_bounds[1] &&
+          stairs->fields.bu == prior_stair_bounds[2] &&
+          stairs->fields.bv == prior_stair_bounds[3] &&
+          stairs->fields.bw == prior_stair_bounds[4] && stairs->fields.bx == prior_stair_bounds[5]);
     mc_client_source_fog_state fog;
     CHECK(mc_client_display_source_fog_inspect(app->display, &fog) && fog.lighting_enabled &&
           fog.rescale_normal_enabled);
@@ -579,7 +670,7 @@ static int hud_failures(fixture *runtime, client_application *app, mc_entity *pl
           MC_INVENTORY_OK);
     mc_item_stack_release(first_dirt);
     mc_item_stack_release(stack);
-    puts("HUD_CONTROL item_dependency_preserves_lighting");
+    puts("HUD_CONTROL item_source_null_preserves_lighting");
     return 0;
 }
 

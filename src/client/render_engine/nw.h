@@ -59,6 +59,10 @@ bool mc_client_nw_uv(mc_client_tessellator *, double u, double v, mc_client_grap
 /* Actual nw.b(DDD)V: raw source offset stores, including outside a begin/draw. */
 bool mc_client_nw_translation(mc_client_tessellator *, double x, double y, double z,
                               mc_client_graphics_error *);
+/* Actual nw.c(FFF)V: float widening and binary64 addition, ordered s8/t19/u30
+ * stores. No batch predicate, buffer reset or draw; failures retain prior stores. */
+bool mc_client_nw_translation_add(mc_client_tessellator *, float x, float y, float z,
+                                  mc_client_graphics_error *);
 bool mc_client_nw_color(mc_client_tessellator *, int32_t red, int32_t green, int32_t blue,
                         int32_t alpha, mc_client_graphics_error *);
 /* Actual nw.a(FFF)V -> a(III)V -> a(IIII)V, with binary32 *255 and Java f2i

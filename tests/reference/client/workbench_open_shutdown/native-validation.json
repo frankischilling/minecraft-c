@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "status": "PASS",
-  "scope": "Windows x64 MSVC Release; four genuine SDK live Workbench scenes followed by actual source-window stop and a native-only C ownership join. Fresh frozen-source cohort with TallGrass World/particle color, inherited Block inventory color/bounds families and saved-light query receipt reuse. Held-tool mining/destruction and Leaves/Snow-layer/Ice harvest remain in the captured production sources. The selected harness includes the Grass HUD success case and the separate Cactus geometry dependency control.",
+  "scope": "Windows x64 MSVC Release; four genuine SDK live Workbench scenes followed by actual source-window stop and a native-only C ownership join. Fresh cohort binding the inventory geometry fixture current-color query. Captured production includes Cactus, Stairs and Fence inventory geometry, additive NW translation and Piston texture getters. Other direct geometry/getter comparisons have separate coverage; this receipt qualifies the declared Workbench terminal flow.",
   "runtime_source_files": {
     "include/mc/block/material/material.h": {
       "bytes": 4557,
@@ -1256,8 +1256,8 @@
       "sha256": "ade35ac909f9a1c66f0905095655971fdeede5845d466936952fd32d1ea700ae"
     },
     "src/block/registry/rendering.c": {
-      "bytes": 26899,
-      "sha256": "8218078e310807657f8311072484273e62323b2bed9b7aad0372704c4139c95b"
+      "bytes": 28222,
+      "sha256": "f6d9e92ebac854f0b4d432aefd0c93fa2e6a92664c77d56df26117d54f67dd98"
     },
     "src/block/registry/runtime.c": {
       "bytes": 22823,
@@ -2104,8 +2104,8 @@
       "sha256": "8d7bccf2a2b35782fe93b016c3cc6f589b808a65ac11c1d7492f6413af937b91"
     },
     "src/client/render/blocks/inventory.c": {
-      "bytes": 7768,
-      "sha256": "de397e44229653006d4bf05d188804073548750ddfde780ec74186196694d8b3"
+      "bytes": 14993,
+      "sha256": "8359cc509a84afad7815411e5e5cb711723b8c955571502d31db7cead5b92299"
     },
     "src/client/render/blocks/inventory_color.h": {
       "bytes": 571,
@@ -2512,12 +2512,12 @@
       "sha256": "38c77b611c4afd6d22f25dc5adc77ea218ba13d78eb8c5f3be4723000951f273"
     },
     "src/client/render_engine/nw.c": {
-      "bytes": 26034,
-      "sha256": "19ccfdb312d30e3a30aea268119bfece60227b47184139edce842eb2dcbb8247"
+      "bytes": 27005,
+      "sha256": "a65dacd205dfb4c34a6fb8d9de29f66005a7f6bd6cee81221f388e3760707777"
     },
     "src/client/render_engine/nw.h": {
-      "bytes": 5665,
-      "sha256": "1cc9941428b8b9ac025d27fc1bc94a1505c78fca139b41e902864e0aae90df64"
+      "bytes": 5979,
+      "sha256": "c4306dee4074e80215d11ed9f153388d21aec345ef845e2327e1245853dfaff2"
     },
     "src/client/render_engine/nw_internal.h": {
       "bytes": 591,
@@ -5769,11 +5769,11 @@
     }
   },
   "runtime_source_count": 1441,
-  "runtime_source_digest": "8e3aa39dc6e04b41450a6a92002d411fc4d3bd152ebaeee1e381d831a0b4c98a",
+  "runtime_source_digest": "3c191cdfe1b8b9b849f6a40a080c07f1b6b01724c19b2a9eb66065d59cf0ae20",
   "harness_source_files": {
     "CMakeLists.txt": {
-      "bytes": 338709,
-      "sha256": "fb641fc164ab80ddc01e828ef77dfb9f3b5628fa5f4892e8dd0e73b4cc29d8a7"
+      "bytes": 338852,
+      "sha256": "66ca0ca1c67afe3ef3571fdf048f7fd461fd9aad7df5793f9b810b517314662d"
     },
     "cmake/client_active_notice_tests.cmake": {
       "bytes": 3606,
@@ -5863,6 +5863,10 @@
       "bytes": 1101,
       "sha256": "de7b5ec420b2321b6967b59f40767e7febf0227d2c606a7f527d273a2f08b370"
     },
+    "cmake/client_inventory_geometry.cmake": {
+      "bytes": 2171,
+      "sha256": "9689f4a1ea9d3dbe2e92a91b1379ef36f8e39cb38a3c21cbc032b277ce73a9c9"
+    },
     "cmake/client_inventory_screen.cmake": {
       "bytes": 10362,
       "sha256": "d27a9a658d4b8cb4e7be3746440feaaa3e0ed35229ee06bf432c21ece9af1b49"
@@ -5883,6 +5887,10 @@
       "bytes": 3574,
       "sha256": "2a1877fd94c4c74f11a58cac5e58a9220f9a28520e99195d02b9cf62bd2fc609"
     },
+    "cmake/client_nw_translation.cmake": {
+      "bytes": 1297,
+      "sha256": "3a1082167ccab5307537dd37d0c89e192639e007f421fa2f49e97becac23677c"
+    },
     "cmake/client_particle_rendering.cmake": {
       "bytes": 610,
       "sha256": "1f04460cb65ba9dda82c59c61fcca82863120ed313a0b227ddc9610cd5190b38"
@@ -5890,6 +5898,10 @@
     "cmake/client_pause_screen.cmake": {
       "bytes": 1329,
       "sha256": "ffe6821e7e8776aa271b3eb8f1aa14b323e1654d397e44dddc3eaf09d27a7d0c"
+    },
+    "cmake/client_piston_inventory_texture.cmake": {
+      "bytes": 1369,
+      "sha256": "12b128cd4f3b21c88256803b316ebb34dc11b088592580894799aca6faa5d78c"
     },
     "cmake/client_placement.cmake": {
       "bytes": 6107,
@@ -6564,8 +6576,8 @@
       "sha256": "1e438b4a6ea5ab506cbee5cff74e803623d01df1ab153dbca22adc0bfd75847f"
     },
     "tests/client/gui/test_gui_ingame_draw.c": {
-      "bytes": 49894,
-      "sha256": "44248e122e60ba5517e19f15f11a795bd8dbb1e921e8dc790c4c5df23515cf6e"
+      "bytes": 56472,
+      "sha256": "3b9dcdbbbaa0ebf7f2707231623fb6e34310cd2a41bb3c14fa0a5e0f676fc3be"
     },
     "tests/client/gui/test_inventory_quads.c": {
       "bytes": 7984,
@@ -6716,8 +6728,12 @@
       "sha256": "edf66022c4142668da932f9ff35b58a5f4bd2949245db82875c7f60b8b0d73ad"
     },
     "tests/client/render/test_inventory_block.c": {
-      "bytes": 69180,
-      "sha256": "07a4b3eeaea1424831faf68ae1b1e4c6ac3a9dd56fcbfb1c3f3eae86325bfc59"
+      "bytes": 71275,
+      "sha256": "7c6fee26f02d312be7d67d2ed129ea71d9b626520ce37a481d059defbdbea910"
+    },
+    "tests/client/render/test_inventory_geometry.c": {
+      "bytes": 31569,
+      "sha256": "1bb107660adace758f3c5f54bfe938d9adc5c095fc3149d698883a7496036213"
     },
     "tests/client/render/test_item_billboard.c": {
       "bytes": 9281,
@@ -6742,6 +6758,10 @@
     "tests/client/render/test_mob_draw.c": {
       "bytes": 55733,
       "sha256": "497a69101ac385cb22ef550bcf6b1cd075ff3a85854fcc71a9625387f8208690"
+    },
+    "tests/client/render/test_piston_inventory_texture.c": {
+      "bytes": 13367,
+      "sha256": "dca14cdbb27f00d3c8ad14df54ffda4dea668e940668d03020413642f5b6f0bd"
     },
     "tests/client/render/test_remaining_mob_draw.c": {
       "bytes": 100487,
@@ -6822,6 +6842,10 @@
     "tests/client/render_engine/test_nw_normals.c": {
       "bytes": 10068,
       "sha256": "79ed49b6c461c644529c0c892947dcef576da8f2b80f329a9767053a9618aa01"
+    },
+    "tests/client/render_engine/test_nw_translation.c": {
+      "bytes": 10086,
+      "sha256": "baa463866d8e2e1c0c91bc79716f5b6181625ecc68e1f4db20494bbbbb2112e5"
     },
     "tests/client/render_engine/test_render_engine.c": {
       "bytes": 19211,
@@ -7504,8 +7528,8 @@
       "sha256": "8482f7d3845d3883f8172787b55490af1828a2a9b2eab81303877e985c1bb80e"
     },
     "tests/tools/client/test_gui_ingame_draw.py": {
-      "bytes": 12523,
-      "sha256": "d9f76a014890c0ed65c101d3c39feff52bbc8bc568a75a0e4de5e012afa9f6ec"
+      "bytes": 12724,
+      "sha256": "691e7518fdb3410f2592f0247d4d51ac83a9782c03b57df5a7eebdcd4bd02c98"
     },
     "tests/tools/client/test_held_item_geometry.py": {
       "bytes": 2160,
@@ -7514,6 +7538,10 @@
     "tests/tools/client/test_image_download.py": {
       "bytes": 9691,
       "sha256": "d9789804234606b3463df3907962164bb702041e4df20af1e32686faf309aa35"
+    },
+    "tests/tools/client/test_inventory_geometry.py": {
+      "bytes": 15963,
+      "sha256": "761ebe2b6d3236a04075113836d8bffd912cbaa53a172f7dce0a5611dd728c8c"
     },
     "tests/tools/client/test_inventory_loop.py": {
       "bytes": 9226,
@@ -7752,22 +7780,22 @@
       "sha256": "1fc2f69d04e2ab6e5c48f9d2ebef1d9dd7de0c50a5a7278a81735b0a63edcff9"
     }
   },
-  "harness_source_count": 495,
-  "harness_source_digest": "517cab43c1e91ecc438d78b68ef02e4ffa4255b741065522c053b40cd27f6911",
+  "harness_source_count": 502,
+  "harness_source_digest": "a5db74a66a299f54d2ea9a05488182ffed250430d0b5c748e29b9d8ad8520f23",
   "selected_execution_inputs": {
-    "count": 1938,
-    "source_count": 1936,
+    "count": 1945,
+    "source_count": 1943,
     "binaries": {
       "mc_test_workbench_open_shutdown.exe": {
-        "bytes": 8927232,
-        "sha256": "3952e627fa5b019046786bd5bed7b0747746c566421c50b62a7dda8b0f23b116"
+        "bytes": 8930816,
+        "sha256": "11b107d3e5baeb911e56ba58e366435147c724d79e8633171a36e75c87c2d701"
       },
       "OpenAL32.dll": {
         "bytes": 1603072,
         "sha256": "885092aee2c41f643158ec8d8914dd286e2466caa794d7e7302cf95e40a5ede0"
       }
     },
-    "digest": "be6532a07a450ab968819384b6f5ca6593b227fe0aec9a1fc9560e2416c68026"
+    "digest": "2c990c96132971afa1b45b24d7c7a8e32c1c055aca2ec66f54929db63745d83f"
   },
   "imported_resources": {
     "count": 413,
@@ -7775,8 +7803,8 @@
   },
   "cohort": {
     "passed": 4,
-    "total_seconds": 58.53,
-    "private_log_sha256": "8937c5caafff8083e6f2e1606eac3f1c7eb46593782aab2fa7b99c4978611eda"
+    "total_seconds": 61.78,
+    "private_log_sha256": "adf0066800348d4f918c587a5bcbd75da6f658695885c08e48de1f99f767757c"
   },
   "authored_scene": {
     "inventory": [
@@ -7837,29 +7865,29 @@
     {
       "profile": "clean",
       "status": "PASS",
-      "ctest_seconds": 14.41,
-      "checks": 1958,
-      "capture_label": "workbench-open-clean-o7sp9iqe",
+      "ctest_seconds": 15.84,
+      "checks": 1930,
+      "capture_label": "workbench-open-clean-3i3i6zuc",
       "private_artifacts": {
         "run.json": {
-          "bytes": 669902,
-          "sha256": "ad5501830c7985be0ab77a969fdb59adca658ac6209359eaf29b3ce608d0b4c4"
+          "bytes": 671529,
+          "sha256": "92904016d64b7a8a79dad992748c6f60d50eb81d84666cb607ae1a899d28ad6d"
         },
         "execution.json": {
-          "bytes": 3956,
-          "sha256": "6f41fccd1fcf675d104e81efe8238bc435131479cfa488a5eb1903634ec2cc76"
+          "bytes": 3813,
+          "sha256": "dc561e21bbc1fc5ab3a257011c47ddbc77d46e281034510f7d02969479eade7f"
         },
         "stdout.txt": {
           "bytes": 4304,
-          "sha256": "96dc165fff4dafc995e8ab52c34ebd57fda692e892ae111b48279b8ad79f2db6"
+          "sha256": "b441c96939dced7b19b9ba76293310a5b504c3704ac3985280c8998cad84c229"
         },
         "stderr.txt": {
           "bytes": 0,
           "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         },
         "workbench-open-shutdown.png": {
-          "bytes": 90682,
-          "sha256": "759782749f7c5508a4c1955e68987b46a6e6c88eb295d1ffe0524d6bec03d540"
+          "bytes": 90387,
+          "sha256": "7035e53da587945811b6b4de7a7eb4375cd493c71cfc4c508b621361f304930e"
         }
       },
       "receipts": {
@@ -7879,8 +7907,8 @@
             "source-unchanged": "1",
             "world-ticks": "0",
             "stacks": "97",
-            "entities": "34",
-            "randoms": "38",
+            "entities": "29",
+            "randoms": "33",
             "active-container-is-screen-container": true
           }
         ],
@@ -7931,30 +7959,29 @@
             "windows-absent": "1",
             "source-close": "0",
             "source-save": "0",
-            "checks": "1958"
+            "checks": "1930"
           }
         ]
       },
-      "receipts_digest": "dcada2d2c1ec4d0848179349e5fd0c0bd97b9069a46e8119a6f8e1d8a326b671",
+      "receipts_digest": "aec99f75fefd32fcc214a1a81b8740771ec57dee07a88cde8354374815eeea2e",
       "selected_inputs_unchanged": true,
       "resources_unchanged": true,
       "live_source_window_capture": true,
       "stopped_save_files": {
-        "alpha/level.dat": "78926c1eef8368f4e6c67021c9af271ddbd6524bc5d13cfca0387309cd7c2d5d",
-        "alpha/level.dat_old": "db90b3599819c3607b0d19adaa5188433bfa622126e82580516fbe1470b3ddd4",
+        "alpha/level.dat": "db90b3599819c3607b0d19adaa5188433bfa622126e82580516fbe1470b3ddd4",
         "alpha/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
-        "alpha/session.lock": "b32bffd1b6dcc505e05e4b137fa2792bfff4b83e4615ff6f976a58f4ff310c94",
+        "alpha/session.lock": "6207d9d6847acd1adbf37585052353697d586653f7c87c0af328f4c25eb59fb8",
         "bravo/level.dat_old": "c2c0ffdf883a87ddfbce9f9e4711be1a6bc8c8bf0b24c81a79fd680f9584146c",
         "bravo/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
         "older/level.dat": "465bf25f91ff7ce43612311439d8f2d84d1bc3b0366e170e59509d8b35a6daea",
         "older/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
-        "alpha/region/r.-1.-1.mcr": "0e8d2e1d649e3dd3fd0dcb5553c3203c788a8a272d9214e44fab3c766602cefe",
-        "alpha/region/r.-1.0.mcr": "d47a1a09e4d0565566942fc08596790fd7db81008cd3ac2018a3b98ab2a3b78d",
-        "alpha/region/r.0.-1.mcr": "a454ef85898c149b3d02877ffbabdb02e61f73985e05c885d9b70cf10260d57e",
+        "alpha/region/r.-1.-1.mcr": "380d92ffe3420675b4782699ab5a063832415aadfce2df4edb69ef2834fcae8e",
+        "alpha/region/r.-1.0.mcr": "6579e6cafedb4a93dceebe54e51e9e812753d02f4b852ce1a082f4d25073a81c",
+        "alpha/region/r.0.-1.mcr": "89e904afb6eefb9e40bab3083b9a4fe88ff9e5477c40aabde8e1693e41f36bff",
         "alpha/region/r.0.0.mcr": "4e171401a7de38667eb2204ee91fb498a669deb9d1a9fddd4867ac952149e7a7",
         "alpha/region/r.9.9.mcr": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
       },
-      "stopped_save_digest": "8e7504137bc5c9f458181b51f6fe4387388d4c309bb3af35136abceab52f9349",
+      "stopped_save_digest": "d341a7d23a948ce7d39fc21911973a172ef6b128c0b9d716922343785438cdb2",
       "unchanged_save_phases": [
         "open-after-native-close",
         "open-after-prepare",
@@ -7964,29 +7991,29 @@
     {
       "profile": "container",
       "status": "PASS",
-      "ctest_seconds": 14.72,
-      "checks": 1971,
-      "capture_label": "workbench-open-container-kpzcjhnd",
+      "ctest_seconds": 16.48,
+      "checks": 1943,
+      "capture_label": "workbench-open-container-j56mscu6",
       "private_artifacts": {
         "run.json": {
-          "bytes": 671017,
-          "sha256": "71f49e4e24edcf0b031b6e6a0e2c1c9a53f2e1ef777c0166a00884d02669ac99"
+          "bytes": 673725,
+          "sha256": "9b30f81e45c6f8695b7d23927e6bf97dc7c78cbcef08bdac9c142668ef0e1b66"
         },
         "execution.json": {
-          "bytes": 3821,
-          "sha256": "735f721072863c24ac048bbbdcbb07de062b08c723d6a074c6cdc46291539009"
+          "bytes": 3964,
+          "sha256": "c7eb15796056b834084b393bb4404d944b2d120f65ed6094dcbf48b63773344d"
         },
         "stdout.txt": {
           "bytes": 4524,
-          "sha256": "6934e1387a33fe3b3b0f8e0189df24b0ef604081092ef3d6614ee13967aaf6c4"
+          "sha256": "0391a8055dc62aaa5196d1c15d59ac25d7d39046274931a5d09597b709e64894"
         },
         "stderr.txt": {
           "bytes": 0,
           "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         },
         "workbench-open-shutdown.png": {
-          "bytes": 90597,
-          "sha256": "3a352891060a173bee8259d51c8fbca915a634fff91e5180b4685eaa0d296b4f"
+          "bytes": 90969,
+          "sha256": "4e03485b026ab9993bac1c5a4e78f25e79b264ec5e1d630569b6edacd54f9bf3"
         }
       },
       "receipts": {
@@ -8006,8 +8033,8 @@
             "source-unchanged": "1",
             "world-ticks": "0",
             "stacks": "97",
-            "entities": "33",
-            "randoms": "37",
+            "entities": "32",
+            "randoms": "36",
             "active-container-is-screen-container": true
           }
         ],
@@ -8065,29 +8092,30 @@
             "windows-absent": "1",
             "source-close": "0",
             "source-save": "0",
-            "checks": "1971"
+            "checks": "1943"
           }
         ]
       },
-      "receipts_digest": "01e0c87c96e54a00b3fe9005b97b052033a524643a88bf1af05db61aa71b6597",
+      "receipts_digest": "e7d831b36ad2316e447fd9ca485ff81be0c2c89338924e1cbd08ab3db3a48f3c",
       "selected_inputs_unchanged": true,
       "resources_unchanged": true,
       "live_source_window_capture": true,
       "stopped_save_files": {
-        "alpha/level.dat": "db90b3599819c3607b0d19adaa5188433bfa622126e82580516fbe1470b3ddd4",
+        "alpha/level.dat": "3c585b7757b74539d07d21fabfd73745e8986dd6d0f408720357cb4f9ebf3342",
+        "alpha/level.dat_old": "db90b3599819c3607b0d19adaa5188433bfa622126e82580516fbe1470b3ddd4",
         "alpha/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
-        "alpha/session.lock": "bb5c24559484279087b359112f2c7fbeb309eb2085084039d16949956db68b65",
+        "alpha/session.lock": "73e0a8b90150997853cc5afc01aed2416fcdd8b7a79c7313a4e99660bbbffeac",
         "bravo/level.dat_old": "c2c0ffdf883a87ddfbce9f9e4711be1a6bc8c8bf0b24c81a79fd680f9584146c",
         "bravo/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
         "older/level.dat": "465bf25f91ff7ce43612311439d8f2d84d1bc3b0366e170e59509d8b35a6daea",
         "older/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
-        "alpha/region/r.-1.-1.mcr": "380d92ffe3420675b4782699ab5a063832415aadfce2df4edb69ef2834fcae8e",
-        "alpha/region/r.-1.0.mcr": "6579e6cafedb4a93dceebe54e51e9e812753d02f4b852ce1a082f4d25073a81c",
-        "alpha/region/r.0.-1.mcr": "89e904afb6eefb9e40bab3083b9a4fe88ff9e5477c40aabde8e1693e41f36bff",
+        "alpha/region/r.-1.-1.mcr": "152da22bbf189e6b17634b34baae3f622519f294465b7ebfdd7ec1d7feb34ab8",
+        "alpha/region/r.-1.0.mcr": "bd6071ef89cdf66709841c47d345505d3131e7cf917ea756cf7a82035ced0173",
+        "alpha/region/r.0.-1.mcr": "3618c2dfcb5c8774a65afa8d7ff988a88d9f3c44a6d94aace12b112b8a12eb65",
         "alpha/region/r.0.0.mcr": "4e171401a7de38667eb2204ee91fb498a669deb9d1a9fddd4867ac952149e7a7",
         "alpha/region/r.9.9.mcr": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
       },
-      "stopped_save_digest": "775ecb9fdc6f1fa67b37c7625b165dc0268c38a397356f2a2eeb02ee712427ee",
+      "stopped_save_digest": "e92006cb0c177a4ecf546a2dcc40f157c4828056316abe364e69d54c0f80355d",
       "unchanged_save_phases": [
         "open-after-native-close",
         "open-after-prepare",
@@ -8098,29 +8126,29 @@
     {
       "profile": "player",
       "status": "PASS",
-      "ctest_seconds": 15.23,
-      "checks": 2274,
-      "capture_label": "workbench-open-player-v25yqku_",
+      "ctest_seconds": 14.66,
+      "checks": 2184,
+      "capture_label": "workbench-open-player-_csd6jif",
       "private_artifacts": {
         "run.json": {
-          "bytes": 671000,
-          "sha256": "f667062450ed0c1d5d496e89375f99cdd51d3c3607fb91818eb7859eaa97123c"
+          "bytes": 673118,
+          "sha256": "bb1a114989ff1175995eb2ea50e401e5c498226ab5c645acf74ab929a9625153"
         },
         "execution.json": {
           "bytes": 3815,
-          "sha256": "e11f29995e32b178d49ad24f4136fe7c75df59d7ebd383ccd93e6581f43da572"
+          "sha256": "50f0721df8f75b645a5901afdbf356a1cd20bb70862f0cae113fed1d88b909db"
         },
         "stdout.txt": {
           "bytes": 4492,
-          "sha256": "dc6b5da20813c077ccd683e3dc8555b93a7ffd6ac759ebf5f4c9b4f8b017547b"
+          "sha256": "7571d5af44a1f2710451e2b894e853d5ee6f856a06c0f1b2263b5c55670141da"
         },
         "stderr.txt": {
           "bytes": 124,
           "sha256": "f71bceb6556e81a7290450edc6e3c90df336449cb298ac23add4cf389fa2db6a"
         },
         "workbench-open-shutdown.png": {
-          "bytes": 90697,
-          "sha256": "4fd4779b0e6c87c43008328b8f5b8ca4a70bcd5cc1f2ce867a6be92466bbf50c"
+          "bytes": 90870,
+          "sha256": "85cc6b28ed37e4f8bf1c87fbddc67f80eca636ed6fdf797213ec71b7446c6261"
         }
       },
       "receipts": {
@@ -8140,8 +8168,8 @@
             "source-unchanged": "1",
             "world-ticks": "0",
             "stacks": "97",
-            "entities": "36",
-            "randoms": "40",
+            "entities": "31",
+            "randoms": "35",
             "active-container-is-screen-container": true
           }
         ],
@@ -8200,18 +8228,18 @@
             "windows-absent": "1",
             "source-close": "0",
             "source-save": "0",
-            "checks": "2274"
+            "checks": "2184"
           }
         ]
       },
-      "receipts_digest": "fbbbd0c2c571340bde157be476a983fbbbfa508dd1d1692cc92c38cfff697de9",
+      "receipts_digest": "70c42fa5b26df8ecb5840f2d76ed0ec9b15ff0cb2502ef31716640fdf594b94c",
       "selected_inputs_unchanged": true,
       "resources_unchanged": true,
       "live_source_window_capture": true,
       "stopped_save_files": {
         "alpha/level.dat": "db90b3599819c3607b0d19adaa5188433bfa622126e82580516fbe1470b3ddd4",
         "alpha/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
-        "alpha/session.lock": "8b6affe1299b4c67306e136c92b406c9baab6bca1eff68cfabac976b776c548a",
+        "alpha/session.lock": "bb5ff0609783c8dc55a4ba0d9c02aec6dc46ee5a1c098fcbba52751797fa7589",
         "bravo/level.dat_old": "c2c0ffdf883a87ddfbce9f9e4711be1a6bc8c8bf0b24c81a79fd680f9584146c",
         "bravo/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
         "older/level.dat": "465bf25f91ff7ce43612311439d8f2d84d1bc3b0366e170e59509d8b35a6daea",
@@ -8222,7 +8250,7 @@
         "alpha/region/r.0.0.mcr": "4e171401a7de38667eb2204ee91fb498a669deb9d1a9fddd4867ac952149e7a7",
         "alpha/region/r.9.9.mcr": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
       },
-      "stopped_save_digest": "770c751fbf0251cf303aa3b4137ba8068edbe67a9f09b042345ceab0903d977b",
+      "stopped_save_digest": "7eb42e8aa6f36693610819b94a11901e642c547599e55b46e34ce20f39ef3100",
       "unchanged_save_phases": [
         "open-after-native-close",
         "open-after-prepare",
@@ -8233,29 +8261,29 @@
     {
       "profile": "world",
       "status": "PASS",
-      "ctest_seconds": 14.14,
-      "checks": 2125,
-      "capture_label": "workbench-open-world-fwkowqct",
+      "ctest_seconds": 14.78,
+      "checks": 2134,
+      "capture_label": "workbench-open-world-aysbmx28",
       "private_artifacts": {
         "run.json": {
-          "bytes": 670989,
-          "sha256": "7227a071ab1fddf92a0b823d84b638437d68ffaede0a37a45f98722d1ed32d55"
+          "bytes": 673107,
+          "sha256": "7f4311f31f164164a6242e02d5e8ee7c0c89a697be80c0ae505f7329dc619151"
         },
         "execution.json": {
           "bytes": 3813,
-          "sha256": "8c129acd3b159024f6d0f1a4b73c92060ed2864dcb7b05a1f6c455e381707e5f"
+          "sha256": "ef2ac11560e147ef1290af860203633995904f6fa6445294bd2f655c5aa95ef6"
         },
         "stdout.txt": {
           "bytes": 4484,
-          "sha256": "d47acf6672e81db39fb64d081e1ddb6db2ca0d5ef181df9a592dba4acf7ead0d"
+          "sha256": "2cf19b40f27c338015a8cfb5f22a3c85f5058c7e72c6bf8c25207b7e2bff10a0"
         },
         "stderr.txt": {
           "bytes": 122,
           "sha256": "0d7af78e021616797609f256ad95c8f687eb9d4ac1fcc760b674750d8a82e235"
         },
         "workbench-open-shutdown.png": {
-          "bytes": 90527,
-          "sha256": "17d7353049c932c1be32dbdbf40c1590c807f063b92241a8ce4cdd3a36c154ab"
+          "bytes": 90712,
+          "sha256": "a98965c53aa57b31856ab65d03b7f81d39f1b4607e81a290656981c8d3436105"
         }
       },
       "receipts": {
@@ -8275,8 +8303,8 @@
             "source-unchanged": "1",
             "world-ticks": "0",
             "stacks": "97",
-            "entities": "25",
-            "randoms": "29",
+            "entities": "26",
+            "randoms": "30",
             "active-container-is-screen-container": true
           }
         ],
@@ -8335,18 +8363,18 @@
             "windows-absent": "1",
             "source-close": "0",
             "source-save": "0",
-            "checks": "2125"
+            "checks": "2134"
           }
         ]
       },
-      "receipts_digest": "09a2132bfeb37fc319524e69b9f6a6e308230b73769b3c64d9b8b5663bc87473",
+      "receipts_digest": "80c8552fbcf8aed4b9321ae974e443c4967feed56435826302a5cd18e29684b4",
       "selected_inputs_unchanged": true,
       "resources_unchanged": true,
       "live_source_window_capture": true,
       "stopped_save_files": {
         "alpha/level.dat": "db90b3599819c3607b0d19adaa5188433bfa622126e82580516fbe1470b3ddd4",
         "alpha/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
-        "alpha/session.lock": "049f79d455c7fc18ca479c2af04a870bf133cbe68a3e9b0a6376040ce73c1c55",
+        "alpha/session.lock": "6d1abb8c1dbdb7677eb9f82ced0688d5f3ebbf51bf7b7e09981eca12cd11793d",
         "bravo/level.dat_old": "c2c0ffdf883a87ddfbce9f9e4711be1a6bc8c8bf0b24c81a79fd680f9584146c",
         "bravo/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
         "older/level.dat": "465bf25f91ff7ce43612311439d8f2d84d1bc3b0366e170e59509d8b35a6daea",
@@ -8357,7 +8385,7 @@
         "alpha/region/r.0.0.mcr": "4e171401a7de38667eb2204ee91fb498a669deb9d1a9fddd4867ac952149e7a7",
         "alpha/region/r.9.9.mcr": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
       },
-      "stopped_save_digest": "77f69821177e545c0c572566d36f9271f1b438109a8b533a9c8a9b7ed7cdec93",
+      "stopped_save_digest": "35cc8cb3628c3837310b30a08d892d20bef3e938117315e82be404e7ec371eac",
       "unchanged_save_phases": [
         "open-after-native-close",
         "open-after-prepare",
@@ -8417,7 +8445,7 @@
     "No Java GC timing or arbitrary ownership-graph claim is made; the real closed native SDK graph and declared external holds are the tested cases.",
     "No original draw or pixel comparison, global Desktop focus qualification, FPS measurement or matched frame-time benchmark is claimed.",
     "No Linux SDK gameplay qualification is included.",
-    "The 1938 selected inputs cover declared runtime, harness, CMake, executable and sibling DLL files; 413 imported-resource files were unchanged. Toolchain and Desktop state are outside that continuity check.",
+    "The 1945 selected inputs cover declared runtime, harness, CMake, executable and sibling DLL files; 413 imported-resource files were unchanged. Toolchain and Desktop state are outside that continuity check.",
     "Private reports, process addresses, absolute paths, save payloads, images, assets and original bytecode are excluded; only typed projections and hashes are public."
   ],
   "intervening_focused_cohort": {

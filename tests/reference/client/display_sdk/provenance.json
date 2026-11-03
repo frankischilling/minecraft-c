@@ -1142,8 +1142,8 @@
       "sha256": "5f66c590611f2f30fa62712244a6ea1d91e8f113413d3db39ec5dd999655baf1"
     },
     "src/client/render_engine/nw.h": {
-      "bytes": 5665,
-      "sha256": "1cc9941428b8b9ac025d27fc1bc94a1505c78fca139b41e902864e0aae90df64"
+      "bytes": 5979,
+      "sha256": "c4306dee4074e80215d11ed9f153388d21aec345ef845e2327e1245853dfaff2"
     },
     "src/client/render_engine/nw_internal.h": {
       "bytes": 591,
@@ -4722,16 +4722,16 @@
       "sha256": "6fa3029e5dad62d7ee36f1f38cbe7b803e79710d813559081f8a48224bc85c90"
     },
     "tests/client/gui/test_gui_ingame_draw.c": {
-      "bytes": 49894,
-      "sha256": "44248e122e60ba5517e19f15f11a795bd8dbb1e921e8dc790c4c5df23515cf6e"
+      "bytes": 56472,
+      "sha256": "3b9dcdbbbaa0ebf7f2707231623fb6e34310cd2a41bb3c14fa0a5e0f676fc3be"
     },
     "tests/reference/client/gui_ingame_draw/capture_reference.py": {
       "bytes": 10396,
       "sha256": "a9e471c41bd8d37b363087be0104126ec6d6350920fa2b358e0d242c98d91387"
     },
     "tests/tools/client/test_gui_ingame_draw.py": {
-      "bytes": 12523,
-      "sha256": "d9f76a014890c0ed65c101d3c39feff52bbc8bc568a75a0e4de5e012afa9f6ec"
+      "bytes": 12724,
+      "sha256": "691e7518fdb3410f2592f0247d4d51ac83a9782c03b57df5a7eebdcd4bd02c98"
     },
     "include/mc/entity/mob/construction.h": {
       "bytes": 5620,
@@ -6054,8 +6054,8 @@
       "sha256": "b9e942c3bc3e27bb65317bbbfe71b0230cc5f028a71fa3b2617ab5d60f8860a8"
     },
     "src/client/render/blocks/inventory.c": {
-      "bytes": 7768,
-      "sha256": "de397e44229653006d4bf05d188804073548750ddfde780ec74186196694d8b3"
+      "bytes": 14993,
+      "sha256": "8359cc509a84afad7815411e5e5cb711723b8c955571502d31db7cead5b92299"
     },
     "src/client/render/item_draw.c": {
       "bytes": 24089,
@@ -6094,8 +6094,8 @@
       "sha256": "875f2fc4dbb6075afef5c929335337f81124337c36c44d3204ced9a854ca6fbc"
     },
     "tests/client/render/test_inventory_block.c": {
-      "bytes": 69180,
-      "sha256": "07a4b3eeaea1424831faf68ae1b1e4c6ac3a9dd56fcbfb1c3f3eae86325bfc59"
+      "bytes": 71275,
+      "sha256": "7c6fee26f02d312be7d67d2ed129ea71d9b626520ce37a481d059defbdbea910"
     },
     "tests/entity/particles/test_digging.c": {
       "bytes": 15805,
@@ -7259,11 +7259,11 @@
     },
     "tests/reference/client/workbench_open_shutdown/packet.py": {
       "bytes": 23677,
-      "sha256": "ad35d359fb1066046ebfd4461387b99fe6df994caad5f1dd028e87dbdf6ba5ef"
+      "sha256": "31e5b93fafd616321dfd099f232ea5a33fa69a81f40eecc5e7ff0ab36c2f0884"
     },
     "tests/reference/client/workbench_open_shutdown/test_packet.py": {
       "bytes": 9801,
-      "sha256": "351e19cd10a55beabfcadb8bf70960e19c491d93a3775660b6f4c7aed95e85de"
+      "sha256": "5b6c0bc726e1c97c8f4100969b898cf0d216d21483c7782549fa46e34a8a1f19"
     },
     "tests/reference/item/mining/capture_reference.py": {
       "bytes": 5373,
@@ -7460,6 +7460,98 @@
     "tests/tools/world/benchmark_light_drain.py": {
       "bytes": 11139,
       "sha256": "30264294b4f296f2fa00c519402275b22397ff37ad6bcdbe1835603af6a6f970"
+    },
+    "cmake/client_inventory_geometry.cmake": {
+      "bytes": 2171,
+      "sha256": "9689f4a1ea9d3dbe2e92a91b1379ef36f8e39cb38a3c21cbc032b277ce73a9c9"
+    },
+    "cmake/client_nw_translation.cmake": {
+      "bytes": 1297,
+      "sha256": "3a1082167ccab5307537dd37d0c89e192639e007f421fa2f49e97becac23677c"
+    },
+    "cmake/client_piston_inventory_texture.cmake": {
+      "bytes": 1369,
+      "sha256": "12b128cd4f3b21c88256803b316ebb34dc11b088592580894799aca6faa5d78c"
+    },
+    "tests/client/render/test_inventory_geometry.c": {
+      "bytes": 31569,
+      "sha256": "1bb107660adace758f3c5f54bfe938d9adc5c095fc3149d698883a7496036213"
+    },
+    "tests/client/render/test_piston_inventory_texture.c": {
+      "bytes": 13367,
+      "sha256": "dca14cdbb27f00d3c8ad14df54ffda4dea668e940668d03020413642f5b6f0bd"
+    },
+    "tests/client/render_engine/test_nw_translation.c": {
+      "bytes": 10086,
+      "sha256": "baa463866d8e2e1c0c91bc79716f5b6181625ecc68e1f4db20494bbbbb2112e5"
+    },
+    "tests/reference/client/inventory_geometry/audit.py": {
+      "bytes": 16445,
+      "sha256": "d0ab161b9c19726894e04db5ee2a0f41364e00e94f32a1fd42efe13cbcc72714"
+    },
+    "tests/reference/client/inventory_geometry/capture_reference.py": {
+      "bytes": 9478,
+      "sha256": "c7f153b76258df469bfe9c58bdd1e25f9eef59126d016249e9ac2d048abc4da9"
+    },
+    "tests/reference/client/inventory_geometry/compare.py": {
+      "bytes": 5024,
+      "sha256": "2e7c97ca001d0b1d81bf55ba83fbd92b37511a115e823787a12d469d40ee91fa"
+    },
+    "tests/reference/client/inventory_geometry/side_chains/capture_reference.py": {
+      "bytes": 5909,
+      "sha256": "6cd9da01640bc88eff24ab26ab3bf06264ea694f7c939212f9ce0894182438f4"
+    },
+    "tests/reference/client/inventory_geometry/side_chains/packet.py": {
+      "bytes": 9626,
+      "sha256": "e08564b6db3460c6ffac9fa4516970c41803a2241b93a1f120be9944037f6550"
+    },
+    "tests/reference/client/inventory_geometry/side_chains/test_packet.py": {
+      "bytes": 3531,
+      "sha256": "64bdf15b074042d3d909d6c0eca6834be58b82245d78a0a3fde25bf035769673"
+    },
+    "tests/reference/client/inventory_geometry/test_modes.py": {
+      "bytes": 2478,
+      "sha256": "c0f66491a9d563c284f192c256170b0322fdb5727521fc5b8669e140e3a91a6e"
+    },
+    "tests/reference/client/inventory_geometry/test_packet.py": {
+      "bytes": 5844,
+      "sha256": "7a098eddfff540dd3540331c2b3fcc993c72ebf7a454cc5f0f3fd76774433c28"
+    },
+    "tests/reference/client/nw_translation/capture_reference.py": {
+      "bytes": 7354,
+      "sha256": "cb26db858f9e6157c4c9b7abe76f4376f46ce44ecd3bfabbde1e7938caca1d6e"
+    },
+    "tests/reference/client/nw_translation/packet.py": {
+      "bytes": 9810,
+      "sha256": "80bc2df80b59edb741d6312c9ae0bbabdbe0a9ee173ae9e310385a7a3022bbc6"
+    },
+    "tests/reference/client/nw_translation/run_native.py": {
+      "bytes": 3551,
+      "sha256": "27ed31e114e45c9ffe17c24f6028124cf7863ac33835391fb5af3b2361d4d347"
+    },
+    "tests/reference/client/nw_translation/test_packet.py": {
+      "bytes": 5703,
+      "sha256": "de252c47ac23213fdc3a66b197364f91a6f3708a5cdea4f571ac6a8c17c5903b"
+    },
+    "tests/reference/client/piston_inventory_texture/capture_reference.py": {
+      "bytes": 7319,
+      "sha256": "e91543a174d456f594b60aad3d2bad288cc6a77009db459802e705b640260179"
+    },
+    "tests/reference/client/piston_inventory_texture/packet.py": {
+      "bytes": 9183,
+      "sha256": "e32800c12f6cbb58b17e409acb6b829e9f7e5c4b674cd6d8ccdf5d7875285ddb"
+    },
+    "tests/reference/client/piston_inventory_texture/run_native.py": {
+      "bytes": 3552,
+      "sha256": "b06a67308bea82bc14b7a8083fb331419940e3240ec4c5766f25a8a4e81baaaf"
+    },
+    "tests/reference/client/piston_inventory_texture/test_packet.py": {
+      "bytes": 6022,
+      "sha256": "f5e103758637056dbf07c791fa44cd491ce1ac959722ff0792492098e9514124"
+    },
+    "tests/tools/client/test_inventory_geometry.py": {
+      "bytes": 15963,
+      "sha256": "761ebe2b6d3236a04075113836d8bffd912cbaa53a172f7dce0a5611dd728c8c"
     }
   },
   "authorities": {

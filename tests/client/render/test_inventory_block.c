@@ -1154,6 +1154,46 @@ static bool inventory_controls(void) {
           !f.context->returned && f.context->source_pc == 114 && f.context->inventory_faces == 0 &&
           !f.nw->fields.w && f.nw->fields.h == 0 &&
           memcmp(plate_read, &plate_expected, sizeof(plate_expected)) == 0);
+
+    static const struct {
+        int32_t id;
+        unsigned int translate_pc;
+        double bounds[6];
+    } specialized[] = {{81, 384, {0, 0, 0, 0, 0, 0}},
+                       {53, 812, {0, 0, 0, 1, 1, .5}},
+                       {67, 812, {0, 0, 0, 1, 1, .5}},
+                       {85, 1193, {.375, 0, 0, .625, 1, .25}}};
+
+    for (size_t specific_case = 0; specific_case < sizeof(specialized) / sizeof(*specialized);
+         ++specific_case) {
+        const mc_block *block = NULL;
+        CHECK(mc_registry_block_get(f.registry, specialized[specific_case].id, &block, NULL) ==
+                  MC_REGISTRY_OK &&
+              block != NULL);
+        const mc_block initial = *block;
+        mc_client_render_blocks_construct_fields(&f.fields, NULL, false);
+        f.fields.b = false;
+        *f.context = (mc_cv_context){.fields = &f.fields,
+                                     .registry = f.registry,
+                                     .models = f.models,
+                                     .graphics = f.graphics};
+        CHECK(!mc_cv_inventory(f.context, block, INT32_MAX, .75f) && f.context->failed &&
+              !f.context->returned && f.context->depth == 1 &&
+              f.context->source_pc == specialized[specific_case].translate_pc &&
+              f.context->failure.status == MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED &&
+              f.context->failure.native_policy && f.context->inventory_faces == 0 &&
+              !f.nw->fields.w && f.nw->fields.h == 0);
+        mc_block expected = initial;
+        if (specialized[specific_case].id != 81) {
+            expected.fields.bs = specialized[specific_case].bounds[0];
+            expected.fields.bt = specialized[specific_case].bounds[1];
+            expected.fields.bu = specialized[specific_case].bounds[2];
+            expected.fields.bv = specialized[specific_case].bounds[3];
+            expected.fields.bw = specialized[specific_case].bounds[4];
+            expected.fields.bx = specialized[specific_case].bounds[5];
+        }
+        CHECK(memcmp(block, &expected, sizeof(expected)) == 0);
+    }
     CHECK(mc_client_render_engine_classes_release(f.graphics) == MC_CLIENT_RENDER_ENGINE_OK);
     CHECK(mc_client_render_classes_free(f.models) == MC_CLIENT_MODEL_OK);
     CHECK(mc_registry_classes_free(f.registry, NULL) == MC_REGISTRY_OK);

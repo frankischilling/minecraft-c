@@ -1,11 +1,23 @@
 # Development status
 
-The integrated runtime passes all 644 Windows Release public tests in 267.67
-seconds and all 639 Linux Clang 18 ASan/UBSan public tests in 143.27 seconds.
-Both runs preserve 4,425 sources and 525 products; Windows also preserves 823
+[Block Item geometry](client/inventory-geometry.md) now renders Cactus, Stairs,
+Fence and Piston bases through the original 3D Item paths. The native geometry
+comparison matches 7,596 active words across 216 submitted face batches, with
+separate source/native inactive-word audits. Native HUD controls draw all six
+registered specialized Items and retain actual failed-child cleanup checks.
+Piston metadata textures match 34,612 original rows, including the original
+NaN-bound fallthrough and lazy Direction initialization. These are finite Item
+rendering checks; specialized World meshes, original pixels and unrestricted
+play remain unfinished.
+
+The final runtime passes all 646 Linux Clang 18 ASan/UBSan public tests in
+148.54 seconds. Windows Release passes 650/651 in 290.25 seconds; Remote Desktop
+takes foreground during World selection, SDL loses focus and the source pauses.
+The unchanged isolated World-selection recheck passes in 38.44 seconds. Both
+broad runs preserve 4,488 sources and 528 products; Windows also preserves 823
 assets. All 1,441 runtime files match across hosts. Linux uses Xvfb/software
 OpenGL, leak detection and halt-on-error. Documentation and binding follow-ups
-have separate checks; full single-player play and general FPS remain unfinished.
+have separate checks; desktop stability, full play and general FPS remain open.
 
 [Block inventory colors and bounds](client/block-inventory.md) now resolve
 the original methods for all 69 represented Block kinds. The native comparison

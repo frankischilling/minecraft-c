@@ -1,12 +1,62 @@
 # Test scope and reproduction
 
-The final integrated runtime passes 644/644 Windows MSVC Release public tests
-in 267.67 seconds and 639/639 Linux Clang 18 Debug ASan/UBSan public tests in
-143.27 seconds. Both retain 4,425 unchanged source inputs and 525 unchanged
+`client.inventory_geometry` runs the full production CV body in fresh immediate
+and GL_COMPILE processes. Submitted geometry matches 216 original face batches
+and all 7,596 active words; 2,772 inactive words retain each process's own prior
+backing. Seventeen whole-call inputs/returns and a separate native source-alias
+admission process retain their actual fields, bounds, known-color and ownership
+checks. The three authored direct AO profiles keep the existing backend's
+unknown current-color state rather than substituting a guessed value.
+
+`client.nw_translation` matches 106 original calls; `client.piston_inventory_texture`
+matches 34,612 original rows. Their separate packet corruption tests preserve
+the original source, captures and failure scopes. `tools.inventory_geometry_packet`
+runs 19 controls across both source modes. Its bounded per-batch mutations
+cover all packed-vertex positions and active word roles; the earlier exhaustive
+negative loop was stopped after 243.92 seconds and retained privately. The
+bounded primary controls pass in 3.732 seconds, with the three supplemental
+mode controls in 0.083 seconds. Positive native geometry still compares every
+active word; this test-runtime change does not supply an FPS measurement.
+The separate `tools.inventory_side_chains_packet` runs 16 controls over 30
+original nested-getter outcomes, 80 entries and both SS5 failure frames.
+
+Initial native integration exposed two fixture defects: reused CV storage
+omitted the new object's default-zero fields, and buffered C result rows
+interleaved with a second Registry's genuine PrintStream output. Fresh logical
+CV storage and an explicit transport flush correct those producers. A separate
+real getter mismatch corrected the Piston predicate to preserve Java's NaN
+fallthrough. Original oracles and strict expected comparisons remain unchanged;
+all earlier failures and raw captures stay retained.
+
+The first complete Linux public cohort passes 645/646 in 145.49 seconds. Its
+new geometry fixture misses the original observer's current-color query and
+therefore sees the initial white ledger before Mesa commits an authored Color
+call. The fixture now reaches that same real query before input inspection;
+Windows and sanitized Linux geometry rechecks pass with unchanged expected
+values. Post-AO inspection remains passive and unknown color stays unknown.
+
+The final integrated runtime passes 646/646 Linux Clang 18 Debug ASan/UBSan
+public tests in 148.54 seconds. Windows MSVC Release passes 650/651 in 290.25
+seconds. Its World-selection scene records Remote Desktop holding foreground,
+lost SDL focus and the ordinary source Pause screen. The unchanged isolated
+recheck passes in 38.44 seconds. The preceding Windows cohort passes 650/651 in
+258.65 seconds with the same foreground-loss condition during the animal scene;
+its unchanged isolated recheck passes in 42.00 seconds. These remain separate
+failed observations, not an aggregate all-pass Windows cohort.
+
+Both final broad runs retain 4,488 unchanged source inputs and 528 unchanged
 products; Windows also retains 823 assets. All 1,441 runtime files match across
 hosts. Linux uses Xvfb/software GL, leak detection and halt-on-error. Subsequent
 documentation/source-binding changes are checked separately and do not change
-the tested runtime or C test sources.
+the tested runtime or C test sources. All eight changed C translation units
+pass strict GCC 13 syntax checks; formatting covers 2,013 C/header/fragments.
+
+Four current-source Workbench shutdown scenes pass 8,191 native checks in
+61.78 seconds, retaining 1,945 selected inputs and 413 assets. All 57 packet
+controls and private/cohort-log audits pass. Leaf, Sand and TallGrass source-input
+scenes pass in 31.43 seconds total with 1,946 selected inputs, 413 assets and
+unchanged stopped/closed save bytes in each scene. Earlier cohorts remain
+separate evidence; see their component notes for exact scope.
 
 The Block inventory comparison runs as `client.inventory_block` and retains
 13,098 original behavior rows, 17 Leaf rows and native admission/ownership
@@ -34,7 +84,7 @@ and 638/639 Linux Clang ASan/UBSan tests in 156.44 seconds, with unchanged
 sources/products and matching runtime files. Both fail the same HUD cleanup
 fixture: it expects Grass inventory color to remain unimplemented. A targeted
 observation instead returns a complete HUD with both cube Items and 12 faces.
-The corrected test asserts that success, then uses the still-unsupported Cactus
+The corrected test asserted that success, then used the then-unsupported Cactus
 geometry to exercise actual failed-child cleanup and repeated Font refusal.
 All detailed failure/ownership assertions remain; the retained CV failure PC
 is 324. Separate Windows and sanitized Linux HUD rechecks pass.

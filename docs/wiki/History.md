@@ -1,5 +1,15 @@
 # History
 
+## Specialized Block Item rendering
+
+Cactus, Stairs and Fence now execute their specialized inventory bodies, and
+Piston bases use their actual metadata-texture method. Native comparisons
+retain all active geometry words, own-prior backing, reached failure effects
+and original NaN-bound behavior. A redundant corruption-test loop was bounded
+to representative word roles across every batch; complete positive geometry
+comparison remains intact. Detailed scopes live in the repository's
+[inventory geometry notes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/inventory-geometry.md).
+
 ## Inventory Blocks, TallGrass and Light drains
 
 Block inventory method resolution now covers all 69 represented kinds.

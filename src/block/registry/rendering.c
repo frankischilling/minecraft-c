@@ -1,5 +1,6 @@
 #include "mc/block/registry/rendering.h"
 #include "registry_internal.h"
+#include "runtime_internal.h"
 
 _Static_assert(MC_BLOCK_KIND_COUNT == 69, "audit new Block rendering descendants");
 
@@ -425,13 +426,39 @@ mc_registry_status mc_block_render_texture_metadata(const mc_block *block, int32
             break;
         case MC_BLOCK_STAIRS:
             return mc_block_render_texture_metadata(block->subtype.ss.a, side, m, out);
+        case MC_BLOCK_PISTON_BASE: {
+            /* JQ.a(II): d1 masks the direction; invalid6/7 return live bm14.
+             * Front17 never reaches WJ. dcmpl/ifgt and dcmpg/iflt let NaN
+             * bounds fall through; do not invert these ordered comparisons. */
+            const int32_t direction = (int32_t)((uint32_t)m & 7u);
+            if (direction > 5)
+                break;
+            if (side == direction) {
+                t = ((uint32_t)m & 8u) != 0 || block->fields.bs > 0.0 || block->fields.bt > 0.0 ||
+                            block->fields.bu > 0.0 || block->fields.bv < 1.0 ||
+                            block->fields.bw < 1.0 || block->fields.bx < 1.0
+                        ? 110
+                        : block->fields.bm;
+                break;
+            }
+            mc_registry_direction_view opposite;
+            mc_registry_status status =
+                mc_registry_direction_get(block->classes, MC_REGISTRY_DIRECTION_A, &opposite, NULL);
+            if (status != MC_REGISTRY_OK)
+                return status;
+            int32_t other_side;
+            status = mc_registry_direction_at(&opposite, direction, &other_side, NULL);
+            if (status != MC_REGISTRY_OK)
+                return status;
+            t = side == other_side ? 109 : 108;
+            break;
+        }
         /* These metadata methods are consumed by still-unimplemented specialized
          * geometry, so no invented inherited result is published. */
         case MC_BLOCK_BED:
         case MC_BLOCK_DOOR:
         case MC_BLOCK_RAIL:
         case MC_BLOCK_DETECTOR_RAIL:
-        case MC_BLOCK_PISTON_BASE:
         case MC_BLOCK_PISTON_HEAD:
             return MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
         default:
