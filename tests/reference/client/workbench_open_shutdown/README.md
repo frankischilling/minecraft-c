@@ -7,15 +7,16 @@ Player's terminal record. It preserves source screen, Container and Stack
 identities while completing checked C cleanup.
 
 `native-validation.json` records the fresh current-source cohort. Captured
-production includes Torch World wrapper/shared geometry and Smoke/Flame
-construction, ticks, sprite drawing and brightness. The selected harness includes
-DK dispatch, loaded-scene and entered-World particle-draw controls, alongside
-Cactus and inventory geometry, additive NW translation, Piston texture getters
-and HUD cleanup after an actual nullable Stair source failure. Those direct and
-entered-draw proofs retain their own comparisons. The test helper waits for
-actual serial input consumption during Table opening. Four tests pass in 59.92
-seconds, with 1,826 / 1,899 / 2,254 / 2,158 native checks. Their measured CTest
-times are 14.14 / 15.99 / 14.74 / 15.01 seconds
+production includes Fluid World rendering, direct live provider-binding reads
+in World queries/propagation and corrected Vector failure diagnostics, alongside
+Torch and Smoke/Flame rendering. The selected harness includes fluid primitive,
+DK dispatch, loaded Water/Lava scenes and entered-World particle-draw controls,
+alongside Cactus and inventory geometry, additive NW translation, Piston texture
+getters and HUD cleanup after an actual nullable Stair source failure. Those
+direct and entered-draw proofs retain their own comparisons. The test helper
+waits for actual serial input consumption during Table opening. Four tests pass
+in 57.11 seconds, with 1,971 / 1,930 / 2,249 / 2,206 native checks. Their measured
+CTest times are 13.94 / 14.00 / 14.66 / 14.48 seconds
 in clean / Container / Player / World order. These SDK scenes qualify the
 Workbench terminal flow; direct geometry, getter and loaded-scene comparisons
 have their own coverage.
@@ -25,8 +26,8 @@ audit. Each releases only its declared existing hold and retries. All four end
 with both source windows absent. The selected save tree stays byte-for-byte
 equal to its stopped snapshot through every native phase.
 
-The receipt binds all 1,445 runtime source files and 508 selected harness/CMake
-files. Each process recorded 1,955 selected inputs and 413 imported-resource
+The receipt binds all 1,445 runtime source files and 510 selected harness/CMake
+files. Each process recorded 1,957 selected inputs and 413 imported-resource
 files unchanged. Native executable and DLL hashes describe the captured
 snapshot; the public audit does not require those binaries or assets. Toolchain
 and Desktop state were outside that continuity check.
@@ -86,11 +87,15 @@ or input timing.
 
 A preceding Torch World cohort passed all four profiles in 59.36 seconds before
 the final entered-World draw fixture assertions. Its complete captures and log
-remain separate private evidence. The current 59.92-second receipt binds the
+remain separate private evidence. The retained 59.92-second receipt binds the
 later rebuilt executable and final frozen source/harness closure. It qualifies
 the Workbench terminal flow; it adds no direct geometry, particle, entered-draw,
 pixel or gameplay claim to that flow. The exact prior 61.47-second public packet
-and its Cactus cohort log/manifest remain backed up separately.
+and its Cactus cohort log/manifest remain backed up separately. The exact
+59.92-second public packet and its actual Torch cohort log/manifest also remain
+backed up separately. The current 57.11-second receipt qualifies the fresh
+Workbench terminal flow without extending direct geometry, pixels or gameplay
+coverage.
 
 Run the Java-free public audit and corruption controls with:
 

@@ -1,5 +1,15 @@
 # Build and tests
 
+Fluid World rendering now has 104 original CPU calls and 416 exact native
+input/cell/geometry/pool rows. All nine original VMs complete, with matching
+stdout within each cohort. The packet retains 9,504 appended words and
+12,209 cache queries. Its 31 corruption controls, real section compilation and
+Windows saved Water/Lava scenes pass. See the
+[fluid evidence and limits](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/fluid-world.md).
+Original whole-frame pixels, unrestricted play and FPS remain unqualified.
+
+## Torch checkpoint
+
 `client.torch_world` passes all 132 input/observation rows from 66 original
 calls, including 14,640 appended words and separate own-backing/FP/cleanup
 receipts. Twelve complete original target streams agree. Two retained JDI

@@ -374,8 +374,8 @@
       "sha256": "b1b7604e84a809e2cdd5406b357808474a2ec880f177dd13e2ed795d91388cff"
     },
     "src/entity/vector/vector.c": {
-      "bytes": 28025,
-      "sha256": "57fc19ee7f85f7655c6ca9a480df726f44fbfbf6954183e9731607ebc70a4804"
+      "bytes": 28104,
+      "sha256": "febf05349d5feca09eedda02d7c0f5dd4c0f9286215216141108beaf3638e041"
     },
     "src/entity/vector/vector_internal.h": {
       "bytes": 1558,
@@ -766,6 +766,26 @@
             "include/mc/entity/classes/classes.h": {
               "bytes": 6952,
               "sha256": "5795bc59a17266baff952db01970b72ca96d770c4bb77089c5b4b2ca3fe7c9af"
+            }
+          },
+          "added": [],
+          "current_count": 123
+        }
+      }
+    },
+    {
+      "from_commit": "56aca7961f1fa5aa50641d01852e84841925541a",
+      "role": "Current fluid rendering, Vector failure-site, measured provider-binding and frame-observation input admission. Earlier observations and compiled products retain their original qualification scope.",
+      "previous_metadata": {
+        "bytes": 30130,
+        "sha256": "c3c6cd9df92ea769a244a25f8b87917ce7aaa1908b02713b5594d75e16025e7e"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "src/entity/vector/vector.c": {
+              "bytes": 28025,
+              "sha256": "57fc19ee7f85f7655c6ca9a480df726f44fbfbf6954183e9731607ebc70a4804"
             }
           },
           "added": [],

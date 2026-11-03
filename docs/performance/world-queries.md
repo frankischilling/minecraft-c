@@ -7,6 +7,13 @@ receipt. Public detailed getters retain their success-reset behavior.
 Light propagation materializes its canonical success receipt once per operation,
 preserving the distinct earlier unreached state.
 
+Scalar queries and light propagation read the same four live provider bindings
+directly. They avoid constructing the full provider view on every GET, while
+retaining admission, lookup order, leases and failure diagnostics. An
+[84-sample Windows CPU comparison](../../tests/benchmarks/light_provider_views_windows.json)
+reduces median fixed-work Light-drain time from 3.1315 to 2.92625 ms (6.55%).
+This measures the specified drain, not scene FPS.
+
 The source-owned cache also handles synchronous nested reads during a mutation
 scope. Its index can be stale there, so the getter scans the current bounded
 map in ordinary lookup order. It preserves generic-call accounting and checks

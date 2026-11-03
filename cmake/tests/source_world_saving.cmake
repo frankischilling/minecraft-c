@@ -27,6 +27,12 @@ if(BUILD_TESTING AND TARGET mc_simulation)
 endif()
 
 option(MC_BUILD_BENCHMARKS "Build optional fixed-work CPU benchmarks" OFF)
+if(BUILD_TESTING AND Python3_Interpreter_FOUND)
+    add_test(NAME tools.client_frame_observations COMMAND Python3::Interpreter -B -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/benchmarks" -p test_client_frames_run.py)
+    set_tests_properties(tools.client_frame_observations PROPERTIES
+        LABELS "public;unit;tools;client;performance" TIMEOUT 30)
+endif()
 if(MC_BUILD_BENCHMARKS AND BUILD_TESTING AND TARGET mc_simulation)
     add_executable(mc_benchmark_world_queries tests/benchmarks/world_queries.c)
     target_include_directories(mc_benchmark_world_queries PRIVATE src)

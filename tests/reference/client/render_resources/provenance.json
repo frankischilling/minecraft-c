@@ -2074,8 +2074,8 @@
       "sha256": "a2de1a7a93eeb45db5eef8ddfc9b1ceef1d75b321d1603e5dec205159fe749f5"
     },
     "cmake/tests/client_world_selection_loop.cmake": {
-      "bytes": 7780,
-      "sha256": "763f59eb7ab9197bb9819438c6ce8ea7b45a7a554aa25a8f23bd89dab64870bf"
+      "bytes": 9089,
+      "sha256": "944880d180f119960c7f46354522c7ec1b2c158d7ac10d98ceba0babbf86e185"
     },
     "cmake/tests/platform_date_format.cmake": {
       "bytes": 2244,
@@ -2154,8 +2154,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 355083,
-      "sha256": "f74df3b1d480a12d7bda58166b10bc31eedbdb63972c3150b6c633260c692425"
+      "bytes": 373514,
+      "sha256": "f55641cf5d83b0c2da865e41f5721e6944a7fe39b003c0f992eff9ad13bf7a54"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -2170,8 +2170,8 @@
       "sha256": "5337d15e53e776798d0a4f394e74432da7a578951b72f5c761439accb811786b"
     },
     "tests/tools/client/test_world_selection_loop.py": {
-      "bytes": 77512,
-      "sha256": "7da5685aac55ab75d4abf08b2a290953044d45e78d2807cb065ec58f663a9d82"
+      "bytes": 88328,
+      "sha256": "dab200ec517d1fe710682c29ed73d6ce030af60778d998955ab5f306233fa4d0"
     },
     "tests/tools/platform/test_date_format_reference.py": {
       "bytes": 4341,
@@ -3590,8 +3590,8 @@
       "sha256": "7507768f1d3e375a15a3c1f304e743b0dd9c140c3a1714907384abe019cf9d48"
     },
     "tests/client/world/test_chunk_compile.c": {
-      "bytes": 33458,
-      "sha256": "c2e72a884f8314ed8d678af18b3d9a1d8d1799b619031e635275a4742d657854"
+      "bytes": 50179,
+      "sha256": "e27d6bc7c4ef166f739481325a9eee27767dae40ae01a9927b3a7bbbbea43a2b"
     },
     "tests/client/world/test_render_global_update.c": {
       "bytes": 56408,
@@ -3650,8 +3650,8 @@
       "sha256": "0014ab876e49870eff33418e8fe716038009fbcd461ed95cde1b7a4bc4f2066a"
     },
     "tests/tools/client/test_chunk_compile.py": {
-      "bytes": 3233,
-      "sha256": "bc3cce6ecac8b02a34221b394f0b3495bd4e69c0237255f70ebfc4eda13c13d4"
+      "bytes": 8841,
+      "sha256": "f93f821a34b270fb3298d742fe748e1705435fb3a4d200734e13f716335ee01e"
     },
     "src/world/storage/chunk_build_internal.h": {
       "bytes": 3813,
@@ -5478,8 +5478,8 @@
       "sha256": "7e343b192ec286e343fd9496c793b38cb3cdeb0d470ee920772be8fdc222a288"
     },
     "cmake/tests/source_world_saving.cmake": {
-      "bytes": 2373,
-      "sha256": "ea22a51f286e274dda40d38caee159195e5d3ebb644e786d7f756ae748e57a2a"
+      "bytes": 2760,
+      "sha256": "9ed21ab0db212882012e9c01d79d9d11c92bc652d200f08b412bb5607775e9fc"
     },
     "src/world/runtime/tile_entities/source_save.inc": {
       "bytes": 11082,
@@ -6174,8 +6174,8 @@
       "sha256": "be7ebf760cd5a4e31c2619ca3e5774b4ef125692ea73631f84ed17c38b840e2e"
     },
     "tests/client/render/test_fluid.c": {
-      "bytes": 8178,
-      "sha256": "50e27dc6dc6f21b6ba5b5511cfe3dae55b7af42d7f07deff5e37c6b9568a677f"
+      "bytes": 14231,
+      "sha256": "d211a53f9163db90d54dfb2f391f60ad2bff528123e67ba532cc58d2e3fb21ea"
     },
     "tests/entity/falling_sand/test_tick.c": {
       "bytes": 18656,
@@ -7010,8 +7010,8 @@
       "sha256": "ad47b26a94754938ecbcae256ac84c432cfd6be915907267f341b626aba6a665"
     },
     "scripts/benchmarks/client_frames_run.py": {
-      "bytes": 13309,
-      "sha256": "a85421fe1bc7ae01e45b8ffbbae86764d214a3a59e3426ee139fdc99e4563b33"
+      "bytes": 15352,
+      "sha256": "dc96bccd27bb58e0e480d7e0877672d687c108d0268a722ba93cbf3432050903"
     },
     "src/client/runtime/bootstrap_terminal_internal.h": {
       "bytes": 2975,
@@ -7038,8 +7038,8 @@
       "sha256": "8d9020defb7fbd4007c802d4638c1d83032f0563eb5ff4c4ee06dc01f7fe0e06"
     },
     "tests/benchmarks/client_frames.c": {
-      "bytes": 18474,
-      "sha256": "d2c9e6b851179ac4dafd794d7609172ec16896cbc9a4751539ce40fbae194fd2"
+      "bytes": 18817,
+      "sha256": "ab52a2dc7264ee4c15d3a7acbcab3a841fd22040b8e7146f94852d33997b8bbe"
     },
     "tests/benchmarks/world_queries.c": {
       "bytes": 20229,
@@ -7067,11 +7067,11 @@
     },
     "tests/reference/client/workbench_open_shutdown/packet.py": {
       "bytes": 23677,
-      "sha256": "75c5aa3fda355e49c15c4add7209cbf506255a7e6e0f018d30cd9e80b5cbacca"
+      "sha256": "1fae4dedc48ada6ce2d008e934b3d1d0dd9c076f30abe5a796956c41e92d81ca"
     },
     "tests/reference/client/workbench_open_shutdown/test_packet.py": {
       "bytes": 9801,
-      "sha256": "9db3688239c816969fc630cb26b7dac80a9aae4d0da574f046dfb24883ef4f1d"
+      "sha256": "5235c05caa6eb78efae70681dd6965438a6aec95dfa0c1a3b4faf08541616dee"
     },
     "tests/reference/item/mining/capture_reference.py": {
       "bytes": 5373,
@@ -7460,6 +7460,34 @@
     "tests/reference/entity/torch_particles/test_packet.py": {
       "bytes": 6919,
       "sha256": "224917033172106435ed0bdffc513501a66276831422cef557c25e44422c6019"
+    },
+    "cmake/client_fluid_world.cmake": {
+      "bytes": 1460,
+      "sha256": "e65a1166e6b75291df40fa22f097230446a43034838be44afb1b22f7653c9dbd"
+    },
+    "tests/client/render/test_fluid_world.c": {
+      "bytes": 28635,
+      "sha256": "cc9740037d563e522e731d7f0f2d08f4305d0a8afa94f1a83e00c7e87211e7a2"
+    },
+    "tests/reference/client/fluid_world/capture_reference.py": {
+      "bytes": 11933,
+      "sha256": "e8c1e7a244d4812a87d9dd4d5b6236dbb5402639be855d7338d416d683e02eeb"
+    },
+    "tests/reference/client/fluid_world/packet.py": {
+      "bytes": 31252,
+      "sha256": "7ca4c09c3d5c2c142c48eb90ea5f23a92c17bb78dcc33920b6964ab9e8501e7e"
+    },
+    "tests/reference/client/fluid_world/run_native.py": {
+      "bytes": 7548,
+      "sha256": "8bf181376ed265f9ea1da854dedb3ad7e869e620fb0dc1093840bffd14cda78f"
+    },
+    "tests/reference/client/fluid_world/test_packet.py": {
+      "bytes": 8873,
+      "sha256": "89f07324e2ec1f0222000df3e3c7680a8d541571fe3db001bd2f0ea3bd0ea069"
+    },
+    "tests/tools/benchmarks/test_client_frames_run.py": {
+      "bytes": 8534,
+      "sha256": "7aa3e0fa0f124a92a77fb26d9cf8902ff028e4b9064e8669df5dcc350dac421e"
     }
   },
   "source_suppliers": {
@@ -10765,6 +10793,74 @@
             "tests/world/runtime/placement/test_placement.c"
           ],
           "current_count": 1506
+        }
+      }
+    },
+    {
+      "from_commit": "56aca7961f1fa5aa50641d01852e84841925541a",
+      "role": "Current fluid rendering, Vector failure-site, measured provider-binding and frame-observation input admission. Earlier observations and compiled products retain their original qualification scope.",
+      "previous_metadata": {
+        "bytes": 445165,
+        "sha256": "4209d2f6cada3c979f3057d8c924c579375585dba2acc8370dac6beb0b0cdfa6"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "cmake/tests/client_world_selection_loop.cmake": {
+              "bytes": 7780,
+              "sha256": "763f59eb7ab9197bb9819438c6ce8ea7b45a7a554aa25a8f23bd89dab64870bf"
+            },
+            "tests/client/startup/test_world_selection_loop.c": {
+              "bytes": 355083,
+              "sha256": "f74df3b1d480a12d7bda58166b10bc31eedbdb63972c3150b6c633260c692425"
+            },
+            "tests/tools/client/test_world_selection_loop.py": {
+              "bytes": 77512,
+              "sha256": "7da5685aac55ab75d4abf08b2a290953044d45e78d2807cb065ec58f663a9d82"
+            },
+            "tests/client/world/test_chunk_compile.c": {
+              "bytes": 33458,
+              "sha256": "c2e72a884f8314ed8d678af18b3d9a1d8d1799b619031e635275a4742d657854"
+            },
+            "tests/tools/client/test_chunk_compile.py": {
+              "bytes": 3233,
+              "sha256": "bc3cce6ecac8b02a34221b394f0b3495bd4e69c0237255f70ebfc4eda13c13d4"
+            },
+            "cmake/tests/source_world_saving.cmake": {
+              "bytes": 2373,
+              "sha256": "ea22a51f286e274dda40d38caee159195e5d3ebb644e786d7f756ae748e57a2a"
+            },
+            "tests/client/render/test_fluid.c": {
+              "bytes": 8178,
+              "sha256": "50e27dc6dc6f21b6ba5b5511cfe3dae55b7af42d7f07deff5e37c6b9568a677f"
+            },
+            "scripts/benchmarks/client_frames_run.py": {
+              "bytes": 13309,
+              "sha256": "a85421fe1bc7ae01e45b8ffbbae86764d214a3a59e3426ee139fdc99e4563b33"
+            },
+            "tests/benchmarks/client_frames.c": {
+              "bytes": 18474,
+              "sha256": "d2c9e6b851179ac4dafd794d7609172ec16896cbc9a4751539ce40fbae194fd2"
+            },
+            "tests/reference/client/workbench_open_shutdown/packet.py": {
+              "bytes": 23677,
+              "sha256": "75c5aa3fda355e49c15c4add7209cbf506255a7e6e0f018d30cd9e80b5cbacca"
+            },
+            "tests/reference/client/workbench_open_shutdown/test_packet.py": {
+              "bytes": 9801,
+              "sha256": "9db3688239c816969fc630cb26b7dac80a9aae4d0da574f046dfb24883ef4f1d"
+            }
+          },
+          "added": [
+            "cmake/client_fluid_world.cmake",
+            "tests/client/render/test_fluid_world.c",
+            "tests/reference/client/fluid_world/capture_reference.py",
+            "tests/reference/client/fluid_world/packet.py",
+            "tests/reference/client/fluid_world/run_native.py",
+            "tests/reference/client/fluid_world/test_packet.py",
+            "tests/tools/benchmarks/test_client_frames_run.py"
+          ],
+          "current_count": 1872
         }
       }
     }

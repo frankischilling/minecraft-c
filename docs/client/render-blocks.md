@@ -113,11 +113,12 @@ sides use their original brightness, color, UV and vertex order. The shared
 Block's bottom and top bounds reset only at source stores1233/1239 after those
 calls return. Failed prefixes retain their vector, World and NW diagnostics.
 
-The native fluid suite passes 306 checks on Windows and Linux ASan/UBSan. It
-covers flowing/still Water and Lava, exact top position/UV words, vector-pool
-progress, hidden-face early return, unchanged hidden bounds and NULL failure
-order. This is authored native evidence; executed-original fluid comparison
-and fluid pixel equality remain unqualified.
+The [fluid World comparison](fluid-world.md) matches 104 executed-original
+calls across all registered fluid metadata, isolated faces, weighted heights,
+flow, hidden bounds and null prefixes. It compares 416 native rows and 9,504
+appended words, with separate backing and Vector-allocation controls. Real
+section compilation and loaded Water/Lava scenes check mesh reuse and dirty
+recompile. Original whole-frame pixels and unrestricted play remain unqualified.
 
 ## Ownership and failed prefixes
 

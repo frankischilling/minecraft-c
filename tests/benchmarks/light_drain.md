@@ -47,3 +47,18 @@ controls also passed 1,479 checks per variant, and the updated query controls
 passed 6,301 checks. The separate discarded prototype is excluded from this
 record. Read its limits before using the finite CPU result; a scene FPS effect
 requires a fully qualified frame comparison.
+
+The [provider-view comparison](light_provider_views_windows.json) uses the
+current Windows MSVC Release dependency closure after the Vector failure-PC
+correction. Each getter reads the same four live provider bindings directly,
+without constructing the full provider field view. Admission, presence, GET,
+lease, query order and failure diagnostics remain unchanged.
+
+The initial 42 samples and separate 84-sample confirmation alternate process
+order and retain every sample. In the confirmation, the median falls from
+3.1315 to 2.92625 ms (6.55%); p95 falls from 3.3167 to 3.0693 ms. Both variants
+share one compiled benchmark object and every other simulation archive member.
+The record binds executable, object, source and dependency hashes to the raw
+samples and matching work/failure/ownership receipts. Both variants also pass
+6,301 query checks and 1,479 propagation checks, with byte-identical propagation
+snapshots. These are finite CPU measurements, not scene FPS results.

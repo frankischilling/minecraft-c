@@ -92,13 +92,30 @@ if(BUILD_TESTING AND TARGET mc_client_runtime)
                 --mode load-torch)
             set_tests_properties(client.world_selection_torch PROPERTIES
                 LABELS "public;integration;client;input;graphics;ownership" TIMEOUT 300)
+            add_test(NAME client.world_selection_water COMMAND Python3::Interpreter -B
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_world_selection_loop.py"
+                --executable "$<TARGET_FILE:mc_test_world_selection_loop>"
+                --assets "${MC_APPLICATION_STARTUP_IMPORTED_RESOURCES}"
+                --artifacts "${CMAKE_CURRENT_BINARY_DIR}/world-selection-water-captures"
+                --mode load-water)
+            set_tests_properties(client.world_selection_water PROPERTIES
+                LABELS "public;integration;client;input;graphics;ownership;fluid" TIMEOUT 300)
+            add_test(NAME client.world_selection_lava COMMAND Python3::Interpreter -B
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_world_selection_loop.py"
+                --executable "$<TARGET_FILE:mc_test_world_selection_loop>"
+                --assets "${MC_APPLICATION_STARTUP_IMPORTED_RESOURCES}"
+                --artifacts "${CMAKE_CURRENT_BINARY_DIR}/world-selection-lava-captures"
+                --mode load-lava)
+            set_tests_properties(client.world_selection_lava PROPERTIES
+                LABELS "public;integration;client;input;graphics;ownership;fluid" TIMEOUT 300)
             # These scenarios require ownership of the same foreground desktop.
             # Keep CPU tests parallel while preventing competing client windows.
             set_tests_properties(client.world_selection_loop client.world_save_title
                 client.world_reload_cycle client.world_selection_light
                 client.world_selection_animals client.world_selection_creatures
                 client.world_selection_wolf client.world_selection_zombie
-                client.world_selection_cactus client.world_selection_torch PROPERTIES
+                client.world_selection_cactus client.world_selection_torch
+                client.world_selection_water client.world_selection_lava PROPERTIES
                 RESOURCE_LOCK mc_desktop_focus)
         endif()
     endif()

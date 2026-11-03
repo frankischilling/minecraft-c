@@ -11,13 +11,13 @@ int mc_perf_unused_auto_main(int, char **);
 enum { PERF_ROWS = 200000, PERF_FPS_ROWS = 64, PERF_FPS_UNITS = 96 };
 
 typedef struct perf_row {
-    int64_t begin, end, run137, run203, run387;
+    int64_t begin, end, run137, run203, run387, render_clock;
     uint64_t frame, ticks, world_ticks, draws, flags;
     uintptr_t foreground;
     DWORD foreground_pid;
     int32_t timer_ticks, tick_returns, screen;
     unsigned int valid;
-    bool returned, source_focus;
+    bool returned, source_focus, render_clock_stored, render_returned;
 } perf_row;
 
 typedef struct perf_fps {
@@ -247,6 +247,9 @@ static int perf_run(fixture *f) {
         r->run137 = state.clocks.run_137;
         r->run203 = state.clocks.run_203;
         r->run387 = state.clocks.run_387;
+        r->render_clock = state.render_clock;
+        r->render_clock_stored = state.render_clock_stored;
+        r->render_returned = state.render_returned;
         r->timer_ticks = state.clocks.timer_ticks;
         r->tick_returns = state.clocks.tick_returns;
         r->valid = (state.clocks.run_137_read ? 1u : 0u) | (state.clocks.run_203_read ? 2u : 0u) |
@@ -287,8 +290,8 @@ static int perf_run(fixture *f) {
             (rows[i].flags & (SDL_WINDOW_MINIMIZED | SDL_WINDOW_HIDDEN)) || !rows[i].source_focus ||
             rows[i].screen != -1)
             ++focus_invalid;
-    printf("PERF_RESULT qpc-hz=%" PRId64 " start=%" PRId64 " end=%" PRId64 " warmup-frames=%" PRIu64
-           " frames=%zu world-ticks=%" PRIu64
+    printf("PERF_RESULT row-version=2 qpc-hz=%" PRId64 " start=%" PRId64 " end=%" PRId64
+           " warmup-frames=%" PRIu64 " frames=%zu world-ticks=%" PRIu64
            " healthy=%d capacity=%d focus-invalid=%zu process-kernel-100ns=%" PRIu64
            " process-user-100ns=%" PRIu64 "\n",
            hz, start, end, warm_frames, count, f->state.world_tick_returns - ticks_before,
@@ -306,10 +309,12 @@ static int perf_run(fixture *f) {
                    r->frame, r->foreground, (unsigned long)r->foreground_pid,
                    (unsigned long)GetCurrentProcessId());
         printf("PERF_ROW %" PRIu64 ",%" PRId64 ",%" PRId64 ",%" PRId64 ",%" PRId64 ",%" PRId64
-               ",%d,%d,%u,%" PRIu64 ",%d,%d,%d,%" PRIu64 ",%" PRIu64 ",%" PRIu64 "\n",
+               ",%d,%d,%u,%" PRIu64 ",%d,%d,%d,%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%" PRId64
+               ",%d,%d\n",
                r->frame, r->begin, r->end, r->run137, r->run203, r->run387, r->timer_ticks,
                r->tick_returns, r->valid, r->flags, (int)r->source_focus, r->screen,
-               (int)r->returned, r->ticks, r->world_ticks, r->draws);
+               (int)r->returned, r->ticks, r->world_ticks, r->draws, r->render_clock,
+               (int)r->render_clock_stored, (int)r->render_returned);
     }
     for (size_t i = 0; i < fps_count; ++i) {
         printf("PERF_SOURCE_FPS at=%" PRId64 " frame=%" PRIu64 " truncated=%d words=", fps[i].at,

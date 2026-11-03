@@ -4,7 +4,7 @@
 #include "../../platform/text/stdout.h"
 #include "../chunk/object_state_internal.h"
 #include "../storage/objects_internal.h"
-#include "chunk_provider_internal.h"
+#include "chunk_provider_state_internal.h"
 #include "construction_internal.h"
 #include "lighting_internal.h"
 #include "mc/core/java/java.h"
@@ -154,15 +154,14 @@ static bool acquire(mc_world_runtime *world, int32_t chunk_x, int32_t chunk_z, l
     if (world->fields.v == NULL)
         return failed(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World propagation getter provider");
-    mc_chunk_provider_fields provider;
-    mc_world_storage_error cause = {0};
-    if (mc_chunk_provider_internal_fields(world->fields.v, &provider, &cause) !=
-        MC_WORLD_STORAGE_OK)
-        return storage_failed(frame, cause);
-    if (provider.world != world || provider.cache != world->acquisition.cache ||
-        provider.pending != world->acquisition.pending || provider.store != world->options.store)
+    const mc_chunk_provider *const provider = world->fields.v;
+    /* Inspect only the four live bindings needed by this getter. The full
+     * provider view has no callbacks and adds unrelated descriptor copies. */
+    if (provider->world != world || &provider->cache != world->acquisition.cache ||
+        &provider->pending != world->acquisition.pending || provider->store != world->options.store)
         return failed(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World propagation replacement provider binding");
+    mc_world_storage_error cause = {0};
     mc_world_runtime_acquisition_error detail;
     mc_chunk_acquire_status status =
         mc_world_runtime_get_failure(world, chunk_x, chunk_z, &out->state, &detail);

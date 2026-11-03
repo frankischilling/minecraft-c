@@ -388,7 +388,8 @@ mc_entity_status mc_entity_vector_add(mc_entity_classes *classes, const mc_entit
     if (status != MC_ENTITY_OK) {
         error->factory = (mc_entity_error){
             .status = error->status, .operation = error->operation, .bytecode = error->bytecode};
-        result(error, status, "vector add", 27);
+        /* BT/BA.c(DDD) invokes the pooled factory at19, then returns at22. */
+        result(error, status, "vector add", 19);
     }
     return status;
 }

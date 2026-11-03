@@ -26,6 +26,12 @@ World-draw component using the actual Timer partial and Settings/PX deadline.
 This separately labelled draw leaves Timer/loop observations unchanged; an
 ordinary returned World/HUD loop frame follows it.
 
+The optional load-water/load-lava profiles declare still fluid above Sand and a
+saved Player standing on a Stone platform. They compare fluid positions/UVs to
+executed-original rows at the same source coordinates/NW translation; raw colors
+are retained with an explicit match count because loaded lighting evolves.
+Real Timer/ticks, fluid callbacks, light notification and cleanup remain active.
+
 The repeat profile declares an existing player whose saved openInventory
 achievement is already present. Its valid pre-bootstrap statistics file uses
 real imported GUIDs and the source checksum; the actual client loads it.
@@ -472,7 +478,7 @@ def tag(kind, key, value):
 
 
 def metadata(display, played, version, partial=False, player_score=None, cactus_player=False,
-             torch_player=False):
+             torch_player=False, fluid_player=False):
     data = tag(8, "LevelName", string(display))
     data += tag(4, "LastPlayed", struct.pack(">q", played))
     data += tag(4, "SizeOnDisk", struct.pack(">q", 3145728))
@@ -502,14 +508,16 @@ def metadata(display, played, version, partial=False, player_score=None, cactus_
         player += tag(3, "Score", struct.pack(">i", player_score))
         player += tag(9, "Inventory", b"\x0a\x00\x00\x00\x00")
         data += tag(10, "Player", player + b"\x00")
-    if cactus_player or torch_player:
-        if partial or player_score is not None or cactus_player and torch_player:
+    if cactus_player or torch_player or fluid_player:
+        if (partial or player_score is not None or
+                sum(bool(flag) for flag in (cactus_player, torch_player, fluid_player)) != 1):
             raise RuntimeError("Distinct authored special Block Player fixture arm")
-        saved_y = 64.0 + struct.unpack(">f", struct.pack(">f", 1.62))[0]
+        saved_y = (65.0 if fluid_player else 64.0) + struct.unpack(">f", struct.pack(">f", 1.62))[0]
         player = tag(3, "Dimension", struct.pack(">i", 0))
         player += tag(9, "Pos", b"\x06" + struct.pack(">i3d", 3, 3.5, saved_y, .5))
         player += tag(9, "Motion", b"\x06" + struct.pack(">i3d", 3, 0., 0., 0.))
-        player += tag(9, "Rotation", b"\x05" + struct.pack(">i2f", 2, 0., 2. if torch_player else 0.))
+        pitch = 26. if fluid_player else 2. if torch_player else 0.
+        player += tag(9, "Rotation", b"\x05" + struct.pack(">i2f", 2, 0., pitch))
         player += tag(1, "OnGround", b"\x01")
         player += tag(2, "Health", struct.pack(">h", 20))
         player += tag(3, "Score", struct.pack(">i", 0))
@@ -641,7 +649,116 @@ def torch_receipts(stdout, pose_input):
         raise RuntimeError("Loaded Torch checked native ownership retirement")
 
 
-def chunk_record(chunk_x, chunk_z, marker=57, cactus=False, torch=False):
+def fluid_scene_input(level_path, region_path, fluid_id):
+    """Decode saved fluid/standing cells and the source-loaded Player pose."""
+    if fluid_id not in (9, 11):
+        raise RuntimeError("Declared still Water/Lava registration")
+    parser_path = Path(__file__).resolve().parents[1] / "world/test_source_saving.py"
+    spec = importlib.util.spec_from_file_location("fluid_input_nbt", parser_path)
+    decoder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(decoder)
+    player = decoder.inflate(decoder.read(level_path), 31)['Data'][1]['Player'][1]
+    position = [struct.pack('>d', value).hex() for value in
+                (3.5, 65.0 + struct.unpack('>f', struct.pack('>f', 1.62))[0], .5)]
+    rotation = [struct.pack('>f', value).hex() for value in (0., 26.)]
+    if (player['Dimension'] != [3, 0] or
+            player['Pos'] != [9, [6, [int(value, 16) for value in position]]] or
+            player['Rotation'] != [9, [5, [int(value, 16) for value in rotation]]] or
+            player['Motion'] != [9, [6, [0, 0, 0]]] or player['OnGround'] != [1, 1] or
+            player['Health'] != [2, 20] or player['Inventory'] != [9, [10, []]]):
+        raise RuntimeError("Independently decoded saved fluid Player camera input")
+    raw = decoder.read(region_path)
+    location = struct.unpack_from('>I', raw, 0)[0]
+    sector, count = location >> 8, location & 255
+    at = sector * 4096
+    if sector < 2 or count < 1 or (sector + count) * 4096 > len(raw):
+        raise RuntimeError("Actual authored fluid Chunk allocation")
+    length = struct.unpack_from('>I', raw, at)[0]
+    if not 1 < length <= count * 4096 - 4 or raw[at + 4] != 2:
+        raise RuntimeError("Actual authored fluid Chunk compression extent")
+    chunk = decoder.inflate(raw[at + 5:at + 4 + length], 15)['Level'][1]
+    if (chunk['xPos'] != [3, 0] or chunk['zPos'] != [3, 0] or
+            chunk['TerrainPopulated'] != [1, 1] or chunk['Blocks'][0] != 7 or
+            len(chunk['Blocks'][1]) != 32768 or chunk['Data'][0] != 7 or
+            len(chunk['Data'][1]) != 16384):
+        raise RuntimeError("Actual source fluid saved Chunk fields")
+    cells = [(3, 64, 0, 1, 0), (3, 64, 3, 12, 0), (3, 65, 3, fluid_id, 0)]
+    for x, y, z, block, meta in cells:
+        index = (x << 11) | (z << 7) | y
+        if (chunk['Blocks'][1][index] != block or
+                (chunk['Data'][1][index // 2] >> ((index & 1) * 4)) & 15 != meta):
+            raise RuntimeError("Independent saved fluid/standing cells and metadata")
+    base, platform = (3 << 11) | (3 << 7), (3 << 11)
+    if (chunk['SkyLight'][1][(base + 64) // 2] != (0xc0 if fluid_id == 9 else 0) or
+            chunk['HeightMap'][1][3 * 16 + 3] != 66 or
+            chunk['SkyLight'][1][(platform + 64) // 2] != 0xf0 or
+            chunk['HeightMap'][1][3] != 65):
+        raise RuntimeError("Declared source-opacity-based fluid and platform saved light inputs")
+    return {'position_bits': position, 'rotation_bits': rotation,
+            'feet_y_bits': struct.pack('>d', 65.).hex(),
+            'offset_bits': struct.pack('>f', 1.62).hex(), 'cells': cells,
+            'fluid': [3, 65, 3, fluid_id, 0], 'pick': [3, 64, 3, 12]}
+
+
+def fluid_receipts(stdout, mode, pose_input, reference):
+    rows = stdout.splitlines()
+    wanted_pose = (f"WORLD_FLUID_POSE mode={mode} input=saved-player source-loaded=1 camera=player "
+                   "position=" + ','.join(pose_input['position_bits']) + " rotation=" +
+                   ','.join(pose_input['rotation_bits']) + " feet=" + pose_input['feet_y_bits'] +
+                   " offset=" + pose_input['offset_bits'] + " hit=3,64,3 block=12")
+    if [line for line in rows if line.startswith("WORLD_FLUID_POSE ")] != [wanted_pose]:
+        raise RuntimeError("Source-read saved fluid Player/camera and Sand pick through liquid")
+    summary = [line for line in rows if line.startswith("WORLD_FLUID ")]
+    receipt = re.fullmatch(
+        rf"WORLD_FLUID mode={mode} input=pre-bootstrap-region block={reference['id']} "
+        rf"metadata={reference['metadata']} pass={reference['pass']} fluid-vertices={reference['vertices']} "
+        r"exact-original-position-uv=1 color-matches=(?P<colors>[0-9]+) "
+        rf"source-colors={reference['vertices']} frames=(?P<frames>[0-9]+) "
+        r"reuse-frames=(?P<reuse>[0-9]+) recompile-frames=(?P<recompile>[0-9]+) "
+        r"list=(?P<list>[0-9]+) source-time=(?P<time>-?[0-9]+) "
+        r"sky-subtraction=(?P<sky>-?[0-9]+) same-world-and-registry=1 returned-world-hud=1 "
+        r"sand-pick-through-fluid=1 reused-definition=1 world-light-notification=1 "
+        r"dirty-recompiled=1 source-bounds-preserved=1",
+        summary[0]) if len(summary) == 1 else None
+    if (receipt is None or not 3 <= int(receipt['frames']) <= 48 or
+            not 1 <= int(receipt['reuse']) <= 16 or not 1 <= int(receipt['recompile']) <= 16 or
+            int(receipt['list']) <= 0 or not -(1 << 63) <= int(receipt['time']) < (1 << 63) or
+            not -(1 << 31) <= int(receipt['sky']) < (1 << 31)):
+        raise RuntimeError("Returned loaded fluid section/reuse/WorldAccess/cleanup receipts")
+    words = [line for line in rows if line.startswith("WORLD_FLUID_WORD ")]
+    if len(words) != reference['vertices']:
+        raise RuntimeError("Every actual loaded fluid vertex must be retained")
+    color_matches = 0
+    for vertex, line in enumerate(words):
+        actual = re.fullmatch(rf"WORLD_FLUID_WORD mode={mode} vertex={vertex} "
+                              r"words=([0-9a-f]{8}(?:,[0-9a-f]{8}){7})", line)
+        if actual is None:
+            raise RuntimeError("Typed loaded fluid packed-word receipt")
+        values = actual[1].split(',')
+        original = reference['words'][vertex * 8:(vertex + 1) * 8]
+        if values[:5] != original[:5]:
+            raise RuntimeError("Exact unchanged-original fluid position/UV words")
+        color_matches += values[5] == original[5]
+    if color_matches != int(receipt['colors']):
+        raise RuntimeError("Independently counted packed source-color matches")
+    # Loaded light evolves normally. Raw colors remain retained even when its
+    # brightness operands differ from the direct original profile's inputs.
+    steps = [line for line in rows if line.startswith("WORLD_FLUID_STEP ")]
+    if len(steps) != int(receipt['reuse']):
+        raise RuntimeError("Actual bounded fluid definition-reuse inventory")
+    for attempt, line in enumerate(steps, 1):
+        step = re.fullmatch(rf"WORLD_FLUID_STEP mode={mode} stage=reuse attempt={attempt} "
+                            r"same-list=1 same-definition=([01]) same-bytes=([01])", line)
+        final = attempt == len(steps)
+        if step is None or (step[1] == '1') != final or final and step[2] != '1':
+            raise RuntimeError("Every validated fluid section before immutable definition reuse")
+    cleanup = [line for line in rows if line.startswith(f"WORLD_SELECTION mode={mode} cleanup=")]
+    if len(cleanup) != 1 or re.fullmatch(
+            rf"WORLD_SELECTION mode={mode} cleanup=1 checks=[1-9][0-9]*", cleanup[0]) is None:
+        raise RuntimeError("Loaded fluid checked ownership terminal retirement")
+
+
+def chunk_record(chunk_x, chunk_z, marker=57, cactus=False, torch=False, fluid_id=0):
     blocks = bytearray(32768)
     data = bytearray(16384)
     skylight = bytearray(16384)
@@ -673,6 +790,20 @@ def chunk_record(chunk_x, chunk_z, marker=57, cactus=False, torch=False):
             data[(base + 64) // 2] = 0x50
             skylight[(base + 64) // 2] = 0xf0
             heights[3 * 16 + 3] = 65
+        if fluid_id:
+            if fluid_id not in (9, 11) or cactus or torch:
+                raise RuntimeError("Independent saved Water/Lava input arm")
+            # Ordinary saved standing platform and Sand-supported fluid.
+            # Actual UU.q opacity is3/255, independently pinned before this
+            # fixture; later source lighting/flow remains ordinary execution.
+            platform = (3 << 11) | (0 << 7)
+            base = (3 << 11) | (3 << 7)
+            blocks[platform + 64] = 1
+            skylight[(platform + 64) // 2] = 0xf0
+            heights[3] = 65
+            blocks[base + 64], blocks[base + 65] = 12, fluid_id
+            skylight[(base + 64) // 2] = 0xc0 if fluid_id == 9 else 0
+            heights[3 * 16 + 3] = 66
     level = tag(3, "xPos", struct.pack(">i", chunk_x))
     level += tag(3, "zPos", struct.pack(">i", chunk_z))
     level += tag(4, "LastUpdate", struct.pack(">q", 0))
@@ -690,7 +821,7 @@ def chunk_record(chunk_x, chunk_z, marker=57, cactus=False, torch=False):
     return record + bytes(sectors * 4096 - len(record)), sectors
 
 
-def saved_regions(directory, generate, marker=57, cactus=False, torch=False):
+def saved_regions(directory, generate, marker=57, cactus=False, torch=False, fluid_id=0):
     # The default UI profile reads all 289 existing Chunks. The optional
     # generation profile retains one saved marker Chunk and generates its
     # surroundings through the same source path.
@@ -698,7 +829,7 @@ def saved_regions(directory, generate, marker=57, cactus=False, torch=False):
                                             for z in range(-8, 9)]
     regions = {}
     for x, z in coordinates:
-        body, sectors = chunk_record(x, z, marker, cactus=cactus, torch=torch)
+        body, sectors = chunk_record(x, z, marker, cactus=cactus, torch=torch, fluid_id=fluid_id)
         region = regions.setdefault((x >> 5, z >> 5), bytearray(8192))
         offset = len(region) // 4096
         index = (x & 31) + (z & 31) * 32
@@ -908,7 +1039,7 @@ def main():
     parser.add_argument("--artifacts", type=Path, required=True)
     parser.add_argument("--mode", action="append",
                         choices=("empty", "populated", "large", "double", "load", "generate",
-                                 "load-terminal", "load-partial", "repeat", "load-light", "load-cactus", "load-torch", "animals", "creatures",
+                                 "load-terminal", "load-partial", "repeat", "load-light", "load-cactus", "load-torch", "load-water", "load-lava", "animals", "creatures",
                                  "creatures-slime", "creatures-creeper", "remaining-mobs",
                                  "remaining-wolf", "remaining-zombie", "remaining-skeleton",
                                  "save-title", "save-title-session", "reload-cycle"))
@@ -933,13 +1064,14 @@ def main():
         remaining = mode in REMAINING_PROFILES
         cactus = mode == "load-cactus"
         torch = mode == "load-torch"
+        fluid_id = 9 if mode == 'load-water' else 11 if mode == 'load-lava' else 0
         reload_cycle = mode == "reload-cycle"
         save_title = mode in ("save-title", "save-title-session") or reload_cycle
         evidence = Path(tempfile.mkdtemp(prefix=mode + "-", dir=artifacts))
         with tempfile.TemporaryDirectory(prefix="mc-rq-loop-") as work:
             appdata = Path(work)
             game = appdata / ".minecraft"
-            if mode == "repeat" or cactus or torch or animal or creature or remaining or save_title:
+            if mode == "repeat" or cactus or torch or fluid_id or animal or creature or remaining or save_title:
                 repeat_statistics(game, assets)
             if save_title:
                 # Declared pre-bootstrap input; source kv.a() parses the real file.
@@ -952,12 +1084,12 @@ def main():
             if mode == "large":
                 worlds = [(f"world{i:02d}", f"Scroll world {i:02d}", 1304000000000, 19132)
                           for i in range(16)]
-            elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or animal or creature or remaining or save_title:
+            elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or fluid_id or animal or creature or remaining or save_title:
                 worlds = [
                     ("older", "Old world", 1303000000000, 19132),
                     ("bravo", "", 1304000000000, 0 if reload_cycle else 19132),
                     ("alpha", "Alpha world", 1304000000000,
-                     19132 if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or animal or creature or remaining or save_title else 0),
+                     19132 if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or fluid_id or animal or creature or remaining or save_title else 0),
                 ]
             else:
                 worlds = []
@@ -970,13 +1102,14 @@ def main():
                                            partial=mode == "load-partial" and folder == "alpha",
                                            player_score=7 if reload_cycle and folder == "alpha" else None,
                                            cactus_player=cactus and folder == "alpha",
-                                           torch_player=torch and folder == "alpha"),
+                                           torch_player=torch and folder == "alpha",
+                                           fluid_player=bool(fluid_id) and folder == "alpha"),
                                   mtime=0))
                 (directory / "preserve-chunk.dat").write_bytes(b"authored untouched chunk")
-            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or animal or creature or remaining or save_title:
+            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or fluid_id or animal or creature or remaining or save_title:
                 regions = saves / "alpha" / "region"
                 regions.mkdir()
-                saved_regions(regions, generate=mode == "generate", cactus=cactus, torch=torch)
+                saved_regions(regions, generate=mode == "generate", cactus=cactus, torch=torch, fluid_id=fluid_id)
             if reload_cycle:
                 regions = saves / "older" / "region"
                 regions.mkdir()
@@ -990,8 +1123,25 @@ def main():
                 pose_input = torch_scene_input(evidence / "before/alpha/level.dat",
                                                evidence / "before/alpha/region/r.0.0.mcr")
                 (evidence / "torch-input.json").write_text(json.dumps(pose_input, indent=2) + "\n", encoding="utf-8")
+            if fluid_id:
+                pose_input = fluid_scene_input(evidence / 'before/alpha/level.dat',
+                                               evidence / 'before/alpha/region/r.0.0.mcr', fluid_id)
+                (evidence / 'fluid-input.json').write_text(json.dumps(pose_input, indent=2) + '\n', encoding='utf-8')
+                spec = importlib.util.spec_from_file_location('fluid_original_projection',
+                                                              Path(__file__).with_name('test_chunk_compile.py'))
+                fluid_projection = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(fluid_projection)
+                fluid_reference = [row for row in fluid_projection.fluid_reference_cases(2)
+                                   if row['id'] == fluid_id]
+                if len(fluid_reference) != 1:
+                    raise RuntimeError('One exact executed-original loaded fluid profile')
+                original_path = evidence / 'fluid-original-inputs-and-words.txt'
+                fluid_projection.write_fluid_reference(original_path, fluid_reference,
+                                                        marker='FLUID_LOADED_V1')
             environment = os.environ.copy()
             environment["APPDATA"] = str(appdata)
+            if fluid_id:
+                environment['MC_WORLD_SELECTION_FLUID_REFERENCE'] = str(original_path)
             if save_title:
                 environment["MC_WORLD_SAVE_TITLE_SESSION"] = str(saves / "alpha/session.lock")
                 environment["MC_WORLD_SAVE_TITLE_SAVES"] = str(saves)
@@ -1118,6 +1268,8 @@ def main():
                     raise RuntimeError("Loaded Cactus native terminal ownership cleanup receipt")
             if torch:
                 torch_receipts(result.stdout, pose_input)
+            if fluid_id:
+                fluid_receipts(result.stdout, mode, pose_input, fluid_reference[0])
             after = snapshot(saves)
             if save_title:
                 decoded = (reload_decode(evidence, result.stdout, process_first) if reload_cycle else
@@ -1129,11 +1281,13 @@ def main():
                         rf"WORLD_SELECTION mode={mode} cleanup=1 checks=[1-9][0-9]*", cleanup[0]) is None:
                     raise RuntimeError("Save/title native terminal ownership cleanup receipt")
                 (evidence / "report.json").write_text(json.dumps(decoded, indent=2) + "\n", encoding="utf-8")
-            elif mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or animal or creature or remaining:
+            elif mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or fluid_id or animal or creature or remaining:
                 if any(after.get(name) != digest for name, digest in before.items()):
                     raise RuntimeError("World loading changed pre-existing fixture bytes")
                 if not (saves / "alpha" / "session.lock").is_file():
                     raise RuntimeError("Actual source SaveHandler did not create its session lock")
+                if fluid_id and set(after) - set(before) != {str(Path("alpha") / "session.lock")}:
+                    raise RuntimeError("Loaded fluid created files beyond its actual session lock")
             elif after != before:
                 raise RuntimeError("World-selection loop modified save files or created a lock")
             data = capture.read_bytes()
@@ -1166,6 +1320,10 @@ def main():
         print("Native loaded Torch: saved Sand/Torch5 and Player camera, exact30 Torch vertices/UV/white color, "
               "returned World/HUD and selection outline, list reuse and WorldAccess dirty recompile passed; "
               "no original pixels or general play claim")
+    elif all(mode in ('load-water', 'load-lava') for mode in modes):
+        print("Native loaded fluid: saved Water/Lava and Player pose, original position/UV words, "
+              "observed color matches, actual returned World/HUD, Sand pick through fluid, "
+              "list reuse and WorldAccess dirty recompile; no original pixel or general play claim")
     elif all(mode == "reload-cycle" for mode in modes):
         print("Native actual same/different World reload: ten source UI epochs, failed successor, actual entry snapshots, "
               "N/DN replacements, disk/player readback and all-epoch terminal ownership; no original parity claim")

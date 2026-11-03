@@ -1,4 +1,7 @@
 /* Genuine native bootstrap/menu composition with authored SDL transport events. */
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 #include "../../support/java_random.h"
 #include "../world/test_load_world_foreign_loading.h"
 #include "../world/test_refresh_entity.h"
@@ -5065,6 +5068,302 @@ static int torch_loaded_controls(fixture *f, const char *screenshot) {
     return 0;
 }
 
+typedef struct loaded_fluid_reference {
+    char name[64];
+    int32_t id, metadata, pass, sky_subtraction, x, y, z, vertices;
+    uint32_t words[36u * 8u];
+} loaded_fluid_reference;
+
+static int fluid_loaded_reference(loaded_fluid_reference *reference, int32_t id) {
+    const char *path =
+        SDL_GetEnvironmentVariable(SDL_GetEnvironment(), "MC_WORLD_SELECTION_FLUID_REFERENCE");
+    CHECK(path != NULL);
+    FILE *input = fopen(path, "r");
+    char marker[32];
+    size_t cases = 0, cells = 0;
+    CHECK(input != NULL && fscanf(input, "%31s %zu", marker, &cases) == 2 &&
+          strcmp(marker, "FLUID_LOADED_V1") == 0 && cases == 1 &&
+          fscanf(input,
+                 "%31s %63s %" SCNd32 " %" SCNd32 " %" SCNd32 " %" SCNd32 " %" SCNd32 " %" SCNd32
+                 " %" SCNd32 " %" SCNd32 " %zu",
+                 marker, reference->name, &reference->id, &reference->metadata, &reference->pass,
+                 &reference->sky_subtraction, &reference->x, &reference->y, &reference->z,
+                 &reference->vertices, &cells) == 11 &&
+          strcmp(marker, "CASE") == 0 && reference->id == id && reference->metadata == 0 &&
+          reference->pass >= 0 && reference->pass <= 1 && reference->x == 3 && reference->y == 65 &&
+          reference->z == 3 && reference->vertices > 0 && reference->vertices <= 36 &&
+          reference->vertices % 6 == 0 && cells == 125);
+    for (size_t i = 0; i < cells; ++i) {
+        int32_t row[7];
+        CHECK(fscanf(input,
+                     "%" SCNd32 " %" SCNd32 " %" SCNd32 " %" SCNd32 " %" SCNd32 " %" SCNd32
+                     " %" SCNd32,
+                     &row[0], &row[1], &row[2], &row[3], &row[4], &row[5], &row[6]) == 7);
+    }
+    for (size_t i = 0; i < (size_t)reference->vertices * 8u; ++i)
+        CHECK(fscanf(input, "%" SCNx32, &reference->words[i]) == 1);
+    CHECK(fscanf(input, "%31s", marker) == EOF && fclose(input) == 0);
+    return 0;
+}
+
+static int fluid_loaded_frame(fixture *f, mc_world_runtime *world) {
+    const mc_client_world_frame_state *draw = f->state.world_frame;
+    if (f->app->r != NULL || !f->app->N) {
+        (void)repeat_focus_state(f, "fluid-loaded-frame");
+        native_focus_receipt(f, "fluid-loaded-frame");
+    }
+    CHECK(!f->state.failed && f->state.running && f->state.render_returned &&
+          f->app->active_world == world && f->app->r == NULL && f->app->N && draw != NULL &&
+          draw->returned && draw->source_pc == 1013 && draw->world == world &&
+          draw->render_global == f->app->g && draw->camera == f->app->i && draw->updates_returned &&
+          draw->terrain_returned && draw->translucent_returned && draw->update != NULL &&
+          draw->update->returned && draw->update->failure == NULL &&
+          draw->update->compile_attempts == draw->update->completed_compiles &&
+          draw->submission != NULL && draw->submission->returned && draw->submission->pass == 0 &&
+          draw->submission->failure == NULL && draw->translucent_submission != NULL &&
+          draw->translucent_submission->returned && draw->translucent_submission->pass == 1 &&
+          draw->translucent_submission->failure == NULL && f->state.hud != NULL &&
+          f->state.hud->returned && f->state.hud->source_pc == 2101 &&
+          f->state.hud->slots_returned && f->state.hud->empty_slots == 9 &&
+          f->state.hud->failure == NULL && f->state.hud->cleanup == NULL);
+    mc_effect_renderer_snapshot effects;
+    const mc_effect_draw_state *sprites = draw->sprite_particles;
+    CHECK(draw->effects_captured && draw->effects == f->app->effect_renderer &&
+          draw->lit_particles_returned && draw->sprite_particles_returned && sprites != NULL &&
+          sprites->returned && !sprites->lit && sprites->source_pc == 311 &&
+          sprites->failure == NULL && sprites->cleanup == NULL &&
+          mc_client_effect_renderer_read(f->app->effect_renderer, &effects) &&
+          effects.world == world && effects.phase == MC_EFFECT_RENDERER_READY &&
+          !effects.tick_pending && effects.sizes[1] == 0 && effects.sizes[2] == 0 &&
+          effects.sizes[3] == 0 && sprites->visited == effects.sizes[0] &&
+          sprites->empty == (effects.sizes[0] == 0) &&
+          sprites->nw_captured == (effects.sizes[0] != 0));
+    for (size_t i = 0; i < effects.sizes[0]; ++i) {
+        mc_entity *particle = mc_client_effect_renderer_particle(f->app->effect_renderer, 0, i);
+        mc_entity_snapshot state;
+        CHECK(particle != NULL && mc_entity_has_particle(particle) &&
+              mc_entity_get_snapshot(particle, &state) == MC_ENTITY_OK &&
+              state.phase == MC_ENTITY_READY && state.base.world == world &&
+              particle->classes == f->app->entities);
+    }
+    mc_entity_snapshot player;
+    mc_entity_hit_result_view hit;
+    mc_entity_hit_kind_class_view kinds;
+    const double saved_y = 65.0 + (double)1.62f;
+    CHECK(f->app->i == f->app->h && draw->camera == f->app->h &&
+          mc_entity_get_snapshot(f->app->h, &player) == MC_ENTITY_OK &&
+          player.phase == MC_ENTITY_READY && player.base.world == world && player.base.x == 3.5 &&
+          player.base.y == saved_y && player.base.z == .5 && player.base.bl == 3.5 &&
+          player.base.bm == saved_y && player.base.bn == .5 && player.base.offset == 1.62f &&
+          player.bounds != NULL && player.bounds->min_y == 65 && player.base.yaw == 0 &&
+          player.base.aT == 26 && player.base.aU == 0 && player.base.aV == 26 &&
+          draw->render_x == 3.5 && draw->render_y == saved_y && draw->render_z == .5 &&
+          draw->picking_source_returned && draw->picking_block_published &&
+          draw->picking_result_identity == (uintptr_t)f->app->y && f->app->y != NULL &&
+          mc_entity_hit_result_inspect(f->app->y, &hit) == MC_ENTITY_HIT_OK &&
+          mc_entity_hit_kind_class_inspect(f->app->entities, &kinds) == MC_ENTITY_HIT_OK &&
+          hit.fields.a == kinds.a && hit.fields.b == 3 && hit.fields.c == 64 && hit.fields.d == 3 &&
+          draw->selection_hit_present && draw->selection_water_read && !draw->selection_water &&
+          draw->selection_calls == 1 && draw->selections[0] != NULL &&
+          draw->selections[0]->overlay_returned && draw->selections[0]->outline_returned &&
+          draw->selections[0]->alpha_restored && draw->selections[0]->outline_block &&
+          draw->selections[0]->block_id == 12 && draw->selections[0]->x == 3 &&
+          draw->selections[0]->y == 64 && draw->selections[0]->z == 3 &&
+          draw->selections[0]->vertices == 18 && draw->selections[0]->draws == 3);
+    return 0;
+}
+
+static int fluid_loaded_advance(fixture *f, mc_world_runtime *world) {
+    CHECK(display_focus(f, true) == 0 && mc_client_menu_loop_inspect(f->loop, &f->state));
+    const uint64_t world_before = f->state.world_draws, hud_before = f->state.hud_draws;
+    CHECK(frame(f) == 0 && fluid_loaded_frame(f, world) == 0 &&
+          f->state.world_draws == world_before + 1 && f->state.hud_draws == hud_before + 1);
+    return 0;
+}
+
+static int fluid_loaded_list(fixture *f, mc_client_source_dk *section,
+                             const loaded_fluid_reference *reference,
+                             mc_client_source_batch_view *batch, size_t *matched_colors) {
+    /* The two actual Sand/Stone cubes each have the ground-covered bottom.
+     * Fluid vertex inventory and every position/UV word come from its exact
+     * executed-original scene profile, at this SAME section translation. */
+    const size_t solids = 2u * 5u * 6u;
+    mc_client_source_list_state opaque, fluid;
+    CHECK(section != NULL && section->fields.c == 0 && section->fields.d == 64 &&
+          section->fields.e == 0 && section->fields.f == 16 && section->fields.g == 16 &&
+          section->fields.h == 16 && section->fields.E && section->fields.o && !section->fields.u &&
+          section->fields.p != NULL && !section->fields.p[0] &&
+          section->fields.p[1] == (reference->pass == 0) &&
+          mc_client_display_list_inspect(f->app->display, section->fields.C, &opaque) &&
+          opaque.defined && !opaque.building && opaque.draws == 1 &&
+          opaque.vertices == solids + (reference->pass == 0 ? (size_t)reference->vertices : 0) &&
+          mc_client_display_list_inspect(f->app->display, section->fields.C + reference->pass,
+                                         &fluid) &&
+          fluid.defined && !fluid.building && fluid.draws == 1 &&
+          mc_client_display_list_batch(f->app->display, section->fields.C + reference->pass, 0,
+                                       batch) &&
+          batch->mode == 4 && batch->arrays == 7 && batch->vertices == (int32_t)fluid.vertices &&
+          batch->byte_count == fluid.vertices * 32u && f->state.world_frame->terrain_count > 0 &&
+          (reference->pass == 0 || f->state.world_frame->translucent_count > 0));
+    const size_t first = reference->pass == 0 ? solids : 0;
+    CHECK(fluid.vertices == first + (size_t)reference->vertices);
+    size_t color_matches = 0;
+    for (size_t i = 0; i < (size_t)reference->vertices; ++i) {
+        uint32_t actual[8];
+        memcpy(actual, batch->bytes + (first + i) * 32u, sizeof(actual));
+        for (size_t word = 0; word < 5; ++word)
+            CHECK(actual[word] == reference->words[i * 8u + word]);
+        if (actual[5] == reference->words[i * 8u + 5u])
+            ++color_matches;
+    }
+    *matched_colors = color_matches;
+    return 0;
+}
+
+static int fluid_loaded_controls(fixture *f, const char *mode, const char *screenshot, int32_t id) {
+    loaded_fluid_reference reference;
+    CHECK(fluid_loaded_reference(&reference, id) == 0);
+    mc_world_runtime *world = f->app->active_world;
+    CHECK(world != NULL && f->app->g != NULL && f->app->g->fields.k == world &&
+          world->world_accesses.count == 1 && world->fields.u == world->world_accesses.list &&
+          repeat_statistics_controls(f, false) == 0 && fluid_loaded_frame(f, world) == 0);
+    mc_client_screen_transition_state transitions;
+    mc_client_world_load_state load;
+    mc_entity_snapshot player;
+    CHECK(mc_client_screen_transitions_inspect(f->app->screen_transitions, &transitions) &&
+          transitions.world_load != NULL &&
+          mc_client_world_load_inspect(transitions.world_load, &load) && load.source_returned &&
+          load.player_load_returned && load.world == world && load.player == f->app->h &&
+          mc_entity_get_snapshot(f->app->h, &player) == MC_ENTITY_OK);
+    printf("WORLD_FLUID_POSE mode=%s input=saved-player source-loaded=1 camera=player "
+           "position=%016" PRIx64 ",%016" PRIx64 ",%016" PRIx64 " rotation=%08" PRIx32 ",%08" PRIx32
+           " feet=%016" PRIx64 " offset=%08" PRIx32 " hit=3,64,3 block=12\n",
+           mode, cactus_pose_double_bits(player.base.x), cactus_pose_double_bits(player.base.y),
+           cactus_pose_double_bits(player.base.z), cactus_pose_float_bits(player.base.yaw),
+           cactus_pose_float_bits(player.base.aT), cactus_pose_double_bits(player.bounds->min_y),
+           cactus_pose_float_bits(player.base.offset));
+    int32_t actual_id = -1, metadata = -1, sand = -1, platform = -1;
+    mc_world_storage_error error;
+    const mc_block *block = NULL;
+    mc_block_render_description description;
+    CHECK(mc_world_runtime_block_get(world, 3, 65, 3, &actual_id, &error) == MC_WORLD_STORAGE_OK &&
+          actual_id == id &&
+          mc_world_runtime_metadata_get(world, 3, 65, 3, &metadata, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          metadata == reference.metadata &&
+          mc_world_runtime_block_get(world, 3, 64, 3, &sand, &error) == MC_WORLD_STORAGE_OK &&
+          sand == 12 &&
+          mc_world_runtime_block_get(world, 3, 64, 0, &platform, &error) == MC_WORLD_STORAGE_OK &&
+          platform == 1 &&
+          mc_registry_block_get(f->app->registry, id, &block, NULL) == MC_REGISTRY_OK &&
+          block != NULL && mc_block_render_describe(block, &description) == MC_REGISTRY_OK &&
+          description.type == 4 && description.pass == reference.pass);
+    const mc_block_fields bounds_before = *mc_block_fields_get(block);
+    mc_client_source_dk *section = NULL;
+    for (mc_client_source_dk *candidate = f->app->g->chunk_owners; candidate != NULL;
+         candidate = candidate->next)
+        if (candidate->fields.a == world && candidate->fields.c == 0 && candidate->fields.d == 64 &&
+            candidate->fields.e == 0) {
+            CHECK(section == NULL);
+            section = candidate;
+        }
+    CHECK(section != NULL);
+    size_t frames = 1, reuse_frames = 0, recompile_frames = 0, color_matches = 0;
+    const uint64_t deadline = SDL_GetTicks() + 60000;
+    while ((section->fields.u || !section->fields.E) && frames < 16 && SDL_GetTicks() < deadline) {
+        CHECK(fluid_loaded_advance(f, world) == 0);
+        ++frames;
+    }
+    mc_client_source_batch_view batch;
+    CHECK(fluid_loaded_list(f, section, &reference, &batch, &color_matches) == 0);
+    const int32_t list_id = section->fields.C;
+    size_t byte_count = batch.byte_count;
+    uint8_t *bytes = malloc(byte_count);
+    CHECK(bytes != NULL);
+    uintptr_t published = 0;
+    bool reused = false;
+    do {
+        published = (uintptr_t)batch.bytes;
+        CHECK(batch.byte_count == byte_count);
+        memcpy(bytes, batch.bytes, byte_count);
+        CHECK(fluid_loaded_advance(f, world) == 0);
+        ++frames;
+        ++reuse_frames;
+        CHECK(fluid_loaded_list(f, section, &reference, &batch, &color_matches) == 0 &&
+              section->fields.C == list_id && batch.byte_count == byte_count);
+        const bool same_definition = (uintptr_t)batch.bytes == published;
+        const bool same_bytes = memcmp(bytes, batch.bytes, byte_count) == 0;
+        printf("WORLD_FLUID_STEP mode=%s stage=reuse attempt=%zu same-list=1 "
+               "same-definition=%d same-bytes=%d\n",
+               mode, reuse_frames, same_definition, same_bytes);
+        CHECK(!same_definition || same_bytes);
+        reused = same_definition;
+    } while (!reused && reuse_frames < 16 && SDL_GetTicks() < deadline);
+    CHECK(reused);
+
+    struct fluid_light_work {
+        mc_world_light_operation_error operation;
+        mc_world_query_error query;
+    } *light = calloc(1, sizeof(*light));
+
+    const mc_world_light_type *block_light = NULL;
+    int32_t saved = -1;
+    CHECK(light != NULL &&
+          mc_world_runtime_light_type_get(world->classes, MC_LIGHT_BLOCK, &block_light, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_saved_light(world, block_light, 3, 65, 3, &saved, &light->query) ==
+              MC_WORLD_STORAGE_OK &&
+          saved >= 0 && saved <= 15);
+    const size_t queued_before = f->app->g->fields.m->count;
+    CHECK(mc_world_runtime_saved_light_set(world, block_light, 3, 65, 3, saved,
+                                           &light->operation) == MC_WORLD_STORAGE_OK &&
+          section->fields.u && section->last_store_pc == 2 &&
+          f->app->g->fields.m->count == queued_before + 1 && (uintptr_t)batch.bytes == published &&
+          memcmp(bytes, batch.bytes, byte_count) == 0);
+    while (section->fields.u && recompile_frames < 16 && SDL_GetTicks() < deadline) {
+        CHECK(fluid_loaded_advance(f, world) == 0);
+        ++frames;
+        ++recompile_frames;
+    }
+    CHECK(recompile_frames > 0 && !section->fields.u &&
+          fluid_loaded_list(f, section, &reference, &batch, &color_matches) == 0 &&
+          section->fields.C == list_id && (uintptr_t)batch.bytes != published &&
+          mc_world_runtime_block_get(world, 3, 65, 3, &actual_id, &error) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_metadata_get(world, 3, 65, 3, &metadata, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          actual_id == reference.id && metadata == reference.metadata);
+    const mc_block_fields *bounds_after = mc_block_fields_get(block);
+    mc_world_info_fields info;
+    CHECK(bounds_after->bs == bounds_before.bs && bounds_after->bt == bounds_before.bt &&
+          bounds_after->bu == bounds_before.bu && bounds_after->bv == bounds_before.bv &&
+          bounds_after->bw == bounds_before.bw && bounds_after->bx == bounds_before.bx &&
+          mc_world_info_fields_get(world->fields.x, &info) == MC_WORLD_INFO_OK &&
+          repeat_statistics_controls(f, false) == 0 && capture(f, screenshot) == 0);
+    const size_t fluid_first = reference.pass == 0 ? 2u * 5u * 6u : 0;
+    for (size_t i = 0; i < (size_t)reference.vertices; ++i) {
+        uint32_t words[8];
+        memcpy(words, batch.bytes + (fluid_first + i) * 32u, sizeof(words));
+        printf("WORLD_FLUID_WORD mode=%s vertex=%zu words=", mode, i);
+        for (size_t word = 0; word < 8; ++word)
+            printf("%s%08" PRIx32, word == 0 ? "" : ",", words[word]);
+        putchar('\n');
+    }
+    printf("WORLD_FLUID mode=%s input=pre-bootstrap-region block=%" PRId32 " metadata=%" PRId32
+           " pass=%" PRId32 " fluid-vertices=%" PRId32
+           " exact-original-position-uv=1 color-matches=%zu source-colors=%" PRId32
+           " frames=%zu reuse-frames=%zu recompile-frames=%zu list=%" PRId32 " source-time=%" PRId64
+           " sky-subtraction=%" PRId32
+           " same-world-and-registry=1 returned-world-hud=1 sand-pick-through-fluid=1 "
+           "reused-definition=1 world-light-notification=1 dirty-recompiled=1 "
+           "source-bounds-preserved=1\n",
+           mode, actual_id, metadata, description.pass, reference.vertices, color_matches,
+           reference.vertices, frames, reuse_frames, recompile_frames, list_id, info.value.time,
+           world->fields.f);
+    free(light);
+    free(bytes);
+    return 0;
+}
+
 int main(int argc, char **argv) {
     CHECK(argc == 4 &&
           (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
@@ -5073,6 +5372,7 @@ int main(int argc, char **argv) {
            strcmp(argv[2], "load-terminal") == 0 || strcmp(argv[2], "load-partial") == 0 ||
            strcmp(argv[2], "repeat") == 0 || strcmp(argv[2], "load-light") == 0 ||
            strcmp(argv[2], "load-cactus") == 0 || strcmp(argv[2], "load-torch") == 0 ||
+           strcmp(argv[2], "load-water") == 0 || strcmp(argv[2], "load-lava") == 0 ||
            strcmp(argv[2], "reload-cycle") == 0 || strcmp(argv[2], "save-title") == 0 ||
            strcmp(argv[2], "save-title-session") == 0 || animal_profile_get(argv[2]) != NULL ||
            creature_profile_get(argv[2]) != NULL || remaining_profile_get(argv[2]) != NULL));
@@ -5089,6 +5389,10 @@ int main(int argc, char **argv) {
     const bool light_control = strcmp(argv[2], "load-light") == 0;
     const bool cactus_control = strcmp(argv[2], "load-cactus") == 0;
     const bool torch_control = strcmp(argv[2], "load-torch") == 0;
+    const int32_t fluid_id = strcmp(argv[2], "load-water") == 0  ? 9
+                             : strcmp(argv[2], "load-lava") == 0 ? 11
+                                                                 : 0;
+    const bool fluid_control = fluid_id != 0;
     const bool reload_cycle = strcmp(argv[2], "reload-cycle") == 0;
     const mc_client_world_load_call *left_load = NULL;
     const bool save_title = reload_cycle || strcmp(argv[2], "save-title") == 0 ||
@@ -5096,14 +5400,15 @@ int main(int argc, char **argv) {
     /* A hidden loaded World opens Pause and its real draw saves metadata.
      * Passive terminal admission uses a focused World, with no Pause draw. */
     const bool focused_load = strcmp(argv[2], "load") == 0 || terminal_admission || repeat_load ||
-                              light_control || cactus_control || torch_control || animals_load ||
-                              creatures_load || remaining_load || save_title;
+                              light_control || cactus_control || torch_control || fluid_control ||
+                              animals_load || creatures_load || remaining_load || save_title;
     const bool complete_host = repeat_load || light_control || cactus_control || torch_control ||
-                               animals_load || creatures_load || remaining_load || save_title;
+                               fluid_control || animals_load || creatures_load || remaining_load ||
+                               save_title;
     const bool loading_world = strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
                                terminal_admission || repeat_load || light_control ||
-                               cactus_control || torch_control || animals_load || creatures_load ||
-                               remaining_load || save_title;
+                               cactus_control || torch_control || fluid_control || animals_load ||
+                               creatures_load || remaining_load || save_title;
     const bool populated =
         strcmp(argv[2], "populated") == 0 || double_click || loading_world || partial_load;
     const bool large = strcmp(argv[2], "large") == 0;
@@ -5133,8 +5438,8 @@ int main(int argc, char **argv) {
               source.load_report->lines_read == 1 && source.load_report->bytes_read == 15);
         printf("WORLD_SAVE_TITLE_OPTIONS view-distance=3 lines=1 bytes=15 source-loaded=1\n");
     }
-    if (repeat_load || cactus_control || torch_control || animals_load || creatures_load ||
-        remaining_load || save_title)
+    if (repeat_load || cactus_control || torch_control || fluid_control || animals_load ||
+        creatures_load || remaining_load || save_title)
         CHECK(repeat_statistics_controls(&f, true) == 0);
     if (save_title)
         CHECK(save_title_host(&f, "open", true, &save_title_frame_id, &save_title_canvas_id) == 0);
@@ -5485,7 +5790,7 @@ int main(int argc, char **argv) {
                   frame->translucent_state_restored && frame->selection_zoom_read &&
                   frame->selection_player_read && frame->selection_player &&
                   frame->selection_hit_read && frame->selection_stack == NULL);
-            if (cactus_control || torch_control) {
+            if (cactus_control || torch_control || fluid_control) {
                 CHECK(frame->selection_hit_present && frame->selection_water_read &&
                       !frame->selection_water && frame->selection_alpha_disabled &&
                       frame->selection_current_returned && frame->selection_calls == 1);
@@ -5575,6 +5880,10 @@ int main(int argc, char **argv) {
             }
             if (torch_control) {
                 CHECK(torch_loaded_controls(&f, argv[3]) == 0);
+                goto loaded_draw_controls_done;
+            }
+            if (fluid_control) {
+                CHECK(fluid_loaded_controls(&f, argv[2], argv[3], fluid_id) == 0);
                 goto loaded_draw_controls_done;
             }
             if (animals_load) {
@@ -5808,7 +6117,8 @@ int main(int argc, char **argv) {
     if (terminal_admission)
         CHECK(loaded_terminal_admission_controls(&f) == 0);
     if (loading_world && !terminal_admission && !repeat_load && !light_control && !cactus_control &&
-        !torch_control && !animals_load && !creatures_load && !remaining_load && !save_title) {
+        !torch_control && !fluid_control && !animals_load && !creatures_load && !remaining_load &&
+        !save_title) {
         mc_world_runtime *world = f.app->active_world;
         mc_entity *player = f.app->h;
         mc_client_render_global *renderer = f.app->g;
@@ -5837,7 +6147,8 @@ int main(int argc, char **argv) {
         CHECK(mc_client_effect_renderer_release(effects) == MC_EFFECT_RENDERER_OK);
     }
     if (!loading_world || terminal_admission || repeat_load || light_control || cactus_control ||
-        torch_control || animals_load || creatures_load || remaining_load || save_title) {
+        torch_control || fluid_control || animals_load || creatures_load || remaining_load ||
+        save_title) {
         CHECK(normal_terminal_retirement_controls(&f, &external, loading_world, save_title,
                                                   left_load) == 0);
     } else {

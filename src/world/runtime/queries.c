@@ -3,7 +3,7 @@
 #include "../../block/registry/runtime_internal.h"
 #include "../chunk/object_state_internal.h"
 #include "../storage/objects_internal.h"
-#include "chunk_provider_internal.h"
+#include "chunk_provider_state_internal.h"
 #include "construction_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
@@ -91,13 +91,11 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, query_chunk *
     error->provider_bytecode = 6;
     if (world->fields.v == NULL)
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World query provider receiver");
-    mc_chunk_provider_fields provider;
-    mc_world_storage_error binding = {0};
-    if (mc_chunk_provider_internal_fields(world->fields.v, &provider, &binding) !=
-        MC_WORLD_STORAGE_OK)
-        return storage_fail(error, &binding);
-    if (provider.world != world || provider.cache != world->acquisition.cache ||
-        provider.pending != world->acquisition.pending || provider.store != world->options.store)
+    const mc_chunk_provider *const provider = world->fields.v;
+    /* Inspect only the four live bindings needed by this getter. The full
+     * provider view has no callbacks and adds unrelated descriptor copies. */
+    if (provider->world != world || &provider->cache != world->acquisition.cache ||
+        &provider->pending != world->acquisition.pending || provider->store != world->options.store)
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                     "World query replacement provider binding");
     mc_world_runtime_acquisition_error detail;

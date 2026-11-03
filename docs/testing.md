@@ -1,5 +1,35 @@
 # Test scope and reproduction
 
+## Fluid rendering and provider-binding qualification
+
+The current fluid comparison matches 104 original calls and 416 native
+input/cell/geometry/pool rows, including 9,504 appended words. Original capture
+uses nine fresh VMs with unchanged producer/helper bytes. All 31 packet controls
+pass. Eight real section profiles and loaded Windows Water/Lava scenes verify
+original position/UV words, immutable mesh reuse, WorldAccess dirty recompilation
+and checked cleanup. Loaded colors retain their separate evolving-light scope.
+See [fluid rendering](client/fluid-world.md).
+
+Windows MSVC Release builds all targets in 453 actions. Its public cohort passes
+664 of 665 tests in 381.66 seconds; Linux Clang 18 Debug ASan/UBSan builds in 457
+actions and passes 655 of 656 tests in 165.15 seconds under Xvfb/software GL.
+Both reject only the Workbench packet's obsolete current-source fingerprints.
+All 4,579 source inputs remain unchanged within each cohort and match across
+hosts. Windows preserves 532 executables and 413 imported assets; Linux preserves
+533 executables. These counts and CTest times describe those complete cohorts,
+including their recorded rejection. Guarded process intervals are longer.
+
+The fresh four-profile Windows Workbench qualification passes 8,356 checks in
+57.11 seconds. The packet is regenerated from the actual current captures;
+all 57 packet controls and private/cohort/history audits pass. Earlier captures
+retain their own source/product identities. The fixed-work
+[provider-binding CPU comparison](../tests/benchmarks/light_drain.md) retains
+its separate 84-sample result and unchanged work/state receipts. Neither these
+tests nor the instrumented [frame profiles](../tests/benchmarks/client_frames.md)
+establish unrestricted play, original whole-frame pixels or a general FPS gain.
+
+## Torch checkpoint
+
 `client.torch_world` passes 132 exact input/observation rows covering 66 original
 calls and 14,640 appended words. Its native own-backing, FP admission and cleanup
 receipts stay separate from original provenance. The original packet retains

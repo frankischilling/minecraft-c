@@ -1,5 +1,26 @@
 # Development status
 
+[Fluid World rendering](client/fluid-world.md) now has executed-original
+comparisons for 104 calls across all four registered fluids and every metadata
+nibble. Native replay matches 416 input/cell/geometry/pool rows and 9,504 appended
+words. Nine original VMs complete, with identical output within each cohort;
+31 packet corruption controls pass. Eight section-compilation profiles and
+saved Water/Lava scenes check real mesh reuse, light-driven recompile and
+ownership cleanup. Loaded positions and UVs match; evolving colors retain their
+separate observations. Original pixels and unrestricted play remain unfinished.
+
+Direct live provider-binding checks reduce median fixed-work Light-drain CPU
+time from 3.1315 to 2.92625 ms (6.55%) across 84 matched Windows samples.
+Work, state and ownership receipts agree. This result has its
+[own measurement scope](../tests/benchmarks/light_drain.md) and does not measure FPS.
+
+[Frame profiling](../tests/benchmarks/client_frames.md) identifies section
+updates and World ticks as the largest measured CPU costs in the saved Tiny
+scene. These instrumented intervals identify work to optimize; they do not
+establish a speedup or general FPS. Single-player remains the development focus.
+
+## Torch checkpoint
+
 [Torch World rendering](client/torch-world.md) now implements the type 2 wrapper
 and shared primitive for Torch and both Redstone Torch registrations. Native
 CPU replay matches all 132 input/observation rows from 66 original calls and

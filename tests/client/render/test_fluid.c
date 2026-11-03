@@ -143,12 +143,111 @@ static bool fluid_controls(picking_fixture *f) {
     return true;
 }
 
+/* Native allocation admission is separate from Java OOM timing. One genuine
+ * pooled slot lets RP.e acquire its zero vector, then refuses the next object
+ * at the first BT.c addition. Keep that reached cursor/value prefix intact. */
+static bool fluid_vector_limit_controls(picking_fixture *f) {
+    mc_client_chunk_cache *cache = NULL;
+    mc_client_chunk_cache_error cache_error;
+    CHECK(mc_client_chunk_cache_create(f->base.world, 0, 0, 0, 31, 127, 31, &cache, &cache_error) ==
+          MC_CLIENT_CHUNK_CACHE_OK);
+    mc_entity_classes *classes = f->base.entities;
+    f->app->source_math_classes = f->math;
+    for (int32_t id = 8; id <= 10; id += 2) {
+        mc_entity_vector_snapshot pool_before, pool_after;
+        CHECK(mc_entity_vector_get_snapshot(classes, &pool_before) == MC_ENTITY_OK &&
+              pool_before.holds == 0 &&
+              mc_entity_vector_pool_clear_client(classes, NULL) == MC_ENTITY_OK);
+        mc_entity_vector *slot = NULL;
+        CHECK(mc_entity_vector_pool_get(classes, 1, 2, 3, &slot, NULL) == MC_ENTITY_OK &&
+              mc_entity_vector_release(classes, slot) == MC_ENTITY_OK &&
+              mc_entity_vector_pool_reset(classes, NULL) == MC_ENTITY_OK &&
+              mc_entity_vector_get_snapshot(classes, &pool_before) == MC_ENTITY_OK &&
+              pool_before.cursor == 0 && pool_before.size == 1 && pool_before.holds == 0);
+        CHECK(fluid_prepare(f->chunks[0], id, 0, false));
+        const mc_block *block = NULL;
+        CHECK(mc_registry_block_get(f->base.registry, id, &block, NULL) == MC_REGISTRY_OK &&
+              block != NULL);
+        const mc_block_fields original_bounds = block->fields;
+        ((mc_block *)block)->fields.bt = .25;
+        ((mc_block *)block)->fields.bw = .75;
+        const mc_block_fields entered_bounds = block->fields;
+        mc_client_render_blocks fields;
+        mc_client_render_blocks_construct_fields(&fields, cache, true);
+        const mc_client_render_blocks entered_fields = fields;
+        mc_cv_context *context = calloc(1, sizeof(*context));
+        CHECK(context != NULL);
+        *context = (mc_cv_context){.fields = &fields,
+                                   .cache = cache,
+                                   .registry = f->base.registry,
+                                   .models = f->models,
+                                   .graphics = f->graphics,
+                                   .application = f->app};
+        CHECK(mc_cv_push(context, "k", "(Luu;III)Z"));
+        mc_client_nw_state before, after;
+        CHECK(mc_client_nw_inspect(f->graphics, &before) && before.fields.B > 0);
+        const size_t bytes = (size_t)before.fields.B * sizeof(*before.fields.g);
+        void *words = malloc(bytes);
+        CHECK(words != NULL);
+        memcpy(words, before.fields.g, bytes);
+        const size_t allocation_limit = classes->limits.max_allocation_bytes;
+        const size_t allocated = classes->allocated_bytes;
+        classes->limits.max_allocation_bytes = allocated;
+        bool output = true;
+        const bool returned = mc_cv_fluid(context, block, 8, 64, 8, &output);
+        classes->limits.max_allocation_bytes = allocation_limit;
+        CHECK(!returned && output && context->failed && context->depth == 3 &&
+              context->failure.status == MC_CLIENT_RENDER_GLOBAL_LIMIT &&
+              context->failure.native_policy && context->source_pc == 213 &&
+              context->last_store_pc == 0 && context->frames[0].pc == 351 &&
+              strcmp(context->frames[0].class_name, "cv") == 0 &&
+              strcmp(context->frames[0].method, "k") == 0 &&
+              context->frames[1].pc == (id == 8 ? 21u : 44u) &&
+              strcmp(context->frames[1].class_name, "rp") == 0 &&
+              strcmp(context->frames[1].method, "a") == 0 && context->frames[2].pc == 213 &&
+              strcmp(context->frames[2].class_name, "rp") == 0 &&
+              strcmp(context->frames[2].method, "e") == 0);
+        if (context->failure.child.pc != 19)
+            fprintf(stderr, "Fluid vector add child pc=%d expected=19 factory=%u\n",
+                    context->failure.child.pc, context->fluid_vector_error.factory.bytecode);
+        CHECK(context->failure.child.pc == 19 &&
+              strcmp(context->failure.child.class_name, "bt") == 0 &&
+              strcmp(context->failure.child.method, "c") == 0 &&
+              strcmp(context->failure.child.descriptor, "(DDD)Lbt;") == 0 &&
+              context->fluid_vector_error.status == MC_ENTITY_LIMIT &&
+              context->fluid_vector_error.bytecode == 19 &&
+              context->fluid_vector_error.factory.status == MC_ENTITY_LIMIT &&
+              context->fluid_vector_error.factory.bytecode == 20 &&
+              context->fluid_vector_error.pool.status == MC_ENTITY_LIMIT &&
+              context->fluid_vector_error.pool.bytecode == 0);
+        CHECK(mc_entity_vector_get_snapshot(classes, &pool_after) == MC_ENTITY_OK &&
+              pool_after.phase == pool_before.phase &&
+              pool_after.pool_identity == pool_before.pool_identity && pool_after.cursor == 1 &&
+              pool_after.size == 1 && pool_after.capacity == pool_before.capacity &&
+              pool_after.holds == pool_before.holds && classes->allocated_bytes == allocated &&
+              classes->vector_pool->elements[0] == slot && slot->x == 0 && slot->y == 0 &&
+              slot->z == 0);
+        CHECK(memcmp(&fields, &entered_fields, sizeof(fields)) == 0 &&
+              memcmp(&block->fields, &entered_bounds, sizeof(entered_bounds)) == 0 &&
+              mc_client_nw_inspect(f->graphics, &after) &&
+              memcmp(&before.fields, &after.fields, sizeof(before.fields)) == 0 &&
+              memcmp(words, after.fields.g, bytes) == 0);
+        free(words);
+        free(context);
+        ((mc_block *)block)->fields = original_bounds;
+    }
+    f->app->source_math_classes = NULL;
+    CHECK(mc_client_chunk_cache_retire(&cache, &cache_error) == MC_CLIENT_CHUNK_CACHE_OK);
+    return true;
+}
+
 int main(int argc, char **argv) {
     if (argc != 3)
         return 2;
     picking_fixture *f = calloc(1, sizeof(*f));
     if (f == NULL || !picking_open(f, argv[1]) || !picking_case_open(f, argv[2]) ||
-        !fluid_controls(f) || !picking_case_close(f) || !picking_close(f))
+        !fluid_controls(f) || !fluid_vector_limit_controls(f) || !picking_case_close(f) ||
+        !picking_close(f))
         return 1;
     free(f);
     printf(

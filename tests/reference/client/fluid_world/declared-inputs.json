@@ -1,0 +1,181 @@
+{
+  "format": 1,
+  "profiles": 104,
+  "integer_fields": [
+    "registered_block_id",
+    "metadata_nibble",
+    "layout",
+    "light_0dark_1sky15_2block15",
+    "render_all",
+    "texture_override",
+    "bm_delta_java_wrap",
+    "bounds_0unit_1partial",
+    "nullable_0none_1cache_2block",
+    "CV_state_0constructor_1authored_retained",
+    "placement_0standard_1DK_2loaded",
+    "reserved_zero",
+    "reserved_zero"
+  ],
+  "cohorts": [
+    {
+      "index": 0,
+      "file": "profiles-0.txt",
+      "first_global_index": 0,
+      "profiles": 35
+    },
+    {
+      "index": 1,
+      "file": "profiles-1.txt",
+      "first_global_index": 35,
+      "profiles": 35
+    },
+    {
+      "index": 2,
+      "file": "profiles-2.txt",
+      "first_global_index": 70,
+      "profiles": 34
+    }
+  ],
+  "placements": [
+    {
+      "xyz": [
+        8,
+        64,
+        8
+      ],
+      "translation": [
+        -0.25,
+        0.5,
+        -0.75
+      ]
+    },
+    {
+      "xyz": [
+        8,
+        64,
+        8
+      ],
+      "translation": [
+        -8,
+        -64,
+        -8
+      ]
+    },
+    {
+      "xyz": [
+        3,
+        65,
+        3
+      ],
+      "translation": [
+        0,
+        -64,
+        0
+      ]
+    }
+  ],
+  "bounds": [
+    [
+      0,
+      0,
+      0,
+      1,
+      1,
+      1
+    ],
+    [
+      0.125,
+      0.25,
+      0.375,
+      0.875,
+      0.75,
+      0.625
+    ]
+  ],
+  "layouts": {
+    "0": "Homogeneous3x3 same-y fluid plane, Air above/below",
+    "1": "Enclosed3x3x3 fluid cube",
+    "2": "Enclosed cube except upper layer Air: top only",
+    "3": "Enclosed cube except lower layer Air: bottom only",
+    "4": "Enclosed cube except north plane Air: north only",
+    "5": "Enclosed cube except south plane Air: south only",
+    "6": "Enclosed cube except west plane Air: west only",
+    "7": "Enclosed cube except east plane Air: east only",
+    "8": "Homogeneous same-y plane; corner metadata0/1/7/8, selected center metadata retained",
+    "9": "Homogeneous plane plus NW upper corner fluid",
+    "10": "Single still fluid at loaded coordinates; Sand12 below; Air elsewhere locally",
+    "11": "Homogeneous plane except west Ice79 and east Air",
+    "12": "Homogeneous plane except west metadata1/east7, center3; nonzero horizontal flow",
+    "13": "Single center fluid; east same-y Air and east below same-fluid metadata2",
+    "14": "Homogeneous falling-fluid plane except north lower/same-y Stone1 wall",
+    "15": "Falling-fluid plane with east metadata3/south6 and north upper Stone1 wall"
+  },
+  "World": "Genuine FD/MX saved World seed23, four actual LM chunks, real EW; sky subtraction3. Every profile resets only declared input chunk arrays and selected Block bounds/bm before call, then restores registered Block bounds/bm. No fake adapter/source replacement.",
+  "NW": "One actual begin per fresh cohort VM; original2M constructor backing and NIO references/cursors. Per-profile genuine b(DDD) setter uses declared placement before active source call. Every non-emitted word audited against own prior bytes.",
+  "vectors": "Actual static BT List identity and actual cursor; no reset or replacement. Full before/after pool entries/primitive values and identity labels observed after real constructors. JDI reads only actual fields/args/results/bytecodes; no target invoke/write.",
+  "CV": "Real constructor(captured EW or declared NULL). f/d set to authored values. state0 otherwise retains actual constructor defaults. state1 sets m/e true, g..l=2, n..N=(i+1)*.03125f,P..aa=(i+1)*.015625f,ab..am alternating. These retained fields are observed unchanged.",
+  "class_fields": "No replacement of final UU.B/UU.D or Material singleton fields. Mutable registered bm uses Java wrapping delta and real six-float bounds setter. Registered original bounds/bm restored after every call.",
+  "warm_static_prerequisites": "Actual BT static List active use and actual MathHelper in.a(0.0f) before profiles, to observe initial pool and use a genuine initialized trig table. No supplied static field values/initializer replacement; cold initialization closure is not claimed.",
+  "source_only": "Direct CV.k wholemethod; private height/RP/BT/Math/NW observed dynamically. No graphical draw, native library, RAW owner, external network/process, or outside-private-World writes.",
+  "raw_row_protocol": {
+    "FLUID": [
+      "tag",
+      "global_index",
+      "profile_name",
+      "actual_return_or_UNRETURNED",
+      "exception_NONE_or_NULL",
+      "NW_o_before",
+      "NW_o_after",
+      "constructor_backing_capacity",
+      "actual_LM_a_flag",
+      "raw_NW_translation",
+      "raw_Block_bounds_before",
+      "raw_Block_bounds_after",
+      "all_CV_primitive_fields",
+      "all_NW_primitive_fields_before",
+      "all_NW_primitive_fields_after",
+      "raw_active_words_plus_minimum100_observed_words"
+    ],
+    "FLUID_INPUT": [
+      "tag",
+      "global_index",
+      "actual_registered_class",
+      "actual_bn",
+      "original_bm",
+      "entered_bm",
+      "thirteen_comma_separated_profile_ints",
+      "actual_xyz",
+      "actual_b_()_render_pass"
+    ],
+    "FLUID_CELLS": [
+      "tag",
+      "global_index",
+      "125_semicolon_cells_x_y_z_id_meta_sky_blocklight",
+      "four_semicolon_Chunk_arrayhash_tuples_Block_meta_sky_blocklight"
+    ],
+    "FLUID_REGISTRY": [
+      "tag",
+      "actual_id",
+      "class_or_NULL_Air_slot",
+      "bn_or_minus1_Air",
+      "bm",
+      "actual_Material_singleton_name",
+      "actual_b()_render_type",
+      "actual_b_()_render_pass",
+      "actual_c()_opacity"
+    ],
+    "FLUID_LIGHT": [
+      "tag",
+      "actual_FD_f_sky_subtraction",
+      "actual_Dimension_class",
+      "actual_16_float_light_table_words"
+    ],
+    "FLUID_POOL": [
+      "tag",
+      "global_index",
+      "actual_before_pool_JSON",
+      "actual_after_pool_JSON"
+    ]
+  },
+  "input_receipts": "Registry/pass/opacity getters, actual Dimension light table, finite actual cell values and full Chunk array hashes are observed declared inputs outside the active CV trace, not replacement query bodies. Source arrays are asserted unchanged after CV."
+}

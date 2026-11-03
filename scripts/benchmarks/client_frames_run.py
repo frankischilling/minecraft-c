@@ -49,6 +49,17 @@ def distribution(values):
             'p99_ms': percentile(values, .99), 'max_ms': max(values)}
 
 
+def source_clock_span(end, start):
+    if not all(-(1 << 63) <= value < (1 << 63) for value in (start, end)):
+        raise ValueError('Source clock must be a signed Java long')
+    # Source nanoTime subtraction has Java long wrapping, including a sample
+    # pair that crosses the signed boundary during an otherwise short frame.
+    span = (end - start + (1 << 63)) % (1 << 64) - (1 << 63)
+    if span < 0:
+        raise ValueError('Source clock interval regressed')
+    return span / 1e6
+
+
 def summarize(stdout):
     result = [fields(s) for s in stdout.splitlines() if s.startswith('PERF_RESULT ')]
     context = [fields(s) for s in stdout.splitlines() if s.startswith('PERF_CONTEXT ')]
@@ -58,16 +69,29 @@ def summarize(stdout):
     result, context, finish = result[0], context[0], finish[0]
     raw = [[int(v) for v in s.split(' ', 1)[1].split(',')]
            for s in stdout.splitlines() if s.startswith('PERF_ROW ')]
-    if not raw or any(len(row) != 16 for row in raw) or len(raw) != int(result['frames']):
+    row_version = int(result.get('row-version', '1'))
+    if row_version not in (1, 2):
+        raise ValueError('Unknown frame observation version')
+    columns = 16 if row_version == 1 else 19
+    if not raw or any(len(row) != columns for row in raw) or len(raw) != int(result['frames']):
         raise ValueError('Incomplete typed raw frame rows')
     hz = int(result['qpc-hz'])
-    if hz <= 0 or any(row[2] < row[1] for row in raw):
+    start, end = int(result['start']), int(result['end'])
+    if (hz <= 0 or end <= start or any(not start <= row[1] <= row[2] <= end for row in raw) or
+            raw[-1][2] != end or any(row[1] < prior[2] for prior, row in zip(raw, raw[1:]))):
         raise ValueError('Invalid raw QPC interval')
     if any(row[0] != raw[0][0] + i for i, row in enumerate(raw)):
         raise ValueError('Nonconsecutive returned source frame indices')
     total = [(r[2] - r[1]) * 1000 / hz for r in raw]
-    tick = [(r[4] - r[3]) / 1e6 for r in raw if r[8] & 3 == 3]
-    render_prefix = [(r[5] - r[4]) / 1e6 for r in raw if r[8] & 6 == 6]
+    tick = [source_clock_span(r[4], r[3]) for r in raw if r[8] & 3 == 3]
+    render_prefix = [source_clock_span(r[5], r[4]) for r in raw if r[8] & 6 == 6]
+    split_rows = []
+    if row_version == 2:
+        if any(r[17] not in (0, 1) or r[18] not in (0, 1) for r in raw):
+            raise ValueError('Invalid render clock/return observations')
+        split_rows = [r for r in raw if r[8] & 6 == 6 and r[17] == 1 and r[18] == 1]
+    pre_hud = [source_clock_span(r[16], r[4]) for r in split_rows]
+    hud_and_active = [source_clock_span(r[5], r[16]) for r in split_rows]
     source_fps = []
     for line in stdout.splitlines():
         if line.startswith('PERF_SOURCE_FPS '):
@@ -97,13 +121,14 @@ def summarize(stdout):
              result['focus-invalid'] == '0' and finish['cleanup'] == '1' and
              int(context['view-distance']) == 3 and all(r[12] == 1 for r in raw) and
              all(r[11] == -1 and r[10] == 1 for r in raw) and native_foreground_valid and
-             actual_rotation_valid)
+             actual_rotation_valid and (row_version == 1 or len(split_rows) == len(raw)))
     return {'cache_receipts': cache, 'no_raw_cache_exports': True,
             'camera_receipts': poses, 'native_foreground_receipts': foreground,
             'native_foreground_valid': native_foreground_valid,
             'authored_rotation_retained': actual_rotation_valid,
             'valid_focused_Tiny_interval': valid, 'context': context, 'measurement': result,
-            'measured_fps': len(raw) * hz / (int(result['end']) - int(result['start'])),
+            'observation_row_version': row_version,
+            'measured_fps': len(raw) * hz / (end - start),
             'gpu': {key: next((s.split(' ', 1)[1] for s in stdout.splitlines()
                               if s.startswith('PERF_GPU_' + key.upper() + ' ')), None)
                     for key in ('vendor', 'renderer', 'version')},
@@ -112,6 +137,14 @@ def summarize(stdout):
             'zero_tick_host_frame': distribution([x for x, r in zip(total, raw) if r[6] == 0]),
             'source_tick_batch': distribution(tick),
             'source_render_and_update_prefix_not_GPU_time': distribution(render_prefix),
+            'source_pre_HUD_prefix_not_GPU_time': distribution(pre_hud),
+            'source_HUD_and_active_check_not_GPU_time': distribution(hud_and_active),
+            'source_render_split_rows': len(split_rows),
+            'source_render_split_scope': (
+                'Existing PX.b450/I453 clock only; no additional source clock reads. '
+                'Pre-HUD prefix includes sound/light work, SDK swap, World draw and source pacing. '
+                'The remaining prefix includes HUD and display-active handling. Neither is GPU time.'
+                if row_version == 2 else 'Legacy rows contain no pre-HUD clock observation.'),
             'frames_over_16_667_ms': sum(x > 1000 / 60 for x in total),
             'frames_over_33_333_ms': sum(x > 1000 / 30 for x in total),
             'observed_source_FPS_strings': source_fps,
