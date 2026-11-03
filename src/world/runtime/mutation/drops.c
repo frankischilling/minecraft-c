@@ -586,6 +586,77 @@ static bool drop_spawn(mc_world_runtime *world, const mc_block *block, int32_t x
     return completed;
 }
 
+bool mc_world_mutation_drop_stack(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                  int32_t y, int32_t z, mc_item_stack *stack,
+                                  mc_world_mutation_error *error) {
+    return drop_spawn(world, block, x, y, z, stack, error) && drop_done(error);
+}
+
+bool mc_world_mutation_snow_harvest_drop(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                         int32_t y, int32_t z, mc_world_mutation_error *error) {
+    const drop_frame frame = drop_frame_make(world, block, "jr", "gj", "a(Lfd;Lgs;IIII)V", error);
+    int32_t item;
+    if (!drop_item_id(&frame, "aB", 0, 3, &item))
+        return false;
+    if (world == NULL)
+        return drop_null(&frame, 13, "Snow harvest World Random field receiver is null");
+    float draw;
+    if (!drop_random_float(&frame, world->fields.r, 16, &draw) || !drop_fp(&frame, 21))
+        return false;
+    const float spread = 0.7f;
+    const float scaled_x = draw * spread;
+    const float edge_x = 1.0f - spread;
+    const double offset_x = (double)scaled_x + (double)edge_x * 0.5;
+    if (!drop_random_float(&frame, world->fields.r, 39, &draw))
+        return false;
+    const float scaled_y = draw * spread;
+    const float edge_y = 1.0f - spread;
+    const double offset_y = (double)scaled_y + (double)edge_y * 0.5;
+    if (!drop_random_float(&frame, world->fields.r, 62, &draw))
+        return false;
+    const float scaled_z = draw * spread;
+    const float edge_z = 1.0f - spread;
+    const double offset_z = (double)scaled_z + (double)edge_z * 0.5;
+    mc_entity *entity = NULL;
+    if (!drop_entity_allocate(&frame, 81, &entity))
+        return false;
+    const double position_x = (double)x + offset_x;
+    const double position_y = (double)y + offset_y;
+    const double position_z = (double)z + offset_z;
+    mc_item_stack *stack = NULL;
+    drop_at(&frame, 103);
+    mc_item_stack_status item_status = mc_item_stack_allocate(&stack);
+    if (item_status != MC_ITEM_STACK_OK) {
+        (void)drop_stack_failed(&frame, 103, item_status);
+        mc_entity_release(entity);
+        return false;
+    }
+    drop_at(&frame, 111);
+    item_status = mc_item_stack_construct(stack, item, 1, 0);
+    if (item_status != MC_ITEM_STACK_OK) {
+        (void)drop_stack_failed(&frame, 111, item_status);
+        mc_item_stack_release(stack);
+        mc_entity_release(entity);
+        return false;
+    }
+    drop_at(&frame, 114);
+    const mc_entity_status status = mc_item_entity_construct(entity, world, position_x, position_y,
+                                                             position_z, stack, &error->entity);
+    mc_item_stack_release(stack);
+    if (status != MC_ENTITY_OK) {
+        (void)drop_entity_failed(&frame, 114, status);
+        mc_entity_release(entity);
+        return false;
+    }
+    if (!drop_pickup_delay(&frame, 123, entity)) {
+        mc_entity_release(entity);
+        return false;
+    }
+    const bool completed = drop_publish(&frame, 129, entity);
+    mc_entity_release(entity);
+    return completed && drop_done(error);
+}
+
 static bool drop_probability(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
                              int32_t z, int32_t metadata, float chance,
                              mc_world_mutation_error *error);

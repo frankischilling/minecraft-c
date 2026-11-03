@@ -1,5 +1,6 @@
 #include "internal.h"
 
+#include "../../../block/registry/leaf_color_internal.h"
 #include "../../../block/registry/registry_internal.h"
 
 #include <emmintrin.h>
@@ -93,7 +94,11 @@ static bool foliage_constant(mc_cv_context *c, bool pine, unsigned int caller_pc
     if (!colorizer_active(c, MC_CLIENT_COLORIZER_FOLIAGE, caller_pc) ||
         !mc_cv_push_source(c, "jh", pine ? "a" : "b", "()I"))
         return false;
-    *out = pine ? 6396257 : 8431445;
+    if (mc_client_colorizer_read_ready(c->graphics, MC_CLIENT_COLORIZER_FOLIAGE,
+                                       pine ? MC_CLIENT_COLORIZER_PINE : MC_CLIENT_COLORIZER_BIRCH,
+                                       0, 0, out, &c->colorizer_error) != MC_CLIENT_COLORIZER_OK)
+        return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED, c->colorizer_error.operation,
+                          c->source_pc, c->colorizer_error.native_policy);
     mc_cv_pc(c, 2);
     mc_cv_pop(c);
     return true;
@@ -105,54 +110,50 @@ static bool lookup(mc_cv_context *c, mc_client_colorizer_kind kind, double tempe
         !mc_cv_push_source(c, kind == MC_CLIENT_COLORIZER_GRASS ? "ia" : "jh", "a", "(DD)I") ||
         !mc_cv_fp(c, 2))
         return false;
-    /* Source binary64 multiply2, subtract6/multiply10 and
-     * subtract16/multiply20; each conversion is Java d2i. */
-    rainfall = _mm_cvtsd_f64(_mm_mul_sd(_mm_set_sd(rainfall), _mm_set_sd(temperature)));
-    double u = _mm_cvtsd_f64(_mm_sub_sd(_mm_set_sd(1.0), _mm_set_sd(temperature)));
-    u = _mm_cvtsd_f64(_mm_mul_sd(_mm_set_sd(u), _mm_set_sd(255.0)));
-    const int32_t column = mc_java_double_to_i32(u);
-    double v = _mm_cvtsd_f64(_mm_sub_sd(_mm_set_sd(1.0), _mm_set_sd(rainfall)));
-    v = _mm_cvtsd_f64(_mm_mul_sd(_mm_set_sd(v), _mm_set_sd(255.0)));
-    const int32_t row = mc_java_double_to_i32(v);
-    const int32_t index = mc_java_i32_shl(row, 8) | column;
-    mc_client_colorizer_state colorizer;
-    if (!mc_client_colorizer_inspect(c->graphics, kind, &colorizer))
-        return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
-                          "actual colorizer native static view", 24, true);
-    const mc_client_graphics_site site = {kind == MC_CLIENT_COLORIZER_GRASS ? "ia" : "jh", "a",
-                                          "(DD)I", 35};
-    mc_client_color_array_state array;
-    if (colorizer.a == NULL || !mc_client_color_array_inspect(colorizer.a, &array) ||
-        array.phase != MC_CLIENT_COLOR_ARRAY_READY || index < 0 || (size_t)index >= array.length) {
-        const bool null_array = colorizer.a == NULL;
-        const bool native_array =
-            !null_array && (!mc_client_color_array_inspect(colorizer.a, &array) ||
-                            array.phase != MC_CLIENT_COLOR_ARRAY_READY);
-        c->colorizer_error = (mc_client_colorizer_error){
-            .status = MC_CLIENT_COLORIZER_ARRAY_FAILED,
-            .operation = null_array     ? "actual colorizer null static int[]"
-                         : native_array ? "actual colorizer native array phase"
-                                        : "actual colorizer int[] index",
-            .site = site,
-            .native_policy = native_array,
-            .array = {.status = null_array     ? MC_CLIENT_COLOR_ARRAY_NULL_REFERENCE
-                                : native_array ? MC_CLIENT_COLOR_ARRAY_INVALID_PHASE
-                                               : MC_CLIENT_COLOR_ARRAY_INDEX_OUT_OF_RANGE,
-                      .site = site,
-                      .native_policy = native_array}};
-        c->failure.child = site;
+    if (mc_client_colorizer_read_ready(c->graphics, kind, MC_CLIENT_COLORIZER_SAMPLE, temperature,
+                                       rainfall, out,
+                                       &c->colorizer_error) != MC_CLIENT_COLORIZER_OK) {
+        const mc_client_colorizer_error *e = &c->colorizer_error;
+        c->failure.child = e->site;
         return mc_cv_fail(c,
-                          null_array ? MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE
-                                     : MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
-                          c->colorizer_error.operation, 35, native_array);
+                          e->array.status == MC_CLIENT_COLOR_ARRAY_NULL_REFERENCE
+                              ? MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE
+                              : MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
+                          e->operation, (unsigned int)e->site.pc, e->native_policy);
     }
-    /* This is the actual Java int, including its high byte. RGB extraction is
-     * the later CV caller's operation. No color-plane copy or RGB mask. */
-    memcpy(out, &array.bits[(size_t)index], sizeof(*out));
     mc_cv_pc(c, 36);
     mc_cv_pop(c);
     return true;
 }
+
+static bool leaf_metadata(void *c, int32_t x, int32_t y, int32_t z, unsigned int pc, int32_t *out) {
+    return mc_cv_metadata(c, x, y, z, pc, out);
+}
+
+static bool leaf_climate(void *c, int32_t x, int32_t z, unsigned int manager, unsigned int sample) {
+    return climate(c, x, z, manager, sample);
+}
+
+static bool leaf_channel(void *c, bool rain, unsigned int manager, unsigned int field,
+                         unsigned int load, double *out) {
+    return channel(c, rain, manager, field, load, out);
+}
+
+static bool leaf_constant(void *c, bool pine, unsigned int pc, int32_t *out) {
+    return foliage_constant(c, pine, pc, out);
+}
+
+static bool leaf_lookup(void *c, double temperature, double rainfall, unsigned int pc,
+                        int32_t *out) {
+    return lookup(c, MC_CLIENT_COLORIZER_FOLIAGE, temperature, rainfall, pc, out);
+}
+
+static void leaf_pc(void *c, unsigned int pc) {
+    mc_cv_pc(c, pc);
+}
+
+static const mc_leaf_color_ops leaf_ops = {leaf_metadata, leaf_climate, leaf_channel,
+                                           leaf_constant, leaf_lookup,  leaf_pc};
 
 bool mc_cv_block_color(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y, int32_t z,
                        unsigned int caller_pc, int32_t *out) {
@@ -178,19 +179,14 @@ bool mc_cv_block_color(mc_cv_context *c, const mc_block *block, int32_t x, int32
         block->kind != MC_BLOCK_TALL_GRASS) {
         value = block->kind == MC_BLOCK_REDSTONE ? 8388608 : 16777215;
         mc_cv_pc(c, 2);
+    } else if (block->kind == MC_BLOCK_LEAVES) {
+        if (!mc_leaf_world_color(&leaf_ops, c, x, y, z, &value))
+            return false;
     } else {
         int32_t metadata = 0;
         if (block->kind != MC_BLOCK_GRASS && !mc_cv_metadata(c, x, y, z, 5, &metadata))
             return false;
-        if (block->kind == MC_BLOCK_LEAVES && (metadata & 1) != 0) {
-            if (!foliage_constant(c, true, 20, &value))
-                return false;
-            mc_cv_pc(c, 23);
-        } else if (block->kind == MC_BLOCK_LEAVES && (metadata & 2) != 0) {
-            if (!foliage_constant(c, false, 32, &value))
-                return false;
-            mc_cv_pc(c, 35);
-        } else if (block->kind == MC_BLOCK_TALL_GRASS && metadata == 0) {
+        if (block->kind == MC_BLOCK_TALL_GRASS && metadata == 0) {
             value = 16777215;
             mc_cv_pc(c, 19);
         } else {

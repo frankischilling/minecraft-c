@@ -15,7 +15,21 @@
 #include <time.h>
 #endif
 
-enum { BENCH_CALLS = 65536, BENCH_SAMPLES = 7, BENCH_COORDINATES = 256 };
+enum { BENCH_CALLS = 65536, BENCH_SAMPLES = 7, BENCH_COORDINATES = 256, BENCH_MODES = 6 };
+
+static void bench_chunk_coordinates(unsigned int count, unsigned int index, int32_t *x,
+                                    int32_t *z) {
+    if (count == 1) {
+        *x = 0;
+        *z = 0;
+    } else if (count == 289) {
+        *x = (int32_t)(index / 17u) - 8;
+        *z = (int32_t)(index % 17u) - 8;
+    } else {
+        *x = (int32_t)(index / 16u) - 16;
+        *z = (int32_t)(index % 16u) - 8;
+    }
+}
 
 static int bench_open(source_save_fixture *s) {
     fixture *f = &s->game;
@@ -93,8 +107,8 @@ static bool bench_clock(uint64_t *out, uint64_t *frequency) {
 }
 
 static int bench_value(mc_world_runtime *world, const mc_world_light_type *light, int mode,
-                       unsigned int index, int32_t *value, mc_world_storage_error *storage,
-                       mc_world_query_error *query) {
+                       unsigned int chunk_count, unsigned int index, int32_t *value,
+                       mc_world_storage_error *storage, mc_world_query_error *query) {
     const int32_t x = (int32_t)(index & 15u), z = (int32_t)((index >> 4u) & 15u);
     const int32_t y = 8 + (int32_t)((index * 17u) % 104u);
     if (mode == 0)
@@ -103,6 +117,19 @@ static int bench_value(mc_world_runtime *world, const mc_world_light_type *light
         return (int)mc_world_runtime_metadata_get(world, x, y, z, value, storage);
     if (mode == 2)
         return (int)mc_world_runtime_saved_light(world, light, x, y, z, value, query);
+    if (mode >= 4) {
+        int32_t chunk_x, chunk_z;
+        bench_chunk_coordinates(chunk_count, (index * 37u) % chunk_count, &chunk_x, &chunk_z);
+        if (mode == 5) {
+            chunk_x = 128 + (int32_t)index;
+            chunk_z = -128 - (int32_t)index;
+        }
+        bool present = false;
+        const mc_world_storage_status status =
+            mc_world_runtime_chunk_provider_contains(world, chunk_x, chunk_z, &present, storage);
+        *value = present ? 1 : 0;
+        return (int)status;
+    }
     mc_chunk_state *state = NULL;
     const mc_chunk_acquire_status status = mc_world_runtime_get_detailed(world, 0, 0, &state, NULL);
     *value = state == NULL ? -1 : state->x;
@@ -114,27 +141,27 @@ static uint64_t bench_mix(uint64_t hash, int32_t value, unsigned int index) {
 }
 
 static int bench_run(source_save_fixture *s, bool mutation, unsigned int chunk_count) {
-    static const char *names[] = {"block", "metadata", "saved-light", "owned-get"};
+    static const char *names[] = {"block",     "metadata",     "saved-light",
+                                  "owned-get", "presence-hit", "presence-miss"};
     mc_world_runtime *world = s->game.worlds[0];
     const mc_world_light_type *light = NULL;
     mc_chunk_state *chunk = NULL;
-    if (chunk_count == 289)
-        for (int32_t x = -8; x <= 8; ++x)
-            for (int32_t z = -8; z <= 8; ++z) {
-                mc_chunk_state *loaded = NULL;
-                VERIFY(mc_world_runtime_get_detailed(world, x, z, &loaded, NULL) ==
-                           MC_CHUNK_ACQUIRE_OK &&
-                       loaded != NULL && loaded->active && !loaded->blank && loaded->x == x &&
-                       loaded->z == z);
-            }
+    for (unsigned int index = 0; index < chunk_count; ++index) {
+        int32_t x, z;
+        bench_chunk_coordinates(chunk_count, index, &x, &z);
+        mc_chunk_state *loaded = NULL;
+        VERIFY(mc_world_runtime_get_detailed(world, x, z, &loaded, NULL) == MC_CHUNK_ACQUIRE_OK &&
+               loaded != NULL && loaded->active && !loaded->blank && loaded->x == x &&
+               loaded->z == z);
+    }
     VERIFY(mc_world_runtime_get_detailed(world, 0, 0, &chunk, NULL) == MC_CHUNK_ACQUIRE_OK &&
            chunk != NULL && chunk->active && !chunk->blank && chunk->data != NULL &&
            mc_world_runtime_light_type_get(world->classes, MC_LIGHT_SKY, &light, &s->error) ==
                MC_WORLD_STORAGE_OK);
-    int32_t expected[4][BENCH_COORDINATES];
+    int32_t expected[BENCH_MODES][BENCH_COORDINATES];
     mc_world_storage_error storage;
     mc_world_query_error query;
-    for (int mode = 0; mode < 4; ++mode)
+    for (int mode = 0; mode < BENCH_MODES; ++mode)
         for (unsigned int i = 0; i < BENCH_COORDINATES; ++i) {
             const unsigned int x = i & 15u, z = (i >> 4u) & 15u;
             const unsigned int y = 8u + (i * 17u) % 104u;
@@ -145,9 +172,12 @@ static int bench_run(source_save_fixture *s, bool mutation, unsigned int chunk_c
                     ? (int32_t)((chunk->data->metadata[offset / 2u] >> ((y & 1u) * 4u)) & 15u)
                 : mode == 2
                     ? (int32_t)((chunk->data->skylight[offset / 2u] >> ((y & 1u) * 4u)) & 15u)
-                    : chunk->x;
+                : mode == 3 ? chunk->x
+                : mode == 4 ? 1
+                            : 0;
             int32_t actual = -1;
-            VERIFY(bench_value(world, light, mode, i, &actual, &storage, &query) == 0 &&
+            VERIFY(bench_value(world, light, mode, chunk_count, i, &actual, &storage, &query) ==
+                       0 &&
                    actual == expected[mode][i]);
         }
     /* These are snapshots of actual read-only owners, never replacement state.
@@ -211,7 +241,7 @@ static int bench_run(source_save_fixture *s, bool mutation, unsigned int chunk_c
            before.raw_exports == 0 && before.mutation_depth == (mutation ? 1u : 0u) &&
            before.map_count == chunk_count);
     uint64_t last_sink = 0;
-    for (int mode = 0; mode < 4; ++mode) {
+    for (int mode = 0; mode < BENCH_MODES; ++mode) {
         uint64_t expected_hash = UINT64_C(1469598103934665603);
         for (unsigned int i = 0; i < BENCH_CALLS; ++i)
             expected_hash = bench_mix(expected_hash, expected[mode][i & 255u], i);
@@ -224,8 +254,8 @@ static int bench_run(source_save_fixture *s, bool mutation, unsigned int chunk_c
             /* Timed fixed public query workload. No assertion, disk, allocation,
              * instrumentation callback, direct mutation or RNG call here. */
             for (unsigned int i = 0; i < BENCH_CALLS; ++i) {
-                status_sum |= (unsigned int)bench_value(world, light, mode, i & 255u, &value,
-                                                        &storage, &query);
+                status_sum |= (unsigned int)bench_value(world, light, mode, chunk_count, i & 255u,
+                                                        &value, &storage, &query);
                 hash = bench_mix(hash, value, i);
             }
             VERIFY(bench_clock(&end, &end_frequency) && frequency == end_frequency && end > start);
@@ -234,7 +264,7 @@ static int bench_run(source_save_fixture *s, bool mutation, unsigned int chunk_c
                 VERIFY(query.status == MC_WORLD_STORAGE_OK && query.operation == NULL &&
                        query.registry.initializer_pc == -1 && query.registry.block_id == -1 &&
                        query.source_chunk == NULL && query.provider_bytecode == 0);
-            else if (mode < 2)
+            else if (mode < 2 || mode >= 4)
                 VERIFY(storage.status == MC_WORLD_STORAGE_OK && storage.operation == NULL);
             last_sink ^= hash;
             printf("CACHE_QUERY_SAMPLE mode=%s sample=%u calls=%u ticks=%" PRIu64
@@ -242,14 +272,14 @@ static int bench_run(source_save_fixture *s, bool mutation, unsigned int chunk_c
                    names[mode], sample, BENCH_CALLS, end - start, frequency, hash);
         }
     }
-    const uint64_t total_calls = (uint64_t)4u * BENCH_SAMPLES * BENCH_CALLS;
+    const uint64_t get_calls = (uint64_t)4u * BENCH_SAMPLES * BENCH_CALLS;
     VERIFY(mc_chunk_provider_cache_observe(world->fields.v, &after) && after.owned &&
            after.raw_exports == 0 && after.mutation_depth == (mutation ? 1u : 0u) &&
            after.map_count == before.map_count && after.insertion_count == before.insertion_count &&
            after.misses == before.misses &&
-           after.generic_gets == before.generic_gets + (mutation ? total_calls : 0u) &&
+           after.generic_gets == before.generic_gets + (mutation ? get_calls : 0u) &&
            after.rebuilds == before.rebuilds &&
-           after.hits == before.hits + (mutation ? 0u : total_calls) &&
+           after.hits == before.hits + (mutation ? 0u : get_calls) &&
            after.index_bytes == before.index_bytes && after.direct_bytes == before.direct_bytes);
     VERIFY(memcmp(&world->fields, fields, sizeof(fields)) == 0 &&
            memcmp(world->fields.r, random, sizeof(random)) == 0 &&
@@ -289,7 +319,7 @@ static int bench_run(source_save_fixture *s, bool mutation, unsigned int chunk_c
     printf("CACHE_QUERY_INVARIANTS owned=1 raw-exports=0 same-chunk=1 same-arrays=1 "
            "same-world-fields=1 same-random=1 same-cache-layout=1 same-pending-membership=1 "
            "same-diagnostics=1 same-holds=1 calls=%u sink=%" PRIu64 "\n",
-           4u * BENCH_SAMPLES * BENCH_CALLS, last_sink);
+           (unsigned int)BENCH_MODES * BENCH_SAMPLES * BENCH_CALLS, last_sink);
     if (mutation) {
         mc_chunk_provider_cache_mutation_end(world->fields.v);
         VERIFY(mc_chunk_provider_cache_observe(world->fields.v, &after) && after.owned &&
@@ -306,9 +336,12 @@ static int bench_run(source_save_fixture *s, bool mutation, unsigned int chunk_c
 int main(int argc, char **argv) {
     VERIFY(argc == 4);
     const bool mutation = strcmp(argv[2], "mutation") == 0;
-    const unsigned int chunk_count = strcmp(argv[3], "289") == 0 ? 289u : 1u;
+    const unsigned int chunk_count = strcmp(argv[3], "289") == 0   ? 289u
+                                     : strcmp(argv[3], "410") == 0 ? 410u
+                                     : strcmp(argv[3], "512") == 0 ? 512u
+                                                                   : 1u;
     VERIFY((mutation || strcmp(argv[2], "indexed") == 0) &&
-           (chunk_count == 289 || strcmp(argv[3], "1") == 0));
+           (chunk_count != 1 || strcmp(argv[3], "1") == 0));
 #if defined(__clang__)
     printf("CACHE_QUERY_CONTEXT compiler=clang major=%d minor=%d patch=%d ", __clang_major__,
            __clang_minor__, __clang_patchlevel__);

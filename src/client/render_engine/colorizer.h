@@ -23,7 +23,8 @@ typedef enum mc_client_colorizer_status {
     MC_CLIENT_COLORIZER_BUSY,
     MC_CLIENT_COLORIZER_LIMIT,
     MC_CLIENT_COLORIZER_ARRAY_FAILED,
-    MC_CLIENT_COLORIZER_CLASS_FAILED
+    MC_CLIENT_COLORIZER_CLASS_FAILED,
+    MC_CLIENT_COLORIZER_UNSUPPORTED_FP
 } mc_client_colorizer_status;
 
 typedef struct mc_client_colorizer_options {
@@ -64,4 +65,33 @@ mc_client_colorizer_status mc_client_colorizer_set(mc_client_render_engine_class
                                                    mc_client_colorizer_error *);
 bool mc_client_colorizer_inspect(const mc_client_render_engine_classes *, mc_client_colorizer_kind,
                                  mc_client_colorizer_state *);
+
+typedef enum mc_client_colorizer_read_kind {
+    MC_CLIENT_COLORIZER_SAMPLE,
+    MC_CLIENT_COLORIZER_PINE,
+    MC_CLIENT_COLORIZER_BIRCH,
+    MC_CLIENT_COLORIZER_DEFAULT_FOLIAGE
+} mc_client_colorizer_read_kind;
+
+/* Exact IA/JH scalar bodies after the caller's reached class active use.
+ * No array copies or masking: the returned int retains all 32 source bits.
+ * The namespace and actual array remain live/exclusive through this call. */
+mc_client_colorizer_status mc_client_colorizer_read_ready(mc_client_render_engine_classes *,
+                                                          mc_client_colorizer_kind,
+                                                          mc_client_colorizer_read_kind,
+                                                          double temperature, double rainfall,
+                                                          int32_t *, mc_client_colorizer_error *);
+
+/* Native upper-layer entry: one actual class active use followed by the same
+ * scalar body. The private class owner installs this callback so simulation
+ * callers need no rendering-library dependency or global namespace binding. */
+typedef mc_client_colorizer_status (*mc_client_colorizer_reader)(mc_client_render_engine_classes *,
+                                                                 mc_client_colorizer_kind,
+                                                                 mc_client_colorizer_read_kind,
+                                                                 double, double, int32_t *,
+                                                                 mc_client_colorizer_error *);
+mc_client_colorizer_status mc_client_colorizer_read(mc_client_render_engine_classes *,
+                                                    mc_client_colorizer_kind,
+                                                    mc_client_colorizer_read_kind, double, double,
+                                                    int32_t *, mc_client_colorizer_error *);
 #endif

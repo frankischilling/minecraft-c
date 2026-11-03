@@ -71,6 +71,8 @@ test cleanup correctly refused its manually published nonempty Chunk cache;
 the final fixture explicitly withdraws that publication after ending Entity
 memberships. No production cleanup rule changes for that fixture correction.
 
-The destruction packet has separate hash and schema checks. Full saved-world
-gameplay, concrete Block harvest overrides such as Leaves/Snow/Ice, original
+The destruction packet has separate hash and schema checks.
+[Leaves, Snow-layer and Ice harvesting](../client/block-harvest.md) now has
+separate original controller comparisons, including fresh hand reads after
+tool breakage. Full saved-world gameplay, remaining Block hooks, original
 pixels/audio, Linux SDK play, extended sessions and FPS remain separate scopes.

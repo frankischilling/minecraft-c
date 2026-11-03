@@ -203,6 +203,40 @@ bool mc_chunk_provider_cache_get(mc_chunk_provider *provider,
     return false;
 }
 
+static bool owned_cache_contains(const mc_chunk_provider *provider, int32_t x, int32_t z,
+                                 bool *out) {
+    const mc_source_owned_cache *owner = provider->owned_cache;
+    if (owner == NULL || owner->mutation_depth != 0)
+        return false;
+    const mc_chunk_cache *cache = &provider->cache;
+    if (cache->entries != owner->entries || cache->insertions != owner->insertions ||
+        cache->capacity != owner->capacity ||
+        cache->insertion_capacity != owner->insertion_capacity || cache->count != owner->count ||
+        cache->insertion_count != owner->insertion_count)
+        return false;
+    /* Presence is packed-key membership only. Unlike GET it does not inspect
+     * values, pending or acquisition bindings, and changes no diagnostics or
+     * counters. Unknown/stale native index state falls back to live lookup. */
+    const int32_t key = mc_chunk_cache_key(x, z);
+    size_t slot = owned_cache_hash(key, owner->slots_count - 1);
+    for (size_t inspected = 0; inspected < owner->slots_count; ++inspected) {
+        const uint32_t word = owner->slots[slot];
+        if (word == 0) {
+            *out = false;
+            return true;
+        }
+        const size_t index = (size_t)word - 1;
+        if (index >= cache->count)
+            return false;
+        if (cache->entries[index].key == key) {
+            *out = true;
+            return true;
+        }
+        slot = (slot + 1) & (owner->slots_count - 1);
+    }
+    return false;
+}
+
 bool mc_chunk_provider_cache_observe(const mc_chunk_provider *provider,
                                      mc_chunk_provider_cache_observation *out) {
     if (provider == NULL || out == NULL)

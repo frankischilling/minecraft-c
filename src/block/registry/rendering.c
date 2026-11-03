@@ -37,9 +37,11 @@ mc_registry_status mc_block_render_inventory_shape(mc_block *block) {
     if (block->kind != MC_BLOCK_BASE && block->kind != MC_BLOCK_DIRT &&
         block->kind != MC_BLOCK_WOOL && block->kind != MC_BLOCK_PUMPKIN &&
         block->kind != MC_BLOCK_LOG && block->kind != MC_BLOCK_CRAFTING_TABLE &&
-        block->kind != MC_BLOCK_SLAB)
+        block->kind != MC_BLOCK_SLAB && block->kind != MC_BLOCK_LEAVES)
         return MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
-    return MC_REGISTRY_OK; /* Actual inherited uu.g()V has only return0. */
+    /* BK and NR declare no g()V; their UU body, like the other selected
+     * inherited receivers, is literal return0 and retains all live bounds. */
+    return MC_REGISTRY_OK;
 }
 
 mc_registry_status mc_block_render_describe(const mc_block *block,

@@ -101,7 +101,8 @@ struct mc_client_render_engine_classes {
     mc_client_command_range *command_ranges;
     struct mc_client_display_context_lease *context_lease;
     mc_client_display *bound_display;
-    mc_client_colorizer_namespace colorizers; /* Three independent cold source classes. */
+    mc_client_colorizer_namespace colorizers;  /* Three independent cold source classes. */
+    mc_client_colorizer_reader colorizer_read; /* Native dispatch, no Source static field. */
     mc_client_render_engine_phase dk_phase;
     mc_client_tessellator *dk_D; /* Actual dk.D, borrowed same-namespace nw.a. */
     int32_t dk_b;                /* Actual dk.b chunk update count. */

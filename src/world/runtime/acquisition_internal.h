@@ -22,4 +22,10 @@ mc_world_runtime_block_get_failure(mc_world_runtime *runtime, int32_t x, int32_t
                                    int32_t *out, mc_world_storage_error *error,
                                    mc_world_runtime_acquisition_error *acquisition);
 
+/* The same convention and one-provider-call contract for World.e(III)I. */
+mc_world_storage_status
+mc_world_runtime_metadata_get_failure(mc_world_runtime *runtime, int32_t x, int32_t y, int32_t z,
+                                      int32_t *out, mc_world_storage_error *error,
+                                      mc_world_runtime_acquisition_error *acquisition);
+
 #endif

@@ -14,6 +14,14 @@ the requested Chunk and context. A miss follows the original coordinator.
 Raw descriptor export permanently disables this optimization. Caller-owned
 caches retain full validation; the index rebuilds only after the outer scope ends.
 
+Provider presence checks now also use the owned index while no mutation is in
+progress. This operation compares packed keys only. A present key with a NULL
+or malformed Chunk value still counts as present, and the actual `World.v`
+receiver can be a different live provider. Presence adds no GET counters,
+validation of pending state, loading, callbacks or owner holds. Mutation scopes,
+raw exports, changed descriptors and caller-owned storage keep the existing live
+linear membership check.
+
 ## Controlled Windows measurement
 
 The fixed-work CPU benchmark uses authored saved Chunks, an actual constructed
@@ -48,6 +56,44 @@ Saved inputs remain unchanged apart from the actual constructor's session lock.
 Native callback regressions separately exercise publication, same-key replacement,
 invalid requested data, reentry, raw export and the final outer-scope rebuild.
 
+## Provider presence measurement
+
+A separate comparison starts from commit `8a213bc6`. Both candidates use its
+same compiled simulation and dependency closure, with only
+`chunk_provider.c.obj` replaced. Their CPU observer object is identical. Three
+fresh processes per candidate retain 21 samples per operation, each containing
+65,536 calls. Presence hits traverse a fixed selection of loaded coordinates;
+misses use coordinates absent from the authored save.
+
+| Operation and loaded Chunks | Baseline (ns/call) | Indexed presence |
+| --- | ---: | ---: |
+| Presence hit, 1 | 9.30 | 10.56 |
+| Presence hit, 289 | 77.74 | 15.03 |
+| Presence miss, 289 | 138.83 | 16.80 |
+| Saved skylight, 289 | 155.82 | 87.22 |
+| Presence hit, 410 | 102.38 | 14.74 |
+| Presence miss, 410 | 188.31 | 15.22 |
+| Saved skylight, 410 | 208.90 | 90.77 |
+| Presence hit, 512 | 124.02 | 15.16 |
+| Presence miss, 512 | 234.26 | 15.90 |
+| Saved skylight, 512 | 212.00 | 87.42 |
+| Presence hit, mutation scope, 512 | 124.22 | 126.37 |
+| Saved skylight, mutation scope, 512 | 324.51 | 324.65 |
+
+The small single-Chunk guard cost and unchanged linear mutation path are retained
+controls. The [record](../../tests/benchmarks/chunk_presence_windows.json)
+contains all 1,260 CPU samples, code fingerprints and continuity receipts.
+Semantic controls pass before and after the optimization, including actual
+callback publication/replacement, packed-key aliases, invalid descriptors,
+NULL values, foreign providers and permanent raw-export fallback.
+
+The same record preserves a failed three-round native frame cohort. Two
+intervals lose foreground focus and enter the source Pause screen; two intervals
+also overlap edits to selected test files. Every attempt remains recorded,
+including individually valid intervals. The cohort supplies no FPS improvement
+claim. The new CPU comparison is separate from the earlier qualified frame pair
+below.
+
 ## Reproduce
 
 Build with tests and the optional benchmark enabled. Use Release builds with
@@ -63,12 +109,17 @@ python -B tests/tools/world/benchmark_queries.py \
 python -B tests/tools/world/benchmark_queries.py \
   --executable current=build/mc_benchmark_world_queries \
   --scope mutation --chunks 289 --rounds 3 --artifacts .local/query-benchmarks
+python -B tests/tools/world/benchmark_queries.py \
+  --executable current=build/mc_benchmark_world_queries \
+  --scope indexed --chunks 512 --rounds 3 --artifacts .local/query-benchmarks
 ```
 
 On Windows, use the `.exe` target path. Repeat `--executable label=path` to
 compare candidates. The runner retains raw samples, executable/source/input
 hashes, checksums and per-operation distributions. It creates its own resources
 and saves; Java, original archives, imported assets and a display are unnecessary.
+The current observer includes presence hits and misses alongside its four
+earlier operations, and accepts 1, 289, 410 or 512 loaded Chunks.
 Timing thresholds are deliberately excluded from CTest.
 
 ## Matched Windows frame intervals

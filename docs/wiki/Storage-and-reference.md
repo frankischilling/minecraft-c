@@ -1,5 +1,18 @@
 # Storage and original references
 
+The [concrete harvest packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/block/harvest/README.md)
+records 92 unchanged-original calls in two matching guarded VMs: 63 complete
+controller removals and 29 supplemental direct calls. Native replay matches
+the 63 controller cases. The [Leaf inventory packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/leaf_inventory/README.md)
+adds 17 original metadata-color/shape rows, with class/Code fingerprints and
+two matching captures. These packets contain no game source, assets or binaries.
+
+The [provider presence record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/chunk_presence_windows.json)
+retains all 1,260 CPU samples, shared-object fingerprints and all six native
+frame attempts. Invalid foreground/source-continuity intervals remain explicit;
+there is no frame-cohort aggregate. Private source paths, process/window IDs
+and resources are excluded from that projection.
+
 The [held Item mining packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/item/mining/README.md)
 records unchanged-original speed, harvesting, destruction and controller calls,
 with method fingerprints and captured result hashes. Original archives and

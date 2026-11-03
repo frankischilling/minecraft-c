@@ -2,6 +2,7 @@
  * reached Math occurrence and complete acquisition diagnostics. */
 #include "../../block/registry/registry_internal.h"
 #include "../../entity/living/travel_math_internal.h"
+#include "../../entity/particles/digging_color_internal.h"
 #include "../../entity/particles/particle_internal.h"
 #include "mc/block/registry/registry.h"
 #include "mc/block/registry/runtime.h"
@@ -11,6 +12,7 @@ struct mc_effect_block_call {
     mc_effect_block_state state;
     mc_effect_renderer_error failure, append, cleanup;
     mc_particle_error particle;
+    mc_digging_color_error color;
     mc_world_storage_error world;
     mc_world_runtime_acquisition_error acquisition;
     mc_registry_error registry;
@@ -44,7 +46,7 @@ static bool block_capture_receipt(struct mc_effect_block_call *w,
 static bool block_capture_acquisition(struct mc_effect_block_call *w) {
     if (w->state.acquisition == NULL)
         return true;
-    const mc_world_runtime_acquisition_error *a = &w->acquisition;
+    const mc_world_runtime_acquisition_error *a = w->state.acquisition;
     return block_capture_receipt(w, &a->batch.publication.world_access_failure) &&
            block_capture_receipt(w, &a->tile_entity.world_access_failure) &&
            block_capture_receipt(w, &a->tile_entity.publication.world_access_failure) &&
@@ -140,6 +142,23 @@ static bool block_particle(struct mc_effect_block_call *w, mc_entity_status stat
     return false;
 }
 
+static bool block_tint(mc_client_effect_renderer *r, struct mc_effect_block_call *w,
+                       unsigned int pc) {
+    const mc_entity_status status =
+        mc_digging_particle_tint_entered(w->candidate, r->render_engine, w->state.x, w->state.y,
+                                         w->state.z, &w->color, &w->particle);
+    if (w->color.reached)
+        w->state.color = &w->color;
+    if (status != MC_ENTITY_OK && w->color.failed && w->color.child == MC_DIGGING_COLOR_METADATA &&
+        w->color.acquisition_reached) {
+        w->state.world = &w->color.world;
+        w->state.acquisition = &w->color.acquisition;
+        if (!block_capture_acquisition(w))
+            (void)block_cleanup_failure(w, "DN failed color acquisition producer capture", NULL);
+    }
+    return block_particle(w, status, pc);
+}
+
 static bool block_append(mc_client_effect_renderer *r, struct mc_effect_block_call *w,
                          unsigned int pc) {
     effect_error_scope work;
@@ -218,11 +237,7 @@ static bool destroy_body(mc_client_effect_renderer *r, struct mc_effect_block_ca
                 const double vz =
                     mc_travel_dsub(mc_travel_dsub(w->state.position[2], (double)w->state.z), .5);
                 if (!block_construct(r, w, registry, math, block, vx, vy, vz, 154) ||
-                    !block_particle(w,
-                                    mc_digging_particle_tint(w->candidate, w->state.x, w->state.y,
-                                                             w->state.z, &w->particle),
-                                    160) ||
-                    !block_append(r, w, 163))
+                    !block_tint(r, w, 160) || !block_append(r, w, 163))
                     return false;
             }
     w->state.source_pc = 184;
@@ -287,11 +302,7 @@ static bool hit_body(mc_client_effect_renderer *r, struct mc_effect_block_call *
         w->state.position[0] =
             mc_travel_dadd(mc_travel_dadd((double)w->state.x, f->bv), (double).1f);
     if (!block_new(r, w, 270) || !block_world(r, w, &w->state.metadata, true, 298) ||
-        !block_construct(r, w, registry, math, block, 0., 0., 0., 301) ||
-        !block_particle(w,
-                        mc_digging_particle_tint(w->candidate, w->state.x, w->state.y, w->state.z,
-                                                 &w->particle),
-                        307) ||
+        !block_construct(r, w, registry, math, block, 0., 0., 0., 301) || !block_tint(r, w, 307) ||
         !block_particle(w, mc_digging_particle_velocity_scale(w->candidate, .2f, &w->particle),
                         312) ||
         !block_particle(w, mc_digging_particle_size_scale(w->candidate, .6f, &w->particle), 317) ||

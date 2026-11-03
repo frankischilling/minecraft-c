@@ -6,7 +6,9 @@
 #include "item/stack/source_internal.h"
 #include "item_billboard.h"
 #include "item_renderer_internal.h"
+#include "item_scale.h"
 #include "mc/core/java/java.h"
+#include "world/runtime/block_normal_internal.h"
 
 static const char item_descriptor[] = "(Lhl;DDDFF)V";
 static const uint16_t terrain_units[] = {'/', 't', 'e', 'r', 'r', 'a',
@@ -105,11 +107,74 @@ static bool item_inventory(ld_frame *f, mc_client_render_blocks *fields, const m
     return true;
 }
 
-static bool billboard_registry_failure(ld_frame *f, mc_registry_classes *registry,
-                                       const char *operation) {
+static bool item_registry_failure(ld_frame *f, mc_registry_classes *registry,
+                                  const char *operation) {
     f->error->selected_child = MC_CLIENT_LIVING_DRAW_CHILD_REGISTRY;
     ld_registry_classify(f, registry, &f->error->detail.registry);
     return ld_fail(f, MC_CLIENT_LIVING_DRAW_CHILD_FAILED, operation);
+}
+
+bool mc_client_item_block_scale(mc_registry_classes *registry, mc_item_stack *stack,
+                                const mc_block *normal_receiver, float *out,
+                                mc_client_living_draw_error *error) {
+    if (out == NULL || error == NULL)
+        return false;
+    ld_frame f = {.error = error};
+    item_at(&f, 188);
+    if (normal_receiver == NULL)
+        return ld_null(&f, "Item actual Block normal predicate receiver");
+    float scale = 0.25f;
+    if (!mc_world_source_block_normal(normal_receiver)) {
+        item_at(&f, 196);
+        if (stack == NULL)
+            return ld_null(&f, "Item scale captured Stack ID receiver");
+        int32_t id;
+        error->detail.stack = mc_item_stack_source_id_get(stack, &id);
+        if (error->detail.stack != MC_ITEM_STACK_OK) {
+            error->selected_child = MC_CLIENT_LIVING_DRAW_CHILD_STACK;
+            return ld_fail(&f, MC_CLIENT_LIVING_DRAW_CHILD_FAILED, "Item scale actual Stack ID");
+        }
+        item_at(&f, 199);
+        const mc_block *singleton = NULL;
+        if (mc_registry_block_static_get(registry, "al", &singleton, &error->detail.registry) !=
+            MC_REGISTRY_OK)
+            return item_registry_failure(&f, registry, "Item scale actual Block.al active use");
+        item_at(&f, 202);
+        if (singleton == NULL)
+            return ld_null(&f, "Item scale current Block.al ID receiver");
+        if (id != mc_block_fields_get(singleton)->bn) {
+            mc_registry_block_m_view array;
+            item_at(&f, 208);
+            if (mc_registry_block_m_get(registry, &array, &error->detail.registry) !=
+                MC_REGISTRY_OK)
+                return item_registry_failure(&f, registry, "Item scale current Block.m active use");
+            item_at(&f, 213);
+            error->detail.stack = mc_item_stack_source_id_get(stack, &id);
+            if (error->detail.stack != MC_ITEM_STACK_OK) {
+                error->selected_child = MC_CLIENT_LIVING_DRAW_CHILD_STACK;
+                return ld_fail(&f, MC_CLIENT_LIVING_DRAW_CHILD_FAILED,
+                               "Item scale fresh captured Stack ID");
+            }
+            item_at(&f, 216);
+            const mc_block *current = NULL;
+            if (mc_registry_block_m_at(&array, id, &current, &error->detail.registry) !=
+                MC_REGISTRY_OK)
+                return item_registry_failure(&f, registry, "Item scale current Block.m element");
+            item_at(&f, 217);
+            if (current == NULL)
+                return ld_null(&f, "Item scale current Block render-type receiver");
+            mc_block_render_description description;
+            if (mc_block_render_describe(current, &description) != MC_REGISTRY_OK)
+                return ld_fail(&f, MC_CLIENT_LIVING_DRAW_STATE,
+                               "Item scale actual Block render type");
+            if (description.type != 16)
+                scale = 0.5f;
+        }
+    }
+    item_at(&f, 229);
+    error->state.item.scale = scale;
+    *out = scale;
+    return true;
 }
 
 static bool billboard_prefix_result(ld_frame *f, const mc_client_item_billboard_context *c,
@@ -166,7 +231,7 @@ static bool item_billboard(ld_frame *f, const mc_client_item_renderer_fields *bb
         const mc_item *color_item = NULL;
         item_at(f, 492);
         if (mc_registry_item_c_get(registry, &array, &e->detail.registry) != MC_REGISTRY_OK)
-            return billboard_registry_failure(f, registry, "Item billboard actual GM.c active use");
+            return item_registry_failure(f, registry, "Item billboard actual GM.c active use");
         item_at(f, 497);
         e->detail.stack = mc_item_stack_source_id_get(stack, &id);
         if (e->detail.stack != MC_ITEM_STACK_OK) {
@@ -177,7 +242,7 @@ static bool item_billboard(ld_frame *f, const mc_client_item_renderer_fields *bb
         item_at(f, 500);
         if (mc_registry_item_c_at(registry, array, id, &color_item, &e->detail.registry) !=
             MC_REGISTRY_OK)
-            return billboard_registry_failure(f, registry, "Item billboard actual GM.c aaload");
+            return item_registry_failure(f, registry, "Item billboard actual GM.c aaload");
         item_at(f, 503);
         int32_t metadata;
         e->detail.stack = mc_item_stack_source_damage_get(stack, &metadata);
@@ -382,14 +447,10 @@ bool mc_client_item_draw_entered(mc_client_draw_scope *scope, mc_client_managed_
         return false;
     if (!block_at(&f, stack, 187, &block))
         return false;
-    item_at(&f, 188);
-    if (block == NULL)
-        return ld_null(&f, "Item actual Block opacity receiver");
-    float scale = 0.25f;
-    if (!mc_block_render_opaque(block))
-        return ld_fail(&f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED,
-                       "Item nonopaque Block scale singleton/type branch");
-    error->state.item.scale = scale;
+    float scale;
+    if (!mc_client_item_block_scale(renderer->parent->classes->registry, stack, block, &scale,
+                                    error))
+        return false;
     item_at(&f, 235);
     if (!ld_display(&f, mc_client_display_source_scale(scope->model.display, scale, scale, scale,
                                                        &error->detail.display)))

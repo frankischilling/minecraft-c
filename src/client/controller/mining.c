@@ -15,6 +15,7 @@
 #include "mc/core/java/java.h"
 #include "mc/entity/player/statistics.h"
 #include "mc/item/mining/destroy.h"
+#include "mc/item/registry/registry.h"
 #include "mc/statistics/registry/registry.h"
 #include "mc/world/runtime/auxiliary.h"
 #include "mc/world/runtime/blocks.h"
@@ -50,7 +51,9 @@ static bool failed(mc_singleplayer_mining_call *call, mc_singleplayer_mining_sta
     call->error.site = (mc_player_site){owner, method, "(IIII)V", pc};
     if (strcmp(method, "b") == 0)
         call->error.site.descriptor = "(IIII)Z";
-    if (strcmp(owner, "uu") == 0 && strcmp(method, "a") == 0)
+    if ((strcmp(owner, "uu") == 0 || strcmp(owner, "bk") == 0 || strcmp(owner, "jr") == 0 ||
+         strcmp(owner, "nk") == 0) &&
+        strcmp(method, "a") == 0)
         call->error.site.descriptor = "(Lfd;Lgs;IIII)V";
     call->error.native_policy = native_policy;
     return false;
@@ -237,47 +240,41 @@ static bool base_destroy(mc_singleplayer_mining_call *call, bool *removed) {
     return true;
 }
 
-static bool harvest(mc_singleplayer_mining_call *call, const mc_block *block,
-                    mc_world_runtime *target, mc_entity *player) {
-    if (block == NULL)
-        return failed(call, MC_SINGLEPLAYER_MINING_SOURCE_NULL,
-                      "actual OS harvest null Block receiver", "os", "b", 158, false);
-    switch (block->kind) {
-        case MC_BLOCK_LEAVES:
-        case MC_BLOCK_SNOW_LAYER:
-        case MC_BLOCK_ICE:
-            return failed(call, MC_SINGLEPLAYER_MINING_DEPENDENCY,
-                          "actual concrete Block harvest override", "os", "b", 158, true);
-        default:
-            break;
-    }
-    /* Client VG (Log) only invokespecial UU.a at10, then returns13. It enters
-     * this same body with the same Block receiver and all unchanged arguments.
-     * FK (Glass) declares no harvest method and inherits UU directly. */
+static bool harvest_statistic(mc_singleplayer_mining_call *call, const mc_block *block,
+                              mc_entity *player, const char *owner, unsigned int static_pc,
+                              unsigned int index_pc, unsigned int invoke_pc) {
     if (mc_registry_classes_initialize_statistics(block->classes, &call->error.registry) !=
         MC_REGISTRY_OK)
-        return failed(call, MC_SINGLEPLAYER_MINING_REGISTRY, call->error.registry.message, "uu",
-                      "a", 1, true);
+        return failed(call, MC_SINGLEPLAYER_MINING_REGISTRY, call->error.registry.message, owner,
+                      "a", static_pc, true);
     mc_registry_statistic_view statistics;
     if (mc_registry_classes_inspect_statistics(block->classes, &statistics,
                                                &call->error.registry) != MC_REGISTRY_OK)
-        return failed(call, MC_SINGLEPLAYER_MINING_REGISTRY, call->error.registry.message, "uu",
-                      "a", 1, true);
+        return failed(call, MC_SINGLEPLAYER_MINING_REGISTRY, call->error.registry.message, owner,
+                      "a", static_pc, true);
     const int32_t id = block->fields.bn;
     if (statistics.C == NULL || id < 0 || id >= 256)
         return failed(call,
                       statistics.C == NULL ? MC_SINGLEPLAYER_MINING_SOURCE_NULL
                                            : MC_SINGLEPLAYER_MINING_REGISTRY,
-                      "actual mined statistic array access", "uu", "a", 8, false);
+                      "actual mined statistic array access", owner, "a", index_pc, false);
     if (player == NULL)
         return failed(call, MC_SINGLEPLAYER_MINING_SOURCE_NULL,
-                      "actual Block harvest null Player statistic receiver", "uu", "a", 10, false);
+                      "actual Block harvest null Player statistic receiver", owner, "a", invoke_pc,
+                      false);
     call->error.statistic = &call->statistic;
     if (mc_local_player_add_statistic(player, statistics.C[id], 1, &call->statistic) !=
         MC_PLAYER_STATISTIC_OK)
-        return failed(call, MC_SINGLEPLAYER_MINING_PLAYER, call->statistic.operation, "uu", "a", 10,
-                      true);
+        return failed(call, MC_SINGLEPLAYER_MINING_PLAYER, call->statistic.operation, owner, "a",
+                      invoke_pc, true);
     call->state.statistic_returned = true;
+    return true;
+}
+
+static bool harvest_base(mc_singleplayer_mining_call *call, const mc_block *block,
+                         mc_world_runtime *target, mc_entity *player) {
+    if (!harvest_statistic(call, block, player, "uu", 1, 8, 10))
+        return false;
     if (!mutation_frame(call, "uu", "a", 22))
         return false;
     if (target == NULL)
@@ -294,6 +291,179 @@ static bool harvest(mc_singleplayer_mining_call *call, const mc_block *block,
                       true);
     call->state.drop_returned = true;
     return true;
+}
+
+static bool harvest_current(mc_singleplayer_mining_call *call, mc_entity *player, unsigned int pc,
+                            const mc_item_stack **out) {
+    if (player == NULL)
+        return failed(call, MC_SINGLEPLAYER_MINING_SOURCE_NULL,
+                      "actual Leaves harvest null Player current-Stack receiver", "bk", "a", pc,
+                      false);
+    if (!mc_entity_is_kind(player, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) ||
+        player->local_player == NULL)
+        return failed(call, MC_SINGLEPLAYER_MINING_PLAYER,
+                      "Leaves harvest canonical Player storage", "bk", "a", pc, true);
+    mc_inventory_player *inventory = player->local_player->fields.player.c;
+    if (inventory == NULL)
+        return failed(call, MC_SINGLEPLAYER_MINING_SOURCE_NULL,
+                      "actual gs.G null Inventory receiver", "bk", "a", pc, false);
+    call->error.inventory = &call->inventory;
+    if (mc_inventory_player_current(inventory, out, &call->inventory) != MC_INVENTORY_OK)
+        return failed(call, MC_SINGLEPLAYER_MINING_PLAYER, call->inventory.operation, "bk", "a", pc,
+                      call->inventory.native_policy);
+    return true;
+}
+
+static bool harvest_leaves(mc_singleplayer_mining_call *call, const mc_block *block,
+                           mc_world_runtime *target, mc_entity *player) {
+    if (target == NULL)
+        return failed(call, MC_SINGLEPLAYER_MINING_SOURCE_NULL,
+                      "actual Leaves harvest null World remote-field receiver", "bk", "a", 1,
+                      false);
+    if (target->fields.B)
+        return harvest_base(call, block, target, player);
+    const mc_item_stack *current;
+    if (!harvest_current(call, player, 8, &current))
+        return false;
+    if (current == NULL)
+        return harvest_base(call, block, target, player);
+    /* The second actual GS.G follows the NULL test. In particular, neither
+     * read borrows the captured Stack already damaged/cleared by OS. */
+    if (!harvest_current(call, player, 15, &current))
+        return false;
+    if (current == NULL)
+        return failed(call, MC_SINGLEPLAYER_MINING_SOURCE_NULL,
+                      "actual Leaves harvest null second Stack ID receiver", "bk", "a", 18, false);
+    int32_t id;
+    if (mc_item_stack_source_id_get(current, &id) != MC_ITEM_STACK_OK)
+        return failed(call, MC_SINGLEPLAYER_MINING_PLAYER, "Leaves harvest live Stack ID", "bk",
+                      "a", 18, true);
+    if (mc_registry_classes_initialize_items(block->classes, &call->error.registry) !=
+        MC_REGISTRY_OK)
+        return failed(call, MC_SINGLEPLAYER_MINING_REGISTRY, call->error.registry.message, "bk",
+                      "a", 21, true);
+    const mc_item *shears;
+    if (mc_registry_classes_inspect_item_static(block->classes, "bc", &shears,
+                                                &call->error.registry) != MC_REGISTRY_OK)
+        return failed(call, MC_SINGLEPLAYER_MINING_REGISTRY, call->error.registry.message, "bk",
+                      "a", 21, true);
+    if (shears == NULL)
+        return failed(call, MC_SINGLEPLAYER_MINING_SOURCE_NULL,
+                      "actual Leaves harvest null static Shears ID receiver", "bk", "a", 24, false);
+    if (id != mc_item_fields_get(shears)->bf)
+        return harvest_base(call, block, target, player);
+    if (!harvest_statistic(call, block, player, "bk", 31, 38, 40))
+        return false;
+    mc_item_stack *stack = NULL;
+    if (mc_item_stack_allocate(&stack) != MC_ITEM_STACK_OK)
+        return failed(call, MC_SINGLEPLAYER_MINING_ALLOCATION, "Leaves harvest Stack allocation",
+                      "bk", "a", 50, true);
+    const mc_block *leaves;
+    if (mc_registry_block_static_get(block->classes, "L", &leaves, &call->error.registry) !=
+        MC_REGISTRY_OK) {
+        mc_item_stack_release(stack);
+        return failed(call, MC_SINGLEPLAYER_MINING_REGISTRY, call->error.registry.message, "bk",
+                      "a", 54, true);
+    }
+    if (leaves == NULL) {
+        mc_item_stack_release(stack);
+        return failed(call, MC_SINGLEPLAYER_MINING_SOURCE_NULL,
+                      "actual Leaves harvest null static Leaves ID receiver", "bk", "a", 57, false);
+    }
+    const int32_t leaf_id = leaves->fields.bn;
+    if (mc_item_stack_construct(stack, leaf_id, 1, call->state.metadata & 3) != MC_ITEM_STACK_OK) {
+        mc_item_stack_release(stack);
+        return failed(call, MC_SINGLEPLAYER_MINING_PLAYER,
+                      "Leaves harvest numeric Stack constructor", "bk", "a", 65, true);
+    }
+    bool done = mutation_frame(call, "bk", "a", 68);
+    if (done && mc_world_runtime_call_enter(target, &call->error.world) != MC_WORLD_STORAGE_OK)
+        done = failed(call, MC_SINGLEPLAYER_MINING_WORLD, call->error.world.operation, "bk", "a",
+                      68, true);
+    else if (done) {
+        done = mc_world_mutation_drop_stack(target, block, call->state.x, call->state.y,
+                                            call->state.z, stack, call->mutation);
+        mc_world_runtime_call_leave(target);
+        if (!done)
+            (void)failed(call, MC_SINGLEPLAYER_MINING_WORLD, call->mutation->operation, "bk", "a",
+                         68, true);
+    }
+    mc_item_stack_release(stack);
+    if (done)
+        call->state.drop_returned = true;
+    return done;
+}
+
+static bool harvest_set(mc_singleplayer_mining_call *call, mc_world_runtime *target, int32_t id,
+                        const char *owner, unsigned int pc) {
+    if (target == NULL)
+        return failed(call, MC_SINGLEPLAYER_MINING_SOURCE_NULL,
+                      "actual harvest null World notifying-setter receiver", owner, "a", pc, false);
+    if (!mutation_frame(call, owner, "a", pc))
+        return false;
+    bool ignored;
+    if (mc_world_runtime_block_set(target, call->state.x, call->state.y, call->state.z, id,
+                                   &ignored, call->mutation) != MC_WORLD_STORAGE_OK)
+        return failed(call, MC_SINGLEPLAYER_MINING_WORLD, call->mutation->operation, owner, "a", pc,
+                      true);
+    return true;
+}
+
+static bool harvest_snow(mc_singleplayer_mining_call *call, const mc_block *block,
+                         mc_world_runtime *target, mc_entity *player) {
+    if (!mutation_frame(call, "jr", "a", 0))
+        return false;
+    if (target != NULL &&
+        mc_world_runtime_call_enter(target, &call->error.world) != MC_WORLD_STORAGE_OK)
+        return failed(call, MC_SINGLEPLAYER_MINING_WORLD, call->error.world.operation, "jr", "a", 0,
+                      true);
+    const bool done = mc_world_mutation_snow_harvest_drop(
+        target, block, call->state.x, call->state.y, call->state.z, call->mutation);
+    if (target != NULL)
+        mc_world_runtime_call_leave(target);
+    if (!done)
+        return failed(call, MC_SINGLEPLAYER_MINING_WORLD, call->mutation->operation, "jr", "a",
+                      call->mutation->drop_bytecode, true);
+    call->state.drop_returned = true;
+    return harvest_set(call, target, 0, "jr", 140) &&
+           harvest_statistic(call, block, player, "jr", 145, 152, 154);
+}
+
+static bool harvest(mc_singleplayer_mining_call *call, const mc_block *block,
+                    mc_world_runtime *target, mc_entity *player) {
+    if (block == NULL)
+        return failed(call, MC_SINGLEPLAYER_MINING_SOURCE_NULL,
+                      "actual OS harvest null Block receiver", "os", "b", 158, false);
+    if (block->kind == MC_BLOCK_LEAVES)
+        return harvest_leaves(call, block, target, player);
+    if (block->kind == MC_BLOCK_SNOW_LAYER)
+        return harvest_snow(call, block, target, player);
+    /* VG's wrapper, FK and both NR/JP superclass resolutions enter UU with
+     * the same receiver. Ice continues only after that body returns. */
+    if (!harvest_base(call, block, target, player))
+        return false;
+    if (block->kind != MC_BLOCK_ICE)
+        return true;
+    mc_material *material;
+    if (mc_world_runtime_material_get(target, call->state.x, mc_java_i32_sub(call->state.y, 1),
+                                      call->state.z, &material,
+                                      &call->error.world) != MC_WORLD_STORAGE_OK)
+        return failed(call, MC_SINGLEPLAYER_MINING_WORLD, call->error.world.operation, "nk", "a",
+                      21, true);
+    if (material == NULL)
+        return failed(call, MC_SINGLEPLAYER_MINING_SOURCE_NULL,
+                      "actual Ice harvest null below Material receiver", "nk", "a", 28, false);
+    if (!mc_material_c(material) && !mc_material_d(material))
+        return true;
+    const mc_block *water;
+    if (mc_registry_block_static_get(block->classes, "B", &water, &call->error.registry) !=
+        MC_REGISTRY_OK)
+        return failed(call, MC_SINGLEPLAYER_MINING_REGISTRY, call->error.registry.message, "nk",
+                      "a", 48, true);
+    if (water == NULL)
+        return failed(call, MC_SINGLEPLAYER_MINING_SOURCE_NULL,
+                      "actual Ice harvest null flowing Water ID receiver", "nk", "a", 51, false);
+    return harvest_set(call, target, water->fields.bn, "nk", 54);
 }
 
 static bool clear_held(mc_singleplayer_mining_call *call, mc_entity *player) {

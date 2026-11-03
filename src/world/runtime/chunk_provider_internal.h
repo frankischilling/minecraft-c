@@ -165,6 +165,10 @@ bool mc_chunk_provider_cache_get(mc_chunk_provider *, const mc_chunk_acquire_con
  * metadata admission. No border, load, generation, pending removal, callbacks
  * or future-payload preflight. Caller holds the World through the complete
  * enclosing source operation and attributes this provider call at bytecode6.
+ * Unexported owned storage may use its depth-zero index for key membership;
+ * mutation scopes, changed descriptors and generic storage keep live linear
+ * lookup. Neither route inspects Chunk values or changes GET diagnostics or
+ * counters. The actual provider may belong to a different live World.
  * Failure preserves out and returns its cause without changing World errors. */
 mc_world_storage_status mc_world_runtime_chunk_provider_contains(mc_world_runtime *runtime,
                                                                  int32_t chunk_x, int32_t chunk_z,

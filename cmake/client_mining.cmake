@@ -15,6 +15,10 @@ if(BUILD_TESTING)
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/item/mining/test_packet.py")
     set_tests_properties(tools.item_mining_packet PROPERTIES
         LABELS "public;unit;tools;item;inventory;reference" TIMEOUT 60)
+    add_test(NAME tools.block_harvest_packet COMMAND Python3::Interpreter -B -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/block/harvest" -p test_packet.py)
+    set_tests_properties(tools.block_harvest_packet PROPERTIES
+        LABELS "public;unit;tools;block;reference" TIMEOUT 60)
     add_executable(mc_test_item_mining tests/item/mining/test_mining.c)
     target_include_directories(mc_test_item_mining PRIVATE src src/platform/time)
     target_link_libraries(mc_test_item_mining PRIVATE
@@ -35,6 +39,16 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/mining-tools-controls")
     set_tests_properties(client.mining_tools PROPERTIES
         LABELS "public;integration;client;item;world;ownership;reference" TIMEOUT 180)
+    add_executable(mc_test_block_harvest tests/client/controller/test_block_harvest.c)
+    target_include_directories(mc_test_block_harvest PRIVATE src src/core/java src/platform/time)
+    target_link_libraries(mc_test_block_harvest PRIVATE
+        mc_client_singleplayer_controller mc_resources mc_c_atomics mc_build_options)
+    add_test(NAME client.block_harvest COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_block_harvest.py"
+        --executable "$<TARGET_FILE:mc_test_block_harvest>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/block-harvest-controls")
+    set_tests_properties(client.block_harvest PROPERTIES
+        LABELS "public;integration;client;item;world;ownership;reference" TIMEOUT 600)
     add_executable(mc_test_mining_controller tests/client/controller/test_mining.c)
     target_include_directories(mc_test_mining_controller PRIVATE src src/platform/time)
     target_link_libraries(mc_test_mining_controller PRIVATE
@@ -66,9 +80,12 @@ if(BUILD_TESTING)
         if(CMAKE_CXX_COMPILER_LOADED)
             set_property(TARGET mc_test_inventory_block PROPERTY LINKER_LANGUAGE CXX)
         endif()
-        add_test(NAME client.inventory_block COMMAND mc_test_inventory_block)
+        add_test(NAME client.inventory_block COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/leaf_inventory/run_native.py"
+            --executable "$<TARGET_FILE:mc_test_inventory_block>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/leaf-inventory-controls")
         set_tests_properties(client.inventory_block PROPERTIES
-            LABELS "public;unit;client;graphics;ownership" TIMEOUT 60)
+            LABELS "public;unit;client;graphics;ownership;reference" TIMEOUT 60)
         unset(_face_links)
     endif()
     if(TARGET mc_test_item_particle)
@@ -124,3 +141,5 @@ if(BUILD_TESTING)
         endif()
     endif()
 endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/client_leaf_harvest.cmake")

@@ -2,6 +2,7 @@
 #define MC_WORLD_RUNTIME_MUTATION_INTERNAL_H
 
 #include "../runtime_internal.h"
+#include "mc/item/stack/stack.h"
 #include "mc/world/chunk/object.h"
 #include "mc/world/runtime/mutations.h"
 
@@ -164,6 +165,16 @@ bool mc_world_mutation_falling_can_pass(mc_world_runtime *world, mc_registry_cla
                                         mc_world_mutation_error *error);
 bool mc_world_mutation_drop(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
                             int32_t z, int32_t metadata, mc_world_mutation_error *error);
+/* Actual protected UU.a(World,III,Stack), with its own remote guard. Caller
+ * holds the exact World/Block/Stack; no probability or quantity call is added. */
+bool mc_world_mutation_drop_stack(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                  int32_t y, int32_t z, mc_item_stack *stack,
+                                  mc_world_mutation_error *error);
+/* JR.a(World,Player,IIII), PCs0..132 only: Item static, three World Random
+ * floats, new Entity before new Stack, delay10 and actual World publication.
+ * There is no remote guard. The caller continues setter140/statistic154. */
+bool mc_world_mutation_snow_harvest_drop(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                         int32_t y, int32_t z, mc_world_mutation_error *error);
 
 /* Caller already holds the exact World; preserve its enclosing source frames. */
 bool mc_world_mutation_sound(mc_world_runtime *world, double x, double y, double z,

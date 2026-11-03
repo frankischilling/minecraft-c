@@ -35,6 +35,14 @@ frame observer. The latter reuses a built SDK test configuration and locally
 imported assets, writes a separate executable, and retains every measurement
 attempt. Neither tool adds timing thresholds to CTest.
 
+The [Leaf/Shears SDK scene](client/block-harvest.md#windows-sdk-qualification)
+uses the existing application startup, display and imported-resource setup.
+Add `-DMC_ENABLE_CLIENT_LEAF_HARVEST_TESTS=ON` to that Windows configuration,
+build `mc_test_leaf_harvest`, then run `ctest --test-dir build-windows
+--output-on-failure --no-tests=error -R '^client.leaf_harvest$'`. It authors its
+own copied save and runs serially with the desktop-focus tests. This local
+qualification does not enable the resource-dependent case in ordinary CI.
+
 The list follows [SDL's Linux build notes](https://github.com/libsdl-org/SDL/blob/release-3.4.18/docs/README-linux.md).
 Other distributions use their corresponding packages. Configure and build with:
 

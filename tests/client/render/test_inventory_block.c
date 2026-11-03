@@ -7,10 +7,13 @@ int mc_inventory_faces_fixture_main(void);
 
 #include "block/registry/registry_internal.h"
 #include "client/render/item_overlay.h"
+#include "client/render/item_scale.h"
 #include "item/render/internal.h"
 #include "item/stack/source_internal.h"
 #include "mc/item/registry/runtime.h"
 #include <inttypes.h>
+
+#include "leaf_inventory_controls.inc"
 
 typedef struct durability_rectangle {
     int32_t x, y, width, height, color, before[48], words[48];
@@ -841,6 +844,160 @@ static bool crafting_getter_controls(fixture *f) {
     return true;
 }
 
+static bool item_block_scale_controls(fixture *f) {
+    static const struct {
+        int32_t id;
+        float scale;
+    } cases[] = {{3, .25f},  {18, .25f}, {20, .25f}, {29, .25f}, {33, .25f}, {43, .25f},
+                 {44, .25f}, {53, .5f},  {79, .25f}, {81, .5f},  {85, .5f}};
+
+    mc_client_living_draw_error *error = calloc(1, sizeof(*error));
+    CHECK(error != NULL);
+    const mc_block *read_leaf = NULL;
+    CHECK(mc_registry_block_get(f->registry, 18, &read_leaf, NULL) == MC_REGISTRY_OK &&
+          read_leaf != NULL);
+    mc_block *leaf_input = (mc_block *)(void *)read_leaf;
+    const mc_block leaf_original = *leaf_input;
+    const size_t bytes = f->registry->allocation_bytes;
+    for (unsigned int fancy = 0; fancy < 2; ++fancy) {
+        /* Prepare the real source setting before entering BB. It changes Leaf
+         * opacity c(), but inherited UU.d() remains true in both settings. */
+        CHECK(mc_block_render_fancy_leaves_receiver(leaf_input, fancy != 0) == MC_REGISTRY_OK);
+        for (size_t i = 0; i < sizeof(cases) / sizeof(cases[0]); ++i) {
+            const mc_block *block = NULL;
+            mc_item_stack *stack = NULL;
+            CHECK(mc_registry_block_get(f->registry, cases[i].id, &block, NULL) == MC_REGISTRY_OK &&
+                  block != NULL && mc_item_stack_allocate(&stack) == MC_ITEM_STACK_OK &&
+                  mc_item_stack_construct(stack, cases[i].id, -3, INT32_MIN) == MC_ITEM_STACK_OK);
+            mc_item_stack_fields before, after;
+            CHECK(mc_item_stack_fields_get(stack, &before) == MC_ITEM_STACK_OK);
+            const mc_block block_before = *block;
+            mc_client_living_draw_error_init(error);
+            error->state.item.matrix_pushed = true; /* Existing parent effect at16. */
+            float scale = -7.f;
+            CHECK(mc_client_item_block_scale(f->registry, stack, block, &scale, error) &&
+                  scale == cases[i].scale && error->state.item.scale == scale &&
+                  error->site.pc == 229 && !error->source_exception &&
+                  error->state.item.matrix_pushed &&
+                  mc_item_stack_fields_get(stack, &after) == MC_ITEM_STACK_OK &&
+                  memcmp(&before, &after, sizeof(before)) == 0 &&
+                  memcmp(block, &block_before, sizeof(block_before)) == 0 &&
+                  f->registry->allocation_bytes == bytes);
+            mc_item_stack_release(stack);
+        }
+        const mc_block *glass = NULL;
+        CHECK(mc_registry_block_get(f->registry, 20, &glass, NULL) == MC_REGISTRY_OK &&
+              glass != NULL);
+        mc_client_living_draw_error_init(error);
+        float scale = -7.f;
+        CHECK(mc_client_item_block_scale(NULL, NULL, read_leaf, &scale, error) && scale == .25f &&
+              error->site.pc == 229);
+        mc_client_living_draw_error_init(error);
+        CHECK(mc_client_item_block_scale(NULL, NULL, glass, &scale, error) && scale == .25f &&
+              error->site.pc == 229);
+        /* Inherited d() has already returned true: neither live source array
+         * nor singleton is reached, even with genuine invalid source cells. */
+        mc_block **saved_array = f->registry->blocks.m;
+        f->registry->blocks.m = NULL;
+        mc_client_living_draw_error_init(error);
+        CHECK(mc_client_item_block_scale(f->registry, NULL, read_leaf, &scale, error) &&
+              scale == .25f && error->site.pc == 229);
+        mc_client_living_draw_error_init(error);
+        CHECK(mc_client_item_block_scale(f->registry, NULL, glass, &scale, error) &&
+              scale == .25f && error->site.pc == 229);
+        f->registry->blocks.m = saved_array;
+    }
+    const mc_block *dirt = NULL, *cactus = NULL, *piston = NULL;
+    CHECK(mc_registry_block_get(f->registry, 3, &dirt, NULL) == MC_REGISTRY_OK &&
+          mc_registry_block_get(f->registry, 81, &cactus, NULL) == MC_REGISTRY_OK &&
+          mc_registry_block_get(f->registry, 33, &piston, NULL) == MC_REGISTRY_OK && dirt != NULL &&
+          cactus != NULL && piston != NULL);
+    mc_client_living_draw_error_init(error);
+    float scale = -7.f;
+    CHECK(mc_client_item_block_scale(NULL, NULL, dirt, &scale, error) && scale == .25f &&
+          error->site.pc == 229); /* Normal predicate never reads Stack or singleton. */
+    mc_client_living_draw_error_init(error);
+    scale = -7.f;
+    CHECK(!mc_client_item_block_scale(NULL, NULL, NULL, &scale, error) && scale == -7.f &&
+          error->site.pc == 188 && error->source_exception && !error->native_policy &&
+          strcmp(error->exception_class, "java/lang/NullPointerException") == 0);
+    mc_client_living_draw_error_init(error);
+    CHECK(!mc_client_item_block_scale(f->registry, NULL, cactus, &scale, error) && scale == -7.f &&
+          error->site.pc == 196 && error->source_exception && !error->native_policy);
+
+    size_t singleton_index = 0;
+    while (singleton_index <
+               sizeof(f->registry->blocks.named) / sizeof(f->registry->blocks.named[0]) &&
+           strcmp(mc_registry_block_static_name(singleton_index), "al") != 0)
+        ++singleton_index;
+    CHECK(singleton_index == 43 &&
+          strcmp(mc_registry_block_static_name(singleton_index), "al") == 0);
+    const mc_block *named_singleton = NULL;
+    CHECK(mc_registry_block_static_get(f->registry, "al", &named_singleton, NULL) ==
+              MC_REGISTRY_OK &&
+          named_singleton == f->registry->blocks.named[singleton_index] &&
+          named_singleton != NULL && named_singleton->fields.bn == 44);
+    mc_item_stack *stack = NULL, *slab_stack = NULL;
+    CHECK(mc_item_stack_allocate(&stack) == MC_ITEM_STACK_OK &&
+          mc_item_stack_construct(stack, 81, 1, 0) == MC_ITEM_STACK_OK &&
+          mc_item_stack_allocate(&slab_stack) == MC_ITEM_STACK_OK &&
+          mc_item_stack_construct(slab_stack, 44, 1, 0) == MC_ITEM_STACK_OK);
+    mc_block *singleton = f->registry->blocks.named[singleton_index];
+    mc_block **array = f->registry->blocks.m;
+    mc_block *entry = array[81];
+    /* Compare the Stack's numeric ID with actual al.bn, not the captured Block
+     * pointer: this different d-false receiver still admits the Slab ID. */
+    f->registry->blocks.m = NULL;
+    mc_client_living_draw_error_init(error);
+    CHECK(mc_client_item_block_scale(f->registry, slab_stack, cactus, &scale, error) &&
+          scale == .25f && error->site.pc == 229);
+    mc_item_stack_release(slab_stack);
+    /* A changed live singleton independently controls the same short circuit. */
+    f->registry->blocks.named[singleton_index] = (mc_block *)(void *)cactus;
+    mc_client_living_draw_error_init(error);
+    CHECK(mc_client_item_block_scale(f->registry, stack, cactus, &scale, error) && scale == .25f &&
+          error->site.pc == 229);
+    f->registry->blocks.named[singleton_index] = NULL;
+    mc_client_living_draw_error_init(error);
+    scale = -7.f;
+    CHECK(!mc_client_item_block_scale(f->registry, stack, cactus, &scale, error) && scale == -7.f &&
+          error->site.pc == 202 && error->source_exception && !error->native_policy);
+    f->registry->blocks.named[singleton_index] = singleton;
+    mc_client_living_draw_error_init(error);
+    CHECK(!mc_client_item_block_scale(f->registry, stack, cactus, &scale, error) && scale == -7.f &&
+          error->site.pc == 216 && error->source_exception && !error->native_policy);
+    f->registry->blocks.m = array;
+    array[81] = (mc_block *)(void *)piston;
+    mc_client_living_draw_error_init(error);
+    CHECK(mc_client_item_block_scale(f->registry, stack, cactus, &scale, error) && scale == .25f);
+    array[81] = (mc_block *)(void *)dirt;
+    mc_client_living_draw_error_init(error);
+    CHECK(mc_client_item_block_scale(f->registry, stack, cactus, &scale, error) && scale == .5f);
+    array[81] = NULL;
+    mc_client_living_draw_error_init(error);
+    scale = -7.f;
+    CHECK(!mc_client_item_block_scale(f->registry, stack, cactus, &scale, error) && scale == -7.f &&
+          error->site.pc == 217 && error->source_exception && !error->native_policy);
+    array[81] = entry;
+    mc_item_stack_release(stack);
+    CHECK(mc_item_stack_allocate(&stack) == MC_ITEM_STACK_OK);
+    mc_client_living_draw_error_init(error);
+    CHECK(!mc_client_item_block_scale(f->registry, stack, cactus, &scale, error) && scale == -7.f &&
+          error->site.pc == 217 && error->source_exception && !error->native_policy);
+    mc_item_stack_phase phase;
+    CHECK(mc_item_stack_phase_get(stack, &phase) == MC_ITEM_STACK_OK && phase == MC_ITEM_STACK_RAW);
+    mc_item_stack_release(stack);
+    CHECK(f->registry->allocation_bytes == bytes && f->registry->blocks.m == array &&
+          array[81] == entry && f->registry->blocks.named[singleton_index] == singleton);
+    /* All prefix calls ended. Restore only the two declared setting-input
+     * cells; no source result, failure, lookup or owner phase is repaired. */
+    leaf_input->nr_b = leaf_original.nr_b;
+    leaf_input->fields.bm = leaf_original.fields.bm;
+    CHECK(memcmp(leaf_input, &leaf_original, sizeof(leaf_original)) == 0);
+    free(error);
+    return true;
+}
+
 static bool inventory_controls(void) {
     fixture f = {0};
     CHECK(mc_materials_create(&f.materials));
@@ -855,7 +1012,8 @@ static bool inventory_controls(void) {
     CHECK(mc_registry_classes_bind_entities(f.registry, f.entities, NULL) == MC_REGISTRY_OK);
     CHECK(mc_registry_classes_initialize_blocks(f.registry, NULL) == MC_REGISTRY_OK);
     CHECK(pumpkin_getter_controls(&f) && pressure_plate_getter_controls(&f) &&
-          slab_block_getter_controls(&f) && crafting_getter_controls(&f));
+          slab_block_getter_controls(&f) && crafting_getter_controls(&f) &&
+          item_block_scale_controls(&f));
     const mc_block *dirt = NULL;
     CHECK(mc_registry_block_get(f.registry, 3, &dirt, NULL) == MC_REGISTRY_OK && dirt != NULL);
     int32_t color = 0, icon = -1;
@@ -960,6 +1118,7 @@ static bool inventory_controls(void) {
               (type == 0 || type == 10 || type == 11 || type == 13 || type == 16));
     f.context = calloc(1, sizeof(*f.context));
     CHECK(f.context != NULL);
+    CHECK(leaf_inventory_controls(&f));
     for (unsigned int which = 0; which < 4; ++which) {
         mc_client_render_blocks_construct_fields(&f.fields, NULL, false);
         f.fields.b = (which & 1u) == 0;

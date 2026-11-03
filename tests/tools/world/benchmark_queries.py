@@ -45,7 +45,7 @@ def main():
     parser.add_argument('--executable', action='append', required=True, metavar='LABEL=PATH')
     parser.add_argument('--rounds', type=int, default=3)
     parser.add_argument('--scope', choices=('indexed', 'mutation'), default='indexed')
-    parser.add_argument('--chunks', choices=(1, 289), type=int, default=1)
+    parser.add_argument('--chunks', choices=(1, 289, 410, 512), type=int, default=1)
     parser.add_argument('--artifacts', type=Path, required=True)
     args = parser.parse_args()
     assert 1 <= args.rounds <= 10
@@ -103,8 +103,13 @@ def main():
         (world / 'level.dat').write_bytes(metadata)
         length, = struct.unpack_from('>i', original, 8192)
         base = zlib.decompress(original[8197:8196 + length])
-        coordinates = ((0, 0),) if args.chunks == 1 else tuple(
-            (x, z) for x in range(-8, 9) for z in range(-8, 9))
+        if args.chunks == 1:
+            coordinates = ((0, 0),)
+        elif args.chunks == 289:
+            coordinates = tuple((x, z) for x in range(-8, 9) for z in range(-8, 9))
+        else:
+            coordinates = tuple((index // 16 - 16, index % 16 - 8)
+                                for index in range(args.chunks))
         grouped = {}
         for x, z in coordinates:
             wire = base
@@ -137,7 +142,8 @@ def main():
               'scope': args.scope, 'chunks': args.chunks,
               'authored_array_hashes': {key: hashlib.sha256(value).hexdigest()
                                        for key, value in arrays.items()},
-              'workload': '65536 fixed public queries per sample, seven samples per operation, four operations; owned loaded source Chunks; no source ticks or rendering.'}
+              'workload': '65536 fixed queries per sample, seven samples per operation, six operations including provider presence hits/misses; owned loaded source Chunks; no source ticks or rendering.'}
+    modes = ('block', 'metadata', 'saved-light', 'owned-get', 'presence-hit', 'presence-miss')
     try:
         for round_index in range(args.rounds):
             order = list(executables)
@@ -162,10 +168,10 @@ def main():
                 contexts = [fields(line) for line in text if line.startswith('CACHE_QUERY_CONTEXT ')]
                 invariants = [fields(line) for line in text if line.startswith('CACHE_QUERY_INVARIANTS ')]
                 finishes = [fields(line) for line in text if line.startswith('CACHE_QUERY_FINISH ')]
-                assert len(rows) == 28 and len(contexts) == len(invariants) == len(finishes) == 1
+                assert len(rows) == 7 * len(modes) and len(contexts) == len(invariants) == len(finishes) == 1
                 assert contexts[0]['scope'] == args.scope and int(contexts[0]['chunks']) == args.chunks
                 assert {(row['mode'], int(row['sample'])) for row in rows} == {
-                    (mode, sample) for mode in ('block', 'metadata', 'saved-light', 'owned-get')
+                    (mode, sample) for mode in modes
                     for sample in range(7)}
                 assert all(set(row) == {'mode', 'sample', 'calls', 'ticks', 'frequency', 'checksum'}
                            and int(row['calls']) == 65536 and int(row['ticks']) > 0
@@ -181,7 +187,7 @@ def main():
         summary = {}
         for label in executables:
             summary[label] = {}
-            for mode in ('block', 'metadata', 'saved-light', 'owned-get'):
+            for mode in modes:
                 rows = [row for profile in report['profiles'] if profile['label'] == label
                         for row in profile['rows'] if row['mode'] == mode]
                 assert len(rows) == 7 * args.rounds
@@ -194,7 +200,7 @@ def main():
                                        'p95_ns_per_call': nanos[math.ceil(.95 * len(nanos)) - 1],
                                        'min_ns_per_call': nanos[0], 'max_ns_per_call': nanos[-1],
                                        'checksum': next(iter(checksums))}
-        for mode in ('block', 'metadata', 'saved-light', 'owned-get'):
+        for mode in modes:
             assert len({value[mode]['checksum'] for value in summary.values()}) == 1
         report.update(status='PASS', summary=summary)
     finally:

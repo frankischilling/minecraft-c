@@ -1,5 +1,37 @@
 # Development status
 
+The expanded runtime passes all 634 Linux Clang 18 ASan/UBSan public tests in
+169.24 seconds. All 4,374 copied files and 522 executables stay unchanged;
+all 1,438 runtime files match Windows. The Windows Release public cohort passes
+638/639 in 215.48 seconds, preserving 4,374 sources, 522 products and 823 assets.
+The single Creature/Slime failure records Remote Desktop taking foreground,
+lost SDL focus and the ordinary source Pause screen. This is separate from
+the earlier unexplained zero-draw assertions; no guard is weakened. An unchanged
+Creature recheck passes Slime and later loses foreground during Creeper; it
+remains a separate failed observation.
+
+[Concrete Leaves, Snow-layer and Ice harvesting](client/block-harvest.md)
+now matches 63 complete original controller scenarios and 208 exact result,
+Item and listener rows. Four native failure-prefix controls also pass; the
+67 fresh native processes complete 6,158 checks. The original packet separately
+retains 29 direct calls, which are not additional native coverage.
+
+Owned provider presence now uses the existing index outside mutation scopes.
+The [separate CPU comparison](performance/world-queries.md#provider-presence-measurement)
+retains all 1,260 samples: at 512 Chunks, median presence hits fall from 124.02
+to 15.16 ns and saved-light reads from 212.00 to 87.42 ns. The small single-Chunk
+cost and linear mutation controls remain recorded. Its three-round frame cohort
+is invalidated by foreground loss and concurrent selected-test edits; it supplies
+no FPS gain claim.
+
+The real Leaf/Shears scene now passes in 7.64 seconds with 467 native checks:
+actual input, 64 tinted destruction particles, exact wear/statistics, same-Item
+World/Chunk publication and returned dropped-Item drawing, strict NBT and checked
+native cleanup. Its 1,928 selected inputs, 413 assets and stopped 12-file save
+tree stay unchanged. Earlier particle-color and Item-scale failures remain
+recorded. This is one finite Windows scene, not unrestricted play or original
+pixel qualification.
+
 [World query hot paths](performance/world-queries.md) now avoid full success
 diagnostic construction and repeated whole-map validation during owned nested
 reads. Controlled Windows CPU workloads preserve values, Random state, payloads,
@@ -18,7 +50,7 @@ six-result mining rows, 2,331 Item/Stack destruction rows and six original
 controller scenarios, including exact-zero clearing and negative-count retention.
 Broader Block hooks, original rendered frames and unrestricted play remain open.
 
-The frozen runtime passes all 632 Linux Clang 18 ASan/UBSan public tests in
+The earlier query/tool runtime passes all 632 Linux Clang 18 ASan/UBSan public tests in
 173.49 seconds. All 4,338 transferred files and 520 executables stay unchanged;
 all 1,434 runtime files match Windows. Windows public attempts pass 633/637 in
 226.45 seconds and 636/637 in 250.01 seconds, with unchanged source/products/assets.

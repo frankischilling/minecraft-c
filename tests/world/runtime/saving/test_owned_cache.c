@@ -12,6 +12,37 @@ static int oc_observe(mc_world_runtime *world, mc_chunk_provider_cache_observati
     return 0;
 }
 
+static bool oc_same_observation(const mc_chunk_provider_cache_observation *a,
+                                const mc_chunk_provider_cache_observation *b) {
+    return a->owned == b->owned && a->map_count == b->map_count &&
+           a->insertion_count == b->insertion_count && a->index_capacity == b->index_capacity &&
+           a->index_bytes == b->index_bytes && a->mutation_depth == b->mutation_depth &&
+           a->direct_bytes == b->direct_bytes && a->hits == b->hits && a->misses == b->misses &&
+           a->generic_gets == b->generic_gets && a->raw_exports == b->raw_exports &&
+           a->rebuilds == b->rebuilds;
+}
+
+static int oc_presence_read(mc_world_runtime *world, int32_t x, int32_t z, bool expected) {
+    mc_chunk_provider_cache_observation before, after;
+    mc_world_storage_error error = {MC_WORLD_STORAGE_LIMIT, "old presence error", 77};
+    const mc_world_storage_error last = world->last_error;
+    const size_t calls = world->active_calls, leases = world->local_leases;
+    unsigned char random[sizeof(*world->fields.r)];
+    memcpy(random, world->fields.r, sizeof(random));
+    bool present = !expected;
+    VERIFY(oc_observe(world, &before) == 0 &&
+           mc_world_runtime_chunk_provider_contains(world, x, z, &present, &error) ==
+               MC_WORLD_STORAGE_OK &&
+           present == expected && error.status == MC_WORLD_STORAGE_OK && error.operation == NULL &&
+           error.system_error == 0 && oc_observe(world, &after) == 0 &&
+           oc_same_observation(&before, &after) && world->active_calls == calls &&
+           world->local_leases == leases && world->last_error.status == last.status &&
+           world->last_error.operation == last.operation &&
+           world->last_error.system_error == last.system_error &&
+           memcmp(random, world->fields.r, sizeof(random)) == 0);
+    return 0;
+}
+
 /* Keep the existing source-save Registry/File/Handler setup, while constructing
  * this World without the old fixture helper's deliberate raw cache export. */
 static int oc_open(source_save_fixture *s, size_t budget) {
@@ -216,6 +247,144 @@ static int oc_stop(source_save_fixture *s) {
     return 0;
 }
 
+static int oc_presence_contracts(mc_world_runtime *world, mc_chunk_state *normal) {
+    mc_chunk_provider_fields fields;
+    mc_chunk_provider_cache_observation before, after;
+    VERIFY(mc_chunk_provider_internal_fields(world->fields.v, &fields, NULL) ==
+               MC_WORLD_STORAGE_OK &&
+           oc_observe(world, &before) == 0 && fields.cache->count >= 2 &&
+           fields.cache->entries[0].key == mc_chunk_cache_key(0, 0));
+    VERIFY(oc_presence_read(world, 0, 0, true) == 0 &&
+           oc_presence_read(world, 32768, 0, true) == 0 &&
+           oc_presence_read(world, 2, 2, true) == 0 && oc_presence_read(world, 7, 7, false) == 0 &&
+           oc_presence_read(world, INT32_MIN, INT32_MAX, false) == 0);
+
+    mc_chunk_state *value = fields.cache->entries[0].chunk;
+    fields.cache->entries[0].chunk = NULL;
+    const int null_value = oc_presence_read(world, 0, 0, true);
+    fields.cache->entries[0].chunk = value;
+    mc_chunk_data *data = normal->data;
+    normal->data = NULL;
+    const int malformed_value = oc_presence_read(world, 0, 0, true);
+    normal->data = data;
+    VERIFY(null_value == 0 && malformed_value == 0);
+
+    /* Presence neither validates nor consumes the pending-set/acquisition
+     * context. These distinct native descriptors are restored before VERIFY. */
+    mc_chunk_pending *pending = world->acquisition.pending;
+    world->acquisition.pending = NULL;
+    const int no_pending = oc_presence_read(world, 0, 0, true);
+    world->acquisition.pending = pending;
+    VERIFY(no_pending == 0);
+
+    mc_world_storage_error error;
+    bool present = true;
+    size_t count = fields.cache->count;
+    fields.cache->count = fields.cache->capacity + 1;
+    const mc_world_storage_status bad_count =
+        mc_world_runtime_chunk_provider_contains(world, 0, 0, &present, &error);
+    fields.cache->count = count;
+    VERIFY(bad_count == MC_WORLD_STORAGE_UNSUPPORTED_STATE && present &&
+           strcmp(error.operation, "World provider presence cache metadata") == 0);
+    count = fields.cache->insertion_count;
+    fields.cache->insertion_count = fields.cache->insertion_capacity + 1;
+    const mc_world_storage_status bad_insertions =
+        mc_world_runtime_chunk_provider_contains(world, 0, 0, &present, &error);
+    fields.cache->insertion_count = count;
+    VERIFY(bad_insertions == MC_WORLD_STORAGE_UNSUPPORTED_STATE && present &&
+           strcmp(error.operation, "World provider presence cache metadata") == 0);
+    mc_chunk_cache_entry *entries = fields.cache->entries;
+    fields.cache->entries = NULL;
+    const mc_world_storage_status no_entries =
+        mc_world_runtime_chunk_provider_contains(world, 0, 0, &present, &error);
+    fields.cache->entries = entries;
+    VERIFY(no_entries == MC_WORLD_STORAGE_UNSUPPORTED_STATE && present &&
+           strcmp(error.operation, "World provider presence cache metadata") == 0);
+    mc_chunk_state **insertions = fields.cache->insertions;
+    fields.cache->insertions = NULL;
+    const mc_world_storage_status no_insertions =
+        mc_world_runtime_chunk_provider_contains(world, 0, 0, &present, &error);
+    fields.cache->insertions = insertions;
+    VERIFY(no_insertions == MC_WORLD_STORAGE_UNSUPPORTED_STATE && present &&
+           strcmp(error.operation, "World provider presence cache metadata") == 0);
+
+    /* Valid changed metadata/backing must retain ordinary live lookup rather
+     * than using the still-owned snapshot of different backing/counts. */
+    count = fields.cache->count;
+    fields.cache->count = 0;
+    const int live_count = oc_presence_read(world, 0, 0, false);
+    fields.cache->count = count;
+    mc_chunk_cache_entry alternate[8] = {0};
+    VERIFY(fields.cache->capacity == COUNT(alternate));
+    memcpy(alternate, entries, count * sizeof(*entries));
+    alternate[0].key = mc_chunk_cache_key(7, 7);
+    fields.cache->entries = alternate;
+    const int old_backing_key = oc_presence_read(world, 0, 0, false);
+    const int live_backing_key = oc_presence_read(world, 7, 7, true);
+    fields.cache->entries = entries;
+    VERIFY(live_count == 0 && old_backing_key == 0 && live_backing_key == 0);
+
+    mc_chunk_provider *provider = world->fields.v;
+    world->fields.v = NULL;
+    const mc_world_storage_status no_provider =
+        mc_world_runtime_chunk_provider_contains(world, 0, 0, &present, &error);
+    world->fields.v = provider;
+    VERIFY(no_provider == MC_WORLD_STORAGE_UNSUPPORTED_STATE && present &&
+           strcmp(error.operation, "World provider presence receiver") == 0);
+    VERIFY(mc_world_runtime_chunk_provider_contains(NULL, 0, 0, &present, &error) ==
+               MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+           present && strcmp(error.operation, "World provider presence arguments") == 0 &&
+           mc_world_runtime_chunk_provider_contains(world, 0, 0, NULL, &error) ==
+               MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+           strcmp(error.operation, "World provider presence arguments") == 0 &&
+           oc_observe(world, &after) == 0 && oc_same_observation(&before, &after));
+    puts("OWNED_CACHE_PRESENCE metadata-only=1 aliases=1 null-value=1 no-pending=1 "
+         "refusals=1 changed-metadata-fallback=1 no-counters=1 no-random=1");
+    return 0;
+}
+
+static int oc_presence_foreign(source_save_fixture *s) {
+    fixture *f = &s->game;
+    mc_world_runtime *world = f->worlds[0], *copy = NULL;
+    mc_world_provider *dimension = NULL;
+    mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
+    limits.max_provider_chunks = 8;
+    limits.max_scheduled_entries = 0;
+    VERIFY(mc_world_provider_create(0, NULL, &dimension, NULL) == MC_WORLD_PROVIDER_OK &&
+           mc_world_runtime_allocate_world(MC_WORLD_RUNTIME_CLIENT_COPY, f->classes[0], &limits,
+                                           &copy, &s->error) == MC_WORLD_STORAGE_OK);
+    const mc_world_runtime_world_arguments arguments = {
+        .name = f->name, .parent = world, .dimension = dimension};
+    VERIFY(mc_world_runtime_construct_world(copy, &arguments, &s->error) == MC_WORLD_STORAGE_OK &&
+           copy->fields.w == world->fields.w && copy->fields.v != world->fields.v);
+    mc_chunk_provider_fields fields;
+    VERIFY(mc_chunk_provider_internal_fields(copy->fields.v, &fields, &s->error) ==
+               MC_WORLD_STORAGE_OK &&
+           fields.world == copy);
+    mc_chunk_provider_cache_mutation_begin(copy->fields.v);
+    const bool published = mc_chunk_cache_publish(fields.cache, 7, 7, fields.fallback);
+    mc_chunk_provider_cache_mutation_end(copy->fields.v);
+    VERIFY(published && oc_presence_read(copy, 7, 7, true) == 0 &&
+           oc_presence_read(copy, 0, 0, false) == 0 && oc_presence_read(world, 7, 7, false) == 0);
+    mc_chunk_provider *own = world->fields.v;
+    world->fields.v = copy->fields.v;
+    const int foreign_present = oc_presence_read(world, 7, 7, true);
+    const int foreign_absent = oc_presence_read(world, 0, 0, false);
+    world->fields.v = own;
+    VERIFY(foreign_present == 0 && foreign_absent == 0 && oc_presence_read(world, 0, 0, true) == 0);
+    mc_chunk_provider_cache_mutation_begin(copy->fields.v);
+    const bool cleared =
+        mc_chunk_cache_init(fields.cache, fields.cache->entries, fields.cache->capacity,
+                            fields.cache->insertions, fields.cache->insertion_capacity);
+    mc_chunk_provider_cache_mutation_end(copy->fields.v);
+    VERIFY(cleared && mc_world_runtime_retire_world(copy, &s->error) == MC_WORLD_STORAGE_OK &&
+           mc_world_runtime_free(copy, &s->error) == MC_WORLD_STORAGE_OK);
+    mc_world_provider_release(dimension);
+    puts("OWNED_CACHE_PRESENCE_FOREIGN actual-copy-provider=1 distinct-membership=1 "
+         "actual-receiver=1 no-context-substitute=1 cleanup=1");
+    return 0;
+}
+
 static int oc_owned(source_save_fixture *s) {
     mc_world_runtime *world = s->game.worlds[0];
     mc_chunk_provider_cache_observation initial, loaded, hit, after;
@@ -236,10 +405,12 @@ static int oc_owned(source_save_fixture *s) {
     VERIFY(oc_observe(world, &after) == 0 && after.owned && after.map_count == 3 &&
            after.insertion_count == 3 && after.hits >= hit.hits + 1 && after.mutation_depth == 0);
     VERIFY(oc_diagnostics(s, states[0]) == 0);
+    VERIFY(oc_presence_contracts(world, states[0]) == 0 && oc_presence_foreign(s) == 0);
     mc_chunk_provider_fields raw = {0};
     VERIFY(mc_chunk_provider_bind_fields(world->fields.v, &raw, &s->error) == MC_WORLD_STORAGE_OK &&
            mc_chunk_cache_validate(raw.cache) && oc_observe(world, &after) == 0 && !after.owned &&
            raw.direct_allocation_bytes == after.direct_bytes);
+    VERIFY(oc_presence_contracts(world, states[0]) == 0);
     for (size_t i = 0; i < 3; ++i) {
         VERIFY(raw.cache->entries[i].key == mc_chunk_cache_key(oc_x[i], oc_z[i]) &&
                raw.cache->entries[i].chunk == states[i] && raw.cache->insertions[i] == states[i] &&
@@ -317,6 +488,7 @@ static int oc_export(source_save_fixture *s, const char *mode) {
                MC_WORLD_STORAGE_OK);
         escaped = raw.cache;
     }
+    VERIFY(oc_presence_contracts(world, states[0]) == 0);
     VERIFY(escaped->count == 2 && escaped->insertion_count == 2 &&
            mc_chunk_cache_publish(escaped, 32768, 0, states[1]) && escaped->insertion_count == 3 &&
            escaped->insertions[2] == states[1] && oc_get(s, 0, &got) == 0 && got == states[1]);
@@ -371,11 +543,15 @@ static bool oc_callback_live_reads(oc_callback_state *state, mc_world_runtime *w
         (state->export_inside ? !before.owned : before.owned && before.mutation_depth > 0));
     if (!ok)
         return false;
+    ok = OC_CALLBACK(oc_presence_read(world, 0, 0, true) == 0 &&
+                     oc_presence_read(world, 2, 2, true) == 0 &&
+                     oc_presence_read(world, 7, 7, false) == 0);
     memset(&detail, 0xa5, sizeof(detail));
     memcpy(untouched, &detail, sizeof(detail));
     ok = OC_CALLBACK(mc_world_runtime_get_failure(world, 2, 2, &got, &detail) ==
                          MC_CHUNK_ACQUIRE_OK &&
-                     got == state->nested && memcmp(untouched, &detail, sizeof(detail)) == 0);
+                     got == state->nested && memcmp(untouched, &detail, sizeof(detail)) == 0) &&
+         ok;
 
     /* A completed same-key publication changes the live map while the outer
      * provider scope's index and count snapshot still precede both loads. */
@@ -384,11 +560,13 @@ static bool oc_callback_live_reads(oc_callback_state *state, mc_world_runtime *w
         mc_world_runtime_get_failure(world, 0, 0, &got, &detail);
     const bool saw_replacement = replacement == MC_CHUNK_ACQUIRE_OK && got == state->nested &&
                                  memcmp(untouched, &detail, sizeof(detail)) == 0;
+    const int replacement_presence = oc_presence_read(world, 0, 0, true);
     const bool restored = mc_chunk_cache_publish(fields.cache, 0, 0, state->outer);
     const mc_chunk_acquire_status original =
         mc_world_runtime_get_failure(world, 0, 0, &got, &detail);
-    ok = OC_CALLBACK(replaced && saw_replacement && restored && original == MC_CHUNK_ACQUIRE_OK &&
-                     got == state->outer && memcmp(untouched, &detail, sizeof(detail)) == 0) &&
+    ok = OC_CALLBACK(replaced && saw_replacement && replacement_presence == 0 && restored &&
+                     original == MC_CHUNK_ACQUIRE_OK && got == state->outer &&
+                     memcmp(untouched, &detail, sizeof(detail)) == 0) &&
          ok;
 
     mc_chunk_data *data = state->outer->data;
@@ -396,9 +574,11 @@ static bool oc_callback_live_reads(oc_callback_state *state, mc_world_runtime *w
     got = state->nested;
     const mc_chunk_acquire_status invalid =
         mc_world_runtime_get_failure(world, 0, 0, &got, &detail);
+    const int malformed_presence = oc_presence_read(world, 0, 0, true);
     state->outer->data = data;
-    ok = OC_CALLBACK(invalid == MC_CHUNK_ACQUIRE_INVALID_ARGUMENT && got == state->nested &&
-                     detail.status == invalid && oc_acquisition_empty_children(&detail)) &&
+    ok = OC_CALLBACK(invalid == MC_CHUNK_ACQUIRE_INVALID_ARGUMENT && malformed_presence == 0 &&
+                     got == state->nested && detail.status == invalid &&
+                     oc_acquisition_empty_children(&detail)) &&
          ok;
     const mc_chunk_acquire_status missing_output =
         mc_world_runtime_get_failure(world, 0, 0, NULL, &detail);
@@ -438,6 +618,8 @@ static mc_world_storage_status oc_added(void *owner, mc_world_runtime *world, mc
         const mc_chunk_acquire_context *escaped = mc_world_runtime_acquisition(world);
         ok = OC_CALLBACK(escaped != NULL && escaped->cache != NULL);
     }
+    if (ok)
+        ok = OC_CALLBACK(oc_presence_read(world, 2, 2, false) == 0);
     if (ok)
         ok = OC_CALLBACK(
             mc_world_runtime_get_detailed(world, 2, 2, &state->nested, &detail) ==
@@ -504,6 +686,9 @@ static int oc_budget(source_save_fixture *s) {
     VERIFY(oc_get(s, 0, &first) == 0 && oc_get(s, 0, &again) == 0 && again == first &&
            oc_observe(s->game.worlds[0], &after) == 0 && !after.owned && after.hits == 0 &&
            after.generic_gets >= absent.generic_gets + 2 && after.direct_bytes == base);
+    VERIFY(oc_presence_read(s->game.worlds[0], 0, 0, true) == 0 &&
+           oc_presence_read(s->game.worlds[0], 32768, 0, true) == 0 &&
+           oc_presence_read(s->game.worlds[0], 7, 7, false) == 0);
     printf("OWNED_CACHE_CASE mode=budget dynamic-base=%zu optional-bytes=%zu exact-base-success=1 "
            "generic-fallback=1 exact-identity=1\n",
            base, initial.index_bytes);

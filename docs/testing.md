@@ -1,5 +1,31 @@
 # Test scope and reproduction
 
+The expanded runtime passes all 634 Linux Clang 18 Debug ASan/UBSan public tests
+in 169.24 seconds, with leak detection and halt-on-error under Xvfb/software GL.
+All 4,374 copied files and 522 executables remain unchanged; all 1,438 runtime
+files match Windows. Windows Release passes 638/639 public tests in 215.48 seconds,
+preserving 4,374 sources, 522 products and 823 assets. The Creature/Slime case
+records external Remote Desktop foreground ownership, SDL focus loss and the
+source Pause screen. This does not identify the cause of prior zero-draw failures.
+An unchanged Creature recheck passes Slime and then records the same external
+foreground loss during Creeper. Neither attempt establishes uniform desktop
+stability.
+
+[Concrete Block harvesting](client/block-harvest.md) adds
+`client.block_harvest` and `tools.block_harvest_packet`. The Windows Release
+controller comparison matches 63 original scenarios and 208 exact rows;
+four native failure-prefix controls bring the run to 67 fresh processes and
+6,158 checks in 1.39 seconds. The packet has 32 validation tests, including
+31 rejection controls. Its 29 supplemental direct original calls remain
+outside native direct-entry coverage.
+
+The [provider presence comparison](performance/world-queries.md#provider-presence-measurement)
+retains five CPU scenarios, 30 fresh processes and 1,260 samples. Baseline and
+indexed candidates vary only one provider object over the same earlier compiled
+library closure. Semantic cache controls pass before and after that change.
+Its failed six-process native frame cohort is retained with no FPS aggregate;
+foreground loss and selected test-source edits invalidate intervals.
+
 The [World query CPU benchmark](performance/world-queries.md) has an optional
 `mc_benchmark_world_queries` target and an asset-independent runner. Its
 recorded Windows A/B samples verify values and complete declared state outside
@@ -9,7 +35,7 @@ timing, with no timing thresholds in CTest. It does not measure FPS.
 coverage for speed, harvest, destruction and statistics, with original packet
 comparisons and separate native ownership/failure controls.
 
-The same frozen runtime passes 632/632 Linux Clang 18 ASan/UBSan public tests in
+The earlier query/tool runtime passes 632/632 Linux Clang 18 ASan/UBSan public tests in
 173.49 seconds, with 4,338 source files and 520 executables unchanged and all
 1,434 runtime files matching Windows. Windows passes 633/637 in 226.45 seconds
 and 636/637 in 250.01 seconds; each keeps 4,338 sources, 520 products and 823

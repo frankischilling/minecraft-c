@@ -1,5 +1,19 @@
 # Build and tests
 
+The [concrete harvest tests](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/block-harvest.md)
+match 63 original controller scenarios and 208 rows. Four failure-prefix controls
+bring the native run to 67 processes and 6,158 checks. The original packet has
+32 validation tests; its 29 direct calls are supplemental original observations.
+Leaf inventory controls pass 2,863 checks and 17 original color/shape rows.
+`MC_ENABLE_CLIENT_LEAF_HARVEST_TESTS=ON` adds the local Windows SDK scene when
+display tests and imported resources are enabled. Its declared scene passes
+467 checks in 7.64 seconds, with strict NBT, returned Item drawing and cleanup.
+
+The CPU query observer now also measures provider presence hits/misses and
+accepts 1, 289, 410 or 512 loaded Chunks. The additional recorded comparison
+has 1,260 samples and changes only one compiled provider object. Its failed
+six-process frame repetition remains separate and supports no FPS aggregate.
+
 `MC_BUILD_BENCHMARKS=ON` adds the optional `mc_benchmark_world_queries` target.
 Its [asset-independent runner](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/world-queries.md)
 compares fixed public queries and retains raw samples and state checks outside
@@ -17,9 +31,17 @@ The public toolkit smoke passes; general gameplay FPS remains unqualified.
 
 ## Current qualification
 
+The expanded runtime passes 634/634 Linux Clang 18 ASan/UBSan public tests in
+169.24 seconds. Its 4,374 copied files and 522 executables stay unchanged, and
+all 1,438 runtime files match Windows. Windows Release passes 638/639 in 215.48
+seconds with unchanged sources, products and assets. The one Creature/Slime
+failure records Remote Desktop foreground loss and the source Pause screen;
+earlier zero-draw assertions remain separately unconfirmed. The unchanged
+Creature recheck also loses foreground, during Creeper after Slime passes.
+
 The [open-Workbench shutdown profiles](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench-open-shutdown.md)
-pass four fresh Windows MSVC Release processes in 68.52 seconds. Clean,
-Container, Player and World hold cases pass 1,975, 1,934, 2,092 and 2,166
+pass four fresh Windows MSVC Release processes in 62.22 seconds. Clean,
+Container, Player and World hold cases pass 1,843, 2,014, 2,239 and 2,281
 checks. The selected Source state and stopped save-tree bytes stay unchanged;
 releasing only the actual blocker permits full cleanup. Public local Inventory
 and genuine Player/OO controls pass 96 and 229 checks. These are native

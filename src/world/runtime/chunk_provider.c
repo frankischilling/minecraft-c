@@ -332,6 +332,7 @@ mc_world_storage_status mc_world_runtime_chunk_provider_contains(mc_world_runtim
         (cache->insertion_capacity != 0 && cache->insertions == NULL))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World provider presence cache metadata");
-    *out = mc_chunk_cache_contains(cache, chunk_x, chunk_z);
+    if (!owned_cache_contains(provider, chunk_x, chunk_z, out))
+        *out = mc_chunk_cache_contains(cache, chunk_x, chunk_z);
     return result(error, MC_WORLD_STORAGE_OK, NULL);
 }

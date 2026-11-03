@@ -7,6 +7,89 @@
 #define MC_ITEM_PARTICLE_MAIN mc_digging_inherited_fixture_main
 #include "../../../src/client/runtime/gameplay_input.h"
 #include "../test_item_particle.c"
+#include "entity/particles/digging_color_internal.h"
+
+static int digging_leaf_controls(ip_fixture *f) {
+    mc_registry_classes *registry = f->runtime.services.registry;
+    mc_chunk_state *chunk = NULL;
+    CHECK(mc_world_runtime_get(f->world, 0, 0, &chunk) == MC_CHUNK_ACQUIRE_OK && chunk != NULL &&
+          chunk->data != NULL);
+    const size_t index = (8u << 11u) | (12u << 7u) | 66u;
+    const uint8_t old_block = chunk->data->blocks[index];
+    const uint8_t old_metadata = chunk->data->metadata[index / 2u];
+    /* Explicit authored actual Chunk operands, before invoking real DN/QM.
+     * The constructor's metadata0 icon cannot supply World metadata2 color. */
+    chunk->data->blocks[index] = 18;
+    chunk->data->metadata[index / 2u] = (uint8_t)((old_metadata & 0xf0u) | 2u);
+    const uint64_t world_random = f->world->fields.r->state;
+    const size_t entities = f->runtime.services.entities->live_entities;
+    mc_java_random expected = *f->effects->random;
+    int32_t ignored;
+    for (size_t i = 0; i < 64; ++i)
+        CHECK(mc_java_random_next_bounded(&expected, 6, &ignored));
+    CHECK(mc_client_effect_renderer_destroy_block(f->effects, registry, f->math, 8, 66, 12, 18, 0,
+                                                  f->effects_error) == MC_EFFECT_RENDERER_OK);
+    const mc_effect_block_state *work = f->effects_error->block;
+    CHECK(work != NULL && work->returned && work->constructed == 64 && work->appended == 64 &&
+          work->random_calls == 64 && work->color != NULL && !work->color->failed &&
+          work->color->value == 8431445 && work->color->block_pc == 35 &&
+          f->effects->random->state == expected.state && f->world->fields.r->state == world_random);
+    for (size_t i = 0; i < 64; ++i) {
+        mc_entity *particle = mc_client_effect_renderer_particle(f->effects, 1, i);
+        CHECK(particle != NULL && ip_fbits(particle->particle->fields.i) == UINT32_C(0x3e9a33ce) &&
+              ip_fbits(particle->particle->fields.j) == UINT32_C(0x3ec92f97) &&
+              ip_fbits(particle->particle->fields.k) == UINT32_C(0x3e4cccce));
+    }
+    CHECK(mc_client_effect_renderer_block_cleanup(f->effects, f->effects_error) ==
+          MC_EFFECT_RENDERER_OK);
+    CHECK(mc_client_effect_renderer_change_world(f->effects, f->world, f->effects_error) ==
+          MC_EFFECT_RENDERER_OK);
+    CHECK(f->runtime.services.entities->live_entities == entities);
+    CHECK(mc_client_effect_renderer_hit_block(f->effects, registry, f->math, 8, 66, 12, 1,
+                                              f->effects_error) == MC_EFFECT_RENDERER_OK);
+    work = f->effects_error->block;
+    CHECK(work != NULL && work->hit && work->returned && work->metadata == 2 &&
+          work->constructed == 1 && work->appended == 1 && work->color != NULL &&
+          work->color->value == 8431445);
+    CHECK(mc_client_effect_renderer_block_cleanup(f->effects, f->effects_error) ==
+          MC_EFFECT_RENDERER_OK);
+    CHECK(mc_client_effect_renderer_change_world(f->effects, f->world, f->effects_error) ==
+          MC_EFFECT_RENDERER_OK);
+    /* A real reached JH null-array failure retains the first constructed QM,
+     * after DN's face draw and before append; cleanup consumes its owner. */
+    mc_client_colorizer_state foliage;
+    CHECK(mc_client_colorizer_inspect(f->runtime.graphics, MC_CLIENT_COLORIZER_FOLIAGE, &foliage) &&
+          foliage.a != NULL);
+    mc_client_color_array *saved = (mc_client_color_array *)foliage.a;
+    CHECK(mc_client_color_array_retain(saved) == MC_CLIENT_COLOR_ARRAY_OK);
+    CHECK(mc_client_colorizer_set(f->runtime.graphics, MC_CLIENT_COLORIZER_FOLIAGE, NULL, NULL,
+                                  NULL) == MC_CLIENT_COLORIZER_OK);
+    chunk->data->metadata[index / 2u] &= 0xf0u;
+    expected = *f->effects->random;
+    CHECK(mc_java_random_next_bounded(&expected, 6, &ignored));
+    CHECK(mc_client_effect_renderer_destroy_block(f->effects, registry, f->math, 8, 66, 12, 18, 0,
+                                                  f->effects_error) ==
+          MC_EFFECT_RENDERER_ENTITY_FAILED);
+    work = f->effects_error->block;
+    CHECK(work != NULL && !work->returned && work->source_pc == 160 && work->constructed == 1 &&
+          work->appended == 0 && work->random_calls == 1 && work->candidate != NULL &&
+          work->candidate->phase == MC_ENTITY_READY && work->color != NULL && work->color->failed &&
+          work->color->block_pc == 81 &&
+          work->color->colorizer.array.status == MC_CLIENT_COLOR_ARRAY_NULL_REFERENCE &&
+          f->effects_error->source_exception && !f->effects_error->native_policy &&
+          f->effects->random->state == expected.state && f->effects->layers[1]->size == 0 &&
+          f->runtime.services.entities->live_entities == entities + 1);
+    CHECK(mc_client_effect_renderer_block_cleanup(f->effects, f->effects_error) ==
+              MC_EFFECT_RENDERER_OK &&
+          f->runtime.services.entities->live_entities == entities);
+    CHECK(mc_client_colorizer_set(f->runtime.graphics, MC_CLIENT_COLORIZER_FOLIAGE, saved, NULL,
+                                  NULL) == MC_CLIENT_COLORIZER_OK);
+    CHECK(mc_client_color_array_release(&saved, NULL) == MC_CLIENT_COLOR_ARRAY_OK);
+    chunk->data->blocks[index] = old_block;
+    chunk->data->metadata[index / 2u] = old_metadata;
+    CHECK(f->world->fields.r->state == world_random);
+    return 0;
+}
 
 static int digging_controls(ip_fixture *f) {
     mc_registry_classes *registry = f->runtime.services.registry;
@@ -161,7 +244,8 @@ int main(int argc, char **argv) {
           mc_client_effect_renderer_construct(f->effects, f->world, f->app->render_engine,
                                               f->effects_error) == MC_EFFECT_RENDERER_OK);
     f->app->effect_renderer = f->effects;
-    CHECK(ip_n_open(f) == 0 && ip_nw_prepare(f) == 0 && digging_controls(f) == 0);
+    CHECK(ip_n_open(f) == 0 && ip_nw_prepare(f) == 0 && digging_controls(f) == 0 &&
+          digging_leaf_controls(f) == 0);
     CHECK(ip_close(f) == 0);
     free(f);
     printf("Digging particles: %u checks; genuine QM/XW/World/DN\n", checks);

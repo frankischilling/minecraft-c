@@ -66,8 +66,10 @@ typedef struct mc_effect_renderer_snapshot {
  * actual constructor arguments. Classes/profile outlive this owner; allocation
  * retains the exact client class namespace without Entity active use. A supplied
  * World uses that same profile and is retained only at the reached dn29 store.
- * The typed ji is borrowed, never synthesized or dereferenced by these methods.
- * Its actual resource construction and particle drawing are separate work.
+ * The typed ji is borrowed and must remain live/exclusive through reached Leaf
+ * tint: its native class context supplies that same runtime's actual JH static
+ * namespace. Construction does not dereference ji; resource work and particle
+ * drawing remain separate source operations.
  *
  * Default allocation budget is 16 MiB. It charges this object, its four-cell
  * List array, separate Random, four List owners and native element arrays.
@@ -149,6 +151,8 @@ struct mc_effect_block_state {
     const struct mc_world_storage_error *world;
     const struct mc_world_runtime_acquisition_error *acquisition;
     const mc_registry_error *registry;
+    /* Complete borrowed QM -> BK/JH child of this exact retained invocation. */
+    const struct mc_digging_color_error *color;
 };
 
 /* Actual DN.a(IIII) and DN.a(IIIII). Registry/Math are canonical native

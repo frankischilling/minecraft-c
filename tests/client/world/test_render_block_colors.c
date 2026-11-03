@@ -5,7 +5,15 @@ int mc_color_picking_fixture_main(int argc, char **argv);
 #undef main
 
 #include "client/render/blocks/internal.h"
+#include "client/render_engine/internal.h"
 #include "client/world/chunk_cache_internal.h"
+#include "entity/particles/digging_color_internal.h"
+#include "entity/particles/particle_internal.h"
+#include "world/chunk/object_internal.h"
+#include "world/runtime/terminal_inventory_internal.h"
+#include "world/storage/objects_internal.h"
+
+#include <xmmintrin.h>
 
 typedef struct block_color_fixture {
     picking_fixture *picking;
@@ -193,12 +201,263 @@ static bool colors_observe(picking_fixture *p) {
     return true;
 }
 
+static bool color_particle(picking_fixture *p, mc_world_runtime *world, mc_entity **out,
+                           mc_particle_error *e) {
+    const mc_block *leaf = NULL;
+    CHECK(mc_registry_block_get(p->base.registry, 18, &leaf, NULL) == MC_REGISTRY_OK);
+    CHECK(mc_digging_particle_allocate(p->base.entities, out, NULL) == MC_ENTITY_OK);
+    /* Constructor metadata is deliberately different from the live XP.e
+     * operand. QM.a must read the actual World, independently of its icon. */
+    CHECK(mc_digging_particle_construct(*out, world, p->base.registry, p->math, 8, 64, 8, 0, 0, 0,
+                                        leaf, 0, 7, e) == MC_ENTITY_OK);
+    return true;
+}
+
+static uint32_t color_float_bits(float value) {
+    uint32_t bits;
+    memcpy(&bits, &value, sizeof(bits));
+    return bits;
+}
+
+typedef struct color_load_observer {
+    mc_world_runtime *world;
+    mc_entity *particle;
+    mc_chunk_load_callback original;
+    mc_chunk_state *loaded;
+    size_t calls;
+    bool bad, rebound;
+} color_load_observer;
+
+static color_load_observer *color_loading;
+
+static mc_chunk_load_result color_observed_load(void *loader,
+                                                const mc_chunk_acquire_context *context, int32_t x,
+                                                int32_t z, mc_chunk_state **out) {
+    color_load_observer *o = color_loading;
+    if (o == NULL)
+        return MC_CHUNK_LOAD_FATAL;
+    ++o->calls;
+    o->bad = o->bad || context != &o->world->acquisition || x != 0 || z != 0 ||
+             o->world->active_calls == 0 || o->particle->base.world != o->world;
+    /* Delegate the real saved Chunk load/import exactly once. This observer
+     * does not supply a surrogate Chunk, skip activation or change any phase. */
+    const mc_chunk_load_result result = o->original(loader, context, x, z, out);
+    if (result == MC_CHUNK_LOAD_LOADED) {
+        o->loaded = *out;
+        o->particle->base.world = NULL; /* Real synchronous mutation of QM.aI. */
+        o->rebound = true;
+    }
+    return result;
+}
+
+static bool color_captured_world(picking_fixture *p, mc_client_render_engine *engine,
+                                 mc_particle_error *e, mc_digging_color_error *d) {
+    mc_entity *particle = NULL;
+    CHECK(color_particle(p, p->base.world, &particle, e));
+    mc_chunk_cache *cache = p->provider.cache;
+    const size_t stored = mc_world_store_chunk_count(p->base.store);
+    /* Explicit valid caller-owned input: an empty native Map populated with
+     * the other three real Chunks. No Chunk phase, Source count or hold is
+     * forged. The absent saved key must reach the normal loader callback. */
+    CHECK(mc_chunk_cache_init(cache, cache->entries, cache->capacity, cache->insertions,
+                              cache->insertion_capacity));
+    for (int32_t x = 0; x < 2; ++x)
+        for (int32_t z = 0; z < 2; ++z)
+            if (x != 0 || z != 0)
+                CHECK(mc_chunk_cache_publish(cache, x, z, p->chunks[(size_t)(x * 2 + z)]));
+    color_load_observer observer = {
+        .world = p->base.world, .particle = particle, .original = p->base.world->acquisition.load};
+    color_loading = &observer;
+    p->base.world->acquisition.load = color_observed_load;
+    const mc_entity_status status =
+        mc_digging_particle_tint_entered(particle, engine, 8, 64, 8, d, e);
+    p->base.world->acquisition.load = observer.original;
+    particle->base.world = p->base.world; /* Restore borrowed Source input before retirement. */
+    color_loading = NULL;
+    const bool result =
+        status == MC_ENTITY_OK && observer.calls == 1 && !observer.bad && observer.rebound &&
+        observer.loaded != NULL && observer.loaded != p->chunks[0] && observer.loaded->active &&
+        !d->failed && d->block_pc == 84 && (uint32_t)d->value == UINT32_C(0xa53f81c7) &&
+        e->source_pc == 92 && p->base.world->active_calls == 0 && p->base.world->local_leases == 0;
+    /* End the authored cache scope, then retire only the extra empty loaded
+     * owner with the ordinary complete structural preflight/native APIs. */
+    CHECK(mc_chunk_cache_init(cache, cache->entries, cache->capacity, cache->insertions,
+                              cache->insertion_capacity));
+    for (int32_t x = 0; x < 2; ++x)
+        for (int32_t z = 0; z < 2; ++z)
+            CHECK(mc_chunk_cache_publish(cache, x, z, p->chunks[(size_t)(x * 2 + z)]));
+    mc_entity_release(particle);
+    CHECK(mc_world_runtime_entity_containers_validate(p->base.world, NULL) == MC_WORLD_STORAGE_OK);
+    if (observer.loaded != NULL) {
+        mc_world_chunk *actual = mc_world_store_chunk_object(p->base.store, observer.loaded);
+        CHECK(actual != NULL && mc_world_chunk_entities_validate(actual));
+        mc_world_chunk_containers_release(actual);
+        CHECK(mc_world_store_retire_chunk(p->base.store, observer.loaded, NULL) ==
+              MC_WORLD_STORAGE_OK);
+    }
+    CHECK(result && mc_world_store_chunk_count(p->base.store) == stored);
+    return true;
+}
+
+/* CPU-only genuine QM/XW/World and actual JI/graphics owners. The existing
+ * original rows above qualify BK's color ints. These controls additionally
+ * qualify the reached QM RGB stores and failure prefixes, without a GL owner. */
+static bool color_particle_controls(picking_fixture *p) {
+    mc_client_render_engine_classes *graphics = NULL;
+    mc_client_default_font *font = NULL;
+    mc_game_settings *settings = NULL;
+    mc_client_render_engine *engine = NULL;
+    mc_entity *particle = NULL;
+    mc_particle_error *e = calloc(1, sizeof(*e));
+    mc_digging_color_error *d = calloc(1, sizeof(*d));
+    CHECK(e != NULL && d != NULL);
+    CHECK(mc_client_render_engine_classes_create(NULL, &graphics) == MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_default_font_create(32u * 1024u * 1024u, &font) == MC_CLIENT_FONT_OK);
+    CHECK(mc_game_settings_create_defaults(NULL, &settings, NULL) == MC_GAME_SETTINGS_OK);
+    CHECK(mc_client_render_engine_allocate(graphics, font, NULL, &engine) ==
+          MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_render_engine_construct(engine, NULL, settings, NULL) ==
+          MC_CLIENT_RENDER_ENGINE_OK);
+    mc_client_colorizer_state state;
+    CHECK(mc_client_colorizer_inspect(graphics, MC_CLIENT_COLORIZER_FOLIAGE, &state) &&
+          state.phase == MC_CLIENT_COLORIZER_RAW);
+    CHECK(color_particle(p, NULL, &particle, e));
+    CHECK(mc_digging_particle_tint_entered(particle, engine, 8, 64, 8, d, e) ==
+              MC_ENTITY_STATE_ERROR &&
+          e->source_exception && !e->native_policy && strcmp(e->source_class, "bk") == 0 &&
+          e->source_pc == 5 && particle->particle->fields.i == .6f &&
+          particle->particle->fields.j == .6f && particle->particle->fields.k == .6f);
+    CHECK(mc_client_colorizer_inspect(graphics, MC_CLIENT_COLORIZER_FOLIAGE, &state) &&
+          state.phase == MC_CLIENT_COLORIZER_RAW);
+    mc_entity_release(particle);
+    particle = NULL;
+    block_color_fixture fixture = {.picking = p};
+    const uint64_t world_random = p->base.world->fields.r->state;
+    /* Source integer/float bits: original BK/JH color ints and QM's three
+     * i2f/fdiv/fmul sequences, with constructor RGB 0x3f19999a. */
+    static const uint32_t pine[3] = {UINT32_C(0x3e69b684), UINT32_C(0x3eb851ec),
+                                     UINT32_C(0x3e69b684)};
+    static const uint32_t birch[3] = {UINT32_C(0x3e9a33ce), UINT32_C(0x3ec92f97),
+                                      UINT32_C(0x3e4cccce)};
+    unsigned char untouched[sizeof(d->acquisition)];
+    memset(untouched, 0xa5, sizeof(untouched));
+    for (uint8_t metadata = 1; metadata <= 16; ++metadata) {
+        const uint8_t actual = metadata & 15u;
+        CHECK(color_metadata(&fixture, actual) && color_particle(p, p->base.world, &particle, e));
+        mc_world_provider *dimension = p->base.world->fields.t;
+        if (metadata == 1)
+            p->base.world->fields.t = NULL; /* Pine must not reach the manager. */
+        memcpy(&d->acquisition, untouched, sizeof(untouched));
+        const mc_entity_status status =
+            mc_digging_particle_tint_entered(particle, engine, 8, 64, 8, d, e);
+        p->base.world->fields.t = dimension;
+        const bool is_pine = (actual & 1u) != 0, is_birch = !is_pine && (actual & 2u) != 0;
+        const int32_t value = is_pine ? 6396257 : is_birch ? 8431445 : 0;
+        CHECK(status == MC_ENTITY_OK && d->reached && !d->failed && d->value == value &&
+              memcmp(&d->acquisition, untouched, sizeof(untouched)) == 0 &&
+              d->block_pc == (is_pine    ? 23u
+                              : is_birch ? 35u
+                                         : 84u) &&
+              e->source_pc == 92 &&
+              color_float_bits(particle->particle->fields.i) == (is_pine    ? pine[0]
+                                                                 : is_birch ? birch[0]
+                                                                            : 0) &&
+              color_float_bits(particle->particle->fields.j) == (is_pine    ? pine[1]
+                                                                 : is_birch ? birch[1]
+                                                                            : 0) &&
+              color_float_bits(particle->particle->fields.k) == (is_pine    ? pine[2]
+                                                                 : is_birch ? birch[2]
+                                                                            : 0));
+        mc_entity_release(particle);
+        particle = NULL;
+    }
+    CHECK(mc_client_colorizer_inspect(graphics, MC_CLIENT_COLORIZER_FOLIAGE, &state) &&
+          state.phase == MC_CLIENT_COLORIZER_READY && state.a != NULL && state.last_store_pc == 4);
+    /* The earlier CV namespace ends with null JH.a. This independent actual
+     * JI namespace is cold-zero initialized and must never read that other one. */
+    mc_client_colorizer_state other;
+    CHECK(mc_client_colorizer_inspect(p->graphics, MC_CLIENT_COLORIZER_FOLIAGE, &other) &&
+          other.a == NULL && p->graphics != graphics);
+    mc_client_color_array *palette = NULL, *empty = NULL;
+    const mc_client_graphics_site prepared = {"fixture", "palette", "()V", -1};
+    CHECK(mc_client_color_array_create(65536, NULL, prepared, &palette, NULL) ==
+          MC_CLIENT_COLOR_ARRAY_OK);
+    for (size_t i = 0; i < 65536; ++i)
+        CHECK(mc_client_color_array_write(palette, i, UINT32_C(0xa53f81c7)) ==
+              MC_CLIENT_COLOR_ARRAY_OK);
+    CHECK(mc_client_colorizer_set(graphics, MC_CLIENT_COLORIZER_FOLIAGE, palette, NULL, NULL) ==
+          MC_CLIENT_COLORIZER_OK);
+    CHECK(color_metadata(&fixture, 0) && color_particle(p, p->base.world, &particle, e));
+    CHECK(mc_digging_particle_tint_entered(particle, engine, 8, 64, 8, d, e) == MC_ENTITY_OK &&
+          (uint32_t)d->value == UINT32_C(0xa53f81c7) &&
+          color_float_bits(particle->particle->fields.i) == UINT32_C(0x3e17caff) &&
+          color_float_bits(particle->particle->fields.j) == UINT32_C(0x3e9b6836) &&
+          color_float_bits(particle->particle->fields.k) == UINT32_C(0x3eefbc8a));
+    mc_entity_release(particle);
+    particle = NULL;
+    CHECK(mc_client_colorizer_set(graphics, MC_CLIENT_COLORIZER_FOLIAGE, NULL, NULL, NULL) ==
+          MC_CLIENT_COLORIZER_OK);
+    CHECK(color_particle(p, p->base.world, &particle, e));
+    CHECK(mc_digging_particle_tint_entered(particle, engine, 8, 64, 8, d, e) ==
+              MC_ENTITY_STATE_ERROR &&
+          d->failed && d->block_pc == 81 &&
+          d->colorizer.array.status == MC_CLIENT_COLOR_ARRAY_NULL_REFERENCE &&
+          strcmp(e->source_class, "jh") == 0 && e->source_pc == 35 && e->source_exception &&
+          particle->particle->fields.i == .6f && particle->particle->fields.j == .6f &&
+          particle->particle->fields.k == .6f);
+    mc_entity_release(particle);
+    particle = NULL;
+    CHECK(color_metadata(&fixture, 2) && color_particle(p, p->base.world, &particle, e));
+    CHECK(mc_digging_particle_tint_entered(particle, engine, 8, 64, 8, d, e) == MC_ENTITY_OK &&
+          d->value == 8431445);
+    mc_entity_release(particle);
+    particle = NULL;
+    CHECK(mc_client_color_array_create(0, NULL, prepared, &empty, NULL) ==
+          MC_CLIENT_COLOR_ARRAY_OK);
+    CHECK(mc_client_colorizer_set(graphics, MC_CLIENT_COLORIZER_FOLIAGE, empty, NULL, NULL) ==
+          MC_CLIENT_COLORIZER_OK);
+    CHECK(color_metadata(&fixture, 0) && color_particle(p, p->base.world, &particle, e));
+    CHECK(mc_digging_particle_tint_entered(particle, engine, 8, 64, 8, d, e) ==
+              MC_ENTITY_STATE_ERROR &&
+          d->colorizer.array.status == MC_CLIENT_COLOR_ARRAY_INDEX_OUT_OF_RANGE &&
+          e->source_exception &&
+          strcmp(e->exception_class, "java/lang/ArrayIndexOutOfBoundsException") == 0 &&
+          particle->particle->fields.i == .6f && particle->particle->fields.j == .6f &&
+          particle->particle->fields.k == .6f);
+    mc_entity_release(particle);
+    particle = NULL;
+    CHECK(color_metadata(&fixture, 2) && color_particle(p, p->base.world, &particle, e));
+    const unsigned int controls = _mm_getcsr();
+    _mm_setcsr(controls | 0x2000u);
+    const mc_entity_status fp = mc_digging_particle_tint_entered(particle, engine, 8, 64, 8, d, e);
+    _mm_setcsr(controls);
+    CHECK(fp == MC_ENTITY_UNSUPPORTED_FP && e->native_policy &&
+          strcmp(e->source_class, "qm") == 0 && e->source_pc == 45 && d->value == 8431445 &&
+          particle->particle->fields.i == .6f && particle->particle->fields.j == .6f &&
+          particle->particle->fields.k == .6f);
+    mc_entity_release(particle);
+    CHECK(mc_client_colorizer_set(graphics, MC_CLIENT_COLORIZER_FOLIAGE, palette, NULL, NULL) ==
+          MC_CLIENT_COLORIZER_OK);
+    CHECK(color_captured_world(p, engine, e, d));
+    CHECK(p->base.world->fields.r->state == world_random);
+    CHECK(mc_client_color_array_release(&palette, NULL) == MC_CLIENT_COLOR_ARRAY_OK);
+    CHECK(mc_client_color_array_release(&empty, NULL) == MC_CLIENT_COLOR_ARRAY_OK);
+    CHECK(mc_client_render_engine_release(engine) == MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_default_font_release(font) == MC_CLIENT_FONT_OK);
+    CHECK(mc_game_settings_retire(&settings, NULL) == MC_GAME_SETTINGS_OK);
+    CHECK(mc_client_render_engine_classes_release(graphics) == MC_CLIENT_RENDER_ENGINE_OK);
+    free(d);
+    free(e);
+    return true;
+}
+
 int main(int argc, char **argv) {
     if (argc != 3)
         return 1;
     picking_fixture *f = calloc(1, sizeof(*f));
     if (f == NULL || !picking_open(f, argv[1]) || !picking_case_open(f, argv[2]) ||
-        !colors_observe(f) || !picking_case_close(f) || !picking_close(f))
+        !colors_observe(f) || !color_particle_controls(f) || !picking_case_close(f) ||
+        !picking_close(f))
         return 1;
     free(f);
     printf("%u source Block color checks passed\n", checks);

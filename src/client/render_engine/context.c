@@ -19,6 +19,7 @@ mc_client_render_engine_status mc_client_render_engine_classes_allocate_context(
     c->nw.options =
         nw == NULL ? (mc_client_render_engine_options){20u * 1024u * 1024u, SIZE_MAX} : *nw;
     c->limits = selected;
+    c->colorizer_read = mc_client_colorizer_read;
     *out = c;
     return MC_CLIENT_RENDER_ENGINE_OK;
 }

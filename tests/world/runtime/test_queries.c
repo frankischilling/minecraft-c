@@ -543,6 +543,20 @@ static bool failure_diagnostics(fixture *f, size_t side) {
     CHECK(mc_world_runtime_block_get_failure(world, 8, -1, 8, &value, &cause, &detail) ==
               MC_WORLD_STORAGE_OK &&
           value == 0 && memcmp(before, &detail, sizeof(detail)) == 0);
+    CHECK(mc_world_runtime_metadata_get_failure(world, 8, 64, 8, &value, &cause, &detail) ==
+              MC_WORLD_STORAGE_OK &&
+          value == 0 && memcmp(before, &detail, sizeof(detail)) == 0);
+    CHECK(mc_world_runtime_metadata_get_failure(world, 8, -1, 8, &value, &cause, &detail) ==
+              MC_WORLD_STORAGE_OK &&
+          value == 0 && memcmp(before, &detail, sizeof(detail)) == 0);
+    /* The public detailed metadata API still resets its entire successful
+     * acquisition diagnostic, including descendant sentinel values. */
+    CHECK(mc_world_runtime_metadata_get_detailed(world, 8, 64, 8, &value, &cause, &detail) ==
+              MC_WORLD_STORAGE_OK &&
+          value == 0 && detail.status == MC_CHUNK_ACQUIRE_OK && detail.batch.index == SIZE_MAX &&
+          detail.load_entity.index == SIZE_MAX &&
+          detail.tile_entity.tile_entity.item_index == SIZE_MAX &&
+          detail.registry.initializer_pc == -1);
 
     value = 777;
     CHECK(mc_world_runtime_block_get_failure(NULL, 8, 64, 8, &value, &cause, &detail) ==
@@ -570,6 +584,41 @@ static bool failure_diagnostics(fixture *f, size_t side) {
     CHECK(payload == MC_WORLD_STORAGE_UNSUPPORTED_STATE && value == 777 &&
           detail.status == MC_CHUNK_ACQUIRE_OK && detail.batch.index == SIZE_MAX &&
           detail.load_entity.index == SIZE_MAX && detail.registry.initializer_pc == -1);
+
+    memset(&detail, 0xa5, sizeof(detail));
+    CHECK(mc_world_runtime_metadata_get_failure(NULL, 8, 64, 8, &value, &cause, &detail) ==
+              MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+          value == 777 && detail.status == MC_CHUNK_ACQUIRE_OK && detail.batch.index == SIZE_MAX &&
+          detail.load_entity.index == SIZE_MAX && detail.registry.initializer_pc == -1);
+    /* Metadata is an embedded fixed16384 array: a null/short standalone
+     * metadata backing is not representable. A normal Chunk with null data
+     * is a real malformed acquisition input, rejected before scalar access. */
+    mc_chunk_data *data = chunk->data;
+    chunk->data = NULL;
+    memset(&detail, 0xa5, sizeof(detail));
+    const mc_world_storage_status metadata_payload =
+        mc_world_runtime_metadata_get_failure(world, 8, 64, 8, &value, &cause, &detail);
+    chunk->data = data;
+    CHECK(metadata_payload == MC_WORLD_STORAGE_UNSUPPORTED_STATE && value == 777 &&
+          detail.status == MC_CHUNK_ACQUIRE_INVALID_ARGUMENT && detail.batch.index == SIZE_MAX &&
+          detail.load_entity.index == SIZE_MAX && detail.registry.initializer_pc == -1);
+    /* Real native admission failure must survive as the exact acquisition
+     * cause, before validating the independently malformed normal Chunk. The
+     * explicit native hold-bound control is restored before any assertion. */
+    chunk->data = NULL;
+    world->active_calls = SIZE_MAX;
+    memset(&detail, 0xa5, sizeof(detail));
+    const mc_world_storage_status metadata_acquisition =
+        mc_world_runtime_metadata_get_failure(world, 8, 64, 8, &value, &cause, &detail);
+    world->active_calls = calls;
+    chunk->data = data;
+    CHECK(metadata_acquisition == MC_WORLD_STORAGE_LIMIT && value == 777 &&
+          detail.status == MC_CHUNK_ACQUIRE_LIMIT && same_cause(&cause, &detail.cause) &&
+          strcmp(cause.operation, "runtime acquisition call hold") == 0 &&
+          detail.batch.index == SIZE_MAX && detail.load_entity.index == SIZE_MAX &&
+          detail.registry.initializer_pc == -1 && detail.source_chunk == NULL &&
+          detail.batch.publication.world_access_failure.receipt == NULL &&
+          detail.tile_entity.world_access_failure.receipt == NULL);
 
     memset(&detail, 0xa5, sizeof(detail));
     CHECK(mc_world_runtime_get_failure(NULL, 0, 0, &chunk, &detail) ==

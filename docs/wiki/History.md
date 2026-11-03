@@ -1,5 +1,20 @@
 # History
 
+## Concrete harvesting and provider presence
+
+Leaves, Snow-layer and Ice now run their original Player-harvest overrides
+through the single-player controller. Exact comparisons cover 63 controller
+scenarios. A real Leaf/Shears scene exposed and then completed the required
+Leaf particle color, dropped-Item scale and inventory color/shape descendants.
+It returns ordinary frames, strict Item/Player NBT and checked native cleanup.
+Original rendered frames and unrestricted play remain unqualified.
+
+Provider membership now uses the existing owned index outside mutation scopes,
+without reading values or changing GET accounting. A separate controlled CPU
+comparison records faster presence/light reads at larger loaded maps, together
+with the single-Chunk cost and unchanged mutation controls. The entire failed
+frame repetition is retained; it supplies no new FPS speedup claim.
+
 ## World query performance and held tools
 
 Scalar reads now avoid full successful acquisition diagnostics. Nested reads

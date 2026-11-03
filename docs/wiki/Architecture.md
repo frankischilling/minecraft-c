@@ -1,5 +1,17 @@
 # Systems and subsystems
 
+Provider presence is packed-key membership, independently of Chunk payload
+validity and GET counters. Only an unexported owned cache outside mutation
+uses the existing index; other cases retain live linear membership.
+
+Concrete harvesting preserves fresh hand reads after tool breakage and each
+Block's distinct publication/statistic order. QM and World rendering share
+the original Leaf color control flow. DN retains one reused color child;
+its metadata adapter avoids full success-diagnostic resets. The Engine's actual
+graphics namespace supplies JH active use without adding a simulation dependency
+on the graphics backend. Leaf inventory color and dropped-Item scale remain
+separate original methods with their own reads and failure prefixes.
+
 [Scalar World queries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/world-queries.md)
 keep complete failure receipts off successful reads. Nested source-owned cache
 hits scan the live bounded map while its index may be stale. Raw export still

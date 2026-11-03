@@ -4,8 +4,10 @@ The client connects empty-hand survival mining to the existing SDK input,
 singleplayer controller, World mutation and Item owners. Dirt is the first
 complete interaction scenario. [Collected-Dirt placement](placement.md) continues
 that route through real right-button use and a further save/reselection.
-Tools, combat, broader Item/Block use and the Inventory screen retain their
-own reached dependencies.
+[Held tools](../item/mining.md), combat, broader Item/Block use and the Inventory
+screen have their own qualification. Concrete [Leaves, Snow-layer and Ice
+harvesting](block-harvest.md) now follows the ordinary controller path in finite
+CPU comparisons; their graphical descendants retain separate verification.
 
 ## Source order
 
@@ -31,8 +33,9 @@ and passes on Windows and Linux. The implementation follows these bytecode entri
 Negative hardness returns before Player work. NaN hardness reaches Player work,
 as prescribed by `UU.fcmpg`; NaN progress does not trigger destruction through
 `OS.fcmpl`. Water and airborne penalties divide speed by five in their original
-order. Inventory reads use the actual selected Stack. Unsupported tools fail at
-their reached invocation rather than borrowing empty-hand behavior.
+order. Inventory reads use the actual selected Stack. All 38 represented Item
+Classes now resolve their mining speed/harvest and destruction bodies; remaining
+Block hooks still fail at their actual reached boundary.
 
 The World auxiliary method reloads the live WorldAccess List as it advances.
 For event2001, RenderGlobal returns from the break sound before constructing

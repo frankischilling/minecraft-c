@@ -1,5 +1,7 @@
 #include "internal.h"
+#include "inventory_color.h"
 
+#include "../../../block/registry/registry_internal.h"
 #include "../../../entity/player/tick_math_internal.h"
 #include "../../display/source_surface.h"
 
@@ -22,6 +24,44 @@ static bool inventory_nw(mc_cv_context *c, bool ok, unsigned int pc) {
                       c->failure.graphics.native_policy);
 }
 
+bool mc_cv_leaf_inventory_color(mc_cv_context *c, int32_t metadata, int32_t *out) {
+    mc_cv_pc(c, 14);
+    if (!mc_cv_push_source(c, "bk", "b", "(I)I"))
+        return false;
+    const bool pine = ((uint32_t)metadata & 1u) == 1u;
+    const bool birch = !pine && ((uint32_t)metadata & 2u) == 2u;
+    const unsigned int invoke = pine ? 7u : birch ? 18u : 22u;
+    const mc_client_colorizer_read_kind read = pine    ? MC_CLIENT_COLORIZER_PINE
+                                               : birch ? MC_CLIENT_COLORIZER_BIRCH
+                                                       : MC_CLIENT_COLORIZER_DEFAULT_FOLIAGE;
+    mc_cv_pc(c, invoke);
+    if (mc_client_colorizer_initialize(c->graphics, MC_CLIENT_COLORIZER_FOLIAGE, NULL,
+                                       &c->colorizer_error) != MC_CLIENT_COLORIZER_OK) {
+        const mc_client_colorizer_error *e = &c->colorizer_error;
+        c->failure.child = e->site;
+        return mc_cv_fail(c,
+                          e->status == MC_CLIENT_COLORIZER_LIMIT ? MC_CLIENT_RENDER_GLOBAL_LIMIT
+                          : e->status == MC_CLIENT_COLORIZER_BUSY
+                              ? MC_CLIENT_RENDER_GLOBAL_BUSY
+                              : MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
+                          e->operation, invoke, e->native_policy);
+    }
+    if (!mc_cv_push_source(c, "jh", pine ? "a" : birch ? "b" : "c", "()I"))
+        return false;
+    if (mc_client_colorizer_read_ready(c->graphics, MC_CLIENT_COLORIZER_FOLIAGE, read, 0.0, 0.0,
+                                       out, &c->colorizer_error) != MC_CLIENT_COLORIZER_OK) {
+        const mc_client_colorizer_error *e = &c->colorizer_error;
+        c->failure.child = e->site;
+        return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED, e->operation, 0,
+                          e->native_policy);
+    }
+    mc_cv_pc(c, 2);
+    mc_cv_pop(c);
+    mc_cv_pc(c, pine ? 10u : birch ? 21u : 25u);
+    mc_cv_pop(c);
+    return true;
+}
+
 bool mc_cv_inventory(mc_cv_context *c, const mc_block *block, int32_t metadata, float brightness) {
     if (!mc_cv_push(c, "a", "(Luu;IF)V") || !mc_cv_nw(c, 0))
         return false;
@@ -30,8 +70,10 @@ bool mc_cv_inventory(mc_cv_context *c, const mc_block *block, int32_t metadata, 
             return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
                               "inventory Block color null receiver", 14, false);
         int32_t color;
-        const mc_registry_status status = mc_block_render_inventory_color(block, metadata, &color);
-        if (status != MC_REGISTRY_OK) {
+        if (block->kind == MC_BLOCK_LEAVES) {
+            if (!mc_cv_leaf_inventory_color(c, metadata, &color))
+                return false;
+        } else if (mc_block_render_inventory_color(block, metadata, &color) != MC_REGISTRY_OK) {
             c->failure.child = (mc_client_graphics_site){"uu", "b", "(I)I", 0};
             return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
                               "inventory actual Block metadata-color body", 14, true);

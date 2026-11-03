@@ -123,7 +123,8 @@ mc_world_runtime_block_get_failure(mc_world_runtime *runtime, int32_t x, int32_t
 
 static mc_world_storage_status metadata_get(mc_world_runtime *runtime, int32_t x, int32_t y,
                                             int32_t z, int32_t *out, mc_world_storage_error *error,
-                                            mc_world_runtime_acquisition_error *acquisition) {
+                                            mc_world_runtime_acquisition_error *acquisition,
+                                            bool *acquisition_failed) {
     if (runtime == NULL || out == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World metadata arguments");
     if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME ||
@@ -137,7 +138,7 @@ static mc_world_storage_status metadata_get(mc_world_runtime *runtime, int32_t x
     mc_world_storage_status status =
         acquisition == NULL
             ? acquire_chunk(runtime, x, z, &chunk, error)
-            : acquire_chunk_detailed(runtime, x, z, &chunk, error, acquisition, NULL);
+            : acquire_chunk_detailed(runtime, x, z, &chunk, error, acquisition, acquisition_failed);
     if (status != MC_WORLD_STORAGE_OK)
         return status;
     if (chunk->blank) {
@@ -158,7 +159,7 @@ static mc_world_storage_status metadata_get(mc_world_runtime *runtime, int32_t x
 mc_world_storage_status mc_world_runtime_metadata_get(mc_world_runtime *runtime, int32_t x,
                                                       int32_t y, int32_t z, int32_t *out,
                                                       mc_world_storage_error *error) {
-    return metadata_get(runtime, x, y, z, out, error, NULL);
+    return metadata_get(runtime, x, y, z, out, error, NULL, NULL);
 }
 
 mc_world_storage_status
@@ -169,7 +170,22 @@ mc_world_runtime_metadata_get_detailed(mc_world_runtime *runtime, int32_t x, int
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                       "World detailed metadata acquisition output");
     acquisition_reset(acquisition);
-    return metadata_get(runtime, x, y, z, out, error, acquisition);
+    return metadata_get(runtime, x, y, z, out, error, acquisition, NULL);
+}
+
+mc_world_storage_status
+mc_world_runtime_metadata_get_failure(mc_world_runtime *runtime, int32_t x, int32_t y, int32_t z,
+                                      int32_t *out, mc_world_storage_error *error,
+                                      mc_world_runtime_acquisition_error *acquisition) {
+    if (acquisition == NULL)
+        return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                      "World detailed metadata acquisition output");
+    bool acquisition_failed = false;
+    const mc_world_storage_status status =
+        metadata_get(runtime, x, y, z, out, error, acquisition, &acquisition_failed);
+    if (status != MC_WORLD_STORAGE_OK && !acquisition_failed)
+        acquisition_reset(acquisition);
+    return status;
 }
 
 mc_world_storage_status mc_world_runtime_metadata_set_quiet(mc_world_runtime *runtime, int32_t x,

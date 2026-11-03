@@ -1,5 +1,16 @@
 # minecraft-c
 
+[Leaves, Snow-layer and Ice harvesting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/block-harvest.md)
+now matches 63 complete original controller scenarios. The Windows Leaf/Shears
+scene also returns actual mining, tinted particles and the dropped Leaf Item,
+with strict NBT and checked native cleanup. These are finite scenarios;
+unrestricted play and original pixels remain unqualified.
+
+Owned provider presence uses its existing index outside mutation scopes. At
+512 loaded Chunks, median presence hits fall from 124.02 to 15.16 ns and
+saved-light reads from 212.00 to 87.42 ns. All CPU controls and samples remain
+recorded. Its failed frame cohort supplies no additional FPS gain claim.
+
 [World query CPU measurements](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/world-queries.md)
 now cover faster block, metadata and light reads with unchanged query results,
 Random state and ownership. These cached-query measurements do not establish
