@@ -8,10 +8,10 @@ import re
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[3]
 PROFILES = ('clean', 'container', 'player', 'world')
-CHECKS = dict(zip(PROFILES, (1971, 1930, 2249, 2206)))
-SECONDS = dict(zip(PROFILES, (13.94, 14.00, 14.66, 14.48)))
-ENTITY_COUNTS = dict(zip(PROFILES, (32, 31, 32, 32)))
-SAVE_COUNTS = dict(zip(PROFILES, (13, 12, 13, 13)))
+CHECKS = dict(zip(PROFILES, (1955, 1905, 2162, 2147)))
+SECONDS = dict(zip(PROFILES, (16.69, 14.08, 16.07, 15.56)))
+ENTITY_COUNTS = dict(zip(PROFILES, (34, 27, 27, 23)))
+SAVE_COUNTS = dict(zip(PROFILES, (13, 12, 13, 12)))
 FOCUSED_CASES = [
     {'name': 'client.world_save_title', 'status': 'PASS', 'seconds': 16.60},
     {'name': 'client.world_reload_cycle', 'status': 'PASS', 'seconds': 42.22},
@@ -173,7 +173,7 @@ def validate(document, root=None):
     public_wire = json.dumps(document)
     require(re.search(r'[A-Za-z]:[\\/]|\\\\Users\\\\|/home/|file://', public_wire) is None,
             'no private absolute paths')
-    for group, count in (('runtime', 1445), ('harness', 510)):
+    for group, count in (('runtime', 1446), ('harness', 512)):
         files = document[group + '_source_files']
         manifest(files, count, group)
         require(document[group + '_source_count'] == count and
@@ -188,7 +188,7 @@ def validate(document, root=None):
     keys(execution, 'count source_count binaries digest', 'execution inputs')
     manifest(execution['binaries'], 2, 'native binaries')
     require(set(execution['binaries']) == {'mc_test_workbench_open_shutdown.exe', 'OpenAL32.dll'} and
-            execution['count'] == 1957 and execution['source_count'] == 1955 and
+            execution['count'] == 1960 and execution['source_count'] == 1958 and
             execution['digest'] == canonical({**runtime, **harness, **{
                 'build-windows/' + name: value for name, value in execution['binaries'].items()}}),
             'complete selected input manifest')
@@ -197,7 +197,7 @@ def validate(document, root=None):
     require(resources['count'] == 413 and hash_string(resources['digest']), 'resource count/digest')
     cohort = document['cohort']
     keys(cohort, 'passed total_seconds private_log_sha256', 'cohort')
-    require(cohort['passed'] == 4 and cohort['total_seconds'] == 57.11 and
+    require(cohort['passed'] == 4 and cohort['total_seconds'] == 62.43 and
             hash_string(cohort['private_log_sha256']), 'four-profile measured cohort')
     require(document['authored_scene'] == {
         'inventory': [[0, 270, 1, 0], [9, 17, 2, 0], [10, 5, 7, 0]],
@@ -302,8 +302,8 @@ def validate(document, root=None):
             path = root / name
             require(path.is_file() and path.stat().st_size == expected['bytes'] and
                     digest(path) == expected['sha256'], 'unchanged selected source ' + name)
-    return {'profiles': 4, 'runtime_sources': 1445, 'harness_sources': 510,
-            'selected_inputs': 1957, 'resources': 413, 'native_checks': sum(CHECKS.values()),
+    return {'profiles': 4, 'runtime_sources': 1446, 'harness_sources': 512,
+            'selected_inputs': 1960, 'resources': 413, 'native_checks': sum(CHECKS.values()),
             'historical_failures': 3, 'intervening_failed_sdk_profiles': 2,
             'preceding_failed_sdk_profiles': 1,
             'source_shutdown_or_pixel_comparisons': 0}
@@ -365,8 +365,8 @@ def audit_cohort_log(path):
                           r'\s+\.+\s+Passed\s+' + re.escape(f'{seconds:.2f}') + r' sec', wire),
                 'actual CTest profile time ' + profile)
     require('100% tests passed, 0 tests failed out of 4' in wire and
-            re.search(r'Total Test time \(real\) =\s+57\.11 sec', wire), 'actual four-profile total')
-    return {'passed': 4, 'seconds': 57.11}
+            re.search(r'Total Test time \(real\) =\s+62\.43 sec', wire), 'actual four-profile total')
+    return {'passed': 4, 'seconds': 62.43}
 
 
 if __name__ == '__main__':

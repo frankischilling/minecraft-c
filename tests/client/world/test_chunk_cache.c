@@ -6,6 +6,7 @@ int mc_ew_picking_fixture_main(int argc, char **argv);
 
 #include "mc/client/world/chunk_cache.h"
 #include "world/chunk/object_state_internal.h"
+#include "world/runtime/chunk_cache_internal.h"
 /* Compile the actual canonical Store body once in this white-box test, as the
  * Display list tests do for Display. Its private identity lease counter is
  * needed for a deterministic native admission failure, not a fake getter or
@@ -14,6 +15,95 @@ int mc_ew_picking_fixture_main(int argc, char **argv);
 #include <limits.h>
 
 static unsigned int ew_rows;
+
+static bool ew_block_failure_pair(mc_client_chunk_cache *cache, int32_t x, int32_t y, int32_t z,
+                                  bool output) {
+    mc_client_chunk_cache_error detailed, failure;
+    uint8_t prior[sizeof(failure)];
+    memset(&failure, 0xa5, sizeof(failure));
+    memcpy(prior, &failure, sizeof(prior));
+    int32_t expected = -179, actual = expected;
+    const bool active = cache != NULL && cache->state.active;
+    const mc_client_chunk_cache_status status =
+        mc_client_chunk_cache_block(cache, x, y, z, output ? &expected : NULL, &detailed);
+    CHECK(mc_client_chunk_cache_block_failure(cache, x, y, z, output ? &actual : NULL, &failure) ==
+              status &&
+          actual == expected && (cache == NULL || cache->state.active == active));
+    if (status == MC_CLIENT_CHUNK_CACHE_OK) {
+        CHECK(memcmp(prior, &failure, sizeof(prior)) == 0 &&
+              detailed.status == MC_CLIENT_CHUNK_CACHE_OK && strcmp(detailed.method, "a") == 0 &&
+              strcmp(detailed.descriptor, "(III)I") == 0);
+    } else {
+        CHECK(
+            actual == -179 && failure.status == detailed.status &&
+            strcmp(failure.operation, detailed.operation) == 0 &&
+            strcmp(failure.method, detailed.method) == 0 &&
+            strcmp(failure.descriptor, detailed.descriptor) == 0 &&
+            failure.bytecode == detailed.bytecode &&
+            failure.child_bytecode == detailed.child_bytecode &&
+            failure.native_policy == detailed.native_policy && failure.nested_count == 0 &&
+            detailed.nested_count == 0 &&
+            memcmp(failure.nested, detailed.nested, sizeof(failure.nested)) == 0 &&
+            memcmp(&failure.storage, &detailed.storage, sizeof(failure.storage)) == 0 &&
+            memcmp(&failure.registry, &detailed.registry, sizeof(failure.registry)) == 0 &&
+            memcmp(&failure.acquisition, &detailed.acquisition, sizeof(failure.acquisition)) == 0 &&
+            memcmp(&failure.tile_entity, &detailed.tile_entity, sizeof(failure.tile_entity)) == 0);
+    }
+    return true;
+}
+
+static bool ew_block_failure_controls(picking_fixture *f) {
+    mc_client_chunk_cache *cache = NULL;
+    mc_client_chunk_cache_error error;
+    CHECK(mc_client_chunk_cache_create(f->base.world, 0, 0, 0, 31, 127, 31, &cache, &error) ==
+              MC_CLIENT_CHUNK_CACHE_OK &&
+          cache != NULL && cache->occurrences[0].object != NULL);
+    static const int32_t positions[][3] = {{8, 64, 8},         {0, 0, 0},  {31, 127, 31},
+                                           {INT32_MIN, 64, 8}, {8, -1, 8}, {8, 128, 8},
+                                           {32, 64, 8},        {8, 64, -1}};
+    for (size_t i = 0; i < sizeof(positions) / sizeof(*positions); ++i)
+        CHECK(
+            ew_block_failure_pair(cache, positions[i][0], positions[i][1], positions[i][2], true));
+    CHECK(ew_block_failure_pair(NULL, 8, 64, 8, true) &&
+          ew_block_failure_pair(cache, 8, 64, 8, false));
+    cache->state.active = true;
+    CHECK(ew_block_failure_pair(cache, 8, 64, 8, true));
+    cache->state.active = false;
+    cache->state.retiring = true;
+    CHECK(ew_block_failure_pair(cache, 8, 64, 8, true));
+    cache->state.retiring = false;
+    mc_chunk_state *const *const *rows = cache->state.c;
+    cache->state.c = NULL;
+    CHECK(ew_block_failure_pair(cache, 8, 64, 8, true) &&
+          ew_block_failure_pair(cache, 32, 64, 8, true) &&
+          ew_block_failure_pair(cache, -1, 64, 8, true) &&
+          ew_block_failure_pair(cache, 8, -1, 8, true));
+    cache->state.c = rows;
+    mc_chunk_state *chunk_state = cache->occurrences[0].state;
+    cache->occurrences[0].state = NULL;
+    CHECK(ew_block_failure_pair(cache, 8, 64, 8, true));
+    cache->occurrences[0].state = chunk_state;
+    const bool blank = chunk_state->blank;
+    chunk_state->blank = true;
+    CHECK(ew_block_failure_pair(cache, 8, 64, 8, true));
+    chunk_state->blank = blank;
+    mc_world_chunk *chunk = cache->occurrences[0].object;
+    uint8_t *blocks = chunk->data->blocks;
+    const size_t capacity = chunk->data->blocks_capacity;
+    chunk->data->blocks = NULL;
+    CHECK(ew_block_failure_pair(cache, 8, 64, 8, true));
+    chunk->data->blocks = blocks;
+    chunk->data->blocks_capacity = 1;
+    CHECK(ew_block_failure_pair(cache, 8, 64, 8, true));
+    int32_t untouched = 79;
+    CHECK(mc_client_chunk_cache_block_failure(cache, 8, 64, 8, &untouched, NULL) ==
+              MC_CLIENT_CHUNK_CACHE_SOURCE_INDEX &&
+          untouched == 79);
+    chunk->data->blocks_capacity = capacity;
+    CHECK(mc_client_chunk_cache_retire(&cache, &error) == MC_CLIENT_CHUNK_CACHE_OK &&
+          cache == NULL);
+    return true;
+}
 
 static const char *ew_exception(mc_client_chunk_cache_status status) {
     switch (status) {
@@ -337,7 +427,8 @@ int main(int argc, char **argv) {
         return 1;
     picking_fixture *f = calloc(1, sizeof(*f));
     if (f == NULL || !picking_open(f, argv[1]) || !picking_case_open(f, argv[2]) ||
-        !ew_observe(f) || ew_rows != 950 || !picking_case_close(f) || !picking_close(f))
+        !ew_observe(f) || ew_rows != 950 || !ew_block_failure_controls(f) ||
+        !picking_case_close(f) || !picking_close(f))
         return 1;
     free(f);
     printf("Source EW: %u checks; 950 original rows and canonical leases\n", checks);

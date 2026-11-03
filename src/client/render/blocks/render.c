@@ -94,6 +94,12 @@ static bool render_block(mc_cv_context *c, const mc_block *block, int32_t x, int
             return false;
         mc_cv_pop(c);
         return_pc = 48;
+    } else if (type == 8) {
+        mc_cv_pc(c, 160);
+        if (!mc_cv_push(c, "h", "(Luu;III)Z") || !mc_cv_ladder(c, block, x, y, z, &rendered))
+            return false;
+        mc_cv_pop(c);
+        return_pc = 163;
     } else if (type == 13) {
         mc_cv_pc(c, 62);
         if (!mc_cv_push(c, "m", "(Luu;III)Z") || !mc_cv_cactus(c, block, x, y, z, &rendered))

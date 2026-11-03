@@ -21,4 +21,11 @@ struct mc_client_chunk_cache {
     bool world_held;
 };
 
+/* The same source block read and native admission, with complete diagnostics
+ * only on failure. Success leaves error untouched. Render callers inspect it
+ * only after a failed status; the public accessor retains its success record. */
+mc_client_chunk_cache_status mc_client_chunk_cache_block_failure(mc_client_chunk_cache *, int32_t,
+                                                                 int32_t, int32_t, int32_t *,
+                                                                 mc_client_chunk_cache_error *);
+
 #endif

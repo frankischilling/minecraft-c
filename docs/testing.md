@@ -1,5 +1,56 @@
 # Test scope and reproduction
 
+## Ladder rendering and ChunkCache diagnostics
+
+`client.ladder_world` matches all 70 selected rows from 35 original calls and
+960 appended words. Three fresh original VMs agree. Native replay passes 1,820
+checks, including four dispatcher calls, strict floating-point admission and
+73,399,360 own-prior inactive words. All sixteen packet corruption controls
+pass. Four original orientation profiles join the existing eight fluid profiles
+in real DK compilation, immutable mesh reuse and light-notification recompile.
+
+The Windows `client.world_selection_ladder` scene passes 1,454 checks in 8.35
+seconds. It independently decodes the saved Player and mounted Ladder, then
+checks the loaded camera, actual pick/outline and all six Ladder position/UV
+words against the original loaded-coordinate profile. Four returned World/HUD
+frames include two reuse attempts and one dirty recompile. Protected resources
+and save files remain unchanged except for the ordinary session lock.
+See [Ladder rendering](client/ladder-world.md) for its exact lighting scope.
+
+The optional [ChunkCache CPU benchmark](../tests/benchmarks/chunk_cache.md)
+retains an initial 42-sample cohort and independent 84-sample confirmation.
+The confirmation median falls from 8.39885 to 0.74005 ms per 65,536 real reads.
+Complete owner/Chunk state, values, allocation/hold state, Random state and
+754 declared diagnostic leaves are checked outside timing. The promoted public
+and failure-only targets also pass separate untimed controls. These finite
+results establish neither unrestricted play nor an FPS improvement.
+
+Four fresh Windows SDK Workbench shutdown profiles pass in 62.43 seconds,
+with 8,169 checks. Their regenerated packet passes all 57 controls and the
+public/private, exact-cohort-log and historical-failure audits. Each actual
+capture retains 1,446 runtime files, 512 harness/CMake files, two binaries and
+413 resources unchanged. The previous 57.11-second packet and its exact
+validators/products retain their earlier scope. Formatting passes all 2,029
+C/header/handwritten-fragment files with clang-format 18.
+
+The full final-runtime public cohort passes 658/658 on Linux Clang 18 Debug
+ASan/UBSan in 162.30 seconds under Xvfb/software OpenGL, with leak detection
+and halt-on-error. Windows MSVC Release passes 658/668 in 270.92 seconds.
+Both cohorts preserve all 4,607 source inputs; Windows also preserves 535
+executables and 413 resources, Linux 536 executables. Every source byte matches
+across hosts, including all 1,446 runtime files. These are CTest times; guarded
+process/post-hash intervals are 275.58 seconds on Windows and 215.69 on Linux.
+
+The ten Windows failures remain recorded: animals, creatures and Wolf lose
+foreground to Chrome; reload, Cactus and Save and Quit time out waiting for
+SDL keyboard focus; Torch, Water, Lava and Ladder fail saved-camera/picking
+assertions. The latter groups do not independently establish an input origin.
+The earlier focused Ladder and fresh Workbench passes remain separate results.
+A single guarded Ladder control refuses launch after its three-second idle
+check observes changed host input. No replacement scene pass or full Windows
+pass is claimed. Native focus recovery, those pose failures and unrestricted
+input stability remain unresolved.
+
 ## Fluid rendering and provider-binding qualification
 
 The current fluid comparison matches 104 original calls and 416 native

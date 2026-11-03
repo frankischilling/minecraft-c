@@ -1,6 +1,7 @@
 #include "source_chunk_compile_internal.h"
 
 #include "../../entity/player/tick_math_internal.h"
+#include "../../world/runtime/chunk_cache_internal.h"
 #include "../../world/runtime/construction_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../application_state.h"
@@ -325,9 +326,9 @@ static bool body(mc_source_dk_compile *c) {
                 for (c->state.x = x; c->state.x < end_x;
                      c->state.x = mc_java_i32_add(c->state.x, 1)) {
                     if (!cache_result(c,
-                                      mc_client_chunk_cache_block(c->cache, c->state.x, c->state.y,
-                                                                  c->state.z, &c->state.block_id,
-                                                                  &c->cache_error),
+                                      mc_client_chunk_cache_block_failure(
+                                          c->cache, c->state.x, c->state.y, c->state.z,
+                                          &c->state.block_id, &c->cache_error),
                                       231))
                         return false;
                     if (c->state.block_id <= 0)

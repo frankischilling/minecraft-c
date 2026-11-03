@@ -1,5 +1,37 @@
 # Development status
 
+[Ladder World rendering](client/ladder-world.md) now reaches the original type 8
+path. Native replay matches 35 original calls, 70 selected rows and 960 appended
+words, including all metadata nibbles and failure prefixes. Four orientations
+pass real section compilation. A saved mounted Ladder scene checks the loaded
+Player camera, picking, outline, mesh reuse, light-driven recompile and cleanup.
+Original whole-frame pixels and broader Ladder interactions remain unfinished.
+
+RenderBlocks and section compilation now use an internal ChunkCache Block
+accessor that builds complete diagnostics only on failure. The public accessor
+retains its success record. An independent 84-sample confirmation reduces
+median time for 65,536 genuine reads from 8.39885 to 0.74005 ms (91.19%), with
+unchanged values, failure details, owners, Random state and Chunk planes.
+The [CPU record](../tests/benchmarks/chunk_cache.md) does not measure scene FPS.
+
+Two narrower [frame profiles](../tests/benchmarks/client_frames.md) retain
+440 raw rows against frozen runtime `ec6f2b38`. Actual section compilation and
+random Chunk ticks dominate their respective measured parents. All eighty
+samples per random Chunk remain active. These attribution intervals identify
+the next work to optimize; their timings are not a variant comparison.
+
+The full Linux Clang 18 Debug ASan/UBSan public cohort passes 658/658 tests in
+162.30 seconds. Windows MSVC Release passes 658/668 in 270.92 seconds; ten
+graphical cases fail foreground/focus or saved-camera/picking checks. A guarded
+Ladder recheck refuses launch when host input changes during its idle check.
+The initial loaded-scene pass and fresh four-profile Workbench pass retain
+their separate scopes. All 4,607 sources and configured products remain
+unchanged through both broad cohorts, including all 1,446 matching runtime
+files. The [test record](testing.md) keeps the failure distinctions; unrestricted
+focus, play and scene FPS remain unqualified.
+
+## Fluid checkpoint
+
 [Fluid World rendering](client/fluid-world.md) now has executed-original
 comparisons for 104 calls across all four registered fluids and every metadata
 nibble. Native replay matches 416 input/cell/geometry/pool rows and 9,504 appended

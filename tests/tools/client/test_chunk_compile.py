@@ -1,4 +1,4 @@
-"""Check actual DK lists/reuse and fluid words from unchanged original captures."""
+"""Check actual DK lists/reuse and Block words from unchanged original captures."""
 import argparse
 import importlib.util
 import json
@@ -88,6 +88,32 @@ def write_fluid_reference(path, cases, marker="FLUID_DK_V1"):
     path.write_text('\n'.join(rows) + '\n', encoding='ascii', newline='\n')
 
 
+def ladder_reference_cases(placement):
+    packet = HERE.parents[1] / 'reference/client/ladder_world'
+    spec = importlib.util.spec_from_file_location('compiled_ladder_packet', packet / 'packet.py')
+    authority = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(authority)
+    cases = authority.projected_cases(placement)
+    for case in cases:
+        x, y, z = case['xyz']
+        light = 1 if placement == 1 else 2
+        case['sky_subtraction'] = 3
+        case['cells'] = []
+        # The frozen original producer clears all four Chunk planes, writes
+        # one Ladder and authors its 3x3x3 light cube. Retain the same 5x5x5
+        # projection schema used by the fluid controls, including zero guards.
+        for dx in range(-2, 3):
+            for dy in range(-2, 3):
+                for dz in range(-2, 3):
+                    center = dx == dy == dz == 0
+                    lit = max(abs(dx), abs(dy), abs(dz)) <= 1
+                    case['cells'].append([x + dx, y + dy, z + dz, 65 if center else 0,
+                                          case['metadata'] if center else 0,
+                                          15 if lit and light == 1 else 0,
+                                          15 if lit and light == 2 else 0])
+    return cases
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--executable", type=Path, required=True)
@@ -105,8 +131,9 @@ def main():
         path.write_bytes(data)
     inputs.authored_world(out / "world")
     fluids = fluid_reference_cases(1)
-    reference = out / 'fluid-original-inputs-and-words.txt'
-    write_fluid_reference(reference, fluids)
+    ladders = ladder_reference_cases(1)
+    reference = out / 'block-original-inputs-and-words.txt'
+    write_fluid_reference(reference, fluids + ladders, marker='BLOCK_DK_V2')
     result = subprocess.run([str(executable), str(out / "resources"), str(out / "world"), str(reference)],
                             env=os.environ.copy(), capture_output=True, text=True, timeout=100)
     (out / "native.stdout").write_text(result.stdout, encoding="utf-8", newline="\n")
@@ -116,6 +143,7 @@ def main():
     cactus = [line for line in result.stdout.splitlines() if line.startswith("DK_CACTUS ")]
     torches = [line for line in result.stdout.splitlines() if line.startswith("DK_TORCH ")]
     fluid_rows = [line for line in result.stdout.splitlines() if line.startswith("DK_FLUID ")]
+    ladder_rows = [line for line in result.stdout.splitlines() if line.startswith("DK_LADDER ")]
     fluid_expected = []
     for case in fluids:
         for stage in ('compile', 'reuse', 'dirty'):
@@ -127,6 +155,17 @@ def main():
                                       f"metadata={case['metadata']} pass={case['pass']} cv-return=48 "
                                       f"vertices={case['vertices']} exact-active-words=1 own-prior-inactive=1 "
                                       f"world-notification={int(stage == 'dirty')}")
+    ladder_expected = []
+    for case in ladders:
+        for stage in ('compile', 'reuse', 'dirty'):
+            if stage == 'reuse':
+                ladder_expected.append(f"DK_LADDER profile={case['name']} stage=reuse attempts=0 "
+                                       f"same-definition=1 vertices={case['vertices']}")
+            else:
+                ladder_expected.append(f"DK_LADDER profile={case['name']} stage={stage} block=65 "
+                                       f"metadata={case['metadata']} pass=0 cv-return=163 "
+                                       f"vertices={case['vertices']} exact-active-words=1 own-prior-inactive=1 "
+                                       f"world-notification={int(stage == 'dirty')}")
     cactus_expected = [
         "DK_CACTUS stage=compile block=81 last-scanned=0 cv-return=65 pass=0 vertices=66 inset-vertices=24 dirty=0 pass0-empty=0 pass1-empty=1",
         "DK_CACTUS stage=reuse attempts=0 same-definition=1 vertices=66",
@@ -141,7 +180,8 @@ def main():
                 torch_expected.append(f"DK_TORCH stage={stage} block=50 metadata={metadata} cv-return=114 pass=0 vertices=66 "
                                       "torch-vertices=30 exact-position-uv-color=1 dirty=0 pass0-empty=0 pass1-empty=1")
     if (result.returncode or result.stderr or actual != expected or cactus != cactus_expected or
-            torches != torch_expected or fluid_rows != fluid_expected or not result.stdout.splitlines()
+            torches != torch_expected or fluid_rows != fluid_expected or ladder_rows != ladder_expected
+            or not result.stdout.splitlines()
             or not result.stdout.splitlines()[-1].startswith("Source DK: ")):
         print(result.stdout, end="")
         print(result.stderr, end="", file=sys.stderr)

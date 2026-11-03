@@ -396,16 +396,16 @@ static bool torch_compile_controls(picking_fixture *f, mc_client_render_global *
 }
 
 /* The wrapper projects these inputs/active words from executed original rows.
- * No expected geometry is obtained from the native fluid implementation. */
-typedef struct fluid_reference_case {
+ * No expected geometry is obtained from the native Block implementation. */
+typedef struct block_reference_case {
     char name[64];
     int32_t id, metadata, pass, sky_subtraction, x, y, z, vertices;
     size_t cells;
     int32_t inputs[125][7];
     uint32_t words[36u * 8u];
-} fluid_reference_case;
+} block_reference_case;
 
-static bool fluid_reference_read(FILE *input, fluid_reference_case *reference) {
+static bool block_reference_read(FILE *input, block_reference_case *reference) {
     char marker[32];
     CHECK(fscanf(input,
                  "%31s %63s %" SCNd32 " %" SCNd32 " %" SCNd32 " %" SCNd32 " %" SCNd32 " %" SCNd32
@@ -413,7 +413,9 @@ static bool fluid_reference_read(FILE *input, fluid_reference_case *reference) {
                  marker, reference->name, &reference->id, &reference->metadata, &reference->pass,
                  &reference->sky_subtraction, &reference->x, &reference->y, &reference->z,
                  &reference->vertices, &reference->cells) == 11 &&
-          strcmp(marker, "CASE") == 0 && reference->id >= 8 && reference->id <= 11 &&
+          strcmp(marker, "CASE") == 0 &&
+          ((reference->id >= 8 && reference->id <= 11) ||
+           (reference->id == 65 && reference->metadata >= 2 && reference->metadata <= 5)) &&
           reference->metadata >= 0 && reference->metadata <= 15 && reference->pass >= 0 &&
           reference->pass <= 1 && reference->x == 8 && reference->y == 64 && reference->z == 8 &&
           reference->vertices > 0 && reference->vertices <= 36 && reference->vertices % 6 == 0 &&
@@ -433,8 +435,8 @@ static bool fluid_reference_read(FILE *input, fluid_reference_case *reference) {
     return true;
 }
 
-static bool fluid_reference_list(picking_fixture *f, mc_client_render_global *owner, int32_t list,
-                                 const fluid_reference_case *reference,
+static bool block_reference_list(picking_fixture *f, mc_client_render_global *owner, int32_t list,
+                                 const block_reference_case *reference,
                                  const uint32_t prior[36u * 8u], const uint8_t **identity) {
     mc_client_source_list_state definition;
     mc_client_source_batch_view batch;
@@ -457,15 +459,15 @@ static bool fluid_reference_list(picking_fixture *f, mc_client_render_global *ow
     return true;
 }
 
-static bool fluid_compile_controls(picking_fixture *f, mc_client_render_global *owner,
+static bool block_compile_controls(picking_fixture *f, mc_client_render_global *owner,
                                    mc_client_source_dk *dk, int32_t base, FILE *input) {
     char marker[32];
     size_t cases = 0;
-    CHECK(fscanf(input, "%31s %zu", marker, &cases) == 2 && strcmp(marker, "FLUID_DK_V1") == 0 &&
-          cases == 8);
+    CHECK(fscanf(input, "%31s %zu", marker, &cases) == 2 && strcmp(marker, "BLOCK_DK_V2") == 0 &&
+          cases == 12);
 
     struct fluid_compile_work {
-        fluid_reference_case reference;
+        block_reference_case reference;
         uint8_t blocks[4][MC_CHUNK_BLOCKS];
         uint8_t metadata[4][MC_CHUNK_NIBBLE_BYTES];
         uint8_t sky[4][MC_CHUNK_NIBBLE_BYTES], light[4][MC_CHUNK_NIBBLE_BYTES];
@@ -511,11 +513,17 @@ static bool fluid_compile_controls(picking_fixture *f, mc_client_render_global *
     dk->fields.q = dk->fields.s = 8;
     dk->fields.r = 64;
     CHECK(mc_entity_set_position(f->actors[0], 8.5, 64.5, 8.5) == MC_ENTITY_OK);
-    unsigned int inventory[4] = {0};
+    unsigned int inventory[4] = {0}, ladder_inventory[4] = {0};
     for (size_t case_index = 0; case_index < cases; ++case_index) {
-        fluid_reference_case *reference = &work->reference;
-        CHECK(fluid_reference_read(input, reference));
-        ++inventory[(size_t)(reference->id - 8)];
+        block_reference_case *reference = &work->reference;
+        CHECK(block_reference_read(input, reference));
+        const bool ladder = reference->id == 65;
+        const unsigned int return_pc = ladder ? 163u : 48u;
+        const char *tag = ladder ? "DK_LADDER" : "DK_FLUID";
+        if (ladder)
+            ++ladder_inventory[(size_t)(reference->metadata - 2)];
+        else
+            ++inventory[(size_t)(reference->id - 8)];
         for (size_t i = 0; i < 4; ++i) {
             memset(f->chunks[i]->data->blocks, 0, MC_CHUNK_BLOCKS);
             memset(f->chunks[i]->data->metadata, 0, MC_CHUNK_NIBBLE_BYTES);
@@ -536,7 +544,7 @@ static bool fluid_compile_controls(picking_fixture *f, mc_client_render_global *
         f->base.world->fields.f = reference->sky_subtraction;
         int32_t actual_id = -1, actual_metadata = -1;
         mc_world_storage_error world_error;
-        const mc_block *fluid = NULL;
+        const mc_block *block = NULL;
         mc_block_render_description description;
         CHECK(mc_world_runtime_block_get(f->base.world, 8, 64, 8, &actual_id, &world_error) ==
                   MC_WORLD_STORAGE_OK &&
@@ -544,10 +552,10 @@ static bool fluid_compile_controls(picking_fixture *f, mc_client_render_global *
               mc_world_runtime_metadata_get(f->base.world, 8, 64, 8, &actual_metadata,
                                             &world_error) == MC_WORLD_STORAGE_OK &&
               actual_metadata == reference->metadata &&
-              mc_registry_block_get(f->base.registry, reference->id, &fluid, NULL) ==
+              mc_registry_block_get(f->base.registry, reference->id, &block, NULL) ==
                   MC_REGISTRY_OK &&
-              mc_block_render_describe(fluid, &description) == MC_REGISTRY_OK &&
-              description.type == 4 && description.pass == reference->pass);
+              mc_block_render_describe(block, &description) == MC_REGISTRY_OK &&
+              description.type == (ladder ? 8 : 4) && description.pass == reference->pass);
         uintptr_t published = 0;
         for (size_t attempt = 0; attempt < 2; ++attempt) {
             mc_client_nw_state before;
@@ -585,22 +593,23 @@ static bool fluid_compile_controls(picking_fixture *f, mc_client_render_global *
             CHECK(compiled->returned && compiled->pass_rendered &&
                   compiled->pass == reference->pass && compiled->block_id == reference->id &&
                   compiled->render_blocks != NULL && compiled->render_blocks->returned &&
-                  !compiled->render_blocks->failed && compiled->render_blocks->source_pc == 48 &&
-                  !compiled->renderer.m && !compiled->list_open && !compiled->matrix_pushed &&
+                  !compiled->render_blocks->failed &&
+                  compiled->render_blocks->source_pc == return_pc && !compiled->renderer.m &&
+                  !compiled->list_open && !compiled->matrix_pushed &&
                   !compiled->tessellator_started && !dk->fields.u && dk->fields.E &&
                   dk->fields.p[reference->pass] == false && dk->fields.p[1 - reference->pass]);
             const uint8_t *current = NULL;
-            CHECK(fluid_reference_list(f, owner, base + reference->pass, reference, work->prior,
+            CHECK(block_reference_list(f, owner, base + reference->pass, reference, work->prior,
                                        &current));
             if (attempt != 0)
                 CHECK((uintptr_t)current != published);
             published = (uintptr_t)current;
             memcpy(work->definition, current, (size_t)reference->vertices * 32u);
-            printf("DK_FLUID profile=%s stage=%s block=%" PRId32 " metadata=%" PRId32
-                   " pass=%" PRId32 " cv-return=48 vertices=%" PRId32
+            printf("%s profile=%s stage=%s block=%" PRId32 " metadata=%" PRId32 " pass=%" PRId32
+                   " cv-return=%u vertices=%" PRId32
                    " exact-active-words=1 own-prior-inactive=1 world-notification=%d\n",
-                   reference->name, attempt == 0 ? "compile" : "dirty", actual_id, actual_metadata,
-                   reference->pass, reference->vertices, attempt != 0);
+                   tag, reference->name, attempt == 0 ? "compile" : "dirty", actual_id,
+                   actual_metadata, reference->pass, return_pc, reference->vertices, attempt != 0);
             CHECK(mc_client_render_global_update_retire(&call, &work->error) ==
                       MC_CLIENT_RENDER_GLOBAL_OK &&
                   f->base.world->persistent_bindings == bindings + 1u);
@@ -611,21 +620,20 @@ static bool fluid_compile_controls(picking_fixture *f, mc_client_render_global *
                       mc_client_render_global_update_inspect(call, &work->update) &&
                       work->update.returned && work->update.compile_attempts == 0 &&
                       work->update.completed_compiles == 0 && work->update.compilation == NULL &&
-                      fluid_reference_list(f, owner, base + reference->pass, reference, work->prior,
+                      block_reference_list(f, owner, base + reference->pass, reference, work->prior,
                                            &current) &&
                       (uintptr_t)current == published &&
                       memcmp(work->definition, current, (size_t)reference->vertices * 32u) == 0 &&
                       mc_client_render_global_update_retire(&call, &work->error) ==
                           MC_CLIENT_RENDER_GLOBAL_OK);
-                printf(
-                    "DK_FLUID profile=%s stage=reuse attempts=0 same-definition=1 vertices=%" PRId32
-                    "\n",
-                    reference->name, reference->vertices);
+                printf("%s profile=%s stage=reuse attempts=0 same-definition=1 vertices=%" PRId32
+                       "\n",
+                       tag, reference->name, reference->vertices);
             }
         }
     }
     for (size_t i = 0; i < 4; ++i)
-        CHECK(inventory[i] == 2);
+        CHECK(inventory[i] == 2 && ladder_inventory[i] == 1);
     CHECK(fscanf(input, "%31s", marker) == EOF &&
           mc_render_global_access_source_remove(owner->access, f->base.world, &work->error) ==
               MC_CLIENT_RENDER_GLOBAL_OK &&
@@ -789,7 +797,7 @@ static bool compile_controls(picking_fixture *f, FILE *fluid_input) {
     CHECK(f->base.world->persistent_bindings == bindings);
     CHECK(cactus_compile_controls(f, n, dk, base));
     CHECK(torch_compile_controls(f, n, dk, base));
-    CHECK(fluid_compile_controls(f, n, dk, base, fluid_input));
+    CHECK(block_compile_controls(f, n, dk, base, fluid_input));
     /* A remaining family still retains a real failed compile prefix. Native
      * cleanup preserves both the earlier list and the unfinished definition. */
     const mc_block *fire = NULL;

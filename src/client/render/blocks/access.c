@@ -1,6 +1,7 @@
 #include "internal.h"
 
 #include "../../../entity/player/tick_math_internal.h"
+#include "../../../world/runtime/chunk_cache_internal.h"
 #include "../../render_engine/internal.h"
 #include "mc/block/registry/runtime.h"
 
@@ -204,8 +205,8 @@ bool mc_cv_block(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned int
             c->world, x, y, z, out, e, &c->world_error.value.query.acquisition);
         return world_result(c, status, e->operation, "a", "(III)I", 0, pc, true, *e);
     }
-    return cache_result(c, mc_client_chunk_cache_block(c->cache, x, y, z, out, &c->cache_error),
-                        pc);
+    return cache_result(
+        c, mc_client_chunk_cache_block_failure(c->cache, x, y, z, out, &c->cache_error), pc);
 }
 
 bool mc_cv_metadata(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned int pc,

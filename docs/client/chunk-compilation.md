@@ -8,8 +8,9 @@ complete. Current frame source calls real
 reached the explicit U.b496 lighting-enable dependency in those historical
 submission profiles. Later loaded native scenes continue through World/HUD.
 Cactus commit `193192e1` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/41678998367).
-Dedicated [Cactus](cactus-world.md) and [Torch](torch-world.md) sections now
-complete; other specialized Block shapes and TileEntity rendering remain
+Dedicated [Cactus](cactus-world.md), [Torch](torch-world.md),
+[fluid](fluid-world.md) and [Ladder](ladder-world.md) sections now complete;
+other specialized Block shapes and TileEntity rendering remain
 unfinished. These finite controls do not establish unrestricted play. See the
 [RenderBlocks contract](render-blocks.md) for geometry and finite comparisons.
 

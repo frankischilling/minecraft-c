@@ -431,6 +431,39 @@ mc_client_chunk_cache_status mc_client_chunk_cache_block(mc_client_chunk_cache *
     return finish(c, &e, error);
 }
 
+static mc_client_chunk_cache_status block_failure_record(mc_client_chunk_cache_error *out,
+                                                         const mc_client_chunk_cache_error *e) {
+    if (out != NULL) {
+        init_error(out, "a", "(III)I");
+        out->status = e->status;
+        out->operation = e->operation;
+        out->bytecode = e->bytecode;
+        out->child_bytecode = e->child_bytecode;
+        out->native_policy = e->native_policy;
+    }
+    return e->status;
+}
+
+mc_client_chunk_cache_status
+mc_client_chunk_cache_block_failure(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z,
+                                    int32_t *out, mc_client_chunk_cache_error *error) {
+    /* The common body writes every reported scalar on failure; it reaches no
+     * diagnostic descendants. A failed read materializes those descendants
+     * from the canonical empty record once, without repeating the source read
+     * or its admission. */
+    mc_client_chunk_cache_error e;
+    e.status = MC_CLIENT_CHUNK_CACHE_OK;
+    e.child_bytecode = 0;
+    if (!enter(c, out != NULL, &e))
+        return block_failure_record(error, &e);
+    int32_t value;
+    const bool returned = block_value(c, x, y, z, &value, &e);
+    if (returned)
+        *out = value;
+    c->state.active = false;
+    return returned ? MC_CLIENT_CHUNK_CACHE_OK : block_failure_record(error, &e);
+}
+
 mc_client_chunk_cache_status mc_client_chunk_cache_metadata(mc_client_chunk_cache *c, int32_t x,
                                                             int32_t y, int32_t z, int32_t *out,
                                                             mc_client_chunk_cache_error *error) {

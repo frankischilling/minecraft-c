@@ -24,8 +24,8 @@ and Piston bases with its own original comparisons.
 `cv.b(Luu;III)Z` reads the Block's virtual render type before updating that
 same Block's mutable bounds. Type 0 enters `cv.l(Luu;III)Z`, type 1 enters the
 crossed-plant body, type 2 enters the [Torch wrapper and primitive](torch-world.md),
-type 4 enters fluid rendering and type 13 enters the
-[Cactus wrapper and body](cactus-world.md). The other 13
+type 4 enters fluid rendering, type 8 enters the [Ladder body](ladder-world.md),
+and type 13 enters the [Cactus wrapper and body](cactus-world.md). The other 12
 recognized render families retain an explicit missing-child failure at their
 source call; they do not return fabricated geometry. Unknown render types
 follow the original ordinary false return.
@@ -136,7 +136,7 @@ without replaying source work or inventing successful end-list operations.
 The N caller clears `DK.u` only after that same compiler returns normally.
 
 TileEntity renderer eligibility at `dk.a()V:399` and the chest texture
-adjacency helper remain missing children. Together with the 14 remaining specialized
+adjacency helper remain missing children. Together with the 12 remaining specialized
 geometry families, these limits prevent a claim that all Block rendering or
 all nonempty sections are complete.
 
@@ -161,7 +161,7 @@ jobs and 1,490 tests: Windows 478/GCC 506/Clang 506, zero failures or skips and
 no preceding hosted test names dropped. The runtime and test sources qualified
 there were those of 6ccdc82. The later Cactus commit `193192e1` passes
 [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/41678998367),
-with 608 Windows, 665 GCC and 665 Clang tests. Current Torch work has separate
+with 608 Windows, 665 GCC and 665 Clang tests. Current rendering work has separate
 component evidence above. Historical suite totals qualify their earlier
 checkpoints. See
 [ChunkRenderer compilation](chunk-compilation.md)

@@ -7,16 +7,18 @@ Player's terminal record. It preserves source screen, Container and Stack
 identities while completing checked C cleanup.
 
 `native-validation.json` records the fresh current-source cohort. Captured
-production includes Fluid World rendering, direct live provider-binding reads
-in World queries/propagation and corrected Vector failure diagnostics, alongside
-Torch and Smoke/Flame rendering. The selected harness includes fluid primitive,
-DK dispatch, loaded Water/Lava scenes and entered-World particle-draw controls,
-alongside Cactus and inventory geometry, additive NW translation, Piston texture
-getters and HUD cleanup after an actual nullable Stair source failure. Those
+production includes Ladder World geometry and failure-only EW Block reads in
+CV and DK. The public EW accessor keeps its complete success diagnostic.
+Fluid, Torch, Smoke/Flame, direct provider-binding reads and corrected Vector
+failure diagnostics remain in the captured runtime. The selected harness
+includes Ladder/fluid primitives, DK dispatch, loaded Water/Lava scenes and
+entered-World particle-draw controls, alongside Cactus and inventory geometry,
+additive NW translation, Piston texture getters and HUD cleanup after an actual
+nullable Stair source failure. Those
 direct and entered-draw proofs retain their own comparisons. The test helper
 waits for actual serial input consumption during Table opening. Four tests pass
-in 57.11 seconds, with 1,971 / 1,930 / 2,249 / 2,206 native checks. Their measured
-CTest times are 13.94 / 14.00 / 14.66 / 14.48 seconds
+in 62.43 seconds, with 1,955 / 1,905 / 2,162 / 2,147 native checks. Their measured
+CTest times are 16.69 / 14.08 / 16.07 / 15.56 seconds
 in clean / Container / Player / World order. These SDK scenes qualify the
 Workbench terminal flow; direct geometry, getter and loaded-scene comparisons
 have their own coverage.
@@ -26,8 +28,8 @@ audit. Each releases only its declared existing hold and retries. All four end
 with both source windows absent. The selected save tree stays byte-for-byte
 equal to its stopped snapshot through every native phase.
 
-The receipt binds all 1,445 runtime source files and 510 selected harness/CMake
-files. Each process recorded 1,957 selected inputs and 413 imported-resource
+The receipt binds all 1,446 runtime source files and 512 selected harness/CMake
+files. Each process recorded 1,960 selected inputs and 413 imported-resource
 files unchanged. Native executable and DLL hashes describe the captured
 snapshot; the public audit does not require those binaries or assets. Toolchain
 and Desktop state were outside that continuity check.
@@ -93,7 +95,10 @@ the Workbench terminal flow; it adds no direct geometry, particle, entered-draw,
 pixel or gameplay claim to that flow. The exact prior 61.47-second public packet
 and its Cactus cohort log/manifest remain backed up separately. The exact
 59.92-second public packet and its actual Torch cohort log/manifest also remain
-backed up separately. The current 57.11-second receipt qualifies the fresh
+backed up separately. The retained 57.11-second packet binds the preceding
+Fluid/provider-query cohort. Its exact public packet, validators, README,
+actual cohort log/manifest and projection parameters remain backed up separately.
+The current 62.43-second receipt qualifies the fresh Ladder/EW source closure's
 Workbench terminal flow without extending direct geometry, pixels or gameplay
 coverage.
 

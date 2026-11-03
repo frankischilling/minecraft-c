@@ -1,5 +1,38 @@
 # Build and tests
 
+Ladder rendering matches 35 original calls, 70 selected native rows and 960
+appended words. Three original VMs agree; all sixteen packet corruption
+controls pass. Four orientations compile through real sections, and a saved
+Windows mounted Ladder scene passes 1,454 checks in 8.35 seconds with actual
+Player camera, picking, mesh reuse, light-notification recompile and cleanup.
+See [Ladder evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/ladder-world.md).
+
+The optional [ChunkCache benchmark](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/chunk_cache.md)
+retains an initial 42 samples and an independent 84-sample confirmation. Both
+published targets pass untimed controls. The internal accessor preserves values,
+failure details and ownership while leaving success diagnostics untouched;
+the public accessor still supplies its full success record. Its CPU timings
+do not establish scene FPS. Original pixels and unrestricted play remain open.
+
+The fresh Ladder/EW runtime's four Windows Workbench shutdown profiles pass
+8,169 checks in 62.43 seconds. All 57 packet controls and public/private,
+cohort-log and historical-failure audits pass. Each capture retains 1,960
+selected inputs and 413 imported resources unchanged. Formatting passes all
+2,029 C/header/handwritten-fragment files with clang-format 18. Full suite
+results and their exact scopes are kept in the
+[testing record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md).
+
+The full Linux Clang 18 ASan/UBSan public suite passes 658/658 tests in 162.30
+seconds. Windows MSVC Release passes 658/668 in 270.92 seconds, with ten
+graphical foreground/focus or saved-camera/picking failures retained. An idle
+guard refuses a later Ladder recheck before launch. Both broad cohorts preserve
+4,607 sources; Windows preserves 535 executables and 413 resources, Linux 536
+executables. All 1,446 runtime files match across hosts. The earlier isolated
+Ladder and fresh Workbench passes retain their own scope; no full Windows or
+general FPS pass is claimed.
+
+## Fluid checkpoint
+
 Fluid World rendering now has 104 original CPU calls and 416 exact native
 input/cell/geometry/pool rows. All nine original VMs complete, with matching
 stdout within each cohort. The packet retains 9,504 appended words and

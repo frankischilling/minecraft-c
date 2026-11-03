@@ -42,4 +42,17 @@ if(MC_BUILD_BENCHMARKS AND BUILD_TESTING AND TARGET mc_simulation)
     target_include_directories(mc_benchmark_light_drain PRIVATE src)
     target_link_libraries(mc_benchmark_light_drain PRIVATE
         mc_simulation mc_persistence mc_c_atomics mc_build_options)
+    add_library(mc_benchmark_chunk_cache_workload OBJECT tests/benchmarks/chunk_cache.c)
+    target_include_directories(mc_benchmark_chunk_cache_workload PRIVATE src)
+    target_link_libraries(mc_benchmark_chunk_cache_workload PRIVATE
+        mc_simulation mc_persistence mc_c_atomics mc_build_options)
+    foreach(_mc_cache_adapter IN ITEMS public failure)
+        add_executable("mc_benchmark_chunk_cache_${_mc_cache_adapter}"
+            "tests/benchmarks/chunk_cache_${_mc_cache_adapter}.c"
+            $<TARGET_OBJECTS:mc_benchmark_chunk_cache_workload>)
+        target_include_directories("mc_benchmark_chunk_cache_${_mc_cache_adapter}" PRIVATE src)
+        target_link_libraries("mc_benchmark_chunk_cache_${_mc_cache_adapter}" PRIVATE
+            mc_simulation mc_persistence mc_c_atomics mc_build_options)
+    endforeach()
+    unset(_mc_cache_adapter)
 endif()

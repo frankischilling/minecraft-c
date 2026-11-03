@@ -105,6 +105,106 @@ class FrameObservations(unittest.TestCase):
     def test_nested_phase_parents_calls_and_instrumentation(self):
         self.check_phase_receipt('client_frame_nested_phases_windows.json', nested=True)
 
+    def test_current_runtime_compilation_and_scheduler_work(self):
+        report = json.loads((ROOT / 'tests/benchmarks/client_frame_work_windows.json').read_text())
+        self.assertEqual(report['status'], 'PASS')
+        self.assertEqual(len(report['captures']), 2)
+        for capture in report['captures']:
+            rows = capture['rows']
+            hz = int(capture['measurement']['qpc-hz'])
+            begin, end = int(capture['measurement']['start']), int(capture['measurement']['end'])
+            self.assertGreater(hz, 0)
+            self.assertGreater(end, begin)
+            self.assertEqual(len(rows), int(capture['measurement']['frames']))
+            self.assertEqual(rows[-1][0][2], end)
+            self.assertEqual(capture['phase_schema'], [entry['name'] for entry in capture['phases']])
+            for index, row in enumerate(rows):
+                host, clocks, source, ticks, calls, valid, flags, work = row
+                self.assertTrue(begin <= host[1] <= host[2] <= end)
+                if index:
+                    self.assertGreaterEqual(host[1], rows[index - 1][0][2])
+                    self.assertEqual(host[0], rows[index - 1][0][0] + 1)
+                self.assertEqual(len(ticks), len(capture['phase_schema']))
+                self.assertEqual(len(work), len(capture['work_schema']))
+                self.assertEqual(calls, valid)
+                self.assertEqual(flags, 0)
+                self.assertEqual(calls[:5], [1] * 5)
+                self.assertTrue(all(value >= 0 for value in ticks + calls + work))
+                self.assertLessEqual(sum(ticks[:5]) + ticks[16], host[2] - host[1])
+                self.assertLessEqual(sum(ticks[5:11]), ticks[3])
+                self.assertLessEqual(sum(ticks[11:16]), ticks[16])
+                self.assertLessEqual(ticks[17], ticks[8])
+                self.assertLessEqual(sum(ticks[18:21]), ticks[11])
+                self.assertEqual(calls[16], source[1])
+                self.assertEqual(calls[18:21], [calls[11]] * 3)
+                self.assertEqual(source[2], 7)
+                self.assertEqual(source[4:7], [1, -1, 1])
+                self.assertEqual(source[-2:], [1, 1])
+                self.assertEqual(work[2:4], [calls[17]] * 2)
+                self.assertEqual(work[5:7], [calls[17]] * 2)
+                self.assertEqual(work[8], work[7] * 80)
+                self.assertEqual(work[9], calls[20] * 1000)
+                for start, finish in ((0, 1), (1, 2), (1, 3), (3, 2)):
+                    FRAMES.source_clock_span(clocks[finish], clocks[start])
+                if len(ticks) == 26:
+                    self.assertLessEqual(sum(ticks[21:26]), ticks[19])
+                    self.assertTrue(all(calls[i] == calls[19] for i in (21, 22, 24, 25)))
+                    self.assertLessEqual(calls[23], calls[19])
+            for index, entry in enumerate(capture['phases']):
+                values = [row[3][index] * 1000 / hz for row in rows]
+                expected = {'count': len(rows), 'mean_ms': statistics.mean(values),
+                            'p50_ms': statistics.median(values),
+                            'p95_ms': FRAMES.percentile(values, .95), 'max_ms': max(values)}
+                self.assertEqual(entry['summary'], expected)
+            for index, name in enumerate(capture['work_schema']):
+                self.assertEqual(capture['work_totals'][name], sum(row[7][index] for row in rows))
+            self.assertEqual(int(capture['measurement']['world-ticks']), sum(row[4][11] for row in rows))
+            for instrument in capture['instrumentation'].values():
+                self.assertEqual(hashlib.sha256(instrument['text'].encode()).hexdigest(),
+                                 instrument['sha256'])
+
+    def test_rejected_helper_frame_attempts_and_input_control(self):
+        report = json.loads((ROOT / 'tests/benchmarks/client_frame_helper_windows.json').read_text())
+        self.assertFalse(report['strict_identical_work_speedup_established'])
+        self.assertEqual(len(report['profiles']), 6)
+        self.assertEqual(len(report['rejected_predecessor']['profiles']), 6)
+        self.assertEqual(len(report['original_shared_control']['profiles']), 2)
+        groups = (report['profiles'], report['rejected_predecessor']['profiles'],
+                  report['original_shared_control']['profiles'])
+        for group in groups:
+            for profile in group:
+                lines = list(profile['native_records'])
+                for foreground in profile['native_foreground_projection']:
+                    lines.append('PERF_FOREGROUND frame={frame} hwnd={window} pid={pid} own-pid=1'.format(
+                        frame=foreground['frame'], window=int(foreground['window_present']),
+                        pid=1 if foreground['owned_by_native_process'] else 2))
+                try:
+                    summary = FRAMES.summarize('\n'.join(lines))
+                except ValueError:
+                    self.assertEqual(profile['status'], 'FAIL')
+                    self.assertIsNotNone(profile['failure_stage'])
+                else:
+                    if profile['summary'] is not None:
+                        self.assertEqual(summary['valid_focused_Tiny_interval'],
+                                         profile['summary']['valid_focused_Tiny_interval'])
+                    if profile['status'] == 'PASS':
+                        self.assertEqual(profile['native_returncode'], 0)
+                        self.assertTrue(summary['valid_focused_Tiny_interval'])
+                    else:
+                        self.assertFalse(summary['valid_focused_Tiny_interval'])
+        prelaunch = sum(not row['host_input_idle_before_launch']['unchanged_last_input']
+                        for row in report['profiles'])
+        changed = sum(row['host_input_before_child']['last_input_tick'] !=
+                      row['host_input_after_child']['last_input_tick'] for row in report['profiles'])
+        self.assertEqual(report['latest_cohort_input_evidence']['prelaunch_observation_changed_count'], prelaunch)
+        self.assertEqual(report['latest_cohort_input_evidence']['whole_child_last_input_changed_count'], changed)
+        for profile in report['original_shared_control']['profiles']:
+            trace = profile['host_trace']
+            changes = sum(a['last_input_tick'] != b['last_input_tick'] for a, b in zip(trace, trace[1:]))
+            self.assertEqual(profile['host_last_input_changes'], changes)
+            self.assertEqual(profile['F2_or_F3_observed_held'],
+                             any(row['F2_down'] or row['F3_down'] for row in trace))
+
     def check_phase_receipt(self, filename, *, nested):
         report = json.loads((ROOT / 'tests/benchmarks' / filename).read_text())
         raw = report['raw_rows']

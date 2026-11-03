@@ -1,5 +1,22 @@
 # World query performance
 
+## Render ChunkCache reads
+
+The section compiler and RenderBlocks use an internal failure-only Block
+accessor. It performs the same admission and source read as the public
+ChunkCache accessor, once. Success leaves its optional error output untouched;
+a failure materializes the complete canonical diagnostic, including unreached
+descendants. The public accessor retains its complete success record.
+
+This avoids initializing and copying a 7,352-byte error record for each
+successful scalar read. The [fixed-work EW comparison](../../tests/benchmarks/chunk_cache.md)
+checks actual saved World/ChunkCache owners, arrays, read values, failures and
+holds. Its separate 84-sample Windows confirmation reduces median time per
+65,536 reads from 8.39885 to 0.74005 ms (91.19%). This is CPU API work, not an
+FPS measurement. Original geometry replays and loaded scenes cover the callers.
+
+## World reads
+
 Successful scalar World reads no longer construct the complete acquisition
 diagnostic tree. A private failure-only getter performs the same single lookup
 and preserves its output on success. Failure still supplies the complete

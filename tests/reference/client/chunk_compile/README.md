@@ -33,12 +33,20 @@ empty, NW's batch is closed and its translation returns to zero. Only the
 completed N caller clears `DK.u` and removes the queue entry. Checked child
 retirement restores the earlier World binding count.
 
-A following torch section reaches a remaining specialized family and fails
-at `cv.b(Luu;III)Z:111`, retained beneath DK464 and N442. The real queue slot
+A following Fire section reaches a remaining specialized family and fails
+at `cv.b(Luu;III)Z:127`, retained beneath DK464 and N442. The real queue slot
 has already become null; DK stays dirty, and the compiler retains its cache,
 open list, pushed matrix and started NW batch. Native cleanup preserves the
 earlier completed 36-vertex list and the unfinished definition's five pending
 commands. It does not claim that the failed source call executed `glEndList`.
+
+The same native compiler now checks eight original fluid profiles and all four
+original Ladder orientations. Each matches every active packed vertex word,
+retains its own inactive backing, reuses the immutable list and recompiles
+after an actual WorldAccess light notification. Those rows come from the
+separate [fluid](../fluid_world/README.md) and
+[Ladder](../ladder_world/README.md) packets; `finite.json` retains its original
+empty-call scope.
 
 These device controls are separate from `finite.json`, which still contains
 only the unchanged-original empty `DK_EMPTY` row. The nonempty controls add

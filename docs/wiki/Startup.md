@@ -12,6 +12,7 @@ use Tiny render distance and authored saved inputs.
 
 ## Qualified interaction paths
 
+- [Ladder rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/ladder-world.md): 35 original calls match native replay, and four orientations compile through real sections. A saved mounted Ladder scene returns World/HUD frames, picking/outline, mesh reuse and light-driven recompile; original whole-frame pixels remain unqualified.
 - [Water and Lava rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/fluid-world.md): 104 original CPU calls match native replay. Saved Water/Lava scenes return World/HUD frames, select Sand through liquid, reuse compiled meshes and recompile after a light notification. Position/UV words match the original scene profiles; evolving colors retain separate observations.
 - [Create World](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/create-world.md): actual name/seed fields, normal seed 777 generation and initial save, World/HUD frames, ordinary save/title and reselection with independent decoding of 390 Chunks and captured Player/WorldInfo values.
 - [Mining and pickup](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mining.md): fresh left click, held empty-hand Dirt break, cracks, destruction particles, dropped-Item drawing, save/reselection, keyboard pickup and held Dirt.
