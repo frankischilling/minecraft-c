@@ -88,6 +88,12 @@ static bool render_block(mc_cv_context *c, const mc_block *block, int32_t x, int
             return false;
         mc_cv_pop(c);
         return_pc = 48;
+    } else if (type == 13) {
+        mc_cv_pc(c, 62);
+        if (!mc_cv_push(c, "m", "(Luu;III)Z") || !mc_cv_cactus(c, block, x, y, z, &rendered))
+            return false;
+        mc_cv_pop(c);
+        return_pc = 65;
     } else {
         static const unsigned int pc[] = {29,  78,  111, 127, 45, 143, 95,  177, 160,
                                           197, 214, 231, 248, 62, 265, 282, 300, 318};

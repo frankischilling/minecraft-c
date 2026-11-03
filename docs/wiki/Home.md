@@ -1,5 +1,11 @@
 # minecraft-c
 
+[Cactus World rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/cactus-world.md)
+now completes section compilation and a finite Windows scene with Cactus on
+Sand. Exact native CPU replay matches 25 original calls; loaded frames check
+picking, selection, mesh reuse, WorldAccess recompile and native cleanup.
+Original pixels, extended play and FPS remain unqualified.
+
 [Specialized Block Items](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/inventory-geometry.md)
 now reach Cactus, Stairs, Fence and Piston inventory rendering. Native geometry
 matches 7,596 active words across 216 original batches; Piston textures match
@@ -7,11 +13,11 @@ matches 7,596 active words across 216 original batches; Piston textures match
 World rendering, original pixels, unrestricted play and general FPS retain
 their separate unfinished scopes.
 
-The current runtime passes all 646 Linux Clang ASan/UBSan public tests. Windows
-passes 650/651, with a recorded foreground-loss failure; that unchanged scene
-passes in isolation. Sources/products remain unchanged and all 1,441 runtime
-files match across hosts. Finite Windows gameplay scenes pass; unrestricted
-single-player play, desktop stability and general FPS remain open.
+The current runtime passes all 654 Windows MSVC Release and all 648 Linux
+Clang ASan/UBSan public tests, including the new finite Cactus controls.
+Both runs preserve 4,507 sources and 529 products; all 1,442 runtime files
+match across hosts. Earlier focus failures remain separate observations.
+Unrestricted single-player play, desktop stability and general FPS remain open.
 
 [Block inventory rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/block-inventory.md)
 now resolves color and bounds methods for all 69 represented Block kinds.

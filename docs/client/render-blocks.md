@@ -16,13 +16,15 @@ pixels or complete gameplay.
 The distinct `cv.a(Block,metadata,brightness)` inventory method now supplies
 ordinary six-face blocks to dropped-Item, GUI and held-item rendering. The
 [Dirt mining contract](mining.md) records those callers and their finite tests.
-Other inventory render families retain reached dependencies.
+[Specialized Item geometry](inventory-geometry.md) covers Cactus, Stairs, Fence
+and Piston bases with its own original comparisons.
 
 ## Dispatcher and standard blocks
 
 `cv.b(Luu;III)Z` reads the Block's virtual render type before updating that
 same Block's mutable bounds. Type 0 enters `cv.l(Luu;III)Z`, type 1 enters the
-crossed-plant body and type 4 enters fluid rendering. The other 15
+crossed-plant body, type 4 enters fluid rendering and type13 enters the
+[Cactus wrapper and body](cactus-world.md). The other 14
 recognized render families retain an explicit missing-child failure at their
 source call; they do not return fabricated geometry. Unknown render types
 follow the original ordinary false return.
@@ -132,7 +134,7 @@ without replaying source work or inventing successful end-list operations.
 The N caller clears `DK.u` only after that same compiler returns normally.
 
 TileEntity renderer eligibility at `dk.a()V:399` and the chest texture
-adjacency helper remain missing children. Together with the 15 remaining specialized
+adjacency helper remain missing children. Together with the 14 remaining specialized
 geometry families, these limits prevent a claim that all Block rendering or
 all nonempty sections are complete.
 

@@ -78,16 +78,59 @@ static int sand_target(fixture *f, int32_t *out) {
     return 0;
 }
 
+static void sand_focus_receipt(fixture *f, const char *stage, SDL_Window *window,
+                               SDL_Window *keyboard, SDL_WindowFlags flags) {
+    /* Failure-only observations. Never pump events, restore focus or retry
+     * source work while identifying an environmental or scene-state failure. */
+    native_focus_receipt(f, stage);
+    fprintf(stderr,
+            "SAND_FOCUS_FAILURE stage=%s window-present=%d keyboard-same=%d sdl-input-focus=%d "
+            "window-flags=%" PRIx64 " window-id=%" PRIu32 " keyboard-id=%" PRIu32
+            " source-focus=%d source-screen-null=%d screen=%d paused=%d frames=%" PRIu64
+            " ticks=%" PRIu64 " source=%s.%s:%" PRId64 " operation=%s\n",
+            stage, window != NULL, keyboard == window, (flags & SDL_WINDOW_INPUT_FOCUS) != 0,
+            (uint64_t)flags, window == NULL ? 0u : SDL_GetWindowID(window),
+            keyboard == NULL ? 0u : SDL_GetWindowID(keyboard), f->app->N, f->app->r == NULL,
+            f->app->r == NULL ? -1 : (int)f->app->r->kind, atomic_load(&f->app->o), f->state.frames,
+            f->state.ticks, f->state.source_class == NULL ? "none" : f->state.source_class,
+            f->state.source_method == NULL ? "none" : f->state.source_method, f->state.source_pc,
+            f->state.operation == NULL ? "none" : f->state.operation);
+#ifdef _WIN32
+    const HWND foreground = GetForegroundWindow();
+    DWORD process = 0;
+    const DWORD thread = foreground == NULL ? 0 : GetWindowThreadProcessId(foreground, &process);
+    fprintf(stderr,
+            "SAND_FOREGROUND_STATE stage=%s foreground-present=%d thread-read=%d same-pid=%d "
+            "foreground-pid=%lu current-pid=%lu\n",
+            stage, foreground != NULL, thread != 0, process == GetCurrentProcessId(),
+            (unsigned long)process, (unsigned long)GetCurrentProcessId());
+#endif
+}
+
 static int sand_focus(fixture *f) {
     SDL_Window *window = mc_client_display_window(f->app->display);
-    CHECK(window != NULL && SDL_GetKeyboardFocus() == window &&
-          (SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS) != 0 && f->app->N &&
-          f->app->r == NULL);
+    SDL_Window *keyboard = SDL_GetKeyboardFocus();
+    const SDL_WindowFlags flags = window == NULL ? 0 : SDL_GetWindowFlags(window);
+    const bool focused = window != NULL && keyboard == window &&
+                         (flags & SDL_WINDOW_INPUT_FOCUS) != 0 && f->app->N && f->app->r == NULL;
+    if (!focused)
+        sand_focus_receipt(f, "sand-window-source", window, keyboard, flags);
+    CHECK(focused);
 #ifdef _WIN32
     DWORD process = 0;
     HWND foreground = GetForegroundWindow();
-    CHECK(foreground != NULL && GetWindowThreadProcessId(foreground, &process) != 0 &&
-          process == GetCurrentProcessId());
+    const DWORD thread = foreground == NULL ? 0 : GetWindowThreadProcessId(foreground, &process);
+    const bool foreground_owned =
+        foreground != NULL && thread != 0 && process == GetCurrentProcessId();
+    if (!foreground_owned) {
+        fprintf(stderr,
+                "SAND_FOREGROUND_GATE foreground-present=%d thread-read=%d same-pid=%d "
+                "foreground-pid=%lu current-pid=%lu\n",
+                foreground != NULL, thread != 0, process == GetCurrentProcessId(),
+                (unsigned long)process, (unsigned long)GetCurrentProcessId());
+        sand_focus_receipt(f, "sand-foreground-pid", window, keyboard, flags);
+    }
+    CHECK(foreground_owned);
 #endif
     return 0;
 }

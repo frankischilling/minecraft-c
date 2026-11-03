@@ -7,6 +7,15 @@ before accepting a fresh title screen. Its session control corrupts/restores the
 real lock file and retains the fm.b42 native exception-allocation frontier.
 Neither publishes a prepared NPC or claims original whole-frame equivalence.
 
+The optional load-cactus profile authors Sand12 at (3,64,3) and Cactus81 at
+(3,65,3) in the saved (0,0) Chunk before bootstrap. Its saved Player stands at
+(3.5,64,.5), faces +Z and uses the source's float eye offset in saved Pos.y.
+The wrapper independently decodes that pose; native checks require the same
+Player/camera pose, actual Cactus pick and returned selection outline. Actual selected-World
+acquisition, returned World/HUD frames, the 60-vertex opaque section, immutable
+list reuse and a World light notification followed by recompile are checked.
+This is native integration evidence; no original pixels or general play claim.
+
 The repeat profile declares an existing player whose saved openInventory
 achievement is already present. Its valid pre-bootstrap statistics file uses
 real imported GUIDs and the source checksum; the actual client loads it.
@@ -452,7 +461,7 @@ def tag(kind, key, value):
     return bytes([kind]) + string(key) + value
 
 
-def metadata(display, played, version, partial=False, player_score=None):
+def metadata(display, played, version, partial=False, player_score=None, cactus_player=False):
     data = tag(8, "LevelName", string(display))
     data += tag(4, "LastPlayed", struct.pack(">q", played))
     data += tag(4, "SizeOnDisk", struct.pack(">q", 3145728))
@@ -482,10 +491,46 @@ def metadata(display, played, version, partial=False, player_score=None):
         player += tag(3, "Score", struct.pack(">i", player_score))
         player += tag(9, "Inventory", b"\x0a\x00\x00\x00\x00")
         data += tag(10, "Player", player + b"\x00")
+    if cactus_player:
+        if partial or player_score is not None:
+            raise RuntimeError("Distinct authored Cactus Player fixture arm")
+        saved_y = 64.0 + struct.unpack(">f", struct.pack(">f", 1.62))[0]
+        player = tag(3, "Dimension", struct.pack(">i", 0))
+        player += tag(9, "Pos", b"\x06" + struct.pack(">i3d", 3, 3.5, saved_y, .5))
+        player += tag(9, "Motion", b"\x06" + struct.pack(">i3d", 3, 0., 0., 0.))
+        player += tag(9, "Rotation", b"\x05" + struct.pack(">i2f", 2, 0., 0.))
+        player += tag(1, "OnGround", b"\x01")
+        player += tag(2, "Health", struct.pack(">h", 20))
+        player += tag(3, "Score", struct.pack(">i", 0))
+        player += tag(9, "Inventory", b"\x0a\x00\x00\x00\x00")
+        data += tag(10, "Player", player + b"\x00")
     return b"\x0a\x00\x00" + tag(10, "Data", data + b"\x00") + b"\x00"
 
 
-def chunk_record(chunk_x, chunk_z, marker=57):
+def cactus_pose_input(path):
+    """Independently decode the exact saved pose supplied to the source reader."""
+    parser_path = Path(__file__).resolve().parents[1] / "world/test_source_saving.py"
+    spec = importlib.util.spec_from_file_location("cactus_pose_nbt", parser_path)
+    parser = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(parser)
+    decoded = parser.inflate(parser.read(path), 31)
+    player = decoded['Data'][1]['Player'][1]
+    position = [struct.pack('>d', value).hex() for value in
+                (3.5, 64.0 + struct.unpack('>f', struct.pack('>f', 1.62))[0], .5)]
+    rotation = ['00000000', '00000000']
+    wanted_position = [int(value, 16) for value in position]
+    if (player['Dimension'] != [3, 0] or player['Pos'] != [9, [6, wanted_position]] or
+            player['Rotation'] != [9, [5, [0, 0]]] or
+            player['Motion'] != [9, [6, [0, 0, 0]]] or
+            player['OnGround'] != [1, 1] or player['Health'] != [2, 20] or
+            player['Inventory'] != [9, [10, []]]):
+        raise RuntimeError("Exact independently decoded saved Cactus camera input")
+    return {'position_bits': position, 'rotation_bits': rotation,
+            'feet_y_bits': struct.pack('>d', 64.).hex(),
+            'offset_bits': struct.pack('>f', 1.62).hex()}
+
+
+def chunk_record(chunk_x, chunk_z, marker=57, cactus=False):
     blocks = bytearray(32768)
     skylight = bytearray(16384)
     heights = bytearray([64] * 256)
@@ -502,6 +547,12 @@ def chunk_record(chunk_x, chunk_z, marker=57):
         blocks[127] = marker
         skylight[127 // 2] &= 15
         heights[0] = 128
+        if cactus:
+            # Sand is the highest opaque block; Cactus retains full skylight.
+            base = (3 << 11) | (3 << 7)
+            blocks[base + 64], blocks[base + 65] = 12, 81
+            skylight[(base + 64) // 2] = 0xf0
+            heights[3 * 16 + 3] = 65
     level = tag(3, "xPos", struct.pack(">i", chunk_x))
     level += tag(3, "zPos", struct.pack(">i", chunk_z))
     level += tag(4, "LastUpdate", struct.pack(">q", 0))
@@ -519,7 +570,7 @@ def chunk_record(chunk_x, chunk_z, marker=57):
     return record + bytes(sectors * 4096 - len(record)), sectors
 
 
-def saved_regions(directory, generate, marker=57):
+def saved_regions(directory, generate, marker=57, cactus=False):
     # The default UI profile reads all 289 existing Chunks. The optional
     # generation profile retains one saved marker Chunk and generates its
     # surroundings through the same source path.
@@ -527,7 +578,7 @@ def saved_regions(directory, generate, marker=57):
                                             for z in range(-8, 9)]
     regions = {}
     for x, z in coordinates:
-        body, sectors = chunk_record(x, z, marker)
+        body, sectors = chunk_record(x, z, marker, cactus=cactus)
         region = regions.setdefault((x >> 5, z >> 5), bytearray(8192))
         offset = len(region) // 4096
         index = (x & 31) + (z & 31) * 32
@@ -737,7 +788,7 @@ def main():
     parser.add_argument("--artifacts", type=Path, required=True)
     parser.add_argument("--mode", action="append",
                         choices=("empty", "populated", "large", "double", "load", "generate",
-                                 "load-terminal", "load-partial", "repeat", "load-light", "animals", "creatures",
+                                 "load-terminal", "load-partial", "repeat", "load-light", "load-cactus", "animals", "creatures",
                                  "creatures-slime", "creatures-creeper", "remaining-mobs",
                                  "remaining-wolf", "remaining-zombie", "remaining-skeleton",
                                  "save-title", "save-title-session", "reload-cycle"))
@@ -760,13 +811,14 @@ def main():
         animal = mode in ANIMAL_PROFILES
         creature = mode in CREATURE_PROFILES
         remaining = mode in REMAINING_PROFILES
+        cactus = mode == "load-cactus"
         reload_cycle = mode == "reload-cycle"
         save_title = mode in ("save-title", "save-title-session") or reload_cycle
         evidence = Path(tempfile.mkdtemp(prefix=mode + "-", dir=artifacts))
         with tempfile.TemporaryDirectory(prefix="mc-rq-loop-") as work:
             appdata = Path(work)
             game = appdata / ".minecraft"
-            if mode == "repeat" or animal or creature or remaining or save_title:
+            if mode == "repeat" or cactus or animal or creature or remaining or save_title:
                 repeat_statistics(game, assets)
             if save_title:
                 # Declared pre-bootstrap input; source kv.a() parses the real file.
@@ -779,12 +831,12 @@ def main():
             if mode == "large":
                 worlds = [(f"world{i:02d}", f"Scroll world {i:02d}", 1304000000000, 19132)
                           for i in range(16)]
-            elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature or remaining or save_title:
+            elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or animal or creature or remaining or save_title:
                 worlds = [
                     ("older", "Old world", 1303000000000, 19132),
                     ("bravo", "", 1304000000000, 0 if reload_cycle else 19132),
                     ("alpha", "Alpha world", 1304000000000,
-                     19132 if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature or remaining or save_title else 0),
+                     19132 if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or animal or creature or remaining or save_title else 0),
                 ]
             else:
                 worlds = []
@@ -795,19 +847,23 @@ def main():
                 (directory / filename).write_bytes(
                     gzip.compress(metadata(display, played, version,
                                            partial=mode == "load-partial" and folder == "alpha",
-                                           player_score=7 if reload_cycle and folder == "alpha" else None),
+                                           player_score=7 if reload_cycle and folder == "alpha" else None,
+                                           cactus_player=cactus and folder == "alpha"),
                                   mtime=0))
                 (directory / "preserve-chunk.dat").write_bytes(b"authored untouched chunk")
-            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature or remaining or save_title:
+            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or animal or creature or remaining or save_title:
                 regions = saves / "alpha" / "region"
                 regions.mkdir()
-                saved_regions(regions, generate=mode == "generate")
+                saved_regions(regions, generate=mode == "generate", cactus=cactus)
             if reload_cycle:
                 regions = saves / "older" / "region"
                 regions.mkdir()
                 saved_regions(regions, generate=False, marker=56)
             before = snapshot(saves)
             before_files = save_title_files(saves, evidence / "before")
+            if cactus:
+                pose_input = cactus_pose_input(evidence / "before/alpha/level.dat")
+                (evidence / "cactus-input.json").write_text(json.dumps(pose_input, indent=2) + "\n", encoding="utf-8")
             environment = os.environ.copy()
             environment["APPDATA"] = str(appdata)
             if save_title:
@@ -898,6 +954,42 @@ def main():
                             if line.startswith("WORLD_LIGHT ")]
                 if observed != [expected]:
                     raise RuntimeError("Declared paused caller did not retain the real 499-record light batch")
+            if cactus:
+                pose_rows = [line for line in result.stdout.splitlines() if line.startswith("WORLD_CACTUS_POSE ")]
+                pose_expected = ("WORLD_CACTUS_POSE input=saved-player source-loaded=1 camera=player position=" +
+                                 ','.join(pose_input['position_bits']) + " rotation=" +
+                                 ','.join(pose_input['rotation_bits']) + " feet=" + pose_input['feet_y_bits'] +
+                                 " offset=" + pose_input['offset_bits'] + " hit=3,65,3")
+                if pose_rows != [pose_expected]:
+                    raise RuntimeError("Actual source-read Player/camera pose differs from independently decoded saved input")
+                rows = [line for line in result.stdout.splitlines() if line.startswith("WORLD_CACTUS ")]
+                receipt = re.fullmatch(
+                    r"WORLD_CACTUS input=pre-bootstrap-region sand=12 cactus=81 at=3,65,3 pass=0 "
+                    r"vertices=60 inset-vertices=24 frames=(?P<frames>[0-9]+) reuse-frames=(?P<reuse>[0-9]+) "
+                    r"recompile-frames=(?P<recompile>[0-9]+) list=(?P<list>[0-9]+) "
+                    r"same-world-and-registry=1 returned-world-hud=1 reused-definition=1 "
+                    r"world-light-notification=1 dirty-recompiled=1 source-bounds-preserved=1",
+                    rows[0]) if len(rows) == 1 else None
+                if (receipt is None or not 1 <= int(receipt['recompile']) <= 16 or
+                        not 1 <= int(receipt['reuse']) <= 16 or
+                        not 3 <= int(receipt['frames']) <= 48 or int(receipt['list']) <= 0):
+                    raise RuntimeError("Loaded Cactus did not prove actual section geometry, returned frames, reuse and dirty recompile")
+                steps = [line for line in result.stdout.splitlines() if line.startswith("WORLD_CACTUS_STEP ")]
+                if len(steps) != int(receipt['reuse']):
+                    raise RuntimeError("Bounded actual Cactus reuse observation inventory")
+                for attempt, step in enumerate(steps, 1):
+                    observed = re.fullmatch(
+                        rf"WORLD_CACTUS_STEP stage=reuse attempt={attempt} same-list=1 "
+                        r"same-definition=([01]) same-bytes=([01])", step)
+                    wanted_same = attempt == len(steps)
+                    if (observed is None or (observed[1] == '1') != wanted_same or
+                            wanted_same and observed[2] != '1'):
+                        raise RuntimeError("Every validated Cactus section must precede an actual immutable list reuse")
+                cleanup = [line for line in result.stdout.splitlines()
+                           if line.startswith("WORLD_SELECTION mode=load-cactus cleanup=")]
+                if len(cleanup) != 1 or re.fullmatch(
+                        r"WORLD_SELECTION mode=load-cactus cleanup=1 checks=[1-9][0-9]*", cleanup[0]) is None:
+                    raise RuntimeError("Loaded Cactus native terminal ownership cleanup receipt")
             after = snapshot(saves)
             if save_title:
                 decoded = (reload_decode(evidence, result.stdout, process_first) if reload_cycle else
@@ -909,7 +1001,7 @@ def main():
                         rf"WORLD_SELECTION mode={mode} cleanup=1 checks=[1-9][0-9]*", cleanup[0]) is None:
                     raise RuntimeError("Save/title native terminal ownership cleanup receipt")
                 (evidence / "report.json").write_text(json.dumps(decoded, indent=2) + "\n", encoding="utf-8")
-            elif mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or animal or creature or remaining:
+            elif mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or animal or creature or remaining:
                 if any(after.get(name) != digest for name, digest in before.items()):
                     raise RuntimeError("World loading changed pre-existing fixture bytes")
                 if not (saves / "alpha" / "session.lock").is_file():
@@ -938,7 +1030,11 @@ def main():
         print("Native remaining Mobs: three independent real Wolf/Zombie/Skeleton loaded scopes, "
               "full tick/World/HUD first compilation/reuse, actual V/RA/Bow receipts and checked "
               "cleanup passed; no original whole-frame parity credit")
-    if all(mode == "reload-cycle" for mode in modes):
+    if all(mode == "load-cactus" for mode in modes):
+        print("Native loaded Cactus: authored saved Sand/Cactus, actual 60-vertex section, "
+              "returned World/HUD frames, list reuse and WorldAccess dirty recompile passed; "
+              "no original pixels or general play claim")
+    elif all(mode == "reload-cycle" for mode in modes):
         print("Native actual same/different World reload: ten source UI epochs, failed successor, actual entry snapshots, "
               "N/DN replacements, disk/player readback and all-epoch terminal ownership; no original parity claim")
     elif all(mode in ("save-title", "save-title-session") for mode in modes):

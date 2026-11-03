@@ -1,5 +1,34 @@
 # Test scope and reproduction
 
+`client.cactus_world` matches all 25 original Cactus wrapper/body observations
+and their declared texture inputs, including 5,232 appended words, reached
+nullable failures and unchanged fields. `tools.cactus_world_packet` runs 19
+controls over three agreeing original VMs, 669 source EW query entries, 444
+ordered translation stores and live Code pins. Native outer-row equality is
+separate from an unimplemented native per-query trace comparison.
+
+`client.chunk_compile` now checks an actual Sand/Cactus section's 66 vertices,
+list reuse, dirty recompile and the retained unsupported Torch prefix. The
+optional Windows `client.world_selection_cactus` authors a saved Player pose
+and real saved Block data, then checks picking, selection outline, visible
+60-vertex section, returned frames/HUD, reuse and actual WorldAccess recompile.
+Its isolated 1,484-check scene passes in 11.53 seconds with protected files and
+cleanup checked. The preceding failure records Remote Desktop foreground,
+lost focus and the source Pause screen while all draw children returned.
+No source guard or failure assertion is relaxed. See the
+[component evidence](client/cactus-world.md) for exact limits.
+
+The final Cactus runtime passes all 654 Windows MSVC Release public tests in
+344.06 seconds and all 648 Linux Clang 18 Debug ASan/UBSan public tests in
+150.29 seconds. The Windows Cactus loaded scene passes in 13.37 seconds.
+Both full runs retain 4,507 unchanged source inputs and 529 unchanged products;
+Windows also retains 823 assets. All 1,442 runtime files match across hosts.
+Linux uses Xvfb/software GL, leak detection and halt-on-error. All seven changed
+C translation units pass strict GCC 13 syntax checks; formatting covers 2,015
+C/header/fragment files. Final documentation/binding edits are checked separately
+and preserve all tested runtime and C fixture bytes. Earlier focus failures
+remain recorded; this successful cohort does not establish desktop stability.
+
 `client.inventory_geometry` runs the full production CV body in fresh immediate
 and GL_COMPILE processes. Submitted geometry matches 216 original face batches
 and all 7,596 active words; 2,772 inactive words retain each process's own prior
@@ -35,7 +64,7 @@ call. The fixture now reaches that same real query before input inspection;
 Windows and sanitized Linux geometry rechecks pass with unchanged expected
 values. Post-AO inspection remains passive and unknown color stays unknown.
 
-The final integrated runtime passes 646/646 Linux Clang 18 Debug ASan/UBSan
+The preceding Item geometry runtime passes 646/646 Linux Clang 18 Debug ASan/UBSan
 public tests in 148.54 seconds. Windows MSVC Release passes 650/651 in 290.25
 seconds. Its World-selection scene records Remote Desktop holding foreground,
 lost SDL focus and the ordinary source Pause screen. The unchanged isolated
@@ -51,12 +80,15 @@ documentation/source-binding changes are checked separately and do not change
 the tested runtime or C test sources. All eight changed C translation units
 pass strict GCC 13 syntax checks; formatting covers 2,013 C/header/fragments.
 
-Four current-source Workbench shutdown scenes pass 8,191 native checks in
-61.78 seconds, retaining 1,945 selected inputs and 413 assets. All 57 packet
-controls and private/cohort-log audits pass. Leaf, Sand and TallGrass source-input
-scenes pass in 31.43 seconds total with 1,946 selected inputs, 413 assets and
-unchanged stopped/closed save bytes in each scene. Earlier cohorts remain
-separate evidence; see their component notes for exact scope.
+The current rebuilt Windows Workbench cohort passes all four shutdown scenes
+and 8,337 native checks in 61.47 seconds, retaining 1,948 selected inputs and
+413 resources. All 57 packet controls and the private/cohort-log audits pass. Leaf, Sand and Tall Grass source-input scenes pass in 29.48
+seconds total, retaining 1,949 selected inputs, 413 assets and unchanged
+stopped/closed save bytes in each scene. Earlier Sand foreground-loss failures
+remain separate. A preceding Workbench setup failure records native game
+foreground with no SDL keyboard focus; its cause remains unconfirmed. The
+unchanged succeeding four-profile cohort passes without changing the focus
+guard. These observations do not establish general desktop stability.
 
 The Block inventory comparison runs as `client.inventory_block` and retains
 13,098 original behavior rows, 17 Leaf rows and native admission/ownership

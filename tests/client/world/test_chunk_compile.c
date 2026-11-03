@@ -82,6 +82,144 @@ static bool bound_dispatch_controls(picking_fixture *f) {
     return true;
 }
 
+static bool cactus_list(mc_client_display *display, int32_t id, int32_t vertices,
+                        const uint8_t **identity) {
+    mc_client_source_list_state list;
+    mc_client_source_batch_view batch;
+    CHECK(mc_client_display_list_inspect(display, id, &list) && list.defined && !list.building &&
+          list.commands == 7 && list.draws == 1 && list.vertices == (size_t)vertices &&
+          mc_client_display_list_batch(display, id, 0, &batch) && batch.vertices == vertices &&
+          batch.mode == 4 && batch.arrays == 7 && batch.byte_count == (size_t)vertices * 32u);
+    size_t inset_vertices = 0;
+    for (size_t i = (size_t)vertices - 30u; i < (size_t)vertices; ++i) {
+        float vertex[5];
+        memcpy(vertex, batch.bytes + i * 32u, sizeof(vertex));
+        CHECK(vertex[0] >= 0 && vertex[0] <= 1 && vertex[1] >= 1 && vertex[1] <= 2 &&
+              vertex[2] >= 0 && vertex[2] <= 1);
+        const bool top = i < (size_t)vertices - 24u;
+        CHECK(vertex[3] >= (top ? 5.0f : 6.0f) / 16.0f && vertex[3] < (top ? 6.0f : 7.0f) / 16.0f &&
+              vertex[4] >= .25f && vertex[4] < .3125f);
+        if (top)
+            CHECK(vertex[1] == 2);
+        else {
+            CHECK(vertex[0] == .0625f || vertex[0] == .9375f || vertex[2] == .0625f ||
+                  vertex[2] == .9375f);
+            ++inset_vertices;
+        }
+    }
+    CHECK(inset_vertices == 24);
+    *identity = batch.bytes;
+    return true;
+}
+
+static bool cactus_compile_controls(picking_fixture *f, mc_client_render_global *n,
+                                    mc_client_source_dk *dk, int32_t base) {
+    const size_t sand_index = (1u << 11u) | (1u << 7u) | 64u;
+    const size_t cactus_index = sand_index + 1u;
+    const uint8_t previous_sand = f->chunks[0]->data->blocks[sand_index];
+    const uint8_t previous_cactus = f->chunks[0]->data->blocks[cactus_index];
+    const mc_block *sand = NULL, *cactus = NULL;
+    mc_block_render_description description;
+    CHECK(mc_registry_block_get(f->base.registry, 12, &sand, NULL) == MC_REGISTRY_OK &&
+          mc_registry_block_get(f->base.registry, 81, &cactus, NULL) == MC_REGISTRY_OK &&
+          sand != NULL && cactus != NULL && mc_block_render_opaque(sand) &&
+          !mc_block_render_opaque(cactus) &&
+          mc_block_render_describe(cactus, &description) == MC_REGISTRY_OK &&
+          description.type == 13 && description.pass == 0);
+    const mc_block_fields cactus_before = *mc_block_fields_get(cactus);
+    CHECK(cactus_before.bs == 0 && cactus_before.bt == 0 && cactus_before.bu == 0 &&
+          cactus_before.bv == 1 && cactus_before.bw == 1 && cactus_before.bx == 1 &&
+          cactus_before.bm == 70);
+    f->chunks[0]->data->blocks[sand_index] = 12;
+    f->chunks[0]->data->blocks[cactus_index] = 81;
+    int32_t entered_cactus_id = -1;
+    mc_world_storage_error world_error;
+    CHECK(mc_world_runtime_block_get(f->base.world, 1, 65, 1, &entered_cactus_id, &world_error) ==
+              MC_WORLD_STORAGE_OK &&
+          entered_cactus_id == 81);
+    dk->fields.g = 2;
+    dk->fields.r = 66;
+    const size_t bindings = f->base.world->persistent_bindings;
+    mc_client_render_global_error error;
+    mc_client_render_global_update_call *call = NULL;
+    mc_client_render_global_update_state state;
+    uintptr_t published = 0;
+    for (size_t attempt = 0; attempt < 2; ++attempt) {
+        /* Invoke the actual DK.f dirty setter and N's real queue append. The
+         * enclosing one-DK graph remains this fixture's declared native input. */
+        mc_source_dk_dirty(dk);
+        CHECK(dk->fields.u && dk->last_store_pc == 2 &&
+              mc_render_global_pointer_append(
+                  n, n->fields.m, dk, (mc_client_graphics_site){"n", "a", "()V", 571}, &error));
+        CHECK(mc_client_render_global_update_begin(n, f->actors[0], false, &call, &error) ==
+              MC_CLIENT_RENDER_GLOBAL_OK);
+        CHECK(mc_client_render_global_update_inspect(call, &state) && state.returned);
+        CHECK(state.compile_attempts == 1 && state.completed_compiles == 1 &&
+              state.remaining_count == 0 && state.compilation != NULL);
+        CHECK(state.compilation->returned && state.compilation->pass == 0 &&
+              state.compilation->pass_rendered && state.compilation->render_blocks != NULL);
+        /* DK scans the entire 2x2x2 section, ending on an Air cell. Its CV
+         * receipt still belongs to the last nonair call, Cactus at return65. */
+        CHECK(state.compilation->block_id == 0 && state.compilation->render_blocks->returned &&
+              state.compilation->render_blocks->source_pc == 65 &&
+              !state.compilation->render_blocks->failed);
+        CHECK(!state.compilation->list_open && !state.compilation->matrix_pushed &&
+              !state.compilation->tessellator_started && !dk->fields.u && dk->fields.E &&
+              !dk->fields.p[0] && dk->fields.p[1]);
+        const uint8_t *current = NULL;
+        CHECK(cactus_list(n->display, base, 66, &current));
+        if (attempt != 0)
+            CHECK((uintptr_t)current != published);
+        published = (uintptr_t)current;
+        printf("DK_CACTUS stage=%s block=%d last-scanned=%d cv-return=%u pass=%d vertices=66 "
+               "inset-vertices=24 dirty=%d "
+               "pass0-empty=%d pass1-empty=%d\n",
+               attempt == 0 ? "compile" : "dirty", entered_cactus_id, state.compilation->block_id,
+               state.compilation->render_blocks->source_pc, state.compilation->pass, dk->fields.u,
+               dk->fields.p[0], dk->fields.p[1]);
+        CHECK(mc_client_render_global_update_retire(&call, &error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+              f->base.world->persistent_bindings == bindings);
+        if (attempt == 0) {
+            CHECK(mc_client_render_global_update_begin(n, f->actors[0], false, &call, &error) ==
+                  MC_CLIENT_RENDER_GLOBAL_OK);
+            CHECK(mc_client_render_global_update_inspect(call, &state) && state.returned &&
+                  state.compile_attempts == 0 && state.completed_compiles == 0 &&
+                  state.compilation == NULL && state.remaining_count == 0 && !dk->fields.u);
+            CHECK(cactus_list(n->display, base, 66, &current) && (uintptr_t)current == published);
+            puts("DK_CACTUS stage=reuse attempts=0 same-definition=1 vertices=66");
+            CHECK(mc_client_render_global_update_retire(&call, &error) ==
+                  MC_CLIENT_RENDER_GLOBAL_OK);
+        }
+    }
+    const mc_block_fields *after = mc_block_fields_get(cactus);
+    mc_client_nw_state nw;
+    CHECK(after->bs == cactus_before.bs && after->bt == cactus_before.bt &&
+          after->bu == cactus_before.bu && after->bv == cactus_before.bv &&
+          after->bw == cactus_before.bw && after->bx == cactus_before.bx &&
+          mc_client_nw_inspect(f->graphics, &nw) && !nw.fields.w && nw.fields.s == 0 &&
+          nw.fields.t == 0 && nw.fields.u == 0);
+    /* Restore the original one-Stone input through a genuine replacement
+     * compile, preserving the following existing failure's exact list oracle. */
+    f->chunks[0]->data->blocks[sand_index] = previous_sand;
+    f->chunks[0]->data->blocks[cactus_index] = previous_cactus;
+    dk->fields.g = 1;
+    dk->fields.r = 65;
+    mc_source_dk_dirty(dk);
+    CHECK(mc_render_global_pointer_append(
+              n, n->fields.m, dk, (mc_client_graphics_site){"n", "a", "()V", 571}, &error) &&
+          mc_client_render_global_update_begin(n, f->actors[0], false, &call, &error) ==
+              MC_CLIENT_RENDER_GLOBAL_OK &&
+          mc_client_render_global_update_inspect(call, &state) && state.returned &&
+          state.completed_compiles == 1 && !dk->fields.u);
+    mc_client_source_list_state restored;
+    CHECK(mc_client_display_list_inspect(n->display, base, &restored) && restored.defined &&
+          !restored.building && restored.commands == 7 && restored.draws == 1 &&
+          restored.vertices == 36 &&
+          mc_client_render_global_update_retire(&call, &error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+          f->base.world->persistent_bindings == bindings);
+    return true;
+}
+
 static bool compile_controls(picking_fixture *f) {
     mc_client_render_global *n = NULL;
     mc_client_render_global_error error;
@@ -193,6 +331,7 @@ static bool compile_controls(picking_fixture *f) {
           nw_state.fields.s == 0 && nw_state.fields.t == 0 && nw_state.fields.u == 0);
     CHECK(mc_client_render_global_update_retire(&call, &error) == MC_CLIENT_RENDER_GLOBAL_OK);
     CHECK(f->base.world->persistent_bindings == bindings);
+    CHECK(cactus_compile_controls(f, n, dk, base));
     /* A remaining family still retains a real failed compile prefix. Native
      * cleanup preserves both the earlier list and the unfinished definition. */
     f->chunks[0]->data->blocks[index] = 50;

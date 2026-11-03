@@ -93,6 +93,12 @@ bool mc_cv_color(mc_cv_context *c, float red, float green, float blue, unsigned 
         c, mc_client_nw_color_float(c->tessellator, red, green, blue, &c->failure.graphics), pc);
 }
 
+bool mc_cv_translation_add(mc_cv_context *c, float x, float y, float z, unsigned int pc) {
+    mc_cv_pc(c, pc);
+    return graphics_result(
+        c, mc_client_nw_translation_add(c->tessellator, x, y, z, &c->failure.graphics), pc);
+}
+
 bool mc_cv_vertex(mc_cv_context *c, double x, double y, double z, double u, double v,
                   unsigned int pc) {
     mc_cv_pc(c, pc);

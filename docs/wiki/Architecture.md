@@ -1,5 +1,13 @@
 # Systems and subsystems
 
+World type13 dispatch now reaches dedicated Cactus wrapper and geometry bodies.
+They append to the enclosing section's NW batch, preserving live bounds, AO
+scratch, ordered culling/light/texture reads and additive lateral offsets.
+The DK compiler publishes their actual mesh; later frames can reuse it or
+recompile it after a real WorldAccess notification. These bodies differ from
+the separate per-face Item renderer. See the
+[Cactus contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/cactus-world.md).
+
 Specialized inventory shapes share per-face plumbing while retaining their
 actual bounds, texture overload, offsets and call order. Cactus uses genuine
 additive Tessellator translation; Stairs keeps its second bounds and Fence

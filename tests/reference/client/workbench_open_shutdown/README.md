@@ -7,23 +7,25 @@ Player's terminal record. It preserves source screen, Container and Stack
 identities while completing checked C cleanup.
 
 `native-validation.json` records the fresh current-source cohort. Captured
-production includes Cactus, Stairs and Fence inventory geometry, additive NW
+production includes Cactus World m/c geometry. The selected harness includes
+DK dispatch and loaded-scene controls, inventory geometry, additive NW
 translation and Piston texture getters. The test helper waits for actual serial
 input consumption during Table opening. The selected harness includes completed
 HUD Block Item draws and cleanup after an actual nullable Stair source failure.
 The Inventory geometry fixture queries actual current color before recording its
-inputs. Four tests pass in 61.78 seconds, with 1,930 / 1,943 / 2,184 / 2,134 native checks.
-Their measured CTest times are 15.84 / 16.48 / 14.66 / 14.78 seconds in clean /
-Container / Player / World order. These SDK scenes qualify the Workbench
-terminal flow; other geometry and getter comparisons have their own coverage.
+inputs. Four tests pass in 61.47 seconds, with 2,005 / 1,914 / 2,209 / 2,209
+native checks. Their measured CTest times are 15.77 / 15.54 / 15.58 / 14.54 seconds
+in clean / Container / Player / World order. These SDK scenes qualify the
+Workbench terminal flow; direct geometry, getter and loaded-scene comparisons
+have their own coverage.
 The Container profile
 refuses before transfer; the Player and World profiles refuse at the later World
 audit. Each releases only its declared existing hold and retries. All four end
 with both source windows absent. The selected save tree stays byte-for-byte
 equal to its stopped snapshot through every native phase.
 
-The receipt binds all 1,441 runtime source files and 502 selected harness/CMake
-files. Each process recorded 1,945 selected inputs and 413 imported-resource
+The receipt binds all 1,442 runtime source files and 504 selected harness/CMake
+files. Each process recorded 1,948 selected inputs and 413 imported-resource
 files unchanged. Native executable and DLL hashes describe the captured
 snapshot; the public audit does not require those binaries or assets. Toolchain
 and Desktop state were outside that continuity check.
@@ -64,10 +66,22 @@ A separate cohort passed all four profiles in 62.96 seconds before the final
 source formatting changes. Its capture and log remain private historical
 evidence; the current receipt binds the later formatted-source cohort.
 
-The preceding 82.19-second cohort used identical production sources and native
-binaries. Its selected geometry fixture preceded the explicit current-color
-query. That cohort remains separate private evidence; the current packet binds
-the corrected fixture bytes as well as the production snapshot.
+The 82.19-second and 61.78-second cohorts used identical production sources and
+native binaries. The selected geometry fixture in the 82.19-second cohort
+preceded the explicit current-color query; the 61.78-second cohort included it.
+Both remain separate private evidence, including an exact backup of the
+61.78-second public packet. The later 59.70-second and 62.05-second Cactus World
+cohorts also remain separate private evidence. The 62.05-second cohort included
+failure-only Sand focus diagnostics, with all existing guards retained, before
+the final dependency rebuild. The current 61.47-second packet binds the final
+rebuilt executable and its captured source and harness closure.
+
+A complete selection after that rebuild passed three of four profiles in 53.96
+seconds. World setup failed its focus gate with the native game owning
+foreground while SDL reported no keyboard focus. Its log and actual failed
+capture remain private evidence. The unchanged full four-profile retry then
+passed in 61.47 seconds. These observations do not qualify unrestricted focus
+or input timing.
 
 Run the Java-free public audit and corruption controls with:
 

@@ -1,5 +1,13 @@
 # Build and tests
 
+`client.cactus_world` compares 25 original wrapper/body calls and 5,232 appended
+words. Its 19 packet controls retain three agreeing VMs, source query/store
+traces and exact failure prefixes. `client.chunk_compile` checks a real
+Sand/Cactus section. The opt-in Windows `client.world_selection_cactus` scene
+checks an ordinary saved Player pose, visible Cactus, picking/outline, section
+reuse, light-notification recompile and cleanup. Its isolated run passes in
+11.53 seconds; a separate foreground-loss failure remains recorded.
+
 `client.inventory_geometry`, `client.nw_translation` and
 `client.piston_inventory_texture` cover the new Item geometry and texture
 bodies. Hidden-display comparisons execute complete native calls, compare all
@@ -9,15 +17,20 @@ immediate and GL_COMPILE cohorts retain separate device scopes. The packet's
 primary loop passes in 3.732 seconds after a redundant exhaustive negative
 loop was stopped at 243.92 seconds. No positive geometry comparison is reduced.
 
-The integrated runtime passes 646/646 Linux Clang 18 ASan/UBSan public tests in
-148.54 seconds. Windows Release passes 650/651 in 290.25 seconds; World selection
-records Remote Desktop holding foreground, lost SDL focus and the source Pause
-screen. Its unchanged isolated recheck passes in 38.44 seconds. Both broad runs
-preserve 4,488 sources and 528 products; Windows preserves 823 assets.
-All 1,441 runtime files match across hosts. Linux uses Xvfb/software GL with
-leak detection and halt-on-error. All eight changed C translation units pass
-strict GCC 13 syntax checks; formatting covers 2,013 C/header/fragment files.
-The final documentation/binding follow-up has separate verification.
+The Cactus runtime passes all 654 Windows MSVC Release public tests in 344.06
+seconds and all 648 Linux Clang 18 Debug ASan/UBSan public tests in 150.29
+seconds. Both runs preserve 4,507 sources and 529 products; Windows also
+preserves 823 assets. All 1,442 runtime files match across hosts. Linux uses
+Xvfb/software GL with leak detection and halt-on-error. All seven changed C
+translation units pass strict GCC 13 syntax checks; formatting covers 2,015
+C/header/fragment files. The final documentation/binding follow-up has separate
+verification. Earlier focus failures remain recorded alongside the successful
+full cohort; uniform desktop stability and unrestricted play remain unqualified.
+
+The rebuilt Workbench shutdown cohort passes four profiles and 8,337 native
+checks in 61.47 seconds. Its 57 packet controls and retained private/log audits
+pass. Leaf, Sand and Tall Grass mining/pickup scenes pass in 29.48 seconds with
+unchanged selected inputs, resources and stopped/closed saves.
 
 `client.inventory_block` matches 13,098 original behavior rows and the retained
 17 Leaf rows. TallGrass tint and controller comparisons match 28 and 192 rows.

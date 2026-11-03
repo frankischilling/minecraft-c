@@ -18,6 +18,7 @@ if(TARGET mc_client_render_global)
         src/client/render/blocks/render.c
         src/client/render/blocks/crossed_plant.c
         src/client/render/blocks/fluid.c
+        src/client/render/blocks/cactus.c
         src/client/render/blocks/color.c
         src/client/render/blocks/faces.c
         src/client/render/blocks/flat.c

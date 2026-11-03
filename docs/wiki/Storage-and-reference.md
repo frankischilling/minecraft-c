@@ -1,5 +1,12 @@
 # Storage and original references
 
+The [Cactus World packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/cactus_world)
+uses genuine saved Worlds, four Chunks, EW/CV constructors and the original NW
+backing. Two ordinary VMs and a read-only JDI target agree on 25 complete calls.
+Selected source records preserve 669 query entries, 444 ordered offset stores
+and five exceptions. Native replay compares outer fields and words; native
+per-query tracing and original whole-frame pixels retain separate scopes.
+
 The [inventory geometry packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/inventory_geometry)
 retains paired ordinary/read-only JDI observations of 216 actual batches in
 both immediate and GL_COMPILE modes. CPU data agrees exactly; deferred device

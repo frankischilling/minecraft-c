@@ -1,4 +1,4 @@
-"""Check actual DK empty completion and reached nonair compilation effects."""
+"""Check DK completion, actual Sand/Cactus lists, reuse and retained failure."""
 import argparse
 import importlib.util
 import json
@@ -34,7 +34,13 @@ def main():
     (out / "native.stderr").write_text(result.stderr, encoding="utf-8", newline="\n")
     expected = json.loads((HERE.parents[1] / "reference/client/chunk_compile/finite.json").read_text())["rows"]
     actual = [line for line in result.stdout.splitlines() if line.startswith("DK_EMPTY ")]
-    if (result.returncode or result.stderr or actual != expected or not result.stdout.splitlines()
+    cactus = [line for line in result.stdout.splitlines() if line.startswith("DK_CACTUS ")]
+    cactus_expected = [
+        "DK_CACTUS stage=compile block=81 last-scanned=0 cv-return=65 pass=0 vertices=66 inset-vertices=24 dirty=0 pass0-empty=0 pass1-empty=1",
+        "DK_CACTUS stage=reuse attempts=0 same-definition=1 vertices=66",
+        "DK_CACTUS stage=dirty block=81 last-scanned=0 cv-return=65 pass=0 vertices=66 inset-vertices=24 dirty=0 pass0-empty=0 pass1-empty=1",
+    ]
+    if (result.returncode or result.stderr or actual != expected or cactus != cactus_expected or not result.stdout.splitlines()
             or not result.stdout.splitlines()[-1].startswith("Source DK: ")):
         print(result.stdout, end="")
         print(result.stderr, end="", file=sys.stderr)

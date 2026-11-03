@@ -1,5 +1,13 @@
 # History
 
+## Cactus World sections
+
+The missing Cactus World child now has dedicated source-equivalent bodies and
+an exact original comparison. Real native section publication/reuse and a
+loaded Windows scene complete with Cactus on Sand, selection, World/HUD frames,
+WorldAccess dirty recompile and cleanup. Scope and retained failures live in
+the [Cactus rendering notes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/cactus-world.md).
+
 ## Specialized Block Item rendering
 
 Cactus, Stairs and Fence now execute their specialized inventory bodies, and

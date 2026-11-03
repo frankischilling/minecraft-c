@@ -90,6 +90,7 @@ void mc_cv_pop(mc_cv_context *);
 void mc_cv_pc(mc_cv_context *, unsigned int);
 bool mc_cv_nw(mc_cv_context *, unsigned int);
 bool mc_cv_color(mc_cv_context *, float, float, float, unsigned int);
+bool mc_cv_translation_add(mc_cv_context *, float, float, float, unsigned int);
 bool mc_cv_vertex(mc_cv_context *, double, double, double, double, double, unsigned int);
 bool mc_cv_fields(mc_cv_context *, const mc_block *, unsigned int, const mc_block_fields **);
 bool mc_cv_block(mc_cv_context *, int32_t, int32_t, int32_t, unsigned int, int32_t *);
@@ -129,6 +130,11 @@ bool mc_cv_crossed_plant(mc_cv_context *, const mc_block *, int32_t, int32_t, in
 bool mc_cv_crossed_plant_geometry(mc_cv_context *, const mc_block *, int32_t, double, double,
                                   double);
 bool mc_cv_fluid(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
+/* Actual Cactus World bodies. The dispatcher owns m's frame; c is entered by
+ * its caller. Neither body begins/draws the enclosing NW batch or resets m. */
+bool mc_cv_cactus(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
+bool mc_cv_cactus_geometry(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, float,
+                           float, float, bool *);
 /* Actual cv.a(Block,III,texture): d3, child b12, d=-1 at18, return21.
  * Failure retains d and the complete nested source/CV/World diagnostics. */
 bool mc_cv_texture_override(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, int32_t);

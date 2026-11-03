@@ -1,5 +1,22 @@
 # Development status
 
+[Cactus World rendering](client/cactus-world.md) now completes type13 geometry
+through real section compilation. Native replay matches 25 original calls and
+5,232 appended words, preserving query/failure effects, bounds and live AO state.
+The Windows saved-pose scene visibly shows Cactus on Sand, returns World/HUD
+frames, reuses its immutable section and recompiles after a WorldAccess light
+notification. The 1,484-check isolated scene passes; a separate foreground-loss
+failure remains recorded. Original whole-frame pixels, other render families,
+unrestricted play and FPS remain open.
+
+The Cactus runtime passes all 654 Windows MSVC Release public tests in 344.06
+seconds and all 648 Linux Clang 18 Debug ASan/UBSan tests in 150.29 seconds.
+Both cohorts retain 4,507 unchanged source inputs and 529 products; Windows
+also retains 823 assets. All 1,442 runtime files match across hosts. The Windows
+cohort includes the new loaded Cactus scene. Earlier focus failures remain
+separate observations. Documentation/binding follow-ups have separate checks;
+these finite runs do not establish unrestricted play or general FPS.
+
 [Block Item geometry](client/inventory-geometry.md) now renders Cactus, Stairs,
 Fence and Piston bases through the original 3D Item paths. The native geometry
 comparison matches 7,596 active words across 216 submitted face batches, with
@@ -7,10 +24,10 @@ separate source/native inactive-word audits. Native HUD controls draw all six
 registered specialized Items and retain actual failed-child cleanup checks.
 Piston metadata textures match 34,612 original rows, including the original
 NaN-bound fallthrough and lazy Direction initialization. These are finite Item
-rendering checks; specialized World meshes, original pixels and unrestricted
+rendering checks; other specialized World meshes, original pixels and unrestricted
 play remain unfinished.
 
-The final runtime passes all 646 Linux Clang 18 ASan/UBSan public tests in
+The preceding Item geometry runtime passes all 646 Linux Clang 18 ASan/UBSan public tests in
 148.54 seconds. Windows Release passes 650/651 in 290.25 seconds; Remote Desktop
 takes foreground during World selection, SDL loses focus and the source pauses.
 The unchanged isolated World-selection recheck passes in 38.44 seconds. Both

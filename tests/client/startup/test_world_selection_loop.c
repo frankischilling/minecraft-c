@@ -19,6 +19,7 @@
 #include "client/input/mouse_helper.h"
 #include "client/render/manager/internal.h"
 #include "client/render/tile_entity_renderer/internal.h"
+#include "client/render_engine/internal.h"
 #include "client/runtime/bootstrap_terminal_internal.h"
 #include "client/runtime/gameplay_input.h"
 #include "client/runtime/menu_loop.h"
@@ -34,6 +35,7 @@
 #include "client/world/render_global_internal.h"
 #include "client/world/source_chunk_compile_internal.h"
 #include "entity/entity_internal.h"
+#include "mc/block/registry/rendering.h"
 #include "mc/client/controller/singleplayer.h"
 #include "mc/client/gui/gui_ingame_draw.h"
 #include "mc/client/input/movement_input.h"
@@ -55,6 +57,7 @@
 #include "mc/world/runtime/propagation.h"
 #include "mc/world/runtime/random_tick.h"
 #include "platform/time/millis.h"
+#include "world/chunk/object_state_internal.h"
 #include "world/runtime/chunk_provider_internal.h"
 #include "world/runtime/construction_internal.h"
 #include "world/runtime/runtime_internal.h"
@@ -4241,6 +4244,293 @@ static int save_title_controls(fixture *f, mc_client_source_da *initial, const c
 
 #include "test_world_reload.inc"
 
+static uint64_t cactus_pose_double_bits(double value) {
+    uint64_t bits;
+    memcpy(&bits, &value, sizeof(bits));
+    return bits;
+}
+
+static uint32_t cactus_pose_float_bits(float value) {
+    uint32_t bits;
+    memcpy(&bits, &value, sizeof(bits));
+    return bits;
+}
+
+static int cactus_loaded_frame(fixture *f, mc_world_runtime *world) {
+    const mc_client_world_frame_state *draw = f->state.world_frame;
+    const bool complete =
+        !f->state.failed && f->state.running && f->state.render_returned &&
+        f->app->active_world == world && f->app->r == NULL && f->app->N && draw != NULL &&
+        draw->returned && draw->source_pc == 1013 && draw->world == world &&
+        draw->render_global == f->app->g && draw->camera == f->app->i && draw->updates_returned &&
+        draw->terrain_returned && draw->translucent_returned && draw->update != NULL &&
+        draw->update->returned && draw->update->failure == NULL &&
+        draw->update->compile_attempts == draw->update->completed_compiles &&
+        draw->submission != NULL && draw->submission->returned && draw->submission->pass == 0 &&
+        draw->submission->failure == NULL && f->state.hud != NULL && f->state.hud->returned &&
+        f->state.hud->source_pc == 2101 && f->state.hud->slots_returned &&
+        f->state.hud->empty_slots == 9 && f->state.hud->failure == NULL &&
+        f->state.hud->cleanup == NULL;
+    if (!complete) {
+        /* Failure-only observations: no source replay, focus request or pump.
+         * Keep every original completed-frame assertion below unchanged. */
+        if (repeat_focus_state(f, "cactus-loaded-frame") == 0)
+            native_focus_receipt(f, "cactus-loaded-frame-focused");
+        fprintf(stderr,
+                "WORLD_CACTUS_FRAME_FAILURE loop-failed=%d running=%d render-returned=%d "
+                "same-world=%d screen=%d source-focus=%d paused=%d frames=%" PRIu64
+                " ticks=%" PRIu64 " source=%s.%s:%" PRId64 " operation=%s\n",
+                f->state.failed, f->state.running, f->state.render_returned,
+                f->app->active_world == world, f->app->r == NULL ? -1 : (int)f->app->r->kind,
+                f->app->N, atomic_load(&f->app->o), f->state.frames, f->state.ticks,
+                f->state.source_class == NULL ? "none" : f->state.source_class,
+                f->state.source_method == NULL ? "none" : f->state.source_method,
+                f->state.source_pc, f->state.operation == NULL ? "none" : f->state.operation);
+        fprintf(stderr,
+                "WORLD_CACTUS_FRAME_CHILD draw=%d returned=%d pc=%u same-world=%d same-global=%d "
+                "same-camera=%d updates=%d terrain=%d translucent=%d update=%d update-returned=%d "
+                "update-failure=%d compiles=%zu,%zu submission=%d submission-returned=%d "
+                "submission-pass=%d submission-failure=%d\n",
+                draw != NULL, draw != NULL && draw->returned, draw == NULL ? 0u : draw->source_pc,
+                draw != NULL && draw->world == world,
+                draw != NULL && draw->render_global == f->app->g,
+                draw != NULL && draw->camera == f->app->i, draw != NULL && draw->updates_returned,
+                draw != NULL && draw->terrain_returned, draw != NULL && draw->translucent_returned,
+                draw != NULL && draw->update != NULL,
+                draw != NULL && draw->update != NULL && draw->update->returned,
+                draw != NULL && draw->update != NULL && draw->update->failure != NULL,
+                draw == NULL || draw->update == NULL ? 0u : draw->update->compile_attempts,
+                draw == NULL || draw->update == NULL ? 0u : draw->update->completed_compiles,
+                draw != NULL && draw->submission != NULL,
+                draw != NULL && draw->submission != NULL && draw->submission->returned,
+                draw == NULL || draw->submission == NULL ? -1 : draw->submission->pass,
+                draw != NULL && draw->submission != NULL && draw->submission->failure != NULL);
+        fprintf(stderr,
+                "WORLD_CACTUS_FRAME_HUD present=%d returned=%d pc=%u slots=%d empty=%u "
+                "failure=%d cleanup=%d\n",
+                f->state.hud != NULL, f->state.hud != NULL && f->state.hud->returned,
+                f->state.hud == NULL ? 0u : f->state.hud->source_pc,
+                f->state.hud != NULL && f->state.hud->slots_returned,
+                f->state.hud == NULL ? 0u : f->state.hud->empty_slots,
+                f->state.hud != NULL && f->state.hud->failure != NULL,
+                f->state.hud != NULL && f->state.hud->cleanup != NULL);
+    }
+    CHECK(complete);
+    mc_entity_snapshot player;
+    mc_entity_hit_result_view hit;
+    mc_entity_hit_kind_class_view kinds;
+    const double saved_y = 64.0 + (double)1.62f;
+    CHECK(f->app->i == f->app->h && draw->camera == f->app->h &&
+          mc_entity_get_snapshot(f->app->h, &player) == MC_ENTITY_OK &&
+          player.phase == MC_ENTITY_READY && player.base.world == world && player.base.x == 3.5 &&
+          player.base.y == saved_y && player.base.z == .5 && player.base.bl == 3.5 &&
+          player.base.bm == saved_y && player.base.bn == .5 && player.base.offset == 1.62f &&
+          player.bounds != NULL && player.bounds->min_y == 64 && player.base.yaw == 0 &&
+          player.base.aT == 0 && player.base.aU == 0 && player.base.aV == 0 &&
+          draw->render_x == 3.5 && draw->render_y == saved_y && draw->render_z == .5);
+    CHECK(draw->picking_source_returned && draw->picking_block_published &&
+          draw->picking_result_identity == (uintptr_t)f->app->y && f->app->y != NULL &&
+          mc_entity_hit_result_inspect(f->app->y, &hit) == MC_ENTITY_HIT_OK &&
+          mc_entity_hit_kind_class_inspect(f->app->entities, &kinds) == MC_ENTITY_HIT_OK &&
+          hit.fields.a == kinds.a && hit.fields.b == 3 && hit.fields.c == 65 && hit.fields.d == 3 &&
+          draw->selection_hit_present && draw->selection_water_read && !draw->selection_water &&
+          draw->selection_alpha_disabled && draw->selection_current_returned &&
+          draw->selection_calls == 1 && draw->selections[0] != NULL &&
+          draw->selections[0]->overlay_returned && draw->selections[0]->outline_returned &&
+          draw->selections[0]->alpha_restored && draw->selections[0]->outline_block &&
+          draw->selections[0]->x == 3 && draw->selections[0]->y == 65 &&
+          draw->selections[0]->z == 3 && draw->selections[0]->block_id == 81 &&
+          draw->selections[0]->vertices == 18 && draw->selections[0]->draws == 3);
+    return 0;
+}
+
+static int cactus_loaded_advance(fixture *f, mc_world_runtime *world) {
+    CHECK(display_focus(f, true) == 0 && mc_client_menu_loop_inspect(f->loop, &f->state));
+    const uint64_t world_before = f->state.world_draws, hud_before = f->state.hud_draws;
+    CHECK(frame(f) == 0 && cactus_loaded_frame(f, world) == 0);
+    if (f->state.world_draws != world_before + 1 || f->state.hud_draws != hud_before + 1)
+        fprintf(stderr,
+                "Cactus frame counters world=%" PRIu64 ",%" PRIu64 " hud=%" PRIu64 ",%" PRIu64 "\n",
+                world_before, f->state.world_draws, hud_before, f->state.hud_draws);
+    CHECK(f->state.world_draws == world_before + 1 && f->state.hud_draws == hud_before + 1);
+    return 0;
+}
+
+static int cactus_loaded_list(fixture *f, mc_client_source_dk *dk,
+                              mc_client_source_batch_view *batch) {
+    mc_client_source_list_state list;
+    CHECK(dk != NULL && dk->fields.c == 0 && dk->fields.d == 64 && dk->fields.e == 0 &&
+          dk->fields.f == 16 && dk->fields.g == 16 && dk->fields.h == 16 && dk->fields.E &&
+          dk->fields.o && !dk->fields.u && dk->fields.p != NULL && !dk->fields.p[0] &&
+          dk->fields.p[1] && mc_client_display_list_inspect(f->app->display, dk->fields.C, &list) &&
+          list.defined && !list.building && list.commands == 7 && list.draws == 1 &&
+          list.vertices == 60 &&
+          mc_client_display_list_batch(f->app->display, dk->fields.C, 0, batch) &&
+          batch->vertices == 60 && batch->mode == 4 && batch->arrays == 7 &&
+          batch->byte_count == 60u * 32u && f->state.world_frame->terrain_count > 0);
+    size_t inset_vertices = 0;
+    for (size_t vertex_index = 30; vertex_index < 60; ++vertex_index) {
+        float vertex[5];
+        memcpy(vertex, batch->bytes + vertex_index * 32u, sizeof(vertex));
+        CHECK(vertex[0] >= 3 && vertex[0] <= 4 && vertex[1] >= 1 && vertex[1] <= 2 &&
+              vertex[2] >= 3 && vertex[2] <= 4);
+        const bool top = vertex_index < 36;
+        CHECK(vertex[3] >= (top ? 5.0f : 6.0f) / 16.0f && vertex[3] < (top ? 6.0f : 7.0f) / 16.0f &&
+              vertex[4] >= .25f && vertex[4] < .3125f);
+        if (top)
+            CHECK(vertex[1] == 2);
+        else {
+            CHECK(vertex[0] == 3.0625f || vertex[0] == 3.9375f || vertex[2] == 3.0625f ||
+                  vertex[2] == 3.9375f);
+            ++inset_vertices;
+        }
+    }
+    CHECK(inset_vertices == 24);
+    return 0;
+}
+
+static int cactus_loaded_controls(fixture *f, const char *screenshot) {
+    mc_world_runtime *world = f->app->active_world;
+    mc_registry_classes *registry = f->app->registry;
+    CHECK(world != NULL && registry != NULL && f->app->g != NULL && f->app->g->fields.k == world &&
+          world->world_accesses.count == 1 && world->fields.u == world->world_accesses.list &&
+          world->fields.u->count == 1 && world->world_accesses.entries[0] != NULL &&
+          repeat_statistics_controls(f, false) == 0 && cactus_loaded_frame(f, world) == 0);
+    mc_client_screen_transition_state transitions;
+    mc_client_world_load_state load;
+    mc_entity_snapshot player;
+    CHECK(mc_client_screen_transitions_inspect(f->app->screen_transitions, &transitions) &&
+          transitions.world_load != NULL &&
+          mc_client_world_load_inspect(transitions.world_load, &load) && load.source_returned &&
+          load.player_load_returned && load.world == world && load.player == f->app->h &&
+          mc_entity_get_snapshot(f->app->h, &player) == MC_ENTITY_OK);
+    printf(
+        "WORLD_CACTUS_POSE input=saved-player source-loaded=%d camera=player position=%016" PRIx64
+        ",%016" PRIx64 ",%016" PRIx64 " rotation=%08" PRIx32 ",%08" PRIx32 " feet=%016" PRIx64
+        " offset=%08" PRIx32 " hit=3,65,3\n",
+        load.player_load_returned, cactus_pose_double_bits(player.base.x),
+        cactus_pose_double_bits(player.base.y), cactus_pose_double_bits(player.base.z),
+        cactus_pose_float_bits(player.base.yaw), cactus_pose_float_bits(player.base.aT),
+        cactus_pose_double_bits(player.bounds->min_y), cactus_pose_float_bits(player.base.offset));
+    int32_t sand_id = -1, cactus_id = -1;
+    mc_world_storage_error error;
+    mc_chunk_state *stored = NULL;
+    CHECK(mc_world_runtime_block_get(world, 3, 64, 3, &sand_id, &error) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_block_get(world, 3, 65, 3, &cactus_id, &error) == MC_WORLD_STORAGE_OK &&
+          sand_id == 12 && cactus_id == 81 &&
+          mc_world_runtime_get(world, 0, 0, &stored) == MC_CHUNK_ACQUIRE_OK && stored != NULL &&
+          stored->active && stored->terrain_populated && stored->data != NULL &&
+          stored->data->blocks[(3u << 11u) | (3u << 7u) | 64u] == 12 &&
+          stored->data->blocks[(3u << 11u) | (3u << 7u) | 65u] == 81);
+    const mc_block *sand = NULL, *cactus = NULL;
+    mc_block_render_description description;
+    CHECK(mc_registry_block_get(registry, 12, &sand, NULL) == MC_REGISTRY_OK &&
+          mc_registry_block_get(registry, 81, &cactus, NULL) == MC_REGISTRY_OK && sand != NULL &&
+          cactus != NULL && mc_block_render_opaque(sand) && !mc_block_render_opaque(cactus) &&
+          mc_block_render_describe(cactus, &description) == MC_REGISTRY_OK &&
+          description.type == 13 && description.pass == 0);
+    const mc_block_fields cactus_bounds = *mc_block_fields_get(cactus);
+    CHECK(cactus_bounds.bs == 0 && cactus_bounds.bt == 0 && cactus_bounds.bu == 0 &&
+          cactus_bounds.bv == 1 && cactus_bounds.bw == 1 && cactus_bounds.bx == 1 &&
+          cactus_bounds.bm == 70);
+    mc_client_source_dk *section = NULL;
+    for (mc_client_source_dk *candidate = f->app->g->chunk_owners; candidate != NULL;
+         candidate = candidate->next)
+        if (candidate->fields.a == world && candidate->fields.c == 0 && candidate->fields.d == 64 &&
+            candidate->fields.e == 0) {
+            CHECK(section == NULL);
+            section = candidate;
+        }
+    CHECK(section != NULL);
+    size_t frames = 1;
+    const uint64_t deadline = SDL_GetTicks() + 60000;
+    while ((section->fields.u || !section->fields.E) && frames < 16 && SDL_GetTicks() < deadline) {
+        CHECK(cactus_loaded_advance(f, world) == 0);
+        ++frames;
+    }
+    mc_client_source_batch_view batch;
+    CHECK(cactus_loaded_list(f, section, &batch) == 0);
+    const int32_t list_id = section->fields.C;
+    uintptr_t published = (uintptr_t)batch.bytes;
+    uint8_t original_bytes[60u * 32u];
+    size_t reuse_frames = 0;
+    bool reused = false;
+    /* Initial World light work can legitimately replace a newly published
+     * definition on the next returned frame. Validate every such section,
+     * then require one actual immutable definition reuse within this bound. */
+    do {
+        published = (uintptr_t)batch.bytes;
+        memcpy(original_bytes, batch.bytes, sizeof(original_bytes));
+        CHECK(cactus_loaded_advance(f, world) == 0);
+        ++frames;
+        ++reuse_frames;
+        CHECK(cactus_loaded_list(f, section, &batch) == 0);
+        const bool same_id = section->fields.C == list_id;
+        const bool same_definition = (uintptr_t)batch.bytes == published;
+        const bool same_bytes = memcmp(original_bytes, batch.bytes, sizeof(original_bytes)) == 0;
+        printf("WORLD_CACTUS_STEP stage=reuse attempt=%zu same-list=%d same-definition=%d "
+               "same-bytes=%d\n",
+               reuse_frames, same_id, same_definition, same_bytes);
+        CHECK(same_id && (!same_definition || same_bytes));
+        reused = same_definition;
+    } while (!reused && reuse_frames < 16 && SDL_GetTicks() < deadline);
+    CHECK(reused);
+
+    /* A declared real World light write notifies the registered N WorldAccess.
+     * Its unchanged light value still reaches the source cell-dirty callback. */
+    struct cactus_light_work {
+        mc_world_light_operation_error operation;
+        mc_world_query_error query;
+    } *light = calloc(1, sizeof(*light));
+
+    const mc_world_light_type *block_light = NULL;
+    int32_t saved = -1;
+    CHECK(light != NULL &&
+          mc_world_runtime_light_type_get(world->classes, MC_LIGHT_BLOCK, &block_light, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_saved_light(world, block_light, 3, 65, 3, &saved, &light->query) ==
+              MC_WORLD_STORAGE_OK &&
+          saved == 0);
+    const size_t queued_before = f->app->g->fields.m->count;
+    CHECK(mc_world_runtime_saved_light_set(world, block_light, 3, 65, 3, saved,
+                                           &light->operation) == MC_WORLD_STORAGE_OK &&
+          section->fields.u && section->last_store_pc == 2 &&
+          f->app->g->fields.m->count == queued_before + 1 &&
+          f->app->g->fields.m->entries[queued_before] == section &&
+          mc_client_display_list_batch(f->app->display, list_id, 0, &batch) &&
+          (uintptr_t)batch.bytes == published &&
+          memcmp(original_bytes, batch.bytes, sizeof(original_bytes)) == 0);
+    mc_render_global_access_state access;
+    CHECK(mc_render_global_access_inspect(f->app->g->access, &access) &&
+          access.registrations == 1 && access.active_callbacks == 0 &&
+          access.retained_failures == 0);
+    size_t recompile_frames = 0;
+    do {
+        CHECK(cactus_loaded_advance(f, world) == 0);
+        ++frames;
+        ++recompile_frames;
+    } while (section->fields.u && recompile_frames < 16 && SDL_GetTicks() < deadline);
+    CHECK(cactus_loaded_list(f, section, &batch) == 0 && section->fields.C == list_id &&
+          (uintptr_t)batch.bytes != published && f->app->active_world == world &&
+          f->app->registry == registry &&
+          mc_world_runtime_block_get(world, 3, 64, 3, &sand_id, &error) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_block_get(world, 3, 65, 3, &cactus_id, &error) == MC_WORLD_STORAGE_OK &&
+          sand_id == 12 && cactus_id == 81);
+    const mc_block_fields *after = mc_block_fields_get(cactus);
+    CHECK(after->bs == cactus_bounds.bs && after->bt == cactus_bounds.bt &&
+          after->bu == cactus_bounds.bu && after->bv == cactus_bounds.bv &&
+          after->bw == cactus_bounds.bw && after->bx == cactus_bounds.bx &&
+          repeat_statistics_controls(f, false) == 0 && capture(f, screenshot) == 0);
+    printf("WORLD_CACTUS input=pre-bootstrap-region sand=%d cactus=%d at=3,65,3 pass=%d "
+           "vertices=%d inset-vertices=24 frames=%zu reuse-frames=%zu recompile-frames=%zu list=%d "
+           "same-world-and-registry=1 returned-world-hud=1 reused-definition=1 "
+           "world-light-notification=1 dirty-recompiled=1 source-bounds-preserved=1\n",
+           sand_id, cactus_id, description.pass, batch.vertices, frames, reuse_frames,
+           recompile_frames, list_id);
+    free(light);
+    return 0;
+}
+
 int main(int argc, char **argv) {
     CHECK(argc == 4 &&
           (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
@@ -4248,9 +4538,10 @@ int main(int argc, char **argv) {
            strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
            strcmp(argv[2], "load-terminal") == 0 || strcmp(argv[2], "load-partial") == 0 ||
            strcmp(argv[2], "repeat") == 0 || strcmp(argv[2], "load-light") == 0 ||
-           strcmp(argv[2], "reload-cycle") == 0 || strcmp(argv[2], "save-title") == 0 ||
-           strcmp(argv[2], "save-title-session") == 0 || animal_profile_get(argv[2]) != NULL ||
-           creature_profile_get(argv[2]) != NULL || remaining_profile_get(argv[2]) != NULL));
+           strcmp(argv[2], "load-cactus") == 0 || strcmp(argv[2], "reload-cycle") == 0 ||
+           strcmp(argv[2], "save-title") == 0 || strcmp(argv[2], "save-title-session") == 0 ||
+           animal_profile_get(argv[2]) != NULL || creature_profile_get(argv[2]) != NULL ||
+           remaining_profile_get(argv[2]) != NULL));
     const animal_profile *animal = animal_profile_get(argv[2]);
     const creature_profile *creature = creature_profile_get(argv[2]);
     const creature_profile *remaining = remaining_profile_get(argv[2]);
@@ -4262,6 +4553,7 @@ int main(int argc, char **argv) {
     const bool partial_load = strcmp(argv[2], "load-partial") == 0;
     const bool repeat_load = strcmp(argv[2], "repeat") == 0;
     const bool light_control = strcmp(argv[2], "load-light") == 0;
+    const bool cactus_control = strcmp(argv[2], "load-cactus") == 0;
     const bool reload_cycle = strcmp(argv[2], "reload-cycle") == 0;
     const mc_client_world_load_call *left_load = NULL;
     const bool save_title = reload_cycle || strcmp(argv[2], "save-title") == 0 ||
@@ -4269,13 +4561,14 @@ int main(int argc, char **argv) {
     /* A hidden loaded World opens Pause and its real draw saves metadata.
      * Passive terminal admission uses a focused World, with no Pause draw. */
     const bool focused_load = strcmp(argv[2], "load") == 0 || terminal_admission || repeat_load ||
-                              light_control || animals_load || creatures_load || remaining_load ||
-                              save_title;
-    const bool complete_host = repeat_load || light_control || animals_load || creatures_load ||
-                               remaining_load || save_title;
-    const bool loading_world = strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
-                               terminal_admission || repeat_load || light_control || animals_load ||
+                              light_control || cactus_control || animals_load || creatures_load ||
+                              remaining_load || save_title;
+    const bool complete_host = repeat_load || light_control || cactus_control || animals_load ||
                                creatures_load || remaining_load || save_title;
+    const bool loading_world = strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
+                               terminal_admission || repeat_load || light_control ||
+                               cactus_control || animals_load || creatures_load || remaining_load ||
+                               save_title;
     const bool populated =
         strcmp(argv[2], "populated") == 0 || double_click || loading_world || partial_load;
     const bool large = strcmp(argv[2], "large") == 0;
@@ -4305,7 +4598,8 @@ int main(int argc, char **argv) {
               source.load_report->lines_read == 1 && source.load_report->bytes_read == 15);
         printf("WORLD_SAVE_TITLE_OPTIONS view-distance=3 lines=1 bytes=15 source-loaded=1\n");
     }
-    if (repeat_load || animals_load || creatures_load || remaining_load || save_title)
+    if (repeat_load || cactus_control || animals_load || creatures_load || remaining_load ||
+        save_title)
         CHECK(repeat_statistics_controls(&f, true) == 0);
     if (save_title)
         CHECK(save_title_host(&f, "open", true, &save_title_frame_id, &save_title_canvas_id) == 0);
@@ -4653,10 +4947,16 @@ int main(int argc, char **argv) {
                   frame->translucent_submission->cleanup == NULL &&
                   frame->translucent_state_restored && frame->selection_zoom_read &&
                   frame->selection_player_read && frame->selection_player &&
-                  frame->selection_hit_read && !frame->selection_hit_present &&
-                  !frame->selection_water_read && !frame->selection_alpha_disabled &&
-                  !frame->selection_current_returned && frame->selection_hit == NULL &&
-                  frame->selection_stack == NULL);
+                  frame->selection_hit_read && frame->selection_stack == NULL);
+            if (cactus_control) {
+                CHECK(frame->selection_hit_present && frame->selection_water_read &&
+                      !frame->selection_water && frame->selection_alpha_disabled &&
+                      frame->selection_current_returned && frame->selection_calls == 1);
+            } else {
+                CHECK(!frame->selection_hit_present && !frame->selection_water_read &&
+                      !frame->selection_alpha_disabled && !frame->selection_current_returned &&
+                      frame->selection_hit == NULL);
+            }
             CHECK(frame->precipitation_returned && frame->precipitation != NULL &&
                   frame->precipitation->returned && frame->precipitation->source_pc == 18 &&
                   frame->precipitation->strength_read && !frame->precipitation->camera_captured &&
@@ -4730,6 +5030,10 @@ int main(int argc, char **argv) {
                 CHECK(immutable_profile_focus(&f) == 0);
             if (light_control) {
                 CHECK(light_batch_controls(&f) == 0);
+                goto loaded_draw_controls_done;
+            }
+            if (cactus_control) {
+                CHECK(cactus_loaded_controls(&f, argv[3]) == 0);
                 goto loaded_draw_controls_done;
             }
             if (animals_load) {
@@ -4962,8 +5266,8 @@ int main(int argc, char **argv) {
         CHECK(terminal_prepare_controls(&f, external) == 0);
     if (terminal_admission)
         CHECK(loaded_terminal_admission_controls(&f) == 0);
-    if (loading_world && !terminal_admission && !repeat_load && !light_control && !animals_load &&
-        !creatures_load && !remaining_load && !save_title) {
+    if (loading_world && !terminal_admission && !repeat_load && !light_control && !cactus_control &&
+        !animals_load && !creatures_load && !remaining_load && !save_title) {
         mc_world_runtime *world = f.app->active_world;
         mc_entity *player = f.app->h;
         mc_client_render_global *renderer = f.app->g;
@@ -4991,8 +5295,8 @@ int main(int argc, char **argv) {
               f.app->active_world == world && f.app->h == player && f.app->i == player);
         CHECK(mc_client_effect_renderer_release(effects) == MC_EFFECT_RENDERER_OK);
     }
-    if (!loading_world || terminal_admission || repeat_load || light_control || animals_load ||
-        creatures_load || remaining_load || save_title) {
+    if (!loading_world || terminal_admission || repeat_load || light_control || cactus_control ||
+        animals_load || creatures_load || remaining_load || save_title) {
         CHECK(normal_terminal_retirement_controls(&f, &external, loading_world, save_title,
                                                   left_load) == 0);
     } else {
