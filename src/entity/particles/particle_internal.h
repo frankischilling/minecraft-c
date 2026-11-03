@@ -13,12 +13,18 @@ struct mc_particle_state {
         struct {
             unsigned int item_pc, tick_pc;
             bool tick_active;
-        } item_native; /* PB/QM native diagnostics; no declared Source fields. */
+        } item_native; /* Non-EM native diagnostics; no declared Source fields. */
     };
 
     const mc_block *digging_block;         /* Actual QM.a. */
     mc_registry_classes *digging_registry; /* Native lifetime of that Block. */
     int32_t digging_face;                  /* Actual QM.o. */
+
+    union {
+        mc_smoke_particle_fields smoke; /* Actual XN.a. */
+        mc_flame_particle_fields flame; /* Actual QU.a. */
+    };
+
     unsigned int particle_pc, pickup_pc;
 };
 
@@ -88,6 +94,21 @@ mc_entity_status mc_explosion_particle_construct_entered(mc_entity *, mc_world_r
                                                          mc_math_classes *, double, double, double,
                                                          double, double, double, mc_math_classes **,
                                                          mc_particle_error *);
+mc_entity_status mc_smoke_particle_construct_entered(mc_entity *, mc_world_runtime *,
+                                                     mc_math_classes *, double, double, double,
+                                                     double, double, double, mc_math_classes **,
+                                                     mc_particle_error *);
+mc_entity_status mc_smoke_particle_construct_scaled_entered(mc_entity *, mc_world_runtime *,
+                                                            mc_math_classes *, double, double,
+                                                            double, double, double, double, float,
+                                                            mc_math_classes **,
+                                                            mc_particle_error *);
+mc_entity_status mc_flame_particle_construct_entered(mc_entity *, mc_world_runtime *,
+                                                     mc_math_classes *, double, double, double,
+                                                     double, double, double, mc_math_classes **,
+                                                     mc_particle_error *);
+/* Passive native completion receipt, with no Source phase/field repair. */
+bool mc_particle_constructor_returned(const mc_entity *);
 void mc_particle_movement_exception(mc_particle_error *, const mc_entity_move_error *,
                                     mc_registry_classes *);
 

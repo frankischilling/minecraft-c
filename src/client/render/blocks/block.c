@@ -13,6 +13,46 @@ static bool enter_block(mc_cv_context *c, const mc_block *b, const char *class_n
     return mc_cv_push_source(c, class_name, method, descriptor);
 }
 
+static bool side_texture_body(mc_cv_context *c, mc_registry_classes *classes, const mc_block *block,
+                              int32_t side, unsigned int pc, int32_t *out) {
+    mc_cv_pc(c, pc);
+    if (block->classes != classes || (unsigned int)block->kind >= (unsigned int)MC_BLOCK_KIND_COUNT)
+        return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
+                          "inventory side texture native Block class", pc, true);
+    if (block->kind == MC_BLOCK_STAIRS) {
+        /* Actual SS.a(I)I captures its source at1, then invokes UU.a(I)I at5.
+         * Every nested source retains its own frame. The existing bounded
+         * source stack also prevents native recursion through cyclic aliases. */
+        if (!mc_cv_push_source(c, "ss", "a", "(I)I"))
+            return false;
+        const mc_block *source = block->subtype.ss.a;
+        if (source == NULL) {
+            c->failure.child = (mc_client_graphics_site){"ss", "a", "(I)I", 5};
+            return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
+                              "inventory Stairs source Block texture null receiver", 5, false);
+        }
+        if (!side_texture_body(c, classes, source, side, 5, out))
+            return false;
+        mc_cv_pc(c, 8);
+        mc_cv_pop(c);
+        mc_cv_pc(c, pc);
+        return true;
+    }
+    const mc_registry_status status = mc_registry_block_texture_side(classes, block, side, out);
+    if (status == MC_REGISTRY_OK)
+        return true;
+    return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
+                      "inventory actual Block side texture", pc, true);
+}
+
+bool mc_cv_side_texture(mc_cv_context *c, const mc_block *block, int32_t side, unsigned int pc,
+                        int32_t *out) {
+    if (block == NULL)
+        return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
+                          "actual Block side texture receiver", pc, false);
+    return side_texture_body(c, block->classes, block, side, pc, out);
+}
+
 bool mc_cv_brightness(mc_cv_context *c, const mc_block *b, int32_t x, int32_t y, int32_t z,
                       unsigned int pc, float *out) {
     const char *name =

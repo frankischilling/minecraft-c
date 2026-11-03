@@ -1,5 +1,29 @@
 # History
 
+## Torch World geometry and display particles
+
+Torch and both Redstone Torch registrations now enter their actual type 2
+World wrapper and shared primitive. Native CPU replay matches 132 rows and
+14,640 appended words from 66 original calls. Twelve complete original target
+streams agree; two observer-deadline failures remain separate with their exact
+trace prefixes. Smoke and Flame constructor/tick/draw comparisons pass. A
+bounded loaded Windows scene passes 1,624 checks in 13.87 seconds. Its separately
+entered World draw visits both recorded callback-created particle identities
+once; ordinary execution then returns five World/HUD frames with section reuse,
+dirty recompile and cleanup. Earlier scene passes and ordinary-frame identity
+failures retain different timing premises. The original particle cohort keeps
+independent entropy and explicitly declared no-clip ticks.
+The [Torch notes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/torch-world.md)
+record the finite scopes without claiming original pixels or general FPS.
+Final public CTest runs pass 660 Windows tests in 338.89 seconds and 653 Linux
+sanitizer tests in 162.88 seconds. The runtime copies agree across all 1,445
+files. The fresh Workbench cohort has 8,137 checks in 59.92 seconds; earlier
+8,337-check receipts retain their historical inputs and scope.
+
+The preceding Cactus commit `193192e1` passes
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/41678998367).
+Its 608 Windows and 665 tests per Linux compiler retain their own commit scope.
+
 ## Cactus World sections
 
 The missing Cactus World child now has dedicated source-equivalent bodies and

@@ -60,7 +60,7 @@ struct mc_entity {
     struct mc_minecart_entity_state *minecart;
     /* Actual embedded subobject of a dc allocation, never an invented Player. */
     struct mc_local_player_state *local_player;
-    /* Actual XW subobject of a canonical EM/PB allocation, else NULL. */
+    /* Actual XW subobject of a complete concrete particle allocation, else NULL. */
     struct mc_particle_state *particle;
     /* Actual embedded LS/II/GZ/BG/AR/leaf storage of a concrete client Mob. */
     struct mc_mob_entity_state *mob;
@@ -71,6 +71,13 @@ struct mc_entity {
 /* Passive actual subtype admission, valid in every phase. The immutable
  * literal must be this Entity classes owner's canonical literal for kind. */
 bool mc_entity_is_kind(const mc_entity *entity, mc_entity_class_kind kind);
+/* Complete concrete XW storage, excluding the query-only XW ancestor. These
+ * passive predicates deliberately admit RAW/FAILED storage for retirement;
+ * callers keep their own reached READY/active-call checks. */
+bool mc_entity_is_particle_kind(mc_entity_class_kind);
+bool mc_entity_has_particle(const mc_entity *);
+/* EM has its separate actor-reference tick and remains outside movement. */
+bool mc_entity_has_moving_particle(const mc_entity *);
 
 /* The production constructor calls these after each real shared Math draw.
  * Their internal seam also permits replay of original observed field formulas;

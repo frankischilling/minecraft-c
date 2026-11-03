@@ -123,11 +123,7 @@ static bool get(mc_client_effect_draw_call *c, unsigned int array_pc, unsigned i
                                    "actual DN particle List.get index", get_pc, false);
     mc_entity *particle = list->elements[(size_t)c->state.index];
     if (particle != NULL) {
-        if ((!mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE) &&
-             !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) &&
-             !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE) &&
-             !mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE)) ||
-            particle->classes != c->state.owner->classes || particle->particle == NULL)
+        if (!mc_entity_has_particle(particle) || particle->classes != c->state.owner->classes)
             return mc_effect_draw_fail(c, MC_EFFECT_DRAW_DEPENDENCY,
                                        "particle List reached unsupported concrete owning row",
                                        c->state.lit ? 54 : 272, true);

@@ -22,6 +22,9 @@ static mc_math_trig trig;
 #ifndef MC_PLAYER_STATISTICS_WORLD_SEED
 #define MC_PLAYER_STATISTICS_WORLD_SEED INT64_C(5143)
 #endif
+#ifndef MC_PLAYER_STATISTICS_MAX_PROVIDER_CHUNKS
+#define MC_PLAYER_STATISTICS_MAX_PROVIDER_CHUNKS 2
+#endif
 #define CHECK(c)                                                                                   \
     do {                                                                                           \
         ++checks;                                                                                  \
@@ -136,7 +139,7 @@ static bool setup(fixture *f, const char *resources, const char *directory, bool
           MC_WORLD_INFO_OK);
     CHECK(mc_world_provider_create(0, NULL, &f->dimension, NULL) == MC_WORLD_PROVIDER_OK);
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
-    limits.max_provider_chunks = 2;
+    limits.max_provider_chunks = MC_PLAYER_STATISTICS_MAX_PROVIDER_CHUNKS;
     CHECK(mc_world_runtime_allocate_world(MC_WORLD_RUNTIME_CLIENT_DIRECT_METADATA,
                                           f->app.world_classes, &limits, &f->world,
                                           NULL) == MC_WORLD_STORAGE_OK);

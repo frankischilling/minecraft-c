@@ -136,6 +136,31 @@ bool mc_entity_is_kind(const mc_entity *entity, mc_entity_class_kind kind) {
            entity->class_literal == &entity->classes->literals[(size_t)kind];
 }
 
+bool mc_entity_is_particle_kind(mc_entity_class_kind kind) {
+    switch (kind) {
+        case MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE:
+        case MC_ENTITY_CLASS_KIND_ITEM_PARTICLE:
+        case MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE:
+        case MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE:
+        case MC_ENTITY_CLASS_KIND_SMOKE_PARTICLE:
+        case MC_ENTITY_CLASS_KIND_FLAME_PARTICLE:
+            return true;
+        default:
+            return false;
+    }
+}
+
+bool mc_entity_has_particle(const mc_entity *entity) {
+    return entity != NULL && entity->class_literal != NULL &&
+           mc_entity_is_particle_kind(entity->class_literal->kind) &&
+           mc_entity_is_kind(entity, entity->class_literal->kind) && entity->particle != NULL;
+}
+
+bool mc_entity_has_moving_particle(const mc_entity *entity) {
+    return mc_entity_has_particle(entity) &&
+           !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE);
+}
+
 mc_entity_status mc_entity_item_pickup_delay_set(mc_entity *entity, int32_t delay) {
     if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM))
         return MC_ENTITY_INVALID_ARGUMENT;
@@ -191,21 +216,16 @@ mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_ent
             bytes = sizeof(mc_mob_entity_object);
             status = mc_entity_base_class_initialize(classes, error);
             break;
-        case MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE:
-        case MC_ENTITY_CLASS_KIND_ITEM_PARTICLE:
-        case MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE:
-        case MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE:
-            if (classes->source != MC_ENTITY_CLIENT)
-                return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
-            bytes = sizeof(mc_pickup_particle_object);
-            status = mc_entity_base_class_initialize(classes, error);
-            break;
         case MC_ENTITY_CLASS_KIND_MINECART:
             bytes = sizeof(mc_minecart_entity_object);
             status = mc_minecart_class_initialize(classes, error);
             break;
         default:
-            return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
+            if (!mc_entity_is_particle_kind(kind) || classes->source != MC_ENTITY_CLIENT)
+                return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
+            bytes = sizeof(mc_pickup_particle_object);
+            status = mc_entity_base_class_initialize(classes, error);
+            break;
     }
     if (status != MC_ENTITY_OK)
         return status;
@@ -236,10 +256,7 @@ mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_ent
         *object = (mc_mob_entity_object){0};
         entity = &object->entity;
         entity->mob = &object->state;
-    } else if (kind == MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE ||
-               kind == MC_ENTITY_CLASS_KIND_ITEM_PARTICLE ||
-               kind == MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE ||
-               kind == MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE) {
+    } else if (mc_entity_is_particle_kind(kind)) {
         mc_pickup_particle_object *object = storage;
         *object = (mc_pickup_particle_object){0};
         entity = &object->entity;
@@ -664,11 +681,7 @@ static void destroy_entity(mc_entity *entity) {
         mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART) ? sizeof(mc_minecart_entity_object)
         : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)
             ? sizeof(mc_local_player_object)
-        : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE) ||
-                mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) ||
-                mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE) ||
-                mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE)
-            ? sizeof(mc_pickup_particle_object)
+        : mc_entity_has_particle(entity)                    ? sizeof(mc_pickup_particle_object)
         : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_C) ? sizeof(mc_lightning_entity_object)
         : mc_entity_has_mob(entity)                         ? sizeof(mc_mob_entity_object)
                                                             : sizeof(*entity);

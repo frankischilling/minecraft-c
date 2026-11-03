@@ -48,6 +48,8 @@ typedef struct mc_effect_draw_error {
     const mc_entity_render_error *entity_render;
     mc_world_storage_status receipt_status;
     const mc_client_manager_draw_error *manager_draw;
+    /* Reached XN/QU invocation of XW; child remains the failing XW operation. */
+    mc_client_graphics_site sprite_caller;
 } mc_effect_draw_error;
 
 /* Actual enclosing namespaces, not source DN World/Engine/camera operands.

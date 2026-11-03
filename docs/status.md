@@ -1,5 +1,42 @@
 # Development status
 
+[Torch World rendering](client/torch-world.md) now implements the type 2 wrapper
+and shared primitive for Torch and both Redstone Torch registrations. Native
+CPU replay matches all 132 input/observation rows from 66 original calls and
+14,640 appended words. Twelve complete original streams agree; two retained
+observer-deadline failures keep their exact partial-trace scope. The completed
+read-only JDI trace records 286 EW queries and 13 live Code pins.
+
+[Smoke and Flame](client/particles.md#smoke-and-flame) constructor/tick/draw
+comparisons pass. Native draw matches 18 rows and 25,165,440 own-inactive words,
+including original nested failure prefixes. The loaded Torch scene passes
+1,624 checks in 13.87 seconds. A separately entered World draw visits both
+recorded Smoke/Flame identities exactly once in its complete four-entry DN
+traversal, with Timer/loop counts and clocks unchanged. Ordinary source
+advancement then returns five World/HUD frames, including mesh reuse, dirty
+recompile and cleanup. These are distinct draw and run-loop qualifications.
+
+Original particle evidence covers 37 constructor roots with independent entropy
+and 30 deterministic components across three VMs. Original ticks explicitly use
+no-clip movement; the native fixture uses real World owners. Collision, original
+pixels, unrestricted play and general FPS remain unqualified.
+
+The final runtime passes all 660 Windows MSVC Release public tests in 338.89
+seconds and all 653 Linux Clang 18 Debug ASan/UBSan public tests in 162.88 seconds.
+These are CTest times. Each cohort preserves 4,548 source inputs and 532 products;
+Windows also preserves 823 assets. All 1,445 runtime files match across hosts.
+Workbench's four SDK profiles pass 8,137 checks in 59.92 seconds, with 57 packet
+controls and their audits passing. Leaf/Sand/TallGrass scenes pass in 33.02
+seconds, each retaining 1,956 selected inputs and 413 resources. Strict GCC 13.3
+checks pass 27 changed translation units across 28 actual configured option sets;
+formatting covers 2,021 files. Documentation/binding follow-ups retain separate
+checks and preserve the qualified runtime and C fixture bytes.
+
+The preceding Cactus commit `193192e1` passes
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/41678998367):
+608 Windows, 665 GCC and 665 Clang tests, plus formatting for 2,015 files.
+Those hosted results precede the current Torch and particle work.
+
 [Cactus World rendering](client/cactus-world.md) now completes type13 geometry
 through real section compilation. Native replay matches 25 original calls and
 5,232 appended words, preserving query/failure effects, bounds and live AO state.

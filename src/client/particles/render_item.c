@@ -20,9 +20,9 @@ static bool item_failed(mc_client_effect_draw_call *c, unsigned int invocation,
     mc_effect_draw_fail(c, status, operation, invocation, native);
     c->state.particle_pc = pc;
     c->failure.child = (mc_client_graphics_site){
-        mc_entity_is_kind(c->current, MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE) ? "xw"
-        : mc_entity_is_kind(c->current, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE) ? "qm"
-                                                                               : "pb",
+        mc_entity_is_kind(c->current, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE) ? "qm"
+        : mc_entity_is_kind(c->current, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE)  ? "pb"
+                                                                             : "xw",
         "a", "(Lnw;FFFFFF)V", (int32_t)pc};
     if (!native && status == MC_EFFECT_DRAW_SOURCE_NULL) {
         c->failure.source_exception = true;
@@ -298,4 +298,39 @@ bool mc_effect_draw_item(mc_client_effect_draw_call *c, unsigned int invocation)
 
 bool mc_effect_draw_sprite(mc_client_effect_draw_call *c, unsigned int invocation) {
     return billboard(c, invocation, true);
+}
+
+bool mc_effect_draw_torch_particle(mc_client_effect_draw_call *c, unsigned int invocation) {
+    const bool smoke = mc_entity_is_kind(c->current, MC_ENTITY_CLASS_KIND_SMOKE_PARTICLE);
+    const char *source = smoke ? "xn" : "qu";
+    if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
+        (void)item_failed(c, invocation, MC_EFFECT_DRAW_UNSUPPORTED_FP,
+                          "Torch particle draw reached strict floating controls", 4, true);
+        c->failure.child.class_name = source;
+        return false;
+    }
+    mc_particle_fields *f = &c->current->particle->fields;
+    float fraction = at_fdiv(at_fadd((float)f->e, c->state.partial), (float)f->f);
+    if (smoke) {
+        fraction = at_fmul(fraction, 32);
+        /* XN's fcmpg/fcmpl branches preserve NaN and clamp finite/infinite values. */
+        if (fraction < 0)
+            fraction = 0;
+        if (fraction > 1)
+            fraction = 1;
+        f->g = at_fmul(c->current->particle->smoke.a, fraction);
+        c->state.particle_pc = 46;
+    } else {
+        f->g = at_fmul(c->current->particle->flame.a,
+                       at_fsub(1, at_fmul(at_fmul(fraction, fraction), .5f)));
+        c->state.particle_pc = 31;
+    }
+    c->state.fraction = fraction;
+    if (!billboard(c, invocation, true)) {
+        c->failure.sprite_caller =
+            (mc_client_graphics_site){source, "a", "(Lnw;FFFFFF)V", smoke ? 61 : 46};
+        return false;
+    }
+    c->state.particle_pc = smoke ? 64u : 49u;
+    return true;
 }

@@ -108,6 +108,7 @@ bool mc_cv_side(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, in
                 bool *);
 bool mc_cv_texture(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, int32_t,
                    unsigned int, int32_t *);
+bool mc_cv_side_texture(mc_cv_context *, const mc_block *, int32_t, unsigned int, int32_t *);
 bool mc_cv_update_bounds(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t,
                          unsigned int);
 bool mc_cv_grass(mc_cv_context *, unsigned int, const mc_block **);
@@ -135,6 +136,11 @@ bool mc_cv_fluid(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, b
 bool mc_cv_cactus(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
 bool mc_cv_cactus_geometry(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, float,
                            float, float, bool *);
+/* Actual type2 World wrapper and shared five-quad Torch primitive. The caller
+ * owns the existing NW batch; the primitive owns its nested source frame. */
+bool mc_cv_torch(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
+bool mc_cv_torch_geometry(mc_cv_context *, const mc_block *, double, double, double, double,
+                          double);
 /* Actual cv.a(Block,III,texture): d3, child b12, d=-1 at18, return21.
  * Failure retains d and the complete nested source/CV/World diagnostics. */
 bool mc_cv_texture_override(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, int32_t);

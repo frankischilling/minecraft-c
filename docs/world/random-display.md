@@ -42,9 +42,13 @@ and emits every selected pair of particles.
 Effects use the real World sound and particle dispatchers. These reread the
 live WorldAccess List after each synchronous callback. Empty Lists return;
 registered renderer and sound receivers execute their actual children.
-Concrete smoke, flame, lava, portal, large-smoke and redstone particle
-construction remains a dependency in RenderGlobal. Reaching such a child
-preserves its real allocation frontier and preceding caller effects.
+Smoke and Flame now reach their concrete RenderGlobal constructors and DN
+publication in the finite Torch scene. Large Smoke's N branch is wired and
+its scale2.5 constructor has native/original comparison; a separate live
+large-Smoke callback replay remains unqualified. The [component and scene evidence](../client/torch-world.md)
+keeps independent constructor entropy and original no-clip ticks explicit.
+Lava, Portal, Red Dust and the other unimplemented particle families retain
+their real allocation frontier and preceding caller effects.
 
 ## Lifetime and failure
 

@@ -1,5 +1,28 @@
 # minecraft-c
 
+[Torch World rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/torch-world.md)
+now supplies the type 2 wrapper and shared primitive for Torch and both Redstone
+Torch registrations. Native replay matches 132 rows from 66 original calls and
+14,640 appended words. Smoke and Flame constructor/tick/draw comparisons also
+pass. The loaded Torch scene passes 1,624 checks in 13.87 seconds: a separately
+entered World draw visits both callback-created identities once, then ordinary
+execution returns five World/HUD frames with mesh reuse, dirty recompile and
+cleanup. The identity proof and ordinary frame continuation have distinct scopes.
+Original particle evidence retains independent constructor entropy and exact
+deterministic components. Original pixels and general FPS remain unqualified.
+
+Final public CTest runs pass 660 Windows tests in 338.89 seconds and 653 Linux
+Clang sanitizer tests in 162.88 seconds. Both preserve4,548 source inputs and 532
+products; all 1,445 runtime files match across hosts. Four Workbench shutdown
+profiles pass 8,137 checks in 59.92 seconds, and the three harvest scenes pass
+in 33.02 seconds. Their detailed receipts and historical scopes remain in the
+[testing record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md).
+
+The preceding Cactus commit `193192e1` passes
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/41678998367):
+608 Windows, 665 GCC and 665 Clang tests, plus formatting. That hosted result
+precedes the current Torch and particle changes.
+
 [Cactus World rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/cactus-world.md)
 now completes section compilation and a finite Windows scene with Cactus on
 Sand. Exact native CPU replay matches 25 original calls; loaded frames check
@@ -13,7 +36,7 @@ matches 7,596 active words across 216 original batches; Piston textures match
 World rendering, original pixels, unrestricted play and general FPS retain
 their separate unfinished scopes.
 
-The current runtime passes all 654 Windows MSVC Release and all 648 Linux
+The Cactus runtime checkpoint passes all 654 Windows MSVC Release and all 648 Linux
 Clang ASan/UBSan public tests, including the new finite Cactus controls.
 Both runs preserve 4,507 sources and 529 products; all 1,442 runtime files
 match across hosts. Earlier focus failures remain separate observations.

@@ -1,10 +1,65 @@
-# Pickup and Item particles
+# Client particles
 
-The client implements the actual `em` pickup and `pb` Item particles, their
-`xw`/`sn` constructors, the `dn` effect manager, and the selected complete-App
-pickup and RenderGlobal particle notifications.
+The client implements Pickup (`em`), Item (`pb`), Digging (`qm`), Explosion
+(`gy`), Smoke (`xn`) and Flame (`qu`) particles, their actual `xw`/`sn` ancestry,
+the `dn` effect manager and selected complete-App notifications.
 The [particle draw entries](particle-rendering.md) now run on these same owners.
 Reached Entity drawing and the complete game frontend remain unfinished.
+
+## Smoke and Flame
+
+Smoke and Flame use genuine RAW client Entity owners and the shared XW
+constructor. Default Smoke retains the six-double constructor's delegation to
+the scaled body; large Smoke uses scale 2.5. The inherited constructor consumes
+five shared Math doubles and four private Random floats. Smoke consumes two
+further Math doubles. Flame consumes one further Math double and six private
+floats, bringing its private constructor receipt to ten floats. Flame's extra
+jitter updates only local constructor coordinates, leaving Entity position at
+the supplied input.
+
+Both ticks store previous coordinates and postincrement wrapping age before
+testing the old age against lifetime. Expiry marks the particle dead and still
+continues movement. Smoke then updates its texture with actual integer
+division, adds 0.004 vertical velocity, calls the real Entity mover, applies
+the unchanged-Y horizontal boost, damping and grounded damping. Zero lifetime
+throws at the original division after the previous-coordinate, age and death
+stores. Flame calls the real mover before its damping and ground adjustment.
+DN dispatches these bodies on the same queued Entities. Checked retirement
+handles all six canonical particle families and preserves pending ownership;
+native cleanup does not advance age or repair source fields.
+
+The [original packet](../../tests/reference/entity/torch_particles/README.md)
+contains 37 constructor roots per VM, including a warm default Smoke, with no
+supplied seed or constructor sample. Two ordinary VMs and a read-only JDI VM
+audit their independent streams. JDI observes 242 Math doubles, 250 private
+floats and 126 constructor entries. The 30 deterministic component rows agree
+across all three VMs: 12 ticks, eight successful draws, four draw failures and
+six Flame brightness calls. Every original tick explicitly sets no-clip=true,
+qualifying real `sn.b`/`eq.d` arithmetic rather than collision behavior.
+
+Native constructor and tick comparisons pass using real World owners and
+separate independent-entropy audits. Native draw matches 18 rows, all 48 words
+per successful sprite and 25,165,440 own-inactive words, retaining
+XN61/QU46/SN118/QU32 failure prefixes. The [loaded Torch scene](torch-world.md#loaded-native-scene)
+passes 1,624 checks. After genuine callbacks, a separately entered World draw
+visits both recorded particle identities once in its complete DN traversal,
+without changing Timer/loop counts or clocks. Ordinary source advancement then
+returns five World/HUD frames and checked cleanup; the identity proof belongs
+to the entered draw. [Draw semantics](particle-rendering.md)
+keep this status separate from the completed original CPU draws. The original
+cohort audits 25,165,440 own-prior inactive NW words per VM and retains all 48
+words of each successful sprite. It supplies no original pixel, collision,
+entropy-distribution or general FPS claim. The final public regression suites
+pass 660 Windows and 653 sanitized Linux cases, with all 1,445 runtime files
+matching across hosts; [testing](../testing.md) retains the exact CTest times
+and input/product continuity separately from original particle evidence.
+
+Bubble, Note, Portal, Lava, Footstep, Splash, Red Dust, Snow Shovel and Heart
+still have explicit reached constructor dependencies in the RenderGlobal
+notification path. Other particle draw families and complete pickup rendering
+retain their separate unfinished or unqualified scopes.
+
+## Pickup and Item ownership
 
 `mc_pickup_particle_allocate` creates a real RAW client-only Entity. Construction
 reads the picked actor's six position/velocity arguments before entering its

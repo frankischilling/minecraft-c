@@ -789,6 +789,94 @@ static bool explosion_particle(mc_render_global_access *access, access_call *cal
     return true;
 }
 
+typedef struct sprite_particle_sites {
+    unsigned int receiver, allocation, world, constructor, enqueue;
+    bool flame, scaled;
+} sprite_particle_sites;
+
+static bool sprite_particle(mc_render_global_access *access, access_call *call,
+                            const sprite_particle_sites *sites, double x, double y, double z,
+                            double vx, double vy, double vz) {
+    const char *descriptor = "(Ljava/lang/String;DDDDDD)V";
+    access_particle *p = capture_particle(access, call, sites->receiver);
+    if (p == NULL)
+        return false;
+    client_application *app = p->application;
+    /* NEW precedes evaluation of the fresh N.k constructor argument. */
+    const mc_entity_status allocated =
+        sites->flame
+            ? mc_flame_particle_allocate(app->entities, &p->candidate, &call->error.entity)
+            : mc_smoke_particle_allocate(app->entities, &p->candidate, &call->error.entity);
+    if (allocated != MC_ENTITY_OK) {
+        fail(&call->error, particle_status(allocated), call->error.entity.operation, "a",
+             descriptor, sites->allocation, true);
+        return false;
+    }
+    mc_world_runtime *world = access->owner->fields.k;
+    if (world != NULL) {
+        if (!mc_world_runtime_binding_retain(world)) {
+            fail(&call->error,
+                 world->persistent_bindings == SIZE_MAX ? MC_CLIENT_RENDER_GLOBAL_LIMIT
+                                                        : MC_CLIENT_RENDER_GLOBAL_BUSY,
+                 "N captured sprite World lifetime", "a", descriptor, sites->world, true);
+            return false;
+        }
+        p->world = world;
+    }
+    call->error.particle = &p->error;
+    /* XW alone captures Math at164 after its five shared draws. Default XN
+     * retains its actual delegation to the scaled constructor at14. */
+    const mc_entity_status constructed =
+        sites->flame
+            ? mc_flame_particle_construct_entered(p->candidate, world, app->source_math_classes, x,
+                                                  y, z, vx, vy, vz, &p->math, &p->error)
+        : sites->scaled
+            ? mc_smoke_particle_construct_scaled_entered(p->candidate, world,
+                                                         app->source_math_classes, x, y, z, vx, vy,
+                                                         vz, 2.5f, &p->math, &p->error)
+            : mc_smoke_particle_construct_entered(p->candidate, world, app->source_math_classes, x,
+                                                  y, z, vx, vy, vz, &p->math, &p->error);
+    if (constructed != MC_ENTITY_OK) {
+        call->source_exception_class =
+            p->error.throwable == MC_PARTICLE_SOURCE_EXCEPTION ? p->error.exception_class : NULL;
+        const mc_client_render_global_status status =
+            p->error.throwable == MC_PARTICLE_SOURCE_EXCEPTION &&
+                    p->error.exception_class != NULL &&
+                    strcmp(p->error.exception_class, "java/lang/NullPointerException") == 0
+                ? MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE
+                : particle_status(constructed);
+        fail(&call->error, status, p->error.operation, "a", descriptor, sites->constructor,
+             p->error.native_policy);
+        call->error.child = (mc_client_graphics_site){
+            p->error.source_class, p->error.source_method, p->error.source_descriptor,
+            p->error.source_class == NULL ? -1 : (int32_t)p->error.source_pc};
+        return false;
+    }
+    if (p->receiver == NULL) {
+        fail(&call->error, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
+             "N sprite null captured DN enqueue receiver", "a", descriptor, sites->enqueue, false);
+        return false;
+    }
+    call->error.effects = &p->effects;
+    const mc_effect_renderer_status added =
+        mc_client_effect_renderer_add(p->receiver, p->candidate, &p->effects);
+    if (added != MC_EFFECT_RENDERER_OK) {
+        call->source_exception_class =
+            p->effects.source_exception ? p->effects.exception_class : NULL;
+        fail(&call->error, effect_status(added), p->effects.operation, "a", descriptor,
+             sites->enqueue, p->effects.native_policy);
+        call->error.child =
+            (mc_client_graphics_site){"dn", p->effects.source_method, p->effects.source_descriptor,
+                                      (int32_t)p->effects.source_pc};
+        return false;
+    }
+    /* The DN List owns its actual independent occurrence after add returns. */
+    mc_entity_release(p->candidate);
+    p->candidate = NULL;
+    call->error.source_returned = true;
+    return true;
+}
+
 static mc_world_storage_status particle(void *context, mc_world_runtime *world,
                                         const mc_registry_string *name, double x, double y,
                                         double z, double vx, double vy, double vz,
@@ -851,6 +939,17 @@ static mc_world_storage_status particle(void *context, mc_world_runtime *world,
                 }
                 if (strcmp(kinds[i].name, "explode") == 0) {
                     (void)explosion_particle(access, call, x, y, z, vx, vy, vz);
+                    break;
+                }
+                if (strcmp(kinds[i].name, "smoke") == 0 || strcmp(kinds[i].name, "flame") == 0 ||
+                    strcmp(kinds[i].name, "largesmoke") == 0) {
+                    const bool flame = strcmp(kinds[i].name, "flame") == 0;
+                    const bool scaled = strcmp(kinds[i].name, "largesmoke") == 0;
+                    const sprite_particle_sites sites =
+                        flame    ? (sprite_particle_sites){337, 340, 345, 359, 362, true, false}
+                        : scaled ? (sprite_particle_sites){505, 508, 513, 529, 532, false, true}
+                                 : (sprite_particle_sites){161, 164, 169, 183, 186, false, false};
+                    (void)sprite_particle(access, call, &sites, x, y, z, vx, vy, vz);
                     break;
                 }
                 fail(&call->error, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,

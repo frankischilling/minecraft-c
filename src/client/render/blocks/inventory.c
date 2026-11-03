@@ -87,44 +87,6 @@ static const inventory_face_sites fence_sites = {{1198, 1230, 1261, 1293, 1324, 
                                                  {1220, 1251, 1283, 1314, 1346, 1377},
                                                  {1225, 1256, 1288, 1319, 1351, 1382}};
 
-static bool inventory_side_body(mc_cv_context *c, mc_registry_classes *classes,
-                                const mc_block *block, int32_t side, unsigned int pc,
-                                int32_t *out) {
-    mc_cv_pc(c, pc);
-    if (block->classes != classes || (unsigned int)block->kind >= (unsigned int)MC_BLOCK_KIND_COUNT)
-        return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
-                          "inventory side texture native Block class", pc, true);
-    if (block->kind == MC_BLOCK_STAIRS) {
-        /* Actual SS.a(I)I captures its source at1, then invokes UU.a(I)I at5.
-         * Every nested source retains its own frame. The existing bounded
-         * source stack also prevents native recursion through cyclic aliases. */
-        if (!mc_cv_push_source(c, "ss", "a", "(I)I"))
-            return false;
-        const mc_block *source = block->subtype.ss.a;
-        if (source == NULL) {
-            c->failure.child = (mc_client_graphics_site){"ss", "a", "(I)I", 5};
-            return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
-                              "inventory Stairs source Block texture null receiver", 5, false);
-        }
-        if (!inventory_side_body(c, classes, source, side, 5, out))
-            return false;
-        mc_cv_pc(c, 8);
-        mc_cv_pop(c);
-        mc_cv_pc(c, pc);
-        return true;
-    }
-    const mc_registry_status status = mc_registry_block_texture_side(classes, block, side, out);
-    if (status == MC_REGISTRY_OK)
-        return true;
-    return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
-                      "inventory actual Block side texture", pc, true);
-}
-
-static bool inventory_side_texture(mc_cv_context *c, const mc_block *block, int32_t side,
-                                   unsigned int pc, int32_t *out) {
-    return inventory_side_body(c, block->classes, block, side, pc, out);
-}
-
 static bool inventory_faces(mc_cv_context *c, const mc_block *block, int32_t metadata,
                             const inventory_face_sites *sites, bool side_texture, bool cactus) {
     static const float normals[6][3] = {{0, -1, 0}, {0, 1, 0},  {0, 0, -1},
@@ -154,7 +116,7 @@ static bool inventory_faces(mc_cv_context *c, const mc_block *block, int32_t met
         }
         int32_t icon;
         if (side_texture) {
-            if (!inventory_side_texture(c, block, side, sites->texture[side], &icon))
+            if (!mc_cv_side_texture(c, block, side, sites->texture[side], &icon))
                 return false;
         } else if (mc_block_render_texture_metadata(block, side, metadata, &icon) !=
                    MC_REGISTRY_OK) {

@@ -16,6 +16,16 @@ acquisition, returned World/HUD frames, the 60-vertex opaque section, immutable
 list reuse and a World light notification followed by recompile are checked.
 This is native integration evidence; no original pixels or general play claim.
 
+The separate optional load-torch profile authors Sand12 and upright Torch50
+metadata5 at the same coordinates. Saved Rotation is yaw0/pitch2, so the real
+Player camera selects the source Torch ray box. Its 30 Torch vertices plus30
+exposed Sand vertices, UVs, white emission color, bounds, list reuse, real
+WorldAccess dirty notification and ownership cleanup are checked independently.
+The genuine Torch callback also supplies both particle identities to an entered
+World-draw component using the actual Timer partial and Settings/PX deadline.
+This separately labelled draw leaves Timer/loop observations unchanged; an
+ordinary returned World/HUD loop frame follows it.
+
 The repeat profile declares an existing player whose saved openInventory
 achievement is already present. Its valid pre-bootstrap statistics file uses
 real imported GUIDs and the source checksum; the actual client loads it.
@@ -461,7 +471,8 @@ def tag(kind, key, value):
     return bytes([kind]) + string(key) + value
 
 
-def metadata(display, played, version, partial=False, player_score=None, cactus_player=False):
+def metadata(display, played, version, partial=False, player_score=None, cactus_player=False,
+             torch_player=False):
     data = tag(8, "LevelName", string(display))
     data += tag(4, "LastPlayed", struct.pack(">q", played))
     data += tag(4, "SizeOnDisk", struct.pack(">q", 3145728))
@@ -491,14 +502,14 @@ def metadata(display, played, version, partial=False, player_score=None, cactus_
         player += tag(3, "Score", struct.pack(">i", player_score))
         player += tag(9, "Inventory", b"\x0a\x00\x00\x00\x00")
         data += tag(10, "Player", player + b"\x00")
-    if cactus_player:
-        if partial or player_score is not None:
-            raise RuntimeError("Distinct authored Cactus Player fixture arm")
+    if cactus_player or torch_player:
+        if partial or player_score is not None or cactus_player and torch_player:
+            raise RuntimeError("Distinct authored special Block Player fixture arm")
         saved_y = 64.0 + struct.unpack(">f", struct.pack(">f", 1.62))[0]
         player = tag(3, "Dimension", struct.pack(">i", 0))
         player += tag(9, "Pos", b"\x06" + struct.pack(">i3d", 3, 3.5, saved_y, .5))
         player += tag(9, "Motion", b"\x06" + struct.pack(">i3d", 3, 0., 0., 0.))
-        player += tag(9, "Rotation", b"\x05" + struct.pack(">i2f", 2, 0., 0.))
+        player += tag(9, "Rotation", b"\x05" + struct.pack(">i2f", 2, 0., 2. if torch_player else 0.))
         player += tag(1, "OnGround", b"\x01")
         player += tag(2, "Health", struct.pack(">h", 20))
         player += tag(3, "Score", struct.pack(">i", 0))
@@ -530,8 +541,109 @@ def cactus_pose_input(path):
             'offset_bits': struct.pack('>f', 1.62).hex()}
 
 
-def chunk_record(chunk_x, chunk_z, marker=57, cactus=False):
+def torch_scene_input(level_path, region_path):
+    """Independently decode the actual pre-bootstrap Player and Chunk operands."""
+    parser_path = Path(__file__).resolve().parents[1] / "world/test_source_saving.py"
+    spec = importlib.util.spec_from_file_location("torch_input_nbt", parser_path)
+    parser = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(parser)
+    player = parser.inflate(parser.read(level_path), 31)['Data'][1]['Player'][1]
+    position = [struct.pack('>d', value).hex() for value in
+                (3.5, 64.0 + struct.unpack('>f', struct.pack('>f', 1.62))[0], .5)]
+    rotation = ['00000000', '40000000']
+    if (player['Dimension'] != [3, 0] or
+            player['Pos'] != [9, [6, [int(value, 16) for value in position]]] or
+            player['Rotation'] != [9, [5, [int(value, 16) for value in rotation]]] or
+            player['Motion'] != [9, [6, [0, 0, 0]]] or player['OnGround'] != [1, 1] or
+            player['Health'] != [2, 20] or player['Inventory'] != [9, [10, []]]):
+        raise RuntimeError("Exact independently decoded saved Torch camera input")
+    raw = parser.read(region_path)
+    location = struct.unpack_from('>I', raw, 0)[0]
+    sector, count = location >> 8, location & 255
+    at = sector * 4096
+    if sector < 2 or count < 1 or (sector + count) * 4096 > len(raw):
+        raise RuntimeError("Actual authored Torch Chunk allocation")
+    length = struct.unpack_from('>I', raw, at)[0]
+    if not 1 < length <= count * 4096 - 4 or raw[at + 4] != 2:
+        raise RuntimeError("Actual authored Torch Chunk compression extent")
+    level = parser.inflate(raw[at + 5:at + 4 + length], 15)['Level'][1]
+    base = (3 << 11) | (3 << 7)
+    if (level['xPos'] != [3, 0] or level['zPos'] != [3, 0] or
+            level['TerrainPopulated'] != [1, 1] or
+            level['Blocks'][0] != 7 or len(level['Blocks'][1]) != 32768 or
+            level['Blocks'][1][base + 63:base + 66] != bytes([2, 12, 50]) or
+            level['Data'][0] != 7 or len(level['Data'][1]) != 16384 or
+            level['Data'][1][(base + 64) // 2] != 0x50 or
+            level['SkyLight'][1][(base + 64) // 2] != 0xf0 or
+            level['HeightMap'][1][3 * 16 + 3] != 65):
+        raise RuntimeError("Independently decoded saved Grass/Sand/Torch5 source operands")
+    return {'position_bits': position, 'rotation_bits': rotation,
+            'feet_y_bits': struct.pack('>d', 64.).hex(),
+            'offset_bits': struct.pack('>f', 1.62).hex(),
+            'sand': [3, 64, 3, 12], 'torch': [3, 65, 3, 50, 5]}
+
+
+def torch_receipts(stdout, pose_input):
+    rows = stdout.splitlines()
+    pose_expected = ("WORLD_TORCH_POSE input=saved-player source-loaded=1 camera=player position=" +
+                     ','.join(pose_input['position_bits']) + " rotation=" +
+                     ','.join(pose_input['rotation_bits']) + " feet=" + pose_input['feet_y_bits'] +
+                     " offset=" + pose_input['offset_bits'] + " hit=3,65,3")
+    if [line for line in rows if line.startswith("WORLD_TORCH_POSE ")] != [pose_expected]:
+        raise RuntimeError("Actual Torch Player/camera must equal the independently decoded saved input")
+    if [line for line in rows if line.startswith("WORLD_TORCH_PARTICLES ")] != [
+            "WORLD_TORCH_PARTICLES source-callback=1 smoke=1 flame=1 same-manager=1 "
+            "world-random-unchanged=1"]:
+        raise RuntimeError("Actual Torch callback must publish Smoke and Flame through the same DN")
+    particles = [line for line in rows if line.startswith("WORLD_TORCH_PARTICLE_DRAW ")]
+    drawn = re.fullmatch(
+        r"WORLD_TORCH_PARTICLE_DRAW entry=world-draw smoke=1 flame=1 same-identities=1 returned=1 "
+        r"visited=(?P<visited>[0-9]+) partial=(?P<partial>[0-9a-f]{8}) "
+        r"performance-mode=(?P<performance>-?[0-9]+) px-I=(?P<clock>-?[0-9]+) "
+        r"deadline=(?P<deadline>-?[0-9]+) timer-unchanged=1 loop-counts-unchanged=1 "
+        r"loop-clocks-unchanged=1 retired=1",
+        particles[0]) if len(particles) == 1 else None
+    if drawn is None or int(drawn['visited']) < 2:
+        raise RuntimeError("Both published identities must be visited by one returned entered World draw")
+    performance, clock, deadline = (int(drawn[key]) for key in ('performance', 'clock', 'deadline'))
+    target = 120 if performance == 1 else 40 if performance == 2 else 200
+    derived_deadline = 0 if performance == 0 else (clock + 1_000_000_000 // target)
+    derived_deadline = (derived_deadline + (1 << 63)) % (1 << 64) - (1 << 63)
+    if (not -(1 << 31) <= performance < (1 << 31) or
+            not -(1 << 63) <= clock < (1 << 63) or
+            not -(1 << 63) <= deadline < (1 << 63) or deadline != derived_deadline):
+        raise RuntimeError("Entered World draw must use the source Settings/PX deadline")
+    summary = [line for line in rows if line.startswith("WORLD_TORCH ")]
+    receipt = re.fullmatch(
+        r"WORLD_TORCH input=pre-bootstrap-region sand=12 torch=50 at=3,65,3 pass=0 "
+        r"metadata=5 vertices=60 torch-vertices=30 exact-position-uv-color=1 light-before=(?P<light>[0-9]+) "
+        r"frames=(?P<frames>[0-9]+) reuse-frames=(?P<reuse>[0-9]+) "
+        r"recompile-frames=(?P<recompile>[0-9]+) list=(?P<list>[0-9]+) "
+        r"same-world-and-registry=1 returned-world-hud=1 reused-definition=1 "
+        r"world-light-notification=1 dirty-recompiled=1 source-bounds-preserved=1",
+        summary[0]) if len(summary) == 1 else None
+    if (receipt is None or not 0 <= int(receipt['light']) <= 15 or
+            not 1 <= int(receipt['recompile']) <= 16 or not 1 <= int(receipt['reuse']) <= 16 or
+            not 4 <= int(receipt['frames']) <= 48 or int(receipt['list']) <= 0):
+        raise RuntimeError("Torch exact section/UV/color, returned World/HUD and real dirty/recompile receipt")
+    steps = [line for line in rows if line.startswith("WORLD_TORCH_STEP ")]
+    if len(steps) != int(receipt['reuse']):
+        raise RuntimeError("Bounded actual Torch reuse observation inventory")
+    for attempt, step in enumerate(steps, 1):
+        observed = re.fullmatch(rf"WORLD_TORCH_STEP stage=reuse attempt={attempt} same-list=1 "
+                                r"same-definition=([01]) same-bytes=([01])", step)
+        final = attempt == len(steps)
+        if (observed is None or (observed[1] == '1') != final or final and observed[2] != '1'):
+            raise RuntimeError("Every Torch section must be validated through actual immutable list reuse")
+    cleanup = [line for line in rows if line.startswith("WORLD_SELECTION mode=load-torch cleanup=")]
+    if len(cleanup) != 1 or re.fullmatch(
+            r"WORLD_SELECTION mode=load-torch cleanup=1 checks=[1-9][0-9]*", cleanup[0]) is None:
+        raise RuntimeError("Loaded Torch checked native ownership retirement")
+
+
+def chunk_record(chunk_x, chunk_z, marker=57, cactus=False, torch=False):
     blocks = bytearray(32768)
+    data = bytearray(16384)
     skylight = bytearray(16384)
     heights = bytearray([64] * 256)
     for x in range(16):
@@ -553,10 +665,18 @@ def chunk_record(chunk_x, chunk_z, marker=57, cactus=False):
             blocks[base + 64], blocks[base + 65] = 12, 81
             skylight[(base + 64) // 2] = 0xf0
             heights[3 * 16 + 3] = 65
+        if torch:
+            if cactus:
+                raise RuntimeError("Independent Cactus and Torch saved input scopes")
+            base = (3 << 11) | (3 << 7)
+            blocks[base + 64], blocks[base + 65] = 12, 50
+            data[(base + 64) // 2] = 0x50
+            skylight[(base + 64) // 2] = 0xf0
+            heights[3 * 16 + 3] = 65
     level = tag(3, "xPos", struct.pack(">i", chunk_x))
     level += tag(3, "zPos", struct.pack(">i", chunk_z))
     level += tag(4, "LastUpdate", struct.pack(">q", 0))
-    for name, values in (("Blocks", blocks), ("Data", bytes(16384)),
+    for name, values in (("Blocks", blocks), ("Data", data),
                          ("SkyLight", skylight), ("BlockLight", bytes(16384)),
                          ("HeightMap", heights)):
         level += tag(7, name, struct.pack(">i", len(values)) + values)
@@ -570,7 +690,7 @@ def chunk_record(chunk_x, chunk_z, marker=57, cactus=False):
     return record + bytes(sectors * 4096 - len(record)), sectors
 
 
-def saved_regions(directory, generate, marker=57, cactus=False):
+def saved_regions(directory, generate, marker=57, cactus=False, torch=False):
     # The default UI profile reads all 289 existing Chunks. The optional
     # generation profile retains one saved marker Chunk and generates its
     # surroundings through the same source path.
@@ -578,7 +698,7 @@ def saved_regions(directory, generate, marker=57, cactus=False):
                                             for z in range(-8, 9)]
     regions = {}
     for x, z in coordinates:
-        body, sectors = chunk_record(x, z, marker, cactus=cactus)
+        body, sectors = chunk_record(x, z, marker, cactus=cactus, torch=torch)
         region = regions.setdefault((x >> 5, z >> 5), bytearray(8192))
         offset = len(region) // 4096
         index = (x & 31) + (z & 31) * 32
@@ -788,7 +908,7 @@ def main():
     parser.add_argument("--artifacts", type=Path, required=True)
     parser.add_argument("--mode", action="append",
                         choices=("empty", "populated", "large", "double", "load", "generate",
-                                 "load-terminal", "load-partial", "repeat", "load-light", "load-cactus", "animals", "creatures",
+                                 "load-terminal", "load-partial", "repeat", "load-light", "load-cactus", "load-torch", "animals", "creatures",
                                  "creatures-slime", "creatures-creeper", "remaining-mobs",
                                  "remaining-wolf", "remaining-zombie", "remaining-skeleton",
                                  "save-title", "save-title-session", "reload-cycle"))
@@ -812,13 +932,14 @@ def main():
         creature = mode in CREATURE_PROFILES
         remaining = mode in REMAINING_PROFILES
         cactus = mode == "load-cactus"
+        torch = mode == "load-torch"
         reload_cycle = mode == "reload-cycle"
         save_title = mode in ("save-title", "save-title-session") or reload_cycle
         evidence = Path(tempfile.mkdtemp(prefix=mode + "-", dir=artifacts))
         with tempfile.TemporaryDirectory(prefix="mc-rq-loop-") as work:
             appdata = Path(work)
             game = appdata / ".minecraft"
-            if mode == "repeat" or cactus or animal or creature or remaining or save_title:
+            if mode == "repeat" or cactus or torch or animal or creature or remaining or save_title:
                 repeat_statistics(game, assets)
             if save_title:
                 # Declared pre-bootstrap input; source kv.a() parses the real file.
@@ -831,12 +952,12 @@ def main():
             if mode == "large":
                 worlds = [(f"world{i:02d}", f"Scroll world {i:02d}", 1304000000000, 19132)
                           for i in range(16)]
-            elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or animal or creature or remaining or save_title:
+            elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or animal or creature or remaining or save_title:
                 worlds = [
                     ("older", "Old world", 1303000000000, 19132),
                     ("bravo", "", 1304000000000, 0 if reload_cycle else 19132),
                     ("alpha", "Alpha world", 1304000000000,
-                     19132 if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or animal or creature or remaining or save_title else 0),
+                     19132 if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or animal or creature or remaining or save_title else 0),
                 ]
             else:
                 worlds = []
@@ -848,13 +969,14 @@ def main():
                     gzip.compress(metadata(display, played, version,
                                            partial=mode == "load-partial" and folder == "alpha",
                                            player_score=7 if reload_cycle and folder == "alpha" else None,
-                                           cactus_player=cactus and folder == "alpha"),
+                                           cactus_player=cactus and folder == "alpha",
+                                           torch_player=torch and folder == "alpha"),
                                   mtime=0))
                 (directory / "preserve-chunk.dat").write_bytes(b"authored untouched chunk")
-            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or animal or creature or remaining or save_title:
+            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or animal or creature or remaining or save_title:
                 regions = saves / "alpha" / "region"
                 regions.mkdir()
-                saved_regions(regions, generate=mode == "generate", cactus=cactus)
+                saved_regions(regions, generate=mode == "generate", cactus=cactus, torch=torch)
             if reload_cycle:
                 regions = saves / "older" / "region"
                 regions.mkdir()
@@ -864,6 +986,10 @@ def main():
             if cactus:
                 pose_input = cactus_pose_input(evidence / "before/alpha/level.dat")
                 (evidence / "cactus-input.json").write_text(json.dumps(pose_input, indent=2) + "\n", encoding="utf-8")
+            if torch:
+                pose_input = torch_scene_input(evidence / "before/alpha/level.dat",
+                                               evidence / "before/alpha/region/r.0.0.mcr")
+                (evidence / "torch-input.json").write_text(json.dumps(pose_input, indent=2) + "\n", encoding="utf-8")
             environment = os.environ.copy()
             environment["APPDATA"] = str(appdata)
             if save_title:
@@ -990,6 +1116,8 @@ def main():
                 if len(cleanup) != 1 or re.fullmatch(
                         r"WORLD_SELECTION mode=load-cactus cleanup=1 checks=[1-9][0-9]*", cleanup[0]) is None:
                     raise RuntimeError("Loaded Cactus native terminal ownership cleanup receipt")
+            if torch:
+                torch_receipts(result.stdout, pose_input)
             after = snapshot(saves)
             if save_title:
                 decoded = (reload_decode(evidence, result.stdout, process_first) if reload_cycle else
@@ -1001,7 +1129,7 @@ def main():
                         rf"WORLD_SELECTION mode={mode} cleanup=1 checks=[1-9][0-9]*", cleanup[0]) is None:
                     raise RuntimeError("Save/title native terminal ownership cleanup receipt")
                 (evidence / "report.json").write_text(json.dumps(decoded, indent=2) + "\n", encoding="utf-8")
-            elif mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or animal or creature or remaining:
+            elif mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or animal or creature or remaining:
                 if any(after.get(name) != digest for name, digest in before.items()):
                     raise RuntimeError("World loading changed pre-existing fixture bytes")
                 if not (saves / "alpha" / "session.lock").is_file():
@@ -1033,6 +1161,10 @@ def main():
     if all(mode == "load-cactus" for mode in modes):
         print("Native loaded Cactus: authored saved Sand/Cactus, actual 60-vertex section, "
               "returned World/HUD frames, list reuse and WorldAccess dirty recompile passed; "
+              "no original pixels or general play claim")
+    elif all(mode == "load-torch" for mode in modes):
+        print("Native loaded Torch: saved Sand/Torch5 and Player camera, exact30 Torch vertices/UV/white color, "
+              "returned World/HUD and selection outline, list reuse and WorldAccess dirty recompile passed; "
               "no original pixels or general play claim")
     elif all(mode == "reload-cycle" for mode in modes):
         print("Native actual same/different World reload: ten source UI epochs, failed successor, actual entry snapshots, "

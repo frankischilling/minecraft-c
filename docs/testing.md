@@ -1,5 +1,80 @@
 # Test scope and reproduction
 
+`client.torch_world` passes 132 exact input/observation rows covering 66 original
+calls and 14,640 appended words. Its native own-backing, FP admission and cleanup
+receipts stay separate from original provenance. The original packet retains
+twelve agreeing complete stdout streams, two observer-deadline failures with
+exact trace prefixes, and a fresh public two-ordinary/one-JDI cohort. Completed
+JDI evidence includes 286 EW queries,235 static reads,13 live Code pins and all
+raw selected NW words. See [Torch World rendering](client/torch-world.md).
+
+The Windows 167-action rebuild passes after the factory and draw corrections.
+The focused ten-test cohort passes in 5.18 seconds, including Torch World, both
+Torch packets, Smoke/Flame constructor/ticks and exact native draw, the existing
+Explosion packet/constructor/draw, EffectRenderer draw and DK. Native draw
+matches 18 rows, all 48 words per successful sprite and 25,165,440 own-inactive
+words, with XN61/QU46/SN118/QU32 failure prefixes. The later full build after
+the scene-helper change passes 33 actions. Formatting still covers 2,021
+C/header/fragment files with clang-format 18.
+
+The final Windows `client.world_selection_torch` scene passes 1,624 checks in
+13.87 seconds (13.91 seconds CTest total). Its separately labelled entered
+World draw uses actual Timer partial, performance setting 1 and independently
+derived live PX.I/deadline operands. DN visits all four entries and both
+recorded Smoke/Flame identities exactly once. The World call returns and
+retires with full Timer bytes, loop frame/tick counts and loop clocks unchanged.
+The caller then advances ordinary source execution: five returned World/HUD
+frames include two reuse frames and one dirty recompile. The section retains
+60 vertices,30 from Torch, source bounds and protected save bytes; `cleanup=1`
+returns. This does not claim both recorded new identities are drawn in a later
+full run-loop frame. Timer catch-up can legitimately expire Smoke first.
+
+Earlier 13.15-second/1,454-check and 13.50-second scene passes, stronger ordinary-
+frame identity failures, the missing-factory failure and deterministic native
+fixture failures remain retained under their original premises. The entered
+World proof and ordinary frame continuation have distinct scopes.
+
+The [original particle packet](../tests/reference/entity/torch_particles/README.md)
+records 37 constructor roots with genuine independent entropy and 30 deterministic
+components across three VMs: 12 ticks, 8 successful draws, 4 draw failures and 6
+Flame brightness calls. Original ticks declare no-clip=true. Real World owners
+in the native fixture do not turn that cohort into a collision comparison.
+Original pixels and general FPS remain unqualified.
+
+The final full public cohorts pass 660/660 on Windows MSVC Release and 653/653
+on Linux Clang 18 Debug ASan/UBSan. CTest wall times are 338.89 and 162.88 seconds,
+respectively. Both retain 4,548 unchanged source inputs and 532 unchanged products;
+Windows also retains 823 assets. Linux uses Xvfb/software GL with leak detection
+and halt-on-error. All 1,445 runtime files match the current Windows copy.
+The separate guarded intervals are 342.931 seconds on Windows and 221.573 seconds
+on Linux; the latter includes post-run hashing. These intervals are not CTest
+or FPS measurements. The runtime/C fixture bytes remain qualified while later
+documentation and source-binding updates receive separate checks.
+
+The four fresh Workbench shutdown profiles pass 8,137 native checks in 59.92
+seconds: clean 1,826, Container 1,899, Player 2,254 and World 2,158. They retain 1,955
+selected inputs (1,445 runtime, 508 harness and 2 products), 413 resources and
+unchanged stopped/closed saves. All 57 packet controls pass in 1.679 seconds;
+public/current/private/history and cohort-log audits pass. The preceding
+8,337-check/61.47-second Cactus receipt remains historical.
+
+Leaf, Sand and TallGrass scenes pass together in 33.02 seconds: 8.05, 12.57 and
+12.36 seconds individually. Each retains 1,956 selected inputs and 413 resources.
+Their final checks are 527, 580 and 2,073; stopped/closed saves remain identical
+across 12, 13 and 13 files respectively, with `cleanup=1` and windows absent.
+
+Strict GCC 13.3 syntax checks pass all 27 changed translation units across 28
+actual configured option sets, with no failed or unconfigured units. All 2,203
+C/header/CMake inputs stay unchanged on both hosts. clang-format 18 checks 2,021
+C/header/fragment files. The source-binding audit before this documentation
+follow-up covers 11,051 entries in 4,547 files; binding refresh has its own check.
+
+The preceding [Cactus hosted run at `193192e1`](https://github.com/frankischilling/minecraft-c/actions/runs/41678998367)
+passes all four jobs:608 Windows tests in 335.75 seconds, 665 GCC tests in 498.34
+seconds, 665 Clang tests in 499.58 seconds, and formatting for 2,015 files.
+Controller mirrors and lifecycle checks pass on all three native hosts. This
+hosted result has its own commit scope and does not qualify the new Torch work.
+
 `client.cactus_world` matches all 25 original Cactus wrapper/body observations
 and their declared texture inputs, including 5,232 appended words, reached
 nullable failures and unchanged fields. `tools.cactus_world_packet` runs 19
@@ -7,9 +82,9 @@ controls over three agreeing original VMs, 669 source EW query entries, 444
 ordered translation stores and live Code pins. Native outer-row equality is
 separate from an unimplemented native per-query trace comparison.
 
-`client.chunk_compile` now checks an actual Sand/Cactus section's 66 vertices,
-list reuse, dirty recompile and the retained unsupported Torch prefix. The
-optional Windows `client.world_selection_cactus` authors a saved Player pose
+The Cactus checkpoint's `client.chunk_compile` checks an actual Sand/Cactus
+section's 66 vertices, list reuse, dirty recompile and its then-unsupported Torch
+prefix. The optional Windows `client.world_selection_cactus` authors a saved Player pose
 and real saved Block data, then checks picking, selection outline, visible
 60-vertex section, returned frames/HUD, reuse and actual WorldAccess recompile.
 Its isolated 1,484-check scene passes in 11.53 seconds with protected files and
@@ -80,7 +155,7 @@ documentation/source-binding changes are checked separately and do not change
 the tested runtime or C test sources. All eight changed C translation units
 pass strict GCC 13 syntax checks; formatting covers 2,013 C/header/fragments.
 
-The current rebuilt Windows Workbench cohort passes all four shutdown scenes
+The preceding Cactus Windows Workbench cohort passes all four shutdown scenes
 and 8,337 native checks in 61.47 seconds, retaining 1,948 selected inputs and
 413 resources. All 57 packet controls and the private/cohort-log audits pass. Leaf, Sand and Tall Grass source-input scenes pass in 29.48
 seconds total, retaining 1,949 selected inputs, 413 assets and unchanged
@@ -4637,7 +4712,7 @@ fresh test directories and retains its report under the build's
 `reference-plant-lifecycle` directory. See the [plant contract](world/plants.md)
 for implemented callbacks and remaining gameplay work.
 
-At the plant checkpoint, complete local suites pass183 MSVC, 185 GCC and 185
+At the plant checkpoint, complete local suites pass 183 MSVC, 185 GCC and 185
 Clang tests, 553 executions with zero failures, errors or skips. Each suite includes the optional original
 plant comparison; normal hosted builds omit those three archive-dependent tests.
 Native plant contracts pass17,595 checks per compiler, including two adjacent
@@ -5901,7 +5976,7 @@ Independent review also verifies the source Git objects and 634 current file
 hashes across the six new reports. See [cave evidence](reference/caves.md).
 
 The natural/protected units pass 2021631/2917405 checks and both helper suites
-pass18 guards per toolchain. Isolated native MSVC AddressSanitizer runs also
+pass 18 guards per toolchain. Isolated native MSVC AddressSanitizer runs also
 pass. Clang-format18 checks 50 C/header files; the native testing-disabled build
 produces the three libraries without Python or Java discovery. Public CI runs
 23 tests per compiler; integration results belong in [status](status.md).

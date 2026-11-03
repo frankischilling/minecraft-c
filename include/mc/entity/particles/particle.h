@@ -29,8 +29,8 @@ typedef enum mc_particle_throwable {
  * initial state is captured immediately before the actual first float call,
  * never derived from its final state or supplied as constructor entropy. */
 typedef struct mc_particle_constructor_random {
-    double math_values[8]; /* XW's five, followed by GY's three when reached. */
-    float own_values[8];   /* XW's four, followed by GY's four when reached. */
+    double math_values[8]; /* XW5, followed by GY3, XN2 or QU1 when reached. */
+    float own_values[10];  /* XW4, then GY4 or QU6; the existing8 prefix is stable. */
     size_t math_count, own_count;
     bool own_initial_stored;
     uintptr_t own_identity;
@@ -55,7 +55,7 @@ typedef struct mc_particle_error {
     mc_particle_constructor_random constructor_random;
 } mc_particle_error;
 
-/* PB-only full tick diagnostics belong in caller-owned/heap storage. The
+/* Full moving-particle tick diagnostics belong in caller-owned/heap storage. The
  * selected movement cause is a complete value; its WorldAccess receipts are
  * borrowed from the live producer graph and must be captured by a retained
  * parent before that graph can retire. No movement pointer escapes scratch. */
@@ -77,6 +77,14 @@ typedef struct mc_pickup_particle_fields {
     float r;
 } mc_pickup_particle_fields;
 
+typedef struct mc_smoke_particle_fields {
+    float a;
+} mc_smoke_particle_fields;
+
+typedef struct mc_flame_particle_fields {
+    float a;
+} mc_flame_particle_fields;
+
 typedef struct mc_particle_snapshot {
     mc_entity_phase phase;
     unsigned int particle_pc, pickup_pc;
@@ -87,6 +95,8 @@ typedef struct mc_particle_snapshot {
     const mc_block *digging_block;
     const mc_registry_classes *digging_registry; /* Native Block lifetime. */
     int32_t digging_face;
+    mc_smoke_particle_fields smoke;
+    mc_flame_particle_fields flame;
 } mc_particle_snapshot;
 
 /* Caller-owned full initialization; never consumes an owning child receipt. */
@@ -118,6 +128,9 @@ mc_entity_status mc_pickup_particle_construct(mc_entity *raw, mc_world_runtime *
 mc_entity_status mc_pickup_particle_tick(mc_entity *particle, mc_particle_error *error);
 mc_entity_status mc_pickup_particle_layer(const mc_entity *particle, int32_t *out);
 bool mc_particle_read(const mc_entity *particle, mc_particle_snapshot *out);
+/* Concrete c_ virtual with no source phase/field read; layer0 XN/QU/GY,
+ * layer1 QM, layer2 PB and layer3 EM. Canonical native storage is required. */
+mc_entity_status mc_particle_layer(const mc_entity *, int32_t *);
 
 /* Genuine client PB, with XW and SN ancestors. Allocate RAW before evaluating
  * the actual constructor operands. Construction irreversibly preserves IDs,
@@ -187,5 +200,38 @@ mc_entity_status mc_explosion_particle_tick(mc_entity *, mc_registry_classes *,
                                             const mc_entity_move_limits *,
                                             mc_item_particle_tick_error *);
 mc_entity_status mc_explosion_particle_layer(const mc_entity *, int32_t *);
+
+/* Actual XN wrappers: the6D constructor delegates with scale1;6DF invokes
+ * XW with zero velocity before adding the caller's velocity. Seven shared
+ * Math draws and four private floats are consumed, without injected entropy.
+ * XN.a is the reached original size; it remains distinct from mutable XW.g.
+ * The same RAW, nullable same-profile World, reached Math, strict FP, required
+ * disjoint error and irreversible FAILED/READY ownership contract applies. */
+mc_entity_status mc_smoke_particle_allocate(mc_entity_classes *, mc_entity **, mc_entity_error *);
+mc_entity_status mc_smoke_particle_construct(mc_entity *, mc_world_runtime *, mc_math_classes *,
+                                             double, double, double, double, double, double,
+                                             mc_particle_error *);
+mc_entity_status mc_smoke_particle_construct_scaled(mc_entity *, mc_world_runtime *,
+                                                    mc_math_classes *, double, double, double,
+                                                    double, double, double, float,
+                                                    mc_particle_error *);
+mc_entity_status mc_smoke_particle_tick(mc_entity *, mc_registry_classes *,
+                                        const mc_entity_move_limits *,
+                                        mc_item_particle_tick_error *);
+mc_entity_status mc_smoke_particle_layer(const mc_entity *, int32_t *);
+
+/* Actual QU: six private jitter draws affect constructor locals only; Entity
+ * position stays the XW input. The full receipt contains six Math values and
+ * ten private floats. QU.a preserves its original size, icon48 and no-clip.
+ * Construction shares the XW ownership/Math contract above. Ordinary Entity
+ * release handles RAW, FAILED and READY allocations without a source retry. */
+mc_entity_status mc_flame_particle_allocate(mc_entity_classes *, mc_entity **, mc_entity_error *);
+mc_entity_status mc_flame_particle_construct(mc_entity *, mc_world_runtime *, mc_math_classes *,
+                                             double, double, double, double, double, double,
+                                             mc_particle_error *);
+mc_entity_status mc_flame_particle_tick(mc_entity *, mc_registry_classes *,
+                                        const mc_entity_move_limits *,
+                                        mc_item_particle_tick_error *);
+mc_entity_status mc_flame_particle_layer(const mc_entity *, int32_t *);
 
 #endif

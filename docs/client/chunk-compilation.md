@@ -5,10 +5,12 @@ constructs its padded ChunkCache and compiles standard Block geometry through
 the actual RenderBlocks and Tessellator. Empty and standard Block sections
 complete. Current frame source calls real
 [terrain submission](terrain-submission.md) at `px.a(FJ)V:486`; a normal N return
-continues to the explicit U.b496 lighting-enable dependency. The specified
-Windows MSVC Debug submission profiles pass; hosted qualification is pending.
-Specialized Block shapes and TileEntity rendering remain unfinished;
-this does not establish a playable frame. See the
+reached the explicit U.b496 lighting-enable dependency in those historical
+submission profiles. Later loaded native scenes continue through World/HUD.
+Cactus commit `193192e1` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/41678998367).
+Dedicated [Cactus](cactus-world.md) and [Torch](torch-world.md) sections now
+complete; other specialized Block shapes and TileEntity rendering remain
+unfinished. These finite controls do not establish unrestricted play. See the
 [RenderBlocks contract](render-blocks.md) for geometry and finite comparisons.
 
 ## Selection and source effects

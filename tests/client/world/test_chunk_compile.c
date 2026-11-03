@@ -220,6 +220,176 @@ static bool cactus_compile_controls(picking_fixture *f, mc_client_render_global 
     return true;
 }
 
+/* Independent source shape: cap and four crossing side quads. DK's NW
+ * translation rebases (1,65,1) to (0,1,0); no Block bounds enter this shape. */
+static bool torch_list(mc_client_display *display, int32_t id, int32_t metadata,
+                       const uint8_t **identity) {
+    mc_client_source_list_state list;
+    mc_client_source_batch_view batch;
+    CHECK(mc_client_display_list_inspect(display, id, &list) && list.defined && !list.building &&
+          list.commands == 7 && list.draws == 1 && list.vertices == 66 &&
+          mc_client_display_list_batch(display, id, 0, &batch) && batch.vertices == 66 &&
+          batch.mode == 4 && batch.arrays == 7 && batch.byte_count == 66u * 32u);
+    static const double torch_shape[20][3] = {
+        {.4375, .625, .4375}, {.4375, .625, .5625}, {.5625, .625, .5625}, {.5625, .625, .4375},
+        {.4375, 1, 0},        {.4375, 0, 0},        {.4375, 0, 1},        {.4375, 1, 1},
+        {.5625, 1, 1},        {.5625, 0, 1},        {.5625, 0, 0},        {.5625, 1, 0},
+        {0, 1, .5625},        {0, 0, .5625},        {1, 0, .5625},        {1, 1, .5625},
+        {1, 1, .4375},        {1, 0, .4375},        {0, 0, .4375},        {0, 1, .4375}};
+    static const size_t torch_triangles[6] = {0, 1, 2, 0, 2, 3};
+    const double tilt = (double).4f, wall_offset = .5 - tilt;
+    const double tilt_x = metadata == 1 ? -tilt : metadata == 2 ? tilt : 0;
+    const double tilt_z = metadata == 3 ? -tilt : metadata == 4 ? tilt : 0;
+    const double dx = metadata == 1 ? -wall_offset : metadata == 2 ? wall_offset : 0;
+    const double dz = metadata == 3 ? -wall_offset : metadata == 4 ? wall_offset : 0;
+    const double dy = metadata >= 1 && metadata <= 4 ? (double).2f : 0;
+    for (size_t vertex_index = 0; vertex_index < 66; ++vertex_index) {
+        float vertex[5];
+        memcpy(vertex, batch.bytes + vertex_index * 32u, sizeof(vertex));
+        if (vertex_index < 36) {
+            CHECK(vertex[0] >= 0 && vertex[0] <= 1 && vertex[1] >= 0 && vertex[1] <= 1 &&
+                  vertex[2] >= 0 && vertex[2] <= 1 && vertex[3] >= .125f && vertex[3] < .1875f &&
+                  vertex[4] >= .0625f && vertex[4] < .125f);
+            continue;
+        }
+        const size_t torch_vertex = vertex_index - 36;
+        const size_t torch_quad = torch_vertex / 6,
+                     torch_corner = torch_triangles[torch_vertex % 6];
+        const double *torch_point = torch_shape[torch_quad * 4 + torch_corner];
+        CHECK(vertex[0] == (float)(dx + torch_point[0] + tilt_x * (1 - torch_point[1])) &&
+              vertex[1] == (float)(1 + dy + torch_point[1]) &&
+              vertex[2] == (float)(dz + torch_point[2] + tilt_z * (1 - torch_point[1])));
+        const bool high_u = torch_corner >= 2, high_v = torch_corner == 1 || torch_corner == 2;
+        const float u0 = torch_quad == 0 ? 7.0f / 256 : 0;
+        const float u1 = torch_quad == 0 ? 9.0f / 256 : 15.99f / 256;
+        const float v0 = torch_quad == 0 ? 86.0f / 256 : 5.0f / 16;
+        const float v1 = torch_quad == 0 ? 88.0f / 256 : (80.0f + 15.99f) / 256;
+        uint32_t packed_color;
+        memcpy(&packed_color, batch.bytes + vertex_index * 32u + 20u, sizeof(packed_color));
+        CHECK(vertex[3] == (high_u ? u1 : u0) && vertex[4] == (high_v ? v1 : v0) &&
+              packed_color == UINT32_MAX);
+    }
+    *identity = batch.bytes;
+    return true;
+}
+
+static bool torch_compile_controls(picking_fixture *f, mc_client_render_global *n,
+                                   mc_client_source_dk *dk, int32_t base) {
+    const size_t sand_index = (1u << 11u) | (1u << 7u) | 64u;
+    const size_t torch_index = sand_index + 1u;
+    const uint8_t previous_sand = f->chunks[0]->data->blocks[sand_index];
+    const uint8_t previous_torch = f->chunks[0]->data->blocks[torch_index];
+    const uint8_t previous_metadata = f->chunks[0]->data->metadata[torch_index / 2u];
+    const mc_block *sand = NULL, *torch = NULL;
+    mc_block_render_description description;
+    mc_registry_block_view registry;
+    CHECK(mc_registry_block_get(f->base.registry, 12, &sand, NULL) == MC_REGISTRY_OK &&
+          mc_registry_block_get(f->base.registry, 50, &torch, NULL) == MC_REGISTRY_OK &&
+          sand != NULL && torch != NULL && mc_block_render_opaque(sand) &&
+          !mc_block_render_opaque(torch) &&
+          mc_block_render_describe(torch, &description) == MC_REGISTRY_OK &&
+          description.type == 2 && description.pass == 0 &&
+          mc_registry_classes_inspect_blocks(f->base.registry, &registry, NULL) == MC_REGISTRY_OK &&
+          registry.s != NULL && registry.s[50] > 0);
+    const mc_block_fields before = *mc_block_fields_get(torch);
+    CHECK(before.bn == 50 && before.bm == 80);
+    f->chunks[0]->data->blocks[sand_index] = 12;
+    f->chunks[0]->data->blocks[torch_index] = 50;
+    dk->fields.g = 2;
+    dk->fields.r = 66;
+    const size_t bindings = f->base.world->persistent_bindings;
+    mc_client_render_global_error error;
+    mc_client_render_global_update_call *call = NULL;
+    mc_client_render_global_update_state state;
+    for (int32_t metadata = 1; metadata <= 5; ++metadata) {
+        CHECK(mc_chunk_nibbles_set(f->chunks[0]->data->metadata, MC_CHUNK_NIBBLE_BYTES, 1, 65, 1,
+                                   metadata));
+        int32_t actual_id = -1, actual_metadata = -1;
+        mc_world_storage_error world_error;
+        CHECK(mc_world_runtime_block_get(f->base.world, 1, 65, 1, &actual_id, &world_error) ==
+                  MC_WORLD_STORAGE_OK &&
+              actual_id == 50 &&
+              mc_world_runtime_metadata_get(f->base.world, 1, 65, 1, &actual_metadata,
+                                            &world_error) == MC_WORLD_STORAGE_OK &&
+              actual_metadata == metadata);
+        uintptr_t published = 0;
+        uint8_t published_bytes[66u * 32u];
+        for (size_t attempt = 0; attempt < 2; ++attempt) {
+            mc_source_dk_dirty(dk);
+            CHECK(dk->fields.u && dk->last_store_pc == 2 &&
+                  mc_render_global_pointer_append(n, n->fields.m, dk,
+                                                  (mc_client_graphics_site){"n", "a", "()V", 571},
+                                                  &error) &&
+                  mc_client_render_global_update_begin(n, f->actors[0], false, &call, &error) ==
+                      MC_CLIENT_RENDER_GLOBAL_OK &&
+                  mc_client_render_global_update_inspect(call, &state) && state.returned &&
+                  state.compile_attempts == 1 && state.completed_compiles == 1 &&
+                  state.remaining_count == 0 && state.compilation != NULL);
+            CHECK(state.compilation->returned && state.compilation->pass == 0 &&
+                  state.compilation->pass_rendered && state.compilation->block_id == 0 &&
+                  state.compilation->render_blocks != NULL &&
+                  state.compilation->render_blocks->returned &&
+                  state.compilation->render_blocks->source_pc == 114 &&
+                  !state.compilation->render_blocks->failed && !state.compilation->list_open &&
+                  !state.compilation->matrix_pushed && !state.compilation->tessellator_started &&
+                  !dk->fields.u && dk->fields.E && !dk->fields.p[0] && dk->fields.p[1]);
+            const uint8_t *current = NULL;
+            CHECK(torch_list(n->display, base, metadata, &current));
+            if (attempt != 0)
+                CHECK((uintptr_t)current != published);
+            published = (uintptr_t)current;
+            memcpy(published_bytes, current, sizeof(published_bytes));
+            printf(
+                "DK_TORCH stage=%s block=%d metadata=%d cv-return=114 pass=0 vertices=66 "
+                "torch-vertices=30 exact-position-uv-color=1 dirty=0 pass0-empty=0 pass1-empty=1\n",
+                attempt == 0 ? "compile" : "dirty", actual_id, actual_metadata);
+            CHECK(mc_client_render_global_update_retire(&call, &error) ==
+                      MC_CLIENT_RENDER_GLOBAL_OK &&
+                  f->base.world->persistent_bindings == bindings);
+            if (attempt == 0) {
+                CHECK(mc_client_render_global_update_begin(n, f->actors[0], false, &call, &error) ==
+                          MC_CLIENT_RENDER_GLOBAL_OK &&
+                      mc_client_render_global_update_inspect(call, &state) && state.returned &&
+                      state.compile_attempts == 0 && state.completed_compiles == 0 &&
+                      state.compilation == NULL && state.remaining_count == 0 && !dk->fields.u &&
+                      torch_list(n->display, base, metadata, &current) &&
+                      (uintptr_t)current == published &&
+                      memcmp(published_bytes, current, sizeof(published_bytes)) == 0);
+                printf(
+                    "DK_TORCH stage=reuse metadata=%d attempts=0 same-definition=1 vertices=66\n",
+                    metadata);
+                CHECK(mc_client_render_global_update_retire(&call, &error) ==
+                      MC_CLIENT_RENDER_GLOBAL_OK);
+            }
+        }
+        const mc_block_fields *after = mc_block_fields_get(torch);
+        mc_client_nw_state nw;
+        CHECK(after->bs == before.bs && after->bt == before.bt && after->bu == before.bu &&
+              after->bv == before.bv && after->bw == before.bw && after->bx == before.bx &&
+              mc_client_nw_inspect(f->graphics, &nw) && !nw.fields.w && nw.fields.s == 0 &&
+              nw.fields.t == 0 && nw.fields.u == 0);
+    }
+    f->chunks[0]->data->blocks[sand_index] = previous_sand;
+    f->chunks[0]->data->blocks[torch_index] = previous_torch;
+    f->chunks[0]->data->metadata[torch_index / 2u] = previous_metadata;
+    dk->fields.g = 1;
+    dk->fields.r = 65;
+    mc_source_dk_dirty(dk);
+    CHECK(mc_render_global_pointer_append(
+              n, n->fields.m, dk, (mc_client_graphics_site){"n", "a", "()V", 571}, &error) &&
+          mc_client_render_global_update_begin(n, f->actors[0], false, &call, &error) ==
+              MC_CLIENT_RENDER_GLOBAL_OK &&
+          mc_client_render_global_update_inspect(call, &state) && state.returned &&
+          state.completed_compiles == 1 && !dk->fields.u);
+    mc_client_source_list_state restored;
+    CHECK(mc_client_display_list_inspect(n->display, base, &restored) && restored.defined &&
+          !restored.building && restored.commands == 7 && restored.draws == 1 &&
+          restored.vertices == 36 &&
+          mc_client_render_global_update_retire(&call, &error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+          f->base.world->persistent_bindings == bindings);
+    return true;
+}
+
 static bool compile_controls(picking_fixture *f) {
     mc_client_render_global *n = NULL;
     mc_client_render_global_error error;
@@ -332,9 +502,15 @@ static bool compile_controls(picking_fixture *f) {
     CHECK(mc_client_render_global_update_retire(&call, &error) == MC_CLIENT_RENDER_GLOBAL_OK);
     CHECK(f->base.world->persistent_bindings == bindings);
     CHECK(cactus_compile_controls(f, n, dk, base));
+    CHECK(torch_compile_controls(f, n, dk, base));
     /* A remaining family still retains a real failed compile prefix. Native
      * cleanup preserves both the earlier list and the unfinished definition. */
-    f->chunks[0]->data->blocks[index] = 50;
+    const mc_block *fire = NULL;
+    mc_block_render_description fire_description;
+    CHECK(mc_registry_block_get(f->base.registry, 51, &fire, NULL) == MC_REGISTRY_OK &&
+          fire != NULL && mc_block_render_describe(fire, &fire_description) == MC_REGISTRY_OK &&
+          fire_description.type == 3 && fire_description.pass == 0);
+    f->chunks[0]->data->blocks[index] = 51;
     dk->fields.u = true;
     CHECK(mc_render_global_pointer_append(n, n->fields.m, dk,
                                           (mc_client_graphics_site){"n", "a", "()V", 571}, &error));
@@ -343,12 +519,12 @@ static bool compile_controls(picking_fixture *f) {
     CHECK(mc_client_render_global_update_inspect(call, &state) && !state.returned &&
           state.source_pc == 442 && state.compile_attempts == 1 && state.completed_compiles == 0 &&
           state.compilation != NULL && state.compilation->source_pc == 464 &&
-          state.compilation->block_id == 50 && state.compilation->list_open &&
+          state.compilation->block_id == 51 && state.compilation->list_open &&
           state.compilation->matrix_pushed && state.compilation->tessellator_started &&
           state.compilation->renderer.c == state.compilation->cache && n->fields.m->count == 1 &&
           n->fields.m->entries[0] == NULL && dk->fields.u &&
           state.compilation->render_blocks != NULL && state.compilation->render_blocks->failed &&
-          state.compilation->render_blocks->failure.source_pc == 111);
+          state.compilation->render_blocks->failure.source_pc == 127);
     CHECK(mc_client_display_list_inspect(n->display, base, &list) && list.building &&
           list.pending_commands == 5 && list.pending_bytes != 0);
     CHECK(mc_client_render_global_update_retire(&call, &error) == MC_CLIENT_RENDER_GLOBAL_OK);

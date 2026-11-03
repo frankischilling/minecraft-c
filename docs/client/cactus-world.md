@@ -63,7 +63,9 @@ Six Sand faces and five Cactus faces publish 66 packed vertices in pass0.
 The test checks Cactus coordinates and UVs, 24 lateral inset vertices, the
 empty second pass, immutable definition reuse and a real dirty/recompile cycle.
 The last scanned cell is Air; the last returned CV is the Cactus dispatcher
-at PC65. The original Stone control and reached Torch dependency remain checked.
+at PC65. The original Stone control remains. The historical Cactus checkpoint also
+retained the then-missing Torch child; the later [Torch controls](torch-world.md)
+compile that family and retain Fire as the remaining-family failure.
 
 The Windows `client.world_selection_cactus` scene authors saved Sand/Cactus
 and a saved Player pose before bootstrap. The ordinary source NBT reader places

@@ -45,8 +45,11 @@ empty and standard Block sections through the actual
 recenter/JO, TG buffers and ARB queries use the same retained owners; a normal
 return reaches the explicit lighting-enable dependency U.b496. The specified
 Windows MSVC Debug profiles pass, including loaded authored terrain and Sky
-before that frontier; hosted qualification remains pending. Specialized
-shapes and TileEntity rendering remain unfinished. The inspection component
+before that frontier. Later Cactus commit `193192e1` passes
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/41678998367).
+The source dispatcher now also enters dedicated [Cactus](client/cactus-world.md)
+and [Torch](client/torch-world.md) bodies. Other specialized shapes and TileEntity
+rendering remain unfinished. The inspection component
 retains its separate finite scope.
 
 The [achievement notice](client/achievement-notice.md) constructs its actual

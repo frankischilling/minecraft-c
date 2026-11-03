@@ -1,5 +1,37 @@
 # Storage and original references
 
+The [Torch World packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/torch_world/README.md)
+retains 66 actual calls through genuine saved-World, Chunk, EW/CV and NW owners.
+Twelve complete target streams agree across the private/public cohorts; two
+observer-deadline failures retain exact partial prefixes. The fresh public
+two-ordinary/one-JDI cohort records 286 EW queries, 235 static captures and 13
+live Code fingerprints. Selected data includes every active word and reached
+failure word. Each VM also checks 138,397,392 non-emitted words against its own
+prior memory. Native replay passes 132 rows and 14,640 appended words, with its
+own backing and cleanup receipts separate from original provenance.
+
+The [Smoke/Flame packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/entity/torch_particles/README.md)
+records 37 constructor roots per VM with genuine independent entropy and 30
+deterministic components agreeing across three VMs. JDI observes 242 shared
+Math doubles, 250 private floats and 24 live Code pins. The default Smoke
+delegation and Flame's local-only jitter remain explicit. Original ticks set
+no-clip=true, so the cohort establishes arithmetic rather than collisions.
+Native constructor/tick comparisons pass; native draw matches 18 rows and
+25,165,440 own-inactive words with exact nested failure prefixes. The bounded
+loaded scene separately proves both recorded callback-created identities in
+an explicitly entered World draw, with full DN visitation and Timer/loop state
+unchanged. Ordinary source execution then returns five World/HUD frames and
+cleanup. Source pixels, entropy-distribution and general FPS remain outside
+these packets.
+
+The final public suites pass 660 Windows and 653 Linux sanitizer cases, retaining
+4,548 source hashes and 532 products per host; all 1,445 runtime files match.
+The refreshed Workbench packet derives8,137 checks from its actual four
+captures, retains 1,955 selected inputs and 413 resources, and passes 57 corruption
+controls plus the public/private/history/cohort audits. Harvest captures each
+retain1,956 selected inputs and 413 resources, with unchanged stopped/closed
+save bytes. These native receipts remain separate from original provenance.
+
 The [Cactus World packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/cactus_world)
 uses genuine saved Worlds, four Chunks, EW/CV constructors and the original NW
 backing. Two ordinary VMs and a read-only JDI target agree on 25 complete calls.

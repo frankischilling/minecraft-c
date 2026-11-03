@@ -1,5 +1,44 @@
 # Build and tests
 
+`client.torch_world` passes all 132 input/observation rows from 66 original
+calls, including 14,640 appended words and separate own-backing/FP/cleanup
+receipts. Twelve complete original target streams agree. Two retained JDI
+observer-deadline failures have exact partial-trace prefixes; the completed
+public cohort uses two ordinary VMs and a read-only JDI VM. Its trace retains
+286 EW queries, 235 static reads, 13 live Code pins and all raw selected words.
+
+The 167-action Windows rebuild and focused ten-test cohort pass, the latter in
+5.18 seconds. Native Smoke/Flame draw matches 18 rows and 25,165,440 own-inactive
+words with exact nested failure prefixes. The later helper build passes 33
+actions; formatting still covers 2,021 files. The final Torch scene passes 1,624
+checks in 13.87 seconds (13.91 CTest total). A separately entered World draw
+visits both recorded callback-created identities once in all four DN entries,
+with Timer/loop counts/clocks unchanged and checked World-call retirement.
+Ordinary source execution then returns five World/HUD frames, two reuse frames,
+one dirty recompile,60 vertices and `cleanup=1`. The identity proof belongs to
+the entered draw. Earlier scene receipts/failures retain their distinct premises.
+Final full public CTest runs pass 660/660 Windows MSVC Release in 338.89 seconds
+and 653/653 Linux Clang 18 ASan/UBSan in 162.88 seconds. Each preserves 4,548 source
+inputs and 532 products; Windows also preserves 823 assets. All 1,445 runtime
+files match across hosts. Guarded execution/post-hash intervals remain separate
+from these CTest times. Four Workbench SDK profiles pass 8,137 checks in 59.92
+seconds, retaining 1,955 selected inputs and 413 resources; all 57 controls and
+public/private/history/cohort audits pass. The three harvest scenes pass in
+33.02 seconds, each retaining 1,956 inputs and 413 resources. GCC 13.3 passes 27
+changed translation units across 28 actual configured option sets with 2,203
+unchanged inputs on both hosts. The pre-documentation source-binding audit
+covers 11,051 entries in 4,547 files. Historical Cactus totals below retain their
+original scope; documentation/binding checks are separate.
+The original packet audits 37
+constructor roots per VM and compares 30 deterministic components across three
+VMs. Original ticks explicitly use no-clip movement; native fixtures use real
+World owners. Pixel, collision and general FPS qualification remain separate.
+
+The preceding [Cactus CI at `193192e1`](https://github.com/frankischilling/minecraft-c/actions/runs/41678998367)
+passes all four jobs: 608 Windows tests in 335.75 seconds, 665 GCC tests in
+498.34 seconds, 665 Clang tests in 499.58 seconds and formatting for 2,015 files.
+Those hosted checks precede the current Torch and particle work.
+
 `client.cactus_world` compares 25 original wrapper/body calls and 5,232 appended
 words. Its 19 packet controls retain three agreeing VMs, source query/store
 traces and exact failure prefixes. `client.chunk_compile` checks a real

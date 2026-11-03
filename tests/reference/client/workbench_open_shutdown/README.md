@@ -7,14 +7,15 @@ Player's terminal record. It preserves source screen, Container and Stack
 identities while completing checked C cleanup.
 
 `native-validation.json` records the fresh current-source cohort. Captured
-production includes Cactus World m/c geometry. The selected harness includes
-DK dispatch and loaded-scene controls, inventory geometry, additive NW
-translation and Piston texture getters. The test helper waits for actual serial
-input consumption during Table opening. The selected harness includes completed
-HUD Block Item draws and cleanup after an actual nullable Stair source failure.
-The Inventory geometry fixture queries actual current color before recording its
-inputs. Four tests pass in 61.47 seconds, with 2,005 / 1,914 / 2,209 / 2,209
-native checks. Their measured CTest times are 15.77 / 15.54 / 15.58 / 14.54 seconds
+production includes Torch World wrapper/shared geometry and Smoke/Flame
+construction, ticks, sprite drawing and brightness. The selected harness includes
+DK dispatch, loaded-scene and entered-World particle-draw controls, alongside
+Cactus and inventory geometry, additive NW translation, Piston texture getters
+and HUD cleanup after an actual nullable Stair source failure. Those direct and
+entered-draw proofs retain their own comparisons. The test helper waits for
+actual serial input consumption during Table opening. Four tests pass in 59.92
+seconds, with 1,826 / 1,899 / 2,254 / 2,158 native checks. Their measured CTest
+times are 14.14 / 15.99 / 14.74 / 15.01 seconds
 in clean / Container / Player / World order. These SDK scenes qualify the
 Workbench terminal flow; direct geometry, getter and loaded-scene comparisons
 have their own coverage.
@@ -24,8 +25,8 @@ audit. Each releases only its declared existing hold and retries. All four end
 with both source windows absent. The selected save tree stays byte-for-byte
 equal to its stopped snapshot through every native phase.
 
-The receipt binds all 1,442 runtime source files and 504 selected harness/CMake
-files. Each process recorded 1,948 selected inputs and 413 imported-resource
+The receipt binds all 1,445 runtime source files and 508 selected harness/CMake
+files. Each process recorded 1,955 selected inputs and 413 imported-resource
 files unchanged. Native executable and DLL hashes describe the captured
 snapshot; the public audit does not require those binaries or assets. Toolchain
 and Desktop state were outside that continuity check.
@@ -73,7 +74,7 @@ Both remain separate private evidence, including an exact backup of the
 61.78-second public packet. The later 59.70-second and 62.05-second Cactus World
 cohorts also remain separate private evidence. The 62.05-second cohort included
 failure-only Sand focus diagnostics, with all existing guards retained, before
-the final dependency rebuild. The current 61.47-second packet binds the final
+the final dependency rebuild. The retained 61.47-second Cactus packet binds that
 rebuilt executable and its captured source and harness closure.
 
 A complete selection after that rebuild passed three of four profiles in 53.96
@@ -82,6 +83,14 @@ foreground while SDL reported no keyboard focus. Its log and actual failed
 capture remain private evidence. The unchanged full four-profile retry then
 passed in 61.47 seconds. These observations do not qualify unrestricted focus
 or input timing.
+
+A preceding Torch World cohort passed all four profiles in 59.36 seconds before
+the final entered-World draw fixture assertions. Its complete captures and log
+remain separate private evidence. The current 59.92-second receipt binds the
+later rebuilt executable and final frozen source/harness closure. It qualifies
+the Workbench terminal flow; it adds no direct geometry, particle, entered-draw,
+pixel or gameplay claim to that flow. The exact prior 61.47-second public packet
+and its Cactus cohort log/manifest remain backed up separately.
 
 Run the Java-free public audit and corruption controls with:
 

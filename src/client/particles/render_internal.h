@@ -42,6 +42,8 @@ bool mc_effect_draw_particle(mc_client_effect_draw_call *, unsigned int invoke_p
 bool mc_effect_draw_item(mc_client_effect_draw_call *, unsigned int invoke_pc);
 /* Actual XW full-atlas billboard, invoked by GY.a's super call at12. */
 bool mc_effect_draw_sprite(mc_client_effect_draw_call *, unsigned int invoke_pc);
+/* Actual XN/QU size overrides, then their inherited XW billboard call. */
+bool mc_effect_draw_torch_particle(mc_client_effect_draw_call *, unsigned int invoke_pc);
 bool mc_effect_draw_item_capture(mc_client_effect_draw_call *);
 bool mc_effect_draw_item_discharge(mc_client_effect_draw_call *);
 void mc_effect_draw_item_free(mc_client_effect_draw_call *);

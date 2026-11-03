@@ -220,7 +220,8 @@ _Static_assert(MC_ENTITY_CLASS_KIND_MINECART == 22 && MC_ENTITY_CLASS_KIND_BOAT 
                    MC_ENTITY_CLASS_KIND_C == 32 && MC_ENTITY_CLASS_KIND_ITEM_PARTICLE == 33 &&
                    MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE == 34 &&
                    MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE == 35 &&
-                   MC_ENTITY_CLASS_KIND_COUNT == 36,
+                   MC_ENTITY_CLASS_KIND_SMOKE_PARTICLE == 36 &&
+                   MC_ENTITY_CLASS_KIND_FLAME_PARTICLE == 37 && MC_ENTITY_CLASS_KIND_COUNT == 38,
                "canonical selectors stay stable when appending client particle classes");
 _Static_assert(COUNT(shapes) == 10 && COUNT(allocation_pcs) == 31 && COUNT(previous_pcs) == 31,
                "complete literal Minecart initializer");

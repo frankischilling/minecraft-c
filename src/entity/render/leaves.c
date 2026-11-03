@@ -3,6 +3,7 @@
 #include "../entity_internal.h"
 #include "../living/fields_internal.h"
 #include "../mob/internal.h"
+#include "../particles/particle_internal.h"
 #include "../player/player_internal.h"
 #include "../player/tick_math_internal.h"
 #include "internal.h"
@@ -726,11 +727,8 @@ static void query_failed(mc_entity_render_query *q, const mc_entity_render_error
     q->exception_class = e->exception_class;
 }
 
-bool mc_entity_render_brightness(mc_entity *p, mc_math_classes *math, float partial, float *out,
-                                 mc_entity_render_error *e) {
-    (void)partial;
-    if (!start(p, out, e, "sn", "a", "(F)F"))
-        return false;
+static bool brightness_base(mc_entity *p, mc_math_classes *math, float *out,
+                            mc_entity_render_error *e) {
     int32_t x, y, z, bounds[6];
     if (!math_floor(math, p->base.x, &x, 4, e))
         return false;
@@ -846,5 +844,37 @@ bool mc_entity_render_brightness(mc_entity *p, mc_math_classes *math, float part
         value = p->base.bE;
     *out = value;
     e->site.pc = 156;
+    return true;
+}
+
+bool mc_entity_render_brightness(mc_entity *p, mc_math_classes *math, float partial, float *out,
+                                 mc_entity_render_error *e) {
+    const bool flame = mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_FLAME_PARTICLE);
+    if (!start(p, out, e, flame ? "qu" : "sn", "a", "(F)F"))
+        return false;
+    if (!flame)
+        return brightness_base(p, math, out, e);
+    if (!mc_entity_has_particle(p))
+        return fail(e, MC_ENTITY_STATE_ERROR, "Flame brightness actual QU storage");
+    e->site.pc = 4;
+    if (!floating(e))
+        return false;
+    float fraction =
+        at_fdiv(at_fadd((float)p->particle->fields.e, partial), (float)p->particle->fields.f);
+    if (fraction < 0)
+        fraction = 0;
+    if (fraction > 1)
+        fraction = 1;
+    e->parent = site("qu", "a", "(F)F", 32);
+    e->site = site("sn", "a", "(F)F", 0);
+    float inherited;
+    if (!brightness_base(p, math, &inherited, e))
+        return false;
+    e->site = site("qu", "a", "(F)F", 38);
+    if (!floating(e))
+        return false;
+    *out = at_fadd(at_fmul(inherited, fraction), at_fsub(1, fraction));
+    e->site.pc = 43;
+    e->parent = (mc_entity_render_site){.pc = -1};
     return true;
 }

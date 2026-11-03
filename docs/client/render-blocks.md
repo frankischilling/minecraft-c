@@ -23,8 +23,9 @@ and Piston bases with its own original comparisons.
 
 `cv.b(Luu;III)Z` reads the Block's virtual render type before updating that
 same Block's mutable bounds. Type 0 enters `cv.l(Luu;III)Z`, type 1 enters the
-crossed-plant body, type 4 enters fluid rendering and type13 enters the
-[Cactus wrapper and body](cactus-world.md). The other 14
+crossed-plant body, type 2 enters the [Torch wrapper and primitive](torch-world.md),
+type 4 enters fluid rendering and type 13 enters the
+[Cactus wrapper and body](cactus-world.md). The other 13
 recognized render families retain an explicit missing-child failure at their
 source call; they do not return fabricated geometry. Unknown render types
 follow the original ordinary false return.
@@ -157,8 +158,10 @@ DK controls. The loaded UI passed 702 checks, preserved resources and saves,
 and retained all 72 focus histories. That checkpoint passed all four hosted
 jobs and 1,490 tests: Windows 478/GCC 506/Clang 506, zero failures or skips and
 no preceding hosted test names dropped. The runtime and test sources qualified
-there were those of 6ccdc82. Current submission passes its specified Windows
-profiles, with hosted qualification pending. Historical suite totals qualify
-their earlier checkpoints. See
+there were those of 6ccdc82. The later Cactus commit `193192e1` passes
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/41678998367),
+with 608 Windows, 665 GCC and 665 Clang tests. Current Torch work has separate
+component evidence above. Historical suite totals qualify their earlier
+checkpoints. See
 [ChunkRenderer compilation](chunk-compilation.md)
 for the selector and cache ownership that this geometry path uses.

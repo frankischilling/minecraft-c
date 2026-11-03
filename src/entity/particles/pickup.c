@@ -373,25 +373,74 @@ mc_entity_status mc_pickup_particle_layer(const mc_entity *p, int32_t *out) {
 }
 
 bool mc_particle_read(const mc_entity *p, mc_particle_snapshot *out) {
-    if ((!mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE) &&
-         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ITEM_PARTICLE) &&
-         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE) &&
-         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE)) ||
-        out == NULL || p->particle == NULL)
+    if (!mc_entity_has_particle(p) || out == NULL)
         return false;
     const bool item = !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE);
-    *out = (mc_particle_snapshot){p->phase,
-                                  p->particle->particle_pc,
-                                  p->particle->pickup_pc,
-                                  p->particle->fields,
-                                  item ? (mc_pickup_particle_fields){0} : p->particle->pickup,
-                                  item ? p->particle->item_native.item_pc : 0,
-                                  item ? p->particle->item_native.tick_pc : 0,
-                                  item && p->particle->item_native.tick_active,
-                                  p->particle->digging_block,
-                                  p->particle->digging_registry,
-                                  p->particle->digging_face};
+    *out = (mc_particle_snapshot){.phase = p->phase,
+                                  .particle_pc = p->particle->particle_pc,
+                                  .pickup_pc = p->particle->pickup_pc,
+                                  .particle = p->particle->fields,
+                                  .pickup =
+                                      item ? (mc_pickup_particle_fields){0} : p->particle->pickup,
+                                  .item_pc = item ? p->particle->item_native.item_pc : 0,
+                                  .tick_pc = item ? p->particle->item_native.tick_pc : 0,
+                                  .tick_active = item && p->particle->item_native.tick_active,
+                                  .digging_block = p->particle->digging_block,
+                                  .digging_registry = p->particle->digging_registry,
+                                  .digging_face = p->particle->digging_face,
+                                  .smoke = mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SMOKE_PARTICLE)
+                                               ? p->particle->smoke
+                                               : (mc_smoke_particle_fields){0},
+                                  .flame = mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_FLAME_PARTICLE)
+                                               ? p->particle->flame
+                                               : (mc_flame_particle_fields){0}};
     return true;
+}
+
+mc_entity_status mc_particle_layer(const mc_entity *p, int32_t *out) {
+    if (!mc_entity_has_particle(p) || out == NULL)
+        return MC_ENTITY_INVALID_ARGUMENT;
+    switch (p->class_literal->kind) {
+        case MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE:
+            *out = 3;
+            break;
+        case MC_ENTITY_CLASS_KIND_ITEM_PARTICLE:
+            *out = 2;
+            break;
+        case MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE:
+            *out = 1;
+            break;
+        case MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE:
+        case MC_ENTITY_CLASS_KIND_SMOKE_PARTICLE:
+        case MC_ENTITY_CLASS_KIND_FLAME_PARTICLE:
+            *out = 0;
+            break;
+        default:
+            return MC_ENTITY_INVALID_ARGUMENT;
+    }
+    return MC_ENTITY_OK;
+}
+
+bool mc_particle_constructor_returned(const mc_entity *p) {
+    if (!mc_entity_has_particle(p))
+        return false;
+    if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE))
+        return p->particle->pickup_pc == 60;
+    const unsigned int pc = p->particle->item_native.item_pc;
+    switch (p->class_literal->kind) {
+        case MC_ENTITY_CLASS_KIND_ITEM_PARTICLE:
+            return pc == 58;
+        case MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE:
+            return pc == 80;
+        case MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE:
+            return pc == 157;
+        case MC_ENTITY_CLASS_KIND_SMOKE_PARTICLE:
+            return pc == 17 || pc == 172;
+        case MC_ENTITY_CLASS_KIND_FLAME_PARTICLE:
+            return pc == 187;
+        default:
+            return false;
+    }
 }
 
 void mc_pickup_particle_dispose(mc_entity *p) {

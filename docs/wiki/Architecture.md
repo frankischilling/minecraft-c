@@ -1,5 +1,28 @@
 # Systems and subsystems
 
+World type 2 dispatch enters the actual Torch wrapper and shared five-quad
+primitive. Metadata, NW capture, brightness and the fresh emission-array read
+retain source order; a texture override still reaches the side getter. The
+primitive shares the existing batch and leaves bounds and unrelated CV fields
+intact. [Torch evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/torch-world.md)
+separates original traces, exact native outer-row replay and loaded-scene scope.
+
+Smoke and Flame extend the same canonical XW Entity storage and DN Lists as
+the four existing particle families. Their actual constructors preserve shared
+Math and private Random ordering. Tick calls use real Entity movement and keep
+partial failure effects. The terminal collector counts duplicate List
+occurrences separately from each distinct particle's World binding. Native
+constructor/tick/draw comparisons pass. In the loaded scene, a separately
+entered World draw visits both actual callback-created identities once in the
+complete DN traversal, with Timer/loop counts/clocks unchanged. Ordinary source
+execution then returns five World/HUD frames. The identity proof belongs to
+the entered draw. Original component ticks explicitly use no-clip movement.
+
+Final public suites pass 660 Windows and 653 sanitized Linux tests, with all
+1,445 runtime files matching across hosts. The source, product and asset
+continuity checks remain separate from original component evidence and the
+entered-draw/ordinary-frame qualifications.
+
 World type13 dispatch now reaches dedicated Cactus wrapper and geometry bodies.
 They append to the enclosing section's NW batch, preserving live bounds, AO
 scratch, ordered culling/light/texture reads and additive lateral offsets.

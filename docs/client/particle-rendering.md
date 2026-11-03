@@ -4,9 +4,35 @@ The client connects the real `dn.b(sn,float)` lit-particle entry and
 `dn.a(sn,float)` sprite entry to the existing effect manager. They use its
 four actual Lists, the same particle Entities and the actual graphics and
 Math namespaces. The supported empty paths return from DN and continue the
-enclosing World frame. The concrete PB Item sprite now completes the nonempty
-layer2 path. Other reached particle and World draw dependencies retain their
+enclosing World frame. PB Item sprites complete layer2. The layer0 XW billboard
+also serves Explosion, Smoke and Flame. Smoke/Flame native draws match the
+finite original CPU rows. Other reached particle and World draw dependencies
+retain their
 own source invocation.
+
+Smoke stores its subtype scale times the clamped growth fraction into inherited
+`g` before calling XW. Flame stores its subtype scale times
+`1 - 0.5 * fraction * fraction` without a growth clamp. Both preserve that store
+when brightness or NW color later throws. XW uses the full particle atlas cell,
+calls brightness before color, and appends four vertices to the existing batch.
+Flame's brightness override clamps its age fraction, calls inherited brightness
+through the real World, then returns `inherited * fraction + (1 - fraction)`.
+Its reached failure retains the nested QU32 caller.
+
+The [Smoke/Flame original packet](../../tests/reference/entity/torch_particles/README.md)
+has eight successful CPU draws, four draw failures and six direct brightness
+calls among 30 deterministic components. Each successful draw retains all 48
+packed words. Native constructor/tick comparisons pass; native draw matches
+18 rows and all 25,165,440 own-inactive words with nested failure prefixes
+retained. The loaded [Torch scene](torch-world.md#loaded-native-scene) separately
+enters an actual World draw and proves both recorded callback-created identities
+are visited once in the complete DN traversal. Timer bytes, loop counts and
+clocks remain unchanged. Ordinary execution then returns five World/HUD frames;
+the identity proof is scoped to the entered draw. These CPU observations do not
+compare pixels or qualify the other particle families. The final 660-case
+Windows and 653-case Linux sanitizer public suites pass; their full source/
+product continuity is recorded in [testing](../testing.md). See
+[construction and tick scope](particles.md#smoke-and-flame).
 
 The [draw API](../../include/mc/client/particles/render.h) returns a retained
 call with its source position, completed stores, current particle and typed
@@ -53,9 +79,10 @@ For a nonempty sprite layer, the source texture is `/particles.png`,
 `/terrain.png` or `/gui/items.png`, respectively. Lookup uses the manager's
 current source RenderEngine, followed by the real texture bind, NW capture,
 quad begin, live-size traversal, concrete draw invocation and NW draw. The
-concrete particle support includes EM pickup on its normal layer3 and the
-returning PB Item sprite on layer2. Other reached virtual draw bodies remain
-explicit dependencies.
+concrete particle support includes EM pickup on its normal layer3, PB Item on
+layer2, QM Digging on layer1 and GY Explosion on layer0. Smoke and Flame also
+dispatch on layer0 with their finite native draw comparison passing. Other reached
+virtual draw bodies remain explicit dependencies.
 
 PB's draw body selects one quarter of its Item atlas cell, computes size from
 the actual inherited `g` field, and interpolates each previous/current position

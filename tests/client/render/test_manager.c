@@ -15,7 +15,8 @@ _Static_assert(MC_ENTITY_CLASS_KIND_ARROW == 0 && MC_ENTITY_CLASS_KIND_BOAT == 2
                    MC_ENTITY_CLASS_KIND_C == 32 && MC_ENTITY_CLASS_KIND_ITEM_PARTICLE == 33 &&
                    MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE == 34 &&
                    MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE == 35 &&
-                   MC_ENTITY_CLASS_KIND_COUNT == 36,
+                   MC_ENTITY_CLASS_KIND_SMOKE_PARTICLE == 36 &&
+                   MC_ENTITY_CLASS_KIND_FLAME_PARTICLE == 37 && MC_ENTITY_CLASS_KIND_COUNT == 38,
                "existing29 literal selectors stay stable; six canonical cells append");
 static unsigned checks;
 #define CHECK(x)                                                                                   \
