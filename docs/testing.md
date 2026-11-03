@@ -6161,3 +6161,17 @@ from 24 tests in 48.815 seconds to 25 in 41.487 seconds. Both final suites pass
 without failures or skips. Each adds a repeated-toggle control and a complete
 baseline-integrity check. These measurements cover local test preparation and
 execution; hosted job duration and gameplay performance require separate runs.
+
+## Hosted runner storage
+
+The [Torch run at `37a91a1b`](https://github.com/frankischilling/minecraft-c/actions/runs/41705768425)
+reached a Clang linker failure with `No space left on device`, before test
+execution. Its compiler cache was bounded at 512 MB; this was an executable
+storage failure rather than an unbounded cache restore.
+
+The Linux job removes only `/usr/local/lib/android`, the unused Android SDK/NDK
+listed in the [hosted image inventory](https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#android).
+It reports disk capacity around that cleanup and build/cache sizes after every
+attempted build. The native C/C++ toolchains, Java 17, `-g1`, ASan/UBSan and full
+test selection remain in use. This runner provisioning change has separate
+hosted validation from the completed local runtime suites above.

@@ -10,8 +10,8 @@
       "sha256": "1c6e06d9d00a02f0d8aabfdca7026893dbf4656a9ee4a2f3d38940b106a9cc89"
     },
     ".github/workflows/ci.yml": {
-      "bytes": 13394,
-      "sha256": "5ecd50e1c85cf0f00572cfebdc98cebee1facdfa2a9cc38f5572a17ee8f07c5c"
+      "bytes": 13995,
+      "sha256": "d1a1d9f7a43be51a77d5708dc00998c9d8678338ff7e0dac34c751cdd127276c"
     },
     ".gitignore": {
       "bytes": 282,
@@ -826,16 +826,16 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 417456,
-      "sha256": "44d117e2dd8be8e0d07203339e6fbbdd88d9de919c92bd8965b7d8a92cfbac8b"
+      "bytes": 418310,
+      "sha256": "8aac651127f0219de9fa3b0808f0c8ce98a7fbdf38f265ca86b9ce6a36495a7c"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 35723,
       "sha256": "634b8729a067c99600f8e346027511af21d7fb7b12b029de4674b99ca8fd787f"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 80062,
-      "sha256": "33d4a5f87eade9114067dfe6a1c3558034a01969c2628e7c77645434ff293987"
+      "bytes": 80511,
+      "sha256": "152f43b53fbbac43a6528943c1c97dbde3ac5b0ef2f5e659346790d06c79ff9f"
     },
     "docs/wiki/History.md": {
       "bytes": 44954,

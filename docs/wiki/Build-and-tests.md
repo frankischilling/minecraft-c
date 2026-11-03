@@ -39,6 +39,12 @@ passes all four jobs: 608 Windows tests in 335.75 seconds, 665 GCC tests in
 498.34 seconds, 665 Clang tests in 499.58 seconds and formatting for 2,015 files.
 Those hosted checks precede the current Torch and particle work.
 
+The first Torch Clang hosted build exhausted disk while linking. Linux jobs
+now remove the unused preinstalled Android SDK/NDK and report disk/build/cache
+sizes, while retaining Java 17, sanitizer coverage, line diagnostics and all
+tests. [Runner storage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#hosted-runner-storage)
+keeps that failure and the provisioning scope separate from local results.
+
 `client.cactus_world` compares 25 original wrapper/body calls and 5,232 appended
 words. Its 19 packet controls retain three agreeing VMs, source query/store
 traces and exact failure prefixes. `client.chunk_compile` checks a real
