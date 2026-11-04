@@ -6,30 +6,32 @@ source window. The native shutdown path transfers the same live IT owner to the
 Player's terminal record. It preserves source screen, Container and Stack
 identities while completing checked C cleanup.
 
-`native-validation.json` records a fresh Crops and raw Chunk source cohort. The
-runtime binding includes the shared fresh raw-Chunk reader and failure-only
-World-random consumer, Crops behavior and type-6 World geometry, and Registry
-Crops Java-int wrapping. Public raw reads retain complete success diagnostics;
-An installed Blank still reads its actual current byte array. The selected
-harness includes persistent Crops controls, sixteen DK cases including four
-Crops stages, and loaded Crops scenes, alongside the existing Ladder/fluid and
-inventory/particle controls. Those direct runtime,
-geometry and entered-draw comparisons retain their own scope. These four SDK
-profiles qualify the Workbench terminal flow.
+`native-validation.json` records a fresh farming-use BUSY-fix source cohort.
+Its runtime binding includes the correction that propagates `MC_ENTITY_BUSY`
+as `MC_ITEM_USE_BUSY` when acquiring the Player for Hoe durability. A separate
+actual-owner component RED/GREEN control reaches the native LA147 refusal
+after the sound/mutation prefix; these SDK profiles do not reproduce that
+branch. The selected harness also binds the updated client-placement
+configuration and saved ordinary farming scene. Direct Item/reference and
+entered-scene comparisons have separate receipts. These four profiles qualify
+the Workbench terminal flow, with no direct farming, pixel, unrestricted
+gameplay or performance claim.
 
-All four tests pass in 60.86 seconds, with 1,888 / 1,975 / 2,091 / 2,161 native
-checks: 8,115 in total. Their measured CTest times are 15.27 / 15.21 / 15.13 /
-15.21 seconds in clean / Container / Player / World order. The Container profile
+All four tests pass in 66.08 seconds, with 1,892 / 1,921 / 2,448 / 2,254 native
+checks: 8,515 in total. Their measured CTest times are 15.82 / 14.17 / 19.13 /
+16.92 seconds in clean / Container / Player / World order. The Container profile
 refuses before transfer; Player and World refuse at the later World audit. Each
 releases only its declared existing hold and retries. All four end with both
 source windows absent. The selected save tree stays byte-for-byte equal to its
-stopped snapshot through every native phase.
+stopped snapshot through every native phase. These elapsed times are
+qualification observations, not performance measurements.
 
-The receipt binds all 1,448 runtime source files and 514 selected harness/CMake
-files. Each process recorded 1,964 selected inputs and 413 imported-resource
-files unchanged. Native executable and DLL hashes describe the captured
-snapshot; the public audit does not require those binaries or assets. Toolchain
-and Desktop state were outside that continuity check.
+The receipt binds all 1,448 runtime source files and 517 selected harness/CMake
+files. Each process recorded 1,967 selected inputs and 413 imported-resource
+files unchanged. Whole-cohort guards match all four actual capture bindings.
+Native executable and DLL hashes describe the captured snapshot; the public
+audit does not require those binaries or assets. Toolchain and Desktop state
+were outside that continuity check.
 
 The public projection contains hashes and typed receipts. Private paths,
 addresses, assets, screenshots, save payloads and original bytecode are absent.
@@ -37,25 +39,32 @@ The two earlier harness failures and the genuine live-owner-guard RED remain
 separate historical failures. `packet.py --private-root <build-directory>` can
 recheck the exact projection against those retained private reports. Its
 optional `--cohort-log <log-file>` checks the measured CTest times.
-The first current-source cohort passed one of four profiles in 83.67 seconds.
-Clean failed its actual Table ray-hit check before queuing a tap; Container
-failed its world-selection check while WindowsTerminal owned foreground; Player
-failed the actual SDL keyboard-focus gate despite native canvas focus. All three
-failed during setup, before terminal preparation. Source-child diagnostics
-reported no failed child. All four retained input/resource continuity. The
-actual captures, cohort log, manifests and diagnostics remain private evidence;
-these observations do not establish a runtime root cause.
 
-A later passive three-second input guard observed six last-input timestamp
-changes and returned NOT_RUN. It launched no SDK process. After an explicitly
-released quiet interval, a fresh three-second guard passed with no changes, and
-the complete current cohort passed. The monitor only read last-input and
-foreground information; it injected no input or focus recovery. It recorded
-three last-input timestamp changes during the passing cohort. Those timestamps
-do not identify a human or distinguish synthetic input; the capture is not
-qualified as entirely free of external input. All failed/NOT_RUN
-attempts remain separate evidence; unrestricted focus/input timing remains
-unqualified.
+The current three-second passive guard recorded 31 samples with no last-input
+timestamp change before launch. Its passive monitor also recorded no changes
+during this cohort. The monitor only read last-input and foreground information;
+it injected no input or focus recovery. These observations do not qualify
+unrestricted focus/input timing or establish that all possible input was absent.
+No failed attempt was silently retried.
+
+The preceding Hoe/Seeds cohort passed in 62.85 seconds with 8,567 checks after
+a quiet three-second guard. Its monitor recorded one timestamp change during
+that cohort, without attributing it to a human or distinguishing synthetic
+input. Its exact public packet, captures, logs and source/product snapshot
+remain separate evidence and were not rebound to the later BUSY fix.
+
+The earlier Crops/Raw preparation first passed one of four profiles in 83.67
+seconds. Clean failed its actual Table ray-hit check before queuing a tap;
+Container failed world selection while WindowsTerminal owned foreground; Player
+failed the SDL keyboard-focus gate despite native canvas focus. All three
+failed during setup, before terminal preparation, with no failed source child
+reported. All four retained input/resource continuity; these observations do
+not establish a runtime root cause. A later three-second passive guard observed
+six last-input changes and returned NOT_RUN without launching an SDK process.
+Its separately released successor passed in 60.86 seconds after a quiet guard,
+with three timestamp changes during that cohort. Those failed/NOT_RUN attempts,
+guards, monitor and log remain private evidence. Unrestricted focus/input timing
+remains unqualified.
 
 The earlier four-profile PASS receipts and their captures, including the
 100.70-second, 62.22-second, 60.97-second, 105.22-second, 58.53-second and
@@ -120,9 +129,13 @@ packet, validators, README, actual cohort log/manifest and frozen input list
 remain backed up separately. The retained 60.01-second successor qualified the
 Workbench terminal flow against the corrected C17 fixture binding. Its exact
 packet, validators, README, matching cohort log/manifest, frozen 1,960-input list
-and declared private artifacts remain preserved. The current 60.86-second
-cohort binds the later Crops/RawChunk source and selected harness; direct
-geometry, pixels and gameplay retain their separate coverage.
+and declared private artifacts remain preserved. The exact 60.86-second Crops/RawChunk packet, four complete captures,
+validators, 57-control result, history/log artifacts, matching native executable
+and DLL, and frozen 1,964-input manifest remain preserved separately. The exact 62.85-second Hoe/Seeds receipt, four complete captures, 8,567
+checks, validators and all 1,967 selected input contents remain preserved
+separately. The current 66.08-second successor binds the later native BUSY
+status mapping and client-placement configuration. Direct Item/reference and
+entered-farming comparisons retain their separate coverage.
 
 Run the Java-free public audit and corruption controls with:
 

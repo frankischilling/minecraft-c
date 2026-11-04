@@ -1,5 +1,6 @@
 include_guard(GLOBAL)
 option(MC_ENABLE_CLIENT_PLACEMENT_TESTS "Run the native collected-Dirt placement/save cycle" OFF)
+option(MC_ENABLE_CLIENT_FARMING_TESTS "Run the native Hoe/Seeds tilling, planting and save cycle" OFF)
 
 target_sources(mc_simulation PRIVATE src/world/runtime/placement.c)
 add_library(mc_item_use STATIC src/item/use/use.c)
@@ -27,6 +28,11 @@ if(BUILD_TESTING)
     target_include_directories(mc_test_item_use PRIVATE src src/platform/time)
     target_link_libraries(mc_test_item_use PRIVATE mc_item_use mc_resources
         mc_c_atomics mc_build_options)
+    if(TARGET mc_client_source_screens AND TARGET mc_client_render_global)
+        target_link_libraries(mc_test_item_use PRIVATE mc_client_source_screens
+            mc_client_source_screen_events mc_client_application_owner)
+        target_compile_definitions(mc_test_item_use PRIVATE MC_FARMING_TERMINAL_INVENTORY=1)
+    endif()
     if(TARGET mc_client_render_global)
         target_link_libraries(mc_test_item_use PRIVATE mc_client_render_global)
         target_compile_definitions(mc_test_item_use PRIVATE MC_PLACEMENT_REAL_RENDER_GLOBAL=1)
@@ -81,6 +87,33 @@ if(BUILD_TESTING)
     unset(_target)
 
     if(TARGET mc_test_world_selection_loop)
+        add_executable(mc_test_farming_loop tests/client/gameplay/test_farming.c
+            tests/client/world/test_load_world_foreign_loading.c
+            tests/client/world/test_render_global_entities.c
+            tests/client/world/test_refresh_entity.c
+            tests/client/world/test_renderer_focus.c)
+        target_include_directories(mc_test_farming_loop PRIVATE src src/platform/time)
+        target_link_libraries(mc_test_farming_loop PRIVATE
+            mc_client_runtime mc_client_saves mc_build_options)
+        if(CMAKE_CXX_COMPILER_LOADED)
+            set_property(TARGET mc_test_farming_loop PROPERTY LINKER_LANGUAGE CXX)
+        endif()
+        if(WIN32 AND TARGET OpenAL)
+            add_custom_command(TARGET mc_test_farming_loop POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
+                    "$<TARGET_FILE_DIR:mc_test_farming_loop>")
+        endif()
+        if(WIN32 AND MC_ENABLE_CLIENT_FARMING_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS
+           AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
+            add_test(NAME client.farming_loop COMMAND Python3::Interpreter -B
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_farming_loop.py"
+                --executable "$<TARGET_FILE:mc_test_farming_loop>"
+                --assets "${MC_APPLICATION_STARTUP_IMPORTED_RESOURCES}"
+                --artifacts "${CMAKE_CURRENT_BINARY_DIR}/farming-loop-captures")
+            set_tests_properties(client.farming_loop PROPERTIES
+                LABELS "local;integration;client;input;graphics;storage;ownership"
+                TIMEOUT 300 RESOURCE_LOCK mc_desktop_focus)
+        endif()
         add_executable(mc_test_placement_loop tests/client/gameplay/test_placement.c
             tests/client/world/test_load_world_foreign_loading.c
             tests/client/world/test_render_global_entities.c

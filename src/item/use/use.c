@@ -9,6 +9,7 @@
 #include "mc/core/java/java.h"
 #include "mc/entity/entity.h"
 #include "mc/entity/player/statistics.h"
+#include "mc/item/combat/combat.h"
 #include "mc/statistics/registry/registry.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/mutations.h"
@@ -27,13 +28,14 @@ struct mc_item_use_call {
     mc_item_use_error error;
     mc_world_placement_error predicate, face, by;
     mc_player_statistic_error statistic;
-    mc_world_runtime_acquisition_error *query;
+    mc_world_runtime_acquisition_error *queries[2];
     mc_world_mutation_error *mutation, *sound;
+    mc_item_combat_error *durability;
     mc_step_sound_name name;
     mc_world_access_failure receipts[USE_RECEIPTS];
     mc_world_source_chunk_error *sources[USE_SOURCES];
     const mc_world_source_chunk_error *source_identities[USE_SOURCES];
-    size_t receipt_count, source_count;
+    size_t receipt_count, source_count, query_count;
     bool registry_held, stack_held, world_held, player_held, result_held;
 };
 
@@ -160,10 +162,13 @@ static bool mutation_capture(mc_item_use_call *c, mc_world_mutation_error *m) {
 }
 
 static bool capture(mc_item_use_call *c) {
-    return (c->query == NULL || (publication(c, &c->query->batch, &c->query->tile_entity,
-                                             c->query->status != MC_CHUNK_ACQUIRE_OK) &&
-                                 copy_source(c, &c->query->source_chunk))) &&
-           mutation_capture(c, c->mutation) && mutation_capture(c, c->sound);
+    for (size_t i = 0; i < c->query_count; ++i) {
+        mc_world_runtime_acquisition_error *q = c->queries[i];
+        if (!publication(c, &q->batch, &q->tile_entity, q->status != MC_CHUNK_ACQUIRE_OK) ||
+            !copy_source(c, &q->source_chunk))
+            return false;
+    }
+    return mutation_capture(c, c->mutation) && mutation_capture(c, c->sound);
 }
 
 static bool captured(mc_item_use_call *c) {
@@ -185,16 +190,34 @@ static bool hold_world(mc_item_use_call *c) {
     return true;
 }
 
-static bool query(mc_item_use_call *c, int32_t *out) {
-    at(c, "ck", use_block_descriptor, 7);
+/* A reached child may retain Player diagnostics even when its later source
+ * operation fails. NULL remains legal for durability; this native occurrence
+ * adds no instanceof, constructor or phase gate. The wrapper reuses it. */
+static bool hold_player(mc_item_use_call *c, const char *operation) {
+    if (c->state.player == NULL || c->player_held)
+        return true;
+    const mc_entity_status status = mc_entity_retain(c->state.player);
+    if (status != MC_ENTITY_OK)
+        return fail(c, status == MC_ENTITY_BUSY ? MC_ITEM_USE_BUSY : MC_ITEM_USE_LIMIT, operation,
+                    true);
+    c->player_held = true;
+    return true;
+}
+
+static bool query_at(mc_item_use_call *c, const char *owner, unsigned int pc, int32_t y,
+                     int32_t *out) {
+    at(c, owner, use_block_descriptor, pc);
     if (!hold_world(c))
         return false;
-    c->query = calloc(1, sizeof(*c->query));
-    if (c->query == NULL)
+    if (c->query_count == sizeof(c->queries) / sizeof(c->queries[0]))
+        return fail(c, MC_ITEM_USE_LIMIT, "Item use reached query diagnostic extent", true);
+    mc_world_runtime_acquisition_error *q = calloc(1, sizeof(*q));
+    if (q == NULL)
         return fail(c, MC_ITEM_USE_ALLOCATION, "Item use reached query diagnostic", true);
-    c->error.acquisition = c->query;
+    c->queries[c->query_count++] = q;
+    c->error.acquisition = q;
     mc_world_storage_status status = mc_world_runtime_block_get_detailed(
-        c->state.world, c->state.x, c->state.y, c->state.z, out, &c->error.world, c->query);
+        c->state.world, c->state.x, y, c->state.z, out, &c->error.world, q);
     if (status != MC_WORLD_STORAGE_OK)
         fail(c, MC_ITEM_USE_WORLD, c->error.world.operation, true);
     return captured(c) && status == MC_WORLD_STORAGE_OK;
@@ -363,10 +386,13 @@ static bool metadata(mc_item_use_call *c) {
     return true;
 }
 
-static bool floating(mc_item_use_call *c, unsigned int pc) {
-    at(c, "ck", use_block_descriptor, pc);
+static bool floating_at(mc_item_use_call *c, const char *owner, unsigned int pc) {
+    at(c, owner, use_block_descriptor, pc);
     return (_mm_getcsr() & 0xffc0u) == 0x1f80u ||
-           fail(c, MC_ITEM_USE_FLOATING, "CK placement floating environment", true);
+           fail(c, MC_ITEM_USE_FLOATING,
+                owner[0] == 'c' ? "CK placement floating environment"
+                                : "Hoe sound floating environment",
+                true);
 }
 
 static float add(float a, float b) {
@@ -385,42 +411,51 @@ static float integer_float(int32_t a) {
     return _mm_cvtss_f32(_mm_cvtsi32_ss(_mm_setzero_ps(), a));
 }
 
-static bool sound(mc_item_use_call *c) {
+typedef struct sound_sites {
+    const char *owner;
+    unsigned int x, y, z, block, name, volume, volume_math, pitch, pitch_math, call;
+} sound_sites;
+
+static bool sound(mc_item_use_call *c, const sound_sites *p) {
     mc_item_use_state *s = &c->state;
-    if (!floating(c, 210))
+    if (!floating_at(c, p->owner, p->x))
         return false;
     s->sound_x = (double)add(integer_float(s->target_x), 0.5f);
-    if (!floating(c, 217))
+    if (!floating_at(c, p->owner, p->y))
         return false;
     s->sound_y = (double)add(integer_float(s->target_y), 0.5f);
-    if (!floating(c, 224))
+    if (!floating_at(c, p->owner, p->z))
         return false;
     s->sound_z = (double)add(integer_float(s->target_z), 0.5f);
-    at(c, "ck", use_block_descriptor, 231);
+    at(c, p->owner, use_block_descriptor, p->block);
     if (s->captured_block == NULL)
-        return source_null(c, "CK earlier captured Block sound field");
-    at(c, "ck", use_block_descriptor, 234);
+        return source_null(c, p->owner[0] == 'c' ? "CK earlier captured Block sound field"
+                                                 : "Hoe captured Farmland sound field");
+    at(c, p->owner, use_block_descriptor, p->name);
     if (mc_registry_step_sound_name(s->registry, s->captured_block->fields.by, false, &c->name,
                                     &c->error.registry) != MC_REGISTRY_OK)
         return registry_failed(c);
-    at(c, "ck", use_block_descriptor, 242);
+    at(c, p->owner, use_block_descriptor, p->volume);
     if (mc_registry_step_sound_volume(s->captured_block->fields.by, &s->volume,
                                       &c->error.registry) != MC_REGISTRY_OK)
         return registry_failed(c);
-    if (!floating(c, 246))
+    if (!floating_at(c, p->owner, p->volume_math))
         return false;
     s->volume = divide(add(s->volume, 1.0f), 2.0f);
-    at(c, "ck", use_block_descriptor, 254);
+    at(c, p->owner, use_block_descriptor, p->pitch);
     if (mc_registry_step_sound_pitch(s->captured_block->fields.by, &s->pitch, &c->error.registry) !=
         MC_REGISTRY_OK)
         return registry_failed(c);
-    if (!floating(c, 259))
+    if (!floating_at(c, p->owner, p->pitch_math))
         return false;
     s->pitch = multiply(s->pitch, 0.8f);
-    at(c, "ck", use_block_descriptor, 260);
+    at(c, p->owner, use_block_descriptor, p->call);
     c->sound = calloc(1, sizeof(*c->sound));
     if (c->sound == NULL)
-        return fail(c, MC_ITEM_USE_ALLOCATION, "CK reached sound diagnostic", true);
+        return fail(c, MC_ITEM_USE_ALLOCATION,
+                    p->owner[0] == 'c' ? "CK reached sound diagnostic"
+                                       : "Hoe reached sound diagnostic",
+                    true);
     c->error.sound = c->sound;
     const mc_world_storage_status status =
         mc_world_runtime_sound(s->world, s->sound_x, s->sound_y, s->sound_z, c->name.string,
@@ -435,7 +470,7 @@ static bool sound(mc_item_use_call *c) {
 static bool ck(mc_item_use_call *c) {
     mc_item_use_state *s = &c->state;
     int32_t id;
-    if (!query(c, &id))
+    if (!query_at(c, "ck", 7, s->y, &id))
         return false;
     const mc_block *snow;
     at(c, "ck", use_block_descriptor, 10);
@@ -544,7 +579,8 @@ static bool ck(mc_item_use_call *c) {
                                      s->target_z, s->player, &c->by) != MC_WORLD_STORAGE_OK)
             return placement_failed(c, &c->by);
         s->placed_by_returned = true;
-        if (!sound(c))
+        static const sound_sites pcs = {"ck", 210, 217, 224, 231, 234, 242, 246, 254, 259, 260};
+        if (!sound(c, &pcs))
             return false;
         at(c, "ck", use_block_descriptor, 265);
         int32_t count;
@@ -560,6 +596,166 @@ static bool ck(mc_item_use_call *c) {
     }
     at(c, "ck", use_block_descriptor, 274);
     s->result = true;
+    return true;
+}
+
+static bool singleton_id(mc_item_use_call *c, const char *owner, const char *name,
+                         unsigned int get_pc, unsigned int id_pc, int32_t *out) {
+    const mc_block *block = NULL;
+    at(c, owner, use_block_descriptor, get_pc);
+    if (mc_registry_block_static_get(c->state.registry, name, &block, &c->error.registry) !=
+        MC_REGISTRY_OK)
+        return registry_failed(c);
+    at(c, owner, use_block_descriptor, id_pc);
+    if (block == NULL)
+        return source_null(c, "Item use actual Block singleton id field");
+    *out = block->fields.bn;
+    return true;
+}
+
+/* LA/RK pop the ordinary World.f result. A normal false still reaches the
+ * following Stack mutation; a failed native/callback invocation does not. */
+static bool farming_set(mc_item_use_call *c, const char *owner, unsigned int pc, int32_t id) {
+    mc_item_use_state *s = &c->state;
+    at(c, owner, use_block_descriptor, pc);
+    c->mutation = calloc(1, sizeof(*c->mutation));
+    if (c->mutation == NULL)
+        return fail(c, MC_ITEM_USE_ALLOCATION, "Item use reached setter diagnostic", true);
+    c->error.mutation = c->mutation;
+    const mc_world_storage_status status = mc_world_runtime_block_set(
+        s->world, s->target_x, s->target_y, s->target_z, id, &s->setter_value, c->mutation);
+    if (status != MC_WORLD_STORAGE_OK)
+        world_failed(c, c->mutation, "f", "(IIII)Z");
+    else
+        s->setter_returned = true;
+    return captured(c) && status == MC_WORLD_STORAGE_OK;
+}
+
+static bool hoe_damage(mc_item_use_call *c) {
+    at(c, "la", use_block_descriptor, 147);
+    if (!hold_player(c, "Hoe reached durability Player occurrence"))
+        return false;
+    c->durability = malloc(sizeof(*c->durability));
+    if (c->durability == NULL)
+        return fail(c, MC_ITEM_USE_ALLOCATION, "Hoe reached durability diagnostic", true);
+    c->error.durability = c->durability;
+    const mc_entity_status status = mc_item_stack_combat_damage(c->state.registry, c->state.stack,
+                                                                1, c->state.player, c->durability);
+    if (status == MC_ENTITY_OK)
+        return true;
+    const mc_item_combat_error *d = c->durability;
+    c->error.child =
+        site(d->site.class_name, d->site.method, d->site.descriptor, (unsigned int)d->site.pc);
+    c->error.registry = d->registry;
+    c->error.stack = d->stack;
+    c->error.source_exception = d->source_exception;
+    c->error.source_error = d->source_error;
+    c->error.exception_class = d->exception_class;
+    mc_item_use_status result = MC_ITEM_USE_STACK;
+    if (status == MC_ENTITY_BUSY)
+        result = MC_ITEM_USE_BUSY;
+    else if (status == MC_ENTITY_LIMIT)
+        result = MC_ITEM_USE_LIMIT;
+    else if (status == MC_ENTITY_ALLOCATION_FAILED)
+        result = MC_ITEM_USE_ALLOCATION;
+    else if (d->statistic_entered && !d->statistic_returned)
+        result = MC_ITEM_USE_PLAYER;
+    else if (d->registry.status != MC_REGISTRY_OK)
+        result = MC_ITEM_USE_REGISTRY;
+    return fail(c, result, d->operation, d->native_policy);
+}
+
+static bool hoe(mc_item_use_call *c) {
+    mc_item_use_state *s = &c->state;
+    int32_t id, above, singleton;
+    if (!query_at(c, "la", 7, s->y, &id) ||
+        !query_at(c, "la", 21, mc_java_i32_add(s->y, 1), &above))
+        return false;
+    bool grass = false;
+    if (s->face != 0 && above == 0) {
+        if (!singleton_id(c, "la", "v", 38, 41, &singleton))
+            return false;
+        grass = id == singleton;
+    }
+    if (!grass) {
+        if (!singleton_id(c, "la", "w", 49, 52, &singleton))
+            return false;
+        if (id != singleton) {
+            at(c, "la", use_block_descriptor, 153);
+            s->result = false;
+            return true;
+        }
+    }
+    at(c, "la", use_block_descriptor, 58);
+    if (mc_registry_block_static_get(s->registry, "aB", &s->captured_block, &c->error.registry) !=
+        MC_REGISTRY_OK)
+        return registry_failed(c);
+    static const sound_sites pcs = {"la", 66, 73, 80, 87, 90, 98, 102, 110, 115, 116};
+    if (!sound(c, &pcs))
+        return false;
+    at(c, "la", use_block_descriptor, 120);
+    mc_world_runtime_fields fields;
+    const mc_world_storage_status status = mc_world_runtime_fields_get(s->world, &fields);
+    if (status != MC_WORLD_STORAGE_OK) {
+        c->error.world = (mc_world_storage_error){status, "Hoe reached World remote field", 0};
+        return fail(c, MC_ITEM_USE_WORLD, c->error.world.operation, true);
+    }
+    if (fields.B) {
+        at(c, "la", use_block_descriptor, 127);
+        s->result = true;
+        return true;
+    }
+    at(c, "la", use_block_descriptor, 137);
+    /* The same captured Farmland survives the sound callback. */
+    s->block_id = s->captured_block->fields.bn;
+    if (!farming_set(c, "la", 140, s->block_id) || !hoe_damage(c))
+        return false;
+    at(c, "la", use_block_descriptor, 151);
+    s->result = true;
+    return true;
+}
+
+static bool seeds(mc_item_use_call *c) {
+    mc_item_use_state *s = &c->state;
+    if (s->face != 1) {
+        at(c, "rk", use_block_descriptor, 7);
+        s->result = false;
+        return true;
+    }
+    int32_t id, farmland;
+    if (!query_at(c, "rk", 15, s->y, &id) || !singleton_id(c, "rk", "aB", 22, 25, &farmland))
+        return false;
+    if (id == farmland) {
+        int32_t above;
+        /* FD.d calls the ordinary acquiring FD.a exactly once at child4. */
+        c->error.child = site("fd", "d", "(III)Z", 4);
+        if (!query_at(c, "rk", 40, mc_java_i32_add(s->y, 1), &above))
+            return false;
+        c->error.child = (mc_item_use_site){0};
+        if (above == 0) {
+            at(c, "rk", use_block_descriptor, 56);
+            s->block_id = s->item->subtype.rk.a;
+            s->target_y = mc_java_i32_add(s->y, 1);
+            if (!farming_set(c, "rk", 59, s->block_id))
+                return false;
+            at(c, "rk", use_block_descriptor, 65);
+            c->error.stack = mc_item_stack_source_count_get(s->stack, &s->count_before);
+            if (c->error.stack != MC_ITEM_STACK_OK)
+                return fail(c, MC_ITEM_USE_STACK, "Seeds late Stack count field", true);
+            s->count_read = true;
+            s->count_after = mc_java_i32_sub(s->count_before, 1);
+            at(c, "rk", use_block_descriptor, 70);
+            c->error.stack = mc_item_stack_source_count_set(s->stack, s->count_after);
+            if (c->error.stack != MC_ITEM_STACK_OK)
+                return fail(c, MC_ITEM_USE_STACK, "Seeds actual Stack count store", true);
+            s->count_stored = true;
+            at(c, "rk", use_block_descriptor, 74);
+            s->result = true;
+            return true;
+        }
+    }
+    at(c, "rk", use_block_descriptor, 76);
+    s->result = false;
     return true;
 }
 
@@ -588,9 +784,8 @@ static bool used_statistic(mc_item_use_call *c) {
     at(c, "iz", wrapper_block_descriptor, 34);
     if (c->state.player == NULL)
         return source_null(c, "IZ actual null Player statistic invocation");
-    if (mc_entity_retain(c->state.player) != MC_ENTITY_OK)
-        return fail(c, MC_ITEM_USE_LIMIT, "IZ reached Player occurrence", true);
-    c->player_held = true;
+    if (!hold_player(c, "IZ reached Player occurrence"))
+        return false;
     c->error.statistic = &c->statistic;
     c->state.statistic_entered = true;
     if (mc_local_player_add_statistic(c->state.player, statistic, 1, &c->statistic) !=
@@ -629,13 +824,19 @@ static bool execute(mc_item_use_call *c) {
         at(c, "iz", "(Lfd;Lgs;)Liz;", 10);
         return true;
     }
-    const char *owner = block_override(k);
-    if (owner != NULL)
-        return unsupported(c, owner, "a", use_block_descriptor);
-    if (block_item(k)) {
+    if (k == MC_ITEM_HOE) {
+        if (!hoe(c))
+            return false;
+    } else if (k == MC_ITEM_SEEDS) {
+        if (!seeds(c))
+            return false;
+    } else if (block_item(k)) {
         if (!ck(c))
             return false;
     } else {
+        const char *owner = block_override(k);
+        if (owner != NULL)
+            return unsupported(c, owner, "a", use_block_descriptor);
         /* Every other known receiver inherits GM's literal false body. */
         c->state.result = false;
     }
@@ -769,9 +970,11 @@ mc_item_use_status mc_item_use_retire(mc_item_use_call **slot, mc_item_use_error
         mc_entity_release(c->state.player);
     if (c->world_held)
         mc_world_runtime_binding_release(c->state.world);
-    free(c->query);
+    for (size_t i = 0; i < c->query_count; ++i)
+        free(c->queries[i]);
     free(c->mutation);
     free(c->sound);
+    free(c->durability);
     free(c);
     *slot = NULL;
     return admission(error, MC_ITEM_USE_OK, NULL);

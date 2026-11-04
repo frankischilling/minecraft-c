@@ -6,20 +6,20 @@
       "sha256": "0081591e56fb3455123fcaa3a97e0b1fcf1c8f01e41e6b0806da11434ddcc364"
     },
     ".gitattributes": {
-      "bytes": 1151,
-      "sha256": "e34b32c0a387a6551f31cb3558bb0e103d1ff80865530b66e04b0d0e51690ebe"
+      "bytes": 1256,
+      "sha256": "339906aa51e9b888c8492994964d9f6481127938779ae1f6e04ffad143862cd1"
     },
     ".github/workflows/ci.yml": {
-      "bytes": 13948,
-      "sha256": "619e2b37e0aa961676f45709cf2387443419972e472896f9ce1408137cefb3e1"
+      "bytes": 14369,
+      "sha256": "be42181a8b1fce08dea6147dce50a1562570c69db487b0d2ecfb1ac1d947f7de"
     },
     ".gitignore": {
       "bytes": 282,
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 339098,
-      "sha256": "c60ae549df1e9c7b7bb6d1799f0e793b01a1dcb7ef7dce65f63b785982e1c282"
+      "bytes": 339136,
+      "sha256": "504a08cca6c70dd3fc27da8e8e2a0d5ca31d428e16bbc087fa6e53913f67defd"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -186,8 +186,8 @@
       "sha256": "1a54745a759c41a57a2453f44296f6cc9793698f281e83afd9a9893bdbe7ae1d"
     },
     "docs/building.md": {
-      "bytes": 20511,
-      "sha256": "2d19056b893e38c5439562b9038d772286a89fe1cfb9a729ef2743c2183e1a86"
+      "bytes": 20809,
+      "sha256": "7e6dfe3a9a1f9f5ceb7d102614ccdb27b8d1b97b7752eb1f373fdf961ff2d6fb"
     },
     "docs/client/achievement-notice.md": {
       "bytes": 12023,
@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 181706,
-      "sha256": "0707df2fff4f9b30a43845b063445e8b2f2aba036897ce0a958322a8a5691a3e"
+      "bytes": 182555,
+      "sha256": "15c4f222aae41bd7c021d02473be2f5dfa73ab73314521d3ae5399c1bdeaa873"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 98458,
-      "sha256": "5db197fc4c7922540c59a59dca2def59ece2a9f9194f55a50865c1617ac16ee5"
+      "bytes": 100896,
+      "sha256": "0e19b1fda712d3ca80cbcd9e9241a421fc6c866dae81f73ff063f8d47c6da3a8"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,28 +826,28 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 431342,
-      "sha256": "2998afd478c2f19d897f67228cd1c9a5ed8d5a5d7d5ccc779f076824cf7be5fa"
+      "bytes": 439761,
+      "sha256": "31b12ce3342d6f11ceacccb0d5c061732f49de4f970f06be50f8ae2d938e99d1"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 35723,
       "sha256": "634b8729a067c99600f8e346027511af21d7fb7b12b029de4674b99ca8fd787f"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 86569,
-      "sha256": "2c506d0f3ab44450c76e5916c9122c03198786a9a3a3288355056ac32a5f9a1c"
+      "bytes": 88942,
+      "sha256": "cf5c1d560bdd0f9e231ad163df10bde471a22554018dabc1f12fb226fb09d6cb"
     },
     "docs/wiki/History.md": {
       "bytes": 44954,
       "sha256": "d300f14f53ca5e43ff85f7fdae53a468d9a9ebd169cf8b3f0c8d167cd894ea8e"
     },
     "docs/wiki/Home.md": {
-      "bytes": 3831,
-      "sha256": "40e15e3051263e68745149d8ebd543a72684444475dd52bce59fe00192b8f6fb"
+      "bytes": 4355,
+      "sha256": "2f070dc2d8db1f2802cf3049659c3494763a24d5c2e3d7ebad4678d857ee12b6"
     },
     "docs/wiki/Startup.md": {
-      "bytes": 7080,
-      "sha256": "747fc01c38304a8b10956e1f7d17b6118dcd634a5932d1338d80c790d467628d"
+      "bytes": 7529,
+      "sha256": "a9b0095da386d9266682b7d965d7ae3043b4d623874c762a856e638fa772a3ef"
     },
     "docs/wiki/Storage-and-reference.md": {
       "bytes": 28196,
@@ -2006,8 +2006,8 @@
       "sha256": "9578e0cc7995e343ef20fb20ba5176b0a88c63648ca9a719329a465acfd1231e"
     },
     "scripts/development/format_code.py": {
-      "bytes": 4962,
-      "sha256": "adcfb0b9e188a440db2f0d4d7a0db5c9be0b9f83439f6e5004f1ec1880e7da37"
+      "bytes": 5018,
+      "sha256": "7f6633dc9caf4b59ece5b50412b4182259ac15c3ac8cd2021a3538e6f7d1f759"
     },
     "scripts/reference/binaries/inspect_jars.py": {
       "bytes": 7826,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 467621,
-      "sha256": "a3a6af2126ed2ff0ff95635443a7097718b50fb1394d902a14c9d5f35b334883"
+      "bytes": 471304,
+      "sha256": "90d6d74e4aadeaac79e1671c17ff5af00077f574d48028c977d85a1bf14f640f"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 565251,
-      "sha256": "90fa9afc4aa5f4a4dfb70f13a990d0e1123ab542cba73eb247ddc84363c6baed"
+      "bytes": 569105,
+      "sha256": "aa54c47a4e111bc38e036171740a11cbc43119163712dcd68f398f20337abe9b"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 463435,
-      "sha256": "61dd75f4aa3b55c5f330770839031babae24bf2651f28f22199b8c0eef3f46a6"
+      "bytes": 467118,
+      "sha256": "a5c68165ed2113681c5e5b8d9aea9ecef5a2e6a0f47c2b3fc6be5c9123983d57"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -15478,12 +15478,12 @@
       "sha256": "1bb92a19c82361088c72d66833767b1748f29eb1ef37a4baf71e9588ef01019a"
     },
     "cmake/client_placement.cmake": {
-      "bytes": 6107,
-      "sha256": "05d8ba33bc784c9a5c08e3f4d9da3e8e9c59237145b6dd92ca449b5933dc8bbb"
+      "bytes": 8226,
+      "sha256": "7d1b497857160ce1f26a008726b995f062b78c5714044b7657b3c22b7c4304ff"
     },
     "docs/client/placement.md": {
-      "bytes": 7106,
-      "sha256": "8529d2759d970f55a7bb1cdfdef2f111e8377c19db13a56f0a5382f97d16d428"
+      "bytes": 9975,
+      "sha256": "0deb84b3660520fde382b590ee231bc5b92583496fcd9e8e0516a5f8953b6114"
     },
     "docs/entity/skeleton-damage.md": {
       "bytes": 3066,
@@ -15494,8 +15494,8 @@
       "sha256": "5cd60b136d4a9862e9a5f6b6f64699d689c03b084a6d06d042d9ccba40da4ba6"
     },
     "include/mc/item/use/use.h": {
-      "bytes": 4772,
-      "sha256": "1f23b42ea421cd76b84d400fe39be812cc4caace41b9bc235c836751002c11b9"
+      "bytes": 5031,
+      "sha256": "00de7bb596488285963a86bd8aa06b7c3c1a52e3c8ce0445e1bde9709add72de"
     },
     "include/mc/world/runtime/placement.h": {
       "bytes": 5977,
@@ -15506,8 +15506,8 @@
       "sha256": "bf372e5a0f28cf596f3aa7ab7b1cbe84f34242c135f4b493f870314378425829"
     },
     "src/item/use/use.c": {
-      "bytes": 32328,
-      "sha256": "4ffcc24e137c3321709cad378aa7cf486d05980cc6d56d4a7360c6c4f7e4ddb4"
+      "bytes": 41120,
+      "sha256": "ff9f5e31d24c5d510fccc3f04ca068c453c61ebaa7b72f0aa4bfddd256129bad"
     },
     "src/world/runtime/placement.c": {
       "bytes": 30124,
@@ -15526,8 +15526,8 @@
       "sha256": "90ef1657e379e148a4a96c78d311d94dc77a258996c09ddd601c5181ef101f84"
     },
     "tests/item/use/test_use.c": {
-      "bytes": 32156,
-      "sha256": "e62ba95d5b3748dc9e8e542ccc64ed8b9e5807d9cb7b2073f27f9a221b69437d"
+      "bytes": 33819,
+      "sha256": "132466e7beddaf953b96fdb5d6f1dd660f419a4cb2cf2364f3000a3b15a9e97f"
     },
     "tests/reference/client/placement/README.md": {
       "bytes": 2679,
@@ -17270,20 +17270,20 @@
       "sha256": "3093a1732a1b0a3122f1eaeb312f76d38ec11c19778042042e2220b3cde291c5"
     },
     "tests/reference/client/workbench_open_shutdown/README.md": {
-      "bytes": 8803,
-      "sha256": "3ca0b3f88cbc5b1a68e8a6b55604aa1b2f8bc825701b253cd162afc882c3e103"
+      "bytes": 9748,
+      "sha256": "bc475b49e3a7c1b2a5aeec4981cf4323045ac250342acedffc2397cb80b42488"
     },
     "tests/reference/client/workbench_open_shutdown/native-validation.json": {
-      "bytes": 340326,
-      "sha256": "9d32c4f8ad5442bf47626a265aa2621cc264441007b4b47d60eacdc0093e025f"
+      "bytes": 340879,
+      "sha256": "d9c7eae75523442a2d5c869d1dfe2c986566838e92947db5122c12fb28b402c7"
     },
     "tests/reference/client/workbench_open_shutdown/packet.py": {
       "bytes": 23677,
-      "sha256": "7a5ddd2563e6e614b45f42eaba3ebe24c9026179efb5076283b0fd4c241ccb3d"
+      "sha256": "199be5e8e5923f3785d4dae92f2f0dd4af19b42fad0d9793d926b425adf64cf2"
     },
     "tests/reference/client/workbench_open_shutdown/test_packet.py": {
       "bytes": 9801,
-      "sha256": "49b05fb0aef7a26a4dde868dc4339c17c4cbe40f3dff04a591c19c1ffd2b51fe"
+      "sha256": "749d516bb0481fa963dbdda1ffdaf1b2ef4ad464e05ef7686c1a1715eaa8dfe0"
     },
     "tests/reference/item/mining/MiningDestroyObservation.java": {
       "bytes": 6130,
@@ -18508,6 +18508,86 @@
     "tests/tools/world/benchmark_random_tick.py": {
       "bytes": 12958,
       "sha256": "c884db872abb54dd7a9b66d3275f0a9fc0348008219407d5f3942ed86b4450b6"
+    },
+    "cmake/item_farming_use.cmake": {
+      "bytes": 1203,
+      "sha256": "adfb1531780a05bfae206be594c60620af72e3dad961678ee9bc8b5033759c1f"
+    },
+    "docs/item/farming-use.md": {
+      "bytes": 9117,
+      "sha256": "3af1b3931ebc56553ef9db03fc8b52e94923dc23c683d45bf4d1ffa6ecdf7ba0"
+    },
+    "tests/client/gameplay/test_farming.c": {
+      "bytes": 21027,
+      "sha256": "560bf356c9bf8b654a08e8044c22f8e1380853704551191aeb877f7def0415a6"
+    },
+    "tests/item/use/farming_controls.inc": {
+      "bytes": 32973,
+      "sha256": "452e4046242e2acd5a3c29722151802dbb9bc5593ffdd7347ec756ad8084591d"
+    },
+    "tests/item/use/farming_reference.c": {
+      "bytes": 20346,
+      "sha256": "9a31208aa98aaa9675371d2e7ca77dae66d64eb95fabc898690cbef012930b2d"
+    },
+    "tests/reference/item/farming_use/FarmingJdi.java": {
+      "bytes": 11274,
+      "sha256": "5d186a4ab65c939324394a6c7c07993d7f7015b35e867614904eefec43884b07"
+    },
+    "tests/reference/item/farming_use/FarmingObservation.java": {
+      "bytes": 10726,
+      "sha256": "7319ed14daac3358367c28d4eb4caa11faf209f6e8f4fbc88466b0d4f24c03c6"
+    },
+    "tests/reference/item/farming_use/README.md": {
+      "bytes": 6887,
+      "sha256": "b6a1f648620c68a4d25c840eb009bde05a76364274a8962dd12aab3832cf5800"
+    },
+    "tests/reference/item/farming_use/capture_reference.py": {
+      "bytes": 9883,
+      "sha256": "444eea8af0c442e7da507ebd027989057e44b6095f0a97b996228af0a7b045e7"
+    },
+    "tests/reference/item/farming_use/declared-inputs.json": {
+      "bytes": 36203,
+      "sha256": "63651b8a7c615d0654376652e39b12f110131cc58a5adffad852276865ee3970"
+    },
+    "tests/reference/item/farming_use/events.jsonl": {
+      "bytes": 562545,
+      "sha256": "7b581d689f6f67173ee2427e2ab18d94f7a78bc4654c75a0422421a06de6ae60"
+    },
+    "tests/reference/item/farming_use/live-code.tsv": {
+      "bytes": 2015,
+      "sha256": "d8179e90f3396fb5cb6b1eb419bb32666d04fff6597760c1a141a7cf5fe97096"
+    },
+    "tests/reference/item/farming_use/packet.py": {
+      "bytes": 15480,
+      "sha256": "ce5fb955022b364236009602ea9a01e1b210ede9b5d4a3606c58195109ec556b"
+    },
+    "tests/reference/item/farming_use/profiles.tsv": {
+      "bytes": 7935,
+      "sha256": "69d6832e6d1dbeaa57a8026028ea3769db94e3ddfb1fc6ee20484d91cd2f903c"
+    },
+    "tests/reference/item/farming_use/provenance.json": {
+      "bytes": 1952,
+      "sha256": "e443097dca388932c5ed195af83811284e8d501de86ba7161d749443411df472"
+    },
+    "tests/reference/item/farming_use/selected.txt": {
+      "bytes": 83050,
+      "sha256": "9411c4b2fe542f897f42a709f8d7ab8b3f67bdb5063d1dd59b29b8208d615716"
+    },
+    "tests/reference/item/farming_use/source-pins.json": {
+      "bytes": 188315,
+      "sha256": "87cc31e336c57ade85ea12e76665dd2883107f5894817def2345c5dea8ca02c5"
+    },
+    "tests/reference/item/farming_use/test_packet.py": {
+      "bytes": 6046,
+      "sha256": "d4749e99d4b40cf88a1f90ada12c6e5bad85153895b442b039bd8cf88fd8e598"
+    },
+    "tests/tools/client/test_farming_loop.py": {
+      "bytes": 16448,
+      "sha256": "5d97de151dac6e1ce79759d5a6eac552dab37792ba53bb36d2465751185f4b9e"
+    },
+    "tests/tools/item/test_farming_use.py": {
+      "bytes": 12719,
+      "sha256": "9df4262b8be8db46bf4136a55f2fc9dd50e067bd019d1fb0fd04fbb07bbba567"
     }
   },
   "self_metadata_excluded": true,
@@ -24742,6 +24822,135 @@
             "tests/tools/world/benchmark_random_tick.py"
           ],
           "current_count": 4627
+        }
+      }
+    },
+    {
+      "from_commit": "213538b155ad8bbf7fcf1c047da04c86418776c4",
+      "role": "Current Hoe and Seeds Item use, sealed Player status preservation, loaded farming and fresh Workbench capture inputs. Earlier observations and compiled products retain their original qualification scope.",
+      "previous_metadata": {
+        "bytes": 1040117,
+        "sha256": "ef4de77fb3ec35f6d3b6260ce1fe9fccc7b84739030cb48cfa595a01fcfec94c"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 339098,
+              "sha256": "c60ae549df1e9c7b7bb6d1799f0e793b01a1dcb7ef7dce65f63b785982e1c282"
+            },
+            "docs/parity.md": {
+              "bytes": 181706,
+              "sha256": "0707df2fff4f9b30a43845b063445e8b2f2aba036897ce0a958322a8a5691a3e"
+            },
+            "docs/status.md": {
+              "bytes": 98458,
+              "sha256": "5db197fc4c7922540c59a59dca2def59ece2a9f9194f55a50865c1617ac16ee5"
+            },
+            "docs/testing.md": {
+              "bytes": 431342,
+              "sha256": "2998afd478c2f19d897f67228cd1c9a5ed8d5a5d7d5ccc779f076824cf7be5fa"
+            },
+            "docs/wiki/Build-and-tests.md": {
+              "bytes": 86569,
+              "sha256": "2c506d0f3ab44450c76e5916c9122c03198786a9a3a3288355056ac32a5f9a1c"
+            },
+            "docs/wiki/Home.md": {
+              "bytes": 3831,
+              "sha256": "40e15e3051263e68745149d8ebd543a72684444475dd52bce59fe00192b8f6fb"
+            },
+            "docs/wiki/Startup.md": {
+              "bytes": 7080,
+              "sha256": "747fc01c38304a8b10956e1f7d17b6118dcd634a5932d1338d80c790d467628d"
+            },
+            "scripts/development/format_code.py": {
+              "bytes": 4962,
+              "sha256": "adcfb0b9e188a440db2f0d4d7a0db5c9be0b9f83439f6e5004f1ec1880e7da37"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 467621,
+              "sha256": "a3a6af2126ed2ff0ff95635443a7097718b50fb1394d902a14c9d5f35b334883"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 565251,
+              "sha256": "90fa9afc4aa5f4a4dfb70f13a990d0e1123ab542cba73eb247ddc84363c6baed"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 463435,
+              "sha256": "61dd75f4aa3b55c5f330770839031babae24bf2651f28f22199b8c0eef3f46a6"
+            },
+            "cmake/client_placement.cmake": {
+              "bytes": 6107,
+              "sha256": "05d8ba33bc784c9a5c08e3f4d9da3e8e9c59237145b6dd92ca449b5933dc8bbb"
+            },
+            "docs/client/placement.md": {
+              "bytes": 7106,
+              "sha256": "8529d2759d970f55a7bb1cdfdef2f111e8377c19db13a56f0a5382f97d16d428"
+            },
+            "include/mc/item/use/use.h": {
+              "bytes": 4772,
+              "sha256": "1f23b42ea421cd76b84d400fe39be812cc4caace41b9bc235c836751002c11b9"
+            },
+            "src/item/use/use.c": {
+              "bytes": 32328,
+              "sha256": "4ffcc24e137c3321709cad378aa7cf486d05980cc6d56d4a7360c6c4f7e4ddb4"
+            },
+            "tests/item/use/test_use.c": {
+              "bytes": 32156,
+              "sha256": "e62ba95d5b3748dc9e8e542ccc64ed8b9e5807d9cb7b2073f27f9a221b69437d"
+            },
+            "tests/reference/client/workbench_open_shutdown/README.md": {
+              "bytes": 8803,
+              "sha256": "3ca0b3f88cbc5b1a68e8a6b55604aa1b2f8bc825701b253cd162afc882c3e103"
+            },
+            "tests/reference/client/workbench_open_shutdown/native-validation.json": {
+              "bytes": 340326,
+              "sha256": "9d32c4f8ad5442bf47626a265aa2621cc264441007b4b47d60eacdc0093e025f"
+            },
+            "tests/reference/client/workbench_open_shutdown/packet.py": {
+              "bytes": 23677,
+              "sha256": "7a5ddd2563e6e614b45f42eaba3ebe24c9026179efb5076283b0fd4c241ccb3d"
+            },
+            "tests/reference/client/workbench_open_shutdown/test_packet.py": {
+              "bytes": 9801,
+              "sha256": "49b05fb0aef7a26a4dde868dc4339c17c4cbe40f3dff04a591c19c1ffd2b51fe"
+            },
+            ".github/workflows/ci.yml": {
+              "bytes": 13948,
+              "sha256": "619e2b37e0aa961676f45709cf2387443419972e472896f9ce1408137cefb3e1"
+            },
+            "docs/building.md": {
+              "bytes": 20511,
+              "sha256": "2d19056b893e38c5439562b9038d772286a89fe1cfb9a729ef2743c2183e1a86"
+            },
+            ".gitattributes": {
+              "bytes": 1151,
+              "sha256": "e34b32c0a387a6551f31cb3558bb0e103d1ff80865530b66e04b0d0e51690ebe"
+            }
+          },
+          "added": [
+            "cmake/item_farming_use.cmake",
+            "docs/item/farming-use.md",
+            "tests/client/gameplay/test_farming.c",
+            "tests/item/use/farming_controls.inc",
+            "tests/item/use/farming_reference.c",
+            "tests/reference/item/farming_use/FarmingJdi.java",
+            "tests/reference/item/farming_use/FarmingObservation.java",
+            "tests/reference/item/farming_use/README.md",
+            "tests/reference/item/farming_use/capture_reference.py",
+            "tests/reference/item/farming_use/declared-inputs.json",
+            "tests/reference/item/farming_use/events.jsonl",
+            "tests/reference/item/farming_use/live-code.tsv",
+            "tests/reference/item/farming_use/packet.py",
+            "tests/reference/item/farming_use/profiles.tsv",
+            "tests/reference/item/farming_use/provenance.json",
+            "tests/reference/item/farming_use/selected.txt",
+            "tests/reference/item/farming_use/source-pins.json",
+            "tests/reference/item/farming_use/test_packet.py",
+            "tests/tools/client/test_farming_loop.py",
+            "tests/tools/item/test_farming_use.py"
+          ],
+          "current_count": 4647
         }
       }
     }

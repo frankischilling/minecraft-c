@@ -269,6 +269,35 @@ static bool literal_and_dispatch(fixture *f) {
     return true;
 }
 
+/* RK's non-UP gate precedes every World/Player/count access. The real IZ
+ * wrapper still resolves the registered Seeds receiver, then returns false. */
+static bool seeds_face_controls(fixture *f) {
+    static const int32_t faces[] = {0, 2, 3, 4, 5, 6, INT32_MIN, INT32_MAX};
+    mc_item_stack *stack = NULL;
+    CHECK(use_stack(295, -7, INT32_MIN, &stack));
+    for (size_t i = 0; i < sizeof faces / sizeof *faces; ++i) {
+        mc_item_use_call *call = NULL;
+        mc_item_use_error error;
+        mc_item_use_state state;
+        const mc_item_use_status status =
+            mc_item_use_on_block_begin(f->registry, stack, NULL, NULL, INT32_MAX, INT32_MIN,
+                                       INT32_MAX, faces[i], &call, &error);
+        if (status != MC_ITEM_USE_OK)
+            fprintf(stderr, "Seeds non-UP face=%d status=%d site=%s:%u child=%s:%u\n", faces[i],
+                    (int)status, error.site.class_name == NULL ? "none" : error.site.class_name,
+                    error.site.pc, error.child.class_name == NULL ? "none" : error.child.class_name,
+                    error.child.pc);
+        CHECK(status == MC_ITEM_USE_OK && mc_item_use_inspect(call, &state) && state.returned &&
+              !state.result && !state.count_read && !state.setter_returned &&
+              !state.statistic_entered && state.source_pc == 39);
+        int32_t count;
+        CHECK(mc_item_stack_source_count_get(stack, &count) == MC_ITEM_STACK_OK && count == -7 &&
+              use_retire(&call));
+    }
+    mc_item_stack_release(stack);
+    return true;
+}
+
 static bool adjustments_and_frontiers(fixture *f, mc_chunk_state *chunk) {
     mc_item_use_call *call = NULL;
     mc_item_use_state s;
@@ -567,8 +596,10 @@ static bool placement_real_n_control(fixture *f, mc_chunk_state *chunk, mc_entit
 }
 #endif
 
+#include "farming_controls.inc"
+
 static bool use_controls(fixture *f) {
-    CHECK(use_initializer_controls(f) && literal_and_dispatch(f));
+    CHECK(use_initializer_controls(f) && literal_and_dispatch(f) && seeds_face_controls(f));
     uint8_t *blocks = calloc(MC_CHUNK_BLOCKS, 1);
     CHECK(blocks != NULL);
     mc_world_chunk *chunk = NULL;
@@ -587,7 +618,7 @@ static bool use_controls(fixture *f) {
           mc_local_player_construct(player, f->world, NULL, session, 0, NULL, NULL) ==
               MC_PLAYER_OK);
     mc_player_session_retire(&session);
-    CHECK(placement_order(f, state, player));
+    CHECK(placement_order(f, state, player) && farming_controls(f, state, player));
 #ifdef MC_PLACEMENT_REAL_RENDER_GLOBAL
     CHECK(placement_receipt_controls(f, state, player) &&
           placement_real_n_control(f, state, player));

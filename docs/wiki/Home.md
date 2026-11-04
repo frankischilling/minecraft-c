@@ -5,6 +5,13 @@ ticks, draw terrain and Mobs, and reach mining, placement, pickup, crafting and
 save/reselection in finite Windows scenarios. Complete Beta 1.7.3 parity and
 unrestricted play remain unfinished. Single-player is the current focus.
 
+[Hoe and Seeds use](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/farming-use.md)
+now tills Farmland and plants Crops through the ordinary ItemStack wrapper.
+Original-method comparisons and separate native controls cover source order,
+count, wear, statistics and failure effects. A saved Windows scenario completes
+actual right-clicks, hotbar selection, mesh updates, Save and Quit and reselection,
+with independently decoded Region/Inventory values. Broader farming remains open.
+
 [Crops rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/crops-world.md)
 now matches 44 original calls and four metadata stages through real section
 compilation. A saved Farmland/Crops scene checks the loaded Player camera,

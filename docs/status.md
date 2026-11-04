@@ -1,5 +1,44 @@
 # Development status
 
+The current full public suite passes 663/663 Linux sanitizer tests in 167.66
+seconds. Windows passes 671/674 in 375.46 seconds; three Water/Lava/Ladder
+saved-camera or picking checks remain failed. All 4,651 selected sources and
+both hosts' compiled products stay unchanged through testing. Two later passive
+input guards refuse launch after timestamp changes; they do not establish the
+earlier failures' cause. The [test record](testing.md#hoe-and-seeds-use) retains
+the exact coverage and failures. Linux CI also overlaps its measured slow
+Android cleanup with configuration, joining both before build.
+
+[Hoe and Seeds use](item/farming-use.md) now reaches the original tilling and
+planting bodies through the real ItemStack wrapper. Hoe preserves the original
+Dirt predicate, sound-before-mutation order, late remote flag and durability
+child. Seeds preserves its early face gate and consumes a seed even when the
+notifying setter normally returns false. Dye use remains unfinished.
+
+Two ordinary original VMs and a read-only JDI target agree on 118 calls. Native
+Windows and sanitized Linux replay compare 57 wrapper effect rows: 54 complete
+selected outcomes and three callback-refusal prefixes whose exception classes
+remain unqualified. The separate actual-owner suite passes 519 checks, including
+32 farming calls and retained failure/ownership controls. Loaded interaction and
+persistence qualification are separate from these component results.
+
+The saved Windows farming scenario passes 2,343 checks in 6.84 seconds. Ordinary
+right-clicks till Dirt and plant Seeds; the actual hotbar key selects Seeds.
+The Hoe gains one damage and one Seed remains. Both section replacements and
+all 48 original stage-zero Crops position/UV records are checked. Ordinary
+Save and Quit, reselection and independent Region/Player NBT decoding preserve
+Farmland, Crops and both Inventory slots. The selected hotbar slot resets to
+zero on reload, as this save format does not store it. Original pixels/audio,
+natural growth, harvesting and unrestricted farming remain separate work.
+
+The BUSY-fix runtime also passes four fresh Workbench shutdown profiles: 8,515
+checks in 66.08 seconds, with 1,967 selected inputs and 413 resources unchanged.
+All 57 packet controls and capture/history/cohort audits pass. The earlier
+62.85-second farming cohort retains its prior source snapshot; it has not been
+rebound to the status fix.
+
+## Crops checkpoint
+
 [Crops World rendering](client/crops-world.md) now reaches the original type 6
 path. Native replay matches 44 original calls, 88 selected rows and 15,744
 appended words. Four metadata stages join the eight fluid and four Ladder

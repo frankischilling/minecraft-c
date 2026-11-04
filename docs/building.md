@@ -95,6 +95,11 @@ so a later test failure does not discard compilation work. Cache statistics
 are printed for each build. Tests still execute from the newly built targets;
 dependency-download and CTest scheduling caches remain separate.
 
+Linux CI removes the hosted image's unused Android SDK/NDK while configuring
+the native build. Both operations finish before build or dependency-archive
+caching; either failure stops the job. Disk capacity is reported around this
+joined step. Compiler, sanitizer and test coverage remain enabled.
+
 Both native CI jobs cache only the pinned FetchContent download archives.
 Source trees, populate stamps and dependency build products are excluded.
 CMake still checks each archive's `URL_HASH` and extracts it into a fresh build.

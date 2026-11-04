@@ -44,14 +44,6 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      # Native Linux builds do not use the hosted image's Android SDK/NDK.
-      - name: Make space for sanitizer executables
-        run: |
-          df -h "$GITHUB_WORKSPACE"
-          if [ -d /usr/local/lib/android ]; then
-            sudo rm -rf -- /usr/local/lib/android
-          fi
-          df -h "$GITHUB_WORKSPACE"
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.12'
@@ -99,23 +91,42 @@ jobs:
           key: ${{ runner.os }}-fetchcontent-archives-v1-${{ hashFiles('CMakeLists.txt', 'cmake/*dependencies.cmake') }}
           restore-keys: ${{ runner.os }}-fetchcontent-archives-v1-
       # Keep sanitizer file/line traces without full type data in every test ELF.
-      - name: Configure
+      - name: Configure and make space for sanitizer executables
         id: configure
-        run: >-
-          python -B scripts/development/configure_with_retry.py -- cmake -S . -B build -G Ninja
-          -DCMAKE_C_COMPILER=${{ matrix.compiler }}
-          -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
-          -DCMAKE_C_COMPILER_LAUNCHER=ccache
-          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
-          -DCMAKE_BUILD_TYPE=Debug
-          -DCMAKE_C_FLAGS_DEBUG=-g1
-          -DCMAKE_CXX_FLAGS_DEBUG=-g1
-          -DMC_ENABLE_SANITIZERS=ON
-          -DMC_ENABLE_JAVA_REFERENCE_TESTS=ON
-          -DMC_ENABLE_CLIENT_DISPLAY_TESTS=ON
-          -DMC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS=ON
-          -DMC_ENABLE_APPLICATION_STARTUP_TESTS=ON
-          -DMC_ENABLE_RESOURCE_LOOKUP_OBSERVERS=ON
+        run: |
+          df -h "$GITHUB_WORKSPACE"
+          # Native configuration does not use the hosted Android SDK/NDK.
+          # Join cleanup even if configuration fails; neither may outlive this step.
+          (
+            if [ -d /usr/local/lib/android ]; then
+              sudo rm -rf -- /usr/local/lib/android
+            fi
+          ) &
+          cleanup_pid=$!
+          set +e
+          python -B scripts/development/configure_with_retry.py -- cmake -S . -B build -G Ninja \
+            -DCMAKE_C_COMPILER=${{ matrix.compiler }} \
+            -DCMAKE_CXX_COMPILER=${{ matrix.cxx }} \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_C_FLAGS_DEBUG=-g1 \
+            -DCMAKE_CXX_FLAGS_DEBUG=-g1 \
+            -DMC_ENABLE_SANITIZERS=ON \
+            -DMC_ENABLE_JAVA_REFERENCE_TESTS=ON \
+            -DMC_ENABLE_CLIENT_DISPLAY_TESTS=ON \
+            -DMC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS=ON \
+            -DMC_ENABLE_APPLICATION_STARTUP_TESTS=ON \
+            -DMC_ENABLE_RESOURCE_LOOKUP_OBSERVERS=ON
+          configure_status=$?
+          wait "$cleanup_pid"
+          cleanup_status=$?
+          set -e
+          df -h "$GITHUB_WORKSPACE"
+          if [ "$configure_status" -ne 0 ]; then
+            exit "$configure_status"
+          fi
+          exit "$cleanup_status"
       - name: Save pinned dependency archives
         if: steps.configure.outcome == 'success' && steps.dependency-archives.outputs.cache-hit != 'true'
         uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4

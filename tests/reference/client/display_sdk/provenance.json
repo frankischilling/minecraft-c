@@ -6142,16 +6142,16 @@
       "sha256": "04cfb9aaf6d92527e53001e3cac558bd277c66b30e5cd5a508dec6560ddc1f96"
     },
     "cmake/client_placement.cmake": {
-      "bytes": 6107,
-      "sha256": "05d8ba33bc784c9a5c08e3f4d9da3e8e9c59237145b6dd92ca449b5933dc8bbb"
+      "bytes": 8226,
+      "sha256": "7d1b497857160ce1f26a008726b995f062b78c5714044b7657b3c22b7c4304ff"
     },
     "include/mc/client/controller/use.h": {
       "bytes": 4714,
       "sha256": "5cd60b136d4a9862e9a5f6b6f64699d689c03b084a6d06d042d9ccba40da4ba6"
     },
     "include/mc/item/use/use.h": {
-      "bytes": 4772,
-      "sha256": "1f23b42ea421cd76b84d400fe39be812cc4caace41b9bc235c836751002c11b9"
+      "bytes": 5031,
+      "sha256": "00de7bb596488285963a86bd8aa06b7c3c1a52e3c8ce0445e1bde9709add72de"
     },
     "include/mc/world/runtime/placement.h": {
       "bytes": 5977,
@@ -6162,8 +6162,8 @@
       "sha256": "bf372e5a0f28cf596f3aa7ab7b1cbe84f34242c135f4b493f870314378425829"
     },
     "src/item/use/use.c": {
-      "bytes": 32328,
-      "sha256": "4ffcc24e137c3321709cad378aa7cf486d05980cc6d56d4a7360c6c4f7e4ddb4"
+      "bytes": 41120,
+      "sha256": "ff9f5e31d24c5d510fccc3f04ca068c453c61ebaa7b72f0aa4bfddd256129bad"
     },
     "src/world/runtime/placement.c": {
       "bytes": 30124,
@@ -6182,8 +6182,8 @@
       "sha256": "90ef1657e379e148a4a96c78d311d94dc77a258996c09ddd601c5181ef101f84"
     },
     "tests/item/use/test_use.c": {
-      "bytes": 32156,
-      "sha256": "e62ba95d5b3748dc9e8e542ccc64ed8b9e5807d9cb7b2073f27f9a221b69437d"
+      "bytes": 33819,
+      "sha256": "132466e7beddaf953b96fdb5d6f1dd660f419a4cb2cf2364f3000a3b15a9e97f"
     },
     "tests/reference/client/placement/test_verify.py": {
       "bytes": 3351,
@@ -7259,11 +7259,11 @@
     },
     "tests/reference/client/workbench_open_shutdown/packet.py": {
       "bytes": 23677,
-      "sha256": "7a5ddd2563e6e614b45f42eaba3ebe24c9026179efb5076283b0fd4c241ccb3d"
+      "sha256": "199be5e8e5923f3785d4dae92f2f0dd4af19b42fad0d9793d926b425adf64cf2"
     },
     "tests/reference/client/workbench_open_shutdown/test_packet.py": {
       "bytes": 9801,
-      "sha256": "49b05fb0aef7a26a4dde868dc4339c17c4cbe40f3dff04a591c19c1ffd2b51fe"
+      "sha256": "749d516bb0481fa963dbdda1ffdaf1b2ef4ad464e05ef7686c1a1715eaa8dfe0"
     },
     "tests/reference/item/mining/capture_reference.py": {
       "bytes": 5373,
@@ -7776,6 +7776,42 @@
     "tests/tools/world/benchmark_random_tick.py": {
       "bytes": 12958,
       "sha256": "c884db872abb54dd7a9b66d3275f0a9fc0348008219407d5f3942ed86b4450b6"
+    },
+    "cmake/item_farming_use.cmake": {
+      "bytes": 1203,
+      "sha256": "adfb1531780a05bfae206be594c60620af72e3dad961678ee9bc8b5033759c1f"
+    },
+    "tests/client/gameplay/test_farming.c": {
+      "bytes": 21027,
+      "sha256": "560bf356c9bf8b654a08e8044c22f8e1380853704551191aeb877f7def0415a6"
+    },
+    "tests/item/use/farming_controls.inc": {
+      "bytes": 32973,
+      "sha256": "452e4046242e2acd5a3c29722151802dbb9bc5593ffdd7347ec756ad8084591d"
+    },
+    "tests/item/use/farming_reference.c": {
+      "bytes": 20346,
+      "sha256": "9a31208aa98aaa9675371d2e7ca77dae66d64eb95fabc898690cbef012930b2d"
+    },
+    "tests/reference/item/farming_use/capture_reference.py": {
+      "bytes": 9883,
+      "sha256": "444eea8af0c442e7da507ebd027989057e44b6095f0a97b996228af0a7b045e7"
+    },
+    "tests/reference/item/farming_use/packet.py": {
+      "bytes": 15480,
+      "sha256": "ce5fb955022b364236009602ea9a01e1b210ede9b5d4a3606c58195109ec556b"
+    },
+    "tests/reference/item/farming_use/test_packet.py": {
+      "bytes": 6046,
+      "sha256": "d4749e99d4b40cf88a1f90ada12c6e5bad85153895b442b039bd8cf88fd8e598"
+    },
+    "tests/tools/client/test_farming_loop.py": {
+      "bytes": 16448,
+      "sha256": "5d97de151dac6e1ce79759d5a6eac552dab37792ba53bb36d2465751185f4b9e"
+    },
+    "tests/tools/item/test_farming_use.py": {
+      "bytes": 12719,
+      "sha256": "9df4262b8be8db46bf4136a55f2fc9dd50e067bd019d1fb0fd04fbb07bbba567"
     }
   },
   "authorities": {
@@ -11347,6 +11383,56 @@
             "tests/tools/world/benchmark_random_tick.py"
           ],
           "current_count": 1944
+        }
+      }
+    },
+    {
+      "from_commit": "213538b155ad8bbf7fcf1c047da04c86418776c4",
+      "role": "Current Hoe and Seeds Item use, sealed Player status preservation, loaded farming and fresh Workbench capture inputs. Earlier observations and compiled products retain their original qualification scope.",
+      "previous_metadata": {
+        "bytes": 467621,
+        "sha256": "a3a6af2126ed2ff0ff95635443a7097718b50fb1394d902a14c9d5f35b334883"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "cmake/client_placement.cmake": {
+              "bytes": 6107,
+              "sha256": "05d8ba33bc784c9a5c08e3f4d9da3e8e9c59237145b6dd92ca449b5933dc8bbb"
+            },
+            "include/mc/item/use/use.h": {
+              "bytes": 4772,
+              "sha256": "1f23b42ea421cd76b84d400fe39be812cc4caace41b9bc235c836751002c11b9"
+            },
+            "src/item/use/use.c": {
+              "bytes": 32328,
+              "sha256": "4ffcc24e137c3321709cad378aa7cf486d05980cc6d56d4a7360c6c4f7e4ddb4"
+            },
+            "tests/item/use/test_use.c": {
+              "bytes": 32156,
+              "sha256": "e62ba95d5b3748dc9e8e542ccc64ed8b9e5807d9cb7b2073f27f9a221b69437d"
+            },
+            "tests/reference/client/workbench_open_shutdown/packet.py": {
+              "bytes": 23677,
+              "sha256": "7a5ddd2563e6e614b45f42eaba3ebe24c9026179efb5076283b0fd4c241ccb3d"
+            },
+            "tests/reference/client/workbench_open_shutdown/test_packet.py": {
+              "bytes": 9801,
+              "sha256": "49b05fb0aef7a26a4dde868dc4339c17c4cbe40f3dff04a591c19c1ffd2b51fe"
+            }
+          },
+          "added": [
+            "cmake/item_farming_use.cmake",
+            "tests/client/gameplay/test_farming.c",
+            "tests/item/use/farming_controls.inc",
+            "tests/item/use/farming_reference.c",
+            "tests/reference/item/farming_use/capture_reference.py",
+            "tests/reference/item/farming_use/packet.py",
+            "tests/reference/item/farming_use/test_packet.py",
+            "tests/tools/client/test_farming_loop.py",
+            "tests/tools/item/test_farming_use.py"
+          ],
+          "current_count": 1953
         }
       }
     }

@@ -1,5 +1,40 @@
 # Build and tests
 
+The current full Linux sanitizer cohort passes 663/663 tests. Windows passes
+671/674; three saved Water/Lava/Ladder camera or picking checks remain failed.
+The [test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#hoe-and-seeds-use)
+keeps their source/product guards and refused passive input retries. Linux CI
+now overlaps Android cleanup with configuration and waits for both before build;
+the orchestration controls establish no whole-job speedup.
+
+The [Hoe/Seeds packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/item/farming_use/README.md)
+has 118 original calls from two ordinary VMs and a read-only JDI target with
+identical stdout. Windows and sanitized Linux compare 57 Stack-wrapper effect
+rows: 54 complete selected outcomes and three native callback-refusal prefixes
+whose exception classes remain unqualified. All 24 packet corruption controls
+and nine negative comparator controls pass. Separate actual-owner controls pass
+519 checks, including 32 farming calls and a sealed-inventory refusal control. The 61 direct original Item calls remain
+outside native replay.
+
+The saved Windows farming scenario passes 2,343 checks in 6.84 seconds. Actual
+clicks till Dirt and plant Seeds; the hotbar key, used statistics, two replaced
+section definitions and all 48 original stage-zero position/UV words are checked.
+Ordinary Save and Quit and reselection preserve Farmland, Crops and both Inventory
+slots under independent Region/Player decoding. It retains 1,984 inputs and 413
+resources unchanged. Broader farming, original pixels/audio, Linux loaded play
+and FPS remain unqualified. See the
+[farming contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/farming-use.md).
+
+The final native Player-retain classifier preserves BUSY for a sealed terminal
+Inventory. Its genuine lifecycle regression passes with the existing controls.
+The rebuilt loaded farming scenario separately passes 2,640 checks in 9.76
+seconds. Four fresh Workbench shutdown profiles pass 8,515 checks in 66.08
+seconds; all 57 packet controls and capture/history/log audits pass. Each capture
+retains 1,967 selected inputs and 413 resources unchanged. Earlier source/product
+snapshots retain their own qualification scope.
+
+## Crops checkpoint
+
 Crops rendering matches 44 original calls, 88 native input/observation rows and
 15,744 appended words. Three original VMs agree; all 20 packet corruption
 controls pass. Four metadata stages extend the real section fixture to sixteen

@@ -1,5 +1,117 @@
 # Test scope and reproduction
 
+## Hoe and Seeds use
+
+The full current public cohort passes 663/663 Linux tests in 167.66 seconds
+with Clang 18 Debug ASan/UBSan, leak detection, halt-on-error and Xvfb/software
+OpenGL. Windows MSVC Release passes 671/674 in 375.46 seconds. Ladder fails its
+saved-camera yaw assertion; Water and Lava fail their later saved-camera/picking
+assertion. Their initial scene poses return correctly. These failures remain
+unresolved; the run is not a full Windows pass. Two subsequent three-second
+passive guards record one and two last-input timestamp changes and refuse to
+launch the focused replay. Those observations do not identify the input actor
+or establish the cause of the earlier failures. No input is filtered and no
+camera or assertion is repaired.
+
+Both complete cohorts preserve all 4,651 selected source inputs, including all
+1,448 runtime files. Windows preserves 539 executables and 413 imported assets;
+Linux preserves 540 executables. Test/post-hash intervals are 378.91 and 220.87
+seconds respectively; these qualification times are not performance comparisons.
+The later CI orchestration and documentation/current-binding edits pass 37-test
+selections on Windows and sanitized Linux in 48.88 and 44.35 seconds, with the
+broad failures retained. They change no runtime or compiled product. The index
+audit then catches LF normalization of the byte-pinned farming event journal:
+the staged packet fails its actual product pin. A targeted Git attribute now
+preserves the captured bytes; no observation or pin is rewritten. Final staged
+packet validation is separate from those preceding cohorts.
+
+The original [farming Item-use packet](../tests/reference/item/farming_use/README.md)
+records 118 calls: 61 direct bodies and 57 independently prepared Stack wrappers.
+Two fresh ordinary VMs and a read-only JDI target produce byte-identical complete
+stdout. The journal retains 4,246 events, 21 live method fingerprints and 16
+actual exceptions. All 24 packet corruption controls pass. Failed preparation
+attempts and the removed, unexecuted final-static mutation profiles retain their
+explicit scope in the packet.
+
+`item.farming_reference` compares all 57 native wrapper effect rows on Windows
+MSVC Release and Linux Clang 18 Debug ASan/UBSan. Fifty-four selected outcomes
+match completely. Three declared original observer exceptions have native status
+refusals: callback, Stack, World-array and statistic effects match, while Java
+exception-class equivalence remains unqualified. The 61 direct Item rows are
+original-only. Nine negative comparator controls reject changed observations.
+Executable, profile, producer, packet and authored-resource hashes remain frozen
+through each native run. The first MSVC build rejected deprecated `strtok`; the
+portable cursor parser passes with warnings enabled. The first native replay
+then exposed a bridge field error: texture index `bh` was read as durability.
+Reading the actual inherited `GM.f` field `a` fixes that input mismatch; runtime
+durability already used the correct field. Both failed receipts remain retained.
+
+The separate `client.placement_item` actual-owner suite passes 519 checks on
+Windows and sanitized Linux, including 32 new farming calls and eight Seeds
+early-face cases. Before implementation, the non-UP Seeds case fails at the
+unsupported IZ14/RK0 frontier instead of returning false. The new body passes
+that unchanged condition. Authored WorldAccess controls check sound before
+mutation, the late remote flag, ignored false setters, count/damage wrapping,
+post-effect statistic failures and exact Player holds through retirement.
+Those controls explicitly restore nullable statistic projections; they are
+separate from the input-equivalent original replay with genuine App/statistics
+owners. These component results do not establish loaded gameplay, save round
+trips, audio-device playback, server behavior or FPS.
+
+GCC 13.3 compiles the current Item-use runtime, component fixture and original
+comparison bridge using all three actual configured Ninja option sets. C17,
+warning, floating-point and sanitizer flags remain enabled; stderr is empty.
+All 2,134 source/dependency/tool/configuration guards remain unchanged and the
+three source files match the Windows copies. This explicitly substitutes GCC
+for the Clang-configured compiler and redirects private object/dependency
+outputs. It is compile-only evidence, separate from a GCC-configured full build
+or native execution.
+
+A genuine sealed LocalPlayer/Workbench inventory control then exposed a native
+status error: reached Player retention returned BUSY but Item use reported LIMIT.
+The test constructs the real Screen/container handoff, checks the completed Hoe
+sound/Farmland prefix and unchanged Stack/holds, then cleans the sealed graph
+before checking the result. The initial run reports LIMIT4 instead of BUSY2.
+The classifier now preserves BUSY; the 519-check suite and unchanged 57-row
+comparison pass on Windows and sanitized Linux. Earlier 505-check, 6.84-second
+loaded and 62.85-second Workbench receipts retain their original source scopes.
+The rebuilt loaded scenario separately passes 2,640 checks in 9.76 seconds,
+with the same exact Region/Inventory readback and source hotbar reset.
+
+The optional Windows `client.farming_loop` passes 2,343 checks in 6.84 seconds.
+Its independent saved input starts with Dirt/Air and a wooden Hoe plus two
+Seeds. One ordinary right-button click tills Farmland and adds one Hoe damage;
+the actual hotbar-2 key and another click plant stage-zero Crops and leave one
+Seed. Both actual used statistics increment once. The CK-only placement
+predicate counters stay unchanged. Both target section definitions are replaced;
+all 48 original stage-zero position/UV records and all 48 observed colors match.
+
+The source Escape/Pause Save and Quit path uses one passive, separately owned
+pre-frame Player NBT sample. Independent decoding finds Farmland60/meta0,
+Crops59/meta0 and Inventory `(slot0,290,count1,damage1)` /
+`(slot1,295,count1,damage0)`. Reselection constructs distinct World/Player/input
+owners and preserves those values. It resets the selected hotbar slot to zero;
+the original save schema does not store that selection. Cleanup removes both
+source windows. All 1,984 selected inputs and 413 imported resources remain
+unchanged. The native screenshot was inspected; no original-pixel comparison is
+claimed. This finite interaction/save/readback is separate from the original
+method packet, natural growth, harvesting, Linux loaded gameplay and FPS.
+
+The first passive three-second launch guard recorded 18 input-timestamp changes
+and refused to launch. After a coordinated idle interval, the next guard saw no
+change and the scenario above passed. Neither guard modifies input or identifies
+its actor. The refused attempt remains retained and supplies no gameplay result.
+
+Four fresh Workbench shutdown profiles qualify the final BUSY-fix runtime in
+66.08 seconds, with 8,515 checks. All 57 packet corruption controls and
+public/private, historical-failure and exact-cohort-log audits pass. The four
+actual captures preserve 1,448 runtime files, 517 selected harness files, two
+binaries and 413 resources. The immediate idle guard and passive cohort monitor
+record no input-timestamp changes; this does not identify an actor or establish
+unrestricted focus stability. The preceding 62.85-second/8,567-check snapshot
+remains preserved with its own exact source and binaries. These are distinct
+qualification scopes, not a performance comparison.
+
 ## Crops rendering and raw Chunk diagnostics
 
 `client.crops_world` matches 88 input/observation rows from 44 unchanged-original
@@ -6356,6 +6468,18 @@ baseline-integrity check. These measurements cover local test preparation and
 execution; hosted job duration and gameplay performance require separate runs.
 
 ## Hosted runner storage
+
+The [GCC job for `213538b1`](https://github.com/frankischilling/minecraft-c/actions/runs/41755562670/job/126330728295)
+spends 191 seconds in Android cleanup and 60 seconds in configuration, measured
+between GitHub's step timestamps. Tests take 507.21 seconds; compiler-cache hits
+are 1,678/1,736 (96.66%). The Linux workflow now overlaps the same bounded
+Android deletion with configuration and joins both before build or archive
+caching. Configuration failure still waits for cleanup; cleanup failure also
+fails the step. Four controls execute the actual shell body with isolated
+external commands: success, each individual failure and simultaneous failure.
+All prove overlap, completion of both children and the expected exit status.
+The actual hosted deletion and whole-job speed remain separately qualified by
+the new hosted run; no speedup is inferred from the controls.
 
 The [Torch run at `37a91a1b`](https://github.com/frankischilling/minecraft-c/actions/runs/41705768425)
 reached a Clang linker failure with `No space left on device`, before test

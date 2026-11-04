@@ -12,6 +12,7 @@ typedef struct mc_world_mutation_error mc_world_mutation_error;
 typedef struct mc_world_runtime_acquisition_error mc_world_runtime_acquisition_error;
 typedef struct mc_world_placement_error mc_world_placement_error;
 typedef struct mc_player_statistic_error mc_player_statistic_error;
+typedef struct mc_item_combat_error mc_item_combat_error;
 
 typedef enum mc_item_use_status {
     MC_ITEM_USE_OK,
@@ -46,6 +47,9 @@ typedef struct mc_item_use_error {
     const mc_world_placement_error *placement;
     const mc_world_mutation_error *mutation, *sound;
     const mc_player_statistic_error *statistic;
+    /* Reached LA147 child, including its completed Stack mutation prefix and
+     * nested broken-statistic cause. Borrows this call through retirement. */
+    const mc_item_combat_error *durability;
     /* A separate native retention/retirement cause never overwrites the
      * reached Source failure. Views borrow the retained call until retire. */
     mc_world_storage_error cleanup;
