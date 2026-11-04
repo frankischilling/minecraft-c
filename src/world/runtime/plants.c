@@ -4,6 +4,7 @@
 #include "../../block/registry/runtime_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
+#include "plant_substrate_internal.h"
 #include "runtime_internal.h"
 
 /* Concrete source receiver predicates over actual World and Registry owners. */
@@ -150,55 +151,12 @@ static bool base_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, 
 /* wb.d / nw.c dispatches on the ACTUAL retained receiver. Mushroom and dead
  * bush select their own substrate body; tall grass inherits wb/nw. */
 static bool substrate(plant_frame *frame, int32_t id, bool *out) {
-    int32_t candidate;
-    switch (frame->receiver->kind) {
-        case MC_BLOCK_MUSHROOM: {
-            stage(frame, "tl", "md", "d", "c", 0);
-            mc_registry_block_o_view array;
-            mc_registry_error cause = empty_registry();
-            if (mc_registry_block_o_get(frame->receiver->classes, &array, &cause) != MC_REGISTRY_OK)
-                return registry_fail(frame, &cause, "Mushroom substrate Block.o active use");
-            frame->error->bytecode = 4;
-            if (mc_registry_block_o_at(&array, id, out, &cause) != MC_REGISTRY_OK)
-                return registry_fail(frame, &cause, "Mushroom substrate Block.o element");
-            return true;
-        }
-        case MC_BLOCK_DEAD_BUSH:
-            stage(frame, "jb", "fz", "d", "c", 0);
-            if (!static_id(frame, "F", 1, 4, &candidate))
-                return false;
-            *out = id == candidate;
-            return true;
-        case MC_BLOCK_CROPS:
-            stage(frame, "ni", "ij", "d", "c", 0);
-            if (!static_id(frame, "aB", 1, 4, &candidate))
-                return false;
-            *out = id == candidate;
-            return true;
-        case MC_BLOCK_FLOWER:
-        case MC_BLOCK_SAPLING:
-        case MC_BLOCK_TALL_GRASS:
-            stage(frame, "wb", "nw", "d", "c", 0);
-            if (!static_id(frame, "v", 1, 4, &candidate))
-                return false;
-            if (id == candidate) {
-                *out = true;
-                return true;
-            }
-            if (!static_id(frame, "w", 11, 14, &candidate))
-                return false;
-            if (id == candidate) {
-                *out = true;
-                return true;
-            }
-            if (!static_id(frame, "aB", 21, 24, &candidate))
-                return false;
-            *out = id == candidate;
-            return true;
-        default:
-            return fail(frame->error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                        "Plant substrate receiver kind");
-    }
+    mc_world_plant_substrate_error error;
+    const mc_registry_status status = mc_world_plant_substrate(frame->receiver, id, out, &error);
+    frame->error->declaring_class = error.class_name;
+    frame->error->declaring_method = error.method;
+    frame->error->bytecode = error.pc;
+    return status == MC_REGISTRY_OK || registry_fail(frame, &error.registry, error.operation);
 }
 
 static bool flower_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {

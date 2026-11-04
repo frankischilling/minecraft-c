@@ -1,13 +1,26 @@
 # World simulation
 
+## Plant placement
+
+[The retained placement path](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plant-placement.md)
+now runs the original flower-family predicate for eight registered Blocks.
+It preserves the base target query, wrapped below-Y read and actual live
+substrate dispatch, with three distinct retained query diagnostics.
+
+Windows and sanitized Linux match all 864 original calls and pass ten focused
+tests each. Separate Windows Sapling/Flower scenes pass 1,617/1,627 checks
+through ordinary placement, drawing, Save and Quit and reselection, preserving
+unrelated bytes and independently checking Region/Player NBT. These are finite
+scenarios, with no new original-pixel or FPS result.
+
 ## Item appearance
 
 [Sapling and Leaves Item drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/appearance.md)
 now completes its icon/color methods, including actual Foliage Colorizer
 initialization. Windows and sanitized Linux match the complete registered
 Item appearance transcript and return sixteen genuine native GUI calls each.
-The GUI fixture creates no World; Sapling placement and other Block hooks
-retain their separate dependencies.
+That GUI fixture creates no World. Ordinary Sapling placement now has the
+separate save-cycle evidence above; other Block hooks retain their dependencies.
 
 ## BlockItem placement metadata
 

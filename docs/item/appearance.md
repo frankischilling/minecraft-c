@@ -81,6 +81,7 @@ and filesystem identity remain unchanged.
 Six parent regressions pass on both hosts: first-person hand, Dye icons,
 Item billboard, held extrusion, specialized Inventory geometry and Piston
 Inventory texture. This component fixture creates no World and runs no ordinary
-input or loaded-play loop. Sapling placement predicates, other Block hooks,
-loaded family coverage, persistence, original pixels/audio and sustained FPS
+input or loaded-play loop. [Plant placement](../world/plant-placement.md) now
+has separate ordinary Sapling/Flower input and save/reload evidence. Other
+Block hooks, loaded family coverage, original pixels/audio and sustained FPS
 retain their separate unfinished scopes.

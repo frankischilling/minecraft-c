@@ -673,6 +673,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/height.c
     src/world/runtime/queries.c
     src/world/runtime/plants.c
+    src/world/runtime/plant_substrate.c
     src/world/runtime/population/plants.c
     src/world/runtime/population/trees.c
     src/world/runtime/population/ore_clay.c
@@ -5625,6 +5626,8 @@ include(cmake/client_mining.cmake)
 include(cmake/item_dye_icon.cmake)
 include(cmake/client_item_billboard.cmake)
 include(cmake/client_placement.cmake)
+include(cmake/world_plant_placement.cmake)
+include(cmake/client_plant_placement.cmake)
 include(cmake/client_food_use.cmake)
 include(cmake/client_dye_use.cmake)
 include(cmake/item_farming_use.cmake)

@@ -6,6 +6,12 @@ grass, dead bushes, mushrooms, reeds, cactus and pumpkins. Dispatch follows the 
 kind and proved inheritance. It does not select behavior from a numeric ID or
 a detached material/property table. Other receiver kinds fail explicitly.
 
+[Ordinary client placement](plant-placement.md) now connects the eight
+flower-family Blocks through the retained Block and World placement entries.
+It shares the substrate body with this runtime while preserving independent
+invoking-Registry identity and three reached World-query diagnostics. Two
+Windows Sapling/Flower scenes separately check ordinary input and save/reload.
+
 | Receiver | Can-place | Survival |
 | --- | --- | --- |
 | Flower, sapling and tall grass | Base target replaceability, then grass/dirt/farmland substrate | Plant light at least8 or visible sky, then the same substrate |

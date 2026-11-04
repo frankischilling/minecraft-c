@@ -5,6 +5,13 @@ ticks, draw terrain and Mobs, and reach mining, placement, pickup, crafting and
 save/reselection in finite Windows scenarios. Complete Beta 1.7.3 parity and
 unrestricted play remain unfinished. Single-player is the current focus.
 
+[Plant placement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plant-placement.md)
+now connects eight flower-family Blocks to the ordinary placement path.
+Windows and sanitized Linux match all 864 original predicate calls. Separate
+Windows Sapling/Flower scenes complete actual input, drawing, consumption,
+Save and Quit and reselection, with independent Region/Player NBT checks.
+The broader plant, loaded-play and FPS requirements remain open.
+
 [Item appearance](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/appearance.md)
 now completes Sapling/Leaves icon overrides and Leaves color through the actual
 Foliage Colorizer. Windows and sanitized Linux match all 4,307 original

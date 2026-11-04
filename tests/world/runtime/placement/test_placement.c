@@ -46,9 +46,10 @@ static bool placement_leaf_controls(fixture *f) {
           value && e.source_exception && e.site.pc == 0 && mc_world_placement_error_retire(&e));
     CHECK(mc_world_block_can_place(f->registry[0], sapling, NULL, 8, 64, 8, 1, &value, &e) ==
               MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
-          !e.source_exception && e.native_policy && strcmp(e.site.class_name, "wb") == 0 &&
-          e.wrapper.pc == 6 && e.site.pc == 0 && e.acquisition == NULL &&
-          mc_world_placement_error_retire(&e));
+          e.source_exception && !e.native_policy && strcmp(e.site.class_name, "uu") == 0 &&
+          e.wrapper.pc == 6 && e.site.pc == 5 && e.acquisition == NULL && e.base_entered &&
+          !e.base_returned && strcmp(e.base.class_name, "wb") == 0 && e.base.pc == 6 &&
+          !e.below_read && !e.substrate_entered && mc_world_placement_error_retire(&e));
     CHECK(mc_world_block_placed_face(f->registry[0], torch, NULL, 8, 64, 8, 1, &e) ==
               MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
           !e.returned && strcmp(e.site.class_name, "vm") == 0 && e.site.pc == 0 &&

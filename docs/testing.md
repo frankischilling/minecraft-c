@@ -1,5 +1,20 @@
 # Test scope and reproduction
 
+## Plant placement and Windows save cycles
+
+Two fresh unchanged original VMs agree on all 864 direct Block, face-wrapper
+and World-wrapper calls across eight registered plant Blocks. Windows MSVC
+Release and Linux Clang Debug ASan/UBSan match every one of the 873 selected
+lines. Ten focused tests pass per host, in 16.50 Windows and 28.03 Linux CTest
+seconds, with Linux leak detection and halt-on-error enabled.
+
+Separate Windows Sapling and Flower input/save/reload profiles pass 1,617 and
+1,627 checks, each in 8.00 CTest seconds. Both preserve 1,992 inputs and 413
+assets, draw the placed Block and held Item, and independently verify saved
+Region/Player NBT. Earlier preparation failures and the final native-path
+comparison failure remain retained. See [exact behavior and scope](world/plant-placement.md)
+for source ordering, native geometry, session-token checks and exclusions.
+
 ## Item appearance and foliage GUI
 
 Windows MSVC Release and Linux Clang Debug ASan/UBSan match all 4,307 selected

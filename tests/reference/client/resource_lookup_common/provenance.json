@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 339508,
-      "sha256": "9f5dbec2322ba6d6a221025e4a8d8820444907ebad082404bc25dd1d40c92124"
+      "bytes": 339635,
+      "sha256": "8dcf4cb320ec262f7c349aa390c0828aa499a013224cdb795c217ede2d9bb388"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 190287,
-      "sha256": "bceb6ce38fb1f869dc3263c0c254c3f4f488264892fdf6abc0648c11008787ca"
+      "bytes": 191100,
+      "sha256": "9951e71a7f7bb0876351b4b61b1ff42adcd53c0fafc8d7145374395ead0a7662"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -826,24 +826,24 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 463691,
-      "sha256": "fcd07f478a86089958fd39e989fe8c4db54fca774a46d2c1bfed08e32439bb5c"
+      "bytes": 464580,
+      "sha256": "4ec4437475ead82024fefd11249166d5beb1f3a9873f9d600d1ea65b71e1ee8e"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
       "sha256": "2266d5edd099003b4b3fe304ecf79cf86bbfcab026ef1480936c04a391024957"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 108901,
-      "sha256": "966db5f070804d4ff3ecc147702c2edae9658a76926051bf48d6953cfbc3db8e"
+      "bytes": 109957,
+      "sha256": "425d7b054930e59036c684a12ce2905babb494c52146ceaead9f312d4c1fead3"
     },
     "docs/wiki/History.md": {
-      "bytes": 55537,
-      "sha256": "5612257c39587da907510fc72739f0cae2398b06bb4d521e7a1a7930567e19d8"
+      "bytes": 56397,
+      "sha256": "f3291aa31152c12face009bd538ffa85e508c7d6ff7a0def9da2eb1d9e447bda"
     },
     "docs/wiki/Home.md": {
-      "bytes": 11283,
-      "sha256": "e5a25f30847bcd92c14429982962ca0f1b422de3751d11f440486985a2c9eb59"
+      "bytes": 11774,
+      "sha256": "93d750d42e3963273497772a3b575ecb0e808b01185f50ac99aa5c60fbaff73f"
     },
     "docs/wiki/Startup.md": {
       "bytes": 7992,
@@ -854,12 +854,12 @@
       "sha256": "82cef3806c626dd62a9d870040b4731dfcfd5916232dec21afdc8efbff5f13dd"
     },
     "docs/wiki/World-simulation.md": {
-      "bytes": 51794,
-      "sha256": "19a4a6cf7ec29d39c04ccf70abc619ee8a5beb56fa2d5b03f7064e601f0a89db"
+      "bytes": 52580,
+      "sha256": "638907289fb3b61b1e4cf146f4c60d08261e2bffdd02cd412775435df8366d4c"
     },
     "docs/wiki/_Sidebar.md": {
-      "bytes": 2229,
-      "sha256": "db48b07617b208a67fa9ddff5b3d73945f9311ed8efaa58593566f98ed89a64d"
+      "bytes": 2358,
+      "sha256": "5be0700116ff5a172a25bde7d148315a280c2e1e6aec918297d07194ca621851"
     },
     "docs/world/biome-registry.md": {
       "bytes": 10503,
@@ -970,8 +970,8 @@
       "sha256": "0316c40c2ff26c498033223dd99cf9e1b003aaff0ecf046a207695e0c8f0efef"
     },
     "docs/world/plants.md": {
-      "bytes": 5370,
-      "sha256": "481cfc5224f5e0a1b47b78fb496c4e4c8ec06897c1132e9cc6ab45e6246a9a29"
+      "bytes": 5748,
+      "sha256": "2b9bbaddbd3e4ca114cdb7da7665d6c53471a63ad231a3d687187965a0c4b79e"
     },
     "docs/world/player-publication.md": {
       "bytes": 6081,
@@ -4938,8 +4938,8 @@
       "sha256": "a0c672745b179439a46f9ece9b0e542d534a1f0cc63a330ef3edb1d2c9754998"
     },
     "src/world/runtime/plants.c": {
-      "bytes": 21038,
-      "sha256": "540f4e0400176933aa1442236969321a453cf21adb213590ad22c3b0132a8354"
+      "bytes": 19458,
+      "sha256": "898c9dbc15be44e8cfcc60262b5356e648bc77ae7b68bd990c06fb895943742e"
     },
     "src/world/runtime/population/dungeon.c": {
       "bytes": 29178,
@@ -6407,7 +6407,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 495378,
-      "sha256": "598c7077924cab922ca04e643b842fcf1b3b3cccabf39767e81893819a578db7"
+      "sha256": "086ef22cbf5eb9bc29593570bdea456db1444122ad01cb82163fe55f55d3f9d3"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6471,7 +6471,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 595345,
-      "sha256": "48f5bc50f887e2629440e7715da13b134b713f6b40f086fe391dfdc93da6b25e"
+      "sha256": "eb5cd0f1defeb97599e31b07514ba38ea8a33f6a20efebce9b7710dc91a39d14"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6603,7 +6603,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 491192,
-      "sha256": "4286e36b81352febf0f7d68c74e23dd6e40056b05cb30e217206a56eac13f1ae"
+      "sha256": "8276d15a2ad954e45ed4386e5cf7ebe47c4b7252887e5107c1e842b7133dd25d"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -15498,8 +15498,8 @@
       "sha256": "068ea250c4d1732c31ff6d23f433e587255e01267883e5a3a07f5782b82d3572"
     },
     "include/mc/world/runtime/placement.h": {
-      "bytes": 5977,
-      "sha256": "7e0052692ff438add7e040daac8bc9e6df4701a181ae6baef1706ea7c4e2b661"
+      "bytes": 7081,
+      "sha256": "7fa0db05e43e936fb62f50dab88b124c646a0a9796484b70869526bfb5925f1d"
     },
     "src/client/controller/use.c": {
       "bytes": 24246,
@@ -15510,8 +15510,8 @@
       "sha256": "40cd393cc1a276fd8d5b741730dea0c34e4e57cfa1b7b247623b482c1b9161d3"
     },
     "src/world/runtime/placement.c": {
-      "bytes": 30124,
-      "sha256": "e36f5a956f061d6ef92df6188cf29c20e459b7ffe1bc17eb1d56ec30dafc950d"
+      "bytes": 33314,
+      "sha256": "01b8750ec345c6f4b38065fd7d3396e9a5d4523a5dea3d29e6c519053ba21bf6"
     },
     "tests/client/controller/test_use.c": {
       "bytes": 10069,
@@ -15526,8 +15526,8 @@
       "sha256": "90ef1657e379e148a4a96c78d311d94dc77a258996c09ddd601c5181ef101f84"
     },
     "tests/item/use/test_use.c": {
-      "bytes": 36154,
-      "sha256": "fa325a1c38c4f9ff6e72aa149d461a221b34a4d4c9264ff1c89c1af17682759f"
+      "bytes": 36455,
+      "sha256": "71dd68d3e2d1b33df4e7cc551552373cf46f86d0fe4c86d000084ef7f5c1a450"
     },
     "tests/reference/client/placement/README.md": {
       "bytes": 2679,
@@ -15574,8 +15574,8 @@
       "sha256": "8b561e19c30e3dafaa292b7bcc18491754696f53004710760cbba3d6b54ae5a8"
     },
     "tests/world/runtime/placement/test_placement.c": {
-      "bytes": 18532,
-      "sha256": "9f0cff9ac906af85e0fee5666f2b066aae7087659a3ec7c0b0ebef7b4b0cc9a0"
+      "bytes": 18679,
+      "sha256": "ab95943f62a90e55df780ca3afe2cb80a2b6ba5aad00e75b8f35f335d6dbc2df"
     },
     "cmake/entity_mount.cmake": {
       "bytes": 803,
@@ -19058,8 +19058,8 @@
       "sha256": "f586c12b727f3e68ff41643b2799d55a712bef425717e58a512614aa5e9a2bce"
     },
     "docs/item/placement-metadata.md": {
-      "bytes": 3106,
-      "sha256": "1d586b039b93a59bd07dede7819485ef58d11fdc65862d0ca8c48dd61cd80038"
+      "bytes": 3372,
+      "sha256": "57dc84f25a7f2b6fbf5333b5306d92b514b0c8da1c6e3efc0f916e2ab9644a56"
     },
     "scripts/benchmarks/client_frames.py": {
       "bytes": 5948,
@@ -19146,8 +19146,8 @@
       "sha256": "676a328637326afec6691d8ba8b7b7679cdeaccd53ca3f07b784a1ada6b6f9e9"
     },
     "docs/item/appearance.md": {
-      "bytes": 5103,
-      "sha256": "e79785025db86e648604509df8260d98f3544ac3a1c0a14fa09bb324728f941e"
+      "bytes": 5180,
+      "sha256": "de04a655d95bb49356b7453c555078ed93a0eb2f1ec0bb9bac25af4b7699ce7b"
     },
     "tests/client/render/foliage_item_controls.inc": {
       "bytes": 27258,
@@ -19224,6 +19224,94 @@
     "tests/tools/item/test_appearance.py": {
       "bytes": 7111,
       "sha256": "846d5b98e36e431b3066b6fc591483a653b7cef139af17701f57dc6a0624fcd5"
+    },
+    "cmake/client_plant_placement.cmake": {
+      "bytes": 2112,
+      "sha256": "1e54ad0d62f94955a4b3574029cc6d03d5adcbcc54a80ee930bd5f294615200c"
+    },
+    "cmake/world_plant_placement.cmake": {
+      "bytes": 1800,
+      "sha256": "a6af4c187f349c4d9d5b852f8aa5c0a813bb36427c03f962299784cbae78808a"
+    },
+    "docs/world/plant-placement.md": {
+      "bytes": 5620,
+      "sha256": "bb894c4ee9297e261d8f12edf190856747637df9ac02b3d8cffb7b0d8be94fb8"
+    },
+    "src/world/runtime/plant_substrate.c": {
+      "bytes": 4508,
+      "sha256": "cc08b3023b3172900991a28c8506b99d08b407c8303accbe9c8ac9e9c078e701"
+    },
+    "src/world/runtime/plant_substrate_internal.h": {
+      "bytes": 801,
+      "sha256": "3c400a5bd324c8cfedd36ab37f55abe4dd0059c5ce75093b6ef686fa77ca563f"
+    },
+    "tests/client/gameplay/test_plant_placement.c": {
+      "bytes": 25478,
+      "sha256": "ed4a404a2b194ad23da4a512149cddd1036a445c39c8e5c4d585e73e3f36086d"
+    },
+    "tests/reference/world/plant_placement/.gitattributes": {
+      "bytes": 276,
+      "sha256": "d4d2151e4895b36b23f26bb645ff295872e2c8998e493de5046c1381fc93a117"
+    },
+    "tests/reference/world/plant_placement/PlantPlacementObservation.java": {
+      "bytes": 8865,
+      "sha256": "cfdec415341284916872d08cdcc6c4a2c0962bef21b6ca4bfa7928d45da08dcf"
+    },
+    "tests/reference/world/plant_placement/README.md": {
+      "bytes": 5772,
+      "sha256": "edfc907f9431a8a82276c082febe502336572ac638610ca2fd337b01a653547c"
+    },
+    "tests/reference/world/plant_placement/capture-provenance.json": {
+      "bytes": 8003,
+      "sha256": "5125dd22685bf123c419dfbd7c42e568adcfb1c087051625b486bd6103f4476e"
+    },
+    "tests/reference/world/plant_placement/capture_reference.py": {
+      "bytes": 9839,
+      "sha256": "c7e5e584ece292fc2d90911235801a2dc4e8c066dc7234baf4b09b4607417b07"
+    },
+    "tests/reference/world/plant_placement/declared-inputs.json": {
+      "bytes": 48040,
+      "sha256": "7875a9bb5930dc66c8ec8ac3890e4760bb7f6d2289ecbdcf774b735f6d1f0763"
+    },
+    "tests/reference/world/plant_placement/ordinary-0.stdout": {
+      "bytes": 48105,
+      "sha256": "c616dfe23456813a11b3bf311d9af7c9b39a518e1b6830508647f10543970164"
+    },
+    "tests/reference/world/plant_placement/ordinary-1.stdout": {
+      "bytes": 48105,
+      "sha256": "c616dfe23456813a11b3bf311d9af7c9b39a518e1b6830508647f10543970164"
+    },
+    "tests/reference/world/plant_placement/original.stdout": {
+      "bytes": 47016,
+      "sha256": "783a1a4de33b4bc75fb83bfe78a742b787a0ce56bfa49882e915d6114d93b5da"
+    },
+    "tests/reference/world/plant_placement/packet.py": {
+      "bytes": 11712,
+      "sha256": "1bfefdb2dc5e139a0e201ac95c76f941854e6a7b474d1b24b89e892e7cd305b1"
+    },
+    "tests/reference/world/plant_placement/profiles.tsv": {
+      "bytes": 9008,
+      "sha256": "046d8ea3fde9a644c1ef2ba01f71c33ca0f3f71fc8345da8b84004011fffba0b"
+    },
+    "tests/reference/world/plant_placement/source-pins.json": {
+      "bytes": 88547,
+      "sha256": "9f6e3ddcf6a6a51b8e406a20faed5045b05d5736745a3fcfe6d0dd885c5d1f2a"
+    },
+    "tests/reference/world/plant_placement/test_packet.py": {
+      "bytes": 4808,
+      "sha256": "2e238bbd65616596f74875ec66236d6efa4b1e58d94df2a73edcd554ae391b21"
+    },
+    "tests/tools/client/test_plant_placement_loop.py": {
+      "bytes": 16429,
+      "sha256": "654eefeeb075917aa40bdedde2ed7368339d539524042875e443f7d57f9c459d"
+    },
+    "tests/tools/world/test_plant_placement.py": {
+      "bytes": 8600,
+      "sha256": "29ead6dfe04a5ced35c6b95335e0bb0c142e49d663698c23ddbf1d6e2f065dd3"
+    },
+    "tests/world/runtime/plant_placement_reference.c": {
+      "bytes": 25375,
+      "sha256": "6b0e2e1e00a51237e15ca3418791b3e0a591386bb109081dc58c51fd7d63a8ff"
     }
   },
   "self_metadata_excluded": true,
@@ -26537,6 +26625,121 @@
             "tests/tools/item/test_appearance.py"
           ],
           "current_count": 4806
+        }
+      }
+    },
+    {
+      "from_commit": "4c0ebea680fbfec0d5a616acdd87f8d055553aae",
+      "role": "Current retained plant placement, shared substrate dispatch, original predicate replay and Windows placement/save controls. Historical Workbench evidence stays sealed; its explicit current-source comparison does not qualify these later inputs. Earlier original, native, hosted and timing results retain their captured scope.",
+      "previous_metadata": {
+        "bytes": 1122525,
+        "sha256": "e5fc723ccb60643b38a6bc377fb478f0dc99303fa1db02fd62458e7f49ab99c6"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 339508,
+              "sha256": "9f5dbec2322ba6d6a221025e4a8d8820444907ebad082404bc25dd1d40c92124"
+            },
+            "docs/parity.md": {
+              "bytes": 190287,
+              "sha256": "bceb6ce38fb1f869dc3263c0c254c3f4f488264892fdf6abc0648c11008787ca"
+            },
+            "docs/testing.md": {
+              "bytes": 463691,
+              "sha256": "fcd07f478a86089958fd39e989fe8c4db54fca774a46d2c1bfed08e32439bb5c"
+            },
+            "docs/wiki/Build-and-tests.md": {
+              "bytes": 108901,
+              "sha256": "966db5f070804d4ff3ecc147702c2edae9658a76926051bf48d6953cfbc3db8e"
+            },
+            "docs/wiki/History.md": {
+              "bytes": 55537,
+              "sha256": "5612257c39587da907510fc72739f0cae2398b06bb4d521e7a1a7930567e19d8"
+            },
+            "docs/wiki/Home.md": {
+              "bytes": 11283,
+              "sha256": "e5a25f30847bcd92c14429982962ca0f1b422de3751d11f440486985a2c9eb59"
+            },
+            "docs/wiki/World-simulation.md": {
+              "bytes": 51794,
+              "sha256": "19a4a6cf7ec29d39c04ccf70abc619ee8a5beb56fa2d5b03f7064e601f0a89db"
+            },
+            "docs/wiki/_Sidebar.md": {
+              "bytes": 2229,
+              "sha256": "db48b07617b208a67fa9ddff5b3d73945f9311ed8efaa58593566f98ed89a64d"
+            },
+            "docs/world/plants.md": {
+              "bytes": 5370,
+              "sha256": "481cfc5224f5e0a1b47b78fb496c4e4c8ec06897c1132e9cc6ab45e6246a9a29"
+            },
+            "src/world/runtime/plants.c": {
+              "bytes": 21038,
+              "sha256": "540f4e0400176933aa1442236969321a453cf21adb213590ad22c3b0132a8354"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 495378,
+              "sha256": "598c7077924cab922ca04e643b842fcf1b3b3cccabf39767e81893819a578db7"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 595345,
+              "sha256": "48f5bc50f887e2629440e7715da13b134b713f6b40f086fe391dfdc93da6b25e"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 491192,
+              "sha256": "4286e36b81352febf0f7d68c74e23dd6e40056b05cb30e217206a56eac13f1ae"
+            },
+            "include/mc/world/runtime/placement.h": {
+              "bytes": 5977,
+              "sha256": "7e0052692ff438add7e040daac8bc9e6df4701a181ae6baef1706ea7c4e2b661"
+            },
+            "src/world/runtime/placement.c": {
+              "bytes": 30124,
+              "sha256": "e36f5a956f061d6ef92df6188cf29c20e459b7ffe1bc17eb1d56ec30dafc950d"
+            },
+            "tests/item/use/test_use.c": {
+              "bytes": 36154,
+              "sha256": "fa325a1c38c4f9ff6e72aa149d461a221b34a4d4c9264ff1c89c1af17682759f"
+            },
+            "tests/world/runtime/placement/test_placement.c": {
+              "bytes": 18532,
+              "sha256": "9f0cff9ac906af85e0fee5666f2b066aae7087659a3ec7c0b0ebef7b4b0cc9a0"
+            },
+            "docs/item/placement-metadata.md": {
+              "bytes": 3106,
+              "sha256": "1d586b039b93a59bd07dede7819485ef58d11fdc65862d0ca8c48dd61cd80038"
+            },
+            "docs/item/appearance.md": {
+              "bytes": 5103,
+              "sha256": "e79785025db86e648604509df8260d98f3544ac3a1c0a14fa09bb324728f941e"
+            }
+          },
+          "added": [
+            "cmake/client_plant_placement.cmake",
+            "cmake/world_plant_placement.cmake",
+            "docs/world/plant-placement.md",
+            "src/world/runtime/plant_substrate.c",
+            "src/world/runtime/plant_substrate_internal.h",
+            "tests/client/gameplay/test_plant_placement.c",
+            "tests/reference/world/plant_placement/.gitattributes",
+            "tests/reference/world/plant_placement/PlantPlacementObservation.java",
+            "tests/reference/world/plant_placement/README.md",
+            "tests/reference/world/plant_placement/capture-provenance.json",
+            "tests/reference/world/plant_placement/capture_reference.py",
+            "tests/reference/world/plant_placement/declared-inputs.json",
+            "tests/reference/world/plant_placement/ordinary-0.stdout",
+            "tests/reference/world/plant_placement/ordinary-1.stdout",
+            "tests/reference/world/plant_placement/original.stdout",
+            "tests/reference/world/plant_placement/packet.py",
+            "tests/reference/world/plant_placement/profiles.tsv",
+            "tests/reference/world/plant_placement/source-pins.json",
+            "tests/reference/world/plant_placement/test_packet.py",
+            "tests/tools/client/test_plant_placement_loop.py",
+            "tests/tools/world/test_plant_placement.py",
+            "tests/world/runtime/plant_placement_reference.c"
+          ],
+          "current_count": 4828
         }
       }
     }

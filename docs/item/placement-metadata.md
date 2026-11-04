@@ -29,19 +29,21 @@ Release and Linux Clang Debug with ASan/UBSan match all 4,040 scalar results
 and the complete class inventory. Seven native comparator controls reject
 changed transcripts; the original packet adds 37 artifact/row controls.
 
-The Item-use component passes 861 checks on both hosts. Five new calls enter the
-real BlockItem path and write Wool, Log or Leaves metadata through the normal
-notifying setter. They complete placed hooks, sound and the Stack count store,
+The Item-use component passes 873 checks on both hosts. Seven calls enter the
+real BlockItem path and write Wool, Log, Leaves, Sapling or Flower metadata
+through the normal notifying setter. They complete placed hooks, sound and the Stack count store,
 then reach the declared NULL Player statistic failure. This includes negative
 Wool damage and Leaves with the lowest signed damage value. The Chunk stores
 the low four bits; the method receipt retains the complete signed result.
 
-Separate controls keep count-zero return ahead of metadata dispatch. Five
+Separate controls keep count-zero return ahead of metadata dispatch. All six
 families reach a normal false setter at height 128, preserving the Stack count
 and skipping sound and placed hooks before the later statistic invocation.
-Sapling still stops at its earlier unimplemented placement predicate.
+Sapling has declared Grass support at Y=127; its predicate returns true before
+the setter rejects Y=128. [Plant placement](../world/plant-placement.md) records
+the original predicate comparison and separate ordinary Windows save cycles.
 
-Eight focused tests pass on each host, including controller use, Food, farming,
+The metadata checkpoint passed eight focused tests per host, including controller use, Food, farming,
 Dye, both metadata tests and the sealed historical Workbench receipt. The
 Linux cohort completes in 7.52 CTest seconds with leak detection and
 halt-on-error. The new code has no fresh Workbench SDK qualification.
@@ -52,5 +54,6 @@ maps the actual Item kind. All metadata values already matched in that failed
 run; its complete output remains retained.
 
 These finite method and component checks do not qualify all six families for
-ordinary loaded play. Other Block predicates, hooks, Item drawing, original
-pixels/audio, save/reload and frame rate retain their separate scopes.
+ordinary loaded play. The Sapling/Flower save cycles have their own scope;
+other Block predicates, hooks, Item drawing, original pixels/audio and frame
+rate retain their separate qualification requirements.

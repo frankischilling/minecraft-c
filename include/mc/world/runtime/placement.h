@@ -35,18 +35,25 @@ typedef struct mc_world_placement_site {
 struct mc_world_placement_error {
     mc_world_storage_status status;
     const char *operation, *exception_class;
-    mc_world_placement_site site, caller, wrapper;
+    mc_world_placement_site site, caller, wrapper, base, substrate;
     bool returned, value, native_policy, source_exception, source_error;
     bool existing_read, candidate_read, box_returned, box_ignored, collision_checked;
     bool existing_replaced, predicate_entered, predicate_returned;
+    bool base_entered, base_returned, base_value, below_read;
+    bool substrate_entered, substrate_returned;
     bool remote_read, remote, workbench_entered, workbench_returned;
-    int32_t existing_id, fresh_id;
+    int32_t existing_id, fresh_id, below_id;
     const mc_block *existing, *candidate;
     const mc_entity_bounds *box;
     mc_world_storage_error cause;
     mc_registry_error registry;
     mc_entity_status bounds_status;
     const mc_world_runtime_acquisition_error *acquisition;
+    /* Every reached ID query has its own retained frame in source order.
+     * acquisition remains the last reached query; no later read overwrites an
+     * earlier query's source or publication cause. Borrow until retirement. */
+    const mc_world_runtime_acquisition_error *queries[3];
+    size_t query_count;
     const mc_world_collision_error *collision;
     const mc_world_spawn_collision_error *entity_collision;
     mc_world_storage_error cleanup;
@@ -77,6 +84,14 @@ mc_world_storage_status mc_world_block_can_place(mc_registry_classes *code_regis
                                                  const mc_block *, mc_world_runtime *, int32_t x,
                                                  int32_t y, int32_t z, int32_t face, bool *out,
                                                  mc_world_placement_error *);
+/* Independently virtual a(World,III)Z, without the face wrapper. WB first
+ * invokes the UU base body, then reads the wrapped below-Y coordinate and
+ * invokes the same receiver's actual substrate predicate. No survival/light
+ * check or same-World-Registry substitution is performed. */
+mc_world_storage_status mc_world_block_can_place_base(mc_registry_classes *code_registry,
+                                                      const mc_block *, mc_world_runtime *,
+                                                      int32_t x, int32_t y, int32_t z, bool *out,
+                                                      mc_world_placement_error *);
 mc_world_storage_status mc_world_block_activate(mc_registry_classes *code_registry,
                                                 const mc_block *, mc_world_runtime *, int32_t x,
                                                 int32_t y, int32_t z, mc_entity *nullable_player,

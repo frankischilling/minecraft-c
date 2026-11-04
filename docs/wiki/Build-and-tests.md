@@ -1,5 +1,23 @@
 # Build and tests
 
+## Plant placement and save cycles
+
+Two ordinary original VMs repeat all 864 plant predicate calls. Windows MSVC
+Release and Linux Clang Debug ASan/UBSan match the complete 873-line transcript,
+with 61 packet and 34 comparator corruption controls. Ten focused tests pass
+in 16.50 Windows and 28.03 Linux CTest seconds.
+
+Two Windows SDK placement/save/reload profiles pass 1,617 Sapling checks and
+1,627 Flower checks, each in 8.00 seconds. Each preserves 1,992 inputs and 413
+assets, checks exact native crossed-plant geometry, and independently decodes
+the saved Block, metadata and Player Inventory. All thirteen files preserve
+their bytes through reselection except the actual eight-byte session token.
+
+[Detailed scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plant-placement.md)
+retains the pre-change native refusal, preparation and path-comparison
+failures. No runtime change was made for the fixture corrections. Original
+pixels/audio, Linux loaded play and FPS remain outside these finite checks.
+
 ## Item appearance and foliage GUI
 
 Windows MSVC Release and Linux Clang Debug ASan/UBSan match all 4,307 selected

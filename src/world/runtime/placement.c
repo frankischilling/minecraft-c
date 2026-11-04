@@ -5,22 +5,24 @@
 #include "../../item/render/internal.h"
 #include "collision/blocks_internal.h"
 #include "construction_internal.h"
+#include "mc/core/java/java.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/collision/spawning.h"
 #include "mc/world/storage/source_chunk_loader.h"
+#include "plant_substrate_internal.h"
 #include "runtime_internal.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-enum { PLACEMENT_RECEIPTS = 16, PLACEMENT_SOURCES = 4 };
+enum { PLACEMENT_RECEIPTS = 16, PLACEMENT_SOURCES = 4, PLACEMENT_QUERIES = 3 };
 
 struct mc_world_placement_work {
     mc_world_runtime *world;
     mc_registry_classes *registry;
     mc_entity_classes *box_owner;
     mc_entity_bounds *box;
-    mc_world_runtime_acquisition_error *queries[2];
+    mc_world_runtime_acquisition_error *queries[PLACEMENT_QUERIES];
     mc_world_collision_error *collision;
     mc_world_spawn_collision_error *entities;
     mc_world_source_chunk_error *sources[PLACEMENT_SOURCES];
@@ -190,7 +192,7 @@ static bool publication_receipts(mc_world_placement_error *e, mc_world_entity_ba
 
 static bool capture(mc_world_placement_error *e) {
     mc_world_placement_work *w = e->work;
-    for (size_t i = 0; i < 2; ++i)
+    for (size_t i = 0; i < PLACEMENT_QUERIES; ++i)
         if (w->queries[i] != NULL &&
             (!copy_source(e, &w->queries[i]->source_chunk) ||
              !publication_receipts(e, &w->queries[i]->batch, &w->queries[i]->tile_entity)))
@@ -222,6 +224,10 @@ static bool block_get(mc_world_placement_error *e, mc_world_runtime *world, size
     if (!hold_world(e, world))
         return false;
     mc_world_placement_work *w = e->work;
+    if (index >= PLACEMENT_QUERIES || w->queries[index] != NULL) {
+        fail(e, MC_WORLD_STORAGE_LIMIT, "Placement reached query diagnostic extent", true);
+        return false;
+    }
     w->queries[index] = calloc(1, sizeof(*w->queries[index]));
     if (w->queries[index] == NULL) {
         fail(e, MC_WORLD_STORAGE_ALLOCATION_FAILED, "Placement reached World query diagnostic",
@@ -229,6 +235,8 @@ static bool block_get(mc_world_placement_error *e, mc_world_runtime *world, size
         return false;
     }
     e->acquisition = w->queries[index];
+    e->queries[index] = w->queries[index];
+    ++e->query_count;
     mc_world_storage_error cause = {0};
     const mc_world_storage_status status =
         mc_world_runtime_block_get_detailed(world, x, y, z, out, &cause, w->queries[index]);
@@ -425,21 +433,12 @@ static bool inherited(mc_world_placement_error *e, const char *declaring) {
     return false;
 }
 
-static bool predicate(mc_world_placement_error *e, const mc_block *block, mc_world_runtime *world,
-                      int32_t x, int32_t y, int32_t z, size_t query_index, bool *out) {
-    const mc_world_placement_site wrapper = e->site;
-    if (!inherited(e, face_predicate_class(block->kind)))
-        return false;
-    e->predicate_entered = true;
-    e->site.pc = 6; /* UU face wrapper invokes its independently virtual base. */
-    e->wrapper = e->site;
-    if (e->caller.class_name == NULL)
-        e->caller = e->site;
-    e->site = site(predicate_class(block->kind), "a", "(Lfd;III)Z", 0);
-    if (!inherited(e, e->site.class_name))
-        return false;
+/* This is also WB's invokespecial body: its receiver does not select another
+ * virtual can-place method here. The World ID read precedes Block active use. */
+static bool uu_predicate(mc_world_placement_error *e, mc_world_runtime *world, int32_t x, int32_t y,
+                         int32_t z, size_t query_index, bool *out) {
+    e->site = site("uu", "a", "(Lfd;III)Z", 5);
     int32_t id;
-    e->site.pc = 5;
     if (!block_get(e, world, query_index, x, y, z, &id))
         return false;
     e->fresh_id = id;
@@ -470,9 +469,70 @@ static bool predicate(mc_world_placement_error *e, const mc_block *block, mc_wor
         }
         value = mc_material_g(material);
     }
+    e->site.pc = 35;
+    *out = value;
+    return true;
+}
+
+static bool base_predicate(mc_world_placement_error *e, const mc_block *block,
+                           mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
+                           size_t query_index, bool *out) {
+    const char *declaring = predicate_class(block->kind);
+    const bool flower = strcmp(declaring, "wb") == 0;
+    e->site = site(declaring, "a", "(Lfd;III)Z", 0);
+    e->base = e->site;
+    e->predicate_entered = e->base_entered = true;
+    if (!flower && !inherited(e, declaring))
+        return false;
+    if (flower)
+        e->base.pc = 6;
+    bool value;
+    if (!uu_predicate(e, world, x, y, z, query_index, &value))
+        return false;
+    if (flower && value) {
+        e->base.pc = 20;
+        e->site = e->base;
+        int32_t below;
+        if (!block_get(e, world, query_index + 1, x, mc_java_i32_sub(y, 1), z, &below))
+            return false;
+        e->below_id = below;
+        e->below_read = true;
+        e->base.pc = 23;
+        e->substrate_entered = true;
+        mc_world_plant_substrate_error child;
+        const mc_registry_status status = mc_world_plant_substrate(block, below, &value, &child);
+        e->site = site(child.class_name, child.method, "(I)Z", child.pc);
+        e->substrate = e->site;
+        if (status != MC_REGISTRY_OK) {
+            e->registry = child.registry;
+            registry_failed(e);
+            return false;
+        }
+        e->substrate_returned = true;
+    }
+    e->base.pc = flower ? 34u : 35u;
+    e->site = e->base;
+    e->base_returned = e->predicate_returned = true;
+    e->base_value = value;
+    *out = value;
+    return true;
+}
+
+static bool predicate(mc_world_placement_error *e, const mc_block *block, mc_world_runtime *world,
+                      int32_t x, int32_t y, int32_t z, size_t query_index, bool *out) {
+    const mc_world_placement_site wrapper = e->site;
+    if (!inherited(e, face_predicate_class(block->kind)))
+        return false;
+    e->predicate_entered = true;
+    e->site.pc = 6; /* UU face wrapper invokes its independently virtual base. */
+    e->wrapper = e->site;
+    if (e->caller.class_name == NULL)
+        e->caller = e->site;
+    bool value;
+    if (!base_predicate(e, block, world, x, y, z, query_index, &value))
+        return false;
     e->site = wrapper;
     e->site.pc = 9;
-    e->predicate_returned = true;
     *out = value;
     return true;
 }
@@ -654,6 +714,22 @@ mc_world_storage_status mc_world_block_can_place(mc_registry_classes *registry,
     return finish(e, returned, returned && value, out);
 }
 
+mc_world_storage_status mc_world_block_can_place_base(mc_registry_classes *registry,
+                                                      const mc_block *block,
+                                                      mc_world_runtime *world, int32_t x, int32_t y,
+                                                      int32_t z, bool *out,
+                                                      mc_world_placement_error *e) {
+    if (e == NULL || out == NULL)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    if (e->work != NULL)
+        return MC_WORLD_STORAGE_BUSY;
+    if (!block_entry(e, registry, block, "a", "(Lfd;III)Z"))
+        return e->status;
+    bool value;
+    const bool returned = base_predicate(e, block, world, x, y, z, 0, &value);
+    return finish(e, returned, returned && value, out);
+}
+
 mc_world_storage_status mc_world_block_activate_with_context(
     mc_registry_classes *registry, const mc_block *block, mc_world_runtime *world, int32_t x,
     int32_t y, int32_t z, mc_entity *player, const mc_world_block_activation_context *context,
@@ -786,7 +862,7 @@ bool mc_world_placement_error_retire(mc_world_placement_error *e) {
         mc_world_access_failure_release(&w->receipts[i]);
     for (size_t i = 0; i < w->source_count; ++i)
         free(w->sources[i]);
-    for (size_t i = 0; i < 2; ++i)
+    for (size_t i = 0; i < PLACEMENT_QUERIES; ++i)
         free(w->queries[i]);
     free(w->collision);
     free(w->entities);

@@ -1,5 +1,20 @@
 # History
 
+## Plant placement and Windows save cycles
+
+The retained Block and World placement entries now execute the original
+flower-family predicate. A shared substrate body preserves the live singleton
+and opaque-array reads; three query frames retain their complete failure and
+ownership graph. Windows and sanitized Linux match all 864 original calls.
+
+Separate Windows Sapling/Flower scenes complete ordinary placement, rendering,
+consumption, Save and Quit and reselection. Independent NBT and native geometry
+checks pass with 1,617/1,627 native checks. The first preparation stopped before
+client launch on authored health; the first native pair completed but its
+wrapper used the wrong Windows path spelling for the session-token exception.
+All failures remain retained, and both fixes change only the fixture. This
+establishes no original-pixel or FPS result.
+
 ## Item appearance and foliage GUI
 
 Sapling and Leaves now read the live named Block and call its texture method;

@@ -349,21 +349,21 @@ static bool adjustments_and_frontiers(fixture *f, mc_chunk_state *chunk) {
         CHECK(mc_item_use_inspect(call, &s) && s.returned && !s.result && use_retire(&call));
         mc_item_stack_release(stack);
         CHECK(use_stack(ids[i], 1, 15, &stack));
+        const size_t below = ((size_t)8 * 16 + 8) * 128 + 127;
+        const uint8_t previous_below = chunk->data->blocks[below];
+        if (i == 3)
+            chunk->data->blocks[below] = 2; /* Declared Grass support below the y128 target. */
         const mc_item_use_status status =
             mc_item_use_on_block_begin(f->registry, stack, NULL, f->world, 8, 128, 8, 6, &call, &e);
+        chunk->data->blocks[below] = previous_below;
         /* The ordinary out-of-height setter returns false after the real
-         * metadata dispatch. Sapling still reaches its earlier WB predicate. */
+         * metadata dispatch, including the supported Sapling predicate. */
         CHECK(mc_item_use_inspect(call, &s) && !s.returned && s.predicate_entered &&
-              !s.count_stored && s.predicate_returned == (i != 3));
-        if (s.predicate_returned) {
-            CHECK(status == MC_ITEM_USE_SOURCE_NULL && s.can_place && s.metadata_returned &&
-                  s.metadata == metadata[i] && s.damage == 15 && s.setter_returned &&
-                  !s.setter_value && s.result && e.site.pc == 34 && e.source_exception &&
-                  !e.native_policy && !s.sound_returned && !s.placed_face_returned);
-        } else {
-            CHECK(status == MC_ITEM_USE_WORLD && e.site.pc == 127 && e.placement != NULL &&
-                  e.placement->native_policy && !s.metadata_returned && !s.setter_returned);
-        }
+              !s.count_stored && s.predicate_returned);
+        CHECK(status == MC_ITEM_USE_SOURCE_NULL && s.can_place && s.metadata_returned &&
+              s.metadata == metadata[i] && s.damage == 15 && s.setter_returned && !s.setter_value &&
+              s.result && e.site.pc == 34 && e.source_exception && !e.native_policy &&
+              !s.sound_returned && !s.placed_face_returned);
         CHECK(use_retire(&call));
         mc_item_stack_release(stack);
     }
@@ -373,8 +373,8 @@ static bool adjustments_and_frontiers(fixture *f, mc_chunk_state *chunk) {
 static bool placement_metadata_controls(fixture *f, mc_chunk_state *chunk) {
     static const struct {
         int32_t id, damage, metadata;
-    } cases[] = {
-        {35, 13, 13}, {17, 2, 2}, {18, 1, 9}, {35, -1, -1}, {18, INT32_MIN, INT32_MIN + 8}};
+    } cases[] = {{35, 13, 13}, {17, 2, 2}, {18, 1, 9}, {35, -1, -1}, {18, INT32_MIN, INT32_MIN + 8},
+                 {6, 2, 2},    {37, -7, 0}};
 
     const size_t index = ((size_t)8 * 16 + 8) * 128 + 64;
     for (size_t i = 0; i < sizeof cases / sizeof *cases; ++i) {
@@ -384,10 +384,15 @@ static bool placement_metadata_controls(fixture *f, mc_chunk_state *chunk) {
         mc_item_use_state s;
         mc_item_use_error e;
         CHECK(use_stack(cases[i].id, 2, cases[i].damage, &stack));
+        const uint8_t previous_below = chunk->data->blocks[index - 1];
+        if (cases[i].id == 6 || cases[i].id == 37)
+            chunk->data->blocks[index - 1] = 2;
         /* NULL Player fails only at IZ's statistic invocation, after the
          * complete placement, sound and count-store prefix has returned. */
-        CHECK(mc_item_use_on_block_begin(f->registry, stack, NULL, f->world, 8, 64, 8, 6, &call,
-                                         &e) == MC_ITEM_USE_SOURCE_NULL);
+        const mc_item_use_status status =
+            mc_item_use_on_block_begin(f->registry, stack, NULL, f->world, 8, 64, 8, 6, &call, &e);
+        chunk->data->blocks[index - 1] = previous_below;
+        CHECK(status == MC_ITEM_USE_SOURCE_NULL);
         int32_t id, stored, count;
         CHECK(mc_item_use_inspect(call, &s) && !s.returned && s.result && s.metadata_returned &&
               s.damage == cases[i].damage && s.metadata == cases[i].metadata && s.setter_returned &&
