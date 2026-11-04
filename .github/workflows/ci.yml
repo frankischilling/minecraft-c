@@ -91,15 +91,21 @@ jobs:
           key: ${{ runner.os }}-fetchcontent-archives-v1-${{ hashFiles('CMakeLists.txt', 'cmake/*dependencies.cmake') }}
           restore-keys: ${{ runner.os }}-fetchcontent-archives-v1-
       # Keep sanitizer file/line traces without full type data in every test ELF.
+      # Compress final DWARF sections; keep code, instrumentation and line tables.
       - name: Configure and make space for sanitizer executables
         id: configure
         run: |
           df -h "$GITHUB_WORKSPACE"
-          # Native configuration does not use the hosted Android SDK/NDK.
+          # Native configuration does not use the hosted Android or .NET SDKs.
           # Join cleanup even if configuration fails; neither may outlive this step.
           (
             if [ -d /usr/local/lib/android ]; then
+              du -sh /usr/local/lib/android
               sudo rm -rf -- /usr/local/lib/android
+            fi
+            if [ -d /usr/share/dotnet ]; then
+              du -sh /usr/share/dotnet
+              sudo rm -rf -- /usr/share/dotnet
             fi
           ) &
           cleanup_pid=$!
@@ -112,6 +118,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_C_FLAGS_DEBUG=-g1 \
             -DCMAKE_CXX_FLAGS_DEBUG=-g1 \
+            -DCMAKE_EXE_LINKER_FLAGS=-Wl,--compress-debug-sections=zlib \
             -DMC_ENABLE_SANITIZERS=ON \
             -DMC_ENABLE_JAVA_REFERENCE_TESTS=ON \
             -DMC_ENABLE_CLIENT_DISPLAY_TESTS=ON \

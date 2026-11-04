@@ -95,10 +95,20 @@ so a later test failure does not discard compilation work. Cache statistics
 are printed for each build. Tests still execute from the newly built targets;
 dependency-download and CTest scheduling caches remain separate.
 
-Linux CI removes the hosted image's unused Android SDK/NDK while configuring
+Linux CI removes the hosted image's unused Android and .NET SDKs while configuring
 the native build. Both operations finish before build or dependency-archive
 caching; either failure stops the job. Disk capacity is reported around this
 joined step. Compiler, sanitizer and test coverage remain enabled.
+
+Linux CI also passes `-Wl,--compress-debug-sections=zlib` through
+`CMAKE_EXE_LINKER_FLAGS`. [GNU ld](https://sourceware.org/binutils/docs/ld/Options.html)
+compresses final ELF debug sections while
+retaining source-line information and sanitizer instrumentation. This addresses
+the GCC runner exhausting its 72 GB filesystem during linking, with a 24 GB
+build directory despite the Android cleanup. It does not strip symbols or
+change the test inventory. Local copied-product checks preserve loaded
+sections and source-line lookup; fresh GCC ASan and UBSan canaries retain their
+file/line diagnostics. Hosted storage and test results are checked separately.
 
 The local Windows Food input/save scenario uses `MC_ENABLE_CLIENT_FOOD_TESTS=ON`
 with display tests and imported resources. Build `mc_test_food_loop` and run

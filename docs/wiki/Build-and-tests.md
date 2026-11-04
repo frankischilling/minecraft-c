@@ -1,5 +1,13 @@
 # Build and tests
 
+Linux hosted builds compress final ELF debug sections with
+`CMAKE_EXE_LINKER_FLAGS=-Wl,--compress-debug-sections=zlib`. Source-line
+diagnostics, sanitizer instrumentation and the full test inventory remain
+enabled. The change addresses a GCC runner disk-exhaustion failure during
+linking. The parallel unused-SDK cleanup now also removes .NET to reserve
+capacity. Local compression and sanitizer checks are separate from hosted
+qualification. See [build details](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/building.md).
+
 The Food/Registry frozen public cohort passes 677/677 Windows tests and
 666/666 Linux sanitizer tests, with source/product guards unchanged. The
 separate Windows Food scene passes actual clicks, HUD/held drawing and

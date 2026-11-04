@@ -10,8 +10,8 @@
       "sha256": "0decbd737c673b7a3dbedc55fd782fdda56f2490826a01194ce3f5277724f2d8"
     },
     ".github/workflows/ci.yml": {
-      "bytes": 14369,
-      "sha256": "be42181a8b1fce08dea6147dce50a1562570c69db487b0d2ecfb1ac1d947f7de"
+      "bytes": 14722,
+      "sha256": "a221812cbcc177fbb6ad29bf2c88b6fd84732e28324d410d03af91c2ff3c245d"
     },
     ".gitignore": {
       "bytes": 282,
@@ -186,8 +186,8 @@
       "sha256": "1a54745a759c41a57a2453f44296f6cc9793698f281e83afd9a9893bdbe7ae1d"
     },
     "docs/building.md": {
-      "bytes": 21250,
-      "sha256": "6e7806c774807c57856176dd3ad6dbba3212a262455ef96df55aeca2675679fe"
+      "bytes": 21914,
+      "sha256": "53a401c3eb0e7b2af01dffbc7b6673d4bb97aac72aa4556315239ce9c4c43105"
     },
     "docs/client/achievement-notice.md": {
       "bytes": 12023,
@@ -834,8 +834,8 @@
       "sha256": "634b8729a067c99600f8e346027511af21d7fb7b12b029de4674b99ca8fd787f"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 89390,
-      "sha256": "6b56dc3fdd4adfd1da2dddf7b580a5c08e70f454ea4a6681120ab1aa8a897ec3"
+      "bytes": 89951,
+      "sha256": "a47e95ce3347ac37989cc4269bfd890cc26bcdeee7214face74e941b09a84f84"
     },
     "docs/wiki/History.md": {
       "bytes": 44954,
@@ -25220,6 +25220,34 @@
             "tests/tools/item/test_food_use.py",
             "tests/tools/world/test_registry_tick_benchmark.py"
           ],
+          "current_count": 4676
+        }
+      }
+    },
+    {
+      "from_commit": "9e073097a2e5290318aeccc5bcbf3951f2a9d78c",
+      "role": "Current hosted Linux executable debug compression and unused SDK cleanup inputs. Earlier runtime observations, compiled products and qualification cohorts retain their original scope.",
+      "previous_metadata": {
+        "bytes": 1061520,
+        "sha256": "bda92f8f370355401d3945c4b57bdc2d69eb347d1409f4edd25a1f34db66cb1c"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            ".github/workflows/ci.yml": {
+              "bytes": 14369,
+              "sha256": "be42181a8b1fce08dea6147dce50a1562570c69db487b0d2ecfb1ac1d947f7de"
+            },
+            "docs/building.md": {
+              "bytes": 21250,
+              "sha256": "6e7806c774807c57856176dd3ad6dbba3212a262455ef96df55aeca2675679fe"
+            },
+            "docs/wiki/Build-and-tests.md": {
+              "bytes": 89390,
+              "sha256": "6b56dc3fdd4adfd1da2dddf7b580a5c08e70f454ea4a6681120ab1aa8a897ec3"
+            }
+          },
+          "added": [],
           "current_count": 4676
         }
       }
