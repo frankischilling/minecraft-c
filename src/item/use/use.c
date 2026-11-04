@@ -2,6 +2,8 @@
 
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
+#include "../../entity/entity_internal.h"
+#include "../../entity/living/fields_internal.h"
 #include "../registry/registry_internal.h"
 #include "../render/internal.h"
 #include "../stack/source_internal.h"
@@ -10,6 +12,7 @@
 #include "mc/entity/entity.h"
 #include "mc/entity/player/statistics.h"
 #include "mc/item/combat/combat.h"
+#include "mc/item/registry/runtime.h"
 #include "mc/statistics/registry/registry.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/mutations.h"
@@ -314,6 +317,74 @@ static bool unsupported(mc_item_use_call *c, const char *owner, const char *meth
                         const char *descriptor) {
     c->error.child = site(owner, method, descriptor, 0);
     return fail(c, MC_ITEM_USE_UNSUPPORTED, "Item use reached distinct virtual override", true);
+}
+
+static bool food(mc_item_use_call *c) {
+    at(c, "yw", use_air_descriptor, 2);
+    c->error.stack = mc_item_stack_source_count_get(c->state.stack, &c->state.count_before);
+    if (c->error.stack != MC_ITEM_STACK_OK)
+        return fail(c, MC_ITEM_USE_STACK, "Food actual Stack count read", true);
+    c->state.count_read = true;
+    c->state.count_after = mc_java_i32_sub(c->state.count_before, 1);
+    at(c, "yw", use_air_descriptor, 7);
+    c->error.stack = mc_item_stack_source_count_set(c->state.stack, c->state.count_after);
+    if (c->error.stack != MC_ITEM_STACK_OK)
+        return fail(c, MC_ITEM_USE_STACK, "Food actual Stack count store", true);
+    c->state.count_stored = true;
+    at(c, "yw", use_air_descriptor, 12);
+    const int32_t amount = c->state.item->yw.a;
+    at(c, "yw", use_air_descriptor, 15);
+    if (c->state.player == NULL)
+        return source_null(c, "Food actual null Player healing invocation");
+    if (!hold_player(c, "Food reached Player healing occurrence"))
+        return false;
+    if (!mc_entity_is_kind(c->state.player, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
+        return fail(c, MC_ITEM_USE_PLAYER, "Food actual concrete Player storage", true);
+    c->state.healing_entered = true;
+    if (!mc_entity_living_heal_source(c->state.player, amount))
+        return fail(c, MC_ITEM_USE_PLAYER, "Food actual inherited Living healing storage", true);
+    c->state.healing_returned = true;
+    return true;
+}
+
+static bool food_result(mc_item_use_call *c, bool soup) {
+    if (!food(c))
+        return false;
+    if (!soup) {
+        at(c, "yw", use_air_descriptor, 19);
+        c->error.stack = mc_item_stack_retain(c->state.stack);
+        if (c->error.stack != MC_ITEM_STACK_OK)
+            return fail(c, MC_ITEM_USE_LIMIT, "Food same-Stack return occurrence", true);
+        c->result_held = true;
+        c->state.result_stack = c->state.stack;
+        return true;
+    }
+    at(c, "bz", use_air_descriptor, 8);
+    c->error.stack = mc_item_stack_allocate(&c->state.allocated_stack);
+    if (c->error.stack != MC_ITEM_STACK_OK)
+        return fail(c, MC_ITEM_USE_ALLOCATION, "Soup reached fresh Stack allocation", true);
+    const mc_item *bowl = NULL;
+    at(c, "bz", use_air_descriptor, 12);
+    if (mc_registry_item_static_get(c->state.registry, "C", &bowl, &c->error.registry) !=
+        MC_REGISTRY_OK)
+        return registry_failed(c);
+    c->state.bowl_captured = true;
+    at(c, "bz", use_air_descriptor, 15);
+    c->error.child = site("iz", "<init>", "(Lgm;)V", 2);
+    if (bowl == NULL)
+        return source_null(c, "Soup actual ItemStack constructor null Item bf read");
+    int32_t id;
+    if (mc_registry_item_source_id(c->state.registry, bowl, &id, &c->error.registry) !=
+        MC_REGISTRY_OK)
+        return registry_failed(c);
+    c->error.child.pc = 7;
+    c->error.stack = mc_item_stack_construct(c->state.allocated_stack, id, 1, 0);
+    if (c->error.stack != MC_ITEM_STACK_OK)
+        return fail(c, MC_ITEM_USE_STACK, "Soup actual ItemStack numeric constructor", true);
+    c->error.child = (mc_item_use_site){0};
+    c->state.result_stack = c->state.allocated_stack;
+    at(c, "bz", use_air_descriptor, 18);
+    return true;
 }
 
 /* Capture m first, then read this same CK.a at the source field site, then
@@ -812,6 +883,12 @@ static bool execute(mc_item_use_call *c) {
         return false;
     const mc_item_kind k = c->state.item->kind;
     if (c->state.in_air) {
+        if (k == MC_ITEM_FOOD || k == MC_ITEM_COOKIE || k == MC_ITEM_SOUP) {
+            if (!food_result(c, k == MC_ITEM_SOUP))
+                return false;
+            at(c, "iz", "(Lfd;Lgs;)Liz;", 10);
+            return true;
+        }
         const char *owner = air_override(k);
         if (owner != NULL)
             return unsupported(c, owner, "a", use_air_descriptor);
@@ -964,6 +1041,7 @@ mc_item_use_status mc_item_use_retire(mc_item_use_call **slot, mc_item_use_error
         free(c->sources[i]);
     if (c->result_held)
         mc_item_stack_release(c->state.result_stack);
+    mc_item_stack_release(c->state.allocated_stack);
     if (c->stack_held)
         mc_item_stack_release(c->state.stack);
     if (c->player_held)

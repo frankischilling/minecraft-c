@@ -5,6 +5,19 @@ ticks, draw terrain and Mobs, and reach mining, placement, pickup, crafting and
 save/reselection in finite Windows scenarios. Complete Beta 1.7.3 parity and
 unrestricted play remain unfinished. Single-player is the current focus.
 
+[Food and soup use](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/food-use.md)
+now preserves immediate healing, count changes and Bowl replacement through the
+ordinary ItemStack/controller path. All 28 selected original method observations
+match Windows and sanitized Linux native replay. The separate
+[Registry random-tick measurement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/registry-random-ticks.md)
+reduces CPU time for its fixed-work workloads while retaining every sample;
+it establishes no scene-FPS improvement.
+
+The saved Windows Food scene also completes actual Apple/Soup clicks, health
+5 to 9 to 19, Bowl replacement, HUD/held drawing and save/reselection with
+independent NBT readback. Linux loaded rendering reaches its pre-input gate;
+Linux Food interaction and persistence remain unqualified.
+
 [Hoe and Seeds use](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/farming-use.md)
 now tills Farmland and plants Crops through the ordinary ItemStack wrapper.
 Original-method comparisons and separate native controls cover source order,

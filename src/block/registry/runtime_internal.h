@@ -78,6 +78,15 @@ mc_registry_status mc_registry_block_n_get(mc_registry_classes *, mc_registry_bl
 mc_registry_status mc_registry_block_n_at(const mc_registry_block_n_view *, int32_t index,
                                           bool *out, mc_registry_error *);
 
+/* Same source operations, owner admission, captures and complete failures as
+ * get/at above. Only the caller diagnostic stays untouched on success. These
+ * are for internal callers that inspect diagnostics exclusively on failure;
+ * no active use or array read is skipped, cached across calls or replayed. */
+mc_registry_status mc_registry_block_n_get_failure(mc_registry_classes *,
+                                                   mc_registry_block_n_view *, mc_registry_error *);
+mc_registry_status mc_registry_block_n_at_failure(const mc_registry_block_n_view *, int32_t index,
+                                                  bool *out, mc_registry_error *);
+
 /* Actual o reference captured at its reached Block active use. Trees retain
  * this exact array across a later World getter; substrate predicates index it
  * immediately. at never reloads current o or performs another active use. The

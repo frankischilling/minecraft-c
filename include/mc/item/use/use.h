@@ -60,6 +60,9 @@ typedef struct mc_item_use_error {
 typedef struct mc_item_use_state {
     mc_registry_classes *registry;
     mc_item_stack *stack, *result_stack;
+    /* Actual BZ new8 owner, including a RAW constructor-failure prefix.
+     * Borrows this call; on success it aliases the distinct result_stack. */
+    mc_item_stack *allocated_stack;
     mc_world_runtime *world;
     mc_entity *player;
     const mc_item *item;
@@ -77,6 +80,7 @@ typedef struct mc_item_use_state {
     bool metadata_returned, setter_returned, setter_value;
     bool placed_face_returned, placed_by_returned;
     bool sound_returned, count_stored, statistic_entered, statistic_returned;
+    bool healing_entered, healing_returned, bowl_captured;
     mc_item_use_status status;
 } mc_item_use_state;
 

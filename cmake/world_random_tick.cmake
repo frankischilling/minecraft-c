@@ -63,3 +63,10 @@ if(BUILD_TESTING)
     set_tests_properties(world.random_tick PROPERTIES
         LABELS "public;unit;world;ownership" TIMEOUT 300)
 endif()
+
+if(BUILD_TESTING)
+    add_test(NAME world.registry_tick_benchmark_receipt COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_registry_tick_benchmark.py")
+    set_tests_properties(world.registry_tick_benchmark_receipt PROPERTIES
+        LABELS "public;unit;world;benchmark" TIMEOUT 60)
+endif()

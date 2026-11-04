@@ -6,8 +6,8 @@
       "sha256": "0081591e56fb3455123fcaa3a97e0b1fcf1c8f01e41e6b0806da11434ddcc364"
     },
     ".gitattributes": {
-      "bytes": 1256,
-      "sha256": "339906aa51e9b888c8492994964d9f6481127938779ae1f6e04ffad143862cd1"
+      "bytes": 1348,
+      "sha256": "0decbd737c673b7a3dbedc55fd782fdda56f2490826a01194ce3f5277724f2d8"
     },
     ".github/workflows/ci.yml": {
       "bytes": 14369,
@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 339136,
-      "sha256": "504a08cca6c70dd3fc27da8e8e2a0d5ca31d428e16bbc087fa6e53913f67defd"
+      "bytes": 339208,
+      "sha256": "997b7cb51e8fa8ab3c47e5e2de7f448929cecd53a80a6992e454babeb9cf2db2"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -186,8 +186,8 @@
       "sha256": "1a54745a759c41a57a2453f44296f6cc9793698f281e83afd9a9893bdbe7ae1d"
     },
     "docs/building.md": {
-      "bytes": 20809,
-      "sha256": "7e6dfe3a9a1f9f5ceb7d102614ccdb27b8d1b97b7752eb1f373fdf961ff2d6fb"
+      "bytes": 21250,
+      "sha256": "6e7806c774807c57856176dd3ad6dbba3212a262455ef96df55aeca2675679fe"
     },
     "docs/client/achievement-notice.md": {
       "bytes": 12023,
@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 182555,
-      "sha256": "15c4f222aae41bd7c021d02473be2f5dfa73ab73314521d3ae5399c1bdeaa873"
+      "bytes": 184001,
+      "sha256": "0b88b8f51c5bdb7cc9212d0968caeca35965157566e33639808d04c74a1ee29b"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 100896,
-      "sha256": "0e19b1fda712d3ca80cbcd9e9241a421fc6c866dae81f73ff063f8d47c6da3a8"
+      "bytes": 102479,
+      "sha256": "9cd987d5b2c935c3f6a6ff82e40712d28285db9ff67d544211d8fb5ce92c1c07"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,28 +826,28 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 439761,
-      "sha256": "31b12ce3342d6f11ceacccb0d5c061732f49de4f970f06be50f8ae2d938e99d1"
+      "bytes": 444294,
+      "sha256": "3bd87af6c0f7f6bb47eaf0692e5051c058ede7848c4c87843e7eb6e6723f2f1c"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 35723,
       "sha256": "634b8729a067c99600f8e346027511af21d7fb7b12b029de4674b99ca8fd787f"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 88942,
-      "sha256": "cf5c1d560bdd0f9e231ad163df10bde471a22554018dabc1f12fb226fb09d6cb"
+      "bytes": 89390,
+      "sha256": "6b56dc3fdd4adfd1da2dddf7b580a5c08e70f454ea4a6681120ab1aa8a897ec3"
     },
     "docs/wiki/History.md": {
       "bytes": 44954,
       "sha256": "d300f14f53ca5e43ff85f7fdae53a468d9a9ebd169cf8b3f0c8d167cd894ea8e"
     },
     "docs/wiki/Home.md": {
-      "bytes": 4355,
-      "sha256": "2f070dc2d8db1f2802cf3049659c3494763a24d5c2e3d7ebad4678d857ee12b6"
+      "bytes": 5262,
+      "sha256": "b3ae05e6ae0c7a2d7f2bda9d707f3b3a79af165dee1af1f9d81e5c5705855e3a"
     },
     "docs/wiki/Startup.md": {
-      "bytes": 7529,
-      "sha256": "a9b0095da386d9266682b7d965d7ae3043b4d623874c762a856e638fa772a3ef"
+      "bytes": 7992,
+      "sha256": "f24a3ae90b3942ba8f074a676035ac447c9634918e7138af1d34b7828827b4e8"
     },
     "docs/wiki/Storage-and-reference.md": {
       "bytes": 28196,
@@ -2006,8 +2006,8 @@
       "sha256": "9578e0cc7995e343ef20fb20ba5176b0a88c63648ca9a719329a465acfd1231e"
     },
     "scripts/development/format_code.py": {
-      "bytes": 5018,
-      "sha256": "7f6633dc9caf4b59ece5b50412b4182259ac15c3ac8cd2021a3538e6f7d1f759"
+      "bytes": 5071,
+      "sha256": "5db073334628ac568ae9d483ee2e3522224e83a33b61a91878da743262cafb12"
     },
     "scripts/reference/binaries/inspect_jars.py": {
       "bytes": 7826,
@@ -2514,12 +2514,12 @@
       "sha256": "2723b6b1c86ba6a6e4e4db831e0b906888cdb50064555e4b741f05975c20514e"
     },
     "src/block/registry/runtime.c": {
-      "bytes": 22823,
-      "sha256": "804c98d222e3653711f6bddab0c3f6a4f12ef69c4badc8d54a92230f1f8c4730"
+      "bytes": 23989,
+      "sha256": "5c40deb26f840a27cf4de5c56bae4638ff0bfdf6206c2eb5b41b31bc46a912b0"
     },
     "src/block/registry/runtime_internal.h": {
-      "bytes": 9522,
-      "sha256": "fec3a30ff1787e76c33e15d1358e52a610604926fc292d27b851e125b86b07f9"
+      "bytes": 10192,
+      "sha256": "4bd216fb475332a6b9e81324a2dddd5a4bc28a6e7ce06a5b3a134222fc96857e"
     },
     "src/block/registry/step_sound.c": {
       "bytes": 8271,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 471304,
-      "sha256": "90d6d74e4aadeaac79e1671c17ff5af00077f574d48028c977d85a1bf14f640f"
+      "bytes": 476301,
+      "sha256": "46fae524be227b34b4ba0b921be958e8c7b2673a798e2d583be26ecba92f7afa"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 569105,
-      "sha256": "aa54c47a4e111bc38e036171740a11cbc43119163712dcd68f398f20337abe9b"
+      "bytes": 574455,
+      "sha256": "9ef19ba11c3f08a8d14d34ee207dabba502940b793109189266491362f28d6d2"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 467118,
-      "sha256": "a5c68165ed2113681c5e5b8d9aea9ecef5a2e6a0f47c2b3fc6be5c9123983d57"
+      "bytes": 472115,
+      "sha256": "e9feb2fae418e00d749c0bc02ad50623bf72c70d4e0edb5552bcf5173b9ed85f"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -13294,8 +13294,8 @@
       "sha256": "0acd9925053c4810e7ec62272f9515ad98479ee3b04ef8dc1c0826e8c279da82"
     },
     "cmake/world_random_tick.cmake": {
-      "bytes": 4003,
-      "sha256": "cb18755e1db7539d8a1ed2b09451e69eef2262e05c5216f08aeed3f294682eb9"
+      "bytes": 4338,
+      "sha256": "76e54802dbbb60c4c2f40f11a47c556b36c8efbca0195a3a4074e5ec07bbebd7"
     },
     "docs/entity/lightning-construction.md": {
       "bytes": 8529,
@@ -13334,8 +13334,8 @@
       "sha256": "a3b2ea14bd0314899640233d6bf4701fb63fe8a265355ccb8a0cb0938743b06b"
     },
     "src/world/runtime/world_tick_random.c": {
-      "bytes": 48505,
-      "sha256": "fa00e5990e5caacab3c1ef6d4acae86cd24944f976436384b4dc4b268c027a04"
+      "bytes": 48553,
+      "sha256": "a3bac7500705fb86f4aabe73299af37495abb6d9cb3c6319a8c6a5b605f557cf"
     },
     "src/world/runtime/world_tick_random_internal.h": {
       "bytes": 562,
@@ -13434,8 +13434,8 @@
       "sha256": "0703302dbc981162ccc196c95dd5853fe36ca5c7a6be6512d6693069fbc52139"
     },
     "tests/world/runtime/test_random_blocks.c": {
-      "bytes": 34336,
-      "sha256": "b5f93c4478480d5bbf0166132796ed3b9c1033385aca3221cf262d668c779d63"
+      "bytes": 53929,
+      "sha256": "32cb6f1cbba2e30dcb0d8a96b693dc6776f38e4e78fa974faa4f83b1b36e13d2"
     },
     "tests/world/runtime/test_world_random_tick.c": {
       "bytes": 39950,
@@ -13534,12 +13534,12 @@
       "sha256": "4ad386a1d6b7d0355c65222ece1d14daf5067a969c8ffa578cffa2bd5d25280c"
     },
     "src/entity/living/fields.c": {
-      "bytes": 526,
-      "sha256": "b731b1fab521f0762c62575773a322acfc7709a0930ca69d774a2fec2c8389a6"
+      "bytes": 947,
+      "sha256": "05b5275c54fd899bf3afe290235fab50188be1cebbe8a7efd8afeced435f9913"
     },
     "src/entity/living/fields_internal.h": {
-      "bytes": 346,
-      "sha256": "7b44d60316eb6a8169a4d633c9369b09dd40b0820fbf8e19d896eb819d613570"
+      "bytes": 711,
+      "sha256": "9110d461b76f388fdca2bbab8de806a31e7c66b87ea334746cc34e1373b03005"
     },
     "src/entity/living/travel_internal.h": {
       "bytes": 917,
@@ -15494,8 +15494,8 @@
       "sha256": "5cd60b136d4a9862e9a5f6b6f64699d689c03b084a6d06d042d9ccba40da4ba6"
     },
     "include/mc/item/use/use.h": {
-      "bytes": 5031,
-      "sha256": "00de7bb596488285963a86bd8aa06b7c3c1a52e3c8ce0445e1bde9709add72de"
+      "bytes": 5277,
+      "sha256": "00ee19439516519262a3945879634cbb8f93b5c5e485755f2ef9269acfa4362c"
     },
     "include/mc/world/runtime/placement.h": {
       "bytes": 5977,
@@ -15506,8 +15506,8 @@
       "sha256": "bf372e5a0f28cf596f3aa7ab7b1cbe84f34242c135f4b493f870314378425829"
     },
     "src/item/use/use.c": {
-      "bytes": 41120,
-      "sha256": "ff9f5e31d24c5d510fccc3f04ca068c453c61ebaa7b72f0aa4bfddd256129bad"
+      "bytes": 44737,
+      "sha256": "200b91c3757c6adaf49aa264847776bfd5aadeb4f730564c6c6f0ab27af58299"
     },
     "src/world/runtime/placement.c": {
       "bytes": 30124,
@@ -15526,8 +15526,8 @@
       "sha256": "90ef1657e379e148a4a96c78d311d94dc77a258996c09ddd601c5181ef101f84"
     },
     "tests/item/use/test_use.c": {
-      "bytes": 33819,
-      "sha256": "132466e7beddaf953b96fdb5d6f1dd660f419a4cb2cf2364f3000a3b15a9e97f"
+      "bytes": 33886,
+      "sha256": "06d72bfa9c894f5d81aed6295e698be8ed1067007a0ac9f0cb577367bd54864d"
     },
     "tests/reference/client/placement/README.md": {
       "bytes": 2679,
@@ -17270,20 +17270,20 @@
       "sha256": "3093a1732a1b0a3122f1eaeb312f76d38ec11c19778042042e2220b3cde291c5"
     },
     "tests/reference/client/workbench_open_shutdown/README.md": {
-      "bytes": 9748,
-      "sha256": "bc475b49e3a7c1b2a5aeec4981cf4323045ac250342acedffc2397cb80b42488"
+      "bytes": 11557,
+      "sha256": "afccddbb4bb22a0738d48e63f3babbbc2edfb8c8fff25c3d495bbda45183cfc8"
     },
     "tests/reference/client/workbench_open_shutdown/native-validation.json": {
-      "bytes": 340879,
-      "sha256": "d9c7eae75523442a2d5c869d1dfe2c986566838e92947db5122c12fb28b402c7"
+      "bytes": 340989,
+      "sha256": "bfcf9956f8f11ad8cc161d6440f8d737fc157212fe075aa4047f608496799e21"
     },
     "tests/reference/client/workbench_open_shutdown/packet.py": {
       "bytes": 23677,
-      "sha256": "199be5e8e5923f3785d4dae92f2f0dd4af19b42fad0d9793d926b425adf64cf2"
+      "sha256": "7735e7aafe6084e057dc79fc24e864797ad91ef22feb57226aa39581844698f2"
     },
     "tests/reference/client/workbench_open_shutdown/test_packet.py": {
       "bytes": 9801,
-      "sha256": "749d516bb0481fa963dbdda1ffdaf1b2ef4ad464e05ef7686c1a1715eaa8dfe0"
+      "sha256": "b6c8ae63842637d368bd72a1cf800c2a57f1bf686cd34c88e1892185c204cd2a"
     },
     "tests/reference/item/mining/MiningDestroyObservation.java": {
       "bytes": 6130,
@@ -18588,6 +18588,122 @@
     "tests/tools/item/test_farming_use.py": {
       "bytes": 12719,
       "sha256": "9df4262b8be8db46bf4136a55f2fc9dd50e067bd019d1fb0fd04fbb07bbba567"
+    },
+    "cmake/client_food_use.cmake": {
+      "bytes": 1757,
+      "sha256": "99b3d2ee05f4817c74aeaaa81939cc4155c23525c1de2630792ec18de675eaea"
+    },
+    "cmake/item_food_use.cmake": {
+      "bytes": 1203,
+      "sha256": "aa3c0d02ead2bbe67e1395b0e9c83bc18dcb56fa5d8d8752cd0375f453ea6617"
+    },
+    "docs/item/food-use.md": {
+      "bytes": 6072,
+      "sha256": "68104b4cadc250a000f7317cb933b537127c7a66aad2909f8cc1c609c67dd076"
+    },
+    "docs/performance/registry-random-ticks.md": {
+      "bytes": 7984,
+      "sha256": "90bf2c7311fc66a4bb2f7d19efd9369a8d9455b02be835d3677b1ec3ac7a81be"
+    },
+    "tests/benchmarks/world_registry_tick_windows.json": {
+      "bytes": 702450,
+      "sha256": "b9ab6310c9fb396a1bca90fdca10331b2239ff4e0f5e4dc1a875634fb5f55af0"
+    },
+    "tests/client/gameplay/test_food.c": {
+      "bytes": 21039,
+      "sha256": "963117d8d4082cecb41125d0349b57e4c12f03ff051c979d78a97ab1aec50b98"
+    },
+    "tests/item/use/food_controls.inc": {
+      "bytes": 7749,
+      "sha256": "77d63bb3e5dfab591107c24007cefc63d6feca2ce4b5a0d096277ea6d4eae1a8"
+    },
+    "tests/item/use/food_reference.c": {
+      "bytes": 7105,
+      "sha256": "82f5648490f2877cf92672b2607e9cac51912f6e3fc7c353fe266f54f4dee949"
+    },
+    "tests/reference/item/food_use/.gitattributes": {
+      "bytes": 43,
+      "sha256": "fe52480d26940eede74a4e2c296418167b43665b2d7fa2fbd3e325b8eecd01ac"
+    },
+    "tests/reference/item/food_use/ControllerFoodObservation.java": {
+      "bytes": 4480,
+      "sha256": "a5e242943bd95adcdea030ccff476ac2e96b47ba0dad1b1a5e196fea06f38ef7"
+    },
+    "tests/reference/item/food_use/FoodObservation.java": {
+      "bytes": 4234,
+      "sha256": "20ffdeac7df81c54f69cdec14181a966d5415b7e445f72e38e4dcddf349d10d4"
+    },
+    "tests/reference/item/food_use/README.md": {
+      "bytes": 6110,
+      "sha256": "d7634f5e862f02af43203980da128a4ed638d23c1ff7384a9444ad2caf8ee444"
+    },
+    "tests/reference/item/food_use/capture_reference.py": {
+      "bytes": 6340,
+      "sha256": "0e7c4b6c1c3742f5084ba48f78c7146b753dab3255b4ecd9c6ad76dcc41b3b64"
+    },
+    "tests/reference/item/food_use/controller-provenance.json": {
+      "bytes": 2417,
+      "sha256": "1f505dcf3a5924233ec859f5e4b5b1717cf0760dbefbe3f03b1ffe5ba72e123b"
+    },
+    "tests/reference/item/food_use/controller.stdout": {
+      "bytes": 1256,
+      "sha256": "5cdc9d237be8a39ac32c61832f6e50dff5f8bf97b4ad04e4675f12a4a337918d"
+    },
+    "tests/reference/item/food_use/controller.tsv": {
+      "bytes": 1211,
+      "sha256": "f01f9bcba48963fa7ccffcb20d366cbb2df1b8998fbc2672261fce7ddbe3ed40"
+    },
+    "tests/reference/item/food_use/declared-inputs.json": {
+      "bytes": 1463,
+      "sha256": "8d970336867ed18e283090e7c807d48c910e273083db38237509ee86e4c26ccc"
+    },
+    "tests/reference/item/food_use/failed-compile.stderr": {
+      "bytes": 305,
+      "sha256": "c46a37945a61b58f14526a983e56f2d0f4dbf275c499b2b50c032f5cf941d96a"
+    },
+    "tests/reference/item/food_use/manifest.json": {
+      "bytes": 1998,
+      "sha256": "abfc44c01d83babae33550ca76a91dbbc9b61c61ca4454223b3a7a9f36d56b1d"
+    },
+    "tests/reference/item/food_use/packet.py": {
+      "bytes": 4777,
+      "sha256": "30a933de1e4b7bddb49d6444672954290afca01741abadf0cb5b4f68f8c26db1"
+    },
+    "tests/reference/item/food_use/profiles.tsv": {
+      "bytes": 287,
+      "sha256": "655a82e05d49e8cd0901eba2970a620c5d5d761e5d99980a0f08fcb6df9b9d52"
+    },
+    "tests/reference/item/food_use/source-pins.json": {
+      "bytes": 86608,
+      "sha256": "e7a9d8dfa3ddcaf22a79a538ecdcafb02d013d4cb073458da5950c4e348f66fc"
+    },
+    "tests/reference/item/food_use/test_packet.py": {
+      "bytes": 717,
+      "sha256": "43cf47fbf3a2e9ee5991eafcf1243148369f134212bc02d15fe85e083aec49ae"
+    },
+    "tests/reference/item/food_use/wrapper-provenance.json": {
+      "bytes": 2381,
+      "sha256": "5674adc5dc999270ab84fed74c9545dfe85492f0933e0f094f4cb89e9a99c1b6"
+    },
+    "tests/reference/item/food_use/wrapper.stdout": {
+      "bytes": 1011,
+      "sha256": "e2eee24f41371e472b31fae88c0a855b1c6f05da0b8e03089fe3f3e25c25f929"
+    },
+    "tests/reference/item/food_use/wrapper.tsv": {
+      "bytes": 966,
+      "sha256": "fb9dd3e5bc20970fb035d349eafc0d837d4e12054ff6d1aa5da3150e11bc6f93"
+    },
+    "tests/tools/client/test_food_loop.py": {
+      "bytes": 13867,
+      "sha256": "81a0f7c735fcd4d21a04cdf2e5f649a25ae4dbbfa97baf26a568df69e2911500"
+    },
+    "tests/tools/item/test_food_use.py": {
+      "bytes": 6396,
+      "sha256": "41aa7120ea1b78bc2225c0b444b2073b8ef2355c0857bad78491c7f07f224245"
+    },
+    "tests/tools/world/test_registry_tick_benchmark.py": {
+      "bytes": 19394,
+      "sha256": "2e17c9381dabec8c6bb893acfad66a26bbdd8f7e0cc20ca7571e39cf01fa3a07"
     }
   },
   "self_metadata_excluded": true,
@@ -24951,6 +25067,160 @@
             "tests/tools/item/test_farming_use.py"
           ],
           "current_count": 4647
+        }
+      }
+    },
+    {
+      "from_commit": "31c803e2fffe8ef1f7a5b4565d0558b3f1d0fff4",
+      "role": "Current Food and Soup Item use, Registry random-tick diagnostics, loaded Food fixture and fresh Workbench capture inputs. Earlier observations and compiled products retain their original qualification scope.",
+      "previous_metadata": {
+        "bytes": 1049453,
+        "sha256": "f3b6c5500735bdd66c07bf395983080c221edb75dde5ecea7dd4ffa56601ef8f"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 339136,
+              "sha256": "504a08cca6c70dd3fc27da8e8e2a0d5ca31d428e16bbc087fa6e53913f67defd"
+            },
+            "docs/building.md": {
+              "bytes": 20809,
+              "sha256": "7e6dfe3a9a1f9f5ceb7d102614ccdb27b8d1b97b7752eb1f373fdf961ff2d6fb"
+            },
+            "docs/parity.md": {
+              "bytes": 182555,
+              "sha256": "15c4f222aae41bd7c021d02473be2f5dfa73ab73314521d3ae5399c1bdeaa873"
+            },
+            "docs/status.md": {
+              "bytes": 100896,
+              "sha256": "0e19b1fda712d3ca80cbcd9e9241a421fc6c866dae81f73ff063f8d47c6da3a8"
+            },
+            "docs/testing.md": {
+              "bytes": 439761,
+              "sha256": "31b12ce3342d6f11ceacccb0d5c061732f49de4f970f06be50f8ae2d938e99d1"
+            },
+            "docs/wiki/Home.md": {
+              "bytes": 4355,
+              "sha256": "2f070dc2d8db1f2802cf3049659c3494763a24d5c2e3d7ebad4678d857ee12b6"
+            },
+            "scripts/development/format_code.py": {
+              "bytes": 5018,
+              "sha256": "7f6633dc9caf4b59ece5b50412b4182259ac15c3ac8cd2021a3538e6f7d1f759"
+            },
+            "src/block/registry/runtime.c": {
+              "bytes": 22823,
+              "sha256": "804c98d222e3653711f6bddab0c3f6a4f12ef69c4badc8d54a92230f1f8c4730"
+            },
+            "src/block/registry/runtime_internal.h": {
+              "bytes": 9522,
+              "sha256": "fec3a30ff1787e76c33e15d1358e52a610604926fc292d27b851e125b86b07f9"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 471304,
+              "sha256": "90d6d74e4aadeaac79e1671c17ff5af00077f574d48028c977d85a1bf14f640f"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 569105,
+              "sha256": "aa54c47a4e111bc38e036171740a11cbc43119163712dcd68f398f20337abe9b"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 467118,
+              "sha256": "a5c68165ed2113681c5e5b8d9aea9ecef5a2e6a0f47c2b3fc6be5c9123983d57"
+            },
+            "cmake/world_random_tick.cmake": {
+              "bytes": 4003,
+              "sha256": "cb18755e1db7539d8a1ed2b09451e69eef2262e05c5216f08aeed3f294682eb9"
+            },
+            "src/world/runtime/world_tick_random.c": {
+              "bytes": 48505,
+              "sha256": "fa00e5990e5caacab3c1ef6d4acae86cd24944f976436384b4dc4b268c027a04"
+            },
+            "tests/world/runtime/test_random_blocks.c": {
+              "bytes": 34336,
+              "sha256": "b5f93c4478480d5bbf0166132796ed3b9c1033385aca3221cf262d668c779d63"
+            },
+            "src/entity/living/fields.c": {
+              "bytes": 526,
+              "sha256": "b731b1fab521f0762c62575773a322acfc7709a0930ca69d774a2fec2c8389a6"
+            },
+            "src/entity/living/fields_internal.h": {
+              "bytes": 346,
+              "sha256": "7b44d60316eb6a8169a4d633c9369b09dd40b0820fbf8e19d896eb819d613570"
+            },
+            "include/mc/item/use/use.h": {
+              "bytes": 5031,
+              "sha256": "00de7bb596488285963a86bd8aa06b7c3c1a52e3c8ce0445e1bde9709add72de"
+            },
+            "src/item/use/use.c": {
+              "bytes": 41120,
+              "sha256": "ff9f5e31d24c5d510fccc3f04ca068c453c61ebaa7b72f0aa4bfddd256129bad"
+            },
+            "tests/item/use/test_use.c": {
+              "bytes": 33819,
+              "sha256": "132466e7beddaf953b96fdb5d6f1dd660f419a4cb2cf2364f3000a3b15a9e97f"
+            },
+            "tests/reference/client/workbench_open_shutdown/README.md": {
+              "bytes": 9748,
+              "sha256": "bc475b49e3a7c1b2a5aeec4981cf4323045ac250342acedffc2397cb80b42488"
+            },
+            "tests/reference/client/workbench_open_shutdown/native-validation.json": {
+              "bytes": 340879,
+              "sha256": "d9c7eae75523442a2d5c869d1dfe2c986566838e92947db5122c12fb28b402c7"
+            },
+            "tests/reference/client/workbench_open_shutdown/packet.py": {
+              "bytes": 23677,
+              "sha256": "199be5e8e5923f3785d4dae92f2f0dd4af19b42fad0d9793d926b425adf64cf2"
+            },
+            "tests/reference/client/workbench_open_shutdown/test_packet.py": {
+              "bytes": 9801,
+              "sha256": "749d516bb0481fa963dbdda1ffdaf1b2ef4ad464e05ef7686c1a1715eaa8dfe0"
+            },
+            "docs/wiki/Startup.md": {
+              "bytes": 7529,
+              "sha256": "a9b0095da386d9266682b7d965d7ae3043b4d623874c762a856e638fa772a3ef"
+            },
+            ".gitattributes": {
+              "bytes": 1256,
+              "sha256": "339906aa51e9b888c8492994964d9f6481127938779ae1f6e04ffad143862cd1"
+            },
+            "docs/wiki/Build-and-tests.md": {
+              "bytes": 88942,
+              "sha256": "cf5c1d560bdd0f9e231ad163df10bde471a22554018dabc1f12fb226fb09d6cb"
+            }
+          },
+          "added": [
+            "cmake/client_food_use.cmake",
+            "cmake/item_food_use.cmake",
+            "docs/item/food-use.md",
+            "docs/performance/registry-random-ticks.md",
+            "tests/benchmarks/world_registry_tick_windows.json",
+            "tests/client/gameplay/test_food.c",
+            "tests/item/use/food_controls.inc",
+            "tests/item/use/food_reference.c",
+            "tests/reference/item/food_use/.gitattributes",
+            "tests/reference/item/food_use/ControllerFoodObservation.java",
+            "tests/reference/item/food_use/FoodObservation.java",
+            "tests/reference/item/food_use/README.md",
+            "tests/reference/item/food_use/capture_reference.py",
+            "tests/reference/item/food_use/controller-provenance.json",
+            "tests/reference/item/food_use/controller.stdout",
+            "tests/reference/item/food_use/controller.tsv",
+            "tests/reference/item/food_use/declared-inputs.json",
+            "tests/reference/item/food_use/failed-compile.stderr",
+            "tests/reference/item/food_use/manifest.json",
+            "tests/reference/item/food_use/packet.py",
+            "tests/reference/item/food_use/profiles.tsv",
+            "tests/reference/item/food_use/source-pins.json",
+            "tests/reference/item/food_use/test_packet.py",
+            "tests/reference/item/food_use/wrapper-provenance.json",
+            "tests/reference/item/food_use/wrapper.stdout",
+            "tests/reference/item/food_use/wrapper.tsv",
+            "tests/tools/client/test_food_loop.py",
+            "tests/tools/item/test_food_use.py",
+            "tests/tools/world/test_registry_tick_benchmark.py"
+          ],
+          "current_count": 4676
         }
       }
     }

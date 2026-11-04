@@ -100,6 +100,13 @@ the native build. Both operations finish before build or dependency-archive
 caching; either failure stops the job. Disk capacity is reported around this
 joined step. Compiler, sanitizer and test coverage remain enabled.
 
+The local Windows Food input/save scenario uses `MC_ENABLE_CLIENT_FOOD_TESTS=ON`
+with display tests and imported resources. Build `mc_test_food_loop` and run
+`ctest --test-dir build-windows --no-tests=error --output-on-failure -R '^client.food_loop$'`.
+It authors its own saved Player and uses the ordinary input, save/title and
+reselection paths. Its desktop-focus resource lock serializes it with the other
+local client-window scenarios.
+
 Both native CI jobs cache only the pinned FetchContent download archives.
 Source trees, populate stamps and dependency build products are excluded.
 CMake still checks each archive's `URL_HASH` and extracts it into a fresh build.

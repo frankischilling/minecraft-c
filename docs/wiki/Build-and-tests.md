@@ -1,5 +1,11 @@
 # Build and tests
 
+The Food/Registry frozen public cohort passes 677/677 Windows tests and
+666/666 Linux sanitizer tests, with source/product guards unchanged. The
+separate Windows Food scene passes actual clicks, HUD/held drawing and
+save/reselection; Linux loaded input retains its own pre-input diagnosis.
+See [current test scopes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#food-use-and-registry-random-ticks).
+
 The current full Linux sanitizer cohort passes 663/663 tests. Windows passes
 671/674; three saved Water/Lava/Ladder camera or picking checks remain failed.
 The [test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#hoe-and-seeds-use)

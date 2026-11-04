@@ -2,8 +2,8 @@
   "scope": "Current authored real-owner loading draw/update/yield/retirement controls; native results are recorded separately for their exact tested snapshots.",
   "native_sources": {
     "CMakeLists.txt": {
-      "bytes": 339136,
-      "sha256": "504a08cca6c70dd3fc27da8e8e2a0d5ca31d428e16bbc087fa6e53913f67defd"
+      "bytes": 339208,
+      "sha256": "997b7cb51e8fa8ab3c47e5e2de7f448929cecd53a80a6992e454babeb9cf2db2"
     },
     "cmake/client_controllers.cmake": {
       "bytes": 1093,
@@ -1034,12 +1034,12 @@
       "sha256": "2723b6b1c86ba6a6e4e4db831e0b906888cdb50064555e4b741f05975c20514e"
     },
     "src/block/registry/runtime.c": {
-      "bytes": 22823,
-      "sha256": "804c98d222e3653711f6bddab0c3f6a4f12ef69c4badc8d54a92230f1f8c4730"
+      "bytes": 23989,
+      "sha256": "5c40deb26f840a27cf4de5c56bae4638ff0bfdf6206c2eb5b41b31bc46a912b0"
     },
     "src/block/registry/runtime_internal.h": {
-      "bytes": 9522,
-      "sha256": "fec3a30ff1787e76c33e15d1358e52a610604926fc292d27b851e125b86b07f9"
+      "bytes": 10192,
+      "sha256": "4bd216fb475332a6b9e81324a2dddd5a4bc28a6e7ce06a5b3a134222fc96857e"
     },
     "src/block/registry/step_sound.c": {
       "bytes": 8271,
@@ -7298,8 +7298,8 @@
       "sha256": "fa7b3876dfec9dfcd1b6dfd5e8a5a759f146716fb250dd069fc3569189492aef"
     },
     "cmake/world_random_tick.cmake": {
-      "bytes": 4003,
-      "sha256": "cb18755e1db7539d8a1ed2b09451e69eef2262e05c5216f08aeed3f294682eb9"
+      "bytes": 4338,
+      "sha256": "76e54802dbbb60c4c2f40f11a47c556b36c8efbca0195a3a4074e5ec07bbebd7"
     },
     "include/mc/entity/lightning/construction.h": {
       "bytes": 3064,
@@ -7330,8 +7330,8 @@
       "sha256": "a3b2ea14bd0314899640233d6bf4701fb63fe8a265355ccb8a0cb0938743b06b"
     },
     "src/world/runtime/world_tick_random.c": {
-      "bytes": 48505,
-      "sha256": "fa00e5990e5caacab3c1ef6d4acae86cd24944f976436384b4dc4b268c027a04"
+      "bytes": 48553,
+      "sha256": "a3bac7500705fb86f4aabe73299af37495abb6d9cb3c6319a8c6a5b605f557cf"
     },
     "src/world/runtime/world_tick_random_internal.h": {
       "bytes": 562,
@@ -7350,8 +7350,8 @@
       "sha256": "0703302dbc981162ccc196c95dd5853fe36ca5c7a6be6512d6693069fbc52139"
     },
     "tests/world/runtime/test_random_blocks.c": {
-      "bytes": 34336,
-      "sha256": "b5f93c4478480d5bbf0166132796ed3b9c1033385aca3221cf262d668c779d63"
+      "bytes": 53929,
+      "sha256": "32cb6f1cbba2e30dcb0d8a96b693dc6776f38e4e78fa974faa4f83b1b36e13d2"
     },
     "tests/world/runtime/test_world_random_tick.c": {
       "bytes": 39950,
@@ -7394,12 +7394,12 @@
       "sha256": "4ad386a1d6b7d0355c65222ece1d14daf5067a969c8ffa578cffa2bd5d25280c"
     },
     "src/entity/living/fields.c": {
-      "bytes": 526,
-      "sha256": "b731b1fab521f0762c62575773a322acfc7709a0930ca69d774a2fec2c8389a6"
+      "bytes": 947,
+      "sha256": "05b5275c54fd899bf3afe290235fab50188be1cebbe8a7efd8afeced435f9913"
     },
     "src/entity/living/fields_internal.h": {
-      "bytes": 346,
-      "sha256": "7b44d60316eb6a8169a4d633c9369b09dd40b0820fbf8e19d896eb819d613570"
+      "bytes": 711,
+      "sha256": "9110d461b76f388fdca2bbab8de806a31e7c66b87ea334746cc34e1373b03005"
     },
     "src/entity/living/travel_internal.h": {
       "bytes": 917,
@@ -8386,8 +8386,8 @@
       "sha256": "5cd60b136d4a9862e9a5f6b6f64699d689c03b084a6d06d042d9ccba40da4ba6"
     },
     "include/mc/item/use/use.h": {
-      "bytes": 5031,
-      "sha256": "00de7bb596488285963a86bd8aa06b7c3c1a52e3c8ce0445e1bde9709add72de"
+      "bytes": 5277,
+      "sha256": "00ee19439516519262a3945879634cbb8f93b5c5e485755f2ef9269acfa4362c"
     },
     "include/mc/world/runtime/placement.h": {
       "bytes": 5977,
@@ -8398,8 +8398,8 @@
       "sha256": "bf372e5a0f28cf596f3aa7ab7b1cbe84f34242c135f4b493f870314378425829"
     },
     "src/item/use/use.c": {
-      "bytes": 41120,
-      "sha256": "ff9f5e31d24c5d510fccc3f04ca068c453c61ebaa7b72f0aa4bfddd256129bad"
+      "bytes": 44737,
+      "sha256": "200b91c3757c6adaf49aa264847776bfd5aadeb4f730564c6c6f0ab27af58299"
     },
     "src/world/runtime/placement.c": {
       "bytes": 30124,
@@ -8418,8 +8418,8 @@
       "sha256": "90ef1657e379e148a4a96c78d311d94dc77a258996c09ddd601c5181ef101f84"
     },
     "tests/item/use/test_use.c": {
-      "bytes": 33819,
-      "sha256": "132466e7beddaf953b96fdb5d6f1dd660f419a4cb2cf2364f3000a3b15a9e97f"
+      "bytes": 33886,
+      "sha256": "06d72bfa9c894f5d81aed6295e698be8ed1067007a0ac9f0cb577367bd54864d"
     },
     "tests/world/runtime/placement/test_callbacks.c": {
       "bytes": 15448,
@@ -9495,11 +9495,11 @@
     },
     "tests/reference/client/workbench_open_shutdown/packet.py": {
       "bytes": 23677,
-      "sha256": "199be5e8e5923f3785d4dae92f2f0dd4af19b42fad0d9793d926b425adf64cf2"
+      "sha256": "7735e7aafe6084e057dc79fc24e864797ad91ef22feb57226aa39581844698f2"
     },
     "tests/reference/client/workbench_open_shutdown/test_packet.py": {
       "bytes": 9801,
-      "sha256": "749d516bb0481fa963dbdda1ffdaf1b2ef4ad464e05ef7686c1a1715eaa8dfe0"
+      "sha256": "b6c8ae63842637d368bd72a1cf800c2a57f1bf686cd34c88e1892185c204cd2a"
     },
     "tests/reference/item/mining/capture_reference.py": {
       "bytes": 5373,
@@ -10048,6 +10048,50 @@
     "tests/tools/item/test_farming_use.py": {
       "bytes": 12719,
       "sha256": "9df4262b8be8db46bf4136a55f2fc9dd50e067bd019d1fb0fd04fbb07bbba567"
+    },
+    "cmake/client_food_use.cmake": {
+      "bytes": 1757,
+      "sha256": "99b3d2ee05f4817c74aeaaa81939cc4155c23525c1de2630792ec18de675eaea"
+    },
+    "cmake/item_food_use.cmake": {
+      "bytes": 1203,
+      "sha256": "aa3c0d02ead2bbe67e1395b0e9c83bc18dcb56fa5d8d8752cd0375f453ea6617"
+    },
+    "tests/client/gameplay/test_food.c": {
+      "bytes": 21039,
+      "sha256": "963117d8d4082cecb41125d0349b57e4c12f03ff051c979d78a97ab1aec50b98"
+    },
+    "tests/item/use/food_controls.inc": {
+      "bytes": 7749,
+      "sha256": "77d63bb3e5dfab591107c24007cefc63d6feca2ce4b5a0d096277ea6d4eae1a8"
+    },
+    "tests/item/use/food_reference.c": {
+      "bytes": 7105,
+      "sha256": "82f5648490f2877cf92672b2607e9cac51912f6e3fc7c353fe266f54f4dee949"
+    },
+    "tests/reference/item/food_use/capture_reference.py": {
+      "bytes": 6340,
+      "sha256": "0e7c4b6c1c3742f5084ba48f78c7146b753dab3255b4ecd9c6ad76dcc41b3b64"
+    },
+    "tests/reference/item/food_use/packet.py": {
+      "bytes": 4777,
+      "sha256": "30a933de1e4b7bddb49d6444672954290afca01741abadf0cb5b4f68f8c26db1"
+    },
+    "tests/reference/item/food_use/test_packet.py": {
+      "bytes": 717,
+      "sha256": "43cf47fbf3a2e9ee5991eafcf1243148369f134212bc02d15fe85e083aec49ae"
+    },
+    "tests/tools/client/test_food_loop.py": {
+      "bytes": 13867,
+      "sha256": "81a0f7c735fcd4d21a04cdf2e5f649a25ae4dbbfa97baf26a568df69e2911500"
+    },
+    "tests/tools/item/test_food_use.py": {
+      "bytes": 6396,
+      "sha256": "41aa7120ea1b78bc2225c0b444b2073b8ef2355c0857bad78491c7f07f224245"
+    },
+    "tests/tools/world/test_registry_tick_benchmark.py": {
+      "bytes": 19394,
+      "sha256": "2e17c9381dabec8c6bb893acfad66a26bbdd8f7e0cc20ca7571e39cf01fa3a07"
     }
   },
   "actual_source_method": {
@@ -13978,6 +14022,86 @@
             "tests/tools/item/test_farming_use.py"
           ],
           "current_count": 2512
+        }
+      }
+    },
+    {
+      "from_commit": "31c803e2fffe8ef1f7a5b4565d0558b3f1d0fff4",
+      "role": "Current Food and Soup Item use, Registry random-tick diagnostics, loaded Food fixture and fresh Workbench capture inputs. Earlier observations and compiled products retain their original qualification scope.",
+      "previous_metadata": {
+        "bytes": 569105,
+        "sha256": "aa54c47a4e111bc38e036171740a11cbc43119163712dcd68f398f20337abe9b"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 339136,
+              "sha256": "504a08cca6c70dd3fc27da8e8e2a0d5ca31d428e16bbc087fa6e53913f67defd"
+            },
+            "src/block/registry/runtime.c": {
+              "bytes": 22823,
+              "sha256": "804c98d222e3653711f6bddab0c3f6a4f12ef69c4badc8d54a92230f1f8c4730"
+            },
+            "src/block/registry/runtime_internal.h": {
+              "bytes": 9522,
+              "sha256": "fec3a30ff1787e76c33e15d1358e52a610604926fc292d27b851e125b86b07f9"
+            },
+            "cmake/world_random_tick.cmake": {
+              "bytes": 4003,
+              "sha256": "cb18755e1db7539d8a1ed2b09451e69eef2262e05c5216f08aeed3f294682eb9"
+            },
+            "src/world/runtime/world_tick_random.c": {
+              "bytes": 48505,
+              "sha256": "fa00e5990e5caacab3c1ef6d4acae86cd24944f976436384b4dc4b268c027a04"
+            },
+            "tests/world/runtime/test_random_blocks.c": {
+              "bytes": 34336,
+              "sha256": "b5f93c4478480d5bbf0166132796ed3b9c1033385aca3221cf262d668c779d63"
+            },
+            "src/entity/living/fields.c": {
+              "bytes": 526,
+              "sha256": "b731b1fab521f0762c62575773a322acfc7709a0930ca69d774a2fec2c8389a6"
+            },
+            "src/entity/living/fields_internal.h": {
+              "bytes": 346,
+              "sha256": "7b44d60316eb6a8169a4d633c9369b09dd40b0820fbf8e19d896eb819d613570"
+            },
+            "include/mc/item/use/use.h": {
+              "bytes": 5031,
+              "sha256": "00de7bb596488285963a86bd8aa06b7c3c1a52e3c8ce0445e1bde9709add72de"
+            },
+            "src/item/use/use.c": {
+              "bytes": 41120,
+              "sha256": "ff9f5e31d24c5d510fccc3f04ca068c453c61ebaa7b72f0aa4bfddd256129bad"
+            },
+            "tests/item/use/test_use.c": {
+              "bytes": 33819,
+              "sha256": "132466e7beddaf953b96fdb5d6f1dd660f419a4cb2cf2364f3000a3b15a9e97f"
+            },
+            "tests/reference/client/workbench_open_shutdown/packet.py": {
+              "bytes": 23677,
+              "sha256": "199be5e8e5923f3785d4dae92f2f0dd4af19b42fad0d9793d926b425adf64cf2"
+            },
+            "tests/reference/client/workbench_open_shutdown/test_packet.py": {
+              "bytes": 9801,
+              "sha256": "749d516bb0481fa963dbdda1ffdaf1b2ef4ad464e05ef7686c1a1715eaa8dfe0"
+            }
+          },
+          "added": [
+            "cmake/client_food_use.cmake",
+            "cmake/item_food_use.cmake",
+            "tests/client/gameplay/test_food.c",
+            "tests/item/use/food_controls.inc",
+            "tests/item/use/food_reference.c",
+            "tests/reference/item/food_use/capture_reference.py",
+            "tests/reference/item/food_use/packet.py",
+            "tests/reference/item/food_use/test_packet.py",
+            "tests/tools/client/test_food_loop.py",
+            "tests/tools/item/test_food_use.py",
+            "tests/tools/world/test_registry_tick_benchmark.py"
+          ],
+          "current_count": 2523
         }
       }
     }

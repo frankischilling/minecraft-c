@@ -67,9 +67,334 @@ static bool random_block_clear(const mc_world_mutation_error *e) {
            e->hook_bytecode == 0;
 }
 
+static bool n_text_equal(const char *a, const char *b) {
+    return a == b || (a != NULL && b != NULL && strcmp(a, b) == 0);
+}
+
+static bool n_same_error(const mc_registry_error *a, const mc_registry_error *b) {
+    return a->status == b->status && n_text_equal(a->message, b->message) &&
+           a->initializer_pc == b->initializer_pc && a->block_id == b->block_id &&
+           n_text_equal(a->constructor_class, b->constructor_class) &&
+           a->constructor_pc == b->constructor_pc && a->profile_status == b->profile_status &&
+           n_text_equal(a->active_initializer_class, b->active_initializer_class) &&
+           a->active_initializer_pc == b->active_initializer_pc &&
+           a->item_argument == b->item_argument &&
+           a->format_error.status == b->format_error.status &&
+           a->format_error.offset == b->format_error.offset &&
+           a->format_error.length == b->format_error.length &&
+           a->format_error.value == b->format_error.value &&
+           a->format_error.flags == b->format_error.flags &&
+           a->format_error.conversion == b->format_error.conversion &&
+           a->format_error.date_time == b->format_error.date_time;
+}
+
+static mc_registry_error n_poison_error(void) {
+    return (mc_registry_error){.status = MC_REGISTRY_DUPLICATE_STATISTIC,
+                               .message = "n error sentinel",
+                               .initializer_pc = 71,
+                               .block_id = 314,
+                               .constructor_class = "n constructor sentinel",
+                               .constructor_pc = 42,
+                               .profile_status = MC_JAVA_RANDOM_PROFILE_HOLDER_FAILED,
+                               .active_initializer_class = "n initializer sentinel",
+                               .active_initializer_pc = 68,
+                               .item_argument = 999,
+                               .format_error = {.status = MC_JAVA_FORMAT_UNSUPPORTED_LOCALE,
+                                                .offset = 3,
+                                                .length = 7,
+                                                .value = -9,
+                                                .flags = 5,
+                                                .conversion = 'x',
+                                                .date_time = true}};
+}
+
+static bool n_clear_error(const mc_registry_error *error) {
+    const mc_registry_error clear = {.status = MC_REGISTRY_OK,
+                                     .initializer_pc = -1,
+                                     .block_id = -1,
+                                     .constructor_pc = -1,
+                                     .active_initializer_pc = -1,
+                                     .item_argument = -1};
+    return n_same_error(error, &clear);
+}
+
+static bool n_same_view(const mc_registry_block_n_view *a, const mc_registry_block_n_view *b) {
+    return a->classes == b->classes && a->identity == b->identity && a->length == b->length;
+}
+
+typedef struct n_owner_snapshot {
+    mc_registry_error last_error, block_failure;
+    mc_registry_phase phase;
+    mc_registry_initializer *initializer;
+    const bool *identity;
+    size_t bytes, managed_bytes, peak_bytes, borrows, named_blocks;
+    uint64_t uniquifier;
+    unsigned int entered;
+    int32_t initializer_pc;
+} n_owner_snapshot;
+
+static n_owner_snapshot n_snapshot(const mc_registry_classes *owner) {
+    if (owner == NULL)
+        return (n_owner_snapshot){0};
+    return (n_owner_snapshot){.last_error = owner->last_error,
+                              .block_failure = owner->block_failure,
+                              .phase = owner->blocks_phase,
+                              .initializer = owner->initializer,
+                              .identity = owner->blocks.n,
+                              .bytes = owner->allocation_bytes,
+                              .managed_bytes = owner->managed_current_bytes,
+                              .peak_bytes = owner->total_peak_bytes,
+                              .borrows = owner->runtime_borrows,
+                              .named_blocks = owner->named_blocks,
+                              .uniquifier = atomic_load_explicit(
+                                  &owner->options.random_profile->uniquifier, memory_order_relaxed),
+                              .entered = owner->entered,
+                              .initializer_pc = owner->block_initializer_pc};
+}
+
+static bool n_same_owner(const n_owner_snapshot *a, const n_owner_snapshot *b) {
+    return n_same_error(&a->block_failure, &b->block_failure) && a->phase == b->phase &&
+           a->initializer == b->initializer && a->identity == b->identity && a->bytes == b->bytes &&
+           a->managed_bytes == b->managed_bytes && a->peak_bytes == b->peak_bytes &&
+           a->borrows == b->borrows && a->named_blocks == b->named_blocks &&
+           a->uniquifier == b->uniquifier && a->entered == b->entered &&
+           a->initializer_pc == b->initializer_pc;
+}
+
+/* Both routes operate on the same live owner. These controls use the public
+ * route as a native contract comparison, not as an original observation. */
+static bool n_get_pair(mc_registry_classes *owner, const mc_registry_block_n_view *anchor,
+                       bool null_output, mc_registry_status expected, bool with_error) {
+    bool ok = false;
+    mc_registry_block_n_view ordinary = *anchor, failure = *anchor;
+    mc_registry_error ordinary_error = n_poison_error(), failure_error = n_poison_error();
+    unsigned char sentinel[sizeof(failure_error)];
+    memcpy(sentinel, &failure_error, sizeof(sentinel));
+    const n_owner_snapshot before = n_snapshot(owner);
+    const mc_registry_status ordinary_status = mc_registry_block_n_get(
+        owner, null_output ? NULL : &ordinary, with_error ? &ordinary_error : NULL);
+    const n_owner_snapshot after_ordinary = n_snapshot(owner);
+    const mc_registry_status failure_status = mc_registry_block_n_get_failure(
+        owner, null_output ? NULL : &failure, with_error ? &failure_error : NULL);
+    const n_owner_snapshot after_failure = n_snapshot(owner);
+    CHECK(ordinary_status == expected && failure_status == ordinary_status &&
+          n_same_view(&ordinary, &failure) && n_same_owner(&before, &after_ordinary) &&
+          n_same_owner(&after_ordinary, &after_failure) &&
+          n_same_error(&after_ordinary.last_error, &after_failure.last_error));
+    if (expected == MC_REGISTRY_OK) {
+        CHECK(ordinary.classes == owner && ordinary.identity == owner->blocks.n &&
+              ordinary.length == (ordinary.identity == NULL ? 0u : MC_REGISTRY_BLOCK_SLOTS) &&
+              n_same_error(&before.last_error, &after_ordinary.last_error));
+        if (with_error)
+            CHECK(n_clear_error(&ordinary_error) &&
+                  memcmp(sentinel, &failure_error, sizeof(sentinel)) == 0);
+    } else {
+        CHECK(n_same_view(&ordinary, anchor));
+        if (expected != MC_REGISTRY_FAILED_INITIALIZATION)
+            CHECK(n_same_error(&before.last_error, &after_ordinary.last_error));
+        if (with_error)
+            CHECK(ordinary_error.status == expected &&
+                  n_same_error(&ordinary_error, &failure_error));
+    }
+    ok = true;
+cleanup:
+    return ok;
+}
+
+static bool n_at_pair(const mc_registry_block_n_view *view, int32_t index, bool null_output,
+                      mc_registry_status expected, bool expected_value, bool with_error) {
+    bool ok = false, ordinary = !expected_value, failure = !expected_value;
+    mc_registry_error ordinary_error = n_poison_error(), failure_error = n_poison_error();
+    unsigned char sentinel[sizeof(failure_error)];
+    memcpy(sentinel, &failure_error, sizeof(sentinel));
+    mc_registry_classes *const owner = view == NULL ? NULL : view->classes;
+    const n_owner_snapshot before = n_snapshot(owner);
+    const mc_registry_status ordinary_status = mc_registry_block_n_at(
+        view, index, null_output ? NULL : &ordinary, with_error ? &ordinary_error : NULL);
+    const n_owner_snapshot after_ordinary = n_snapshot(owner);
+    const mc_registry_status failure_status = mc_registry_block_n_at_failure(
+        view, index, null_output ? NULL : &failure, with_error ? &failure_error : NULL);
+    const n_owner_snapshot after_failure = n_snapshot(owner);
+    CHECK(ordinary_status == expected && failure_status == ordinary_status && ordinary == failure &&
+          n_same_owner(&before, &after_ordinary) && n_same_owner(&after_ordinary, &after_failure) &&
+          n_same_error(&after_ordinary.last_error, &after_failure.last_error));
+    if (expected == MC_REGISTRY_OK) {
+        CHECK(ordinary == expected_value &&
+              n_same_error(&before.last_error, &after_ordinary.last_error));
+        if (with_error)
+            CHECK(n_clear_error(&ordinary_error) &&
+                  memcmp(sentinel, &failure_error, sizeof(sentinel)) == 0);
+    } else {
+        CHECK(ordinary == !expected_value);
+        if (expected == MC_REGISTRY_INVALID_ARGUMENT)
+            CHECK(n_same_error(&before.last_error, &after_ordinary.last_error));
+        if (with_error)
+            CHECK(ordinary_error.status == expected &&
+                  n_same_error(&ordinary_error, &failure_error));
+    }
+    ok = true;
+cleanup:
+    return ok;
+}
+
+typedef struct n_entered_control {
+    mc_registry_classes *owner;
+    mc_registry_block_n_view anchor, captured;
+    size_t opens;
+    bool valid;
+} n_entered_control;
+
+static mc_registry_status n_entered_open(void *context, const char *name,
+                                         mc_java_properties_input *out) {
+    n_entered_control *control = context;
+    mc_registry_classes *const owner = control->owner;
+    ++control->opens;
+    control->valid = name != NULL && strcmp(name, "/lang/en_US.lang") == 0 && out != NULL &&
+                     owner->entered != 0 && owner->blocks_phase == MC_REGISTRY_INITIALIZING &&
+                     owner->initializer != NULL && owner->blocks.n != NULL;
+    if (control->valid) {
+        control->captured =
+            (mc_registry_block_n_view){owner, owner->blocks.n, MC_REGISTRY_BLOCK_SLOTS};
+        control->valid = n_get_pair(owner, &control->anchor, false, MC_REGISTRY_BUSY, true) &&
+                         n_get_pair(owner, &control->anchor, false, MC_REGISTRY_BUSY, false) &&
+                         n_at_pair(&control->captured, 2, false, MC_REGISTRY_OK, true, true);
+    }
+    return MC_REGISTRY_NULL_REFERENCE;
+}
+
+static bool n_cold_pairs(fixture *f, const mc_registry_block_n_view *anchor) {
+    bool ok = false;
+    mc_registry_classes *ordinary = NULL, *failure = NULL, *entered = NULL;
+    resources sources[2] = {0};
+    mc_registry_block_n_view ordinary_view = *anchor, failure_view = *anchor;
+    mc_registry_error ordinary_error = n_poison_error(), failure_error = n_poison_error();
+    unsigned char sentinel[sizeof(failure_error)];
+    memcpy(sentinel, &failure_error, sizeof(sentinel));
+    mc_registry_options options = {MC_REGISTRY_CLIENT, f->profile, f->materials, 8u * 1024u * 1024u,
+                                   NULL};
+    for (size_t i = 0; i < COUNT(sources); ++i) {
+        sources[i].streams[0] = (stream){.bytes = language, .length = sizeof(language) - 1};
+        sources[i].streams[1] = sources[i].streams[2] = (stream){.bytes = language};
+        sources[i].api =
+            (mc_registry_resources){&sources[i], open_resource, close_resource, ready_resource};
+    }
+    options.resources = &sources[0].api;
+    CHECK(mc_registry_classes_allocate(&options, &ordinary, NULL) == MC_REGISTRY_OK &&
+          mc_registry_classes_bind_entities(ordinary, f->entities[0], NULL) == MC_REGISTRY_OK);
+    options.resources = &sources[1].api;
+    CHECK(mc_registry_classes_allocate(&options, &failure, NULL) == MC_REGISTRY_OK &&
+          mc_registry_classes_bind_entities(failure, f->entities[0], NULL) == MC_REGISTRY_OK &&
+          ordinary->blocks_phase == MC_REGISTRY_COLD && failure->blocks_phase == MC_REGISTRY_COLD &&
+          ordinary->blocks.n == NULL && failure->blocks.n == NULL);
+    CHECK(n_get_pair(ordinary, anchor, true, MC_REGISTRY_INVALID_ARGUMENT, true) &&
+          n_get_pair(failure, anchor, true, MC_REGISTRY_INVALID_ARGUMENT, false) &&
+          ordinary->blocks_phase == MC_REGISTRY_COLD && failure->blocks_phase == MC_REGISTRY_COLD &&
+          sources[0].opens == 0 && sources[1].opens == 0);
+    CHECK(
+        mc_registry_block_n_get(ordinary, &ordinary_view, &ordinary_error) == MC_REGISTRY_OK &&
+        mc_registry_block_n_get_failure(failure, &failure_view, &failure_error) == MC_REGISTRY_OK &&
+        n_clear_error(&ordinary_error) && memcmp(sentinel, &failure_error, sizeof(sentinel)) == 0 &&
+        ordinary_view.classes == ordinary && failure_view.classes == failure &&
+        ordinary_view.identity == ordinary->blocks.n &&
+        failure_view.identity == failure->blocks.n && ordinary_view.identity != NULL &&
+        failure_view.identity != NULL && ordinary_view.identity != failure_view.identity &&
+        ordinary_view.length == MC_REGISTRY_BLOCK_SLOTS &&
+        ordinary_view.length == failure_view.length &&
+        ordinary->blocks_phase == MC_REGISTRY_READY && failure->blocks_phase == MC_REGISTRY_READY &&
+        ordinary->entered == 0 && failure->entered == 0 &&
+        ordinary->allocation_bytes == failure->allocation_bytes &&
+        n_same_error(&ordinary->last_error, &failure->last_error) &&
+        n_same_error(&ordinary->block_failure, &failure->block_failure) && !sources[0].bad &&
+        !sources[1].bad && sources[0].opens != 0 && sources[0].opens == sources[1].opens &&
+        sources[0].closes == sources[1].closes);
+    for (size_t i = 0; i < ordinary_view.length; ++i)
+        CHECK(ordinary_view.identity[i] == failure_view.identity[i]);
+    CHECK(n_get_pair(failure, anchor, false, MC_REGISTRY_OK, true) &&
+          n_get_pair(failure, anchor, false, MC_REGISTRY_OK, false));
+
+    n_entered_control control = {.anchor = *anchor};
+    const mc_registry_resources callback = {.context = &control, .open = n_entered_open};
+    options.resources = &callback;
+    CHECK(mc_registry_classes_allocate(&options, &entered, NULL) == MC_REGISTRY_OK);
+    control.owner = entered;
+    CHECK(mc_registry_classes_initialize_blocks(entered, &ordinary_error) ==
+              MC_REGISTRY_NULL_REFERENCE &&
+          control.valid && control.opens == 1 && entered->blocks_phase == MC_REGISTRY_FAILED &&
+          entered->entered == 0 && control.captured.identity == entered->blocks.n);
+    CHECK(n_get_pair(entered, anchor, false, MC_REGISTRY_FAILED_INITIALIZATION, true) &&
+          n_get_pair(entered, anchor, false, MC_REGISTRY_FAILED_INITIALIZATION, false) &&
+          n_at_pair(&control.captured, 2, false, MC_REGISTRY_OK, true, true) && control.opens == 1);
+    ok = true;
+cleanup:
+    if (mc_registry_classes_free(entered, NULL) != MC_REGISTRY_OK)
+        ok = false;
+    if (mc_registry_classes_free(failure, NULL) != MC_REGISTRY_OK)
+        ok = false;
+    if (mc_registry_classes_free(ordinary, NULL) != MC_REGISTRY_OK)
+        ok = false;
+    return ok;
+}
+
+static bool n_array_pairs(fixture *f, const mc_registry_block_n_view *captured,
+                          const mc_registry_block_n_view *missing) {
+    bool ok = false;
+    mc_registry_classes *const owner = f->registry[0];
+    CHECK(n_get_pair(owner, captured, false, MC_REGISTRY_OK, true) &&
+          n_get_pair(owner, captured, false, MC_REGISTRY_OK, false) &&
+          n_get_pair(owner, captured, true, MC_REGISTRY_INVALID_ARGUMENT, true) &&
+          n_get_pair(NULL, captured, false, MC_REGISTRY_INVALID_ARGUMENT, true) &&
+          n_get_pair(NULL, captured, true, MC_REGISTRY_INVALID_ARGUMENT, false));
+    CHECK(n_at_pair(captured, 2, false, MC_REGISTRY_OK, true, true) &&
+          n_at_pair(captured, 1, false, MC_REGISTRY_OK, false, true) &&
+          n_at_pair(captured, 2, false, MC_REGISTRY_OK, true, false) &&
+          n_at_pair(captured, 2, true, MC_REGISTRY_INVALID_ARGUMENT, false, true) &&
+          n_at_pair(NULL, 2, false, MC_REGISTRY_INVALID_ARGUMENT, false, true));
+    mc_registry_block_n_view no_classes = *captured;
+    no_classes.classes = NULL;
+    CHECK(n_at_pair(&no_classes, 2, false, MC_REGISTRY_INVALID_ARGUMENT, false, true));
+    const int32_t bounds[] = {INT32_MIN, -1, 256, INT32_MAX};
+    for (size_t i = 0; i < COUNT(bounds); ++i)
+        CHECK(n_at_pair(captured, bounds[i], false, MC_REGISTRY_INDEX_OUT_OF_RANGE, false, true) &&
+              n_at_pair(missing, bounds[i], false, MC_REGISTRY_NULL_REFERENCE, false, true));
+    mc_registry_block_n_view malformed = *captured;
+    malformed.length = MC_REGISTRY_BLOCK_SLOTS + 1u;
+    CHECK(n_at_pair(&malformed, -1, false, MC_REGISTRY_INVALID_ARGUMENT, false, true) &&
+          n_at_pair(&malformed, 2, false, MC_REGISTRY_INVALID_ARGUMENT, false, false));
+    malformed.length = 0;
+    CHECK(n_at_pair(&malformed, 0, false, MC_REGISTRY_INDEX_OUT_OF_RANGE, false, true) &&
+          n_at_pair(missing, -1, false, MC_REGISTRY_NULL_REFERENCE, false, false) &&
+          n_at_pair(captured, 256, false, MC_REGISTRY_INDEX_OUT_OF_RANGE, false, false));
+    bool *const array = owner->blocks.n;
+    const bool original = array[2];
+    array[2] = false;
+    const bool mutated = n_at_pair(captured, 2, false, MC_REGISTRY_OK, false, true);
+    array[2] = original;
+    CHECK(mutated && n_at_pair(captured, 2, false, MC_REGISTRY_OK, original, true));
+    owner->blocks.n = NULL;
+    const bool rebound_null = n_get_pair(owner, captured, false, MC_REGISTRY_OK, true) &&
+                              n_at_pair(captured, 2, false, MC_REGISTRY_OK, original, true);
+    owner->blocks.n = array;
+    CHECK(rebound_null);
+    /* Rebind to another actual owned boolean array, then mutate its current
+     * cell. A captured n reference must still read its original array. */
+    bool *const current = owner->blocks.o;
+    const bool current_original = current[2];
+    owner->blocks.n = current;
+    current[2] = !original;
+    const bool rebound_owned = n_get_pair(owner, captured, false, MC_REGISTRY_OK, true) &&
+                               n_at_pair(captured, 2, false, MC_REGISTRY_OK, original, true);
+    current[2] = current_original;
+    owner->blocks.n = array;
+    CHECK(rebound_owned && n_cold_pairs(f, captured));
+    puts("BLOCK_RANDOM n failure-only native-pairs=1 cold=1 entered=1 owner-effects=1");
+    ok = true;
+cleanup:
+    return ok;
+}
+
 static bool n_array_contract(fixture *f) {
     bool ok = false, value = false;
-    mc_registry_classes *r = f->registry[0], *limited = NULL;
+    mc_registry_classes *r = f->registry[0], *limited = NULL, *limited_failure = NULL;
     mc_registry_block_n_view captured = {0}, missing = {0};
     mc_registry_error e = {0};
     CHECK(mc_registry_block_n_get(r, &captured, &e) == MC_REGISTRY_OK &&
@@ -93,11 +418,21 @@ static bool n_array_contract(fixture *f) {
     const mc_registry_options options = {MC_REGISTRY_CLIENT, f->profile, f->materials,
                                          sizeof(mc_registry_classes) + 1024, &f->sources[0].api};
     CHECK(mc_registry_classes_allocate(&options, &limited, NULL) == MC_REGISTRY_OK);
+    CHECK(mc_registry_classes_allocate(&options, &limited_failure, NULL) == MC_REGISTRY_OK);
     const uint64_t before = atomic_load_explicit(&f->profile->uniquifier, memory_order_relaxed);
     mc_registry_block_n_view unchanged = captured;
     CHECK(mc_registry_block_n_get(limited, &unchanged, &e) == MC_REGISTRY_LIMIT &&
           limited->blocks_phase == MC_REGISTRY_FAILED && unchanged.identity == captured.identity &&
           unchanged.classes == r && unchanged.length == captured.length);
+    mc_registry_block_n_view failure_unchanged = captured;
+    mc_registry_error failure_error = n_poison_error();
+    CHECK(mc_registry_block_n_get_failure(limited_failure, &failure_unchanged, &failure_error) ==
+              MC_REGISTRY_LIMIT &&
+          n_same_error(&e, &failure_error) && n_same_view(&failure_unchanged, &captured) &&
+          limited_failure->blocks_phase == MC_REGISTRY_FAILED && limited_failure->entered == 0 &&
+          limited_failure->allocation_bytes == limited->allocation_bytes &&
+          n_same_error(&limited->last_error, &limited_failure->last_error) &&
+          n_same_error(&limited->block_failure, &limited_failure->block_failure));
     const mc_registry_error first = limited->block_failure;
     const size_t bytes = limited->allocation_bytes;
     CHECK(mc_registry_block_n_get(limited, &unchanged, &e) == MC_REGISTRY_FAILED_INITIALIZATION &&
@@ -107,9 +442,14 @@ static bool n_array_contract(fixture *f) {
           limited->block_failure.message == first.message && limited->allocation_bytes == bytes &&
           unchanged.identity == captured.identity &&
           atomic_load_explicit(&f->profile->uniquifier, memory_order_relaxed) == before);
+    CHECK(n_get_pair(limited, &captured, false, MC_REGISTRY_FAILED_INITIALIZATION, true) &&
+          n_get_pair(limited_failure, &captured, false, MC_REGISTRY_FAILED_INITIALIZATION, false) &&
+          n_array_pairs(f, &captured, &missing));
     puts("BLOCK_RANDOM n active-use=1 captured-reference=1 null-before-index=1 failed-latched=1");
     ok = true;
 cleanup:
+    if (mc_registry_classes_free(limited_failure, NULL) != MC_REGISTRY_OK)
+        ok = false;
     if (mc_registry_classes_free(limited, NULL) != MC_REGISTRY_OK)
         ok = false;
     return ok;

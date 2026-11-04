@@ -892,12 +892,12 @@ static bool samples(mc_world_random_tick_call *c) {
             return chunk_fail(c);
         mc_registry_block_n_view active;
         at(c, 951);
-        if (mc_registry_block_n_get(c->state.world->classes->registry, &active, &c->registry) !=
-            MC_REGISTRY_OK)
+        if (mc_registry_block_n_get_failure(c->state.world->classes->registry, &active,
+                                            &c->registry) != MC_REGISTRY_OK)
             return registry_fail(c);
         at(c, 956);
         bool enabled;
-        if (mc_registry_block_n_at(&active, c->state.block_id, &enabled, &c->registry) !=
+        if (mc_registry_block_n_at_failure(&active, c->state.block_id, &enabled, &c->registry) !=
             MC_REGISTRY_OK)
             return registry_fail(c);
         if (enabled) {

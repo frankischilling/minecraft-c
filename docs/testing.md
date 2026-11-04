@@ -1,5 +1,73 @@
 # Test scope and reproduction
 
+## Food use and Registry random ticks
+
+The full frozen Food/Registry cohort passes 677/677 Windows MSVC Release tests
+in 409.25 seconds and 666/666 Linux Clang 18 Debug ASan/UBSan tests in 179.82
+seconds. Linux uses Xvfb/software GL, leak detection and halt-on-error. Both
+cohorts preserve all 4,680 selected source files, including all 1,448 runtime
+files. Windows preserves 541 executables and 413 imported assets; Linux
+preserves 542 executables. The complete test/post-hash intervals are 414.63
+and 239.63 seconds. These qualification times are not a speed comparison.
+The earlier three Windows scene failures remain historical failures; their
+checks pass in this cohort without a source focus/input repair. This does not
+establish their original cause or unrestricted foreground stability.
+
+clang-format 18 checks all 2,039 C/header/handwritten-fragment files. The final
+staged-byte audit preserves the original food stdout bytes; a path-specific
+Git whitespace attribute recognizes their captured CRLF without changing a
+sample, parser or pin. Later documentation/current-binding-only edits retain
+separate validation from the frozen broad cohorts.
+
+The [food packet](../tests/reference/item/food_use/README.md) records 28 original
+Stack/controller calls across four fresh ordinary VMs. Windows and sanitized Linux comparison
+matches all rows, including six NULL-Player effect prefixes, actual selected-slot
+replacement/clearing and zero used-statistic deltas. Thirteen negative comparator
+controls pass. Original Java arithmetic and source order also have separate
+actual-owner controls. Loaded input, HUD/held presentation and persistence are
+not established by those method comparisons.
+
+The separate Windows Food scenario passes 1,806 checks in 8.46 seconds, with
+1,976 selected inputs/products and 413 assets unchanged. Actual clicks and
+hotbar selection heal 5/9/19 and replace Soup with a fresh Bowl. HUD/held draws,
+ordinary save/title/reselection and independent NBT/Region decoding pass. An
+initial observer incorrectly dereferenced identity through a retired hand
+receipt; passive diagnostics prove its cleared pointer and the correct live
+renderer alias. The corrected observer checks both facts and all prior scalar
+predicates. It modifies no runtime, input, camera or clock behavior. The two
+failed captures and idle-guard refusals remain retained. The passing attempt
+records zero input-timestamp changes during its guard and cohort.
+
+Four fresh current-source Workbench profiles pass 8,499 checks in 63.31 seconds,
+with all 1,971 selected inputs (1,448 runtime files, 521 harness files and two
+binaries) and 413 resources unchanged. The first new idle guard refuses launch;
+the later passing guard/cohort record no timestamp changes. Publication passes
+the preserved 57 corruption controls and historical/public/private/cohort-log
+audits, keeping the preceding 66.08-second/8,515-check packet separate. These
+are distinct ownership qualifications, not a performance comparison.
+
+The [Registry CPU record](performance/registry-random-ticks.md) retains a warned
+preliminary pair and a corrected clean pair, each with independent three- and
+six-round cohorts. The first command tokenizer turned an empty argument string
+into the Python executable path; MSVC reported D9024/D9027 and ignored it. Clean
+recompilation removes that argument and collects fresh cohorts. Only the clean
+pair supplies the primary speed claim. All 72 processes, 1,152 rows and 1,008
+timings remain published, including warmups, order strata and unfavorable maxima.
+The receipt audit checks complete native observations and 79 output hashes
+across eight controls, including 75 binary byte counts. All fourteen receipt
+tests pass. These are native CPU comparisons, not new original or FPS
+qualification.
+
+The preceding [hosted farming run](https://github.com/frankischilling/minecraft-c/actions/runs/41768032576)
+passes all four jobs for `31c803e2`: Windows 623/623 tests in 250.22 seconds,
+Clang 680/680 in 514.63 seconds, GCC 680/680 in 382.61 seconds, and formatting
+for 2,036 files. Every checkout log identifies `a2fcf4c7`, whose Git tree exactly
+matches the pushed head. The joined configuration/cleanup step completes in
+57 seconds on Clang and 104 seconds on GCC. This proves both operations finish
+before build on those runners; it does not establish a controlled whole-job
+speedup. These hosted results apply to that farming commit, separately from
+the later Food/Registry source and the imported-resource Windows scene failures.
+
 ## Hoe and Seeds use
 
 The full current public cohort passes 663/663 Linux tests in 167.66 seconds

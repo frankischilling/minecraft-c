@@ -282,9 +282,8 @@ mc_registry_status mc_registry_block_m_at(const mc_registry_block_m_view *array,
     return status;
 }
 
-mc_registry_status mc_registry_block_n_get(mc_registry_classes *classes,
-                                           mc_registry_block_n_view *out,
-                                           mc_registry_error *error) {
+static mc_registry_status block_n_get(mc_registry_classes *classes, mc_registry_block_n_view *out,
+                                      mc_registry_error *error, bool success_error) {
     if (out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime n output");
     mc_registry_status status = enter_blocks(classes, error);
@@ -294,15 +293,16 @@ mc_registry_status mc_registry_block_n_get(mc_registry_classes *classes,
     status = mc_registry_blocks_active_use(classes);
     if (status == MC_REGISTRY_OK)
         identity = classes->blocks.n;
-    status = leave_blocks(classes, status, error);
+    status =
+        leave_blocks(classes, status, status == MC_REGISTRY_OK && !success_error ? NULL : error);
     if (status == MC_REGISTRY_OK)
         *out = (mc_registry_block_n_view){classes, identity,
                                           identity == NULL ? 0u : MC_REGISTRY_BLOCK_SLOTS};
     return status;
 }
 
-mc_registry_status mc_registry_block_n_at(const mc_registry_block_n_view *array, int32_t index,
-                                          bool *out, mc_registry_error *error) {
+static mc_registry_status block_n_at(const mc_registry_block_n_view *array, int32_t index,
+                                     bool *out, mc_registry_error *error, bool success_error) {
     if (array == NULL || array->classes == NULL || out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime n element arguments");
     mc_registry_status status;
@@ -316,11 +316,34 @@ mc_registry_status mc_registry_block_n_at(const mc_registry_block_n_view *array,
                         "Block runtime captured n index");
     else {
         *out = array->identity[index];
-        return result(error, MC_REGISTRY_OK, NULL);
+        return result(success_error ? error : NULL, MC_REGISTRY_OK, NULL);
     }
     if (error != NULL)
         *error = array->classes->last_error;
     return status;
+}
+
+mc_registry_status mc_registry_block_n_get(mc_registry_classes *classes,
+                                           mc_registry_block_n_view *out,
+                                           mc_registry_error *error) {
+    return block_n_get(classes, out, error, true);
+}
+
+mc_registry_status mc_registry_block_n_at(const mc_registry_block_n_view *array, int32_t index,
+                                          bool *out, mc_registry_error *error) {
+    return block_n_at(array, index, out, error, true);
+}
+
+mc_registry_status mc_registry_block_n_get_failure(mc_registry_classes *classes,
+                                                   mc_registry_block_n_view *out,
+                                                   mc_registry_error *error) {
+    return block_n_get(classes, out, error, false);
+}
+
+mc_registry_status mc_registry_block_n_at_failure(const mc_registry_block_n_view *array,
+                                                  int32_t index, bool *out,
+                                                  mc_registry_error *error) {
+    return block_n_at(array, index, out, error, false);
 }
 
 mc_registry_status mc_registry_block_o_get(mc_registry_classes *classes,

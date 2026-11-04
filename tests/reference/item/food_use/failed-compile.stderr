@@ -1,0 +1,5 @@
+<helper>/FoodObservation.java:42: error: reference to a is ambiguous
+                try {returned=stack.a(null,p[5]!=0?null:player);}catch(NullPointerException e){exception=e.getClass().getName();}
+                                   ^
+  both method a(fd,gs) in iz and method a(ls,gs) in iz match
+1 error

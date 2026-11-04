@@ -55,7 +55,8 @@ def main():
         print(f"UNAVAILABLE: formatter not found: {args.clang_format}", file=sys.stderr)
         return 77
     root = Path(__file__).resolve().parents[2]
-    fragments = {"tests/item/use/farming_controls.inc",
+    fragments = {"tests/item/use/food_controls.inc",
+                 "tests/item/use/farming_controls.inc",
                  "src/storage/nbt/stream_support.inc",
                  "src/client/display/source_surface.inc",
                  "src/client/display/source_lighting_draw.inc",

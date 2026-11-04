@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "status": "PASS",
-  "scope": "Windows x64 MSVC Release; four genuine SDK live Workbench scenes followed by actual source-window stop and a native-only C ownership join. Fresh farming-use BUSY-fix source cohort: the runtime binding includes Hoe and Seeds on-block use and the correction that propagates a sealed-Inventory MC_ENTITY_BUSY refusal as MC_ITEM_USE_BUSY instead of LIMIT. The reached LA147 refusal and unchanged prior effects are checked by a separate actual-owner component RED/GREEN control, not by these SDK profiles. The selected harness includes the saved ordinary single-player farming scene and updated client-placement test configuration. Direct Item/World/reference and entered-scene comparisons retain their own coverage. This receipt qualifies only the declared Workbench terminal flow; it adds no direct farming, pixel, unrestricted gameplay or performance claim.",
+  "scope": "Fresh native Workbench terminal-flow successor binding current Registry runtime dispatch and Food in-air source code. This scenario does not invoke the new Food branches or qualify original Food gameplay, pixels, FPS, audio, networking or unrestricted input.",
   "runtime_source_files": {
     "include/mc/block/material/material.h": {
       "bytes": 4557,
@@ -664,8 +664,8 @@
       "sha256": "b35c433b81d757718ca9a0b2abe1564e206a346e7a10f7ba693709cf15bacff8"
     },
     "include/mc/item/use/use.h": {
-      "bytes": 5031,
-      "sha256": "00de7bb596488285963a86bd8aa06b7c3c1a52e3c8ce0445e1bde9709add72de"
+      "bytes": 5277,
+      "sha256": "00ee19439516519262a3945879634cbb8f93b5c5e485755f2ef9269acfa4362c"
     },
     "include/mc/resources/files/files.h": {
       "bytes": 1630,
@@ -1260,12 +1260,12 @@
       "sha256": "2723b6b1c86ba6a6e4e4db831e0b906888cdb50064555e4b741f05975c20514e"
     },
     "src/block/registry/runtime.c": {
-      "bytes": 22823,
-      "sha256": "804c98d222e3653711f6bddab0c3f6a4f12ef69c4badc8d54a92230f1f8c4730"
+      "bytes": 23989,
+      "sha256": "5c40deb26f840a27cf4de5c56bae4638ff0bfdf6206c2eb5b41b31bc46a912b0"
     },
     "src/block/registry/runtime_internal.h": {
-      "bytes": 9522,
-      "sha256": "fec3a30ff1787e76c33e15d1358e52a610604926fc292d27b851e125b86b07f9"
+      "bytes": 10192,
+      "sha256": "4bd216fb475332a6b9e81324a2dddd5a4bc28a6e7ce06a5b3a134222fc96857e"
     },
     "src/block/registry/step_sound.c": {
       "bytes": 8271,
@@ -3479,13 +3479,13 @@
       "bytes": 10395,
       "sha256": "e17720111da4631764e2ae1ca256b98f2840a16165946b787a14c7b7a78e1966"
     },
-    "src/client/world/render_global_entities.c": {
-      "bytes": 28448,
-      "sha256": "35c66429b4431bad8970e6a72ca3f115f5d07603401040b23764e664f84d4441"
-    },
     "src/client/world/render_global_entities/body.inc": {
       "bytes": 19716,
       "sha256": "cc351cc89b02591efdff0c5e81b83513c08c5db2a1b00313c6ce11f72542e5dd"
+    },
+    "src/client/world/render_global_entities.c": {
+      "bytes": 28448,
+      "sha256": "35c66429b4431bad8970e6a72ca3f115f5d07603401040b23764e664f84d4441"
     },
     "src/client/world/render_global_internal.h": {
       "bytes": 7640,
@@ -3908,12 +3908,12 @@
       "sha256": "fc84465ea32817c3672a58bbd91b86c79e0a2805d6a21bc39004eac93cfbdc2a"
     },
     "src/entity/living/fields.c": {
-      "bytes": 526,
-      "sha256": "b731b1fab521f0762c62575773a322acfc7709a0930ca69d774a2fec2c8389a6"
+      "bytes": 947,
+      "sha256": "05b5275c54fd899bf3afe290235fab50188be1cebbe8a7efd8afeced435f9913"
     },
     "src/entity/living/fields_internal.h": {
-      "bytes": 346,
-      "sha256": "7b44d60316eb6a8169a4d633c9369b09dd40b0820fbf8e19d896eb819d613570"
+      "bytes": 711,
+      "sha256": "9110d461b76f388fdca2bbab8de806a31e7c66b87ea334746cc34e1373b03005"
     },
     "src/entity/living/sleeping.c": {
       "bytes": 2570,
@@ -4532,8 +4532,8 @@
       "sha256": "4913000dc2d952670bff62d297c5a6ee6df4587a577253b4120f44a2ac338b10"
     },
     "src/item/use/use.c": {
-      "bytes": 41120,
-      "sha256": "ff9f5e31d24c5d510fccc3f04ca068c453c61ebaa7b72f0aa4bfddd256129bad"
+      "bytes": 44737,
+      "sha256": "200b91c3757c6adaf49aa264847776bfd5aadeb4f730564c6c6f0ab27af58299"
     },
     "src/platform/files/byte_output.c": {
       "bytes": 2940,
@@ -5584,8 +5584,8 @@
       "sha256": "5942ac38bd6cf625d360730015efa9013ca5d4814453c03c453d5ec2403ef551"
     },
     "src/world/runtime/world_tick_random.c": {
-      "bytes": 48505,
-      "sha256": "fa00e5990e5caacab3c1ef6d4acae86cd24944f976436384b4dc4b268c027a04"
+      "bytes": 48553,
+      "sha256": "a3bac7500705fb86f4aabe73299af37495abb6d9cb3c6319a8c6a5b605f557cf"
     },
     "src/world/runtime/world_tick_random_internal.h": {
       "bytes": 562,
@@ -5797,12 +5797,8 @@
     }
   },
   "runtime_source_count": 1448,
-  "runtime_source_digest": "4864cb41f0e3f00f4201e45e0a0a01b6c34904b6c43d24a6f3324ad3b019d6aa",
+  "runtime_source_digest": "60575c06d9722bd498bf1a8bbbaa604029979964ed1eafbc449c45ebdac4b09a",
   "harness_source_files": {
-    "CMakeLists.txt": {
-      "bytes": 339136,
-      "sha256": "504a08cca6c70dd3fc27da8e8e2a0d5ca31d428e16bbc087fa6e53913f67defd"
-    },
     "cmake/client_active_notice_tests.cmake": {
       "bytes": 3606,
       "sha256": "d1632a7e875a08c1fe1ba1a80d66f38b4ff0e23621ed47238e200164264c9086"
@@ -5866,6 +5862,10 @@
     "cmake/client_font_views.cmake": {
       "bytes": 218,
       "sha256": "38d621f4be169766c9c71850b28557f27bd927884531c74ce6ab422a135b514f"
+    },
+    "cmake/client_food_use.cmake": {
+      "bytes": 1757,
+      "sha256": "99b3d2ee05f4817c74aeaaa81939cc4155c23525c1de2630792ec18de675eaea"
     },
     "cmake/client_frustum.cmake": {
       "bytes": 1234,
@@ -6118,6 +6118,10 @@
     "cmake/item_farming_use.cmake": {
       "bytes": 1203,
       "sha256": "adfb1531780a05bfae206be594c60620af72e3dad961678ee9bc8b5033759c1f"
+    },
+    "cmake/item_food_use.cmake": {
+      "bytes": 1203,
+      "sha256": "aa3c0d02ead2bbe67e1395b0e9c83bc18dcb56fa5d8d8752cd0375f453ea6617"
     },
     "cmake/java_file_urls.cmake": {
       "bytes": 848,
@@ -6444,8 +6448,8 @@
       "sha256": "52cc20f92e72601ab77b2538f702f841a0140bea6e4f72c434bfbe73019501b6"
     },
     "cmake/world_random_tick.cmake": {
-      "bytes": 4003,
-      "sha256": "cb18755e1db7539d8a1ed2b09451e69eef2262e05c5216f08aeed3f294682eb9"
+      "bytes": 4338,
+      "sha256": "76e54802dbbb60c4c2f40f11a47c556b36c8efbca0195a3a4074e5ec07bbebd7"
     },
     "cmake/world_raytrace.cmake": {
       "bytes": 111,
@@ -6462,6 +6466,10 @@
     "cmake/world_tick.cmake": {
       "bytes": 725,
       "sha256": "aeaf94c1de931037c94f616707f7e677b2f58627be582ab5c422dfbdd64207c2"
+    },
+    "CMakeLists.txt": {
+      "bytes": 339208,
+      "sha256": "997b7cb51e8fa8ab3c47e5e2de7f448929cecd53a80a6992e454babeb9cf2db2"
     },
     "tests/client/controller/test_block_harvest.c": {
       "bytes": 21086,
@@ -6558,6 +6566,10 @@
     "tests/client/gameplay/test_farming.c": {
       "bytes": 21027,
       "sha256": "560bf356c9bf8b654a08e8044c22f8e1380853704551191aeb877f7def0415a6"
+    },
+    "tests/client/gameplay/test_food.c": {
+      "bytes": 21039,
+      "sha256": "963117d8d4082cecb41125d0349b57e4c12f03ff051c979d78a97ab1aec50b98"
     },
     "tests/client/gameplay/test_inventory.c": {
       "bytes": 15599,
@@ -7595,6 +7607,10 @@
       "bytes": 2245,
       "sha256": "75836005513a10868b5148674bba3a5b60da3e7102f08b2941742b66bc337cf9"
     },
+    "tests/tools/client/test_food_loop.py": {
+      "bytes": 13867,
+      "sha256": "81a0f7c735fcd4d21a04cdf2e5f649a25ae4dbbfa97baf26a568df69e2911500"
+    },
     "tests/tools/client/test_game_directory_file.py": {
       "bytes": 12606,
       "sha256": "8a9dc9e0ce0056501fb6c3ee6b5ab558f1b7ae2e9966a271576007a6ef8236bf"
@@ -7868,22 +7884,22 @@
       "sha256": "1fc2f69d04e2ab6e5c48f9d2ebef1d9dd7de0c50a5a7278a81735b0a63edcff9"
     }
   },
-  "harness_source_count": 517,
-  "harness_source_digest": "2da4731d64342874a57a56b7b3eeee3497ed3f39f0e5194f0ae4c9cb3ea8e3fe",
+  "harness_source_count": 521,
+  "harness_source_digest": "127fb7d346771e8144ea7c57713b54a4b9fc7fee02fa047f30007bb85179d347",
   "selected_execution_inputs": {
-    "count": 1967,
-    "source_count": 1965,
+    "count": 1971,
+    "source_count": 1969,
     "binaries": {
       "mc_test_workbench_open_shutdown.exe": {
-        "bytes": 8960512,
-        "sha256": "ac9237a53fd09fdae164b73b2f918e7d1c56598d3449650c8d3da2b4c11d453e"
+        "bytes": 8962560,
+        "sha256": "4a2d7d43c2c6dabfe82fb098d93c0e6c06f3c5c6ffff3d7d0c6af1d19266ea00"
       },
       "OpenAL32.dll": {
         "bytes": 1603072,
         "sha256": "885092aee2c41f643158ec8d8914dd286e2466caa794d7e7302cf95e40a5ede0"
       }
     },
-    "digest": "bb794fe4ad0254b389a3c81173aac2ef483779c77a3e1fc06c2298fae9cd339d"
+    "digest": "693ece0220ab0a5f7ecb9c08023d528da82d315e2c21f2d80b54e9b77fe4f2a3"
   },
   "imported_resources": {
     "count": 413,
@@ -7891,8 +7907,8 @@
   },
   "cohort": {
     "passed": 4,
-    "total_seconds": 66.08,
-    "private_log_sha256": "dd04ca17b931a2edb220cdbdb13c55d2625c314afe087da26d7f4d0af4b30fe8"
+    "total_seconds": 63.31,
+    "private_log_sha256": "1359b58faf5b7fbfc5765cbc7b6da82aca22e67e5b726e9a9693fd86c491ee0b"
   },
   "authored_scene": {
     "inventory": [
@@ -7953,29 +7969,29 @@
     {
       "profile": "clean",
       "status": "PASS",
-      "ctest_seconds": 15.82,
-      "checks": 1892,
-      "capture_label": "workbench-open-clean-m2b5xzk_",
+      "ctest_seconds": 16.05,
+      "checks": 1893,
+      "capture_label": "workbench-open-clean-iyhoan5t",
       "private_artifacts": {
         "run.json": {
-          "bytes": 678288,
-          "sha256": "2b696123531db7b9bf138e881643a59a701f339b29b7464e7104563ed024ed77"
+          "bytes": 679394,
+          "sha256": "f394f0f0caebcd050301be3746267503a304bb8d08998dd34ef2596d531421d6"
         },
         "execution.json": {
           "bytes": 3956,
-          "sha256": "aa35b47a8502074a3242537b3718e2d6c9009224c692f00216a64ab7fb27a181"
+          "sha256": "319969915671159210778666e9663f4e1aab7b38ef036579b15275639f6ba183"
         },
         "stdout.txt": {
           "bytes": 4304,
-          "sha256": "84fd86faa1fae6d4cec3c2f50ffe04405cccd8a84b6496cff96c99307095fe6f"
+          "sha256": "1edfa0292f2d5714af31b8a96d45b3cdb15f6ecff20afa86d97eddb6e61f9572"
         },
         "stderr.txt": {
           "bytes": 0,
           "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         },
         "workbench-open-shutdown.png": {
-          "bytes": 90942,
-          "sha256": "37b5d32900cf6c15b8f09712149201d97af80f0814b9a1ee31c7e5d89d7c27cd"
+          "bytes": 90685,
+          "sha256": "627c93edbacd654d369721e36c47cdd23fb03e83dfa33e4cf93994c63c6e8488"
         }
       },
       "receipts": {
@@ -7995,8 +8011,8 @@
             "source-unchanged": "1",
             "world-ticks": "0",
             "stacks": "97",
-            "entities": "28",
-            "randoms": "32",
+            "entities": "29",
+            "randoms": "33",
             "active-container-is-screen-container": true
           }
         ],
@@ -8047,30 +8063,30 @@
             "windows-absent": "1",
             "source-close": "0",
             "source-save": "0",
-            "checks": "1892"
+            "checks": "1893"
           }
         ]
       },
-      "receipts_digest": "9daee624356ea045d099426ced6a353b7fb8003bfb714d63e3673323f7f78457",
+      "receipts_digest": "48299e5c0aa807679861631871e019cb77ef130721378b8879af7f5bf80b9b5f",
       "selected_inputs_unchanged": true,
       "resources_unchanged": true,
       "live_source_window_capture": true,
       "stopped_save_files": {
-        "alpha/level.dat": "64c94b1db6422f3cffdd8f008ad8a398cd4714ce9303c2f96d093c38d3788279",
+        "alpha/level.dat": "426c5dd4922a5f327a6e84c189bff09eeb61326b5d0d9a045ab8af835ca773d1",
         "alpha/level.dat_old": "db90b3599819c3607b0d19adaa5188433bfa622126e82580516fbe1470b3ddd4",
         "alpha/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
-        "alpha/session.lock": "e06cee867cfc09432336494b1c1b3f0d9218b806f59fbe14599836a443ca69ec",
+        "alpha/session.lock": "7981bacec637459e7b5fb8b59d38b537a49a42f61897d281b48107d56d2dcb1b",
         "bravo/level.dat_old": "c2c0ffdf883a87ddfbce9f9e4711be1a6bc8c8bf0b24c81a79fd680f9584146c",
         "bravo/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
         "older/level.dat": "465bf25f91ff7ce43612311439d8f2d84d1bc3b0366e170e59509d8b35a6daea",
         "older/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
-        "alpha/region/r.-1.-1.mcr": "2a3fc7f3e304151d15c29c5897ce872fbcc061ffdce381cdfa599f12caa69e3b",
-        "alpha/region/r.-1.0.mcr": "303193bf10fac0133e216f89bed01a4a9fc705b84f21a3510c80c4b8a5d8cbd5",
-        "alpha/region/r.0.-1.mcr": "65ef3ba8e0ba0e14d8ac021ff09b64098913dca90e4ef1d3f9fd00fa509e286e",
+        "alpha/region/r.-1.-1.mcr": "2575e8b3b6ec2e304b4e38a8b23a50229e77bc70774b0b79d5ef7fbc659c32d4",
+        "alpha/region/r.-1.0.mcr": "c6c21e84fd764a80ba2a39db61f7f4c4767f4c449ee361659f2c346f57a0c813",
+        "alpha/region/r.0.-1.mcr": "1aa04cd4c7aa108087d62e09009f4e3618362ae7566db446d47b1843a3cc79e3",
         "alpha/region/r.0.0.mcr": "4e171401a7de38667eb2204ee91fb498a669deb9d1a9fddd4867ac952149e7a7",
         "alpha/region/r.9.9.mcr": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
       },
-      "stopped_save_digest": "e5cd0cea2faec2f8616cae02da6f9190a4f2875b1c25cdd410e2e23a34dbf2ee",
+      "stopped_save_digest": "e0adce240d9cdfc090fa0cbb19546c3e86d58db7fb32f33038f3955dc22540b7",
       "unchanged_save_phases": [
         "open-after-native-close",
         "open-after-prepare",
@@ -8080,29 +8096,29 @@
     {
       "profile": "container",
       "status": "PASS",
-      "ctest_seconds": 14.17,
-      "checks": 1921,
-      "capture_label": "workbench-open-container-4yx5dmbi",
+      "ctest_seconds": 15.05,
+      "checks": 1923,
+      "capture_label": "workbench-open-container-3gsk38ba",
       "private_artifacts": {
         "run.json": {
-          "bytes": 679403,
-          "sha256": "9b485344bffba4e75578150473650551b899b116c187f1be6d6da855c97dea23"
+          "bytes": 680509,
+          "sha256": "71859153004c238412989d519446b67a1ba31ba0f3ffc0cf3a60ac980e7408a1"
         },
         "execution.json": {
           "bytes": 3821,
-          "sha256": "11749f2372bfd64c09b9344355a965e878925cf3a3c029c179c7a0f9fd984762"
+          "sha256": "cce8698c99a49049f1d54661ea16dcab5b70c2dd7d5f24433ac4cb2a43602be9"
         },
         "stdout.txt": {
           "bytes": 4524,
-          "sha256": "1521ab1183ad8b26bd0111cc12faf3c7be75774d18139fe916b22f424b200a8b"
+          "sha256": "d0f7f563bbbb1c03bb49532ae16847b495d1e1310994574d7bbe790bcd917615"
         },
         "stderr.txt": {
           "bytes": 0,
           "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         },
         "workbench-open-shutdown.png": {
-          "bytes": 90633,
-          "sha256": "ec4771630f7ef7d8351a71db94bcf89b6779a698af56e53c5545b23c7bc816ca"
+          "bytes": 90660,
+          "sha256": "b5dc44ed6605699262ff136489b0d8ffb6f042f8a9731c34694b542ddda90137"
         }
       },
       "receipts": {
@@ -8122,8 +8138,8 @@
             "source-unchanged": "1",
             "world-ticks": "0",
             "stacks": "97",
-            "entities": "29",
-            "randoms": "33",
+            "entities": "31",
+            "randoms": "35",
             "active-container-is-screen-container": true
           }
         ],
@@ -8181,18 +8197,18 @@
             "windows-absent": "1",
             "source-close": "0",
             "source-save": "0",
-            "checks": "1921"
+            "checks": "1923"
           }
         ]
       },
-      "receipts_digest": "96ca320355e800c8d5202573cb9d47b91efa93b48c6568a248ea82bd9d3d65c0",
+      "receipts_digest": "86c169377c3b086cb3d850c064ae7a60721c45480cd91fd7ece27629004610a3",
       "selected_inputs_unchanged": true,
       "resources_unchanged": true,
       "live_source_window_capture": true,
       "stopped_save_files": {
         "alpha/level.dat": "db90b3599819c3607b0d19adaa5188433bfa622126e82580516fbe1470b3ddd4",
         "alpha/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
-        "alpha/session.lock": "468980d71ed535b2929980a3acae30f9e6978937f101307fd59bdd35208fcc91",
+        "alpha/session.lock": "472958b6abf8b86718cd0c9f3892607127822831833f0e0ef2cbd1ea9d4117ad",
         "bravo/level.dat_old": "c2c0ffdf883a87ddfbce9f9e4711be1a6bc8c8bf0b24c81a79fd680f9584146c",
         "bravo/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
         "older/level.dat": "465bf25f91ff7ce43612311439d8f2d84d1bc3b0366e170e59509d8b35a6daea",
@@ -8203,7 +8219,7 @@
         "alpha/region/r.0.0.mcr": "4e171401a7de38667eb2204ee91fb498a669deb9d1a9fddd4867ac952149e7a7",
         "alpha/region/r.9.9.mcr": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
       },
-      "stopped_save_digest": "35abe75b8fe01f23fa09c8170519ff8a5038074a2d2356fb2667be6f5c83dae3",
+      "stopped_save_digest": "1effd25afd2a21746a56dc651a82abb808d038816cdea9aecd409410f8e4df67",
       "unchanged_save_phases": [
         "open-after-native-close",
         "open-after-prepare",
@@ -8214,29 +8230,29 @@
     {
       "profile": "player",
       "status": "PASS",
-      "ctest_seconds": 19.13,
-      "checks": 2448,
-      "capture_label": "workbench-open-player-2s4mj1_s",
+      "ctest_seconds": 15.64,
+      "checks": 2350,
+      "capture_label": "workbench-open-player-dxx8uq9s",
       "private_artifacts": {
         "run.json": {
-          "bytes": 679976,
-          "sha256": "c19283994f076119115a33857abae1b0b707c29cb41db9dc82bfca50708e7f5c"
+          "bytes": 681082,
+          "sha256": "0a758a271d9a900232d743c5e52d28fee7bbb660471ead7b26ff9d1a9d274f55"
         },
         "execution.json": {
           "bytes": 3958,
-          "sha256": "1889277c659a8c1838ce143b7d410334dc10600e5a627ff9e0ffca5f1175d434"
+          "sha256": "4736e2cbe7f60220d856f66ed0c3b7f6dca3456c3948c0550021505665cd5c60"
         },
         "stdout.txt": {
-          "bytes": 9053,
-          "sha256": "b4be5b89ca77d85663becc341482471ff7d1421e2c995db827bf76e8aa51fbbd"
+          "bytes": 4492,
+          "sha256": "f64e3b1ac5c86f27444d9b92b700eb74400fe215ffa0657a20da88ee7c15a499"
         },
         "stderr.txt": {
           "bytes": 124,
           "sha256": "f71bceb6556e81a7290450edc6e3c90df336449cb298ac23add4cf389fa2db6a"
         },
         "workbench-open-shutdown.png": {
-          "bytes": 89659,
-          "sha256": "deb1f73d9bd184fb81246f8905572f8145051ee62ff8c65bda4376c2b427e87f"
+          "bytes": 90977,
+          "sha256": "466381965c6e986ba95ab88387f1c8c67b09037f56f7d5303c7f5a31542e69c9"
         }
       },
       "receipts": {
@@ -8256,8 +8272,8 @@
             "source-unchanged": "1",
             "world-ticks": "0",
             "stacks": "97",
-            "entities": "39",
-            "randoms": "43",
+            "entities": "43",
+            "randoms": "47",
             "active-container-is-screen-container": true
           }
         ],
@@ -8316,30 +8332,30 @@
             "windows-absent": "1",
             "source-close": "0",
             "source-save": "0",
-            "checks": "2448"
+            "checks": "2350"
           }
         ]
       },
-      "receipts_digest": "51b66f40dc756bedd60d439a3408ace58d9bfbeddebe7bf22c51e5d441e83962",
+      "receipts_digest": "85f6a453e9f88f963d8bf25fa4bd835ce70c68b6b27f3278ead8464cd12f4e16",
       "selected_inputs_unchanged": true,
       "resources_unchanged": true,
       "live_source_window_capture": true,
       "stopped_save_files": {
-        "alpha/level.dat": "87b76895e74027b17a4fb704bc837c0f65376b7c3f5d0c3f61fae04601d19ae8",
+        "alpha/level.dat": "b2e76e19c15b1e80b0c25ce606591179273138e8fc1583df56b26082f5ff626b",
         "alpha/level.dat_old": "db90b3599819c3607b0d19adaa5188433bfa622126e82580516fbe1470b3ddd4",
         "alpha/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
-        "alpha/session.lock": "14ca839dd252d87418ef3d04d0d02cea3e85b4c37a39edf0d988a2ad0b9f4c45",
+        "alpha/session.lock": "ce21e2710113ddc67cfdbe7d3ff9a57329996142ab20e9eda64f1089b9b8e687",
         "bravo/level.dat_old": "c2c0ffdf883a87ddfbce9f9e4711be1a6bc8c8bf0b24c81a79fd680f9584146c",
         "bravo/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
         "older/level.dat": "465bf25f91ff7ce43612311439d8f2d84d1bc3b0366e170e59509d8b35a6daea",
         "older/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
-        "alpha/region/r.-1.-1.mcr": "70c423677bbbd8e2b2fae8fa897f82728008a9c0144f572671ae865a827c9242",
-        "alpha/region/r.-1.0.mcr": "7ee1762f0705490ada7ff195d6710ccd536f4351d4fa2e3cd3b813d91d4b9e40",
-        "alpha/region/r.0.-1.mcr": "1118152ebeb833adb05c17c97b73ed26fd92f6082adf333f1e7669e839d64745",
+        "alpha/region/r.-1.-1.mcr": "b907e76c921ae5d30f7b4975d948c85c9553ca8d1bc75ad38007ee9a11e9072c",
+        "alpha/region/r.-1.0.mcr": "85cf5c298d75bd330475b1a72a2592e1d5d9c0ee4d2ed57484afd3def86fdefa",
+        "alpha/region/r.0.-1.mcr": "a45c4ca0c04bd80f1c483bec32f939b9867cc839e029f375c76ee315dedf2481",
         "alpha/region/r.0.0.mcr": "4e171401a7de38667eb2204ee91fb498a669deb9d1a9fddd4867ac952149e7a7",
         "alpha/region/r.9.9.mcr": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
       },
-      "stopped_save_digest": "079e2279c6b493bf04ed715dbdf08818252830af32079f51ee32f35ddb7bfd64",
+      "stopped_save_digest": "e5353472d83d1f3287740cf056a8e1a418def07f6bbbb53d0fd848d56d9e4db6",
       "unchanged_save_phases": [
         "open-after-native-close",
         "open-after-prepare",
@@ -8350,29 +8366,29 @@
     {
       "profile": "world",
       "status": "PASS",
-      "ctest_seconds": 16.92,
-      "checks": 2254,
-      "capture_label": "workbench-open-world-54xgq3j8",
+      "ctest_seconds": 16.53,
+      "checks": 2333,
+      "capture_label": "workbench-open-world-u3nit28j",
       "private_artifacts": {
         "run.json": {
-          "bytes": 679375,
-          "sha256": "6ad1a1a9ec1c4b2d50c370f04abf3bd1b6a012236190efc80510aef7b06ac6a3"
+          "bytes": 681071,
+          "sha256": "bf6845ba672e444fd064184d9c3ea147aac3a1ab546d80f098026a4fb3407359"
         },
         "execution.json": {
-          "bytes": 3813,
-          "sha256": "f9452363f54604cda1151315796275870f0e6eb3bbe4887f258b7e1c7a42fc33"
+          "bytes": 3956,
+          "sha256": "e7ba1331e16386c6623555357f405f3a21446cfc00e0239111bd4892b375b496"
         },
         "stdout.txt": {
           "bytes": 4484,
-          "sha256": "6f6cfb888bd6597b7d843fc6db9fcc26d35527429ebe5e5aa6d8315b839cfaaa"
+          "sha256": "816926d15a2379ecb0a8f3861bfd97861a5f6299d722d9677ea10d330c8cf5bf"
         },
         "stderr.txt": {
           "bytes": 122,
           "sha256": "0d7af78e021616797609f256ad95c8f687eb9d4ac1fcc760b674750d8a82e235"
         },
         "workbench-open-shutdown.png": {
-          "bytes": 90497,
-          "sha256": "4bda30bbd4bf9d221cba7f73d8ed02cb59a226498dfce18da5ee121a73981154"
+          "bytes": 90534,
+          "sha256": "9d29353c250f2034470968449cfd93f80e2874ca4ef700c17b4ba9eb90575acf"
         }
       },
       "receipts": {
@@ -8392,8 +8408,8 @@
             "source-unchanged": "1",
             "world-ticks": "0",
             "stacks": "97",
-            "entities": "33",
-            "randoms": "37",
+            "entities": "40",
+            "randoms": "44",
             "active-container-is-screen-container": true
           }
         ],
@@ -8452,29 +8468,30 @@
             "windows-absent": "1",
             "source-close": "0",
             "source-save": "0",
-            "checks": "2254"
+            "checks": "2333"
           }
         ]
       },
-      "receipts_digest": "6f779d553858f3fde4e566268c0f6315d5cc8a5ccfbe71b4aead6ecfc90aaaa9",
+      "receipts_digest": "4311177337c1bb360cf5accf13765b9bd5bce19c658408a7f7a793d91634e72f",
       "selected_inputs_unchanged": true,
       "resources_unchanged": true,
       "live_source_window_capture": true,
       "stopped_save_files": {
-        "alpha/level.dat": "db90b3599819c3607b0d19adaa5188433bfa622126e82580516fbe1470b3ddd4",
+        "alpha/level.dat": "3c21330219f87fae48f0c7ceb62d70bc1f569b9bad01f6916b170c2a42d14476",
+        "alpha/level.dat_old": "db90b3599819c3607b0d19adaa5188433bfa622126e82580516fbe1470b3ddd4",
         "alpha/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
-        "alpha/session.lock": "65434fae12980c270453ba6d1c86bcdaa5f792920e495703a08764f4126f19d6",
+        "alpha/session.lock": "c95dc255ae7112ae3e6672b4ec325f5c8c45a68012837eba5c063b8d137e04df",
         "bravo/level.dat_old": "c2c0ffdf883a87ddfbce9f9e4711be1a6bc8c8bf0b24c81a79fd680f9584146c",
         "bravo/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
         "older/level.dat": "465bf25f91ff7ce43612311439d8f2d84d1bc3b0366e170e59509d8b35a6daea",
         "older/preserve-chunk.dat": "7f7ec248b7a47f6501ec33dd492c52525fb86a4479bca8bb2a8946f29c2661e0",
-        "alpha/region/r.-1.-1.mcr": "380d92ffe3420675b4782699ab5a063832415aadfce2df4edb69ef2834fcae8e",
-        "alpha/region/r.-1.0.mcr": "6579e6cafedb4a93dceebe54e51e9e812753d02f4b852ce1a082f4d25073a81c",
-        "alpha/region/r.0.-1.mcr": "89e904afb6eefb9e40bab3083b9a4fe88ff9e5477c40aabde8e1693e41f36bff",
+        "alpha/region/r.-1.-1.mcr": "5026fc9097df9f29a974bc41d201ad8ec5da17c803942caf17145de960b27737",
+        "alpha/region/r.-1.0.mcr": "32abae7f24b64ff8e20361688a0d6a0e1b4ffb97bfcde40eae51137fcdd5df1b",
+        "alpha/region/r.0.-1.mcr": "100a8a5414c6c6d5af7c32297fd978b3b94a061eea6632f75ed339cc6fff2bd2",
         "alpha/region/r.0.0.mcr": "4e171401a7de38667eb2204ee91fb498a669deb9d1a9fddd4867ac952149e7a7",
         "alpha/region/r.9.9.mcr": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
       },
-      "stopped_save_digest": "1d93f405cd2713f63769fb7a672b137fe85bcbe5f0eaf07326adab0059b65331",
+      "stopped_save_digest": "a48c36bf01f972260bb490d179cddcff13931a3112461327637696b39e6bae2f",
       "unchanged_save_phases": [
         "open-after-native-close",
         "open-after-prepare",

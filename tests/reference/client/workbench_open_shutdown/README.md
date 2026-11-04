@@ -1,5 +1,38 @@
 # Live-open Workbench native shutdown
 
+The four Windows SDK profiles freshly qualify the Workbench terminal flow on
+the current Registry/Food source cohort. They open the real Workbench, retain its
+live grid, cursor and recipe result, then close the source window and finish
+checked native cleanup. This scenario does not exercise the new Food branches.
+
+All four profiles pass in 63.31 seconds with 8,499 checks.
+In clean / Container / Player / World order, the checks are
+1,893 / 1,923 / 2,350 / 2,333 and measured CTest times are
+16.05 / 15.05 / 15.64 / 16.53 seconds. These are qualification
+observations, not frame-rate or performance measurements. Each process and the
+whole cohort preserve 1,448 runtime source files, 521 selected harness/CMake
+files, 2 binaries and 413 imported resources: 1,971 selected inputs in total.
+
+The quiet three-second guard records 31 samples and
+0 last-input timestamp changes. The passive cohort monitor records
+0 changes. It only reads timestamps and foreground information;
+it injects no input or focus repair. These observations do not establish that
+all possible input was absent or qualify unrestricted Desktop timing.
+
+The previous 66.08-second/8,515-check packet, its four exact captures,
+validators, logs, binaries, all 1,967 frozen input contents and older history
+remain checked immutable private evidence. The new receipt comes from four
+fresh processes and has its own source/product/resource continuity records.
+Public corruption controls and private/log audits retain their original checks.
+No earlier receipt is rebound to the new source tree.
+
+The following preserved account describes the preceding cohort and all earlier
+limits. Its times and counts remain historical and do not describe this successor.
+
+## Previous qualification and retained history
+
+# Live-open Workbench native shutdown
+
 The four Windows SDK profiles open the real Workbench, leave Logs in its grid,
 Planks on the cursor and a real recipe result visible, then close the actual
 source window. The native shutdown path transfers the same live IT owner to the

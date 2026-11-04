@@ -1,6 +1,29 @@
 # Development status
 
-The current full public suite passes 663/663 Linux sanitizer tests in 167.66
+The frozen Food/Registry public suite passes all 677 Windows tests in 409.25
+seconds and all 666 Linux tests in 179.82 seconds. Linux uses Clang 18 Debug
+ASan/UBSan with leak detection and halt-on-error under Xvfb/software OpenGL.
+All 4,680 selected sources and both hosts' products remain unchanged. The
+Windows loaded Food scene and the private Linux pre-input diagnosis retain
+their separate scopes; full parity, focus stability and sustained FPS remain open.
+
+[Food and soup use](item/food-use.md) now follows the original immediate healing
+and controller behavior, including signed count/health overflow and replacement
+of Mushroom Stew with a distinct Bowl. Windows and sanitized Linux match all 28 original
+Stack/controller observations with genuine statistics owners. A separate Windows
+scenario passes 1,806 checks: ordinary Apple/Soup clicks heal 5 to 9 to 19,
+replace Soup with a fresh Bowl, return HUD/held draws, and preserve health and
+Inventory through Save and Quit/reselection. The private Linux scene reaches
+loaded rendering but stops at its pre-input admission; Linux interaction remains
+unqualified. These finite results do not establish unrestricted survival play.
+
+[Registry random-tick reads](performance/registry-random-ticks.md) avoid resetting
+unused success diagnostics while preserving reached class use, current array
+captures and complete failures. A controlled Windows CPU confirmation reduces
+median random-sampler time by 21.08% for air and 23.88% for stone, retaining all
+28,880 samples. These measurements do not establish scene FPS.
+
+The preceding frozen farming public suite passes 663/663 Linux sanitizer tests in 167.66
 seconds. Windows passes 671/674 in 375.46 seconds; three Water/Lava/Ladder
 saved-camera or picking checks remain failed. All 4,651 selected sources and
 both hosts' compiled products stay unchanged through testing. Two later passive
