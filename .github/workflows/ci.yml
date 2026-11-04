@@ -98,13 +98,12 @@ jobs:
           df -h "$GITHUB_WORKSPACE"
           # Native configuration does not use the hosted Android or .NET SDKs.
           # Join cleanup even if configuration fails; neither may outlive this step.
+          # Delete directly; df reports space without a second walk of each SDK.
           (
             if [ -d /usr/local/lib/android ]; then
-              du -sh /usr/local/lib/android
               sudo rm -rf -- /usr/local/lib/android
             fi
             if [ -d /usr/share/dotnet ]; then
-              du -sh /usr/share/dotnet
               sudo rm -rf -- /usr/share/dotnet
             fi
           ) &

@@ -10,8 +10,8 @@
       "sha256": "920c8c73065c29095426a7cae97f32503b1e96a72505ebd90235993c5933017b"
     },
     ".github/workflows/ci.yml": {
-      "bytes": 14722,
-      "sha256": "a221812cbcc177fbb6ad29bf2c88b6fd84732e28324d410d03af91c2ff3c245d"
+      "bytes": 14720,
+      "sha256": "99315930b4879e6d00010c75252e3478dd35f746912d01b7b3321d7e44ddd476"
     },
     ".gitignore": {
       "bytes": 282,
@@ -19312,6 +19312,10 @@
     "tests/world/runtime/plant_placement_reference.c": {
       "bytes": 25375,
       "sha256": "6b0e2e1e00a51237e15ca3418791b3e0a591386bb109081dc58c51fd7d63a8ff"
+    },
+    "docs/performance/ci-storage.md": {
+      "bytes": 1451,
+      "sha256": "667303047b86c0b888d88dd84f76c873c5a68b0fcff5d1fa1176015fe9f49409"
     }
   },
   "self_metadata_excluded": true,
@@ -26740,6 +26744,28 @@
             "tests/world/runtime/plant_placement_reference.c"
           ],
           "current_count": 4828
+        }
+      }
+    },
+    {
+      "from_commit": "ad55f449949acfbd452fd8e1f12b6f8e13b6f139",
+      "role": "Current hosted Linux SDK cleanup and recorded configure/cleanup evidence. Historical Workbench evidence stays sealed; its explicit current-source comparison does not qualify these later inputs. Earlier original, native, hosted and timing results retain their captured scope.",
+      "previous_metadata": {
+        "bytes": 1131884,
+        "sha256": "8688bde4e247f1a9d1eea35d426fcb7dadff47f150d3fad9e80864b610fdf643"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            ".github/workflows/ci.yml": {
+              "bytes": 14722,
+              "sha256": "a221812cbcc177fbb6ad29bf2c88b6fd84732e28324d410d03af91c2ff3c245d"
+            }
+          },
+          "added": [
+            "docs/performance/ci-storage.md"
+          ],
+          "current_count": 4829
         }
       }
     }
