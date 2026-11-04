@@ -53,6 +53,10 @@ last constructor/mutator diagnostic as a runtime Class. The corrected fixture
 maps the actual Item kind. All metadata values already matched in that failed
 run; its complete output remains retained.
 
+The later [ordinary Torch path](../world/torch-placement.md) adds its inherited
+metadata-zero placement, orientation/support callbacks, queued lighting and
+separate Windows placement/removal save cycles.
+
 These finite method and component checks do not qualify all six families for
 ordinary loaded play. The Sapling/Flower save cycles have their own scope;
 other Block predicates, hooks, Item drawing, original pixels/audio and frame

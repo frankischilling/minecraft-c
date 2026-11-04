@@ -12,7 +12,9 @@ earlier effects. [Flowing and still fluids](fluids.md) now have concrete update,
 addition and neighbor bodies. [Wooden pressure plates](pressure-plates.md) have
 their actual added, support-neighbor, removal and shared contact/tick bodies.
 [Plant callbacks](plants.md) implement survival, drops, growth and farmland
-through the same World services. Population, complete fluid/falling closure,
+through the same World services. [Ordinary client Torch](torch-placement.md)
+now runs onAdded orientation, support-loss drops and its metadata-zero tick
+through those notifying setters. Population, complete fluid/falling closure,
 broader TileEntity/Entity effects and the remaining WorldAccess slots remain
 unfinished. The six implemented slots and their live-list behavior are described
 in [WorldAccess callbacks](world-access.md).

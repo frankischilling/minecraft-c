@@ -1,5 +1,22 @@
 # World simulation
 
+## Ordinary Torch placement and support
+
+[Torch 50](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/torch-placement.md)
+now executes live wall/floor support, onAdded orientation, clicked-face
+metadata, support-loss drops and its metadata-zero tick. The existing setter
+keeps addition before the clicked-face override, with both notifications.
+Retained support, query and mutation children preserve callback ownership.
+
+Windows and sanitized Linux match all 193 original calls, including nine
+NULL-World exceptions, and independently audit 34 drops per process. Final
+Windows placement/removal scenes pass 3,242/5,724 checks through normal queued
+lighting, drawing, Save and Quit and distinct-owner reselection. The saved
+fixture now covers all 361 active random-tick Chunks and their probe halo;
+earlier lighting and native focus failures remain recorded. Redstone Torch
+lifecycle, general focus reliability, original pixels/audio and FPS remain
+separate.
+
 ## Plant placement
 
 [The retained placement path](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plant-placement.md)

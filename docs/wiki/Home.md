@@ -5,6 +5,13 @@ ticks, draw terrain and Mobs, and reach mining, placement, pickup, crafting and
 save/reselection in finite Windows scenarios. Complete Beta 1.7.3 parity and
 unrestricted play remain unfinished. Single-player is the current focus.
 
+[Ordinary Torch placement and support](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/torch-placement.md)
+now reaches input, orientation, neighbor removal, queued lighting and
+save/reselection. Windows and sanitized Linux match 193 original method calls
+and audit their own drop entropy. Final Windows placement/removal scenes pass
+3,242/5,724 checks. Earlier lighting and focus failures remain recorded;
+general focus reliability and FPS remain open.
+
 [Plant placement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plant-placement.md)
 now connects eight flower-family Blocks to the ordinary placement path.
 Windows and sanitized Linux match all 864 original predicate calls. Separate

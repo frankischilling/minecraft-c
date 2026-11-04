@@ -6,8 +6,8 @@
       "sha256": "0081591e56fb3455123fcaa3a97e0b1fcf1c8f01e41e6b0806da11434ddcc364"
     },
     ".gitattributes": {
-      "bytes": 1442,
-      "sha256": "920c8c73065c29095426a7cae97f32503b1e96a72505ebd90235993c5933017b"
+      "bytes": 1598,
+      "sha256": "1a08d426f88203c4c666162492526f3a3db4dce9bbb115d71b452931f1c04703"
     },
     ".github/workflows/ci.yml": {
       "bytes": 14720,
@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 339635,
-      "sha256": "8dcf4cb320ec262f7c349aa390c0828aa499a013224cdb795c217ede2d9bb388"
+      "bytes": 339799,
+      "sha256": "2279eff191ec7a923da70ad5d93a22912877696ae397792bc42515ed448cb083"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 191100,
-      "sha256": "9951e71a7f7bb0876351b4b61b1ff42adcd53c0fafc8d7145374395ead0a7662"
+      "bytes": 192011,
+      "sha256": "167941c8a503fe7c39d3ae69317f259c3789296a7aaadb94be9fcc7da86a2a97"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -826,24 +826,24 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 464580,
-      "sha256": "4ec4437475ead82024fefd11249166d5beb1f3a9873f9d600d1ea65b71e1ee8e"
+      "bytes": 465714,
+      "sha256": "674191d1d296a6a751a3e145cc03910f2c37ac53ff8e1c148193fe6b0ae50568"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
       "sha256": "2266d5edd099003b4b3fe304ecf79cf86bbfcab026ef1480936c04a391024957"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 109957,
-      "sha256": "425d7b054930e59036c684a12ce2905babb494c52146ceaead9f312d4c1fead3"
+      "bytes": 111113,
+      "sha256": "5f41a93830ffdc118f1e958cce036610e66689082564ef8ffeeff1b3f0ee5f7e"
     },
     "docs/wiki/History.md": {
-      "bytes": 56397,
-      "sha256": "f3291aa31152c12face009bd538ffa85e508c7d6ff7a0def9da2eb1d9e447bda"
+      "bytes": 57331,
+      "sha256": "afbb29d57e4b2a3cd4faf5b1066ac6de4be675b7a90b68d28849028a8596fa2e"
     },
     "docs/wiki/Home.md": {
-      "bytes": 11774,
-      "sha256": "93d750d42e3963273497772a3b575ecb0e808b01185f50ac99aa5c60fbaff73f"
+      "bytes": 12269,
+      "sha256": "6fd108520e8bd9022c732e1eeba2b67d5c8552e727f55947d77bccd12fe0d85a"
     },
     "docs/wiki/Startup.md": {
       "bytes": 7992,
@@ -854,12 +854,12 @@
       "sha256": "82cef3806c626dd62a9d870040b4731dfcfd5916232dec21afdc8efbff5f13dd"
     },
     "docs/wiki/World-simulation.md": {
-      "bytes": 52580,
-      "sha256": "638907289fb3b61b1e4cf146f4c60d08261e2bffdd02cd412775435df8366d4c"
+      "bytes": 53578,
+      "sha256": "94df77f2228902a23451f1fc3541977f24108ca50a09e27cf3ac49c4da259950"
     },
     "docs/wiki/_Sidebar.md": {
-      "bytes": 2358,
-      "sha256": "5be0700116ff5a172a25bde7d148315a280c2e1e6aec918297d07194ca621851"
+      "bytes": 2508,
+      "sha256": "0e1e3d1f35d9bb0ca5ceef03e4ccefe2fad143b7ca3ea8071107c56e0e95bb21"
     },
     "docs/world/biome-registry.md": {
       "bytes": 10503,
@@ -962,8 +962,8 @@
       "sha256": "10a9aa14070a1d465c458ac0aa955ff40b1594b523f1f68cd15d1b53056aadff"
     },
     "docs/world/mutations.md": {
-      "bytes": 8064,
-      "sha256": "0422d387fc51aef32f008cbeaff03825e1d220563a3512f97da8994a4efcb13e"
+      "bytes": 8217,
+      "sha256": "503fcf9d02bdeb6f870d05fa279948e9b6fa3a7cc4ff2b277b98b602d9612544"
     },
     "docs/world/noise.md": {
       "bytes": 2862,
@@ -1730,8 +1730,8 @@
       "sha256": "656258a3fea4374ffe08691fbdea9203c34c6ab7d1788b8845fe822c3ada0b3f"
     },
     "include/mc/world/runtime/mutations.h": {
-      "bytes": 8944,
-      "sha256": "6d1db8b1dcb59e771c914ffbe8f786a0a778402457e13eaf9cce9243d37af8ca"
+      "bytes": 9306,
+      "sha256": "947ada648d6892579011d7783b47d3e862afab0a4f91fea7912930622a0af7cb"
     },
     "include/mc/world/runtime/plants.h": {
       "bytes": 3817,
@@ -2006,8 +2006,8 @@
       "sha256": "3c32c85088eb8c13ba451175b19c2dcb4931f192d4973ab0135ff80f53e5dd31"
     },
     "scripts/development/format_code.py": {
-      "bytes": 5361,
-      "sha256": "b22e6ff7e856bd25167e0530b2108a3628c930e17331eff6ef5304480450b58f"
+      "bytes": 5500,
+      "sha256": "06b4d61fc099f00a73015e00470ad2efbe1cbe423fa72343f3de74a9ea269f61"
     },
     "scripts/reference/binaries/inspect_jars.py": {
       "bytes": 7826,
@@ -4806,12 +4806,12 @@
       "sha256": "f72d5d21ab72bdc47502405a03fded0c86b4c05e66f44bbd135663a2dd295f09"
     },
     "src/world/runtime/mutation/hooks.c": {
-      "bytes": 21087,
-      "sha256": "5e63f199bfed715da5a24d4d2c93a2146563a6c57391cf93d91a7429e0980ffa"
+      "bytes": 21405,
+      "sha256": "1be9e6966dabce6efdb3d8c33b12b9f48a060edcc03eb95bb718317943a76f2c"
     },
     "src/world/runtime/mutation/mutation_internal.h": {
-      "bytes": 16930,
-      "sha256": "05cc89125224d1f55e1b6538e6b4073b93340a67a85e2caf6d9d5517aae6a523"
+      "bytes": 18208,
+      "sha256": "53d33821dfd393d134a2de7dbb00442ae4554ceecc1ca53992b4782208c6a3e1"
     },
     "src/world/runtime/mutation/notifications.c": {
       "bytes": 7112,
@@ -4930,8 +4930,8 @@
       "sha256": "49147e2865fd02083e9164eb5143e672d49031c8389e8b051715673284ac2798"
     },
     "src/world/runtime/mutation/ticks.c": {
-      "bytes": 5951,
-      "sha256": "161cc71b736ead781639dccb53cd063c710d98ffc3086464d978c58c5cf60fd7"
+      "bytes": 6110,
+      "sha256": "adccccd55b4c608e6fdfa292822580c22250b29537813555474b62e97886d876"
     },
     "src/world/runtime/mutation/world.c": {
       "bytes": 13226,
@@ -6407,7 +6407,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 495378,
-      "sha256": "086ef22cbf5eb9bc29593570bdea456db1444122ad01cb82163fe55f55d3f9d3"
+      "sha256": "35edc83bb51182b08f7a741df0f91310e59242e1d89b7608bf834b7ae643a7d0"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6471,7 +6471,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 595345,
-      "sha256": "eb5cd0f1defeb97599e31b07514ba38ea8a33f6a20efebce9b7710dc91a39d14"
+      "sha256": "8e87b7585fbe11d45c5d3d9091346026d9ce255d18dad7bc21a593e67803700f"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6603,7 +6603,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 491192,
-      "sha256": "8276d15a2ad954e45ed4386e5cf7ebe47c4b7252887e5107c1e842b7133dd25d"
+      "sha256": "f3330867d9bc4891aa83c938e232fac8febfb98b4cc9dd2cba8f0330aa154e95"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -15498,8 +15498,8 @@
       "sha256": "068ea250c4d1732c31ff6d23f433e587255e01267883e5a3a07f5782b82d3572"
     },
     "include/mc/world/runtime/placement.h": {
-      "bytes": 7081,
-      "sha256": "7fa0db05e43e936fb62f50dab88b124c646a0a9796484b70869526bfb5925f1d"
+      "bytes": 7375,
+      "sha256": "4a833aa4084d405ef414afcbcc9e22924844853e02911f8ecd94e092108c0e8e"
     },
     "src/client/controller/use.c": {
       "bytes": 24246,
@@ -15510,8 +15510,8 @@
       "sha256": "40cd393cc1a276fd8d5b741730dea0c34e4e57cfa1b7b247623b482c1b9161d3"
     },
     "src/world/runtime/placement.c": {
-      "bytes": 33314,
-      "sha256": "01b8750ec345c6f4b38065fd7d3396e9a5d4523a5dea3d29e6c519053ba21bf6"
+      "bytes": 41945,
+      "sha256": "1ed9934990ff2051ec3fc14c0835ba6f54a897104424156b6d8338ecde52d7c0"
     },
     "tests/client/controller/test_use.c": {
       "bytes": 10069,
@@ -15526,8 +15526,8 @@
       "sha256": "90ef1657e379e148a4a96c78d311d94dc77a258996c09ddd601c5181ef101f84"
     },
     "tests/item/use/test_use.c": {
-      "bytes": 36455,
-      "sha256": "71dd68d3e2d1b33df4e7cc551552373cf46f86d0fe4c86d000084ef7f5c1a450"
+      "bytes": 36572,
+      "sha256": "a64e8facc3d9320e95bded8e00474d66005e0d10914bd4ff7596612ebcc5c29e"
     },
     "tests/reference/client/placement/README.md": {
       "bytes": 2679,
@@ -15570,12 +15570,12 @@
       "sha256": "b656177762f2578a3311c35d60cddf0136028af7f107ac11b98a3107196bc3a6"
     },
     "tests/world/runtime/placement/test_callbacks.c": {
-      "bytes": 15448,
-      "sha256": "8b561e19c30e3dafaa292b7bcc18491754696f53004710760cbba3d6b54ae5a8"
+      "bytes": 16084,
+      "sha256": "c0ec454db524dc0c7cf4b2637e7fca91e23636dc06bfdd34f3a7d52334dffd3c"
     },
     "tests/world/runtime/placement/test_placement.c": {
-      "bytes": 18679,
-      "sha256": "ab95943f62a90e55df780ca3afe2cb80a2b6ba5aad00e75b8f35f335d6dbc2df"
+      "bytes": 18818,
+      "sha256": "96df42d13b1d5ea9759d7e675e4bd0119dec1b3ccbf773d8a7530f1304152479"
     },
     "cmake/entity_mount.cmake": {
       "bytes": 803,
@@ -18022,8 +18022,8 @@
       "sha256": "9f82b2f15ad071b7e953b38cdc2ccf70181cad6b67ef8394a145447120221683"
     },
     "docs/client/torch-world.md": {
-      "bytes": 7672,
-      "sha256": "544189128bacf1b5d16d243b81ab67ec627da8ea7485e1e3910f51e8f047ce6b"
+      "bytes": 7961,
+      "sha256": "97b332728082410ebf1b58dce4790dec22b16899bf9463d51302fad6a968d252"
     },
     "src/client/render/blocks/torch.c": {
       "bytes": 5862,
@@ -19058,8 +19058,8 @@
       "sha256": "f586c12b727f3e68ff41643b2799d55a712bef425717e58a512614aa5e9a2bce"
     },
     "docs/item/placement-metadata.md": {
-      "bytes": 3372,
-      "sha256": "57dc84f25a7f2b6fbf5333b5306d92b514b0c8da1c6e3efc0f916e2ab9644a56"
+      "bytes": 3577,
+      "sha256": "ed88dbdd7eca2a90c3a25dc723c9414b438028dc670febe7ea603f2d596c1956"
     },
     "scripts/benchmarks/client_frames.py": {
       "bytes": 5948,
@@ -19316,6 +19316,122 @@
     "docs/performance/ci-storage.md": {
       "bytes": 1451,
       "sha256": "667303047b86c0b888d88dd84f76c873c5a68b0fcff5d1fa1176015fe9f49409"
+    },
+    "cmake/client_torch_placement.cmake": {
+      "bytes": 2282,
+      "sha256": "418351664d493b29cdd7010de49670f1261151e780fccc385bf0de855de47b5d"
+    },
+    "cmake/world_torch_placement.cmake": {
+      "bytes": 1800,
+      "sha256": "d37146288c05f01b4ca019117ca26354608f52e111bc8e07497c9e32d93187c6"
+    },
+    "docs/world/torch-placement.md": {
+      "bytes": 7213,
+      "sha256": "9c65218cdb1740abfce5ded5cb7c77e0b610769aa2d2deef4794aac07610b1d3"
+    },
+    "src/world/runtime/mutation/torch.c": {
+      "bytes": 13406,
+      "sha256": "08f5f5851eda71b992041e43951b5e87ef70a2b3510d737effbe95830366bab4"
+    },
+    "src/world/runtime/torch_support.c": {
+      "bytes": 1191,
+      "sha256": "61004e3bc7ec3cb6f8e357a5bb34162c0ad2ca9e94cf019a90add9b15efe6bf8"
+    },
+    "src/world/runtime/torch_support_internal.h": {
+      "bytes": 667,
+      "sha256": "45e6be0ee1d7e8028221473c1ec5b9db13e55a73197f1a69ed4b9e3db1ecada7"
+    },
+    "tests/client/gameplay/test_torch_placement.c": {
+      "bytes": 36226,
+      "sha256": "d3a73c0ecf37131ca1171a587570a691425c33388c801790bd5fd8a51c12a12c"
+    },
+    "tests/reference/world/torch_placement/.gitattributes": {
+      "bytes": 369,
+      "sha256": "5700cde87e33ab7ae32e9f6a62d7466b68acb6162ff39a021f349a82c659b624"
+    },
+    "tests/reference/world/torch_placement/README.md": {
+      "bytes": 6081,
+      "sha256": "d2dc94bce07cbc37fc141ab763e55c7f60a4bf0244ae6b050a3691cddc9aa1d3"
+    },
+    "tests/reference/world/torch_placement/TorchPlacementObservation.java": {
+      "bytes": 12472,
+      "sha256": "57ca0b5623fa2f220bdd30329724dbdd214df82c3f82bf253d2324c9ed7cfc99"
+    },
+    "tests/reference/world/torch_placement/capture-provenance.json": {
+      "bytes": 9297,
+      "sha256": "cb2b55e3d530bc0b8d96b8b533364fbf6e5bd8c1e2465e3b03bbba531448d0ce"
+    },
+    "tests/reference/world/torch_placement/capture_reference.py": {
+      "bytes": 12207,
+      "sha256": "208cc6f8d03b1823e0337665f171450b47e95b1f8fee51cc11daff972410807c"
+    },
+    "tests/reference/world/torch_placement/declared-inputs.json": {
+      "bytes": 41786,
+      "sha256": "c8df7a000cefac9a2c8d864634b0a903081d27384ce88fdf07f1573b4a776f9c"
+    },
+    "tests/reference/world/torch_placement/entropy.py": {
+      "bytes": 6300,
+      "sha256": "2177e3012c7fe4a6f876300373ab3125421c19af24dab15947195b534d710d9c"
+    },
+    "tests/reference/world/torch_placement/ordinary-0.entropy.jsonl": {
+      "bytes": 77666,
+      "sha256": "99d1b87440de38ed9ad4fa25e307ba5ac568ebf29625dab12265e41c49abc7fc"
+    },
+    "tests/reference/world/torch_placement/ordinary-0.stdout": {
+      "bytes": 142446,
+      "sha256": "4a7f8dfaf45a37af1fb87782b0d18edc7b819b005320a4b1a91f0c7a1fa542f8"
+    },
+    "tests/reference/world/torch_placement/ordinary-1.entropy.jsonl": {
+      "bytes": 77666,
+      "sha256": "f42d7eb307ee52395b91f259151591e956f6eec9e5ecbde6540cb22d8b375641"
+    },
+    "tests/reference/world/torch_placement/ordinary-1.stdout": {
+      "bytes": 142446,
+      "sha256": "d2bb87b9c7010892600af0504ad4b9f5bbe8ff15c9ff8e94765747463aca4b6c"
+    },
+    "tests/reference/world/torch_placement/original.stdout": {
+      "bytes": 64239,
+      "sha256": "05e5b02107c34d304ab933c8011b0f04c0befa84e694a4b686e780369a555361"
+    },
+    "tests/reference/world/torch_placement/packet.py": {
+      "bytes": 15587,
+      "sha256": "a5f2bb66b67a9665d1c06e7723cdfdc02b018d99daa55dbd6b0829cfccf39e5c"
+    },
+    "tests/reference/world/torch_placement/profiles.tsv": {
+      "bytes": 9110,
+      "sha256": "253a0b67fd1b90cfbf6bd56b96f47404adb116d5bd06d54f3362d321324a5ddb"
+    },
+    "tests/reference/world/torch_placement/protocol.json": {
+      "bytes": 4221,
+      "sha256": "4da588560ebac9c6b6eeed7b29e341ccfaf1181eab616fb625f4e00658fe5df1"
+    },
+    "tests/reference/world/torch_placement/source-pins.json": {
+      "bytes": 129422,
+      "sha256": "36ff7b20d8a01ef3b2c916c8c3cedc5c105100468a18db290ef9a8f71d4c0e92"
+    },
+    "tests/reference/world/torch_placement/test_packet.py": {
+      "bytes": 6636,
+      "sha256": "00b1e9daa644eb503375b92ddf162f1bc2498abcf901de2ee855a561ffc63659"
+    },
+    "tests/tools/client/test_torch_placement_loop.py": {
+      "bytes": 26257,
+      "sha256": "875b711691f95768053bb12493fcf85c7376e79d78eafc4481a4470b437159ee"
+    },
+    "tests/tools/world/test_torch_placement.py": {
+      "bytes": 13782,
+      "sha256": "957fce7819c6210829fa6c4a82177aa5437a7676be412acc6ec3ad22ea0ee8a8"
+    },
+    "tests/world/runtime/placement/torch_callbacks.inc": {
+      "bytes": 6168,
+      "sha256": "821eb5d9f2e722e320b20fd9e4a506fdec5e8f812e61e9eae1301614cea5de2a"
+    },
+    "tests/world/runtime/placement/torch_controls.inc": {
+      "bytes": 4834,
+      "sha256": "21a8c0072d46153e4901f53e2d523cacfc00b3d6e042690a0380d678048baac1"
+    },
+    "tests/world/runtime/torch_placement_reference.c": {
+      "bytes": 33813,
+      "sha256": "a72e944c6e3b4cef910c59265c9f4cd27f93499d7f5f8d1d224f72e0c91ee97b"
     }
   },
   "self_metadata_excluded": true,
@@ -26766,6 +26882,152 @@
             "docs/performance/ci-storage.md"
           ],
           "current_count": 4829
+        }
+      }
+    },
+    {
+      "from_commit": "a960e73288ebad44c999bd45a69e57cc7204f69f",
+      "role": "Current ordinary client Torch support lifecycle, shared live Fence comparison, retained notification diagnostics, original effect and own-entropy replay, and finite Windows SDK placement/removal save controls. Historical Workbench evidence stays sealed; its explicit current-source comparison does not qualify these later inputs. Earlier original, native, hosted and timing results retain their captured scope.",
+      "previous_metadata": {
+        "bytes": 1132941,
+        "sha256": "3d4f2763a278351bfa6c4a0adddc724cc33f481abc656fcfc9ab3bded7381068"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            ".gitattributes": {
+              "bytes": 1442,
+              "sha256": "920c8c73065c29095426a7cae97f32503b1e96a72505ebd90235993c5933017b"
+            },
+            "CMakeLists.txt": {
+              "bytes": 339635,
+              "sha256": "8dcf4cb320ec262f7c349aa390c0828aa499a013224cdb795c217ede2d9bb388"
+            },
+            "docs/parity.md": {
+              "bytes": 191100,
+              "sha256": "9951e71a7f7bb0876351b4b61b1ff42adcd53c0fafc8d7145374395ead0a7662"
+            },
+            "docs/testing.md": {
+              "bytes": 464580,
+              "sha256": "4ec4437475ead82024fefd11249166d5beb1f3a9873f9d600d1ea65b71e1ee8e"
+            },
+            "docs/wiki/Build-and-tests.md": {
+              "bytes": 109957,
+              "sha256": "425d7b054930e59036c684a12ce2905babb494c52146ceaead9f312d4c1fead3"
+            },
+            "docs/wiki/History.md": {
+              "bytes": 56397,
+              "sha256": "f3291aa31152c12face009bd538ffa85e508c7d6ff7a0def9da2eb1d9e447bda"
+            },
+            "docs/wiki/Home.md": {
+              "bytes": 11774,
+              "sha256": "93d750d42e3963273497772a3b575ecb0e808b01185f50ac99aa5c60fbaff73f"
+            },
+            "docs/wiki/World-simulation.md": {
+              "bytes": 52580,
+              "sha256": "638907289fb3b61b1e4cf146f4c60d08261e2bffdd02cd412775435df8366d4c"
+            },
+            "docs/wiki/_Sidebar.md": {
+              "bytes": 2358,
+              "sha256": "5be0700116ff5a172a25bde7d148315a280c2e1e6aec918297d07194ca621851"
+            },
+            "docs/world/mutations.md": {
+              "bytes": 8064,
+              "sha256": "0422d387fc51aef32f008cbeaff03825e1d220563a3512f97da8994a4efcb13e"
+            },
+            "include/mc/world/runtime/mutations.h": {
+              "bytes": 8944,
+              "sha256": "6d1db8b1dcb59e771c914ffbe8f786a0a778402457e13eaf9cce9243d37af8ca"
+            },
+            "scripts/development/format_code.py": {
+              "bytes": 5361,
+              "sha256": "b22e6ff7e856bd25167e0530b2108a3628c930e17331eff6ef5304480450b58f"
+            },
+            "src/world/runtime/mutation/hooks.c": {
+              "bytes": 21087,
+              "sha256": "5e63f199bfed715da5a24d4d2c93a2146563a6c57391cf93d91a7429e0980ffa"
+            },
+            "src/world/runtime/mutation/mutation_internal.h": {
+              "bytes": 16930,
+              "sha256": "05cc89125224d1f55e1b6538e6b4073b93340a67a85e2caf6d9d5517aae6a523"
+            },
+            "src/world/runtime/mutation/ticks.c": {
+              "bytes": 5951,
+              "sha256": "161cc71b736ead781639dccb53cd063c710d98ffc3086464d978c58c5cf60fd7"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 495378,
+              "sha256": "086ef22cbf5eb9bc29593570bdea456db1444122ad01cb82163fe55f55d3f9d3"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 595345,
+              "sha256": "eb5cd0f1defeb97599e31b07514ba38ea8a33f6a20efebce9b7710dc91a39d14"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 491192,
+              "sha256": "8276d15a2ad954e45ed4386e5cf7ebe47c4b7252887e5107c1e842b7133dd25d"
+            },
+            "include/mc/world/runtime/placement.h": {
+              "bytes": 7081,
+              "sha256": "7fa0db05e43e936fb62f50dab88b124c646a0a9796484b70869526bfb5925f1d"
+            },
+            "src/world/runtime/placement.c": {
+              "bytes": 33314,
+              "sha256": "01b8750ec345c6f4b38065fd7d3396e9a5d4523a5dea3d29e6c519053ba21bf6"
+            },
+            "tests/item/use/test_use.c": {
+              "bytes": 36455,
+              "sha256": "71dd68d3e2d1b33df4e7cc551552373cf46f86d0fe4c86d000084ef7f5c1a450"
+            },
+            "tests/world/runtime/placement/test_callbacks.c": {
+              "bytes": 15448,
+              "sha256": "8b561e19c30e3dafaa292b7bcc18491754696f53004710760cbba3d6b54ae5a8"
+            },
+            "tests/world/runtime/placement/test_placement.c": {
+              "bytes": 18679,
+              "sha256": "ab95943f62a90e55df780ca3afe2cb80a2b6ba5aad00e75b8f35f335d6dbc2df"
+            },
+            "docs/client/torch-world.md": {
+              "bytes": 7672,
+              "sha256": "544189128bacf1b5d16d243b81ab67ec627da8ea7485e1e3910f51e8f047ce6b"
+            },
+            "docs/item/placement-metadata.md": {
+              "bytes": 3372,
+              "sha256": "57dc84f25a7f2b6fbf5333b5306d92b514b0c8da1c6e3efc0f916e2ab9644a56"
+            }
+          },
+          "added": [
+            "cmake/client_torch_placement.cmake",
+            "cmake/world_torch_placement.cmake",
+            "docs/world/torch-placement.md",
+            "src/world/runtime/mutation/torch.c",
+            "src/world/runtime/torch_support.c",
+            "src/world/runtime/torch_support_internal.h",
+            "tests/client/gameplay/test_torch_placement.c",
+            "tests/reference/world/torch_placement/.gitattributes",
+            "tests/reference/world/torch_placement/README.md",
+            "tests/reference/world/torch_placement/TorchPlacementObservation.java",
+            "tests/reference/world/torch_placement/capture-provenance.json",
+            "tests/reference/world/torch_placement/capture_reference.py",
+            "tests/reference/world/torch_placement/declared-inputs.json",
+            "tests/reference/world/torch_placement/entropy.py",
+            "tests/reference/world/torch_placement/ordinary-0.entropy.jsonl",
+            "tests/reference/world/torch_placement/ordinary-0.stdout",
+            "tests/reference/world/torch_placement/ordinary-1.entropy.jsonl",
+            "tests/reference/world/torch_placement/ordinary-1.stdout",
+            "tests/reference/world/torch_placement/original.stdout",
+            "tests/reference/world/torch_placement/packet.py",
+            "tests/reference/world/torch_placement/profiles.tsv",
+            "tests/reference/world/torch_placement/protocol.json",
+            "tests/reference/world/torch_placement/source-pins.json",
+            "tests/reference/world/torch_placement/test_packet.py",
+            "tests/tools/client/test_torch_placement_loop.py",
+            "tests/tools/world/test_torch_placement.py",
+            "tests/world/runtime/placement/torch_callbacks.inc",
+            "tests/world/runtime/placement/torch_controls.inc",
+            "tests/world/runtime/torch_placement_reference.c"
+          ],
+          "current_count": 4858
         }
       }
     }

@@ -1,5 +1,26 @@
 # Test scope and reproduction
 
+## Ordinary Torch placement and support removal
+
+Windows MSVC Release and Linux Clang Debug ASan/UBSan match all 193 original
+Torch effect records and independently audit each process's 34 drops. Ten
+focused tests pass in 17.66 Windows and 27.77 Linux CTest seconds, including
+75 packet and 49 native comparator corruption controls. Linux enables leak
+detection and halt-on-error.
+
+Separate final Windows SDK profiles pass 3,242 placement and 5,724
+support-removal checks in 6.66 and 7.87 seconds. Each preserves 1,999 inputs
+and 413 assets, checks native Torch geometry and normal queued lighting, then
+independently decodes saved Region/Player NBT after reselection. The removal
+profile uses one relative mouse event and actual mining, with both drops
+retained through save/load.
+
+[Detailed behavior and failure history](world/torch-placement.md) explain the
+441-Chunk prelaunch coverage, three earlier lighting failures and two native
+focus refusals. Runtime lighting, frame budgets and focus handling remain
+unchanged. Original pixels/audio, Linux loaded play, general focus reliability
+and FPS are outside these finite results.
+
 ## Plant placement and Windows save cycles
 
 Two fresh unchanged original VMs agree on all 864 direct Block, face-wrapper

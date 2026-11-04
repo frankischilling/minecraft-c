@@ -70,14 +70,10 @@ static mc_world_storage_status placement_observe_added(void *context, mc_world_r
     return error->status;
 }
 
-static mc_world_storage_status placement_observe_source(void *context, mc_world_runtime *world,
-                                                        mc_entity *entity,
+static mc_world_storage_status placement_source_failure(placement_observer *o,
+                                                        mc_world_runtime *world,
                                                         mc_world_storage_error *error,
                                                         mc_world_access_failure *failure) {
-    placement_observer *o = context;
-    const mc_world_storage_status status = placement_observe_prefix(context, world, entity, error);
-    if (status != MC_WORLD_STORAGE_OK)
-        return status;
     mc_world_access_failure actual = {0};
     /* Actual N sound reads its real default-null App at22, before any Display
      * or GL operation. No diagnostic, READY flag, status or actor is forged. */
@@ -103,6 +99,16 @@ static mc_world_storage_status placement_observe_source(void *context, mc_world_
      * exclusively from that inner invocation's public receipt API. */
     o->receipt->exception_class = exception;
     return source_status;
+}
+
+static mc_world_storage_status placement_observe_source(void *context, mc_world_runtime *world,
+                                                        mc_entity *entity,
+                                                        mc_world_storage_error *error,
+                                                        mc_world_access_failure *failure) {
+    const mc_world_storage_status status = placement_observe_prefix(context, world, entity, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    return placement_source_failure(context, world, error, failure);
 }
 
 static int placement_real_producer(placement_observer *o, mc_world_runtime *world) {
@@ -271,6 +277,8 @@ static int placement_source_callback(source_save_fixture *s, bool source_excepti
     return 0;
 }
 
+#include "torch_callbacks.inc"
+
 int main(int argc, char **argv) {
     char root[8192];
     if (argc != 3 || strcmp(argv[1], "world-placement-callbacks") != 0 ||
@@ -283,6 +291,11 @@ int main(int argc, char **argv) {
                    placement_source_callback(s, mode != 0, action) == 0);
             free(s);
         }
+    for (unsigned int mode = 0; mode < 2; ++mode) {
+        source_save_fixture *s = calloc(1, sizeof(*s));
+        VERIFY(s != NULL && ss_setup(s, root) == 0 && torch_metadata_callback(s, mode != 0) == 0);
+        free(s);
+    }
     printf("PASS: %u World placement live callback/retirement checks\n", checks);
     return 0;
 }

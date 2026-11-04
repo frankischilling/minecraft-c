@@ -11,6 +11,7 @@
 - [GuiIngame and loaded frames](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/gui-ingame.md)
 - [World simulation](World-simulation)
 - [Plant placement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plant-placement.md)
+- [Ordinary Torch placement and support](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/torch-placement.md)
 - [Systems and subsystems](Architecture)
 - [Build and tests](Build-and-tests)
 - [Current local qualification](Build-and-tests#current-local-qualification)

@@ -1,5 +1,10 @@
 # Torch World rendering
 
+[Ordinary client placement and support removal](../world/torch-placement.md)
+now reach this renderer through SDK input, queued lighting and save/reselection.
+That separate evidence covers Torch 50; the rendering results below retain
+their original direct-method and authored-scene scope.
+
 World render type 2 enters the actual Torch wrapper `cv.c(Block,III)` and shared
 primitive `cv.a(Block,DDDDD)`. Registered Torch 50 and RedstoneTorch 75/76 use
 the same geometry. Metadata 1..4 selects the four wall tilts; the other twelve

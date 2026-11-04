@@ -674,6 +674,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/queries.c
     src/world/runtime/plants.c
     src/world/runtime/plant_substrate.c
+    src/world/runtime/torch_support.c
     src/world/runtime/population/plants.c
     src/world/runtime/population/trees.c
     src/world/runtime/population/ore_clay.c
@@ -721,6 +722,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/mutation/fluids.c
     src/world/runtime/mutation/falling.c
     src/world/runtime/mutation/snow.c
+    src/world/runtime/mutation/torch.c
     src/world/runtime/mutation/plants/survival.c
     src/world/runtime/mutation/plants/upright.c
     src/world/runtime/mutation/plants/mushroom.c
@@ -5628,6 +5630,8 @@ include(cmake/client_item_billboard.cmake)
 include(cmake/client_placement.cmake)
 include(cmake/world_plant_placement.cmake)
 include(cmake/client_plant_placement.cmake)
+include(cmake/client_torch_placement.cmake)
+include(cmake/world_torch_placement.cmake)
 include(cmake/client_food_use.cmake)
 include(cmake/client_dye_use.cmake)
 include(cmake/item_farming_use.cmake)

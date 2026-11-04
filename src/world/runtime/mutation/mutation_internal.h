@@ -12,6 +12,21 @@
 mc_registry_error mc_world_mutation_empty_registry(void);
 void mc_world_mutation_error_init(mc_world_mutation_error *error);
 mc_world_mutation_error mc_world_mutation_empty_error(void);
+/* Ordinary client VM bodies. A nonnull GAME World is held/entered by the
+ * enclosing operation; nullable source World reaches its first dereference.
+ * Native completion and each private predicate's ordinary value are separate. */
+bool mc_world_mutation_torch_can_place(mc_world_runtime *, const mc_block *, int32_t, int32_t,
+                                       int32_t, bool *, mc_world_mutation_error *);
+bool mc_world_mutation_torch_floor(mc_world_runtime *, const mc_block *, int32_t, int32_t, int32_t,
+                                   bool *, mc_world_mutation_error *);
+bool mc_world_mutation_torch_survive(mc_world_runtime *, const mc_block *, int32_t, int32_t,
+                                     int32_t, bool *, mc_world_mutation_error *);
+bool mc_world_mutation_torch_added(mc_world_runtime *, const mc_block *, int32_t, int32_t, int32_t,
+                                   mc_world_mutation_error *);
+bool mc_world_mutation_torch_neighbor(mc_world_runtime *, const mc_block *, int32_t, int32_t,
+                                      int32_t, int32_t, mc_world_mutation_error *);
+bool mc_world_mutation_torch_tick(mc_world_runtime *, const mc_block *, int32_t, int32_t, int32_t,
+                                  mc_java_random *, mc_world_mutation_error *);
 bool mc_world_mutation_fail(mc_world_runtime *world, mc_world_mutation_error *error,
                             mc_world_storage_status status, const char *operation);
 bool mc_world_mutation_registry_fail(mc_world_runtime *world, mc_world_mutation_error *error,

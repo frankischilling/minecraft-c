@@ -503,10 +503,11 @@ static bool placement_order(fixture *f, mc_chunk_state *chunk, mc_entity *player
         mc_item_use_on_block_begin(f->registry, stack, player, f->world, 8, 64, 8, 6, &call, &e);
     f->registry->blocks.m[3] = saved_block;
     o.replacement = NULL;
-    CHECK(replaced == MC_ITEM_USE_WORLD && mc_item_use_inspect(call, &s) && s.setter_returned &&
-          s.setter_value && !s.placed_face_returned && !s.count_stored &&
-          s.captured_block == saved_block && e.site.pc == 185 && e.placement != NULL &&
-          strcmp(e.placement->site.class_name, "vm") == 0 && chunk->data->blocks[index] == 3 &&
+    CHECK(replaced == MC_ITEM_USE_PLAYER && mc_item_use_inspect(call, &s) && !s.returned &&
+          s.result && s.setter_returned && s.setter_value && s.placed_face_returned &&
+          s.placed_by_returned && s.sound_returned && s.count_stored && s.count_after == 1 &&
+          s.statistic_entered && !s.statistic_returned && e.site.pc == 34 && e.source_exception &&
+          !e.native_policy && s.captured_block == saved_block && chunk->data->blocks[index] == 3 &&
           use_retire(&call));
     mc_item_stack_release(stack);
     bool removed = false;

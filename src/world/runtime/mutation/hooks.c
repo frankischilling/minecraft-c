@@ -324,6 +324,8 @@ bool mc_world_mutation_block_added(mc_world_runtime *world, const mc_block *bloc
         case MC_BLOCK_TNT:
             return unavailable(world, block, "ah", "t", "Block addition hook", error);
         case MC_BLOCK_TORCH:
+            if (block->classes->options.side == MC_REGISTRY_CLIENT)
+                return mc_world_mutation_torch_added(world, block, x, y, z, error);
             return unavailable(world, block, "vm", "np", "Block addition hook", error);
         case MC_BLOCK_FIRE:
             return unavailable(world, block, "yq", "pt", "Block fire addition hook", error);
@@ -419,6 +421,8 @@ bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *b
         case MC_BLOCK_TNT:
             return unavailable(world, block, "ah", "t", "Block neighbor hook", error);
         case MC_BLOCK_TORCH:
+            if (block->classes->options.side == MC_REGISTRY_CLIENT)
+                return mc_world_mutation_torch_neighbor(world, block, x, y, z, source_id, error);
             return unavailable(world, block, "vm", "np", "Block neighbor hook", error);
         case MC_BLOCK_FIRE:
             return unavailable(world, block, "yq", "pt", "Block fire neighbor hook", error);

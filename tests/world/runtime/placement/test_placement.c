@@ -52,13 +52,16 @@ static bool placement_leaf_controls(fixture *f) {
           !e.below_read && !e.substrate_entered && mc_world_placement_error_retire(&e));
     CHECK(mc_world_block_placed_face(f->registry[0], torch, NULL, 8, 64, 8, 1, &e) ==
               MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
-          !e.returned && strcmp(e.site.class_name, "vm") == 0 && e.site.pc == 0 &&
+          !e.returned && strcmp(e.site.class_name, "vm") == 0 && e.site.pc == 5 &&
+          e.source_exception && !e.native_policy && e.acquisition == NULL &&
           mc_world_placement_error_retire(&e));
     ok = true;
 cleanup:
     (void)mc_world_placement_error_retire(&e);
     return ok;
 }
+
+#include "torch_controls.inc"
 
 static bool workbench_activation_controls(fixture *f) {
     bool ok = false;
@@ -316,9 +319,9 @@ int main(int argc, char **argv) {
               MC_ENTITY_OK &&
           mc_registry_classes_initialize_blocks(f->registry[0], NULL) == MC_REGISTRY_OK);
     CHECK(boxes_open_store(f, 0, root) && boxes_create_world(f, 0) && placement_leaf_controls(f) &&
-          placement_world_controls(f) && workbench_activation_controls(f) &&
-          placement_overlap_controls(f) && placement_initializer_controls(root, 0) &&
-          placement_initializer_controls(root, 1));
+          placement_world_controls(f) && torch_placement_controls(f) &&
+          workbench_activation_controls(f) && placement_overlap_controls(f) &&
+          placement_initializer_controls(root, 0) && placement_initializer_controls(root, 1));
     result = 0;
 cleanup:
     if (!cleanup_fixture(f)) {

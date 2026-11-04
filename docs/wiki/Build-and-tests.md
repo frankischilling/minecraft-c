@@ -1,5 +1,25 @@
 # Build and tests
 
+## Ordinary Torch placement and removal
+
+Two fresh original VMs agree on 193 Torch effect records and nine exceptions.
+Windows MSVC Release and Linux Clang Debug ASan/UBSan match every record and
+independently audit each process's own 34 drops, without reseeding streams.
+Packet and comparator tests reject 75 and 49 corruptions. Ten focused tests
+pass in 17.66 Windows and 27.77 Linux CTest seconds.
+
+The final Windows SDK placement and support-removal profiles pass 3,242 and
+5,724 checks in 6.66 and 7.87 seconds. Each preserves 1,999 inputs and 413
+assets, checks exact native Torch geometry and normally propagated light,
+then independently decodes Region/Player NBT after save/reselection. All
+thirteen files retain their bytes except the actual eight-byte session token.
+
+[Detailed scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/torch-placement.md)
+records the 441-Chunk prelaunch correction, three earlier lighting failures
+and two native focus refusals. Neither runtime lighting nor focus handling
+changed. No original-pixel, general focus-reliability, Linux loaded-play or
+FPS result is claimed.
+
 ## Plant placement and save cycles
 
 Two ordinary original VMs repeat all 864 plant predicate calls. Windows MSVC

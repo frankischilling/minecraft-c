@@ -1,5 +1,21 @@
 # History
 
+## Ordinary Torch placement, lighting and support removal
+
+Client Torch 50 now runs its support, orientation, addition, neighbor and tick
+bodies. Live Fence reads, fresh metadata and notifying intermediate writes
+retain their source order and failures. Windows and sanitized Linux match
+all 193 original calls and independently audit actual drop entropy.
+
+The final Windows SDK placement/removal pair completes lighting, drawing,
+consumption, ordinary mining and save/reselection with 3,242/5,724 checks.
+The initial 289-Chunk fixture omitted the original radius9 random-tick ring;
+newly generated terrain starved its Torch update. A prelaunch append supplies
+441 saved Chunks while preserving the original 289 records byte-for-byte.
+Three lighting failures and two native focus refusals remain retained.
+The runtime lighting algorithm, frame budgets and focus transport are
+unchanged; general focus reliability and FPS remain open.
+
 ## Plant placement and Windows save cycles
 
 The retained Block and World placement entries now execute the original

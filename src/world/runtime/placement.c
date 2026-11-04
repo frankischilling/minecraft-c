@@ -3,14 +3,17 @@
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
 #include "../../item/render/internal.h"
+#include "block_queries_internal.h"
 #include "collision/blocks_internal.h"
 #include "construction_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/collision/spawning.h"
+#include "mc/world/runtime/mutations.h"
 #include "mc/world/storage/source_chunk_loader.h"
 #include "plant_substrate_internal.h"
 #include "runtime_internal.h"
+#include "torch_support_internal.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -23,6 +26,8 @@ struct mc_world_placement_work {
     mc_entity_classes *box_owner;
     mc_entity_bounds *box;
     mc_world_runtime_acquisition_error *queries[PLACEMENT_QUERIES];
+    mc_world_solid_support_detail *supports[5];
+    mc_world_mutation_error *mutation;
     mc_world_collision_error *collision;
     mc_world_spawn_collision_error *entities;
     mc_world_source_chunk_error *sources[PLACEMENT_SOURCES];
@@ -52,16 +57,20 @@ static mc_world_storage_status null_reference(mc_world_placement_error *e, const
     return fail(e, MC_WORLD_STORAGE_UNSUPPORTED_STATE, operation, false);
 }
 
-static mc_world_storage_status registry_failed(mc_world_placement_error *e) {
+static mc_world_storage_status registry_failed_in(mc_world_placement_error *e,
+                                                  mc_registry_classes *classes) {
     const mc_registry_status status = e->registry.status;
     const mc_world_storage_status result = mc_world_runtime_registry_status(status);
     mc_item_render_throwable throwable = MC_ITEM_RENDER_NO_THROWABLE;
-    mc_item_render_registry_classification(e->work->registry, &e->registry, &throwable,
-                                           &e->exception_class);
+    mc_item_render_registry_classification(classes, &e->registry, &throwable, &e->exception_class);
     e->source_exception = throwable == MC_ITEM_RENDER_SOURCE_EXCEPTION;
     e->source_error = throwable == MC_ITEM_RENDER_SOURCE_ERROR;
     fail(e, result, e->registry.message, throwable == MC_ITEM_RENDER_NO_THROWABLE);
     return result;
+}
+
+static mc_world_storage_status registry_failed(mc_world_placement_error *e) {
+    return registry_failed_in(e, e->work->registry);
 }
 
 static bool allocate(mc_world_placement_error *e, mc_world_placement_site entry) {
@@ -204,6 +213,28 @@ static bool capture(mc_world_placement_error *e) {
             (!copy_source(e, &nearby[i]->query.source_chunk) ||
              !publication_receipts(e, &nearby[i]->batch, &nearby[i]->tile_entity)))
             return false;
+    for (size_t i = 0; i < e->support_query_count; ++i) {
+        mc_world_nearby_error *child = &w->supports[i]->access;
+        if (!copy_source(e, &child->query.source_chunk) ||
+            !publication_receipts(e, &child->batch, &child->tile_entity))
+            return false;
+    }
+    if (w->mutation != NULL) {
+        mc_world_mutation_error *m = w->mutation;
+        if (!receipt(e, &m->world_access_failure) ||
+            !receipt(e, &m->publication.world_access_failure) ||
+            !publication_receipts(e, &m->batch, &m->tile_entity) ||
+            !publication_receipts(e, &m->nearby.batch, &m->nearby.tile_entity) ||
+            !publication_receipts(e, &m->power.access.batch, &m->power.access.tile_entity) ||
+            !publication_receipts(e, &m->rail_access.nearby.batch,
+                                  &m->rail_access.nearby.tile_entity) ||
+            !copy_source(e, &m->query.source_chunk) ||
+            !copy_source(e, &m->nearby.query.source_chunk) ||
+            !copy_source(e, &m->plant.query.source_chunk) ||
+            !copy_source(e, &m->power.access.query.source_chunk) ||
+            !copy_source(e, &m->rail_access.nearby.query.source_chunk))
+            return false;
+    }
     return true;
 }
 
@@ -219,8 +250,8 @@ static void classify_receipts(mc_world_placement_error *e) {
         }
 }
 
-static bool block_get(mc_world_placement_error *e, mc_world_runtime *world, size_t index, int32_t x,
-                      int32_t y, int32_t z, int32_t *out) {
+static bool value_get(mc_world_placement_error *e, mc_world_runtime *world, size_t index, int32_t x,
+                      int32_t y, int32_t z, bool metadata, int32_t *out) {
     if (!hold_world(e, world))
         return false;
     mc_world_placement_work *w = e->work;
@@ -239,7 +270,9 @@ static bool block_get(mc_world_placement_error *e, mc_world_runtime *world, size
     ++e->query_count;
     mc_world_storage_error cause = {0};
     const mc_world_storage_status status =
-        mc_world_runtime_block_get_detailed(world, x, y, z, out, &cause, w->queries[index]);
+        metadata
+            ? mc_world_runtime_metadata_get_detailed(world, x, y, z, out, &cause, w->queries[index])
+            : mc_world_runtime_block_get_detailed(world, x, y, z, out, &cause, w->queries[index]);
     if (status != MC_WORLD_STORAGE_OK) {
         fail(e, status, cause.operation, true);
         e->cause = cause;
@@ -252,6 +285,118 @@ static bool block_get(mc_world_placement_error *e, mc_world_runtime *world, size
     if (status != MC_WORLD_STORAGE_OK)
         classify_receipts(e);
     return status == MC_WORLD_STORAGE_OK;
+}
+
+static bool block_get(mc_world_placement_error *e, mc_world_runtime *world, size_t index, int32_t x,
+                      int32_t y, int32_t z, int32_t *out) {
+    return value_get(e, world, index, x, y, z, false, out);
+}
+
+static bool torch_solid(mc_world_placement_error *e, mc_world_runtime *world, int32_t x, int32_t y,
+                        int32_t z, bool *out) {
+    if (!hold_world(e, world))
+        return false;
+    const size_t index = e->support_query_count;
+    if (index == 5) {
+        fail(e, MC_WORLD_STORAGE_LIMIT, "Placement reached support diagnostic extent", true);
+        return false;
+    }
+    mc_world_solid_support_detail *child = calloc(1, sizeof(*child));
+    if (child == NULL) {
+        fail(e, MC_WORLD_STORAGE_ALLOCATION_FAILED, "Placement reached support diagnostic", true);
+        return false;
+    }
+    e->work->supports[index] = child;
+    e->support_queries[index] = child;
+    ++e->support_query_count;
+    mc_world_storage_error cause = {0};
+    mc_world_storage_status status = mc_world_runtime_call_enter(world, &cause);
+    if (status == MC_WORLD_STORAGE_OK) {
+        status = mc_world_solid_support_detailed_held(world, x, y, z, out, child);
+        mc_world_runtime_call_leave(world);
+        cause = child->error.cause;
+    }
+    if (status != MC_WORLD_STORAGE_OK) {
+        fail(e, status, cause.operation, true);
+        e->cause = cause;
+        e->registry = child->error.registry;
+        if (e->registry.status != MC_REGISTRY_OK) {
+            mc_item_render_throwable throwable = MC_ITEM_RENDER_NO_THROWABLE;
+            mc_item_render_registry_classification(mc_world_runtime_registry(world), &e->registry,
+                                                   &throwable, &e->exception_class);
+            e->source_exception = throwable == MC_ITEM_RENDER_SOURCE_EXCEPTION;
+            e->source_error = throwable == MC_ITEM_RENDER_SOURCE_ERROR;
+            e->native_policy = throwable == MC_ITEM_RENDER_NO_THROWABLE;
+        }
+    }
+    if (!capture(e)) {
+        if (status == MC_WORLD_STORAGE_OK)
+            fail(e, e->cleanup.status, e->cleanup.operation, true);
+        return false;
+    }
+    if (status != MC_WORLD_STORAGE_OK)
+        classify_receipts(e);
+    return status == MC_WORLD_STORAGE_OK;
+}
+
+static bool torch_floor(mc_world_placement_error *e, mc_world_runtime *world, int32_t x, int32_t y,
+                        int32_t z, size_t query_index, bool *out) {
+    e->site = e->floor = site("vm", "h", "(Lfd;III)Z", 5);
+    bool value;
+    if (!torch_solid(e, world, x, y, z, &value))
+        return false;
+    if (!value) {
+        e->site.pc = e->floor.pc = 16;
+        int32_t id;
+        if (!block_get(e, world, query_index, x, y, z, &id))
+            return false;
+        e->below_read = true;
+        e->below_id = id;
+        mc_world_torch_fence_error child;
+        const mc_registry_status status =
+            mc_world_torch_floor_fence(e->work->registry, id, &value, &child);
+        e->site.pc = e->floor.pc = child.pc;
+        if (status != MC_REGISTRY_OK) {
+            e->registry = child.registry;
+            registry_failed(e);
+            return false;
+        }
+    }
+    e->site.pc = e->floor.pc = 33;
+    *out = value;
+    return true;
+}
+
+static bool torch_predicate(mc_world_placement_error *e, mc_world_runtime *world, int32_t x,
+                            int32_t y, int32_t z, size_t query_index, bool *out) {
+    const unsigned int pcs[] = {7, 22, 37, 52};
+    const int32_t xs[] = {mc_java_i32_sub(x, 1), mc_java_i32_add(x, 1), x, x};
+    const int32_t zs[] = {z, z, mc_java_i32_sub(z, 1), mc_java_i32_add(z, 1)};
+    bool value = false;
+    unsigned int return_pc = 77;
+    for (size_t i = 0; i < 4; ++i) {
+        e->site = e->base;
+        e->site.pc = e->base.pc = pcs[i];
+        if (!torch_solid(e, world, xs[i], y, zs[i], &value))
+            return false;
+        if (value) {
+            return_pc = pcs[i] + 7;
+            break;
+        }
+    }
+    if (!value) {
+        e->base.pc = 68;
+        if (!torch_floor(e, world, x, mc_java_i32_sub(y, 1), z, query_index, &value))
+            return false;
+        if (value)
+            return_pc = 75;
+    }
+    e->site = e->base;
+    e->site.pc = e->base.pc = return_pc;
+    e->base_returned = e->predicate_returned = true;
+    e->base_value = value;
+    *out = value;
+    return true;
 }
 
 static const char *activation_class(mc_block_kind kind) {
@@ -482,6 +627,8 @@ static bool base_predicate(mc_world_placement_error *e, const mc_block *block,
     e->site = site(declaring, "a", "(Lfd;III)Z", 0);
     e->base = e->site;
     e->predicate_entered = e->base_entered = true;
+    if (strcmp(declaring, "vm") == 0)
+        return torch_predicate(e, world, x, y, z, query_index, out);
     if (!flower && !inherited(e, declaring))
         return false;
     if (flower)
@@ -790,17 +937,65 @@ mc_world_storage_status mc_world_block_placed_face(mc_registry_classes *registry
                                                    const mc_block *block, mc_world_runtime *world,
                                                    int32_t x, int32_t y, int32_t z, int32_t face,
                                                    mc_world_placement_error *e) {
-    (void)world;
-    (void)x;
-    (void)y;
-    (void)z;
-    (void)face;
     if (e == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     if (e->work != NULL)
         return MC_WORLD_STORAGE_BUSY;
     if (!block_entry(e, registry, block, "e", "(Lfd;IIII)V"))
         return e->status;
+    if (strcmp(placed_face_class(block->kind), "vm") == 0) {
+        e->site = site("vm", "e", "(Lfd;IIII)V", 5);
+        int32_t metadata;
+        if (!value_get(e, world, 0, x, y, z, true, &metadata))
+            return finish(e, false, false, NULL);
+        bool supported = false;
+        if (face == 1) {
+            e->caller = e->site;
+            e->caller.pc = 24;
+            if (!torch_floor(e, world, x, mc_java_i32_sub(y, 1), z, 1, &supported))
+                return finish(e, false, false, NULL);
+            if (supported)
+                metadata = 5;
+        } else if (face >= 2 && face <= 5) {
+            const unsigned int pcs[] = {46, 68, 90, 112};
+            const int32_t xs[] = {x, x, mc_java_i32_add(x, 1), mc_java_i32_sub(x, 1)};
+            const int32_t zs[] = {mc_java_i32_add(z, 1), mc_java_i32_sub(z, 1), z, z};
+            const size_t index = (size_t)(face - 2);
+            e->site.pc = pcs[index];
+            if (!torch_solid(e, world, xs[index], y, zs[index], &supported))
+                return finish(e, false, false, NULL);
+            if (supported)
+                metadata = 6 - face;
+        }
+        e->site = site("vm", "e", "(Lfd;IIII)V", 128);
+        e->work->mutation = malloc(sizeof(*e->work->mutation));
+        if (e->work->mutation == NULL) {
+            fail(e, MC_WORLD_STORAGE_ALLOCATION_FAILED, "Torch notifying metadata diagnostic",
+                 true);
+            return finish(e, false, false, NULL);
+        }
+        e->mutation = e->work->mutation;
+        const mc_world_storage_status status =
+            mc_world_runtime_metadata_set(world, x, y, z, metadata, e->work->mutation);
+        if (status != MC_WORLD_STORAGE_OK) {
+            fail(e, status, e->mutation->operation, true);
+            e->cause = e->mutation->cause;
+            e->registry = e->mutation->registry;
+            if (e->registry.status != MC_REGISTRY_OK)
+                registry_failed_in(e, mc_world_runtime_registry(world));
+        }
+        if (!capture(e)) {
+            if (status == MC_WORLD_STORAGE_OK)
+                fail(e, e->cleanup.status, e->cleanup.operation, true);
+            return finish(e, false, false, NULL);
+        }
+        if (status != MC_WORLD_STORAGE_OK) {
+            classify_receipts(e);
+            return finish(e, false, false, NULL);
+        }
+        e->site.pc = 131;
+        return finish(e, true, false, NULL);
+    }
     return finish(e, inherited(e, placed_face_class(block->kind)), false, NULL);
 }
 
@@ -864,6 +1059,9 @@ bool mc_world_placement_error_retire(mc_world_placement_error *e) {
         free(w->sources[i]);
     for (size_t i = 0; i < PLACEMENT_QUERIES; ++i)
         free(w->queries[i]);
+    for (size_t i = 0; i < e->support_query_count; ++i)
+        free(w->supports[i]);
+    free(w->mutation);
     free(w->collision);
     free(w->entities);
     if (w->world != NULL)

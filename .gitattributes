@@ -16,6 +16,8 @@
 *.txt text eol=lf
 .gitattributes text eol=lf
 .gitignore text eol=lf
+# Preserve the recorded SDK fixture input bytes.
+tests/tools/client/test_torch_placement_loop.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 .clang-format text eol=lf
 LICENSE text eol=lf
 licenses/openal-soft/* text eol=lf
