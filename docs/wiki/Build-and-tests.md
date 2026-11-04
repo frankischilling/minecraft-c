@@ -14,8 +14,8 @@ failure details and ownership while leaving success diagnostics untouched;
 the public accessor still supplies its full success record. Its CPU timings
 do not establish scene FPS. Original pixels and unrestricted play remain open.
 
-The fresh Ladder/EW runtime's four Windows Workbench shutdown profiles pass
-8,169 checks in 62.43 seconds. All 57 packet controls and public/private,
+The C17 Ladder fixture successor's four Windows Workbench shutdown profiles pass
+8,340 checks in 60.01 seconds. All 57 packet controls and public/private,
 cohort-log and historical-failure audits pass. Each capture retains 1,960
 selected inputs and 413 imported resources unchanged. Formatting passes all
 2,029 C/header/handwritten-fragment files with clang-format 18. Full suite
@@ -30,6 +30,14 @@ guard refuses a later Ladder recheck before launch. Both broad cohorts preserve
 executables. All 1,446 runtime files match across hosts. The earlier isolated
 Ladder and fresh Workbench passes retain their own scope; no full Windows or
 general FPS pass is claimed.
+
+GCC's strict C17 build caught a nested-array qualifier conversion in the new
+test helper. The parameter fix retains every assertion and all runtime bytes.
+The same configured GCC command now passes, as do Windows and sanitized Linux
+replays. The earlier 62.43-second Workbench receipt remains separate evidence.
+CI also omits the recursive Android size probe; cleanup and both capacity
+reports remain. Prior traversal-output intervals and their limits are recorded
+in the [testing notes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#hosted-runner-storage).
 
 ## Fluid checkpoint
 

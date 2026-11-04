@@ -25,7 +25,7 @@ Complete owner/Chunk state, values, allocation/hold state, Random state and
 and failure-only targets also pass separate untimed controls. These finite
 results establish neither unrestricted play nor an FPS improvement.
 
-Four fresh Windows SDK Workbench shutdown profiles pass in 62.43 seconds,
+The initial Windows SDK Workbench shutdown profiles pass in 62.43 seconds,
 with 8,169 checks. Their regenerated packet passes all 57 controls and the
 public/private, exact-cohort-log and historical-failure audits. Each actual
 capture retains 1,446 runtime files, 512 harness/CMake files, two binaries and
@@ -50,6 +50,23 @@ A single guarded Ladder control refuses launch after its three-second idle
 check observes changed host input. No replacement scene pass or full Windows
 pass is claimed. Native focus recovery, those pose failures and unrestricted
 input stability remain unresolved.
+
+The [hosted GCC build at `c478df81`](https://github.com/frankischilling/minecraft-c/actions/runs/41741440471/job/126283655414)
+rejects an implicit nested-array qualifier conversion in the Ladder test
+helper under C17. The helper parameter now accepts the existing matrix
+directly. Every assertion and all 1,446 runtime files remain unchanged. The
+actual configured command reproduces the error with GCC 13, then passes with
+the same C17, warning, floating-point and sanitizer flags. Windows replay
+passes 1,820 checks and all 70 rows in 0.77 seconds; sanitized Clang replay
+passes in 1.10 seconds.
+
+The qualifier successor has four fresh SDK Workbench captures: 8,340 checks
+in 60.01 seconds, with all 57 packet controls and public/private, exact-log and
+historical-failure audits passing. Each capture preserves 1,960 selected inputs
+and 413 resources. Its runtime and SDK binaries match the previous 62.43-second
+cohort; only the selected Ladder fixture source changes. The previous packet,
+validators and actual captures remain retained. The broad runtime results
+above keep their original source/product identities.
 
 ## Fluid rendering and provider-binding qualification
 
@@ -6256,3 +6273,13 @@ It reports disk capacity around that cleanup and build/cache sizes after every
 attempted build. The native C/C++ toolchains, Java 17, `-g1`, ASan/UBSan and full
 test selection remain in use. This runner provisioning change has separate
 hosted validation from the completed local runtime suites above.
+
+The later cleanup omits the recursive Android size probe. In the preceding
+[GCC job](https://github.com/frankischilling/minecraft-c/actions/runs/41729721951/job/126243608241),
+the first `df` filesystem row and `du` result are 65.92 seconds apart; the
+[Clang job](https://github.com/frankischilling/minecraft-c/actions/runs/41729721951/job/126243608269)
+records 102.24 seconds. The following deletion/output intervals are 21.26 and
+36.00 seconds. These adjacent log-output intervals include command overhead;
+they are not per-command CPU measurements. Cleanup and both capacity reports
+remain, along with the same compiler, sanitizer and test coverage. A new
+whole-job speed comparison has not been established.

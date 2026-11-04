@@ -49,7 +49,6 @@ jobs:
         run: |
           df -h "$GITHUB_WORKSPACE"
           if [ -d /usr/local/lib/android ]; then
-            sudo du -sh /usr/local/lib/android
             sudo rm -rf -- /usr/local/lib/android
           fi
           df -h "$GITHUB_WORKSPACE"

@@ -171,7 +171,7 @@ static bool ladder_prepare(picking_fixture *f, int32_t metadata, int32_t light,
 }
 
 static bool ladder_dispatch(picking_fixture *f, mc_client_chunk_cache *cache, const mc_block *block,
-                            const uint32_t words[4][48]) {
+                            uint32_t words[4][48]) {
     const int32_t xyz[3] = {8, 64, 8};
     mc_client_tessellator *nw = NULL;
     mc_client_graphics_error graphics;

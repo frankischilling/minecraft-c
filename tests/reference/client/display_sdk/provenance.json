@@ -7259,11 +7259,11 @@
     },
     "tests/reference/client/workbench_open_shutdown/packet.py": {
       "bytes": 23677,
-      "sha256": "2a5c390b4a132be6aaf33df99c9bb9ebb7ca030466f045037f1607990b623302"
+      "sha256": "a82c808f42a967cc489eb3040bf951fa1732f54e47c43a4f2b1535002ba3dbbd"
     },
     "tests/reference/client/workbench_open_shutdown/test_packet.py": {
       "bytes": 9801,
-      "sha256": "55a93d12c626e16b39f6d5c0170f0a598674a8271a7eda4fd2e520996961412e"
+      "sha256": "21b832ae9e1a158212be0446096f8c3e1382b79c58141b9eb0bfc03b58cc82b6"
     },
     "tests/reference/item/mining/capture_reference.py": {
       "bytes": 5373,
@@ -7710,8 +7710,8 @@
       "sha256": "b0839f6ca98e01bab5a7fb265cbaf7b760313fe31fd4ea6c0f3afa01fe2c888b"
     },
     "tests/client/render/test_ladder_world.c": {
-      "bytes": 22910,
-      "sha256": "cff9be5f82bb7dffa3fb20b15ded1e1f2761ba00b9c0b2bbcbdbade69e396b0c"
+      "bytes": 22904,
+      "sha256": "6c58bf2ff1d47076f407cdc22c76401503c4653d2d52933bc5e0de982b1b567b"
     },
     "tests/reference/client/ladder_world/capture_reference.py": {
       "bytes": 10163,
@@ -11186,6 +11186,34 @@
             "tests/reference/client/ladder_world/test_packet.py",
             "tests/tools/world/benchmark_chunk_cache.py"
           ],
+          "current_count": 1933
+        }
+      }
+    },
+    {
+      "from_commit": "c478df81d67f8e23b897267bbad303b3dd8a6e24",
+      "role": "Current C17 Ladder fixture portability and fresh Workbench closure input admission. Earlier observations and compiled products retain their original qualification scope.",
+      "previous_metadata": {
+        "bytes": 460470,
+        "sha256": "93b43e28ab0d4665ae5387bc4f82fd86ee6889442e339a40bc3b7bfbb6d50748"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/workbench_open_shutdown/packet.py": {
+              "bytes": 23677,
+              "sha256": "2a5c390b4a132be6aaf33df99c9bb9ebb7ca030466f045037f1607990b623302"
+            },
+            "tests/reference/client/workbench_open_shutdown/test_packet.py": {
+              "bytes": 9801,
+              "sha256": "55a93d12c626e16b39f6d5c0170f0a598674a8271a7eda4fd2e520996961412e"
+            },
+            "tests/client/render/test_ladder_world.c": {
+              "bytes": 22910,
+              "sha256": "cff9be5f82bb7dffa3fb20b15ded1e1f2761ba00b9c0b2bbcbdbade69e396b0c"
+            }
+          },
+          "added": [],
           "current_count": 1933
         }
       }

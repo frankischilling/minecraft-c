@@ -6,8 +6,11 @@ source window. The native shutdown path transfers the same live IT owner to the
 Player's terminal record. It preserves source screen, Container and Stack
 identities while completing checked C cleanup.
 
-`native-validation.json` records the fresh current-source cohort. Captured
-production includes Ladder World geometry and failure-only EW Block reads in
+`native-validation.json` records a fresh C17 fixture-portability successor to
+the retained 62.43-second cohort. The only selected source change removes a
+nested-array parameter qualifier in the Ladder replay fixture. All 1,446
+runtime files and the SDK executable/DLL bytes remain identical. Captured
+production includes the same Ladder World geometry and failure-only EW Block reads in
 CV and DK. The public EW accessor keeps its complete success diagnostic.
 Fluid, Torch, Smoke/Flame, direct provider-binding reads and corrected Vector
 failure diagnostics remain in the captured runtime. The selected harness
@@ -17,8 +20,8 @@ additive NW translation, Piston texture getters and HUD cleanup after an actual
 nullable Stair source failure. Those
 direct and entered-draw proofs retain their own comparisons. The test helper
 waits for actual serial input consumption during Table opening. Four tests pass
-in 62.43 seconds, with 1,955 / 1,905 / 2,162 / 2,147 native checks. Their measured
-CTest times are 16.69 / 14.08 / 16.07 / 15.56 seconds
+in 60.01 seconds, with 1,904 / 1,923 / 2,320 / 2,193 native checks. Their measured
+CTest times are 14.83 / 15.28 / 15.11 / 14.76 seconds
 in clean / Container / Player / World order. These SDK scenes qualify the
 Workbench terminal flow; direct geometry, getter and loaded-scene comparisons
 have their own coverage.
@@ -98,9 +101,11 @@ and its Cactus cohort log/manifest remain backed up separately. The exact
 backed up separately. The retained 57.11-second packet binds the preceding
 Fluid/provider-query cohort. Its exact public packet, validators, README,
 actual cohort log/manifest and projection parameters remain backed up separately.
-The current 62.43-second receipt qualifies the fresh Ladder/EW source closure's
-Workbench terminal flow without extending direct geometry, pixels or gameplay
-coverage.
+The retained 62.43-second receipt binds the Ladder/EW source closure. Its exact
+packet, validators, README, actual cohort log/manifest and frozen input list
+remain backed up separately. The current 60.01-second successor qualifies the
+Workbench terminal flow against the corrected C17 fixture binding; direct
+geometry, pixels and gameplay retain their separate coverage.
 
 Run the Java-free public audit and corruption controls with:
 

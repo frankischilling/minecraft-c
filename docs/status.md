@@ -30,6 +30,15 @@ unchanged through both broad cohorts, including all 1,446 matching runtime
 files. The [test record](testing.md) keeps the failure distinctions; unrestricted
 focus, play and scene FPS remain unqualified.
 
+GCC's C17 build then exposed a nested-array qualifier conversion in the new
+Ladder test helper. Its parameter now accepts the existing matrix directly;
+all assertions and runtime files remain unchanged. The exact GCC compile and
+Windows/sanitized Linux replays pass. Four fresh Workbench SDK profiles pass
+8,340 checks in 60.01 seconds, with 57 packet controls and capture audits.
+The previous 62.43-second receipt remains separate evidence. CI also omits an
+expensive recursive pre-cleanup size probe; the cleanup and capacity reports
+remain. Its timing scope is recorded in [testing](testing.md#hosted-runner-storage).
+
 ## Fluid checkpoint
 
 [Fluid World rendering](client/fluid-world.md) now has executed-original

@@ -10,8 +10,8 @@
       "sha256": "e34b32c0a387a6551f31cb3558bb0e103d1ff80865530b66e04b0d0e51690ebe"
     },
     ".github/workflows/ci.yml": {
-      "bytes": 13995,
-      "sha256": "d1a1d9f7a43be51a77d5708dc00998c9d8678338ff7e0dac34c751cdd127276c"
+      "bytes": 13948,
+      "sha256": "619e2b37e0aa961676f45709cf2387443419972e472896f9ce1408137cefb3e1"
     },
     ".gitignore": {
       "bytes": 282,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 95736,
-      "sha256": "68b0b2fe662023b3d765dcbd0b8b29fffcdd680dbb4a0959340eff8da71a4014"
+      "bytes": 96358,
+      "sha256": "69e9c9f666ab9c60eaa574b822a958238d86f9feefa296ce4a912f024fd6c3c8"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,16 +826,16 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 423434,
-      "sha256": "dd3c64ca367bbda668852064dec67dd237e6403a3d6fecc38f8f1ef64a6619b3"
+      "bytes": 425268,
+      "sha256": "e6277320efa81d509b267423f8dd211ebb0a90f1598a8797bff2a9ea8d591557"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 35723,
       "sha256": "634b8729a067c99600f8e346027511af21d7fb7b12b029de4674b99ca8fd787f"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 83267,
-      "sha256": "6a798018f9ccdb51cf52ad87f5edfe509919e49bff6aadff7c1de6807e013347"
+      "bytes": 83879,
+      "sha256": "f0af3393ace3588901b35bdec6970d9313fb633683ae0aa46df5ce2fbaac0bb9"
     },
     "docs/wiki/History.md": {
       "bytes": 44954,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 460470,
-      "sha256": "93b43e28ab0d4665ae5387bc4f82fd86ee6889442e339a40bc3b7bfbb6d50748"
+      "bytes": 461653,
+      "sha256": "51a29072c9f93a24b6f453c5262c25f6de2ac1a57e787ce8b5b1d590fed91004"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 558138,
-      "sha256": "34f307246b53a8250176fb4eba20322104f2ee8a8709099befaaf788ed62f1f2"
+      "bytes": 559323,
+      "sha256": "1da346e6103b54b579bcae0b28d7aa67e9fa8249d6ecd38a7744963b8bdbe7cc"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 456284,
-      "sha256": "094921f9691e8a779741bb5ebcbd8721b2ab95d3ccb508156fd36cacf648f2dd"
+      "bytes": 457467,
+      "sha256": "d17034e6d7c9e305fb5f10cd5d33ca35259b76eeb172d2000823d9ca1ac2d4b9"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -17270,20 +17270,20 @@
       "sha256": "3093a1732a1b0a3122f1eaeb312f76d38ec11c19778042042e2220b3cde291c5"
     },
     "tests/reference/client/workbench_open_shutdown/README.md": {
-      "bytes": 7268,
-      "sha256": "76993d4fe8b1ef442fdffb882c30e98c05e85cfb5387b24a04e1bced024b856b"
+      "bytes": 7706,
+      "sha256": "b3c5fca96ab50ef855bd075f3379a0e71eae5f96635b6fb837a8787633be7c76"
     },
     "tests/reference/client/workbench_open_shutdown/native-validation.json": {
-      "bytes": 339467,
-      "sha256": "8461a10dbe5ab199ad8c66df311f1fdd95828d538fc96e7c6567e85550a8454f"
+      "bytes": 339591,
+      "sha256": "5092456c69c07834f5ad3b268c41109f23f21d3d3673a8aaf02dd5192da58974"
     },
     "tests/reference/client/workbench_open_shutdown/packet.py": {
       "bytes": 23677,
-      "sha256": "2a5c390b4a132be6aaf33df99c9bb9ebb7ca030466f045037f1607990b623302"
+      "sha256": "a82c808f42a967cc489eb3040bf951fa1732f54e47c43a4f2b1535002ba3dbbd"
     },
     "tests/reference/client/workbench_open_shutdown/test_packet.py": {
       "bytes": 9801,
-      "sha256": "55a93d12c626e16b39f6d5c0170f0a598674a8271a7eda4fd2e520996961412e"
+      "sha256": "21b832ae9e1a158212be0446096f8c3e1382b79c58141b9eb0bfc03b58cc82b6"
     },
     "tests/reference/item/mining/MiningDestroyObservation.java": {
       "bytes": 6130,
@@ -18350,8 +18350,8 @@
       "sha256": "0925abfed03fa52c7a00b38acc8764cd938358b38788a85d315805ae6a6b426a"
     },
     "tests/client/render/test_ladder_world.c": {
-      "bytes": 22910,
-      "sha256": "cff9be5f82bb7dffa3fb20b15ded1e1f2761ba00b9c0b2bbcbdbade69e396b0c"
+      "bytes": 22904,
+      "sha256": "6c58bf2ff1d47076f407cdc22c76401503c4653d2d52933bc5e0de982b1b567b"
     },
     "tests/reference/client/ladder_world/LadderJdi.java": {
       "bytes": 11815,
@@ -24416,6 +24416,70 @@
             "tests/reference/client/ladder_world/test_packet.py",
             "tests/tools/world/benchmark_chunk_cache.py"
           ],
+          "current_count": 4603
+        }
+      }
+    },
+    {
+      "from_commit": "c478df81d67f8e23b897267bbad303b3dd8a6e24",
+      "role": "Current C17 Ladder fixture portability and fresh Workbench closure input admission. Earlier observations and compiled products retain their original qualification scope.",
+      "previous_metadata": {
+        "bytes": 1025221,
+        "sha256": "8e6db15c034582bfe957b21a1265ffa574f5cfbf26a58bbebe20e235cb417db7"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            ".github/workflows/ci.yml": {
+              "bytes": 13995,
+              "sha256": "d1a1d9f7a43be51a77d5708dc00998c9d8678338ff7e0dac34c751cdd127276c"
+            },
+            "docs/status.md": {
+              "bytes": 95736,
+              "sha256": "68b0b2fe662023b3d765dcbd0b8b29fffcdd680dbb4a0959340eff8da71a4014"
+            },
+            "docs/testing.md": {
+              "bytes": 423434,
+              "sha256": "dd3c64ca367bbda668852064dec67dd237e6403a3d6fecc38f8f1ef64a6619b3"
+            },
+            "docs/wiki/Build-and-tests.md": {
+              "bytes": 83267,
+              "sha256": "6a798018f9ccdb51cf52ad87f5edfe509919e49bff6aadff7c1de6807e013347"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 460470,
+              "sha256": "93b43e28ab0d4665ae5387bc4f82fd86ee6889442e339a40bc3b7bfbb6d50748"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 558138,
+              "sha256": "34f307246b53a8250176fb4eba20322104f2ee8a8709099befaaf788ed62f1f2"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 456284,
+              "sha256": "094921f9691e8a779741bb5ebcbd8721b2ab95d3ccb508156fd36cacf648f2dd"
+            },
+            "tests/reference/client/workbench_open_shutdown/README.md": {
+              "bytes": 7268,
+              "sha256": "76993d4fe8b1ef442fdffb882c30e98c05e85cfb5387b24a04e1bced024b856b"
+            },
+            "tests/reference/client/workbench_open_shutdown/native-validation.json": {
+              "bytes": 339467,
+              "sha256": "8461a10dbe5ab199ad8c66df311f1fdd95828d538fc96e7c6567e85550a8454f"
+            },
+            "tests/reference/client/workbench_open_shutdown/packet.py": {
+              "bytes": 23677,
+              "sha256": "2a5c390b4a132be6aaf33df99c9bb9ebb7ca030466f045037f1607990b623302"
+            },
+            "tests/reference/client/workbench_open_shutdown/test_packet.py": {
+              "bytes": 9801,
+              "sha256": "55a93d12c626e16b39f6d5c0170f0a598674a8271a7eda4fd2e520996961412e"
+            },
+            "tests/client/render/test_ladder_world.c": {
+              "bytes": 22910,
+              "sha256": "cff9be5f82bb7dffa3fb20b15ded1e1f2761ba00b9c0b2bbcbdbade69e396b0c"
+            }
+          },
+          "added": [],
           "current_count": 4603
         }
       }
