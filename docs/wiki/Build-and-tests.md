@@ -1,5 +1,183 @@
 # Build and tests
 
+## Registry, cache and save progress
+
+The current Windows Release rebuild completes 811 commands in 74.333 seconds.
+Seven focused Registry/cache/source-saving tests pass in 1.42 seconds. The
+registered-target Windows build then passes in 25.61 seconds. Public stage
+passes in 0.55 seconds, its nine parser methods in 1.37 seconds and the CPU
+auditor's eight tests in 2.95 seconds. Linux Clang 18 Debug ASan/UBSan builds
+in 26.656 seconds and passes nine focused tests in 2.04 seconds, including
+all six public stage cases, with leak detection and halt-on-error enabled.
+An initial strict Clang test-literal failure remains retained; grouping the
+literal preserves its intended bytes. The preceding repaired Linux build takes
+118.257 seconds. These build times are not a controlled speed comparison.
+
+The five-test Windows client cohort passes in 55.51 CTest/55.626 outer seconds:
+World selection takes 35.45 seconds; farming passes 2,289 checks in 6.03 seconds,
+Food 1,847 in 7.03, Dye 2,857 in 6.76 and Create World unit controls 207 in 0.20.
+The last is not fresh World-creation SDK coverage. All 1,978 selected sources,
+635 products and 413 assets stay unchanged. The 31-sample guard has zero changes;
+the during-run monitor has one, so strict quiet and input-cause qualification
+are not established.
+
+A separate actual `client.create_world_loop` SDK run passes 2,616 checks in
+26.50 CTest/26.639 outer seconds. Typed name/seed777, normal-loader HUD return,
+initial-save=1, ordinary Save and Quit, independent disk/Player readback and
+reselection through two distinct epochs pass; reload has initial-save=0.
+The same source/product/asset counts stay unchanged, with zero guard and monitor
+changes. The local option adds this test without changing runtime or Settings.
+The first frozen full suites remain FAIL: Windows 683/684 in 291.08 CTest /
+295.948 outer seconds, Linux 672/673 in 156.78 / 210.689 seconds. Their sole
+failure is the previous Workbench packet's exact old runtime-source set.
+Both retain all 4,754 sources, 635 products and 413 assets unchanged. Windows
+products are 546 executables/88 libraries/one DLL; Linux has 547 ELFs/88 archives.
+The Windows monitor records one change in 1,147 samples, without strict quiet
+or cause qualification. All Windows native graphical/reload/creature tests pass.
+
+A fresh four-profile Workbench successor passes 7,574 checks in 30.28 CTest /
+41.386 outer seconds. Clean/Container/Player/World have 1,722/1,741/2,045/2,066
+checks and 7.55/7.56/7.45/7.70 seconds. Its 1,450 runtime files, 526 harness files,
+two binaries and 413 assets remain unchanged. Guard changes are zero and monitor
+changes one; all 57 controls and current/private/history/log audits pass. The
+prior Dye packet, validators, captures, binaries and failures remain immutable;
+no old receipt is rebound. This fresh terminal-flow capture does not replace
+full-suite results or establish an FPS, full-save or growth comparison.
+
+Default cache controls are added after the frozen suites: all 780 pass on both
+hosts, in 0.15 native/0.21 total Windows seconds and 2.16/2.18 Linux seconds.
+GCC 13.3 syntax-checks 19 units under the actual C17/FP/sanitizer options, without
+full GCC runtime credit. clang-format 18 passes all 2,050 files. Source-binding
+preflight now calls the packet's unchanged strict audit before a long suite;
+it refreshes no native receipt and supplies no bypass.
+
+The final Linux full suite passes 674/674 in 151.85 CTest/205.075398 outer
+seconds. Windows remains FAIL at 684/685 in 269.09/274.0573 seconds. Both preserve
+all 4,754 sources, 636 products and 413 assets, and the Workbench packet passes.
+Windows fails only the animal scenario's Pig draw-prefix gate: eight frames,
+delayed=1, undrawn=7, entityframes=0, bt=0, paused=0 and screen=NULL. Returned-frame
+guards succeed, but Pig frustum selection is false before presence/model calls.
+The cause remains unresolved, without Timer/focus/input/FPS attribution or a
+waiver/repeat. Its monitor records one timestamp change. The earlier native
+animal pass, first packet-binding failures and older focus failures retain
+separate scope.
+
+Hosted exact-revision checks remain pending. The
+[current change](https://github.com/frankischilling/minecraft-c/pull/52) tracks
+their later result; it does not replace the native Windows failure. Earlier
+hosted and broad results keep their old scope.
+
+The [frozen Windows CPU receipt](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/static_cpu_windows.json)
+keeps four alternating rounds/eight fresh processes for the Block public getter:
+168.526 to 28.962 ns/get, 82.814% lower median cost, with 1,011 controls per
+process. The selected cache validator reduces mixed-key medians by 96.625%,
+97.323% and 93.703% for 513/1,024/4,096 entries. Deliberate one-bucket keys are
+7.552%, 3.343% and 2.592% slower. All 780 controls per process pass. QPC is
+primary; coarse raw CPU values, rejected candidates and unfavorable rows remain
+retained. These are CPU workloads, not FPS or original-method comparisons.
+
+The receipt keeps all 32 processes and 440 timed samples in their distinct
+cohorts; its auditor and eight corruption-test methods pass. Separate Windows
+public smoke checks pass 1,032 Block and 780 cache controls without timing or
+comparison credit. Additional untimed checks and the new Block POSIX clock
+path do not inherit historical binary or Linux timing qualification.
+
+Six frozen Source save-stage profiles pass 378 native checks. The first full
+save's 63-check capture remains the same process: its original parser failure
+is preserved, while a pure retained audit requires exact Compound10 empty
+lists before writing and Byte1 empty lists afterwards. All nine other checked
+Chunk fields and unwritten record bytes remain exact. Five subsequent profiles
+pass both progress failures, NULL override, nested restoration and permanent raw export.
+The public projection has separate current Windows/Linux passes above. The
+[saving contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saving.md#source-progress-ownership)
+records the shared Source/public/options behavior and lifetime limits.
+
+The retained private Linux Food phase capture has 33.716 seconds in population
+and 1,235,464 generic GETs after a definite historical observer export. Maximum
+cache count is 382, excluding the larger-map path from that stall. The Source
+progress escape is separate. Eligibility-only fixture reads now use the current
+provider's scalar count; captured-provider rebinding and malformed-cache tests
+retain their declared limits. No Source work, input, frame, clock or gameplay
+assertion is repaired. Linux Food interaction, current scene FPS and full
+parity remain unqualified. See [phase scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/world-queries.md#retained-linux-phase-diagnosis).
+
+## Dye checkpoint
+
+Hosted [run 41794361719](https://github.com/frankischilling/minecraft-c/actions/runs/41794361719)
+passes all four jobs for `44483ff9`: formatting checks 2,043 files, Windows
+passes 630 tests in 257.93 seconds, GCC passes 687 in 517.30 seconds and Clang
+passes 687 in 381.09 seconds. Every actual checkout is merge `3f6e98de`, whose
+Git tree equals the pushed head's tree. These asset-independent checks have a
+separate scope from the local Windows scene failures retained below.
+
+The [bone meal comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/dye-use.md)
+replays a separately captured 39-wrapper original cohort on Windows and
+sanitized Linux. Thirty-six complete selected outcomes match; three callback
+effect prefixes retain distinct native LIMIT and original IllegalStateException
+causes. Both actual Random owners, live GM.b aliasing, count/callback order,
+all five Chunk-array diffs, final Block/metadata maps and used statistics stay
+checked. Twenty-three comparator corruption controls and ten malformed-output
+fixtures pass. Windows and sanitized Linux separately match 33 original Dye
+icon profiles; the four focused Windows icon/render tests also pass.
+
+The Windows `client.dye_loop` scene passes 3,136 checks in 7.96 seconds with
+1,994 selected inputs/products and 413 assets unchanged. One ordinary input
+matures Crop stage 0 to 7, changes the same Dye Stack from count 2 to 1 and
+increments its real used statistic once. HUD/held icon 191, health 5, section
+replacement and save/title/reselection pass. All 48 position/UV records at both
+stages match executed-original Crops geometry; colors use a separate
+source-lighting check. Independent Region/NBT decoding confirms Crop stage 7,
+health 5 and slot 0 Dye 351/count 1/damage 15. This is not an original-pixel
+comparison. Enable `MC_ENABLE_CLIENT_DYE_TESTS=ON` with display tests and
+imported resources, build `mc_test_dye_loop`, then select `^client.dye_loop$`.
+
+The first SDK process reaches its completed input receipt, then fails a compound
+post-use assertion; the exact failed term remains unresolved. The first native
+replay parser also rejects the existing bootstrap prelude before its exact
+two-line contract is corrected. An initial cold-owner fixture wrongly expects
+the Java-new facade to produce a cold RAW Item; the corrected test uses
+Registry-owned RAW metadata. The original GM-first initializer failure and its
+declared LF/path diagnostic projection retain their raw evidence. No passing
+retry erases these failures or establishes the first SDK failure's cause.
+
+Four fresh Workbench shutdown processes pass 8,259 checks in 61.63 seconds,
+preserving 1,449 runtime files, 526 harness files, two binaries and 413 assets:
+1,977 selected inputs. All 57 public controls and private/history/cohort-log
+audits pass. The first guard refuses launch and remains NOT_RUN. The passing
+guard records no timestamp changes; its passive cohort monitor records one,
+which identifies neither a human nor a cause. The previous 8,499-check,
+63.31-second Food/Registry receipt remains historical. This Workbench scenario
+does not invoke Dye growth or measure frame rate.
+
+The final Linux build completes, and its Clang 18 Debug ASan/UBSan public
+suite passes 670/670 tests in 164.89 seconds under Xvfb/software GL, including
+the 33-profile icon replay. The enclosing helper takes 221.574 seconds.
+GCC 13 passes syntax-only checks for seven units; this supplies no full GCC
+build or runtime credit.
+
+Windows passes 679/681 public tests in 350.24 seconds, with chicken/Wolf focus
+failures. A separately retained quiet repeat passes 679/681 in 317.34 seconds:
+Wolf passes, Cow fails initial loaded focus, and the reload decoder rejects a
+metadata-only rotation. Neither is a full Windows pass. All four Dye
+packet/native tests pass in both Windows cohorts and Linux. Each bracket
+preserves 4,742 source files, 544 products and 413 assets; Windows products
+are 543 executables plus one DLL, and Linux products are ELFs.
+
+The quiet guard has 31 samples and zero timestamp changes; its passive cohort
+monitor records nine, identifying neither a human nor a cause. All 17 public
+visible foreground tests share `mc_desktop_focus`; no overlap gap was found.
+The reload native process completes ten epochs and 5,931 checks, and all ten
+individual save-stage decoders pass. Only `after-3` to `before-4` changes
+`alpha/level.dat` LastPlayed and rotates its prior bytes to `level.dat_old`;
+Time 23, Player data and region bytes are unchanged. That interval includes
+a completed loaded frame. Pause pass-0 saving is consistent with the bytes,
+but the exact writer remains unresolved. No test waiver, automatic retry or
+production repair follows. [Detailed test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#bone-meal-block-use-dye-icons-and-loaded-crop)
+retains the failures. Broader single-player completion, loaded Grass/tree
+growth, Sheep coloring, original pixels/audio and FPS remain open.
+
+## Earlier build and qualification scopes
+
 Linux hosted builds compress final ELF debug sections with
 `CMAKE_EXE_LINKER_FLAGS=-Wl,--compress-debug-sections=zlib`. Source-line
 diagnostics, sanitizer instrumentation and the full test inventory remain
@@ -14,7 +192,7 @@ separate Windows Food scene passes actual clicks, HUD/held drawing and
 save/reselection; Linux loaded input retains its own pre-input diagnosis.
 See [current test scopes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#food-use-and-registry-random-ticks).
 
-The current full Linux sanitizer cohort passes 663/663 tests. Windows passes
+The preceding farming Linux sanitizer cohort passes 663/663 tests. Windows passes
 671/674; three saved Water/Lava/Ladder camera or picking checks remain failed.
 The [test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#hoe-and-seeds-use)
 keeps their source/product guards and refused passive input retries. Linux CI

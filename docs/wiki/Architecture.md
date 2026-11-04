@@ -1,5 +1,21 @@
 # Systems and subsystems
 
+The active Block static loader and passive inspector share one bounded
+96-name decoder. They keep their distinct class-use and diagnostic contracts
+and read the current nullable named cell on every successful call. Larger
+generic cache maps use local hash batches with a pairwise collision fallback;
+caller-owned state and validation results remain authoritative. The
+[CPU measurements](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/world-queries.md#block-static-name-selection-and-cache-validation)
+retain collision regressions and add no scene-FPS claim.
+
+The private GAME save-progress join passes only owner/stage through a
+synchronous stack bridge to the same full lifecycle. The concrete caller
+still retains and invokes its actual LoadingScreen. Public/options callbacks
+retain mutable-context export, and a real raw borrow inside a stage callback
+still discards the owned index permanently. Eligibility-only fixture observers
+use the current provider's scalar count; they do not claim captured-provider
+equivalence after rebinding. See the [save boundary](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saving.md#source-progress-ownership).
+
 World type 2 dispatch enters the actual Torch wrapper and shared five-quad
 primitive. Metadata, NW capture, brightness and the fresh emission-array read
 retain source order; a texture override still reaches the side getter. The

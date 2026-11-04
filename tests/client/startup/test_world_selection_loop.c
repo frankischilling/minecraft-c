@@ -3980,24 +3980,20 @@ static int save_title_run(fixture *f, mc_client_source_da *initial, const char *
 
     /* Wait only through actual Timer-selected frames for an eligible cached
      * Chunk. No dirty/q/time field is repaired to manufacture a write. */
-    mc_chunk_provider_fields provider;
-    mc_world_storage_error storage;
-    CHECK(mc_chunk_provider_bind_fields(world->fields.v, &provider, &storage) ==
-              MC_WORLD_STORAGE_OK &&
-          provider.cache != NULL);
     size_t eligible = 0;
     int64_t world_time = 0;
+    CHECK(save_title_eligibility(world, NULL, &eligible, &world_time) == 0);
     mc_client_source_da *recovered[4] = {0};
     size_t focus_pauses = 0;
     const uint64_t tick_deadline = SDL_GetTicks() + 3000;
     for (;;) {
-        CHECK(save_title_resume(f, world, &provider, recovered, &focus_pauses, &eligible,
-                                &world_time) == 0 &&
-              save_title_eligibility(world, &provider, &eligible, &world_time) == 0);
+        CHECK(save_title_resume(f, world, NULL, recovered, &focus_pauses, &eligible, &world_time) ==
+                  0 &&
+              save_title_eligibility(world, NULL, &eligible, &world_time) == 0);
         if (eligible != 0 || SDL_GetTicks() >= tick_deadline)
             break;
         CHECK(save_title_focus(f) == 0 && frame(f) == 0 &&
-              save_title_eligibility(world, &provider, &eligible, &world_time) == 0);
+              save_title_eligibility(world, NULL, &eligible, &world_time) == 0);
     }
     CHECK(eligible != 0 && app->r == NULL && app->N &&
           mc_client_screen_transitions_inspect(app->screen_transitions, &transitions));
@@ -4053,7 +4049,7 @@ static int save_title_run(fixture *f, mc_client_source_da *initial, const char *
          * even though the action has already stored App.r=NULL. */
         do {
             CHECK(save_title_focus(f) == 0 && frame(f) == 0 &&
-                  save_title_eligibility(world, &provider, &eligible, &world_time) == 0);
+                  save_title_eligibility(world, NULL, &eligible, &world_time) == 0);
             ++attempt_frames;
         } while (app->r == pause && attempt_frames < 64 && SDL_GetTicks() < attempt_deadline);
         CHECK(app->r == NULL && app->N && eligible != 0 &&
@@ -4108,7 +4104,7 @@ static int save_title_run(fixture *f, mc_client_source_da *initial, const char *
             ++warmup_frames;
             CHECK(app->r == pause && !app->N && atomic_load(&app->o) &&
                   app->active_world == world &&
-                  save_title_eligibility(world, &provider, &eligible, &world_time) == 0 &&
+                  save_title_eligibility(world, NULL, &eligible, &world_time) == 0 &&
                   world_time == paused_time &&
                   mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
                   transitions.screens == screens_before);
@@ -4159,7 +4155,7 @@ static int save_title_run(fixture *f, mc_client_source_da *initial, const char *
                    : reload_entry_snapshot(reload_epoch, save_frames, &entry_aggregate,
                                            &entry_bytes)) == 0 &&
               mc_world_info_fields_get(world->fields.x, &info_before) == MC_WORLD_INFO_OK &&
-              save_title_eligibility(world, &provider, &eligible, &world_time) == 0 &&
+              save_title_eligibility(world, NULL, &eligible, &world_time) == 0 &&
               mc_platform_current_time_millis(&first) == MC_PLATFORM_MILLIS_OK);
         /* This real paused MAP_CACHE frame cannot save before GUI input: fd.w
          * returns its field, paused controller/texture ticks are skipped, and

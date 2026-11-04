@@ -444,12 +444,9 @@ static int mining_ready(fixture *f, mining_work *work, bool require_hit) {
         if (f->app->active_world == NULL)
             continue;
         if (f->app->r != NULL) {
-            mc_chunk_provider_fields provider;
             size_t eligible;
             int64_t time;
-            CHECK(mc_chunk_provider_bind_fields(f->app->active_world->fields.v, &provider, NULL) ==
-                      MC_WORLD_STORAGE_OK &&
-                  save_title_resume(f, f->app->active_world, &provider, recovered, &focus_pauses,
+            CHECK(save_title_resume(f, f->app->active_world, NULL, recovered, &focus_pauses,
                                     &eligible, &time) == 0);
             continue;
         }

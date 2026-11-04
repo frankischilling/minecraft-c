@@ -557,6 +557,21 @@ interfaces; neither implicitly selects a world schema or opens a file.
 
 ## System and subsystem folders
 
+The Block static selector lives beside its canonical registration-name table
+and is shared by active loading and passive inspection. It selects an index;
+each caller retains its own class-use, output and error contract and reads the
+current nullable cell. Generic large-cache validation uses local bounded
+hash batches with a pairwise collision fallback, without allocating or changing
+caller-owned storage. [Performance scopes](performance/world-queries.md)
+separate those CPU measurements from instrumented gameplay work.
+
+The private GAME save-stage header below exposes only owner/stage progress.
+Its stack bridge and the public mutable-context route share the same full
+lifecycle. The concrete Source caller retains its actual LoadingScreen, while
+public/options callbacks and actual raw borrows keep permanent index export.
+The [saving boundary](world/saving.md#source-progress-ownership) owns nullable,
+reentrant, diagnostic and failure-lifetime rules.
+
 Runtime implementations live at `src/<system>/<subsystem>/`; public headers mirror
 that path under `include/mc/`, and tests mirror it under `tests/`. This keeps a
 subsystem's implementation and interface easy to locate as the project grows.
@@ -614,11 +629,25 @@ src/world/storage/store.c
 src/world/storage/files.c
 include/mc/world/chunk/references.h
 include/mc/world/cache/lifecycle.h
+src/world/cache/cache.c
 src/world/cache/lifecycle.c
 tests/world/cache/test_lifecycle.c
 include/mc/world/runtime/runtime.h
 src/world/runtime/runtime.c
+src/world/runtime/saving/progress_internal.h
+src/client/world/source_save.inc
 tests/world/runtime/test_runtime.c
+tests/world/runtime/saving/test_stage_progress.c
+tests/tools/world/test_stage_progress.py
+src/block/registry/registration.c
+src/block/registry/registry.c
+src/item/registry/registry.c
+tests/block/registry/static_index_cases.h
+tests/item/registry/block_static_controls.inc
+tests/benchmarks/block_static_getter.c
+tests/benchmarks/cache_validation.c
+tests/benchmarks/static_cpu_windows.json
+tests/tools/world/benchmark_static_cpu.py
 tests/world/storage/test_chunk.c
 include/mc/world/noise/noise.h
 src/world/noise/noise.c

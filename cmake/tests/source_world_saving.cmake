@@ -24,9 +24,32 @@ if(BUILD_TESTING AND TARGET mc_simulation)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/source-owned-cache-controls")
     set_tests_properties(world.source_owned_cache PROPERTIES
         LABELS "public;integration;world;storage;ownership;filesystem" TIMEOUT 300)
+
+    add_executable(mc_test_source_stage_progress tests/world/runtime/saving/test_stage_progress.c)
+    target_include_directories(mc_test_source_stage_progress PRIVATE src)
+    target_link_libraries(mc_test_source_stage_progress PRIVATE
+        mc_simulation mc_persistence mc_c_atomics mc_build_options)
+    add_test(NAME world.source_stage_progress COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_stage_progress.py"
+        --executable "$<TARGET_FILE:mc_test_source_stage_progress>"
+        --source-root "${CMAKE_CURRENT_SOURCE_DIR}"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/source-stage-progress-controls")
+    set_tests_properties(world.source_stage_progress PROPERTIES
+        LABELS "public;integration;world;storage;ownership;filesystem" TIMEOUT 300)
+    add_test(NAME tools.source_stage_progress_controller COMMAND Python3::Interpreter -B -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world" -p test_stage_progress_driver.py)
+    set_tests_properties(tools.source_stage_progress_controller PROPERTIES
+        LABELS "public;unit;tools;world;storage" TIMEOUT 30)
 endif()
 
 option(MC_BUILD_BENCHMARKS "Build optional fixed-work CPU benchmarks" OFF)
+if(BUILD_TESTING AND TARGET mc_world)
+    add_executable(mc_test_cache_validation_controls tests/benchmarks/cache_validation.c)
+    target_link_libraries(mc_test_cache_validation_controls PRIVATE mc_world mc_build_options)
+    add_test(NAME world.cache_validation_controls COMMAND mc_test_cache_validation_controls controls)
+    set_tests_properties(world.cache_validation_controls PROPERTIES
+        LABELS "public;unit;world;ownership" TIMEOUT 60)
+endif()
 if(BUILD_TESTING AND Python3_Interpreter_FOUND)
     add_test(NAME tools.client_frame_observations COMMAND Python3::Interpreter -B -m unittest discover
         -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/benchmarks" -p test_client_frames_run.py)
@@ -36,8 +59,17 @@ if(BUILD_TESTING AND Python3_Interpreter_FOUND)
         -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/benchmarks" -p test_world_random_tick.py)
     set_tests_properties(tools.world_random_tick_observations PROPERTIES
         LABELS "public;unit;tools;world;performance" TIMEOUT 30)
+    add_test(NAME tools.static_cpu_benchmarks COMMAND Python3::Interpreter -B -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world" -p test_static_cpu_benchmarks.py)
+    set_tests_properties(tools.static_cpu_benchmarks PROPERTIES
+        LABELS "public;unit;tools;world;performance" TIMEOUT 30)
 endif()
 if(MC_BUILD_BENCHMARKS AND BUILD_TESTING AND TARGET mc_simulation)
+    add_executable(mc_benchmark_block_static_getter tests/benchmarks/block_static_getter.c)
+    target_link_libraries(mc_benchmark_block_static_getter PRIVATE
+        mc_registry mc_c_atomics mc_build_options)
+    add_executable(mc_benchmark_cache_validation tests/benchmarks/cache_validation.c)
+    target_link_libraries(mc_benchmark_cache_validation PRIVATE mc_world mc_build_options)
     add_executable(mc_benchmark_world_queries tests/benchmarks/world_queries.c)
     target_include_directories(mc_benchmark_world_queries PRIVATE src)
     target_link_libraries(mc_benchmark_world_queries PRIVATE

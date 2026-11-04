@@ -242,12 +242,9 @@ static int aim_case(fixture *f, aim_work *work, const char *directory, int32_t t
               loaded.source_returned && loaded.world == f->app->active_world &&
               loaded.player == f->app->h && loaded.input != NULL && loaded.terrain_samples == 289);
         if (f->app->r != NULL) {
-            mc_chunk_provider_fields provider;
             size_t eligible;
             int64_t time;
-            CHECK(mc_chunk_provider_bind_fields(f->app->active_world->fields.v, &provider, NULL) ==
-                      MC_WORLD_STORAGE_OK &&
-                  save_title_resume(f, f->app->active_world, &provider, work->recovered,
+            CHECK(save_title_resume(f, f->app->active_world, NULL, work->recovered,
                                     &work->focus_pauses, &eligible, &time) == 0);
             continue;
         }

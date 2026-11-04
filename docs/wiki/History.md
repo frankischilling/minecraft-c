@@ -1,5 +1,87 @@
 # History
 
+## Registry selection, validation and progress ownership
+
+The current performance revision replaces two 96-name Block selector scans with
+a shared bounded decoder while retaining active use, live nullable cells and
+complete errors. Four alternating Windows rounds/eight fresh processes measure
+168.526 to 28.962 ns/get, with 1,011 controls per process. The selected larger-map
+validator improves mixed-key medians by 93.703–97.323%, with deliberate collision
+regressions of 2.592–7.552%. Earlier rejected candidates and their complete
+histories stay retained. These CPU measurements establish no current scene-FPS
+or full-parity result.
+
+The Source full-save caller now uses an internal GAME owner/stage bridge.
+LoadingScreen, session, metadata, SavedData and Chunk order remain; public and
+options callbacks retain mutable-context export. Actual raw borrows still
+select generic validation permanently. Six frozen native profiles pass
+378 checks, including an exact retained-capture audit of the first parser
+failure. Eligibility-only fixture observations avoid unused exports, with
+current-provider limits explicit. The historical Linux Food capture's definite
+observer export and maximum cache count 382 keep its population stall separate
+from the larger-map optimization and genuine Source-progress exposure.
+
+The current Windows rebuild and seven focused tests pass. Public benchmark
+smoke has separate semantic credit, public stage passes on Windows/Linux, and
+four Windows loaded-client loops plus separate Create World unit controls pass.
+A separate actual Create World SDK run passes 2,616 checks through initial
+save, ordinary leave and distinct-epoch reload with zero guard/monitor changes.
+Both first full suites remain failed only at the stale Workbench runtime-set
+binding: 683/684 Windows and 672/673 Linux. A fresh four-profile successor
+passes 7,574 checks in 30.28 CTest seconds with unchanged current inputs and
+all strict audits; the prior Dye packet and failures remain immutable. Default
+780-check cache controls pass both hosts, GCC syntax-checks 19 units and
+clang-format 18 passes 2,050 files. Early binding preflight now calls the strict
+packet audit. The final Linux suite passes 674/674 in 151.85 seconds; Windows
+remains FAIL at 684/685 in 269.09 seconds at the Pig draw-prefix gate. False frustum
+selection leaves its model callback unreached; the reason remains unresolved,
+with no Timer/focus/input/FPS cause attribution, waiver or repeat. Both final
+guards retain all 4,754 sources, 636 products and 413 assets unchanged. The
+Workbench packet passes, while both first full failures stay historical.
+Hosted exact-revision checks remain pending; [the current change](https://github.com/frankischilling/minecraft-c/pull/52)
+tracks their later result without replacing this native Windows failure. Earlier Dye, Food, focus and reload
+failures below retain their original scopes. [Performance notes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/world-queries.md)
+and [test scopes](Build-and-tests#registry-cache-and-save-progress) keep those
+boundaries explicit.
+
+## Bone meal, Dye icons and loaded Crop
+
+Commit `44483ff9` passes all four hosted jobs in
+[run 41794361719](https://github.com/frankischilling/minecraft-c/actions/runs/41794361719):
+Windows 630 tests, GCC and Clang 687 each, formatting 2,043 files. Actual merge
+checkout `3f6e98de` has the same tree as the pushed commit. The local Windows
+asset-scene failures below retain their separate unresolved scope.
+
+The [Dye increment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/dye-use.md)
+implements the Sapling, Crop and 128-attempt Grass Block-use body through the
+actual ItemStack wrapper, including signed counts and live Random reloads.
+Windows and sanitized Linux compare 39 separately captured original wrappers:
+36 complete selected outcomes and three callback effect prefixes with distinct
+native causes. An earlier 78-call interleaved corpus stays supporting history.
+Both platforms also match 33 original icon profiles, including signed arithmetic
+and mutable-bh cases.
+
+The separate Windows Crop scene passes 3,136 checks in 7.96 seconds. Actual
+input, stage 0 to 7, one consumed bone meal, HUD/held icon 191 and ordinary
+save/reload pass with independent Region/Player NBT decoding. Exact original
+position/UV geometry and native source-color observations have separate scopes.
+The first compound SDK assertion failure remains unresolved. Parser/bootstrap,
+cold-owner fixture and original initializer failures retain their own evidence;
+successful retries do not erase or explain them.
+
+Four fresh Workbench ownership/shutdown profiles pass 8,259 checks in 61.63
+seconds, preserving 1,977 selected inputs and 413 assets. Its refused first
+guard stays NOT_RUN; the passing cohort has one passive timestamp change with
+no human/cause attribution. The preceding 8,499-check/63.31-second packet and
+all older captures, frozen inputs and failures remain historical evidence.
+The final Linux public suite passes 670/670 in 164.89 seconds. Both Windows
+cohorts pass 679/681, in 350.24 and 317.34 seconds, retaining focus and final
+reload-decoder failures. All four Dye packet/native tests pass in each cohort;
+the metadata-only reload writer remains unresolved. [Build and tests](Build-and-tests#dye-checkpoint)
+keeps the exact qualification scopes and unchanged-input brackets.
+Loaded Grass/tree growth, Sheep coloring, broader single-player completion,
+original pixels/audio and FPS remain open.
+
 ## Torch World geometry and display particles
 
 Torch and both Redstone Torch registrations now enter their actual type 2

@@ -367,11 +367,11 @@ mc_registry_status mc_registry_classes_inspect_block_static(const mc_registry_cl
                                                             mc_registry_error *error) {
     if (classes == NULL || name == NULL || out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block static view arguments");
-    for (size_t i = 0; i < 96; ++i)
-        if (strcmp(mc_registry_block_static_name(i), name) == 0) {
-            *out = classes->blocks.named[i];
-            return result(error, MC_REGISTRY_OK, NULL);
-        }
+    size_t index;
+    if (mc_registry_block_static_index(name, &index)) {
+        *out = classes->blocks.named[index];
+        return result(error, MC_REGISTRY_OK, NULL);
+    }
     return result(error, MC_REGISTRY_INVALID_ARGUMENT, "unknown Block static name");
 }
 

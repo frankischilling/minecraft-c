@@ -2,6 +2,7 @@
 #include "load_world_terminal_internal.h"
 
 #include "../../world/runtime/chunk_provider_internal.h"
+#include "../../world/runtime/saving/progress_internal.h"
 #include "../../world/runtime/source_terminal_internal.h"
 #include "../../world/runtime/terminal_inventory_internal.h"
 #include "../../world/storage/objects_internal.h"

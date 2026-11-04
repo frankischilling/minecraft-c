@@ -157,6 +157,19 @@ static void entered_checks(fixture *f) {
     OBSERVE(f, mc_registry_item_c_at(owner, f->callback_capture, 0, &item, &error) ==
                    MC_REGISTRY_BUSY);
     OBSERVE(f, item == &output_anchor && fresh(error, MC_REGISTRY_BUSY));
+    /* Existing real resource callback: Block reentry stays BUSY for valid
+     * and malformed names. NULL-name admission still precedes that gate. */
+    mc_block block_anchor = {0};
+    const mc_block *block_out = &block_anchor;
+    error = poison_error();
+    OBSERVE(f, mc_registry_block_static_get(owner, "u", &block_out, &error) == MC_REGISTRY_BUSY &&
+                   block_out == &block_anchor && fresh(error, MC_REGISTRY_BUSY));
+    OBSERVE(f, mc_registry_block_static_get(owner, "missing", &block_out, &error) ==
+                       MC_REGISTRY_BUSY &&
+                   block_out == &block_anchor && fresh(error, MC_REGISTRY_BUSY));
+    OBSERVE(f, mc_registry_block_static_get(owner, NULL, &block_out, &error) ==
+                       MC_REGISTRY_INVALID_ARGUMENT &&
+                   block_out == &block_anchor && fresh(error, MC_REGISTRY_INVALID_ARGUMENT));
     f->busy_checks += 3;
     OBSERVE(f, memcmp(before, owner, sizeof(before)) == 0 &&
                    memcmp(frame_before, owner->initializer, sizeof(frame_before)) == 0);
@@ -451,6 +464,8 @@ cleanup:
     return result;
 }
 
+#include "block_static_controls.inc"
+
 int main(void) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
@@ -467,6 +482,8 @@ int main(void) {
         CHECK(cold_failure(options, false) == 0);
         CHECK(cold_failure(options, true) == 0);
         CHECK(ready_capture(options) == 0);
+        CHECK(block_static_semantics(options, false) == 0);
+        CHECK(block_static_semantics(options, true) == 0);
     }
     CHECK(profile->math == NULL &&
           atomic_load_explicit(&profile->holder_phase, memory_order_relaxed) ==

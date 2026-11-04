@@ -385,5 +385,7 @@ mc_registry_status mc_registry_block_class_initialize(mc_registry_classes *class
                                                       mc_block_kind kind);
 mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes);
 const char *mc_registry_block_static_name(size_t index);
+/* Pure bounded selector; private to Registry implementation/tests. */
+bool mc_registry_block_static_index(const char *name, size_t *out);
 
 #endif

@@ -109,6 +109,46 @@ It does not update another World's Info or substitute convenience Store metadata
 for a GAME binding. Lifecycle still owns last-save-time and dirty transitions.
 No failed save restores those earlier effects or reports successful growth.
 
+## Source progress ownership
+
+The concrete client Source full-save join uses the private
+`mc_world_runtime_save_stages_detailed` entry. It passes only the actual callback
+owner and LEVEL/CHUNKS stage to the existing LoadingScreen callback; that
+callback never consumed a mutable save context. A synchronous stack bridge
+copies only the per-call progress binding and shares the unchanged full-save
+lifecycle. Session, metadata, SavedData, Chunk work, loading calls and failure
+prefixes keep their order. NULL disables progress for this call, including any
+configured callback; it does not select a fallback.
+
+This trusted entry accepts GAME Worlds. COMPOSITION remains excluded because
+its auxiliary callback can receive the context. The public progress API and
+configured-options bridge still export the actual mutable cache before calling
+external code. A public raw borrow from inside a private stage callback also
+discards the optional owned index permanently; retained aliases stay mutable
+and later calls retain generic validation.
+
+Nested calls retain their own stack bridge and diagnostic frame, then restore
+the outer frame, active holds and mutation scope. No runtime context or option
+is rebound. Callback data and result remain live through return; the result
+can be a subobject of its owner, as in the actual Source save record. The
+runtime and result remain disjoint. Existing Source success/failure ownership
+of the captured LoadingScreen and terminal cleanup is unchanged.
+
+Six frozen Windows native profiles pass 378 checks: completed full save, LEVEL
+and CHUNKS failure, NULL callback override, nested save/read restoration and an
+actual raw export with retained-alias mutation. The first completed save has
+63 native checks; its original decoder failure is retained. A separate audit
+of those same bytes requires exact authored Compound10 empty Entity/TileEntity
+lists before writing and canonical Byte1 empty lists afterwards. All nine other
+checked Chunk fields and unwritten record bytes stay exact. The remaining five
+profiles pass 61/63/60/65/66 checks. The public projection now separately
+passes Windows and the current Linux sanitizer focused cohort. Current Windows
+selection, farming, Food and Dye loops also pass their bounded save cycles.
+A separate actual seed777 Create World SDK run passes 2,616 checks, including
+initial save, ordinary leave, independent NBT readback and distinct-epoch
+reselection. Its guard and monitor record zero changes. Full broad qualification
+remains pending; these controls add no original whole-save or FPS result.
+
 ## Ownership, composition and diagnostics
 
 One embedded Store save scope owns one real exact-identity Chunk lease. Nested

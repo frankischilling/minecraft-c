@@ -17,6 +17,18 @@ World `f`. It clears Player `h` only on the later null-target branch. Metadata
 still precedes Chunk writes and late SizeOnDisk growth. The source provider's
 ordinary eligibility predicate also applies to forced saving.
 
+The full-save progress join uses a private GAME-only owner/stage adapter so
+the actual LoadingScreen callback does not borrow an unused mutable cache
+descriptor. The same nullable LoadingScreen is retained and invoked at the
+same source sites. The shared lifecycle, public/options export behavior,
+failure children and terminal ownership remain unchanged. Actual public raw
+borrows still permanently select generic cache validation. The
+[save contract](../world/saving.md#source-progress-ownership) separates the
+qualified component controls and current bounded client passes from pending
+full broad qualification. The separate current seed777 Create World SDK run
+passes 2,616 checks through initial save, leave and distinct-epoch reload, with
+independent NBT readback and no passive guard/monitor timestamp changes.
+
 RenderGlobal and particle World fields retain the previous World because the
 null branch skips their replacement calls. The selected Load keeps its own
 World, Player, input and Handler alive after the App fields have cleared.
@@ -33,7 +45,7 @@ title return. Retained leave records have an explicit native bound of 32.
 
 ## Verification and remaining work
 
-The current Windows selection passes all seven CTests in 106.43 seconds. Its
+The earlier Windows selection passes all seven CTests in 106.43 seconds. Its
 Save and quit test takes 95.08 seconds and completes both the normal Tiny
 scenario and the session-mismatch failure control. The other six tests cover
 the Frame/Canvas owner and five standalone profiles. The

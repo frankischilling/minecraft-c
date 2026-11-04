@@ -6,6 +6,11 @@ untouched. The existing and new accessors share class active use, owner admissio
 the captured array identity, signed bounds checks and complete failure records.
 Each reached capture and read still occurs; the array is not cached across samples.
 
+The later [static-name and cache validation measurements](world-queries.md#block-static-name-selection-and-cache-validation)
+cover different operations and frozen builds. Their percentages cannot be
+combined with the captured-array results here. The retained Linux phase
+diagnosis and Source progress ownership change also keep separate scopes.
+
 The [Windows receipt](../../tests/benchmarks/world_registry_tick_windows.json)
 measures `mc_world_runtime_random_tick_begin` on genuine GAME Worlds with a Player,
 Math and Registry owners, and 361 distinct loaded saved Chunks. Each completed call

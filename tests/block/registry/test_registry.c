@@ -996,6 +996,8 @@ cleanup:
     return result;
 }
 
+#include "static_index_values.inc"
+
 static int test_side(mc_registry_side side, mc_java_random_profile *profile,
                      mc_materials *materials) {
     size_t upper = 0;
@@ -1018,6 +1020,7 @@ int main(int argc, char **argv) {
         fprintf(stderr, "usage: %s [client|server]\n", argv[0]);
         goto cleanup;
     }
+    CHECK(test_block_static_index_values() == 0);
     CHECK(mc_java_random_profile_create(SIZE_MAX, &profile) == MC_JAVA_RANDOM_PROFILE_OK);
     CHECK(mc_materials_create(&materials));
     size_t profile_bytes = mc_java_random_profile_allocation_bytes(profile);

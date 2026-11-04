@@ -1,7 +1,5 @@
 /* Shared actual fd.a(yb) join for new-World save and ordinary leave. */
-static mc_chunk_callback_result
-source_save_progress(void *owner, const mc_world_save_context *context, mc_world_save_stage stage) {
-    (void)context;
+static mc_chunk_callback_result source_save_progress(void *owner, mc_world_save_stage stage) {
     source_save *save = owner;
     mc_client_world_load_call *call = save->call;
     const bool level = stage == MC_WORLD_SAVE_LEVEL;
@@ -55,7 +53,7 @@ static bool source_world_save(mc_client_world_load_call *call, mc_world_runtime 
         }
         save->progress = progress;
     }
-    const mc_chunk_lifecycle_status saved = mc_world_runtime_save_with_progress_detailed(
+    const mc_chunk_lifecycle_status saved = mc_world_runtime_save_stages_detailed(
         world, true, save, progress == NULL ? NULL : source_save_progress, &save->saving);
     if (saved != MC_CHUNK_LIFECYCLE_OK) {
         call->failure.saving = &save->saving;

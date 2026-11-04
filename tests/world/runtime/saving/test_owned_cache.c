@@ -695,7 +695,11 @@ static int oc_budget(source_save_fixture *s) {
     return 0;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_OWNED_CACHE_FIXTURE_MAIN
+#define MC_OWNED_CACHE_FIXTURE_MAIN main
+#endif
+
+int MC_OWNED_CACHE_FIXTURE_MAIN(int argc, char **argv) {
     VERIFY(argc == 3);
     const char *mode = argv[2];
     const bool owned = strcmp(mode, "owned") == 0, budget = strcmp(mode, "budget") == 0;

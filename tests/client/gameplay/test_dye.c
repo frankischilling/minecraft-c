@@ -154,13 +154,10 @@ static int dye_ready(fixture *f) {
         if (f->app->active_world == NULL)
             continue;
         if (f->app->r != NULL || !f->app->N) {
-            mc_chunk_provider_fields provider;
             size_t eligible = 0;
             int64_t world_time = 0;
-            CHECK(mc_chunk_provider_bind_fields(f->app->active_world->fields.v, &provider, NULL) ==
-                      MC_WORLD_STORAGE_OK &&
-                  save_title_resume(f, f->app->active_world, &provider, recovered, &pauses,
-                                    &eligible, &world_time) == 0);
+            CHECK(save_title_resume(f, f->app->active_world, NULL, recovered, &pauses, &eligible,
+                                    &world_time) == 0);
             continue;
         }
         const mc_client_world_frame_state *draw = f->state.world_frame;

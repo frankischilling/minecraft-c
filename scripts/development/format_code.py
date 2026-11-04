@@ -56,6 +56,8 @@ def main():
         return 77
     root = Path(__file__).resolve().parents[2]
     fragments = {"tests/item/use/food_controls.inc",
+                 "tests/block/registry/static_index_values.inc",
+                 "tests/item/registry/block_static_controls.inc",
                  "tests/item/use/dye_controls.inc",
                  "src/item/use/dye.inc",
                  "tests/item/use/farming_controls.inc",

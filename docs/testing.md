@@ -1,5 +1,174 @@
 # Test scope and reproduction
 
+## Static Registry selection, cache validation and save progress
+
+The [static CPU receipt](../tests/benchmarks/static_cpu_windows.json) separates
+the final Block-name getter pair from all three cache-validator candidate
+histories. Four alternating rounds use eight fresh processes. Block getter
+median cost is 168.526 to 28.962 ns/get, with 1,011 controls in every process.
+The selected cache variant's mixed-key medians fall 96.625%, 97.323% and 93.703%
+at 513, 1,024 and 4,096 entries. Its one-bucket medians rise 7.552%, 3.343% and
+2.592%; every process passes 780 controls. QPC elapsed time is primary, raw CPU
+counters and rejected candidates remain retained. All 32 processes and 440
+timed samples stay in their four separate build/cohort scopes. The public
+receipt auditor and eight corruption-test methods pass. These tests do not
+measure rendering or FPS.
+
+The current Windows Release rebuild completes 811 commands in 74.333 seconds.
+Seven focused tests pass in 1.42 seconds: Block Registry construction, Item
+Registry construction/runtime, ordered Chunk pending state, provider generation,
+Source saving and Source-owned cache. Separate Windows public benchmark smoke
+checks pass 1,032 Block controls and 780 cache controls; the extra untimed Block
+checks and new POSIX host-clock path receive no historical timing credit.
+The registered-target Windows build then passes in 25.61 seconds.
+`world.source_stage_progress` passes in 0.55 seconds and its nine parser methods
+pass in 1.37 seconds. The static CPU auditor's eight tests pass in 2.95 seconds.
+The current Linux Clang 18 Debug ASan/UBSan build passes in 26.656 seconds;
+nine focused tests pass in 2.04 seconds, including all six public stage cases,
+Source saving/owned cache, provider generation and the new name decoder.
+Leak detection and halt-on-error stay enabled. An initial strict Clang compile
+failure at an adjacent hex test literal is retained; grouping the literal
+preserves the intended bytes without changing flags or runtime behavior.
+The preceding repaired Linux build passes in 118.257 seconds. Build durations
+are separate receipts, not a controlled speed comparison.
+
+The current Windows client cohort passes all five tests in 55.51 CTest seconds
+(55.626 seconds for the outer helper), preserving 1,978 selected sources,
+635 products and 413 assets. Its results have distinct scopes:
+
+| Test scope | Checks | Seconds |
+| --- | ---: | ---: |
+| World-selection loop | Not summarized here | 35.45 |
+| Loaded farming | 2,289 | 6.03 |
+| Loaded Food | 1,847 | 7.03 |
+| Loaded Dye | 2,857 | 6.76 |
+| Create World unit controls | 207 | 0.20 |
+
+The 31-sample passive guard has no timestamp changes; the during-run monitor
+records one. This is not strict quiet qualification and identifies no human
+or input cause. Create World in this cohort is a unit test, not a fresh
+World-creation SDK run.
+
+A separate `client.create_world_loop` run passes 2,616 checks in 26.50 CTest
+seconds (26.639 outer seconds). Actual SDK name/seed777 input drives the normal
+loader through HUD return with initial-save=1. Ordinary Escape, Save and Quit,
+independent disk/Player readback and reselection complete two distinct epochs;
+the second has initial-save=0. All 1,978 sources, 635 products and 413 assets
+stay unchanged, and both passive guard and during-run monitor record zero
+changes. Enabling local `MC_ENABLE_CLIENT_CREATE_WORLD_TESTS=ON` adds this test;
+runtime and GameSettings remain unchanged. This qualifies the current native
+initial Source save, leave and reload join, without original pixels or FPS.
+
+The first frozen full cohorts retain these failed results:
+
+| Host | Passed / selected | CTest seconds | Outer seconds |
+| --- | ---: | ---: | ---: |
+| Windows MSVC Release | 683 / 684 | 291.08 | 295.948 |
+| Linux Clang 18 ASan/UBSan | 672 / 673 | 156.78 | 210.689 |
+
+Both fail only `tools.workbench_open_shutdown_packet`: the previous Dye receipt
+requires its exact old runtime source set. The new private progress header and
+changed source hashes need a fresh native capture, not an excluded path or
+updated old hash. All native graphical, reload and creature tests pass in the
+Windows cohort. Both brackets preserve 4,754 selected sources, 635 products and
+413 assets. Windows products are 546 executables, 88 libraries and one DLL;
+Linux products are 547 ELFs and 88 archives. The Windows passive monitor has
+1,147 samples and one timestamp change, establishing neither strict quiet nor
+an input cause. The original full-cohort FAIL verdicts remain unchanged.
+
+A separately released fresh Workbench successor passes all four profiles in
+30.28 CTest seconds (41.386 outer seconds), with 7,574 native checks. In clean /
+Container / Player / World order, checks are 1,722 / 1,741 / 2,045 / 2,066 and
+CTest times are 7.55 / 7.56 / 7.45 / 7.70 seconds. Each capture binds the actual
+1,450 runtime files, 526 harness/CMake files, two binaries and 413 resources:
+1,978 selected inputs. All remain unchanged. Its guard records zero changes;
+the monitor records one, with no strict quiet or cause qualification. All 57
+public corruption controls and current/private/history/cohort-log audits pass.
+The published packet derives its numeric parameters from these new captures;
+the complete prior Dye receipt, validators, binaries, captures and failures
+remain immutable history. This terminal-flow qualification supplies no FPS,
+Source-save or Dye-growth comparison and does not replace either full suite.
+
+After those frozen suites, the default `world.cache_validation_controls` target
+is added without requiring optional benchmarks. All 780 checks pass on Windows
+(0.15 native / 0.21 total seconds) and Linux (2.16 / 2.18 seconds). These focused
+passes do not retroactively change the full-suite inventory or results.
+GCC 13.3 syntax-checks 19 selected translation units with the actual configured
+strict C17, FP and sanitizer options; all 4,754 inputs remain unchanged. This
+compiler substitution provides no GCC-configured full-build or runtime credit.
+The actual clang-format 18 check passes all 2,050 C/header/handwritten fragments.
+
+Source-binding preflight now invokes the Workbench packet's existing strict
+`audit_public` after the six declaration groups. It catches the observed stale
+runtime set before a long build/suite and prints the runtime/harness counts.
+It never refreshes a receipt or bypasses its source checks.
+
+The final full cohorts have completed continuity checks:
+
+| Host | Result | Passed / selected | CTest seconds | Outer seconds |
+| --- | --- | ---: | ---: | ---: |
+| Windows MSVC Release | FAIL | 684 / 685 | 269.09 | 274.0573 |
+| Linux Clang 18 ASan/UBSan | PASS | 674 / 674 | 151.85 | 205.075398 |
+
+Both preserve all 4,754 selected sources, 636 products and 413 assets. The
+Workbench packet passes on both hosts. Windows fails only
+`client.world_selection_animals` at the Pig draw-prefix gate. The retained
+capture has eight frames over a ten-second observation within the sixty-second
+scenario deadline: delayed=1, undrawn=7, entityframes=0 and actor bt=0, with
+paused=0 and screen=NULL. Every returned-frame guard succeeds. Seven PC569
+passes reach distance/frustum selection but no presence check or model draw;
+read-only review establishes Pig frustum=false and an unreached model callback.
+The reason for that state remains unresolved. No Timer, focus, input, FPS or
+production-defect cause follows from these operands. The final Windows monitor
+records one timestamp change, with no human or cause attribution. The same
+native animal scenario passed in the first frozen cohort. Its final failure
+is distinct from the older focus failures and is neither waived nor rerun.
+
+Hosted exact-revision checks remain pending; the
+[current change](https://github.com/frankischilling/minecraft-c/pull/52)
+tracks their later result. Earlier full-suite, SDK and hosted receipts below
+retain their historical checkpoints, including both first packet-binding failures.
+
+Six frozen Windows GAME save-stage profiles pass 378 native checks. The first
+actual successful full save returns 63 checks, but the original coordinator
+rejects its empty Entity list subtype. That failure is preserved. A pure audit
+of the same retained process and actual timestamp bounds requires exact
+authored Compound10 empty lists before writing and canonical Byte1 empty
+Entities/TileEntities afterwards. All nine other fields and every unwritten
+record's tree, header, timestamp and allocated bytes remain exact. It launches
+no native process. The remaining five profiles pass 61/63/60/65/66 checks for
+LEVEL failure, CHUNKS failure after metadata, NULL override, nested restoration
+and an actual permanent raw export. The new public projection separately
+passes on Windows and in the current Linux focused cohort above; it has its
+own execution rather than receiving a historical receipt by rebinding.
+
+The public target is `mc_test_source_stage_progress`; CTest registers
+`world.source_stage_progress` and `tools.source_stage_progress_controller`.
+Build the target, then select those two tests:
+
+```sh
+ctest --test-dir BUILD -R "^(world.source_stage_progress|tools.source_stage_progress_controller)$" --output-on-failure
+```
+
+These names reproduce the separately qualified public projection.
+
+The private Linux phase observation reaches a 36.165-second random-Chunk body,
+including 33.716 seconds in 32 actual population callbacks. All 1,235,464 GETs
+are generic. Its inherited Food observer unconditionally exports the provider
+before admission; snapshots show raw_exports=1, owned=false and cache counts
+310–362, with a whole-capture maximum of 382. This establishes that observer
+escape, not that the generic validator accounts for all population time. The
+larger-map optimization is not exercised. The [performance notes](performance/world-queries.md#retained-linux-phase-diagnosis)
+keep overlapping intervals and the separate Source-progress exposure explicit.
+The failed Linux Food interaction/admission scopes remain unqualified.
+
+Current eligibility-only fixture observations no longer borrow an unused raw
+descriptor. The scalar route follows the retained World's current provider and
+validates cache metadata. These fixed profiles author no provider replacement;
+captured-provider equivalence under rebinding is not claimed. Intentional
+raw-alias and malformed-cache tests remain explicit. Recovery inputs, frames,
+clocks, Source work and gameplay predicates remain in their original order.
+
 ## Bone meal Block use, Dye icons and loaded Crop
 
 The [Dye Block-use comparison](item/dye-use.md) uses a separately captured
@@ -98,9 +267,20 @@ That observer interval includes a completed loaded frame before `before-4`
 is copied. Source Pause rendering at pass 0 can save metadata, and epoch 4
 later records one recovered Pause, but the exact writer and Pause creation
 time remain unresolved. No focus cause or production defect follows from
-these artifacts alone. The failure remains intact; the next diagnosis must
-observe the load-return/first-frame writer seam without assuming its cause.
-No automatic retry, test waiver or production repair was applied.
+these artifacts alone. The failure remains intact.
+
+A later private writer observer copies each constructor-complete boundary
+before ordinary ticking/rendering. Its quiet run passes ten boundaries and
+7,526 native checks: only the selected session.lock changes at construction,
+and no metadata writer or disk change occurs before the older frame-boundary
+copy. This does not reproduce or explain the historical failure. A distinct
+controlled scenario adds one ordinary Escape press/release after epoch 4 load.
+It completes 6,914 native checks and records the actual Pause pass-0, metadata
+and Source-info writer chain; the unchanged original decoder still fails its
+disk guard. Time changes 15 to 21, rain/thunder timers and regions also change,
+so this is not the historical metadata-only outcome. Its passive monitor has
+one timestamp change, leaving the strict control witness NOT_ESTABLISHED.
+No human/cause attribution, historical failure waiver or Source repair follows.
 
 Loaded Grass/tree growth, Sheep coloring, original pixels/audio, server
 behavior and frame rate remain outside these Dye results.

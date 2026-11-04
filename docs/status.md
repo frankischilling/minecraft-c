@@ -1,5 +1,59 @@
 # Development status
 
+[Registry selection and cache validation](performance/world-queries.md#block-static-name-selection-and-cache-validation)
+have new bounded Windows CPU comparisons. The 96-name public Block getter
+falls from 168.526 to 28.962 ns/get in four alternating rounds and eight fresh
+processes, with 1,011 native controls per process. The selected cache validator
+reduces mixed-key median cost by 93.703–97.323% for 513–4,096 entries; deliberately
+colliding keys remain 2.592–7.552% slower. Earlier candidates and unfavorable
+results remain retained. These are frozen CPU workloads, not scene-FPS results.
+
+The [Source save progress join](world/saving.md#source-progress-ownership) now
+passes only its actual owner and stage through an internal GAME-only adapter.
+The shared save lifecycle and actual LoadingScreen calls retain their order;
+public/options mutable-context callbacks and actual raw borrows still discard
+the owned index permanently. Six frozen native profiles pass 378 checks.
+Eligibility-only fixture observations use the current provider's scalar count,
+with explicit limits for provider rebinding and malformed-cache comparisons.
+
+The current Windows Release rebuild completes 811 commands in 74.333 seconds;
+seven focused Registry/cache/source-saving tests pass in 1.42 seconds. The
+registered-target Windows build then passes in 25.61 seconds. Public stage
+controls pass on Windows and Linux, with separate benchmark semantic smoke
+checks and no replacement timing samples. Four Windows loaded-client loops
+and separate 207-check Create World unit controls pass with selected inputs
+unchanged; one passive timestamp change supplies no strict quiet or input-cause
+qualification. A separate actual Create World SDK run passes 2,616 checks in
+26.50 seconds, with initial save, ordinary save/title/reselection, independent
+NBT readback and zero guard/monitor changes.
+
+The first frozen full suites pass 683/684 Windows and 672/673 Linux tests;
+the sole failure on both hosts is the older Workbench packet's exact runtime
+source-set check. Both failed results remain retained. A fresh four-profile
+Workbench successor now passes 7,574 checks in 30.28 seconds, with all 1,978
+selected inputs and 413 resources unchanged; its 57 controls and strict
+current/private/history/log audits pass. The old Dye receipt is preserved,
+not rebound. Default cache validation controls now pass all 780 checks on both
+hosts. GCC 13 syntax-checks 19 selected units, and clang-format 18 passes
+2,050 files.
+
+The final Linux full suite passes 674/674 in 151.85 CTest seconds. Windows
+remains FAIL at 684/685 in 269.09 seconds: the Pig draw-prefix gate fails after
+eight frames, with its model callback unreached because frustum selection is
+false. The cause remains unresolved; this is distinct from the earlier focus
+failures. Both final guards preserve all 4,754 sources, 636 products and 413
+assets. The Workbench packet now passes. No waiver or repeat is applied to the
+Windows failure. Hosted exact-revision checks remain pending; the
+[current change](https://github.com/frankischilling/minecraft-c/pull/52)
+tracks their later result without replacing this native Windows failure.
+
+The Linux phase diagnosis retains its failed Food profile:
+32 population callbacks take 33.716 seconds, with all 1,235,464 first-body GETs
+generic after the historical observer's definite raw export. Cache count never
+exceeds 382, so the larger-than-512 validator did not cause that observed stall.
+Source progress is a separate production exposure. No new FPS or full-parity
+claim follows. Earlier checkpoints below keep their exact source scope.
+
 [Bone meal Block use and Dye icons](item/dye-use.md) now have separate original
 packets and native comparisons. Windows and sanitized Linux match the 39
 Block-use wrapper profiles: 36 complete selected outcomes and three callback
@@ -20,7 +74,7 @@ change, which identifies neither a human nor a cause. All 57 public controls
 and public/private/history/log audits pass. The preceding
 8,499-check/63.31-second packet retains its Food/Registry source scope.
 
-The final Linux public suite passes 670/670 tests in 164.89 seconds, including
+The frozen Dye Linux public suite passes 670/670 tests in 164.89 seconds, including
 the icon replay. Windows passes 679/681 in 350.24 seconds and a separate quiet
 repeat passes 679/681 in 317.34 seconds; focus checks and the repeat's final
 reload decoder remain failed. All four Dye packet/native tests pass in all

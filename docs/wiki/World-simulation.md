@@ -8,6 +8,18 @@ zlib into the region's Chunk buffer. Explicit close commits the record; late
 growth accounting then updates live Info. Metadata retains its earlier place
 in the full-save sequence.
 
+Concrete Source progress uses a private GAME-only owner/stage callback over
+the same full lifecycle. It retains the actual LoadingScreen and nullable
+argument behavior without exporting an unused mutable cache context. Public
+and options callbacks, and actual raw borrows inside private callbacks, still
+discard the owned index permanently. Six frozen native profiles pass 378
+checks. The public projection separately passes Windows and the current Linux
+sanitizer focused cohort; bounded Windows client save cycles also pass. Actual
+seed777 World creation, initial save, leave and distinct-epoch reload separately
+pass 2,616 checks with zero guard/monitor changes. Full broad qualification
+remains pending. The [save contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saving.md#source-progress-ownership)
+records reentry, diagnostics and retained failure ownership.
+
 Native controls save empty and Item/Chest Worlds twice, retire their owners,
 flush the shared region cache and load the same files through newly constructed
 source Worlds. Independent decoding checks Block arrays, typed records,

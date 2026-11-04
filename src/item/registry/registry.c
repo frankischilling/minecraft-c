@@ -344,11 +344,11 @@ mc_registry_status mc_registry_block_static_load(mc_registry_classes *classes, c
     mc_registry_status status = mc_registry_blocks_active_use(classes);
     if (status != MC_REGISTRY_OK)
         return status;
-    for (size_t i = 0; i < 96; ++i)
-        if (strcmp(mc_registry_block_static_name(i), name) == 0) {
-            *out = classes->blocks.named[i];
-            return MC_REGISTRY_OK;
-        }
+    size_t index;
+    if (mc_registry_block_static_index(name, &index)) {
+        *out = classes->blocks.named[index];
+        return MC_REGISTRY_OK;
+    }
     return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT, "unknown Block static operand",
                             NULL);
 }

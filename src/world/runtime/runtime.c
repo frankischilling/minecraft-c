@@ -13,6 +13,7 @@
 #include "millis.h"
 #include "runtime_internal.h"
 #include "saving/player_metadata_internal.h"
+#include "saving/progress_internal.h"
 #include "saving/saving_internal.h"
 
 #include <stdlib.h>
@@ -1039,6 +1040,43 @@ mc_world_runtime_save_with_progress_detailed(mc_world_runtime *runtime, bool for
     mc_world_save_context selected = runtime->saving;
     selected.progress = owner;
     selected.report_progress = callback;
+    return lifecycle_attempt_progress(runtime, force, 0, NULL, LIFECYCLE_SAVE_WORLD, error,
+                                      &selected);
+}
+
+typedef struct source_stage_progress {
+    void *owner;
+    mc_world_runtime_save_stage_callback callback;
+} source_stage_progress;
+
+static mc_chunk_callback_result source_stage_progress_call(void *owner,
+                                                           const mc_world_save_context *context,
+                                                           mc_world_save_stage stage) {
+    (void)context;
+    source_stage_progress *progress = owner;
+    return progress->callback(progress->owner, stage);
+}
+
+mc_chunk_lifecycle_status
+mc_world_runtime_save_stages_detailed(mc_world_runtime *runtime, bool force, void *owner,
+                                      mc_world_runtime_save_stage_callback callback,
+                                      mc_world_runtime_lifecycle_error *error) {
+    if (runtime == NULL)
+        return lifecycle_attempt(runtime, force, 0, NULL, LIFECYCLE_SAVE_WORLD, error);
+    if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME) {
+        mc_world_runtime_lifecycle_error frame;
+        lifecycle_error_init(&frame);
+        frame.status = MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT;
+        runtime_error(&frame.cause, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "Source stage progress requires GAME World");
+        if (error != NULL)
+            *error = frame;
+        return frame.status;
+    }
+    source_stage_progress progress = {owner, callback};
+    mc_world_save_context selected = runtime->saving;
+    selected.progress = callback == NULL ? owner : &progress;
+    selected.report_progress = callback == NULL ? NULL : source_stage_progress_call;
     return lifecycle_attempt_progress(runtime, force, 0, NULL, LIFECYCLE_SAVE_WORLD, error,
                                       &selected);
 }

@@ -1,6 +1,44 @@
 # Live-open Workbench native shutdown
 
 The four Windows SDK profiles freshly qualify the Workbench terminal flow on
+the current performance runtime and SDK harness cohort. They open the real Workbench, retain its
+live grid, cursor and recipe result, then close the source window and finish
+checked native cleanup. It does not directly qualify the CPU workloads,
+Food/Dye growth or Source full-save progress.
+
+All four profiles pass in 30.28 seconds with 7,574 checks.
+In clean / Container / Player / World order, the checks are
+1,722 / 1,741 / 2,045 / 2,066 and measured CTest times are
+7.55 / 7.56 / 7.45 / 7.70 seconds. These are qualification
+observations, not frame-rate or performance measurements. Each process and the
+whole cohort preserve 1,450 runtime source files, 526 selected harness/CMake
+files, 2 binaries and 413 imported resources: 1,978 selected inputs in total.
+
+The quiet three-second guard records 31 samples and
+0 last-input timestamp changes. The passive cohort monitor records
+1 changes. It only reads timestamps and foreground information;
+it injects no input or focus repair. These observations do not establish that
+all possible input was absent or qualify unrestricted Desktop timing.
+
+The previous 61.63-second/8,259-check packet, its four exact captures,
+validators, logs, binaries, all 1,977 frozen input contents and older history
+remain checked immutable private evidence. The new receipt comes from four
+fresh processes and has its own source/product/resource continuity records.
+Public corruption controls and private/log audits retain their original checks.
+No earlier receipt is rebound to the new source tree.
+
+The earlier frozen Windows and Linux full suites remain failed at the old
+packet's runtime-source binding. This new four-profile capture and its audits
+do not replace those full-suite results.
+
+The following preserved account describes the preceding cohort and all earlier
+limits. Its times and counts remain historical and do not describe this successor.
+
+## Previous qualification and retained history
+
+# Live-open Workbench native shutdown
+
+The four Windows SDK profiles freshly qualify the Workbench terminal flow on
 the current Dye runtime and SDK harness cohort. They open the real Workbench, retain its
 live grid, cursor and recipe result, then close the source window and finish
 checked native cleanup. This scenario does not exercise Dye growth.

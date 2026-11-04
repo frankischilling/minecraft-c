@@ -142,13 +142,10 @@ static int auto_observer_remove(void) {
 }
 
 static int auto_resume(fixture *f) {
-    mc_chunk_provider_fields provider;
     mc_client_source_da *recovered[4] = {0};
     size_t focus_pauses = 0, eligible;
     int64_t world_time;
-    CHECK(mc_chunk_provider_bind_fields(f->app->active_world->fields.v, &provider, NULL) ==
-              MC_WORLD_STORAGE_OK &&
-          save_title_resume(f, f->app->active_world, &provider, recovered, &focus_pauses, &eligible,
+    CHECK(save_title_resume(f, f->app->active_world, NULL, recovered, &focus_pauses, &eligible,
                             &world_time) == 0);
     return 0;
 }

@@ -1,5 +1,124 @@
 # World query performance
 
+## Block static-name selection and cache validation
+
+The Block static loader and passive inspector share a bounded decoder for the
+existing 96 names. The loader still performs class active use before selection;
+the inspector does not initialize the class. Each successful call reads the
+current nullable named cell. Argument admission, entered/failed owners, output
+preservation and complete diagnostics retain their existing order. No Block
+value or class state is cached.
+
+The [Windows CPU receipt](../../tests/benchmarks/static_cpu_windows.json) records
+four alternating rounds and eight fresh processes for the actual public getter
+on a READY client Registry. Median cost falls from 168.526 to 28.962 ns/get,
+82.814% lower using the unrounded observations. Every process passes 1,011
+native controls. Separate persistent controls cover the complete name domain,
+cold/entered/failed owners, live rebinding, NULL cells and unchanged failures.
+These are finite native CPU results, with no new original-method or FPS claim.
+
+Generic cache validation keeps the existing path through 512 entries. Larger
+maps use allocation-free 512-entry hash batches and the existing 1,024-word
+scratch size. Each batch checks its live Chunk values and duplicate keys, then
+checks later keys against that batch. A 64-probe collision bound returns to
+the complete pairwise validator. Insertion entries still receive their original
+validation; no cache, Source state or persistent trust flag is changed.
+
+The same receipt keeps all three candidate histories. The selected third
+candidate has these changes in median QPC time for the declared validation
+workload:
+
+| Entries | Mixed keys | Keys in one hash bucket |
+| --- | ---: | ---: |
+| 513 | 96.625% lower | 7.552% higher |
+| 1,024 | 97.323% lower | 3.343% higher |
+| 4,096 | 93.703% lower | 2.592% higher |
+
+Each process passes 780 semantic controls, including boundary and cross-batch
+duplicates, live entry edits, malformed descriptors, NULL/data/Blank values and
+insertion-list rules. The collision regressions and earlier rejected candidates
+remain in the receipt. QPC elapsed time is primary; raw process CPU counters
+are retained even when their coarse resolution produces zero. Captured timings
+belong to their frozen builds. The public receipt keeps all 32 processes and
+440 timed samples across the four distinct pairs. Its auditor and eight
+corruption-test methods pass.
+
+The published workloads have separate Windows semantic smoke checks: 1,032
+Block controls after additional untimed fixture checks, and 780 cache controls.
+They supply no comparison or timing credit. Public include/timer/formatting
+projections do not rebind the historical binaries; the Block observer's new
+POSIX host-clock path has no Linux timing qualification. The default
+`world.cache_validation_controls` also passes all 780 checks on both Windows
+and Linux without enabling optional benchmark builds.
+
+Both first frozen full suites retain a sole failure from the older Workbench
+packet's exact runtime binding. A fresh four-profile successor now supplies
+current source/capture bindings and passes all strict audits; it does not
+replace those full-suite results. The final Linux suite passes 674/674;
+Windows remains FAIL at 684/685 at the Pig draw-prefix gate, where frustum
+selection prevents the model callback. Its cause remains unresolved, and
+neither that failure nor these CPU measurements establish an FPS result.
+The [test record](../testing.md#static-registry-selection-cache-validation-and-save-progress)
+keeps both full attempts, focused controls and measurement scopes separate.
+
+Audit the retained receipt without building or launching native code:
+
+```sh
+python -B tests/tools/world/benchmark_static_cpu.py
+```
+
+With `MC_BUILD_BENCHMARKS=ON`, the public source targets are
+`mc_benchmark_block_static_getter` and `mc_benchmark_cache_validation`.
+The runner's explicit `--kind block` or `--kind cache`, `--baseline`,
+`--candidate` and fresh `--artifacts` arguments collect a new pair. Preserve
+actual build/input identities and pass controls before timing; a new build
+does not inherit the retained measurements.
+
+## Source saving and passive observations
+
+The concrete GAME Source full-save caller now uses an internal owner/stage
+callback. Its actual LoadingScreen callback never reads the mutable save
+context. A synchronous stack bridge enters the unchanged full lifecycle, with
+the same progress, session, metadata, SavedData and Chunk call order. NULL
+still means no progress for that call. The public mutable-context API and
+configured-options callback keep their permanent raw-export behavior. An actual
+public borrow inside a stage callback also keeps the provider permanently
+generic. See the [saving contract](../world/saving.md#source-progress-ownership).
+
+Eligibility-only fixture observations use a scalar count from the retained
+World's current provider. They no longer export an unused mutable descriptor.
+This is limited to the selected fixtures, which do not author a provider
+replacement. A captured descriptor and the current provider can differ after
+rebinding; general equivalence for that case is not claimed. The scalar route
+also validates cache metadata. Intentional mutable-alias, malformed-cache and
+terminal identity controls retain their explicit raw access. No focus input,
+recovery action, frame, clock, Source save or gameplay assertion is repaired.
+
+## Retained Linux phase diagnosis
+
+A private isolated-X11 Food capture measures a 36.165-second random-Chunk body.
+Its inclusive acquisition interval is 34.936 seconds; 32 actual population
+callbacks account for 33.716 seconds and 52 generation calls for 2.309 seconds.
+These nested instrumented intervals overlap and cannot be added. All 52 actual
+loads return MISS, taking 2.117 ms in total. A later 5.367-second lighting drain
+visits 499 regions and 22,672 cells, with 187,841 generic GETs and four nibble
+writes. These observations identify reached work, without assigning the whole
+interval to cache validation or generation.
+
+The first random body makes 1,235,464 GET attempts, all generic and none handled
+by the owned index. The historical Food observer unconditionally called
+`bind_fields` before first admission, permanently exporting that provider.
+Pre-attempt snapshots show owned=false, raw_exports=1 and cache counts 310–362;
+the whole capture's maximum is 382. The larger-than-512 validation change was
+therefore not exercised by that stall. The Source progress escape above is a
+separate production exposure, not the established export in this capture.
+
+The failed Linux Food captures and their exact timing/input profiles remain
+retained. Removing an observer export does not retrospectively turn them into
+an unmodified baseline or qualify Linux Food interaction. No current scene-FPS,
+full-frame parity or unrestricted-play improvement follows from these CPU
+measurements or passive timings.
+
 ## Render ChunkCache reads
 
 The section compiler and RenderBlocks use an internal failure-only Block

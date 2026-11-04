@@ -16,6 +16,41 @@ const char *mc_registry_block_static_name(size_t index) {
     return index < sizeof(names) / sizeof(names[0]) ? names[index] : NULL;
 }
 
+/* Decode only the declared uu/na static names. Reads stop at the first NUL
+ * and never go beyond the third byte of a longer valid C string. This pure
+ * selector does not initialize classes or read/cache any named cell. Failure
+ * preserves out; callers retain their existing argument/active-use order. */
+bool mc_registry_block_static_index(const char *name, size_t *out) {
+    if (name == NULL || out == NULL)
+        return false;
+    const unsigned char first = (unsigned char)name[0];
+    if (first == 0)
+        return false;
+    const unsigned char second = (unsigned char)name[1];
+    size_t index;
+    if (second == 0) {
+        if (first >= 'u' && first <= 'z')
+            index = (size_t)(first - 'u');
+        else if (first >= 'A' && first <= 'Z')
+            index = 6u + (size_t)(first - 'A');
+        else
+            return false;
+    } else {
+        if (name[2] != '\0')
+            return false;
+        if (first == 'a' && second >= 'a' && second <= 'z')
+            index = 32u + (size_t)(second - 'a');
+        else if (first == 'a' && second >= 'A' && second <= 'Z')
+            index = 58u + (size_t)(second - 'A');
+        else if (first == 'b' && second >= 'a' && second <= 'l')
+            index = 84u + (size_t)(second - 'a');
+        else
+            return false;
+    }
+    *out = index;
+    return true;
+}
+
 /* These statement macros preserve explicit source sites without introducing
  * an interpreter or moving argument reads before RAW allocation. */
 #define AT(pc) (classes->block_initializer_pc = (pc))
