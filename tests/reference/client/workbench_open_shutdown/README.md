@@ -1,11 +1,24 @@
 # Live-open Workbench native shutdown
 
-The four Windows SDK profiles freshly qualify the Workbench terminal flow on
-the current EW metadata runtime with the bounded native join fixture. They open
+The four Windows SDK profiles qualify the Workbench terminal flow on the
+captured EW metadata runtime with the bounded native join fixture. They open
 the real Workbench, retain its live grid, cursor and recipe result, then close
 the source window and finish
 checked native cleanup. It does not directly qualify the CPU workloads,
 Food/Dye growth or Source full-save progress.
+
+The capture is historical evidence. Its unchanged `native-validation.json` is
+sealed by SHA256 in `packet.py`; all receipt, manifest and corruption checks
+remain active. Later runtime or harness edits do not inherit this native SDK
+qualification. `packet.py --current-sources` separately requires the complete
+current runtime and selected harness bytes to match the captured manifests.
+The placement metadata revision fails that explicit equality check. It has
+separate component tests and makes no new Workbench SDK claim.
+
+The public suite validates this sealed receipt without rerunning graphical
+captures after unrelated source edits. Its 74 controls also reject a replacement
+receipt with repaired manifest digests. The explicit current-source check keeps
+the full runtime inventory and byte comparisons.
 
 Schema 2 requires an actual JOIN receipt for each profile. In clean / Container /
 Player / World order, attempts are
@@ -14,8 +27,8 @@ Player / World order, attempts are
 status is 0 and the consumed slot is NULL. All four cases complete on the first call, with attempts 1 and BUSY 0. This cohort does not exercise the BUSY retry branch.
 The native fixture follows the existing main caller's bounded BUSY/Delay 1
 protocol and checks the same nonnull owner on every BUSY response. Its runtime
-source and archives did not change for this fixture correction. The 71 public
-controls retain all 57 earlier methods and add 14 JOIN methods. Exact literals,
+source and archives did not change for this fixture correction. Those 71 public
+controls retained all 57 earlier methods and added 14 JOIN methods. Exact literals,
 canonical integers, bounds, profile, count relation and raw stdout are checked.
 
 The earlier unpublished EW cohort remains FAIL: clean failed at the original

@@ -1,4 +1,4 @@
-"""Schema 2 live-open Workbench receipt, including actual bounded bootstrap join."""
+"""Sealed Workbench capture, including actual bounded bootstrap join."""
 import argparse
 import hashlib
 import json
@@ -7,6 +7,7 @@ import re
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[3]
+CAPTURE_SHA256 = '8755157c367d8f5cc1bc7bfbe46f755c1631b101e9a8fcac7fd3225f9a0919bf'
 PROFILES = ('clean', 'container', 'player', 'world')
 CHECKS = dict(zip(PROFILES, (1679, 1677, 2064, 2026)))
 SECONDS = dict(zip(PROFILES, (7.57, 7.31, 7.33, 7.59)))
@@ -333,12 +334,27 @@ def validate(document, root=None):
             'source_shutdown_or_pixel_comparisons': 0}
 
 
-def audit_public():
-    return validate(load(HERE / 'native-validation.json'), ROOT)
+def audit_public(path=None):
+    """Validate the immutable captured checkpoint, independently of later code."""
+    path = HERE / 'native-validation.json' if path is None else Path(path)
+    require(digest(path) == CAPTURE_SHA256, 'sealed historical capture receipt')
+    result = validate(load(path))
+    result['current_source_qualification'] = False
+    return result
+
+
+def audit_current_sources(root=ROOT):
+    """Explicitly require all current runtime/harness bytes to match that capture."""
+    require(root is not None, 'current-source audit requires a directory')
+    root = Path(root)
+    require(root.is_dir(), 'current-source audit requires a directory')
+    audit_public()
+    return validate(load(HERE / 'native-validation.json'), root)
 
 
 def audit_private(private_root):
     """Recheck the published projection against retained private reports, without copying them."""
+    audit_public()
     document = load(HERE / 'native-validation.json')
     validate(document)
     root = Path(private_root)
@@ -397,8 +413,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--private-root', type=Path)
     parser.add_argument('--cohort-log', type=Path)
+    parser.add_argument('--current-sources', action='store_true')
     args = parser.parse_args()
     print(audit_public())
+    if args.current_sources:
+        print(audit_current_sources())
     if args.private_root:
         print(audit_private(args.private_root))
     if args.cohort_log:

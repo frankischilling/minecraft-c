@@ -44,16 +44,16 @@ def check(root):
                     raise ValueError(f"{profile}.{group}: stale source binding: {relative}")
                 count += 1
     print(f"Source bindings: {count} entries, {len(observed)} distinct current files")
-    # The Workbench receipt binds a complete runtime set as well as selected
-    # harness bytes. Check its own strict validator before a long build/suite;
-    # updating a current declaration above cannot requalify this native capture.
+    # The sealed Workbench receipt describes its captured checkpoint. Later
+    # source changes neither invalidate that history nor inherit its native
+    # qualification. Its separate --current-sources check requires byte equality.
     packet = root / "tests/reference/client/workbench_open_shutdown/packet.py"
     spec = importlib.util.spec_from_file_location("workbench_source_bindings", packet)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     result = module.audit_public()
-    print(f"Workbench capture bindings: {result['runtime_sources']} runtime, "
-          f"{result['harness_sources']} harness files")
+    print(f"Workbench historical capture: {result['runtime_sources']} runtime, "
+          f"{result['harness_sources']} harness files; no current-source qualification")
 
 
 def main():

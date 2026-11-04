@@ -4,6 +4,7 @@ import importlib.util
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 
 sys.dont_write_bytecode = True
@@ -24,10 +25,34 @@ class PacketTests(unittest.TestCase):
         with self.assertRaises((ValueError, KeyError, TypeError)):
             P.validate(document, P.ROOT if check_files else None)
 
-    def test_current_public_bindings(self):
+    def test_sealed_historical_public_receipt(self):
         result = P.audit_public()
         self.assertEqual(result['native_checks'], 7446)
         self.assertEqual(result['source_shutdown_or_pixel_comparisons'], 0)
+        self.assertFalse(result['current_source_qualification'])
+
+    def test_repaired_manifest_cannot_replace_sealed_capture(self):
+        document = copy.deepcopy(self.original)
+        name = next(iter(document['runtime_source_files']))
+        document['runtime_source_files'][name]['sha256'] = '0' * 64
+        document['runtime_source_digest'] = P.canonical(document['runtime_source_files'])
+        document['selected_execution_inputs']['digest'] = P.canonical({
+            **document['runtime_source_files'], **document['harness_source_files'], **{
+                'build-windows/' + n: v for n, v in document['selected_execution_inputs']['binaries'].items()}})
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'receipt.json'
+            path.write_text(json.dumps(document), encoding='utf-8')
+            with self.assertRaisesRegex(ValueError, 'sealed historical capture'):
+                P.audit_public(path)
+
+    def test_current_audit_rejects_none_root(self):
+        with self.assertRaisesRegex(ValueError, 'requires a directory'):
+            P.audit_current_sources(None)
+
+    def test_current_audit_requires_complete_runtime_inventory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaisesRegex(ValueError, 'all current runtime sources bound'):
+                P.audit_current_sources(directory)
 
     def test_receipt_without_private_inputs(self):
         self.assertEqual(P.validate(self.original)['profiles'], 4)

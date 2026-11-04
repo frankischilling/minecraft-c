@@ -5,8 +5,9 @@ Item, World, Inventory and held-item owners. Dirt uses the inherited BlockItem
 placement body. Interactive Blocks and distinct Item overrides retain their
 reached dependencies. Registered Hoes and Seeds execute their own
 [farming bodies](../item/farming-use.md), with separate predicates and Stack
-effects. Dye remains an explicit unsupported override. Combat and the Inventory
-screen have separate entry paths.
+effects. [Dye and bone meal](../item/dye-use.md) have their own Block-use bodies.
+[BlockItem metadata](../item/placement-metadata.md) now dispatches all six
+original overrides. Combat and the Inventory screen have separate entry paths.
 
 ## Source order
 

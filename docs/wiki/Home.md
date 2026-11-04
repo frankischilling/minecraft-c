@@ -5,16 +5,22 @@ ticks, draw terrain and Mobs, and reach mining, placement, pickup, crafting and
 save/reselection in finite Windows scenarios. Complete Beta 1.7.3 parity and
 unrestricted play remain unfinished. Single-player is the current focus.
 
+[BlockItem metadata](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/placement-metadata.md)
+now implements all six original placement overrides. Windows and sanitized
+Linux match 4,040 original scalar results across 202 Items and 38 classes;
+861 component checks include real Wool, Log and Leaves placement effects.
+Other predicates, hooks and Item drawing retain their unfinished scopes.
+
 The latest [EW metadata CPU result](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/chunk_cache_metadata.md)
 retains all 56 samples: median cost falls from 138.3064 to 16.6023 ns/read,
 87.995984% lower for the fixed getter workload. Its separate eight-attempt
 frame cohort remains FAIL: five intervals qualify and three lose foreground
 validity and end paused. The first paused baseline reports 39.18 raw FPS with
 zero World-time steps. No aggregate or passing-subset FPS gain or retry is
-claimed. Four current Workbench SDK profiles separately pass 7,446 checks in
+claimed. Four captured Workbench SDK profiles separately pass 7,446 checks in
 29.83 CTest seconds; all joins take one call with zero BUSY returns. The caller
 now follows the documented bounded native join protocol, while a natural
-BUSY-to-OK transition remains unobserved. Current public suites pass 674/674
+BUSY-to-OK transition remains unobserved. At that EW checkpoint, public suites pass 674/674
 Linux tests and 684/685 Windows tests; Windows fails only the Pig focus check,
 separate from the historical frustum failure. Both metadata CPU executables
 pass 6,342 fresh controls each on both hosts, with no new timing samples or FPS

@@ -1,5 +1,14 @@
 # World simulation
 
+## BlockItem placement metadata
+
+[The placement metadata rules](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/placement-metadata.md)
+now return signed damage for Wool/Slab/Log/Sapling, damage OR 8 for Leaves,
+and 7 for either Piston. The Stack damage read precedes even constant bodies.
+Windows and sanitized Linux match all 4,040 original scalar calls. Five real
+placement controls separately check complete returned values and stored
+nibbles, hooks, sound and count effects. Other Block dependencies remain.
+
 ## EW metadata work
 
 The [internal metadata accessor](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/chunk_cache_metadata.md)
@@ -13,7 +22,7 @@ three foreground/paused refusals. Their World-time/random/display counts are
 0, 60 and 129 against 195, 192 and 194 coordinator returns. No aggregate or
 passing-subset FPS gain or retry is claimed. The cause is not established.
 
-Four current Workbench shutdown profiles separately pass 7,446 checks in
+Four captured Workbench shutdown profiles separately pass 7,446 checks in
 29.83 CTest seconds with 1,979 inputs and 413 assets unchanged. The fixture's
 bounded BUSY-only native join supplies no Source frame, input, clock, getter
 or World progress. Controlled refusals and stopped-disk/window assertions

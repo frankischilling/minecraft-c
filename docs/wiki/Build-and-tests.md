@@ -1,5 +1,19 @@
 # Build and tests
 
+## Placement metadata comparison
+
+Two fresh unchanged original VMs agree on all 4,040 metadata calls across
+202 Items and 38 runtime classes. Windows MSVC Release and Linux Clang Debug
+ASan/UBSan match the full scalar/class transcript. Both hosts pass eight
+focused tests; Linux completes in 7.52 CTest seconds with leak detection and
+halt-on-error. Real Item-use controls pass 861 checks on each host, including
+five Wool/Log/Leaves placement prefixes and normal false-setter branches.
+
+The historical Workbench receipt is sealed and has 74 public controls.
+Its explicit `--current-sources` comparison still rejects source drift;
+later unrelated edits grant no new SDK qualification and need no replacement
+capture to keep the old evidence valid. No new FPS measurement is claimed.
+
 ## EW metadata CPU and frame scopes
 
 The [metadata guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/chunk_cache_metadata.md)
@@ -15,7 +29,7 @@ and end paused. Source/product/asset guards pass, but the cohort remains FAIL.
 No retry, aggregate or passing-subset gain estimate is claimed. Current public
 suite outcomes are recorded below; the CPU timing scope is unchanged.
 
-## Current Workbench native completion
+## Captured EW Workbench native completion
 
 Four Windows SDK profiles pass 7,446 checks in 29.83 CTest seconds. In
 Clean / Container / Player / World order, counts are 1,679 / 1,677 / 2,064 /
@@ -33,7 +47,7 @@ The earlier startup-resource-cleanup BUSY failure remains preserved; its exact
 child is unresolved, and a natural BUSY-to-OK transition remains unobserved.
 These results retain their native completion scope alongside the full suites.
 
-## Current EW public suites
+## EW checkpoint public suites
 
 Windows finishes 684/685 CTests in 247.42 seconds (255.9969 seconds outer).
 Only `client.world_selection_animals` fails: its Pig profile records Source

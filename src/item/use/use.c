@@ -22,6 +22,7 @@
 #include "mc/world/runtime/placement.h"
 #include "mc/world/runtime/presentation.h"
 #include "mc/world/storage/source_chunk_loader.h"
+#include "metadata_internal.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -473,33 +474,8 @@ static bool metadata(mc_item_use_call *c) {
     if (c->error.stack != MC_ITEM_STACK_OK)
         return fail(c, MC_ITEM_USE_STACK, "CK reached Stack damage method", true);
     at(c, "ck", use_block_descriptor, 159);
-    const char *owner = NULL;
-    switch (c->state.item->kind) {
-        case MC_ITEM_WOOL_BLOCK:
-            owner = "bi";
-            break;
-        case MC_ITEM_SLAB_BLOCK:
-            owner = "en";
-            break;
-        case MC_ITEM_LOG_BLOCK:
-            owner = "go";
-            break;
-        case MC_ITEM_SAPLING_BLOCK:
-            owner = "mr";
-            break;
-        case MC_ITEM_PISTON_BLOCK:
-            owner = "qr";
-            break;
-        case MC_ITEM_LEAVES_BLOCK:
-            owner = "uy";
-            break;
-        default:
-            break;
-    }
-    if (owner != NULL)
-        return unsupported(c, owner, "b", "(I)I");
-    /* GM.b(int) is literal zero, independent of the argument. */
-    c->state.metadata = 0;
+    if (!mc_item_placement_metadata(c->state.item->kind, c->state.damage, &c->state.metadata))
+        return fail(c, MC_ITEM_USE_ARGUMENT, "Item placement metadata concrete code owner", true);
     c->state.metadata_returned = true;
     return true;
 }

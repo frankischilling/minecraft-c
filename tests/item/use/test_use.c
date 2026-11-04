@@ -341,7 +341,7 @@ static bool adjustments_and_frontiers(fixture *f, mc_chunk_state *chunk) {
     /* Same inherited CK body for metadata subtypes. Count0 is handled before
      * their actual distinct metadata dispatch at CK159; it is not preflighted. */
     static const int32_t ids[] = {35, 44, 17, 6, 29, 18};
-    static const char *const owners[] = {"bi", "en", "go", "mr", "qr", "uy"};
+    static const int32_t metadata[] = {15, 15, 15, 15, 7, 15};
     for (size_t i = 0; i < sizeof ids / sizeof *ids; ++i) {
         CHECK(use_stack(ids[i], 0, 15, &stack));
         CHECK(mc_item_use_on_block_begin(f->registry, stack, NULL, f->world, 8, 64, 8, 6, &call,
@@ -350,21 +350,59 @@ static bool adjustments_and_frontiers(fixture *f, mc_chunk_state *chunk) {
         mc_item_stack_release(stack);
         CHECK(use_stack(ids[i], 1, 15, &stack));
         const mc_item_use_status status =
-            mc_item_use_on_block_begin(f->registry, stack, NULL, f->world, 8, 64, 8, 6, &call, &e);
-        /* Sapling/other real Block predicate overrides may stop at FD127
-         * before the later metadata body. Both are precise reached frontiers. */
+            mc_item_use_on_block_begin(f->registry, stack, NULL, f->world, 8, 128, 8, 6, &call, &e);
+        /* The ordinary out-of-height setter returns false after the real
+         * metadata dispatch. Sapling still reaches its earlier WB predicate. */
         CHECK(mc_item_use_inspect(call, &s) && !s.returned && s.predicate_entered &&
-              !s.setter_returned && !s.count_stored);
+              !s.count_stored && s.predicate_returned == (i != 3));
         if (s.predicate_returned) {
-            CHECK(status == MC_ITEM_USE_UNSUPPORTED && s.can_place && e.site.pc == 159 &&
-                  strcmp(e.child.class_name, owners[i]) == 0);
+            CHECK(status == MC_ITEM_USE_SOURCE_NULL && s.can_place && s.metadata_returned &&
+                  s.metadata == metadata[i] && s.damage == 15 && s.setter_returned &&
+                  !s.setter_value && s.result && e.site.pc == 34 && e.source_exception &&
+                  !e.native_policy && !s.sound_returned && !s.placed_face_returned);
         } else {
             CHECK(status == MC_ITEM_USE_WORLD && e.site.pc == 127 && e.placement != NULL &&
-                  e.placement->native_policy);
+                  e.placement->native_policy && !s.metadata_returned && !s.setter_returned);
         }
         CHECK(use_retire(&call));
         mc_item_stack_release(stack);
     }
+    return true;
+}
+
+static bool placement_metadata_controls(fixture *f, mc_chunk_state *chunk) {
+    static const struct {
+        int32_t id, damage, metadata;
+    } cases[] = {
+        {35, 13, 13}, {17, 2, 2}, {18, 1, 9}, {35, -1, -1}, {18, INT32_MIN, INT32_MIN + 8}};
+
+    const size_t index = ((size_t)8 * 16 + 8) * 128 + 64;
+    for (size_t i = 0; i < sizeof cases / sizeof *cases; ++i) {
+        chunk->data->blocks[index] = 0;
+        mc_item_stack *stack = NULL;
+        mc_item_use_call *call = NULL;
+        mc_item_use_state s;
+        mc_item_use_error e;
+        CHECK(use_stack(cases[i].id, 2, cases[i].damage, &stack));
+        /* NULL Player fails only at IZ's statistic invocation, after the
+         * complete placement, sound and count-store prefix has returned. */
+        CHECK(mc_item_use_on_block_begin(f->registry, stack, NULL, f->world, 8, 64, 8, 6, &call,
+                                         &e) == MC_ITEM_USE_SOURCE_NULL);
+        int32_t id, stored, count;
+        CHECK(mc_item_use_inspect(call, &s) && !s.returned && s.result && s.metadata_returned &&
+              s.damage == cases[i].damage && s.metadata == cases[i].metadata && s.setter_returned &&
+              s.setter_value && s.placed_face_returned && s.placed_by_returned &&
+              s.sound_returned && s.count_stored && s.count_after == 1 && e.site.pc == 34 &&
+              e.source_exception && !e.native_policy &&
+              mc_item_stack_source_count_get(stack, &count) == MC_ITEM_STACK_OK && count == 1 &&
+              mc_world_runtime_block_get(f->world, 8, 64, 8, &id, NULL) == MC_WORLD_STORAGE_OK &&
+              id == cases[i].id &&
+              mc_world_runtime_metadata_get(f->world, 8, 64, 8, &stored, NULL) ==
+                  MC_WORLD_STORAGE_OK &&
+              stored == (cases[i].metadata & 15) && use_retire(&call));
+        mc_item_stack_release(stack);
+    }
+    chunk->data->blocks[index] = 0;
     return true;
 }
 
@@ -612,7 +650,7 @@ static bool use_controls(fixture *f) {
     const mc_chunk_acquire_context *acquisition = mc_world_runtime_acquisition(f->world);
     CHECK(state != NULL && acquisition != NULL &&
           mc_chunk_cache_publish(acquisition->cache, 0, 0, state));
-    CHECK(adjustments_and_frontiers(f, state));
+    CHECK(adjustments_and_frontiers(f, state) && placement_metadata_controls(f, state));
     mc_player_session *session = NULL;
     mc_entity *player = NULL;
     CHECK(mc_player_session_create(f->sessions, NULL, NULL, &session, NULL) == MC_PLAYER_OK &&

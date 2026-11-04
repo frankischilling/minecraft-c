@@ -1,5 +1,19 @@
 # History
 
+## BlockItem placement metadata
+
+The six original metadata overrides now run inside the ordinary BlockItem
+placement body. Two fresh original VMs repeat 4,040 signed scalar calls;
+Windows and sanitized Linux match every result and all 202 Item class rows.
+Both hosts pass eight focused tests and 861 real Item-use checks. The first
+native replay exposed a Bucket class-label error in its observer, corrected
+without changing runtime behavior; the failed output remains retained.
+
+The previous Workbench capture stays sealed historical evidence. Its 74
+public controls retain strict receipt validation, while an explicit source
+comparison still rejects the new runtime. No new Workbench SDK or FPS result
+is claimed.
+
 ## EW metadata diagnostics and separate frame refusal
 
 The [metadata CPU receipt](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/chunk_cache_metadata_windows.json)
@@ -14,7 +28,7 @@ while three lose native foreground validity and end paused. One reports
 is retained; no retry, aggregate or passing-subset FPS gain is claimed, and
 the cause is not established. The earlier failed cohort below stays separate.
 
-Four current Windows Workbench profiles separately pass 7,446 checks in
+Four captured Windows Workbench profiles separately pass 7,446 checks in
 29.83 CTest seconds, preserving 1,979 selected inputs and 413 assets. The
 fixture now drives the documented bounded BUSY-only native join without
 changing controlled refusals, Source progress or window/disk assertions.
