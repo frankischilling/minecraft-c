@@ -58,6 +58,23 @@ static int perf_pose(fixture *f, const char *stage) {
     return 0;
 }
 
+/* Copy completed-loop counters and live World time outside the timed section.
+ * Returned World coordinators alone do not prove unpaused simulation work. */
+static void perf_work(fixture *f, const char *stage) {
+    const mc_world_runtime *world = f->app->active_world;
+    int64_t time = 0;
+    const bool present = world != NULL && world->fields.x != NULL &&
+                         mc_world_info_time_get(world->fields.x, &time) == MC_WORLD_INFO_OK;
+    printf("PERF_WORK stage=%s present=%d main-ticks=%" PRIu64 " world-ticks=%" PRIu64
+           " world-draws=%" PRIu64 " world-time=%" PRId64 " paused=%d random-calls=%" PRIu64
+           " random-samples=%" PRIu64 " display-calls=%" PRIu64 " display-samples=%" PRIu64
+           " display-random=%" PRIu64 "\n",
+           stage, (int)present, f->state.ticks, f->state.world_tick_returns, f->state.world_draws,
+           time, (int)atomic_load(&f->app->o), f->state.random_chunk_calls,
+           f->state.random_chunk_samples, f->state.random_display_calls,
+           f->state.random_display_samples, f->state.random_display_random_calls);
+}
+
 /* No raw Chunk/provider/cache binding occurs on this setup path. Existing
  * selected-world helpers are used only for real SDK selection/focus/input.
  * reload_capture_epoch is scalar/identity inspection, not a binding export. */
@@ -215,6 +232,7 @@ static int perf_run(fixture *f) {
     CHECK(perf_cache_receipt(f, "warmup-returned") == 0);
     CHECK(perf_pose(f, "timed-entry") == 0);
     const uint64_t ticks_before = f->state.world_tick_returns;
+    perf_work(f, "timed-entry");
     FILETIME pc0, pe0, pk0, pu0, pc1, pe1, pk1, pu1;
     CHECK(GetProcessTimes(GetCurrentProcess(), &pc0, &pe0, &pk0, &pu0));
     CHECK(perf_qpc(&start));
@@ -284,6 +302,7 @@ static int perf_run(fixture *f) {
     CHECK(perf_cache_receipt(f, "timed-returned") == 0);
     CHECK(perf_pose(f, "timed-returned") == 0);
     CHECK(mc_client_menu_loop_inspect(f->loop, &f->state));
+    perf_work(f, "timed-returned");
     size_t focus_invalid = 0;
     for (size_t i = 0; i < count; ++i)
         if (!(rows[i].flags & SDL_WINDOW_INPUT_FOCUS) ||

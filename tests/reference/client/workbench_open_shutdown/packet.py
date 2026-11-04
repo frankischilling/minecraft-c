@@ -1,4 +1,4 @@
-"""Java-free audit of the bounded live-open Workbench native receipt."""
+"""Schema 2 live-open Workbench receipt, including actual bounded bootstrap join."""
 import argparse
 import hashlib
 import json
@@ -8,9 +8,9 @@ import re
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[3]
 PROFILES = ('clean', 'container', 'player', 'world')
-CHECKS = dict(zip(PROFILES, (1722, 1741, 2045, 2066)))
-SECONDS = dict(zip(PROFILES, (7.55, 7.56, 7.45, 7.7)))
-ENTITY_COUNTS = dict(zip(PROFILES, (13, 14, 16, 19)))
+CHECKS = dict(zip(PROFILES, (1679, 1677, 2064, 2026)))
+SECONDS = dict(zip(PROFILES, (7.57, 7.31, 7.33, 7.59)))
+ENTITY_COUNTS = dict(zip(PROFILES, (6, 6, 21, 14)))
 SAVE_COUNTS = dict(zip(PROFILES, (12, 12, 12, 12)))
 FOCUSED_CASES = [
     {'name': 'client.world_save_title', 'status': 'PASS', 'seconds': 16.60},
@@ -33,6 +33,8 @@ PRECEDING_OBSERVATION = (
     'The test wait was corrected to consume actual serial input events; unrestricted input '
     'timing remains unqualified.')
 SUFFIXES = ('.c', '.h', '.inc', '.cmake', '.py')
+# Filled only by the private publisher from four genuine fresh native captures.
+JOIN_RECEIPTS = {'clean': [{'profile': 'clean', 'attempts': '1', 'busy': '0', 'limit': '35000', 'status': '0', 'slot-null': '1'}], 'container': [{'profile': 'container', 'attempts': '1', 'busy': '0', 'limit': '35000', 'status': '0', 'slot-null': '1'}], 'player': [{'profile': 'player', 'attempts': '1', 'busy': '0', 'limit': '35000', 'status': '0', 'slot-null': '1'}], 'world': [{'profile': 'world', 'attempts': '1', 'busy': '0', 'limit': '35000', 'status': '0', 'slot-null': '1'}]}
 
 
 def require(value, message):
@@ -83,7 +85,27 @@ def manifest(value, count, label):
                 hash_string(entry['sha256']), label + ' exact bytes/hash')
 
 
-def expected_receipts(profile, checks):
+def validate_join(records, profile):
+    """Check one actual bounded BUSY-only join, without assuming its attempt count."""
+    require(type(records) is list and len(records) == 1, 'one mandatory JOIN receipt')
+    row = records[0]
+    keys(row, 'profile attempts busy limit status slot-null', 'JOIN')
+    require(all(type(value) is str for value in row.values()), 'JOIN typed string fields')
+    require(profile in PROFILES and row['profile'] == profile and row['limit'] == '35000' and
+            row['status'] == '0' and row['slot-null'] == '1', 'JOIN actual consumed owner')
+    require(re.fullmatch('[1-9][0-9]*', row['attempts']) is not None and
+            re.fullmatch('0|[1-9][0-9]*', row['busy']) is not None,
+            'JOIN canonical unsigned decimal counts')
+    attempts, busy = int(row['attempts']), int(row['busy'])
+    require(1 <= attempts <= 35000 and busy == attempts - 1,
+            'JOIN successful call follows only bounded BUSY replies')
+    return records
+
+
+def expected_receipts(profile, checks, join):
+    validate_join(join, profile)
+    require(type(JOIN_RECEIPTS) is dict and set(JOIN_RECEIPTS) == set(PROFILES) and
+            join == JOIN_RECEIPTS[profile], 'exact actual captured JOIN counts')
     busy = []
     if profile == 'container':
         busy = [{'profile': profile, 'phase': 'pre-transfer', 'source-unchanged': '1',
@@ -108,6 +130,7 @@ def expected_receipts(profile, checks):
                      'released': 'none' if profile == 'clean' else profile, 'same-it': '1'}],
         'terminal': [{'profile': profile, 'native-prepare': '1', 'source-close': '0',
                       'source-save': '0', 'unchanged': '1'}],
+        'join': join,
         'finish': [{'profile': profile, 'native-cleanup': '1', 'windows-absent': '1',
                     'source-close': '0', 'source-save': '0', 'checks': str(checks)}],
     }
@@ -133,6 +156,7 @@ def project_profile(directory, seconds):
     require(execution['mode'] == 'workbench-open' and execution['event'] == 'result' and
             execution['exit_code'] == 0, 'retained native process exit')
     receipts = json.loads(json.dumps(source['receipts']))
+    validate_join(receipts.get('join'), profile)
     prepare = receipts['prepare'][0]
     require(set(prepare) == {'profile', 'returned', 'source-unchanged', 'world-ticks',
                             'stacks', 'entities', 'randoms', 'r', 'e', 'j'} and
@@ -168,12 +192,12 @@ def validate(document, root=None):
          'harness_source_files harness_source_count harness_source_digest selected_execution_inputs '
          'imported_resources cohort authored_scene assertions profiles failed_cohorts_preserved '
          'intervening_focused_cohort preceding_sdk_cohort limits', 'document')
-    require(type(document['schema']) is int and document['schema'] == 1 and
+    require(type(document['schema']) is int and document['schema'] == 2 and
             document['status'] == 'PASS', 'schema and status')
     public_wire = json.dumps(document)
     require(re.search(r'[A-Za-z]:[\\/]|\\\\Users\\\\|/home/|file://', public_wire) is None,
             'no private absolute paths')
-    for group, count in (('runtime', 1450), ('harness', 526)):
+    for group, count in (('runtime', 1450), ('harness', 527)):
         files = document[group + '_source_files']
         manifest(files, count, group)
         require(document[group + '_source_count'] == count and
@@ -188,7 +212,7 @@ def validate(document, root=None):
     keys(execution, 'count source_count binaries digest', 'execution inputs')
     manifest(execution['binaries'], 2, 'native binaries')
     require(set(execution['binaries']) == {'mc_test_workbench_open_shutdown.exe', 'OpenAL32.dll'} and
-            execution['count'] == 1978 and execution['source_count'] == 1976 and
+            execution['count'] == 1979 and execution['source_count'] == 1977 and
             execution['digest'] == canonical({**runtime, **harness, **{
                 'build-windows/' + name: value for name, value in execution['binaries'].items()}}),
             'complete selected input manifest')
@@ -197,7 +221,7 @@ def validate(document, root=None):
     require(resources['count'] == 413 and hash_string(resources['digest']), 'resource count/digest')
     cohort = document['cohort']
     keys(cohort, 'passed total_seconds private_log_sha256', 'cohort')
-    require(cohort['passed'] == 4 and cohort['total_seconds'] == 30.28 and
+    require(cohort['passed'] == 4 and cohort['total_seconds'] == 29.83 and
             hash_string(cohort['private_log_sha256']), 'four-profile measured cohort')
     require(document['authored_scene'] == {
         'inventory': [[0, 270, 1, 0], [9, 17, 2, 0], [10, 5, 7, 0]],
@@ -224,7 +248,7 @@ def validate(document, root=None):
                 record['live_source_window_capture'] is True and
                 record['selected_inputs_unchanged'] is True and record['resources_unchanged'] is True,
                 'actual capture and unchanged inputs')
-        require(record['receipts'] == expected_receipts(profile, record['checks']) and
+        require(record['receipts'] == expected_receipts(profile, record['checks'], record['receipts'].get('join')) and
                 record['receipts_digest'] == canonical(record['receipts']), 'strict sanitized source receipts')
         saved = record['stopped_save_files']
         require(len(saved) == SAVE_COUNTS[profile] and all(relative_name(n) and hash_string(h) for n, h in saved.items()) and
@@ -302,8 +326,8 @@ def validate(document, root=None):
             path = root / name
             require(path.is_file() and path.stat().st_size == expected['bytes'] and
                     digest(path) == expected['sha256'], 'unchanged selected source ' + name)
-    return {'profiles': 4, 'runtime_sources': 1450, 'harness_sources': 526,
-            'selected_inputs': 1978, 'resources': 413, 'native_checks': sum(CHECKS.values()),
+    return {'profiles': 4, 'runtime_sources': 1450, 'harness_sources': 527,
+            'selected_inputs': 1979, 'resources': 413, 'native_checks': sum(CHECKS.values()),
             'historical_failures': 3, 'intervening_failed_sdk_profiles': 2,
             'preceding_failed_sdk_profiles': 1,
             'source_shutdown_or_pixel_comparisons': 0}
@@ -365,8 +389,8 @@ def audit_cohort_log(path):
                           r'\s+\.+\s+Passed\s+' + re.escape(f'{seconds:.2f}') + r' sec', wire),
                 'actual CTest profile time ' + profile)
     require('100% tests passed, 0 tests failed out of 4' in wire and
-            re.search(r'Total Test time \(real\) =\s+30\.28 sec', wire), 'actual four-profile total')
-    return {'passed': 4, 'seconds': 30.28}
+            re.search(r'Total Test time \(real\) =\s+29\.83 sec', wire), 'actual four-profile total')
+    return {'passed': 4, 'seconds': 29.83}
 
 
 if __name__ == '__main__':

@@ -1,13 +1,66 @@
 # History
 
+## EW metadata diagnostics and separate frame refusal
+
+The [metadata CPU receipt](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/chunk_cache_metadata_windows.json)
+retains 950 unchanged original-reference rows, 3,541 native checks, 26 CPU cases
+and 56 measured samples. A shared caller measures median 9.06405 versus
+1.08805 ms per 65,536 reads, an 87.995984% reduction. This is fixed-work getter
+cost, with no new original-reference or memory-traffic claim.
+
+Its separate eight-attempt frame cohort remains FAIL: five intervals qualify,
+while three lose native foreground validity and end paused. One reports
+39.18 raw FPS with zero World-time steps. Every attempt and continuity guard
+is retained; no retry, aggregate or passing-subset FPS gain is claimed, and
+the cause is not established. The earlier failed cohort below stays separate.
+
+Four current Windows Workbench profiles separately pass 7,446 checks in
+29.83 CTest seconds, preserving 1,979 selected inputs and 413 assets. The
+fixture now drives the documented bounded BUSY-only native join without
+changing controlled refusals, Source progress or window/disk assertions.
+The earlier one-call failure returned BUSY in startup resource cleanup; its
+exact child remains undistinguished. Current four-profile and separate
+three-clean regression joins all take one call with zero BUSY returns, so a
+natural BUSY-to-OK transition remains unobserved. The guard records zero input
+timestamp changes and the monitor one, without human or input-free attribution.
+Current public suites subsequently finish at 684/685 Windows CTests in
+247.42 seconds and 674/674 Linux Clang 18 Debug ASan/UBSan CTests in
+147.72 seconds. Windows fails only the Pig focus check, with Source focus 0,
+paused 1, display-active 0 and `msrdc.exe` / `TscShellContainerClass` recorded
+as foreground; it is separate from the historical frustum failure. Three
+passive input-timestamp changes identify neither a human nor a cause.
+Each cohort preserves 4,767 source inputs, 638 products and 413 assets with
+no drift or observer errors. Both metadata CPU executables pass 6,342 fresh
+controls each on both hosts with no timing samples. Earlier timing results,
+failed frame cohorts and full-suite observations keep their separate scopes;
+there is no full Windows pass or new FPS claim.
+
+## Frame work ledger and retained failed cohort
+
+The frame observer now records completed main/World work, live World time,
+paused state and random/display counters at the timed boundaries. Current
+comparison admission requires advancing unpaused simulation, at least ten
+seconds, complete focus/cleanup, finite identical endpoint pose and matching
+save/assets/graphics identity across every profile. It keeps individual
+zero-tick frames and permits different natural work totals.
+
+The [new eight-attempt cohort](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/client_frame_work_qualification_windows.json)
+remains FAIL. Seven profiles pass; round 1 current fails focus/native foreground
+and ends paused, with 191 World coordinator returns, 189 World-time steps
+and 189 calls each to random-Chunk and random-display work. All attempts and
+exact continuity guards remain retained.
+No retry or aggregate/subset gain estimate is claimed. Legacy frame-only
+captures below retain their own observations and receive no new work-ledger
+comparison credit. This adds no original-game parity result.
+
 ## Registry selection, validation and progress ownership
 
 The current performance revision replaces two 96-name Block selector scans with
 a shared bounded decoder while retaining active use, live nullable cells and
 complete errors. Four alternating Windows rounds/eight fresh processes measure
 168.526 to 28.962 ns/get, with 1,011 controls per process. The selected larger-map
-validator improves mixed-key medians by 93.703–97.323%, with deliberate collision
-regressions of 2.592–7.552%. Earlier rejected candidates and their complete
+validator improves mixed-key medians by 93.703â€“97.323%, with deliberate collision
+regressions of 2.592â€“7.552%. Earlier rejected candidates and their complete
 histories stay retained. These CPU measurements establish no current scene-FPS
 or full-parity result.
 
@@ -159,7 +212,7 @@ Windows comparisons match 19,594 six-result mining rows, 2,331 destruction rows
 and six original controller scenarios. Details: [query measurements](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/world-queries.md)
 and [held Item mining](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/mining.md).
 
-One valid matched Windows Tiny sky-view pair measures 5.37 to 19.95 FPS and
+A legacy frame-only Windows Tiny sky-view pair records 5.37 to 19.95 FPS and
 p95 host frame time of 625.66 to 109.69 ms. A later three-round cohort contains
 two invalid baseline intervals and has no aggregate speedup result. The public
 toolkit's current-client run passes at 20.88 FPS. All 632 Linux sanitizer public

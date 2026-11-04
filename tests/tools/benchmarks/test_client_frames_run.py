@@ -1,5 +1,6 @@
 """Check frame-observation parsing without a display or imported resources."""
 import importlib.util
+import copy
 import hashlib
 import json
 from pathlib import Path
@@ -13,6 +14,19 @@ SPEC = importlib.util.spec_from_file_location(
 FRAMES = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(FRAMES)
 
+# Include the retained native cohort in the configured frame-observation suite.
+WORK_SPEC = importlib.util.spec_from_file_location(
+    'client_frame_work_qualification', Path(__file__).with_name('test_client_frame_work_qualification.py'))
+WORK = importlib.util.module_from_spec(WORK_SPEC)
+WORK_SPEC.loader.exec_module(WORK)
+ClientFrameWorkQualificationTests = WORK.ClientFrameWorkQualificationTests
+
+METADATA_FRAME_SPEC = importlib.util.spec_from_file_location(
+    'chunk_cache_metadata_frames', Path(__file__).with_name('test_chunk_cache_metadata_frames.py'))
+METADATA_FRAMES = importlib.util.module_from_spec(METADATA_FRAME_SPEC)
+METADATA_FRAME_SPEC.loader.exec_module(METADATA_FRAMES)
+ChunkCacheMetadataFramesTests = METADATA_FRAMES.ChunkCacheMetadataFramesTests
+
 
 def receipt(version=2):
     rows = [
@@ -23,19 +37,229 @@ def receipt(version=2):
     ]
     wire = [
         f'PERF_RESULT row-version={version} qpc-hz=1000 start=999 end=1200 frames=2 '
-        'healthy=1 capacity=0 focus-invalid=0',
-        'PERF_CONTEXT view-distance=3',
+        'world-ticks=1 healthy=1 capacity=0 focus-invalid=0',
+        'PERF_CONTEXT major=3 minor=3 profile=1 swap-zero=1 width=854 height=480 '
+        'view-distance=3 performance-mode=1',
+        'PERF_GPU_VENDOR test vendor',
+        'PERF_GPU_RENDERER test renderer',
+        'PERF_GPU_VERSION test version',
         'PERF_FINISH cleanup=1',
         'PERF_CACHE stage=before-selection present=0',
     ]
     for stage in ('first-loaded', 'setup-returned', 'warmup-returned', 'timed-returned'):
         wire.append(f'PERF_CACHE stage={stage} present=1 owned=1 raw-exports=0 mutation-depth=0')
     for stage in ('pre-warmup', 'timed-entry', 'timed-returned'):
-        wire.append(f'PERF_POSE stage={stage} yaw=43340000 pitch=c1f00000')
+        wire.append(f'PERF_POSE stage={stage} x=3fe0000000000000 y=405067ae147ae148 '
+                    'z=3fe0000000000000 yaw=43340000 pitch=c1f00000')
     wire.append('PERF_FOREGROUND frame=7 hwnd=42 pid=100 own-pid=100')
     for row in rows:
         wire.append('PERF_ROW ' + ','.join(map(str, row[:16] if version == 1 else row)))
     return '\n'.join(wire)
+
+
+def edit_rows(wire, change):
+    lines = wire.splitlines()
+    indices = [i for i, line in enumerate(lines) if line.startswith('PERF_ROW ')]
+    rows = [[int(v) for v in lines[i].split(' ', 1)[1].split(',')] for i in indices]
+    change(rows)
+    for index, row in zip(indices, rows):
+        lines[index] = 'PERF_ROW ' + ','.join(map(str, row))
+    return '\n'.join(lines)
+
+
+def work_receipt(wire=None):
+    wire = receipt() if wire is None else wire
+    wire = wire.replace('end=1200', 'end=11000')
+    def longer(rows):
+        rows[0][2] = 6000
+        rows[1][1:3] = [6001, 11000]
+    wire = edit_rows(wire, longer)
+    rows = [[int(v) for v in line.split(' ', 1)[1].split(',')]
+            for line in wire.splitlines() if line.startswith('PERF_ROW ')]
+    result = FRAMES.fields(wire.splitlines()[0])
+    world = int(result['world-ticks'])
+    for stage, main, returned, draws, time, calls in (
+            ('timed-entry', rows[0][13] - rows[0][7], rows[-1][14] - world,
+             rows[0][15] - 1, 6000, 1),
+            ('timed-returned', rows[-1][13], rows[-1][14], rows[-1][15], 6000 + world, 1 + world)):
+        wire += (f'\nPERF_WORK stage={stage} present=1 main-ticks={main} world-ticks={returned} '
+                 f'world-draws={draws} world-time={time} paused=0 random-calls={calls} '
+                 f'random-samples={calls * 28880} display-calls={calls} '
+                 f'display-samples={calls * 1000} display-random={calls * 6000}')
+    return wire
+
+
+class FrameWorkObservations(unittest.TestCase):
+    def test_independent_work_checkpoints_qualify(self):
+        summary = FRAMES.summarize(work_receipt())
+        self.assertTrue(summary['comparison_qualified'])
+        self.assertTrue(summary['work_ledger']['simulation_advanced'])
+        self.assertEqual(summary['work_ledger']['world_time_delta'], 1)
+        self.assertEqual(summary['work_ledger']['world_draws_proved'], 2)
+        self.assertEqual(summary['work_ledger']['main_ticks'], 1)
+
+    def test_main_and_world_counts_need_not_be_equal(self):
+        def unequal(rows):
+            rows[0][6:8], rows[1][6:8] = [2, 2], [3, 3]
+            rows[0][13:16], rows[1][13:16] = [12, 4, 6], [15, 5, 7]
+        wire = edit_rows(receipt().replace('world-ticks=1', 'world-ticks=2'), unequal)
+        summary = FRAMES.summarize(work_receipt(wire))
+        self.assertTrue(summary['comparison_qualified'])
+        self.assertEqual(summary['work_ledger']['main_ticks'], 5)
+        self.assertEqual(summary['work_ledger']['world_coordinator_returns'], 2)
+
+    def test_zero_tick_data_retained_without_comparison_credit(self):
+        def zero(rows):
+            for row in rows:
+                row[6:8], row[13:15] = [0, 0], [25, 20]
+        wire = edit_rows(receipt().replace('world-ticks=1', 'world-ticks=0'), zero)
+        result = FRAMES.summarize(work_receipt(wire))
+        self.assertTrue(result['valid_focused_Tiny_interval'])
+        self.assertFalse(result['comparison_qualified'])
+        self.assertEqual(result['work_ledger']['main_ticks'], 0)
+        self.assertEqual(result['work_ledger']['world_entry'], 20)
+
+    def test_world_returns_are_not_world_time_or_random_work(self):
+        wire = work_receipt()
+        for before, after in (('world-time=6001', 'world-time=6000'),
+                              ('paused=0', 'paused=1'),
+                              ('random-samples=57760', 'random-samples=28880'),
+                              ('display-samples=2000', 'display-samples=1000'),
+                              ('PERF_WORK stage=timed-returned present=1',
+                               'PERF_WORK stage=timed-returned present=0')):
+            with self.subTest(after=after):
+                result = FRAMES.summarize(wire.replace(before, after))
+                self.assertTrue(result['valid_focused_Tiny_interval'])
+                self.assertFalse(result['comparison_qualified'])
+
+    def test_positive_main_ticks_without_world_return(self):
+        wire = edit_rows(receipt().replace('world-ticks=1', 'world-ticks=0'),
+                         lambda rows: [r.__setitem__(14, 1) for r in rows])
+        result = FRAMES.summarize(work_receipt(wire))
+        self.assertEqual(result['work_ledger']['main_ticks'], 1)
+        self.assertFalse(result['comparison_qualified'])
+
+    def test_completed_counter_corruptions_are_rejected(self):
+        wire = work_receipt()
+        mutations = [(0, 6, 11), (0, 7, 0), (0, 13, -1), (1, 13, 3),
+                     (1, 14, 1), (1, 14, 4), (1, 15, 2), (1, 15, 4),
+                     (0, 13, 1 << 64)]
+        for row, column, value in mutations:
+            with self.subTest(row=row, column=column, value=value), self.assertRaises(ValueError):
+                FRAMES.summarize(edit_rows(wire, lambda rows: rows[row].__setitem__(column, value)))
+        for value in (0, 4, 5, 1 << 64):
+            with self.subTest(world_delta=value), self.assertRaises(ValueError):
+                FRAMES.summarize(wire.replace('world-ticks=1 healthy=', f'world-ticks={value} healthy='))
+
+    def test_checkpoint_baseline_and_schema_corruptions(self):
+        wire = work_receipt()
+        for before, after in (('main-ticks=1', 'main-ticks=0'),
+                              ('world-draws=1', 'world-draws=0'),
+                              ('world-time=6001', 'world-time=9223372036854775808'),
+                              ('display-random=12000', 'display-random=1'),
+                              ('PERF_WORK stage=timed-entry present=1',
+                               'PERF_WORK stage=timed-entry present=2'),
+                              ('stage=timed-entry present=', 'stage=other present=')):
+            with self.subTest(after=after), self.assertRaises(ValueError):
+                FRAMES.summarize(wire.replace(before, after))
+        lines = [line for line in wire.splitlines() if not line.startswith('PERF_WORK stage=timed-entry')]
+        with self.assertRaises(ValueError):
+            FRAMES.summarize('\n'.join(lines))
+
+    def test_negative_timer_value_with_zero_returns_is_source_valid(self):
+        wire = edit_rows(receipt(), lambda rows: rows[1].__setitem__(6, -1))
+        result = FRAMES.summarize(work_receipt(wire))
+        self.assertTrue(result['comparison_qualified'])
+
+    def test_failed_partial_prefix_keeps_its_distinct_scope(self):
+        wire = edit_rows(work_receipt().replace('healthy=1', 'healthy=0'),
+                         lambda rows: rows[1].__setitem__(14, 4))
+        result = FRAMES.summarize(wire)
+        self.assertFalse(result['comparison_qualified'])
+        self.assertFalse(result['work_ledger']['completed'])
+
+    def test_legacy_frames_lack_independent_simulation_evidence(self):
+        result = FRAMES.summarize(receipt(1))
+        self.assertTrue(result['valid_focused_Tiny_interval'])
+        self.assertFalse(result['comparison_qualified'])
+
+    def test_duration_and_full_endpoint_pose_are_required(self):
+        result = FRAMES.summarize(receipt())
+        self.assertFalse(result['measurement_at_least_ten_seconds'])
+        wire = work_receipt()
+        def shorter(rows):
+            rows[0][2], rows[1][1:3] = 1100, [1101, 1200]
+        short = edit_rows(wire.replace('end=11000', 'end=1200'), shorter)
+        result = FRAMES.summarize(short)
+        self.assertTrue(result['work_ledger']['simulation_advanced'])
+        self.assertTrue(result['full_endpoint_pose_retained'])
+        self.assertFalse(result['comparison_qualified'])
+        for axis in ('x', 'y', 'z'):
+            lines = wire.splitlines()
+            index = next(i for i, line in enumerate(lines) if line.startswith('PERF_POSE stage=timed-returned'))
+            values = FRAMES.fields(lines[index])
+            lines[index] = lines[index].replace(f"{axis}={values[axis]}", f'{axis}=0000000000000000')
+            with self.subTest(axis=axis):
+                result = FRAMES.summarize('\n'.join(lines))
+                self.assertTrue(result['valid_focused_Tiny_interval'])
+                self.assertFalse(result['comparison_qualified'])
+
+    def test_either_unqualified_member_rejects_whole_cohort(self):
+        observation = {'status': 'PASS', 'summary': FRAMES.summarize(work_receipt()),
+                       'save_before': {'world': 'same'}, 'assets_before': {'assets': 'same'}}
+        profiles = [{'driver_exit': 0, 'observation': copy.deepcopy(observation)} for _ in range(2)]
+        self.assertEqual(FRAMES.qualify_cohort(profiles)['status'], 'PASS')
+        for index in range(2):
+            changed = copy.deepcopy(profiles)
+            changed[index]['observation']['summary']['comparison_qualified'] = False
+            self.assertEqual(FRAMES.qualify_cohort(changed)['status'], 'FAIL')
+            self.assertEqual(len(changed), 2)
+        for key in ('save_before', 'assets_before'):
+            changed = copy.deepcopy(profiles)
+            changed[1]['observation'][key]['extra'] = 'changed'
+            self.assertEqual(FRAMES.qualify_cohort(changed)['status'], 'FAIL')
+        for key in ('context', 'gpu'):
+            changed = copy.deepcopy(profiles)
+            changed[1]['observation']['summary'][key]['changed'] = True
+            self.assertEqual(FRAMES.qualify_cohort(changed)['status'], 'FAIL')
+
+    def test_world_time_uses_java_long_wrapping(self):
+        wire = work_receipt().replace('world-time=6000', f'world-time={(1 << 63) - 1}')
+        wire = wire.replace('world-time=6001', f'world-time={-(1 << 63)}')
+        result = FRAMES.summarize(wire)
+        self.assertEqual(result['work_ledger']['world_time_delta'], 1)
+        self.assertTrue(result['comparison_qualified'])
+
+    def test_missing_or_duplicate_checkpoint_keeps_no_comparison_credit(self):
+        wire = work_receipt()
+        legacy = '\n'.join(line for line in wire.splitlines() if not line.startswith('PERF_WORK '))
+        result = FRAMES.summarize(legacy)
+        self.assertTrue(result['valid_focused_Tiny_interval'])
+        self.assertFalse(result['comparison_qualified'])
+        duplicate = wire + '\n' + next(line for line in wire.splitlines() if line.startswith('PERF_WORK '))
+        with self.assertRaisesRegex(ValueError, 'schema/order'):
+            FRAMES.summarize(duplicate)
+
+    def test_fixed_pose_requires_finite_complete_positions(self):
+        wire = work_receipt()
+        for value in ('7ff8000000000000', '7ff0000000000000', '00000000', 'invalid'):
+            with self.subTest(value=value):
+                result = FRAMES.summarize(wire.replace('x=3fe0000000000000', f'x={value}'))
+                self.assertTrue(result['valid_focused_Tiny_interval'])
+                self.assertFalse(result['comparison_qualified'])
+
+    def test_complete_graphics_identity_is_required(self):
+        wire = work_receipt()
+        for prefix in ('PERF_CONTEXT ', 'PERF_GPU_VENDOR ', 'PERF_GPU_RENDERER ', 'PERF_GPU_VERSION '):
+            if prefix == 'PERF_CONTEXT ':
+                changed = wire.replace('width=854 ', '')
+            else:
+                changed = '\n'.join(line for line in wire.splitlines() if not line.startswith(prefix))
+            with self.subTest(prefix=prefix):
+                result = FRAMES.summarize(changed)
+                self.assertTrue(result['valid_focused_Tiny_interval'])
+                self.assertFalse(result['comparison_qualified'])
+        self.assertEqual(FRAMES.qualify_cohort([])['status'], 'FAIL')
 
 
 class FrameObservations(unittest.TestCase):

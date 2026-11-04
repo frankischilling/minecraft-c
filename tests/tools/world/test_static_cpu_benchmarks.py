@@ -1,5 +1,6 @@
 """Historical CPU receipt audit and corruption controls; no native execution."""
 import copy
+import importlib.util
 import json
 from pathlib import Path
 import subprocess
@@ -9,6 +10,14 @@ import unittest
 from unittest import mock
 
 import benchmark_static_cpu as benchmark
+
+# Keep the metadata receipt in the configured CPU benchmark audit suite.
+METADATA_SPEC = importlib.util.spec_from_file_location(
+    'chunk_cache_metadata_receipt',
+    Path(__file__).resolve().parents[1] / 'benchmarks/test_chunk_cache_metadata.py')
+METADATA = importlib.util.module_from_spec(METADATA_SPEC)
+METADATA_SPEC.loader.exec_module(METADATA)
+ChunkCacheMetadataTests = METADATA.ChunkCacheMetadataTests
 
 CAPTURE_DIGESTS = {
     "block_ready_final": "9f5087d049cbc1004354e96b095aca89aaa3bab527f67ea3b71d17ed3d508507",

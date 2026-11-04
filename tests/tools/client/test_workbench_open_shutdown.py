@@ -42,7 +42,7 @@ def metadata(mining, selected, world, name):
 
 def receipts(mining, stdout, profile):
     values = {name: mining.rows(stdout, 'WORKBENCH_OPEN_' + name.upper()) for name in
-              ('setup', 'prepare', 'transfer', 'denials', 'busy', 'release', 'terminal', 'finish')}
+              ('setup', 'prepare', 'transfer', 'denials', 'busy', 'release', 'terminal', 'join', 'finish')}
     require(values['setup'] == [{'sdk-open': '1', 'sdk-grid': '1', 'sdk-cursor': '1',
             'result-preview': '1', 'actual-aliases': '1'}], 'Genuine SDK live Workbench scene')
     prepare = values['prepare']
@@ -74,6 +74,15 @@ def receipts(mining, stdout, profile):
     require(values['terminal'] == [{'profile': profile, 'native-prepare': '1',
             'source-close': '0', 'source-save': '0', 'unchanged': '1'}],
             'Native-only terminal join without Source close or forced World save')
+    join = values['join']
+    require(len(join) == 1 and set(join[0]) == {'profile', 'attempts', 'busy', 'limit', 'status',
+            'slot-null'} and join[0]['profile'] == profile and join[0]['limit'] == '35000' and
+            join[0]['status'] == '0' and join[0]['slot-null'] == '1',
+            'Completed native bootstrap join with its consumed owner')
+    attempts, busy_count = int(join[0]['attempts']), int(join[0]['busy'])
+    require(1 <= attempts <= 35000 and busy_count == attempts - 1 and
+            join[0]['attempts'] == str(attempts) and join[0]['busy'] == str(busy_count),
+            'Only retained-owner BUSY responses precede successful bootstrap consumption')
     finish = values['finish']
     require(len(finish) == 1 and set(finish[0]) == {'profile', 'native-cleanup', 'windows-absent',
             'source-close', 'source-save', 'checks'} and finish[0]['profile'] == profile and

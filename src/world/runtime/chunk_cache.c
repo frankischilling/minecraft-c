@@ -464,6 +464,21 @@ mc_client_chunk_cache_block_failure(mc_client_chunk_cache *c, int32_t x, int32_t
     return returned ? MC_CLIENT_CHUNK_CACHE_OK : block_failure_record(error, &e);
 }
 
+static void metadata_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z, int32_t *out,
+                           mc_client_chunk_cache_error *e) {
+    if (y < 0 || y >= 128)
+        *out = 0;
+    else {
+        mc_client_chunk_cache_occurrence *cell = cell_at(c, x, z, 41, 44, e);
+        if (chunk_required(cell, 54, e)) {
+            int32_t value = 0;
+            e->bytecode = 54;
+            if (cell->state->blank || nibble(cell->object->e, x & 15, y, z & 15, &value, 10, e))
+                *out = value;
+        }
+    }
+}
+
 mc_client_chunk_cache_status mc_client_chunk_cache_metadata(mc_client_chunk_cache *c, int32_t x,
                                                             int32_t y, int32_t z, int32_t *out,
                                                             mc_client_chunk_cache_error *error) {
@@ -471,18 +486,37 @@ mc_client_chunk_cache_status mc_client_chunk_cache_metadata(mc_client_chunk_cach
     init_error(&e, "e", "(III)I");
     if (!enter(c, out != NULL, &e))
         return copy_error(error, &e);
-    if (y < 0 || y >= 128)
-        *out = 0;
-    else {
-        mc_client_chunk_cache_occurrence *cell = cell_at(c, x, z, 41, 44, &e);
-        if (chunk_required(cell, 54, &e)) {
-            int32_t value = 0;
-            e.bytecode = 54;
-            if (cell->state->blank || nibble(cell->object->e, x & 15, y, z & 15, &value, 10, &e))
-                *out = value;
-        }
-    }
+    metadata_value(c, x, y, z, out, &e);
     return finish(c, &e, error);
+}
+
+static mc_client_chunk_cache_status metadata_failure_record(mc_client_chunk_cache_error *out,
+                                                            const mc_client_chunk_cache_error *e) {
+    if (out != NULL) {
+        init_error(out, "e", "(III)I");
+        out->status = e->status;
+        out->operation = e->operation;
+        out->bytecode = e->bytecode;
+        out->child_bytecode = e->child_bytecode;
+        out->native_policy = e->native_policy;
+    }
+    return e->status;
+}
+
+mc_client_chunk_cache_status
+mc_client_chunk_cache_metadata_failure(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z,
+                                       int32_t *out, mc_client_chunk_cache_error *error) {
+    /* metadata_value reaches only scalar/array/nibble fields. A complete
+     * descendant baseline is materialized on failure without replaying it. */
+    mc_client_chunk_cache_error e;
+    e.status = MC_CLIENT_CHUNK_CACHE_OK;
+    e.child_bytecode = 0;
+    if (!enter(c, out != NULL, &e))
+        return metadata_failure_record(error, &e);
+    metadata_value(c, x, y, z, out, &e);
+    c->state.active = false;
+    return e.status == MC_CLIENT_CHUNK_CACHE_OK ? MC_CLIENT_CHUNK_CACHE_OK
+                                                : metadata_failure_record(error, &e);
 }
 
 mc_client_chunk_cache_status mc_client_chunk_cache_tile_entity(mc_client_chunk_cache *c, int32_t x,

@@ -60,6 +60,103 @@ def source_clock_span(end, start):
     return span / 1e6
 
 
+def unsigned(value, label):
+    value = int(value)
+    if not 0 <= value < 1 << 64:
+        raise ValueError(label + ' must be an unsigned 64-bit counter')
+    return value
+
+
+def work_ledger(raw, result, version, checkpoints):
+    """Audit completed frames; failed prefixes remain observable but unqualified."""
+    complete = result['healthy'] == '1' and all(row[12] == 1 for row in raw)
+    if not complete:
+        return {'completed': False, 'simulation_advanced': False, 'checkpoints': checkpoints}
+    for row in raw:
+        for index in (0, 13, 14, 15):
+            unsigned(row[index], 'Frame work')
+        if not -(1 << 31) <= row[6] <= 10 or row[7] != max(row[6], 0):
+            raise ValueError('Timer/returned-tick work mismatch')
+        if row[14] > row[13] or row[15] > row[0]:
+            raise ValueError('Cumulative World work exceeds its parent')
+    main_entry = raw[0][13] - raw[0][7]
+    world_delta = unsigned(result['world-ticks'], 'Returned World delta')
+    world_entry = raw[-1][14] - world_delta
+    if not 0 <= world_entry <= main_entry:
+        raise ValueError('Invalid initial main/World work baseline')
+    previous_main, previous_world = main_entry, world_entry
+    for row in raw:
+        if row[13] - previous_main != row[7] or not 0 <= row[14] - previous_world <= row[7]:
+            raise ValueError('Inconsistent main/World work delta')
+        previous_main, previous_world = row[13], row[14]
+    # Version 1 did not record the World-render branch flags. A full version 2
+    # World return proves one draw; otherwise only later bounded deltas are known.
+    full_draws = version == 2 and all(row[17] == row[18] == 1 for row in raw)
+    if full_draws and raw[0][15] < 1:
+        raise ValueError('Invalid initial World draw baseline')
+    for previous, row in zip(raw, raw[1:]):
+        delta = row[15] - previous[15]
+        if (full_draws and delta != 1) or not 0 <= delta <= 1:
+            raise ValueError('Inconsistent World draw work delta')
+    ledger = {'completed': True, 'main_entry': main_entry, 'main_ticks': sum(r[7] for r in raw),
+              'world_entry': world_entry, 'world_coordinator_returns': world_delta,
+              'world_draws_proved': len(raw) if full_draws else None,
+              'simulation_advanced': False, 'checkpoints': checkpoints}
+    if not checkpoints:
+        return ledger  # Legacy frame data has no independent World-time evidence.
+    names = {'stage', 'present', 'main-ticks', 'world-ticks', 'world-draws', 'world-time',
+             'paused', 'random-calls', 'random-samples', 'display-calls', 'display-samples',
+             'display-random'}
+    if [row.get('stage') for row in checkpoints] != ['timed-entry', 'timed-returned'] or any(
+            set(row) != names or row['present'] not in ('0', '1') or row['paused'] not in ('0', '1')
+            for row in checkpoints):
+        raise ValueError('Invalid World work checkpoint schema/order')
+    first, last = checkpoints
+    counters = names - {'stage', 'present', 'world-time', 'paused'}
+    for row in checkpoints:
+        for key in counters:
+            unsigned(row[key], 'Checkpoint ' + key)
+        if not -(1 << 63) <= int(row['world-time']) < 1 << 63:
+            raise ValueError('World time must be a signed Java long')
+    if (int(first['main-ticks']) != main_entry or int(last['main-ticks']) != raw[-1][13] or
+            int(first['world-ticks']) != world_entry or int(last['world-ticks']) != raw[-1][14] or
+            int(last['world-draws']) != raw[-1][15] or
+            (full_draws and int(first['world-draws']) != raw[0][15] - 1)):
+        raise ValueError('Checkpoint/raw work baseline mismatch')
+    deltas = {key: int(last[key]) - int(first[key]) for key in counters}
+    if any(value < 0 for value in deltas.values()):
+        raise ValueError('World work checkpoint counter regressed')
+    time_delta = (int(last['world-time']) - int(first['world-time']) + (1 << 63)) % (1 << 64) - (1 << 63)
+    ledger.update(checkpoint_deltas=deltas, world_time_delta=time_delta)
+    ledger['simulation_advanced'] = (
+        first['present'] == last['present'] == '1' and first['paused'] == last['paused'] == '0' and
+        world_delta > 0 and ledger['main_ticks'] > 0 and time_delta > 0 and
+        all(deltas[key] > 0 for key in ('random-calls', 'random-samples', 'display-calls',
+                                      'display-samples', 'display-random')))
+    return ledger
+
+
+def qualify_cohort(profiles):
+    """Require complete actual-work intervals and the same declared scene."""
+    complete = bool(profiles) and all(
+        p['driver_exit'] == 0 and p['observation']['status'] == 'PASS' and
+        p['observation']['summary'].get('comparison_qualified', False) for p in profiles)
+    matched = False
+    if complete:
+        first = profiles[0]['observation']
+        def pose(row):
+            return {key: value for key, value in row.items() if key != 'stage'}
+        matched = all(
+            p['observation']['save_before'] == first['save_before'] and
+            p['observation']['assets_before'] == first['assets_before'] and
+            p['observation']['summary']['context'] == first['summary']['context'] and
+            p['observation']['summary']['gpu'] == first['summary']['gpu'] and
+            pose(p['observation']['summary']['camera_receipts'][1]) ==
+            pose(first['summary']['camera_receipts'][1]) for p in profiles)
+    return {'status': 'PASS' if complete and matched else 'FAIL',
+            'all_intervals_qualified': complete, 'authored_scene_and_camera_matched': matched}
+
+
 def summarize(stdout):
     result = [fields(s) for s in stdout.splitlines() if s.startswith('PERF_RESULT ')]
     context = [fields(s) for s in stdout.splitlines() if s.startswith('PERF_CONTEXT ')]
@@ -117,21 +214,43 @@ def summarize(stdout):
         for row in foreground)
     actual_rotation_valid = all(row['yaw'] == '43340000' and row['pitch'] == 'c1f00000'
                                 for row in poses[1:])
+    pose_keys = {'x', 'y', 'z', 'yaw', 'pitch'}
+    def finite_position(row):
+        try:
+            return all(len(row[key]) == 16 and math.isfinite(struct.unpack(
+                '>d', bytes.fromhex(row[key]))[0]) for key in ('x', 'y', 'z'))
+        except (KeyError, ValueError, struct.error):
+            return False
+    full_pose_retained = (all(pose_keys <= set(row) and finite_position(row) for row in poses[1:]) and
+                          all(poses[1][key] == poses[2][key] for key in pose_keys))
+    ledger = work_ledger(raw, result, row_version,
+                         [fields(s) for s in stdout.splitlines() if s.startswith('PERF_WORK ')])
+    duration_complete = end - start >= 10 * hz
     valid = (result['healthy'] == '1' and result['capacity'] == '0' and
              result['focus-invalid'] == '0' and finish['cleanup'] == '1' and
              int(context['view-distance']) == 3 and all(r[12] == 1 for r in raw) and
              all(r[11] == -1 and r[10] == 1 for r in raw) and native_foreground_valid and
              actual_rotation_valid and (row_version == 1 or len(split_rows) == len(raw)))
+    gpu = {key: next((s.split(' ', 1)[1] for s in stdout.splitlines()
+                      if s.startswith('PERF_GPU_' + key.upper() + ' ')), None)
+           for key in ('vendor', 'renderer', 'version')}
+    context_complete = ({'major', 'minor', 'profile', 'swap-zero', 'width', 'height',
+                         'view-distance', 'performance-mode'} <= set(context) and
+                        all(gpu.values()))
     return {'cache_receipts': cache, 'no_raw_cache_exports': True,
             'camera_receipts': poses, 'native_foreground_receipts': foreground,
             'native_foreground_valid': native_foreground_valid,
             'authored_rotation_retained': actual_rotation_valid,
+            'full_endpoint_pose_retained': full_pose_retained,
+            'measurement_at_least_ten_seconds': duration_complete,
+            'work_ledger': ledger,
+            'comparison_qualified': (valid and duration_complete and full_pose_retained and
+                                     context_complete and ledger['simulation_advanced']),
             'valid_focused_Tiny_interval': valid, 'context': context, 'measurement': result,
             'observation_row_version': row_version,
             'measured_fps': len(raw) * hz / (end - start),
-            'gpu': {key: next((s.split(' ', 1)[1] for s in stdout.splitlines()
-                              if s.startswith('PERF_GPU_' + key.upper() + ' ')), None)
-                    for key in ('vendor', 'renderer', 'version')},
+            'gpu': gpu,
+            'graphics_context_complete': context_complete,
             'host_frame': distribution(total),
             'tick_bearing_host_frame': distribution([x for x, r in zip(total, raw) if r[6] > 0]),
             'zero_tick_host_frame': distribution([x for x, r in zip(total, raw) if r[6] == 0]),
@@ -244,8 +363,8 @@ def main():
         report['summary'] = summarize(result.stdout.decode('utf8', errors='strict'))
         report['save_after'] = world.snapshot(saves)
         report['save_changed_by_normal_source_execution'] = report['save_before'] != report['save_after']
-        if result.returncode != 0 or not report['summary']['valid_focused_Tiny_interval']:
-            raise RuntimeError('Probe did not return a complete focused Tiny steady-play interval')
+        if result.returncode != 0 or not report['summary']['comparison_qualified']:
+            raise RuntimeError('Probe did not return a complete focused fixed-pose interval with World work')
         report['status'] = 'PASS'
     except BaseException as error:
         report['error'] = {'type': type(error).__name__, 'message': str(error)}

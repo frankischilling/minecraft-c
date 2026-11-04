@@ -95,4 +95,21 @@ if(MC_BUILD_BENCHMARKS AND BUILD_TESTING AND TARGET mc_simulation)
             mc_simulation mc_persistence mc_c_atomics mc_build_options)
     endforeach()
     unset(_mc_cache_adapter)
+    add_library(mc_benchmark_chunk_cache_metadata_workload OBJECT
+        tests/benchmarks/chunk_cache_metadata.c)
+    target_include_directories(mc_benchmark_chunk_cache_metadata_workload PRIVATE src)
+    target_link_libraries(mc_benchmark_chunk_cache_metadata_workload PRIVATE
+        mc_simulation mc_persistence mc_c_atomics mc_build_options)
+    foreach(_mc_metadata_adapter IN ITEMS public failure)
+        add_executable("mc_benchmark_chunk_cache_metadata_${_mc_metadata_adapter}"
+            "tests/benchmarks/chunk_cache_metadata_${_mc_metadata_adapter}.c"
+            $<TARGET_OBJECTS:mc_benchmark_chunk_cache_metadata_workload>)
+        target_include_directories("mc_benchmark_chunk_cache_metadata_${_mc_metadata_adapter}"
+            PRIVATE src)
+        target_link_libraries("mc_benchmark_chunk_cache_metadata_${_mc_metadata_adapter}" PRIVATE
+            mc_simulation mc_persistence mc_c_atomics mc_build_options)
+        set_target_properties("mc_benchmark_chunk_cache_metadata_${_mc_metadata_adapter}"
+            PROPERTIES MC_NO_SHELL32_DELAYLOAD TRUE)
+    endforeach()
+    unset(_mc_metadata_adapter)
 endif()

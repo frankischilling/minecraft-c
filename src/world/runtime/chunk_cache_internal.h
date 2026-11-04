@@ -28,4 +28,11 @@ mc_client_chunk_cache_status mc_client_chunk_cache_block_failure(mc_client_chunk
                                                                  int32_t, int32_t, int32_t *,
                                                                  mc_client_chunk_cache_error *);
 
+/* Same metadata admission and source read. Success leaves error untouched;
+ * every failure supplies the complete public record without a second read. */
+mc_client_chunk_cache_status mc_client_chunk_cache_metadata_failure(mc_client_chunk_cache *,
+                                                                    int32_t, int32_t, int32_t,
+                                                                    int32_t *,
+                                                                    mc_client_chunk_cache_error *);
+
 #endif

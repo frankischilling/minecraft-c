@@ -26,7 +26,7 @@ class PacketTests(unittest.TestCase):
 
     def test_current_public_bindings(self):
         result = P.audit_public()
-        self.assertEqual(result['native_checks'], 7574)
+        self.assertEqual(result['native_checks'], 7446)
         self.assertEqual(result['source_shutdown_or_pixel_comparisons'], 0)
 
     def test_receipt_without_private_inputs(self):
@@ -220,6 +220,67 @@ class PacketTests(unittest.TestCase):
     def test_missing_limit(self):
         self.corrupt(lambda d: d['limits'].pop())
 
+
+    def corrupt_join(self, mutation):
+        def apply(document):
+            record = document['profiles'][0]
+            mutation(record['receipts'])
+            record['receipts_digest'] = P.canonical(record['receipts'])
+        self.corrupt(apply)
+
+    def test_join_missing_even_with_repaired_digest(self):
+        self.corrupt_join(lambda r: r.pop('join'))
+
+    def test_join_duplicate_even_with_repaired_digest(self):
+        self.corrupt_join(lambda r: r['join'].append(copy.deepcopy(r['join'][0])))
+
+    def test_join_extra_field_even_with_repaired_digest(self):
+        self.corrupt_join(lambda r: r['join'][0].update(unproved='1'))
+
+    def test_join_zero_attempt_even_with_repaired_digest(self):
+        self.corrupt_join(lambda r: r['join'][0].update(attempts='0', busy='0'))
+
+    def test_join_over_limit_even_with_repaired_digest(self):
+        self.corrupt_join(lambda r: r['join'][0].update(attempts='35001', busy='35000'))
+
+    def test_join_busy_mismatch_even_with_repaired_digest(self):
+        self.corrupt_join(lambda r: r['join'][0].update(busy=r['join'][0]['attempts']))
+
+    def test_join_non_ok_even_with_repaired_digest(self):
+        self.corrupt_join(lambda r: r['join'][0].update(status='1'))
+
+    def test_join_unconsumed_owner_even_with_repaired_digest(self):
+        self.corrupt_join(lambda r: r['join'][0].update(**{'slot-null': '0'}))
+
+    def test_join_wrong_profile_even_with_repaired_digest(self):
+        self.corrupt_join(lambda r: r['join'][0].update(profile='container'))
+
+    def test_join_changed_limit_even_with_repaired_digest(self):
+        self.corrupt_join(lambda r: r['join'][0].update(limit='35001'))
+
+    def test_join_noncanonical_integer_or_type_even_with_repaired_digest(self):
+        for key, value in [('attempts', True), ('attempts', 1), ('attempts', None),
+                           ('attempts', '01'), ('attempts', '+1'), ('attempts', ' 1'),
+                           ('attempts', '1.0'), ('attempts', '1e0'), ('busy', '-0'),
+                           ('busy', False), ('limit', 35000), ('status', 0), ('slot-null', True)]:
+            with self.subTest(key=key, value=value):
+                self.corrupt_join(lambda r: r['join'][0].update({key: value}))
+
+    def test_join_consistent_recount_cannot_rebind_capture(self):
+        def mutation(receipts):
+            row = receipts['join'][0]
+            attempts = 2 if row['attempts'] == '1' else 1
+            row.update(attempts=str(attempts), busy=str(attempts - 1))
+        self.corrupt_join(mutation)
+
+    def test_join_bounds_are_contract_controls_only(self):
+        for attempts in (1, 35000):
+            row = {'profile': 'clean', 'attempts': str(attempts), 'busy': str(attempts - 1),
+                   'limit': '35000', 'status': '0', 'slot-null': '1'}
+            self.assertEqual(P.validate_join([row], 'clean'), [row])
+
+    def test_join_requires_schema_two(self):
+        self.corrupt(lambda d: d.update(schema=1))
 
 if __name__ == '__main__':
     unittest.main()

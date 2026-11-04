@@ -3586,8 +3586,8 @@
       "sha256": "695f1342d37d540e453c983bbb30cec70f70e6d8bfb154eab149a26544e97692"
     },
     "tests/client/world/test_chunk_cache.c": {
-      "bytes": 23236,
-      "sha256": "e56711435c481000775830039b9cfd4d5bd8884c25253fec1de01c143673e225"
+      "bytes": 23440,
+      "sha256": "8f141c942c269b226f312e9e0aa07b3a614dfab602e240f61e94cd540de7def1"
     },
     "tests/client/world/test_chunk_compile.c": {
       "bytes": 51363,
@@ -3698,8 +3698,8 @@
       "sha256": "db48725dd52b8f9b466cb9d98768104adf93ce762818eedcb3015c2597f2497f"
     },
     "src/client/render/blocks/access.c": {
-      "bytes": 16390,
-      "sha256": "04a32a96643bbb1ba05ad81f660f776e90fb0a94e49d60a9c1153fcfda52359c"
+      "bytes": 16383,
+      "sha256": "1c73db9a34f898f87f5a0ab98346d9d8e9a3e59376b76348539e11ea2801d4f5"
     },
     "src/client/render/blocks/ambient_occlusion.c": {
       "bytes": 14218,
@@ -4902,12 +4902,12 @@
       "sha256": "39ee7f49684cdefaa5bab60c00dfe12708898111b68a8b4aa4ec552be7193f43"
     },
     "src/world/runtime/chunk_cache.c": {
-      "bytes": 36935,
-      "sha256": "2096e0943920f12a360b17c5c24c09f6bb7034c43808bb92ed5a4128e0720724"
+      "bytes": 38425,
+      "sha256": "47726b3dadb7fd5aac04bed2b16ad93a550f478ee79338ae67ce51e1ba685443"
     },
     "src/world/runtime/chunk_cache_internal.h": {
-      "bytes": 1178,
-      "sha256": "a19d792c30ceaeb8f269788995a095e7338a85cc6c3b0923a8daa8735f59e270"
+      "bytes": 1701,
+      "sha256": "02259a7495f420566c1c1fd188baa70ac8fee23776e96c4a82450f21cc6c1831"
     },
     "src/world/runtime/path.c": {
       "bytes": 26664,
@@ -5478,8 +5478,8 @@
       "sha256": "7e343b192ec286e343fd9496c793b38cb3cdeb0d470ee920772be8fdc222a288"
     },
     "cmake/tests/source_world_saving.cmake": {
-      "bytes": 6600,
-      "sha256": "4a89e2cf9600b30c9b49c182c564d76edfecec3ffb4212f88a350c894033a8c2"
+      "bytes": 7722,
+      "sha256": "b25686ab659bb26619432c569284f71e894fdf0b65fee9078d87fc3a90279273"
     },
     "src/world/runtime/tile_entities/source_save.inc": {
       "bytes": 11082,
@@ -7002,16 +7002,16 @@
       "sha256": "4c91d9bd8b0bac0cc2a4d6f5075bc1173945879289cd2a94a983f87359b3158f"
     },
     "scripts/benchmarks/client_frames.py": {
-      "bytes": 6726,
-      "sha256": "cea84ea5529de70a4771bda76cb81d6bf25a316d3817bf7947fd7e8c18001439"
+      "bytes": 5948,
+      "sha256": "85fdf397ab7d6336ca18cd1d9a4405a1f9e82e83423369fd8e18329e90a3a9ae"
     },
     "scripts/benchmarks/client_frames_build.py": {
       "bytes": 7407,
       "sha256": "ad47b26a94754938ecbcae256ac84c432cfd6be915907267f341b626aba6a665"
     },
     "scripts/benchmarks/client_frames_run.py": {
-      "bytes": 15352,
-      "sha256": "dc96bccd27bb58e0e480d7e0877672d687c108d0268a722ba93cbf3432050903"
+      "bytes": 22255,
+      "sha256": "92ec20b2082ea8459148e6cee983904fbe2bf0bb6afcb4c8969fa499e92152f6"
     },
     "src/client/runtime/bootstrap_terminal_internal.h": {
       "bytes": 2975,
@@ -7038,8 +7038,8 @@
       "sha256": "8d9020defb7fbd4007c802d4638c1d83032f0563eb5ff4c4ee06dc01f7fe0e06"
     },
     "tests/benchmarks/client_frames.c": {
-      "bytes": 18817,
-      "sha256": "ab52a2dc7264ee4c15d3a7acbcab3a841fd22040b8e7146f94852d33997b8bbe"
+      "bytes": 19991,
+      "sha256": "02e6a7d5a8b7787cf3bd8942854a5ca63d1de03f32aeaa782abdd1847c499f54"
     },
     "tests/benchmarks/world_queries.c": {
       "bytes": 20229,
@@ -7050,8 +7050,8 @@
       "sha256": "de6f4ec72e73f143cebb83458a7be17ece1dc46322b9e2a814b394bd10c283a6"
     },
     "tests/client/gameplay/test_workbench_open_shutdown.c": {
-      "bytes": 21472,
-      "sha256": "bff91f0eb5192997a361ebaa375e6e2cb65674a858d4bea41081d8629de9fcce"
+      "bytes": 22467,
+      "sha256": "6bd6583deb98dff2060782dcb495f4fde9f2e272ef18cfae03818cfabb34b6a9"
     },
     "tests/entity/player/test_terminal_inventory.c": {
       "bytes": 15274,
@@ -7066,12 +7066,12 @@
       "sha256": "3093a1732a1b0a3122f1eaeb312f76d38ec11c19778042042e2220b3cde291c5"
     },
     "tests/reference/client/workbench_open_shutdown/packet.py": {
-      "bytes": 23672,
-      "sha256": "b15b78b50ed3aafcf8942909a2051a93462c94f2e9f2687abaab98b3eae9447f"
+      "bytes": 25539,
+      "sha256": "860cce9c7f4abfce19de11093ce028b80a397c1152d33f2f478452346c44c8bf"
     },
     "tests/reference/client/workbench_open_shutdown/test_packet.py": {
-      "bytes": 9801,
-      "sha256": "7220866c758df9c6cfb2ce73e9d75af92d0f141ab496e0231bea24278dd4e92a"
+      "bytes": 12751,
+      "sha256": "4ab3465542fa32aff808b4404171dba84753ded522be897c44caea470945c947"
     },
     "tests/reference/item/mining/capture_reference.py": {
       "bytes": 5373,
@@ -7090,8 +7090,8 @@
       "sha256": "18627ed4115349c42bbd8aa06d3ec5c11e6f8a364ddbafe4e09b294163e3771a"
     },
     "tests/tools/client/test_workbench_open_shutdown.py": {
-      "bytes": 11959,
-      "sha256": "6b152039354056067b3dd8dc2a85f2e0fe8b8be9d6576cfda9c16ddfe5d2f74e"
+      "bytes": 12651,
+      "sha256": "1a00db11d69fb7a61a98d5dfc853161c5e25293ed6642a56a634287c5af91b7b"
     },
     "tests/tools/inventory/test_terminal_inventory.py": {
       "bytes": 2429,
@@ -7486,8 +7486,8 @@
       "sha256": "89f07324e2ec1f0222000df3e3c7680a8d541571fe3db001bd2f0ea3bd0ea069"
     },
     "tests/tools/benchmarks/test_client_frames_run.py": {
-      "bytes": 15159,
-      "sha256": "d514bf2f602e3431826b96c8d18dfdd853bc21b63b2332d8e3e10fb6e88cc27f"
+      "bytes": 27605,
+      "sha256": "44e619fd85e7610e19b7fea87bf1a496ba8998cbc1868726e7789112f636cfab"
     },
     "cmake/client_ladder_world.cmake": {
       "bytes": 1473,
@@ -7786,12 +7786,48 @@
       "sha256": "e261121edd8b5d6504bf5a4ec01ef67ca333129424f9d70148cf3cd9cd834200"
     },
     "tests/tools/world/test_static_cpu_benchmarks.py": {
-      "bytes": 8475,
-      "sha256": "aa77b26b48837322f147dfb71d29d1db207eb5e31875a6e4c14dcd6519bf49b7"
+      "bytes": 8908,
+      "sha256": "683ab876e1216dc16b829de197b3e83c8e627e3c9b103db99795728ccacc55c6"
     },
     "tests/world/runtime/saving/test_stage_progress.c": {
       "bytes": 13543,
       "sha256": "5e0546b0c1ece437b8a4a17485cccc7eda1797c313371674e262fa58e9c689a2"
+    },
+    "tests/tools/benchmarks/test_client_frame_work_qualification.py": {
+      "bytes": 14506,
+      "sha256": "85805f92e22757b6ef5459dd3005a1ca5d84e276d3a0d24ae4935bf4415fe28c"
+    },
+    "tests/benchmarks/chunk_cache_metadata.c": {
+      "bytes": 16711,
+      "sha256": "8f7a75afe2114c2994301434c82e5ab5fdfa968530a5d016bb527d138b884340"
+    },
+    "tests/benchmarks/chunk_cache_metadata_adapter.h": {
+      "bytes": 584,
+      "sha256": "925c8fa2d782a8009fbfa7e0408495ea032b754795ac220f8db7280a37491f87"
+    },
+    "tests/benchmarks/chunk_cache_metadata_failure.c": {
+      "bytes": 308,
+      "sha256": "1e344856a660ed6a0b5ace6adbd98b02c53e667576f30e30089e3189ac2ffc0d"
+    },
+    "tests/benchmarks/chunk_cache_metadata_public.c": {
+      "bytes": 207,
+      "sha256": "88ba4f074df7059448c6a1d71ad3ec707a5d0dcdea769fb7712b9e8277b434b5"
+    },
+    "tests/client/world/chunk_cache_metadata_controls.inc": {
+      "bytes": 7487,
+      "sha256": "69ba56b7daa557f18430fc0a948d7aec863f25c2420e2e03fb2538f5874cb30e"
+    },
+    "tests/tools/benchmarks/test_chunk_cache_metadata.py": {
+      "bytes": 23151,
+      "sha256": "0bad99057eda5b44aa802d2c6997cb5493ec55685c9ea0ccb1fb8d2d95f11108"
+    },
+    "tests/tools/benchmarks/test_chunk_cache_metadata_frames.py": {
+      "bytes": 19997,
+      "sha256": "5417eebacd22592f8a6046edf640d3f9fddedacdbcc185135530dcf016a88847"
+    },
+    "tests/tools/world/benchmark_chunk_cache_metadata.py": {
+      "bytes": 14168,
+      "sha256": "44bd5f5464c05460841b619a17cb0bfa8dc218d306b8284f7efbe8c7abba1bce"
     }
   },
   "source_suppliers": {
@@ -11655,6 +11691,109 @@
             "tests/world/runtime/saving/test_stage_progress.c"
           ],
           "current_count": 1948
+        }
+      }
+    },
+    {
+      "from_commit": "719089051182e835e7bc16bdbe0fd98bfe57e5b7",
+      "role": "Current frame observer work checkpoints, completed-counter reconciliation and fixed-camera comparison admission. Earlier observations, compiled products and qualification cohorts retain their original scope.",
+      "previous_metadata": {
+        "bytes": 484764,
+        "sha256": "9163dea0e200298ae5f14beb437a22b891eb19b1d004850d2dade79c94dc66e5"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "scripts/benchmarks/client_frames.py": {
+              "bytes": 6726,
+              "sha256": "cea84ea5529de70a4771bda76cb81d6bf25a316d3817bf7947fd7e8c18001439"
+            },
+            "scripts/benchmarks/client_frames_run.py": {
+              "bytes": 15352,
+              "sha256": "dc96bccd27bb58e0e480d7e0877672d687c108d0268a722ba93cbf3432050903"
+            },
+            "tests/benchmarks/client_frames.c": {
+              "bytes": 18817,
+              "sha256": "ab52a2dc7264ee4c15d3a7acbcab3a841fd22040b8e7146f94852d33997b8bbe"
+            },
+            "tests/tools/benchmarks/test_client_frames_run.py": {
+              "bytes": 15159,
+              "sha256": "d514bf2f602e3431826b96c8d18dfdd853bc21b63b2332d8e3e10fb6e88cc27f"
+            }
+          },
+          "added": [
+            "tests/tools/benchmarks/test_client_frame_work_qualification.py"
+          ],
+          "current_count": 1949
+        }
+      }
+    },
+    {
+      "from_commit": "719089051182e835e7bc16bdbe0fd98bfe57e5b7",
+      "role": "Current EW metadata failure-only access, public diagnostic and owner controls, shared CPU benchmark targets, frame audit inputs and fresh Workbench qualification inputs. Earlier observations, compiled products and qualification cohorts retain their original scope; failed frame cohorts supply no comparison credit.",
+      "previous_metadata": {
+        "bytes": 486409,
+        "sha256": "57adf67d630242703126f4c0ee08989d99bfac0ed1c8daf46f1388878398c2e6"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/client/world/test_chunk_cache.c": {
+              "bytes": 23236,
+              "sha256": "e56711435c481000775830039b9cfd4d5bd8884c25253fec1de01c143673e225"
+            },
+            "src/client/render/blocks/access.c": {
+              "bytes": 16390,
+              "sha256": "04a32a96643bbb1ba05ad81f660f776e90fb0a94e49d60a9c1153fcfda52359c"
+            },
+            "src/world/runtime/chunk_cache.c": {
+              "bytes": 36935,
+              "sha256": "2096e0943920f12a360b17c5c24c09f6bb7034c43808bb92ed5a4128e0720724"
+            },
+            "src/world/runtime/chunk_cache_internal.h": {
+              "bytes": 1178,
+              "sha256": "a19d792c30ceaeb8f269788995a095e7338a85cc6c3b0923a8daa8735f59e270"
+            },
+            "cmake/tests/source_world_saving.cmake": {
+              "bytes": 6600,
+              "sha256": "4a89e2cf9600b30c9b49c182c564d76edfecec3ffb4212f88a350c894033a8c2"
+            },
+            "tests/client/gameplay/test_workbench_open_shutdown.c": {
+              "bytes": 21472,
+              "sha256": "bff91f0eb5192997a361ebaa375e6e2cb65674a858d4bea41081d8629de9fcce"
+            },
+            "tests/reference/client/workbench_open_shutdown/packet.py": {
+              "bytes": 23672,
+              "sha256": "b15b78b50ed3aafcf8942909a2051a93462c94f2e9f2687abaab98b3eae9447f"
+            },
+            "tests/reference/client/workbench_open_shutdown/test_packet.py": {
+              "bytes": 9801,
+              "sha256": "7220866c758df9c6cfb2ce73e9d75af92d0f141ab496e0231bea24278dd4e92a"
+            },
+            "tests/tools/client/test_workbench_open_shutdown.py": {
+              "bytes": 11959,
+              "sha256": "6b152039354056067b3dd8dc2a85f2e0fe8b8be9d6576cfda9c16ddfe5d2f74e"
+            },
+            "tests/tools/benchmarks/test_client_frames_run.py": {
+              "bytes": 27237,
+              "sha256": "f7a923eb1462f9e2140acb52e99c8126991d747a8c751002026aa4eafe995c07"
+            },
+            "tests/tools/world/test_static_cpu_benchmarks.py": {
+              "bytes": 8475,
+              "sha256": "aa77b26b48837322f147dfb71d29d1db207eb5e31875a6e4c14dcd6519bf49b7"
+            }
+          },
+          "added": [
+            "tests/benchmarks/chunk_cache_metadata.c",
+            "tests/benchmarks/chunk_cache_metadata_adapter.h",
+            "tests/benchmarks/chunk_cache_metadata_failure.c",
+            "tests/benchmarks/chunk_cache_metadata_public.c",
+            "tests/client/world/chunk_cache_metadata_controls.inc",
+            "tests/tools/benchmarks/test_chunk_cache_metadata.py",
+            "tests/tools/benchmarks/test_chunk_cache_metadata_frames.py",
+            "tests/tools/world/benchmark_chunk_cache_metadata.py"
+          ],
+          "current_count": 1957
         }
       }
     }

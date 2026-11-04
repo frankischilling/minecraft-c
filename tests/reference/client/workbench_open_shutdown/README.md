@@ -1,6 +1,69 @@
 # Live-open Workbench native shutdown
 
 The four Windows SDK profiles freshly qualify the Workbench terminal flow on
+the current EW metadata runtime with the bounded native join fixture. They open
+the real Workbench, retain its live grid, cursor and recipe result, then close
+the source window and finish
+checked native cleanup. It does not directly qualify the CPU workloads,
+Food/Dye growth or Source full-save progress.
+
+Schema 2 requires an actual JOIN receipt for each profile. In clean / Container /
+Player / World order, attempts are
+1 / 1 / 1 / 1 and BUSY counts are
+0 / 0 / 0 / 0. The limit is 35,000,
+status is 0 and the consumed slot is NULL. All four cases complete on the first call, with attempts 1 and BUSY 0. This cohort does not exercise the BUSY retry branch.
+The native fixture follows the existing main caller's bounded BUSY/Delay 1
+protocol and checks the same nonnull owner on every BUSY response. Its runtime
+source and archives did not change for this fixture correction. The 71 public
+controls retain all 57 earlier methods and add 14 JOIN methods. Exact literals,
+canonical integers, bounds, profile, count relation and raw stdout are checked.
+
+The earlier unpublished EW cohort remains FAIL: clean failed at the original
+one-shot final cleanup assertion; the other three passed. Later unchanged-code
+and failure-only diagnostic groups remain separate retained evidence. A
+retained-context snapshot observed Bootstrap BUSY with operation `startup
+resource worker retirement`; it did not identify which underlying BUSY arm
+was selected. All plans, failed and
+passing captures, original binaries and diagnostic histories remain immutable.
+These new four processes supply the new packet; no failed result is relabeled.
+A separate fixed-three clean regression also passes, with JOIN attempts 1/BUSY 0
+in each process. Its checks are 1,677 / 1,797 / 1,619. It is not pooled into this
+four-profile qualification and adds no natural BUSY-to-OK observation.
+
+All four profiles pass in 29.83 seconds with 7,446 checks.
+In clean / Container / Player / World order, the checks are
+1,679 / 1,677 / 2,064 / 2,026 and measured CTest times are
+7.57 / 7.31 / 7.33 / 7.59 seconds. These are qualification
+observations, not frame-rate or performance measurements. Each process and the
+whole cohort preserve 1,450 runtime source files, 527 selected harness/CMake
+files, 2 binaries and 413 imported resources: 1,979 selected inputs in total.
+
+The quiet three-second guard records 31 samples and
+0 last-input timestamp changes. The passive cohort monitor records
+1 changes. It only reads timestamps and foreground information;
+it injects no input or focus repair. These observations do not establish that
+all possible input was absent or qualify unrestricted Desktop timing.
+
+The previous 30.28-second/7,574-check packet, its four exact captures,
+validators, logs, binaries, all 1,978 frozen input contents and older history
+remain checked immutable private evidence. The new receipt comes from four
+fresh processes and has its own source/product/resource continuity records.
+Public corruption controls and private/log audits retain every earlier check
+and add the mandatory JOIN contract.
+No earlier receipt is rebound to the new source tree.
+
+All previous full-suite outcomes retain their original scope. This fresh
+four-profile capture and its audits supply no new broad-suite or performance
+result.
+
+The following preserved account describes the preceding cohort and all earlier
+limits. Its times and counts remain historical and do not describe this successor.
+
+## Previous qualification and retained history
+
+# Live-open Workbench native shutdown
+
+The four Windows SDK profiles freshly qualify the Workbench terminal flow on
 the current performance runtime and SDK harness cohort. They open the real Workbench, retain its
 live grid, cursor and recipe result, then close the source window and finish
 checked native cleanup. It does not directly qualify the CPU workloads,

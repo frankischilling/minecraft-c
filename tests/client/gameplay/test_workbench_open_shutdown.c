@@ -235,6 +235,30 @@ static bool shutdown_retire(fixture *f) {
     return returned;
 }
 
+static bool shutdown_join(fixture *f, const char *profile) {
+    if (f->bootstrap == NULL)
+        return false;
+    const uintptr_t owner = (uintptr_t)f->bootstrap;
+    mc_client_bootstrap_status status = MC_CLIENT_BOOTSTRAP_BUSY;
+    unsigned int attempts = 0, busy = 0;
+    /* Match the ordinary client's native stop/join protocol. BUSY retains the
+     * same graph; no expired App/World view or Source entry is used here. */
+    while (status == MC_CLIENT_BOOTSTRAP_BUSY && attempts < 35000) {
+        ++attempts;
+        status = mc_client_bootstrap_close(&f->bootstrap);
+        if (status == MC_CLIENT_BOOTSTRAP_BUSY) {
+            ++busy;
+            if (f->bootstrap == NULL || (uintptr_t)f->bootstrap != owner)
+                break;
+            SDL_Delay(1);
+        }
+    }
+    printf(
+        "WORKBENCH_OPEN_JOIN profile=%s attempts=%u busy=%u limit=35000 status=%d slot-null=%d\n",
+        profile, attempts, busy, (int)status, (int)(f->bootstrap == NULL));
+    return status == MC_CLIENT_BOOTSTRAP_OK && f->bootstrap == NULL;
+}
+
 static int shutdown_setup(fixture *f, mc_client_source_id **out) {
     mining_work *m = &workbench->mining;
     CHECK(mc_client_menu_loop_create(f->bootstrap, &f->loop) &&
@@ -397,8 +421,7 @@ int main(int argc, char **argv) {
         fflush(stderr);
         return result;
     }
-    CHECK(shutdown_retire(f) && f->loop == NULL &&
-          mc_client_bootstrap_close(&f->bootstrap) == MC_CLIENT_BOOTSTRAP_OK &&
+    CHECK(shutdown_retire(f) && f->loop == NULL && shutdown_join(f, argv[3]) &&
           f->bootstrap == NULL && SDL_GetWindowFromID(frame_id) == NULL &&
           SDL_GetWindowFromID(canvas_id) == NULL &&
           reload_snapshot("open-after-native-close") == 0);

@@ -1,5 +1,54 @@
 # World query performance
 
+## EW metadata diagnostics
+
+Public EW metadata access keeps its complete diagnostic contract. A private
+failure-only accessor shares the same Source read and admission, leaves caller
+diagnostics untouched on success, and supplies the full canonical failure
+record. Only CV's EW metadata branch changes; direct World access, Block reads,
+outputs, active state and leases retain their behavior.
+
+The [Windows CPU receipt](../../tests/benchmarks/chunk_cache_metadata_windows.json)
+retains the existing 950 original-reference rows, 3,541 native checks, 26 CPU
+control rows and all 56 samples from eight fresh processes. Median elapsed cost
+per 65,536 actual reads falls from 9.06405 to 1.08805 ms, or 138.3064 to
+16.6023 ns/read: an 87.995984% reduction using unrounded observations. The same
+compiled caller uses a genuine nine-Chunk EW and checks values, errors, ownership,
+Random and zero acquisitions outside timing. The 7,352-byte public record's
+nominal initialization-plus-copy size is not measured DRAM traffic.
+
+The separate [EW frame cohort](../../tests/benchmarks/chunk_cache_metadata_frames_windows.json)
+is FAIL. All eight attempts remain; five pass individual admission and three
+lose native foreground validity and end paused. Their World-time/random/display
+counts are 0, 60 and 129 despite 195, 192 and 194 World coordinator returns.
+The first paused baseline's 39.18 raw FPS accompanies zero World-time steps and
+supplies no comparison credit. Source/product/asset guards pass; the foreground
+cause remains unestablished. No aggregate, passing-subset FPS gain or retry is
+claimed. This cohort stays separate from the earlier failed work-ledger cohort.
+
+The [metadata benchmark guide](../../tests/benchmarks/chunk_cache_metadata.md)
+records the public targets, driver and contract limits. Runtime bodies match
+the measured candidate. Four current Windows Workbench SDK profiles separately
+pass 7,446 checks in 29.83 CTest seconds, preserving 1,979 selected inputs and
+413 assets. Every join takes one call with no BUSY return. The fixture follows
+the documented bounded BUSY-only native completion protocol; its controlled
+refusals, windows and stopped-disk assertions remain intact. The earlier
+startup-resource BUSY failure stays retained, with its exact child unresolved;
+a natural BUSY-to-OK transition is still unobserved.
+
+Current public suites finish at 684/685 Windows CTests in 247.42 seconds and
+674/674 Linux Clang 18 Debug ASan/UBSan CTests in 147.72 seconds under
+Xvfb/software GL. Windows fails only the Pig focus check in
+`client.world_selection_animals`, with Source focus 0/paused 1/display-active 0;
+this is separate from the historical frustum failure and establishes no cause.
+Each cohort preserves 4,767 source inputs, 638 products and 413 assets without
+drift or observer errors. Both public metadata CPU executables pass 6,342 fresh
+control checks each on both hosts with no timing samples. ChunkCache/Fluid and
+the 43 frame, 18 static-CPU and 71 native-packet audit methods also pass on both.
+The [guide](../../tests/benchmarks/chunk_cache_metadata.md#current-public-validation)
+records the full validation scope. There is no full Windows pass or new FPS,
+Linux timing or original-reference claim.
+
 ## Block static-name selection and cache validation
 
 The Block static loader and passive inspector share a bounded decoder for the
@@ -319,6 +368,33 @@ Timing thresholds are deliberately excluded from CTest.
 
 ## Matched Windows frame intervals
 
+### Work-ledger admission and failed cohort
+
+The [eight-profile receipt](../../tests/benchmarks/client_frame_work_qualification_windows.json)
+retains four alternating rounds in the natural seed-123 Tiny sky-view scene.
+Seven intervals pass individual admission; round 1 current fails focus and
+native-foreground checks and ends paused. Its 191 enclosing World returns
+include 189 steps of live World time and 189 calls each to random-Chunk
+and random-display work. The full cohort remains FAIL, with every attempt and
+the source/product/asset guards retained. It supplies no aggregate FPS gain or
+passing-subset comparison.
+
+Admission requires at least ten seconds, complete focused ordinary frames,
+finite identical endpoint x/y/z/yaw/pitch, the same starting save/assets and
+complete matching graphics identity. Boundary counters must agree with the
+raw frames and prove unpaused World-time and random/display advancement.
+Individual zero-tick frames stay in the interval; natural work totals need not
+match between processes. Endpoint pose equality does not prove every
+intermediate position, and recorded graphics identity is not all GL state.
+The [observer contract](../../tests/benchmarks/client_frames.md#eight-profile-work-ledger-cohort)
+contains every raw FPS observation and the pure receipt audit command.
+
+### Legacy frame-only captures
+
+The following captures retain their earlier frame, focus and camera checks.
+They lack the independent work checkpoints required by current admission and
+are not combined with the eight-profile cohort.
+
 Both C client candidates also run the same authored seed-123 save, Player
 position/Inventory, 854x480 window, Tiny distance, performance mode 1 and zero
 swap interval. The camera starts at yaw 180 and pitch -30, looking away from
@@ -328,7 +404,7 @@ driver 581.42. Each fresh process warms up for two seconds, then runs ten second
 of ordinary source frames with no capture, disk checks or assertion callbacks
 inside the timed loop.
 
-One complete valid matched pair gives:
+The earlier frame-only protocol accepted this pair:
 
 | Metric | Baseline | Current |
 | --- | ---: | ---: |
@@ -343,7 +419,7 @@ The [frame record](../../tests/benchmarks/client_frames_windows.json) retains
 raw rows, validity, camera/settings and candidate fingerprints. A subsequent
 three-round cohort fails because two baseline intervals lose foreground validity;
 all six attempts remain recorded. It supplies no aggregate speedup claim.
-A separate run through the public toolkit passes at 20.88 FPS. These finite
+A separate legacy toolkit smoke records 20.88 FPS. These finite
 intervals retain the baseline qualifications above, natural construction entropy,
 ongoing Chunk work and ordinary source timing. They do not establish fully warmed
 performance, original-game pixels, Far distance or unrestricted play.

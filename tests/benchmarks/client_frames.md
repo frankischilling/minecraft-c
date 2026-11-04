@@ -12,10 +12,65 @@ python -B scripts/benchmarks/client_frames.py --executable current=PATH_TO_CLIEN
 ```
 
 The driver retains every process, including focus and unsupported-behavior
-failures. Only complete intervals with matching settings, assets, saved state,
-camera and graphics context support comparisons. No FPS threshold determines
-success. [The earlier frame comparison](client_frames_windows.json) retains its
-separate qualifications and failed repeat cohort.
+failures. Comparison admission requires at least ten seconds of complete
+focused frames, cleanup, an owned cache with no raw export, and a complete
+recorded graphics identity. Finite x/y/z and the authored yaw/pitch must be
+bit-identical at timed entry and return. These are endpoint observations,
+not a per-frame position trace.
+
+`PERF_WORK` samples completed main ticks, World coordinator returns/draws,
+live Info.Time, paused state and random-Chunk/display counters outside the
+timed window. The parser checks their raw-row baselines and deltas, including
+Java-long World-time wrapping. Comparison admission requires an unpaused World
+at both boundaries, advancing World time, positive main/World work and positive
+random/display work. Individual zero-tick frames remain included. A World
+coordinator return alone does not establish that simulation advanced.
+
+Every declared profile must pass this admission. All profiles must also share
+the starting save, assets, timed-entry pose, GL version/profile, swap setting,
+window size, Tiny/performance mode and GPU strings. Natural work totals can
+differ between processes. No FPS threshold determines success.
+
+## Eight-profile work-ledger cohort
+
+The [work-ledger receipt](client_frame_work_qualification_windows.json) retains
+four alternating rounds and all eight attempts in native execution order.
+For the seven varied production files, `parent` selects frozen bodies from
+`44483ff9` and `current` selects `71908905`. Both executables are fresh
+comparison builds using the same current observer, declaration headers and
+remaining dependencies. The receipt records their exact compile/link identities.
+
+Seven pass individual admission. Recorded round 1's current attempt fails
+focus/native-foreground checks and ends paused. Its 191 World coordinator
+returns accompany 189 World-time steps and 189 calls each to random-Chunk
+and random-display work. The whole cohort is FAIL. Exact source, product and
+asset guards pass, but that does not qualify the failed interval. No retry or
+aggregate/subset gain estimate is claimed.
+
+The following are unpooled raw observations. Round numbers are zero-based;
+the failed row remains in the table and in the receipt.
+
+| Round | Label | Frames | Raw FPS | Individual admission | World returns / time steps |
+| --- | --- | ---: | ---: | --- | ---: |
+| 0 | parent | 217 | 21.61 | PASS | 193 / 193 |
+| 0 | current | 315 | 31.48 | PASS | 192 / 192 |
+| 1 | current | 329 | 32.86 | FAIL | 191 / 189 |
+| 1 | parent | 217 | 21.70 | PASS | 190 / 190 |
+| 2 | parent | 209 | 20.85 | PASS | 195 / 195 |
+| 2 | current | 363 | 36.28 | PASS | 193 / 193 |
+| 3 | current | 320 | 31.95 | PASS | 195 / 195 |
+| 3 | parent | 247 | 24.66 | PASS | 192 / 192 |
+
+Audit all retained rows and their corruption controls without a native run:
+
+```powershell
+python -B tests/tools/benchmarks/test_client_frame_work_qualification.py
+```
+
+The [legacy frame-only comparison](client_frames_windows.json) retains its
+original observations and failed repeat cohort. Those captures lack the new
+independent work checkpoints and receive no work-ledger comparison credit.
+They are not pooled with these eight attempts.
 
 Observation version 2 adds the existing pre-HUD source clock and its reached and
 returned flags to each raw row. It does not query another source clock. The

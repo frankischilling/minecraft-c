@@ -1,5 +1,46 @@
 # World simulation
 
+## EW metadata work
+
+The [internal metadata accessor](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/chunk_cache_metadata.md)
+keeps the same Source read, admission, outputs and leases. Success leaves caller
+diagnostics untouched; failure supplies the complete canonical public record.
+The public accessor keeps its full success record, and only CV's EW metadata
+branch switches. The finite CPU result is separate from World/frame timing.
+
+The new eight-attempt EW frame cohort is FAIL, with five admitted intervals and
+three foreground/paused refusals. Their World-time/random/display counts are
+0, 60 and 129 against 195, 192 and 194 coordinator returns. No aggregate or
+passing-subset FPS gain or retry is claimed. The cause is not established.
+
+Four current Workbench shutdown profiles separately pass 7,446 checks in
+29.83 CTest seconds with 1,979 inputs and 413 assets unchanged. The fixture's
+bounded BUSY-only native join supplies no Source frame, input, clock, getter
+or World progress. Controlled refusals and stopped-disk/window assertions
+remain intact. All four joins take one call with zero BUSY returns; the
+earlier startup-resource-cleanup BUSY failure remains retained with an
+undistinguished child. A natural BUSY-to-OK transition is unobserved.
+
+Current public suites pass 674/674 Linux Clang 18 Debug ASan/UBSan tests in
+147.72 CTest seconds and 684/685 Windows tests in 247.42 seconds. Windows fails
+only the Pig focus check, recording Source focus 0/paused 1/display-active 0;
+the historical frustum failure remains separate. Each cohort preserves
+4,767 source inputs, 638 products and 413 assets without drift or observer
+errors. Both metadata CPU executables pass 6,342 controls each on both hosts,
+with no new timing samples or frame-performance claim.
+
+## Frame work evidence
+
+Timed frame boundaries now include completed main ticks, World coordinator
+returns/draws, live Info.Time, paused state and random/display counters.
+Comparison admission requires coherent baselines and positive unpaused time
+and random/display advancement. Individual zero-tick frames remain valid
+parts of an interval; coordinator returns alone do not prove World work.
+The [eight-profile cohort](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/client_frame_work_qualification_windows.json)
+is FAIL: round 1 current ends paused with invalid native foreground. All
+eight attempts remain visible, without aggregate or passing-subset gain estimates.
+Natural work counts may differ, and original-game parity remains separate.
+
 ## Source Chunk saving and reload
 
 The source World saves supported live Chunks through its actual loader and

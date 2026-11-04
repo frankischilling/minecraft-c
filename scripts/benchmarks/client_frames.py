@@ -10,7 +10,7 @@ Compare already-built observers from two revisions:
 The fixed scene uses seed 123, Tiny distance, 854x480 and saved Rotation 180,-30.
 Each fresh process warms up naturally for 2s and measures 10s of ordinary Source
 frames. All attempts, including focus/frontier failures, remain in artifacts.
-There is no universal FPS or original-game parity claim and no timing gate.
+There is no universal FPS or original-game parity claim and no FPS threshold.
 """
 import argparse
 import json
@@ -21,6 +21,7 @@ import sys
 import tempfile
 
 from client_frames_build import build_observer
+from client_frames_run import qualify_cohort
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -89,20 +90,7 @@ def main():
                                        'retained_report': str(path), 'observation': observation})
             (output / 'run.json').write_text(json.dumps(report, indent=2) + '\n')
             print(label, round_index, observation['status'], flush=True)
-    first = report['profiles'][0]['observation']
-    complete = all(p['driver_exit'] == 0 and p['observation']['status'] == 'PASS'
-                   for p in report['profiles'])
-    def pose(row):
-        return {key: value for key, value in row.items() if key != 'stage'}
-    matched = complete and all(
-        p['observation']['save_before'] == first['save_before'] and
-        p['observation']['assets_before'] == first['assets_before'] and
-        p['observation']['summary']['context'] == first['summary']['context'] and
-        p['observation']['summary']['gpu'] == first['summary']['gpu'] and
-        pose(p['observation']['summary']['camera_receipts'][1]) ==
-        pose(first['summary']['camera_receipts'][1]) for p in report['profiles'])
-    report.update(status='PASS' if complete and matched else 'FAIL',
-                  all_intervals_qualified=complete, authored_scene_and_camera_matched=matched)
+    report.update(qualify_cohort(report['profiles']))
     (output / 'run.json').write_text(json.dumps(report, indent=2) + '\n')
     summary = [{'label': p['label'], 'round': p['round'], 'status': p['observation']['status'],
                 'measurement': p['observation'].get('summary', {}).get('measurement'),
@@ -110,7 +98,7 @@ def main():
                 'host_frame': p['observation'].get('summary', {}).get('host_frame')}
                for p in report['profiles']]
     print(json.dumps({'status': report['status'], 'report': str(output / 'run.json'),
-                      'matched': matched, 'profiles': summary}))
+                      'matched': report['authored_scene_and_camera_matched'], 'profiles': summary}))
     return 0 if report['status'] == 'PASS' else 1
 
 

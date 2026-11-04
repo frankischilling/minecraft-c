@@ -513,7 +513,8 @@ if(WIN32)
     target_link_libraries(mc_client_directory_native PRIVATE shell32 ole32)
     if(MSVC)
         target_link_libraries(mc_client_directory_native PRIVATE delayimp)
-        target_link_options(mc_client_directory_native INTERFACE "/DELAYLOAD:shell32.dll")
+        target_link_options(mc_client_directory_native INTERFACE
+            "$<$<NOT:$<BOOL:$<TARGET_PROPERTY:MC_NO_SHELL32_DELAYLOAD>>>:/DELAYLOAD:shell32.dll>")
     endif()
 endif()
 add_library(mc_java_files STATIC

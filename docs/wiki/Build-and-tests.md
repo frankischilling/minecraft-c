@@ -1,5 +1,81 @@
 # Build and tests
 
+## EW metadata CPU and frame scopes
+
+The [metadata guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/chunk_cache_metadata.md)
+records the optional public/failure targets and coordinator. One compiled
+workload serves both accessors. Retained Windows qualification includes 950
+unchanged original-reference rows, 3,541 native checks, 26 CPU control rows and
+56 samples. Median cost per 65,536 reads falls from 9.06405 to 1.08805 ms;
+the 87.995984% reduction applies to this getter workload, not scene FPS.
+
+The separate [EW frame cohort](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/chunk_cache_metadata_frames_windows.json)
+retains eight attempts: five pass admission and three lose foreground validity
+and end paused. Source/product/asset guards pass, but the cohort remains FAIL.
+No retry, aggregate or passing-subset gain estimate is claimed. Current public
+suite outcomes are recorded below; the CPU timing scope is unchanged.
+
+## Current Workbench native completion
+
+Four Windows SDK profiles pass 7,446 checks in 29.83 CTest seconds. In
+Clean / Container / Player / World order, counts are 1,679 / 1,677 / 2,064 /
+2,026 and CTest times are 7.57 / 7.31 / 7.33 / 7.59 seconds. All 1,979 inputs
+(1,450 runtime, 527 harness and two binaries) and 413 assets remain unchanged.
+The guard records zero last-input timestamp changes and the passive monitor
+records one; neither observation identifies a human or establishes no input.
+
+The fixture drives the documented BUSY-only bootstrap join with the normal
+35,000-attempt bound, 1 ms delay and same retained nonnull owner. Controlled
+menu/ownership refusals remain one-shot, and window/disk checks stay intact.
+All four joins actually take one call with zero BUSY returns. Three separate
+clean regressions pass 1,677 / 1,797 / 1,619 checks, also with one-call joins.
+The earlier startup-resource-cleanup BUSY failure remains preserved; its exact
+child is unresolved, and a natural BUSY-to-OK transition remains unobserved.
+These results retain their native completion scope alongside the full suites.
+
+## Current EW public suites
+
+Windows finishes 684/685 CTests in 247.42 seconds (255.9969 seconds outer).
+Only `client.world_selection_animals` fails: its Pig profile records Source
+focus 0, paused 1 and display-active 0 at 77 frames/35 ticks, with
+`msrdc.exe` / `TscShellContainerClass` in the foreground. This is distinct from
+the historical frustum failure. Three passive input-timestamp changes establish
+neither a human nor the cause. No current full Windows pass is claimed.
+
+Linux Clang 18 Debug passes 674/674 in 147.72 CTest seconds (268.4867 seconds
+outer), using ASan/UBSan with leak detection, halt-on-error and stack traces,
+under Xvfb/software GL. Both cohorts preserve 4,767 source inputs, 638 products
+and 413 assets, with no drift or observer errors.
+
+Both metadata CPU executables pass 6,342 fresh controls each on each host,
+with zero timing samples. ChunkCache and Fluid pass, along with the 43-method
+frame, 18-method static-CPU and 71-method native-packet audits on both hosts.
+The earlier qualified MSVC getter timing remains separate from these semantic
+controls, all historical full suites and the two failed frame cohorts.
+
+## Ordinary frame admission
+
+The [earlier frame receipt](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/client_frame_work_qualification_windows.json)
+retains all eight attempts from four alternating rounds. Seven pass individual
+admission. Round 1 current fails focus/native-foreground checks and ends paused,
+with 191 World coordinator returns, 189 World-time steps and 189 calls each
+to random-Chunk and random-display work.
+Source, product and asset guards pass; the cohort remains FAIL. No aggregate
+FPS or passing-subset gain estimate is claimed; there is no retry.
+
+Each interval needs at least ten seconds, complete focused frames, finite
+identical endpoint pose, and complete matching graphics identity. Outside the
+timed window, the observer reads completed counters and live World time.
+The parser requires coherent raw/checkpoint baselines and actual unpaused
+simulation advancement. Individual zero-tick frames remain included, and
+natural work totals may differ between processes. Every declared profile must
+qualify and match save/assets/context/GPU/entry pose before cohort admission.
+Legacy frame-only captures lack these independent checkpoints and keep their
+original historical scope. Audit the new receipt with
+`python -B tests/tools/benchmarks/test_client_frame_work_qualification.py`.
+The [frame contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/client_frames.md)
+records the endpoint and graphics-identity limits.
+
 ## Registry, cache and save progress
 
 The current Windows Release rebuild completes 811 commands in 74.333 seconds.

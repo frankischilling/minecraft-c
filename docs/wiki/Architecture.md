@@ -1,5 +1,37 @@
 # Systems and subsystems
 
+EW metadata now has an internal failure-only diagnostic contract over the same
+Source read. Successful calls preserve the caller's error bytes; failures
+materialize the complete canonical record without replaying the read. The
+public accessor still returns full diagnostics. Only CV's EW metadata consumer
+switches, preserving direct World access, Source order, active state and leases.
+The [contract and CPU evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/chunk_cache_metadata.md)
+retain the separate failed frame cohort and make no DRAM-traffic or FPS claim.
+
+The Workbench fixture now drives the bootstrap's documented retained-slot
+completion protocol: retry only BUSY with the same nonnull owner, the normal
+35,000-attempt bound and 1 ms delay. Controlled menu/ownership refusals remain
+one-shot; stopped-disk and window-absence checks remain intact. No Source frame,
+input, clock, getter or World progress is supplied. All four current profiles
+pass, each needing one close call and zero BUSY returns; a natural BUSY-to-OK
+transition remains unobserved.
+
+Current full public testing passes 674/674 Linux Clang 18 Debug ASan/UBSan
+tests and 684/685 Windows tests. Windows' sole Pig focus refusal is distinct
+from the historical frustum failure; no cause or full Windows pass is claimed.
+Both metadata CPU executables pass 6,342 fresh controls each on both hosts,
+with zero timing samples. The [validation scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/chunk_cache_metadata.md#current-public-validation)
+keeps these checks separate from the retained CPU timing and failed frame cohorts.
+
+The frame observer reads completed counters and live World time outside its
+timed window. Its parser distinguishes an enclosing World return from actual
+simulation advancement, checks counter baselines, and requires unpaused time
+and random/display work. It records finite endpoint pose and complete graphics
+identity; these do not prove every intermediate position or all GL state.
+Every profile must qualify and match before a cohort can pass. The
+[frame contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/client_frames.md)
+retains zero-tick frames, failures and legacy data without pooling them.
+
 The active Block static loader and passive inspector share one bounded
 96-name decoder. They keep their distinct class-use and diagnostic contracts
 and read the current nullable named cell on every successful call. Larger
