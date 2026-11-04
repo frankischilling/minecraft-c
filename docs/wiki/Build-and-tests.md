@@ -1,5 +1,26 @@
 # Build and tests
 
+## Item appearance and foliage GUI
+
+Windows MSVC Release and Linux Clang Debug ASan/UBSan match all 4,307 selected
+original lines: 202 Item class rows, 4,040 appearance profiles, 64 live-texture
+profiles and completion. The original packet has 49 corruption controls and
+the native comparator has 35. Native Inventory Block controls pass 19,999
+checks per host; six parent-renderer regressions also pass on each host.
+
+Sixteen genuine native GUI calls pass 350 checks per host. Windows takes 5.67
+CTest seconds; Linux software GL takes 12.64 seconds for its outer cohort,
+with leak detection and halt-on-error. Actual cleanup takes four calls/three
+BUSY returns on Windows and 26 calls/25 BUSY returns on Linux. Both preserve
+their captured inputs and all 413 assets. Linux isolates the actual account
+game-directory path and preserves the host directory's contents and identity.
+
+[Detailed scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/appearance.md)
+retains the first Windows transport failure and pre-change UBSan overflow.
+Native imported-texture checks establish no original-pixel, loaded-play or
+FPS result. Historical Workbench joins and failed frame/focus cohorts remain
+separate.
+
 ## Placement metadata comparison
 
 Two fresh unchanged original VMs agree on all 4,040 metadata calls across

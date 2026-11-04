@@ -52,7 +52,9 @@ static bool held_color(mc_client_held_item_draw_call *c) {
         return fail(c, MC_CLIENT_HELD_ITEM_DRAW_SOURCE_NULL, "held Item color null receiver", 140,
                     false);
     c->failure.item = &c->item_error;
-    if (!mc_item_render_color(c->item_registry, item, damage, &color, &c->item_error)) {
+    const mc_item_render_color_context colors = {graphics(c), mc_client_colorizer_read};
+    if (!mc_item_render_color_with_context(c->item_registry, item, damage, &colors, &color,
+                                           &c->item_error)) {
         c->failure.child =
             (mc_client_graphics_site){c->item_error.site.class_name, c->item_error.site.method,
                                       c->item_error.site.descriptor, c->item_error.site.pc};

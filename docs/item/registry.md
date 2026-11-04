@@ -93,11 +93,13 @@ different source reads. An earlier capture does not replace a later source reloa
 Renderer dispatch also distinguishes method bodies from constructor fields.
 Inherited GM icon/color/full3D/rotate leaves use their actual field or literal
 body. DQ/QD/LA/CS full3D methods return true, and CS rotate returns true, even
-when the inherited `GM.bi` field differs. Wool BI keeps its metadata mapping.
-The KM/GO/EN/MR/UY icon overrides and UY color remain named dependencies.
-The [original inventory](../../tests/reference/entity/held_item_attack/item-inventory.json)
-records all 202 IDs, declaring methods and scalar observations; it does not
-turn those remaining overrides into native successes.
+when the inherited `GM.bi` field differs. Wool BI, Log GO, Slab EN, Sapling MR,
+Leaves UY and Dye KM now execute their icon overrides. Leaves color uses the
+caller's actual graphics namespace, preserving Foliage Colorizer initialization
+and cached failures. The [appearance comparison](appearance.md) matches every
+selected scalar and declaring-owner row across all 202 Items and 38 classes
+on Windows and sanitized Linux. Native GUI controls separately cover Sapling
+and Leaves drawing; this does not qualify unrestricted Item rendering.
 
 ## Failures, observations and lifetime
 

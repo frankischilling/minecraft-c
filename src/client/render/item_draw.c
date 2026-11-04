@@ -255,8 +255,10 @@ static bool item_billboard(ld_frame *f, const mc_client_item_renderer_fields *bb
         if (color_item == NULL)
             return ld_null(f, "Item billboard null captured color Item receiver");
         int32_t color;
-        if (!ld_item_result(
-                f, mc_item_render_color(registry, color_item, metadata, &color, &e->detail.item)))
+        const mc_item_render_color_context colors = {f->scope->model.graphics,
+                                                     mc_client_colorizer_read};
+        if (!ld_item_result(f, mc_item_render_color_with_context(registry, color_item, metadata,
+                                                                 &colors, &color, &e->detail.item)))
             return false;
         item_at(f, 523);
         if (!ld_fp(f))

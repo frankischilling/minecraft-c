@@ -377,7 +377,7 @@ mc_registry_status mc_block_render_texture_metadata(const mc_block *block, int32
             t = side == 0 || side == 1 ? 21 : m == 1 ? 116 : m == 2 ? 117 : 20;
             break;
         case MC_BLOCK_LEAVES:
-            t = (m & 3) == 1 ? t + 80 : t;
+            t = (m & 3) == 1 ? mc_java_i32_add(t, 80) : t;
             break;
         case MC_BLOCK_TALL_GRASS:
             t = m == 2 ? t + 17 : m == 0 ? t + 16 : t;

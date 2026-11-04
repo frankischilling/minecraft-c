@@ -5386,12 +5386,12 @@
       "sha256": "f17906b1291eefdb87b3f64290370111a323ecf55eb7c9e5f6b545bda0746002"
     },
     "src/item/render/internal.h": {
-      "bytes": 2380,
-      "sha256": "98d80249c72bd2e743ab7b3408310096ff93a1bb34ce3df2dd88b4295b2b7d31"
+      "bytes": 3390,
+      "sha256": "243da87b81cd749ce81e4d17876b3dfad2c5767a7e029c0c30374d8b8054bf61"
     },
     "src/item/render/leaves.c": {
-      "bytes": 22815,
-      "sha256": "ca497f3664ce8027d34a970b095e0eb156f5d6490b8f5b5b6c0713a8bbd67eeb"
+      "bytes": 26463,
+      "sha256": "237540a47f54f9dff503078c1ecb6c78ff7972cb928eda1e2348974bbdb2e9fb"
     },
     "tests/client/render/test_remaining_mob_draw.c": {
       "bytes": 100487,
@@ -5902,8 +5902,8 @@
       "sha256": "d06662e486fabc14193d2937fed0b4e4f8b77fde3a1d173245706ac858716ae2"
     },
     "src/client/render/item_gui.c": {
-      "bytes": 27638,
-      "sha256": "73dc5949319afef6416597abfda5cae3bad878f6bc5248aba61ed2f849681bb2"
+      "bytes": 27875,
+      "sha256": "3c51a68b4503e6bcd5e3c6b51777df792368c3f262cd36147be64ba0eae6bd3e"
     },
     "src/client/render/item_gui.h": {
       "bytes": 4794,
@@ -6058,12 +6058,12 @@
       "sha256": "6811b7b217396b9f76dc87bf472e919b118d5358b47e39bfaf957a2e2d246c96"
     },
     "src/client/render/item_draw.c": {
-      "bytes": 24089,
-      "sha256": "d7c25d9bddbe6b23c801ff07cba79ebbfead627f43c072d040178bddc3c346f5"
+      "bytes": 24318,
+      "sha256": "d86b47efc7b87eb2c196ed7431c18ed4208f8d2a2c297f9a54d7ed0800744242"
     },
     "src/client/world/entity_renderer/held_block.inc": {
-      "bytes": 18530,
-      "sha256": "3d5a81e02587d1869c99cd7d1def6c35c38c7fb9fb23f561e5fe13a122785cdd"
+      "bytes": 18684,
+      "sha256": "f703d185af63b985c31ab5778362adc5c27304c499020c3d33220aa43347da74"
     },
     "src/client/world/render_global_auxiliary.inc": {
       "bytes": 15098,
@@ -6094,8 +6094,8 @@
       "sha256": "2885b20de9a033e5a73bfa0978a66cfd373bfb20deead7e3db2a0fc0a8bf21d4"
     },
     "tests/client/render/test_inventory_block.c": {
-      "bytes": 82202,
-      "sha256": "677511da0ed455a3b4a3c9d17f124ec0449fbeb36c25ccc1b9a2f4cbd980a8b2"
+      "bytes": 81125,
+      "sha256": "372cf1b11cf0cb860362eb14c2b8b1bd39444f6ac0bd8d029bf7d006a850e922"
     },
     "tests/entity/particles/test_digging.c": {
       "bytes": 15805,

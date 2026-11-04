@@ -83,6 +83,7 @@ def main():
                  "tests/client/startup/test_world_reload.inc",
                  "tests/client/gameplay/test_attack_autosave.inc",
                  "tests/client/render/inventory_family_controls.inc",
+                 "tests/client/render/foliage_item_controls.inc",
                  "tests/benchmarks/chunk_cache_error_equal.inc",
                  "tests/world/runtime/collision/selected_getter_cases.inc",
                  "src/client/settings/source_input.inc",

@@ -14,6 +14,7 @@ int mc_inventory_faces_fixture_main(void);
 #include "mc/item/registry/runtime.h"
 #include <inttypes.h>
 
+#include "foliage_item_controls.inc"
 #include "inventory_family_controls.inc"
 #include "leaf_inventory_controls.inc"
 
@@ -273,29 +274,6 @@ static bool inherited_item_controls(mc_registry_classes *registry) {
         CHECK(busy && icon == 77 && error.status == MC_REGISTRY_BUSY && error.site.pc == -1);
     }
 
-    static const struct {
-        mc_item_kind kind;
-        const char *icon_owner;
-    } overrides[] = {{MC_ITEM_SAPLING_BLOCK, "mr"}, {MC_ITEM_LEAVES_BLOCK, "uy"}};
-
-    for (size_t i = 0; i < sizeof(overrides) / sizeof(overrides[0]); ++i) {
-        mc_item *raw = NULL;
-        CHECK(mc_registry_item_allocate(registry, overrides[i].kind, &raw) == MC_REGISTRY_OK &&
-              raw != NULL && raw->phase == MC_ITEM_RAW);
-        raw->fields.bh = 109;
-        mc_item_render_error error;
-        int32_t value = 77;
-        CHECK(!mc_item_render_icon(registry, raw, 15, &value, &error) && value == 77 &&
-              error.status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY && error.site.pc == 0 &&
-              strcmp(error.site.class_name, overrides[i].icon_owner) == 0);
-        if (overrides[i].kind == MC_ITEM_LEAVES_BLOCK)
-            CHECK(!mc_item_render_color(registry, raw, 0, &value, &error) && value == 77 &&
-                  error.status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY &&
-                  strcmp(error.site.class_name, "uy") == 0);
-        else
-            CHECK(mc_item_render_color(registry, raw, 0, &value, &error) && value == 0xffffff &&
-                  strcmp(error.site.class_name, "gm") == 0);
-    }
     return true;
 }
 
@@ -1266,7 +1244,8 @@ static bool inventory_controls(void) {
     CHECK(inherited_item_controls(f.registry) && dye_item_getter_controls(&f) &&
           dye_icon_observations(f.registry) && log_item_getter_controls(&f) &&
           slab_item_getter_controls(&f) && log_item_initializer_controls(&f) &&
-          slab_item_initializer_controls(&f));
+          slab_item_initializer_controls(&f) && foliage_item_icon_controls(&f) &&
+          foliage_item_color_controls(&f) && foliage_item_color_failure_controls(&f));
     mc_item_render_error item_error;
     CHECK(mc_item_render_icon(f.registry, item, 7, &icon, &item_error) && item_error.returned &&
           icon == 2);

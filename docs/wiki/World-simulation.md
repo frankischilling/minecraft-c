@@ -1,5 +1,14 @@
 # World simulation
 
+## Item appearance
+
+[Sapling and Leaves Item drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/appearance.md)
+now completes its icon/color methods, including actual Foliage Colorizer
+initialization. Windows and sanitized Linux match the complete registered
+Item appearance transcript and return sixteen genuine native GUI calls each.
+The GUI fixture creates no World; Sapling placement and other Block hooks
+retain their separate dependencies.
+
 ## BlockItem placement metadata
 
 [The placement metadata rules](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/placement-metadata.md)

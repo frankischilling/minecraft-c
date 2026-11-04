@@ -1,5 +1,27 @@
 # Test scope and reproduction
 
+## Item appearance and foliage GUI
+
+Windows MSVC Release and Linux Clang Debug ASan/UBSan match all 4,307 selected
+[original appearance lines](../tests/reference/item/appearance/README.md):
+202 registered Items, 38 classes, 4,040 appearance profiles and 64 live-texture
+profiles. The native Inventory Block fixture passes 19,999 checks per host.
+Six parent-renderer regressions also pass, in 5.37 Windows and 8.21 Linux CTest
+seconds. Leak detection and halt-on-error remain enabled on Linux.
+
+The optional `MC_ENABLE_CLIENT_FOLIAGE_GUI_TESTS` target runs sixteen genuine
+Sapling/Leaves GUI calls with imported assets and passes 350 checks per host.
+Windows takes 5.67 CTest seconds; the Linux software-GL outer cohort takes
+12.64 seconds. Actual native cleanup observes BUSY-to-OK on both hosts.
+Linux requires an explicit isolated actual getpwuid game directory and validates
+its live mount-namespace receipt; a HOME override does not provide that proof.
+The real host directory and frozen inputs remain unchanged.
+
+See [method behavior and qualification limits](item/appearance.md) for the
+retained first transport failure, pre-change UBSan overflow, precise native
+pixel scope and separate loaded-play/FPS exclusions. Historical Workbench and
+failed focus/frame cohorts keep their original scopes.
+
 ## Static Registry selection, cache validation and save progress
 
 The [static CPU receipt](../tests/benchmarks/static_cpu_windows.json) separates

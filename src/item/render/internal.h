@@ -1,5 +1,6 @@
 #ifndef MC_ITEM_RENDER_INTERNAL_H
 #define MC_ITEM_RENDER_INTERNAL_H
+#include "../../client/render_engine/colorizer.h"
 #include "mc/item/registry/runtime.h"
 #include "mc/item/stack/stack.h"
 
@@ -23,6 +24,8 @@ typedef struct mc_item_render_error {
     size_t ancestor_count;
     mc_registry_error registry;
     mc_item_stack_status stack;
+    mc_client_colorizer_error colorizer;
+    bool colorizer_entered, colorizer_returned;
     /* Passive actual operands, not an Item/Stack/array replacement. */
     uintptr_t stack_identity, array_identity, item_identity;
     int32_t id, damage;
@@ -42,6 +45,21 @@ bool mc_item_render_icon(mc_registry_classes *, const mc_item *, int32_t damage,
                          mc_item_render_error *);
 bool mc_item_render_color(mc_registry_classes *, const mc_item *, int32_t damage, int32_t *,
                           mc_item_render_error *);
+
+typedef struct mc_item_render_color_context {
+    mc_client_render_engine_classes *graphics;
+    mc_client_colorizer_reader read;
+} mc_item_render_color_context;
+
+/* The actual upper-layer namespace and its genuine Colorizer reader form one
+ * borrowed pair. They remain live/exclusive through this synchronous call.
+ * Only UY's reached JH invocation uses the pair; inherited GM ignores it.
+ * The reader performs actual class active use, including cold allocation and
+ * cached failure. No graphics library symbol or global binding is needed in
+ * the Item module. The Registry-only entry above supplies no such pair. */
+bool mc_item_render_color_with_context(mc_registry_classes *, const mc_item *, int32_t damage,
+                                       const mc_item_render_color_context *, int32_t *,
+                                       mc_item_render_error *);
 bool mc_item_render_rotate(mc_registry_classes *, const mc_item *, bool *, mc_item_render_error *);
 /* Actual IZ.b -> IZ.a -> GM.b(IZ) -> IZ.i -> selected GM.a(int).
  * c_get precedes each current id read; c_at uses that captured array. */

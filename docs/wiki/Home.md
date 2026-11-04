@@ -5,6 +5,14 @@ ticks, draw terrain and Mobs, and reach mining, placement, pickup, crafting and
 save/reselection in finite Windows scenarios. Complete Beta 1.7.3 parity and
 unrestricted play remain unfinished. Single-player is the current focus.
 
+[Item appearance](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/appearance.md)
+now completes Sapling/Leaves icon overrides and Leaves color through the actual
+Foliage Colorizer. Windows and sanitized Linux match all 4,307 original
+appearance lines across 202 Items and 38 classes. Sixteen genuine native GUI
+draws pass 350 checks per host, with imported-texture readbacks and checked
+cleanup. These component results do not establish loaded family coverage,
+original pixels or an FPS improvement.
+
 [BlockItem metadata](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/placement-metadata.md)
 now implements all six original placement overrides. Windows and sanitized
 Linux match 4,040 original scalar results across 202 Items and 38 classes;

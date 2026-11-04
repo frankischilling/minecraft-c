@@ -1,5 +1,19 @@
 # History
 
+## Item appearance and foliage GUI
+
+Sapling and Leaves now read the live named Block and call its texture method;
+the Leaves texture addition uses Java wrapping. Leaves Item color invokes
+the actual Foliage Colorizer through each caller's graphics owner, retaining
+cold initialization, allocation limits and cached failures.
+
+Two fresh original VMs repeat all 4,307 selected appearance lines. Windows and
+sanitized Linux match every row and pass 19,999 Inventory Block checks each.
+Sixteen separate native GUI calls pass 350 checks per host through real draws
+and native cleanup. The fixture creates no World; original pixels, loaded
+family coverage and FPS remain unqualified. The first Windows transport
+failure and genuine pre-change UBSan overflow remain retained.
+
 ## BlockItem placement metadata
 
 The six original metadata overrides now run inside the ordinary BlockItem

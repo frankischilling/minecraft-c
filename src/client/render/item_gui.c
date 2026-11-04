@@ -223,8 +223,11 @@ static bool item_color(mc_client_item_gui_call *c, int32_t active_pc, int32_t in
         return registry_failure(c, "GUI Item actual GM.c aaload", index_pc);
     if (c->state.color_item == NULL)
         return null_reference(c, "actual GUI Item null color Item", invoke_pc);
-    if (!mc_item_render_color(c->registry, c->state.color_item, c->state.metadata, &c->state.color,
-                              &c->failure.item)) {
+    if (c->state.color_item->kind == MC_ITEM_LEAVES_BLOCK && !hold_graphics(c, invoke_pc))
+        return false;
+    const mc_item_render_color_context colors = {c->graphics, mc_client_colorizer_read};
+    if (!mc_item_render_color_with_context(c->registry, c->state.color_item, c->state.metadata,
+                                           &colors, &c->state.color, &c->failure.item)) {
         c->failure.child =
             (mc_client_graphics_site){c->failure.item.site.class_name, c->failure.item.site.method,
                                       c->failure.item.site.descriptor, c->failure.item.site.pc};

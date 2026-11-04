@@ -321,6 +321,24 @@ static bool icon_entered(mc_registry_classes *classes, const mc_item *item, int3
         e->site.pc = 8;
         return true;
     }
+    if (resolved->icon == RENDER_MR || resolved->icon == RENDER_UY) {
+        const bool leaves = resolved->icon == RENDER_UY;
+        e->site = at(leaves ? "uy" : "mr", "a", "(I)I", 0);
+        const mc_block *block = NULL;
+        if (mc_registry_block_static_get(classes, leaves ? "L" : "z", &block, &e->registry) !=
+            MC_REGISTRY_OK)
+            return registry_failed(classes, e);
+        /* Both methods capture their named static before passing side0 and
+         * the unchanged signed damage to that receiver's virtual texture. */
+        e->site.pc = 5;
+        if (block == NULL)
+            return source_null(e, "Foliage Item icon null captured Block receiver");
+        const mc_registry_status status = mc_block_render_texture_metadata(block, 0, damage, out);
+        if (status != MC_REGISTRY_OK)
+            return fail(e, status, "Foliage Item icon actual Block texture override");
+        e->site.pc = 8;
+        return true;
+    }
     if (resolved->icon == RENDER_KM) {
         e->site = at("km", "a", "(I)I", 3);
         const int32_t base = item->fields.bh;
@@ -384,8 +402,9 @@ bool mc_item_render_full_3d(mc_registry_classes *classes, const mc_item *item, b
     return true;
 }
 
-bool mc_item_render_color(mc_registry_classes *classes, const mc_item *item, int32_t damage,
-                          int32_t *out, mc_item_render_error *e) {
+bool mc_item_render_color_with_context(mc_registry_classes *classes, const mc_item *item,
+                                       int32_t damage, const mc_item_render_color_context *context,
+                                       int32_t *out, mc_item_render_error *e) {
     if (e == NULL)
         return false;
     mc_item_render_error_init(e);
@@ -398,12 +417,55 @@ bool mc_item_render_color(mc_registry_classes *classes, const mc_item *item, int
         return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
                     "Item render unresolved color declaration");
     e->site = at(body_class(resolved->color), "f", "(I)I", 0);
+    if (resolved->color == RENDER_UY) {
+        const bool pine = ((uint32_t)damage & 1u) != 0;
+        const bool birch = !pine && ((uint32_t)damage & 2u) != 0;
+        const mc_client_colorizer_read_kind read = pine    ? MC_CLIENT_COLORIZER_PINE
+                                                   : birch ? MC_CLIENT_COLORIZER_BIRCH
+                                                           : MC_CLIENT_COLORIZER_DEFAULT_FOLIAGE;
+        e->site.pc = pine ? 7 : birch ? 18 : 22;
+        if (context == NULL || context->graphics == NULL || context->read == NULL)
+            return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
+                        "Foliage Item color actual Colorizer namespace");
+        e->colorizer_entered = true;
+        if (context->read(context->graphics, MC_CLIENT_COLORIZER_FOLIAGE, read, 0.0, 0.0, out,
+                          &e->colorizer) != MC_CLIENT_COLORIZER_OK) {
+            const mc_client_colorizer_error *child = &e->colorizer;
+            e->child = at(child->site.class_name, child->site.method, child->site.descriptor,
+                          child->site.pc);
+            mc_registry_status status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
+            if (child->status == MC_CLIENT_COLORIZER_BUSY)
+                status = MC_REGISTRY_BUSY;
+            else if (child->status == MC_CLIENT_COLORIZER_LIMIT ||
+                     (child->status == MC_CLIENT_COLORIZER_ARRAY_FAILED &&
+                      child->array.status == MC_CLIENT_COLOR_ARRAY_LIMIT))
+                status = MC_REGISTRY_LIMIT;
+            else if (child->status == MC_CLIENT_COLORIZER_ARRAY_FAILED &&
+                     child->array.status == MC_CLIENT_COLOR_ARRAY_ALLOCATION_FAILED)
+                status = MC_REGISTRY_ALLOCATION_FAILED;
+            else if (child->status == MC_CLIENT_COLORIZER_CLASS_FAILED)
+                status = MC_REGISTRY_FAILED_INITIALIZATION;
+            /* Constant JH bodies have no null/index/FP operation. Native
+             * initialization refusals remain typed causes, not Java throws. */
+            return fail(e, status, child->operation);
+        }
+        e->colorizer_returned = true;
+        e->child = at("jh", pine ? "a" : birch ? "b" : "c", "()I", 2);
+        e->site.pc = pine ? 10 : birch ? 21 : 25;
+        e->returned = true;
+        return true;
+    }
     if (resolved->color != RENDER_GM)
         return fail(e, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY, "Item actual metadata color override");
     *out = 16777215;
     e->site.pc = 2;
     e->returned = true;
     return true;
+}
+
+bool mc_item_render_color(mc_registry_classes *classes, const mc_item *item, int32_t damage,
+                          int32_t *out, mc_item_render_error *e) {
+    return mc_item_render_color_with_context(classes, item, damage, NULL, out, e);
 }
 
 bool mc_item_render_rotate(mc_registry_classes *classes, const mc_item *item, bool *out,
