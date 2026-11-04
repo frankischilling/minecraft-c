@@ -478,7 +478,7 @@ def tag(kind, key, value):
 
 
 def metadata(display, played, version, partial=False, player_score=None, cactus_player=False,
-             torch_player=False, fluid_player=False, ladder_player=False):
+             torch_player=False, fluid_player=False, ladder_player=False, crops_player=False):
     data = tag(8, "LevelName", string(display))
     data += tag(4, "LastPlayed", struct.pack(">q", played))
     data += tag(4, "SizeOnDisk", struct.pack(">q", 3145728))
@@ -508,15 +508,15 @@ def metadata(display, played, version, partial=False, player_score=None, cactus_
         player += tag(3, "Score", struct.pack(">i", player_score))
         player += tag(9, "Inventory", b"\x0a\x00\x00\x00\x00")
         data += tag(10, "Player", player + b"\x00")
-    if cactus_player or torch_player or fluid_player or ladder_player:
+    if cactus_player or torch_player or fluid_player or ladder_player or crops_player:
         if (partial or player_score is not None or
-                sum(bool(flag) for flag in (cactus_player, torch_player, fluid_player, ladder_player)) != 1):
+                sum(bool(flag) for flag in (cactus_player, torch_player, fluid_player, ladder_player, crops_player)) != 1):
             raise RuntimeError("Distinct authored special Block Player fixture arm")
-        saved_y = (65.0 if fluid_player or ladder_player else 64.0) + struct.unpack(">f", struct.pack(">f", 1.62))[0]
+        saved_y = (65.0 if fluid_player or ladder_player or crops_player else 64.0) + struct.unpack(">f", struct.pack(">f", 1.62))[0]
         player = tag(3, "Dimension", struct.pack(">i", 0))
         player += tag(9, "Pos", b"\x06" + struct.pack(">i3d", 3, 3.5, saved_y, .5))
         player += tag(9, "Motion", b"\x06" + struct.pack(">i3d", 3, 0., 0., 0.))
-        pitch = 15. if ladder_player else 26. if fluid_player else 2. if torch_player else 0.
+        pitch = 15. if ladder_player else 26. if fluid_player or crops_player else 2. if torch_player else 0.
         player += tag(9, "Rotation", b"\x05" + struct.pack(">i2f", 2, 0., pitch))
         player += tag(1, "OnGround", b"\x01")
         player += tag(2, "Health", struct.pack(">h", 20))
@@ -651,9 +651,11 @@ def torch_receipts(stdout, pose_input):
 
 def standing_scene_input(level_path, region_path, block_id):
     """Decode saved Block/standing cells and the source-loaded Player pose."""
-    if block_id not in (9, 11, 65):
-        raise RuntimeError("Declared Water/Lava/Ladder registration")
+    if block_id not in (9, 11, 59, 65):
+        raise RuntimeError("Declared Water/Lava/Crops/Ladder registration")
     ladder = block_id == 65
+    crops = block_id == 59
+    block_metadata = 7 if crops else 2 if ladder else 0
     parser_path = Path(__file__).resolve().parents[1] / "world/test_source_saving.py"
     spec = importlib.util.spec_from_file_location("fluid_input_nbt", parser_path)
     decoder = importlib.util.module_from_spec(spec)
@@ -667,36 +669,37 @@ def standing_scene_input(level_path, region_path, block_id):
             player['Rotation'] != [9, [5, [int(value, 16) for value in rotation]]] or
             player['Motion'] != [9, [6, [0, 0, 0]]] or player['OnGround'] != [1, 1] or
             player['Health'] != [2, 20] or player['Inventory'] != [9, [10, []]]):
-        raise RuntimeError("Independently decoded saved fluid Player camera input")
+        raise RuntimeError("Independently decoded saved standing Block Player camera input")
     raw = decoder.read(region_path)
     location = struct.unpack_from('>I', raw, 0)[0]
     sector, count = location >> 8, location & 255
     at = sector * 4096
     if sector < 2 or count < 1 or (sector + count) * 4096 > len(raw):
-        raise RuntimeError("Actual authored fluid Chunk allocation")
+        raise RuntimeError("Actual authored standing Block Chunk allocation")
     length = struct.unpack_from('>I', raw, at)[0]
     if not 1 < length <= count * 4096 - 4 or raw[at + 4] != 2:
-        raise RuntimeError("Actual authored fluid Chunk compression extent")
+        raise RuntimeError("Actual authored standing Block Chunk compression extent")
     chunk = decoder.inflate(raw[at + 5:at + 4 + length], 15)['Level'][1]
     if (chunk['xPos'] != [3, 0] or chunk['zPos'] != [3, 0] or
             chunk['TerrainPopulated'] != [1, 1] or chunk['Blocks'][0] != 7 or
             len(chunk['Blocks'][1]) != 32768 or chunk['Data'][0] != 7 or
             len(chunk['Data'][1]) != 16384):
-        raise RuntimeError("Actual source fluid saved Chunk fields")
-    cells = [(3, 64, 0, 1, 0), (3, 64, 3, 12, 0), (3, 65, 3, block_id, 2 if ladder else 0)]
+        raise RuntimeError("Actual source standing Block saved Chunk fields")
+    cells = [(3, 64, 0, 1, 0), (3, 64, 3, 60 if crops else 12, 0),
+             (3, 65, 3, block_id, block_metadata)]
     if ladder:
         cells.append((3, 65, 4, 1, 0))
     for x, y, z, block, meta in cells:
         index = (x << 11) | (z << 7) | y
         if (chunk['Blocks'][1][index] != block or
                 (chunk['Data'][1][index // 2] >> ((index & 1) * 4)) & 15 != meta):
-            raise RuntimeError("Independent saved fluid/standing cells and metadata")
+            raise RuntimeError("Independent saved standing Block cells and metadata")
     base, platform = (3 << 11) | (3 << 7), (3 << 11)
-    if (chunk['SkyLight'][1][(base + 64) // 2] != (0xf0 if ladder else 0xc0 if block_id == 9 else 0) or
-            chunk['HeightMap'][1][3 * 16 + 3] != (65 if ladder else 66) or
+    if (chunk['SkyLight'][1][(base + 64) // 2] != (0xf0 if ladder or crops else 0xc0 if block_id == 9 else 0) or
+            chunk['HeightMap'][1][3 * 16 + 3] != (65 if ladder or crops else 66) or
             chunk['SkyLight'][1][(platform + 64) // 2] != 0xf0 or
             chunk['HeightMap'][1][3] != 65):
-        raise RuntimeError("Declared source-opacity-based fluid and platform saved light inputs")
+        raise RuntimeError("Declared source-opacity-based Block and platform saved light inputs")
     if ladder:
         wall = (3 << 11) | (4 << 7)
         if (chunk['SkyLight'][1][(wall + 64) // 2] != 0 or
@@ -705,8 +708,8 @@ def standing_scene_input(level_path, region_path, block_id):
     return {'position_bits': position, 'rotation_bits': rotation,
             'feet_y_bits': struct.pack('>d', 65.).hex(),
             'offset_bits': struct.pack('>f', 1.62).hex(), 'cells': cells,
-            'block': [3, 65, 3, block_id, 2 if ladder else 0],
-            'pick': [3, 65, 3, 65] if ladder else [3, 64, 3, 12]}
+            'block': [3, 65, 3, block_id, block_metadata],
+            'pick': [3, 65, 3, block_id] if ladder or crops else [3, 64, 3, 12]}
 
 
 def fluid_receipts(stdout, mode, pose_input, reference):
@@ -767,59 +770,63 @@ def fluid_receipts(stdout, mode, pose_input, reference):
         raise RuntimeError("Loaded fluid checked ownership terminal retirement")
 
 
-def ladder_receipts(stdout, pose_input, reference):
+def standing_block_receipts(stdout, pose_input, reference):
+    if reference['id'] not in (59, 65):
+        raise RuntimeError('Closed standing Block receipt family')
+    crops = reference['id'] == 59
+    tag, noun, mode = ('CROPS', 'crops', 'load-crops') if crops else ('LADDER', 'ladder', 'load-ladder')
+    block, metadata, count, total = (59, 7, 48, 108) if crops else (65, 2, 6, 102)
     rows = stdout.splitlines()
-    pose = ('WORLD_LADDER_POSE input=saved-player source-loaded=1 camera=player position=' +
+    pose = (f'WORLD_{tag}_POSE input=saved-player source-loaded=1 camera=player position=' +
             ','.join(pose_input['position_bits']) + ' rotation=' +
             ','.join(pose_input['rotation_bits']) + ' feet=' + pose_input['feet_y_bits'] +
-            ' offset=' + pose_input['offset_bits'] + ' hit=3,65,3 block=65')
-    if [row for row in rows if row.startswith('WORLD_LADDER_POSE ')] != [pose]:
-        raise RuntimeError('Source-read saved Ladder Player/camera and actual Ladder pick')
-    summaries = [row for row in rows if row.startswith('WORLD_LADDER ')]
+            ' offset=' + pose_input['offset_bits'] + f' hit=3,65,3 block={block}')
+    if [row for row in rows if row.startswith(f'WORLD_{tag}_POSE ')] != [pose]:
+        raise RuntimeError('Source-read saved standing Block Player/camera and actual pick')
+    summaries = [row for row in rows if row.startswith(f'WORLD_{tag} ')]
     receipt = re.fullmatch(
-        r'WORLD_LADDER input=pre-bootstrap-region block=65 metadata=2 pass=0 vertices=102 '
-        r'ladder-vertices=6 exact-original-position-uv=1 color-matches=(?P<colors>[0-9]+) '
-        r'source-colors=6 frames=(?P<frames>[0-9]+) reuse-frames=(?P<reuse>[0-9]+) '
+        rf'WORLD_{tag} input=pre-bootstrap-region block={block} metadata={metadata} pass=0 vertices={total} '
+        rf'{noun}-vertices={count} exact-original-position-uv=1 color-matches=(?P<colors>[0-9]+) '
+        rf'source-colors={count} frames=(?P<frames>[0-9]+) reuse-frames=(?P<reuse>[0-9]+) '
         r'recompile-frames=(?P<recompile>[0-9]+) list=(?P<list>[0-9]+) '
-        r'same-world-and-registry=1 returned-world-hud=1 ladder-pick=1 reused-definition=1 '
+        rf'same-world-and-registry=1 returned-world-hud=1 {noun}-pick=1 reused-definition=1 '
         r'world-light-notification=1 dirty-recompiled=1 source-bounds-preserved=1',
         summaries[0]) if len(summaries) == 1 else None
     if (receipt is None or not 3 <= int(receipt['frames']) <= 48 or
             not 1 <= int(receipt['reuse']) <= 16 or not 1 <= int(receipt['recompile']) <= 16 or
-            int(receipt['list']) <= 0 or reference['vertices'] != 6 or
-            reference['id'] != 65 or reference['metadata'] != 2):
-        raise RuntimeError('Returned Ladder section/reuse/dirty-recompile inventory')
-    vertices = [row for row in rows if row.startswith('WORLD_LADDER_WORD ')]
-    if len(vertices) != 6:
-        raise RuntimeError('Every actual loaded Ladder vertex must be retained')
+            int(receipt['list']) <= 0 or reference['vertices'] != count or reference['metadata'] != metadata):
+        raise RuntimeError('Returned standing Block section/reuse/dirty-recompile inventory')
+    vertices = [row for row in rows if row.startswith(f'WORLD_{tag}_WORD ')]
+    if len(vertices) != count:
+        raise RuntimeError('Every actual loaded standing Block vertex must be retained')
     colors = 0
     for i, row in enumerate(vertices):
-        match = re.fullmatch(rf'WORLD_LADDER_WORD vertex={i} words=([0-9a-f]{{8}}(?:,[0-9a-f]{{8}}){{7}})', row)
+        match = re.fullmatch(rf'WORLD_{tag}_WORD vertex={i} words=([0-9a-f]{{8}}(?:,[0-9a-f]{{8}}){{7}})', row)
         if match is None:
-            raise RuntimeError('Typed loaded Ladder packed-word receipt')
+            raise RuntimeError('Typed loaded standing Block packed-word receipt')
         words = match[1].split(',')
         original = reference['words'][i * 8:(i + 1) * 8]
         if words[:5] != original[:5]:
-            raise RuntimeError('Exact unchanged-original Ladder position/UV words')
+            raise RuntimeError('Exact unchanged-original standing Block position/UV words')
         colors += words[5] == original[5]
     if colors != int(receipt['colors']):
-        raise RuntimeError('Independently counted loaded Ladder color matches')
-    steps = [row for row in rows if row.startswith('WORLD_LADDER_STEP ')]
+        raise RuntimeError('Independently counted standing Block color matches')
+    steps = [row for row in rows if row.startswith(f'WORLD_{tag}_STEP ')]
     if len(steps) != int(receipt['reuse']):
-        raise RuntimeError('Actual bounded Ladder definition-reuse inventory')
+        raise RuntimeError('Actual bounded standing Block definition-reuse inventory')
     for i, row in enumerate(steps, 1):
-        step = re.fullmatch(rf'WORLD_LADDER_STEP stage=reuse attempt={i} same-list=1 '
+        step = re.fullmatch(rf'WORLD_{tag}_STEP stage=reuse attempt={i} same-list=1 '
                             r'same-definition=([01]) same-bytes=([01])', row)
         final = i == len(steps)
         if step is None or (step[1] == '1') != final or final and step[2] != '1':
-            raise RuntimeError('Every qualified Ladder section before immutable reuse')
-    cleanup = [row for row in rows if row.startswith('WORLD_SELECTION mode=load-ladder cleanup=')]
+            raise RuntimeError('Every qualified standing Block section before immutable reuse')
+    cleanup = [row for row in rows if row.startswith(f'WORLD_SELECTION mode={mode} cleanup=')]
     if len(cleanup) != 1 or re.fullmatch(
-            r'WORLD_SELECTION mode=load-ladder cleanup=1 checks=[1-9][0-9]*', cleanup[0]) is None:
-        raise RuntimeError('Loaded Ladder checked ownership retirement')
+            rf'WORLD_SELECTION mode={mode} cleanup=1 checks=[1-9][0-9]*', cleanup[0]) is None:
+        raise RuntimeError('Loaded standing Block checked ownership retirement')
 
 
-def chunk_record(chunk_x, chunk_z, marker=57, cactus=False, torch=False, fluid_id=0, ladder=False):
+def chunk_record(chunk_x, chunk_z, marker=57, cactus=False, torch=False, fluid_id=0, ladder=False, crops=False):
     blocks = bytearray(32768)
     data = bytearray(16384)
     skylight = bytearray(16384)
@@ -876,6 +883,15 @@ def chunk_record(chunk_x, chunk_z, marker=57, cactus=False, torch=False, fluid_i
             skylight[(wall + 64) // 2] = 0
             heights[3] = heights[3 * 16 + 3] = 65
             heights[4 * 16 + 3] = 66
+        if crops:
+            if cactus or torch or fluid_id or ladder:
+                raise RuntimeError('Independent saved Crops input arm')
+            platform, base = (3 << 11), (3 << 11) | (3 << 7)
+            blocks[platform + 64] = 1
+            blocks[base + 64], blocks[base + 65] = 60, 59
+            data[(base + 64) // 2] = 0x70
+            skylight[(platform + 64) // 2] = skylight[(base + 64) // 2] = 0xf0
+            heights[3] = heights[3 * 16 + 3] = 65
     level = tag(3, "xPos", struct.pack(">i", chunk_x))
     level += tag(3, "zPos", struct.pack(">i", chunk_z))
     level += tag(4, "LastUpdate", struct.pack(">q", 0))
@@ -893,7 +909,7 @@ def chunk_record(chunk_x, chunk_z, marker=57, cactus=False, torch=False, fluid_i
     return record + bytes(sectors * 4096 - len(record)), sectors
 
 
-def saved_regions(directory, generate, marker=57, cactus=False, torch=False, fluid_id=0, ladder=False):
+def saved_regions(directory, generate, marker=57, cactus=False, torch=False, fluid_id=0, ladder=False, crops=False):
     # The default UI profile reads all 289 existing Chunks. The optional
     # generation profile retains one saved marker Chunk and generates its
     # surroundings through the same source path.
@@ -902,7 +918,7 @@ def saved_regions(directory, generate, marker=57, cactus=False, torch=False, flu
     regions = {}
     for x, z in coordinates:
         body, sectors = chunk_record(x, z, marker, cactus=cactus, torch=torch, fluid_id=fluid_id,
-                                     ladder=ladder)
+                                     ladder=ladder, crops=crops)
         region = regions.setdefault((x >> 5, z >> 5), bytearray(8192))
         offset = len(region) // 4096
         index = (x & 31) + (z & 31) * 32
@@ -1112,7 +1128,7 @@ def main():
     parser.add_argument("--artifacts", type=Path, required=True)
     parser.add_argument("--mode", action="append",
                         choices=("empty", "populated", "large", "double", "load", "generate",
-                                 "load-terminal", "load-partial", "repeat", "load-light", "load-cactus", "load-torch", "load-water", "load-lava", "load-ladder", "animals", "creatures",
+                                 "load-terminal", "load-partial", "repeat", "load-light", "load-cactus", "load-torch", "load-water", "load-lava", "load-ladder", "load-crops", "animals", "creatures",
                                  "creatures-slime", "creatures-creeper", "remaining-mobs",
                                  "remaining-wolf", "remaining-zombie", "remaining-skeleton",
                                  "save-title", "save-title-session", "reload-cycle"))
@@ -1138,6 +1154,7 @@ def main():
         cactus = mode == "load-cactus"
         torch = mode == "load-torch"
         ladder = mode == 'load-ladder'
+        crops = mode == 'load-crops'
         fluid_id = 9 if mode == 'load-water' else 11 if mode == 'load-lava' else 0
         reload_cycle = mode == "reload-cycle"
         save_title = mode in ("save-title", "save-title-session") or reload_cycle
@@ -1145,7 +1162,7 @@ def main():
         with tempfile.TemporaryDirectory(prefix="mc-rq-loop-") as work:
             appdata = Path(work)
             game = appdata / ".minecraft"
-            if mode == "repeat" or cactus or torch or fluid_id or ladder or animal or creature or remaining or save_title:
+            if mode == "repeat" or cactus or torch or fluid_id or ladder or crops or animal or creature or remaining or save_title:
                 repeat_statistics(game, assets)
             if save_title:
                 # Declared pre-bootstrap input; source kv.a() parses the real file.
@@ -1158,12 +1175,12 @@ def main():
             if mode == "large":
                 worlds = [(f"world{i:02d}", f"Scroll world {i:02d}", 1304000000000, 19132)
                           for i in range(16)]
-            elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or fluid_id or ladder or animal or creature or remaining or save_title:
+            elif mode in ("populated", "double", "load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or fluid_id or ladder or crops or animal or creature or remaining or save_title:
                 worlds = [
                     ("older", "Old world", 1303000000000, 19132),
                     ("bravo", "", 1304000000000, 0 if reload_cycle else 19132),
                     ("alpha", "Alpha world", 1304000000000,
-                     19132 if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or fluid_id or ladder or animal or creature or remaining or save_title else 0),
+                     19132 if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or fluid_id or ladder or crops or animal or creature or remaining or save_title else 0),
                 ]
             else:
                 worlds = []
@@ -1178,14 +1195,15 @@ def main():
                                            cactus_player=cactus and folder == "alpha",
                                            torch_player=torch and folder == "alpha",
                                            fluid_player=bool(fluid_id) and folder == "alpha",
-                                           ladder_player=ladder and folder == "alpha"),
+                                           ladder_player=ladder and folder == "alpha",
+                                           crops_player=crops and folder == "alpha"),
                                   mtime=0))
                 (directory / "preserve-chunk.dat").write_bytes(b"authored untouched chunk")
-            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or fluid_id or ladder or animal or creature or remaining or save_title:
+            if mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or fluid_id or ladder or crops or animal or creature or remaining or save_title:
                 regions = saves / "alpha" / "region"
                 regions.mkdir()
                 saved_regions(regions, generate=mode == "generate", cactus=cactus, torch=torch,
-                              fluid_id=fluid_id, ladder=ladder)
+                              fluid_id=fluid_id, ladder=ladder, crops=crops)
             if reload_cycle:
                 regions = saves / "older" / "region"
                 regions.mkdir()
@@ -1212,7 +1230,7 @@ def main():
                 if len(fluid_reference) != 1:
                     raise RuntimeError('One exact executed-original loaded fluid profile')
                 original_path = evidence / 'fluid-original-inputs-and-words.txt'
-                fluid_projection.write_fluid_reference(original_path, fluid_reference,
+                fluid_projection.write_block_reference(original_path, fluid_reference,
                                                         marker='FLUID_LOADED_V1')
             if ladder:
                 pose_input = standing_scene_input(evidence / 'before/alpha/level.dat',
@@ -1228,14 +1246,32 @@ def main():
                 if len(ladder_reference) != 1:
                     raise RuntimeError('One exact executed-original loaded Ladder profile')
                 original_path = evidence / 'ladder-original-inputs-and-words.txt'
-                block_projection.write_fluid_reference(original_path, ladder_reference,
+                block_projection.write_block_reference(original_path, ladder_reference,
                                                         marker='LADDER_LOADED_V1')
+            if crops:
+                pose_input = standing_scene_input(evidence / 'before/alpha/level.dat',
+                                                 evidence / 'before/alpha/region/r.0.0.mcr', 59)
+                (evidence / 'crops-input.json').write_text(json.dumps(pose_input, indent=2) + '\n',
+                                                        encoding='utf-8', newline='\n')
+                spec = importlib.util.spec_from_file_location('crops_original_projection',
+                                                              Path(__file__).with_name('test_chunk_compile.py'))
+                block_projection = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(block_projection)
+                crops_reference = [row for row in block_projection.crops_reference_cases(2)
+                                   if row['metadata'] == 7]
+                if len(crops_reference) != 1:
+                    raise RuntimeError('One exact executed-original loaded Crops profile')
+                original_path = evidence / 'crops-original-inputs-and-words.txt'
+                block_projection.write_block_reference(original_path, crops_reference,
+                                                       marker='CROPS_LOADED_V1')
             environment = os.environ.copy()
             environment["APPDATA"] = str(appdata)
             if fluid_id:
                 environment['MC_WORLD_SELECTION_FLUID_REFERENCE'] = str(original_path)
             if ladder:
                 environment['MC_WORLD_SELECTION_LADDER_REFERENCE'] = str(original_path)
+            if crops:
+                environment['MC_WORLD_SELECTION_CROPS_REFERENCE'] = str(original_path)
             if save_title:
                 environment["MC_WORLD_SAVE_TITLE_SESSION"] = str(saves / "alpha/session.lock")
                 environment["MC_WORLD_SAVE_TITLE_SAVES"] = str(saves)
@@ -1365,7 +1401,9 @@ def main():
             if fluid_id:
                 fluid_receipts(result.stdout, mode, pose_input, fluid_reference[0])
             if ladder:
-                ladder_receipts(result.stdout, pose_input, ladder_reference[0])
+                standing_block_receipts(result.stdout, pose_input, ladder_reference[0])
+            if crops:
+                standing_block_receipts(result.stdout, pose_input, crops_reference[0])
             after = snapshot(saves)
             if save_title:
                 decoded = (reload_decode(evidence, result.stdout, process_first) if reload_cycle else
@@ -1377,12 +1415,12 @@ def main():
                         rf"WORLD_SELECTION mode={mode} cleanup=1 checks=[1-9][0-9]*", cleanup[0]) is None:
                     raise RuntimeError("Save/title native terminal ownership cleanup receipt")
                 (evidence / "report.json").write_text(json.dumps(decoded, indent=2) + "\n", encoding="utf-8")
-            elif mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or fluid_id or ladder or animal or creature or remaining:
+            elif mode in ("load", "generate", "load-terminal", "load-partial", "repeat", "load-light") or cactus or torch or fluid_id or ladder or crops or animal or creature or remaining:
                 if any(after.get(name) != digest for name, digest in before.items()):
                     raise RuntimeError("World loading changed pre-existing fixture bytes")
                 if not (saves / "alpha" / "session.lock").is_file():
                     raise RuntimeError("Actual source SaveHandler did not create its session lock")
-                if (fluid_id or ladder) and set(after) - set(before) != {str(Path("alpha") / "session.lock")}:
+                if (fluid_id or ladder or crops) and set(after) - set(before) != {str(Path("alpha") / "session.lock")}:
                     raise RuntimeError("Loaded Block scene created files beyond its actual session lock")
             elif after != before:
                 raise RuntimeError("World-selection loop modified save files or created a lock")
@@ -1422,6 +1460,10 @@ def main():
               "list reuse and WorldAccess dirty recompile; no original pixel or general play claim")
     elif all(mode == 'load-ladder' for mode in modes):
         print('Native loaded Ladder: saved mounted Ladder and Player pose, original position/UV words, '
+              'actual picking/outline, returned World/HUD, mesh reuse, WorldAccess dirty recompile '
+              'and checked ownership; no original pixel or general play claim')
+    elif all(mode == 'load-crops' for mode in modes):
+        print('Native loaded Crops: saved mature Wheat on Farmland and Player pose, original position/UV words, '
               'actual picking/outline, returned World/HUD, mesh reuse, WorldAccess dirty recompile '
               'and checked ownership; no original pixel or general play claim')
     elif all(mode == "reload-cycle" for mode in modes):

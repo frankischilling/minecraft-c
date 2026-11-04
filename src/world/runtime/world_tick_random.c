@@ -4,6 +4,7 @@
 #include "../../block/registry/runtime_internal.h"
 #include "../../entity/entity_internal.h"
 #include "chunk_provider_internal.h"
+#include "chunk_tick_internal.h"
 #include "construction_internal.h"
 #include "entity_tick_math_internal.h"
 #include "mc/block/registry/runtime.h"
@@ -885,9 +886,9 @@ static bool samples(mc_world_random_tick_call *c) {
         lcg(c, 887, true);
         ++c->state.samples_started;
         at(c, 944);
-        if (mc_world_chunk_tick_raw_block(c->chunk, c->state.local_x, c->state.local_y,
-                                          c->state.local_z, &c->state.block_id,
-                                          &c->chunk_error) != MC_WORLD_STORAGE_OK)
+        if (mc_world_chunk_tick_raw_block_failure(c->chunk, c->state.local_x, c->state.local_y,
+                                                  c->state.local_z, &c->state.block_id,
+                                                  &c->chunk_error) != MC_WORLD_STORAGE_OK)
             return chunk_fail(c);
         mc_registry_block_n_view active;
         at(c, 951);

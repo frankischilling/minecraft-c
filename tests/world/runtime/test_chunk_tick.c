@@ -2,6 +2,7 @@
 #include "../../../src/core/java/random_profile_internal.h"
 #include "../../../src/world/chunk/object_state_internal.h"
 #include "../../../src/world/runtime/chunk_provider_internal.h"
+#include "../../../src/world/runtime/chunk_tick_internal.h"
 #include "../../../src/world/runtime/construction_internal.h"
 #include "../../../src/world/runtime/runtime_internal.h"
 #include "../../../src/world/storage/files.h"
@@ -497,13 +498,178 @@ static bool cleanup(fixture *f) {
     return true;
 }
 
+static bool raw_text_equal(const char *a, const char *b) {
+    return a == b || (a && b && !strcmp(a, b));
+}
+
+static bool raw_site_equal(mc_world_chunk_tick_site a, mc_world_chunk_tick_site b) {
+    return raw_text_equal(a.class_name, b.class_name) && raw_text_equal(a.method, b.method) &&
+           raw_text_equal(a.descriptor, b.descriptor) && a.pc == b.pc;
+}
+
+static bool raw_error_equal(const mc_world_chunk_tick_error *a,
+                            const mc_world_chunk_tick_error *b) {
+    return a->status == b->status && raw_text_equal(a->operation, b->operation) &&
+           raw_text_equal(a->exception_class, b->exception_class) &&
+           raw_site_equal(a->site, b->site) && raw_site_equal(a->child, b->child) &&
+           a->native_policy == b->native_policy && a->source_exception == b->source_exception &&
+           a->packed_index == b->packed_index && a->array_index == b->array_index &&
+           a->cause.status == b->cause.status &&
+           raw_text_equal(a->cause.operation, b->cause.operation) &&
+           a->cause.system_error == b->cause.system_error;
+}
+
+static bool raw_pair(fixture *f, int32_t x, int32_t y, int32_t z, int32_t expected_index,
+                     int32_t expected_value, mc_world_storage_status status, int32_t pc,
+                     const char *message, const char *exception, bool null_output,
+                     bool null_error) {
+    mc_world_chunk_tick_state before[2], after[2];
+    mc_world_chunk_tick_error prior[2], error[2];
+    int32_t value[2] = {777, 777};
+    unsigned char sentinel[sizeof(error[1])];
+    memset(&error[0], 0x5a, sizeof(error[0]));
+    memset(&error[1], 0xa5, sizeof(error[1]));
+    memcpy(sentinel, &error[1], sizeof(sentinel));
+    const size_t calls = f->world[0]->active_calls, leases = f->world[0]->local_leases;
+    for (size_t i = 0; i < COUNT(before); ++i) {
+        CHECK(mc_world_chunk_tick_capture_inspect(f->capture[i], &before[i]));
+        prior[i] = *before[i].failure;
+        const mc_world_storage_error world_error = f->world[0]->last_error;
+        const mc_world_storage_status actual =
+            i == 0 ? mc_world_chunk_tick_raw_block(f->capture[i], x, y, z,
+                                                   null_output ? NULL : &value[i],
+                                                   null_error ? NULL : &error[i])
+                   : mc_world_chunk_tick_raw_block_failure(f->capture[i], x, y, z,
+                                                           null_output ? NULL : &value[i],
+                                                           null_error ? NULL : &error[i]);
+        CHECK(actual == status && value[i] == expected_value &&
+              mc_world_chunk_tick_capture_inspect(f->capture[i], &after[i]));
+        CHECK(after[i].reads == before[i].reads + (null_output ? 0u : 1u) &&
+              after[i].operation ==
+                  (null_output ? before[i].operation : MC_WORLD_CHUNK_TICK_RAW_BLOCK) &&
+              after[i].active == before[i].active && after[i].ready == before[i].ready &&
+              after[i].world_held == before[i].world_held &&
+              after[i].chunk_held == before[i].chunk_held && after[i].world == before[i].world &&
+              after[i].captured == before[i].captured);
+        const mc_world_chunk_tick_error expected = {
+            .status = status,
+            .operation = message,
+            .exception_class = exception,
+            .site = {"fd", "n", "()V", pc},
+            .native_policy = status != MC_WORLD_STORAGE_OK && exception == NULL,
+            .source_exception = exception != NULL,
+            .packed_index = expected_index,
+            .array_index = expected_index,
+            .cause = {status, message, 0}};
+        const mc_world_storage_error expected_world =
+            null_output || status == MC_WORLD_STORAGE_OK ? world_error : expected.cause;
+        CHECK(f->world[0]->last_error.status == expected_world.status &&
+              raw_text_equal(f->world[0]->last_error.operation, expected_world.operation) &&
+              f->world[0]->last_error.system_error == expected_world.system_error);
+        if (!null_error) {
+            if (i == 1 && status == MC_WORLD_STORAGE_OK)
+                CHECK(!memcmp(sentinel, &error[i], sizeof(sentinel)));
+            else
+                CHECK(raw_error_equal(&error[i], &expected));
+        }
+        if (null_output || status == MC_WORLD_STORAGE_OK)
+            CHECK(raw_error_equal(after[i].failure, &prior[i]));
+        else
+            CHECK(raw_error_equal(after[i].failure, &expected));
+    }
+    CHECK(after[0].reads == after[1].reads && after[0].blank == after[1].blank &&
+          after[0].chunk_x == after[1].chunk_x && after[0].chunk_z == after[1].chunk_z &&
+          after[0].packed_index == after[1].packed_index &&
+          after[0].array_index == after[1].array_index &&
+          raw_site_equal(after[0].site, after[1].site) &&
+          raw_site_equal(after[0].child, after[1].child) &&
+          raw_error_equal(after[0].failure, after[1].failure) &&
+          f->world[0]->active_calls == calls && f->world[0]->local_leases == leases);
+    return true;
+}
+
+static bool failure_only_contracts(fixture *f) {
+    const mc_world_storage_status ok = MC_WORLD_STORAGE_OK;
+    const mc_world_storage_status bad = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+    for (size_t blank = 0; blank < 2; ++blank) {
+        mc_chunk_state *chunk = blank ? &f->world[0]->fallback : f->normal[0][0];
+        mc_chunk_data *data = chunk->data;
+        uint8_t *bytes = data->blocks;
+        const size_t capacity = data->blocks_capacity;
+        const uint8_t original = bytes[0];
+        bytes[0] = 173;
+        for (size_t i = 0; i < COUNT(f->capture); ++i)
+            CHECK(mc_world_chunk_tick_capture_begin(f->world[0], chunk, &f->capture[i], NULL) ==
+                  ok);
+        CHECK(raw_pair(f, 0, 0, 0, 0, 173, ok, 948, NULL, NULL, false, false));
+        CHECK(raw_pair(f, 0, 0, 0, 0, 173, ok, 948, NULL, NULL, false, true));
+        CHECK(raw_pair(f, 0, 0, 0, 0, 777, MC_WORLD_STORAGE_INVALID_ARGUMENT, -1,
+                       "Captured Chunk read arguments", NULL, true, false));
+        CHECK(raw_pair(f, 0, 0, 0, 0, 777, MC_WORLD_STORAGE_INVALID_ARGUMENT, -1,
+                       "Captured Chunk read arguments", NULL, true, true));
+        mc_world_chunk *object = blank ? NULL : mc_world_store_chunk_object(f->store[0], chunk);
+        CHECK(blank || object);
+        if (blank)
+            chunk->data = NULL;
+        else
+            object->data = NULL;
+        CHECK(raw_pair(f, 0, 0, 0, 0, 777, bad, 927, "Captured Chunk native data owner", NULL,
+                       false, false));
+        if (blank)
+            chunk->data = data;
+        else
+            object->data = data;
+        data->blocks_capacity = 1;
+        CHECK(raw_pair(f, 0, 1, 0, 1, 777, bad, 944, "Captured Chunk block byte index",
+                       "java/lang/ArrayIndexOutOfBoundsException", false, false));
+        CHECK(raw_pair(f, 0, 1, 0, 1, 777, bad, 944, "Captured Chunk block byte index",
+                       "java/lang/ArrayIndexOutOfBoundsException", false, true));
+        data->blocks_capacity = capacity;
+        data->blocks = NULL;
+        CHECK(raw_pair(f, -1, -1, -1, -1, 777, bad, 944, "Captured Chunk null block byte array",
+                       "java/lang/NullPointerException", false, false));
+        CHECK(raw_pair(f, -1, -1, -1, -1, 777, bad, 944, "Captured Chunk null block byte array",
+                       "java/lang/NullPointerException", false, true));
+        uint8_t *replacement = malloc(capacity);
+        CHECK(replacement);
+        memset(replacement, 193, capacity);
+        data->blocks = replacement;
+        CHECK(raw_pair(f, 0, 0, 0, 0, 193, ok, 948, NULL, NULL, false, false));
+        replacement[0] = 241;
+        CHECK(raw_pair(f, 0, 0, 0, 0, 241, ok, 948, NULL, NULL, false, false));
+        data->blocks = bytes;
+        free(replacement);
+        CHECK(raw_pair(f, INT32_C(-2097152), 0, 0, 0, 173, ok, 948, NULL, NULL, false, false));
+        CHECK(raw_pair(f, 16, 0, 0, 32768, 777, bad, 944, "Captured Chunk block byte index",
+                       "java/lang/ArrayIndexOutOfBoundsException", false, false));
+        data->blocks = NULL;
+        for (size_t i = 0; i < COUNT(f->capture); ++i)
+            CHECK(mc_world_chunk_tick_capture_retire(&f->capture[i], NULL) == ok && !f->capture[i]);
+        CHECK(data->blocks == NULL && f->world[0]->active_calls == 0 &&
+              f->world[0]->local_leases == 0);
+        data->blocks = bytes;
+        bytes[0] = original;
+    }
+    int32_t untouched = 777;
+    mc_world_chunk_tick_error a, b;
+    CHECK(mc_world_chunk_tick_raw_block(NULL, 0, 0, 0, &untouched, &a) ==
+              MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+          mc_world_chunk_tick_raw_block_failure(NULL, 0, 0, 0, &untouched, &b) ==
+              MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+          untouched == 777 && raw_error_equal(&a, &b));
+    CHECK(mc_world_chunk_tick_raw_block_failure(NULL, 0, 0, 0, &untouched, NULL) ==
+              MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+          untouched == 777);
+    return true;
+}
+
 int main(int argc, char **argv) {
     if (argc != 2 || !mc_math_trig_init(&trig))
         return 2;
     fixture *f = calloc(1, sizeof(*f));
     if (!f)
         return 2;
-    const bool passed = setup(f, argv[1]) && contracts(f);
+    const bool passed = setup(f, argv[1]) && contracts(f) && failure_only_contracts(f);
     const bool retired = cleanup(f);
     if (!retired) {
         fputs("Chunk tick cleanup refused; live dependencies retained\n", stderr);

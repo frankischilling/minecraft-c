@@ -26,7 +26,7 @@ class PacketTests(unittest.TestCase):
 
     def test_current_public_bindings(self):
         result = P.audit_public()
-        self.assertEqual(result['native_checks'], 8340)
+        self.assertEqual(result['native_checks'], 8115)
         self.assertEqual(result['source_shutdown_or_pixel_comparisons'], 0)
 
     def test_receipt_without_private_inputs(self):

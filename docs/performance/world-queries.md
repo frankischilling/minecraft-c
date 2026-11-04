@@ -15,6 +15,58 @@ holds. Its separate 84-sample Windows confirmation reduces median time per
 65,536 reads from 8.39885 to 0.74005 ms (91.19%). This is CPU API work, not an
 FPS measurement. Original geometry replays and loaded scenes cover the callers.
 
+## Random Chunk reads
+
+The World scheduler's random-Chunk child uses an internal failure-only raw Block
+accessor. It shares the public accessor's admission and checked read body, reloads
+the current data and Block array on every read, and preserves captured normal and
+Blank Chunk behavior. Complete diagnostics are constructed on failure. The public
+accessor still supplies its complete 128-byte success record; the internal
+caller's error alone stays untouched on success. Capture inspection fields,
+absolute read counts, retained failures, World errors and ownership holds remain
+unchanged.
+
+The [random-Chunk CPU benchmark](../../tests/benchmarks/world_random_tick.md)
+measures actual `mc_world_runtime_random_tick_begin` over 361 distinct saved
+Chunks and all 28,880 samples per call. Loading, warmup, the independent scalar
+oracle, inspection, outer retirement and final state checks stay outside timing.
+The two homogeneous workloads use air with an active ambient cooldown and stone
+with ambient checks reached. Enabled Block virtuals are exercised by separate
+controls.
+
+The initial Windows cohort has 42 samples per variant/workload; a separate
+confirmation has 84. Both variants share one observer and 31 identical archives,
+with two runtime objects overridden in the candidate.
+
+| Cohort/workload | Baseline median ms | Candidate median ms | Baseline mean ms | Candidate mean ms | Baseline p95 ms | Candidate p95 ms |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Initial air | 5.43535 | 5.11545 | 5.79623 | 5.32856 | 7.4992 | 6.7411 |
+| Initial stone | 4.99200 | 4.68580 | 5.06727 | 4.76815 | 5.6243 | 5.3099 |
+| Confirmation air | 5.06880 | 4.31255 | 5.10261 | 4.40022 | 5.8014 | 4.8984 |
+| Confirmation stone | 4.77915 | 4.32035 | 4.80397 | 4.37188 | 5.1728 | 4.9637 |
+
+All 504 recorded timings, warmup rows, process order and outliers remain in the
+[receipt](../../tests/benchmarks/world_random_tick_windows.json). Initial air
+round 1 has a slightly worse candidate median. Confirmation stone retains a
+higher candidate maximum, 5.6478 ms versus 5.5441 ms, and some individual process
+p95s favor baseline. Confirmation mean and median are lower in every matched
+round and both order strata; the percentage varies between cohorts.
+
+Independent frozen-baseline controls pass 510 paired accessor checks, including
+complete error/state records, success sentinels, error=NULL, busy/read-limit
+refusal, source-array changes and unrepaired capture retirement. The promoted
+public benchmark also passes all 15 existing genuine-World profiles against the
+exact frozen C baseline: 89,842 checks per variant and all 76 complete output
+hashes match each other and the captured controls. This final run qualifies the
+public workload/control-entry projection with the current combined dependencies;
+it supplies no replacement timing samples. Persistent `world.chunk_tick` and
+`world.random_tick` tests pass after promotion.
+
+These measurements cover the declared random-tick CPU work. They are separate
+from the EW accessor comparison above; their percentages cannot be added or
+converted into a scene-FPS or full World.tick result. Source-reference parity
+remains scoped to the linked fixtures.
+
 ## World reads
 
 Successful scalar World reads no longer construct the complete acquisition

@@ -9,9 +9,9 @@ reached the explicit U.b496 lighting-enable dependency in those historical
 submission profiles. Later loaded native scenes continue through World/HUD.
 Cactus commit `193192e1` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/41678998367).
 Dedicated [Cactus](cactus-world.md), [Torch](torch-world.md),
-[fluid](fluid-world.md) and [Ladder](ladder-world.md) sections now complete;
-other specialized Block shapes and TileEntity rendering remain
-unfinished. These finite controls do not establish unrestricted play. See the
+[fluid](fluid-world.md), [Ladder](ladder-world.md) and [Crops](crops-world.md)
+sections now complete; other specialized Block shapes and TileEntity rendering
+remain unfinished. These finite controls do not establish unrestricted play. See the
 [RenderBlocks contract](render-blocks.md) for geometry and finite comparisons.
 
 ## Selection and source effects
@@ -94,6 +94,27 @@ retirement. A one-stone section publishes 36 expanded vertices and the caller
 clears u; rail and bed controls verify bounds change before their missing mesh
 children. These prepared bodies have narrower scope than ordinary generated
 sections and rendered terrain.
+
+The current Block integration matrix has 16 profiles: eight fluid cases, four
+Ladder orientations and Crops stages 0, 7, 8 and 15. Each profile enters the real
+N dirty selector and DK compiler, checks its completed list, observes an update
+with zero compilation attempts and the same definition, then uses a genuine
+World light notification to dirty and recompile that DK. Crops reaches the CV
+dispatcher return at 98 and publishes 48 vertices. Positions, UVs and colors
+match its executed-original section row; unused packed words are checked
+against their own prior NW backing. The importer accepts the corresponding
+48-vertex capacity and verifies every family/stage inventory before cleanup.
+
+The separate saved Farmland/Crops scene passes 2,624 checks in 9.39 seconds on
+Windows MSVC Release. Its target section contains 108 vertices, including
+48 Crops vertices at the same source coordinates and NW translation as the
+original loaded projection. All 48 position/UV and color comparisons match.
+Four checked World/HUD frames include two reuse observations and one dirty
+recompile, followed by checked ownership retirement and checks of save bytes.
+[Crops World rendering](crops-world.md) records the exact fixture, earlier
+partial original capture, separate foreground/Pause failure and adjacent
+focus-recovery limits. These results do not establish original pixels, full
+farming simulation or performance.
 
 The [sky-change fixture](../../tests/reference/client/sky_changed/README.md)
 contains eight original profiles. [Matrix and translation observations](../../tests/reference/client/compiled_matrices/README.md)

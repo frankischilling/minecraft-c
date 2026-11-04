@@ -1,5 +1,39 @@
 # Development status
 
+[Crops World rendering](client/crops-world.md) now reaches the original type 6
+path. Native replay matches 44 original calls, 88 selected rows and 15,744
+appended words. Four metadata stages join the eight fluid and four Ladder
+profiles in real section compilation, reuse and light-driven recompile.
+A saved Farmland/Crops scene passes 2,624 checks in 9.39 seconds: actual loaded
+Player camera, picking/outline, 108 section vertices, all 48 Crops position/UV
+records, two mesh reuse frames, dirty recompile and cleanup. Full farming and
+original whole-frame pixels remain unfinished.
+
+The random Chunk sampler now uses a private raw Block accessor that constructs
+complete diagnostics only on failure. The public accessor keeps its full
+success record. All 361 Chunks, 28,880 samples, Random state, checked ownership
+and failure behavior remain active. Separate 84-sample confirmations reduce
+median CPU time from 5.0688 to 4.31255 ms for air and 4.77915 to 4.32035 ms for
+stone. The [benchmark](../tests/benchmarks/world_random_tick.md) retains every
+sample and outlier; these finite CPU results do not measure FPS.
+
+Four fresh Windows Workbench shutdown profiles pass 8,115 checks in 60.86
+seconds with 1,964 selected inputs and 413 resources unchanged. Earlier camera,
+foreground and SDL/native-focus failures remain separate retained results;
+the passing cohort does not establish unrestricted focus stability.
+
+The full public suite passes 661/661 on Linux Clang 18 Debug ASan/UBSan in
+181.82 seconds. Windows MSVC Release passes 669/672 in 352.94 seconds. Creatures
+lose foreground to Remote Desktop; Zombie fails its initial display-active
+gate; Water times out on SDL keyboard focus despite native Canvas focus.
+All 4,631 source inputs match across hosts and remain unchanged through each
+cohort, including all 1,448 runtime files. Windows preserves 537 executables
+and 413 resources; Linux preserves 538 executables. The new Crops scene passes
+within the Windows cohort. These results retain the three failures and the
+separate earlier passing Workbench/scene scopes.
+
+## Ladder checkpoint
+
 [Ladder World rendering](client/ladder-world.md) now reaches the original type 8
 path. Native replay matches 35 original calls, 70 selected rows and 960 appended
 words, including all metadata nibbles and failure prefixes. Four orientations

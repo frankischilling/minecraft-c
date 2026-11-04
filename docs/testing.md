@@ -1,5 +1,100 @@
 # Test scope and reproduction
 
+## Crops rendering and raw Chunk diagnostics
+
+`client.crops_world` matches 88 input/observation rows from 44 unchanged-original
+calls, covering all World metadata nibbles, direct metadata extremes, texture
+wrapping/override, lighting, retained bounds and failure prefixes. Three fresh
+original VMs agree. Windows MSVC Release passes 3,512 native checks, including
+four actual dispatcher controls, two floating-point admission controls and
+92,258,944 own-prior inactive words. All 20 packet corruption controls pass.
+The earlier JDI observer deadline retains its exact partial-trace scope; the
+completed cohort changes only the observation deadline.
+
+Four Crops metadata stages extend the real DK fixture to sixteen profiles:
+eight fluid, four Ladder and four Crops. Compile, immutable reuse and actual
+WorldAccess light-notification recompile compare every active word. The saved
+Windows `client.world_selection_crops` scene passes 2,624 checks in 9.39 seconds.
+It independently decodes the pre-bootstrap saved Player, Farmland and Crops,
+then checks actual picking/outline, the 108-vertex section and all 48 original
+Crops position/UV records. All 48 observed colors also match in this run.
+Four captured frames include two reuse frames and one dirty recompile; cleanup
+and protected-save/resource checks pass.
+
+The first combined focused run passes seven of nine tests. Its Crops scene loses
+foreground to Remote Desktop; Ladder fails the saved-pose/picking compound.
+Both failed receipts remain retained. Passive first-failed-operand telemetry
+now preserves the same 46 once-evaluated Ladder/Crops assertions and their
+short-circuit order. The separate Crops pass above follows that observer change.
+Existing Ladder and Lava regressions then pass in 8.72 and 9.60 seconds. Water
+fails the later save/title SDL keyboard-focus check despite native Frame/Canvas
+focus. Those failures do not establish one common input cause.
+
+The optional [raw Chunk benchmark](../tests/benchmarks/world_random_tick.md)
+retains 504 timed samples across its separate initial and confirmation cohorts.
+The independent confirmation has 84 samples per variant/workload; median CPU
+times fall 14.92% for air and 9.60% for stone. Frozen-original/public controls
+check 15 actual World profiles, 89,842 checks per variant and 76 identical
+outputs. Admission counts, complete error/cursor state, live array rebinding,
+owners, Random state and all 361-by-80 samples remain checked. Full World tick,
+mixed-Block performance, pixels, unrestricted play and FPS remain outside this
+measurement.
+
+The promoted optional benchmark target also builds under Linux Clang 18 Debug
+ASan/UBSan and passes all 89,842 genuine-World controls. This is a separate
+untimed portability result; the published timing cohorts remain Windows-only.
+
+A real registry Crops texture regression first triggers signed-overflow UBSan
+at `INT32_MAX + 7`. The implementation now uses the existing Java signed-add
+helper. The same sanitized replay passes; 72 explicit texture/metadata/side
+checks retain the original negative-metadata fallback and unbounded addition.
+
+GCC 13.3 also compiles all eleven changed/new C translation units across six
+actual configured Ninja option sets, including the optional benchmark. Every
+warning, C17, strict floating-point and sanitizer flag remains; all stderr files
+are empty and 2,208 input files remain unchanged. These are explicit GCC replays
+of the Clang-configured commands with private object/dependency destinations,
+not a GCC-configured CMake build or runtime execution.
+
+Four fresh Windows Workbench shutdown SDK profiles pass 8,115 checks in 60.86
+seconds. Each actual capture preserves 1,448 runtime files, 514 selected harness
+files, two binaries and 413 imported resources. These qualify the current Crops
+and raw Chunk runtime through the existing terminal ownership flow.
+All 57 packet controls and public/private, exact-cohort-log and historical-failure
+audits pass. clang-format 18 checks all 2,033 C/header/handwritten-fragment files.
+
+The first Workbench cohort passes one of four profiles in 83.67 seconds. Clean
+fails the actual Table ray hit with a changed camera while focus remains present;
+Container records Windows Terminal foreground; Player reports native Canvas
+focus with SDL keyboard focus missing. All three fail before terminal preparation.
+A passive three-second retry guard observes six input-timestamp changes and
+refuses launch. After an idle interval is coordinated, the next guard passes and
+the complete cohort above passes with unchanged source. Passive timestamps do
+not identify an actor or distinguish synthetic input. No focus correction or
+assertion change separates the failed and passing cohorts.
+
+The full public cohort passes 661/661 tests on Linux Clang 18 Debug ASan/UBSan
+in 181.82 seconds under Xvfb/software OpenGL, with leak detection and
+halt-on-error. Windows MSVC Release passes 669/672 in 352.94 seconds. Crops
+native replay passes on both hosts; the saved Windows Crops scene also passes
+within this cohort in 10.63 seconds. Its initial 9.39-second receipt above
+retains its own exact frame and color observations.
+
+The three Windows failures remain retained. Creatures record Remote Desktop
+foreground and the source Pause screen. Zombie fails its initial loaded
+display-active gate with no failed source child; that receipt does not identify
+a foreground owner. Water times out on SDL keyboard focus while native Frame
+foreground and Canvas focus are present. No full Windows pass or common input
+cause is claimed.
+
+Both complete cohorts preserve all 4,631 source inputs, including 1,448 runtime
+files, and every source byte matches across hosts. Windows preserves 537
+executables and 413 imported resources; Linux preserves 538 executables. Guarded
+test/post-hash intervals are 358.02 seconds on Windows and 238.67 on Linux;
+the shorter numbers above are actual CTest times. These are concurrent-host
+qualification runs, not a performance comparison. Current source-binding checks
+cover 11,227 entries across 4,630 distinct paths.
+
 ## Ladder rendering and ChunkCache diagnostics
 
 `client.ladder_world` matches all 70 selected rows from 35 original calls and

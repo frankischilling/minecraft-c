@@ -5,6 +5,12 @@ ticks, draw terrain and Mobs, and reach mining, placement, pickup, crafting and
 save/reselection in finite Windows scenarios. Complete Beta 1.7.3 parity and
 unrestricted play remain unfinished. Single-player is the current focus.
 
+[Crops rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/crops-world.md)
+now matches 44 original calls and four metadata stages through real section
+compilation. A saved Farmland/Crops scene checks the loaded Player camera,
+picking/outline, all 48 original position/UV records, mesh reuse, light-driven
+recompile and cleanup. Full farming and original pixels remain unfinished.
+
 [Ladder rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/ladder-world.md)
 now matches 35 original calls and all four orientations through real section
 compilation. A saved mounted Ladder scene checks the loaded Player camera,
@@ -25,6 +31,12 @@ identify actual section compilation and random Chunk ticking as major measured
 CPU costs. Every random Chunk still performs all eighty Block samples. Natural
 spawning, loading, generation, saves and source deadlines remain active.
 These attribution intervals do not compare runtime speed.
+
+The random Chunk sampler now builds full diagnostics only on failure while
+retaining all samples, ownership and Random state. Independent CPU confirmation
+reduces median time by 14.92% for air and 9.60% for stone across 361 Chunks and
+28,880 samples. The [raw Chunk benchmark](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/world_random_tick.md)
+keeps all observations and outliers. These results do not measure scene FPS.
 
 Original pixels/audio, broader persistence, Linux loaded gameplay, sustained
 performance, remaining Block/Item actions and extended play still need work.

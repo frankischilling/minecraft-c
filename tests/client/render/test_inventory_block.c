@@ -843,6 +843,46 @@ static bool crafting_getter_controls(fixture *f) {
     return true;
 }
 
+static bool crops_texture_controls(fixture *f) {
+    const mc_block *view = NULL;
+    CHECK(mc_registry_block_get(f->registry, 59, &view, NULL) == MC_REGISTRY_OK && view != NULL &&
+          view->kind == MC_BLOCK_CROPS && view->fields.bm == 88);
+    mc_block *block = (mc_block *)(void *)view;
+    const mc_block original = *block;
+
+    /* Actual NI.a(II)I: negative metadata becomes seven, positive metadata is
+     * not clamped, and iadd12 wraps the live texture field. Expected values
+     * are explicit low-32-bit results, independent of the C arithmetic helper. */
+    static const struct {
+        int32_t texture, metadata, expected;
+    } cases[] = {{88, -1, 95},
+                 {88, 7, 95},
+                 {88, 15, 103},
+                 {88, INT32_MIN, 95},
+                 {INT32_MAX, -1, INT32_MIN + 6},
+                 {INT32_MAX, 0, INT32_MAX},
+                 {INT32_MAX, 1, INT32_MIN},
+                 {INT32_MAX, 15, INT32_MIN + 14},
+                 {INT32_MAX, INT32_MAX, -2},
+                 {INT32_MIN, -1, INT32_MIN + 7},
+                 {INT32_MIN, INT32_MAX, -1},
+                 {-1, INT32_MAX, INT32_MAX - 1}};
+
+    static const int32_t sides[] = {INT32_MIN, -1, 0, 1, 5, INT32_MAX};
+    for (size_t i = 0; i < sizeof(cases) / sizeof(*cases); ++i) {
+        block->fields.bm = cases[i].texture;
+        const mc_block entered = *block;
+        for (size_t side = 0; side < sizeof(sides) / sizeof(*sides); ++side) {
+            int32_t texture = -777;
+            CHECK(mc_block_render_texture_metadata(block, sides[side], cases[i].metadata,
+                                                   &texture) == MC_REGISTRY_OK &&
+                  texture == cases[i].expected && memcmp(block, &entered, sizeof(entered)) == 0);
+        }
+    }
+    *block = original;
+    return true;
+}
+
 static bool item_block_scale_controls(fixture *f) {
     static const struct {
         int32_t id;
@@ -1018,7 +1058,7 @@ static bool inventory_controls(void) {
           inventory_family_controls(&f, preparation.raw_base));
     CHECK(pumpkin_getter_controls(&f) && pressure_plate_getter_controls(&f) &&
           slab_block_getter_controls(&f) && crafting_getter_controls(&f) &&
-          item_block_scale_controls(&f));
+          crops_texture_controls(&f) && item_block_scale_controls(&f));
     const mc_block *dirt = NULL;
     CHECK(mc_registry_block_get(f.registry, 3, &dirt, NULL) == MC_REGISTRY_OK && dirt != NULL);
     int32_t color = 0, icon = -1;

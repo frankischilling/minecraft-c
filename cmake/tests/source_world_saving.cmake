@@ -32,6 +32,10 @@ if(BUILD_TESTING AND Python3_Interpreter_FOUND)
         -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/benchmarks" -p test_client_frames_run.py)
     set_tests_properties(tools.client_frame_observations PROPERTIES
         LABELS "public;unit;tools;client;performance" TIMEOUT 30)
+    add_test(NAME tools.world_random_tick_observations COMMAND Python3::Interpreter -B -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/benchmarks" -p test_world_random_tick.py)
+    set_tests_properties(tools.world_random_tick_observations PROPERTIES
+        LABELS "public;unit;tools;world;performance" TIMEOUT 30)
 endif()
 if(MC_BUILD_BENCHMARKS AND BUILD_TESTING AND TARGET mc_simulation)
     add_executable(mc_benchmark_world_queries tests/benchmarks/world_queries.c)
@@ -42,6 +46,10 @@ if(MC_BUILD_BENCHMARKS AND BUILD_TESTING AND TARGET mc_simulation)
     target_include_directories(mc_benchmark_light_drain PRIVATE src)
     target_link_libraries(mc_benchmark_light_drain PRIVATE
         mc_simulation mc_persistence mc_c_atomics mc_build_options)
+    add_executable(mc_benchmark_world_random_tick tests/benchmarks/world_random_tick.c)
+    target_include_directories(mc_benchmark_world_random_tick PRIVATE src src/core/java)
+    target_link_libraries(mc_benchmark_world_random_tick PRIVATE
+        mc_simulation mc_resources mc_persistence mc_c_atomics mc_build_options)
     add_library(mc_benchmark_chunk_cache_workload OBJECT tests/benchmarks/chunk_cache.c)
     target_include_directories(mc_benchmark_chunk_cache_workload PRIVATE src)
     target_link_libraries(mc_benchmark_chunk_cache_workload PRIVATE

@@ -1,5 +1,46 @@
 # Build and tests
 
+Crops rendering matches 44 original calls, 88 native input/observation rows and
+15,744 appended words. Three original VMs agree; all 20 packet corruption
+controls pass. Four metadata stages extend the real section fixture to sixteen
+profiles. A saved Windows Farmland/Crops scene passes 2,624 checks in 9.39 seconds,
+including all 48 original position/UV records, picking/outline, mesh reuse,
+light-driven recompile and cleanup. See
+[Crops evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/crops-world.md).
+
+The optional [raw Chunk benchmark](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/world_random_tick.md)
+retains all 504 timed samples across initial and independent confirmation
+cohorts. Confirmation medians fall 14.92% for air and 9.60% for stone, with all
+361 Chunks and 28,880 samples active. Complete error/cursor/owner/Random controls
+and all 76 frozen-original/public outputs match. These bounded CPU results do
+not establish an FPS improvement.
+
+The current runtime's four Windows Workbench shutdown profiles pass 8,115 checks
+in 60.86 seconds. Each capture retains 1,448 runtime files, 514 harness files,
+two binaries and 413 resources unchanged. The earlier failed cohort and refused
+input guard remain retained; the complete passing cohort follows a coordinated
+idle interval without source or assertion changes. General focus stability
+remains unqualified.
+
+All 57 Workbench packet controls and public/private/history/cohort-log audits
+pass. clang-format 18 checks 2,033 C/header/handwritten-fragment files. GCC 13.3
+compiles all eleven changed/new C units across six actual configured Ninja option
+sets with unchanged warning, C17, floating-point and sanitizer flags. This is a
+compiler-substitution replay of the Clang configuration, not a complete GCC build.
+
+The full Linux Clang 18 Debug ASan/UBSan public suite passes 661/661 tests in
+181.82 seconds under Xvfb/software OpenGL. Windows MSVC Release passes 669/672
+in 352.94 seconds. Creatures record Remote Desktop foreground; Zombie fails its
+initial display-active gate; Water reports missing SDL keyboard focus despite
+native Canvas focus. All 4,631 source inputs, including 1,448 runtime files,
+match across hosts and remain unchanged. Windows preserves 537 executables and
+413 resources; Linux preserves 538 executables. The Crops scene passes within
+the Windows cohort. The three failures remain unresolved, and current bindings
+cover 11,227 entries across 4,630 paths. See the
+[test scopes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md).
+
+## Ladder checkpoint
+
 Ladder rendering matches 35 original calls, 70 selected native rows and 960
 appended words. Three original VMs agree; all sixteen packet corruption
 controls pass. Four orientations compile through real sections, and a saved

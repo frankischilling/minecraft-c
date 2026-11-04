@@ -1,5 +1,7 @@
 #include "mc/world/runtime/chunk_tick.h"
 
+#include "chunk_tick_internal.h"
+
 #include "../chunk/object_state_internal.h"
 #include "../storage/objects_internal.h"
 #include "construction_internal.h"
@@ -138,30 +140,39 @@ bool mc_world_chunk_tick_capture_inspect(const mc_world_chunk_tick_capture *c,
     return true;
 }
 
-static bool enter(mc_world_chunk_tick_capture *c, mc_world_chunk_tick_operation operation,
-                  const int32_t *out, mc_world_chunk_tick_error *e) {
-    *e = (mc_world_chunk_tick_error){.site = {"fd", "n", "()V", -1}};
+static mc_world_storage_status read_admit(mc_world_chunk_tick_capture *c,
+                                          mc_world_chunk_tick_operation operation,
+                                          const int32_t *out, const char **message) {
     if (c == NULL || out == NULL) {
-        (void)fail(e, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Captured Chunk read arguments", NULL);
-        return false;
+        *message = "Captured Chunk read arguments";
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     }
     if (c->state.active) {
-        (void)fail(e, MC_WORLD_STORAGE_BUSY, "Captured Chunk active read", NULL);
-        return false;
+        *message = "Captured Chunk active read";
+        return MC_WORLD_STORAGE_BUSY;
     }
     if (!c->state.ready || !c->state.world_held || !c->state.chunk_held) {
-        (void)fail(e, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Captured Chunk incomplete ownership",
-                   NULL);
-        return false;
+        *message = "Captured Chunk incomplete ownership";
+        return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
     }
     if (c->state.reads == SIZE_MAX) {
-        (void)fail(e, MC_WORLD_STORAGE_LIMIT, "Captured Chunk native read counter", NULL);
-        return false;
+        *message = "Captured Chunk native read counter";
+        return MC_WORLD_STORAGE_LIMIT;
     }
     c->state.active = true;
     c->state.operation = operation;
     ++c->state.reads;
-    return true;
+    return MC_WORLD_STORAGE_OK;
+}
+
+static bool enter(mc_world_chunk_tick_capture *c, mc_world_chunk_tick_operation operation,
+                  const int32_t *out, mc_world_chunk_tick_error *e) {
+    *e = (mc_world_chunk_tick_error){.site = {"fd", "n", "()V", -1}};
+    const char *message = NULL;
+    const mc_world_storage_status status = read_admit(c, operation, out, &message);
+    if (status != MC_WORLD_STORAGE_OK)
+        (void)fail(e, status, message, NULL);
+    return status == MC_WORLD_STORAGE_OK;
 }
 
 static mc_world_storage_status rejected(const mc_world_chunk_tick_error *frame,
@@ -175,31 +186,52 @@ static int32_t packed(int32_t x, int32_t y, int32_t z) {
     return mc_java_i32_shl(x, 11) | mc_java_i32_shl(z, 7) | y;
 }
 
-static bool bytes(mc_world_chunk_tick_capture *c, int32_t x, int32_t y, int32_t z, int32_t *value,
-                  bool raw, mc_world_chunk_tick_error *e) {
+typedef enum byte_read_status {
+    BYTE_READ_OK,
+    BYTE_READ_DATA,
+    BYTE_READ_NULL,
+    BYTE_READ_INDEX
+} byte_read_status;
+
+/* One actual data/array/index/read body for virtual and raw callers. */
+static byte_read_status read_bytes(mc_world_chunk_tick_capture *c, int32_t x, int32_t y, int32_t z,
+                                   int32_t *value, int32_t *index) {
     mc_chunk_data *data = c->state.blank ? c->state.captured->data : c->object->data;
-    e->site = raw ? location("fd", "n", "()V", 927) : location("lm", "a", "(III)I", 1);
-    if (data == NULL) {
-        (void)fail(e, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Captured Chunk native data owner", NULL);
-        return false;
-    }
+    if (data == NULL)
+        return BYTE_READ_DATA;
     /* Read the actual b reference before computing the source packed index.
      * A Java NULL array fails at baload, after that index computation. */
     const uint8_t *array = data->blocks;
-    e->packed_index = packed(x, y, z);
-    e->array_index = e->packed_index;
+    *index = packed(x, y, z);
+    if (array == NULL)
+        return BYTE_READ_NULL;
+    if (*index < 0 || (size_t)*index >= data->blocks_capacity)
+        return BYTE_READ_INDEX;
+    *value = (int32_t)array[(size_t)*index];
+    return BYTE_READ_OK;
+}
+
+static bool bytes(mc_world_chunk_tick_capture *c, int32_t x, int32_t y, int32_t z, int32_t *value,
+                  bool raw, mc_world_chunk_tick_error *e) {
+    int32_t index = 0;
+    const byte_read_status status = read_bytes(c, x, y, z, value, &index);
+    e->site = raw ? location("fd", "n", "()V", 927) : location("lm", "a", "(III)I", 1);
+    if (status == BYTE_READ_DATA) {
+        (void)fail(e, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Captured Chunk native data owner", NULL);
+        return false;
+    }
+    e->packed_index = e->array_index = index;
     e->site.pc = raw ? 944 : 15;
-    if (array == NULL) {
+    if (status == BYTE_READ_NULL) {
         (void)fail(e, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Captured Chunk null block byte array",
                    "java/lang/NullPointerException");
         return false;
     }
-    if (e->array_index < 0 || (size_t)e->array_index >= data->blocks_capacity) {
+    if (status == BYTE_READ_INDEX) {
         (void)fail(e, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Captured Chunk block byte index",
                    "java/lang/ArrayIndexOutOfBoundsException");
         return false;
     }
-    *value = (int32_t)array[(size_t)e->array_index];
     e->site.pc = raw ? 948 : 20;
     return true;
 }
@@ -246,17 +278,71 @@ mc_world_storage_status mc_world_chunk_tick_block(mc_world_chunk_tick_capture *c
     return finish(c, &frame, error);
 }
 
+#if defined(_MSC_VER)
+#define RAW_NOINLINE __declspec(noinline)
+#elif defined(__GNUC__) || defined(__clang__)
+#define RAW_NOINLINE __attribute__((noinline))
+#else
+#define RAW_NOINLINE
+#endif
+
+/* Complete diagnostic construction stays outside the internal success frame. */
+static RAW_NOINLINE mc_world_storage_status
+raw_diagnostic(mc_world_chunk_tick_capture *c, bool entered, mc_world_storage_status status,
+               const char *message, const char *exception, int32_t pc, int32_t index,
+               mc_world_chunk_tick_error *error) {
+    mc_world_chunk_tick_error frame = {
+        .site = {"fd", "n", "()V", pc}, .packed_index = index, .array_index = index};
+    if (status != MC_WORLD_STORAGE_OK)
+        (void)fail(&frame, status, message, exception);
+    return entered ? finish(c, &frame, error) : rejected(&frame, error);
+}
+
+static mc_world_storage_status raw_read(mc_world_chunk_tick_capture *c, int32_t x, int32_t y,
+                                        int32_t z, int32_t *out, mc_world_chunk_tick_error *error,
+                                        bool success_error) {
+    const char *message = NULL;
+    const mc_world_storage_status admission =
+        read_admit(c, MC_WORLD_CHUNK_TICK_RAW_BLOCK, out, &message);
+    if (admission != MC_WORLD_STORAGE_OK)
+        return raw_diagnostic(c, false, admission, message, NULL, -1, 0, error);
+    int32_t value, index = 0;
+    const byte_read_status status = read_bytes(c, x, y, z, &value, &index);
+    if (status == BYTE_READ_DATA)
+        return raw_diagnostic(c, true, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "Captured Chunk native data owner", NULL, 927, 0, error);
+    if (status == BYTE_READ_NULL)
+        return raw_diagnostic(c, true, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "Captured Chunk null block byte array",
+                              "java/lang/NullPointerException", 944, index, error);
+    if (status == BYTE_READ_INDEX)
+        return raw_diagnostic(c, true, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "Captured Chunk block byte index",
+                              "java/lang/ArrayIndexOutOfBoundsException", 944, index, error);
+    *out = value;
+    if (success_error)
+        return raw_diagnostic(c, true, MC_WORLD_STORAGE_OK, NULL, NULL, 948, index, error);
+    c->state.site = location("fd", "n", "()V", 948);
+    c->state.child = (mc_world_chunk_tick_site){0};
+    c->state.packed_index = c->state.array_index = index;
+    c->state.active = false;
+    return MC_WORLD_STORAGE_OK;
+}
+
 mc_world_storage_status mc_world_chunk_tick_raw_block(mc_world_chunk_tick_capture *c, int32_t x,
                                                       int32_t y, int32_t z, int32_t *out,
                                                       mc_world_chunk_tick_error *error) {
-    mc_world_chunk_tick_error frame;
-    if (!enter(c, MC_WORLD_CHUNK_TICK_RAW_BLOCK, out, &frame))
-        return rejected(&frame, error);
-    int32_t value;
-    if (bytes(c, x, y, z, &value, true, &frame))
-        *out = value;
-    return finish(c, &frame, error);
+    return raw_read(c, x, y, z, out, error, true);
 }
+
+mc_world_storage_status mc_world_chunk_tick_raw_block_failure(mc_world_chunk_tick_capture *c,
+                                                              int32_t x, int32_t y, int32_t z,
+                                                              int32_t *out,
+                                                              mc_world_chunk_tick_error *error) {
+    return raw_read(c, x, y, z, out, error, false);
+}
+
+#undef RAW_NOINLINE
 
 mc_world_storage_status mc_world_chunk_tick_metadata(mc_world_chunk_tick_capture *c, int32_t x,
                                                      int32_t y, int32_t z, int32_t *out,

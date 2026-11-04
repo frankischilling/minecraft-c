@@ -2398,8 +2398,8 @@
       "sha256": "a2de1a7a93eeb45db5eef8ddfc9b1ceef1d75b321d1603e5dec205159fe749f5"
     },
     "cmake/tests/client_world_selection_loop.cmake": {
-      "bytes": 9737,
-      "sha256": "6302d2a790fb4686e075c3f108a2f6c615f3c5384795a0b29d0f78d8cd085810"
+      "bytes": 10396,
+      "sha256": "4e1b27d26e7cdeafeaa83d63ae0589836f4842e149d1142c00a090fb15e8ae81"
     },
     "cmake/tests/platform_date_format.cmake": {
       "bytes": 2244,
@@ -2474,8 +2474,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 385698,
-      "sha256": "8cfc1b5808e95edd39a6ec37d248f003c5cb4e6641081b192d25a3cac0f32a44"
+      "bytes": 392352,
+      "sha256": "6e7b8ede033e35cbf2ef6ef0cf56c9f3f71b9aaac9d7f7c0e8f663782f508f5c"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -2490,8 +2490,8 @@
       "sha256": "5337d15e53e776798d0a4f394e74432da7a578951b72f5c761439accb811786b"
     },
     "tests/tools/client/test_world_selection_loop.py": {
-      "bytes": 95069,
-      "sha256": "fe154379fb828fa148666efc360c54ad95f20cb2edad423ec2a4ddaa24fef0c9"
+      "bytes": 98293,
+      "sha256": "a86aaf31cb61732c36246f8d383593d5e4ef6a3cd49fcf724cc5563c0e998952"
     },
     "tests/tools/platform/test_date_format_reference.py": {
       "bytes": 4341,
@@ -2650,8 +2650,8 @@
       "sha256": "62b53690c06abc8f6bcfb7806850c01858089f738043817fbe41eb181548db68"
     },
     "cmake/client_render_global_world.cmake": {
-      "bytes": 1455,
-      "sha256": "acd622e17d243f839d0bede5814d1e72a0efaff737bf5a280d868d64ce31c448"
+      "bytes": 1496,
+      "sha256": "e3ee45050f91b7ba54f3ad97b803a3bc8664b84644cf34f336d9f587055a0898"
     },
     "cmake/entity_appearance.cmake": {
       "bytes": 544,
@@ -3782,8 +3782,8 @@
       "sha256": "e56711435c481000775830039b9cfd4d5bd8884c25253fec1de01c143673e225"
     },
     "tests/client/world/test_chunk_compile.c": {
-      "bytes": 50649,
-      "sha256": "df6151689a93fac4f8dc41af045708cc21a330f5172515fb8403e565f97c594c"
+      "bytes": 51363,
+      "sha256": "27cac9f46fce10993d77694cfdfbd9678ba7de09acb6f694b82102a7fb853ed8"
     },
     "tests/client/world/test_render_global_update.c": {
       "bytes": 56408,
@@ -3842,8 +3842,8 @@
       "sha256": "0014ab876e49870eff33418e8fe716038009fbcd461ed95cde1b7a4bc4f2066a"
     },
     "tests/tools/client/test_chunk_compile.py": {
-      "bytes": 11073,
-      "sha256": "3433d3ed5e4803d309ab924fc25ee9af1fbf3d92b509148f259521ac80fe4dd4"
+      "bytes": 13188,
+      "sha256": "bc483821438273156c66f5a61af166819f0564e9f9843a5bb419b8c59800f780"
     },
     "src/world/storage/chunk_build_internal.h": {
       "bytes": 3813,
@@ -3918,12 +3918,12 @@
       "sha256": "99c3d7bee454b78341314364052eb3aeeecb6448bec898380ad091f790efef3f"
     },
     "src/client/render/blocks/internal.h": {
-      "bytes": 8036,
-      "sha256": "e9905789507a78231701eed226c5b787c3146ccb4f971cdea19e55a5c8195b27"
+      "bytes": 8219,
+      "sha256": "85c5430647958f9abcfbe63508a5be4c3417da8b922031885e2b152a9ab8dc4f"
     },
     "src/client/render/blocks/render.c": {
-      "bytes": 6917,
-      "sha256": "f3d627de7480169d2068541381194bce3a48bac02a7a500d896cc8cf8417e804"
+      "bytes": 7135,
+      "sha256": "1967a73baabe155e407a42c296de51062992a6a91ecdd8923c6e4890a15ef68d"
     },
     "src/client/startup/application_queries.c": {
       "bytes": 3537,
@@ -4838,16 +4838,16 @@
       "sha256": "61fa7741c68a7c3e1a8fc59fd5b975d9304e9c07f122dd8e2f458bb21e275373"
     },
     "src/world/runtime/chunk_tick.c": {
-      "bytes": 15384,
-      "sha256": "6a2482d1fd3a8744e0013a3d5d56beb963ffe4c692e5f941589c5a0d234cd7e4"
+      "bytes": 19293,
+      "sha256": "2ce7e534971147a3757308e81b0c47402bd3c6ffc87e90e94ae3682c5ff838e3"
     },
     "src/world/runtime/mutation/random_blocks.c": {
       "bytes": 20078,
       "sha256": "a3b2ea14bd0314899640233d6bf4701fb63fe8a265355ccb8a0cb0938743b06b"
     },
     "src/world/runtime/world_tick_random.c": {
-      "bytes": 48448,
-      "sha256": "545b6219e43476471a426b6a89200602e5430e87766f768ddc12e0982915405b"
+      "bytes": 48505,
+      "sha256": "fa00e5990e5caacab3c1ef6d4acae86cd24944f976436384b4dc4b268c027a04"
     },
     "src/world/runtime/world_tick_random_internal.h": {
       "bytes": 562,
@@ -4890,8 +4890,8 @@
       "sha256": "6f63aadc2ad8589a3a5b0c528a663f8c4354ecec3865943dbe8708d9a8f7ce78"
     },
     "tests/world/runtime/test_chunk_tick.c": {
-      "bytes": 26148,
-      "sha256": "19b0c0edc02761a3a5bbf7ac1df316a3ce49321fe5ed7b80d2bf9f22d1f740b1"
+      "bytes": 35402,
+      "sha256": "0703302dbc981162ccc196c95dd5853fe36ca5c7a6be6512d6693069fbc52139"
     },
     "tests/world/runtime/test_random_blocks.c": {
       "bytes": 34336,
@@ -5670,8 +5670,8 @@
       "sha256": "7e343b192ec286e343fd9496c793b38cb3cdeb0d470ee920772be8fdc222a288"
     },
     "cmake/tests/source_world_saving.cmake": {
-      "bytes": 3620,
-      "sha256": "63018f971a287cde8b859f13d995105c08a3d033c115c6187d577cccc3d31d7d"
+      "bytes": 4283,
+      "sha256": "5ac45afd90f811bc8871239556838511e53950ab084678772c34d8ed17f6c12e"
     },
     "src/world/runtime/tile_entities/source_save.inc": {
       "bytes": 11082,
@@ -6094,8 +6094,8 @@
       "sha256": "875f2fc4dbb6075afef5c929335337f81124337c36c44d3204ced9a854ca6fbc"
     },
     "tests/client/render/test_inventory_block.c": {
-      "bytes": 71275,
-      "sha256": "7c6fee26f02d312be7d67d2ed129ea71d9b626520ce37a481d059defbdbea910"
+      "bytes": 73125,
+      "sha256": "bcebc147adf916fa23c99ae97913199cef0e5cf9166ee83a712a4a0b4e6af1b0"
     },
     "tests/entity/particles/test_digging.c": {
       "bytes": 15805,
@@ -7259,11 +7259,11 @@
     },
     "tests/reference/client/workbench_open_shutdown/packet.py": {
       "bytes": 23677,
-      "sha256": "a82c808f42a967cc489eb3040bf951fa1732f54e47c43a4f2b1535002ba3dbbd"
+      "sha256": "7a5ddd2563e6e614b45f42eaba3ebe24c9026179efb5076283b0fd4c241ccb3d"
     },
     "tests/reference/client/workbench_open_shutdown/test_packet.py": {
       "bytes": 9801,
-      "sha256": "21b832ae9e1a158212be0446096f8c3e1382b79c58141b9eb0bfc03b58cc82b6"
+      "sha256": "49b05fb0aef7a26a4dde868dc4339c17c4cbe40f3dff04a591c19c1ffd2b51fe"
     },
     "tests/reference/item/mining/capture_reference.py": {
       "bytes": 5373,
@@ -7732,6 +7732,50 @@
     "tests/tools/world/benchmark_chunk_cache.py": {
       "bytes": 12416,
       "sha256": "f456027a6b0fd28b5b811e44fb10d55285a44c73c357d313d96dce778e5d133d"
+    },
+    "cmake/client_crops_world.cmake": {
+      "bytes": 1460,
+      "sha256": "b77c663304f9bcf54584959307c352689d02f705d34ff516c895607ac941a75e"
+    },
+    "src/client/render/blocks/crops.c": {
+      "bytes": 3390,
+      "sha256": "ad13f63fb6b040312fa128eeb9c7591012f69ba921f1edcd5554d929391ce0b3"
+    },
+    "src/world/runtime/chunk_tick_internal.h": {
+      "bytes": 1069,
+      "sha256": "229063ac10016ed3b83c2ec902bc47a7c63534bbd29262cf8b69790c7fd5a1e5"
+    },
+    "tests/benchmarks/world_random_tick.c": {
+      "bytes": 7234,
+      "sha256": "990102f61128cecabbec755f74415ecb7c3b637764ed0898df9ede6f84f3cc4d"
+    },
+    "tests/client/render/test_crops_world.c": {
+      "bytes": 24264,
+      "sha256": "e5c6d7b75d698cdff438cdaaccd15215db8b3702f37f688ee116d71a651be746"
+    },
+    "tests/reference/client/crops_world/capture_reference.py": {
+      "bytes": 10399,
+      "sha256": "79598d054c379be13ed587b0184eea1fb83cd40bcbc698de3aadd1d45e0b1909"
+    },
+    "tests/reference/client/crops_world/packet.py": {
+      "bytes": 18076,
+      "sha256": "d2dee28c0ea5e6109dcfcae364b630003573410909dff2d280edbe0be9832ba6"
+    },
+    "tests/reference/client/crops_world/run_native.py": {
+      "bytes": 5663,
+      "sha256": "d86ae9cf65622c3047510604b3f644eb749b8ee19c25a5a6d88aa54e1a24e06b"
+    },
+    "tests/reference/client/crops_world/test_packet.py": {
+      "bytes": 6264,
+      "sha256": "429e0461b311f7a87119cdc23dd04e436e6c3cc5a0c9eeddc287663a7df6c997"
+    },
+    "tests/tools/benchmarks/test_world_random_tick.py": {
+      "bytes": 2820,
+      "sha256": "d37e9a9a604bc7ab668654245b959e38a35a46d9d98c344bdecef5433d552a75"
+    },
+    "tests/tools/world/benchmark_random_tick.py": {
+      "bytes": 12958,
+      "sha256": "c884db872abb54dd7a9b66d3275f0a9fc0348008219407d5f3942ed86b4450b6"
     }
   },
   "authorities": {
@@ -11215,6 +11259,94 @@
           },
           "added": [],
           "current_count": 1933
+        }
+      }
+    },
+    {
+      "from_commit": "55088bf8c66487b284f12e10d495d7e866621929",
+      "role": "Current Crops World geometry, raw Chunk reads with failure-only diagnostics and fresh Workbench capture inputs. Earlier observations and compiled products retain their original qualification scope.",
+      "previous_metadata": {
+        "bytes": 461653,
+        "sha256": "51a29072c9f93a24b6f453c5262c25f6de2ac1a57e787ce8b5b1d590fed91004"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "cmake/tests/client_world_selection_loop.cmake": {
+              "bytes": 9737,
+              "sha256": "6302d2a790fb4686e075c3f108a2f6c615f3c5384795a0b29d0f78d8cd085810"
+            },
+            "tests/client/startup/test_world_selection_loop.c": {
+              "bytes": 385698,
+              "sha256": "8cfc1b5808e95edd39a6ec37d248f003c5cb4e6641081b192d25a3cac0f32a44"
+            },
+            "tests/tools/client/test_world_selection_loop.py": {
+              "bytes": 95069,
+              "sha256": "fe154379fb828fa148666efc360c54ad95f20cb2edad423ec2a4ddaa24fef0c9"
+            },
+            "cmake/client_render_global_world.cmake": {
+              "bytes": 1455,
+              "sha256": "acd622e17d243f839d0bede5814d1e72a0efaff737bf5a280d868d64ce31c448"
+            },
+            "tests/client/world/test_chunk_compile.c": {
+              "bytes": 50649,
+              "sha256": "df6151689a93fac4f8dc41af045708cc21a330f5172515fb8403e565f97c594c"
+            },
+            "tests/tools/client/test_chunk_compile.py": {
+              "bytes": 11073,
+              "sha256": "3433d3ed5e4803d309ab924fc25ee9af1fbf3d92b509148f259521ac80fe4dd4"
+            },
+            "src/client/render/blocks/internal.h": {
+              "bytes": 8036,
+              "sha256": "e9905789507a78231701eed226c5b787c3146ccb4f971cdea19e55a5c8195b27"
+            },
+            "src/client/render/blocks/render.c": {
+              "bytes": 6917,
+              "sha256": "f3d627de7480169d2068541381194bce3a48bac02a7a500d896cc8cf8417e804"
+            },
+            "src/world/runtime/chunk_tick.c": {
+              "bytes": 15384,
+              "sha256": "6a2482d1fd3a8744e0013a3d5d56beb963ffe4c692e5f941589c5a0d234cd7e4"
+            },
+            "src/world/runtime/world_tick_random.c": {
+              "bytes": 48448,
+              "sha256": "545b6219e43476471a426b6a89200602e5430e87766f768ddc12e0982915405b"
+            },
+            "tests/world/runtime/test_chunk_tick.c": {
+              "bytes": 26148,
+              "sha256": "19b0c0edc02761a3a5bbf7ac1df316a3ce49321fe5ed7b80d2bf9f22d1f740b1"
+            },
+            "cmake/tests/source_world_saving.cmake": {
+              "bytes": 3620,
+              "sha256": "63018f971a287cde8b859f13d995105c08a3d033c115c6187d577cccc3d31d7d"
+            },
+            "tests/client/render/test_inventory_block.c": {
+              "bytes": 71275,
+              "sha256": "7c6fee26f02d312be7d67d2ed129ea71d9b626520ce37a481d059defbdbea910"
+            },
+            "tests/reference/client/workbench_open_shutdown/packet.py": {
+              "bytes": 23677,
+              "sha256": "a82c808f42a967cc489eb3040bf951fa1732f54e47c43a4f2b1535002ba3dbbd"
+            },
+            "tests/reference/client/workbench_open_shutdown/test_packet.py": {
+              "bytes": 9801,
+              "sha256": "21b832ae9e1a158212be0446096f8c3e1382b79c58141b9eb0bfc03b58cc82b6"
+            }
+          },
+          "added": [
+            "cmake/client_crops_world.cmake",
+            "src/client/render/blocks/crops.c",
+            "src/world/runtime/chunk_tick_internal.h",
+            "tests/benchmarks/world_random_tick.c",
+            "tests/client/render/test_crops_world.c",
+            "tests/reference/client/crops_world/capture_reference.py",
+            "tests/reference/client/crops_world/packet.py",
+            "tests/reference/client/crops_world/run_native.py",
+            "tests/reference/client/crops_world/test_packet.py",
+            "tests/tools/benchmarks/test_world_random_tick.py",
+            "tests/tools/world/benchmark_random_tick.py"
+          ],
+          "current_count": 1944
         }
       }
     }

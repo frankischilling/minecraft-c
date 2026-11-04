@@ -6,33 +6,27 @@ source window. The native shutdown path transfers the same live IT owner to the
 Player's terminal record. It preserves source screen, Container and Stack
 identities while completing checked C cleanup.
 
-`native-validation.json` records a fresh C17 fixture-portability successor to
-the retained 62.43-second cohort. The only selected source change removes a
-nested-array parameter qualifier in the Ladder replay fixture. All 1,446
-runtime files and the SDK executable/DLL bytes remain identical. Captured
-production includes the same Ladder World geometry and failure-only EW Block reads in
-CV and DK. The public EW accessor keeps its complete success diagnostic.
-Fluid, Torch, Smoke/Flame, direct provider-binding reads and corrected Vector
-failure diagnostics remain in the captured runtime. The selected harness
-includes Ladder/fluid primitives, DK dispatch, loaded Water/Lava scenes and
-entered-World particle-draw controls, alongside Cactus and inventory geometry,
-additive NW translation, Piston texture getters and HUD cleanup after an actual
-nullable Stair source failure. Those
-direct and entered-draw proofs retain their own comparisons. The test helper
-waits for actual serial input consumption during Table opening. Four tests pass
-in 60.01 seconds, with 1,904 / 1,923 / 2,320 / 2,193 native checks. Their measured
-CTest times are 14.83 / 15.28 / 15.11 / 14.76 seconds
-in clean / Container / Player / World order. These SDK scenes qualify the
-Workbench terminal flow; direct geometry, getter and loaded-scene comparisons
-have their own coverage.
-The Container profile
-refuses before transfer; the Player and World profiles refuse at the later World
-audit. Each releases only its declared existing hold and retries. All four end
-with both source windows absent. The selected save tree stays byte-for-byte
-equal to its stopped snapshot through every native phase.
+`native-validation.json` records a fresh Crops and raw Chunk source cohort. The
+runtime binding includes the shared fresh raw-Chunk reader and failure-only
+World-random consumer, Crops behavior and type-6 World geometry, and Registry
+Crops Java-int wrapping. Public raw reads retain complete success diagnostics;
+An installed Blank still reads its actual current byte array. The selected
+harness includes persistent Crops controls, sixteen DK cases including four
+Crops stages, and loaded Crops scenes, alongside the existing Ladder/fluid and
+inventory/particle controls. Those direct runtime,
+geometry and entered-draw comparisons retain their own scope. These four SDK
+profiles qualify the Workbench terminal flow.
 
-The receipt binds all 1,446 runtime source files and 512 selected harness/CMake
-files. Each process recorded 1,960 selected inputs and 413 imported-resource
+All four tests pass in 60.86 seconds, with 1,888 / 1,975 / 2,091 / 2,161 native
+checks: 8,115 in total. Their measured CTest times are 15.27 / 15.21 / 15.13 /
+15.21 seconds in clean / Container / Player / World order. The Container profile
+refuses before transfer; Player and World refuse at the later World audit. Each
+releases only its declared existing hold and retries. All four end with both
+source windows absent. The selected save tree stays byte-for-byte equal to its
+stopped snapshot through every native phase.
+
+The receipt binds all 1,448 runtime source files and 514 selected harness/CMake
+files. Each process recorded 1,964 selected inputs and 413 imported-resource
 files unchanged. Native executable and DLL hashes describe the captured
 snapshot; the public audit does not require those binaries or assets. Toolchain
 and Desktop state were outside that continuity check.
@@ -43,6 +37,26 @@ The two earlier harness failures and the genuine live-owner-guard RED remain
 separate historical failures. `packet.py --private-root <build-directory>` can
 recheck the exact projection against those retained private reports. Its
 optional `--cohort-log <log-file>` checks the measured CTest times.
+The first current-source cohort passed one of four profiles in 83.67 seconds.
+Clean failed its actual Table ray-hit check before queuing a tap; Container
+failed its world-selection check while WindowsTerminal owned foreground; Player
+failed the actual SDL keyboard-focus gate despite native canvas focus. All three
+failed during setup, before terminal preparation. Source-child diagnostics
+reported no failed child. All four retained input/resource continuity. The
+actual captures, cohort log, manifests and diagnostics remain private evidence;
+these observations do not establish a runtime root cause.
+
+A later passive three-second input guard observed six last-input timestamp
+changes and returned NOT_RUN. It launched no SDK process. After an explicitly
+released quiet interval, a fresh three-second guard passed with no changes, and
+the complete current cohort passed. The monitor only read last-input and
+foreground information; it injected no input or focus recovery. It recorded
+three last-input timestamp changes during the passing cohort. Those timestamps
+do not identify a human or distinguish synthetic input; the capture is not
+qualified as entirely free of external input. All failed/NOT_RUN
+attempts remain separate evidence; unrestricted focus/input timing remains
+unqualified.
+
 The earlier four-profile PASS receipts and their captures, including the
 100.70-second, 62.22-second, 60.97-second, 105.22-second, 58.53-second and
 82.19-second cohorts, remain
@@ -103,8 +117,11 @@ Fluid/provider-query cohort. Its exact public packet, validators, README,
 actual cohort log/manifest and projection parameters remain backed up separately.
 The retained 62.43-second receipt binds the Ladder/EW source closure. Its exact
 packet, validators, README, actual cohort log/manifest and frozen input list
-remain backed up separately. The current 60.01-second successor qualifies the
-Workbench terminal flow against the corrected C17 fixture binding; direct
+remain backed up separately. The retained 60.01-second successor qualified the
+Workbench terminal flow against the corrected C17 fixture binding. Its exact
+packet, validators, README, matching cohort log/manifest, frozen 1,960-input list
+and declared private artifacts remain preserved. The current 60.86-second
+cohort binds the later Crops/RawChunk source and selected harness; direct
 geometry, pixels and gameplay retain their separate coverage.
 
 Run the Java-free public audit and corruption controls with:

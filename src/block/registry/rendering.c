@@ -419,7 +419,7 @@ mc_registry_status mc_block_render_texture_metadata(const mc_block *block, int32
             break;
         }
         case MC_BLOCK_CROPS:
-            t += m < 0 ? 7 : m;
+            t = mc_java_i32_add(t, m < 0 ? 7 : m);
             break;
         case MC_BLOCK_CAKE:
             t += side == 0 ? 3 : side == 1 ? 0 : (m > 0 && side == 4) ? 2 : 1;

@@ -402,7 +402,7 @@ typedef struct block_reference_case {
     int32_t id, metadata, pass, sky_subtraction, x, y, z, vertices;
     size_t cells;
     int32_t inputs[125][7];
-    uint32_t words[36u * 8u];
+    uint32_t words[48u * 8u];
 } block_reference_case;
 
 static bool block_reference_read(FILE *input, block_reference_case *reference) {
@@ -415,10 +415,12 @@ static bool block_reference_read(FILE *input, block_reference_case *reference) {
                  &reference->vertices, &reference->cells) == 11 &&
           strcmp(marker, "CASE") == 0 &&
           ((reference->id >= 8 && reference->id <= 11) ||
-           (reference->id == 65 && reference->metadata >= 2 && reference->metadata <= 5)) &&
+           (reference->id == 65 && reference->metadata >= 2 && reference->metadata <= 5) ||
+           (reference->id == 59 && (reference->metadata == 0 || reference->metadata == 7 ||
+                                    reference->metadata == 8 || reference->metadata == 15))) &&
           reference->metadata >= 0 && reference->metadata <= 15 && reference->pass >= 0 &&
           reference->pass <= 1 && reference->x == 8 && reference->y == 64 && reference->z == 8 &&
-          reference->vertices > 0 && reference->vertices <= 36 && reference->vertices % 6 == 0 &&
+          reference->vertices > 0 && reference->vertices <= 48 && reference->vertices % 6 == 0 &&
           reference->cells == 125);
     for (size_t i = 0; i < reference->cells; ++i) {
         int32_t *row = reference->inputs[i];
@@ -437,7 +439,7 @@ static bool block_reference_read(FILE *input, block_reference_case *reference) {
 
 static bool block_reference_list(picking_fixture *f, mc_client_render_global *owner, int32_t list,
                                  const block_reference_case *reference,
-                                 const uint32_t prior[36u * 8u], const uint8_t **identity) {
+                                 const uint32_t prior[48u * 8u], const uint8_t **identity) {
     mc_client_source_list_state definition;
     mc_client_source_batch_view batch;
     mc_client_nw_state actual;
@@ -463,16 +465,16 @@ static bool block_compile_controls(picking_fixture *f, mc_client_render_global *
                                    mc_client_source_dk *dk, int32_t base, FILE *input) {
     char marker[32];
     size_t cases = 0;
-    CHECK(fscanf(input, "%31s %zu", marker, &cases) == 2 && strcmp(marker, "BLOCK_DK_V2") == 0 &&
-          cases == 12);
+    CHECK(fscanf(input, "%31s %zu", marker, &cases) == 2 && strcmp(marker, "BLOCK_DK_V3") == 0 &&
+          cases == 16);
 
-    struct fluid_compile_work {
+    struct block_compile_work {
         block_reference_case reference;
         uint8_t blocks[4][MC_CHUNK_BLOCKS];
         uint8_t metadata[4][MC_CHUNK_NIBBLE_BYTES];
         uint8_t sky[4][MC_CHUNK_NIBBLE_BYTES], light[4][MC_CHUNK_NIBBLE_BYTES];
-        uint32_t prior[36u * 8u];
-        uint8_t definition[36u * 32u];
+        uint32_t prior[48u * 8u];
+        uint8_t definition[48u * 32u];
         mc_world_light_operation_error light_operation;
         mc_world_query_error query;
         mc_client_render_global_error error;
@@ -502,7 +504,7 @@ static bool block_compile_controls(picking_fixture *f, mc_client_render_global *
     owner->fields.q = 8;
     owner->fields.o = mc_render_global_allocate(
         owner, 8u * sizeof(*owner->fields.o),
-        (mc_client_graphics_site){"native-test", "fluid", "", -1}, &work->error);
+        (mc_client_graphics_site){"native-test", "Block geometry", "", -1}, &work->error);
     CHECK(owner->fields.o != NULL && f->base.world->persistent_bindings == bindings + 1u);
     owner->o_length = 8;
     owner->fields.o[4] = dk;
@@ -513,15 +515,21 @@ static bool block_compile_controls(picking_fixture *f, mc_client_render_global *
     dk->fields.q = dk->fields.s = 8;
     dk->fields.r = 64;
     CHECK(mc_entity_set_position(f->actors[0], 8.5, 64.5, 8.5) == MC_ENTITY_OK);
-    unsigned int inventory[4] = {0}, ladder_inventory[4] = {0};
+    unsigned int inventory[4] = {0}, ladder_inventory[4] = {0}, crops_inventory[4] = {0};
     for (size_t case_index = 0; case_index < cases; ++case_index) {
         block_reference_case *reference = &work->reference;
         CHECK(block_reference_read(input, reference));
         const bool ladder = reference->id == 65;
-        const unsigned int return_pc = ladder ? 163u : 48u;
-        const char *tag = ladder ? "DK_LADDER" : "DK_FLUID";
+        const bool crops = reference->id == 59;
+        const unsigned int return_pc = crops ? 98u : ladder ? 163u : 48u;
+        const char *tag = crops ? "DK_CROPS" : ladder ? "DK_LADDER" : "DK_FLUID";
         if (ladder)
             ++ladder_inventory[(size_t)(reference->metadata - 2)];
+        else if (crops)
+            ++crops_inventory[reference->metadata == 0   ? 0u
+                              : reference->metadata == 7 ? 1u
+                              : reference->metadata == 8 ? 2u
+                                                         : 3u];
         else
             ++inventory[(size_t)(reference->id - 8)];
         for (size_t i = 0; i < 4; ++i) {
@@ -555,7 +563,10 @@ static bool block_compile_controls(picking_fixture *f, mc_client_render_global *
               mc_registry_block_get(f->base.registry, reference->id, &block, NULL) ==
                   MC_REGISTRY_OK &&
               mc_block_render_describe(block, &description) == MC_REGISTRY_OK &&
-              description.type == (ladder ? 8 : 4) && description.pass == reference->pass);
+              description.type == (crops    ? 6
+                                   : ladder ? 8
+                                            : 4) &&
+              description.pass == reference->pass);
         uintptr_t published = 0;
         for (size_t attempt = 0; attempt < 2; ++attempt) {
             mc_client_nw_state before;
@@ -633,7 +644,7 @@ static bool block_compile_controls(picking_fixture *f, mc_client_render_global *
         }
     }
     for (size_t i = 0; i < 4; ++i)
-        CHECK(inventory[i] == 2 && ladder_inventory[i] == 1);
+        CHECK(inventory[i] == 2 && ladder_inventory[i] == 1 && crops_inventory[i] == 1);
     CHECK(fscanf(input, "%31s", marker) == EOF &&
           mc_render_global_access_source_remove(owner->access, f->base.world, &work->error) ==
               MC_CLIENT_RENDER_GLOBAL_OK &&
@@ -684,7 +695,7 @@ static bool block_compile_controls(picking_fixture *f, mc_client_render_global *
     return true;
 }
 
-static bool compile_controls(picking_fixture *f, FILE *fluid_input) {
+static bool compile_controls(picking_fixture *f, FILE *block_input) {
     mc_client_render_global *n = NULL;
     mc_client_render_global_error error;
     CHECK(mc_client_render_global_allocate(f->graphics, NULL, &n, &error) ==
@@ -797,7 +808,7 @@ static bool compile_controls(picking_fixture *f, FILE *fluid_input) {
     CHECK(f->base.world->persistent_bindings == bindings);
     CHECK(cactus_compile_controls(f, n, dk, base));
     CHECK(torch_compile_controls(f, n, dk, base));
-    CHECK(block_compile_controls(f, n, dk, base, fluid_input));
+    CHECK(block_compile_controls(f, n, dk, base, block_input));
     /* A remaining family still retains a real failed compile prefix. Native
      * cleanup preserves both the earlier list and the unfinished definition. */
     const mc_block *fire = NULL;
@@ -840,15 +851,15 @@ static bool compile_controls(picking_fixture *f, FILE *fluid_input) {
 int main(int argc, char **argv) {
     if (argc != 4)
         return 2;
-    FILE *fluid_input = fopen(argv[3], "r");
-    if (fluid_input == NULL)
+    FILE *block_input = fopen(argv[3], "r");
+    if (block_input == NULL)
         return 2;
     picking_fixture *f = calloc(1, sizeof(*f));
     if (f == NULL || !picking_open(f, argv[1]) || !picking_case_open(f, argv[2]) ||
-        !bound_dispatch_controls(f) || !compile_controls(f, fluid_input) ||
+        !bound_dispatch_controls(f) || !compile_controls(f, block_input) ||
         !picking_case_close(f) || !picking_close(f))
         return 1;
-    if (fclose(fluid_input) != 0)
+    if (fclose(block_input) != 0)
         return 1;
     free(f);
     printf("Source DK: %u checks; empty and nonair completion, retained family failure\n", checks);

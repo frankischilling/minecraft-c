@@ -132,6 +132,8 @@ bool mc_cv_crossed_plant_geometry(mc_cv_context *, const mc_block *, int32_t, do
                                   double);
 bool mc_cv_fluid(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
 bool mc_cv_ladder(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
+bool mc_cv_crops(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
+bool mc_cv_crops_geometry(mc_cv_context *, const mc_block *, int32_t, double, double, double);
 /* Actual Cactus World bodies. The dispatcher owns m's frame; c is entered by
  * its caller. Neither body begins/draws the enclosing NW batch or resets m. */
 bool mc_cv_cactus(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
