@@ -115,6 +115,23 @@ mc_registry_status mc_registry_item_c_get(mc_registry_classes *classes,
     return status;
 }
 
+mc_registry_status mc_registry_item_b_get(mc_registry_classes *classes, mc_java_random **out,
+                                          mc_registry_error *error) {
+    if (out == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Item runtime b output");
+    mc_registry_status status = enter_items(classes, error);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    mc_java_random *random = NULL;
+    status = mc_registry_items_active_use(classes);
+    if (status == MC_REGISTRY_OK)
+        random = classes->items.b;
+    status = leave_items(classes, status, error);
+    if (status == MC_REGISTRY_OK)
+        *out = random;
+    return status;
+}
+
 mc_registry_status mc_registry_item_c_at(mc_registry_classes *classes,
                                          const mc_registry_item_array *captured_array,
                                          int32_t index, const mc_item **out,

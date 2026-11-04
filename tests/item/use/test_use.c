@@ -596,6 +596,7 @@ static bool placement_real_n_control(fixture *f, mc_chunk_state *chunk, mc_entit
 }
 #endif
 
+#include "dye_controls.inc"
 #include "farming_controls.inc"
 #include "food_controls.inc"
 
@@ -620,7 +621,7 @@ static bool use_controls(fixture *f) {
               MC_PLAYER_OK);
     mc_player_session_retire(&session);
     CHECK(placement_order(f, state, player) && farming_controls(f, state, player) &&
-          food_controls(f, player));
+          food_controls(f, player) && dye_controls(f, state));
 #ifdef MC_PLACEMENT_REAL_RENDER_GLOBAL
     CHECK(placement_receipt_controls(f, state, player) &&
           placement_real_n_control(f, state, player));

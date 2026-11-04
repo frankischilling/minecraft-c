@@ -1,0 +1,94 @@
+{
+  "status": "PASS",
+  "profiles": 33,
+  "ordinary_fresh_vms": 2,
+  "original_game_class_replacements": 0,
+  "inputs_before": {
+    "b1.7.3.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "libraries/org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "libraries/org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "libraries/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "libraries/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "jdk/java.EXE": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "jdk/javac.EXE": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "jdk/modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "jdk/jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "authored/DyeIconObservation.java": "913ed750634cdf928b42f749217d2fceebbcf076c8c4c1d7eb6ad03abdf932d3",
+    "authored/profiles.tsv": "4bb99dc6dee70fd299999e5bd06f4485d360e042c6aa93cf3b32f165a4e646c3",
+    "authored/declared-inputs.json": "c4f436fa28fb19b4e2f70cda5cd499b84e43690ac807fabf10cc5396ed822e63",
+    "authored/source-pins.json": "2029982a61b84c4bff714b3043cb56ba4e63697119171b202b5745830f951fa9",
+    "authored/capture.py": "eb6489eec04ab922e2861d28a113686fe962cbb3bc2661bc23b4754583b2ddcd",
+    "tests/reference/client/picking/observe.py": "7dc92c800767da251a33c2da082e77f95d75d39544d12ec2207029c7dacb8c23",
+    "tests/reference/client/controller/classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+  },
+  "inputs_after": {
+    "b1.7.3.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "libraries/org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "libraries/org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "libraries/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "libraries/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "jdk/java.EXE": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "jdk/javac.EXE": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "jdk/modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "jdk/jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "authored/DyeIconObservation.java": "913ed750634cdf928b42f749217d2fceebbcf076c8c4c1d7eb6ad03abdf932d3",
+    "authored/profiles.tsv": "4bb99dc6dee70fd299999e5bd06f4485d360e042c6aa93cf3b32f165a4e646c3",
+    "authored/declared-inputs.json": "c4f436fa28fb19b4e2f70cda5cd499b84e43690ac807fabf10cc5396ed822e63",
+    "authored/source-pins.json": "2029982a61b84c4bff714b3043cb56ba4e63697119171b202b5745830f951fa9",
+    "authored/capture.py": "eb6489eec04ab922e2861d28a113686fe962cbb3bc2661bc23b4754583b2ddcd",
+    "tests/reference/client/picking/observe.py": "7dc92c800767da251a33c2da082e77f95d75d39544d12ec2207029c7dacb8c23",
+    "tests/reference/client/controller/classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+  },
+  "helpers_before": {
+    "DyeIconObservation$1.class": "ca6fef1cc98f57c0dc0239e0231c10c7965cae57325e670c8f47bfb0858dc0a0",
+    "DyeIconObservation.class": "ad171bb60c6cc010886a9296a677b6b2ef0b76073ed93b4e6acdecc4b89d421e"
+  },
+  "inputs_unchanged": true,
+  "helpers_unchanged": true,
+  "selected_sha256": "c773ca56a3a31c549da5ea2b02ff2ff64b5682e16a43ed167939ba92a5392353",
+  "raw_stdout_sha256": "10bd7618540fe675a2a1104736e928de01fc6dbc974957a9194e8369cf86ea30",
+  "runs": [
+    {
+      "returncode": 0,
+      "stdout_sha256": "10bd7618540fe675a2a1104736e928de01fc6dbc974957a9194e8369cf86ea30",
+      "stderr_raw_private_sha256": "321cda86fb230d1eb2f25192120861d411772b11f192200dab00dce9117e0bba",
+      "command_roles": [
+        "pinned-java",
+        "-Xint",
+        "-Xverify:all",
+        "-Xmx128m",
+        "headless",
+        "SecurityManager-allow",
+        "original-JAR/library/helper-classpath",
+        "DyeIconObservation",
+        "verified-original-JAR",
+        "frozen-profiles.tsv"
+      ]
+    },
+    {
+      "returncode": 0,
+      "stdout_sha256": "10bd7618540fe675a2a1104736e928de01fc6dbc974957a9194e8369cf86ea30",
+      "stderr_raw_private_sha256": "321cda86fb230d1eb2f25192120861d411772b11f192200dab00dce9117e0bba",
+      "command_roles": [
+        "pinned-java",
+        "-Xint",
+        "-Xverify:all",
+        "-Xmx128m",
+        "headless",
+        "SecurityManager-allow",
+        "original-JAR/library/helper-classpath",
+        "DyeIconObservation",
+        "verified-original-JAR",
+        "frozen-profiles.tsv"
+      ]
+    }
+  ],
+  "projection": {
+    "policy": "Portable identities replace absolute input/command paths. Ordinary stdout is exact captured bytes. Selected JSONL is the declared DYE_ICON-prefixed ASCII splitlines plus LF projection of the original stdout. Private warning stderr represented by raw hashes. Failed initializer diagnostic has private helper path replaced and LF text projection; exact original retained privately.",
+    "raw_capture_sha256": "f69aae97f69b33f67c459ff329775337e98ca39d40346bc90e0b0634d1502184",
+    "raw_freeze_sha256": "353bdb90fec87dad32c2914a7c0c4709b41db8c96f940d43c2451c40487c37a1",
+    "failed_attempt_capture_sha256": "3e7928880ef39bc40dc43c6e2ce9aa9304bc10955949a2144168118eadc3d796",
+    "failed_stderr_raw_sha256": "125a020c867c6d89f866c9a37383132e192fbde2483d3ab08dd942c2f46f17b9"
+  },
+  "scope": "Actual registered original Dye scalar and IZ wrapper, inherited GM.b(IZ) supporting scalar, GM.f(I)I/GM.b()Z/GM.c()Z. Declared UU-before-GM class initialization and per-row bh stores. No World, native parity, graphics or complete rendering claim."
+}

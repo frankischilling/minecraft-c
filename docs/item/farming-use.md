@@ -3,8 +3,8 @@
 Registered Hoes and Seeds execute their original client on-block bodies through
 the actual ItemStack wrapper. Hoe IDs 290 through 294 use `la`; Seeds 295 uses
 `rk`. The loaded client can till Dirt, plant Seeds, save, and reload the result
-in the bounded scenario below. Dye's distinct `km` override remains an explicit
-unsupported call.
+in the bounded scenario below. Dye's distinct `km` bone meal override has its
+separate [Block-use and loaded-Crop qualification](dye-use.md).
 
 ## Body and wrapper order
 

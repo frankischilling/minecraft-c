@@ -3,6 +3,7 @@
 #include "internal.h"
 #include "mc/block/registry/rendering.h"
 #include "mc/block/registry/runtime.h"
+#include "mc/core/java/java.h"
 #include <string.h>
 
 static mc_item_render_site at(const char *c, const char *m, const char *d, int32_t pc) {
@@ -318,6 +319,17 @@ static bool icon_entered(mc_registry_classes *classes, const mc_item *item, int3
         if (status != MC_REGISTRY_OK)
             return fail(e, status, "Slab Item icon actual Block texture override");
         e->site.pc = 8;
+        return true;
+    }
+    if (resolved->icon == RENDER_KM) {
+        e->site = at("km", "a", "(I)I", 3);
+        const int32_t base = item->fields.bh;
+        /* Java irem/idiv truncate toward zero; the fixed positive divisor
+         * admits every signed damage. Preserve both wrapping iadd results. */
+        const int32_t offset = mc_java_i32_mul(damage % 8, 16);
+        const int32_t prefix = mc_java_i32_add(base, offset);
+        *out = mc_java_i32_add(prefix, damage / 8);
+        e->site.pc = 19;
         return true;
     }
     if (resolved->icon != RENDER_GM) {

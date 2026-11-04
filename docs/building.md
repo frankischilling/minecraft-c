@@ -117,6 +117,19 @@ It authors its own saved Player and uses the ordinary input, save/title and
 reselection paths. Its desktop-focus resource lock serializes it with the other
 local client-window scenarios.
 
+The separate Windows loaded-Crop bone meal scenario uses
+`MC_ENABLE_CLIENT_DYE_TESTS=ON` with display tests and imported resources. Build
+`mc_test_dye_loop`, then run
+`ctest --test-dir build-windows --no-tests=error --output-on-failure -R '^client.dye_loop$'`.
+It checks one actual Block-use input, stage-zero/stage-seven geometry, HUD/held
+icon 191 and ordinary save/title/reselection. It shares the desktop-focus
+resource lock with the other local window scenarios. The Java-free
+`item.dye_reference` and `item.dye_icon_reference` tests have separate method
+comparison scopes; see [Dye use](item/dye-use.md) for results and limits.
+The final Linux public suite passes 670/670; both current Windows cohorts pass
+679/681 with retained failures. See [test details](testing.md#bone-meal-block-use-dye-icons-and-loaded-crop)
+for their exact source/product scopes and unresolved reload diagnosis.
+
 Both native CI jobs cache only the pinned FetchContent download archives.
 Source trees, populate stamps and dependency build products are excluded.
 CMake still checks each archive's `URL_HASH` and extracts it into a fresh build.

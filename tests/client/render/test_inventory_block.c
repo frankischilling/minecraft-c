@@ -8,6 +8,7 @@ int mc_inventory_faces_fixture_main(void);
 #include "block/registry/registry_internal.h"
 #include "client/render/item_overlay.h"
 #include "client/render/item_scale.h"
+#include "core/java/random_profile_internal.h"
 #include "item/render/internal.h"
 #include "item/stack/source_internal.h"
 #include "mc/item/registry/runtime.h"
@@ -275,8 +276,7 @@ static bool inherited_item_controls(mc_registry_classes *registry) {
     static const struct {
         mc_item_kind kind;
         const char *icon_owner;
-    } overrides[] = {
-        {MC_ITEM_DYE, "km"}, {MC_ITEM_SAPLING_BLOCK, "mr"}, {MC_ITEM_LEAVES_BLOCK, "uy"}};
+    } overrides[] = {{MC_ITEM_SAPLING_BLOCK, "mr"}, {MC_ITEM_LEAVES_BLOCK, "uy"}};
 
     for (size_t i = 0; i < sizeof(overrides) / sizeof(overrides[0]); ++i) {
         mc_item *raw = NULL;
@@ -296,6 +296,178 @@ static bool inherited_item_controls(mc_registry_classes *registry) {
             CHECK(mc_item_render_color(registry, raw, 0, &value, &error) && value == 0xffffff &&
                   strcmp(error.site.class_name, "gm") == 0);
     }
+    return true;
+}
+
+static bool dye_item_getter_controls(fixture *f) {
+    static const struct {
+        int32_t base, damage, expected;
+    } cases[] = {{193, 0, 193},
+                 {193, 1, 209},
+                 {193, 2, 225},
+                 {193, 3, 241},
+                 {193, 4, 257},
+                 {193, 5, 273},
+                 {193, 6, 289},
+                 {193, 7, 305},
+                 {193, 8, 194},
+                 {193, 9, 210},
+                 {193, 10, 226},
+                 {193, 11, 242},
+                 {193, 12, 258},
+                 {193, 13, 274},
+                 {193, 14, 290},
+                 {193, 15, 306},
+                 {193, -1, 177},
+                 {193, -7, 81},
+                 {193, -8, 192},
+                 {193, -9, 176},
+                 {193, -15, 80},
+                 {193, -16, 191},
+                 {193, -17, 175},
+                 {193, INT32_MIN, -268435263},
+                 {193, INT32_MAX, 268435760},
+                 {INT32_MAX, 7, -2147483537},
+                 {INT32_MAX, 15, -2147483536},
+                 {INT32_MIN, -1, 2147483632},
+                 {INT32_MIN, INT32_MIN, 1879048192},
+                 {INT32_MAX, INT32_MAX, -1879048082}};
+
+    /* Declared native RAW metadata exercises the entered pure KM body while
+     * its owner stays cold. This is not Java new/KM construction: that facade
+     * must initialize classes before allocating the object. The native arena
+     * owns this payload through checked Registry retirement. */
+    const mc_registry_options options = {MC_REGISTRY_CLIENT, f->profile, f->materials, 0, NULL};
+    mc_registry_classes *cold = NULL;
+    CHECK(mc_registry_classes_allocate(&options, &cold, NULL) == MC_REGISTRY_OK);
+    mc_item *raw = mc_registry_allocate(cold, sizeof(*raw));
+    CHECK(raw != NULL);
+    *raw = (mc_item){.classes = cold,
+                     .kind = MC_ITEM_DYE,
+                     .phase = MC_ITEM_RAW,
+                     .requested_argument = -1,
+                     .constructor_pc = -1};
+    CHECK(raw->phase == MC_ITEM_RAW && cold->current_item == NULL &&
+          cold->item_states[MC_ITEM_BASE].phase == MC_REGISTRY_COLD &&
+          cold->item_states[MC_ITEM_DYE].phase == MC_REGISTRY_COLD &&
+          cold->blocks_phase == MC_REGISTRY_COLD && cold->items.b == NULL && cold->items.c == NULL);
+    const size_t bytes = cold->allocation_bytes;
+    const mc_registry_class_state base = cold->item_states[MC_ITEM_BASE];
+    const mc_registry_class_state declaring = cold->item_states[MC_ITEM_DYE];
+    const mc_registry_phase blocks = cold->blocks_phase;
+    const uint64_t uniquifier = atomic_load(&f->profile->uniquifier);
+    for (size_t i = 0; i < sizeof cases / sizeof *cases; ++i) {
+        raw->fields.bh = cases[i].base;
+        const mc_item before = *raw;
+        mc_item_render_error error;
+        int32_t icon = -77;
+        CHECK(mc_item_render_icon(cold, raw, cases[i].damage, &icon, &error) && error.returned &&
+              error.status == MC_REGISTRY_OK && !error.native_policy && !error.source_exception &&
+              error.throwable == MC_ITEM_RENDER_NO_THROWABLE && icon == cases[i].expected &&
+              error.site.pc == 19 && strcmp(error.site.class_name, "km") == 0 &&
+              strcmp(error.site.method, "a") == 0 && strcmp(error.site.descriptor, "(I)I") == 0 &&
+              memcmp(&before, raw, sizeof before) == 0 && cold->allocation_bytes == bytes &&
+              memcmp(&base, &cold->item_states[MC_ITEM_BASE], sizeof base) == 0 &&
+              memcmp(&declaring, &cold->item_states[MC_ITEM_DYE], sizeof declaring) == 0 &&
+              cold->blocks_phase == blocks && cold->current_item == NULL && cold->items.b == NULL &&
+              cold->items.c == NULL && atomic_load(&f->profile->uniquifier) == uniquifier);
+    }
+    mc_item_render_error error;
+    int32_t icon = 91;
+    CHECK(!mc_item_render_icon(cold, NULL, 15, &icon, &error) && icon == 91 &&
+          error.status == MC_REGISTRY_INVALID_ARGUMENT && !error.returned && error.site.pc == -1 &&
+          !error.source_exception);
+    CHECK(!mc_item_render_icon(cold, raw, 15, NULL, &error) &&
+          error.status == MC_REGISTRY_INVALID_ARGUMENT && error.site.pc == -1);
+    CHECK(!mc_item_render_icon(cold, raw, 15, &icon, NULL) && icon == 91);
+    CHECK(!mc_item_render_icon(f->registry, raw, 15, &icon, &error) && icon == 91 &&
+          error.status == MC_REGISTRY_INVALID_ARGUMENT && error.site.pc == -1);
+    cold->entered = 1;
+    const bool busy = !mc_item_render_icon(cold, raw, 15, &icon, &error);
+    cold->entered = 0;
+    CHECK(busy && icon == 91 && error.status == MC_REGISTRY_BUSY && error.site.pc == -1 &&
+          mc_registry_classes_free(cold, NULL) == MC_REGISTRY_OK);
+    return true;
+}
+
+static bool dye_icon_observe(mc_registry_classes *registry, mc_item *item, size_t ordinal,
+                             const char *name, int32_t base, int32_t damage) {
+    item->fields.bh = base;
+    const mc_item before = *item;
+    mc_item_stack *stack = NULL;
+    CHECK(mc_item_stack_allocate(&stack) == MC_ITEM_STACK_OK &&
+          mc_item_stack_construct(stack, 351, 2, damage) == MC_ITEM_STACK_OK);
+    int32_t direct, wrapped, color;
+    bool full_3d, rotate;
+    mc_item_render_error error;
+    CHECK(mc_item_render_icon(registry, item, damage, &direct, &error) && error.returned &&
+          error.site.pc == 19 && strcmp(error.site.class_name, "km") == 0);
+    /* This actual IZ path enters its inherited GM.b(IZ) child. The original
+     * packet's separate direct GM.b(IZ) observation remains supporting data. */
+    CHECK(mc_item_stack_render_icon(registry, stack, &wrapped, &error) && error.returned &&
+          error.site.pc == 8 && strcmp(error.site.class_name, "iz") == 0 && error.id_read &&
+          error.damage_read && error.id == 351 && error.damage == damage &&
+          error.ancestor_count == 0 && wrapped == direct);
+    CHECK(mc_item_render_color(registry, item, damage, &color, &error) && error.returned &&
+          mc_item_render_full_3d(registry, item, &full_3d, &error) && error.returned &&
+          mc_item_render_rotate(registry, item, &rotate, &error) && error.returned &&
+          memcmp(&before, item, sizeof before) == 0);
+    mc_item_stack_fields fields;
+    CHECK(mc_item_stack_fields_get(stack, &fields) == MC_ITEM_STACK_OK && fields.id == 351 &&
+          fields.count == 2 && fields.damage == damage && fields.animation == 0);
+    printf("DYE_ICON_NATIVE\t{\"index\":%zu,\"name\":\"%s\",\"bh\":%" PRId32 ",\"damage\":%" PRId32
+           ",\"direct_icon\":%" PRId32 ",\"stack_icon\":%" PRId32 ",\"color\":%" PRId32
+           ",\"full3d\":%s,\"rotate\":%s}\n",
+           ordinal, name, base, damage, direct, wrapped, color, full_3d ? "true" : "false",
+           rotate ? "true" : "false");
+    mc_item_stack_release(stack);
+    return true;
+}
+
+static bool dye_icon_observations(mc_registry_classes *registry) {
+    const mc_registry_item_array *array = NULL;
+    const mc_item *captured = NULL;
+    CHECK(mc_registry_item_c_get(registry, &array, NULL) == MC_REGISTRY_OK &&
+          mc_registry_item_c_at(registry, array, 351, &captured, NULL) == MC_REGISTRY_OK &&
+          captured != NULL && captured->kind == MC_ITEM_DYE);
+    mc_item *item = (mc_item *)(void *)captured;
+    const int32_t saved = item->fields.bh;
+    CHECK(saved == 78);
+    printf("DYE_ICON_NATIVE_INIT\t{\"id\":351,\"initial_bh\":%" PRId32 "}\n", saved);
+    size_t ordinal = 0;
+    for (int32_t damage = 0; damage < 16; ++damage) {
+        char name[32];
+        const int length = snprintf(name, sizeof name, "normal_%" PRId32, damage);
+        CHECK(length > 0 && (size_t)length < sizeof name &&
+              dye_icon_observe(registry, item, ordinal++, name, 78, damage));
+    }
+
+    static const struct {
+        const char *name;
+        int32_t base, damage;
+    } cases[] = {{"signed_minus1", 78, -1},
+                 {"signed_minus7", 78, -7},
+                 {"signed_minus8", 78, -8},
+                 {"signed_minus9", 78, -9},
+                 {"signed_minus15", 78, -15},
+                 {"signed_minus16", 78, -16},
+                 {"signed_minus17", 78, -17},
+                 {"signed_minus2147483648", 78, INT32_MIN},
+                 {"signed_2147483647", 78, INT32_MAX},
+                 {"base_0", 0, 15},
+                 {"base_1", -1, 15},
+                 {"base_2", INT32_MAX, 15},
+                 {"base_3", INT32_MIN, -1},
+                 {"base_4", INT32_MAX, INT32_MAX},
+                 {"base_5", INT32_MIN, INT32_MIN},
+                 {"base_6", 2147483640, 1},
+                 {"base_7", -2147483640, -1}};
+
+    for (size_t i = 0; i < sizeof cases / sizeof *cases; ++i)
+        CHECK(dye_icon_observe(registry, item, ordinal++, cases[i].name, cases[i].base,
+                               cases[i].damage));
+    item->fields.bh = saved;
+    printf("DYE_ICON_NATIVE_COMPLETE rows=%zu restored_bh=%" PRId32 "\n", ordinal, item->fields.bh);
     return true;
 }
 
@@ -1091,7 +1263,8 @@ static bool inventory_controls(void) {
     CHECK(mc_registry_item_c_get(f.registry, &items, NULL) == MC_REGISTRY_OK &&
           mc_registry_item_c_at(f.registry, items, 3, &item, NULL) == MC_REGISTRY_OK &&
           item != NULL);
-    CHECK(inherited_item_controls(f.registry) && log_item_getter_controls(&f) &&
+    CHECK(inherited_item_controls(f.registry) && dye_item_getter_controls(&f) &&
+          dye_icon_observations(f.registry) && log_item_getter_controls(&f) &&
           slab_item_getter_controls(&f) && log_item_initializer_controls(&f) &&
           slab_item_initializer_controls(&f));
     mc_item_render_error item_error;

@@ -22,6 +22,7 @@ licenses/openal-soft/* text eol=lf
 
 # Preserve the exact byte-pinned capture inputs and reference packet files.
 tests/reference/item/food_use/*.stdout whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/item/dye_use/**/*.stdout whitespace=trailing-space,space-before-tab,cr-at-eol
 tests/reference/item/farming_use/events.jsonl -text whitespace=trailing-space,space-before-tab,cr-at-eol
 tests/reference/item/mining/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
 tests/reference/item/mining/*.tsv -text whitespace=trailing-space,space-before-tab,cr-at-eol

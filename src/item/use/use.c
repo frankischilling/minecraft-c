@@ -4,6 +4,9 @@
 #include "../../block/registry/runtime_internal.h"
 #include "../../entity/entity_internal.h"
 #include "../../entity/living/fields_internal.h"
+#include "../../world/runtime/acquisition_internal.h"
+#include "../../world/runtime/block_queries_internal.h"
+#include "../../world/runtime/mutation/plants/plants_internal.h"
 #include "../registry/registry_internal.h"
 #include "../render/internal.h"
 #include "../stack/source_internal.h"
@@ -24,7 +27,14 @@
 #include <string.h>
 #include <xmmintrin.h>
 
-enum { USE_RECEIPTS = 16, USE_SOURCES = 5 };
+enum { USE_RECEIPTS = 16 };
+
+typedef struct use_source_copy {
+    mc_world_source_chunk_error value;
+    const mc_world_source_chunk_error *identity;
+    size_t epoch;
+    struct use_source_copy *next;
+} use_source_copy;
 
 struct mc_item_use_call {
     mc_item_use_state state;
@@ -32,13 +42,16 @@ struct mc_item_use_call {
     mc_world_placement_error predicate, face, by;
     mc_player_statistic_error statistic;
     mc_world_runtime_acquisition_error *queries[2];
+    mc_world_runtime_acquisition_error *dye_query;
+    mc_world_solid_support_detail *dye_support;
     mc_world_mutation_error *mutation, *sound;
     mc_item_combat_error *durability;
     mc_step_sound_name name;
     mc_world_access_failure receipts[USE_RECEIPTS];
-    mc_world_source_chunk_error *sources[USE_SOURCES];
-    const mc_world_source_chunk_error *source_identities[USE_SOURCES];
-    size_t receipt_count, source_count, query_count;
+    mc_world_access_failure *extra_receipts;
+    use_source_copy *sources;
+    size_t receipt_count, extra_capacity, query_count, source_epoch;
+    bool dye_query_initialized;
     bool registry_held, stack_held, world_held, player_held, result_held;
 };
 
@@ -100,19 +113,41 @@ static bool receipt(mc_item_use_call *c, const mc_world_access_failure *v, bool 
     if (v->receipt == NULL)
         return true;
     for (size_t i = 0; i < c->receipt_count; ++i)
-        if (c->receipts[i].receipt == v->receipt) {
-            receipt_exception(c, &c->receipts[i], child_failed);
+        if ((i < USE_RECEIPTS ? c->receipts[i].receipt
+                              : c->extra_receipts[i - USE_RECEIPTS].receipt) == v->receipt) {
+            receipt_exception(c, v, child_failed);
             return true;
         }
+    if (c->receipt_count >= USE_RECEIPTS && c->receipt_count - USE_RECEIPTS == c->extra_capacity) {
+        const size_t maximum = SIZE_MAX / sizeof(*c->extra_receipts);
+        if (c->extra_capacity >= maximum) {
+            c->error.cleanup = (mc_world_storage_error){MC_WORLD_STORAGE_LIMIT,
+                                                        "Item use producer capture size", 0};
+            return false;
+        }
+        size_t capacity = c->extra_capacity == 0 ? USE_RECEIPTS : c->extra_capacity;
+        capacity = capacity > maximum / 2u ? maximum : capacity * 2u;
+        mc_world_access_failure *grown = realloc(c->extra_receipts, capacity * sizeof(*grown));
+        if (grown == NULL) {
+            c->error.cleanup = (mc_world_storage_error){MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                                                        "Item use producer capture allocation", 0};
+            return false;
+        }
+        c->extra_receipts = grown;
+        c->extra_capacity = capacity;
+    }
     mc_world_storage_status status = MC_WORLD_STORAGE_LIMIT;
-    if (c->receipt_count < USE_RECEIPTS)
-        status = mc_world_access_failure_retain(v, &c->receipts[c->receipt_count]);
+    mc_world_access_failure *destination =
+        c->receipt_count < USE_RECEIPTS ? &c->receipts[c->receipt_count]
+                                        : &c->extra_receipts[c->receipt_count - USE_RECEIPTS];
+    *destination = (mc_world_access_failure){0};
+    status = mc_world_access_failure_retain(v, destination);
     if (status != MC_WORLD_STORAGE_OK) {
         c->error.cleanup =
             (mc_world_storage_error){status, "Item use exact callback producer occurrence", 0};
         return false;
     }
-    receipt_exception(c, &c->receipts[c->receipt_count], child_failed);
+    receipt_exception(c, destination, child_failed);
     c->error.retained_producers = ++c->receipt_count;
     return true;
 }
@@ -121,27 +156,22 @@ static bool copy_source(mc_item_use_call *c, const mc_world_source_chunk_error *
     const mc_world_source_chunk_error *source = *slot;
     if (source == NULL)
         return true;
-    for (size_t i = 0; i < c->source_count; ++i)
-        if (source == c->sources[i] || source == c->source_identities[i]) {
-            *slot = c->sources[i];
+    for (use_source_copy *copy = c->sources; copy != NULL; copy = copy->next)
+        if (source == &copy->value ||
+            (copy->epoch == c->source_epoch && source == copy->identity)) {
+            *slot = &copy->value;
             return true;
         }
-    if (c->source_count == USE_SOURCES) {
-        c->error.cleanup = (mc_world_storage_error){MC_WORLD_STORAGE_LIMIT,
-                                                    "Item use loader diagnostic extent", 0};
-        return false;
-    }
-    mc_world_source_chunk_error *copy = malloc(sizeof(*copy));
+    use_source_copy *copy = malloc(sizeof(*copy));
     if (copy == NULL) {
         c->error.cleanup = (mc_world_storage_error){MC_WORLD_STORAGE_ALLOCATION_FAILED,
                                                     "Item use loader diagnostic copy", 0};
         return false;
     }
-    *copy = *source;
-    const size_t i = c->source_count++;
-    c->sources[i] = copy;
-    c->source_identities[i] = source;
-    *slot = copy;
+    *copy = (use_source_copy){
+        .value = *source, .identity = source, .epoch = c->source_epoch, .next = c->sources};
+    c->sources = copy;
+    *slot = &copy->value;
     return true;
 }
 
@@ -161,7 +191,14 @@ static bool mutation_capture(mc_item_use_call *c, mc_world_mutation_error *m) {
            receipt(c, &m->publication.world_access_failure, failed) &&
            publication(c, &m->batch, &m->tile_entity, failed) &&
            publication(c, &m->nearby.batch, &m->nearby.tile_entity, failed) &&
-           copy_source(c, &m->query.source_chunk) && copy_source(c, &m->nearby.query.source_chunk);
+           publication(c, &m->power.access.batch, &m->power.access.tile_entity, failed) &&
+           publication(c, &m->rail_access.nearby.batch, &m->rail_access.nearby.tile_entity,
+                       failed) &&
+           copy_source(c, &m->query.source_chunk) &&
+           copy_source(c, &m->nearby.query.source_chunk) &&
+           copy_source(c, &m->plant.query.source_chunk) &&
+           copy_source(c, &m->power.access.query.source_chunk) &&
+           copy_source(c, &m->rail_access.nearby.query.source_chunk);
 }
 
 static bool capture(mc_item_use_call *c) {
@@ -171,6 +208,15 @@ static bool capture(mc_item_use_call *c) {
             !copy_source(c, &q->source_chunk))
             return false;
     }
+    if (c->dye_query != NULL && (!publication(c, &c->dye_query->batch, &c->dye_query->tile_entity,
+                                              c->dye_query->status != MC_CHUNK_ACQUIRE_OK) ||
+                                 !copy_source(c, &c->dye_query->source_chunk)))
+        return false;
+    if (c->dye_support != NULL &&
+        (!publication(c, &c->dye_support->access.batch, &c->dye_support->access.tile_entity,
+                      c->dye_support->error.status != MC_WORLD_STORAGE_OK) ||
+         !copy_source(c, &c->dye_support->access.query.source_chunk)))
+        return false;
     return mutation_capture(c, c->mutation) && mutation_capture(c, c->sound);
 }
 
@@ -219,6 +265,7 @@ static bool query_at(mc_item_use_call *c, const char *owner, unsigned int pc, in
         return fail(c, MC_ITEM_USE_ALLOCATION, "Item use reached query diagnostic", true);
     c->queries[c->query_count++] = q;
     c->error.acquisition = q;
+    ++c->source_epoch;
     mc_world_storage_status status = mc_world_runtime_block_get_detailed(
         c->state.world, c->state.x, y, c->state.z, out, &c->error.world, q);
     if (status != MC_WORLD_STORAGE_OK)
@@ -830,6 +877,8 @@ static bool seeds(mc_item_use_call *c) {
     return true;
 }
 
+#include "dye.inc"
+
 static bool used_statistic(mc_item_use_call *c) {
     at(c, "iz", wrapper_block_descriptor, 25);
     if (mc_registry_classes_initialize_statistics(c->state.registry, &c->error.registry) !=
@@ -901,7 +950,10 @@ static bool execute(mc_item_use_call *c) {
         at(c, "iz", "(Lfd;Lgs;)Liz;", 10);
         return true;
     }
-    if (k == MC_ITEM_HOE) {
+    if (k == MC_ITEM_DYE) {
+        if (!dye(c))
+            return false;
+    } else if (k == MC_ITEM_HOE) {
         if (!hoe(c))
             return false;
     } else if (k == MC_ITEM_SEEDS) {
@@ -1036,9 +1088,14 @@ mc_item_use_status mc_item_use_retire(mc_item_use_call **slot, mc_item_use_error
     }
     c->registry_held = false;
     for (size_t i = 0; i < c->receipt_count; ++i)
-        mc_world_access_failure_release(&c->receipts[i]);
-    for (size_t i = 0; i < c->source_count; ++i)
-        free(c->sources[i]);
+        mc_world_access_failure_release(i < USE_RECEIPTS ? &c->receipts[i]
+                                                         : &c->extra_receipts[i - USE_RECEIPTS]);
+    free(c->extra_receipts);
+    while (c->sources != NULL) {
+        use_source_copy *next = c->sources->next;
+        free(c->sources);
+        c->sources = next;
+    }
     if (c->result_held)
         mc_item_stack_release(c->state.result_stack);
     mc_item_stack_release(c->state.allocated_stack);
@@ -1050,6 +1107,8 @@ mc_item_use_status mc_item_use_retire(mc_item_use_call **slot, mc_item_use_error
         mc_world_runtime_binding_release(c->state.world);
     for (size_t i = 0; i < c->query_count; ++i)
         free(c->queries[i]);
+    free(c->dye_query);
+    free(c->dye_support);
     free(c->mutation);
     free(c->sound);
     free(c->durability);

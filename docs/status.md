@@ -1,5 +1,34 @@
 # Development status
 
+[Bone meal Block use and Dye icons](item/dye-use.md) now have separate original
+packets and native comparisons. Windows and sanitized Linux match the 39
+Block-use wrapper profiles: 36 complete selected outcomes and three callback
+effect prefixes with distinct native causes. Both also match 33 icon
+profiles. The loaded Windows Crop scenario passes 3,136 checks in 7.96 seconds:
+one actual right-click matures the Crop, consumes one bone meal, returns HUD
+and held icon 191, and preserves stage 7, count 1/damage 15 and health 5 through
+ordinary save/title/reselection. All 1,994 selected inputs/products and 413
+assets remain unchanged. The first combined post-use SDK assertion failure
+remains unresolved; the later pass does not establish its cause.
+
+Four fresh Dye-era Workbench shutdown profiles pass 8,259 checks in 61.63
+seconds, preserving 1,449 runtime files, 526 harness files, two binaries and
+413 assets: 1,977 selected inputs. The first attempt remains NOT_RUN after its
+passive guard returns 2 without launching native code. The passing attempt's
+guard records no timestamp changes; its passive cohort monitor records one
+change, which identifies neither a human nor a cause. All 57 public controls
+and public/private/history/log audits pass. The preceding
+8,499-check/63.31-second packet retains its Food/Registry source scope.
+
+The final Linux public suite passes 670/670 tests in 164.89 seconds, including
+the icon replay. Windows passes 679/681 in 350.24 seconds and a separate quiet
+repeat passes 679/681 in 317.34 seconds; focus checks and the repeat's final
+reload decoder remain failed. All four Dye packet/native tests pass in all
+three unchanged-input cohorts. [Test details](testing.md#bone-meal-block-use-dye-icons-and-loaded-crop)
+retain the metadata-only reload rotation and unresolved writer. These finite
+results do not qualify loaded Grass/tree growth, Sheep coloring, original
+pixels/audio or sustained FPS.
+
 The frozen Food/Registry public suite passes all 677 Windows tests in 409.25
 seconds and all 666 Linux tests in 179.82 seconds. Linux uses Clang 18 Debug
 ASan/UBSan with leak detection and halt-on-error under Xvfb/software OpenGL.
@@ -36,7 +65,8 @@ Android cleanup with configuration, joining both before build.
 planting bodies through the real ItemStack wrapper. Hoe preserves the original
 Dirt predicate, sound-before-mutation order, late remote flag and durability
 child. Seeds preserves its early face gate and consumes a seed even when the
-notifying setter normally returns false. Dye use remains unfinished.
+notifying setter normally returns false. Bone meal has the separate
+[Dye qualification](item/dye-use.md) above.
 
 Two ordinary original VMs and a read-only JDI target agree on 118 calls. Native
 Windows and sanitized Linux replay compare 57 wrapper effect rows: 54 complete

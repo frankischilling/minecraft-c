@@ -6,8 +6,8 @@
       "sha256": "0081591e56fb3455123fcaa3a97e0b1fcf1c8f01e41e6b0806da11434ddcc364"
     },
     ".gitattributes": {
-      "bytes": 1348,
-      "sha256": "0decbd737c673b7a3dbedc55fd782fdda56f2490826a01194ce3f5277724f2d8"
+      "bytes": 1442,
+      "sha256": "920c8c73065c29095426a7cae97f32503b1e96a72505ebd90235993c5933017b"
     },
     ".github/workflows/ci.yml": {
       "bytes": 14722,
@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 339208,
-      "sha256": "997b7cb51e8fa8ab3c47e5e2de7f448929cecd53a80a6992e454babeb9cf2db2"
+      "bytes": 339313,
+      "sha256": "a0a24c39e30f9764e383c5467d6887e18355bd7c597509b41fbba0d8d154089b"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -186,8 +186,8 @@
       "sha256": "1a54745a759c41a57a2453f44296f6cc9793698f281e83afd9a9893bdbe7ae1d"
     },
     "docs/building.md": {
-      "bytes": 21914,
-      "sha256": "53a401c3eb0e7b2af01dffbc7b6673d4bb97aac72aa4556315239ce9c4c43105"
+      "bytes": 22808,
+      "sha256": "a5717ac67adf20fbddc5a5e246e39234fe5fdb0c553726adaa09e20bb5623a78"
     },
     "docs/client/achievement-notice.md": {
       "bytes": 12023,
@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 184001,
-      "sha256": "0b88b8f51c5bdb7cc9212d0968caeca35965157566e33639808d04c74a1ee29b"
+      "bytes": 185962,
+      "sha256": "21bb7f8ffb01d0a4e897b734e06c302a003edbf5f19702cf8467ed1ee7cf46c5"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 102479,
-      "sha256": "9cd987d5b2c935c3f6a6ff82e40712d28285db9ff67d544211d8fb5ce92c1c07"
+      "bytes": 104463,
+      "sha256": "78d6bdef0b66829762cc36c40b105ac80f9fbc6e4f30b8fcba21cf5e383776fd"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 444294,
-      "sha256": "3bd87af6c0f7f6bb47eaf0692e5051c058ede7848c4c87843e7eb6e6723f2f1c"
+      "bytes": 451154,
+      "sha256": "4833fae0805320bca2c04938f742501258e63d89e776859b8b2e60e9c2d89189"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 35723,
@@ -1498,8 +1498,8 @@
       "sha256": "7268ddf5f53429905bc2beb813188eeecf7a640a1dd7cc568720388bdc5757fc"
     },
     "include/mc/item/registry/runtime.h": {
-      "bytes": 5499,
-      "sha256": "e0134949bf3eae3c0a0becc5476e4416585359257388442c34e78f7a8a2d9e17"
+      "bytes": 5817,
+      "sha256": "55ad73fbb2c1bd612467b35d661ffe5a88655d4f1cae30c2999f2d9b66467fe5"
     },
     "include/mc/item/stack/stack.h": {
       "bytes": 9525,
@@ -2006,8 +2006,8 @@
       "sha256": "9578e0cc7995e343ef20fb20ba5176b0a88c63648ca9a719329a465acfd1231e"
     },
     "scripts/development/format_code.py": {
-      "bytes": 5071,
-      "sha256": "5db073334628ac568ae9d483ee2e3522224e83a33b61a91878da743262cafb12"
+      "bytes": 5164,
+      "sha256": "5047055b7661c972bfd6d20279e7915e7256309bfb0e71e47caf158d602f31cc"
     },
     "scripts/reference/binaries/inspect_jars.py": {
       "bytes": 7826,
@@ -4266,8 +4266,8 @@
       "sha256": "105bd51083b784e8d68740f26561181676185e58094951027a8e16b550a0addc"
     },
     "src/item/registry/runtime.c": {
-      "bytes": 9265,
-      "sha256": "e53f35d91cd45321f57f0b76e2666bb35e841210d7f5b820697cdc76bb7b87f7"
+      "bytes": 9938,
+      "sha256": "03aaee0cc0537f45ba81bb1227b31ba679a1243991c4cdda65f77594b02dfe5d"
     },
     "src/item/registry/stacks.c": {
       "bytes": 10363,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 476301,
-      "sha256": "46fae524be227b34b4ba0b921be958e8c7b2673a798e2d583be26ecba92f7afa"
+      "bytes": 483121,
+      "sha256": "293decfb9cdee7f95828baad6fb1879637d00fc9b115773903fef726868e81b1"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 574455,
-      "sha256": "9ef19ba11c3f08a8d14d34ee207dabba502940b793109189266491362f28d6d2"
+      "bytes": 581626,
+      "sha256": "1b40eb6cb478071ec0b741e3509c813fc74b3c09f4a784b227980bbeee6e0bee"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 472115,
-      "sha256": "e9feb2fae418e00d749c0bc02ad50623bf72c70d4e0edb5552bcf5173b9ed85f"
+      "bytes": 478935,
+      "sha256": "abf32c148e2ba0ff69fc42f6a8168b3f7dcb7c20db335161c18cc238f45ea831"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -14250,8 +14250,8 @@
       "sha256": "98d80249c72bd2e743ab7b3408310096ff93a1bb34ce3df2dd88b4295b2b7d31"
     },
     "src/item/render/leaves.c": {
-      "bytes": 22271,
-      "sha256": "657370d7c91432a42f46b3b0f4c30dc8d7fe8626a12db687ddd59e647a05f117"
+      "bytes": 22815,
+      "sha256": "ca497f3664ce8027d34a970b095e0eb156f5d6490b8f5b5b6c0713a8bbd67eeb"
     },
     "tests/client/render/test_remaining_mob_draw.c": {
       "bytes": 100487,
@@ -15266,8 +15266,8 @@
       "sha256": "875f2fc4dbb6075afef5c929335337f81124337c36c44d3204ced9a854ca6fbc"
     },
     "tests/client/render/test_inventory_block.c": {
-      "bytes": 73125,
-      "sha256": "bcebc147adf916fa23c99ae97913199cef0e5cf9166ee83a712a4a0b4e6af1b0"
+      "bytes": 82202,
+      "sha256": "677511da0ed455a3b4a3c9d17f124ec0449fbeb36c25ccc1b9a2f4cbd980a8b2"
     },
     "tests/entity/particles/test_digging.c": {
       "bytes": 15805,
@@ -15494,8 +15494,8 @@
       "sha256": "5cd60b136d4a9862e9a5f6b6f64699d689c03b084a6d06d042d9ccba40da4ba6"
     },
     "include/mc/item/use/use.h": {
-      "bytes": 5277,
-      "sha256": "00ee19439516519262a3945879634cbb8f93b5c5e485755f2ef9269acfa4362c"
+      "bytes": 5688,
+      "sha256": "068ea250c4d1732c31ff6d23f433e587255e01267883e5a3a07f5782b82d3572"
     },
     "include/mc/world/runtime/placement.h": {
       "bytes": 5977,
@@ -15506,8 +15506,8 @@
       "sha256": "bf372e5a0f28cf596f3aa7ab7b1cbe84f34242c135f4b493f870314378425829"
     },
     "src/item/use/use.c": {
-      "bytes": 44737,
-      "sha256": "200b91c3757c6adaf49aa264847776bfd5aadeb4f730564c6c6f0ab27af58299"
+      "bytes": 47701,
+      "sha256": "7d0c5805a99e61c6abce717593e72c519a0af1d437a7dee0f1bd60a778de5527"
     },
     "src/world/runtime/placement.c": {
       "bytes": 30124,
@@ -15526,8 +15526,8 @@
       "sha256": "90ef1657e379e148a4a96c78d311d94dc77a258996c09ddd601c5181ef101f84"
     },
     "tests/item/use/test_use.c": {
-      "bytes": 33886,
-      "sha256": "06d72bfa9c894f5d81aed6295e698be8ed1067007a0ac9f0cb577367bd54864d"
+      "bytes": 33940,
+      "sha256": "12e0c4f4792bb31a181e2c3a21577d7ffbfb93231eaa288334ad6a65146f4994"
     },
     "tests/reference/client/placement/README.md": {
       "bytes": 2679,
@@ -17270,20 +17270,20 @@
       "sha256": "3093a1732a1b0a3122f1eaeb312f76d38ec11c19778042042e2220b3cde291c5"
     },
     "tests/reference/client/workbench_open_shutdown/README.md": {
-      "bytes": 11557,
-      "sha256": "afccddbb4bb22a0738d48e63f3babbbc2edfb8c8fff25c3d495bbda45183cfc8"
+      "bytes": 13362,
+      "sha256": "eb8048f9a4b634e9e81c8090e385df0baa011bfc698c6a03287f5298bc6951f1"
     },
     "tests/reference/client/workbench_open_shutdown/native-validation.json": {
-      "bytes": 340989,
-      "sha256": "bfcf9956f8f11ad8cc161d6440f8d737fc157212fe075aa4047f608496799e21"
+      "bytes": 341654,
+      "sha256": "30e9e1a1c4246a4374be4e0afb8a38f45e916084c566615fdd7993ee3e8887a6"
     },
     "tests/reference/client/workbench_open_shutdown/packet.py": {
       "bytes": 23677,
-      "sha256": "7735e7aafe6084e057dc79fc24e864797ad91ef22feb57226aa39581844698f2"
+      "sha256": "41407c8fe5e1a6701d9a9288b32b1d018a494fc16dc8fab6d1c031b381f341c9"
     },
     "tests/reference/client/workbench_open_shutdown/test_packet.py": {
       "bytes": 9801,
-      "sha256": "b6c8ae63842637d368bd72a1cf800c2a57f1bf686cd34c88e1892185c204cd2a"
+      "sha256": "534a94bbe598f04a227d1901d18943cb542d3e6015b9d05455d960c10f2fd192"
     },
     "tests/reference/item/mining/MiningDestroyObservation.java": {
       "bytes": 6130,
@@ -18514,8 +18514,8 @@
       "sha256": "adfb1531780a05bfae206be594c60620af72e3dad961678ee9bc8b5033759c1f"
     },
     "docs/item/farming-use.md": {
-      "bytes": 9117,
-      "sha256": "3af1b3931ebc56553ef9db03fc8b52e94923dc23c683d45bf4d1ffa6ecdf7ba0"
+      "bytes": 9161,
+      "sha256": "48aa8a2d473401cd978fb18b18404c02f4cece8c5b2f34cad2d0730dd86e6472"
     },
     "tests/client/gameplay/test_farming.c": {
       "bytes": 21027,
@@ -18704,6 +18704,254 @@
     "tests/tools/world/test_registry_tick_benchmark.py": {
       "bytes": 19394,
       "sha256": "2e17c9381dabec8c6bb893acfad66a26bbdd8f7e0cc20ca7571e39cf01fa3a07"
+    },
+    "cmake/item_dye_use.cmake": {
+      "bytes": 1129,
+      "sha256": "a3be7b6485a61a16585b7a30fa4df7bb32e5c764271a720c37cea77d72cd86d8"
+    },
+    "src/item/use/dye.inc": {
+      "bytes": 14421,
+      "sha256": "0cd5469a78643a2a12aaf84c12ff2aa854e507d85c4b186cb6747df039b5bc28"
+    },
+    "tests/item/use/dye_controls.inc": {
+      "bytes": 16288,
+      "sha256": "6bb138c2d54cef6fddfb067551b1dc9ef68869d3b574aed67c9bd7079c1638f4"
+    },
+    "tests/item/use/dye_reference.c": {
+      "bytes": 23922,
+      "sha256": "5b1eaf11217a543ced049a31cd16ab2c07633190b2adf988adf8dba3dc47ee74"
+    },
+    "tests/reference/item/dye_use/.gitattributes": {
+      "bytes": 15,
+      "sha256": "70a4361a1eed91143e7de91d6eebf82f98990ec0dd9df197f2b64050a5f851f8"
+    },
+    "tests/reference/item/dye_use/DyeObservation.java": {
+      "bytes": 10694,
+      "sha256": "db5c8068a3868946685265455c8f082829930bf5fed3f040110f857ca213f709"
+    },
+    "tests/reference/item/dye_use/README.md": {
+      "bytes": 6944,
+      "sha256": "45a02c0776522941499182d393a95608c96f86bd9a1b722f3bf171fecba0d5dd"
+    },
+    "tests/reference/item/dye_use/capture-provenance.json": {
+      "bytes": 7902,
+      "sha256": "71c8a6b37e3b333895b4c7078b81f6b1c7bb24435cd716d0a761e4a7b151522d"
+    },
+    "tests/reference/item/dye_use/capture_reference.py": {
+      "bytes": 1090,
+      "sha256": "796eca353b742410783631e23507c7ba5aebe67f5e858fb00753b9057939034c"
+    },
+    "tests/reference/item/dye_use/declared-inputs.json": {
+      "bytes": 11516,
+      "sha256": "9dc7cd14dc73b9f2eb5d454892afbc24e54e3b627036e09358481b0298958c6d"
+    },
+    "tests/reference/item/dye_use/manifest.json": {
+      "bytes": 6502,
+      "sha256": "87c821b4be63b0ee64db140e449481fe47b259966bd92dac1891236fe84ec23b"
+    },
+    "tests/reference/item/dye_use/native-replay-contract.md": {
+      "bytes": 3363,
+      "sha256": "7e6591b034329ad09307961c20459f01cb006486615d1261d073df2c9f237240"
+    },
+    "tests/reference/item/dye_use/ordinary-0.stdout": {
+      "bytes": 741795,
+      "sha256": "e1adc9933e11b9a9904c4b734123f65c0744d67a4326fa4d478e03ad3ea4b48f"
+    },
+    "tests/reference/item/dye_use/ordinary-1.stdout": {
+      "bytes": 741795,
+      "sha256": "e1adc9933e11b9a9904c4b734123f65c0744d67a4326fa4d478e03ad3ea4b48f"
+    },
+    "tests/reference/item/dye_use/original-capture-driver.py": {
+      "bytes": 7308,
+      "sha256": "84a78749cc748842828177155eca1f58f91cc7432db9de8952bdb846a97a92db"
+    },
+    "tests/reference/item/dye_use/packet.py": {
+      "bytes": 14270,
+      "sha256": "ea0e45f4203fa60ca483a8ecd292c80796dad44758afe4adcf10b6cbd8a29f05"
+    },
+    "tests/reference/item/dye_use/profiles.tsv": {
+      "bytes": 2456,
+      "sha256": "1cf7f608ede790e93e2ca3a827c5bd9d14ad54f8b4901cc30f7fe2c89f610f0e"
+    },
+    "tests/reference/item/dye_use/selected.jsonl": {
+      "bytes": 741725,
+      "sha256": "b4820e7faa7cc20a20418ff59de5f8acf8fd633d5d518b033e5dd78f0680423d"
+    },
+    "tests/reference/item/dye_use/setup-contract.json": {
+      "bytes": 2793,
+      "sha256": "a2c75589a9165eebb35a1c0e2d26a1c861a158346bc1a0b861470ba0e435fb0f"
+    },
+    "tests/reference/item/dye_use/source-outcomes.json": {
+      "bytes": 3367,
+      "sha256": "2537ed870f10826123d09a15cf2c312d8ae0208315106d6002206896feea2d3e"
+    },
+    "tests/reference/item/dye_use/source-pins.json": {
+      "bytes": 130306,
+      "sha256": "b75ef32e15c68a425f246b45e47491d184106f1c5e92978ff2e7a2f0bec3493a"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/.gitattributes": {
+      "bytes": 15,
+      "sha256": "70a4361a1eed91143e7de91d6eebf82f98990ec0dd9df197f2b64050a5f851f8"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/DyeObservation.java": {
+      "bytes": 10694,
+      "sha256": "db5c8068a3868946685265455c8f082829930bf5fed3f040110f857ca213f709"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/README.md": {
+      "bytes": 5853,
+      "sha256": "0025ba9ec2dab6b66ddcaeebad5b9adac31f932c4fceb4908b9105d936104ca7"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/capture-provenance.json": {
+      "bytes": 7963,
+      "sha256": "5894b7540757f7136e83964839e60dbc7c4c0b140f3d1e082569dc14be6c758d"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/capture_reference.py": {
+      "bytes": 1090,
+      "sha256": "796eca353b742410783631e23507c7ba5aebe67f5e858fb00753b9057939034c"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/declared-inputs.json": {
+      "bytes": 21215,
+      "sha256": "12a424f980563696af535e1263549ecd76951f427be29636b2692c8a82b58f9e"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/manifest.json": {
+      "bytes": 7445,
+      "sha256": "845176c79490ed6b967a90cbc4a2f876cda485093437eae89235a997e8b2e4fb"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/native-replay-contract.md": {
+      "bytes": 3444,
+      "sha256": "a14fb1649de4d05f4454390be5c4832b39fc582d508b090ea6f765fa96e02e66"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/ordinary-0.stdout": {
+      "bytes": 1483259,
+      "sha256": "dd348cc977cc0862a8245ebe8986bb11f2c16bc221720d593adae9f4a157a592"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/ordinary-1.stdout": {
+      "bytes": 1483259,
+      "sha256": "dd348cc977cc0862a8245ebe8986bb11f2c16bc221720d593adae9f4a157a592"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/original-capture-driver.py": {
+      "bytes": 7320,
+      "sha256": "4ac317ea5dea11c5af5adb620125689a86dc46ce25665535b2f0db1b44198317"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/packet.py": {
+      "bytes": 12669,
+      "sha256": "0601e066d14f0457876a000e7b7e144132089dc8280559e22b460ce539ab332c"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/profiles.tsv": {
+      "bytes": 4873,
+      "sha256": "2956b5bc2315e93dba273da7886e31fba18b1d523d92be4ab600eecc252de449"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/selected.jsonl": {
+      "bytes": 1483150,
+      "sha256": "d0fb8a0f7ebeb6bab5d689228f06e666516eabb7917795f2f2c0d6ce3d6f63f0"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/setup-contract.json": {
+      "bytes": 2468,
+      "sha256": "4ae1b81adb12ba7841e22650b52a46a0a0ce33ccbb520a1cb145055a4c09ac7e"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/source-outcomes.json": {
+      "bytes": 5055,
+      "sha256": "9adfe190bb0fa5fe88630e1d42ff2ab9a0df1594c61b5ba51f13674c18d93911"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/source-pins.json": {
+      "bytes": 130306,
+      "sha256": "b75ef32e15c68a425f246b45e47491d184106f1c5e92978ff2e7a2f0bec3493a"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/test_packet.py": {
+      "bytes": 6163,
+      "sha256": "1f6c7c8c1da126aa888a334d57189b544e9ad2a510aec69edaaab9844e877deb"
+    },
+    "tests/reference/item/dye_use/test_packet.py": {
+      "bytes": 6432,
+      "sha256": "d02137f03fbcc6ce546b0208e97865be3ddd9ff733ef1e4345cd285a63c34ca8"
+    },
+    "tests/tools/item/test_dye_use.py": {
+      "bytes": 18715,
+      "sha256": "ae8a93d358a422b5dd5fb7c6f94cce770b82de23d1b2832576b1d98995c74fdf"
+    },
+    "cmake/client_dye_use.cmake": {
+      "bytes": 1735,
+      "sha256": "ab96c02ba79339fcd60192460af08c2e1009de771a34059564102abc57f37e6a"
+    },
+    "cmake/item_dye_icon.cmake": {
+      "bytes": 852,
+      "sha256": "282275bfdec5cb54547538085ec0f26b496465b1ed63d053217c32ac091b41e0"
+    },
+    "tests/client/gameplay/test_dye.c": {
+      "bytes": 27365,
+      "sha256": "6cb67c5151f36254b1ac95314619b28afa4f7de7e92cfbe9adb6227fb079c0ee"
+    },
+    "tests/reference/item/dye_icon/.gitattributes": {
+      "bytes": 68,
+      "sha256": "64baf7059bb72cfce43b825e03cdc9f479de25d4d303d904868758a0411985c2"
+    },
+    "tests/reference/item/dye_icon/DyeIconObservation.java": {
+      "bytes": 2425,
+      "sha256": "913ed750634cdf928b42f749217d2fceebbcf076c8c4c1d7eb6ad03abdf932d3"
+    },
+    "tests/reference/item/dye_icon/README.md": {
+      "bytes": 1433,
+      "sha256": "e8c39f81b85cbc8836218c6dbd3a6e4ac0fd57da1cedf82e0214b2fabb76baa7"
+    },
+    "tests/reference/item/dye_icon/capture-provenance.json": {
+      "bytes": 6219,
+      "sha256": "0633cefc3796143c317b1a335f52d9c32c1b2a2daf4e435764d576eece49b3de"
+    },
+    "tests/reference/item/dye_icon/declared-inputs.json": {
+      "bytes": 3690,
+      "sha256": "c4f436fa28fb19b4e2f70cda5cd499b84e43690ac807fabf10cc5396ed822e63"
+    },
+    "tests/reference/item/dye_icon/failed-initialization.stderr-projection.txt": {
+      "bytes": 780,
+      "sha256": "586a48cc0b3bc68af2ea567b071cf32b25e6886d6a5ba8aedcbfba731f1883be"
+    },
+    "tests/reference/item/dye_icon/failed-initialization.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/reference/item/dye_icon/ordinary-0.stdout": {
+      "bytes": 5859,
+      "sha256": "10bd7618540fe675a2a1104736e928de01fc6dbc974957a9194e8369cf86ea30"
+    },
+    "tests/reference/item/dye_icon/ordinary-1.stdout": {
+      "bytes": 5859,
+      "sha256": "10bd7618540fe675a2a1104736e928de01fc6dbc974957a9194e8369cf86ea30"
+    },
+    "tests/reference/item/dye_icon/packet.py": {
+      "bytes": 3554,
+      "sha256": "39fb55baf9712cf30b5d0c6afc9a1f9a88146a2c7f14f418f6997ea9d7b8cdcf"
+    },
+    "tests/reference/item/dye_icon/profiles.tsv": {
+      "bytes": 622,
+      "sha256": "4bb99dc6dee70fd299999e5bd06f4485d360e042c6aa93cf3b32f165a4e646c3"
+    },
+    "tests/reference/item/dye_icon/run_native.py": {
+      "bytes": 5205,
+      "sha256": "6a67562c12b8aa6cd7ed34194203b30c6c6b1befd5c928915f7be8c3dafa51da"
+    },
+    "tests/reference/item/dye_icon/selected.jsonl": {
+      "bytes": 5794,
+      "sha256": "c773ca56a3a31c549da5ea2b02ff2ff64b5682e16a43ed167939ba92a5392353"
+    },
+    "tests/reference/item/dye_icon/source-pins.json": {
+      "bytes": 36172,
+      "sha256": "2029982a61b84c4bff714b3043cb56ba4e63697119171b202b5745830f951fa9"
+    },
+    "tests/reference/item/dye_icon/test_native.py": {
+      "bytes": 3234,
+      "sha256": "75cfc65fc344563e87e2629f048f3122708cfbfeac2510f35567ecec3fb556db"
+    },
+    "tests/reference/item/dye_icon/test_packet.py": {
+      "bytes": 1164,
+      "sha256": "acfb484c07bba05b2c68a7191370ab5c3299c3ec740421512feb56de1936869e"
+    },
+    "tests/tools/client/test_dye_loop.py": {
+      "bytes": 16603,
+      "sha256": "3a05f689f3df29390e190cdc7dcc763652ce754ac7580ef2335acb7e99edfe85"
+    },
+    "docs/item/dye-use.md": {
+      "bytes": 9406,
+      "sha256": "e00f57fc8635a0d27f9c6ebd3d7747e251f6fd39a10ac6a2a97654b3941aa818"
     }
   },
   "self_metadata_excluded": true,
@@ -25249,6 +25497,173 @@
           },
           "added": [],
           "current_count": 4676
+        }
+      }
+    },
+    {
+      "from_commit": "23b016ee7ea40f748aafee07497d2d7af4ab4b47",
+      "role": "Current Dye and bone meal Block use, retained World diagnostics, actual-owner controls and original-wrapper replay inputs. Earlier observations, compiled products and qualification cohorts retain their original scope.",
+      "previous_metadata": {
+        "bytes": 1062631,
+        "sha256": "6c814e9e3490f751bdd0f0e707a1c4d4b0e3f26dd35d33424a84560dd8799a96"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            ".gitattributes": {
+              "bytes": 1348,
+              "sha256": "0decbd737c673b7a3dbedc55fd782fdda56f2490826a01194ce3f5277724f2d8"
+            },
+            "CMakeLists.txt": {
+              "bytes": 339208,
+              "sha256": "997b7cb51e8fa8ab3c47e5e2de7f448929cecd53a80a6992e454babeb9cf2db2"
+            },
+            "include/mc/item/registry/runtime.h": {
+              "bytes": 5499,
+              "sha256": "e0134949bf3eae3c0a0becc5476e4416585359257388442c34e78f7a8a2d9e17"
+            },
+            "scripts/development/format_code.py": {
+              "bytes": 5071,
+              "sha256": "5db073334628ac568ae9d483ee2e3522224e83a33b61a91878da743262cafb12"
+            },
+            "src/item/registry/runtime.c": {
+              "bytes": 9265,
+              "sha256": "e53f35d91cd45321f57f0b76e2666bb35e841210d7f5b820697cdc76bb7b87f7"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 476301,
+              "sha256": "46fae524be227b34b4ba0b921be958e8c7b2673a798e2d583be26ecba92f7afa"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 574455,
+              "sha256": "9ef19ba11c3f08a8d14d34ee207dabba502940b793109189266491362f28d6d2"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 472115,
+              "sha256": "e9feb2fae418e00d749c0bc02ad50623bf72c70d4e0edb5552bcf5173b9ed85f"
+            },
+            "include/mc/item/use/use.h": {
+              "bytes": 5277,
+              "sha256": "00ee19439516519262a3945879634cbb8f93b5c5e485755f2ef9269acfa4362c"
+            },
+            "src/item/use/use.c": {
+              "bytes": 44737,
+              "sha256": "200b91c3757c6adaf49aa264847776bfd5aadeb4f730564c6c6f0ab27af58299"
+            },
+            "tests/item/use/test_use.c": {
+              "bytes": 33886,
+              "sha256": "06d72bfa9c894f5d81aed6295e698be8ed1067007a0ac9f0cb577367bd54864d"
+            },
+            "src/item/render/leaves.c": {
+              "bytes": 22271,
+              "sha256": "657370d7c91432a42f46b3b0f4c30dc8d7fe8626a12db687ddd59e647a05f117"
+            },
+            "tests/client/render/test_inventory_block.c": {
+              "bytes": 73125,
+              "sha256": "bcebc147adf916fa23c99ae97913199cef0e5cf9166ee83a712a4a0b4e6af1b0"
+            },
+            "docs/building.md": {
+              "bytes": 21914,
+              "sha256": "53a401c3eb0e7b2af01dffbc7b6673d4bb97aac72aa4556315239ce9c4c43105"
+            },
+            "docs/parity.md": {
+              "bytes": 184001,
+              "sha256": "0b88b8f51c5bdb7cc9212d0968caeca35965157566e33639808d04c74a1ee29b"
+            },
+            "docs/status.md": {
+              "bytes": 102479,
+              "sha256": "9cd987d5b2c935c3f6a6ff82e40712d28285db9ff67d544211d8fb5ce92c1c07"
+            },
+            "docs/testing.md": {
+              "bytes": 444294,
+              "sha256": "3bd87af6c0f7f6bb47eaf0692e5051c058ede7848c4c87843e7eb6e6723f2f1c"
+            },
+            "tests/reference/client/workbench_open_shutdown/README.md": {
+              "bytes": 11557,
+              "sha256": "afccddbb4bb22a0738d48e63f3babbbc2edfb8c8fff25c3d495bbda45183cfc8"
+            },
+            "tests/reference/client/workbench_open_shutdown/native-validation.json": {
+              "bytes": 340989,
+              "sha256": "bfcf9956f8f11ad8cc161d6440f8d737fc157212fe075aa4047f608496799e21"
+            },
+            "tests/reference/client/workbench_open_shutdown/packet.py": {
+              "bytes": 23677,
+              "sha256": "7735e7aafe6084e057dc79fc24e864797ad91ef22feb57226aa39581844698f2"
+            },
+            "tests/reference/client/workbench_open_shutdown/test_packet.py": {
+              "bytes": 9801,
+              "sha256": "b6c8ae63842637d368bd72a1cf800c2a57f1bf686cd34c88e1892185c204cd2a"
+            },
+            "docs/item/farming-use.md": {
+              "bytes": 9117,
+              "sha256": "3af1b3931ebc56553ef9db03fc8b52e94923dc23c683d45bf4d1ffa6ecdf7ba0"
+            }
+          },
+          "added": [
+            "cmake/client_dye_use.cmake",
+            "cmake/item_dye_icon.cmake",
+            "cmake/item_dye_use.cmake",
+            "docs/item/dye-use.md",
+            "src/item/use/dye.inc",
+            "tests/client/gameplay/test_dye.c",
+            "tests/item/use/dye_controls.inc",
+            "tests/item/use/dye_reference.c",
+            "tests/reference/item/dye_icon/.gitattributes",
+            "tests/reference/item/dye_icon/DyeIconObservation.java",
+            "tests/reference/item/dye_icon/README.md",
+            "tests/reference/item/dye_icon/capture-provenance.json",
+            "tests/reference/item/dye_icon/declared-inputs.json",
+            "tests/reference/item/dye_icon/failed-initialization.stderr-projection.txt",
+            "tests/reference/item/dye_icon/failed-initialization.stdout",
+            "tests/reference/item/dye_icon/ordinary-0.stdout",
+            "tests/reference/item/dye_icon/ordinary-1.stdout",
+            "tests/reference/item/dye_icon/packet.py",
+            "tests/reference/item/dye_icon/profiles.tsv",
+            "tests/reference/item/dye_icon/run_native.py",
+            "tests/reference/item/dye_icon/selected.jsonl",
+            "tests/reference/item/dye_icon/source-pins.json",
+            "tests/reference/item/dye_icon/test_native.py",
+            "tests/reference/item/dye_icon/test_packet.py",
+            "tests/reference/item/dye_use/.gitattributes",
+            "tests/reference/item/dye_use/DyeObservation.java",
+            "tests/reference/item/dye_use/README.md",
+            "tests/reference/item/dye_use/capture-provenance.json",
+            "tests/reference/item/dye_use/capture_reference.py",
+            "tests/reference/item/dye_use/declared-inputs.json",
+            "tests/reference/item/dye_use/manifest.json",
+            "tests/reference/item/dye_use/native-replay-contract.md",
+            "tests/reference/item/dye_use/ordinary-0.stdout",
+            "tests/reference/item/dye_use/ordinary-1.stdout",
+            "tests/reference/item/dye_use/original-capture-driver.py",
+            "tests/reference/item/dye_use/packet.py",
+            "tests/reference/item/dye_use/profiles.tsv",
+            "tests/reference/item/dye_use/selected.jsonl",
+            "tests/reference/item/dye_use/setup-contract.json",
+            "tests/reference/item/dye_use/source-outcomes.json",
+            "tests/reference/item/dye_use/source-pins.json",
+            "tests/reference/item/dye_use/supporting-interleaved-78/.gitattributes",
+            "tests/reference/item/dye_use/supporting-interleaved-78/DyeObservation.java",
+            "tests/reference/item/dye_use/supporting-interleaved-78/README.md",
+            "tests/reference/item/dye_use/supporting-interleaved-78/capture-provenance.json",
+            "tests/reference/item/dye_use/supporting-interleaved-78/capture_reference.py",
+            "tests/reference/item/dye_use/supporting-interleaved-78/declared-inputs.json",
+            "tests/reference/item/dye_use/supporting-interleaved-78/manifest.json",
+            "tests/reference/item/dye_use/supporting-interleaved-78/native-replay-contract.md",
+            "tests/reference/item/dye_use/supporting-interleaved-78/ordinary-0.stdout",
+            "tests/reference/item/dye_use/supporting-interleaved-78/ordinary-1.stdout",
+            "tests/reference/item/dye_use/supporting-interleaved-78/original-capture-driver.py",
+            "tests/reference/item/dye_use/supporting-interleaved-78/packet.py",
+            "tests/reference/item/dye_use/supporting-interleaved-78/profiles.tsv",
+            "tests/reference/item/dye_use/supporting-interleaved-78/selected.jsonl",
+            "tests/reference/item/dye_use/supporting-interleaved-78/setup-contract.json",
+            "tests/reference/item/dye_use/supporting-interleaved-78/source-outcomes.json",
+            "tests/reference/item/dye_use/supporting-interleaved-78/source-pins.json",
+            "tests/reference/item/dye_use/supporting-interleaved-78/test_packet.py",
+            "tests/reference/item/dye_use/test_packet.py",
+            "tests/tools/client/test_dye_loop.py",
+            "tests/tools/item/test_dye_use.py"
+          ],
+          "current_count": 4738
         }
       }
     }

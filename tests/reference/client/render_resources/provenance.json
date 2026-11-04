@@ -382,8 +382,8 @@
       "sha256": "7268ddf5f53429905bc2beb813188eeecf7a640a1dd7cc568720388bdc5757fc"
     },
     "include/mc/item/registry/runtime.h": {
-      "bytes": 5499,
-      "sha256": "e0134949bf3eae3c0a0becc5476e4416585359257388442c34e78f7a8a2d9e17"
+      "bytes": 5817,
+      "sha256": "55ad73fbb2c1bd612467b35d661ffe5a88655d4f1cae30c2999f2d9b66467fe5"
     },
     "include/mc/item/stack/stack.h": {
       "bytes": 9525,
@@ -5198,8 +5198,8 @@
       "sha256": "98d80249c72bd2e743ab7b3408310096ff93a1bb34ce3df2dd88b4295b2b7d31"
     },
     "src/item/render/leaves.c": {
-      "bytes": 22271,
-      "sha256": "657370d7c91432a42f46b3b0f4c30dc8d7fe8626a12db687ddd59e647a05f117"
+      "bytes": 22815,
+      "sha256": "ca497f3664ce8027d34a970b095e0eb156f5d6490b8f5b5b6c0713a8bbd67eeb"
     },
     "tests/client/render/test_remaining_mob_draw.c": {
       "bytes": 100487,
@@ -5902,8 +5902,8 @@
       "sha256": "875f2fc4dbb6075afef5c929335337f81124337c36c44d3204ced9a854ca6fbc"
     },
     "tests/client/render/test_inventory_block.c": {
-      "bytes": 73125,
-      "sha256": "bcebc147adf916fa23c99ae97913199cef0e5cf9166ee83a712a4a0b4e6af1b0"
+      "bytes": 82202,
+      "sha256": "677511da0ed455a3b4a3c9d17f124ec0449fbeb36c25ccc1b9a2f4cbd980a8b2"
     },
     "tests/entity/particles/test_digging.c": {
       "bytes": 15805,
@@ -5958,8 +5958,8 @@
       "sha256": "5cd60b136d4a9862e9a5f6b6f64699d689c03b084a6d06d042d9ccba40da4ba6"
     },
     "include/mc/item/use/use.h": {
-      "bytes": 5277,
-      "sha256": "00ee19439516519262a3945879634cbb8f93b5c5e485755f2ef9269acfa4362c"
+      "bytes": 5688,
+      "sha256": "068ea250c4d1732c31ff6d23f433e587255e01267883e5a3a07f5782b82d3572"
     },
     "include/mc/world/runtime/placement.h": {
       "bytes": 5977,
@@ -5970,8 +5970,8 @@
       "sha256": "bf372e5a0f28cf596f3aa7ab7b1cbe84f34242c135f4b493f870314378425829"
     },
     "src/item/use/use.c": {
-      "bytes": 44737,
-      "sha256": "200b91c3757c6adaf49aa264847776bfd5aadeb4f730564c6c6f0ab27af58299"
+      "bytes": 47701,
+      "sha256": "7d0c5805a99e61c6abce717593e72c519a0af1d437a7dee0f1bd60a778de5527"
     },
     "src/world/runtime/placement.c": {
       "bytes": 30124,
@@ -5990,8 +5990,8 @@
       "sha256": "90ef1657e379e148a4a96c78d311d94dc77a258996c09ddd601c5181ef101f84"
     },
     "tests/item/use/test_use.c": {
-      "bytes": 33886,
-      "sha256": "06d72bfa9c894f5d81aed6295e698be8ed1067007a0ac9f0cb577367bd54864d"
+      "bytes": 33940,
+      "sha256": "12e0c4f4792bb31a181e2c3a21577d7ffbfb93231eaa288334ad6a65146f4994"
     },
     "tests/reference/client/placement/test_verify.py": {
       "bytes": 3351,
@@ -7067,11 +7067,11 @@
     },
     "tests/reference/client/workbench_open_shutdown/packet.py": {
       "bytes": 23677,
-      "sha256": "7735e7aafe6084e057dc79fc24e864797ad91ef22feb57226aa39581844698f2"
+      "sha256": "41407c8fe5e1a6701d9a9288b32b1d018a494fc16dc8fab6d1c031b381f341c9"
     },
     "tests/reference/client/workbench_open_shutdown/test_packet.py": {
       "bytes": 9801,
-      "sha256": "b6c8ae63842637d368bd72a1cf800c2a57f1bf686cd34c88e1892185c204cd2a"
+      "sha256": "534a94bbe598f04a227d1901d18943cb542d3e6015b9d05455d960c10f2fd192"
     },
     "tests/reference/item/mining/capture_reference.py": {
       "bytes": 5373,
@@ -7664,6 +7664,90 @@
     "tests/tools/world/test_registry_tick_benchmark.py": {
       "bytes": 19394,
       "sha256": "2e17c9381dabec8c6bb893acfad66a26bbdd8f7e0cc20ca7571e39cf01fa3a07"
+    },
+    "cmake/item_dye_use.cmake": {
+      "bytes": 1129,
+      "sha256": "a3be7b6485a61a16585b7a30fa4df7bb32e5c764271a720c37cea77d72cd86d8"
+    },
+    "src/item/use/dye.inc": {
+      "bytes": 14421,
+      "sha256": "0cd5469a78643a2a12aaf84c12ff2aa854e507d85c4b186cb6747df039b5bc28"
+    },
+    "tests/item/use/dye_controls.inc": {
+      "bytes": 16288,
+      "sha256": "6bb138c2d54cef6fddfb067551b1dc9ef68869d3b574aed67c9bd7079c1638f4"
+    },
+    "tests/item/use/dye_reference.c": {
+      "bytes": 23922,
+      "sha256": "5b1eaf11217a543ced049a31cd16ab2c07633190b2adf988adf8dba3dc47ee74"
+    },
+    "tests/reference/item/dye_use/capture_reference.py": {
+      "bytes": 1090,
+      "sha256": "796eca353b742410783631e23507c7ba5aebe67f5e858fb00753b9057939034c"
+    },
+    "tests/reference/item/dye_use/original-capture-driver.py": {
+      "bytes": 7308,
+      "sha256": "84a78749cc748842828177155eca1f58f91cc7432db9de8952bdb846a97a92db"
+    },
+    "tests/reference/item/dye_use/packet.py": {
+      "bytes": 14270,
+      "sha256": "ea0e45f4203fa60ca483a8ecd292c80796dad44758afe4adcf10b6cbd8a29f05"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/capture_reference.py": {
+      "bytes": 1090,
+      "sha256": "796eca353b742410783631e23507c7ba5aebe67f5e858fb00753b9057939034c"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/original-capture-driver.py": {
+      "bytes": 7320,
+      "sha256": "4ac317ea5dea11c5af5adb620125689a86dc46ce25665535b2f0db1b44198317"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/packet.py": {
+      "bytes": 12669,
+      "sha256": "0601e066d14f0457876a000e7b7e144132089dc8280559e22b460ce539ab332c"
+    },
+    "tests/reference/item/dye_use/supporting-interleaved-78/test_packet.py": {
+      "bytes": 6163,
+      "sha256": "1f6c7c8c1da126aa888a334d57189b544e9ad2a510aec69edaaab9844e877deb"
+    },
+    "tests/reference/item/dye_use/test_packet.py": {
+      "bytes": 6432,
+      "sha256": "d02137f03fbcc6ce546b0208e97865be3ddd9ff733ef1e4345cd285a63c34ca8"
+    },
+    "tests/tools/item/test_dye_use.py": {
+      "bytes": 18715,
+      "sha256": "ae8a93d358a422b5dd5fb7c6f94cce770b82de23d1b2832576b1d98995c74fdf"
+    },
+    "cmake/client_dye_use.cmake": {
+      "bytes": 1735,
+      "sha256": "ab96c02ba79339fcd60192460af08c2e1009de771a34059564102abc57f37e6a"
+    },
+    "cmake/item_dye_icon.cmake": {
+      "bytes": 852,
+      "sha256": "282275bfdec5cb54547538085ec0f26b496465b1ed63d053217c32ac091b41e0"
+    },
+    "tests/client/gameplay/test_dye.c": {
+      "bytes": 27365,
+      "sha256": "6cb67c5151f36254b1ac95314619b28afa4f7de7e92cfbe9adb6227fb079c0ee"
+    },
+    "tests/reference/item/dye_icon/packet.py": {
+      "bytes": 3554,
+      "sha256": "39fb55baf9712cf30b5d0c6afc9a1f9a88146a2c7f14f418f6997ea9d7b8cdcf"
+    },
+    "tests/reference/item/dye_icon/run_native.py": {
+      "bytes": 5205,
+      "sha256": "6a67562c12b8aa6cd7ed34194203b30c6c6b1befd5c928915f7be8c3dafa51da"
+    },
+    "tests/reference/item/dye_icon/test_native.py": {
+      "bytes": 3234,
+      "sha256": "75cfc65fc344563e87e2629f048f3122708cfbfeac2510f35567ecec3fb556db"
+    },
+    "tests/reference/item/dye_icon/test_packet.py": {
+      "bytes": 1164,
+      "sha256": "acfb484c07bba05b2c68a7191370ab5c3299c3ec740421512feb56de1936869e"
+    },
+    "tests/tools/client/test_dye_loop.py": {
+      "bytes": 16603,
+      "sha256": "3a05f689f3df29390e190cdc7dcc763652ce754ac7580ef2335acb7e99edfe85"
     }
   },
   "source_suppliers": {
@@ -11373,6 +11457,76 @@
             "tests/tools/world/test_registry_tick_benchmark.py"
           ],
           "current_count": 1916
+        }
+      }
+    },
+    {
+      "from_commit": "23b016ee7ea40f748aafee07497d2d7af4ab4b47",
+      "role": "Current Dye and bone meal Block use, retained World diagnostics, actual-owner controls and original-wrapper replay inputs. Earlier observations, compiled products and qualification cohorts retain their original scope.",
+      "previous_metadata": {
+        "bytes": 472115,
+        "sha256": "e9feb2fae418e00d749c0bc02ad50623bf72c70d4e0edb5552bcf5173b9ed85f"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "include/mc/item/registry/runtime.h": {
+              "bytes": 5499,
+              "sha256": "e0134949bf3eae3c0a0becc5476e4416585359257388442c34e78f7a8a2d9e17"
+            },
+            "include/mc/item/use/use.h": {
+              "bytes": 5277,
+              "sha256": "00ee19439516519262a3945879634cbb8f93b5c5e485755f2ef9269acfa4362c"
+            },
+            "src/item/use/use.c": {
+              "bytes": 44737,
+              "sha256": "200b91c3757c6adaf49aa264847776bfd5aadeb4f730564c6c6f0ab27af58299"
+            },
+            "tests/item/use/test_use.c": {
+              "bytes": 33886,
+              "sha256": "06d72bfa9c894f5d81aed6295e698be8ed1067007a0ac9f0cb577367bd54864d"
+            },
+            "src/item/render/leaves.c": {
+              "bytes": 22271,
+              "sha256": "657370d7c91432a42f46b3b0f4c30dc8d7fe8626a12db687ddd59e647a05f117"
+            },
+            "tests/client/render/test_inventory_block.c": {
+              "bytes": 73125,
+              "sha256": "bcebc147adf916fa23c99ae97913199cef0e5cf9166ee83a712a4a0b4e6af1b0"
+            },
+            "tests/reference/client/workbench_open_shutdown/packet.py": {
+              "bytes": 23677,
+              "sha256": "7735e7aafe6084e057dc79fc24e864797ad91ef22feb57226aa39581844698f2"
+            },
+            "tests/reference/client/workbench_open_shutdown/test_packet.py": {
+              "bytes": 9801,
+              "sha256": "b6c8ae63842637d368bd72a1cf800c2a57f1bf686cd34c88e1892185c204cd2a"
+            }
+          },
+          "added": [
+            "cmake/client_dye_use.cmake",
+            "cmake/item_dye_icon.cmake",
+            "cmake/item_dye_use.cmake",
+            "src/item/use/dye.inc",
+            "tests/client/gameplay/test_dye.c",
+            "tests/item/use/dye_controls.inc",
+            "tests/item/use/dye_reference.c",
+            "tests/reference/item/dye_icon/packet.py",
+            "tests/reference/item/dye_icon/run_native.py",
+            "tests/reference/item/dye_icon/test_native.py",
+            "tests/reference/item/dye_icon/test_packet.py",
+            "tests/reference/item/dye_use/capture_reference.py",
+            "tests/reference/item/dye_use/original-capture-driver.py",
+            "tests/reference/item/dye_use/packet.py",
+            "tests/reference/item/dye_use/supporting-interleaved-78/capture_reference.py",
+            "tests/reference/item/dye_use/supporting-interleaved-78/original-capture-driver.py",
+            "tests/reference/item/dye_use/supporting-interleaved-78/packet.py",
+            "tests/reference/item/dye_use/supporting-interleaved-78/test_packet.py",
+            "tests/reference/item/dye_use/test_packet.py",
+            "tests/tools/client/test_dye_loop.py",
+            "tests/tools/item/test_dye_use.py"
+          ],
+          "current_count": 1937
         }
       }
     }

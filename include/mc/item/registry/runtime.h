@@ -18,6 +18,10 @@ mc_registry_status mc_registry_item_static_get(mc_registry_classes *classes, con
 mc_registry_status mc_registry_item_c_get(mc_registry_classes *classes,
                                           const mc_registry_item_array **out,
                                           mc_registry_error *error);
+/* Reached GM.b getstatic. Active use precedes the nullable live Random read;
+ * no draw, snapshot or separately owned Random occurrence is introduced. */
+mc_registry_status mc_registry_item_b_get(mc_registry_classes *classes, mc_java_random **out,
+                                          mc_registry_error *error);
 
 /* Reached aaload of THAT captured array: no second active use, phase check,
  * comparison with current c, or c-cell reread. A NULL capture fails before

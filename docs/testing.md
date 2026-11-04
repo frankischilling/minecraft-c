@@ -1,5 +1,110 @@
 # Test scope and reproduction
 
+## Bone meal Block use, Dye icons and loaded Crop
+
+The [Dye Block-use comparison](item/dye-use.md) uses a separately captured
+39-wrapper original cohort. Two fresh original VMs agree on that ordered
+single-World/four-Chunk history; the earlier 78 interleaved direct/wrapper
+observations remain supporting history. Windows and Linux Clang 18 ASan/UBSan
+compare all selected fields: 36 exact outcomes, including six NULL prefixes,
+and three declared callback effect prefixes. Their native LIMIT causes remain
+separate from original IllegalStateException. The comparison covers both actual
+Random owners, live GM.b aliasing, callback/count order, all five Chunk-array
+diffs, the final Block/metadata map and real used statistics. It runs 23
+corruption controls and ten malformed-output fixtures.
+
+The first Windows native replay completes but its parser rejects the two
+existing achievements/recipes bootstrap lines. That failed receipt remains
+retained. The corrected parser requires the exact two-line prelude followed
+by all 79 records; it accepts no arbitrary diagnostic filtering. The new replay
+passes without changing a gameplay predicate. The pre-icon Linux focused
+selection passes all 13 tests in 22.53 seconds, with 4,721 source inputs and
+543 executables unchanged. That result does not qualify later icon or SDK edits.
+
+The [Dye icon packet](../tests/reference/item/dye_icon/README.md) records 33
+scalar profiles in two fresh original VMs. Windows native direct/ItemStack
+icons and inherited leaves match; all four focused icon/render tests pass.
+The first cold-owner native fixture wrongly expects the Java-new allocation
+facade to produce a cold RAW Item and remains failed evidence. Registry-owned
+RAW metadata now exercises the entered pure icon body without changing that
+facade's class-initialization behavior. The first original GM-first initializer
+failure is also retained. Its declared path/newline diagnostic projection has
+an LF-only correction, with raw captures and successful original stdout intact.
+
+The Windows `client.dye_loop` scenario passes 3,136 checks in 7.96 seconds,
+preserving all 1,994 selected inputs/products and 413 assets. One ordinary
+right-click changes the loaded Crop from stage 0 to 7, consumes one of two
+bone meal in the same Stack and adds exactly one real used statistic. It
+returns World/HUD/held draws with icon 191 and health 5. The replaced section
+matches all 48 executed-original position/UV records at both stages; colors
+match the separate source-lighting checks. Escape, Save and Quit, independent
+Region/Player NBT decoding and reselection preserve Crop 59/stage 7 at
+(3,65,3), Farmland 60, health 5 and slot 0 Dye 351/count 1/damage 15. Distinct
+World/Player owners reload and cleanup leaves no windows.
+
+The first SDK process emits its completed input receipt, then fails a compound
+post-use Inventory/statistic/Crop/draw/geometry/NBT assertion. The exact failed
+term remains unresolved. Its source snapshot and failed capture stay separate
+from the later pass. An earlier idle guard refuses launch. The passing guard
+and cohort record no last-input timestamp changes; they do not establish
+unrestricted focus or input stability. No runtime camera, clock, Random,
+World or input-queue repair occurs in this scenario.
+
+Four fresh Workbench successor processes pass 8,259 checks in 61.63 seconds.
+Clean/Container/Player/World checks are 1,820/1,969/2,280/2,190, with measured
+times 15.01/15.09/15.96/15.53 seconds. All 1,449 runtime files, 526 harness
+files, two binaries and 413 assets remain unchanged: 1,977 selected inputs.
+The first attempt remains NOT_RUN after the passive guard returns 2, without
+a native capture. The passing attempt's three-second guard has no timestamp
+changes; the passive cohort monitor has one. A timestamp change identifies
+neither a human nor a cause and does not invalidate the unchanged input/resource
+receipts or passing checks. All 57 public controls and public/private/history/
+cohort-log audits pass. The earlier 8,499-check/63.31-second Food/Registry
+receipt and all its history remain immutable evidence. These are ownership
+qualifications, not Dye-growth or performance comparisons.
+
+The final Linux Clang 18 Debug ASan/UBSan public suite passes 670/670 tests in
+164.89 seconds under Xvfb/software GL, including the 33-profile icon replay.
+The enclosing helper takes 221.574 seconds. The final Linux build also passes;
+GCC 13 syntax-only checks of seven units supply no full GCC runtime credit.
+
+The first Windows MSVC Release public cohort passes 679/681 tests in 350.24
+seconds. `client.world_selection_animals` fails its chicken focus check and
+`client.world_selection_wolf` fails its Wolf focus check. A separately retained
+quiet-guard repeat passes 679/681 in 317.34 seconds: Wolf passes, while the Cow
+process fails `initial-loaded-focus` with Pause, Source focus 0 and Display
+query 0; `client.world_reload_cycle` fails its final reopen-invariance decoder.
+Neither cohort is a full Windows pass. All four Dye packet/native tests pass
+in both Windows cohorts and Linux. Each of the three brackets preserves its
+4,742 source files, 544 products and 413 assets byte-for-byte. The Windows
+products are 543 executables and one DLL; Linux has 544 ELFs.
+
+The quiet repeat's three-second guard has 31 samples and no last-input
+timestamp changes; its passive cohort monitor records nine changes. These
+observations identify neither a human nor a cause. A resource-lock review
+finds all 17 public visible foreground tests sharing `mc_desktop_focus`, with
+no overlap gap found; it does not explain either failure.
+
+The retained reload capture `reload-cycle-rlpznjux` completes ten native epochs,
+cleanup and 5,931 checks with exit 0. All ten individual save-stage decoders
+pass. The later guard at `test_world_selection_loop.py:439` rejects only the
+`after-3` to `before-4` boundary when reopening `alpha`: `level.dat` changes
+only `Data.LastPlayed`, from 1793777281398 to 1793777291674. Time stays 23;
+Player and every other tag match. `level.dat_old` becomes byte-identical to
+the preceding `level.dat`; no region file changes. The selected eight-byte
+`session.lock` replacement is permitted by the guard.
+
+That observer interval includes a completed loaded frame before `before-4`
+is copied. Source Pause rendering at pass 0 can save metadata, and epoch 4
+later records one recovered Pause, but the exact writer and Pause creation
+time remain unresolved. No focus cause or production defect follows from
+these artifacts alone. The failure remains intact; the next diagnosis must
+observe the load-return/first-frame writer seam without assuming its cause.
+No automatic retry, test waiver or production repair was applied.
+
+Loaded Grass/tree growth, Sheep coloring, original pixels/audio, server
+behavior and frame rate remain outside these Dye results.
+
 ## Food use and Registry random ticks
 
 The full frozen Food/Registry cohort passes 677/677 Windows MSVC Release tests
@@ -38,7 +143,7 @@ predicates. It modifies no runtime, input, camera or clock behavior. The two
 failed captures and idle-guard refusals remain retained. The passing attempt
 records zero input-timestamp changes during its guard and cohort.
 
-Four fresh current-source Workbench profiles pass 8,499 checks in 63.31 seconds,
+Four fresh Food/Registry-source Workbench profiles pass 8,499 checks in 63.31 seconds,
 with all 1,971 selected inputs (1,448 runtime files, 521 harness files and two
 binaries) and 413 resources unchanged. The first new idle guard refuses launch;
 the later passing guard/cohort record no timestamp changes. Publication passes

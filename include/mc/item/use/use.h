@@ -13,6 +13,8 @@ typedef struct mc_world_runtime_acquisition_error mc_world_runtime_acquisition_e
 typedef struct mc_world_placement_error mc_world_placement_error;
 typedef struct mc_player_statistic_error mc_player_statistic_error;
 typedef struct mc_item_combat_error mc_item_combat_error;
+typedef struct mc_world_solid_support_error mc_world_solid_support_error;
+typedef struct mc_world_nearby_error mc_world_nearby_error;
 
 typedef enum mc_item_use_status {
     MC_ITEM_USE_OK,
@@ -27,7 +29,8 @@ typedef enum mc_item_use_status {
     MC_ITEM_USE_SOURCE_NULL,
     MC_ITEM_USE_SOURCE_INDEX,
     MC_ITEM_USE_UNSUPPORTED,
-    MC_ITEM_USE_FLOATING
+    MC_ITEM_USE_FLOATING,
+    MC_ITEM_USE_SOURCE_CAST
 } mc_item_use_status;
 
 typedef struct mc_item_use_site {
@@ -50,6 +53,10 @@ typedef struct mc_item_use_error {
     /* Reached LA147 child, including its completed Stack mutation prefix and
      * nested broken-statistic cause. Borrows this call through retirement. */
     const mc_item_combat_error *durability;
+    /* Latest reached Dye FD.h child and its explicit acquisition descendants.
+     * These borrow this call; no ambient World error is consulted. */
+    const mc_world_solid_support_error *support;
+    const mc_world_nearby_error *support_access;
     /* A separate native retention/retirement cause never overwrites the
      * reached Source failure. Views borrow the retained call until retire. */
     mc_world_storage_error cleanup;
