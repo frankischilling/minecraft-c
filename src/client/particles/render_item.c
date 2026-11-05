@@ -300,25 +300,28 @@ bool mc_effect_draw_sprite(mc_client_effect_draw_call *c, unsigned int invocatio
     return billboard(c, invocation, true);
 }
 
-bool mc_effect_draw_torch_particle(mc_client_effect_draw_call *c, unsigned int invocation) {
+bool mc_effect_draw_animated_sprite(mc_client_effect_draw_call *c, unsigned int invocation) {
     const bool smoke = mc_entity_is_kind(c->current, MC_ENTITY_CLASS_KIND_SMOKE_PARTICLE);
-    const char *source = smoke ? "xn" : "qu";
+    const bool redstone = mc_entity_is_kind(c->current, MC_ENTITY_CLASS_KIND_REDSTONE_PARTICLE);
+    const bool rising = smoke || redstone;
+    const char *source = redstone ? "im" : smoke ? "xn" : "qu";
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
         (void)item_failed(c, invocation, MC_EFFECT_DRAW_UNSUPPORTED_FP,
-                          "Torch particle draw reached strict floating controls", 4, true);
+                          "Animated sprite draw reached strict floating controls", 4, true);
         c->failure.child.class_name = source;
         return false;
     }
     mc_particle_fields *f = &c->current->particle->fields;
     float fraction = at_fdiv(at_fadd((float)f->e, c->state.partial), (float)f->f);
-    if (smoke) {
+    if (rising) {
         fraction = at_fmul(fraction, 32);
-        /* XN's fcmpg/fcmpl branches preserve NaN and clamp finite/infinite values. */
+        /* XN/IM's fcmpg/fcmpl branches preserve NaN and clamp finite/infinite values. */
         if (fraction < 0)
             fraction = 0;
         if (fraction > 1)
             fraction = 1;
-        f->g = at_fmul(c->current->particle->smoke.a, fraction);
+        f->g = at_fmul(redstone ? c->current->particle->redstone.a : c->current->particle->smoke.a,
+                       fraction);
         c->state.particle_pc = 46;
     } else {
         f->g = at_fmul(c->current->particle->flame.a,
@@ -328,9 +331,9 @@ bool mc_effect_draw_torch_particle(mc_client_effect_draw_call *c, unsigned int i
     c->state.fraction = fraction;
     if (!billboard(c, invocation, true)) {
         c->failure.sprite_caller =
-            (mc_client_graphics_site){source, "a", "(Lnw;FFFFFF)V", smoke ? 61 : 46};
+            (mc_client_graphics_site){source, "a", "(Lnw;FFFFFF)V", rising ? 61 : 46};
         return false;
     }
-    c->state.particle_pc = smoke ? 64u : 49u;
+    c->state.particle_pc = rising ? 64u : 49u;
     return true;
 }

@@ -18,7 +18,7 @@ static const char *const literal_names[MC_ENTITY_CLASS_KIND_COUNT][2] = {
     {"xt", "pf"}, {"gi", "eh"}, {"qw", "kg"}, {"ju", "gl"}, {"yl", "pr"}, {"fz", "eb"},
     {"sn", "lq"}, {"gs", "em"}, {"dc", NULL}, {"xw", NULL}, {"em", NULL}, {"vv", NULL},
     {"cf", NULL}, {"lx", NULL}, {"c", NULL},  {"pb", NULL}, {"qm", NULL}, {"gy", NULL},
-    {"xn", NULL}, {"qu", NULL}};
+    {"xn", NULL}, {"qu", NULL}, {"im", NULL}};
 
 /* Nearest admitted superclass from the paired class declarations. Monster
  * gz/ep reaches Living ls/hl through ii/fp; animals through bg/ao -> ii/fp;
@@ -64,7 +64,8 @@ static const mc_entity_class_kind literal_parents[MC_ENTITY_CLASS_KIND_COUNT] = 
     [MC_ENTITY_CLASS_KIND_DIGGING_PARTICLE] = MC_ENTITY_CLASS_KIND_PARTICLE,
     [MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE] = MC_ENTITY_CLASS_KIND_PARTICLE,
     [MC_ENTITY_CLASS_KIND_SMOKE_PARTICLE] = MC_ENTITY_CLASS_KIND_PARTICLE,
-    [MC_ENTITY_CLASS_KIND_FLAME_PARTICLE] = MC_ENTITY_CLASS_KIND_PARTICLE};
+    [MC_ENTITY_CLASS_KIND_FLAME_PARTICLE] = MC_ENTITY_CLASS_KIND_PARTICLE,
+    [MC_ENTITY_CLASS_KIND_REDSTONE_PARTICLE] = MC_ENTITY_CLASS_KIND_PARTICLE};
 
 mc_entity_status mc_entity_base_class_initialize(mc_entity_classes *classes,
                                                  mc_entity_error *error) {

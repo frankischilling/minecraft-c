@@ -82,7 +82,7 @@ static bool torch_draw_case(fixture *f, mc_math_classes *math, mc_client_effect_
     const uint64_t own = p->random->state, shared = atomic_load(&f->app.profile->math->state),
                    world = f->world->fields.r->state;
     const mc_entity_bounds *bounds = p->bounds;
-    const bool returned = mc_effect_draw_torch_particle(call, 291),
+    const bool returned = mc_effect_draw_animated_sprite(call, 291),
                failed = profile->null_world || strcmp(profile->operation, "draw_null_nw") == 0;
     CHECK(returned != failed && p->bounds == bounds && p->random->state == own &&
           shared == atomic_load(&f->app.profile->math->state) &&
@@ -222,7 +222,7 @@ static bool torch_fp_controls(fixture *f, mc_math_classes *math,
         const uint32_t before = torch_fbits(p->particle->fields.g);
         const unsigned controls = _mm_getcsr();
         _mm_setcsr(controls | UINT32_C(0x8000));
-        const bool returned = mc_effect_draw_torch_particle(call, 291);
+        const bool returned = mc_effect_draw_animated_sprite(call, 291);
         _mm_setcsr(controls);
         CHECK(!returned && call->failure.native_policy && !call->failure.source_exception &&
               call->failure.status == MC_EFFECT_DRAW_UNSUPPORTED_FP &&

@@ -383,6 +383,8 @@ static mc_entity_status moving_particle_tick(mc_entity *p, mc_registry_classes *
             return mc_smoke_particle_tick(p, registry, limits, error);
         case MC_ENTITY_CLASS_KIND_FLAME_PARTICLE:
             return mc_flame_particle_tick(p, registry, limits, error);
+        case MC_ENTITY_CLASS_KIND_REDSTONE_PARTICLE:
+            return mc_redstone_particle_tick(p, registry, limits, error);
         default:
             return mc_item_particle_tick(p, registry, limits, error);
     }

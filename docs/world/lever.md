@@ -61,11 +61,37 @@ also pass the 32-row rendering comparison. The full enabled Windows suite
 passes 652 tests in 238.64 seconds; Linux's seven-test selection passes in
 5.85 seconds. This is not a full Linux suite result.
 
-These are component results. Loaded input, circuit timing across arbitrary
-devices, save/reselection, original whole-frame pixels, audio playback, extended
-survival and FPS require separate checks. The server Lever lifecycle remains
-unimplemented.
+These results describe the component checkpoint. The saved circuit below adds
+bounded native input and persistence coverage. Circuit timing across arbitrary
+devices, original whole-frame pixels/audio, extended survival and FPS require
+separate checks. The server Lever lifecycle remains unimplemented.
 
 ```sh
 ctest --test-dir build --output-on-failure -R '^(world[.]lever|world[.]lever_placement_reference|tools[.]lever_placement_packet|client[.]placement_world)$'
 ```
+
+## Saved circuit
+
+The [Windows SDK scene](../../tests/reference/client/lever_placement/README.md)
+places a wall Lever beside Redstone Dust through ordinary SDL input. Right
+click turns it on, left click turns it off through the actual mining-start
+hook, and a final right click powers it again. Lever metadata follows 4/12/4/12;
+Dust follows 0/15/0/15. One Item is consumed and used69 increments once. The
+unchanged camera ray selects the actual Lever outline.
+
+Default AO remains true. Six actual terrain batches match the active position,
+UV and color arrays from the separate 160-call original scene packet. Native
+outlines match 18 independently derived positions per phase. Ordinary
+Save/Quit and reselection preserve the powered circuit, health 5 and Item69
+count 1 across distinct World/Player owners. Independent NBT readback checks
+all 441 saved Chunks and zero Item Entities. Only the actual eight-byte session
+token changes on disk during reselection.
+
+The post-fix opportunity passes 1,945 native checks and 19 evidence-corruption
+controls with 2,143 selected source/product inputs and 413 assets unchanged.
+Natural Redstone particles appear in the actual DN Lists during completed
+frames. A prior failed opportunity reached the missing concrete particle
+allocation. The [Redstone particle implementation](../entity/redstone-particle.md)
+resolves that dependency; retained failures and the unchanged scene limits
+remain documented. This finite Windows scene does not qualify unrestricted
+circuits, general focus reliability, Linux loaded play or FPS.

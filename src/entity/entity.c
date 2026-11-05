@@ -144,6 +144,7 @@ bool mc_entity_is_particle_kind(mc_entity_class_kind kind) {
         case MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE:
         case MC_ENTITY_CLASS_KIND_SMOKE_PARTICLE:
         case MC_ENTITY_CLASS_KIND_FLAME_PARTICLE:
+        case MC_ENTITY_CLASS_KIND_REDSTONE_PARTICLE:
             return true;
         default:
             return false;

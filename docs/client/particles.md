@@ -1,7 +1,7 @@
 # Client particles
 
 The client implements Pickup (`em`), Item (`pb`), Digging (`qm`), Explosion
-(`gy`), Smoke (`xn`) and Flame (`qu`) particles, their actual `xw`/`sn` ancestry,
+(`gy`), Smoke (`xn`), Flame (`qu`) and Redstone (`im`) particles, their actual `xw`/`sn` ancestry,
 the `dn` effect manager and selected complete-App notifications.
 The [particle draw entries](particle-rendering.md) now run on these same owners.
 Reached Entity drawing and the complete game frontend remain unfinished.
@@ -25,7 +25,7 @@ the unchanged-Y horizontal boost, damping and grounded damping. Zero lifetime
 throws at the original division after the previous-coordinate, age and death
 stores. Flame calls the real mover before its damping and ground adjustment.
 DN dispatches these bodies on the same queued Entities. Checked retirement
-handles all six canonical particle families and preserves pending ownership;
+handles the canonical particle families and preserves pending ownership;
 native cleanup does not advance age or repair source fields.
 
 The [original packet](../../tests/reference/entity/torch_particles/README.md)
@@ -54,7 +54,12 @@ pass 660 Windows and 653 sanitized Linux cases, with all 1,445 runtime files
 matching across hosts; [testing](../testing.md) retains the exact CTest times
 and input/product continuity separately from original particle evidence.
 
-Bubble, Note, Portal, Lava, Footstep, Splash, Red Dust, Snow Shovel and Heart
+The [Redstone particle implementation](../entity/redstone-particle.md) supplies
+the actual `reddust` constructor, tick and animated XW draw. Its separate original
+packet and native tests retain constructor entropy, 30 exact component rows and
+the genuine World callback publication checks.
+
+Bubble, Note, Portal, Lava, Footstep, Splash, Snow Shovel and Heart
 still have explicit reached constructor dependencies in the RenderGlobal
 notification path. Other particle draw families and complete pickup rendering
 retain their separate unfinished or unqualified scopes.

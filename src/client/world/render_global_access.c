@@ -791,7 +791,7 @@ static bool explosion_particle(mc_render_global_access *access, access_call *cal
 
 typedef struct sprite_particle_sites {
     unsigned int receiver, allocation, world, constructor, enqueue;
-    bool flame, scaled;
+    bool flame, scaled, redstone;
 } sprite_particle_sites;
 
 static bool sprite_particle(mc_render_global_access *access, access_call *call,
@@ -804,7 +804,9 @@ static bool sprite_particle(mc_render_global_access *access, access_call *call,
     client_application *app = p->application;
     /* NEW precedes evaluation of the fresh N.k constructor argument. */
     const mc_entity_status allocated =
-        sites->flame
+        sites->redstone
+            ? mc_redstone_particle_allocate(app->entities, &p->candidate, &call->error.entity)
+        : sites->flame
             ? mc_flame_particle_allocate(app->entities, &p->candidate, &call->error.entity)
             : mc_smoke_particle_allocate(app->entities, &p->candidate, &call->error.entity);
     if (allocated != MC_ENTITY_OK) {
@@ -824,10 +826,16 @@ static bool sprite_particle(mc_render_global_access *access, access_call *call,
         p->world = world;
     }
     call->error.particle = &p->error;
-    /* XW alone captures Math at164 after its five shared draws. Default XN
-     * retains its actual delegation to the scaled constructor at14. */
+    /* XW alone captures Math at164 after its five shared draws. Default XN/IM
+     * retain their actual delegation to the scaled constructor at14. */
     const mc_entity_status constructed =
-        sites->flame
+        sites->redstone ? mc_redstone_particle_construct_entered(
+                              p->candidate, world, app->source_math_classes, x, y, z,
+                              _mm_cvtss_f32(_mm_cvtsd_ss(_mm_setzero_ps(), _mm_set_sd(vx))),
+                              _mm_cvtss_f32(_mm_cvtsd_ss(_mm_setzero_ps(), _mm_set_sd(vy))),
+                              _mm_cvtss_f32(_mm_cvtsd_ss(_mm_setzero_ps(), _mm_set_sd(vz))),
+                              &p->math, &p->error)
+        : sites->flame
             ? mc_flame_particle_construct_entered(p->candidate, world, app->source_math_classes, x,
                                                   y, z, vx, vy, vz, &p->math, &p->error)
         : sites->scaled
@@ -942,13 +950,19 @@ static mc_world_storage_status particle(void *context, mc_world_runtime *world,
                     break;
                 }
                 if (strcmp(kinds[i].name, "smoke") == 0 || strcmp(kinds[i].name, "flame") == 0 ||
-                    strcmp(kinds[i].name, "largesmoke") == 0) {
+                    strcmp(kinds[i].name, "largesmoke") == 0 ||
+                    strcmp(kinds[i].name, "reddust") == 0) {
                     const bool flame = strcmp(kinds[i].name, "flame") == 0;
                     const bool scaled = strcmp(kinds[i].name, "largesmoke") == 0;
+                    const bool redstone = strcmp(kinds[i].name, "reddust") == 0;
                     const sprite_particle_sites sites =
-                        flame    ? (sprite_particle_sites){337, 340, 345, 359, 362, true, false}
-                        : scaled ? (sprite_particle_sites){505, 508, 513, 529, 532, false, true}
-                                 : (sprite_particle_sites){161, 164, 169, 183, 186, false, false};
+                        redstone
+                            ? (sprite_particle_sites){551, 554, 559, 576, 579, false, false, true}
+                        : flame
+                            ? (sprite_particle_sites){337, 340, 345, 359, 362, true, false, false}
+                        : scaled
+                            ? (sprite_particle_sites){505, 508, 513, 529, 532, false, true, false}
+                            : (sprite_particle_sites){161, 164, 169, 183, 186, false, false, false};
                     (void)sprite_particle(access, call, &sites, x, y, z, vx, vy, vz);
                     break;
                 }

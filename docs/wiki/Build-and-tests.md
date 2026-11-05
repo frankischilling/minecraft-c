@@ -1,5 +1,33 @@
 # Build and tests
 
+## Saved Lever circuit and Redstone particles
+
+The [saved scene](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/lever_placement/README.md) passes
+one post-fix Windows opportunity: 1,945 checks, 19 evidence-corruption controls,
+four ordinary SDL taps, Dust power 0/15/0/15 and powered save/reselection.
+All 2,143 guarded source/product inputs and 413 assets stay unchanged. Six
+actual terrain batches match active words from a new 160-row original scene
+packet; the full CPU replay also checks inactive words. Outlines and selected
+cell operands are checked independently. Natural Redstone particles occur
+during returned World/HUD frames.
+
+The prior actual missing-allocation failure remains retained. The implementation
+adds genuine IM constructors, tick and XW draw. Two original VMs agree on 30
+component rows; native replay matches all 30, audits 38 independent constructors
+and rejects 53 corruptions. A deterministic WorldAccess regression and separate
+CPU draw/admission controls pass. The documented unbegun-NW and NULL-display
+fixture corrections preserve their failed runs and original comparison rows.
+Windows MSVC Release passes all 20 focused tests in 11.29 CTest seconds.
+Linux Clang 18 Debug builds the client and passes 20 focused ASan/UBSan tests
+in 39.17 CTest seconds, with all 4,954 guarded non-document inputs unchanged.
+The wider display-enabled Windows public run remains failed at 701/704 in
+481.62 seconds. Cow and Ladder failures record `msrdc.exe` holding foreground
+focus. A returned-frame light-control pause assertion also fails; focus/timing
+is a hypothesis for that case, and its isolated counterpart passes in the same
+run. No reroll or source repair replaces the failed evidence. General circuits,
+Linux loaded play, focus reliability, original pixels/audio and FPS remain
+outside this finite qualification.
+
 ## Lever behavior and geometry
 
 The [Lever component checks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/lever.md) pass on Windows MSVC Release and Linux Clang 18 Debug with ASan/UBSan. Native replay checks 209 complete original effect records and two floor choices against its own Random stream. The original packet retains 244 calls per VM; its 33 left-click wrapper rows stay outside that replay. Separate actual mining-start tests exercise left-click toggles and a retained failed activation. Rendering matches 32 original flat-shading rows and all 576 words per row.

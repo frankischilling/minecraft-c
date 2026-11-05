@@ -376,24 +376,27 @@ bool mc_particle_read(const mc_entity *p, mc_particle_snapshot *out) {
     if (!mc_entity_has_particle(p) || out == NULL)
         return false;
     const bool item = !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE);
-    *out = (mc_particle_snapshot){.phase = p->phase,
-                                  .particle_pc = p->particle->particle_pc,
-                                  .pickup_pc = p->particle->pickup_pc,
-                                  .particle = p->particle->fields,
-                                  .pickup =
-                                      item ? (mc_pickup_particle_fields){0} : p->particle->pickup,
-                                  .item_pc = item ? p->particle->item_native.item_pc : 0,
-                                  .tick_pc = item ? p->particle->item_native.tick_pc : 0,
-                                  .tick_active = item && p->particle->item_native.tick_active,
-                                  .digging_block = p->particle->digging_block,
-                                  .digging_registry = p->particle->digging_registry,
-                                  .digging_face = p->particle->digging_face,
-                                  .smoke = mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SMOKE_PARTICLE)
-                                               ? p->particle->smoke
-                                               : (mc_smoke_particle_fields){0},
-                                  .flame = mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_FLAME_PARTICLE)
-                                               ? p->particle->flame
-                                               : (mc_flame_particle_fields){0}};
+    *out = (mc_particle_snapshot){
+        .phase = p->phase,
+        .particle_pc = p->particle->particle_pc,
+        .pickup_pc = p->particle->pickup_pc,
+        .particle = p->particle->fields,
+        .pickup = item ? (mc_pickup_particle_fields){0} : p->particle->pickup,
+        .item_pc = item ? p->particle->item_native.item_pc : 0,
+        .tick_pc = item ? p->particle->item_native.tick_pc : 0,
+        .tick_active = item && p->particle->item_native.tick_active,
+        .digging_block = p->particle->digging_block,
+        .digging_registry = p->particle->digging_registry,
+        .digging_face = p->particle->digging_face,
+        .smoke = mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SMOKE_PARTICLE)
+                     ? p->particle->smoke
+                     : (mc_smoke_particle_fields){0},
+        .flame = mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_FLAME_PARTICLE)
+                     ? p->particle->flame
+                     : (mc_flame_particle_fields){0},
+        .redstone = mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_REDSTONE_PARTICLE)
+                        ? p->particle->redstone
+                        : (mc_redstone_particle_fields){0}};
     return true;
 }
 
@@ -413,6 +416,7 @@ mc_entity_status mc_particle_layer(const mc_entity *p, int32_t *out) {
         case MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE:
         case MC_ENTITY_CLASS_KIND_SMOKE_PARTICLE:
         case MC_ENTITY_CLASS_KIND_FLAME_PARTICLE:
+        case MC_ENTITY_CLASS_KIND_REDSTONE_PARTICLE:
             *out = 0;
             break;
         default:
@@ -438,6 +442,8 @@ bool mc_particle_constructor_returned(const mc_entity *p) {
             return pc == 17 || pc == 172;
         case MC_ENTITY_CLASS_KIND_FLAME_PARTICLE:
             return pc == 187;
+        case MC_ENTITY_CLASS_KIND_REDSTONE_PARTICLE:
+            return pc == 17 || pc == 202;
         default:
             return false;
     }

@@ -1,5 +1,66 @@
 # Test scope and reproduction
 
+## Saved Lever circuit and Redstone particles
+
+The [saved-scene receipt](../tests/reference/client/lever_placement/README.md)
+records a fresh post-fix Windows opportunity: 1,945 native checks, 19 controls
+against changed copies of actual evidence, and unchanged selected source,
+product and resource inputs. Four real SDL taps exercise placement and both
+click paths; independent NBT readback confirms the powered circuit, Item count,
+health, 441 Chunks and zero Item Entities after save/reselection. Natural
+Redstone particles are observed during completed frames without forcing a
+spawn, seed, clock or deadline. The older success and actual missing-allocation
+failure remain separate retained evidence.
+
+The [160-row scene packet](../tests/reference/client/lever_scene_geometry/README.md)
+covers all 16 skylight-subtraction values, AO off/on and before/off/on geometry.
+Native replay compares all eight vertex words. The SDK compares six active
+words per vertex, 150 surrounding cells and 18 outline positions per phase.
+An untranslated helper capture remains preserved as failed evidence; the
+corrected explicit-double call is observed in two fresh original VMs.
+
+The [Redstone particle packet](../tests/reference/entity/redstone_particles/README.md)
+uses two further original VMs, each with 37 actual constructors and 30 component
+calls. Native replay matches all 30 literal rows, audits 38 independent native
+constructors and rejects 53 changed records. Six packet tests pass. Separate
+native regressions cover actual WorldAccess publication, eight CPU size
+profiles, three failure prefixes and nonempty DN layer-zero display admission.
+The unbegun-Tessellator negative fixture was incorrect: original vertex append
+does not check begun state. Its failed run remains retained; production did not
+change to satisfy it. A second fixture initially expected texture generation
+with a NULL Display; the retained native admission is now checked at its actual
+boundary. Neither fixture correction changes the exact original component rows.
+
+Windows MSVC Release builds the client and passes all 20 focused tests in 11.29
+CTest seconds. Linux Clang 18 Debug builds the graphical client and passes all 20 focused
+tests in 39.17 CTest seconds with ASan/UBSan, leak detection and halt-on-error.
+All 4,954 guarded non-document inputs stay unchanged through that run. This
+is a focused native/CPU qualification, not loaded Linux play. Later Git
+attributes preserve three captured CRLF files byte-for-byte; their packet
+controls pass after staging normalization is corrected.
+
+The wider display-enabled Windows public run passes 701/704 tests in 481.62
+seconds and remains failed. Cow and Ladder continuations record `msrdc.exe`
+holding foreground focus, with source Pause active. The load-light case returns
+its frame but fails the screen/pause assertion before checking the light queue;
+its failure has no contemporaneous focus receipt. Its separately registered
+counterpart passes later in the same run. Focus/timing is a supported hypothesis
+for that case, not a proven diagnosis. No retry, skip, larger budget or source
+focus repair converts this run into a pass. General native focus reliability
+remains unqualified; these failures do not replace the separate passing Lever
+scene and exact CPU comparisons.
+
+Public checks require no original archive, assets, Java or display:
+
+```sh
+ctest --test-dir build --output-on-failure --no-tests=error -R '^(tools[.]lever_(scene_geometry_packet|geometry_controls|gui_controls)|client[.]lever_scene_geometry|tools[.]redstone_particles_packet|entity[.]redstone_particle_reference|client[.]redstone_particle_(factory|draw_cpu))$'
+```
+
+The optional Windows SDK uses `MC_ENABLE_CLIENT_LEVER_PLACEMENT_TESTS` together
+with the display/imported-resource options recorded in its receipt. This
+coverage does not establish original whole-frame pixels/audio, arbitrary
+circuits, general focus reliability, Linux loaded play or FPS.
+
 ## Lever component checks
 
 The original Lever World packet runs 244 calls in each of two ordinary VMs.

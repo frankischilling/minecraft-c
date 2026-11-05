@@ -1,5 +1,25 @@
 # Development status
 
+The [saved Lever circuit](world/lever.md#saved-circuit) passes one post-fix
+Windows SDK opportunity with 1,945 native checks. Four ordinary SDL taps place
+and switch the Lever, drive adjacent Dust through 0/15/0/15 and leave it powered
+across Save/Quit and distinct-owner reselection. Default AO terrain and actual
+outlines match the declared original scene geometry. All 2,143 guarded inputs
+and 413 assets remain unchanged; 19 evidence-corruption controls pass.
+
+The run naturally emits [Redstone particles](entity/redstone-particle.md).
+A retained earlier failure reached their missing concrete allocation; the
+successor implements the actual constructor, tick and draw. Two original VMs
+agree on 30 component rows; native replay matches them with 38 independently
+audited constructors. General circuits, Linux loaded play, original pixels/audio,
+focus reliability and sustained FPS remain unqualified. The wider display-enabled
+Windows run remains failed at 701/704: two scenarios record Remote Desktop holding
+foreground focus, and one returned-frame pause assertion needs a direct receipt.
+Linux's 20 focused sanitizer tests pass. [Testing](testing.md) keeps these scopes
+and the retained failures separate.
+
+## Preceding Lever component checkpoint
+
 [Lever placement and switching](world/lever.md) now reach client support,
 clicked-face placement, activation, neighbor and removal bodies. Windows and
 sanitized Linux replay check 209 complete original effect records and two floor-choice

@@ -1,6 +1,14 @@
 # minecraft-c
 
-[Lever behavior](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/lever.md) now includes client placement, activation, support loss, removal and the actual mining-start hook. Windows and sanitized Linux replay check 209 complete original effect records and two native-own-stream floor choices; separate controller controls cover left-click activation and a failed callback. [Rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lever-world.md) matches 32 original flat-shading rows and all appended words. These component results do not qualify loaded circuits, persistence, original pixels/audio or FPS.
+The [saved Lever circuit](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/lever.md#saved-circuit) now passes
+placement, right/left-click switching, powered Redstone Dust and Save/Quit with
+distinct-owner reselection in one native Windows SDK opportunity. It checks
+default AO terrain, outlines, inventory and 441 saved Chunks, with 1,945 native
+assertions and 19 evidence-corruption controls. A reached missing particle
+allocation is fixed by the actual [Redstone particle](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/redstone-particle.md)
+constructor, tick and draw; its native replay matches 30 original component
+rows. Arbitrary circuits, general focus reliability, Linux loaded play,
+original whole-frame pixels/audio and FPS remain unqualified.
 
 [Redstone Torch lifecycle](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/redstone-torch.md) now covers client 75/76 power checks, delayed switching and class-shared burnout history. Windows and sanitized Linux match 203 original case records with bounded stream accounting; unpublished Item fields remain unobserved. Separate List ownership and metadata texture tests pass. A Windows SDK placement naturally switches off and survives save/reselection. General circuits, server lifecycle and FPS retain their own scopes.
 

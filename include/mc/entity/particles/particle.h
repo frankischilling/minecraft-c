@@ -29,8 +29,8 @@ typedef enum mc_particle_throwable {
  * initial state is captured immediately before the actual first float call,
  * never derived from its final state or supplied as constructor entropy. */
 typedef struct mc_particle_constructor_random {
-    double math_values[8]; /* XW5, followed by GY3, XN2 or QU1 when reached. */
-    float own_values[10];  /* XW4, then GY4 or QU6; the existing8 prefix is stable. */
+    double math_values[10]; /* XW5, followed by GY3, XN2, QU1 or IM5 when reached. */
+    float own_values[10];   /* XW4, then GY4 or QU6; the existing8 prefix is stable. */
     size_t math_count, own_count;
     bool own_initial_stored;
     uintptr_t own_identity;
@@ -85,6 +85,10 @@ typedef struct mc_flame_particle_fields {
     float a;
 } mc_flame_particle_fields;
 
+typedef struct mc_redstone_particle_fields {
+    float a;
+} mc_redstone_particle_fields;
+
 typedef struct mc_particle_snapshot {
     mc_entity_phase phase;
     unsigned int particle_pc, pickup_pc;
@@ -97,6 +101,7 @@ typedef struct mc_particle_snapshot {
     int32_t digging_face;
     mc_smoke_particle_fields smoke;
     mc_flame_particle_fields flame;
+    mc_redstone_particle_fields redstone;
 } mc_particle_snapshot;
 
 /* Caller-owned full initialization; never consumes an owning child receipt. */
@@ -233,5 +238,28 @@ mc_entity_status mc_flame_particle_tick(mc_entity *, mc_registry_classes *,
                                         const mc_entity_move_limits *,
                                         mc_item_particle_tick_error *);
 mc_entity_status mc_flame_particle_layer(const mc_entity *, int32_t *);
+
+/* Actual client IM. The default constructor delegates to scale1; the scaled
+ * constructor accepts scale before RGB, exactly as the original descriptor.
+ * XW contributes five shared Math draws and four private floats; IM adds five
+ * Math draws, preserving float/double conversion boundaries and original red
+ * zero substitution. Construction accepts no supplied seed or entropy. The
+ * existing RAW/FAILED/READY ownership and required disjoint error apply. */
+mc_entity_status mc_redstone_particle_allocate(mc_entity_classes *, mc_entity **,
+                                               mc_entity_error *);
+mc_entity_status mc_redstone_particle_construct(mc_entity *, mc_world_runtime *, mc_math_classes *,
+                                                double, double, double, float, float, float,
+                                                mc_particle_error *);
+mc_entity_status mc_redstone_particle_construct_scaled(mc_entity *, mc_world_runtime *,
+                                                       mc_math_classes *, double, double, double,
+                                                       float scale, float red, float green,
+                                                       float blue, mc_particle_error *);
+/* IM.w_ continues after expiry, uses its own atlas animation, genuine Entity
+ * movement, equal-Y horizontal acceleration and damping. It adds no gravity.
+ * The complete movement diagnostics follow the same lifetime as other ticks. */
+mc_entity_status mc_redstone_particle_tick(mc_entity *, mc_registry_classes *,
+                                           const mc_entity_move_limits *,
+                                           mc_item_particle_tick_error *);
+mc_entity_status mc_redstone_particle_layer(const mc_entity *, int32_t *);
 
 #endif

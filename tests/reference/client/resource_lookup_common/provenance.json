@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 341546,
-      "sha256": "96d0df0226b5cd3ba38d284cbd23ba6f97269144c3ee05fc0ccbbc0e61954c61"
+      "bytes": 341686,
+      "sha256": "30017a2dd6eb4517ad955a1b809379907314674ad268218a2d3ba5833a58b738"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -250,8 +250,8 @@
       "sha256": "735053a410e7c03ee14df273f402c07fc2ea7c1091d6b68e1eecc464d5421548"
     },
     "docs/client/particles.md": {
-      "bytes": 11396,
-      "sha256": "0ee8128074088f79a06d1e96c75824634fa0a3c7d5ac02c521b06379605bc1d9"
+      "bytes": 11690,
+      "sha256": "d4f6d8ae5ddf6d57e38dbc6ac99069a8830463105c5f67c4ee63089ab3445082"
     },
     "docs/client/player-construction.md": {
       "bytes": 7100,
@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 195822,
-      "sha256": "6f1f7ea7953e1203fff1887121d324bb11a892c8647058bd29e56b4419fae571"
+      "bytes": 196646,
+      "sha256": "c0492926001370b3403c8f0cb5612324a16ed05821985ff76e1052052e12310a"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 110162,
-      "sha256": "b41b27e7c64e06815d1aa9e037ecc426fa70fbfe899cebdce015d3a07a1a16c5"
+      "bytes": 111418,
+      "sha256": "9f6d411af804a52882cf0287dc150df84fc76731c722461ba5191e3bca33ec7c"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,24 +826,24 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 470209,
-      "sha256": "c5d99bea46ad5938a593fd96bc08463dde49308674bd3f92fb5e4cb3b2f4b9c5"
+      "bytes": 474170,
+      "sha256": "b2a84091e32217aa99fc8ff6b8950ccd28cf279d86610b7c060e29b68379da6a"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
       "sha256": "2266d5edd099003b4b3fe304ecf79cf86bbfcab026ef1480936c04a391024957"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 116633,
-      "sha256": "20fc562de444452de0cc9202007ba70b4c8cd8fb435a080aa417fad84d313ee7"
+      "bytes": 118530,
+      "sha256": "586d3f553b40195332401c9799d76c01c0a3acb43bfbb3557d0951cdd182fde7"
     },
     "docs/wiki/History.md": {
       "bytes": 60438,
       "sha256": "f823b35e3f0449ed55d6d9b55be06b35080911b6c2e834d9516289b5e49b8f7e"
     },
     "docs/wiki/Home.md": {
-      "bytes": 14388,
-      "sha256": "5ae9db633228b6e3f99feca9daf9b2b1dda1003d3c5af45020c8498743e0f36b"
+      "bytes": 14532,
+      "sha256": "d3a0e294cf9f85649ca53fc7483cbdb125517236f4325172bd972a32f3cf0a35"
     },
     "docs/wiki/Startup.md": {
       "bytes": 7992,
@@ -1334,8 +1334,8 @@
       "sha256": "4cd33f11935846d9e978f46732b36ce88452d377e67bcbd3e0320c9284d59339"
     },
     "include/mc/entity/classes/classes.h": {
-      "bytes": 7234,
-      "sha256": "bf45aa2def594c34c5eb648960bb078d7a6408776556f7ff926c838669b7dc60"
+      "bytes": 7303,
+      "sha256": "e77454c2bb0a5070c5ef6a632dd044f91b0003b6cdc9fae568e86b225fd2ebf3"
     },
     "include/mc/entity/entity.h": {
       "bytes": 8923,
@@ -1414,8 +1414,8 @@
       "sha256": "fbae283a884a2130a4cde4c9f7fcb0ca693eda636e9b87a9e98e731613f0a988"
     },
     "include/mc/entity/particles/particle.h": {
-      "bytes": 13470,
-      "sha256": "778bd323e9175707b153a7d0113d52dee92caba6383729b856a4ffb29269d145"
+      "bytes": 15393,
+      "sha256": "6d00d9cb2f87e70c7759369d24696b91253b76dbf75b3741fd4049483615d705"
     },
     "include/mc/entity/player/input.h": {
       "bytes": 2824,
@@ -2914,8 +2914,8 @@
       "sha256": "537b0eda61b3d90454aa7e776ed3a9ad459a0d290e072d10fee7bedd2e7ecf1b"
     },
     "src/client/particles/effect_renderer.c": {
-      "bytes": 34887,
-      "sha256": "a0de649a8e207df84c9819fa829d5a32c0449f65d9f0c70367dfba01278544a8"
+      "bytes": 35014,
+      "sha256": "3c81a1d62fc473d6dfce31fd5e9bc948563cb52ab644aa837532dbca2510038f"
     },
     "src/client/particles/effect_renderer_internal.h": {
       "bytes": 2475,
@@ -3910,8 +3910,8 @@
       "sha256": "a5768439cb478cb9e13567a6ab223ff0e4fa2bd031f9d3272a71fb1ce6215ce0"
     },
     "src/entity/classes/classes.c": {
-      "bytes": 13844,
-      "sha256": "cfa53c1468e79bd085308593f4778d1f5c504898ec4250936aef803db6bad460"
+      "bytes": 13936,
+      "sha256": "bdcdda1bc97ef869954a8befdf99f2fa5a951b2e863b158a4be27fc1ddd5149f"
     },
     "src/entity/classes/classes_internal.h": {
       "bytes": 3220,
@@ -3930,8 +3930,8 @@
       "sha256": "4b35f250c9f5f2e038f72aa5a595192edaad36d17c1694b845b13eed6fd934f0"
     },
     "src/entity/entity.c": {
-      "bytes": 35698,
-      "sha256": "6db274e77b5e84278d35c96a2a77bd1ecfc0efd8171713001261e239cba49016"
+      "bytes": 35751,
+      "sha256": "aa7ebec2afe11955e7bcbd4fd8442a01786df96eeb19366593e1c73cb5b44910"
     },
     "src/entity/entity_internal.h": {
       "bytes": 5035,
@@ -4042,12 +4042,12 @@
       "sha256": "caa76c2af8ed33cafca5526df22bdc5bf331c990633857c6d52b593c7a350cd6"
     },
     "src/entity/particles/particle_internal.h": {
-      "bytes": 6613,
-      "sha256": "81617feb2eea80787c0824984e202ced46dd9f9fa3fcabd60e41fa5bda1f2ac4"
+      "bytes": 7514,
+      "sha256": "753dc46a1401e0799a16e9c1b633d7f286f7e11659bdc4146995a3b082953bfb"
     },
     "src/entity/particles/pickup.c": {
-      "bytes": 20385,
-      "sha256": "1de915af36beb8e5715a47fc31fb7e7cc698c05fe46ffffad0964226d8175fbf"
+      "bytes": 20277,
+      "sha256": "187e54fa57d3440ccdfa44692878abe31ed68137ec241ab0da551d8dfd4c2703"
     },
     "src/entity/player/active_internal.h": {
       "bytes": 1639,
@@ -5414,8 +5414,8 @@
       "sha256": "148cd661e6c99a555cf6e4417d65c3f5f4eac4d4a95277483e5f98172eb2b599"
     },
     "tests/client/render/test_manager.c": {
-      "bytes": 23813,
-      "sha256": "f9d1ed03b77a6ec5035ebc0afd6663e581f7ee84f6ca6a0e026b219332a7a2f7"
+      "bytes": 23882,
+      "sha256": "0b758929c11a58f3e13b330d7f9caab979dc52ff1f6f3aec624312610c604c8c"
     },
     "tests/client/render_engine/lookup_observation.h": {
       "bytes": 15985,
@@ -5986,8 +5986,8 @@
       "sha256": "3fb186185dbcb2f263ae4b29bc5329d24364418767ad610b93eb902b3dce9509"
     },
     "tests/entity/minecart/test_minecart.c": {
-      "bytes": 64945,
-      "sha256": "0f8ef79bfb80f1a56727efb08a97a83eae347a119f8a2ef698e406a85c251ab3"
+      "bytes": 65012,
+      "sha256": "50f4cf47f9f8485e60456f5dcf21e00154a5fc6c42ad3c861dbd7ec22684cce3"
     },
     "tests/entity/minecart/test_nbt.c": {
       "bytes": 38764,
@@ -6275,7 +6275,7 @@
     },
     "tests/reference/client/application_owner/provenance.json": {
       "bytes": 30992,
-      "sha256": "f9787bdff27cad8b670138e2f16cfacef2a45276ef4051582ea156b528ba1920"
+      "sha256": "07b60907804c23dbbb726af352407859e7dbb3a596cb63f9272769b2395c7549"
     },
     "tests/reference/client/application_owner/run_native.py": {
       "bytes": 2027,
@@ -6307,7 +6307,7 @@
     },
     "tests/reference/client/biped/provenance.json": {
       "bytes": 30903,
-      "sha256": "8c11a32ea8ad4b2327104c52460eb0d2b6638e7b3f03c6126bb4f04ddfcebbdf"
+      "sha256": "c4c5aafcd3c3632e034acc4192eba472a6610d58fc6b7cd60e0398dfe0d4a301"
     },
     "tests/reference/client/biped/run_native.py": {
       "bytes": 2290,
@@ -6407,7 +6407,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 495379,
-      "sha256": "4dd4076ed68f026d6d14b72df8263f4bd575837ddb4558538b9025033a0790dd"
+      "sha256": "09b40c929af1ad7d88986fb6f9e209b5dd154fcf63dd378e550b5ca208cf2e26"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6471,7 +6471,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 595346,
-      "sha256": "3ab3ba3a0c223f454f5c78c1567badc868e7578c756f4e1b3c4cc87be45862ea"
+      "sha256": "ee9a8e106ffcaa0668538d059c7dba32b3686f6aeedcae93b93902ac35ac889c"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6603,7 +6603,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 491193,
-      "sha256": "3c2e5b8ae9049a02013157ba41106eb15f5c312f02f458ae63250e263dc1b78b"
+      "sha256": "7bf833b3539cca7486080013c5a9a0c80538c1fec99391db8a0aea6d699d8fd5"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -10182,8 +10182,8 @@
       "sha256": "4c27a952596ec7d60c0c0e851c4c7f200defcac1c6a00bcbed87a1d270c4e287"
     },
     "src/client/world/render_global_access.c": {
-      "bytes": 67406,
-      "sha256": "2a81a85c399092d698320c8ce550a80fe3f6f5f62d2e90419e88449bec4c7288"
+      "bytes": 68370,
+      "sha256": "e45a7148948fc1649e3baa974bba90a6dbfec7db91b5244fc1b97a43022fe39a"
     },
     "src/client/world/render_global_access.h": {
       "bytes": 6118,
@@ -12842,8 +12842,8 @@
       "sha256": "bbd7e4061d3f497b17a80c48b81599f443683d5522864896477e8eb20834e0a8"
     },
     "docs/client/particle-rendering.md": {
-      "bytes": 17688,
-      "sha256": "7f160eafa9537409b5e0498a1a36dcc91922e6715d59b87863e8dc7400d5ce8d"
+      "bytes": 18276,
+      "sha256": "835cdee8a601214879c312007f7b25604e7c141fcdc390122f7136cd1b8175cb"
     },
     "include/mc/client/particles/render.h": {
       "bytes": 6553,
@@ -12858,12 +12858,12 @@
       "sha256": "f29d3ac13addf221df71613e649c0d29817a2ae621ca99208bb7fae2e344714a"
     },
     "src/client/particles/render_internal.h": {
-      "bytes": 2499,
-      "sha256": "ac62ad1fc449aad97357e21d6521bda4e57a9ca77e1dc60f28f1e55492a794d3"
+      "bytes": 2503,
+      "sha256": "be1979f0f3ad7a6dce179a85adab8bd9b8856e3dd2f70b4ae760096e64dbece2"
     },
     "src/client/particles/render_pickup.c": {
-      "bytes": 18742,
-      "sha256": "be8526a27c56e24a4fbe75e45266b56cbfd7eaa10a0faf6c2e8b90031e5b82e3"
+      "bytes": 18825,
+      "sha256": "4a34190a183fb67f3b48d0b9a2207974f4b1f73665be600d9aff7bb6dc02c2fb"
     },
     "src/client/world/entity_renderer/world_frame_after_particles.inc": {
       "bytes": 34946,
@@ -14014,8 +14014,8 @@
       "sha256": "dc9c31b9178dd8d186881e07a72ef17fe2f8147c7105d6e6c81de14c7691f4f6"
     },
     "src/client/particles/render_item.c": {
-      "bytes": 17297,
-      "sha256": "1cb70ccc42f532cb16650d1faf674e75ac26b5c18cdf45d3a30111588f3fd19b"
+      "bytes": 17532,
+      "sha256": "3ad70568c26d019bab616e27ae9402f7f05018727822984715799fb4817e1783"
     },
     "src/client/render/living_draw/creatures.c": {
       "bytes": 18931,
@@ -18038,8 +18038,8 @@
       "sha256": "64df9ae3ba842901af96727fcc6f2105a0c99d39848298c5c7f97ebe3b4105ce"
     },
     "tests/client/particles/test_torch_draw.c": {
-      "bytes": 18425,
-      "sha256": "59a6c0779abdf95d8a1d12983535a966039d819da06f60fc006dcf0584895a38"
+      "bytes": 18427,
+      "sha256": "ce651ab3082f5980a406b3982ecc107ac79f848e55686fcd7e1a3d807b32ffcb"
     },
     "tests/client/render/test_torch_world.c": {
       "bytes": 25595,
@@ -20694,12 +20694,12 @@
       "sha256": "9c008f426f8558f83a06bca1cf6f8c88fe39b157f0579c3851552da206dab383"
     },
     "docs/client/lever-world.md": {
-      "bytes": 1964,
-      "sha256": "126093cce49c40984dc21f973c889d0f9fe24eb72d79443fc24d154e045db18e"
+      "bytes": 3585,
+      "sha256": "bbcae49d4a5599833c63e82f43d7ddc9b8dc32b2db51bf31cf2cddd4689ae9d6"
     },
     "docs/world/lever.md": {
-      "bytes": 4215,
-      "sha256": "65aba32a6eea008bc4f96a2f5fb94da51ef68660a61c8bfb508668322d86727a"
+      "bytes": 5833,
+      "sha256": "0b83a13a36290d2ae27d8983a7392ba36a053132157b38646d13e1309919fccb"
     },
     "src/client/render/blocks/lever.c": {
       "bytes": 9759,
@@ -20836,6 +20836,250 @@
     "tests/world/runtime/test_lever.c": {
       "bytes": 9963,
       "sha256": "8d334841c466242d99c0cc3a68cfa4797cccd762df9c1db19bba8fec012bf341"
+    },
+    "cmake/client_lever_placement.cmake": {
+      "bytes": 2271,
+      "sha256": "7847007fcb752d3996ed991301feb85278e72da0867431e0b7b3c32f61c26d02"
+    },
+    "cmake/client_lever_scene_geometry.cmake": {
+      "bytes": 1864,
+      "sha256": "f02fd94fbb567044dc2fc7091cc6b67c10e0e8ff6e4537255f48d2bd5a3307fb"
+    },
+    "cmake/client_redstone_particles.cmake": {
+      "bytes": 3730,
+      "sha256": "fe02efb4b6adc011260c4d7a17ce5b538c52eccb7552929bb42077a55fdb2efa"
+    },
+    "docs/entity/redstone-particle.md": {
+      "bytes": 3023,
+      "sha256": "e01f3578e1654848e5f2eefca3b31d1b605eadbef63a6470dbf6d337ed44bdeb"
+    },
+    "src/entity/particles/redstone.c": {
+      "bytes": 13030,
+      "sha256": "3903d1ebcf7f53db2e014664a1045b53f367a61b95bfe2368f339650b7a27e85"
+    },
+    "tests/client/gameplay/lever_scene.json": {
+      "bytes": 6997,
+      "sha256": "eb7d6bac7804dea8a6b28240acacfe9fabc07d60978981b31394628f615753c6"
+    },
+    "tests/client/gameplay/test_lever_placement.c": {
+      "bytes": 40502,
+      "sha256": "f48e40192ecfc48850e1c2d7caaf8f179b21f87d0104a4d30cb656b13983fccb"
+    },
+    "tests/client/particles/test_redstone_draw.c": {
+      "bytes": 14988,
+      "sha256": "bedce4646c25afaf016868cf4c77947dff0d1e29c297f42e61387e5a309b0d7c"
+    },
+    "tests/client/particles/test_redstone_factory.c": {
+      "bytes": 10918,
+      "sha256": "7e8ddc00f10e6f42b73243b2be2921b43ff032313f7699b4257748a3cc975029"
+    },
+    "tests/client/render/test_lever_scene_geometry.c": {
+      "bytes": 8784,
+      "sha256": "5c2bad5f7d89616cdd1de59e83802fcc5292f595ff6135722c01fef4d7030fae"
+    },
+    "tests/entity/particles/test_redstone_reference.c": {
+      "bytes": 30424,
+      "sha256": "c96dd8f3fd3333f412578249cc90279d8757d2bef152dd84af0176cf03c6b43e"
+    },
+    "tests/reference/client/lever_placement/README.md": {
+      "bytes": 3218,
+      "sha256": "ffa2cf690b26f58fd77dc57b5a49ba0ca8b1d8ed03cf66994a90ce7e7ce0d93d"
+    },
+    "tests/reference/client/lever_placement/native-validation.json": {
+      "bytes": 326923,
+      "sha256": "f6e6791c20829a82878b6ca11c604aa03f3be41266d99e1eced905083f0e439e"
+    },
+    "tests/reference/client/lever_scene_geometry/.gitattributes": {
+      "bytes": 183,
+      "sha256": "232c5b7a79b69451506cd1568189c92a57f439ff0934958fecb3ac9f37eb48fd"
+    },
+    "tests/reference/client/lever_scene_geometry/LeverSceneObservation.java": {
+      "bytes": 6273,
+      "sha256": "28f4e4bab3e3cd8a4b4cac97572bce27e4a85aec86a053172c27ba0fdc196055"
+    },
+    "tests/reference/client/lever_scene_geometry/README.md": {
+      "bytes": 4715,
+      "sha256": "3b21cfce72fbcae52f11218ee6ac0ef34426ca2dd89a32d70c0bd77dd3da4a3f"
+    },
+    "tests/reference/client/lever_scene_geometry/capture.py": {
+      "bytes": 4713,
+      "sha256": "35294941226ab8733fb47bac2aadb4fd0dbf0b43a0d05a39fbd5be3217189189"
+    },
+    "tests/reference/client/lever_scene_geometry/history/capture2/LeverSceneObservation.java": {
+      "bytes": 5614,
+      "sha256": "ee876587635b4464f3b1b10fe4bf08b2f821f40de3a546f9773aa6fecd2acbb9"
+    },
+    "tests/reference/client/lever_scene_geometry/history/capture2/README.md": {
+      "bytes": 3935,
+      "sha256": "0532caeb632cf9df4f5c1d74cf7832f70b4bfc016c8a76f88796bdf5f7efd00f"
+    },
+    "tests/reference/client/lever_scene_geometry/history/capture2/capture.py": {
+      "bytes": 4193,
+      "sha256": "9cd3333af873540b48909aabbd3d4a5c55484f46e3d441f35ea689fa6a2cbf56"
+    },
+    "tests/reference/client/lever_scene_geometry/history/capture2/packet.py": {
+      "bytes": 2341,
+      "sha256": "73b11da6b5d51055963d5490503f259d47a82c300482c74fcac91d0b71983448"
+    },
+    "tests/reference/client/lever_scene_geometry/history/capture2/provenance.json": {
+      "bytes": 2273,
+      "sha256": "9e0cd683834dfce26cc986a6b3afa16446187a98edaa8c204037aaaa16011a33"
+    },
+    "tests/reference/client/lever_scene_geometry/history/capture2/retained-files.json": {
+      "bytes": 1161,
+      "sha256": "ba950179255a7eb7512faff58b6ee341d9d6f277a329b065655f76a8bd911a7a"
+    },
+    "tests/reference/client/lever_scene_geometry/history/capture2/run_native.py": {
+      "bytes": 2857,
+      "sha256": "f7054f78f575e0395c447cfbc8d88e98f19c09cf0a0f86e1d4c00eade670f3d4"
+    },
+    "tests/reference/client/lever_scene_geometry/history/capture2/scene-input-origin.json": {
+      "bytes": 1232,
+      "sha256": "ed03140754f9067dd143347e2eb8bc90b62325a2648f1a9c8c620e09978b1855"
+    },
+    "tests/reference/client/lever_scene_geometry/history/capture2/scene-input.bin": {
+      "bytes": 82176,
+      "sha256": "8565bc42d6ed6b4fdb28b73a9c4ff2c0c8b3fb844fe0f1e84d8c4aa5df8b5131"
+    },
+    "tests/reference/client/lever_scene_geometry/history/capture2/selected.txt": {
+      "bytes": 408444,
+      "sha256": "d2919207b89896c79e05057e6a95e812ef0400b6c73e7e6343045f23ef1e2dde"
+    },
+    "tests/reference/client/lever_scene_geometry/history/capture2/source-pins.json": {
+      "bytes": 1422,
+      "sha256": "0a908dfe39e759d76cbe0ef2b09ded6f6be63997900f551937629b358f008a0c"
+    },
+    "tests/reference/client/lever_scene_geometry/history/capture2/test_packet.py": {
+      "bytes": 1722,
+      "sha256": "1d1222ff165b8f6986ad9e1fc1138aa450a0cab08903cb9b70a966d20beade60"
+    },
+    "tests/reference/client/lever_scene_geometry/packet.py": {
+      "bytes": 3185,
+      "sha256": "f5dede453912a2a578754ca2b1c1f938e51d66e8f936cee3b4e35e829be522fd"
+    },
+    "tests/reference/client/lever_scene_geometry/provenance.json": {
+      "bytes": 2887,
+      "sha256": "0c3db0f0e77448cbf3070bc51ef028b36d2201bc1064b312487f74a5be434781"
+    },
+    "tests/reference/client/lever_scene_geometry/run_native.py": {
+      "bytes": 2857,
+      "sha256": "f7054f78f575e0395c447cfbc8d88e98f19c09cf0a0f86e1d4c00eade670f3d4"
+    },
+    "tests/reference/client/lever_scene_geometry/scene-input-origin.json": {
+      "bytes": 1232,
+      "sha256": "ed03140754f9067dd143347e2eb8bc90b62325a2648f1a9c8c620e09978b1855"
+    },
+    "tests/reference/client/lever_scene_geometry/scene-input.bin": {
+      "bytes": 82176,
+      "sha256": "8565bc42d6ed6b4fdb28b73a9c4ff2c0c8b3fb844fe0f1e84d8c4aa5df8b5131"
+    },
+    "tests/reference/client/lever_scene_geometry/selected.txt": {
+      "bytes": 408444,
+      "sha256": "ea6bf8332692c252f8e54466466dc64dc74de0fa0d7cf56969444e3883572b9b"
+    },
+    "tests/reference/client/lever_scene_geometry/source-pins.json": {
+      "bytes": 1422,
+      "sha256": "0a908dfe39e759d76cbe0ef2b09ded6f6be63997900f551937629b358f008a0c"
+    },
+    "tests/reference/client/lever_scene_geometry/test_packet.py": {
+      "bytes": 2420,
+      "sha256": "04d37a987ea699f89cc1256da640f91d725b500dc393ce1c930615292e2bc6f1"
+    },
+    "tests/reference/entity/redstone_particles/.gitattributes": {
+      "bytes": 428,
+      "sha256": "db9d3e5de890fe4e5d613aff34301f0453008914226a23a11630a3dd51ca933d"
+    },
+    "tests/reference/entity/redstone_particles/README.md": {
+      "bytes": 3301,
+      "sha256": "b26a2eb7cd5b1451b111124b27be6f710a01b0eef3fae0b4898ac33207ca060a"
+    },
+    "tests/reference/entity/redstone_particles/RedstoneParticleObservation.java": {
+      "bytes": 12986,
+      "sha256": "17764c48fab82c26aee5e5b4f148ee24ee1e4a5d3c0ef9c0eca1bf45e2a3c664"
+    },
+    "tests/reference/entity/redstone_particles/audit.py": {
+      "bytes": 4631,
+      "sha256": "c4fc7cfda7b51cde86b2f6e30bfde83e5accfc4796de22dadfddc2b8f10cb4e1"
+    },
+    "tests/reference/entity/redstone_particles/capture_reference.py": {
+      "bytes": 7267,
+      "sha256": "07a8ad84f676fc7b7d10d09094d6f22b5a28c25f829beb175363de67ef7ac18b"
+    },
+    "tests/reference/entity/redstone_particles/compare.py": {
+      "bytes": 1916,
+      "sha256": "dd05614a35d19d266d7ad8bfbd423eb1dd89ae75f166bb8dae40a52935bbfa5a"
+    },
+    "tests/reference/entity/redstone_particles/declared-inputs.json": {
+      "bytes": 9446,
+      "sha256": "a4a864f331c4eed54a3a2e323a6933bb998513e430804910b9bafc3336023fd3"
+    },
+    "tests/reference/entity/redstone_particles/ordinary-0.components.json": {
+      "bytes": 97023,
+      "sha256": "90a234eaa6cbd03253549c047322d42d33c81297749453e2f9de8854a6a116bc"
+    },
+    "tests/reference/entity/redstone_particles/ordinary-0.constructors.json": {
+      "bytes": 47518,
+      "sha256": "0a6b5e4c9ffa6098cb6b84ec25c4aece254d860b128c00ac1f4e78aef6f75929"
+    },
+    "tests/reference/entity/redstone_particles/ordinary-0.stdout": {
+      "bytes": 90538,
+      "sha256": "34c89d7cc2eea6629e2a4694ae87c536d371656790b048b40c492ec62383d9a9"
+    },
+    "tests/reference/entity/redstone_particles/ordinary-1.components.json": {
+      "bytes": 97023,
+      "sha256": "90a234eaa6cbd03253549c047322d42d33c81297749453e2f9de8854a6a116bc"
+    },
+    "tests/reference/entity/redstone_particles/ordinary-1.constructors.json": {
+      "bytes": 47516,
+      "sha256": "d7f120f8706afa194f59427121b0c6f8a51e5a20b590596403d8f8f8c6e7c439"
+    },
+    "tests/reference/entity/redstone_particles/ordinary-1.stdout": {
+      "bytes": 90536,
+      "sha256": "c678d5627364577aa232e9f46725e380282f7b08d32aac7a5ae922142c4b8cd1"
+    },
+    "tests/reference/entity/redstone_particles/packet.py": {
+      "bytes": 8897,
+      "sha256": "3ab0f06078ec162f30a0712f4402fe66675e308a7055ded6230156c9bd20135b"
+    },
+    "tests/reference/entity/redstone_particles/profiles.tsv": {
+      "bytes": 3652,
+      "sha256": "a2c91c68f8db47318004894d2dc62051750ca93559645f13bacc3d91c7dd0b00"
+    },
+    "tests/reference/entity/redstone_particles/provenance.json": {
+      "bytes": 6602,
+      "sha256": "3ce2cc3ea85c8a2085de3a3df891d7fcc4c13405437a97c1b95a072851509af5"
+    },
+    "tests/reference/entity/redstone_particles/run_native.py": {
+      "bytes": 6007,
+      "sha256": "bad6c4610aae486f1ab5ac7c3d8474419354a53cb19fc1f97cecc5064c3172a9"
+    },
+    "tests/reference/entity/redstone_particles/source-code.json": {
+      "bytes": 114664,
+      "sha256": "a50668a1932e330c4d8a55021b3243b294f0305adb80b726419654847ab9d607"
+    },
+    "tests/reference/entity/redstone_particles/test_packet.py": {
+      "bytes": 4441,
+      "sha256": "4b0b651ae1c20024aec1b03dfa667aefa2b4be35d524aaa967fade3f8eeba9d0"
+    },
+    "tests/tools/client/lever_geometry.py": {
+      "bytes": 4670,
+      "sha256": "6eae510dab45bc8e2cc31b1da2e5d1e925223cb71e12048408c81b8bfa526199"
+    },
+    "tests/tools/client/test_lever_controls.py": {
+      "bytes": 6998,
+      "sha256": "7249496b391ccd44903caafbeee76742a508695242571554dc98635072e477b9"
+    },
+    "tests/tools/client/test_lever_geometry.py": {
+      "bytes": 3834,
+      "sha256": "538230c63a3810140b52ad5edd29932c763f156075e0a4387e6878cc359d68ff"
+    },
+    "tests/tools/client/test_lever_loop.py": {
+      "bytes": 28089,
+      "sha256": "aa8913ee623f44ee733c12b201f23d55769ccae88dd5627c2739004c3ce28be9"
+    },
+    "tests/tools/client/test_redstone_factory.py": {
+      "bytes": 2547,
+      "sha256": "f229f761e1fc1ae4b146adc1de20ad20e0b5158191b6f0f3803b8e85af3b0f60"
     }
   },
   "self_metadata_excluded": true,
@@ -29344,6 +29588,200 @@
           },
           "added": [],
           "current_count": 5209
+        }
+      }
+    },
+    {
+      "from_commit": "211892e286a7213f63a72da3c6af75ce5e1f50f6",
+      "role": "Add the saved Lever circuit SDK, translated default-AO scene comparison and concrete Redstone particle constructor/tick/draw. Earlier receipts retain their exact source and tool scopes; this refresh declares current source inputs without rebinding historical qualification.",
+      "previous_metadata": {
+        "bytes": 1260424,
+        "sha256": "73f6d78aabcd2863924ab2dd6447a42fdf153f9f3472e22510a06a72af6571e8"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 341546,
+              "sha256": "96d0df0226b5cd3ba38d284cbd23ba6f97269144c3ee05fc0ccbbc0e61954c61"
+            },
+            "docs/client/particles.md": {
+              "bytes": 11396,
+              "sha256": "0ee8128074088f79a06d1e96c75824634fa0a3c7d5ac02c521b06379605bc1d9"
+            },
+            "docs/parity.md": {
+              "bytes": 195822,
+              "sha256": "6f1f7ea7953e1203fff1887121d324bb11a892c8647058bd29e56b4419fae571"
+            },
+            "docs/status.md": {
+              "bytes": 110162,
+              "sha256": "b41b27e7c64e06815d1aa9e037ecc426fa70fbfe899cebdce015d3a07a1a16c5"
+            },
+            "docs/testing.md": {
+              "bytes": 470209,
+              "sha256": "c5d99bea46ad5938a593fd96bc08463dde49308674bd3f92fb5e4cb3b2f4b9c5"
+            },
+            "docs/wiki/Build-and-tests.md": {
+              "bytes": 116633,
+              "sha256": "20fc562de444452de0cc9202007ba70b4c8cd8fb435a080aa417fad84d313ee7"
+            },
+            "docs/wiki/Home.md": {
+              "bytes": 14388,
+              "sha256": "5ae9db633228b6e3f99feca9daf9b2b1dda1003d3c5af45020c8498743e0f36b"
+            },
+            "include/mc/entity/classes/classes.h": {
+              "bytes": 7234,
+              "sha256": "bf45aa2def594c34c5eb648960bb078d7a6408776556f7ff926c838669b7dc60"
+            },
+            "include/mc/entity/particles/particle.h": {
+              "bytes": 13470,
+              "sha256": "778bd323e9175707b153a7d0113d52dee92caba6383729b856a4ffb29269d145"
+            },
+            "src/client/particles/effect_renderer.c": {
+              "bytes": 34887,
+              "sha256": "a0de649a8e207df84c9819fa829d5a32c0449f65d9f0c70367dfba01278544a8"
+            },
+            "src/entity/classes/classes.c": {
+              "bytes": 13844,
+              "sha256": "cfa53c1468e79bd085308593f4778d1f5c504898ec4250936aef803db6bad460"
+            },
+            "src/entity/entity.c": {
+              "bytes": 35698,
+              "sha256": "6db274e77b5e84278d35c96a2a77bd1ecfc0efd8171713001261e239cba49016"
+            },
+            "src/entity/particles/particle_internal.h": {
+              "bytes": 6613,
+              "sha256": "81617feb2eea80787c0824984e202ced46dd9f9fa3fcabd60e41fa5bda1f2ac4"
+            },
+            "src/entity/particles/pickup.c": {
+              "bytes": 20385,
+              "sha256": "1de915af36beb8e5715a47fc31fb7e7cc698c05fe46ffffad0964226d8175fbf"
+            },
+            "tests/client/render/test_manager.c": {
+              "bytes": 23813,
+              "sha256": "f9d1ed03b77a6ec5035ebc0afd6663e581f7ee84f6ca6a0e026b219332a7a2f7"
+            },
+            "tests/entity/minecart/test_minecart.c": {
+              "bytes": 64945,
+              "sha256": "0f8ef79bfb80f1a56727efb08a97a83eae347a119f8a2ef698e406a85c251ab3"
+            },
+            "tests/reference/client/application_owner/provenance.json": {
+              "bytes": 30992,
+              "sha256": "f9787bdff27cad8b670138e2f16cfacef2a45276ef4051582ea156b528ba1920"
+            },
+            "tests/reference/client/biped/provenance.json": {
+              "bytes": 30903,
+              "sha256": "8c11a32ea8ad4b2327104c52460eb0d2b6638e7b3f03c6126bb4f04ddfcebbdf"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 495379,
+              "sha256": "4dd4076ed68f026d6d14b72df8263f4bd575837ddb4558538b9025033a0790dd"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 595346,
+              "sha256": "3ab3ba3a0c223f454f5c78c1567badc868e7578c756f4e1b3c4cc87be45862ea"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 491193,
+              "sha256": "3c2e5b8ae9049a02013157ba41106eb15f5c312f02f458ae63250e263dc1b78b"
+            },
+            "src/client/world/render_global_access.c": {
+              "bytes": 67406,
+              "sha256": "2a81a85c399092d698320c8ce550a80fe3f6f5f62d2e90419e88449bec4c7288"
+            },
+            "docs/client/particle-rendering.md": {
+              "bytes": 17688,
+              "sha256": "7f160eafa9537409b5e0498a1a36dcc91922e6715d59b87863e8dc7400d5ce8d"
+            },
+            "src/client/particles/render_internal.h": {
+              "bytes": 2499,
+              "sha256": "ac62ad1fc449aad97357e21d6521bda4e57a9ca77e1dc60f28f1e55492a794d3"
+            },
+            "src/client/particles/render_pickup.c": {
+              "bytes": 18742,
+              "sha256": "be8526a27c56e24a4fbe75e45266b56cbfd7eaa10a0faf6c2e8b90031e5b82e3"
+            },
+            "src/client/particles/render_item.c": {
+              "bytes": 17297,
+              "sha256": "1cb70ccc42f532cb16650d1faf674e75ac26b5c18cdf45d3a30111588f3fd19b"
+            },
+            "tests/client/particles/test_torch_draw.c": {
+              "bytes": 18425,
+              "sha256": "59a6c0779abdf95d8a1d12983535a966039d819da06f60fc006dcf0584895a38"
+            },
+            "docs/client/lever-world.md": {
+              "bytes": 1964,
+              "sha256": "126093cce49c40984dc21f973c889d0f9fe24eb72d79443fc24d154e045db18e"
+            },
+            "docs/world/lever.md": {
+              "bytes": 4215,
+              "sha256": "65aba32a6eea008bc4f96a2f5fb94da51ef68660a61c8bfb508668322d86727a"
+            }
+          },
+          "added": [
+            "cmake/client_lever_placement.cmake",
+            "cmake/client_lever_scene_geometry.cmake",
+            "cmake/client_redstone_particles.cmake",
+            "docs/entity/redstone-particle.md",
+            "src/entity/particles/redstone.c",
+            "tests/client/gameplay/lever_scene.json",
+            "tests/client/gameplay/test_lever_placement.c",
+            "tests/client/particles/test_redstone_draw.c",
+            "tests/client/particles/test_redstone_factory.c",
+            "tests/client/render/test_lever_scene_geometry.c",
+            "tests/entity/particles/test_redstone_reference.c",
+            "tests/reference/client/lever_placement/README.md",
+            "tests/reference/client/lever_placement/native-validation.json",
+            "tests/reference/client/lever_scene_geometry/.gitattributes",
+            "tests/reference/client/lever_scene_geometry/LeverSceneObservation.java",
+            "tests/reference/client/lever_scene_geometry/README.md",
+            "tests/reference/client/lever_scene_geometry/capture.py",
+            "tests/reference/client/lever_scene_geometry/history/capture2/LeverSceneObservation.java",
+            "tests/reference/client/lever_scene_geometry/history/capture2/README.md",
+            "tests/reference/client/lever_scene_geometry/history/capture2/capture.py",
+            "tests/reference/client/lever_scene_geometry/history/capture2/packet.py",
+            "tests/reference/client/lever_scene_geometry/history/capture2/provenance.json",
+            "tests/reference/client/lever_scene_geometry/history/capture2/retained-files.json",
+            "tests/reference/client/lever_scene_geometry/history/capture2/run_native.py",
+            "tests/reference/client/lever_scene_geometry/history/capture2/scene-input-origin.json",
+            "tests/reference/client/lever_scene_geometry/history/capture2/scene-input.bin",
+            "tests/reference/client/lever_scene_geometry/history/capture2/selected.txt",
+            "tests/reference/client/lever_scene_geometry/history/capture2/source-pins.json",
+            "tests/reference/client/lever_scene_geometry/history/capture2/test_packet.py",
+            "tests/reference/client/lever_scene_geometry/packet.py",
+            "tests/reference/client/lever_scene_geometry/provenance.json",
+            "tests/reference/client/lever_scene_geometry/run_native.py",
+            "tests/reference/client/lever_scene_geometry/scene-input-origin.json",
+            "tests/reference/client/lever_scene_geometry/scene-input.bin",
+            "tests/reference/client/lever_scene_geometry/selected.txt",
+            "tests/reference/client/lever_scene_geometry/source-pins.json",
+            "tests/reference/client/lever_scene_geometry/test_packet.py",
+            "tests/reference/entity/redstone_particles/.gitattributes",
+            "tests/reference/entity/redstone_particles/README.md",
+            "tests/reference/entity/redstone_particles/RedstoneParticleObservation.java",
+            "tests/reference/entity/redstone_particles/audit.py",
+            "tests/reference/entity/redstone_particles/capture_reference.py",
+            "tests/reference/entity/redstone_particles/compare.py",
+            "tests/reference/entity/redstone_particles/declared-inputs.json",
+            "tests/reference/entity/redstone_particles/ordinary-0.components.json",
+            "tests/reference/entity/redstone_particles/ordinary-0.constructors.json",
+            "tests/reference/entity/redstone_particles/ordinary-0.stdout",
+            "tests/reference/entity/redstone_particles/ordinary-1.components.json",
+            "tests/reference/entity/redstone_particles/ordinary-1.constructors.json",
+            "tests/reference/entity/redstone_particles/ordinary-1.stdout",
+            "tests/reference/entity/redstone_particles/packet.py",
+            "tests/reference/entity/redstone_particles/profiles.tsv",
+            "tests/reference/entity/redstone_particles/provenance.json",
+            "tests/reference/entity/redstone_particles/run_native.py",
+            "tests/reference/entity/redstone_particles/source-code.json",
+            "tests/reference/entity/redstone_particles/test_packet.py",
+            "tests/tools/client/lever_geometry.py",
+            "tests/tools/client/test_lever_controls.py",
+            "tests/tools/client/test_lever_geometry.py",
+            "tests/tools/client/test_lever_loop.py",
+            "tests/tools/client/test_redstone_factory.py"
+          ],
+          "current_count": 5270
         }
       }
     }

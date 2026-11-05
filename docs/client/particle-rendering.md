@@ -5,10 +5,19 @@ The client connects the real `dn.b(sn,float)` lit-particle entry and
 four actual Lists, the same particle Entities and the actual graphics and
 Math namespaces. The supported empty paths return from DN and continue the
 enclosing World frame. PB Item sprites complete layer2. The layer0 XW billboard
-also serves Explosion, Smoke and Flame. Smoke/Flame native draws match the
+also serves Explosion, Smoke, Flame and Redstone. Smoke/Flame native draws match the
 finite original CPU rows. Other reached particle and World draw dependencies
 retain their
 own source invocation.
+
+[Redstone particles](../entity/redstone-particle.md) add the original IM size
+override and inherited XW billboard. Their native replay matches 30 original
+component rows, including 12 draw prefixes and six brightness calls. A separate
+CPU test checks eight finite size profiles, NULL World/NW failures, strict FP
+admission and a nonempty DN layer 0 lookup. That lookup stops at the explicit
+native NULL-display admission boundary; it does not claim a completed GL draw.
+The saved Lever circuit separately observes naturally emitted DN members
+during returned World/HUD frames.
 
 Smoke stores its subtype scale times the clamped growth fraction into inherited
 `g` before calling XW. Flame stores its subtype scale times

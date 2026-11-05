@@ -21,8 +21,9 @@ struct mc_particle_state {
     int32_t digging_face;                  /* Actual QM.o. */
 
     union {
-        mc_smoke_particle_fields smoke; /* Actual XN.a. */
-        mc_flame_particle_fields flame; /* Actual QU.a. */
+        mc_smoke_particle_fields smoke;       /* Actual XN.a. */
+        mc_flame_particle_fields flame;       /* Actual QU.a. */
+        mc_redstone_particle_fields redstone; /* Actual IM.a. */
     };
 
     unsigned int particle_pc, pickup_pc;
@@ -107,6 +108,15 @@ mc_entity_status mc_flame_particle_construct_entered(mc_entity *, mc_world_runti
                                                      mc_math_classes *, double, double, double,
                                                      double, double, double, mc_math_classes **,
                                                      mc_particle_error *);
+mc_entity_status mc_redstone_particle_construct_entered(mc_entity *, mc_world_runtime *,
+                                                        mc_math_classes *, double, double, double,
+                                                        float, float, float, mc_math_classes **,
+                                                        mc_particle_error *);
+mc_entity_status mc_redstone_particle_construct_scaled_entered(mc_entity *, mc_world_runtime *,
+                                                               mc_math_classes *, double, double,
+                                                               double, float, float, float, float,
+                                                               mc_math_classes **,
+                                                               mc_particle_error *);
 /* Passive native completion receipt, with no Source phase/field repair. */
 bool mc_particle_constructor_returned(const mc_entity *);
 void mc_particle_movement_exception(mc_particle_error *, const mc_entity_move_error *,

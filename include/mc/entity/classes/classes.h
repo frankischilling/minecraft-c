@@ -77,6 +77,7 @@ typedef enum mc_entity_class_kind {
     MC_ENTITY_CLASS_KIND_EXPLOSION_PARTICLE, /* Actual client gy. */
     MC_ENTITY_CLASS_KIND_SMOKE_PARTICLE,     /* Actual client xn. */
     MC_ENTITY_CLASS_KIND_FLAME_PARTICLE,     /* Actual client qu. */
+    MC_ENTITY_CLASS_KIND_REDSTONE_PARTICLE,  /* Actual client im. */
     MC_ENTITY_CLASS_KIND_COUNT
 } mc_entity_class_kind;
 
