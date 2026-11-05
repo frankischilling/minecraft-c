@@ -1,0 +1,66 @@
+{
+  "jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "loaded_time_path": [
+    {
+      "method": "fd.<init>(Lwt;Ljava/lang/String;J)V",
+      "bytes": 9,
+      "sha256": "bae6b5018dfd3d8ebb1d9033ea04127e43caae681bebbbf5f2a55d49c755b3c2",
+      "pcs": {
+        "delegate": 5
+      }
+    },
+    {
+      "method": "fd.<init>(Lwt;Ljava/lang/String;JLxa;)V",
+      "bytes": 427,
+      "sha256": "14101d5e3743dfde8732eef75d805a30a81bec6269e19e65a187e4be43dac707",
+      "pcs": {
+        "loader_wt_c": 281,
+        "store_fd_x": 286,
+        "existing_info_branch": 385,
+        "existing_name_only": 390,
+        "provider_bind": 398,
+        "provider_create": 403,
+        "new_only_spawn": 415,
+        "sky": 419,
+        "weather": 423
+      }
+    },
+    {
+      "method": "ei.<init>(Lnu;)V",
+      "bytes": 167,
+      "sha256": "e444dbe3144ebd0c414cff262ee40dc939e0c10e9ef828a23e4755a357d8f216",
+      "pcs": {
+        "Time_key": 46,
+        "read_long": 48,
+        "store_e": 51
+      }
+    },
+    {
+      "method": "fd.t()J",
+      "bytes": 8,
+      "sha256": "45dc4cb00dc68fb8b32bfbc0641b6657d794beec59ff2697e48bbe6b18c43929",
+      "pcs": {
+        "WorldInfo": 1,
+        "ei_f": 4
+      }
+    },
+    {
+      "method": "ei.f()J",
+      "bytes": 5,
+      "sha256": "c33801854236db923ce8be0e9eb0e4ef8c8583f973d588b6a3c1499b2ae6cfaa",
+      "pcs": {
+        "read_e": 1,
+        "return": 4
+      }
+    }
+  ],
+  "constructor_other_time": "fd.I is genuine host currentTimeMillis initialization at156/159, distinct from WorldInfo.e; never selected or overwritten by helper",
+  "powered_valid_path": {
+    "db.h": "metadata1 attached west query fd.k@90 side4;2 east@112 side5;3 north@46 side2;4 south@68 side3",
+    "fd.k": "solid fd.h@4 -> fd.r@14; non-solid actual Block.c@46",
+    "fd.r": "above neighbor fd.j@22 with side1",
+    "fd.j": "actual Block.d@28",
+    "bv.d": "metadata fd.e@5, side==1 at16, return24; Code25 SHA11f26b4087a05d7675b4794f32fe75970ecf2701f77ce434b719bbbb9f13c155"
+  },
+  "scheduler": "fd.c(IIIII)V Code236 SHA6f37f2fa8030e0a959fb27095502550b5b9ed94a8ed2583a4c65fe51d69a1899: new QY@0/ctor9; immediate flag fd.a19; ordinary availability171; time ei.f191 + delay ->QY.a195; F.contains205 then F.add219 before E.add231; no queue drain is authored"
+}

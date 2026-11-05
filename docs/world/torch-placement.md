@@ -3,7 +3,8 @@
 Client Torch 50 now runs its original support, orientation, addition, neighbor
 and tick bodies. The existing BlockItem path places it through the ordinary
 World setter, consumes the Stack, updates the statistic and reaches saving.
-Redstone Torch lifecycle and the dedicated-server counterpart remain separate.
+[Redstone Torch lifecycle](redstone-torch.md) has separate client evidence.
+The dedicated-server counterpart remains separate.
 
 ## Source behavior
 

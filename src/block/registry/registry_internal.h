@@ -9,6 +9,7 @@
 #include "../../world/biome/registry_internal.h"
 #include "mc/block/registry/registry.h"
 #include "redstone_set_internal.h"
+#include "redstone_torch_list_internal.h"
 #define MC_REGISTRY_BLOCK_SLOTS 256u
 
 typedef enum mc_block_kind {
@@ -273,6 +274,10 @@ struct mc_registry_classes {
     struct mc_client_owned_inventory_callback *owned_inventory_callbacks;
     mc_registry_redstone_set *redstone_sets;
     size_t redstone_snapshot_count;
+    mc_registry_redstone_torch_list *redstone_torch_lists;
+    size_t redstone_torch_external_occurrences;
+    uint64_t redstone_torch_record_identities, redstone_torch_list_identities;
+    uint64_t redstone_torch_array_identities;
     struct mc_registry_stack_allocation *item_stacks;
     mc_registry_literal *literals;
     mc_block *current_block;
@@ -290,7 +295,7 @@ struct mc_registry_classes {
     int32_t **ve_a;
     const mc_registry_string **ys_a;
     bool tc_c;
-    mc_registry_list *db_b;
+    mc_registry_redstone_torch_list *db_b;
     double *wo_a;
     int32_t *wo_b;
     mc_pressure_category *pressure_a, *pressure_b, *pressure_c;

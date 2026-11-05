@@ -56,6 +56,8 @@ def main():
         return 77
     root = Path(__file__).resolve().parents[2]
     fragments = {"tests/item/use/redstone/statistics_setup.inc",
+                 "tests/block/registry/redstone_torch/texture_fixture.inc",
+                 "tests/world/runtime/redstone_torch/terminal_current.inc",
                  "tests/item/use/redstone/statistics_teardown.inc",
                  "tests/item/use/redstone/support_setup.inc",
                  "tests/item/use/redstone/terminal_cleanup.inc",

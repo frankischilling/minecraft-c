@@ -1,5 +1,15 @@
 # World simulation
 
+## Redstone Torch lifecycle
+
+[Client Torches 75/76](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/redstone-torch.md) now run addition, removal, neighbor scheduling, directional power and burnout through the actual World services. The defining class owns one shared, reclaimable burnout List across Worlds. Windows and sanitized Linux match all 203 finite cases against two original repeats, including age100/101, wrapped time, callback failures and shared history.
+
+Separate accounting reconciles four unpublished Item constructions while retaining their unobserved fields and constructor clock operands. The native ownership controls pass 1,946 checks per host. A fresh texture packet covers 160 calls in each of two original VMs and passes native scalar replay.
+
+A Windows SDK run consumed one held Item76, observed its lit76 placement and future deadline, then its natural switch to off75. Normal Save and Quit and distinct-owner reselection preserved off75 metadata 4 and the remaining Inventory count. Independent NBT readback and 1,193 native checks passed with unchanged frozen inputs. The saved pressed Plate is a declared transient input. General circuits, server behavior, original pixels/audio and FPS retain separate scopes.
+
+The separately built public fixture passes the same scene with 1,232 checks and unchanged inputs. Both native products and their independent save/readback receipts remain retained.
+
 ## Redstone Item331 placement
 
 [Item331 use and support](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/redstone-use.md) now execute through actual Stack, Player, Registry and World owners. The 42-wrapper and 12-support replay preserves count-before-setter, ignored ordinary false results, callback prefixes, live-ID statistics and persistent queue/Set history. Windows and sanitized Linux pass the complete finite comparison.

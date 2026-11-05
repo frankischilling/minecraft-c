@@ -1,0 +1,7 @@
+{"cohort":"lifecycle","index":9,"name":"added-75-null","exception":"java.lang.NullPointerException","frames":[["db","c",58],["RedstoneTorchObservation","main",428]],"declared_callback":0}
+{"cohort":"lifecycle","index":23,"name":"neighbor-75-null","exception":"java.lang.NullPointerException","frames":[["vm","a",36],["vm","i",102],["vm","b",84],["db","b",144],["RedstoneTorchObservation","main",430]],"declared_callback":0}
+{"cohort":"lifecycle","index":28,"name":"tick-75-null-world","exception":"java.lang.NullPointerException","frames":[["db","h",95],["db","a",106],["RedstoneTorchObservation","main",431]],"declared_callback":0}
+{"cohort":"lifecycle","index":37,"name":"removed-76-null-1","exception":"java.lang.NullPointerException","frames":[["db","b",71],["RedstoneTorchObservation","main",429]],"declared_callback":0}
+{"cohort":"lifecycle","index":38,"name":"added-76-null","exception":"java.lang.NullPointerException","frames":[["db","c",58],["RedstoneTorchObservation","main",428]],"declared_callback":0}
+{"cohort":"lifecycle","index":52,"name":"neighbor-76-null","exception":"java.lang.NullPointerException","frames":[["vm","a",36],["vm","i",102],["vm","b",84],["db","b",144],["RedstoneTorchObservation","main",430]],"declared_callback":0}
+{"cohort":"lifecycle","index":57,"name":"tick-76-null-world","exception":"java.lang.NullPointerException","frames":[["db","h",95],["db","a",106],["RedstoneTorchObservation","main",431]],"declared_callback":0}

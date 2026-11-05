@@ -1,5 +1,6 @@
 #include "mutation_internal.h"
 #include "plants/plants_internal.h"
+#include "redstone_torch/redstone_torch_internal.h"
 
 #include "../../../block/registry/registry_internal.h"
 #include "mc/core/java/java.h"
@@ -115,6 +116,8 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
         case MC_BLOCK_REDSTONE_ORE:
             return tick_unavailable(world, block, "bs", "az", error);
         case MC_BLOCK_REDSTONE_TORCH:
+            if (block->classes->options.side == MC_REGISTRY_CLIENT)
+                return mc_world_mutation_redstone_torch_tick(world, block, x, y, z, random, error);
             return tick_unavailable(world, block, "db", "by", error);
         case MC_BLOCK_BUTTON:
             return tick_unavailable(world, block, "oi", "iz", error);

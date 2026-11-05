@@ -6,8 +6,8 @@
       "sha256": "0081591e56fb3455123fcaa3a97e0b1fcf1c8f01e41e6b0806da11434ddcc364"
     },
     ".gitattributes": {
-      "bytes": 1598,
-      "sha256": "1a08d426f88203c4c666162492526f3a3db4dce9bbb115d71b452931f1c04703"
+      "bytes": 1882,
+      "sha256": "2527d4b6c51100f7d68ae89c145a0b27b7a045e7b5a89862ca384fca413ff034"
     },
     ".github/workflows/ci.yml": {
       "bytes": 14720,
@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 339972,
-      "sha256": "20e7b8ff4ec6442a09850c08ef5e145263a138b02c66e8264a229302da5440c7"
+      "bytes": 340833,
+      "sha256": "41801957e5c4eb2d1f2fdc209b7a1fae402ab7e256369f3b8c2e73d3acf1471f"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 193846,
-      "sha256": "424ea9d4e22bdf89bb495e52d23586d84db901e1f9bbb68dfc0545f412080f4b"
+      "bytes": 194977,
+      "sha256": "13f12fe10ede9f5e281f11da77b70dfdbeeb260d6694a620866afaad9b5f5e9c"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -834,16 +834,16 @@
       "sha256": "2266d5edd099003b4b3fe304ecf79cf86bbfcab026ef1480936c04a391024957"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 113726,
-      "sha256": "bfc951a34f68059a96368a358bdbc19c858ad4cc79b095e3e08d25f308122308"
+      "bytes": 115180,
+      "sha256": "b600acf2acee6c82470ce6665f743f1d34f0c80c6535fae5cb07a42de403b3a0"
     },
     "docs/wiki/History.md": {
-      "bytes": 59382,
-      "sha256": "d980759bc367ea2fdb48a6eff156ec5744d90210dc383fd53e7242619513a300"
+      "bytes": 60207,
+      "sha256": "f3fb873668de9165d3712014874d3b1145ffef61ae1910cff34f85777f5e9b79"
     },
     "docs/wiki/Home.md": {
-      "bytes": 13130,
-      "sha256": "33f8e6f506d8631daa9e4dcd727632d7e8284fd7df407e753bbbe83086117e1b"
+      "bytes": 13694,
+      "sha256": "cce8fcf4589c97da6aa421281791ddc4c62d5889fbf37d335d83721626ac88e2"
     },
     "docs/wiki/Startup.md": {
       "bytes": 7992,
@@ -854,12 +854,12 @@
       "sha256": "82cef3806c626dd62a9d870040b4731dfcfd5916232dec21afdc8efbff5f13dd"
     },
     "docs/wiki/World-simulation.md": {
-      "bytes": 55002,
-      "sha256": "a6c2314b1940cf61cc6461598b87739eb34b7183c59ef6df0afca8059cf2a113"
+      "bytes": 56465,
+      "sha256": "aa2933add7c83b164000a277ff8b5161bfec7ccedbcb2deec8739050f1dd72f5"
     },
     "docs/wiki/_Sidebar.md": {
-      "bytes": 2791,
-      "sha256": "6f0a524014de1a23dd48c163f825b84ed4891507b0d215a14853592f887a0275"
+      "bytes": 2928,
+      "sha256": "adf75ac8c8c6aedeaf262eb9205f80e972860d83de0de1ef6f2cb9763dd6b96b"
     },
     "docs/world/biome-registry.md": {
       "bytes": 10503,
@@ -1730,8 +1730,8 @@
       "sha256": "656258a3fea4374ffe08691fbdea9203c34c6ab7d1788b8845fe822c3ada0b3f"
     },
     "include/mc/world/runtime/mutations.h": {
-      "bytes": 9306,
-      "sha256": "947ada648d6892579011d7783b47d3e862afab0a4f91fea7912930622a0af7cb"
+      "bytes": 10282,
+      "sha256": "73eff8e28f6f67d5a3cabe7012f45365d6c488bb2c20c38963bae67b2706b2a7"
     },
     "include/mc/world/runtime/plants.h": {
       "bytes": 3817,
@@ -2006,8 +2006,8 @@
       "sha256": "3c32c85088eb8c13ba451175b19c2dcb4931f192d4973ab0135ff80f53e5dd31"
     },
     "scripts/development/format_code.py": {
-      "bytes": 5760,
-      "sha256": "e111c7e064cab644b8884967e3e02f9fc898f6565b3700fec2de5c9186329447"
+      "bytes": 5912,
+      "sha256": "f7cc0c8943794c09a7eb22cd4872259691b6d8434a394b92bb930e68c9abd3fb"
     },
     "scripts/reference/binaries/inspect_jars.py": {
       "bytes": 7826,
@@ -2454,8 +2454,8 @@
       "sha256": "df5ca2e1c044252bfc88939f01cf361d0f69d509d450e55cbf8d4d09be443bb8"
     },
     "src/block/registry/class_initializers.c": {
-      "bytes": 18608,
-      "sha256": "df112145c0347b599993a2b447deccdb962b6573ebbb2e9c04c0edd2c7558388"
+      "bytes": 18598,
+      "sha256": "155843bd371d9fadbf7f691e505c8199aa147d4730c0b19bb59be999e8a6ff1b"
     },
     "src/block/registry/constructors.c": {
       "bytes": 35922,
@@ -2502,16 +2502,16 @@
       "sha256": "635ef27e7b4ff14f78dc8e27b9ecbeae86251009abd8d7db547987267f6792da"
     },
     "src/block/registry/registry.c": {
-      "bytes": 30304,
-      "sha256": "9f5b5fe3a4ab05bf2446cf14b9c5d1977f0b06fdb6b23a29876adf02516c7965"
+      "bytes": 30542,
+      "sha256": "70b0a5d97080b370585ecaedbb60c6ad99d75562b754cf334e89bb4fe1d22713"
     },
     "src/block/registry/registry_internal.h": {
-      "bytes": 13977,
-      "sha256": "7389fdec9364b805598aad9fc00aaa63f7d9e3a782a8e341c06dcb974ca50236"
+      "bytes": 14266,
+      "sha256": "aeb38ea7ce50b360ca73d7f31525c04ca7a2e12037fc963550b91e5558d2e5af"
     },
     "src/block/registry/rendering.c": {
-      "bytes": 28257,
-      "sha256": "3edcce09c270cba4dbca1041754cf99cd8971d6eb718f075d0dbe219fbf6c842"
+      "bytes": 34396,
+      "sha256": "2d1742fbdfcda8932cabddf0b5f9bd0956b743ae17528ac7f89a1d318e632edb"
     },
     "src/block/registry/runtime.c": {
       "bytes": 23989,
@@ -4806,8 +4806,8 @@
       "sha256": "f72d5d21ab72bdc47502405a03fded0c86b4c05e66f44bbd135663a2dd295f09"
     },
     "src/world/runtime/mutation/hooks.c": {
-      "bytes": 21405,
-      "sha256": "1be9e6966dabce6efdb3d8c33b12b9f48a060edcc03eb95bb718317943a76f2c"
+      "bytes": 22021,
+      "sha256": "ad5a80e9b474c87e09ab1a99b94c7629e5620b29165743bc3fcba8efeeb55415"
     },
     "src/world/runtime/mutation/mutation_internal.h": {
       "bytes": 18208,
@@ -4930,8 +4930,8 @@
       "sha256": "49147e2865fd02083e9164eb5143e672d49031c8389e8b051715673284ac2798"
     },
     "src/world/runtime/mutation/ticks.c": {
-      "bytes": 6110,
-      "sha256": "adccccd55b4c608e6fdfa292822580c22250b29537813555474b62e97886d876"
+      "bytes": 6330,
+      "sha256": "8a3b4be08eda7e4a7719e8e3cd55aa903a0292f5388a859dcbfc07b68ce833be"
     },
     "src/world/runtime/mutation/world.c": {
       "bytes": 13226,
@@ -5290,8 +5290,8 @@
       "sha256": "9bfa9cf6030eeb7c13396c5e7f09487823bb76aa25899bc13b0378c81f4699d1"
     },
     "tests/block/registry/test_registry.c": {
-      "bytes": 49114,
-      "sha256": "31b5bbadc3ddad38b32a3cb2641bf147f317ff9cd04f98058ed8a535d4456099"
+      "bytes": 49647,
+      "sha256": "dc0c7da8119c036b1c534248bc1da7d45f93f96749f2dcce57dd1c6103766292"
     },
     "tests/block/registry/test_runtime_literals.c": {
       "bytes": 38542,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 495378,
-      "sha256": "ada01b75b7f409d8148cffcda367d43814efd167847b8ea041822ba3b2223fcc"
+      "bytes": 495379,
+      "sha256": "c5dca299258491713f5bffc9281154dbc38f0a121c4e7e8c4d59cf2d932ac962"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 595345,
-      "sha256": "edb4bded295bde684698006e9f52f91971af1964d3463c4e5684352564e8d638"
+      "bytes": 595346,
+      "sha256": "d8d52c5b35b1cc36139354618bd377ab70c38b1067fe303507437e73a45c1c28"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 491192,
-      "sha256": "f2ed7b6cca16217a1565fa12925b9a6e19a2bc07c11a173fad9c78ab06a0dd63"
+      "bytes": 491193,
+      "sha256": "57bfe961651ef45d942f840cd8989201b9cf70074aa6e2fb2f8af1db859840a7"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -19326,8 +19326,8 @@
       "sha256": "d37146288c05f01b4ca019117ca26354608f52e111bc8e07497c9e32d93187c6"
     },
     "docs/world/torch-placement.md": {
-      "bytes": 7213,
-      "sha256": "9c65218cdb1740abfce5ded5cb7c77e0b610769aa2d2deef4794aac07610b1d3"
+      "bytes": 7261,
+      "sha256": "f9c31798184e8a8291524be804161e1a5b46f38c90471320981b758320887231"
     },
     "src/world/runtime/mutation/torch.c": {
       "bytes": 13406,
@@ -19984,6 +19984,706 @@
     "tests/tools/item/test_redstone_use.py": {
       "bytes": 22552,
       "sha256": "60b40e7fc6edd2e45464962adf151a46bfb1a6044e49a0c9205c89d279f4d4d2"
+    },
+    "cmake/client_redstone_torch_placement.cmake": {
+      "bytes": 2432,
+      "sha256": "4e9aad7815e86d1ff651aa702a7e6408dc0311bc3cd67c68e3753360682e09b4"
+    },
+    "cmake/redstone_torch_texture.cmake": {
+      "bytes": 1894,
+      "sha256": "17f8cda86b3acf2a11ec3fa2fad5f4253b3ec664eee7b5ad64be8285f000296a"
+    },
+    "cmake/world_redstone_torch.cmake": {
+      "bytes": 1903,
+      "sha256": "3f8a994ec6412f62ada11371b5e1c45fddca76dceeb439b8c09cb381be8ecc83"
+    },
+    "docs/world/redstone-torch.md": {
+      "bytes": 7238,
+      "sha256": "b06c084262b9ca2b91c7daa54e6bfc9efac2d2042b2523161340eaf137ad98fa"
+    },
+    "src/block/registry/redstone_torch_list.c": {
+      "bytes": 19243,
+      "sha256": "3fb5914c55a92b62ac85388935945b955541a8625e00bdca02aa1a3bfd1839a3"
+    },
+    "src/block/registry/redstone_torch_list_internal.h": {
+      "bytes": 8260,
+      "sha256": "10d6d103a35606bb9464b80cf6b10bd50a5eb1cfaebf27189373c12e5e606a05"
+    },
+    "src/block/registry/rendering_internal.h": {
+      "bytes": 1326,
+      "sha256": "300c7f2f9d834d8f443993ee503acd9b01db38e23061778f05a91841b0039a9e"
+    },
+    "src/world/runtime/mutation/redstone_torch/burnout.c": {
+      "bytes": 4105,
+      "sha256": "57a9b982445a5084586ca32780a27e3cb3761ad005a44cfa3f7896ccdd3dd8c7"
+    },
+    "src/world/runtime/mutation/redstone_torch/lifecycle.c": {
+      "bytes": 7011,
+      "sha256": "f8ddf52ffc21c05c1f6184ce6a9a3b39c57bd472437f9b52616cdc75fb0efa93"
+    },
+    "src/world/runtime/mutation/redstone_torch/queries.c": {
+      "bytes": 11570,
+      "sha256": "712d937ff0ca3646be21ddf57ddf8155dbe1d0a67ef7f5226d15d4e8531ddd6d"
+    },
+    "src/world/runtime/mutation/redstone_torch/redstone_torch_internal.h": {
+      "bytes": 4079,
+      "sha256": "48871911ac8eeb821ca704afccf7b751e8cba60d5c5a1fecee99a0552b1a6931"
+    },
+    "src/world/runtime/mutation/redstone_torch/tick.c": {
+      "bytes": 10564,
+      "sha256": "ba8c82c86627815e7a48a4eda9d00a80a9c59d926eb6fdb59ff51199eb2e975a"
+    },
+    "tests/block/registry/redstone_torch/texture.c": {
+      "bytes": 9503,
+      "sha256": "4b42831f8ed1a4a08e243b758f8d9df218cabe40c431813cd43d460f7cc18d87"
+    },
+    "tests/block/registry/redstone_torch/texture_detail.c": {
+      "bytes": 5647,
+      "sha256": "001ee86269dbcf2d7741958b23ee0a114ce7bd72f63b48ba1cb0c0f7a9d51e45"
+    },
+    "tests/block/registry/redstone_torch/texture_fixture.inc": {
+      "bytes": 357,
+      "sha256": "bfb0ef6a69c324eb9b98d6a14c65a070ef4e85869dd20f602e0cb74225c03315"
+    },
+    "tests/block/registry/test_redstone_torch_list.c": {
+      "bytes": 30855,
+      "sha256": "57e960a6ac1c691521e26e9633e6f95396584533a6be7280b146ca1110e5254a"
+    },
+    "tests/client/gameplay/redstone_torch_scene.json": {
+      "bytes": 5098,
+      "sha256": "a0b568c7824d11e1297d49bcf80baa3196bb85a258cf03f112fb50e29e275d2d"
+    },
+    "tests/client/gameplay/test_redstone_torch_placement.c": {
+      "bytes": 32168,
+      "sha256": "0bf0c6145f48f12f8f05edb71cdda47e78774687fd04b578dab7f89396dad9f1"
+    },
+    "tests/reference/client/redstone_torch_texture/.gitattributes": {
+      "bytes": 347,
+      "sha256": "cdad247cf940eadf9098f1c0b3cb3c74301d66e4ebf5cc5b49684bca0e09d1bd"
+    },
+    "tests/reference/client/redstone_torch_texture/README.md": {
+      "bytes": 2411,
+      "sha256": "b6f1fdf76955c6628fcc338e4a342dc344242fe9c4b9a022ddb95ec833ae2b83"
+    },
+    "tests/reference/client/redstone_torch_texture/TorchTextureObservation.java": {
+      "bytes": 5650,
+      "sha256": "f5b29b8846db6f5a1b82b79cb08d41f62dc14c836762fd6d995c5952b549beb1"
+    },
+    "tests/reference/client/redstone_torch_texture/capture.json": {
+      "bytes": 43835,
+      "sha256": "b079b23e70c662c0cf942802bfef258c6f404507ff308b5024ece22dd436573e"
+    },
+    "tests/reference/client/redstone_torch_texture/capture_reference.py": {
+      "bytes": 9643,
+      "sha256": "83378e67d1c7913607d152844f97be032450b089c66d3d3a4b10dbebe5abe586"
+    },
+    "tests/reference/client/redstone_torch_texture/compile.capture.json": {
+      "bytes": 1478,
+      "sha256": "9344d3dfcdaf48f80dc144617e306e0d678b8d7525107a743460db98e49b48c9"
+    },
+    "tests/reference/client/redstone_torch_texture/compile.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/reference/client/redstone_torch_texture/compile.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/reference/client/redstone_torch_texture/declared-inputs.json": {
+      "bytes": 23701,
+      "sha256": "4d56d976cf18885da8f527b478cdb31dc1c4182b6891e15d101b70ee9c92be52"
+    },
+    "tests/reference/client/redstone_torch_texture/freeze.json": {
+      "bytes": 18328,
+      "sha256": "1b23d8ed7a23343164b97beaec0d6be2259943e59928f86fed755d13be788672"
+    },
+    "tests/reference/client/redstone_torch_texture/input-freeze.json": {
+      "bytes": 265,
+      "sha256": "930829e66aa17e3a59f8cdd05985e049d05b36bd09a49d215568974f6f83f098"
+    },
+    "tests/reference/client/redstone_torch_texture/java.capture.json": {
+      "bytes": 620,
+      "sha256": "7428f7444c52df07ef1dc507d51ad1f008b058a2d08193c15545ac775947b342"
+    },
+    "tests/reference/client/redstone_torch_texture/java.stderr": {
+      "bytes": 190,
+      "sha256": "60aba3fe0d7bf59797df0e8cb7af289d0843e978623fafea7e3ae5ef925b6622"
+    },
+    "tests/reference/client/redstone_torch_texture/java.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/reference/client/redstone_torch_texture/javac.capture.json": {
+      "bytes": 622,
+      "sha256": "6a4e3e688cb5b3e63338f9f345e6c35c19cc1d9ed3a31fa41e5285d97720e9a4"
+    },
+    "tests/reference/client/redstone_torch_texture/javac.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/reference/client/redstone_torch_texture/javac.stdout": {
+      "bytes": 15,
+      "sha256": "825ce50fb46a3e8bd8d38f6da5bf8449d442a9f210d9d38c83709234bfa8ee9c"
+    },
+    "tests/reference/client/redstone_torch_texture/manifest.json": {
+      "bytes": 2693,
+      "sha256": "1a4efab8fa56ccbe7d7375582bbea67ef67dcf117c4d8ae5c107b6c6e7e82a26"
+    },
+    "tests/reference/client/redstone_torch_texture/ordinary-0/original.capture.json": {
+      "bytes": 1511,
+      "sha256": "1c63e7985dcc4cda4d756ce81835705844e5d74927802e0a4571e21f668f3441"
+    },
+    "tests/reference/client/redstone_torch_texture/ordinary-0/original.stderr": {
+      "bytes": 403,
+      "sha256": "f10215ff9a893c078c2a7c4cac5a4b5f0ce2e1642db2ff3fa6af5724fe8f0eaa"
+    },
+    "tests/reference/client/redstone_torch_texture/ordinary-0/original.stdout": {
+      "bytes": 15309,
+      "sha256": "b344c62c6288df1c6be540e95ce3f5f52653c85cc56a1231ee8407f264673dbd"
+    },
+    "tests/reference/client/redstone_torch_texture/ordinary-0/selected.tsv": {
+      "bytes": 15116,
+      "sha256": "259d6e011520cc5ab940acc6d57275f965cf0e26beff6331212714b28bad0158"
+    },
+    "tests/reference/client/redstone_torch_texture/ordinary-1/original.capture.json": {
+      "bytes": 1511,
+      "sha256": "1c63e7985dcc4cda4d756ce81835705844e5d74927802e0a4571e21f668f3441"
+    },
+    "tests/reference/client/redstone_torch_texture/ordinary-1/original.stderr": {
+      "bytes": 403,
+      "sha256": "f10215ff9a893c078c2a7c4cac5a4b5f0ce2e1642db2ff3fa6af5724fe8f0eaa"
+    },
+    "tests/reference/client/redstone_torch_texture/ordinary-1/original.stdout": {
+      "bytes": 15309,
+      "sha256": "b344c62c6288df1c6be540e95ce3f5f52653c85cc56a1231ee8407f264673dbd"
+    },
+    "tests/reference/client/redstone_torch_texture/ordinary-1/selected.tsv": {
+      "bytes": 15116,
+      "sha256": "259d6e011520cc5ab940acc6d57275f965cf0e26beff6331212714b28bad0158"
+    },
+    "tests/reference/client/redstone_torch_texture/packet.py": {
+      "bytes": 16798,
+      "sha256": "247d1ce0705d69b10ef550eeacda3dc24868314cdacba30ac94588bb2c8e56f7"
+    },
+    "tests/reference/client/redstone_torch_texture/profiles.tsv": {
+      "bytes": 5576,
+      "sha256": "93814bb0282031fada52d03a2614f73706736d8d95d313fd96fb92c5136c6998"
+    },
+    "tests/reference/client/redstone_torch_texture/provenance.json": {
+      "bytes": 11075,
+      "sha256": "51456c966f8f613f364972fa3f896da49f58566b57423d18b0481cd904ade16b"
+    },
+    "tests/reference/client/redstone_torch_texture/source-pins.json": {
+      "bytes": 51860,
+      "sha256": "58ee4b4dca417bb59ad479e3cc8803e74e355ad2724749b4f92a43b9cf20fdad"
+    },
+    "tests/reference/client/redstone_torch_texture/test_packet.py": {
+      "bytes": 7854,
+      "sha256": "1846dbca43c2894bb2a8afbddbf4ab9a23efb729388ff78ca4cb64d60dddc6fc"
+    },
+    "tests/reference/world/redstone_torch/.gitattributes": {
+      "bytes": 508,
+      "sha256": "88d94112a9b7e7a29cc6502b7625e1d20cd83ca7b08a8807a4a53b96891c3d31"
+    },
+    "tests/reference/world/redstone_torch/README.md": {
+      "bytes": 5927,
+      "sha256": "a8e34d5f0df2015f0560e70ef404ff8021df98d7a49f7e5f8c5ae0e5899ba539"
+    },
+    "tests/reference/world/redstone_torch/RedstoneTorchObservation.java": {
+      "bytes": 27531,
+      "sha256": "88cd0df874ba4e6c447e8ca7b94e6770df19c70d9087827d92c86fa6c044d66a"
+    },
+    "tests/reference/world/redstone_torch/accounting.py": {
+      "bytes": 5093,
+      "sha256": "a73674b0a5f218e0504eae320c1fe27fae81b346fb355c55189b404f43fa4857"
+    },
+    "tests/reference/world/redstone_torch/aging-ordinary-0/original.capture.json": {
+      "bytes": 1740,
+      "sha256": "47701e336a3ba9dbcc6f6c04a602327c71fe62a6c4dc20ae883eb249678b9f45"
+    },
+    "tests/reference/world/redstone_torch/aging-ordinary-0/original.stderr": {
+      "bytes": 397,
+      "sha256": "60b7346e44c4232031dd70be79e50e76df770bf61b4a40072740831fd34f8522"
+    },
+    "tests/reference/world/redstone_torch/aging-ordinary-0/original.stdout": {
+      "bytes": 753903,
+      "sha256": "eaddf3554b0661073d6a6a8b51e86dc83f95c9675f448ecdc9a0661f829cfbf5"
+    },
+    "tests/reference/world/redstone_torch/aging-ordinary-0/own-entropy.jsonl": {
+      "bytes": 38290,
+      "sha256": "cd2a50c47264994428c65861523d1542d4d3c7b524981dc68ecc6ee1b3d3d29e"
+    },
+    "tests/reference/world/redstone_torch/aging-ordinary-0/selected.txt": {
+      "bytes": 713563,
+      "sha256": "f004acbdb684317ec480bf30f5ed11de4a83aa1e2d7c6ea3877ef190fdfe467c"
+    },
+    "tests/reference/world/redstone_torch/aging-ordinary-0/source-exceptions.jsonl": {
+      "bytes": 210,
+      "sha256": "2f365a523397d3c1fef4f273499483678ed054b6b8b76f52e79e4abcd07005f0"
+    },
+    "tests/reference/world/redstone_torch/aging-ordinary-1/original.capture.json": {
+      "bytes": 1740,
+      "sha256": "78c439f4a0887c80d4ff02e53e6e50692ce3440627b4b882372f494f3f440a75"
+    },
+    "tests/reference/world/redstone_torch/aging-ordinary-1/original.stderr": {
+      "bytes": 397,
+      "sha256": "60b7346e44c4232031dd70be79e50e76df770bf61b4a40072740831fd34f8522"
+    },
+    "tests/reference/world/redstone_torch/aging-ordinary-1/original.stdout": {
+      "bytes": 753903,
+      "sha256": "5d3e855a905ce01a7368f50a415ed6b816d69b180aa75db7d07468f931e6998f"
+    },
+    "tests/reference/world/redstone_torch/aging-ordinary-1/own-entropy.jsonl": {
+      "bytes": 38290,
+      "sha256": "ce5fc74ab1bb1f5dc1af4aa8ec8313a9d01599284d5f2aa8cb7224753608a0c3"
+    },
+    "tests/reference/world/redstone_torch/aging-ordinary-1/selected.txt": {
+      "bytes": 713563,
+      "sha256": "f004acbdb684317ec480bf30f5ed11de4a83aa1e2d7c6ea3877ef190fdfe467c"
+    },
+    "tests/reference/world/redstone_torch/aging-ordinary-1/source-exceptions.jsonl": {
+      "bytes": 210,
+      "sha256": "2f365a523397d3c1fef4f273499483678ed054b6b8b76f52e79e4abcd07005f0"
+    },
+    "tests/reference/world/redstone_torch/aging-profiles.tsv": {
+      "bytes": 1262,
+      "sha256": "a2ea0caa2199c44fc4b686d02d59c4ffa7a37fe6fb5d63ce0537e4d838cb0d29"
+    },
+    "tests/reference/world/redstone_torch/burnout-ordinary-0/original.capture.json": {
+      "bytes": 1746,
+      "sha256": "3173200ad4eab0d1f367e3deabd65ac3a5ec0f8ca2180cce88e68d7a9887eef0"
+    },
+    "tests/reference/world/redstone_torch/burnout-ordinary-0/original.stderr": {
+      "bytes": 397,
+      "sha256": "60b7346e44c4232031dd70be79e50e76df770bf61b4a40072740831fd34f8522"
+    },
+    "tests/reference/world/redstone_torch/burnout-ordinary-0/original.stdout": {
+      "bytes": 981484,
+      "sha256": "ce04a13af15a3dbc8d648a01f2c59c4cf2385adefa36712912788caa377d24f9"
+    },
+    "tests/reference/world/redstone_torch/burnout-ordinary-0/own-entropy.jsonl": {
+      "bytes": 61134,
+      "sha256": "fed1d3b539ca7bce95781d6e644b0d932d642f22bcb8553135859502f4f4e75a"
+    },
+    "tests/reference/world/redstone_torch/burnout-ordinary-0/selected.txt": {
+      "bytes": 917327,
+      "sha256": "1d492e424783b2f8316297ffcfe4f7c4f6842efba594e017aa19461883914523"
+    },
+    "tests/reference/world/redstone_torch/burnout-ordinary-0/source-exceptions.jsonl": {
+      "bytes": 1540,
+      "sha256": "7f645dbea241327be9f992a78dbd5e86c219dba7313250d5a3694d4e8a62453d"
+    },
+    "tests/reference/world/redstone_torch/burnout-ordinary-1/original.capture.json": {
+      "bytes": 1746,
+      "sha256": "a79df9441566a34cb315857fd1012244e994707513b66a9586c77a8e3bcdedc2"
+    },
+    "tests/reference/world/redstone_torch/burnout-ordinary-1/original.stderr": {
+      "bytes": 397,
+      "sha256": "60b7346e44c4232031dd70be79e50e76df770bf61b4a40072740831fd34f8522"
+    },
+    "tests/reference/world/redstone_torch/burnout-ordinary-1/original.stdout": {
+      "bytes": 981484,
+      "sha256": "e1cdafaf9b77b81e70ef37386ca0f49bdeb21f96387349ae46a69f37960996c9"
+    },
+    "tests/reference/world/redstone_torch/burnout-ordinary-1/own-entropy.jsonl": {
+      "bytes": 61134,
+      "sha256": "054abb1f4d30e20af693cdb3ce59334720a6d20b92ea86e565855b0c7373effc"
+    },
+    "tests/reference/world/redstone_torch/burnout-ordinary-1/selected.txt": {
+      "bytes": 917327,
+      "sha256": "1d492e424783b2f8316297ffcfe4f7c4f6842efba594e017aa19461883914523"
+    },
+    "tests/reference/world/redstone_torch/burnout-ordinary-1/source-exceptions.jsonl": {
+      "bytes": 1540,
+      "sha256": "7f645dbea241327be9f992a78dbd5e86c219dba7313250d5a3694d4e8a62453d"
+    },
+    "tests/reference/world/redstone_torch/burnout-profiles.tsv": {
+      "bytes": 4451,
+      "sha256": "7dfadaa026990150ece9bf9a4df2d1d65e4714243bff5e018b3bc0c8301cac23"
+    },
+    "tests/reference/world/redstone_torch/capture.json": {
+      "bytes": 109909,
+      "sha256": "c14b863ea4ea1a0c13f66f5b843df3090d93c64e48f53796dee5f30abbeb51fd"
+    },
+    "tests/reference/world/redstone_torch/capture_reference.py": {
+      "bytes": 14120,
+      "sha256": "b24829a0e137f5ef1b60877f263382323ba04384d3ddd7c1d24137c512498af2"
+    },
+    "tests/reference/world/redstone_torch/compile.capture.json": {
+      "bytes": 1454,
+      "sha256": "b328c95fd62dd9434c0518addf9805d72b621b7a95db59642f3dc28bc0bfe570"
+    },
+    "tests/reference/world/redstone_torch/compile.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/reference/world/redstone_torch/compile.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/reference/world/redstone_torch/constructor-proof.json": {
+      "bytes": 2313,
+      "sha256": "cdcfc27e106e511df81d4c04174a16b12f2d6e54bc08f2c0733762ddc82b6894"
+    },
+    "tests/reference/world/redstone_torch/declared-inputs.json": {
+      "bytes": 61811,
+      "sha256": "4666fe6edf41c0bcb6f27334e0b82bdf2e6f9aee7dca5a005f2d7c3c78c3734e"
+    },
+    "tests/reference/world/redstone_torch/entropy.py": {
+      "bytes": 8785,
+      "sha256": "a151ddfa3300085461c8c1924301d57d7984bb96dd35e649d8f8345572e71e4b"
+    },
+    "tests/reference/world/redstone_torch/freeze.json": {
+      "bytes": 41652,
+      "sha256": "7c7c992d0f50aad187057448005e5e64782161d984c19aa1c5b1a1f4ab8c91cc"
+    },
+    "tests/reference/world/redstone_torch/generate_worlds.py": {
+      "bytes": 1304,
+      "sha256": "ba8fe1ab52e3f0bea3675817e5bcf07a72892870b091e17ed78c9fa852953ea9"
+    },
+    "tests/reference/world/redstone_torch/helper-source-pins.json": {
+      "bytes": 44973,
+      "sha256": "cdae532146c4570ad18758583cfab5010854dc9ee09c2ce3b0f32b310cd0076b"
+    },
+    "tests/reference/world/redstone_torch/history.json": {
+      "bytes": 746,
+      "sha256": "559b44bb012e5db8c259facf17b3969d4bfa6456cb50bea96908c63965710b57"
+    },
+    "tests/reference/world/redstone_torch/input-freeze.json": {
+      "bytes": 5187,
+      "sha256": "bc3088204f4eabac8ee57878fe89619b749ec2f7dfeb15054a885217ee0a762d"
+    },
+    "tests/reference/world/redstone_torch/java.capture.json": {
+      "bytes": 620,
+      "sha256": "7428f7444c52df07ef1dc507d51ad1f008b058a2d08193c15545ac775947b342"
+    },
+    "tests/reference/world/redstone_torch/java.stderr": {
+      "bytes": 190,
+      "sha256": "60aba3fe0d7bf59797df0e8cb7af289d0843e978623fafea7e3ae5ef925b6622"
+    },
+    "tests/reference/world/redstone_torch/java.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/reference/world/redstone_torch/javac.capture.json": {
+      "bytes": 622,
+      "sha256": "6a4e3e688cb5b3e63338f9f345e6c35c19cc1d9ed3a31fa41e5285d97720e9a4"
+    },
+    "tests/reference/world/redstone_torch/javac.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/reference/world/redstone_torch/javac.stdout": {
+      "bytes": 15,
+      "sha256": "825ce50fb46a3e8bd8d38f6da5bf8449d442a9f210d9d38c83709234bfa8ee9c"
+    },
+    "tests/reference/world/redstone_torch/jdk-accounting-pins.json": {
+      "bytes": 1850,
+      "sha256": "71bd69f6a6698f64bdd69fadc69d2754d77c0c3648b7a87c85b92ae0542fcf18"
+    },
+    "tests/reference/world/redstone_torch/jdk-code-pins.json": {
+      "bytes": 201395,
+      "sha256": "5e08984e82c54a18f1a377e033fbce372379a7980b677d56378ad08e76655491"
+    },
+    "tests/reference/world/redstone_torch/jdk-methods.json": {
+      "bytes": 1013,
+      "sha256": "dab5f9e9854e695be967d809a516d17b4950b8c2c021f0c53d03b7fb4edd942c"
+    },
+    "tests/reference/world/redstone_torch/lifecycle-ordinary-0/original.capture.json": {
+      "bytes": 1752,
+      "sha256": "c351b93221febb804a23c78396636e0a9a7bff7f59a43bf625aa4445a029539d"
+    },
+    "tests/reference/world/redstone_torch/lifecycle-ordinary-0/original.stderr": {
+      "bytes": 397,
+      "sha256": "60b7346e44c4232031dd70be79e50e76df770bf61b4a40072740831fd34f8522"
+    },
+    "tests/reference/world/redstone_torch/lifecycle-ordinary-0/original.stdout": {
+      "bytes": 597518,
+      "sha256": "db30c274bd85a7cb8ff1f33ff5636a4b830506cb7cd788a0633bd55a4839e09b"
+    },
+    "tests/reference/world/redstone_torch/lifecycle-ordinary-0/own-entropy.jsonl": {
+      "bytes": 62382,
+      "sha256": "3c9a55a4835ac3fe9f750a5d23f794c889853f16d2cd809b8ec01ea378b3b448"
+    },
+    "tests/reference/world/redstone_torch/lifecycle-ordinary-0/selected.txt": {
+      "bytes": 532267,
+      "sha256": "6ededf9d0236b77290985e00d1c9c73de611fa356a46c30fff590a564cc21167"
+    },
+    "tests/reference/world/redstone_torch/lifecycle-ordinary-0/source-exceptions.jsonl": {
+      "bytes": 1460,
+      "sha256": "076b916b6e28db37d402eff12e8aa31c361fed900ae2609a480f3e005b11fae4"
+    },
+    "tests/reference/world/redstone_torch/lifecycle-ordinary-1/original.capture.json": {
+      "bytes": 1752,
+      "sha256": "dc2b24db22bd03d949f37a83732bb4bcdd208b72be53599ff228af45f09155e8"
+    },
+    "tests/reference/world/redstone_torch/lifecycle-ordinary-1/original.stderr": {
+      "bytes": 397,
+      "sha256": "60b7346e44c4232031dd70be79e50e76df770bf61b4a40072740831fd34f8522"
+    },
+    "tests/reference/world/redstone_torch/lifecycle-ordinary-1/original.stdout": {
+      "bytes": 597518,
+      "sha256": "45f234eb0c833b788c335c2821d6d5bb9d32e0b3aeb72b74135cf2e2ab9f4c87"
+    },
+    "tests/reference/world/redstone_torch/lifecycle-ordinary-1/own-entropy.jsonl": {
+      "bytes": 62382,
+      "sha256": "77e88f05a4144cdcd22a40e85e5e455c7c682dc82be2a391271bbf860cf801f2"
+    },
+    "tests/reference/world/redstone_torch/lifecycle-ordinary-1/selected.txt": {
+      "bytes": 532267,
+      "sha256": "6ededf9d0236b77290985e00d1c9c73de611fa356a46c30fff590a564cc21167"
+    },
+    "tests/reference/world/redstone_torch/lifecycle-ordinary-1/source-exceptions.jsonl": {
+      "bytes": 1460,
+      "sha256": "076b916b6e28db37d402eff12e8aa31c361fed900ae2609a480f3e005b11fae4"
+    },
+    "tests/reference/world/redstone_torch/lifecycle-profiles.tsv": {
+      "bytes": 3914,
+      "sha256": "0894c0121899f62d295b26f078981864f15d000b11b712c2f217e5b83c7e4f56"
+    },
+    "tests/reference/world/redstone_torch/manifest.json": {
+      "bytes": 11616,
+      "sha256": "43eec19c874adc2fc89382b4d2e070d5eb0d0f6175b07ac52e719be97bfc2ea8"
+    },
+    "tests/reference/world/redstone_torch/metadata-probe-pins.json": {
+      "bytes": 1594,
+      "sha256": "8674961aaa2604ad00bd1c91e3480e82ac6913a163ffa64b7dcc7b8f14ff9be4"
+    },
+    "tests/reference/world/redstone_torch/observation.py": {
+      "bytes": 6091,
+      "sha256": "0a71cd4c4ccd760fd6644bb1f559aac2d03bf3af19c15347feba797cb5ebc492"
+    },
+    "tests/reference/world/redstone_torch/packet.py": {
+      "bytes": 20105,
+      "sha256": "82ed01f2d289e8b58d19d80e125bdbe9b41ff5e36168d88cc4598b3143de4d42"
+    },
+    "tests/reference/world/redstone_torch/powered-ordinary-0/original.capture.json": {
+      "bytes": 1746,
+      "sha256": "edfba45f5a34c7d969f10fc46af00c21f782e49c2736da7e8e27462ef6df1717"
+    },
+    "tests/reference/world/redstone_torch/powered-ordinary-0/original.stderr": {
+      "bytes": 397,
+      "sha256": "60b7346e44c4232031dd70be79e50e76df770bf61b4a40072740831fd34f8522"
+    },
+    "tests/reference/world/redstone_torch/powered-ordinary-0/original.stdout": {
+      "bytes": 184458,
+      "sha256": "661ea454a6cdf943efabe5500982505da6c28fd5f87aa8938bb7ada0cd5a19d4"
+    },
+    "tests/reference/world/redstone_torch/powered-ordinary-0/own-entropy.jsonl": {
+      "bytes": 21876,
+      "sha256": "c31703d04388a85725c785bab1c869a7c65abfea7cb78cd78e6de40278c8e8b4"
+    },
+    "tests/reference/world/redstone_torch/powered-ordinary-0/selected.txt": {
+      "bytes": 160962,
+      "sha256": "1c3318fe9deedf3f3f543b13507d70663a2a648a6a920549fccbfbb94ce3da5e"
+    },
+    "tests/reference/world/redstone_torch/powered-ordinary-0/source-exceptions.jsonl": {
+      "bytes": 777,
+      "sha256": "34ba27dbf0dd187c8fa9e896632d3f46422e597ecc429019626db250bc11d91d"
+    },
+    "tests/reference/world/redstone_torch/powered-ordinary-1/original.capture.json": {
+      "bytes": 1746,
+      "sha256": "da8c136984fdd8c495f9d5927c6b0343905898c17379f54561b8c9e7bb02e9d8"
+    },
+    "tests/reference/world/redstone_torch/powered-ordinary-1/original.stderr": {
+      "bytes": 397,
+      "sha256": "60b7346e44c4232031dd70be79e50e76df770bf61b4a40072740831fd34f8522"
+    },
+    "tests/reference/world/redstone_torch/powered-ordinary-1/original.stdout": {
+      "bytes": 184458,
+      "sha256": "50d7118afd40b32bd66bc565da8fbadc81f216deb89ed426652da966c881cfea"
+    },
+    "tests/reference/world/redstone_torch/powered-ordinary-1/own-entropy.jsonl": {
+      "bytes": 21876,
+      "sha256": "c8fd4fe88b231ff4cd5b8f29ec39e50694aa94df564a8bb7b8771f62065a1180"
+    },
+    "tests/reference/world/redstone_torch/powered-ordinary-1/selected.txt": {
+      "bytes": 160962,
+      "sha256": "1c3318fe9deedf3f3f543b13507d70663a2a648a6a920549fccbfbb94ce3da5e"
+    },
+    "tests/reference/world/redstone_torch/powered-ordinary-1/source-exceptions.jsonl": {
+      "bytes": 777,
+      "sha256": "34ba27dbf0dd187c8fa9e896632d3f46422e597ecc429019626db250bc11d91d"
+    },
+    "tests/reference/world/redstone_torch/powered-profiles.tsv": {
+      "bytes": 1828,
+      "sha256": "72ba92659a1cf1ba9f8bfc0155611ec4f8f55377e2cdf669f33231e8c79c73ac"
+    },
+    "tests/reference/world/redstone_torch/protocol.json": {
+      "bytes": 6243,
+      "sha256": "64923236fc94ef0e923c1392568066fd208aff65ba77efb330e38468ed907f23"
+    },
+    "tests/reference/world/redstone_torch/publish.py": {
+      "bytes": 2612,
+      "sha256": "60ee6b487cf772e8beb5805878c3247c3f3b8251867eac6f1b1f1117b9fd091e"
+    },
+    "tests/reference/world/redstone_torch/reader-history.json": {
+      "bytes": 572,
+      "sha256": "de4068c4e0bc1bc7859cc8f1a6845e29c97974aaba28831ba72383686a869a31"
+    },
+    "tests/reference/world/redstone_torch/rng.py": {
+      "bytes": 6300,
+      "sha256": "2177e3012c7fe4a6f876300373ab3125421c19af24dab15947195b534d710d9c"
+    },
+    "tests/reference/world/redstone_torch/source-pins.json": {
+      "bytes": 84368,
+      "sha256": "5d6225b42fc9650484533abcc04d911be2055946f686cd83524031db2f6aa73d"
+    },
+    "tests/reference/world/redstone_torch/synthetic-world-provenance.json": {
+      "bytes": 4150,
+      "sha256": "ac5377db54517c491a1dc032508f7735f8db86b6b362a32d22cf75fe479d179f"
+    },
+    "tests/reference/world/redstone_torch/test_packet.py": {
+      "bytes": 9600,
+      "sha256": "22114f7798bccf24cc8cc0f2492f0ad25a2ada2056da9d8f3414ecda4b0612ca"
+    },
+    "tests/reference/world/redstone_torch/topology.py": {
+      "bytes": 7085,
+      "sha256": "1598358810b97388b0981e7cfe0d059313ba5a3ec187bfd9d2a0d4198f6d78c5"
+    },
+    "tests/reference/world/redstone_torch/witness.py": {
+      "bytes": 3657,
+      "sha256": "f343953dd8e1e0acace29a0cfe3bdfd27e3e96b27aed4011b7f6b8d1910364cd"
+    },
+    "tests/reference/world/redstone_torch/world-inputs.json": {
+      "bytes": 2777,
+      "sha256": "76af3e93d68fbd7d370078e0b8e379b8db594a56842538fd82c4fa301cee4fbf"
+    },
+    "tests/reference/world/redstone_torch/world-inputs/age100/level.dat": {
+      "bytes": 164,
+      "sha256": "bc0a4dac03abf3eb38289eb922704b1af197aa0583d6808c74056aead6abf5fa"
+    },
+    "tests/reference/world/redstone_torch/world-inputs/age100/region/r.0.0.mcr": {
+      "bytes": 24576,
+      "sha256": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a"
+    },
+    "tests/reference/world/redstone_torch/world-inputs/age100/session.lock": {
+      "bytes": 8,
+      "sha256": "1f68b90274f1bb075fd342378aba11ea80a68c3ae18d1c2a7472964dd616254b"
+    },
+    "tests/reference/world/redstone_torch/world-inputs/age101/level.dat": {
+      "bytes": 164,
+      "sha256": "1d3e325c9abc4e12cb6d4791c56bf4bdb9e08b9c96a4cf7fd26c7304b5e2e1ce"
+    },
+    "tests/reference/world/redstone_torch/world-inputs/age101/region/r.0.0.mcr": {
+      "bytes": 24576,
+      "sha256": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a"
+    },
+    "tests/reference/world/redstone_torch/world-inputs/age101/session.lock": {
+      "bytes": 8,
+      "sha256": "1f68b90274f1bb075fd342378aba11ea80a68c3ae18d1c2a7472964dd616254b"
+    },
+    "tests/reference/world/redstone_torch/world-inputs/wrap-old/level.dat": {
+      "bytes": 170,
+      "sha256": "bc2993806b04850912031f92dc7b96007f840f106e5f5f3d0f1589c0e4a3ea43"
+    },
+    "tests/reference/world/redstone_torch/world-inputs/wrap-old/region/r.0.0.mcr": {
+      "bytes": 24576,
+      "sha256": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a"
+    },
+    "tests/reference/world/redstone_torch/world-inputs/wrap-old/session.lock": {
+      "bytes": 8,
+      "sha256": "1f68b90274f1bb075fd342378aba11ea80a68c3ae18d1c2a7472964dd616254b"
+    },
+    "tests/reference/world/redstone_torch/world-inputs/wrap100/level.dat": {
+      "bytes": 169,
+      "sha256": "5ae36a25563609be6b524572caafd8203fae8eb7fe9f7dd2ab2c7b8283b6dcec"
+    },
+    "tests/reference/world/redstone_torch/world-inputs/wrap100/region/r.0.0.mcr": {
+      "bytes": 24576,
+      "sha256": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a"
+    },
+    "tests/reference/world/redstone_torch/world-inputs/wrap100/session.lock": {
+      "bytes": 8,
+      "sha256": "1f68b90274f1bb075fd342378aba11ea80a68c3ae18d1c2a7472964dd616254b"
+    },
+    "tests/reference/world/redstone_torch/world-inputs/wrap101/level.dat": {
+      "bytes": 169,
+      "sha256": "9fadd16f8804534358e792c54eb690e34f71f98dda742bb22593aa2a93cf66de"
+    },
+    "tests/reference/world/redstone_torch/world-inputs/wrap101/region/r.0.0.mcr": {
+      "bytes": 24576,
+      "sha256": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a"
+    },
+    "tests/reference/world/redstone_torch/world-inputs/wrap101/session.lock": {
+      "bytes": 8,
+      "sha256": "1f68b90274f1bb075fd342378aba11ea80a68c3ae18d1c2a7472964dd616254b"
+    },
+    "tests/reference/world/redstone_torch/world-inputs/zero/level.dat": {
+      "bytes": 162,
+      "sha256": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283"
+    },
+    "tests/reference/world/redstone_torch/world-inputs/zero/region/r.0.0.mcr": {
+      "bytes": 24576,
+      "sha256": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a"
+    },
+    "tests/reference/world/redstone_torch/world-inputs/zero/session.lock": {
+      "bytes": 8,
+      "sha256": "1f68b90274f1bb075fd342378aba11ea80a68c3ae18d1c2a7472964dd616254b"
+    },
+    "tests/reference/world/redstone_torch/world_inputs.py": {
+      "bytes": 1812,
+      "sha256": "d2b03aa1f9df990d280a64104759650e4748e67833a113120907deb0145c111c"
+    },
+    "tests/reference/world/redstone_torch/worlds.tsv": {
+      "bytes": 128,
+      "sha256": "a8e19ce65d0b8be0b6b915d8bfb26440f20ca2f402e7e396e365f6763c5346b4"
+    },
+    "tests/tools/block/test_redstone_torch_texture.py": {
+      "bytes": 11961,
+      "sha256": "d08ee154991316fe20128cb9dd469fe9f8d7303e4c548799ce6962ae217fcaca"
+    },
+    "tests/tools/client/test_redstone_torch_controls.py": {
+      "bytes": 5693,
+      "sha256": "af7b137647caa792e0444c5cd5fe46664b7f52304f54d675f2520c0e2c6ddfbc"
+    },
+    "tests/tools/client/test_redstone_torch_loop.py": {
+      "bytes": 19927,
+      "sha256": "b1f4caa1fa262f0c07e4d63da9781a9372f282ea311ed184d7e256e284d1d064"
+    },
+    "tests/tools/world/redstone_torch_accounting.py": {
+      "bytes": 12852,
+      "sha256": "bb919c313bf3c97cd9152d0ef080a6f3d4a89ffdacd3372d8714991a47f41478"
+    },
+    "tests/tools/world/redstone_torch_current.py": {
+      "bytes": 33499,
+      "sha256": "0d372bbdc6133f5d92319040f2f96dcaadb8fa6c899d08cee1b7d67b203751b0"
+    },
+    "tests/tools/world/test_redstone_torch.py": {
+      "bytes": 10240,
+      "sha256": "0e80748fe33e0a80c2abc4ba349d6fe32dc46d52dbc8660377de10c6b1fe62cd"
+    },
+    "tests/tools/world/test_redstone_torch_controller.py": {
+      "bytes": 16541,
+      "sha256": "884af0690f6cf6b9da83027fba65b57f2d4f3860db5d2103bdfeafa69c135ece"
+    },
+    "tests/world/runtime/redstone_torch/README.md": {
+      "bytes": 2683,
+      "sha256": "d02b09b96acceb17d36db867e55cc847180017f0a34f52776a65325de6a96d7c"
+    },
+    "tests/world/runtime/redstone_torch/current_caller.c": {
+      "bytes": 30453,
+      "sha256": "a42cc8088dd8a51035d1c8018d25022bf561bdc3e8f7ac2fae8500b7ca8ff6e8"
+    },
+    "tests/world/runtime/redstone_torch/current_caller.h": {
+      "bytes": 5913,
+      "sha256": "0305de7341ab96d4cbed31327c2324efc8c483928bc56f0b791c91e7fb1657aa"
+    },
+    "tests/world/runtime/redstone_torch/emit_current.c": {
+      "bytes": 25590,
+      "sha256": "013e1f031a2e99812295d0d56023e54fa9d5892371a91907f5c8db125c2f73f3"
+    },
+    "tests/world/runtime/redstone_torch/emit_current.h": {
+      "bytes": 710,
+      "sha256": "9c73b198883793fdfe8678ada51d4ec19f46897292e9ad8ee54018f142f67de0"
+    },
+    "tests/world/runtime/redstone_torch/native_main.c": {
+      "bytes": 4106,
+      "sha256": "48b566cf180640b43a5e81b4fec0200ac2265702ada4dbae3b5ac0a98d7a97b3"
+    },
+    "tests/world/runtime/redstone_torch/terminal_current.inc": {
+      "bytes": 3523,
+      "sha256": "cff771ead9f719e2454af92f41718a0d7a50c84be8005257d2fcfb0db855a131"
     }
   },
   "self_metadata_excluded": true,
@@ -27945,6 +28645,282 @@
             "tests/tools/item/test_redstone_use.py"
           ],
           "current_count": 4996
+        }
+      }
+    },
+    {
+      "from_commit": "3340b48559f90f166af450c6e7523a8f471b8d6d",
+      "role": "Client Redstone Torch 75/76 lifecycle, directional power and shared defining-class burnout List. Finite CPU comparisons cover 203 calls with exact deterministic effects and bounded own-stream constructor accounting on Windows and sanitized Linux. Four unpublished Item constructions retain their unobserved Entity-field frontier. Metadata texture has a separate 160-call original/native packet. Earlier failed accounting receipts remain unchanged beside separate successor admissions. A bounded Windows SDK scene observes placement, a natural scheduled off transition and save/reselection. No general circuit, unrestricted gameplay or FPS qualification follows from these bindings.",
+      "previous_metadata": {
+        "bytes": 1190530,
+        "sha256": "24cd3065088320a1a624cf808da86b68044dfb07f9b3a55c768eb310899a0df5"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            ".gitattributes": {
+              "bytes": 1598,
+              "sha256": "1a08d426f88203c4c666162492526f3a3db4dce9bbb115d71b452931f1c04703"
+            },
+            "CMakeLists.txt": {
+              "bytes": 339972,
+              "sha256": "20e7b8ff4ec6442a09850c08ef5e145263a138b02c66e8264a229302da5440c7"
+            },
+            "docs/parity.md": {
+              "bytes": 193846,
+              "sha256": "424ea9d4e22bdf89bb495e52d23586d84db901e1f9bbb68dfc0545f412080f4b"
+            },
+            "docs/wiki/Build-and-tests.md": {
+              "bytes": 113726,
+              "sha256": "bfc951a34f68059a96368a358bdbc19c858ad4cc79b095e3e08d25f308122308"
+            },
+            "docs/wiki/History.md": {
+              "bytes": 59382,
+              "sha256": "d980759bc367ea2fdb48a6eff156ec5744d90210dc383fd53e7242619513a300"
+            },
+            "docs/wiki/Home.md": {
+              "bytes": 13130,
+              "sha256": "33f8e6f506d8631daa9e4dcd727632d7e8284fd7df407e753bbbe83086117e1b"
+            },
+            "docs/wiki/World-simulation.md": {
+              "bytes": 55002,
+              "sha256": "a6c2314b1940cf61cc6461598b87739eb34b7183c59ef6df0afca8059cf2a113"
+            },
+            "docs/wiki/_Sidebar.md": {
+              "bytes": 2791,
+              "sha256": "6f0a524014de1a23dd48c163f825b84ed4891507b0d215a14853592f887a0275"
+            },
+            "include/mc/world/runtime/mutations.h": {
+              "bytes": 9306,
+              "sha256": "947ada648d6892579011d7783b47d3e862afab0a4f91fea7912930622a0af7cb"
+            },
+            "scripts/development/format_code.py": {
+              "bytes": 5760,
+              "sha256": "e111c7e064cab644b8884967e3e02f9fc898f6565b3700fec2de5c9186329447"
+            },
+            "src/block/registry/class_initializers.c": {
+              "bytes": 18608,
+              "sha256": "df112145c0347b599993a2b447deccdb962b6573ebbb2e9c04c0edd2c7558388"
+            },
+            "src/block/registry/registry.c": {
+              "bytes": 30304,
+              "sha256": "9f5b5fe3a4ab05bf2446cf14b9c5d1977f0b06fdb6b23a29876adf02516c7965"
+            },
+            "src/block/registry/registry_internal.h": {
+              "bytes": 13977,
+              "sha256": "7389fdec9364b805598aad9fc00aaa63f7d9e3a782a8e341c06dcb974ca50236"
+            },
+            "src/block/registry/rendering.c": {
+              "bytes": 28257,
+              "sha256": "3edcce09c270cba4dbca1041754cf99cd8971d6eb718f075d0dbe219fbf6c842"
+            },
+            "src/world/runtime/mutation/hooks.c": {
+              "bytes": 21405,
+              "sha256": "1be9e6966dabce6efdb3d8c33b12b9f48a060edcc03eb95bb718317943a76f2c"
+            },
+            "src/world/runtime/mutation/ticks.c": {
+              "bytes": 6110,
+              "sha256": "adccccd55b4c608e6fdfa292822580c22250b29537813555474b62e97886d876"
+            },
+            "tests/block/registry/test_registry.c": {
+              "bytes": 49114,
+              "sha256": "31b5bbadc3ddad38b32a3cb2641bf147f317ff9cd04f98058ed8a535d4456099"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 495378,
+              "sha256": "ada01b75b7f409d8148cffcda367d43814efd167847b8ea041822ba3b2223fcc"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 595345,
+              "sha256": "edb4bded295bde684698006e9f52f91971af1964d3463c4e5684352564e8d638"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 491192,
+              "sha256": "f2ed7b6cca16217a1565fa12925b9a6e19a2bc07c11a173fad9c78ab06a0dd63"
+            },
+            "docs/world/torch-placement.md": {
+              "bytes": 7213,
+              "sha256": "9c65218cdb1740abfce5ded5cb7c77e0b610769aa2d2deef4794aac07610b1d3"
+            }
+          },
+          "added": [
+            "cmake/client_redstone_torch_placement.cmake",
+            "cmake/redstone_torch_texture.cmake",
+            "cmake/world_redstone_torch.cmake",
+            "docs/world/redstone-torch.md",
+            "src/block/registry/redstone_torch_list.c",
+            "src/block/registry/redstone_torch_list_internal.h",
+            "src/block/registry/rendering_internal.h",
+            "src/world/runtime/mutation/redstone_torch/burnout.c",
+            "src/world/runtime/mutation/redstone_torch/lifecycle.c",
+            "src/world/runtime/mutation/redstone_torch/queries.c",
+            "src/world/runtime/mutation/redstone_torch/redstone_torch_internal.h",
+            "src/world/runtime/mutation/redstone_torch/tick.c",
+            "tests/block/registry/redstone_torch/texture.c",
+            "tests/block/registry/redstone_torch/texture_detail.c",
+            "tests/block/registry/redstone_torch/texture_fixture.inc",
+            "tests/block/registry/test_redstone_torch_list.c",
+            "tests/client/gameplay/redstone_torch_scene.json",
+            "tests/client/gameplay/test_redstone_torch_placement.c",
+            "tests/reference/client/redstone_torch_texture/.gitattributes",
+            "tests/reference/client/redstone_torch_texture/README.md",
+            "tests/reference/client/redstone_torch_texture/TorchTextureObservation.java",
+            "tests/reference/client/redstone_torch_texture/capture.json",
+            "tests/reference/client/redstone_torch_texture/capture_reference.py",
+            "tests/reference/client/redstone_torch_texture/compile.capture.json",
+            "tests/reference/client/redstone_torch_texture/compile.stderr",
+            "tests/reference/client/redstone_torch_texture/compile.stdout",
+            "tests/reference/client/redstone_torch_texture/declared-inputs.json",
+            "tests/reference/client/redstone_torch_texture/freeze.json",
+            "tests/reference/client/redstone_torch_texture/input-freeze.json",
+            "tests/reference/client/redstone_torch_texture/java.capture.json",
+            "tests/reference/client/redstone_torch_texture/java.stderr",
+            "tests/reference/client/redstone_torch_texture/java.stdout",
+            "tests/reference/client/redstone_torch_texture/javac.capture.json",
+            "tests/reference/client/redstone_torch_texture/javac.stderr",
+            "tests/reference/client/redstone_torch_texture/javac.stdout",
+            "tests/reference/client/redstone_torch_texture/manifest.json",
+            "tests/reference/client/redstone_torch_texture/ordinary-0/original.capture.json",
+            "tests/reference/client/redstone_torch_texture/ordinary-0/original.stderr",
+            "tests/reference/client/redstone_torch_texture/ordinary-0/original.stdout",
+            "tests/reference/client/redstone_torch_texture/ordinary-0/selected.tsv",
+            "tests/reference/client/redstone_torch_texture/ordinary-1/original.capture.json",
+            "tests/reference/client/redstone_torch_texture/ordinary-1/original.stderr",
+            "tests/reference/client/redstone_torch_texture/ordinary-1/original.stdout",
+            "tests/reference/client/redstone_torch_texture/ordinary-1/selected.tsv",
+            "tests/reference/client/redstone_torch_texture/packet.py",
+            "tests/reference/client/redstone_torch_texture/profiles.tsv",
+            "tests/reference/client/redstone_torch_texture/provenance.json",
+            "tests/reference/client/redstone_torch_texture/source-pins.json",
+            "tests/reference/client/redstone_torch_texture/test_packet.py",
+            "tests/reference/world/redstone_torch/.gitattributes",
+            "tests/reference/world/redstone_torch/README.md",
+            "tests/reference/world/redstone_torch/RedstoneTorchObservation.java",
+            "tests/reference/world/redstone_torch/accounting.py",
+            "tests/reference/world/redstone_torch/aging-ordinary-0/original.capture.json",
+            "tests/reference/world/redstone_torch/aging-ordinary-0/original.stderr",
+            "tests/reference/world/redstone_torch/aging-ordinary-0/original.stdout",
+            "tests/reference/world/redstone_torch/aging-ordinary-0/own-entropy.jsonl",
+            "tests/reference/world/redstone_torch/aging-ordinary-0/selected.txt",
+            "tests/reference/world/redstone_torch/aging-ordinary-0/source-exceptions.jsonl",
+            "tests/reference/world/redstone_torch/aging-ordinary-1/original.capture.json",
+            "tests/reference/world/redstone_torch/aging-ordinary-1/original.stderr",
+            "tests/reference/world/redstone_torch/aging-ordinary-1/original.stdout",
+            "tests/reference/world/redstone_torch/aging-ordinary-1/own-entropy.jsonl",
+            "tests/reference/world/redstone_torch/aging-ordinary-1/selected.txt",
+            "tests/reference/world/redstone_torch/aging-ordinary-1/source-exceptions.jsonl",
+            "tests/reference/world/redstone_torch/aging-profiles.tsv",
+            "tests/reference/world/redstone_torch/burnout-ordinary-0/original.capture.json",
+            "tests/reference/world/redstone_torch/burnout-ordinary-0/original.stderr",
+            "tests/reference/world/redstone_torch/burnout-ordinary-0/original.stdout",
+            "tests/reference/world/redstone_torch/burnout-ordinary-0/own-entropy.jsonl",
+            "tests/reference/world/redstone_torch/burnout-ordinary-0/selected.txt",
+            "tests/reference/world/redstone_torch/burnout-ordinary-0/source-exceptions.jsonl",
+            "tests/reference/world/redstone_torch/burnout-ordinary-1/original.capture.json",
+            "tests/reference/world/redstone_torch/burnout-ordinary-1/original.stderr",
+            "tests/reference/world/redstone_torch/burnout-ordinary-1/original.stdout",
+            "tests/reference/world/redstone_torch/burnout-ordinary-1/own-entropy.jsonl",
+            "tests/reference/world/redstone_torch/burnout-ordinary-1/selected.txt",
+            "tests/reference/world/redstone_torch/burnout-ordinary-1/source-exceptions.jsonl",
+            "tests/reference/world/redstone_torch/burnout-profiles.tsv",
+            "tests/reference/world/redstone_torch/capture.json",
+            "tests/reference/world/redstone_torch/capture_reference.py",
+            "tests/reference/world/redstone_torch/compile.capture.json",
+            "tests/reference/world/redstone_torch/compile.stderr",
+            "tests/reference/world/redstone_torch/compile.stdout",
+            "tests/reference/world/redstone_torch/constructor-proof.json",
+            "tests/reference/world/redstone_torch/declared-inputs.json",
+            "tests/reference/world/redstone_torch/entropy.py",
+            "tests/reference/world/redstone_torch/freeze.json",
+            "tests/reference/world/redstone_torch/generate_worlds.py",
+            "tests/reference/world/redstone_torch/helper-source-pins.json",
+            "tests/reference/world/redstone_torch/history.json",
+            "tests/reference/world/redstone_torch/input-freeze.json",
+            "tests/reference/world/redstone_torch/java.capture.json",
+            "tests/reference/world/redstone_torch/java.stderr",
+            "tests/reference/world/redstone_torch/java.stdout",
+            "tests/reference/world/redstone_torch/javac.capture.json",
+            "tests/reference/world/redstone_torch/javac.stderr",
+            "tests/reference/world/redstone_torch/javac.stdout",
+            "tests/reference/world/redstone_torch/jdk-accounting-pins.json",
+            "tests/reference/world/redstone_torch/jdk-code-pins.json",
+            "tests/reference/world/redstone_torch/jdk-methods.json",
+            "tests/reference/world/redstone_torch/lifecycle-ordinary-0/original.capture.json",
+            "tests/reference/world/redstone_torch/lifecycle-ordinary-0/original.stderr",
+            "tests/reference/world/redstone_torch/lifecycle-ordinary-0/original.stdout",
+            "tests/reference/world/redstone_torch/lifecycle-ordinary-0/own-entropy.jsonl",
+            "tests/reference/world/redstone_torch/lifecycle-ordinary-0/selected.txt",
+            "tests/reference/world/redstone_torch/lifecycle-ordinary-0/source-exceptions.jsonl",
+            "tests/reference/world/redstone_torch/lifecycle-ordinary-1/original.capture.json",
+            "tests/reference/world/redstone_torch/lifecycle-ordinary-1/original.stderr",
+            "tests/reference/world/redstone_torch/lifecycle-ordinary-1/original.stdout",
+            "tests/reference/world/redstone_torch/lifecycle-ordinary-1/own-entropy.jsonl",
+            "tests/reference/world/redstone_torch/lifecycle-ordinary-1/selected.txt",
+            "tests/reference/world/redstone_torch/lifecycle-ordinary-1/source-exceptions.jsonl",
+            "tests/reference/world/redstone_torch/lifecycle-profiles.tsv",
+            "tests/reference/world/redstone_torch/manifest.json",
+            "tests/reference/world/redstone_torch/metadata-probe-pins.json",
+            "tests/reference/world/redstone_torch/observation.py",
+            "tests/reference/world/redstone_torch/packet.py",
+            "tests/reference/world/redstone_torch/powered-ordinary-0/original.capture.json",
+            "tests/reference/world/redstone_torch/powered-ordinary-0/original.stderr",
+            "tests/reference/world/redstone_torch/powered-ordinary-0/original.stdout",
+            "tests/reference/world/redstone_torch/powered-ordinary-0/own-entropy.jsonl",
+            "tests/reference/world/redstone_torch/powered-ordinary-0/selected.txt",
+            "tests/reference/world/redstone_torch/powered-ordinary-0/source-exceptions.jsonl",
+            "tests/reference/world/redstone_torch/powered-ordinary-1/original.capture.json",
+            "tests/reference/world/redstone_torch/powered-ordinary-1/original.stderr",
+            "tests/reference/world/redstone_torch/powered-ordinary-1/original.stdout",
+            "tests/reference/world/redstone_torch/powered-ordinary-1/own-entropy.jsonl",
+            "tests/reference/world/redstone_torch/powered-ordinary-1/selected.txt",
+            "tests/reference/world/redstone_torch/powered-ordinary-1/source-exceptions.jsonl",
+            "tests/reference/world/redstone_torch/powered-profiles.tsv",
+            "tests/reference/world/redstone_torch/protocol.json",
+            "tests/reference/world/redstone_torch/publish.py",
+            "tests/reference/world/redstone_torch/reader-history.json",
+            "tests/reference/world/redstone_torch/rng.py",
+            "tests/reference/world/redstone_torch/source-pins.json",
+            "tests/reference/world/redstone_torch/synthetic-world-provenance.json",
+            "tests/reference/world/redstone_torch/test_packet.py",
+            "tests/reference/world/redstone_torch/topology.py",
+            "tests/reference/world/redstone_torch/witness.py",
+            "tests/reference/world/redstone_torch/world-inputs.json",
+            "tests/reference/world/redstone_torch/world-inputs/age100/level.dat",
+            "tests/reference/world/redstone_torch/world-inputs/age100/region/r.0.0.mcr",
+            "tests/reference/world/redstone_torch/world-inputs/age100/session.lock",
+            "tests/reference/world/redstone_torch/world-inputs/age101/level.dat",
+            "tests/reference/world/redstone_torch/world-inputs/age101/region/r.0.0.mcr",
+            "tests/reference/world/redstone_torch/world-inputs/age101/session.lock",
+            "tests/reference/world/redstone_torch/world-inputs/wrap-old/level.dat",
+            "tests/reference/world/redstone_torch/world-inputs/wrap-old/region/r.0.0.mcr",
+            "tests/reference/world/redstone_torch/world-inputs/wrap-old/session.lock",
+            "tests/reference/world/redstone_torch/world-inputs/wrap100/level.dat",
+            "tests/reference/world/redstone_torch/world-inputs/wrap100/region/r.0.0.mcr",
+            "tests/reference/world/redstone_torch/world-inputs/wrap100/session.lock",
+            "tests/reference/world/redstone_torch/world-inputs/wrap101/level.dat",
+            "tests/reference/world/redstone_torch/world-inputs/wrap101/region/r.0.0.mcr",
+            "tests/reference/world/redstone_torch/world-inputs/wrap101/session.lock",
+            "tests/reference/world/redstone_torch/world-inputs/zero/level.dat",
+            "tests/reference/world/redstone_torch/world-inputs/zero/region/r.0.0.mcr",
+            "tests/reference/world/redstone_torch/world-inputs/zero/session.lock",
+            "tests/reference/world/redstone_torch/world_inputs.py",
+            "tests/reference/world/redstone_torch/worlds.tsv",
+            "tests/tools/block/test_redstone_torch_texture.py",
+            "tests/tools/client/test_redstone_torch_controls.py",
+            "tests/tools/client/test_redstone_torch_loop.py",
+            "tests/tools/world/redstone_torch_accounting.py",
+            "tests/tools/world/redstone_torch_current.py",
+            "tests/tools/world/test_redstone_torch.py",
+            "tests/tools/world/test_redstone_torch_controller.py",
+            "tests/world/runtime/redstone_torch/README.md",
+            "tests/world/runtime/redstone_torch/current_caller.c",
+            "tests/world/runtime/redstone_torch/current_caller.h",
+            "tests/world/runtime/redstone_torch/emit_current.c",
+            "tests/world/runtime/redstone_torch/emit_current.h",
+            "tests/world/runtime/redstone_torch/native_main.c",
+            "tests/world/runtime/redstone_torch/terminal_current.inc"
+          ],
+          "current_count": 5171
         }
       }
     }

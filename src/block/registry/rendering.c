@@ -1,5 +1,7 @@
 #include "mc/block/registry/rendering.h"
+#include "mc/block/registry/runtime.h"
 #include "registry_internal.h"
+#include "rendering_internal.h"
 #include "runtime_internal.h"
 
 _Static_assert(MC_BLOCK_KIND_COUNT == 69, "audit new Block rendering descendants");
@@ -364,8 +366,11 @@ mc_registry_status mc_block_render_update_bounds(mc_block *block, const mc_block
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_block_render_texture_metadata(const mc_block *block, int32_t side, int32_t m,
-                                                    int32_t *out) {
+static mc_registry_status texture_metadata_body(const mc_block *block, int32_t side, int32_t m,
+                                                int32_t *out, mc_item_render_error *error);
+
+static mc_registry_status texture_metadata_plain(const mc_block *block, int32_t side, int32_t m,
+                                                 int32_t *out, mc_item_render_error *error) {
     if (!valid(block) || out == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     int32_t t = block->fields.bm;
@@ -425,7 +430,7 @@ mc_registry_status mc_block_render_texture_metadata(const mc_block *block, int32
             t += side == 0 ? 3 : side == 1 ? 0 : (m > 0 && side == 4) ? 2 : 1;
             break;
         case MC_BLOCK_STAIRS:
-            return mc_block_render_texture_metadata(block->subtype.ss.a, side, m, out);
+            return texture_metadata_body(block->subtype.ss.a, side, m, out, error);
         case MC_BLOCK_PISTON_BASE: {
             /* JQ.a(II): d1 masks the direction; invalid6/7 return live bm14.
              * Front17 never reaches WJ. dcmpl/ifgt and dcmpg/iflt let NaN
@@ -466,6 +471,130 @@ mc_registry_status mc_block_render_texture_metadata(const mc_block *block, int32
     }
     *out = t;
     return MC_REGISTRY_OK;
+}
+
+static mc_item_render_site texture_site(const char *owner, int32_t pc) {
+    return (mc_item_render_site){owner, "a", "(II)I", pc};
+}
+
+static mc_registry_status texture_fail(mc_item_render_error *error, mc_registry_status status,
+                                       const char *operation) {
+    if (error != NULL) {
+        error->status = status;
+        error->operation = operation;
+        error->native_policy = error->throwable == MC_ITEM_RENDER_NO_THROWABLE;
+    }
+    return status;
+}
+
+static mc_registry_status texture_metadata_body(const mc_block *block, int32_t side, int32_t m,
+                                                int32_t *out, mc_item_render_error *error) {
+    if (!valid(block) || out == NULL)
+        return texture_fail(error, MC_REGISTRY_INVALID_ARGUMENT,
+                            "Block metadata texture arguments");
+    if (block->kind == MC_BLOCK_REDSTONE) {
+        /* SM.a(II)I5 is its own direct getfield bm1/ireturn4 body. It
+         * does not delegate through UU's virtual side-texture call. */
+        if (error != NULL) {
+            error->site = texture_site("sm", 1);
+            if (error->ancestor_count != 0)
+                error->child = error->site;
+        }
+        const int32_t value = block->fields.bm;
+        if (error != NULL) {
+            error->site = texture_site("sm", 4);
+            if (error->ancestor_count != 0)
+                error->child = error->site;
+        }
+        *out = value;
+        return MC_REGISTRY_OK;
+    }
+    if (block->kind != MC_BLOCK_REDSTONE_TORCH) {
+        const mc_registry_status status = texture_metadata_plain(block, side, m, out, error);
+        if (status != MC_REGISTRY_OK && error != NULL && error->status == MC_REGISTRY_OK)
+            return texture_fail(error, status, "actual Block metadata texture child");
+        return status;
+    }
+    int32_t value;
+    if (side == 1) {
+        /* DB.a(II)I reads the live named field only at getstatic5. Record
+         * that reached site before genuine active-use resource callbacks. */
+        if (error != NULL)
+            error->site = texture_site("db", 5);
+        mc_registry_error local_registry;
+        mc_registry_error *registry = error != NULL ? &error->registry : &local_registry;
+        const mc_block *source = NULL;
+        mc_registry_status status =
+            mc_registry_block_static_get(block->classes, "aw", &source, registry);
+        if (status != MC_REGISTRY_OK) {
+            if (error != NULL) {
+                mc_item_render_registry_classification(block->classes, registry, &error->throwable,
+                                                       &error->exception_class);
+                error->source_exception = error->throwable == MC_ITEM_RENDER_SOURCE_EXCEPTION;
+                if (registry->active_initializer_class != NULL)
+                    error->child =
+                        (mc_item_render_site){registry->active_initializer_class, "<clinit>", "()V",
+                                              registry->active_initializer_pc};
+            }
+            return texture_fail(error, status, registry->message);
+        }
+        if (error != NULL)
+            error->site = texture_site("db", 10);
+        if (source == NULL) {
+            if (error != NULL) {
+                error->throwable = MC_ITEM_RENDER_SOURCE_EXCEPTION;
+                error->source_exception = true;
+                error->exception_class = "java/lang/NullPointerException";
+            }
+            return texture_fail(error, MC_REGISTRY_NULL_REFERENCE,
+                                "DB metadata texture actual aw null receiver");
+        }
+        if (source->classes != block->classes)
+            return texture_fail(error, MC_REGISTRY_INVALID_ARGUMENT,
+                                "DB metadata texture actual namespace");
+        if (error != NULL &&
+            error->ancestor_count < sizeof error->ancestors / sizeof *error->ancestors)
+            error->ancestors[error->ancestor_count++] = error->site;
+        /* Invoke the metadata virtual, not its apparently equal side result.
+         * The receiver is the value just captured; do not reload aw here. */
+        status = texture_metadata_body(source, side, m, &value, error);
+        if (status != MC_REGISTRY_OK)
+            return status;
+        if (error != NULL)
+            error->site = texture_site("db", 13);
+    } else {
+        /* VM declares no a(II)I: invokespecial17 resolves UU.a(II)I6,
+         * which calls virtual a(I)I at2 on this same DB receiver. */
+        if (error != NULL) {
+            error->site = texture_site("db", 17);
+            error->child = texture_site("uu", 2);
+        }
+        const mc_registry_status status =
+            mc_registry_block_texture_side(block->classes, block, side, &value);
+        if (status != MC_REGISTRY_OK)
+            return texture_fail(error, status, "DB superclass metadata side virtual");
+        if (error != NULL)
+            error->site = texture_site("db", 20);
+    }
+    *out = value;
+    return MC_REGISTRY_OK;
+}
+
+mc_registry_status mc_block_render_texture_metadata_detail(const mc_block *block, int32_t side,
+                                                           int32_t metadata, int32_t *out,
+                                                           mc_item_render_error *error) {
+    mc_item_render_error_init(error);
+    const mc_registry_status status = texture_metadata_body(block, side, metadata, out, error);
+    if (error != NULL) {
+        error->status = status;
+        error->returned = status == MC_REGISTRY_OK;
+    }
+    return status;
+}
+
+mc_registry_status mc_block_render_texture_metadata(const mc_block *block, int32_t side,
+                                                    int32_t metadata, int32_t *out) {
+    return mc_block_render_texture_metadata_detail(block, side, metadata, out, NULL);
 }
 
 static int32_t chest_texture(const mc_block *b, const mc_block_render_access *a, int32_t x,

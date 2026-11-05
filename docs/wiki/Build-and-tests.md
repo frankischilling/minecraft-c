@@ -1,5 +1,13 @@
 # Build and tests
 
+## Redstone Torch lifecycle
+
+The [client 75/76 replay](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/redstone-torch.md) matches 203 original case records on Windows MSVC Release and Linux Clang Debug ASan/UBSan. Eight fresh original VMs retain two complete repeats. Twenty-one packet controls pass; separate native controller controls audit the actual four processes. List lifetime and allocation controls pass 1,946 checks per host. The metadata texture packet separately covers 160 calls per original VM, 160 native calls and 54 native detail checks.
+
+One Windows SDK opportunity observes lit76 and its actual future deadline, then natural off75, continued World/HUD/held frames and normal save/reselection. It passes 1,193 checks and independent NBT readback with all 3,784 conservative frozen inputs unchanged. The saved pressed Plate is a declared transient input. Four unpublished Item constructions retain an explicit unobserved Entity frontier; full entropy qualification remains false. General circuits, original GUI/pixels/audio and FPS remain separate.
+
+The separately built public SDK fixture also passes its first opportunity: 1,232 checks, save at time 14, distinct-owner reselection at time 15 and all 3,792 frozen inputs unchanged. Its C and scene ledger match the first fixture exactly. Eleven final focused CTests pass in 19.22 Windows and 88.35 Linux seconds. The full Windows build passes.
+
 ## Redstone Item use and SDK placement
 
 The [54-call replay](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/redstone-use.md) passes on MSVC Release and Clang Debug ASan/UBSan. Four fresh original VMs preserve separate use/support cohorts. Sixteen packet tests and 106 comparator controls reject corrupted outcomes, frames, entropy, queue/Set history and native protocol. All 17 focused CTests pass in 24.76 Windows and 30.40 Linux seconds.

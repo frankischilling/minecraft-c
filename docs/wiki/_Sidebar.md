@@ -12,6 +12,7 @@
 - [World simulation](World-simulation)
 - [Plant placement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plant-placement.md)
 - [Ordinary Torch placement and support](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/torch-placement.md)
+- [Redstone Torch lifecycle](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/redstone-torch.md)
 - [Redstone World rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/redstone-world.md)
 - [Redstone Item use and SDK placement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/redstone-use.md)
 - [Systems and subsystems](Architecture)

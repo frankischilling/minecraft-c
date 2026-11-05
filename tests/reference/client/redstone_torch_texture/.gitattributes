@@ -1,0 +1,8 @@
+*.java text eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.tsv -text whitespace=trailing-space,space-before-tab,cr-at-eol
+*.stdout -text whitespace=trailing-space,space-before-tab,cr-at-eol
+*.stderr -text whitespace=trailing-space,space-before-tab,cr-at-eol
+*.capture.json -text whitespace=trailing-space,space-before-tab,cr-at-eol

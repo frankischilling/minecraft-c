@@ -428,10 +428,14 @@ mc_registry_status mc_registry_classes_free(mc_registry_classes *classes,
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Registry Entity binding release");
     if (classes->redstone_snapshot_count != 0)
         return result(error, MC_REGISTRY_BUSY, "Registry redstone snapshots remain");
+    if (classes->redstone_torch_external_occurrences != 0)
+        return result(error, MC_REGISTRY_BUSY,
+                      "Registry redstone Torch external occurrences remain");
     /* All fallible free admission is complete. Only native App borrow
      * decrements run here, before either Registry arena is retired. */
     mc_client_inventory_callbacks_retire(classes);
     mc_registry_redstone_sets_retire(classes);
+    mc_registry_redstone_torch_lists_retire(classes);
     mc_registry_managed_retire(classes);
     mc_registry_stacks_retire(classes);
     mc_registry_allocation *record = classes->allocations;

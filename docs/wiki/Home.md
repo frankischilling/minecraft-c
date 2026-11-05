@@ -1,5 +1,7 @@
 # minecraft-c
 
+[Redstone Torch lifecycle](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/redstone-torch.md) now covers client 75/76 power checks, delayed switching and class-shared burnout history. Windows and sanitized Linux match 203 original case records with bounded stream accounting; unpublished Item fields remain unobserved. Separate List ownership and metadata texture tests pass. A Windows SDK placement naturally switches off and survives save/reselection. General circuits, server lifecycle and FPS retain their own scopes.
+
 [Redstone Item331 use](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/redstone-use.md) now reaches actual support, Stack consumption, notifying placement and the late used statistic. Windows and sanitized Linux match 54 original records with one distinct callback effect prefix. A Windows SDK scene passes placement, native terrain geometry and save/reselection. Powered devices, general focus reliability and FPS remain open.
 
 [Redstone World rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/redstone-world.md) implements floor connections, power tint and upright strips. Windows and sanitized Linux match 100 original CPU calls, including signed-coordinate cache aliases and six null prefixes. Loaded original rendering and whole-frame pixels remain separate work.

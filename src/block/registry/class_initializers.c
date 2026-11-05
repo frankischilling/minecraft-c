@@ -297,10 +297,9 @@ mc_registry_status mc_registry_block_class_initialize(mc_registry_classes *class
                 break;
             case MC_BLOCK_REDSTONE_TORCH: {
                 mc_registry_initializer_stage(classes, 0);
-                mc_registry_list *list = mc_registry_allocate(classes, sizeof(*list));
-                if (list == NULL)
-                    status = classes->last_error.status;
-                else {
+                mc_registry_redstone_torch_list *list = NULL;
+                status = mc_registry_redstone_torch_list_create(classes, &list);
+                if (status == MC_REGISTRY_OK) {
                     /* The existing empty ArrayList representation has no
                      * fallible operation at the reached constructor call. */
                     mc_registry_initializer_stage(classes, 4);

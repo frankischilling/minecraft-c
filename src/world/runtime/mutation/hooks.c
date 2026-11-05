@@ -1,5 +1,6 @@
 #include "mutation_internal.h"
 #include "plants/plants_internal.h"
+#include "redstone_torch/redstone_torch_internal.h"
 
 #include "../../../block/registry/registry_internal.h"
 #include "../chunk_provider_internal.h"
@@ -229,6 +230,8 @@ bool mc_world_mutation_block_removed(mc_world_runtime *world, const mc_block *bl
         case MC_BLOCK_PRESSURE_PLATE:
             return mc_world_mutation_pressure_removed(world, block, x, y, z, error);
         case MC_BLOCK_REDSTONE_TORCH:
+            if (block->classes->options.side == MC_REGISTRY_CLIENT)
+                return mc_world_mutation_redstone_torch_removed(world, block, x, y, z, error);
             return unavailable(world, block, "db", "by", "Block removal hook", error);
         case MC_BLOCK_BUTTON:
             return unavailable(world, block, "oi", "iz", "Block removal hook", error);
@@ -338,6 +341,8 @@ bool mc_world_mutation_block_added(mc_world_runtime *world, const mc_block *bloc
         case MC_BLOCK_PRESSURE_PLATE:
             return hook_return(error); /* bv/bc.c is itself return0. */
         case MC_BLOCK_REDSTONE_TORCH:
+            if (block->classes->options.side == MC_REGISTRY_CLIENT)
+                return mc_world_mutation_redstone_torch_added(world, block, x, y, z, error);
             return unavailable(world, block, "db", "by", "Block addition hook", error);
         case MC_BLOCK_REPEATER:
             return unavailable(world, block, "wo", "oi", "Block addition hook", error);
@@ -441,6 +446,9 @@ bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *b
         case MC_BLOCK_PRESSURE_PLATE:
             return mc_world_mutation_pressure_neighbor(world, block, x, y, z, source_id, error);
         case MC_BLOCK_REDSTONE_TORCH:
+            if (block->classes->options.side == MC_REGISTRY_CLIENT)
+                return mc_world_mutation_redstone_torch_neighbor(world, block, x, y, z, source_id,
+                                                                 error);
             return unavailable(world, block, "db", "by", "Block neighbor hook", error);
         case MC_BLOCK_BUTTON:
             return unavailable(world, block, "oi", "iz", "Block neighbor hook", error);

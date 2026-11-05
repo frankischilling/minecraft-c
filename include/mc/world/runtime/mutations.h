@@ -2,6 +2,7 @@
 #define MC_WORLD_RUNTIME_MUTATIONS_H
 
 #include "mc/entity/entity.h"
+#include "mc/world/info/info.h"
 #include "mc/world/runtime/collision/boxes.h"
 #include "mc/world/runtime/collision/entities.h"
 #include "mc/world/runtime/entities.h"
@@ -21,6 +22,17 @@
 typedef struct mc_world_redstone_sites {
     unsigned int added, removed, neighbor, support, drain, update, notify, strength;
 } mc_world_redstone_sites;
+
+typedef struct mc_world_redstone_torch_sites {
+    unsigned int added, removed, neighbor, tick, powered, burnout;
+} mc_world_redstone_torch_sites;
+
+typedef enum mc_world_redstone_torch_collection_failure {
+    MC_WORLD_REDSTONE_TORCH_COLLECTION_NONE,
+    MC_WORLD_REDSTONE_TORCH_COLLECTION_NULL,
+    MC_WORLD_REDSTONE_TORCH_COLLECTION_INDEX,
+    MC_WORLD_REDSTONE_TORCH_COLLECTION_NATIVE
+} mc_world_redstone_torch_collection_failure;
 
 typedef struct mc_world_mutation_error {
     mc_world_storage_status status;
@@ -102,6 +114,14 @@ typedef struct mc_world_mutation_error {
     mc_world_collision_error rail_access;
     mc_world_solid_support_error rail_support;
     mc_world_redstone_sites redstone;
+    /* DB owns six separate bodies and a class-static ArrayList. These flat
+     * values record actual failed operations, without owning List storage or
+     * imposing a source recursion/work bound. */
+    mc_world_redstone_torch_sites redstone_torch;
+    bool redstone_torch_source_null, redstone_torch_mod_count_stored;
+    mc_registry_status redstone_torch_collection_status;
+    mc_world_redstone_torch_collection_failure redstone_torch_collection_failure;
+    mc_world_info_status redstone_torch_info;
     /* Only a failed held value read selects these coordinates. Its complete
      * acquisition/query child already occupies nearby/query above. Avoid
      * duplicating that large graph in every enclosing mutation diagnostic. */

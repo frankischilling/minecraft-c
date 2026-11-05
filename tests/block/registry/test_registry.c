@@ -1,5 +1,6 @@
 #include "mc/block/registry/registry.h"
 
+#include "../../../src/block/registry/redstone_torch_list_internal.h"
 #include "../../../src/block/registry/registry_internal.h"
 #include "../../../src/core/java/random_profile_internal.h"
 
@@ -487,7 +488,13 @@ static int check_complete(mc_registry_classes *owner, mc_materials *materials,
     }
     CHECK(owner->ys_a[0] == view->d->fields.a);
     CHECK(owner->ys_a[1] == view->l->fields.a && owner->ys_a[2] == view->e->fields.a);
-    CHECK(owner->db_b->elements == NULL && owner->db_b->count == 0 && owner->db_b->capacity == 0);
+    mc_registry_redstone_torch_list_ref history = {0};
+    mc_registry_redstone_torch_list_view history_view = {0};
+    CHECK(mc_registry_redstone_torch_list_capture(owner, &history) == MC_REGISTRY_OK &&
+          mc_registry_redstone_torch_list_inspect(&history, &history_view, NULL) == MC_REGISTRY_OK);
+    CHECK(history_view.size == 0 && history_view.capacity == 0 && history_view.mod_count == 0 &&
+          history_view.backing == MC_REGISTRY_REDSTONE_TORCH_DEFAULT_EMPTY &&
+          history_view.unused_slots_null && history_view.allocated_records == 0);
     CHECK(owner->wo_a != NULL && owner->wo_b != NULL);
     CHECK((const void *)owner->wo_a != (const void *)owner->wo_b);
     static const double offsets[] = {-0.0625, 0.0625, 0.1875, 0.3125};

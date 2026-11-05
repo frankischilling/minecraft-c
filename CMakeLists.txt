@@ -432,6 +432,7 @@ add_library(mc_registry STATIC
     src/block/registry/managed.c
     src/block/registry/step_sound.c
     src/block/registry/redstone_set.c
+    src/block/registry/redstone_torch_list.c
     src/block/registry/runtime.c
     src/block/registry/directions.c
     src/block/registry/horizontal_directions.c
@@ -723,6 +724,10 @@ add_library(mc_simulation STATIC
     src/world/runtime/mutation/falling.c
     src/world/runtime/mutation/snow.c
     src/world/runtime/mutation/torch.c
+    src/world/runtime/mutation/redstone_torch/queries.c
+    src/world/runtime/mutation/redstone_torch/lifecycle.c
+    src/world/runtime/mutation/redstone_torch/burnout.c
+    src/world/runtime/mutation/redstone_torch/tick.c
     src/world/runtime/mutation/plants/survival.c
     src/world/runtime/mutation/plants/upright.c
     src/world/runtime/mutation/plants/mushroom.c
@@ -1922,6 +1927,12 @@ if(BUILD_TESTING)
     add_test(NAME block.redstone_position_set COMMAND mc_test_redstone_set)
     set_tests_properties(block.redstone_position_set PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
 
+    add_executable(mc_test_redstone_torch_list tests/block/registry/test_redstone_torch_list.c)
+    target_include_directories(mc_test_redstone_torch_list PRIVATE src)
+    target_link_libraries(mc_test_redstone_torch_list PRIVATE mc_registry mc_build_options)
+    add_test(NAME block.redstone_torch_list COMMAND mc_test_redstone_torch_list)
+    set_tests_properties(block.redstone_torch_list PROPERTIES
+        LABELS "public;unit;ownership" TIMEOUT 60)
     add_executable(mc_redstone_set_probe tests/block/registry/redstone_set_probe.c)
     target_link_libraries(mc_redstone_set_probe PRIVATE mc_registry mc_build_options)
 
@@ -5631,12 +5642,15 @@ include(cmake/client_placement.cmake)
 include(cmake/world_plant_placement.cmake)
 include(cmake/client_plant_placement.cmake)
 include(cmake/client_torch_placement.cmake)
+include(cmake/client_redstone_torch_placement.cmake)
 include(cmake/world_torch_placement.cmake)
 include(cmake/native_product_capture.cmake)
 include(cmake/client_food_use.cmake)
 include(cmake/client_dye_use.cmake)
 include(cmake/item_farming_use.cmake)
 include(cmake/item_redstone_use.cmake)
+include(cmake/redstone_torch_texture.cmake)
+include(cmake/world_redstone_torch.cmake)
 include(cmake/item_food_use.cmake)
 include(cmake/item_dye_use.cmake)
 include(cmake/item_placement_metadata.cmake)

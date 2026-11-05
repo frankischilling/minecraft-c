@@ -614,8 +614,8 @@
       "sha256": "656258a3fea4374ffe08691fbdea9203c34c6ab7d1788b8845fe822c3ada0b3f"
     },
     "include/mc/world/runtime/mutations.h": {
-      "bytes": 9306,
-      "sha256": "947ada648d6892579011d7783b47d3e862afab0a4f91fea7912930622a0af7cb"
+      "bytes": 10282,
+      "sha256": "73eff8e28f6f67d5a3cabe7012f45365d6c488bb2c20c38963bae67b2706b2a7"
     },
     "include/mc/world/runtime/plants.h": {
       "bytes": 3817,
@@ -750,8 +750,8 @@
       "sha256": "6e9819d22234437fbdfd929ec4c9732abef27373533a5e1ef65819dc29a049c4"
     },
     "src/block/registry/registry_internal.h": {
-      "bytes": 13977,
-      "sha256": "7389fdec9364b805598aad9fc00aaa63f7d9e3a782a8e341c06dcb974ca50236"
+      "bytes": 14266,
+      "sha256": "aeb38ea7ce50b360ca73d7f31525c04ca7a2e12037fc963550b91e5558d2e5af"
     },
     "src/block/registry/runtime_internal.h": {
       "bytes": 10192,
