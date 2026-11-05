@@ -166,6 +166,18 @@ bool mc_world_mutation_pressure_neighbor(mc_world_runtime *world, const mc_block
 bool mc_world_mutation_pressure_removed(mc_world_runtime *world, const mc_block *block, int32_t x,
                                         int32_t y, int32_t z, mc_world_mutation_error *error);
 
+/* Actual client XR support and lifecycle. The caller holds the same GAME World
+ * and Block. Support tests retain source order; neighbor queries all six
+ * attachment supports even after a detach condition becomes true. */
+bool mc_world_mutation_lever_can_place(mc_world_runtime *, const mc_block *, int32_t, int32_t,
+                                       int32_t, bool *, mc_world_mutation_error *);
+bool mc_world_mutation_lever_survive(mc_world_runtime *, const mc_block *, int32_t, int32_t,
+                                     int32_t, bool *, mc_world_mutation_error *);
+bool mc_world_mutation_lever_neighbor(mc_world_runtime *, const mc_block *, int32_t, int32_t,
+                                      int32_t, int32_t, mc_world_mutation_error *);
+bool mc_world_mutation_lever_removed(mc_world_runtime *, const mc_block *, int32_t, int32_t,
+                                     int32_t, mc_world_mutation_error *);
+
 /* Actual invokestatic c_(World,III)Z: perform gk/ei declaring active use at the
  * caller's reached invoke, then source body query4/fire18/m29/material42/52.
  * classes is that same application's actual Registry, not an ID palette.

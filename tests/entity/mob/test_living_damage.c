@@ -504,10 +504,9 @@ typedef struct living_reference_profile {
 } living_reference_profile;
 
 #define LIVING_PROFILE(amount_, health_, by_, au_, world_, source_, random_, bounds_, point_)      \
-    {                                                                                              \
-        0, amount_, health_, by_, au_, world_, source_, random_, bounds_, point_, 0x41f00000,      \
-            UINT64_C(0xbfd8000000000000), 0, 38, 0, 0                                              \
-    }
+    {0,       amount_, health_, by_,    au_,        world_,                                        \
+     source_, random_, bounds_, point_, 0x41f00000, UINT64_C(0xbfd8000000000000),                  \
+     0,       38,      0,       0}
 static const living_reference_profile living_profiles[] = {
     LIVING_PROFILE(4, 20, 0, 0, 0, 0, 0, 0, 0),
     LIVING_PROFILE(4, 20, 0, 0, 0, 0, 0, 0, 1),

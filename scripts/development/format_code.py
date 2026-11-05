@@ -63,6 +63,8 @@ def main():
                  "tests/item/use/redstone/terminal_cleanup.inc",
                  "tests/item/use/food_controls.inc",
                  "tests/world/runtime/placement/torch_controls.inc",
+                 "tests/world/runtime/placement/lever_controls.inc",
+                 "src/world/runtime/placement/lever.inc",
                  "tests/world/runtime/placement/torch_callbacks.inc",
                  "tests/block/registry/static_index_values.inc",
                  "tests/item/registry/block_static_controls.inc",

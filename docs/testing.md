@@ -1,5 +1,51 @@
 # Test scope and reproduction
 
+## Lever component checks
+
+The original Lever World packet runs 244 calls in each of two ordinary VMs.
+Native replay selects 211 bodies: 209 complete literal effect records and two
+floor placements validated against the native process's own Random stream.
+All 33 original left-click wrapper rows remain outside this replay. Separate
+actual single-player mining-start controls check left-click activation and a
+failure after the metadata mutation. The component tests exercise retained
+diagnostics and checked retirement, rather than substituting a returned Block
+value or bypassing the controller.
+
+The render packet runs 32 complete original calls per VM, covering metadata
+0 through 15 and default/override textures. Its native counterpart compares
+all 576 appended words per call, final bounds, renderer fields and pooled
+Vec3 cursor. Separate native faults check partial pool acquisition and release,
+the Cobblestone override and a failed base child. The original application and
+settings are declared raw input state; this is not application construction or
+a whole-frame image comparison. See [Lever behavior](world/lever.md) and
+[render scope](client/lever-world.md).
+
+These checks require no original archive, assets, Java or display at replay
+time. Original captures remain separate local commands with verified inputs.
+
+The Windows Release build passes all 652 enabled tests in 238.64 seconds.
+Its preceding full run passes 650/652 in 234.89 seconds and remains failed.
+The two failed Rail/Detector fixtures used a Lever neighbor as an unimplemented
+child. Both now use Button 77, preserving every failure-order, lighting,
+ownership and queue assertion. Their focused rerun passes before the fresh
+652-test suite. No production behavior is reverted to preserve the old fixture.
+
+Linux Clang 18 Debug builds the graphical client and passes all seven selected
+Lever, placement and mining tests in 5.85 seconds with ASan/UBSan, leak detection
+and halt-on-error. All 4,895 guarded non-document inputs remain unchanged.
+The source remains on the Windows mount; build outputs and 9,601 hash-verified
+dependency files use Linux storage. Earlier attempts retain an unavailable
+headless target and two terminated configuration runs, including the corrected
+mixed C/C++ compiler selection. They are not parity passes. This is a focused
+Linux qualification, not a full public Linux suite or an interactive scene.
+
+GCC 13.3.0 syntax-checks 12 selected production/test units with the generated
+includes, defines and strict warnings, including `-Wshadow -Werror`. All 14
+selected source/fragment hashes stay unchanged. Clang-format 18 checks all
+2,104 C/header/fragment files after five existing macro layout mismatches are
+corrected without changing initializer values. The public source declarations
+retain historical capture scopes instead of rebinding their gameplay receipts.
+
 ## Native product evidence
 
 Visible World controllers preserve the selected executable, adjacent native

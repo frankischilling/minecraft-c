@@ -736,6 +736,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/mutation/plants/farmland.c
     src/world/runtime/mutation/pressure_plate.c
     src/world/runtime/mutation/pressure_lifecycle.c
+    src/world/runtime/mutation/lever.c
     src/world/runtime/mutation/rails/connections.c
     src/world/runtime/mutation/rails/detector.c
     src/world/runtime/mutation/rails/dispatch.c
@@ -2256,6 +2257,8 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_pressure_plate tests/world/runtime/test_pressure_plate.c)
     target_link_libraries(mc_test_world_pressure_plate PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_executable(mc_test_world_lever tests/world/runtime/test_lever.c)
+    target_link_libraries(mc_test_world_lever PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_scheduling tests/world/runtime/test_scheduling.c)
     target_link_libraries(mc_test_world_scheduling PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -4106,6 +4109,15 @@ if(BUILD_TESTING)
     set_tests_properties(world.pressure_plate PROPERTIES
         LABELS "public;integration;ownership;mutation;scheduling" TIMEOUT 90)
 
+    add_test(NAME world.lever
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_lever>"
+        --scenario world-lever
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-lever-contracts")
+    set_tests_properties(world.lever PROPERTIES
+        LABELS "public;integration;ownership;mutation" TIMEOUT 90)
+
     add_test(NAME world.scheduling
         COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
@@ -5644,6 +5656,7 @@ include(cmake/client_plant_placement.cmake)
 include(cmake/client_torch_placement.cmake)
 include(cmake/client_redstone_torch_placement.cmake)
 include(cmake/world_torch_placement.cmake)
+include(cmake/world_lever_placement.cmake)
 include(cmake/native_product_capture.cmake)
 include(cmake/client_food_use.cmake)
 include(cmake/client_dye_use.cmake)
@@ -5671,6 +5684,7 @@ include(cmake/client_inventory_geometry.cmake)
 include(cmake/client_piston_inventory_texture.cmake)
 include(cmake/client_cactus_world.cmake)
 include(cmake/client_torch_world.cmake)
+include(cmake/client_lever_world.cmake)
 include(cmake/client_redstone_world.cmake)
 include(cmake/client_redstone_placement.cmake)
 include(cmake/client_fluid_world.cmake)

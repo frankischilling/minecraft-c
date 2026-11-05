@@ -5,10 +5,90 @@
 
 #include "../../../src/block/registry/registry_internal.h"
 #include "../../../src/client/application_state.h"
+#include "../../../src/world/runtime/runtime_internal.h"
 #include "../../../src/world/storage/generated_internal.h"
 #include "mc/client/controller/mining.h"
 #include "mc/entity/player/statistics.h"
 #include "mc/inventory/mining.h"
+#include "mc/world/runtime/mutations.h"
+#include "mc/world/runtime/placement.h"
+
+static bool lever_initial_hook_controls(fixture *f, mc_entity *player) {
+    const mc_chunk_acquire_context *acquisition = mc_world_runtime_acquisition(f->world);
+    CHECK(acquisition != NULL && acquisition->cache->count == 0);
+    uint8_t *blocks = calloc(MC_CHUNK_BLOCKS, 1);
+    CHECK(blocks != NULL);
+    blocks[((size_t)3 * 16u + 5u) * 128u + 64u] = 69;
+    blocks[((size_t)3 * 16u + 5u) * 128u + 63u] = 1;
+    mc_world_chunk *chunk = NULL;
+    CHECK(mc_world_store_create_generated(f->store, f->world, 0, 0, 0, &blocks, MC_CHUNK_BLOCKS,
+                                          &chunk, NULL) == MC_WORLD_STORAGE_OK &&
+          blocks == NULL);
+    mc_chunk_state *state = mc_world_chunk_state(chunk);
+    CHECK(state != NULL && mc_chunk_cache_publish(acquisition->cache, 0, 0, state));
+    client_application *application = calloc(1, sizeof(*application));
+    CHECK(application != NULL);
+    application->active_world = f->world;
+    application->h = player;
+    application->registry = f->registry;
+    mc_client_singleplayer_controller *controller = NULL;
+    CHECK(mc_client_singleplayer_controller_allocate(f->entities, f->profile, 0, &controller,
+                                                     NULL) == MC_SINGLEPLAYER_CONTROLLER_OK &&
+          mc_client_singleplayer_controller_construct(controller, application, NULL) ==
+              MC_SINGLEPLAYER_CONTROLLER_OK);
+    mc_singleplayer_mining_call *call = NULL;
+    mc_singleplayer_mining_error error;
+    mc_singleplayer_mining_state result;
+    int32_t metadata = -1;
+    const size_t holds = player->holds;
+    for (int32_t i = 0; i < 2; ++i) {
+        CHECK(mc_client_singleplayer_mining_begin(controller, MC_SINGLEPLAYER_MINING_START, 3, 64,
+                                                  5, 1, &call,
+                                                  &error) == MC_SINGLEPLAYER_MINING_OK);
+        CHECK(mc_client_singleplayer_mining_inspect(call, &result) && result.returned &&
+              result.initial_hook_returned && result.block_id == 69 && result.source_pc == 113 &&
+              !result.removal_returned && !result.progress_stored && error.activation != NULL &&
+              error.activation->returned && error.activation->value &&
+              error.activation->site.pc == 219 &&
+              strcmp(error.initial_hook.class_name, "xr") == 0 &&
+              strcmp(error.initial_hook.method, "b") == 0 && error.initial_hook.pc == 8 &&
+              mc_world_runtime_metadata_get(f->world, 3, 64, 5, &metadata, NULL) ==
+                  MC_WORLD_STORAGE_OK &&
+              metadata == (i == 0 ? 8 : 0) && player->holds == holds);
+        CHECK(mc_client_singleplayer_controller_free(&controller, NULL) ==
+              MC_SINGLEPLAYER_CONTROLLER_BUSY);
+        CHECK(mc_client_singleplayer_mining_retire(&call, NULL) == MC_SINGLEPLAYER_MINING_OK &&
+              call == NULL);
+    }
+    /* Missing actual WorldAccess fails after the metadata store. The real
+     * controller receipt retains the XR child and its mutation prefix until
+     * checked retirement; no direct wrapper result stands in for this call. */
+    mc_world_reference_list *const accesses = f->world->fields.u;
+    f->world->fields.u = NULL;
+    const mc_singleplayer_mining_status failed_status = mc_client_singleplayer_mining_begin(
+        controller, MC_SINGLEPLAYER_MINING_START, 3, 64, 5, 1, &call, &error);
+    f->world->fields.u = accesses;
+    CHECK(failed_status == MC_SINGLEPLAYER_MINING_WORLD && error.site.pc == 74 &&
+          strcmp(error.site.class_name, "os") == 0 && strcmp(error.site.method, "a") == 0 &&
+          error.initial_hook.pc == 8 && error.activation != NULL && !error.activation->returned &&
+          error.activation->mutation != NULL &&
+          error.activation->mutation->world_access_bytecode == 9 &&
+          mc_client_singleplayer_mining_inspect(call, &result) && !result.returned &&
+          !result.initial_hook_returned &&
+          mc_world_runtime_metadata_get(f->world, 3, 64, 5, &metadata, NULL) ==
+              MC_WORLD_STORAGE_OK &&
+          metadata == 8 && player->holds == holds);
+    CHECK(mc_client_singleplayer_mining_retire(&call, NULL) == MC_SINGLEPLAYER_MINING_OK &&
+          call == NULL);
+    CHECK(mc_client_singleplayer_controller_free(&controller, NULL) ==
+          MC_SINGLEPLAYER_CONTROLLER_OK);
+    free(application);
+    CHECK(mc_chunk_cache_init(acquisition->cache, acquisition->cache->entries,
+                              acquisition->cache->capacity, acquisition->cache->insertions,
+                              acquisition->cache->insertion_capacity) &&
+          mc_world_store_retire_chunk(f->store, state, NULL) == MC_WORLD_STORAGE_OK);
+    return true;
+}
 
 static bool held_pickaxe_start(fixture *f, mc_entity *player) {
     const mc_chunk_acquire_context *acquisition = mc_world_runtime_acquisition(f->world);
@@ -211,6 +291,7 @@ static bool mining_controls(fixture *f) {
           MC_SINGLEPLAYER_CONTROLLER_OK);
     CHECK(held_pickaxe_start(f, player));
     CHECK(inherited_harvest_controls(f, player));
+    CHECK(lever_initial_hook_controls(f, player));
     mc_entity_release(player);
     return true;
 }

@@ -18,7 +18,7 @@ SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "pr
              "world-info-bindings", "saved-data-ids", "saved-data-named", "typed-world-info", "game-world", "world-registry",
              "world-biome-runtime", "temperature-runtime", "world-lighting-runtime", "world-light-queue-runtime",
              "world-chunk-objects", "world-chunk-provider-generation", "world-chunk-provider-activation", "world-mutations",
-             "world-pressure-plate", "world-scheduling", "world-solid-support", "world-power", "world-rails", "world-fluids", "world-entity-publication",
+             "world-pressure-plate", "world-lever", "world-scheduling", "world-solid-support", "world-power", "world-rails", "world-fluids", "world-entity-publication",
              "world-queries", "world-entity-batch", "world-nearby", "world-class-entities", "world-collision-boxes",
              "world-piston-geometry", "world-piston-tile-entities", "world-piston-finalization", "world-piston-tick", "world-entity-movement",
              "world-movement-dependencies", "world-minecart-detector", "world-dedicated-construction")
@@ -262,7 +262,7 @@ def main():
                 if args.scenario == "world-lighting-runtime" else "tests/world/runtime/test_light_queue_runtime.c")
         if args.scenario == "world-chunk-objects":
             paths["chunk_object_test"] = ROOT / "tests/world/runtime/test_chunk_objects.c"
-        if args.scenario in ("world-mutations", "world-pressure-plate", "world-scheduling", "world-solid-support", "world-fluids"):
+        if args.scenario in ("world-mutations", "world-pressure-plate", "world-lever", "world-scheduling", "world-solid-support", "world-fluids"):
             paths["mutation_test"] = ROOT / "tests/world/runtime/test_mutations.c"
             paths["mutation_header"] = ROOT / "include/mc/world/runtime/mutations.h"
             paths["chunk_runtime_internal"] = ROOT / "src/world/runtime/chunks_internal.h"
@@ -380,7 +380,7 @@ def main():
                 "bounds": ROOT / "src/entity/bounds/bounds.c",
                 "bounds_header": ROOT / "include/mc/entity/bounds/bounds.h",
             })
-        if args.scenario in ("world-class-entities", "world-pressure-plate", "world-entity-movement", "world-piston-tick"):
+        if args.scenario in ("world-class-entities", "world-pressure-plate", "world-lever", "world-entity-movement", "world-piston-tick"):
             paths.update({
                 "class_entities": ROOT / "src/world/runtime/collision/class_entities.c",
                 "class_entities_header": ROOT / "include/mc/world/runtime/collision/class_entities.h",
@@ -466,7 +466,7 @@ def main():
             })
             if args.scenario == "world-entity-movement":
                 paths["effects_test"] = ROOT / "tests/entity/movement/test_effects.c"
-        if args.scenario in ("world-pressure-plate", "world-entity-movement", "world-piston-tick"):
+        if args.scenario in ("world-pressure-plate", "world-lever", "world-entity-movement", "world-piston-tick"):
             paths.update({
                 "pressure": ROOT / "src/world/runtime/mutation/pressure_plate.c",
                 "pressure_lifecycle": ROOT / "src/world/runtime/mutation/pressure_lifecycle.c",
@@ -481,9 +481,12 @@ def main():
                 "entity_publication": ROOT / "src/world/runtime/entity_publication.c",
                 "registry_internal": ROOT / "src/block/registry/registry_internal.h",
             })
-        if args.scenario == "world-pressure-plate":
+        if args.scenario in ("world-pressure-plate", "world-lever"):
             paths["pressure_test"] = ROOT / "tests/world/runtime/test_pressure_plate.c"
-        if args.scenario in ("world-scheduling", "world-pressure-plate"):
+        if args.scenario == "world-lever":
+            paths["lever_test"] = ROOT / "tests/world/runtime/test_lever.c"
+            paths["lever_lifecycle"] = ROOT / "src/world/runtime/mutation/lever.c"
+        if args.scenario in ("world-scheduling", "world-pressure-plate", "world-lever"):
             paths["scheduling_test"] = ROOT / "tests/world/runtime/test_scheduling.c"
             paths["scheduling_header"] = ROOT / "include/mc/world/runtime/scheduling.h"
             paths["scheduling"] = ROOT / "src/world/runtime/scheduling.c"
@@ -606,7 +609,7 @@ def main():
         text = stdout.decode("ascii").replace("\r\n", "\n")
         if args.scenario in ("world-registry", "world-biome-runtime", "world-lighting-runtime",
                              "world-light-queue-runtime", "world-chunk-objects", "world-chunk-provider-generation",
-                             "world-chunk-provider-activation", "world-mutations", "world-pressure-plate", "world-scheduling", "world-solid-support", "world-power", "world-rails", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-class-entities", "world-collision-boxes", "world-piston-geometry", "world-piston-tile-entities", "world-piston-finalization", "world-piston-tick", "world-entity-movement", "world-movement-dependencies", "world-minecart-detector"):
+                             "world-chunk-provider-activation", "world-mutations", "world-pressure-plate", "world-lever", "world-scheduling", "world-solid-support", "world-power", "world-rails", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-class-entities", "world-collision-boxes", "world-piston-geometry", "world-piston-tile-entities", "world-piston-finalization", "world-piston-tick", "world-entity-movement", "world-movement-dependencies", "world-minecart-detector"):
             lines = text.splitlines(keepends=True)
             CAPTURE.require(bool(lines), "native registry contract result is missing")
             console = ("16 achievements\n", "151 recipes\n")
@@ -631,7 +634,7 @@ def main():
                 CAPTURE.require(lines[:-1] == ["16 achievements\n", "151 recipes\n"],
                                 "complete one-owner acquisition bootstrap diagnostics")
             elif args.scenario in ("world-piston-geometry", "world-piston-tile-entities", "world-piston-finalization", "world-piston-tick",
-                                   "world-entity-movement", "world-movement-dependencies", "world-pressure-plate", "world-class-entities", "world-power", "world-rails"):
+                                   "world-entity-movement", "world-movement-dependencies", "world-pressure-plate", "world-lever", "world-class-entities", "world-power", "world-rails"):
                 CAPTURE.require(lines[:-1] == ["16 achievements\n", "151 recipes\n"] * 2,
                                 "complete two-owner Piston bootstrap diagnostics")
             elif args.scenario == "world-minecart-detector":
@@ -698,7 +701,7 @@ def main():
                         expected_timestamp = 1 if args.scenario in ("world-lighting-runtime", "world-chunk-objects") else 0xfedcba98
                         CAPTURE.require(timestamp == expected_timestamp, "explicit native region clock in live header cell")
                     timestamps.append({"file": path.relative_to(root).as_posix(), "slot": slot, "timestamp": timestamp})
-        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-chunk-provider-activation", "world-mutations", "world-pressure-plate", "world-scheduling", "world-solid-support", "world-power", "world-rails", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-class-entities", "world-collision-boxes", "world-piston-geometry", "world-piston-tile-entities", "world-piston-finalization", "world-piston-tick", "world-entity-movement", "world-movement-dependencies", "world-minecart-detector")),
+        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-chunk-provider-activation", "world-mutations", "world-pressure-plate", "world-lever", "world-scheduling", "world-solid-support", "world-power", "world-rails", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-class-entities", "world-collision-boxes", "world-piston-geometry", "world-piston-tile-entities", "world-piston-finalization", "world-piston-tick", "world-entity-movement", "world-movement-dependencies", "world-minecart-detector")),
                         "expected committed region slots")
         report["region_timestamps_checked"] = timestamps
         if args.scenario == "world-minecart-detector":
@@ -725,7 +728,7 @@ def main():
                             {name for name, _ in expected_slots}, "exact Class-query fixture region files")
             CAPTURE.require({path.name for path in root.glob("world*") if path.is_dir()} ==
                             {f"world{i}" for i in range(8)}, "exact Class-query fixture World owners")
-        if args.scenario == "world-pressure-plate":
+        if args.scenario in ("world-pressure-plate", "world-lever"):
             expected_slots = {(f"world{i}/region/r.0.0.mcr", slot)
                               for i in range(8) for slot in (0, 1, 32, 33)}
             CAPTURE.require(len(timestamps) == 32 and

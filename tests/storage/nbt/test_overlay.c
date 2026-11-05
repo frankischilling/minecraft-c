@@ -15,8 +15,7 @@ static unsigned int checks;
         }                                                                                          \
     } while (0)
 
-#define SPAN(array)                                                                                \
-    { (array), sizeof(array) / sizeof((array)[0]) }
+#define SPAN(array) {(array), sizeof(array) / sizeof((array)[0])}
 
 static int error_is(mc_nbt_error error, mc_nbt_status status) {
     return error.status == status && error.offset == 0;

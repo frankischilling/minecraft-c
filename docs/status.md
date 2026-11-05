@@ -1,5 +1,23 @@
 # Development status
 
+[Lever placement and switching](world/lever.md) now reach client support,
+clicked-face placement, activation, neighbor and removal bodies. Windows and
+sanitized Linux replay check 209 complete original effect records and two floor-choice
+bodies against its own Random stream. The original packet retains 244 calls
+per VM; its 33 left-click wrapper records remain outside that native replay.
+Separate actual mining-start controls check left-click toggles and a retained
+callback failure. [Lever rendering](client/lever-world.md) matches 32 original
+flat-shading rows, including every appended Tessellator word. Loaded gameplay,
+arbitrary circuits, persistence, original pixels/audio and FPS remain unqualified.
+
+The Windows Release build passes all 652 enabled tests in 238.64 seconds.
+The preceding 650/652 run remains failed: two negative fixtures expected the
+formerly unimplemented Lever neighbor hook. Those fixtures now use Button 77,
+preserving their mutation-order, lighting, queue and ownership assertions.
+The Linux Clang 18 Debug client build and seven focused ASan/UBSan tests pass;
+all 4,895 guarded non-document inputs remain unchanged. GCC 13.3 syntax-checks
+12 selected units with strict warnings. Formatting passes all 2,104 files.
+
 [Redstone Item331 use](item/redstone-use.md) now reaches its actual support
 predicate, count store, notifying setter and late used statistic. Windows and
 sanitized Linux match 54 original method records, with one callback effect

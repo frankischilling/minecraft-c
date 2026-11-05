@@ -11,6 +11,7 @@
 #include "mc/world/runtime/collision/spawning.h"
 #include "mc/world/runtime/mutations.h"
 #include "mc/world/storage/source_chunk_loader.h"
+#include "mutation/mutation_internal.h"
 #include "plant_substrate_internal.h"
 #include "runtime_internal.h"
 #include "torch_support_internal.h"
@@ -399,6 +400,8 @@ static bool torch_predicate(mc_world_placement_error *e, mc_world_runtime *world
     return true;
 }
 
+#include "placement/lever.inc"
+
 static const char *activation_class(mc_block_kind kind) {
     switch (kind) {
         case MC_BLOCK_TNT:
@@ -629,6 +632,8 @@ static bool base_predicate(mc_world_placement_error *e, const mc_block *block,
     e->predicate_entered = e->base_entered = true;
     if (strcmp(declaring, "vm") == 0)
         return torch_predicate(e, world, x, y, z, query_index, out);
+    if (block->kind == MC_BLOCK_LEVER)
+        return lever_base_predicate(e, world, x, y, z, out);
     if (strcmp(declaring, "sm") == 0) {
         e->site.pc = e->base.pc = 7;
         bool value;
@@ -677,7 +682,10 @@ static bool base_predicate(mc_world_placement_error *e, const mc_block *block,
 }
 
 static bool predicate(mc_world_placement_error *e, const mc_block *block, mc_world_runtime *world,
-                      int32_t x, int32_t y, int32_t z, size_t query_index, bool *out) {
+                      int32_t x, int32_t y, int32_t z, int32_t face, size_t query_index,
+                      bool *out) {
+    if (block->kind == MC_BLOCK_LEVER)
+        return lever_face_predicate(e, world, x, y, z, face, out);
     const mc_world_placement_site wrapper = e->site;
     if (!inherited(e, face_predicate_class(block->kind)))
         return false;
@@ -710,7 +718,6 @@ static mc_world_storage_status finish(mc_world_placement_error *e, bool returned
 mc_world_storage_status mc_world_runtime_can_place(mc_world_runtime *world, int32_t id, int32_t x,
                                                    int32_t y, int32_t z, bool ignore, int32_t face,
                                                    bool *out, mc_world_placement_error *e) {
-    (void)face; /* UU face wrapper deliberately does not read this source argument. */
     if (e == NULL || out == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     if (e->work != NULL)
@@ -835,7 +842,7 @@ mc_world_storage_status mc_world_runtime_can_place(mc_world_runtime *world, int3
         e->caller = caller;
         e->site = site("uu", "a", "(Lfd;IIII)Z", 0);
         bool allowed;
-        if (!predicate(e, e->candidate, world, x, y, z, 1, &allowed))
+        if (!predicate(e, e->candidate, world, x, y, z, face, 1, &allowed))
             return finish(e, false, false, out);
         e->caller = caller;
         e->site = site("fd", "a", "(IIIIZI)Z", allowed ? 137u : 139u);
@@ -860,7 +867,6 @@ mc_world_storage_status mc_world_block_can_place(mc_registry_classes *registry,
                                                  const mc_block *block, mc_world_runtime *world,
                                                  int32_t x, int32_t y, int32_t z, int32_t face,
                                                  bool *out, mc_world_placement_error *e) {
-    (void)face;
     if (e == NULL || out == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     if (e->work != NULL)
@@ -868,7 +874,7 @@ mc_world_storage_status mc_world_block_can_place(mc_registry_classes *registry,
     if (!block_entry(e, registry, block, "a", "(Lfd;IIII)Z"))
         return e->status;
     bool value;
-    const bool returned = predicate(e, block, world, x, y, z, 0, &value);
+    const bool returned = predicate(e, block, world, x, y, z, face, 0, &value);
     return finish(e, returned, returned && value, out);
 }
 
@@ -898,6 +904,10 @@ mc_world_storage_status mc_world_block_activate_with_context(
         return MC_WORLD_STORAGE_BUSY;
     if (!block_entry(e, registry, block, "a", "(Lfd;IIILgs;)Z"))
         return e->status;
+    if (block->kind == MC_BLOCK_LEVER) {
+        const bool returned = lever_activate(e, block, world, x, y, z);
+        return finish(e, returned, returned, out);
+    }
     if (block->kind == MC_BLOCK_CRAFTING_TABLE) {
         e->site = site("fi", "a", "(Lfd;IIILgs;)Z", 1);
         if (!hold_world(e, world))
@@ -954,6 +964,8 @@ mc_world_storage_status mc_world_block_placed_face(mc_registry_classes *registry
         return MC_WORLD_STORAGE_BUSY;
     if (!block_entry(e, registry, block, "e", "(Lfd;IIII)V"))
         return e->status;
+    if (block->kind == MC_BLOCK_LEVER)
+        return finish(e, lever_placed_face(e, block, world, x, y, z, face), false, NULL);
     if (strcmp(placed_face_class(block->kind), "vm") == 0) {
         e->site = site("vm", "e", "(Lfd;IIII)V", 5);
         int32_t metadata;

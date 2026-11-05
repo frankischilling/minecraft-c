@@ -5,8 +5,8 @@
 #include "../model_graph_internal.h"
 #include "mc/client/world/entity_renderer.h"
 
-static bool standard(mc_cv_context *c, const mc_block *b, int32_t x, int32_t y, int32_t z,
-                     bool *out) {
+bool mc_cv_standard(mc_cv_context *c, const mc_block *b, int32_t x, int32_t y, int32_t z,
+                    bool *out) {
     int32_t color;
     if (!mc_cv_block_color(c, b, x, y, z, 9, &color) || !mc_cv_fp(c, 26))
         return false;
@@ -72,7 +72,7 @@ static bool render_block(mc_cv_context *c, const mc_block *block, int32_t x, int
     unsigned int return_pc = 323;
     if (type == 0) {
         mc_cv_pc(c, 29);
-        if (!mc_cv_push(c, "l", "(Luu;III)Z") || !standard(c, block, x, y, z, &rendered))
+        if (!mc_cv_push(c, "l", "(Luu;III)Z") || !mc_cv_standard(c, block, x, y, z, &rendered))
             return false;
         mc_cv_pop(c);
         return_pc = 32;
@@ -112,6 +112,12 @@ static bool render_block(mc_cv_context *c, const mc_block *block, int32_t x, int
             return false;
         mc_cv_pop(c);
         return_pc = 163;
+    } else if (type == 12) {
+        mc_cv_pc(c, 248);
+        if (!mc_cv_push(c, "e", "(Luu;III)Z") || !mc_cv_lever(c, block, x, y, z, &rendered))
+            return false;
+        mc_cv_pop(c);
+        return_pc = 251;
     } else if (type == 13) {
         mc_cv_pc(c, 62);
         if (!mc_cv_push(c, "m", "(Luu;III)Z") || !mc_cv_cactus(c, block, x, y, z, &rendered))

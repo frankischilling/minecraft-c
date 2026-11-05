@@ -226,6 +226,8 @@ bool mc_world_mutation_block_removed(mc_world_runtime *world, const mc_block *bl
         case MC_BLOCK_FURNACE:
             return unavailable(world, block, "tc", "lz", "Block furnace removal hook", error);
         case MC_BLOCK_LEVER:
+            if (block->classes->options.side == MC_REGISTRY_CLIENT)
+                return mc_world_mutation_lever_removed(world, block, x, y, z, error);
             return unavailable(world, block, "xr", "pd", "Block removal hook", error);
         case MC_BLOCK_PRESSURE_PLATE:
             return mc_world_mutation_pressure_removed(world, block, x, y, z, error);
@@ -442,6 +444,8 @@ bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *b
         case MC_BLOCK_LADDER:
             return unavailable(world, block, "dp", "cg", "Block neighbor hook", error);
         case MC_BLOCK_LEVER:
+            if (block->classes->options.side == MC_REGISTRY_CLIENT)
+                return mc_world_mutation_lever_neighbor(world, block, x, y, z, source_id, error);
             return unavailable(world, block, "xr", "pd", "Block neighbor hook", error);
         case MC_BLOCK_PRESSURE_PLATE:
             return mc_world_mutation_pressure_neighbor(world, block, x, y, z, source_id, error);

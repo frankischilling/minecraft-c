@@ -8,6 +8,7 @@
 #include "mc/entity/movement/effects.h"
 #include "mc/world/runtime/collision/spawning.h"
 #include "mc/world/runtime/placement.h"
+#include "mc/world/runtime/world_access.h"
 
 static bool placement_leaf_controls(fixture *f) {
     bool ok = false, value = true;
@@ -61,6 +62,7 @@ cleanup:
     return ok;
 }
 
+#include "lever_controls.inc"
 #include "torch_controls.inc"
 
 static bool workbench_activation_controls(fixture *f) {
@@ -320,8 +322,9 @@ int main(int argc, char **argv) {
           mc_registry_classes_initialize_blocks(f->registry[0], NULL) == MC_REGISTRY_OK);
     CHECK(boxes_open_store(f, 0, root) && boxes_create_world(f, 0) && placement_leaf_controls(f) &&
           placement_world_controls(f) && torch_placement_controls(f) &&
-          workbench_activation_controls(f) && placement_overlap_controls(f) &&
-          placement_initializer_controls(root, 0) && placement_initializer_controls(root, 1));
+          lever_placement_controls(f) && workbench_activation_controls(f) &&
+          placement_overlap_controls(f) && placement_initializer_controls(root, 0) &&
+          placement_initializer_controls(root, 1));
     result = 0;
 cleanup:
     if (!cleanup_fixture(f)) {

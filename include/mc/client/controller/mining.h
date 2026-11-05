@@ -11,6 +11,7 @@ struct mc_player_statistic_error;
 struct mc_sound_error;
 struct mc_sound_manager_report;
 struct mc_item_mining_destroy_error;
+struct mc_world_placement_error;
 
 typedef struct mc_singleplayer_mining_call mc_singleplayer_mining_call;
 
@@ -50,6 +51,8 @@ typedef struct mc_singleplayer_mining_error {
     const struct mc_sound_error *sound;
     const struct mc_sound_manager_report *sound_report;
     const struct mc_item_mining_destroy_error *tool;
+    const struct mc_world_placement_error *activation;
+    mc_player_site initial_hook;
     const mc_inventory_error *slots;
 } mc_singleplayer_mining_error;
 
@@ -66,6 +69,7 @@ typedef struct mc_singleplayer_mining_state {
     bool statistic_returned, drop_returned, cooldown_stored;
     bool tool_returned, item_used_returned, exhausted_stack, destroy_callback_returned;
     bool clear_returned;
+    bool initial_hook_returned;
     int32_t count_after, cleared_slot;
     uintptr_t held_stack_identity;
 } mc_singleplayer_mining_state;

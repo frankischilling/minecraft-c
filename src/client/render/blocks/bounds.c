@@ -147,8 +147,26 @@ bool mc_cv_update_bounds(mc_cv_context *c, const mc_block *receiver, int32_t x, 
             }
             mc_cv_pop(c);
             break;
-        case MC_BLOCK_DOOR:
         case MC_BLOCK_LEVER:
+            if (!mc_cv_metadata(c, x, y, z, 5, &m))
+                return false;
+            m &= 7;
+            if (m == 1) {
+                if (!bounds(c, b, 0, .2f, .3125f, .375f, .8f, .6875f, 45))
+                    return false;
+            } else if (m == 2) {
+                if (!bounds(c, b, .625f, .2f, .3125f, 1, .8f, .6875f, 79))
+                    return false;
+            } else if (m == 3) {
+                if (!bounds(c, b, .3125f, .2f, 0, .6875f, .8f, .375f, 111))
+                    return false;
+            } else if (m == 4) {
+                if (!bounds(c, b, .3125f, .2f, .625f, .6875f, .8f, 1, 145))
+                    return false;
+            } else if (!bounds(c, b, .25f, 0, .25f, .75f, .6f, .75f, 179))
+                return false;
+            break;
+        case MC_BLOCK_DOOR:
         case MC_BLOCK_SIGN:
         case MC_BLOCK_MOVING_PISTON:
         case MC_BLOCK_PISTON_BASE:

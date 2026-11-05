@@ -1,5 +1,11 @@
 # Build and tests
 
+## Lever behavior and geometry
+
+The [Lever component checks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/lever.md) pass on Windows MSVC Release and Linux Clang 18 Debug with ASan/UBSan. Native replay checks 209 complete original effect records and two floor choices against its own Random stream. The original packet retains 244 calls per VM; its 33 left-click wrapper rows stay outside that replay. Separate actual mining-start tests exercise left-click toggles and a retained failed activation. Rendering matches 32 original flat-shading rows and all 576 words per row.
+
+The full enabled Windows suite passes 652/652 in 238.64 seconds. The earlier 650/652 run remains failed; two negative Rail/Detector fixtures used a formerly unimplemented Lever child. They now use Button 77 without changing the failure-order assertions. Linux builds the graphical client and passes seven focused tests in 5.85 seconds, preserving 4,895 non-document inputs. GCC 13.3 syntax-checks 12 selected units, and formatting checks 2,104 files. Loaded gameplay, persistence, original pixels/audio, arbitrary circuits, server lifecycle and FPS remain separate work.
+
 ## Redstone Torch lifecycle
 
 The [client 75/76 replay](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/redstone-torch.md) matches 203 original case records on Windows MSVC Release and Linux Clang Debug ASan/UBSan. Eight fresh original VMs retain two complete repeats. Twenty-one packet controls pass; separate native controller controls audit the actual four processes. List lifetime and allocation controls pass 1,946 checks per host. The metadata texture packet separately covers 160 calls per original VM, 160 native calls and 54 native detail checks.

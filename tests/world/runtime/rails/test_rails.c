@@ -552,12 +552,14 @@ static bool rails_dispatch_callers(fixture *f, size_t side) {
 
     ++rail_cases;
     rails_clear(f, side);
+    /* Button remains the concrete unsupported neighbor child for this native
+     * failure-prefix control; Lever now executes its actual lifecycle. */
     CHECK(rails_cell(f, side, 8, 64, 8, 1, 0) && rails_supported(f, side, 7, 64, 8, 66, 0) &&
-          rails_cell(f, side, 9, 64, 8, 69, 0) && !f->registry[side]->blocks.t[1]);
+          rails_cell(f, side, 9, 64, 8, 77, 0) && !f->registry[side]->blocks.t[1]);
     const mc_world_storage_status later = mc_world_runtime_metadata_set(w, 8, 64, 8, 1, &error);
     CHECK(later == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.wrapper_bytecode == 52 &&
           error.neighbor_call_bytecode == 19 && error.neighbor_bytecode == 41 &&
-          error.hook_class != NULL && strcmp(error.hook_class, side == 0 ? "xr" : "pd") == 0 &&
+          error.hook_class != NULL && strcmp(error.hook_class, side == 0 ? "oi" : "iz") == 0 &&
           error.rail_sites_selected == 0 && rails_metadata(f, side, 8, 64, 8, 1) &&
           rails_light_snapshot_get(w, &light_later) &&
           light_later.list.identity == light_before.list.identity &&

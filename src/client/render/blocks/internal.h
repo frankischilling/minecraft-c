@@ -141,6 +141,8 @@ bool mc_cv_flat(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, fl
 bool mc_source_cv_ambient_occlusion(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t,
                                     float, float, float, bool *);
 bool mc_cv_render(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
+bool mc_cv_standard(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
+bool mc_cv_lever(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
 bool mc_cv_crossed_plant(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
 bool mc_cv_crossed_plant_geometry(mc_cv_context *, const mc_block *, int32_t, double, double,
                                   double);

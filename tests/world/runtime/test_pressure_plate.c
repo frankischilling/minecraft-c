@@ -716,7 +716,10 @@ static bool plate_cleanup(fixture *f) {
     return cleanup_fixture(f);
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_PRESSURE_MAIN_NAME
+#define MC_PRESSURE_MAIN_NAME main
+#endif
+int MC_PRESSURE_MAIN_NAME(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192];

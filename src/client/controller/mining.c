@@ -19,6 +19,7 @@
 #include "mc/statistics/registry/registry.h"
 #include "mc/world/runtime/auxiliary.h"
 #include "mc/world/runtime/blocks.h"
+#include "mc/world/runtime/placement.h"
 
 #include <math.h>
 #include <stdlib.h>
@@ -32,6 +33,7 @@ struct mc_singleplayer_mining_call {
     mc_inventory_current_error inventory;
     mc_world_auxiliary_error auxiliary;
     mc_world_mutation_error *mutation;
+    mc_world_placement_error activation;
     mc_player_statistic_error statistic;
     mc_sound_error sound;
     mc_sound_manager_report sound_report;
@@ -136,7 +138,8 @@ static bool strength(mc_singleplayer_mining_call *call, const mc_block *block, c
                   invoke_pc, call->player.native_policy);
 }
 
-static bool initial_hook(mc_singleplayer_mining_call *call, const mc_block *block) {
+static bool initial_hook(mc_singleplayer_mining_call *call, const mc_block *block,
+                         mc_world_runtime *target, mc_entity *player) {
     for (size_t depth = 0; depth != 64; ++depth) {
         if (block == NULL)
             return failed(call, MC_SINGLEPLAYER_MINING_SOURCE_NULL,
@@ -152,9 +155,19 @@ static bool initial_hook(mc_singleplayer_mining_call *call, const mc_block *bloc
             case MC_BLOCK_TRAPDOOR:
             case MC_BLOCK_NOTE_BLOCK:
             case MC_BLOCK_CAKE:
-            case MC_BLOCK_LEVER:
                 return failed(call, MC_SINGLEPLAYER_MINING_DEPENDENCY,
                               "actual concrete initial Block mining hook", "os", "a", 74, true);
+            case MC_BLOCK_LEVER: {
+                call->error.activation = &call->activation;
+                call->error.initial_hook = (mc_player_site){"xr", "b", "(Lfd;IIILgs;)V", 8};
+                bool ignored;
+                if (mc_world_block_activate(block->classes, block, target, call->state.x,
+                                            call->state.y, call->state.z, player, &ignored,
+                                            &call->activation) != MC_WORLD_STORAGE_OK)
+                    return failed(call, MC_SINGLEPLAYER_MINING_WORLD, call->activation.operation,
+                                  "os", "a", 74, call->activation.native_policy);
+                return true; /* XR.b discards the activation result, then returns12. */
+            }
             default:
                 return true; /* Actual inherited UU.b(World,III,Player): return0. */
         }
@@ -619,8 +632,11 @@ static bool start(mc_singleplayer_mining_call *call) {
             const mc_block *block;
             if (value == NULL || !block_get(call, value, id, &block, "os", "a", 56))
                 return false;
-            if (!initial_hook(call, block))
+            target = value->active_world;
+            value = app(call, "os", "a", 71);
+            if (value == NULL || !initial_hook(call, block, target, value->h))
                 return false;
+            call->state.initial_hook_returned = true;
         }
         value = app(call, "os", "a", 92);
         const mc_block *block;
@@ -816,6 +832,9 @@ mc_client_singleplayer_mining_retire(mc_singleplayer_mining_call **slot,
     if (!mc_world_auxiliary_error_retire(&call->auxiliary))
         return admission_result(error, MC_SINGLEPLAYER_MINING_BUSY,
                                 "mining auxiliary diagnostic retirement");
+    if (!mc_world_placement_error_retire(&call->activation))
+        return admission_result(error, MC_SINGLEPLAYER_MINING_BUSY,
+                                "mining initial Block activation diagnostic retirement");
     if (call->sound_name.classes != NULL &&
         mc_registry_step_sound_name_release(&call->sound_name, &call->error.registry) !=
             MC_REGISTRY_OK)

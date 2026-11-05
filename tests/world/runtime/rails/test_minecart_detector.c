@@ -503,8 +503,10 @@ static bool notification_prefix(fixture *f, size_t side) {
     mc_world_entity_contact_error error = mc_world_entity_contact_empty_error();
     mc_world_schedule_class_state before = {0}, after = {0};
     ++cases;
+    /* Button retains the concrete unsupported neighbor child without relying
+     * on Lever's former native frontier. All reached detector effects remain. */
     CHECK(cell(f, side, 8, 63, 8, 1, 0) && cell(f, side, 8, 64, 8, 28, 0) &&
-          cell(f, side, 7, 64, 8, 69, 0) &&
+          cell(f, side, 7, 64, 8, 77, 0) &&
           mc_world_runtime_schedule_class_get(f->classes[side], &before) == MC_WORLD_STORAGE_OK);
     const mc_world_storage_status status =
         mc_world_runtime_entity_contact(world, detector, 8, 64, 8, NULL, &error);
@@ -515,7 +517,7 @@ static bool notification_prefix(fixture *f, size_t side) {
           error.mutation.wrapper_bytecode == 40 && error.mutation.neighbor_call_bytecode == 8 &&
           error.mutation.neighbor_bytecode == 41 && error.mutation.cause_hook_bytecode == 0 &&
           error.mutation.cause_hook_class != NULL &&
-          strcmp(error.mutation.cause_hook_class, side == 0 ? "xr" : "pd") == 0);
+          strcmp(error.mutation.cause_hook_class, side == 0 ? "oi" : "iz") == 0);
     CHECK(metadata_is(f, side, 8) && queues_are(world, 0, 0) &&
           mc_world_runtime_schedule_class_get(f->classes[side], &after) == MC_WORLD_STORAGE_OK &&
           after.initialized == before.initialized && after.next == before.next &&
