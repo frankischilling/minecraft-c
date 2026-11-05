@@ -1,10 +1,16 @@
 # History
 
+## Redstone Item use
+
+Item331 now enters its original Snow/face/air routing and independent support predicate. The body consumes before the notifying setter and the wrapper reads the late Stack ID for statistics. Native Windows and sanitized Linux match all 54 original effect records, including one callback prefix with distinct exception/refusal causes. A separate Windows SDK scene verifies unpowered placement, native geometry and source save/reselection.
+
+Earlier native fixture failures remain retained: loaded Chunks needed explicit terminal retirement, the context getter had to precede the terminal latch, and the new constructor's actual output order differed from the renderer fixture. None required changing Source gameplay to pass. The reload's initial geometry compile remains unpaired; arbitrary circuits and FPS remain open.
+
 ## Redstone World renderer
 
 Type 5 now draws the original floor shapes and upright overlays, with live connectivity, repeater directions and captured brightness arguments. The 100-call source packet and both native hosts agree on the declared CPU results. Source owner observations resolved an incorrect fixture assumption: twelve signed-coordinate requests return ten distinct Chunk owners. Native preparation now follows request slots and retires each owner once.
 
-Registry active use also records its source location before resource callbacks. The exposing native stress deliberately uses separate defining owners; it is not evidence of an ordinary cold Java call. Item placement, adjacent devices, loaded drawing and FPS remain open.
+Registry active use also records its source location before resource callbacks. The exposing native stress deliberately uses separate defining owners; it is not evidence of an ordinary cold Java call. That renderer checkpoint left Item placement and loaded drawing for the later work above. Adjacent devices and FPS remain open.
 
 ## Native failure product retention
 

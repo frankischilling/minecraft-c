@@ -1,6 +1,8 @@
 # minecraft-c
 
-[Redstone World rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/redstone-world.md) now implements floor connections, power tint and upright strips. Windows and sanitized Linux match 100 original CPU calls, including signed-coordinate cache aliases and six null prefixes. Item Redstone placement, loaded GL rendering and FPS remain separate work.
+[Redstone Item331 use](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/redstone-use.md) now reaches actual support, Stack consumption, notifying placement and the late used statistic. Windows and sanitized Linux match 54 original records with one distinct callback effect prefix. A Windows SDK scene passes placement, native terrain geometry and save/reselection. Powered devices, general focus reliability and FPS remain open.
+
+[Redstone World rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/redstone-world.md) implements floor connections, power tint and upright strips. Windows and sanitized Linux match 100 original CPU calls, including signed-coordinate cache aliases and six null prefixes. Loaded original rendering and whole-frame pixels remain separate work.
 
 The single-player client can create and load saved Worlds, run Player and World
 ticks, draw terrain and Mobs, and reach mining, placement, pickup, crafting and

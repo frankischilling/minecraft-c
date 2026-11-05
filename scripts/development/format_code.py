@@ -55,7 +55,11 @@ def main():
         print(f"UNAVAILABLE: formatter not found: {args.clang_format}", file=sys.stderr)
         return 77
     root = Path(__file__).resolve().parents[2]
-    fragments = {"tests/item/use/food_controls.inc",
+    fragments = {"tests/item/use/redstone/statistics_setup.inc",
+                 "tests/item/use/redstone/statistics_teardown.inc",
+                 "tests/item/use/redstone/support_setup.inc",
+                 "tests/item/use/redstone/terminal_cleanup.inc",
+                 "tests/item/use/food_controls.inc",
                  "tests/world/runtime/placement/torch_controls.inc",
                  "tests/world/runtime/placement/torch_callbacks.inc",
                  "tests/block/registry/static_index_values.inc",

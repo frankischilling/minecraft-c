@@ -6,6 +6,8 @@ placement body. Interactive Blocks and distinct Item overrides retain their
 reached dependencies. Registered Hoes and Seeds execute their own
 [farming bodies](../item/farming-use.md), with separate predicates and Stack
 effects. [Dye and bone meal](../item/dye-use.md) have their own Block-use bodies.
+[Redstone Item331](../item/redstone-use.md) uses its own support predicate and
+stores the count before the notifying Block setter.
 [BlockItem metadata](../item/placement-metadata.md) now dispatches all six
 original overrides. Combat and the Inventory screen have separate entry paths.
 

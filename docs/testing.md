@@ -10,6 +10,21 @@ failure precedence. The command and runtime behavior stay unchanged.
 candidate archive bytes require separate link proof and why the earlier
 unbound focus failures remain unresolved.
 
+## Redstone Item use and SDK placement
+
+The [54-call replay](item/redstone-use.md) covers 42 actual ItemStack wrappers
+and 12 direct support predicates. Four fresh original VMs agree within their
+separate cohorts. The sealed packet has 16 admission tests; the native comparator
+rejects 106 corruptions. All 17 focused CTests pass on MSVC Release and sanitized
+Clang Debug in 24.76 and 30.40 seconds, respectively.
+
+The separate Windows SDK placement/save/reselection run passes 3,051 checks in
+8.41 seconds. It verifies count2 to count1, used331, Block55/metadata0, actual
+12-vertex XYZ/UV/color output and independently decoded saved data. Placement
+compile operands are paired; the reload's initial compile is explicitly
+unpaired. Twenty-seven post-capture controls reject altered receipts, operands
+and geometry. This adds no loaded-original, general focus or FPS qualification.
+
 ## Ordinary Torch placement and support removal
 
 Windows MSVC Release and Linux Clang Debug ASan/UBSan match all 193 original

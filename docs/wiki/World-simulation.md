@@ -1,5 +1,11 @@
 # World simulation
 
+## Redstone Item331 placement
+
+[Item331 use and support](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/redstone-use.md) now execute through actual Stack, Player, Registry and World owners. The 42-wrapper and 12-support replay preserves count-before-setter, ignored ordinary false results, callback prefixes, live-ID statistics and persistent queue/Set history. Windows and sanitized Linux pass the complete finite comparison.
+
+A separate unpowered Windows SDK scene places Block55/metadata0, draws its actual floor geometry, saves and reloads the same Inventory and Block. Its placement compile has passive paired operands; the reload initial compile is unpaired and reported separately. Powered devices, arbitrary circuits, default equal-hash identity ordering and full original World-state acceptance remain unfinished.
+
 ## Redstone World renderer
 
 [Redstone World rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/redstone-world.md) completes the type 5 CPU geometry path. Five separate original cohorts cover every floor connection mask at three power levels, vertical routes, repeater directions, signed float boundaries and six null failures. Native Windows and sanitized Linux match all 100 calls and the original packed-key owner aliases. This scope does not qualify Item Redstone placement or adjacent device lifecycles.

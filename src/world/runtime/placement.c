@@ -629,6 +629,17 @@ static bool base_predicate(mc_world_placement_error *e, const mc_block *block,
     e->predicate_entered = e->base_entered = true;
     if (strcmp(declaring, "vm") == 0)
         return torch_predicate(e, world, x, y, z, query_index, out);
+    if (strcmp(declaring, "sm") == 0) {
+        e->site.pc = e->base.pc = 7;
+        bool value;
+        if (!torch_solid(e, world, x, mc_java_i32_sub(y, 1), z, &value))
+            return false;
+        e->site.pc = e->base.pc = 10;
+        e->base_returned = e->predicate_returned = true;
+        e->base_value = value;
+        *out = value;
+        return true;
+    }
     if (!flower && !inherited(e, declaring))
         return false;
     if (flower)

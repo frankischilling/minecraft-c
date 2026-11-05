@@ -85,6 +85,7 @@ renderer result. The callback regression also retained its earlier failure:
 Registry initialization exposed parent PC 51 instead of active-use PC 5. The
 fixed helper records PC 5 before entering initialization.
 
-Item Redstone use and its can-place join remain separate implementation work.
-These CPU comparisons do not establish loaded GL rendering, original pixels,
+The separate [Item331 use and Windows SDK scenario](../item/redstone-use.md)
+now cover support, placement, loaded native geometry and save/reselection.
+These CPU comparisons do not establish loaded original rendering, original pixels,
 audio, power-propagation parity, general focus reliability or FPS improvements.

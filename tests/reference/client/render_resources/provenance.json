@@ -5970,12 +5970,12 @@
       "sha256": "bf372e5a0f28cf596f3aa7ab7b1cbe84f34242c135f4b493f870314378425829"
     },
     "src/item/use/use.c": {
-      "bytes": 47178,
-      "sha256": "40cd393cc1a276fd8d5b741730dea0c34e4e57cfa1b7b247623b482c1b9161d3"
+      "bytes": 50649,
+      "sha256": "6a38c3bd726176487b7c756f5e286f159e11b970c8c6e4474b091bbd70ceded3"
     },
     "src/world/runtime/placement.c": {
-      "bytes": 41945,
-      "sha256": "1ed9934990ff2051ec3fc14c0835ba6f54a897104424156b6d8338ecde52d7c0"
+      "bytes": 42316,
+      "sha256": "aa94b7326d4ea6050983eb2f37c0ed6433b2d01013cafa55fb152bd7a0d2912d"
     },
     "tests/client/controller/test_use.c": {
       "bytes": 10069,

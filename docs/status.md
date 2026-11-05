@@ -1,5 +1,12 @@
 # Development status
 
+[Redstone Item331 use](item/redstone-use.md) now reaches its actual support
+predicate, count store, notifying setter and late used statistic. Windows and
+sanitized Linux match 54 original method records, with one callback effect
+prefix whose exception/refusal causes stay distinct. A separate Windows SDK
+scene passes placement, native geometry and save/reselection. Powered devices,
+general focus reliability, unrestricted play and FPS remain unfinished.
+
 [Registry selection and cache validation](performance/world-queries.md#block-static-name-selection-and-cache-validation)
 have new bounded Windows CPU comparisons. The 96-name public Block getter
 falls from 168.526 to 28.962 ns/get in four alternating rounds and eight fresh

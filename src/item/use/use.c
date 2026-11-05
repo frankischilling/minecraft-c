@@ -254,8 +254,8 @@ static bool hold_player(mc_item_use_call *c, const char *operation) {
     return true;
 }
 
-static bool query_at(mc_item_use_call *c, const char *owner, unsigned int pc, int32_t y,
-                     int32_t *out) {
+static bool query_xyz_at(mc_item_use_call *c, const char *owner, unsigned int pc, int32_t x,
+                         int32_t y, int32_t z, int32_t *out) {
     at(c, owner, use_block_descriptor, pc);
     if (!hold_world(c))
         return false;
@@ -267,11 +267,16 @@ static bool query_at(mc_item_use_call *c, const char *owner, unsigned int pc, in
     c->queries[c->query_count++] = q;
     c->error.acquisition = q;
     ++c->source_epoch;
-    mc_world_storage_status status = mc_world_runtime_block_get_detailed(
-        c->state.world, c->state.x, y, c->state.z, out, &c->error.world, q);
+    mc_world_storage_status status =
+        mc_world_runtime_block_get_detailed(c->state.world, x, y, z, out, &c->error.world, q);
     if (status != MC_WORLD_STORAGE_OK)
         fail(c, MC_ITEM_USE_WORLD, c->error.world.operation, true);
     return captured(c) && status == MC_WORLD_STORAGE_OK;
+}
+
+static bool query_at(mc_item_use_call *c, const char *owner, unsigned int pc, int32_t y,
+                     int32_t *out) {
+    return query_xyz_at(c, owner, pc, c->state.x, y, c->state.z, out);
 }
 
 static bool resolve_item(mc_item_use_call *c) {
@@ -725,6 +730,74 @@ static bool farming_set(mc_item_use_call *c, const char *owner, unsigned int pc,
     return captured(c) && status == MC_WORLD_STORAGE_OK;
 }
 
+static bool redstone(mc_item_use_call *c) {
+    mc_item_use_state *s = &c->state;
+    int32_t id, snow;
+    if (!query_at(c, "ie", 7, s->y, &id) || !singleton_id(c, "ie", "aT", 10, 13, &snow))
+        return false;
+    s->snow = id == snow;
+    if (!s->snow) {
+        if (s->target_face == 0)
+            s->target_y = mc_java_i32_sub(s->target_y, 1);
+        if (s->target_face == 1)
+            s->target_y = mc_java_i32_add(s->target_y, 1);
+        if (s->target_face == 2)
+            s->target_z = mc_java_i32_sub(s->target_z, 1);
+        if (s->target_face == 3)
+            s->target_z = mc_java_i32_add(s->target_z, 1);
+        if (s->target_face == 4)
+            s->target_x = mc_java_i32_sub(s->target_x, 1);
+        if (s->target_face == 5)
+            s->target_x = mc_java_i32_add(s->target_x, 1);
+        /* Actual FD.d invokes its acquiring FD.a once at child4, using all
+         * three shifted coordinates rather than the original clicked x/z. */
+        c->error.child = site("fd", "d", "(III)Z", 4);
+        if (!query_xyz_at(c, "ie", 79, s->target_x, s->target_y, s->target_z, &id))
+            return false;
+        c->error.child = (mc_item_use_site){0};
+        if (id != 0) {
+            at(c, "ie", use_block_descriptor, 86);
+            s->result = false;
+            return true;
+        }
+    }
+    at(c, "ie", use_block_descriptor, 87);
+    if (mc_registry_block_static_get(s->registry, "aw", &s->captured_block, &c->error.registry) !=
+        MC_REGISTRY_OK)
+        return registry_failed(c);
+    at(c, "ie", use_block_descriptor, 97);
+    if (s->captured_block == NULL)
+        return source_null(c, "Redstone actual null Block can-place invocation");
+    c->error.placement = &c->predicate;
+    s->predicate_entered = true;
+    if (mc_world_block_can_place_base(s->registry, s->captured_block, s->world, s->target_x,
+                                      s->target_y, s->target_z, &s->can_place,
+                                      &c->predicate) != MC_WORLD_STORAGE_OK)
+        return placement_failed(c, &c->predicate);
+    s->predicate_returned = true;
+    if (s->can_place) {
+        at(c, "ie", use_block_descriptor, 105);
+        c->error.stack = mc_item_stack_source_count_get(s->stack, &s->count_before);
+        if (c->error.stack != MC_ITEM_STACK_OK)
+            return fail(c, MC_ITEM_USE_STACK, "Redstone actual Stack count field", true);
+        s->count_read = true;
+        s->count_after = mc_java_i32_sub(s->count_before, 1);
+        at(c, "ie", use_block_descriptor, 110);
+        c->error.stack = mc_item_stack_source_count_set(s->stack, s->count_after);
+        if (c->error.stack != MC_ITEM_STACK_OK)
+            return fail(c, MC_ITEM_USE_STACK, "Redstone actual Stack count store", true);
+        s->count_stored = true;
+        /* IE reloads aw only after its count store, then discards the
+         * notifying World.f result, including an ordinary false return. */
+        if (!singleton_id(c, "ie", "aw", 120, 123, &s->block_id) ||
+            !farming_set(c, "ie", 126, s->block_id))
+            return false;
+    }
+    at(c, "ie", use_block_descriptor, 131);
+    s->result = true;
+    return true;
+}
+
 static bool hoe_damage(mc_item_use_call *c) {
     at(c, "la", use_block_descriptor, 147);
     if (!hold_player(c, "Hoe reached durability Player occurrence"))
@@ -934,6 +1007,9 @@ static bool execute(mc_item_use_call *c) {
             return false;
     } else if (k == MC_ITEM_SEEDS) {
         if (!seeds(c))
+            return false;
+    } else if (k == MC_ITEM_REDSTONE) {
+        if (!redstone(c))
             return false;
     } else if (block_item(k)) {
         if (!ck(c))

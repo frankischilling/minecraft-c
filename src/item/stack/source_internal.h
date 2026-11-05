@@ -50,6 +50,8 @@ mc_item_stack_status mc_item_stack_source_clone(const mc_item_stack *source,
  * APIs. split reads original id15/damage20 only AFTER the actual allocation,
  * constructs23, and preserves out on failure and the earlier count store. */
 mc_item_stack_status mc_item_stack_source_id_get(const mc_item_stack *stack, int32_t *out);
+/* Phase-transparent ID field store; the Java int is not NBT-narrowed. */
+mc_item_stack_status mc_item_stack_source_id_set(mc_item_stack *stack, int32_t id);
 mc_item_stack_status mc_item_stack_source_damage_get(const mc_item_stack *stack, int32_t *out);
 mc_item_stack_status mc_item_stack_source_count_get(const mc_item_stack *stack, int32_t *out);
 mc_item_stack_status mc_item_stack_source_count_set(mc_item_stack *stack, int32_t count);

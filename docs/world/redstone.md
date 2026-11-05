@@ -5,6 +5,10 @@ closure through the existing GAME World services. The implementation lives in
 `src/world/runtime/mutation/redstone/`; collection ownership stays in the defining
 Registry's actual redstone Block.
 
+[Item331 use](../item/redstone-use.md) reaches this lifecycle through the actual
+support predicate and notifying World setter. Its Stack consumption and wrapper
+statistic order have a separate original/native replay.
+
 The recursive update disables the shared redstone output flag for its external-power
 query, then stores true unconditionally. It preserves horizontal query order,
 repeated support reads and fresh center-metadata reads after recursive updates.

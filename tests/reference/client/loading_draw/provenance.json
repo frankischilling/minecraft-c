@@ -2,8 +2,8 @@
   "scope": "Current authored real-owner loading draw/update/yield/retirement controls; native results are recorded separately for their exact tested snapshots.",
   "native_sources": {
     "CMakeLists.txt": {
-      "bytes": 339886,
-      "sha256": "3773790bde151d1b051a8010df7d134ece6184af6a6b23c1844b92413b964003"
+      "bytes": 339972,
+      "sha256": "20e7b8ff4ec6442a09850c08ef5e145263a138b02c66e8264a229302da5440c7"
     },
     "cmake/client_controllers.cmake": {
       "bytes": 1093,
@@ -2798,12 +2798,12 @@
       "sha256": "a163d5fa4c041f5e032ba2f184c53962198d1f082905e6b92d09aa06855eb3a7"
     },
     "src/item/stack/source_internal.h": {
-      "bytes": 4380,
-      "sha256": "5cc98e88fd76783ccf47110d914a20eb93ffb5e79f1599c8d0345787a180c706"
+      "bytes": 4538,
+      "sha256": "802fce32aa166511ee670669f6e010526e595c84a47921c20dc8bc87b139c03d"
     },
     "src/item/stack/stack.c": {
-      "bytes": 28427,
-      "sha256": "4913000dc2d952670bff62d297c5a6ee6df4587a577253b4120f44a2ac338b10"
+      "bytes": 28641,
+      "sha256": "44415968eec3415cfeac7d2ab42f1c1e0c901eb5c39ed49f49a9ad30f50524ac"
     },
     "src/platform/files/byte_output.c": {
       "bytes": 2940,
@@ -8398,12 +8398,12 @@
       "sha256": "bf372e5a0f28cf596f3aa7ab7b1cbe84f34242c135f4b493f870314378425829"
     },
     "src/item/use/use.c": {
-      "bytes": 47178,
-      "sha256": "40cd393cc1a276fd8d5b741730dea0c34e4e57cfa1b7b247623b482c1b9161d3"
+      "bytes": 50649,
+      "sha256": "6a38c3bd726176487b7c756f5e286f159e11b970c8c6e4474b091bbd70ceded3"
     },
     "src/world/runtime/placement.c": {
-      "bytes": 41945,
-      "sha256": "1ed9934990ff2051ec3fc14c0835ba6f54a897104424156b6d8338ecde52d7c0"
+      "bytes": 42316,
+      "sha256": "aa94b7326d4ea6050983eb2f37c0ed6433b2d01013cafa55fb152bd7a0d2912d"
     },
     "tests/client/controller/test_use.c": {
       "bytes": 10069,

@@ -1,5 +1,11 @@
 # Build and tests
 
+## Redstone Item use and SDK placement
+
+The [54-call replay](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/redstone-use.md) passes on MSVC Release and Clang Debug ASan/UBSan. Four fresh original VMs preserve separate use/support cohorts. Sixteen packet tests and 106 comparator controls reject corrupted outcomes, frames, entropy, queue/Set history and native protocol. All 17 focused CTests pass in 24.76 Windows and 30.40 Linux seconds.
+
+One Windows SDK placement/save/reselection scene passes 3,051 checks in 8.41 seconds and 27 post-capture corruption controls. Actual terrain bytes, held count, used331 and independent Region/Player NBT agree. Placement compile operands are paired; reload initial compile is explicitly unpaired. This establishes neither a loaded original scene nor general focus reliability or FPS.
+
 ## Redstone World rendering
 
 The five original cohorts contain 100 direct renderer calls. Their packet has 26 integrity and semantic tests. Windows MSVC Release and Linux Clang Debug ASan/UBSan each pass seven focused CTests and nine neighboring renderer regressions. Replay matches 310 literal records and the separate original owner receipt; the native dispatcher join has 70 assertions.

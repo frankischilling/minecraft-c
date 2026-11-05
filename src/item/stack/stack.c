@@ -235,6 +235,13 @@ mc_item_stack_status mc_item_stack_source_id_get(const mc_item_stack *stack, int
     return MC_ITEM_STACK_OK;
 }
 
+mc_item_stack_status mc_item_stack_source_id_set(mc_item_stack *stack, int32_t id) {
+    if (stack == NULL)
+        return MC_ITEM_STACK_INVALID_ARGUMENT;
+    stack->fields.id = id;
+    return MC_ITEM_STACK_OK;
+}
+
 mc_item_stack_status mc_item_stack_source_damage_get(const mc_item_stack *stack, int32_t *out) {
     if (stack == NULL || out == NULL)
         return MC_ITEM_STACK_INVALID_ARGUMENT;

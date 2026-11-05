@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 339886,
-      "sha256": "3773790bde151d1b051a8010df7d134ece6184af6a6b23c1844b92413b964003"
+      "bytes": 339972,
+      "sha256": "20e7b8ff4ec6442a09850c08ef5e145263a138b02c66e8264a229302da5440c7"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 192928,
-      "sha256": "6195144f3ffa26cedb0e4fb1a4183a73d7fbe35a85a4ecc15a9505d40e8e62eb"
+      "bytes": 193846,
+      "sha256": "424ea9d4e22bdf89bb495e52d23586d84db901e1f9bbb68dfc0545f412080f4b"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 108095,
-      "sha256": "50d0299ccd081fcf2746a45f66a2962d586cdb69028d67c5f3e9fe73e11a1b8e"
+      "bytes": 108552,
+      "sha256": "1db0e39eaec5ea1749e443ce556e049d1cd12734352a7f0ffe863ba58601212c"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,24 +826,24 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 466227,
-      "sha256": "d7428d196872bc53ed35aad3f310a3aeaa90db6c139a581e655a68c6aa971e62"
+      "bytes": 467110,
+      "sha256": "fbe46d116aeec34417b4e5c7c2f1ef3448af27b41323495c235a175bde2c2cba"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
       "sha256": "2266d5edd099003b4b3fe304ecf79cf86bbfcab026ef1480936c04a391024957"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 112861,
-      "sha256": "bce01c8737043f1d7e6d90b9a75c11a2970d8c41cd42e27ce74bb5aa39658b34"
+      "bytes": 113726,
+      "sha256": "bfc951a34f68059a96368a358bdbc19c858ad4cc79b095e3e08d25f308122308"
     },
     "docs/wiki/History.md": {
-      "bytes": 58482,
-      "sha256": "909d1153748f06f2ba46d9398d0621aff40172bc9086b2858ab89ba4a02b33a6"
+      "bytes": 59382,
+      "sha256": "d980759bc367ea2fdb48a6eff156ec5744d90210dc383fd53e7242619513a300"
     },
     "docs/wiki/Home.md": {
-      "bytes": 12669,
-      "sha256": "4d6de39ec257f1a115e6dedc2e9e95b0d03cbad15fd1388c8f21fb9d94ecc2e7"
+      "bytes": 13130,
+      "sha256": "33f8e6f506d8631daa9e4dcd727632d7e8284fd7df407e753bbbe83086117e1b"
     },
     "docs/wiki/Startup.md": {
       "bytes": 7992,
@@ -854,12 +854,12 @@
       "sha256": "82cef3806c626dd62a9d870040b4731dfcfd5916232dec21afdc8efbff5f13dd"
     },
     "docs/wiki/World-simulation.md": {
-      "bytes": 54137,
-      "sha256": "03736f20c55623a03e6066c8379dafe1a05cfd680d4c93cf2445fc8a6eac8993"
+      "bytes": 55002,
+      "sha256": "a6c2314b1940cf61cc6461598b87739eb34b7183c59ef6df0afca8059cf2a113"
     },
     "docs/wiki/_Sidebar.md": {
-      "bytes": 2646,
-      "sha256": "12047a6804058e8f22af87633db95dc68c2791be652e791b971951142b0fa4b5"
+      "bytes": 2791,
+      "sha256": "6f0a524014de1a23dd48c163f825b84ed4891507b0d215a14853592f887a0275"
     },
     "docs/world/biome-registry.md": {
       "bytes": 10503,
@@ -1022,8 +1022,8 @@
       "sha256": "8dfd5e86b562507916cc91027c5d15f2b79937a9a6b9b76331bc1e60db708061"
     },
     "docs/world/redstone.md": {
-      "bytes": 17717,
-      "sha256": "1323d0d390053084a6a2c96b2ca3e0b3dbe113b7c10afd37b17ea6bdd7603cbb"
+      "bytes": 17935,
+      "sha256": "2e0f8d00419fc7946d3b02b36dc1086ddc0608879efe004688fc04c435c5286e"
     },
     "docs/world/registry.md": {
       "bytes": 6326,
@@ -2006,8 +2006,8 @@
       "sha256": "3c32c85088eb8c13ba451175b19c2dcb4931f192d4973ab0135ff80f53e5dd31"
     },
     "scripts/development/format_code.py": {
-      "bytes": 5500,
-      "sha256": "06b4d61fc099f00a73015e00470ad2efbe1cbe423fa72343f3de74a9ea269f61"
+      "bytes": 5760,
+      "sha256": "e111c7e064cab644b8884967e3e02f9fc898f6565b3700fec2de5c9186329447"
     },
     "scripts/reference/binaries/inspect_jars.py": {
       "bytes": 7826,
@@ -4278,12 +4278,12 @@
       "sha256": "a163d5fa4c041f5e032ba2f184c53962198d1f082905e6b92d09aa06855eb3a7"
     },
     "src/item/stack/source_internal.h": {
-      "bytes": 4380,
-      "sha256": "5cc98e88fd76783ccf47110d914a20eb93ffb5e79f1599c8d0345787a180c706"
+      "bytes": 4538,
+      "sha256": "802fce32aa166511ee670669f6e010526e595c84a47921c20dc8bc87b139c03d"
     },
     "src/item/stack/stack.c": {
-      "bytes": 28427,
-      "sha256": "4913000dc2d952670bff62d297c5a6ee6df4587a577253b4120f44a2ac338b10"
+      "bytes": 28641,
+      "sha256": "44415968eec3415cfeac7d2ab42f1c1e0c901eb5c39ed49f49a9ad30f50524ac"
     },
     "src/platform/files/byte_output.c": {
       "bytes": 2940,
@@ -6407,7 +6407,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 495378,
-      "sha256": "1d3e395d3ed4519da323953716720d272eb15cacabb8c84da3550ec29b4be6c5"
+      "sha256": "ada01b75b7f409d8148cffcda367d43814efd167847b8ea041822ba3b2223fcc"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6471,7 +6471,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 595345,
-      "sha256": "3e791daa727b92b79ad78eb017f6d1de1474c33919f1769f49132ec98e85c19e"
+      "sha256": "edb4bded295bde684698006e9f52f91971af1964d3463c4e5684352564e8d638"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6603,7 +6603,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 491192,
-      "sha256": "f8afc69f431a1d73113a05775ee11076492e1c39badba3f1fcfe631dbadc8a34"
+      "sha256": "f2ed7b6cca16217a1565fa12925b9a6e19a2bc07c11a173fad9c78ab06a0dd63"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -15482,8 +15482,8 @@
       "sha256": "7d1b497857160ce1f26a008726b995f062b78c5714044b7657b3c22b7c4304ff"
     },
     "docs/client/placement.md": {
-      "bytes": 10097,
-      "sha256": "1465910f88d62eb061ec001ad4f2a8787886cd4f5c73332f6b913aeb5f46c150"
+      "bytes": 10228,
+      "sha256": "2c44de84a79c4c3fe5be474d52ca12cd458252bfa8da8ea0d99ef32aed1ce362"
     },
     "docs/entity/skeleton-damage.md": {
       "bytes": 3066,
@@ -15506,12 +15506,12 @@
       "sha256": "bf372e5a0f28cf596f3aa7ab7b1cbe84f34242c135f4b493f870314378425829"
     },
     "src/item/use/use.c": {
-      "bytes": 47178,
-      "sha256": "40cd393cc1a276fd8d5b741730dea0c34e4e57cfa1b7b247623b482c1b9161d3"
+      "bytes": 50649,
+      "sha256": "6a38c3bd726176487b7c756f5e286f159e11b970c8c6e4474b091bbd70ceded3"
     },
     "src/world/runtime/placement.c": {
-      "bytes": 41945,
-      "sha256": "1ed9934990ff2051ec3fc14c0835ba6f54a897104424156b6d8338ecde52d7c0"
+      "bytes": 42316,
+      "sha256": "aa94b7326d4ea6050983eb2f37c0ed6433b2d01013cafa55fb152bd7a0d2912d"
     },
     "tests/client/controller/test_use.c": {
       "bytes": 10069,
@@ -19458,8 +19458,8 @@
       "sha256": "ab201069e1b106e30b32db4ef20305b24edec41b328916772cee250d88122011"
     },
     "docs/client/redstone-world.md": {
-      "bytes": 5370,
-      "sha256": "cd88413b8d3017c7e768734a73cfd3ba8fc669ff37449a6be1b33be98f75ebbc"
+      "bytes": 5450,
+      "sha256": "7f15bf92e16486cc47b534a2504fde0e5a9466da1935cfb416fb293cc7592c86"
     },
     "src/client/render/blocks/redstone.c": {
       "bytes": 16500,
@@ -19748,6 +19748,242 @@
     "tests/tools/client/test_redstone_world.py": {
       "bytes": 24317,
       "sha256": "9891d6dfa8697e5a121d2a0eafb5133906a8e3c63d17988cf1f1d126141e77b4"
+    },
+    "cmake/client_redstone_placement.cmake": {
+      "bytes": 2428,
+      "sha256": "27fbbbab4a2b61aa5379bfc70bb307f7be76bb94fb691c1e76a78d8f3232b6b5"
+    },
+    "cmake/item_redstone_use.cmake": {
+      "bytes": 1911,
+      "sha256": "3771fad820699233794f516f03913ce504e806269790cde08ea3ee5df53419b7"
+    },
+    "docs/item/redstone-use.md": {
+      "bytes": 6607,
+      "sha256": "da5c283d1b7f13e9440fb3e95362e5f463dbf30ce208371e0b80214cc2e3ba90"
+    },
+    "tests/client/gameplay/redstone/test_placement.c": {
+      "bytes": 41350,
+      "sha256": "47813c47f9c8ea85484bac84c1ee5857e56b88cc07b665ada7ac3f7e0b214e23"
+    },
+    "tests/item/use/redstone/reference.c": {
+      "bytes": 33694,
+      "sha256": "0a422835c26a54cb1f7151ed931713658e0ac78511b929f50dfa15a0374d94ed"
+    },
+    "tests/item/use/redstone/statistics_setup.inc": {
+      "bytes": 7247,
+      "sha256": "546fd1a83a591c5f44e27ef8fab73830e8daf39a4b9bd7387fec87df8846818e"
+    },
+    "tests/item/use/redstone/statistics_teardown.inc": {
+      "bytes": 1636,
+      "sha256": "ab9ff3a169d24d297686ecce75a5c59ccd5c2e964d1728b35146388f8eacb4a9"
+    },
+    "tests/item/use/redstone/support_setup.inc": {
+      "bytes": 3993,
+      "sha256": "0b0a44ac466393829827e8be65f00f469ad0912eafdae9bcd049185c3d3eb6ab"
+    },
+    "tests/item/use/redstone/terminal_cleanup.inc": {
+      "bytes": 4681,
+      "sha256": "a8ac224a30476bd777c5a868fa7d56e217c8882a7aa807c05d34514e0bf9c883"
+    },
+    "tests/reference/item/redstone_use/.gitattributes": {
+      "bytes": 347,
+      "sha256": "cdad247cf940eadf9098f1c0b3cb3c74301d66e4ebf5cc5b49684bca0e09d1bd"
+    },
+    "tests/reference/item/redstone_use/README.md": {
+      "bytes": 3629,
+      "sha256": "c38114d67fd86767f6e361fcfbd396e846b12444ae7ae40943740c95828e2413"
+    },
+    "tests/reference/item/redstone_use/RedstoneUseObservation.java": {
+      "bytes": 19061,
+      "sha256": "51cc2610e21c76a8aed6811b421a426230d400ae8e3188f010acc12727909459"
+    },
+    "tests/reference/item/redstone_use/capture.json": {
+      "bytes": 51610,
+      "sha256": "db3f0290823305d6b9b3dcdfff5f3941a62e7531e388a6af9eecd7a5f37f1069"
+    },
+    "tests/reference/item/redstone_use/capture_reference.py": {
+      "bytes": 9899,
+      "sha256": "36a3854a34e4a4066d695c147792478a785e6720ac0ad1d8d4615d380e778844"
+    },
+    "tests/reference/item/redstone_use/compile.capture.json": {
+      "bytes": 1455,
+      "sha256": "4f6141f0f2f47a1370bb16358347a2ba0c47b4e8774547ef13adebd9562c463c"
+    },
+    "tests/reference/item/redstone_use/compile.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/reference/item/redstone_use/compile.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/reference/item/redstone_use/declared-inputs.json": {
+      "bytes": 14020,
+      "sha256": "b18c57a8bb6f18b3e3a3ed13a972e98cc94835e5c7b592ac2521d8356408522d"
+    },
+    "tests/reference/item/redstone_use/freeze.json": {
+      "bytes": 19610,
+      "sha256": "cd371ff7744583670dcb80823f13612b9ed1ebc75eb186b96325229743c39129"
+    },
+    "tests/reference/item/redstone_use/input-freeze.json": {
+      "bytes": 386,
+      "sha256": "915f09e4072e783e284efd182609646bb67f31ffbfc9560736baeac9f93cc0d1"
+    },
+    "tests/reference/item/redstone_use/java.capture.json": {
+      "bytes": 620,
+      "sha256": "7428f7444c52df07ef1dc507d51ad1f008b058a2d08193c15545ac775947b342"
+    },
+    "tests/reference/item/redstone_use/java.stderr": {
+      "bytes": 190,
+      "sha256": "60aba3fe0d7bf59797df0e8cb7af289d0843e978623fafea7e3ae5ef925b6622"
+    },
+    "tests/reference/item/redstone_use/java.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/reference/item/redstone_use/javac.capture.json": {
+      "bytes": 622,
+      "sha256": "6a4e3e688cb5b3e63338f9f345e6c35c19cc1d9ed3a31fa41e5285d97720e9a4"
+    },
+    "tests/reference/item/redstone_use/javac.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/reference/item/redstone_use/javac.stdout": {
+      "bytes": 15,
+      "sha256": "825ce50fb46a3e8bd8d38f6da5bf8449d442a9f210d9d38c83709234bfa8ee9c"
+    },
+    "tests/reference/item/redstone_use/manifest.json": {
+      "bytes": 4614,
+      "sha256": "12252f225755dd065720278af328d5e3b0935ddaab267ab49db4d612c2db673f"
+    },
+    "tests/reference/item/redstone_use/packet.py": {
+      "bytes": 29337,
+      "sha256": "de068df9d5aac147a70841d11d493c3e462e76f6e10998fb60a3c513ce806f40"
+    },
+    "tests/reference/item/redstone_use/provenance.json": {
+      "bytes": 11157,
+      "sha256": "58cde6a490b31a35b40cad71e99bfd7efa0adaff2587acb1996944dea0728e0c"
+    },
+    "tests/reference/item/redstone_use/source-pins.json": {
+      "bytes": 471405,
+      "sha256": "e1cc8f1118b545a21fb48a3a3156fdda4ab4ca390e19a78aa15412e8c9bdc125"
+    },
+    "tests/reference/item/redstone_use/support-ordinary-0/original.capture.json": {
+      "bytes": 1745,
+      "sha256": "c94ee34814f7c72b494ef75f706ccd72309bdbdaa8984f408d2a208114959068"
+    },
+    "tests/reference/item/redstone_use/support-ordinary-0/original.stderr": {
+      "bytes": 396,
+      "sha256": "d46b3d6f86546d9218b3b65cd7d5a97b46f53d476051444148b7ad2ae93a4aac"
+    },
+    "tests/reference/item/redstone_use/support-ordinary-0/original.stdout": {
+      "bytes": 15353,
+      "sha256": "2496aeeff42876a053e4ba02180c83864d6a0f1ad108634ed6ef68fbc8327828"
+    },
+    "tests/reference/item/redstone_use/support-ordinary-0/own-entropy.jsonl": {
+      "bytes": 3121,
+      "sha256": "dd1a9a77b6244f4bffe5439e32d62086d9984e84fffeabb39b20649b718e7a23"
+    },
+    "tests/reference/item/redstone_use/support-ordinary-0/selected.txt": {
+      "bytes": 11887,
+      "sha256": "cf005cdd4bfbe24f22143fe2da4bb0eb399853138fb5ba37f2c038475fd75a33"
+    },
+    "tests/reference/item/redstone_use/support-ordinary-0/source-exceptions.jsonl": {
+      "bytes": 158,
+      "sha256": "4a9929eb030c2069b87543820809ff147aa92c508e6bc19e34b19e90a6aca68e"
+    },
+    "tests/reference/item/redstone_use/support-ordinary-1/original.capture.json": {
+      "bytes": 1745,
+      "sha256": "23784e52c5ebe54356f91d993de8dc941900fb06d16aa4a9050224b18f5e35e8"
+    },
+    "tests/reference/item/redstone_use/support-ordinary-1/original.stderr": {
+      "bytes": 396,
+      "sha256": "d46b3d6f86546d9218b3b65cd7d5a97b46f53d476051444148b7ad2ae93a4aac"
+    },
+    "tests/reference/item/redstone_use/support-ordinary-1/original.stdout": {
+      "bytes": 15353,
+      "sha256": "80e568e369f2f1df25e4abaaa0400b2ecea7b5b5b770158ea1dc4f727948498a"
+    },
+    "tests/reference/item/redstone_use/support-ordinary-1/own-entropy.jsonl": {
+      "bytes": 3121,
+      "sha256": "dd3668e804f131a686f50e605f57afe02cccc4cbf15cf84d6b8f266239b11f16"
+    },
+    "tests/reference/item/redstone_use/support-ordinary-1/selected.txt": {
+      "bytes": 11887,
+      "sha256": "cf005cdd4bfbe24f22143fe2da4bb0eb399853138fb5ba37f2c038475fd75a33"
+    },
+    "tests/reference/item/redstone_use/support-ordinary-1/source-exceptions.jsonl": {
+      "bytes": 158,
+      "sha256": "4a9929eb030c2069b87543820809ff147aa92c508e6bc19e34b19e90a6aca68e"
+    },
+    "tests/reference/item/redstone_use/support-profiles.tsv": {
+      "bytes": 343,
+      "sha256": "67301c8f667f6ef47b5c635ab96d8a6e17438a709277d8b333294308ab66e2d6"
+    },
+    "tests/reference/item/redstone_use/test_packet.py": {
+      "bytes": 10964,
+      "sha256": "025bd4029200d1e6c0529082cf59029c0de7025f9ccd341c114e22a62a400af0"
+    },
+    "tests/reference/item/redstone_use/use-ordinary-0/original.capture.json": {
+      "bytes": 1733,
+      "sha256": "70222732348cd2889068b0771390995ae219c9229c9ca3b0e29e7eb85d9f7b6e"
+    },
+    "tests/reference/item/redstone_use/use-ordinary-0/original.stderr": {
+      "bytes": 396,
+      "sha256": "d46b3d6f86546d9218b3b65cd7d5a97b46f53d476051444148b7ad2ae93a4aac"
+    },
+    "tests/reference/item/redstone_use/use-ordinary-0/original.stdout": {
+      "bytes": 62695,
+      "sha256": "058c2ee355611ab1833df0e8db1f39d3b4a11c481d0165acd4f911e2b5334708"
+    },
+    "tests/reference/item/redstone_use/use-ordinary-0/own-entropy.jsonl": {
+      "bytes": 11012,
+      "sha256": "0af1007bc2b729ac3b08e289403817d5aa56c7b59de1c6ea8efe4b7dc2a6712e"
+    },
+    "tests/reference/item/redstone_use/use-ordinary-0/selected.txt": {
+      "bytes": 50326,
+      "sha256": "669cc8c142f9356f5922bc307e789b2a294a804214ea10e9a28b4e37d10d9591"
+    },
+    "tests/reference/item/redstone_use/use-ordinary-0/source-exceptions.jsonl": {
+      "bytes": 1105,
+      "sha256": "fef938335cbd978dc236dcd66d566d712916b043cafcc6c06619813ea78c207e"
+    },
+    "tests/reference/item/redstone_use/use-ordinary-1/original.capture.json": {
+      "bytes": 1733,
+      "sha256": "8f989f701e0814aa578d1ec2cfa8ec3955a8cb4d6740997c165e41c0ced5d741"
+    },
+    "tests/reference/item/redstone_use/use-ordinary-1/original.stderr": {
+      "bytes": 396,
+      "sha256": "d46b3d6f86546d9218b3b65cd7d5a97b46f53d476051444148b7ad2ae93a4aac"
+    },
+    "tests/reference/item/redstone_use/use-ordinary-1/original.stdout": {
+      "bytes": 62695,
+      "sha256": "9d60ead35f15439678b3ea4c57263e33509939d6ff4e5f9508e85e372f70d1c4"
+    },
+    "tests/reference/item/redstone_use/use-ordinary-1/own-entropy.jsonl": {
+      "bytes": 11012,
+      "sha256": "3eb5faa1827f97a7a35a971f9b312f151f020aa203912fab84e0c404eb8531e6"
+    },
+    "tests/reference/item/redstone_use/use-ordinary-1/selected.txt": {
+      "bytes": 50326,
+      "sha256": "669cc8c142f9356f5922bc307e789b2a294a804214ea10e9a28b4e37d10d9591"
+    },
+    "tests/reference/item/redstone_use/use-ordinary-1/source-exceptions.jsonl": {
+      "bytes": 1105,
+      "sha256": "fef938335cbd978dc236dcd66d566d712916b043cafcc6c06619813ea78c207e"
+    },
+    "tests/reference/item/redstone_use/use-profiles.tsv": {
+      "bytes": 2263,
+      "sha256": "fbe4c90374af6287e33211e8ca3e503bfb7a5e053ae51159013ac92fbe57e873"
+    },
+    "tests/tools/client/test_redstone_placement_loop.py": {
+      "bytes": 30264,
+      "sha256": "d9327c78de62fd77f8eb82d3f2aef9e5561e71f30b2107558cbea155f140d70d"
+    },
+    "tests/tools/item/test_redstone_use.py": {
+      "bytes": 22552,
+      "sha256": "60b40e7fc6edd2e45464962adf151a46bfb1a6044e49a0c9205c89d279f4d4d2"
     }
   },
   "self_metadata_excluded": true,
@@ -27553,6 +27789,162 @@
             "tests/tools/client/test_redstone_world.py"
           ],
           "current_count": 4937
+        }
+      }
+    },
+    {
+      "from_commit": "cdf2db71666be86e53653ba3f098527a61879b16",
+      "role": "Redstone Item331 use and independent SM support predicate through genuine World/Stack/Player owners. Finite CPU evidence covers 42 wrapper calls and 12 direct support calls, including exact callback effect prefixes with distinct original exception/native refusal causes. Terminal native fixture cleanup is separate from observed gameplay. Previous original, hosted and timing evidence retains its captured scope; this binding update adds no full-frame, general circuit or FPS qualification.",
+      "previous_metadata": {
+        "bytes": 1171430,
+        "sha256": "df7de6a7e25b94cc6ba6b4bcb7072b841ddcf1917b00ee182a5453917171f5bc"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 339886,
+              "sha256": "3773790bde151d1b051a8010df7d134ece6184af6a6b23c1844b92413b964003"
+            },
+            "docs/parity.md": {
+              "bytes": 192928,
+              "sha256": "6195144f3ffa26cedb0e4fb1a4183a73d7fbe35a85a4ecc15a9505d40e8e62eb"
+            },
+            "docs/status.md": {
+              "bytes": 108095,
+              "sha256": "50d0299ccd081fcf2746a45f66a2962d586cdb69028d67c5f3e9fe73e11a1b8e"
+            },
+            "docs/testing.md": {
+              "bytes": 466227,
+              "sha256": "d7428d196872bc53ed35aad3f310a3aeaa90db6c139a581e655a68c6aa971e62"
+            },
+            "docs/wiki/Build-and-tests.md": {
+              "bytes": 112861,
+              "sha256": "bce01c8737043f1d7e6d90b9a75c11a2970d8c41cd42e27ce74bb5aa39658b34"
+            },
+            "docs/wiki/History.md": {
+              "bytes": 58482,
+              "sha256": "909d1153748f06f2ba46d9398d0621aff40172bc9086b2858ab89ba4a02b33a6"
+            },
+            "docs/wiki/Home.md": {
+              "bytes": 12669,
+              "sha256": "4d6de39ec257f1a115e6dedc2e9e95b0d03cbad15fd1388c8f21fb9d94ecc2e7"
+            },
+            "docs/wiki/World-simulation.md": {
+              "bytes": 54137,
+              "sha256": "03736f20c55623a03e6066c8379dafe1a05cfd680d4c93cf2445fc8a6eac8993"
+            },
+            "docs/wiki/_Sidebar.md": {
+              "bytes": 2646,
+              "sha256": "12047a6804058e8f22af87633db95dc68c2791be652e791b971951142b0fa4b5"
+            },
+            "docs/world/redstone.md": {
+              "bytes": 17717,
+              "sha256": "1323d0d390053084a6a2c96b2ca3e0b3dbe113b7c10afd37b17ea6bdd7603cbb"
+            },
+            "scripts/development/format_code.py": {
+              "bytes": 5500,
+              "sha256": "06b4d61fc099f00a73015e00470ad2efbe1cbe423fa72343f3de74a9ea269f61"
+            },
+            "src/item/stack/source_internal.h": {
+              "bytes": 4380,
+              "sha256": "5cc98e88fd76783ccf47110d914a20eb93ffb5e79f1599c8d0345787a180c706"
+            },
+            "src/item/stack/stack.c": {
+              "bytes": 28427,
+              "sha256": "4913000dc2d952670bff62d297c5a6ee6df4587a577253b4120f44a2ac338b10"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 495378,
+              "sha256": "1d3e395d3ed4519da323953716720d272eb15cacabb8c84da3550ec29b4be6c5"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 595345,
+              "sha256": "3e791daa727b92b79ad78eb017f6d1de1474c33919f1769f49132ec98e85c19e"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 491192,
+              "sha256": "f8afc69f431a1d73113a05775ee11076492e1c39badba3f1fcfe631dbadc8a34"
+            },
+            "docs/client/placement.md": {
+              "bytes": 10097,
+              "sha256": "1465910f88d62eb061ec001ad4f2a8787886cd4f5c73332f6b913aeb5f46c150"
+            },
+            "src/item/use/use.c": {
+              "bytes": 47178,
+              "sha256": "40cd393cc1a276fd8d5b741730dea0c34e4e57cfa1b7b247623b482c1b9161d3"
+            },
+            "src/world/runtime/placement.c": {
+              "bytes": 41945,
+              "sha256": "1ed9934990ff2051ec3fc14c0835ba6f54a897104424156b6d8338ecde52d7c0"
+            },
+            "docs/client/redstone-world.md": {
+              "bytes": 5370,
+              "sha256": "cd88413b8d3017c7e768734a73cfd3ba8fc669ff37449a6be1b33be98f75ebbc"
+            }
+          },
+          "added": [
+            "cmake/client_redstone_placement.cmake",
+            "cmake/item_redstone_use.cmake",
+            "docs/item/redstone-use.md",
+            "tests/client/gameplay/redstone/test_placement.c",
+            "tests/item/use/redstone/reference.c",
+            "tests/item/use/redstone/statistics_setup.inc",
+            "tests/item/use/redstone/statistics_teardown.inc",
+            "tests/item/use/redstone/support_setup.inc",
+            "tests/item/use/redstone/terminal_cleanup.inc",
+            "tests/reference/item/redstone_use/.gitattributes",
+            "tests/reference/item/redstone_use/README.md",
+            "tests/reference/item/redstone_use/RedstoneUseObservation.java",
+            "tests/reference/item/redstone_use/capture.json",
+            "tests/reference/item/redstone_use/capture_reference.py",
+            "tests/reference/item/redstone_use/compile.capture.json",
+            "tests/reference/item/redstone_use/compile.stderr",
+            "tests/reference/item/redstone_use/compile.stdout",
+            "tests/reference/item/redstone_use/declared-inputs.json",
+            "tests/reference/item/redstone_use/freeze.json",
+            "tests/reference/item/redstone_use/input-freeze.json",
+            "tests/reference/item/redstone_use/java.capture.json",
+            "tests/reference/item/redstone_use/java.stderr",
+            "tests/reference/item/redstone_use/java.stdout",
+            "tests/reference/item/redstone_use/javac.capture.json",
+            "tests/reference/item/redstone_use/javac.stderr",
+            "tests/reference/item/redstone_use/javac.stdout",
+            "tests/reference/item/redstone_use/manifest.json",
+            "tests/reference/item/redstone_use/packet.py",
+            "tests/reference/item/redstone_use/provenance.json",
+            "tests/reference/item/redstone_use/source-pins.json",
+            "tests/reference/item/redstone_use/support-ordinary-0/original.capture.json",
+            "tests/reference/item/redstone_use/support-ordinary-0/original.stderr",
+            "tests/reference/item/redstone_use/support-ordinary-0/original.stdout",
+            "tests/reference/item/redstone_use/support-ordinary-0/own-entropy.jsonl",
+            "tests/reference/item/redstone_use/support-ordinary-0/selected.txt",
+            "tests/reference/item/redstone_use/support-ordinary-0/source-exceptions.jsonl",
+            "tests/reference/item/redstone_use/support-ordinary-1/original.capture.json",
+            "tests/reference/item/redstone_use/support-ordinary-1/original.stderr",
+            "tests/reference/item/redstone_use/support-ordinary-1/original.stdout",
+            "tests/reference/item/redstone_use/support-ordinary-1/own-entropy.jsonl",
+            "tests/reference/item/redstone_use/support-ordinary-1/selected.txt",
+            "tests/reference/item/redstone_use/support-ordinary-1/source-exceptions.jsonl",
+            "tests/reference/item/redstone_use/support-profiles.tsv",
+            "tests/reference/item/redstone_use/test_packet.py",
+            "tests/reference/item/redstone_use/use-ordinary-0/original.capture.json",
+            "tests/reference/item/redstone_use/use-ordinary-0/original.stderr",
+            "tests/reference/item/redstone_use/use-ordinary-0/original.stdout",
+            "tests/reference/item/redstone_use/use-ordinary-0/own-entropy.jsonl",
+            "tests/reference/item/redstone_use/use-ordinary-0/selected.txt",
+            "tests/reference/item/redstone_use/use-ordinary-0/source-exceptions.jsonl",
+            "tests/reference/item/redstone_use/use-ordinary-1/original.capture.json",
+            "tests/reference/item/redstone_use/use-ordinary-1/original.stderr",
+            "tests/reference/item/redstone_use/use-ordinary-1/original.stdout",
+            "tests/reference/item/redstone_use/use-ordinary-1/own-entropy.jsonl",
+            "tests/reference/item/redstone_use/use-ordinary-1/selected.txt",
+            "tests/reference/item/redstone_use/use-ordinary-1/source-exceptions.jsonl",
+            "tests/reference/item/redstone_use/use-profiles.tsv",
+            "tests/tools/client/test_redstone_placement_loop.py",
+            "tests/tools/item/test_redstone_use.py"
+          ],
+          "current_count": 4996
         }
       }
     }

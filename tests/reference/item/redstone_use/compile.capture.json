@@ -1,0 +1,27 @@
+{
+  "command": [
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javac.exe",
+    "-encoding",
+    "UTF-8",
+    "-implicit:none",
+    "-cp",
+    "C:\\Users\\admin\\minecraft\\.local\\redstone-item-use-public-original-2\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+    "-d",
+    "C:\\Users\\admin\\minecraft\\.local\\redstone-item-use-public-original-2\\classes",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\item\\redstone_use\\RedstoneUseObservation.java"
+  ],
+  "exit": 0,
+  "timeout_seconds": 30,
+  "timed_out": false,
+  "pipe_capture_complete": true,
+  "reader_errors": {},
+  "output_overflow": false,
+  "stdout_file": "compile.stdout",
+  "stderr_file": "compile.stderr",
+  "stdout_bytes": 0,
+  "stderr_bytes": 0,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_limit": 4194304,
+  "stderr_limit": 1048576
+}
