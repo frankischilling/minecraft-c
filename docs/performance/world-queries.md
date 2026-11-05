@@ -1,5 +1,14 @@
 # World query performance
 
+## EW render getters
+
+[Chunk rendering and EW diagnostics](chunk-rendering.md) records the measured
+minimum-brightness and opaque-query hot paths, six shared failure-only getters,
+336 retained CPU samples and exact native controls. Median minimum-brightness
+cost is 38.332% lower and opaque cost is 64.516% lower in the fixed workload.
+The separate six-process frame cohort fails foreground/World-progress admission;
+it supplies no FPS improvement claim. Earlier receipts retain their captured scope.
+
 ## EW metadata diagnostics
 
 Public EW metadata access keeps its complete diagnostic contract. A private

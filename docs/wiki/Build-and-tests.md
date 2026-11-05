@@ -1,5 +1,23 @@
 # Build and tests
 
+## EW render getter diagnostics
+
+The [CPU receipt and reproduction guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/chunk-rendering.md)
+retain eight processes and all 336 samples over six typed getters. One compiled
+workload supplies identical actual calls. Native replay preserves 950 original
+rows and passes 8,470 checks; a deliberate success-contract mutation is rejected.
+Windows passes 22 focused tests with 5,058 unchanged inputs. Linux Clang Debug
+passes 20 with ASan/UBSan, leak detection, Xvfb/software GL and 4,001 unchanged
+inputs. These checks cover actual compilation, flat/AO faces, Fluid, Lever
+geometry, Redstone and both benchmark adapters.
+
+The separate six-process uninstrumented frame cohort remains failed. Two
+baseline processes lose foreground validity, end paused and advance fewer
+World-time steps than coordinator returns. All three optimized processes pass,
+but no aggregate or passing-subset FPS gain is qualified. Every attempt stays
+retained, including the earlier failed three-process baseline. General native
+focus reliability and sustained FPS remain unqualified.
+
 ## Saved Lever circuit and Redstone particles
 
 The [saved scene](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/lever_placement/README.md) passes

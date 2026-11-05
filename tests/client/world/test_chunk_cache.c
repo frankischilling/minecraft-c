@@ -426,13 +426,16 @@ static bool ew_observe(picking_fixture *f) {
     return true;
 }
 
+#include "chunk_cache_getter_controls.inc"
+
 int main(int argc, char **argv) {
     if (argc != 3)
         return 1;
     picking_fixture *f = calloc(1, sizeof(*f));
     if (f == NULL || !picking_open(f, argv[1]) || !picking_case_open(f, argv[2]) ||
         !ew_observe(f) || ew_rows != 950 || !ew_block_failure_controls(f) ||
-        !ew_metadata_failure_controls(f) || !picking_case_close(f) || !picking_close(f))
+        !ew_metadata_failure_controls(f) || !ew_getter_failure_controls(f) ||
+        !picking_case_close(f) || !picking_close(f))
         return 1;
     free(f);
     printf("Source EW: %u checks; 950 original rows and canonical leases\n", checks);

@@ -17,6 +17,10 @@ destruction rows and six controller destruction scenarios. These finite bodies
 do not establish unrestricted block hooks or extended gameplay.
 [World query performance](performance/world-queries.md) has controlled CPU
 benchmarks and exact read-state checks; it makes no gameplay FPS claim.
+The [EW render getter comparison](performance/chunk-rendering.md) retains
+336 samples and complete native error/output controls. Minimum brightness and
+opaque-query CPU medians are 38.332% and 64.516% lower respectively. Its separate
+six-process frame cohort remains failed and supplies no FPS improvement claim.
 
 The current performance revision adds bounded Block-name selection, generic
 large-cache validation and a private GAME save-progress join. Frozen CPU and

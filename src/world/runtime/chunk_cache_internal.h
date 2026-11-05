@@ -35,4 +35,26 @@ mc_client_chunk_cache_status mc_client_chunk_cache_metadata_failure(mc_client_ch
                                                                     int32_t *,
                                                                     mc_client_chunk_cache_error *);
 
+/* Render getters share the public Source bodies and admission. Success leaves
+ * error untouched; failure materializes every public diagnostic descendant. */
+mc_client_chunk_cache_status
+mc_client_chunk_cache_brightness_failure(mc_client_chunk_cache *, int32_t, int32_t, int32_t,
+                                         float *, mc_client_chunk_cache_error *);
+mc_client_chunk_cache_status
+mc_client_chunk_cache_min_brightness_failure(mc_client_chunk_cache *, int32_t, int32_t, int32_t,
+                                             int32_t, float *, mc_client_chunk_cache_error *);
+mc_client_chunk_cache_status mc_client_chunk_cache_material_failure(mc_client_chunk_cache *,
+                                                                    int32_t, int32_t, int32_t,
+                                                                    mc_material **,
+                                                                    mc_client_chunk_cache_error *);
+mc_client_chunk_cache_status mc_client_chunk_cache_opaque_failure(mc_client_chunk_cache *, int32_t,
+                                                                  int32_t, int32_t, bool *,
+                                                                  mc_client_chunk_cache_error *);
+mc_client_chunk_cache_status
+mc_client_chunk_cache_normal_cube_failure(mc_client_chunk_cache *, int32_t, int32_t, int32_t,
+                                          bool *, mc_client_chunk_cache_error *);
+mc_client_chunk_cache_status mc_client_chunk_cache_manager_failure(mc_client_chunk_cache *,
+                                                                   mc_world_chunk_manager **,
+                                                                   mc_client_chunk_cache_error *);
+
 #endif

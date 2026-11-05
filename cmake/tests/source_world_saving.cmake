@@ -59,6 +59,10 @@ if(BUILD_TESTING AND Python3_Interpreter_FOUND)
         -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/benchmarks" -p test_world_random_tick.py)
     set_tests_properties(tools.world_random_tick_observations PROPERTIES
         LABELS "public;unit;tools;world;performance" TIMEOUT 30)
+    add_test(NAME tools.chunk_cache_render_benchmarks COMMAND Python3::Interpreter -B -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/benchmarks" -p test_chunk_cache_render.py)
+    set_tests_properties(tools.chunk_cache_render_benchmarks PROPERTIES
+        LABELS "public;unit;tools;world;performance" TIMEOUT 30)
     add_test(NAME tools.static_cpu_benchmarks COMMAND Python3::Interpreter -B -m unittest discover
         -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world" -p test_static_cpu_benchmarks.py)
     set_tests_properties(tools.static_cpu_benchmarks PROPERTIES
@@ -112,4 +116,36 @@ if(MC_BUILD_BENCHMARKS AND BUILD_TESTING AND TARGET mc_simulation)
             PROPERTIES MC_NO_SHELL32_DELAYLOAD TRUE)
     endforeach()
     unset(_mc_metadata_adapter)
+endif()
+
+# One compiled workload and two typed function-pointer tables. Candidate adapters
+# share production source bodies; no copied getter is benchmarked here.
+if(MC_BUILD_BENCHMARKS AND BUILD_TESTING AND TARGET mc_simulation)
+    add_library(mc_benchmark_chunk_cache_render_workload OBJECT
+        tests/benchmarks/chunk_cache_render.c)
+    target_include_directories(mc_benchmark_chunk_cache_render_workload PRIVATE src)
+    target_link_libraries(mc_benchmark_chunk_cache_render_workload PRIVATE
+        mc_simulation mc_persistence mc_c_atomics mc_build_options)
+    foreach(_mc_render_adapter IN ITEMS public failure)
+        add_executable("mc_benchmark_chunk_cache_render_${_mc_render_adapter}"
+            "tests/benchmarks/chunk_cache_render_${_mc_render_adapter}.c"
+            $<TARGET_OBJECTS:mc_benchmark_chunk_cache_render_workload>)
+        target_include_directories("mc_benchmark_chunk_cache_render_${_mc_render_adapter}"
+            PRIVATE src)
+        target_link_libraries("mc_benchmark_chunk_cache_render_${_mc_render_adapter}" PRIVATE
+            mc_simulation mc_persistence mc_c_atomics mc_build_options)
+        set_target_properties("mc_benchmark_chunk_cache_render_${_mc_render_adapter}"
+            PROPERTIES MC_NO_SHELL32_DELAYLOAD TRUE)
+    endforeach()
+    unset(_mc_render_adapter)
+    if(Python3_Interpreter_FOUND)
+        add_test(NAME world.chunk_cache_render_benchmark_controls COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/benchmark_chunk_cache_render.py"
+            --executable "public=$<TARGET_FILE:mc_benchmark_chunk_cache_render_public>"
+            --executable "failure=$<TARGET_FILE:mc_benchmark_chunk_cache_render_failure>"
+            --artifacts "${CMAKE_CURRENT_BINARY_DIR}/chunk-cache-render-benchmark-controls"
+            --rounds 1 --mode controls)
+        set_tests_properties(world.chunk_cache_render_benchmark_controls PROPERTIES
+            LABELS "public;integration;world;performance;ownership" TIMEOUT 240)
+    endif()
 endif()

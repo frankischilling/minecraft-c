@@ -258,8 +258,8 @@ bool mc_cv_material(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned 
         return world_result(c, status, e->operation, "f", "(III)Lln;", e->bytecode, pc, native,
                             e->cause);
     }
-    return cache_result(c, mc_client_chunk_cache_material(c->cache, x, y, z, out, &c->cache_error),
-                        pc);
+    return cache_result(
+        c, mc_client_chunk_cache_material_failure(c->cache, x, y, z, out, &c->cache_error), pc);
 }
 
 bool mc_cv_manager(mc_cv_context *c, unsigned int pc, mc_world_chunk_manager **out) {
@@ -273,7 +273,8 @@ bool mc_cv_manager(mc_cv_context *c, unsigned int pc, mc_world_chunk_manager **o
         return world_result(c, status, e->operation, "a", "()Lxv;", e->bytecode, pc,
                             e->native_policy, e->cause);
     }
-    return cache_result(c, mc_client_chunk_cache_manager(c->cache, out, &c->cache_error), pc);
+    return cache_result(c, mc_client_chunk_cache_manager_failure(c->cache, out, &c->cache_error),
+                        pc);
 }
 
 bool mc_cv_cache_brightness(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned int pc,
@@ -296,7 +297,7 @@ bool mc_cv_cache_brightness_bound(mc_cv_context *c, const void *receiver, int32_
             e->source_exception == MC_WORLD_BRIGHTNESS_SOURCE_NONE || e->native_policy, e->cause);
     }
     return cache_result(
-        c, mc_client_chunk_cache_brightness(c->cache, x, y, z, out, &c->cache_error), pc);
+        c, mc_client_chunk_cache_brightness_failure(c->cache, x, y, z, out, &c->cache_error), pc);
 }
 
 bool mc_cv_min_brightness(mc_cv_context *c, int32_t x, int32_t y, int32_t z, int32_t minimum,
@@ -318,9 +319,10 @@ bool mc_cv_min_brightness_bound(mc_cv_context *c, const void *receiver, int32_t 
             c, status, e->operation, "a", "(IIII)F", e->bytecode, pc,
             e->source_exception == MC_WORLD_BRIGHTNESS_SOURCE_NONE || e->native_policy, e->cause);
     }
-    return cache_result(
-        c, mc_client_chunk_cache_min_brightness(c->cache, x, y, z, minimum, out, &c->cache_error),
-        pc);
+    return cache_result(c,
+                        mc_client_chunk_cache_min_brightness_failure(c->cache, x, y, z, minimum,
+                                                                     out, &c->cache_error),
+                        pc);
 }
 
 bool mc_cv_opaque(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned int pc, bool *out) {
@@ -336,8 +338,8 @@ bool mc_cv_opaque(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned in
         return world_result(c, status, e->operation, "g", "(III)Z", e->bytecode, pc,
                             e->native_policy, e->cause);
     }
-    return cache_result(c, mc_client_chunk_cache_opaque(c->cache, x, y, z, out, &c->cache_error),
-                        pc);
+    return cache_result(
+        c, mc_client_chunk_cache_opaque_failure(c->cache, x, y, z, out, &c->cache_error), pc);
 }
 
 bool mc_cv_solid(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned int pc, bool *out) {
@@ -356,7 +358,7 @@ bool mc_cv_solid(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned int
                             e->cause);
     }
     return cache_result(
-        c, mc_client_chunk_cache_normal_cube(c->cache, x, y, z, out, &c->cache_error), pc);
+        c, mc_client_chunk_cache_normal_cube_failure(c->cache, x, y, z, out, &c->cache_error), pc);
 }
 
 bool mc_cv_registry(mc_cv_context *c, unsigned int pc, mc_registry_block_view *view) {

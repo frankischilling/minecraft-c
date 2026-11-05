@@ -1,5 +1,14 @@
 # minecraft-c
 
+The [Chunk rendering comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/chunk-rendering.md)
+identifies minimum-brightness and opaque-query diagnostics in the measured hot
+path. Shared failure-only render getters reduce their fixed-work CPU medians
+by 38.332% and 64.516%, with all 336 samples retained. Exact outputs, complete
+failures and the 950 existing original-reference EW rows remain intact.
+Windows and sanitized Linux pass focused checks. The separate six-process
+frame cohort fails foreground/World-progress admission; it establishes no FPS
+improvement. Complete parity and unrestricted play remain unfinished.
+
 The [saved Lever circuit](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/lever.md#saved-circuit) now passes
 placement, right/left-click switching, powered Redstone Dust and Save/Quit with
 distinct-owner reselection in one native Windows SDK opportunity. It checks

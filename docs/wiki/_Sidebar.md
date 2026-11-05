@@ -17,6 +17,7 @@
 - [Redstone Item use and SDK placement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/redstone-use.md)
 - [Systems and subsystems](Architecture)
 - [Build and tests](Build-and-tests)
+- [Chunk rendering and EW diagnostics](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/chunk-rendering.md)
 - [Current local qualification](Build-and-tests#current-local-qualification)
 - [Storage and original references](Storage-and-reference)
 - [History](History)

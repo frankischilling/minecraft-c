@@ -1,5 +1,22 @@
 # Test scope and reproduction
 
+## EW render getter diagnostics
+
+The [Chunk rendering qualification](performance/chunk-rendering.md) preserves
+all 950 original-reference EW rows and adds six-getter controls for full errors,
+exact outputs, valid lighting effects and untouched success diagnostics.
+Windows replay passes 8,470 checks. A deliberately wrong successful-call
+contract is rejected while preserving the original rows.
+
+The typed CPU pair shares one compiled workload and retains all eight processes
+and 336 samples. Its auditor rejects incomplete work, reordered or duplicate
+records, changed outputs/effects, guard failures and incomplete cleanup. Windows
+passes 22 focused tests; Linux Clang Debug with ASan/UBSan and Xvfb/software GL
+passes 20. The separate uninstrumented six-process frame cohort fails native
+focus and World-progress admission in two baseline processes; no FPS comparison
+or passing-subset gain is qualified. The qualification links detailed results
+and raw CPU observations.
+
 ## Saved Lever circuit and Redstone particles
 
 The [saved-scene receipt](../tests/reference/client/lever_placement/README.md)

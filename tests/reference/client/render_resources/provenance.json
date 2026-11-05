@@ -3586,8 +3586,8 @@
       "sha256": "695f1342d37d540e453c983bbb30cec70f70e6d8bfb154eab149a26544e97692"
     },
     "tests/client/world/test_chunk_cache.c": {
-      "bytes": 23440,
-      "sha256": "8f141c942c269b226f312e9e0aa07b3a614dfab602e240f61e94cd540de7def1"
+      "bytes": 23526,
+      "sha256": "1781c42f673d2f338303158088783a3d4d7dacc17672c38f7171e8c18ebbd733"
     },
     "tests/client/world/test_chunk_compile.c": {
       "bytes": 51363,
@@ -3698,8 +3698,8 @@
       "sha256": "db48725dd52b8f9b466cb9d98768104adf93ce762818eedcb3015c2597f2497f"
     },
     "src/client/render/blocks/access.c": {
-      "bytes": 18759,
-      "sha256": "882e7a5a520e4c9967280faf4f1d546254aa8eebbfd3578ee47dccd714620ad3"
+      "bytes": 18901,
+      "sha256": "a85489becd320e83e0ce3e4235c92f46d6c43a620bbea840e92ef4cd33b76dbc"
     },
     "src/client/render/blocks/ambient_occlusion.c": {
       "bytes": 14218,
@@ -4902,12 +4902,12 @@
       "sha256": "39ee7f49684cdefaa5bab60c00dfe12708898111b68a8b4aa4ec552be7193f43"
     },
     "src/world/runtime/chunk_cache.c": {
-      "bytes": 38425,
-      "sha256": "47726b3dadb7fd5aac04bed2b16ad93a550f478ee79338ae67ce51e1ba685443"
+      "bytes": 42694,
+      "sha256": "2b6b669d27fca4f284fdf75acf2b14f9af0a5803274264d3fb41bd03c02fb6a3"
     },
     "src/world/runtime/chunk_cache_internal.h": {
-      "bytes": 1701,
-      "sha256": "02259a7495f420566c1c1fd188baa70ac8fee23776e96c4a82450f21cc6c1831"
+      "bytes": 3438,
+      "sha256": "7af340f2a10f60ee9f3e1aa91092f892a28a7ff5b4ac67c1ee5423c0658d41f3"
     },
     "src/world/runtime/path.c": {
       "bytes": 26664,
@@ -5478,8 +5478,8 @@
       "sha256": "7e343b192ec286e343fd9496c793b38cb3cdeb0d470ee920772be8fdc222a288"
     },
     "cmake/tests/source_world_saving.cmake": {
-      "bytes": 7722,
-      "sha256": "b25686ab659bb26619432c569284f71e894fdf0b65fee9078d87fc3a90279273"
+      "bytes": 10090,
+      "sha256": "809c349c64d557fb21e0ad46a5df25acad91e316f2c52169a823680bba96b333"
     },
     "src/world/runtime/tile_entities/source_save.inc": {
       "bytes": 11082,
@@ -7828,6 +7828,34 @@
     "tests/tools/world/benchmark_chunk_cache_metadata.py": {
       "bytes": 14168,
       "sha256": "44bd5f5464c05460841b619a17cb0bfa8dc218d306b8284f7efbe8c7abba1bce"
+    },
+    "tests/benchmarks/chunk_cache_render.c": {
+      "bytes": 29260,
+      "sha256": "b450acc4083974475faf8b5a543759f019823e49faf2033c460d8a9630f48ec9"
+    },
+    "tests/benchmarks/chunk_cache_render_adapter.h": {
+      "bytes": 1940,
+      "sha256": "607e9aaa7260813c8f6ada7cb317204a58b359990af17686dec9e9406c7c7b35"
+    },
+    "tests/benchmarks/chunk_cache_render_failure.c": {
+      "bytes": 802,
+      "sha256": "475a99f78b9077ef0b3590b88f7eb9d1e15335983f5ef6240ebf9fcb0f8c8545"
+    },
+    "tests/benchmarks/chunk_cache_render_public.c": {
+      "bytes": 704,
+      "sha256": "d9692739a956d293cc6a5647df07abcc545c1039c2688367ef0a8ce2897a65ae"
+    },
+    "tests/client/world/chunk_cache_getter_controls.inc": {
+      "bytes": 32875,
+      "sha256": "b335443cace9a84c7d84ef95336f3669bbe20453b5e72d2b3964b6621a03ef08"
+    },
+    "tests/tools/benchmarks/test_chunk_cache_render.py": {
+      "bytes": 8802,
+      "sha256": "34ec7bbb62b4105f1dc1d511e51c5b2dbdb2904e64790c2cfe52c515911c365c"
+    },
+    "tests/tools/world/benchmark_chunk_cache_render.py": {
+      "bytes": 12950,
+      "sha256": "6d7b66033aca82a52a63f9787d7a253614fd3e4298e837822ed9e1568a9dc187"
     }
   },
   "source_suppliers": {
@@ -11794,6 +11822,50 @@
             "tests/tools/world/benchmark_chunk_cache_metadata.py"
           ],
           "current_count": 1957
+        }
+      }
+    },
+    {
+      "from_commit": "9421fca5752720349dd4124bc3c67a11e8b770a9",
+      "role": "Current EW render getter failure-only diagnostics, typed equivalence controls and fixed-work CPU comparison inputs. Earlier observations, products and frame cohorts retain their captured scope.",
+      "previous_metadata": {
+        "bytes": 491193,
+        "sha256": "7bf833b3539cca7486080013c5a9a0c80538c1fec99391db8a0aea6d699d8fd5"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/client/world/test_chunk_cache.c": {
+              "bytes": 23440,
+              "sha256": "8f141c942c269b226f312e9e0aa07b3a614dfab602e240f61e94cd540de7def1"
+            },
+            "src/client/render/blocks/access.c": {
+              "bytes": 18759,
+              "sha256": "882e7a5a520e4c9967280faf4f1d546254aa8eebbfd3578ee47dccd714620ad3"
+            },
+            "src/world/runtime/chunk_cache.c": {
+              "bytes": 38425,
+              "sha256": "47726b3dadb7fd5aac04bed2b16ad93a550f478ee79338ae67ce51e1ba685443"
+            },
+            "src/world/runtime/chunk_cache_internal.h": {
+              "bytes": 1701,
+              "sha256": "02259a7495f420566c1c1fd188baa70ac8fee23776e96c4a82450f21cc6c1831"
+            },
+            "cmake/tests/source_world_saving.cmake": {
+              "bytes": 7722,
+              "sha256": "b25686ab659bb26619432c569284f71e894fdf0b65fee9078d87fc3a90279273"
+            }
+          },
+          "added": [
+            "tests/benchmarks/chunk_cache_render.c",
+            "tests/benchmarks/chunk_cache_render_adapter.h",
+            "tests/benchmarks/chunk_cache_render_failure.c",
+            "tests/benchmarks/chunk_cache_render_public.c",
+            "tests/client/world/chunk_cache_getter_controls.inc",
+            "tests/tools/benchmarks/test_chunk_cache_render.py",
+            "tests/tools/world/benchmark_chunk_cache_render.py"
+          ],
+          "current_count": 1964
         }
       }
     }

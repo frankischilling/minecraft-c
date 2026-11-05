@@ -17,14 +17,15 @@
 
 _Static_assert(MC_BLOCK_KIND_COUNT == 69, "audit ew normal-cube virtual descendants");
 
+static const mc_client_chunk_cache_error empty_error = {.registry = {.initializer_pc = -1,
+                                                                     .block_id = -1,
+                                                                     .constructor_pc = -1,
+                                                                     .active_initializer_pc = -1,
+                                                                     .item_argument = -1}};
+
 static void init_error(mc_client_chunk_cache_error *error, const char *method,
                        const char *descriptor) {
-    static const mc_client_chunk_cache_error empty = {.registry = {.initializer_pc = -1,
-                                                                   .block_id = -1,
-                                                                   .constructor_pc = -1,
-                                                                   .active_initializer_pc = -1,
-                                                                   .item_argument = -1}};
-    memcpy(error, &empty, sizeof(*error));
+    memcpy(error, &empty_error, sizeof(*error));
     error->method = method;
     error->descriptor = descriptor;
 }
@@ -42,6 +43,34 @@ static mc_client_chunk_cache_status copy_error(mc_client_chunk_cache_error *out,
                                                const mc_client_chunk_cache_error *e) {
     if (out != NULL)
         *out = *e;
+    return e->status;
+}
+
+/* These getters reach only the scalar/frame prefix and Registry diagnostics.
+ * Their failure-only callers materialize the untouched descendants from the
+ * same canonical record after failure, without repeating a Source child. */
+static void render_error_init(mc_client_chunk_cache_error *e, const char *method,
+                              const char *descriptor, bool failure_only) {
+    if (!failure_only) {
+        init_error(e, method, descriptor);
+        return;
+    }
+    memcpy(e, &empty_error, offsetof(mc_client_chunk_cache_error, storage));
+    e->registry = empty_error.registry;
+    e->method = method;
+    e->descriptor = descriptor;
+}
+
+static mc_client_chunk_cache_status render_error_copy(mc_client_chunk_cache_error *out,
+                                                      const mc_client_chunk_cache_error *e,
+                                                      bool failure_only) {
+    if (!failure_only)
+        return copy_error(out, e);
+    if (e->status != MC_CLIENT_CHUNK_CACHE_OK && out != NULL) {
+        init_error(out, e->method, e->descriptor);
+        memcpy(out, e, offsetof(mc_client_chunk_cache_error, storage));
+        out->registry = e->registry;
+    }
     return e->status;
 }
 
@@ -722,11 +751,12 @@ static bool table_read(const float *table, int32_t level, unsigned int pc, float
 
 static mc_client_chunk_cache_status brightness(mc_client_chunk_cache *c, int32_t x, int32_t y,
                                                int32_t z, bool minimum, int32_t lower, float *out,
-                                               mc_client_chunk_cache_error *error) {
+                                               mc_client_chunk_cache_error *error,
+                                               bool failure_only) {
     mc_client_chunk_cache_error e;
-    init_error(&e, minimum ? "a" : "c", minimum ? "(IIII)F" : "(III)F");
+    render_error_init(&e, minimum ? "a" : "c", minimum ? "(IIII)F" : "(III)F", failure_only);
     if (!enter(c, out != NULL, &e))
-        return copy_error(error, &e);
+        return render_error_copy(error, &e, failure_only);
     mc_world_provider *dimension = NULL;
     const float *table = NULL;
     int32_t light = 0;
@@ -751,29 +781,31 @@ static mc_client_chunk_cache_status brightness(mc_client_chunk_cache *c, int32_t
         (void)table_read(table, light, minimum ? 32u : 17u, out, &e);
     if (dimension != NULL)
         mc_world_provider_release(dimension);
-    return finish(c, &e, error);
+    c->state.active = false;
+    return render_error_copy(error, &e, failure_only);
 }
 
 mc_client_chunk_cache_status mc_client_chunk_cache_brightness(mc_client_chunk_cache *c, int32_t x,
                                                               int32_t y, int32_t z, float *out,
                                                               mc_client_chunk_cache_error *error) {
-    return brightness(c, x, y, z, false, 0, out, error);
+    return brightness(c, x, y, z, false, 0, out, error, false);
 }
 
 mc_client_chunk_cache_status
 mc_client_chunk_cache_min_brightness(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z,
                                      int32_t minimum, float *out,
                                      mc_client_chunk_cache_error *error) {
-    return brightness(c, x, y, z, true, minimum, out, error);
+    return brightness(c, x, y, z, true, minimum, out, error, false);
 }
 
-mc_client_chunk_cache_status mc_client_chunk_cache_material(mc_client_chunk_cache *c, int32_t x,
-                                                            int32_t y, int32_t z, mc_material **out,
-                                                            mc_client_chunk_cache_error *error) {
+static mc_client_chunk_cache_status material_value(mc_client_chunk_cache *c, int32_t x, int32_t y,
+                                                   int32_t z, mc_material **out,
+                                                   mc_client_chunk_cache_error *error,
+                                                   bool failure_only) {
     mc_client_chunk_cache_error e;
-    init_error(&e, "f", "(III)Lln;");
+    render_error_init(&e, "f", "(III)Lln;", failure_only);
     if (!enter(c, out != NULL, &e))
-        return copy_error(error, &e);
+        return render_error_copy(error, &e, failure_only);
     int32_t id;
     if (block_child(c, x, y, z, &id, "f", "(III)Lln;", 4, &e)) {
         if (id == 0) {
@@ -792,7 +824,8 @@ mc_client_chunk_cache_status mc_client_chunk_cache_material(mc_client_chunk_cach
             }
         }
     }
-    return finish(c, &e, error);
+    c->state.active = false;
+    return render_error_copy(error, &e, failure_only);
 }
 
 static bool normal_block(const mc_block *block) {
@@ -801,11 +834,12 @@ static bool normal_block(const mc_block *block) {
 
 static mc_client_chunk_cache_status predicate(mc_client_chunk_cache *c, int32_t x, int32_t y,
                                               int32_t z, bool normal, bool *out,
-                                              mc_client_chunk_cache_error *error) {
+                                              mc_client_chunk_cache_error *error,
+                                              bool failure_only) {
     mc_client_chunk_cache_error e;
-    init_error(&e, normal ? "h" : "g", "(III)Z");
+    render_error_init(&e, normal ? "h" : "g", "(III)Z", failure_only);
     if (!enter(c, out != NULL, &e))
-        return copy_error(error, &e);
+        return render_error_copy(error, &e, failure_only);
     mc_registry_block_m_view array;
     if (registry_result(&e, mc_registry_block_m_get(registry(c), &array, &e.registry), 0)) {
         int32_t id;
@@ -826,28 +860,30 @@ static mc_client_chunk_cache_status predicate(mc_client_chunk_cache *c, int32_t 
             }
         }
     }
-    return finish(c, &e, error);
+    c->state.active = false;
+    return render_error_copy(error, &e, failure_only);
 }
 
 mc_client_chunk_cache_status mc_client_chunk_cache_opaque(mc_client_chunk_cache *c, int32_t x,
                                                           int32_t y, int32_t z, bool *out,
                                                           mc_client_chunk_cache_error *error) {
-    return predicate(c, x, y, z, false, out, error);
+    return predicate(c, x, y, z, false, out, error, false);
 }
 
 mc_client_chunk_cache_status mc_client_chunk_cache_normal_cube(mc_client_chunk_cache *c, int32_t x,
                                                                int32_t y, int32_t z, bool *out,
                                                                mc_client_chunk_cache_error *error) {
-    return predicate(c, x, y, z, true, out, error);
+    return predicate(c, x, y, z, true, out, error, false);
 }
 
-mc_client_chunk_cache_status mc_client_chunk_cache_manager(mc_client_chunk_cache *c,
-                                                           mc_world_chunk_manager **out,
-                                                           mc_client_chunk_cache_error *error) {
+static mc_client_chunk_cache_status manager_value(mc_client_chunk_cache *c,
+                                                  mc_world_chunk_manager **out,
+                                                  mc_client_chunk_cache_error *error,
+                                                  bool failure_only) {
     mc_client_chunk_cache_error e;
-    init_error(&e, "a", "()Lxv;");
+    render_error_init(&e, "a", "()Lxv;", failure_only);
     if (!enter(c, out != NULL, &e))
-        return copy_error(error, &e);
+        return render_error_copy(error, &e, failure_only);
     if (c->state.d == NULL)
         fail(&e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL, "actual ew manager null World receiver", 4,
              false);
@@ -866,5 +902,55 @@ mc_client_chunk_cache_status mc_client_chunk_cache_manager(mc_client_chunk_cache
                 *out = fields.b;
         }
     }
-    return finish(c, &e, error);
+    c->state.active = false;
+    return render_error_copy(error, &e, failure_only);
+}
+
+mc_client_chunk_cache_status
+mc_client_chunk_cache_brightness_failure(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z,
+                                         float *out, mc_client_chunk_cache_error *error) {
+    return brightness(c, x, y, z, false, 0, out, error, true);
+}
+
+mc_client_chunk_cache_status
+mc_client_chunk_cache_min_brightness_failure(mc_client_chunk_cache *c, int32_t x, int32_t y,
+                                             int32_t z, int32_t minimum, float *out,
+                                             mc_client_chunk_cache_error *error) {
+    return brightness(c, x, y, z, true, minimum, out, error, true);
+}
+
+mc_client_chunk_cache_status
+mc_client_chunk_cache_material_failure(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z,
+                                       mc_material **out, mc_client_chunk_cache_error *error) {
+    return material_value(c, x, y, z, out, error, true);
+}
+
+mc_client_chunk_cache_status mc_client_chunk_cache_material(mc_client_chunk_cache *c, int32_t x,
+                                                            int32_t y, int32_t z, mc_material **out,
+                                                            mc_client_chunk_cache_error *error) {
+    return material_value(c, x, y, z, out, error, false);
+}
+
+mc_client_chunk_cache_status
+mc_client_chunk_cache_opaque_failure(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z,
+                                     bool *out, mc_client_chunk_cache_error *error) {
+    return predicate(c, x, y, z, false, out, error, true);
+}
+
+mc_client_chunk_cache_status
+mc_client_chunk_cache_normal_cube_failure(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z,
+                                          bool *out, mc_client_chunk_cache_error *error) {
+    return predicate(c, x, y, z, true, out, error, true);
+}
+
+mc_client_chunk_cache_status
+mc_client_chunk_cache_manager_failure(mc_client_chunk_cache *c, mc_world_chunk_manager **out,
+                                      mc_client_chunk_cache_error *error) {
+    return manager_value(c, out, error, true);
+}
+
+mc_client_chunk_cache_status mc_client_chunk_cache_manager(mc_client_chunk_cache *c,
+                                                           mc_world_chunk_manager **out,
+                                                           mc_client_chunk_cache_error *error) {
+    return manager_value(c, out, error, false);
 }

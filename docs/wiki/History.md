@@ -1,5 +1,21 @@
 # History
 
+## EW render diagnostics
+
+Host timing identifies repeated minimum-brightness and opaque getters inside
+actual Chunk compilation. Six internal render getters now share the public
+Source bodies while producing full diagnostics only after failure. Public
+success records, nested causes, lighting effects and ownership retain their
+contracts. The existing 950 original rows and new native controls pass on
+Windows and sanitized Linux.
+
+All eight CPU processes and 336 samples pass; minimum-brightness and opaque
+medians are 38.332% and 64.516% lower in that fixed workload. A separate native
+frame comparison fails foreground/World-progress admission in two baseline
+processes. Its failed intervals and earlier baseline remain retained, without
+an FPS improvement claim. The [qualification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/chunk-rendering.md)
+records the actual counts, rejected build audits and reproduction steps.
+
 ## Redstone Torch lifecycle
 
 Client Torches75/76 now run addition, removal, neighbor scheduling, directional power, scheduled switching and shared-class burnout history. Windows and sanitized Linux match all 203 finite original cases. A separate Windows SDK placement reaches its natural scheduled off transition and persists through save/reselection.
