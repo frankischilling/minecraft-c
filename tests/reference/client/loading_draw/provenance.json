@@ -2658,8 +2658,8 @@
       "sha256": "c384eea289560d143a229ce742f8cfd3fd4e91f94640a4bca02ee7058b72e4ab"
     },
     "src/entity/registry/registry.c": {
-      "bytes": 12568,
-      "sha256": "6ac209fc45b160e53ba7d574f98cb72c9de28f3bbff8dd7256adc44b68161184"
+      "bytes": 12570,
+      "sha256": "ffd9986cbeba5acead32a60faa3c7b29f6ae34989b609ec580ca5f301b18e51e"
     },
     "src/entity/registry/registry_internal.h": {
       "bytes": 951,
@@ -4762,8 +4762,8 @@
       "sha256": "6d1f65c3da0521f7fdc86b84474d44b6ebbf33bc05d5d37c009f776fac73fea1"
     },
     "tests/storage/nbt/test_overlay.c": {
-      "bytes": 24689,
-      "sha256": "c5a1b373d13f664f237f7a9f86ee28b52897d2e10619be3b5bbd8d3a1719cc7c"
+      "bytes": 24776,
+      "sha256": "d681c6249085125ee8f576a690c4f4ce1042156624f33aa74c4c58a8b39d2741"
     },
     "tests/storage/region/region_probe.c": {
       "bytes": 9755,
@@ -5074,8 +5074,8 @@
       "sha256": "252b6f5d79e23230a452ae34d0a9d947e50bf251ef1bef41ea54cf72c991015c"
     },
     "tests/world/runtime/rails/test_error_sites.c": {
-      "bytes": 32222,
-      "sha256": "b2522c92ee7784c19f7181259c1dec65bb40b4b8a2b17fa60b2b41c5ebb7a6ac"
+      "bytes": 32224,
+      "sha256": "a6c780b10e16ca15e577324e88935ec0db50424e0408b5a9095e819c37cf61e6"
     },
     "tests/world/runtime/rails/test_minecart_detector.c": {
       "bytes": 40899,
@@ -7254,8 +7254,8 @@
       "sha256": "fc84465ea32817c3672a58bbd91b86c79e0a2805d6a21bc39004eac93cfbdc2a"
     },
     "src/entity/mob/construction.c": {
-      "bytes": 37850,
-      "sha256": "e659de5a8be55e08b1ed133162f64a91bfe1fa96c5cf936b4c5c09b437e803e2"
+      "bytes": 37935,
+      "sha256": "747667ed873d86a08b75147c7ce23062669e8dc6881c767e57352b9bb15b5de1"
     },
     "src/entity/mob/internal.h": {
       "bytes": 2398,
@@ -8670,8 +8670,8 @@
       "sha256": "688c58a1260697b36cce665ea42884711f1ac1762fe00bb19984b02fc6eb5c31"
     },
     "tests/entity/mob/test_living_damage.c": {
-      "bytes": 40733,
-      "sha256": "3cb7a2671b4d79af4a2bae13cfd7c7e56fba4435fc95a32a7e299e4b23c9542d"
+      "bytes": 40805,
+      "sha256": "269b5be0048ed3476b68357464ce2148da449f610eb1d74f29f36426c4211c78"
     },
     "tests/reference/entity/living_damage/capture_reference.py": {
       "bytes": 14538,

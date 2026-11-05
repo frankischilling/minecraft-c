@@ -23,7 +23,7 @@ a whole-frame image comparison. See [Lever behavior](world/lever.md) and
 These checks require no original archive, assets, Java or display at replay
 time. Original captures remain separate local commands with verified inputs.
 
-The Windows Release build passes all 652 enabled tests in 238.64 seconds.
+The `eb94d63b` Windows Release build passes all 652 enabled tests in 238.64 seconds.
 Its preceding full run passes 650/652 in 234.89 seconds and remains failed.
 The two failed Rail/Detector fixtures used a Lever neighbor as an unimplemented
 child. Both now use Button 77, preserving every failure-order, lighting,
@@ -41,9 +41,12 @@ Linux qualification, not a full public Linux suite or an interactive scene.
 
 GCC 13.3.0 syntax-checks 12 selected production/test units with the generated
 includes, defines and strict warnings, including `-Wshadow -Werror`. All 14
-selected source/fragment hashes stay unchanged. Clang-format 18 checks all
-2,104 C/header/fragment files after five existing macro layout mismatches are
-corrected without changing initializer values. The public source declarations
+selected source/fragment hashes stay unchanged. The local clang-format 18.1.8
+check passes 2,104 files at that checkpoint, but hosted 18.1.3 rejects five
+initializer macro layouts. The follow-up restores those five files to their
+preceding bytes and pins the formatter to 18.1.3. An actual 18.1.8 invocation
+now returns unavailable before traversing files. Initializer values and gameplay
+logic do not change. The public source declarations
 retain historical capture scopes instead of rebinding their gameplay receipts.
 
 ## Native product evidence

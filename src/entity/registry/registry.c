@@ -29,7 +29,7 @@ static const uint16_t name_units[24][12] = {{'A', 'r', 'r', 'o', 'w'},
                                             {'B', 'o', 'a', 't'}};
 
 #define RECORD(kind, id, index, length, client, server)                                            \
-    {MC_ENTITY_CLASS_KIND_##kind, id, {name_units[index], length}, client, server}
+    { MC_ENTITY_CLASS_KIND_##kind, id, {name_units[index], length}, client, server }
 static const mc_entity_registry_record records[] = {
     RECORD(ARROW, 10, 0, 5, 46, 46),         RECORD(SNOWBALL, 11, 1, 8, 55, 55),
     RECORD(ITEM, 1, 2, 4, 63, 63),           RECORD(PAINTING, 9, 3, 8, 72, 72),

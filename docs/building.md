@@ -354,7 +354,11 @@ and duplicate-label controls.
 Runtime code is organized as `src/<system>/<subsystem>/`, with matching public
 headers under `include/mc/` and tests under `tests/`. See [architecture](architecture.md)
 for current and planned modules. `.clang-format` sets four spaces, a 100-column
-limit, attached braces, and blank lines between definitions. CI uses clang-format18:
+limit, attached braces, and blank lines between definitions. Use clang-format
+18.1.3, matching Ubuntu 24.04 CI. Later patch versions can format initializer
+macros differently; the helper rejects a mismatched formatter before editing
+any files. On Windows, `python -m pip install clang-format==18.1.3` supplies the
+same reported version. Pass its executable with `--clang-format`:
 
 ```sh
 python scripts/development/format_code.py --clang-format clang-format-18

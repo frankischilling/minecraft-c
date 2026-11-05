@@ -31,7 +31,7 @@ typedef struct site_slot {
 
 /* This table names record slots, not any gameplay transition or dispatch. */
 #define SLOT(bit_name, member, type, cause_index)                                                  \
-    {MC_WORLD_RAIL_SITE_##bit_name, offsetof(mc_world_mutation_error, member), type, cause_index}
+    { MC_WORLD_RAIL_SITE_##bit_name, offsetof(mc_world_mutation_error, member), type, cause_index }
 static const site_slot slots[] = {
     SLOT(DETECTOR_CONTACT, rail_detector_contact, DETECTOR, 3),
     SLOT(DETECTOR_TICK, rail_detector_tick, DETECTOR, 3),

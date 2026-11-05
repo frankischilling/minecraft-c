@@ -10,13 +10,19 @@ callback failure. [Lever rendering](client/lever-world.md) matches 32 original
 flat-shading rows, including every appended Tessellator word. Loaded gameplay,
 arbitrary circuits, persistence, original pixels/audio and FPS remain unqualified.
 
-The Windows Release build passes all 652 enabled tests in 238.64 seconds.
+At `eb94d63b`, the Windows Release build passes all 652 enabled tests in 238.64 seconds.
 The preceding 650/652 run remains failed: two negative fixtures expected the
 formerly unimplemented Lever neighbor hook. Those fixtures now use Button 77,
 preserving their mutation-order, lighting, queue and ownership assertions.
 The Linux Clang 18 Debug client build and seven focused ASan/UBSan tests pass;
 all 4,895 guarded non-document inputs remain unchanged. GCC 13.3 syntax-checks
-12 selected units with strict warnings. Formatting passes all 2,104 files.
+12 selected units with strict warnings.
+
+Hosted formatting exposes a tool-version mismatch: local clang-format 18.1.8
+and CI's 18.1.3 format five initializer macros differently. The follow-up
+restores those five files to their preceding bytes and requires 18.1.3 before
+formatting can edit files. The 18.1.8 result remains historical; it does not
+qualify CI formatting. Initializer data and gameplay logic are unchanged.
 
 [Redstone Item331 use](item/redstone-use.md) now reaches its actual support
 predicate, count store, notifying setter and late used statistic. Windows and

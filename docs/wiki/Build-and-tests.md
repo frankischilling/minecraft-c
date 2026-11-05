@@ -4,7 +4,9 @@
 
 The [Lever component checks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/lever.md) pass on Windows MSVC Release and Linux Clang 18 Debug with ASan/UBSan. Native replay checks 209 complete original effect records and two floor choices against its own Random stream. The original packet retains 244 calls per VM; its 33 left-click wrapper rows stay outside that replay. Separate actual mining-start tests exercise left-click toggles and a retained failed activation. Rendering matches 32 original flat-shading rows and all 576 words per row.
 
-The full enabled Windows suite passes 652/652 in 238.64 seconds. The earlier 650/652 run remains failed; two negative Rail/Detector fixtures used a formerly unimplemented Lever child. They now use Button 77 without changing the failure-order assertions. Linux builds the graphical client and passes seven focused tests in 5.85 seconds, preserving 4,895 non-document inputs. GCC 13.3 syntax-checks 12 selected units, and formatting checks 2,104 files. Loaded gameplay, persistence, original pixels/audio, arbitrary circuits, server lifecycle and FPS remain separate work.
+At `eb94d63b`, the full enabled Windows suite passes 652/652 in 238.64 seconds. The earlier 650/652 run remains failed; two negative Rail/Detector fixtures used a formerly unimplemented Lever child. They now use Button 77 without changing the failure-order assertions. Linux builds the graphical client and passes seven focused tests in 5.85 seconds, preserving 4,895 non-document inputs. GCC 13.3 syntax-checks 12 selected units. Loaded gameplay, persistence, original pixels/audio, arbitrary circuits, server lifecycle and FPS remain separate work.
+
+Hosted formatting then exposes the local 18.1.8 versus CI 18.1.3 mismatch. The follow-up restores five initializer macro layouts and requires clang-format 18.1.3 before editing. Earlier format results keep their own version scope; gameplay logic and initializer data are unchanged.
 
 ## Redstone Torch lifecycle
 

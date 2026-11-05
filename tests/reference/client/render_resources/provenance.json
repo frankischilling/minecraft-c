@@ -4554,8 +4554,8 @@
       "sha256": "fc84465ea32817c3672a58bbd91b86c79e0a2805d6a21bc39004eac93cfbdc2a"
     },
     "src/entity/mob/construction.c": {
-      "bytes": 37850,
-      "sha256": "e659de5a8be55e08b1ed133162f64a91bfe1fa96c5cf936b4c5c09b437e803e2"
+      "bytes": 37935,
+      "sha256": "747667ed873d86a08b75147c7ce23062669e8dc6881c767e57352b9bb15b5de1"
     },
     "src/entity/mob/internal.h": {
       "bytes": 2398,
@@ -6242,8 +6242,8 @@
       "sha256": "688c58a1260697b36cce665ea42884711f1ac1762fe00bb19984b02fc6eb5c31"
     },
     "tests/entity/mob/test_living_damage.c": {
-      "bytes": 40733,
-      "sha256": "3cb7a2671b4d79af4a2bae13cfd7c7e56fba4435fc95a32a7e299e4b23c9542d"
+      "bytes": 40805,
+      "sha256": "269b5be0048ed3476b68357464ce2148da449f610eb1d74f29f36426c4211c78"
     },
     "tests/reference/entity/living_damage/capture_reference.py": {
       "bytes": 14538,

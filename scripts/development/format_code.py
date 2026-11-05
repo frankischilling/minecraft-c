@@ -4,6 +4,7 @@
 import argparse
 import os
 from pathlib import Path
+import re
 import shutil
 import struct
 import subprocess
@@ -53,6 +54,11 @@ def main():
     formatter = shutil.which(args.clang_format)
     if not formatter:
         print(f"UNAVAILABLE: formatter not found: {args.clang_format}", file=sys.stderr)
+        return 77
+    version = subprocess.run([formatter, "--version"], capture_output=True, text=True, check=True)
+    if re.search(r"\bversion 18\.1\.3\b", version.stdout) is None:
+        print("UNAVAILABLE: formatting requires clang-format 18.1.3; found " +
+              version.stdout.strip(), file=sys.stderr)
         return 77
     root = Path(__file__).resolve().parents[2]
     fragments = {"tests/item/use/redstone/statistics_setup.inc",

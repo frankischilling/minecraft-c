@@ -433,7 +433,8 @@ static const uint16_t wolf_units[] = {'/', 'm', 'o', 'b', '/', 'w', 'o',
                                       'l', 'f', '.', 'p', 'n', 'g'};
 static const uint16_t squid_units[] = {'/', 'm', 'o', 'b', '/', 's', 'q',
                                        'u', 'i', 'd', '.', 'p', 'n', 'g'};
-#define LITERAL(name) {SIZE_MAX, sizeof(name##_units) / sizeof(*name##_units), name##_units}
+#define LITERAL(name)                                                                              \
+    { SIZE_MAX, sizeof(name##_units) / sizeof(*name##_units), name##_units }
 static const mc_player_string spider_texture = LITERAL(spider);
 static const mc_player_string zombie_texture = LITERAL(zombie);
 static const mc_player_string skeleton_texture = LITERAL(skeleton);
