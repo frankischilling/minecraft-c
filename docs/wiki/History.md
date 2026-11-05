@@ -6,6 +6,8 @@ Client Torches75/76 now run addition, removal, neighbor scheduling, directional 
 
 The first stream-accounting report remains failed. Later bounded accounting explains four constructed but unpublished Items without inventing their fields or Random states. Publication reader failures are also retained: native JDK declarations have no Code, and method metadata requires exact integer types. These reader corrections preserve every execution input and fresh capture byte. Unrestricted circuits, server behavior, original pixels/audio and FPS remain open.
 
+The first hosted GCC build exposed a signed-promotion warning in native diagnostic output. The emitter now promotes the byte explicitly before shifting and masking. Original VM inputs and runtime gameplay bodies remain unchanged.
+
 ## Redstone Item use
 
 Item331 now enters its original Snow/face/air routing and independent support predicate. The body consumes before the notifying setter and the wrapper reads the late Stack ID for statistics. Native Windows and sanitized Linux match all 54 original effect records, including one callback prefix with distinct exception/refusal causes. A separate Windows SDK scene verifies unpowered placement, native geometry and source save/reselection.

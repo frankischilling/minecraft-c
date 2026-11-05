@@ -838,8 +838,8 @@
       "sha256": "b600acf2acee6c82470ce6665f743f1d34f0c80c6535fae5cb07a42de403b3a0"
     },
     "docs/wiki/History.md": {
-      "bytes": 60207,
-      "sha256": "f3fb873668de9165d3712014874d3b1145ffef61ae1910cff34f85777f5e9b79"
+      "bytes": 60438,
+      "sha256": "f823b35e3f0449ed55d6d9b55be06b35080911b6c2e834d9516289b5e49b8f7e"
     },
     "docs/wiki/Home.md": {
       "bytes": 13694,
@@ -20670,8 +20670,8 @@
       "sha256": "0305de7341ab96d4cbed31327c2324efc8c483928bc56f0b791c91e7fb1657aa"
     },
     "tests/world/runtime/redstone_torch/emit_current.c": {
-      "bytes": 25590,
-      "sha256": "013e1f031a2e99812295d0d56023e54fa9d5892371a91907f5c8db125c2f73f3"
+      "bytes": 25588,
+      "sha256": "8576dfde248caaefd60319358546b69112ef09b5213f0fa4d2589cba1b408f37"
     },
     "tests/world/runtime/redstone_torch/emit_current.h": {
       "bytes": 710,
@@ -28920,6 +28920,30 @@
             "tests/world/runtime/redstone_torch/native_main.c",
             "tests/world/runtime/redstone_torch/terminal_current.inc"
           ],
+          "current_count": 5171
+        }
+      }
+    },
+    {
+      "from_commit": "905319fab22a5d5827dc4b2c59c4ccfd4c7c509d",
+      "role": "Native Redstone Torch diagnostic output promotes the metadata byte to unsigned before shifting and masking. GCC strict warnings remain enabled. Original VM inputs and runtime gameplay bodies remain unchanged; the first failed hosted build is retained.",
+      "previous_metadata": {
+        "bytes": 1240844,
+        "sha256": "77750bae2942f9dc6c5f6e324980a2f0c28b3ea7986bcc4fb3f4c037f989522c"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/wiki/History.md": {
+              "bytes": 60207,
+              "sha256": "f3fb873668de9165d3712014874d3b1145ffef61ae1910cff34f85777f5e9b79"
+            },
+            "tests/world/runtime/redstone_torch/emit_current.c": {
+              "bytes": 25590,
+              "sha256": "013e1f031a2e99812295d0d56023e54fa9d5892371a91907f5c8db125c2f73f3"
+            }
+          },
+          "added": [],
           "current_count": 5171
         }
       }

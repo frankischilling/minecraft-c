@@ -268,7 +268,7 @@ static void center(FILE *out, const db_snapshot *s, const db_profile *p) {
     const size_t c = (size_t)(x >> 4) * 2u + (size_t)(z >> 4),
                  i = (((size_t)x & 15u) << 11u) | (((size_t)z & 15u) << 7u) | (size_t)y;
     fprintf(out, "[%u,%u]", (unsigned int)bytes_at(w, c, 0)[i],
-            (unsigned int)((bytes_at(w, c, 1)[i >> 1u] >> ((i & 1u) * 4u)) & 15u));
+            ((unsigned int)bytes_at(w, c, 1)[i >> 1u] >> ((i & 1u) * 4u)) & 15u);
 }
 
 static void scheduled(FILE *out, const db_scheduled_inventory *q) {
