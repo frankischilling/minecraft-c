@@ -28,6 +28,13 @@ run. No reroll or source repair replaces the failed evidence. General circuits,
 Linux loaded play, focus reliability, original pixels/audio and FPS remain
 outside this finite qualification.
 
+The first `7b84fae3` hosted run passes both 733-test Linux jobs; Windows passes
+675/676. MSVC Debug exposes a scene fixture that omitted Java's zeroed allocation
+prestate before constructor stores. Two local debug-stack runs reproduce the
+failure. Zeroing the fixture restores all 160 literal rows, with runtime and
+original observations unchanged. Earlier SDK receipts retain their captured
+source scope.
+
 ## Lever behavior and geometry
 
 The [Lever component checks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/lever.md) pass on Windows MSVC Release and Linux Clang 18 Debug with ASan/UBSan. Native replay checks 209 complete original effect records and two floor choices against its own Random stream. The original packet retains 244 calls per VM; its 33 left-click wrapper rows stay outside that replay. Separate actual mining-start tests exercise left-click toggles and a retained failed activation. Rendering matches 32 original flat-shading rows and all 576 words per row.

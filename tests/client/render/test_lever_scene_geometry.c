@@ -96,7 +96,8 @@ static bool scene_controls(picking_fixture *f, const char *input) {
                     CHECK(mc_registry_block_get(f->base.registry, id, &block, NULL) ==
                               MC_REGISTRY_OK &&
                           block != NULL);
-                    mc_client_render_blocks fields;
+                    /* Java NEW zeroes fields before the entered constructor stores. */
+                    mc_client_render_blocks fields = {0};
                     mc_client_render_blocks_construct_fields(&fields, cache, true);
                     CHECK(!fields.f && fields.d == -1);
                     mc_cv_context context = {.fields = &fields,

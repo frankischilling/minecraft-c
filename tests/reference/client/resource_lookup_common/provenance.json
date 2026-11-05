@@ -826,16 +826,16 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 474170,
-      "sha256": "b2a84091e32217aa99fc8ff6b8950ccd28cf279d86610b7c060e29b68379da6a"
+      "bytes": 474938,
+      "sha256": "53b2fe2f6d53b691ec2f50e627f86e8e38dde306b650aaa30124d72b44dea4e1"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
       "sha256": "2266d5edd099003b4b3fe304ecf79cf86bbfcab026ef1480936c04a391024957"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 118530,
-      "sha256": "586d3f553b40195332401c9799d76c01c0a3acb43bfbb3557d0951cdd182fde7"
+      "bytes": 118937,
+      "sha256": "e4e170c91848f51d42f98f28f6b95cd5ef696ada095fbbf98fc08b22f65854e8"
     },
     "docs/wiki/History.md": {
       "bytes": 60438,
@@ -20694,8 +20694,8 @@
       "sha256": "9c008f426f8558f83a06bca1cf6f8c88fe39b157f0579c3851552da206dab383"
     },
     "docs/client/lever-world.md": {
-      "bytes": 3585,
-      "sha256": "bbcae49d4a5599833c63e82f43d7ddc9b8dc32b2db51bf31cf2cddd4689ae9d6"
+      "bytes": 4053,
+      "sha256": "b301a5eee54da7efd638f4e21ee77aafc887b0f1d2d5caa62ad742c70761bbdb"
     },
     "docs/world/lever.md": {
       "bytes": 5833,
@@ -20874,16 +20874,16 @@
       "sha256": "7e8ddc00f10e6f42b73243b2be2921b43ff032313f7699b4257748a3cc975029"
     },
     "tests/client/render/test_lever_scene_geometry.c": {
-      "bytes": 8784,
-      "sha256": "5c2bad5f7d89616cdd1de59e83802fcc5292f595ff6135722c01fef4d7030fae"
+      "bytes": 8878,
+      "sha256": "a7e14a0982063a5387c8449581a4047c5ae59918958b38af5c22605748209a13"
     },
     "tests/entity/particles/test_redstone_reference.c": {
       "bytes": 30424,
       "sha256": "c96dd8f3fd3333f412578249cc90279d8757d2bef152dd84af0176cf03c6b43e"
     },
     "tests/reference/client/lever_placement/README.md": {
-      "bytes": 3218,
-      "sha256": "ffa2cf690b26f58fd77dc57b5a49ba0ca8b1d8ed03cf66994a90ce7e7ce0d93d"
+      "bytes": 3519,
+      "sha256": "7b8345b4cfd310b0341c4bfb50249edd1053cb6af8b09b57b9fe0d15c2d765e6"
     },
     "tests/reference/client/lever_placement/native-validation.json": {
       "bytes": 326923,
@@ -29781,6 +29781,42 @@
             "tests/tools/client/test_lever_loop.py",
             "tests/tools/client/test_redstone_factory.py"
           ],
+          "current_count": 5270
+        }
+      }
+    },
+    {
+      "from_commit": "7b84fae3266b1785fa59bc57aae952076ce73aa8",
+      "role": "Supply the Java zero-allocation prestate in the Lever scene CPU fixture before original constructor stores. Runtime code and all original observations are unchanged. Earlier SDK, native and hosted receipts retain their captured source scopes; the Debug fixture successor has separate qualification.",
+      "previous_metadata": {
+        "bytes": 1281887,
+        "sha256": "857b9e92a4a53d03f18ba7f0fb2adf7a4901ac59bb47797b5a988aacf331c10f"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/testing.md": {
+              "bytes": 474170,
+              "sha256": "b2a84091e32217aa99fc8ff6b8950ccd28cf279d86610b7c060e29b68379da6a"
+            },
+            "docs/wiki/Build-and-tests.md": {
+              "bytes": 118530,
+              "sha256": "586d3f553b40195332401c9799d76c01c0a3acb43bfbb3557d0951cdd182fde7"
+            },
+            "docs/client/lever-world.md": {
+              "bytes": 3585,
+              "sha256": "bbcae49d4a5599833c63e82f43d7ddc9b8dc32b2db51bf31cf2cddd4689ae9d6"
+            },
+            "tests/client/render/test_lever_scene_geometry.c": {
+              "bytes": 8784,
+              "sha256": "5c2bad5f7d89616cdd1de59e83802fcc5292f595ff6135722c01fef4d7030fae"
+            },
+            "tests/reference/client/lever_placement/README.md": {
+              "bytes": 3218,
+              "sha256": "ffa2cf690b26f58fd77dc57b5a49ba0ca8b1d8ed03cf66994a90ce7e7ce0d93d"
+            }
+          },
+          "added": [],
           "current_count": 5270
         }
       }

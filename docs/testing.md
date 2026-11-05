@@ -50,6 +50,17 @@ focus repair converts this run into a pass. General native focus reliability
 remains unqualified; these failures do not replace the separate passing Lever
 scene and exact CPU comparisons.
 
+The first hosted successor at `7b84fae3` passes both 733-test Linux jobs but
+Windows passes 675/676. Its scene replay reads an uninitialized stack `m` field
+after an entered constructor that correctly preserves unstored fields. The
+fixture omitted Java's zeroed allocation prestate. Compiling only that exact
+fixture entry with MSVC `/Od /RTCs`, against unchanged Release libraries and CRT,
+reproduces the same failure twice. Zero initialization makes the same entry
+pass all 160 literal rows; three ordinary Release scene tests also pass in
+4.10 seconds. This is a fixture correction, not a renderer or oracle change.
+The earlier SDK and complete-input receipts remain bound to their captured
+`7b84fae3` bytes; the fixture-only successor has separate qualification.
+
 Public checks require no original archive, assets, Java or display:
 
 ```sh

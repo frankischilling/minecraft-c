@@ -61,3 +61,10 @@ predecessor and changed or ambiguous selected geometry.
 
 These finite calls establish the specified scene geometry. Original whole-frame
 pixels, audio, arbitrary terrain and FPS remain separate qualifications.
+
+The first hosted MSVC Debug replay exposed an uninitialized native fixture
+field. The entered constructor intentionally writes only its original stores;
+Java's preceding allocation supplies zero defaults. The test now zeroes its
+stack object before those constructor stores. Two local runs with debug stack
+initialization reproduce the original failure, and the corrected entry matches
+all 160 rows. Runtime code, original observations and comparisons are unchanged.

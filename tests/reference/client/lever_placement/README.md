@@ -41,6 +41,11 @@ describe the captured worktree, separately from historical original evidence.
 This finite native scene does not qualify general focus reliability, Linux
 loaded play, arbitrary circuits, original whole-frame pixels/audio or FPS.
 
+The receipt's exact guarded inputs belong to `7b84fae3`. A later CPU scene-test
+fix supplies Java's zeroed allocation prestate; it changes one guarded fixture,
+with game runtime unchanged. Its separate MSVC Debug qualification does not
+rebind this saved-scene receipt to a new complete-input cohort.
+
 With imported assets and the built fixture, repeat in a fresh retained child:
 
 ```powershell
