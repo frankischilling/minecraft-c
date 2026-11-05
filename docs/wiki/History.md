@@ -1,5 +1,13 @@
 # History
 
+## Native failure product retention
+
+World test captures now retain exact native products before launch. Failed
+process output and binary evidence survive a failed final save snapshot.
+The first placement/removal validation retains one pass and one mining-time
+focus failure, with the failing executable available for inspection. Its
+existing SDL correction is present; no new focus fix or FPS gain is claimed.
+
 ## Ordinary Torch placement, lighting and support removal
 
 Client Torch 50 now runs its support, orientation, addition, neighbor and tick

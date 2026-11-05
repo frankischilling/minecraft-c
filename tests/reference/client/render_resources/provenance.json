@@ -2170,8 +2170,8 @@
       "sha256": "5337d15e53e776798d0a4f394e74432da7a578951b72f5c761439accb811786b"
     },
     "tests/tools/client/test_world_selection_loop.py": {
-      "bytes": 98293,
-      "sha256": "a86aaf31cb61732c36246f8d383593d5e4ef6a3cd49fcf724cc5563c0e998952"
+      "bytes": 98934,
+      "sha256": "baa5ad2013f3e44160b37faa95e457b7b33dae98d7a14b2f2ecf3a5c06f29a1f"
     },
     "tests/tools/platform/test_date_format_reference.py": {
       "bytes": 4341,

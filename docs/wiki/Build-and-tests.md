@@ -1,5 +1,19 @@
 # Build and tests
 
+## Native product retention
+
+Visible World controllers preserve the selected executable, adjacent native
+libraries and available SDL candidates before launch. Eighteen filesystem and
+controller tests pass on Windows and Linux, including preservation of native
+failures when the final save snapshot also fails.
+
+The first two-mode validation passes Torch placement and fails during support
+mining. Its preserved executable contains the existing corrected SDL focus
+body. Windows reports Canvas focus while SDL reports no keyboard owner; the
+cause remains open. Finite green controls do not qualify general reliability.
+
+[Capture contract and remaining focus work](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing/native-product-capture.md)
+
 ## Ordinary Torch placement and removal
 
 Two fresh original VMs agree on 193 Torch effect records and nine exceptions.

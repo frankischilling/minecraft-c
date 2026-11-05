@@ -118,23 +118,33 @@ def save_title_files(root, destination):
 def retained_native_run(command, environment, evidence, saves, before_files, mode,
                         process_first, timeout):
     """Retain process evidence before attempting a fallible final disk copy."""
-    result = primary = after_error = None
+    result = primary = after_error = products = None
+    stage = "native-product-capture"
     try:
+        module_path = Path(__file__).with_name("native_product_capture.py")
+        spec = importlib.util.spec_from_file_location("world_native_product_capture", module_path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        products = module.capture_native_products(command, evidence)
+        stage = "native-process"
         result = subprocess.run(command, env=environment, timeout=timeout, check=False,
                                 capture_output=True, text=True)
     except BaseException as error:
         primary = error
+        if stage == "native-product-capture":
+            products = getattr(error, "receipt", None)
     stdout = result.stdout if result is not None else getattr(primary, "stdout", None)
     stderr = result.stderr if result is not None else getattr(primary, "stderr", None)
     for filename, value in (("stdout.txt", stdout), ("stderr.txt", stderr)):
         data = value if isinstance(value, bytes) else (value or "").encode("utf-8")
         (evidence / filename).write_bytes(data)
     execution = {"mode": mode, "before": before_files, "command": command,
-                 "process_first_millis": process_first}
+                 "process_first_millis": process_first, "native_products": products}
     if result is not None:
         execution.update(event="result", exit_code=result.returncode)
     else:
-        execution.update(event="timeout" if isinstance(primary, subprocess.TimeoutExpired) else
+        execution.update(event="product-capture-error" if stage == "native-product-capture" else
+                         "timeout" if isinstance(primary, subprocess.TimeoutExpired) else
                          "launch-error" if isinstance(primary, OSError) else "process-error",
                          error_type=type(primary).__name__, error=str(primary))
         if isinstance(primary, subprocess.TimeoutExpired):

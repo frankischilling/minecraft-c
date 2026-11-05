@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 339799,
-      "sha256": "2279eff191ec7a923da70ad5d93a22912877696ae397792bc42515ed448cb083"
+      "bytes": 339843,
+      "sha256": "cd773a6fb5bcdcefa1a82e65c9c0b5f0a02e9f4b11722cdd8ede25c796f304c3"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -826,20 +826,20 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 465714,
-      "sha256": "674191d1d296a6a751a3e145cc03910f2c37ac53ff8e1c148193fe6b0ae50568"
+      "bytes": 466227,
+      "sha256": "d7428d196872bc53ed35aad3f310a3aeaa90db6c139a581e655a68c6aa971e62"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
       "sha256": "2266d5edd099003b4b3fe304ecf79cf86bbfcab026ef1480936c04a391024957"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 111113,
-      "sha256": "5f41a93830ffdc118f1e958cce036610e66689082564ef8ffeeff1b3f0ee5f7e"
+      "bytes": 111895,
+      "sha256": "eda9397631274f45e10bb7fbf29d003264188e2399554ac81f61d1fc016c6e8b"
     },
     "docs/wiki/History.md": {
-      "bytes": 57331,
-      "sha256": "afbb29d57e4b2a3cd4faf5b1066ac6de4be675b7a90b68d28849028a8596fa2e"
+      "bytes": 57743,
+      "sha256": "145588c77b985e28025c6ee9079f9beaedb18ea9eff74c54f0f2b060880553aa"
     },
     "docs/wiki/Home.md": {
       "bytes": 12269,
@@ -6407,7 +6407,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 495378,
-      "sha256": "35edc83bb51182b08f7a741df0f91310e59242e1d89b7608bf834b7ae643a7d0"
+      "sha256": "8bc8b5d9f4706016e4691d6e26b985a53350080df85811959b11defa647437b9"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6471,7 +6471,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 595345,
-      "sha256": "8e87b7585fbe11d45c5d3d9091346026d9ce255d18dad7bc21a593e67803700f"
+      "sha256": "118aa98f369a2e169d4547a01fd62cf73c79032c4f8c1a4bf7592bd425d1b1f9"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6603,7 +6603,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 491192,
-      "sha256": "f3330867d9bc4891aa83c938e232fac8febfb98b4cc9dd2cba8f0330aa154e95"
+      "sha256": "b0a76be2e065c783749b3feb666b8f865b07338317860ef0cdf9b12d44d68eff"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9958,8 +9958,8 @@
       "sha256": "5337d15e53e776798d0a4f394e74432da7a578951b72f5c761439accb811786b"
     },
     "tests/tools/client/test_world_selection_loop.py": {
-      "bytes": 98293,
-      "sha256": "a86aaf31cb61732c36246f8d383593d5e4ef6a3cd49fcf724cc5563c0e998952"
+      "bytes": 98934,
+      "sha256": "baa5ad2013f3e44160b37faa95e457b7b33dae98d7a14b2f2ecf3a5c06f29a1f"
     },
     "tests/tools/platform/test_date_format_reference.py": {
       "bytes": 4341,
@@ -19432,6 +19432,26 @@
     "tests/world/runtime/torch_placement_reference.c": {
       "bytes": 33813,
       "sha256": "a72e944c6e3b4cef910c59265c9f4cd27f93499d7f5f8d1d224f72e0c91ee97b"
+    },
+    "cmake/native_product_capture.cmake": {
+      "bytes": 395,
+      "sha256": "9f19fbce1449343c0518675174d3b6aa38c7a99c4e5fa52b9e9a173633d3642a"
+    },
+    "docs/testing/native-product-capture.md": {
+      "bytes": 3907,
+      "sha256": "bb303187a879422302de5e07209addcee33fd07f757e2f7a97ad9861c4a04eff"
+    },
+    "tests/tools/client/native_product_capture.py": {
+      "bytes": 6288,
+      "sha256": "842a3116ef92607c779c4c64bfe6f78575a7ccfe8f67d5a514932ed5f8427ead"
+    },
+    "tests/tools/client/test_native_product_capture.py": {
+      "bytes": 11212,
+      "sha256": "329d1dcf885e63b2a83700f34a436adc02656943b2bdb1c4e3f59f6e635647f8"
+    },
+    "tests/tools/client/test_native_run_capture.py": {
+      "bytes": 5152,
+      "sha256": "0e9abeaa1f9f3176e3a42fd455c0f04d805d64db05b1a3477d517f74f1446785"
     }
   },
   "self_metadata_excluded": true,
@@ -27028,6 +27048,60 @@
             "tests/world/runtime/torch_placement_reference.c"
           ],
           "current_count": 4858
+        }
+      }
+    },
+    {
+      "from_commit": "0469b850e660dd19043b3412c0018912ccb6e83a",
+      "role": "Current prelaunch native-product preservation and failure receipts for visible World controllers. Filesystem and controller controls qualify capture ownership only; retained native focus failures remain unresolved and earlier gameplay, original, hosted and timing evidence keeps its captured scope.",
+      "previous_metadata": {
+        "bytes": 1145198,
+        "sha256": "7e7141604a1ae598c858df0abc6f42e646d341325b87dcfb30497464d5737ad6"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 339799,
+              "sha256": "2279eff191ec7a923da70ad5d93a22912877696ae397792bc42515ed448cb083"
+            },
+            "docs/testing.md": {
+              "bytes": 465714,
+              "sha256": "674191d1d296a6a751a3e145cc03910f2c37ac53ff8e1c148193fe6b0ae50568"
+            },
+            "docs/wiki/Build-and-tests.md": {
+              "bytes": 111113,
+              "sha256": "5f41a93830ffdc118f1e958cce036610e66689082564ef8ffeeff1b3f0ee5f7e"
+            },
+            "docs/wiki/History.md": {
+              "bytes": 57331,
+              "sha256": "afbb29d57e4b2a3cd4faf5b1066ac6de4be675b7a90b68d28849028a8596fa2e"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 495378,
+              "sha256": "35edc83bb51182b08f7a741df0f91310e59242e1d89b7608bf834b7ae643a7d0"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 595345,
+              "sha256": "8e87b7585fbe11d45c5d3d9091346026d9ce255d18dad7bc21a593e67803700f"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 491192,
+              "sha256": "f3330867d9bc4891aa83c938e232fac8febfb98b4cc9dd2cba8f0330aa154e95"
+            },
+            "tests/tools/client/test_world_selection_loop.py": {
+              "bytes": 98293,
+              "sha256": "a86aaf31cb61732c36246f8d383593d5e4ef6a3cd49fcf724cc5563c0e998952"
+            }
+          },
+          "added": [
+            "cmake/native_product_capture.cmake",
+            "docs/testing/native-product-capture.md",
+            "tests/tools/client/native_product_capture.py",
+            "tests/tools/client/test_native_product_capture.py",
+            "tests/tools/client/test_native_run_capture.py"
+          ],
+          "current_count": 4863
         }
       }
     }

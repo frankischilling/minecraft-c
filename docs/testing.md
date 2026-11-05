@@ -1,5 +1,15 @@
 # Test scope and reproduction
 
+## Native product evidence
+
+Visible World controllers preserve the selected executable, adjacent native
+libraries and available candidate SDL build inputs before launch. Eighteen
+filesystem/controller checks cover product replacement, partial capture and
+failure precedence. The command and runtime behavior stay unchanged.
+[Capture scope and limits](testing/native-product-capture.md) explain why
+candidate archive bytes require separate link proof and why the earlier
+unbound focus failures remain unresolved.
+
 ## Ordinary Torch placement and support removal
 
 Windows MSVC Release and Linux Clang Debug ASan/UBSan match all 193 original
