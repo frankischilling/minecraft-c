@@ -6,6 +6,14 @@ support Overworld population and plant survival. They have different bounds,
 acquisition and class-initialization behavior; one bounded block lookup cannot
 replace them.
 
+Random Grass and Leaves queries use the existing internal failure-only Block
+and metadata accessors. Their shared query bodies still perform the same real
+provider GET and current-array read. The caller consumes acquisition details
+only after failure; every failed result retains its full canonical or reached
+child record. Public detailed getters retain their success outputs. The
+[performance qualification](../performance/random-block-ticks.md) records exact
+caller failures, complete state comparisons and the finite CPU scope.
+
 | Query | Bounds and acquisition | Normal Chunk result | Blank result |
 | --- | --- | --- | --- |
 | `mc_world_runtime_top_solid_liquid` | No World border gate; acquire once before masking X/Z | Scan Y127 through Y1; return the first solid or liquid material's Y+1, otherwise -1 | Scan air through the same reached Material operations; return -1 |

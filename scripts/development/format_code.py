@@ -102,6 +102,7 @@ def main():
                  "tests/client/render/foliage_item_controls.inc",
                  "tests/benchmarks/chunk_cache_error_equal.inc",
                  "tests/client/world/chunk_cache_getter_controls.inc",
+                 "tests/world/runtime/random_block_getter_controls.inc",
                  "tests/world/runtime/collision/selected_getter_cases.inc",
                  "src/client/settings/source_input.inc",
                  "src/world/saved_data/source_storage.inc",

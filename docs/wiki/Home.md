@@ -1,5 +1,12 @@
 # minecraft-c
 
+The [Grass and Leaves comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/random-block-ticks.md)
+removes unused successful query diagnostics while preserving real World queries
+and complete failures. All 168 final CPU samples qualify; connected Leaves has
+a 37.561% lower median in the declared cached workload. Windows and sanitized
+Linux each pass 16 focused tests. A separate six-process frame cohort fails
+foreground admission in two baseline processes, so no FPS gain is claimed.
+
 The [Chunk rendering comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/chunk-rendering.md)
 identifies minimum-brightness and opaque-query diagnostics in the measured hot
 path. Shared failure-only render getters reduce their fixed-work CPU medians

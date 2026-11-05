@@ -1,5 +1,21 @@
 # Build and tests
 
+## Grass and Leaves query diagnostics
+
+The [qualification and reproduction guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/random-block-ticks.md)
+retains two separate CPU cohorts of 168 measured samples each. Complete planes,
+persistent scratch, ordered queues, callbacks, Random state and native owners
+match across the real detailed/failure bodies. A narrow untouched cave seed
+word remains recorded independently. Three caller failure controls retain exact
+nested diagnostics and provider GET counts; the existing eighteen leaf profiles
+remain unchanged.
+
+Full Windows and Linux builds pass. Each host passes 16 focused tests with
+3,215 unchanged guards; Linux uses Clang Debug with ASan/UBSan and leak checks.
+The six-process native frame cohort remains unqualified after two baseline
+focus failures. All attempts and rejected harness builds remain retained,
+without an FPS improvement claim or new original-game coverage.
+
 ## EW render getter diagnostics
 
 The [CPU receipt and reproduction guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/chunk-rendering.md)

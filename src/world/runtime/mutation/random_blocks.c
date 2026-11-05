@@ -105,8 +105,8 @@ static bool rb_get(random_block_frame *f, unsigned int pc, int32_t x, int32_t y,
     mc_world_storage_error cause = {0};
     mc_world_runtime_acquisition_error detail;
     const mc_world_storage_status status =
-        metadata ? mc_world_runtime_metadata_get_detailed(f->world, x, y, z, out, &cause, &detail)
-                 : mc_world_runtime_block_get_detailed(f->world, x, y, z, out, &cause, &detail);
+        metadata ? mc_world_runtime_metadata_get_failure(f->world, x, y, z, out, &cause, &detail)
+                 : mc_world_runtime_block_get_failure(f->world, x, y, z, out, &cause, &detail);
     if (status == MC_WORLD_STORAGE_OK)
         return true;
     rb_acquisition(f, &detail);

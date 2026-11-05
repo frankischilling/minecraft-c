@@ -1,5 +1,20 @@
 # History
 
+## Grass and Leaves diagnostics
+
+The random Block getter now uses the existing failure-only Block and metadata
+queries. It preserves the shared Source body, actual provider lookup, current
+arrays, Random trajectory and full failure projection. New native Leaves
+controls verify three failure prefixes and exact GET counts.
+
+The final eight-process CPU cohort retains 168 measured samples. Median costs
+fall 9.170% for bright Grass, 7.714% for flag-clear Leaves and 37.561% for
+connected flagged Leaves. The earlier qualified CPU cohort stays separate.
+Windows and sanitized Linux each pass 16 focused tests. Two baseline focus
+failures invalidate the new six-process frame comparison; all attempts remain
+recorded and no FPS gain is claimed. The [qualification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/random-block-ticks.md)
+preserves build bindings, failed controls and reproduction steps.
+
 ## EW render diagnostics
 
 Host timing identifies repeated minimum-brightness and opaque getters inside

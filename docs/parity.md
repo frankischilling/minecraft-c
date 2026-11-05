@@ -10,6 +10,13 @@ Statuses: Not started; Under research; Partially implemented; Implemented but
 unverified; Verified for specified scenarios; Blocked (with a named dependency).
 The inventory expands the broad gameplay rows into concrete child behaviors.
 
+The [Grass and Leaves diagnostic comparison](performance/random-block-ticks.md)
+keeps the actual provider queries, Random trajectories, mutations and complete
+failure records. Its final 168-sample CPU cohort reduces the connected Leaves
+median by 37.561%. Windows and sanitized Linux each pass 16 focused tests.
+The separate six-process frame cohort is unqualified after two baseline focus
+failures, so it supplies no FPS improvement claim or new original-game coverage.
+
 [Held Item mining](item/mining.md) now covers speed, harvest eligibility,
 destruction, wear, breakage and ordered statistics through the actual controller.
 Windows CPU comparisons match 19,594 six-result mining rows, 2,331 Item/Stack

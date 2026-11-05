@@ -1,5 +1,27 @@
 # Test scope and reproduction
 
+## Grass and Leaves query diagnostics
+
+The [qualification](performance/random-block-ticks.md) retains two separate
+eight-process CPU cohorts, each with 168 predeclared measured samples. One
+compiled workload calls the actual Grass and Leaves bodies through typed
+adapters. It checks complete planes, persistent scratch, ordered light and
+scheduled records, callbacks, owner identities and Random state. Only an
+unreached cave owner's unchanged default-constructor state word is excluded
+across processes; all raw values remain retained.
+
+Caller regressions cover successful metadata followed by the first failed Block
+read, a missing provider, and a reached cached-Chunk acquisition failure. They
+check full nested diagnostics, exact GET counts and retained source prefixes.
+Windows passes 16 focused tests in 23.40 CTest seconds; Linux Clang Debug passes
+the same 16 in 74.70 seconds with ASan/UBSan and leak checks. Each host retains
+3,215 unchanged guards. Full builds pass on both hosts.
+
+The new six-process frame cohort remains unqualified after two baseline focus
+failures. All attempts, source work, guards and failures remain recorded, with
+no FPS improvement or passing-subset claim. The receipt also preserves the two
+rejected strict builds and the initial cave-state control mismatch.
+
 ## EW render getter diagnostics
 
 The [Chunk rendering qualification](performance/chunk-rendering.md) preserves

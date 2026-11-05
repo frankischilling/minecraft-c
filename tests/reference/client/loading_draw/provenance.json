@@ -7326,8 +7326,8 @@
       "sha256": "2ce7e534971147a3757308e81b0c47402bd3c6ffc87e90e94ae3682c5ff838e3"
     },
     "src/world/runtime/mutation/random_blocks.c": {
-      "bytes": 20078,
-      "sha256": "a3b2ea14bd0314899640233d6bf4701fb63fe8a265355ccb8a0cb0938743b06b"
+      "bytes": 20076,
+      "sha256": "95a24a00bb4793f293899c51bdb32bfa1716939bcab7e3890609adfdb3e8041c"
     },
     "src/world/runtime/world_tick_random.c": {
       "bytes": 48553,
@@ -7350,8 +7350,8 @@
       "sha256": "0703302dbc981162ccc196c95dd5853fe36ca5c7a6be6512d6693069fbc52139"
     },
     "tests/world/runtime/test_random_blocks.c": {
-      "bytes": 53929,
-      "sha256": "32cb6f1cbba2e30dcb0d8a96b693dc6776f38e4e78fa974faa4f83b1b36e13d2"
+      "bytes": 54017,
+      "sha256": "fc347793586aee0cd806ab21e9d80f524445d5b18cb5beae78a0c765d9f1dcb7"
     },
     "tests/world/runtime/test_world_random_tick.c": {
       "bytes": 39950,
@@ -7934,8 +7934,8 @@
       "sha256": "7e343b192ec286e343fd9496c793b38cb3cdeb0d470ee920772be8fdc222a288"
     },
     "cmake/tests/source_world_saving.cmake": {
-      "bytes": 10090,
-      "sha256": "809c349c64d557fb21e0ad46a5df25acad91e316f2c52169a823680bba96b333"
+      "bytes": 13481,
+      "sha256": "352b8c0a8fa520a5166c89a9e05c75c530b80b9799535eede4cf9ed13b4aae8f"
     },
     "src/world/runtime/tile_entities/source_save.inc": {
       "bytes": 11082,
@@ -10284,6 +10284,34 @@
     "tests/tools/world/benchmark_chunk_cache_render.py": {
       "bytes": 12950,
       "sha256": "6d7b66033aca82a52a63f9787d7a253614fd3e4298e837822ed9e1568a9dc187"
+    },
+    "tests/benchmarks/random_blocks.c": {
+      "bytes": 27919,
+      "sha256": "ea9d8c21700be7110f89a7f7ac1b59afe5c046eccb165eb06c216b97e9105282"
+    },
+    "tests/benchmarks/random_blocks_adapter.h": {
+      "bytes": 540,
+      "sha256": "4b97c669284e99c42a9b2490f316b1dca05cb3699a5ec9148c33f6e8e06519cc"
+    },
+    "tests/benchmarks/random_blocks_detailed.c": {
+      "bytes": 916,
+      "sha256": "ee42798a347275cdda50b598b9b50b88be2dd4500b51b54bf951a4f48a94bc88"
+    },
+    "tests/benchmarks/random_blocks_failure.c": {
+      "bytes": 426,
+      "sha256": "95d6b7534fb2459207dc51ce2782ed254acbe04019a9a56c18efe06d1004e4bb"
+    },
+    "tests/tools/benchmarks/test_random_blocks.py": {
+      "bytes": 51794,
+      "sha256": "fae25e2b0714e971e3a3b24c6322f7b727a0e8e2d961634cb47c78932c1cf0bf"
+    },
+    "tests/tools/world/benchmark_random_blocks.py": {
+      "bytes": 30610,
+      "sha256": "8ec5bf523c4e00aa791635c1ae9cc109040d56ed1bec4856279c401a5ff03ed1"
+    },
+    "tests/world/runtime/random_block_getter_controls.inc": {
+      "bytes": 11535,
+      "sha256": "eb477a22925eb83fe2d2a0d7662dd0a437832ad2dcf619e8dbc465081e1f80d2"
     }
   },
   "actual_source_method": {
@@ -14635,6 +14663,42 @@
             "tests/tools/world/benchmark_chunk_cache_render.py"
           ],
           "current_count": 2571
+        }
+      }
+    },
+    {
+      "from_commit": "e770cc8b79a67eb233ab4cb824b4c16f28daae93",
+      "role": "Current random Block getter failure-only call sites, native caller controls, typed Grass/Leaves workloads and complete CPU/frame audit inputs. These are current admission declarations only; earlier observations, products and every failed or passing capture retain their recorded scope.",
+      "previous_metadata": {
+        "bytes": 598493,
+        "sha256": "53dc587767033b73717d7777851cf39460e0a4740eb2a682c51d2a976901d3cc"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "src/world/runtime/mutation/random_blocks.c": {
+              "bytes": 20078,
+              "sha256": "a3b2ea14bd0314899640233d6bf4701fb63fe8a265355ccb8a0cb0938743b06b"
+            },
+            "tests/world/runtime/test_random_blocks.c": {
+              "bytes": 53929,
+              "sha256": "32cb6f1cbba2e30dcb0d8a96b693dc6776f38e4e78fa974faa4f83b1b36e13d2"
+            },
+            "cmake/tests/source_world_saving.cmake": {
+              "bytes": 10090,
+              "sha256": "809c349c64d557fb21e0ad46a5df25acad91e316f2c52169a823680bba96b333"
+            }
+          },
+          "added": [
+            "tests/benchmarks/random_blocks.c",
+            "tests/benchmarks/random_blocks_adapter.h",
+            "tests/benchmarks/random_blocks_detailed.c",
+            "tests/benchmarks/random_blocks_failure.c",
+            "tests/tools/benchmarks/test_random_blocks.py",
+            "tests/tools/world/benchmark_random_blocks.py",
+            "tests/world/runtime/random_block_getter_controls.inc"
+          ],
+          "current_count": 2578
         }
       }
     }

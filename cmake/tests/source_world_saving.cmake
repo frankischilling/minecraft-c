@@ -63,6 +63,10 @@ if(BUILD_TESTING AND Python3_Interpreter_FOUND)
         -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/benchmarks" -p test_chunk_cache_render.py)
     set_tests_properties(tools.chunk_cache_render_benchmarks PROPERTIES
         LABELS "public;unit;tools;world;performance" TIMEOUT 30)
+    add_test(NAME tools.random_blocks_benchmarks COMMAND Python3::Interpreter -B -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/benchmarks" -p test_random_blocks.py)
+    set_tests_properties(tools.random_blocks_benchmarks PROPERTIES
+        LABELS "public;unit;tools;world;performance" TIMEOUT 30)
     add_test(NAME tools.static_cpu_benchmarks COMMAND Python3::Interpreter -B -m unittest discover
         -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world" -p test_static_cpu_benchmarks.py)
     set_tests_properties(tools.static_cpu_benchmarks PROPERTIES
@@ -146,6 +150,52 @@ if(MC_BUILD_BENCHMARKS AND BUILD_TESTING AND TARGET mc_simulation)
             --artifacts "${CMAKE_CURRENT_BINARY_DIR}/chunk-cache-render-benchmark-controls"
             --rounds 1 --mode controls)
         set_tests_properties(world.chunk_cache_render_benchmark_controls PROPERTIES
+            LABELS "public;integration;world;performance;ownership" TIMEOUT 240)
+    endif()
+endif()
+
+# The workload is compiled once. The detailed baseline compiles the same
+# production leaf bodies with target-local symbol and getter aliases.
+if(MC_BUILD_BENCHMARKS AND BUILD_TESTING AND TARGET mc_simulation)
+    add_library(mc_benchmark_random_blocks_workload OBJECT tests/benchmarks/random_blocks.c)
+    target_include_directories(mc_benchmark_random_blocks_workload PRIVATE src src/core/java)
+    target_link_libraries(mc_benchmark_random_blocks_workload PRIVATE
+        mc_simulation mc_resources mc_persistence mc_c_atomics mc_build_options)
+    add_library(mc_benchmark_random_blocks_detailed_body OBJECT
+        src/world/runtime/mutation/random_blocks.c)
+    target_include_directories(mc_benchmark_random_blocks_detailed_body PRIVATE
+        src/platform/time include src/client/startup)
+    target_link_libraries(mc_benchmark_random_blocks_detailed_body PRIVATE
+        mc_simulation mc_c_atomics mc_build_options)
+    target_compile_definitions(mc_benchmark_random_blocks_detailed_body PRIVATE
+        mc_world_mutation_grass_tick=mc_benchmark_detailed_grass_tick
+        mc_world_mutation_leaves_tick=mc_benchmark_detailed_leaves_tick
+        mc_world_mutation_ice_tick=mc_benchmark_detailed_ice_tick
+        mc_world_mutation_snow_block_tick=mc_benchmark_detailed_snow_block_tick
+        mc_world_runtime_block_get_failure=mc_world_runtime_block_get_detailed
+        mc_world_runtime_metadata_get_failure=mc_world_runtime_metadata_get_detailed)
+    foreach(_mc_random_blocks_adapter IN ITEMS detailed failure)
+        add_executable("mc_benchmark_random_blocks_${_mc_random_blocks_adapter}"
+            "tests/benchmarks/random_blocks_${_mc_random_blocks_adapter}.c"
+            $<TARGET_OBJECTS:mc_benchmark_random_blocks_workload>)
+        target_include_directories("mc_benchmark_random_blocks_${_mc_random_blocks_adapter}"
+            PRIVATE src)
+        target_link_libraries("mc_benchmark_random_blocks_${_mc_random_blocks_adapter}" PRIVATE
+            mc_simulation mc_resources mc_persistence mc_c_atomics mc_build_options)
+        set_target_properties("mc_benchmark_random_blocks_${_mc_random_blocks_adapter}"
+            PROPERTIES MC_NO_SHELL32_DELAYLOAD TRUE)
+    endforeach()
+    unset(_mc_random_blocks_adapter)
+    target_sources(mc_benchmark_random_blocks_detailed PRIVATE
+        $<TARGET_OBJECTS:mc_benchmark_random_blocks_detailed_body>)
+    if(Python3_Interpreter_FOUND)
+        add_test(NAME world.random_blocks_benchmark_controls COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/benchmark_random_blocks.py"
+            --executable "detailed=$<TARGET_FILE:mc_benchmark_random_blocks_detailed>"
+            --executable "failure=$<TARGET_FILE:mc_benchmark_random_blocks_failure>"
+            --artifacts "${CMAKE_CURRENT_BINARY_DIR}/random-blocks-benchmark-controls"
+            --rounds 1 --mode controls)
+        set_tests_properties(world.random_blocks_benchmark_controls PROPERTIES
             LABELS "public;integration;world;performance;ownership" TIMEOUT 240)
     endif()
 endif()

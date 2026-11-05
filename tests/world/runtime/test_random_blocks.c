@@ -943,6 +943,8 @@ cleanup:
     return ok ? 0 : 1;
 }
 
+#include "random_block_getter_controls.inc"
+
 int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
@@ -1005,7 +1007,7 @@ int main(int argc, char **argv) {
           mc_registry_block_get(f->registry[0], 79, &ice, NULL) == MC_REGISTRY_OK &&
           mc_registry_block_get(f->registry[0], 80, &snow, NULL) == MC_REGISTRY_OK &&
           n_array_contract(f) && grass_contract(f, grass) && leaves_contract(f, leaves) &&
-          melt_contract(f, ice, snow));
+          melt_contract(f, ice, snow) && random_block_getter_contract(f, leaves));
     result = 0;
 cleanup:
     if (!cleanup_fixture(f)) {
