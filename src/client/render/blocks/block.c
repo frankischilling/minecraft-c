@@ -55,6 +55,11 @@ bool mc_cv_side_texture(mc_cv_context *c, const mc_block *block, int32_t side, u
 
 bool mc_cv_brightness(mc_cv_context *c, const mc_block *b, int32_t x, int32_t y, int32_t z,
                       unsigned int pc, float *out) {
+    return mc_cv_brightness_bound(c, b, c->fields->c, x, y, z, pc, out);
+}
+
+bool mc_cv_brightness_bound(mc_cv_context *c, const mc_block *b, const void *receiver, int32_t x,
+                            int32_t y, int32_t z, unsigned int pc, float *out) {
     const char *name =
         b != NULL && b->kind == MC_BLOCK_STAIRS ? "ss"
         : b != NULL && (b->kind == MC_BLOCK_FLOWING_FLUID || b->kind == MC_BLOCK_STILL_FLUID)
@@ -64,12 +69,13 @@ bool mc_cv_brightness(mc_cv_context *c, const mc_block *b, int32_t x, int32_t y,
         return false;
     float value;
     if (b->kind == MC_BLOCK_STAIRS) {
-        if (!mc_cv_brightness(c, b->subtype.ss.a, x, y, z, 9, &value))
+        if (!mc_cv_brightness_bound(c, b->subtype.ss.a, receiver, x, y, z, 9, &value))
             return false;
     } else if (b->kind == MC_BLOCK_FLOWING_FLUID || b->kind == MC_BLOCK_STILL_FLUID) {
         float below, above;
-        if (!mc_cv_cache_brightness(c, x, y, z, 5, &below) ||
-            !mc_cv_cache_brightness(c, x, mc_java_i32_add(y, 1), z, 19, &above) || !mc_cv_fp(c, 30))
+        if (!mc_cv_cache_brightness_bound(c, receiver, x, y, z, 5, &below) ||
+            !mc_cv_cache_brightness_bound(c, receiver, x, mc_java_i32_add(y, 1), z, 19, &above) ||
+            !mc_cv_fp(c, 30))
             return false;
         value = below > above ? below : above;
     } else {
@@ -87,7 +93,7 @@ bool mc_cv_brightness(mc_cv_context *c, const mc_block *b, int32_t x, int32_t y,
             return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
                               "actual uu.s brightness index", 12, false);
         }
-        if (!mc_cv_min_brightness(c, x, y, z, s[id], 13, &value))
+        if (!mc_cv_min_brightness_bound(c, receiver, x, y, z, s[id], 13, &value))
             return false;
     }
     mc_cv_pop(c);

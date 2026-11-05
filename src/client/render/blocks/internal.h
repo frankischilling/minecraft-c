@@ -27,7 +27,8 @@ typedef enum mc_cv_world_child_kind {
     MC_CV_WORLD_BRIGHTNESS,
     MC_CV_WORLD_MIN_BRIGHTNESS,
     MC_CV_WORLD_OPAQUE,
-    MC_CV_WORLD_MANAGER
+    MC_CV_WORLD_MANAGER,
+    MC_CV_WORLD_SOLID
 } mc_cv_world_child_kind;
 
 typedef struct mc_cv_world_error {
@@ -44,6 +45,7 @@ typedef struct mc_cv_world_error {
         mc_world_brightness_error brightness;
         mc_world_opaque_error opaque;
         mc_world_manager_error manager;
+        mc_world_solid_support_error solid;
     } value;
 } mc_cv_world_error;
 
@@ -95,15 +97,27 @@ bool mc_cv_vertex(mc_cv_context *, double, double, double, double, double, unsig
 bool mc_cv_fields(mc_cv_context *, const mc_block *, unsigned int, const mc_block_fields **);
 bool mc_cv_block(mc_cv_context *, int32_t, int32_t, int32_t, unsigned int, int32_t *);
 bool mc_cv_metadata(mc_cv_context *, int32_t, int32_t, int32_t, unsigned int, int32_t *);
+/* Use the captured source XP argument rather than rereading the live CV.c. */
+bool mc_cv_block_bound(mc_cv_context *, const void *, int32_t, int32_t, int32_t, unsigned int,
+                       int32_t *);
+bool mc_cv_metadata_bound(mc_cv_context *, const void *, int32_t, int32_t, int32_t, unsigned int,
+                          int32_t *);
 bool mc_cv_material(mc_cv_context *, int32_t, int32_t, int32_t, unsigned int, mc_material **);
 bool mc_cv_manager(mc_cv_context *, unsigned int, mc_world_chunk_manager **);
 bool mc_cv_cache_brightness(mc_cv_context *, int32_t, int32_t, int32_t, unsigned int, float *);
 bool mc_cv_min_brightness(mc_cv_context *, int32_t, int32_t, int32_t, int32_t, unsigned int,
                           float *);
+bool mc_cv_cache_brightness_bound(mc_cv_context *, const void *, int32_t, int32_t, int32_t,
+                                  unsigned int, float *);
+bool mc_cv_min_brightness_bound(mc_cv_context *, const void *, int32_t, int32_t, int32_t, int32_t,
+                                unsigned int, float *);
 bool mc_cv_opaque(mc_cv_context *, int32_t, int32_t, int32_t, unsigned int, bool *);
+bool mc_cv_solid(mc_cv_context *, int32_t, int32_t, int32_t, unsigned int, bool *);
 bool mc_cv_registry(mc_cv_context *, unsigned int, mc_registry_block_view *);
 bool mc_cv_brightness(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, unsigned int,
                       float *);
+bool mc_cv_brightness_bound(mc_cv_context *, const mc_block *, const void *, int32_t, int32_t,
+                            int32_t, unsigned int, float *);
 bool mc_cv_side(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, int32_t, unsigned int,
                 bool *);
 bool mc_cv_texture(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, int32_t,
@@ -144,6 +158,7 @@ bool mc_cv_cactus_geometry(mc_cv_context *, const mc_block *, int32_t, int32_t, 
 bool mc_cv_torch(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
 bool mc_cv_torch_geometry(mc_cv_context *, const mc_block *, double, double, double, double,
                           double);
+bool mc_cv_redstone(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
 /* Actual cv.a(Block,III,texture): d3, child b12, d=-1 at18, return21.
  * Failure retains d and the complete nested source/CV/World diagnostics. */
 bool mc_cv_texture_override(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, int32_t);

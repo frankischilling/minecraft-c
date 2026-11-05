@@ -1,5 +1,9 @@
 # World simulation
 
+## Redstone World renderer
+
+[Redstone World rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/redstone-world.md) completes the type 5 CPU geometry path. Five separate original cohorts cover every floor connection mask at three power levels, vertical routes, repeater directions, signed float boundaries and six null failures. Native Windows and sanitized Linux match all 100 calls and the original packed-key owner aliases. This scope does not qualify Item Redstone placement or adjacent device lifecycles.
+
 ## Ordinary Torch placement and support
 
 [Torch 50](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/torch-placement.md)

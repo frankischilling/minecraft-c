@@ -2370,8 +2370,8 @@
       "sha256": "62b53690c06abc8f6bcfb7806850c01858089f738043817fbe41eb181548db68"
     },
     "cmake/client_render_global_world.cmake": {
-      "bytes": 1496,
-      "sha256": "e3ee45050f91b7ba54f3ad97b803a3bc8664b84644cf34f336d9f587055a0898"
+      "bytes": 1540,
+      "sha256": "0c95bbce3d5f18a561bd1716b12cd65f2b2140a45b6c93e950ba8251e42541b7"
     },
     "cmake/entity_appearance.cmake": {
       "bytes": 544,
@@ -3698,16 +3698,16 @@
       "sha256": "db48725dd52b8f9b466cb9d98768104adf93ce762818eedcb3015c2597f2497f"
     },
     "src/client/render/blocks/access.c": {
-      "bytes": 16383,
-      "sha256": "1c73db9a34f898f87f5a0ab98346d9d8e9a3e59376b76348539e11ea2801d4f5"
+      "bytes": 18759,
+      "sha256": "882e7a5a520e4c9967280faf4f1d546254aa8eebbfd3578ee47dccd714620ad3"
     },
     "src/client/render/blocks/ambient_occlusion.c": {
       "bytes": 14218,
       "sha256": "6694282eb61903fa9b5b1c2f1944f4a9683d7782bdad18762bbd2c3e95243966"
     },
     "src/client/render/blocks/block.c": {
-      "bytes": 13671,
-      "sha256": "f088dbd74da931cb49ab1f33adf9ac68bb4bf76604b8bd51da99466a2e793323"
+      "bytes": 14002,
+      "sha256": "cc15481998e2164d861f70038d8dfce633f291fec043e5ae7591dabca609e35a"
     },
     "src/client/render/blocks/bounds.c": {
       "bytes": 7319,
@@ -3726,12 +3726,12 @@
       "sha256": "99c3d7bee454b78341314364052eb3aeeecb6448bec898380ad091f790efef3f"
     },
     "src/client/render/blocks/internal.h": {
-      "bytes": 8219,
-      "sha256": "85c5430647958f9abcfbe63508a5be4c3417da8b922031885e2b152a9ab8dc4f"
+      "bytes": 9267,
+      "sha256": "306ddb1eb4c8ee1cc86049dd9b8258e3f712e3385bc90befb8eb412ec745ff35"
     },
     "src/client/render/blocks/render.c": {
-      "bytes": 7135,
-      "sha256": "1967a73baabe155e407a42c296de51062992a6a91ecdd8923c6e4890a15ef68d"
+      "bytes": 7358,
+      "sha256": "ddc71a5515015cd4b4835eef8793e42308191a6cfdf0fefb70691eeeedb48d2a"
     },
     "src/client/startup/application_queries.c": {
       "bytes": 3537,

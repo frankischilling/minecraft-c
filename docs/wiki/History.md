@@ -1,5 +1,11 @@
 # History
 
+## Redstone World renderer
+
+Type 5 now draws the original floor shapes and upright overlays, with live connectivity, repeater directions and captured brightness arguments. The 100-call source packet and both native hosts agree on the declared CPU results. Source owner observations resolved an incorrect fixture assumption: twelve signed-coordinate requests return ten distinct Chunk owners. Native preparation now follows request slots and retires each owner once.
+
+Registry active use also records its source location before resource callbacks. The exposing native stress deliberately uses separate defining owners; it is not evidence of an ordinary cold Java call. Item placement, adjacent devices, loaded drawing and FPS remain open.
+
 ## Native failure product retention
 
 World test captures now retain exact native products before launch. Failed

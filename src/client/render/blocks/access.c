@@ -132,16 +132,20 @@ static bool cache_result(mc_cv_context *c, mc_client_chunk_cache_status status, 
                       c->cache_error.operation, pc, c->cache_error.native_policy);
 }
 
-/* c is the live source XP reference. Each call dispatches on the exact bound
- * EW or World identity. A changed/foreign reference never reads an old owner. */
-static bool xp(mc_cv_context *c, unsigned int pc) {
-    if (c->fields->c == NULL)
+/* A captured source XP reference keeps its exact EW or World identity across
+ * child calls, even when a callback changes the live CV.c field. */
+static bool xp_bound(mc_cv_context *c, const void *receiver, unsigned int pc) {
+    if (receiver == NULL)
         return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
                           "actual CV IBlockAccess receiver", pc, false);
-    return (c->cache != NULL && c->fields->c == c->cache) ||
-           (c->world != NULL && c->fields->c == c->world) ||
+    return (c->cache != NULL && receiver == c->cache) ||
+           (c->world != NULL && receiver == c->world) ||
            mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
                       "actual CV IBlockAccess implementation", pc, true);
+}
+
+static bool xp(mc_cv_context *c, unsigned int pc) {
+    return xp_bound(c, c->fields->c, pc);
 }
 
 static bool world_access(const mc_cv_context *c) {
@@ -177,6 +181,9 @@ static bool world_result(mc_cv_context *c, mc_world_storage_status status, const
         case MC_CV_WORLD_OPAQUE:
             source_null = c->world_error.value.opaque.registry.status == MC_REGISTRY_NULL_REFERENCE;
             break;
+        case MC_CV_WORLD_SOLID:
+            source_null = c->world_error.value.solid.registry.status == MC_REGISTRY_NULL_REFERENCE;
+            break;
         case MC_CV_WORLD_MANAGER:
             /* This bounded getter's only source failure is its null Dimension. */
             source_null = !c->world_error.value.manager.native_policy;
@@ -195,10 +202,15 @@ static bool world_result(mc_cv_context *c, mc_world_storage_status status, const
 }
 
 bool mc_cv_block(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned int pc, int32_t *out) {
+    return mc_cv_block_bound(c, c->fields->c, x, y, z, pc, out);
+}
+
+bool mc_cv_block_bound(mc_cv_context *c, const void *receiver, int32_t x, int32_t y, int32_t z,
+                       unsigned int pc, int32_t *out) {
     mc_cv_pc(c, pc);
-    if (!xp(c, pc))
+    if (!xp_bound(c, receiver, pc))
         return false;
-    if (world_access(c)) {
+    if (c->world != NULL && receiver == c->world) {
         world_child(c, MC_CV_WORLD_BLOCK);
         mc_world_storage_error *e = &c->world_error.value.query.cause;
         const mc_world_storage_status status = mc_world_runtime_block_get_detailed(
@@ -211,10 +223,15 @@ bool mc_cv_block(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned int
 
 bool mc_cv_metadata(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned int pc,
                     int32_t *out) {
+    return mc_cv_metadata_bound(c, c->fields->c, x, y, z, pc, out);
+}
+
+bool mc_cv_metadata_bound(mc_cv_context *c, const void *receiver, int32_t x, int32_t y, int32_t z,
+                          unsigned int pc, int32_t *out) {
     mc_cv_pc(c, pc);
-    if (!xp(c, pc))
+    if (!xp_bound(c, receiver, pc))
         return false;
-    if (world_access(c)) {
+    if (c->world != NULL && receiver == c->world) {
         world_child(c, MC_CV_WORLD_METADATA);
         mc_world_storage_error *e = &c->world_error.value.query.cause;
         const mc_world_storage_status status = mc_world_runtime_metadata_get_detailed(
@@ -261,10 +278,15 @@ bool mc_cv_manager(mc_cv_context *c, unsigned int pc, mc_world_chunk_manager **o
 
 bool mc_cv_cache_brightness(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned int pc,
                             float *out) {
+    return mc_cv_cache_brightness_bound(c, c->fields->c, x, y, z, pc, out);
+}
+
+bool mc_cv_cache_brightness_bound(mc_cv_context *c, const void *receiver, int32_t x, int32_t y,
+                                  int32_t z, unsigned int pc, float *out) {
     mc_cv_pc(c, pc);
-    if (!xp(c, pc))
+    if (!xp_bound(c, receiver, pc))
         return false;
-    if (world_access(c)) {
+    if (c->world != NULL && receiver == c->world) {
         world_child(c, MC_CV_WORLD_BRIGHTNESS);
         mc_world_brightness_error *e = &c->world_error.value.brightness;
         const mc_world_storage_status status =
@@ -279,10 +301,15 @@ bool mc_cv_cache_brightness(mc_cv_context *c, int32_t x, int32_t y, int32_t z, u
 
 bool mc_cv_min_brightness(mc_cv_context *c, int32_t x, int32_t y, int32_t z, int32_t minimum,
                           unsigned int pc, float *out) {
+    return mc_cv_min_brightness_bound(c, c->fields->c, x, y, z, minimum, pc, out);
+}
+
+bool mc_cv_min_brightness_bound(mc_cv_context *c, const void *receiver, int32_t x, int32_t y,
+                                int32_t z, int32_t minimum, unsigned int pc, float *out) {
     mc_cv_pc(c, pc);
-    if (!xp(c, pc))
+    if (!xp_bound(c, receiver, pc))
         return false;
-    if (world_access(c)) {
+    if (c->world != NULL && receiver == c->world) {
         world_child(c, MC_CV_WORLD_MIN_BRIGHTNESS);
         mc_world_brightness_error *e = &c->world_error.value.brightness;
         const mc_world_storage_status status =
@@ -313,7 +340,28 @@ bool mc_cv_opaque(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned in
                         pc);
 }
 
+bool mc_cv_solid(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned int pc, bool *out) {
+    mc_cv_pc(c, pc);
+    if (!xp(c, pc))
+        return false;
+    if (world_access(c)) {
+        world_child(c, MC_CV_WORLD_SOLID);
+        mc_world_solid_support_error *e = &c->world_error.value.solid;
+        const mc_world_storage_status status =
+            mc_world_runtime_solid_support_get(c->world, x, y, z, out, e);
+        c->failure.registry = e->registry;
+        const bool native = e->registry.status != MC_REGISTRY_NULL_REFERENCE &&
+                            e->registry.status != MC_REGISTRY_INDEX_OUT_OF_RANGE;
+        return world_result(c, status, e->operation, "h", "(III)Z", e->bytecode, pc, native,
+                            e->cause);
+    }
+    return cache_result(
+        c, mc_client_chunk_cache_normal_cube(c->cache, x, y, z, out, &c->cache_error), pc);
+}
+
 bool mc_cv_registry(mc_cv_context *c, unsigned int pc, mc_registry_block_view *view) {
+    /* A cold class can invoke resource callbacks before returning its fields. */
+    mc_cv_pc(c, pc);
     if (mc_registry_classes_initialize_blocks(c->registry, &c->failure.registry) != MC_REGISTRY_OK)
         return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED, c->failure.registry.message,
                           pc, true);

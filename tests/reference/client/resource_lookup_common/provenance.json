@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 339843,
-      "sha256": "cd773a6fb5bcdcefa1a82e65c9c0b5f0a02e9f4b11722cdd8ede25c796f304c3"
+      "bytes": 339886,
+      "sha256": "3773790bde151d1b051a8010df7d134ece6184af6a6b23c1844b92413b964003"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 192011,
-      "sha256": "167941c8a503fe7c39d3ae69317f259c3789296a7aaadb94be9fcc7da86a2a97"
+      "bytes": 192928,
+      "sha256": "6195144f3ffa26cedb0e4fb1a4183a73d7fbe35a85a4ecc15a9505d40e8e62eb"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -834,16 +834,16 @@
       "sha256": "2266d5edd099003b4b3fe304ecf79cf86bbfcab026ef1480936c04a391024957"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 111895,
-      "sha256": "eda9397631274f45e10bb7fbf29d003264188e2399554ac81f61d1fc016c6e8b"
+      "bytes": 112861,
+      "sha256": "bce01c8737043f1d7e6d90b9a75c11a2970d8c41cd42e27ce74bb5aa39658b34"
     },
     "docs/wiki/History.md": {
-      "bytes": 57743,
-      "sha256": "145588c77b985e28025c6ee9079f9beaedb18ea9eff74c54f0f2b060880553aa"
+      "bytes": 58482,
+      "sha256": "909d1153748f06f2ba46d9398d0621aff40172bc9086b2858ab89ba4a02b33a6"
     },
     "docs/wiki/Home.md": {
-      "bytes": 12269,
-      "sha256": "6fd108520e8bd9022c732e1eeba2b67d5c8552e727f55947d77bccd12fe0d85a"
+      "bytes": 12669,
+      "sha256": "4d6de39ec257f1a115e6dedc2e9e95b0d03cbad15fd1388c8f21fb9d94ecc2e7"
     },
     "docs/wiki/Startup.md": {
       "bytes": 7992,
@@ -854,12 +854,12 @@
       "sha256": "82cef3806c626dd62a9d870040b4731dfcfd5916232dec21afdc8efbff5f13dd"
     },
     "docs/wiki/World-simulation.md": {
-      "bytes": 53578,
-      "sha256": "94df77f2228902a23451f1fc3541977f24108ca50a09e27cf3ac49c4da259950"
+      "bytes": 54137,
+      "sha256": "03736f20c55623a03e6066c8379dafe1a05cfd680d4c93cf2445fc8a6eac8993"
     },
     "docs/wiki/_Sidebar.md": {
-      "bytes": 2508,
-      "sha256": "0e1e3d1f35d9bb0ca5ceef03e4ccefe2fad143b7ca3ea8071107c56e0e95bb21"
+      "bytes": 2646,
+      "sha256": "12047a6804058e8f22af87633db95dc68c2791be652e791b971951142b0fa4b5"
     },
     "docs/world/biome-registry.md": {
       "bytes": 10503,
@@ -6407,7 +6407,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 495378,
-      "sha256": "8bc8b5d9f4706016e4691d6e26b985a53350080df85811959b11defa647437b9"
+      "sha256": "1d3e395d3ed4519da323953716720d272eb15cacabb8c84da3550ec29b4be6c5"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6471,7 +6471,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 595345,
-      "sha256": "118aa98f369a2e169d4547a01fd62cf73c79032c4f8c1a4bf7592bd425d1b1f9"
+      "sha256": "3e791daa727b92b79ad78eb017f6d1de1474c33919f1769f49132ec98e85c19e"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6603,7 +6603,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 491192,
-      "sha256": "b0a76be2e065c783749b3feb666b8f865b07338317860ef0cdf9b12d44d68eff"
+      "sha256": "f8afc69f431a1d73113a05775ee11076492e1c39badba3f1fcfe631dbadc8a34"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -10106,8 +10106,8 @@
       "sha256": "62b53690c06abc8f6bcfb7806850c01858089f738043817fbe41eb181548db68"
     },
     "cmake/client_render_global_world.cmake": {
-      "bytes": 1496,
-      "sha256": "e3ee45050f91b7ba54f3ad97b803a3bc8664b84644cf34f336d9f587055a0898"
+      "bytes": 1540,
+      "sha256": "0c95bbce3d5f18a561bd1716b12cd65f2b2140a45b6c93e950ba8251e42541b7"
     },
     "cmake/entity_appearance.cmake": {
       "bytes": 544,
@@ -11726,20 +11726,20 @@
       "sha256": "db48725dd52b8f9b466cb9d98768104adf93ce762818eedcb3015c2597f2497f"
     },
     "docs/client/render-blocks.md": {
-      "bytes": 11564,
-      "sha256": "fd3e8bedd4e1623fd3ae5af2761f2131ee618c75bccd8686593f6dbced6d6589"
+      "bytes": 12319,
+      "sha256": "0e36671a1daa6428fd4f9eb483be16a85505f061c691e276d8c58eebae3f8114"
     },
     "src/client/render/blocks/access.c": {
-      "bytes": 16383,
-      "sha256": "1c73db9a34f898f87f5a0ab98346d9d8e9a3e59376b76348539e11ea2801d4f5"
+      "bytes": 18759,
+      "sha256": "882e7a5a520e4c9967280faf4f1d546254aa8eebbfd3578ee47dccd714620ad3"
     },
     "src/client/render/blocks/ambient_occlusion.c": {
       "bytes": 14218,
       "sha256": "6694282eb61903fa9b5b1c2f1944f4a9683d7782bdad18762bbd2c3e95243966"
     },
     "src/client/render/blocks/block.c": {
-      "bytes": 13671,
-      "sha256": "f088dbd74da931cb49ab1f33adf9ac68bb4bf76604b8bd51da99466a2e793323"
+      "bytes": 14002,
+      "sha256": "cc15481998e2164d861f70038d8dfce633f291fec043e5ae7591dabca609e35a"
     },
     "src/client/render/blocks/bounds.c": {
       "bytes": 7319,
@@ -11758,12 +11758,12 @@
       "sha256": "99c3d7bee454b78341314364052eb3aeeecb6448bec898380ad091f790efef3f"
     },
     "src/client/render/blocks/internal.h": {
-      "bytes": 8219,
-      "sha256": "85c5430647958f9abcfbe63508a5be4c3417da8b922031885e2b152a9ab8dc4f"
+      "bytes": 9267,
+      "sha256": "306ddb1eb4c8ee1cc86049dd9b8258e3f712e3385bc90befb8eb412ec745ff35"
     },
     "src/client/render/blocks/render.c": {
-      "bytes": 7135,
-      "sha256": "1967a73baabe155e407a42c296de51062992a6a91ecdd8923c6e4890a15ef68d"
+      "bytes": 7358,
+      "sha256": "ddc71a5515015cd4b4835eef8793e42308191a6cfdf0fefb70691eeeedb48d2a"
     },
     "src/client/startup/application_queries.c": {
       "bytes": 3537,
@@ -19452,6 +19452,302 @@
     "tests/tools/client/test_native_run_capture.py": {
       "bytes": 5152,
       "sha256": "0e9abeaa1f9f3176e3a42fd455c0f04d805d64db05b1a3477d517f74f1446785"
+    },
+    "cmake/client_redstone_world.cmake": {
+      "bytes": 2639,
+      "sha256": "ab201069e1b106e30b32db4ef20305b24edec41b328916772cee250d88122011"
+    },
+    "docs/client/redstone-world.md": {
+      "bytes": 5370,
+      "sha256": "cd88413b8d3017c7e768734a73cfd3ba8fc669ff37449a6be1b33be98f75ebbc"
+    },
+    "src/client/render/blocks/redstone.c": {
+      "bytes": 16500,
+      "sha256": "75d2f49412cff53c90b1c2e805333ac688bab585ac091c0dc8086f16cae9bbb2"
+    },
+    "tests/client/render/redstone_callbacks.inc": {
+      "bytes": 15953,
+      "sha256": "4c85c30c7ebc0623166794aa13293aa8b240b50c2bcd2d9bb1d18058d3b259d6"
+    },
+    "tests/client/render/test_redstone_world.c": {
+      "bytes": 41533,
+      "sha256": "09c2af1a0378b9dd943a3bbdc91f87c9d2f4c4bd5a8b01b90e98b3edc8beb59c"
+    },
+    "tests/reference/client/redstone_world/.gitattributes": {
+      "bytes": 82,
+      "sha256": "3e4c6ef8fb63ff07e54bacd418f1fa68627ae8b614210ce792964db8e0bb50ef"
+    },
+    "tests/reference/client/redstone_world/README.md": {
+      "bytes": 5303,
+      "sha256": "c821d8f693a27bc8d0343c0ad103468bca477a950472119f14bbe93ef8e8971c"
+    },
+    "tests/reference/client/redstone_world/capability/RedstoneCapabilityJdi.java": {
+      "bytes": 13970,
+      "sha256": "41e232650aee84c10d787d20047a2b2dac3cec4d57f840360c61bc04738c278f"
+    },
+    "tests/reference/client/redstone_world/capability/RedstoneCapabilityObservation.java": {
+      "bytes": 13603,
+      "sha256": "7daadf5499f9e7dda5ed3339ead1e8a865b509bd0f259f67408b78aa43b72577"
+    },
+    "tests/reference/client/redstone_world/capability/capture_reference.py": {
+      "bytes": 11211,
+      "sha256": "c87357a3b1cb73f3bedc5b788cc4875d73fd6756e28332cb3cef5e5e8e751da3"
+    },
+    "tests/reference/client/redstone_world/capability/declared-inputs.json": {
+      "bytes": 3118,
+      "sha256": "d42659372496a580402198468c4f8316b9d5a9648f9220a3c652cddd6d614113"
+    },
+    "tests/reference/client/redstone_world/capability/events.jsonl": {
+      "bytes": 721634,
+      "sha256": "407ec08fb4e01d61e7bdbf4497881979c3ef7b4535f7878f70d16c757d1fa9be"
+    },
+    "tests/reference/client/redstone_world/capability/generate_profiles.py": {
+      "bytes": 4753,
+      "sha256": "1d1027cb07bed05fdbe3e2cb613e2da002331ea2cb53fab250f6d4ceecfec281"
+    },
+    "tests/reference/client/redstone_world/capability/live-code.tsv": {
+      "bytes": 2041,
+      "sha256": "0eda2819a626fa2aa37e17788275f0ecb27bf735922275398b434ad7777bd751"
+    },
+    "tests/reference/client/redstone_world/capability/original.stdout": {
+      "bytes": 24086,
+      "sha256": "70eb94a2db40bf168e5b249a7b285378f964fd6ec018623227badc718f2e68ba"
+    },
+    "tests/reference/client/redstone_world/capability/profiles.txt": {
+      "bytes": 644,
+      "sha256": "d6f771bc2fec07f71676ab4d9a1eb687c350c51e933de50cec4aa65b543690d5"
+    },
+    "tests/reference/client/redstone_world/capability/provenance.json": {
+      "bytes": 19209,
+      "sha256": "88fa217f47d84c03ecf846c41e42e794e16c29e7a24ecb7c573779fdd7cc86b7"
+    },
+    "tests/reference/client/redstone_world/capability/selected.txt": {
+      "bytes": 24022,
+      "sha256": "a413989692037fe9e336f9ec30c1b5c36a40508b0246d15de0f8ce928dfd836f"
+    },
+    "tests/reference/client/redstone_world/capability/source-pins.json": {
+      "bytes": 102875,
+      "sha256": "1f8f49a12c20ea28bcc3bf59c52121dc0ad866ac5ede928df0b3f96ec5076136"
+    },
+    "tests/reference/client/redstone_world/flat/RedstoneJdi.java": {
+      "bytes": 12561,
+      "sha256": "3c08362f82a70c94c8bdde04a2d8c52436c4481f0e590815fa11271d0313edf2"
+    },
+    "tests/reference/client/redstone_world/flat/RedstoneObservation.java": {
+      "bytes": 13369,
+      "sha256": "2a7d458c63b9994c6a042cb66b5892429db918bb0710b9edad49cf6f982bff8c"
+    },
+    "tests/reference/client/redstone_world/flat/capture_reference.py": {
+      "bytes": 11093,
+      "sha256": "5e7210fb602631ae04545769b77092a48b8b399f3f54c681d18d684b7f695707"
+    },
+    "tests/reference/client/redstone_world/flat/declared-inputs.json": {
+      "bytes": 2487,
+      "sha256": "058e76295916f19f7682518a74757eedc1d3e0569b281c4608fe4204b14e031b"
+    },
+    "tests/reference/client/redstone_world/flat/events.jsonl": {
+      "bytes": 3572457,
+      "sha256": "01555765864c86df894579318b94dca0fb10fe0bb466eb7e3054860ddbfe9e3a"
+    },
+    "tests/reference/client/redstone_world/flat/generate_profiles.py": {
+      "bytes": 4542,
+      "sha256": "c8c0236655e3b30585c57a0ecd21eabfcd088b61bf684ed2d12a3e98afacc1f0"
+    },
+    "tests/reference/client/redstone_world/flat/live-code.tsv": {
+      "bytes": 1409,
+      "sha256": "0ad5134de8be225bb5232fff931444b8d465f912faa7483b05dd3e66afc81cb9"
+    },
+    "tests/reference/client/redstone_world/flat/original.stdout": {
+      "bytes": 132816,
+      "sha256": "75ae4f2a18c7dbbcb154fd23638e5fc7b1d220d4d8f21e9fd6dd41f44f2028b2"
+    },
+    "tests/reference/client/redstone_world/flat/profiles.txt": {
+      "bytes": 3364,
+      "sha256": "ef99b0ef3677ed1bad1c6c32348ea3efb869f419dee2f7e1f9e869dc91f8365a"
+    },
+    "tests/reference/client/redstone_world/flat/provenance.json": {
+      "bytes": 19086,
+      "sha256": "4310a2a0e739b51ce383c5d787d2033c9d599295b6e80292c86721fafd28d3b3"
+    },
+    "tests/reference/client/redstone_world/flat/selected.txt": {
+      "bytes": 132614,
+      "sha256": "f1043e9b3693d5410595b38bb015cae81f33d374902d35ddd68c24540e2730a7"
+    },
+    "tests/reference/client/redstone_world/flat/source-pins.json": {
+      "bytes": 93035,
+      "sha256": "301d6df5f527af8f8bfedf3df6a382b003e71de031e1c7c636648f56b61ae309"
+    },
+    "tests/reference/client/redstone_world/manifest.json": {
+      "bytes": 6669,
+      "sha256": "0865d29e8088ec9dd67899aaabf52c78514ab08172a75a3836d5e4f874698301"
+    },
+    "tests/reference/client/redstone_world/nullable/RedstoneNullableJdi.java": {
+      "bytes": 13923,
+      "sha256": "e57ccf9507c0782161a3acd2a02c2ad14a736bc4fe9d36380174715f9d1999f8"
+    },
+    "tests/reference/client/redstone_world/nullable/RedstoneNullableObservation.java": {
+      "bytes": 14302,
+      "sha256": "5d3503c9bf4e2f34c9e2873b5e6f40240044b2d107756e25803a15374222ecb7"
+    },
+    "tests/reference/client/redstone_world/nullable/capture_reference.py": {
+      "bytes": 11175,
+      "sha256": "c64f70b04427b6ffae80320c8a4cbec98b4759a14897da4c400689844b4d4430"
+    },
+    "tests/reference/client/redstone_world/nullable/declared-inputs.json": {
+      "bytes": 4025,
+      "sha256": "4c1727d6528bf763c78277ea304441c69e90e53eed5b8bce3ff0a4a336f329fa"
+    },
+    "tests/reference/client/redstone_world/nullable/events.jsonl": {
+      "bytes": 50274,
+      "sha256": "595dc4e760c94376f9d4e31204e59e338040053bda33caa0583726949b906a9a"
+    },
+    "tests/reference/client/redstone_world/nullable/generate_profiles.py": {
+      "bytes": 5516,
+      "sha256": "bffaff6e81f57d5b45454429c0cb0adeeed600b83eda4a65403717908600a55a"
+    },
+    "tests/reference/client/redstone_world/nullable/live-code.tsv": {
+      "bytes": 1128,
+      "sha256": "b342b29931e9dba6b70688fd19aafe330b60ab093489913df37da7bcdc0e2b2b"
+    },
+    "tests/reference/client/redstone_world/nullable/original.stdout": {
+      "bytes": 14476,
+      "sha256": "dd7f7eb9b8444c871a7fd61d28b2f914fcb9740e9a302a20bb0c898e9f4b6d69"
+    },
+    "tests/reference/client/redstone_world/nullable/profiles.txt": {
+      "bytes": 338,
+      "sha256": "f8b41d25a1cfe4206df194ad80e90b0f883769cf49658c50e122654f0d6e6aa1"
+    },
+    "tests/reference/client/redstone_world/nullable/provenance.json": {
+      "bytes": 19165,
+      "sha256": "25719f1553088098afbdac7f3f2dee778c8ef3d51835856d9d86a47d9d7c9400"
+    },
+    "tests/reference/client/redstone_world/nullable/selected.txt": {
+      "bytes": 14424,
+      "sha256": "1ba6b0f4b0f0c08e697e3d1bbd278a9d658b1128b3d95368cd06223489986fbf"
+    },
+    "tests/reference/client/redstone_world/nullable/source-pins.json": {
+      "bytes": 102875,
+      "sha256": "1f8f49a12c20ea28bcc3bf59c52121dc0ad866ac5ede928df0b3f96ec5076136"
+    },
+    "tests/reference/client/redstone_world/packet.py": {
+      "bytes": 46934,
+      "sha256": "a223db91bd25d69758c33ce1314415ba890c413e0475d479f6b7dbc9dfe8ad31"
+    },
+    "tests/reference/client/redstone_world/signed/RedstoneSignedJdi.java": {
+      "bytes": 13915,
+      "sha256": "2cb216333d31661dbdc9ccfeaabc28ccf0999be730f0d22c7aec7b56a263862b"
+    },
+    "tests/reference/client/redstone_world/signed/RedstoneSignedObservation.java": {
+      "bytes": 14843,
+      "sha256": "1c7f46f6de1e5c456b690ff5e2a4d7eb9051ec7bc7dc2e9b86f244f5b965c430"
+    },
+    "tests/reference/client/redstone_world/signed/capture_reference.py": {
+      "bytes": 11830,
+      "sha256": "69f58c221c6be87ad07fa060b075e1e1d1fc5bb6fda003e4ec02a70ab52acaad"
+    },
+    "tests/reference/client/redstone_world/signed/declared-inputs.json": {
+      "bytes": 4274,
+      "sha256": "f871fb21a6a5f558104e0da95ce4c9797fb778a89eb725d62aa8317014eda240"
+    },
+    "tests/reference/client/redstone_world/signed/events.jsonl": {
+      "bytes": 661005,
+      "sha256": "1afb9957c7d5bc47a737c5198f83f1d79114a24b7fbde9aec2d76cedd9e2cd86"
+    },
+    "tests/reference/client/redstone_world/signed/generate_profiles.py": {
+      "bytes": 5368,
+      "sha256": "8978aaa1a1c71213a3204b84efbabd8183818683508fb6f9b2354c2adb0b4503"
+    },
+    "tests/reference/client/redstone_world/signed/live-code.tsv": {
+      "bytes": 1587,
+      "sha256": "c32c3b3d6483df5a7558e34c0a388e9a140ca3a3715132413619e1f8540b4df2"
+    },
+    "tests/reference/client/redstone_world/signed/original.stdout": {
+      "bytes": 22916,
+      "sha256": "79d9e6c3e59e7dcea34c0249f8e63af4af7a0c8d5a321f77b45fbe9650682161"
+    },
+    "tests/reference/client/redstone_world/signed/owner-contract.json": {
+      "bytes": 1322,
+      "sha256": "32ce50d69c1d225052d118e8b133e04409c10388bc3968d325e2e97a9baa5443"
+    },
+    "tests/reference/client/redstone_world/signed/owners.tsv": {
+      "bytes": 258,
+      "sha256": "5df0dfb571f5c7842ed13db0551e0536b0e6cf885301d9687921b88d1f565e22"
+    },
+    "tests/reference/client/redstone_world/signed/profiles.txt": {
+      "bytes": 540,
+      "sha256": "f17065673c93fc19d79f2acc8479878b4ddecf551a3bb7119871a5cef6d4eee6"
+    },
+    "tests/reference/client/redstone_world/signed/provenance.json": {
+      "bytes": 22262,
+      "sha256": "6a758deec63a481537439d3ed62094ba020aabc8a59678be7fe8a2cbab692634"
+    },
+    "tests/reference/client/redstone_world/signed/selected.txt": {
+      "bytes": 22599,
+      "sha256": "5044ed4963dc178039ea6802bb1317af799ab49cb3caf4759a2d8217924cdf3d"
+    },
+    "tests/reference/client/redstone_world/signed/source-pins.json": {
+      "bytes": 106871,
+      "sha256": "0d144bc1ce687964dce18f7a8b1466647ae6b6c96b27de1c94f42f4a5179c6f6"
+    },
+    "tests/reference/client/redstone_world/signed/world_inputs.py": {
+      "bytes": 2025,
+      "sha256": "c0601747a6388ab71ad78730e78a5e1e92de61065dc9572eee7ddab4087153b9"
+    },
+    "tests/reference/client/redstone_world/test_packet.py": {
+      "bytes": 16529,
+      "sha256": "062ccdc377a93e941bc7926c5c333937b6873f5e52a22e5a5d7d1d875269775f"
+    },
+    "tests/reference/client/redstone_world/vertical/RedstoneVerticalJdi.java": {
+      "bytes": 12774,
+      "sha256": "554ae09f05fdd2af93286103e3d767801b2bcc6a4009176e7ac1758aea3f7da1"
+    },
+    "tests/reference/client/redstone_world/vertical/RedstoneVerticalObservation.java": {
+      "bytes": 14056,
+      "sha256": "702b1c6dd8affbd920628e1bf1952aeea6a1cfd0d47243b0c34e82de8856a931"
+    },
+    "tests/reference/client/redstone_world/vertical/capture_reference.py": {
+      "bytes": 11185,
+      "sha256": "8410313965b450de260253b25ea200030ba02ffa060f4ae53021faf32bb89eae"
+    },
+    "tests/reference/client/redstone_world/vertical/declared-inputs.json": {
+      "bytes": 3231,
+      "sha256": "bedb46d1e3e4f052e18157cfa95f054afcd4380da0256565a338cde8faa90968"
+    },
+    "tests/reference/client/redstone_world/vertical/events.jsonl": {
+      "bytes": 1695073,
+      "sha256": "719d9db790bcfbc29f3b8957a89a8daa8c5686beeb93af7fd6dbe80485080999"
+    },
+    "tests/reference/client/redstone_world/vertical/generate_profiles.py": {
+      "bytes": 5421,
+      "sha256": "b81e62925a993123e395ca8613fe482ec7f868c290f631c20b9c203076e7a1ba"
+    },
+    "tests/reference/client/redstone_world/vertical/live-code.tsv": {
+      "bytes": 1676,
+      "sha256": "26ecced8451e4ad63ae1d86ff50b26c31ab94de395ea1d39acc80d760b29e1b8"
+    },
+    "tests/reference/client/redstone_world/vertical/original.stdout": {
+      "bytes": 58115,
+      "sha256": "9362d5dac60dc211d2ef45152c4937e9e18dcce5232d194ce02e3d1de88f1356"
+    },
+    "tests/reference/client/redstone_world/vertical/profiles.txt": {
+      "bytes": 1392,
+      "sha256": "409715eeecf1d140ae2d75053dd17e41dc9d208bb7d4823353447e710639a4d4"
+    },
+    "tests/reference/client/redstone_world/vertical/provenance.json": {
+      "bytes": 19176,
+      "sha256": "3735dde3f9b5dc3e140104a21ca0c0f51efd3d2fbe60193737f49a3e2af3d02a"
+    },
+    "tests/reference/client/redstone_world/vertical/selected.txt": {
+      "bytes": 58021,
+      "sha256": "5bd20d7ed2059a66b528649e53e9ad5a15704efdaa48cdf9d42361ee3280a07d"
+    },
+    "tests/reference/client/redstone_world/vertical/source-pins.json": {
+      "bytes": 105629,
+      "sha256": "3327c43090d8fe6edf79d91ac35fa1af06a7fe1fd37b84ef76c93cdf7552fb4a"
+    },
+    "tests/tools/client/test_redstone_world.py": {
+      "bytes": 24317,
+      "sha256": "9891d6dfa8697e5a121d2a0eafb5133906a8e3c63d17988cf1f1d126141e77b4"
     }
   },
   "self_metadata_excluded": true,
@@ -27102,6 +27398,161 @@
             "tests/tools/client/test_native_run_capture.py"
           ],
           "current_count": 4863
+        }
+      }
+    },
+    {
+      "from_commit": "b1946e2c6c099531f566793d91e4f443fd6f4865",
+      "role": "Redstone World renderer, typed XP solid support and captured child XP arguments. Finite CPU evidence covers 100 direct original/native calls, signed owner aliases, nullable prefixes and a separate native dispatcher join. Callback stress with separate defining Registries is internal scope only. Previous original, hosted and timing evidence retains its captured scope; this update adds no full-frame or FPS qualification.",
+      "previous_metadata": {
+        "bytes": 1148527,
+        "sha256": "679e83c3ec07af18196a072225534eec7fd86b2f977105d7d568d9c907f78b02"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 339843,
+              "sha256": "cd773a6fb5bcdcefa1a82e65c9c0b5f0a02e9f4b11722cdd8ede25c796f304c3"
+            },
+            "docs/parity.md": {
+              "bytes": 192011,
+              "sha256": "167941c8a503fe7c39d3ae69317f259c3789296a7aaadb94be9fcc7da86a2a97"
+            },
+            "docs/wiki/Build-and-tests.md": {
+              "bytes": 111895,
+              "sha256": "eda9397631274f45e10bb7fbf29d003264188e2399554ac81f61d1fc016c6e8b"
+            },
+            "docs/wiki/History.md": {
+              "bytes": 57743,
+              "sha256": "145588c77b985e28025c6ee9079f9beaedb18ea9eff74c54f0f2b060880553aa"
+            },
+            "docs/wiki/Home.md": {
+              "bytes": 12269,
+              "sha256": "6fd108520e8bd9022c732e1eeba2b67d5c8552e727f55947d77bccd12fe0d85a"
+            },
+            "docs/wiki/World-simulation.md": {
+              "bytes": 53578,
+              "sha256": "94df77f2228902a23451f1fc3541977f24108ca50a09e27cf3ac49c4da259950"
+            },
+            "docs/wiki/_Sidebar.md": {
+              "bytes": 2508,
+              "sha256": "0e1e3d1f35d9bb0ca5ceef03e4ccefe2fad143b7ca3ea8071107c56e0e95bb21"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 495378,
+              "sha256": "8bc8b5d9f4706016e4691d6e26b985a53350080df85811959b11defa647437b9"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 595345,
+              "sha256": "118aa98f369a2e169d4547a01fd62cf73c79032c4f8c1a4bf7592bd425d1b1f9"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 491192,
+              "sha256": "b0a76be2e065c783749b3feb666b8f865b07338317860ef0cdf9b12d44d68eff"
+            },
+            "cmake/client_render_global_world.cmake": {
+              "bytes": 1496,
+              "sha256": "e3ee45050f91b7ba54f3ad97b803a3bc8664b84644cf34f336d9f587055a0898"
+            },
+            "docs/client/render-blocks.md": {
+              "bytes": 11564,
+              "sha256": "fd3e8bedd4e1623fd3ae5af2761f2131ee618c75bccd8686593f6dbced6d6589"
+            },
+            "src/client/render/blocks/access.c": {
+              "bytes": 16383,
+              "sha256": "1c73db9a34f898f87f5a0ab98346d9d8e9a3e59376b76348539e11ea2801d4f5"
+            },
+            "src/client/render/blocks/block.c": {
+              "bytes": 13671,
+              "sha256": "f088dbd74da931cb49ab1f33adf9ac68bb4bf76604b8bd51da99466a2e793323"
+            },
+            "src/client/render/blocks/internal.h": {
+              "bytes": 8219,
+              "sha256": "85c5430647958f9abcfbe63508a5be4c3417da8b922031885e2b152a9ab8dc4f"
+            },
+            "src/client/render/blocks/render.c": {
+              "bytes": 7135,
+              "sha256": "1967a73baabe155e407a42c296de51062992a6a91ecdd8923c6e4890a15ef68d"
+            }
+          },
+          "added": [
+            "cmake/client_redstone_world.cmake",
+            "docs/client/redstone-world.md",
+            "src/client/render/blocks/redstone.c",
+            "tests/client/render/redstone_callbacks.inc",
+            "tests/client/render/test_redstone_world.c",
+            "tests/reference/client/redstone_world/.gitattributes",
+            "tests/reference/client/redstone_world/README.md",
+            "tests/reference/client/redstone_world/capability/RedstoneCapabilityJdi.java",
+            "tests/reference/client/redstone_world/capability/RedstoneCapabilityObservation.java",
+            "tests/reference/client/redstone_world/capability/capture_reference.py",
+            "tests/reference/client/redstone_world/capability/declared-inputs.json",
+            "tests/reference/client/redstone_world/capability/events.jsonl",
+            "tests/reference/client/redstone_world/capability/generate_profiles.py",
+            "tests/reference/client/redstone_world/capability/live-code.tsv",
+            "tests/reference/client/redstone_world/capability/original.stdout",
+            "tests/reference/client/redstone_world/capability/profiles.txt",
+            "tests/reference/client/redstone_world/capability/provenance.json",
+            "tests/reference/client/redstone_world/capability/selected.txt",
+            "tests/reference/client/redstone_world/capability/source-pins.json",
+            "tests/reference/client/redstone_world/flat/RedstoneJdi.java",
+            "tests/reference/client/redstone_world/flat/RedstoneObservation.java",
+            "tests/reference/client/redstone_world/flat/capture_reference.py",
+            "tests/reference/client/redstone_world/flat/declared-inputs.json",
+            "tests/reference/client/redstone_world/flat/events.jsonl",
+            "tests/reference/client/redstone_world/flat/generate_profiles.py",
+            "tests/reference/client/redstone_world/flat/live-code.tsv",
+            "tests/reference/client/redstone_world/flat/original.stdout",
+            "tests/reference/client/redstone_world/flat/profiles.txt",
+            "tests/reference/client/redstone_world/flat/provenance.json",
+            "tests/reference/client/redstone_world/flat/selected.txt",
+            "tests/reference/client/redstone_world/flat/source-pins.json",
+            "tests/reference/client/redstone_world/manifest.json",
+            "tests/reference/client/redstone_world/nullable/RedstoneNullableJdi.java",
+            "tests/reference/client/redstone_world/nullable/RedstoneNullableObservation.java",
+            "tests/reference/client/redstone_world/nullable/capture_reference.py",
+            "tests/reference/client/redstone_world/nullable/declared-inputs.json",
+            "tests/reference/client/redstone_world/nullable/events.jsonl",
+            "tests/reference/client/redstone_world/nullable/generate_profiles.py",
+            "tests/reference/client/redstone_world/nullable/live-code.tsv",
+            "tests/reference/client/redstone_world/nullable/original.stdout",
+            "tests/reference/client/redstone_world/nullable/profiles.txt",
+            "tests/reference/client/redstone_world/nullable/provenance.json",
+            "tests/reference/client/redstone_world/nullable/selected.txt",
+            "tests/reference/client/redstone_world/nullable/source-pins.json",
+            "tests/reference/client/redstone_world/packet.py",
+            "tests/reference/client/redstone_world/signed/RedstoneSignedJdi.java",
+            "tests/reference/client/redstone_world/signed/RedstoneSignedObservation.java",
+            "tests/reference/client/redstone_world/signed/capture_reference.py",
+            "tests/reference/client/redstone_world/signed/declared-inputs.json",
+            "tests/reference/client/redstone_world/signed/events.jsonl",
+            "tests/reference/client/redstone_world/signed/generate_profiles.py",
+            "tests/reference/client/redstone_world/signed/live-code.tsv",
+            "tests/reference/client/redstone_world/signed/original.stdout",
+            "tests/reference/client/redstone_world/signed/owner-contract.json",
+            "tests/reference/client/redstone_world/signed/owners.tsv",
+            "tests/reference/client/redstone_world/signed/profiles.txt",
+            "tests/reference/client/redstone_world/signed/provenance.json",
+            "tests/reference/client/redstone_world/signed/selected.txt",
+            "tests/reference/client/redstone_world/signed/source-pins.json",
+            "tests/reference/client/redstone_world/signed/world_inputs.py",
+            "tests/reference/client/redstone_world/test_packet.py",
+            "tests/reference/client/redstone_world/vertical/RedstoneVerticalJdi.java",
+            "tests/reference/client/redstone_world/vertical/RedstoneVerticalObservation.java",
+            "tests/reference/client/redstone_world/vertical/capture_reference.py",
+            "tests/reference/client/redstone_world/vertical/declared-inputs.json",
+            "tests/reference/client/redstone_world/vertical/events.jsonl",
+            "tests/reference/client/redstone_world/vertical/generate_profiles.py",
+            "tests/reference/client/redstone_world/vertical/live-code.tsv",
+            "tests/reference/client/redstone_world/vertical/original.stdout",
+            "tests/reference/client/redstone_world/vertical/profiles.txt",
+            "tests/reference/client/redstone_world/vertical/provenance.json",
+            "tests/reference/client/redstone_world/vertical/selected.txt",
+            "tests/reference/client/redstone_world/vertical/source-pins.json",
+            "tests/tools/client/test_redstone_world.py"
+          ],
+          "current_count": 4937
         }
       }
     }

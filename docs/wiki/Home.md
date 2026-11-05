@@ -1,5 +1,7 @@
 # minecraft-c
 
+[Redstone World rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/redstone-world.md) now implements floor connections, power tint and upright strips. Windows and sanitized Linux match 100 original CPU calls, including signed-coordinate cache aliases and six null prefixes. Item Redstone placement, loaded GL rendering and FPS remain separate work.
+
 The single-player client can create and load saved Worlds, run Player and World
 ticks, draw terrain and Mobs, and reach mining, placement, pickup, crafting and
 save/reselection in finite Windows scenarios. Complete Beta 1.7.3 parity and

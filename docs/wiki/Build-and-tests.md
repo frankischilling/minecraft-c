@@ -1,5 +1,13 @@
 # Build and tests
 
+## Redstone World rendering
+
+The five original cohorts contain 100 direct renderer calls. Their packet has 26 integrity and semantic tests. Windows MSVC Release and Linux Clang Debug ASan/UBSan each pass seven focused CTests and nine neighboring renderer regressions. Replay matches 310 literal records and the separate original owner receipt; the native dispatcher join has 70 assertions.
+
+The signed input has twelve request slots and ten actual Chunk owners. Original packed keys alias the final two requests to loaded base Chunks. Native preparation and unique retirement preserve those aliases. A separate internal stress uses different Block/code Registries and establishes no ordinary Java cross-loader behavior.
+
+[Redstone World rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/redstone-world.md) records the commands, exact source scope and retained failures. No loaded rendering or FPS gain is claimed.
+
 ## Native product retention
 
 Visible World controllers preserve the selected executable, adjacent native
