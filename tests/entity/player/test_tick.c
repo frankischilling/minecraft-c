@@ -7,11 +7,14 @@
 #include "../../../src/client/statistics/application.h"
 #include "../../../src/entity/player/active_internal.h"
 #include "../../../src/entity/player/container_interaction.h"
+#include "../../../src/entity/player/nbt_internal.h"
 #include "../../../src/item/stack/source_internal.h"
 #include "../../../src/platform/time/millis.h"
 #include "mc/entity/nbt/factory.h"
+#include "mc/entity/player/coordinates.h"
 #include "mc/entity/player/tick.h"
 #include "mc/resources/files/files.h"
+#include "mc/world/chunk/nibbles.h"
 #include <xmmintrin.h>
 
 static bool active_reference;
@@ -665,6 +668,268 @@ cleanup:
     return ok;
 }
 
+/* Authored native parent controls. These enter the real GS.w_ body, use the
+ * actual retained wake module and keep all old reference rows unchanged. */
+static bool wake_tick_prepare(fixture *f, client_application *app, mc_entity *p,
+                              mc_movement_input *input, int32_t direction, bool missing, bool day) {
+    bool ok = false;
+    mc_player_sleep_call *call = NULL;
+    const mc_player_sleep_context context = {.code_registry = app->registry};
+    const int32_t dx[] = {0, -1, 0, 1}, dz[] = {1, 0, -1, 0};
+    CHECK(reset_tick(f, p, input) && reset_stats(app));
+    mc_world_runtime *world = f->worlds[0];
+    mc_chunk_data *data = f->states[0]->data;
+    const mc_player_coordinates saved = {42, 10, 44};
+    CHECK(mc_player_saved_spawn_set(p, &saved, NULL) == MC_PLAYER_OK);
+    world->fields.f = 5;
+    data->blocks[boxes_index(8, 8, 8)] = 26;
+    data->blocks[boxes_index(8 - dx[direction], 8, 8 - dz[direction])] = 26;
+    CHECK(mc_chunk_nibbles_set(data->metadata, MC_CHUNK_NIBBLE_BYTES, 8, 8, 8,
+                               (uint8_t)(direction | 8)) &&
+          mc_chunk_nibbles_set(data->metadata, MC_CHUNK_NIBBLE_BYTES, 8 - dx[direction], 8,
+                               8 - dz[direction], (uint8_t)direction));
+    CHECK(mc_player_try_sleep_begin(p, 8, 8, 8, &context, &call, NULL) == MC_PLAYER_SLEEP_OK &&
+          p->local_player->fields.player.u && world->fields.J &&
+          mc_player_sleep_retire(&call, NULL) == MC_PLAYER_SLEEP_OK && call == NULL);
+    p->local_player->fields.player.private_a = 99;
+    CHECK(mc_chunk_nibbles_set(data->metadata, MC_CHUNK_NIBBLE_BYTES, 8, 8, 8,
+                               (uint8_t)(direction | 12)));
+    if (missing) {
+        data->blocks[boxes_index(8, 8, 8)] = 0;
+        data->blocks[boxes_index(8 - dx[direction], 8, 8 - dz[direction])] = 0;
+    }
+    world->fields.f = day ? 0 : 5;
+    ok = true;
+cleanup:
+    if (mc_player_sleep_retire(&call, NULL) != MC_PLAYER_SLEEP_OK)
+        ok = false;
+    return ok;
+}
+
+typedef struct wake_tick_observer {
+    size_t cells, ranges;
+} wake_tick_observer;
+
+/* This declared observer refusal is a native callback control, not an original
+ * failure oracle or a replacement of the wake/metadata implementation. */
+static mc_world_storage_status wake_tick_cell(void *context, mc_world_runtime *world, int32_t x,
+                                              int32_t y, int32_t z, mc_world_storage_error *error) {
+    (void)world;
+    wake_tick_observer *observer = context;
+    ++observer->cells;
+    if (x == 8 && y == 8 && z == 8) {
+        *error =
+            (mc_world_storage_error){MC_WORLD_STORAGE_IO_ERROR, "authored wake cell refusal", 73};
+        return MC_WORLD_STORAGE_IO_ERROR;
+    }
+    return MC_WORLD_STORAGE_OK;
+}
+
+static mc_world_storage_status wake_tick_range(void *context, mc_world_runtime *world,
+                                               int32_t min_x, int32_t min_y, int32_t min_z,
+                                               int32_t max_x, int32_t max_y, int32_t max_z,
+                                               mc_world_storage_error *error) {
+    (void)world;
+    (void)min_x;
+    (void)min_y;
+    (void)min_z;
+    (void)max_x;
+    (void)max_y;
+    (void)max_z;
+    (void)error;
+    ++((wake_tick_observer *)context)->ranges;
+    return MC_WORLD_STORAGE_OK;
+}
+
+static bool wake_tick_cases(fixture *f, client_application *app, mc_entity *p,
+                            mc_movement_input *input) {
+    bool ok = false, registered = false;
+    mc_world_access *access = NULL;
+    mc_player_tick_error *error = calloc(1, sizeof(*error));
+    struct mc_player_nbt_coordinate *node = NULL;
+    size_t restored_pins = 0, restored_borrows = 0;
+    bool pins_changed = false, borrows_changed = false;
+    const unsigned int entered = app->registry->entered;
+    const bool bed_observation = app->registry->blocks.t[26];
+    const int32_t old_time = f->worlds[0]->fields.f;
+    const bool old_sleeping = f->worlds[0]->fields.J;
+    const mc_player_action_context context = {
+        .travel = {.code_registry = app->registry, .trig = &trig}};
+    wake_tick_observer observer = {0};
+    CHECK(error != NULL);
+    mc_player_tick_error_init(error);
+    mc_player_fields *fields = &p->local_player->fields.player;
+    mc_world_runtime *world = f->worlds[0];
+
+    /* Four actual day-wake orientations, then missing Bed at night and day.
+     * Missing Bed wins over daytime and does not replace savedQ. No observer
+     * coordinate pin is held across any call. */
+    for (int32_t scenario = 0; scenario < 6; ++scenario) {
+        const bool missing = scenario >= 4;
+        CHECK(wake_tick_prepare(f, app, p, input, missing ? 0 : scenario, missing, scenario != 4));
+        const mc_player_coordinates *bed = fields->v, *saved = fields->private_b;
+        const size_t holds = p->holds, borrows = app->registry->runtime_borrows,
+                     world_holds = world->persistent_bindings;
+        CHECK(mc_player_tick(p, &context, NULL, error) == MC_ENTITY_OK &&
+              error->child == MC_PLAYER_TICK_CHILD_NONE && error->retained_registry == NULL &&
+              !fields->u && fields->private_a == (missing ? 0 : 100) && !world->fields.J &&
+              p->base.bt == 18 && p->holds == holds && app->registry->runtime_borrows == borrows &&
+              world->persistent_bindings == world_holds);
+        if (missing)
+            CHECK(fields->private_b == saved && fields->private_b->x == 42 &&
+                  fields->private_b->y == 10 && fields->private_b->z == 44);
+        else
+            CHECK(fields->private_b != bed && fields->private_b->x == 8 &&
+                  fields->private_b->y == 8 && fields->private_b->z == 8 && fields->v == bed);
+        CHECK(mc_player_tick_error_retire(error));
+    }
+
+    /* Successful wake is retired before the genuine later Living/DC failure.
+     * That failure keeps the completed wake and must expose no expired WAKE arm. */
+    CHECK(wake_tick_prepare(f, app, p, input, 0, false, true));
+    p->local_player->fields.minecraft = NULL;
+    const mc_entity_status later = mc_player_tick(p, &context, NULL, error);
+    p->local_player->fields.minecraft = app;
+    CHECK(later == MC_ENTITY_STATE_ERROR && error->local_bytecode == 4 &&
+          error->child != MC_PLAYER_TICK_CHILD_WAKE && error->retained_registry == NULL &&
+          !fields->u && fields->private_a == 100 && fields->private_b != fields->v &&
+          fields->private_b->x == 8 && p->base.bt == 18 && mc_player_tick_error_retire(error));
+
+    /* Real parent-output availability, independent of its diagnostic scratch.
+     * Both refusal forms retain earlier GS timer/am work and stop at53 only. */
+    CHECK(wake_tick_prepare(f, app, p, input, 0, true, true));
+    const size_t empty_holds = p->holds, empty_borrows = app->registry->runtime_borrows;
+    CHECK(mc_player_tick_with_child_output(p, &context, NULL, false, error) ==
+              MC_ENTITY_STATE_ERROR &&
+          error->player_bytecode == 53 && error->child == MC_PLAYER_TICK_CHILD_NONE &&
+          error->retained_registry == NULL && fields->u && fields->private_a == 100 &&
+          p->base.bt == 17 && p->base.width == .2f && p->holds == empty_holds &&
+          app->registry->runtime_borrows == empty_borrows);
+    CHECK(wake_tick_prepare(f, app, p, input, 0, true, true));
+    CHECK(mc_player_tick(p, &context, NULL, NULL) == MC_ENTITY_STATE_ERROR && fields->u &&
+          fields->private_a == 100 && p->base.bt == 17 && p->holds == empty_holds &&
+          app->registry->runtime_borrows == empty_borrows);
+    CHECK(reset_tick(f, p, input) && mc_player_tick(p, &context, NULL, NULL) == MC_ENTITY_OK);
+
+    /* A real source wake fails at pin13 only after resize5/offset9. Its call
+     * remains owned. After child cleanup, independent parent Registry BUSY
+     * must preserve the first LIMIT/site and retain only that parent hold. */
+    CHECK(wake_tick_prepare(f, app, p, input, 0, true, false));
+    node = p->local_player->nbt_coordinates;
+    while (node != NULL && &node->value != fields->v)
+        node = node->next;
+    CHECK(node != NULL && node->pins == 0);
+    restored_pins = node->pins;
+    node->pins = SIZE_MAX;
+    pins_changed = true;
+    const size_t limit_holds = p->holds, limit_borrows = app->registry->runtime_borrows;
+    CHECK(mc_player_tick(p, &context, NULL, error) == MC_ENTITY_LIMIT &&
+          error->player_bytecode == 53 && error->child == MC_PLAYER_TICK_CHILD_WAKE &&
+          error->child_error.wake.call != NULL && error->child_error.wake.error.site.pc == 13 &&
+          error->retained_registry == app->registry && fields->u && fields->private_a == 100 &&
+          p->base.width == .6f && p->base.height == 1.8f && p->base.offset == 1.62f &&
+          p->base.bt == 17 && p->holds == limit_holds + 1 &&
+          app->registry->runtime_borrows == limit_borrows + 1);
+    node->pins = restored_pins;
+    pins_changed = false;
+    app->registry->entered = 1; /* Deliberate native retirement refusal. */
+    CHECK(!mc_player_tick_error_retire(error) && error->status == MC_ENTITY_LIMIT &&
+          error->player_bytecode == 53 && error->child_error.wake.call == NULL &&
+          error->child_error.wake.error.site.pc == 13 &&
+          error->cleanup.child == MC_PLAYER_TICK_CLEANUP_REGISTRY &&
+          error->cleanup.status == MC_ENTITY_BUSY && error->retained_registry == app->registry &&
+          p->holds == limit_holds);
+    app->registry->entered = entered;
+    CHECK(mc_player_tick_error_retire(error) && error->retained_registry == NULL &&
+          error->status == MC_ENTITY_LIMIT && app->registry->runtime_borrows == limit_borrows);
+
+    /* Genuine occupancy/WorldAccess failure at wake80 retains the producer.
+     * Two checked native cleanup refusals then consume exactly that work,
+     * clearing its borrows before the remaining parent Registry is refused. */
+    CHECK(wake_tick_prepare(f, app, p, input, 0, false, true));
+    /* Actual mutable source t[] input selects FD.d's cell-observation arm;
+     * the default Bed flag does not promise that notification. */
+    app->registry->blocks.t[26] = true;
+    const mc_world_access_callbacks callbacks = {.cell = wake_tick_cell, .range = wake_tick_range};
+    CHECK(mc_world_access_create(&callbacks, &observer, &access, NULL) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_add_world_access(world, access, NULL) == MC_WORLD_STORAGE_OK);
+    registered = true;
+    const size_t failed_holds = p->holds, failed_borrows = app->registry->runtime_borrows,
+                 failed_world_holds = world->persistent_bindings;
+    CHECK(mc_player_tick(p, &context, NULL, error) == MC_ENTITY_WORLD_FAILED &&
+          error->player_bytecode == 73 && error->child == MC_PLAYER_TICK_CHILD_WAKE &&
+          error->child_error.wake.call != NULL && error->child_error.wake.error.site.pc == 80 &&
+          error->child_error.wake.error.world.status == MC_WORLD_STORAGE_IO_ERROR &&
+          error->child_error.wake.error.occupancy != NULL && fields->u &&
+          fields->private_a == 100 && p->base.bt == 17 && observer.cells == 1);
+    const size_t cells = observer.cells, ranges = observer.ranges;
+    const mc_entity_status source_status = error->status;
+    const char *const operation = error->operation;
+    node = p->local_player->nbt_coordinates;
+    while (node != NULL && &node->value != fields->v)
+        node = node->next;
+    CHECK(node != NULL && node->pins == 2);
+    restored_pins = node->pins;
+    node->pins = 1; /* Deliberate native metadata corruption, not source state. */
+    pins_changed = true;
+    CHECK(!mc_player_tick_error_retire(error) &&
+          error->cleanup.child == MC_PLAYER_TICK_CLEANUP_WAKE &&
+          error->cleanup.wake.child == MC_PLAYER_SLEEP_CLEANUP_COORDINATE &&
+          error->child_error.wake.call != NULL && error->status == source_status &&
+          error->operation == operation && error->child_error.wake.error.site.pc == 80);
+    node->pins = restored_pins;
+    pins_changed = false;
+    CHECK(app->registry->runtime_borrows > failed_borrows + 1);
+    const size_t child_borrows = app->registry->runtime_borrows - failed_borrows - 1;
+    restored_borrows = failed_borrows + 1;
+    app->registry->runtime_borrows = child_borrows;
+    borrows_changed = true; /* Omit parent/base counts; force only its later refusal. */
+    CHECK(!mc_player_tick_error_retire(error) && error->child_error.wake.call == NULL &&
+          error->child_error.wake.error.acquisition == NULL &&
+          error->child_error.wake.error.occupancy == NULL &&
+          error->child_error.wake.error.bed == NULL &&
+          error->child_error.wake.error.world_sleep == NULL &&
+          error->child_error.wake.error.position == NULL &&
+          error->cleanup.child == MC_PLAYER_TICK_CLEANUP_REGISTRY &&
+          error->retained_registry == app->registry && error->status == source_status &&
+          error->operation == operation && error->player_bytecode == 73 &&
+          error->child_error.wake.error.site.pc == 80 && p->holds == failed_holds &&
+          world->persistent_bindings == failed_world_holds && observer.cells == cells &&
+          observer.ranges == ranges);
+    app->registry->runtime_borrows = restored_borrows;
+    borrows_changed = false;
+    CHECK(mc_player_tick_error_retire(error) && error->retained_registry == NULL &&
+          app->registry->runtime_borrows == failed_borrows && observer.cells == cells &&
+          observer.ranges == ranges);
+    ok = true;
+cleanup:
+    p->local_player->fields.minecraft = app;
+    app->registry->entered = entered;
+    app->registry->blocks.t[26] = bed_observation;
+    if (pins_changed && node != NULL)
+        node->pins = restored_pins;
+    if (borrows_changed)
+        app->registry->runtime_borrows = restored_borrows;
+    if (error != NULL && !mc_player_tick_error_retire(error))
+        ok = false;
+    if (registered) {
+        bool removed;
+        if (mc_world_runtime_remove_world_access(f->worlds[0], access, &removed, NULL) !=
+                MC_WORLD_STORAGE_OK ||
+            !removed)
+            ok = false;
+    }
+    if (access != NULL && mc_world_access_free(access, NULL) != MC_WORLD_STORAGE_OK)
+        ok = false;
+    if (!reset_tick(f, p, input) || mc_player_saved_spawn_set(p, NULL, NULL) != MC_PLAYER_OK)
+        ok = false;
+    f->worlds[0]->fields.f = old_time;
+    f->worlds[0]->fields.J = old_sleeping;
+    mc_player_nbt_coordinates_collect_held(p);
+    free(error);
+    return ok;
+}
+
 static bool tick_cases(fixture *f, client_application *app, mc_entity *p,
                        mc_movement_input *input) {
     bool ok = false;
@@ -834,7 +1099,8 @@ static bool tick_cases(fixture *f, client_application *app, mc_entity *p,
     }
     CHECK(input_fp_cases(p, input) && pushout_cases(f, p, input));
     if (!active_reference)
-        CHECK(automatic_close_cases(f, app, p, input) && second_corner_case(f, app, p, input));
+        CHECK(automatic_close_cases(f, app, p, input) && wake_tick_cases(f, app, p, input) &&
+              second_corner_case(f, app, p, input));
     ok = true;
 cleanup:
     if (stack != NULL) {

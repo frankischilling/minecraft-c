@@ -12,6 +12,7 @@
 #include "mc/entity/player/tick.h"
 #include "mc/inventory/container.h"
 #include "player_internal.h"
+#include "tick_internal.h"
 #include "tick_math_internal.h"
 
 typedef struct mc_active_scope {
@@ -19,10 +20,12 @@ typedef struct mc_active_scope {
     const mc_player_action_context *context;
     const mc_player_tick_limits *limits;
     mc_registry_classes *registry;
-    bool registry_held;
+    bool registry_held, can_transfer_children;
 } mc_active_scope;
 
 bool mc_active_fail(mc_player_tick_error *, mc_entity_status, const char *);
+mc_entity_status mc_active_sleep_status(mc_player_sleep_status);
+bool mc_active_wake_retire(mc_player_tick_error *);
 bool mc_active_fp(mc_player_tick_error *);
 bool mc_active_work(mc_player_tick_error *);
 bool mc_active_registry(mc_active_scope *, mc_player_tick_error *);

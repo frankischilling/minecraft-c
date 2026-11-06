@@ -1,5 +1,23 @@
 # Development status
 
+[Player tick sleep/wake parents](entity/player-sleep-tick.md) now run retained
+wake at the missing-Bed and daytime sites and preserve failed ownership through
+World/client cleanup. Windows and sanitized Linux pass the new 36-profile
+original prefix comparison, 1,625 scalars and staged native cleanup controls.
+The whole native continuation has an explicit differing App input; whole
+original parent returns and loaded-night gameplay remain unqualified.
+
+Complete public selections pass Windows 776/776 in 349.20 seconds and
+sanitized Linux 762/762 in 994.85 seconds, without skips. All preceding
+names remain, exactly six are added per host, and all 5,523 guarded inputs
+stay unchanged. All 24 visible Windows test windows are placed on monitor 2.
+
+The preceding exact `21effab7` source passes
+[hosted run 42214978291](https://github.com/frankischilling/minecraft-c/actions/runs/42214978291):
+Windows 719/719, GCC and Clang 777/777, plus formatting of 2,180 files.
+All four checkout trees equal that pushed source. These results precede the
+current Player tick increment.
+
 Hosted [run 42189248809](https://github.com/frankischilling/minecraft-c/actions/runs/42189248809)
 at `fd11d600` passes Windows 712/712, Clang 770/770 and formatting. GCC stops
 at two fixture sign-conversion diagnostics before runtime tests. Explicit
@@ -7,7 +25,7 @@ unsigned byte promotion fixes those expressions; the same local strict GCC
 check and both fixture builds pass. The [record](testing.md#hosted-gcc-fixture-diagnostics)
 keeps the failed hosted checkpoint separate from the follow-up.
 
-The current increment implements [Item355 placement](item/bed-use.md),
+The earlier Bed increment implements [Item355 placement](item/bed-use.md),
 [Bed neighbor/daytime activation](world/bed-interaction.md) and genuine
 [Player sleep rejection/CW objects](entity/player-sleep.md). Original packets
 cover 72, 85 and 48 component profiles respectively. The first 12/13 selections
@@ -16,7 +34,10 @@ including 2,569 original comparisons and 4,834 native checks. Five headless
 cases pass. The first visible Windows placement opportunity fails during
 loading while Remote Desktop holds focus, before any Bed action. The retained
 [test record](testing.md#bed-placement-and-daytime-interaction) separates those
-scopes. Successful nighttime sleep and waking remain unfinished.
+scopes. Complete sleep/wake bodies and Player tick wake parents now have
+separate bounded qualification above. Natural elapsed sleep, default-hostile
+CQ/FW, damage/NBT wake parents and loaded-night acceptance remain unfinished
+or unqualified.
 
 The [World reference reader](performance/reference-readers.md) preserves all
 1,167 corruption controls while avoiding repeated original-packet validation.

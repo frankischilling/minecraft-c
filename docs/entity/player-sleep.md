@@ -56,6 +56,14 @@ retirement. Refused cleanup preserves remaining ownership and the first source
 failure. Consumed child views are cleared before another cleanup can refuse.
 No source retry, rollback or Player-global retry latch is used.
 
+## Player tick parents
+
+The [Player tick join](player-sleep-tick.md) now invokes retained wake at the
+actual missing-Bed and daytime sites, with source flags and checked ownership
+through World/client cleanup. A separate 36-profile original packet compares
+the bounded sleep prefix and first null failures. The native continuation has
+its own declared App input and does not qualify a whole original parent return.
+
 ## World and Display callers
 
 The [World tick](../../src/world/runtime/world_tick.c) sleeping predicate uses

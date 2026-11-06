@@ -84,10 +84,11 @@ typedef struct mc_world_entity_tick_error {
 } mc_world_entity_tick_error;
 
 void mc_world_entity_tick_error_init(mc_world_entity_tick_error *);
-/* End owned FallingSand failure work before reusing this record or retiring
- * its graph. A failed child transfers ownership into the output; it must not
- * be copied or cleared. Other child projections are borrowed. False preserves
- * remaining work and its cleanup cause. No source work is replayed. */
+/* End owned Player, Mob and FallingSand failure work before reusing this
+ * record or retiring its graph. An owning child transfers its occurrences
+ * into the output; it must not be copied or cleared. Other child projections
+ * are borrowed. False preserves remaining work and its cleanup cause.
+ * Successful retirement ends these projections. No source work is replayed. */
 bool mc_world_entity_tick_error_retire(mc_world_entity_tick_error *);
 /* Genuine GAME World bodies: fd.f(Entity), fd.a(Entity,flag), fd.g(). These
  * are not the World time/block/weather scheduler or Minecraft/frontend loop.
@@ -105,8 +106,10 @@ bool mc_world_entity_tick_error_retire(mc_world_entity_tick_error *);
  * separate unfinished dependency. Admission preserves World/Entity state and
  * earlier World diagnostics; optional caller error is fresh for this attempt. */
 /* The reached FallingSand child requires a nonnull error output to own any
- * failed constructor/publication/placement prefix. With NULL output it stops
- * before that child; earlier loop effects are preserved. */
+ * failed constructor/publication/placement prefix. A reached Player wake
+ * invocation likewise requires an actual outer ownership destination.
+ * With NULL output these stop before that child; earlier source effects
+ * and ordinary Player bypass paths are preserved. */
 mc_world_storage_status mc_world_runtime_tick_entity(mc_world_runtime *, mc_entity *,
                                                      const mc_world_entity_tick_context *,
                                                      const mc_world_entity_tick_limits *,

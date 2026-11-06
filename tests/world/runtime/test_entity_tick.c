@@ -645,6 +645,101 @@ cleanup:
     return ok;
 }
 
+/* Native caller controls through the actual FD.f/a -> GS.w_ route. Original
+ * World rows keep their separate scope and never execute these controls. */
+static bool world_player_wake_ownership(fixture *f, client_application *app, mc_entity *player,
+                                        mc_movement_input *input) {
+    bool ok = false, registered = false;
+    mc_world_runtime *world = f->worlds[0];
+    mc_world_access *access = NULL;
+    wake_tick_observer observer = {0};
+    const unsigned int entered = app->registry->entered;
+    const bool bed_observation = app->registry->blocks.t[26], sleeping = world->fields.J;
+    const int32_t daylight = world->fields.f;
+    const mc_player_action_context action = {
+        .travel = {.code_registry = app->registry, .trig = &trig}};
+    const mc_world_entity_tick_context context = {.player = action};
+    mc_player_fields *fields = &player->local_player->fields.player;
+
+    CHECK(wake_tick_prepare(f, app, player, input, 0, true, true));
+    const size_t holds = player->holds, borrows = app->registry->runtime_borrows,
+                 world_holds = world->persistent_bindings;
+    CHECK(mc_world_runtime_tick_entity(world, player, &context, NULL, NULL) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          fields->u && fields->private_a == 100 && player->base.width == .2f &&
+          player->base.bt == 17 && player->holds == holds &&
+          app->registry->runtime_borrows == borrows && world->persistent_bindings == world_holds);
+
+    /* An actual non-waking Player remains legal without an outer error owner. */
+    CHECK(wake_tick_prepare(f, app, player, input, 0, false, false));
+    CHECK(mc_world_runtime_tick_entity(world, player, &context, NULL, NULL) ==
+              MC_WORLD_STORAGE_OK &&
+          fields->u && fields->private_a == 100 && player->base.bt == 18);
+
+    CHECK(wake_tick_prepare(f, app, player, input, 0, true, false));
+    CHECK(mc_world_runtime_tick_entity(world, player, &context, NULL, tick_error) ==
+              MC_WORLD_STORAGE_OK &&
+          tick_error->child == MC_WORLD_ENTITY_TICK_CHILD_NONE && !fields->u &&
+          fields->private_a == 0 && player->base.bt == 18 && fields->private_b->x == 42 &&
+          fields->private_b->y == 10 && fields->private_b->z == 44);
+
+    CHECK(wake_tick_prepare(f, app, player, input, 0, false, true));
+    /* Declared mutable t[] input selects the genuine cell callback branch. */
+    app->registry->blocks.t[26] = true;
+    const mc_world_access_callbacks callbacks = {.cell = wake_tick_cell, .range = wake_tick_range};
+    CHECK(mc_world_access_create(&callbacks, &observer, &access, NULL) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_add_world_access(world, access, NULL) == MC_WORLD_STORAGE_OK);
+    registered = true;
+    CHECK(mc_world_runtime_tick_entity(world, player, &context, NULL, tick_error) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          tick_error->child == MC_WORLD_ENTITY_TICK_CHILD_PLAYER &&
+          tick_error->child_error.player.child == MC_PLAYER_TICK_CHILD_WAKE &&
+          tick_error->child_error.player.child_error.wake.call != NULL &&
+          tick_error->child_error.player.child_error.wake.error.site.pc == 80 &&
+          tick_error->child_error.player.child_error.wake.error.world.status ==
+              MC_WORLD_STORAGE_IO_ERROR &&
+          fields->u && fields->private_a == 100 && player->base.bt == 17 && observer.cells == 1);
+    const unsigned int caller_pc = tick_error->bytecode, update_pc = tick_error->update_bytecode;
+    const char *const operation = tick_error->operation;
+    const size_t cells = observer.cells, ranges = observer.ranges;
+    app->registry->entered = 1;
+    CHECK(!mc_world_entity_tick_error_retire(tick_error) &&
+          tick_error->status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          tick_error->operation == operation && tick_error->bytecode == caller_pc &&
+          tick_error->update_bytecode == update_pc &&
+          tick_error->child == MC_WORLD_ENTITY_TICK_CHILD_PLAYER &&
+          tick_error->child_error.player.child_error.wake.call != NULL &&
+          tick_error->child_error.player.cleanup.child == MC_PLAYER_TICK_CLEANUP_WAKE &&
+          tick_error->child_error.player.cleanup.wake.child == MC_PLAYER_SLEEP_CLEANUP_REGISTRY &&
+          tick_error->child_error.player.child_error.wake.error.site.pc == 80);
+    app->registry->entered = entered;
+    CHECK(mc_world_entity_tick_error_retire(tick_error) &&
+          tick_error->child == MC_WORLD_ENTITY_TICK_CHILD_NONE && player->holds == holds &&
+          app->registry->runtime_borrows == borrows && world->persistent_bindings == world_holds &&
+          observer.cells == cells && observer.ranges == ranges && fields->u &&
+          fields->private_a == 100 && player->base.bt == 17);
+    ok = true;
+cleanup:
+    app->registry->entered = entered;
+    app->registry->blocks.t[26] = bed_observation;
+    if (!mc_world_entity_tick_error_retire(tick_error))
+        ok = false;
+    if (registered) {
+        bool removed = false;
+        if (mc_world_runtime_remove_world_access(world, access, &removed, NULL) !=
+                MC_WORLD_STORAGE_OK ||
+            !removed)
+            ok = false;
+    }
+    if (access != NULL && mc_world_access_free(access, NULL) != MC_WORLD_STORAGE_OK)
+        ok = false;
+    if (!reset_tick(f, player, input))
+        ok = false;
+    world->fields.f = daylight;
+    world->fields.J = sleeping;
+    return ok;
+}
+
 static bool world_player_and_tiles(fixture *f, client_application *app, const char *root) {
     bool ok = false, inserted = false;
     mc_entity *player = NULL;
@@ -668,6 +763,8 @@ static bool world_player_and_tiles(fixture *f, client_application *app, const ch
         CHECK(player->base.bt == 18 + (int32_t)i && !w->fields.L);
     }
     CHECK(w->fields.b->count == 1 && w->fields.d->count == 1);
+    if (!tick_reference)
+        CHECK(world_player_wake_ownership(f, app, player, input));
     /* Nearest uses genuine lowercase d; dead Players are deliberately included. */
     scope = calloc(1, sizeof *scope);
     CHECK(scope != NULL);

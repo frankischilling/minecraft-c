@@ -2914,8 +2914,8 @@
       "sha256": "ed03d18203b44f74735df6ee30d3f0e3a8136ce8f638981773881e277c36edee"
     },
     "include/mc/entity/player/tick.h": {
-      "bytes": 2774,
-      "sha256": "c4775552b88badf6026153420c29e0e9e07986dc300071eb439783622728915c"
+      "bytes": 4640,
+      "sha256": "591016beaea29348ae52b4f98bcc18a8d267c5ff8f30929f28393f1a0cf15e0a"
     },
     "include/mc/entity/tick/environment.h": {
       "bytes": 3930,
@@ -2950,8 +2950,8 @@
       "sha256": "c70dca4488ec681b6c830a6762e397b680bec426f3002fa5706228c112ea479a"
     },
     "include/mc/world/runtime/entity_tick.h": {
-      "bytes": 6882,
-      "sha256": "7e5ca18ef16bf40ac85dd4eef4406d1cfb0b4a280b94cc5010c8aab16654e035"
+      "bytes": 7087,
+      "sha256": "ae137b49a822de535c2d0d6b8eb6d4c0bd9168a8a182b73278d7a8680c628df4"
     },
     "include/mc/world/runtime/material_movement.h": {
       "bytes": 3911,
@@ -2974,12 +2974,12 @@
       "sha256": "44c04d7f465a6fbdbea456db236456ca9a6fc4dcb586951a007d796234a2e412"
     },
     "src/client/runtime/world_tick.c": {
-      "bytes": 19801,
-      "sha256": "2a1f68da645c4c3e4d2d1a40a93ced298da0c1cf647f382f744acf62d07cb5b3"
+      "bytes": 19999,
+      "sha256": "359221645e3d6b26a3ed659523f0ba81a4e613ff1935cbf186127ae3eedab714"
     },
     "src/client/runtime/world_tick.h": {
-      "bytes": 5168,
-      "sha256": "342f71ffdca3fb893d1e8f7a3446d3bc6b93754893f07c869d5346820a4cd2c8"
+      "bytes": 5476,
+      "sha256": "6732a741ab4efe4256d21b8dde3fd33d92a924204d59ac3808254fb60f4a8f31"
     },
     "src/client/view_slot.h": {
       "bytes": 946,
@@ -8106,8 +8106,8 @@
       "sha256": "0a5ba4fb7bee78d43295fe8bac1cb0fafdd67be0a2fc2964252c32ac62e1017a"
     },
     "tests/world/runtime/test_entity_tick.c": {
-      "bytes": 49072,
-      "sha256": "4e9ecc8ca625be593a09ed4a0d72fc6774e01a22e49e5a4e5d6209258b50180f"
+      "bytes": 54627,
+      "sha256": "b6c5147f2ca65986f03d84a8a712982635cf682250a4dff3cf7d78a2ceb23193"
     },
     "tests/world/runtime/test_respawn.c": {
       "bytes": 13439,
@@ -8498,8 +8498,8 @@
       "sha256": "0304dc80f5da9ea39c24b4f78898bd505072b775e7b7db8e0633f9896e82e62a"
     },
     "tests/tools/entity/test_player_sleep_wake.py": {
-      "bytes": 18715,
-      "sha256": "ad9cf6fd65ce973763bd70a4a3c0e99744d54803271cdc5caf8257fb91855cd2"
+      "bytes": 18880,
+      "sha256": "b1bdcf5ba9dc4714f00818a969dc31f8f83b89d15da12408e63f8ea6920f1ce0"
     },
     "tests/tools/world/test_bed_state.py": {
       "bytes": 2461,
@@ -8536,6 +8536,74 @@
     "tests/world/runtime/world_access/test_world_access.c": {
       "bytes": 29170,
       "sha256": "b44b0aa9c06aec980106ffc32de6cdd66dd3f4ad96354161394054e168988469"
+    },
+    "cmake/player_sleep_tick.cmake": {
+      "bytes": 2972,
+      "sha256": "edeaad38b5abf32e2b2d695748ac6817a8f1d7967a3a4f999ff7109ab68c9a91"
+    },
+    "src/entity/player/active_internal.h": {
+      "bytes": 1806,
+      "sha256": "a95252f39d5a9429321c41369a07dc693ec9c939f4fbf6dcc9ec8b5eddca84ae"
+    },
+    "src/entity/player/player_tick.c": {
+      "bytes": 11409,
+      "sha256": "3bd0f0f40ba4185ec5a6837a0e61f7792671d6d0bdd0a28b781b0b090c70498a"
+    },
+    "src/entity/player/tick.c": {
+      "bytes": 12873,
+      "sha256": "99594e01a8eae5af1b20dc55dd0df477b3fb345ecc7be12febe5b5f70e6eff7d"
+    },
+    "src/entity/player/tick_internal.h": {
+      "bytes": 861,
+      "sha256": "7beadfaf96b2a1096c960a1030f1e998568eba08a4f4114f333316d597a1faf1"
+    },
+    "src/world/runtime/entity_tick.c": {
+      "bytes": 10881,
+      "sha256": "e17ce005b6b2c1ac63f3a03d8e0ce0d6655f1e138d8c4206938be72e44cd4dda"
+    },
+    "src/world/runtime/entity_tick_dispatch.c": {
+      "bytes": 11625,
+      "sha256": "0c364971776d199adc75c36c7d671630f18cea1c3c7e6c3a506a97b579db8c58"
+    },
+    "tests/client/gameplay/test_player_sleep_tick_cleanup.c": {
+      "bytes": 7449,
+      "sha256": "75a760781c5e486d8b3a5661d1e9588d183e742ad6072f13b32b5609d3c44042"
+    },
+    "tests/entity/player/test_sleep_tick.c": {
+      "bytes": 34543,
+      "sha256": "4331387c3e6e9add5028c07481d96db0fe129c65204ed5f2e112a2d35ff75d5d"
+    },
+    "tests/entity/player/test_tick.c": {
+      "bytes": 60339,
+      "sha256": "42b4d7f451b263ddcc5fea3432e0b7bdf8ab188b52f39a4335ce3f56e55485da"
+    },
+    "tests/reference/entity/player_sleep_tick/capture_reference.py": {
+      "bytes": 17881,
+      "sha256": "6cc4a5f394db327d3756e456ab33b6492eccf7d7d5695101251f1904111e70e9"
+    },
+    "tests/reference/entity/player_sleep_tick/export_reference.py": {
+      "bytes": 4791,
+      "sha256": "e3902de0bd6498732eaa5a58581034e4ec5a6e180e60ec3fbca5a40a128219fe"
+    },
+    "tests/reference/entity/player_sleep_tick/packet.py": {
+      "bytes": 8026,
+      "sha256": "a15a111fa92ebcbe457665752591ccce43cce501492b14254b8e80cbabab9c9f"
+    },
+    "tests/reference/entity/player_sleep_tick/test_packet.py": {
+      "bytes": 4707,
+      "sha256": "e160eb44a62c42abd7801c286d63fffcab563c7d64d8582abab93f8b0aaffdb2"
+    },
+    "tests/reference/entity/player_sleep_tick/validate.py": {
+      "bytes": 12094,
+      "sha256": "6f4840371c7329c1e188abe371842708162cd66d111815e429690d7e01afea0f"
+    },
+    "tests/tools/client/test_player_sleep_tick_cleanup.py": {
+      "bytes": 3977,
+      "sha256": "7f93bdd846a6c9039795e52121a2631363476a555950d2919e63ba3b845eb8a2"
+    },
+    "tests/tools/entity/test_player_sleep_tick.py": {
+      "bytes": 22589,
+      "sha256": "333312ebe6de045d9f555c1dbad781d4ff889098453fc2b1bf95a0f7ab218251"
     }
   },
   "source_suppliers": {
@@ -13318,6 +13386,64 @@
             "tests/world/runtime/world_access/test_world_access.c"
           ],
           "current_count": 2134
+        }
+      }
+    },
+    {
+      "from_commit": "21effab740cd7471c01a304e4e72ce067fc5f0a1",
+      "role": "Current Player-tick wake parent joins, retained child ownership, World/client cleanup and sleep comparison diagnostics inputs. This entry binds current inputs only; earlier original and native observations, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 558900,
+        "sha256": "8b419009a73742fa8547404d49f2842448a51d999b391e79575cac39f99d987e"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "include/mc/entity/player/tick.h": {
+              "bytes": 2774,
+              "sha256": "c4775552b88badf6026153420c29e0e9e07986dc300071eb439783622728915c"
+            },
+            "include/mc/world/runtime/entity_tick.h": {
+              "bytes": 6882,
+              "sha256": "7e5ca18ef16bf40ac85dd4eef4406d1cfb0b4a280b94cc5010c8aab16654e035"
+            },
+            "src/client/runtime/world_tick.c": {
+              "bytes": 19801,
+              "sha256": "2a1f68da645c4c3e4d2d1a40a93ced298da0c1cf647f382f744acf62d07cb5b3"
+            },
+            "src/client/runtime/world_tick.h": {
+              "bytes": 5168,
+              "sha256": "342f71ffdca3fb893d1e8f7a3446d3bc6b93754893f07c869d5346820a4cd2c8"
+            },
+            "tests/world/runtime/test_entity_tick.c": {
+              "bytes": 49072,
+              "sha256": "4e9ecc8ca625be593a09ed4a0d72fc6774e01a22e49e5a4e5d6209258b50180f"
+            },
+            "tests/tools/entity/test_player_sleep_wake.py": {
+              "bytes": 18715,
+              "sha256": "ad9cf6fd65ce973763bd70a4a3c0e99744d54803271cdc5caf8257fb91855cd2"
+            }
+          },
+          "added": [
+            "cmake/player_sleep_tick.cmake",
+            "src/entity/player/active_internal.h",
+            "src/entity/player/player_tick.c",
+            "src/entity/player/tick.c",
+            "src/entity/player/tick_internal.h",
+            "src/world/runtime/entity_tick.c",
+            "src/world/runtime/entity_tick_dispatch.c",
+            "tests/client/gameplay/test_player_sleep_tick_cleanup.c",
+            "tests/entity/player/test_sleep_tick.c",
+            "tests/entity/player/test_tick.c",
+            "tests/reference/entity/player_sleep_tick/capture_reference.py",
+            "tests/reference/entity/player_sleep_tick/export_reference.py",
+            "tests/reference/entity/player_sleep_tick/packet.py",
+            "tests/reference/entity/player_sleep_tick/test_packet.py",
+            "tests/reference/entity/player_sleep_tick/validate.py",
+            "tests/tools/client/test_player_sleep_tick_cleanup.py",
+            "tests/tools/entity/test_player_sleep_tick.py"
+          ],
+          "current_count": 2151
         }
       }
     }

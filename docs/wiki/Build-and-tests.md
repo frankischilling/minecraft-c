@@ -1,5 +1,27 @@
 # Build and tests
 
+The [Player tick parent comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-sleep-tick.md)
+adds six public cases: normal/optimized portable readers and native transport
+controls, native parent replay and client cleanup. Focused Windows and
+sanitized Linux cohorts pass 11/11 in 43.73/59.89 seconds, with all 5,522 public
+inputs unchanged. Readers reject 362 changed copies per mode and transport
+controls reject 2,859. Native replay matches 36 profiles and 1,625 scalars;
+client cleanup passes 219 checks without executing a Minecraft frame.
+Original parent returns, the 32-row differing App input and unselected native
+continuation effects retain their explicit comparison limits.
+
+Complete public selections pass Windows 776/776 in 349.20 seconds and
+sanitized Linux 762/762 in 994.85 seconds, without skips. All preceding
+names remain, exactly six are added per host, and all 5,523 guarded inputs
+stay unchanged. All 24 visible Windows test windows are placed on monitor 2.
+
+Preceding exact source `21effab7` passes
+[run 42214978291](https://github.com/frankischilling/minecraft-c/actions/runs/42214978291):
+Windows 719/719 in 426.28 seconds, GCC 777/777 in 613.64 seconds and Clang
+777/777 in 472.51 seconds, plus formatting of 2,180 files. All four checkout
+trees equal that pushed source; all preceding test names remain, with no skips.
+This checkpoint precedes the Player tick parent changes.
+
 The [Player sleep/wake qualification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#player-sleep-and-wake)
 adds seven registered cases without removing any preceding name. Complete
 Windows and Clang Linux builds pass; Windows public tests pass 770/770 in

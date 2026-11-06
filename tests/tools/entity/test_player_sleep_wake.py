@@ -187,19 +187,23 @@ def compare(actual, expected):
     comparisons = 0
     def visit(a, b, path):
         nonlocal comparisons
-        require(type(a) is type(b), 'sleep/wake comparison type: ' + path)
+        if not (type(a) is type(b)):
+            raise AssertionError('sleep/wake comparison type: ' + path)
         if type(b) is dict:
-            require(a.keys() == b.keys(), 'sleep/wake comparison keys: ' + path)
+            if not (a.keys() == b.keys()):
+                raise AssertionError('sleep/wake comparison keys: ' + path)
             for key in b:
                 visit(a[key], b[key], path + '/' + key)
         elif type(b) is list:
-            require(len(a) == len(b), 'sleep/wake comparison length: ' + path)
+            if not (len(a) == len(b)):
+                raise AssertionError('sleep/wake comparison length: ' + path)
             for index, (left, right) in enumerate(zip(a, b)):
                 visit(left, right, path + '/' + str(index))
         else:
             comparisons += 1
-            require(a == b, 'sleep/wake scalar differs: ' + path + ': native=' + str(a) +
-                    '; original=' + str(b))
+            if not (a == b):
+                raise AssertionError('sleep/wake scalar differs: ' + path + ': native=' + str(a) +
+                                     '; original=' + str(b))
     visit(actual, expected, 'rows')
     return comparisons
 

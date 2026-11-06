@@ -1,5 +1,10 @@
 # Active LocalPlayer tick
 
+The [sleep/wake parent join](player-sleep-tick.md) now reaches actual retained
+wake at GS53/73 and transfers failed children through World/client cleanup.
+Its separate 36-profile original prefix packet and native continuation controls
+do not expand the older 39-row original whole-tick comparison below.
+
 `mc_player_tick` executes the inherited `gs.w_()` body on a genuine, ready
 LocalPlayer. Its ordinary portal-false path now runs the actual `ls.w_()` and
 `sn.w_()` wrappers, virtual Living environment update, `dc.o()` action prefix,
@@ -61,9 +66,11 @@ failure returns before the source body; all successful allocations retire on
 every exit. This keeps nested genuine wrappers within the normal Windows
 Debug stack without sharing a workspace between calls. Caller output is
 written only at final return, including during real WorldAccess reentry. The
-large environment/action child is tagged; read only the active union member.
-Success returns a fresh empty error. Failure retains the completed source
-prefix, wrapper PCs and full reached child diagnostics.
+large environment/action/wake child is tagged; read only the active union
+member. Success returns a fresh empty error. Failure retains the completed
+source prefix, wrapper PCs and full reached child diagnostics. An error owning
+a wake call or retained Registry hold must pass `mc_player_tick_error_retire`
+before reuse or graph retirement.
 
 Strict x86-64 nearest-even arithmetic with gradual underflow is admitted at
 reached floating operations. The Input extension checks its first actually
@@ -85,12 +92,15 @@ The ordinary complete path does not hide missing descendants:
 * Portal true preserves the actual World/dismount prefix and stops at `dc.o`
   PC70, the missing live `Minecraft.r` screen owner. Screen closure, sound and
   dimension transition are later dependencies.
-* Nonremote sleeping performs the real bed lookup and daytime test. Missing
-  wake behavior stops at `gs.w_` PC53 or PC73.
+* Nonremote sleeping performs the real bed lookup and daytime test, then
+  reaches retained wake at `gs.w_` PC53 or PC73. Without an externally retained
+  error output it stops before that invocation. Otherwise failures retain the
+  actual child, and successful checked retirement precedes Living111.
 * Ineligible Workbench closure preserves `gs.r`'s `e=d` store, then stops at
   `dc.r` PC9, the missing `Minecraft.a(Screen)` descendant.
-* Map tracking/terrain updates, later Living hurt, wake/GUI operations and
-  unsupported concrete Entity descendants retain their reached failures.
+* Map tracking/terrain updates, later Living hurt, damage/NBT wake parents,
+  remote sleep screens and unsupported concrete Entity descendants retain
+  their reached failures.
   Item pickup now has its own completed insertion/notification/death path;
   particle drawing and normal RenderEngine startup remain separate work.
 

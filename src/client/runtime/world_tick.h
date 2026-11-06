@@ -73,6 +73,8 @@ typedef struct mc_client_world_tick {
  * no clock query/store; the caller retains the later P1329/1332 sequence.
  * The record starts zeroed and stays live/disjoint/exclusive through cleanup.
  * Completed fields and children survive terminal failures; no replay/resume.
+ * Failed Player/Mob/FallingSand children transfer owned work into entities;
+ * this record must not be copied, cleared or reused before cleanup succeeds.
  * The ordered World scheduler is invoked at1260 and retains its exact reached
  * descendants, followed by the actual fd.q random display call at1311.
  * The actual App/menu loop keeps its native transition lease and all failed
@@ -80,7 +82,9 @@ typedef struct mc_client_world_tick {
  * All graph owners stay live on the video thread through native cleanup. */
 bool mc_client_world_tick_run(client_application *, mc_math_classes *, mc_client_world_tick *);
 /* Releases child native occurrences without replaying source work. Top-level
- * value diagnostics and complete entity/field errors survive cleanup retry;
+ * value diagnostics and still-owned entity/field errors survive cleanup retry;
+ * successful owned-Entity retirement ends that child projection before any
+ * later cleanup refusal. The outer failure operation/site remain intact.
  * renderer/refresh borrowed child views end with their successful release.
  * effects copies its selected complete movement value before releasing the PB
  * record; its nested producer-borrowed World/loader/WorldAccess views must be

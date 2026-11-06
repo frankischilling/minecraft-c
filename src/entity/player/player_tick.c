@@ -19,7 +19,19 @@ static bool bed(mc_active_scope *s, bool *out, mc_player_tick_error *e) {
     if (v == NULL)
         return mc_active_fail(e, MC_ENTITY_STATE_ERROR,
                               "Sleeping Player null bed coordinate receiver");
-    const int32_t x = v->x, y = v->y, z = v->z;
+    const int32_t x = v->x;
+    e->bed_bytecode = 15;
+    v = p->local_player->fields.player.v;
+    if (v == NULL)
+        return mc_active_fail(e, MC_ENTITY_STATE_ERROR,
+                              "Sleeping Player null bed Y coordinate receiver");
+    const int32_t y = v->y;
+    e->bed_bytecode = 22;
+    v = p->local_player->fields.player.v;
+    if (v == NULL)
+        return mc_active_fail(e, MC_ENTITY_STATE_ERROR,
+                              "Sleeping Player null bed Z coordinate receiver");
+    const int32_t z = v->z;
     e->bed_bytecode = 25;
     if (world == NULL)
         return mc_active_fail(e, MC_ENTITY_STATE_ERROR, "Sleeping Player null World bed receiver");
@@ -42,6 +54,39 @@ static bool bed(mc_active_scope *s, bool *out, mc_player_tick_error *e) {
     return true;
 }
 
+static bool wake(mc_active_scope *s, bool reset_timer, bool set_spawn, mc_player_tick_error *e) {
+    if (!s->can_transfer_children)
+        return mc_active_fail(e, MC_ENTITY_STATE_ERROR,
+                              "Sleeping tick wake requires retained child output");
+    e->child = MC_PLAYER_TICK_CHILD_WAKE;
+    e->child_error.wake = (mc_player_tick_wake){0};
+    const mc_player_sleep_context context = {.code_registry = s->registry};
+    const mc_player_sleep_status status =
+        mc_player_wake_begin(s->player, reset_timer, true, set_spawn, &context,
+                             &e->child_error.wake.call, &e->child_error.wake.error);
+    if (status != MC_PLAYER_SLEEP_OK) {
+        const mc_player_sleep_error *error = &e->child_error.wake.error;
+        const mc_entity_status mapped =
+            error->world.status == MC_WORLD_STORAGE_LIMIT ? MC_ENTITY_LIMIT
+            : error->world.status == MC_WORLD_STORAGE_ALLOCATION_FAILED
+                ? MC_ENTITY_ALLOCATION_FAILED
+            : error->world.status == MC_WORLD_STORAGE_BUSY ? MC_ENTITY_BUSY
+            : error->world.status != MC_WORLD_STORAGE_OK   ? MC_ENTITY_WORLD_FAILED
+                                                           : mc_active_sleep_status(status);
+        return mc_active_fail(e, mapped, error->operation);
+    }
+    mc_player_sleep_state state;
+    if (e->child_error.wake.call == NULL ||
+        !mc_player_sleep_inspect(e->child_error.wake.call, &state) || !state.returned)
+        return mc_active_fail(e, MC_ENTITY_STATE_ERROR, "Sleeping tick actual wake returned child");
+    if (!mc_active_wake_retire(e))
+        return mc_active_fail(e, e->cleanup.status, e->cleanup.operation);
+    /* The wake is complete and owns no child. Only now may Living111 select
+     * another large error arm. The same-call awake fade branch stays skipped. */
+    e->child = MC_PLAYER_TICK_CHILD_NONE;
+    return true;
+}
+
 static bool sleep_prefix(mc_active_scope *s, mc_player_tick_error *e) {
     mc_entity *p = s->player;
     mc_player_fields *v = &p->local_player->fields.player;
@@ -60,8 +105,7 @@ static bool sleep_prefix(mc_active_scope *s, mc_player_tick_error *e) {
                 return false;
             if (!in_bed) {
                 at(e, 53);
-                return mc_active_fail(e, MC_ENTITY_STATE_ERROR,
-                                      "Sleeping tick genuine gs.a(ZZZ) wake descendant dependency");
+                return wake(s, true, false, e);
             }
             at(e, 63);
             if (p->base.world == NULL)
@@ -69,9 +113,7 @@ static bool sleep_prefix(mc_active_scope *s, mc_player_tick_error *e) {
                                       "Sleeping tick null World daytime receiver");
             if (p->base.world->fields.f < 4) {
                 at(e, 73);
-                return mc_active_fail(
-                    e, MC_ENTITY_STATE_ERROR,
-                    "Daytime sleeping tick genuine gs.a(ZZZ) wake descendant dependency");
+                return wake(s, false, true, e);
             }
         }
     } else if (v->private_a > 0) {

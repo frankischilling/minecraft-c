@@ -18,6 +18,11 @@ do not postpone original comparisons until a whole milestone is built. Independe
 research can proceed in parallel, but shared interfaces, builds, Git operations
 and integration need explicit ownership.
 
+The [Player tick wake parents](entity/player-sleep-tick.md) now have bounded
+original-prefix and native ownership coverage. Next sleep work remains the
+default-hostile CQ/FW branch, damage/NBT parents, real loaded-night acceptance
+and original whole-parent qualification.
+
 The current priority is playable single-player before server work. All eleven
 default Overworld Mob draw paths have finite comparisons and loaded-client
 continuations, including Skeleton's held Bow. Tutorial notices and Canvas

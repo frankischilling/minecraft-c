@@ -1,5 +1,45 @@
 # Test scope and reproduction
 
+## Player tick sleep and wake parents
+
+The [parent join and comparison scope](entity/player-sleep-tick.md) use a new
+36-profile unchanged-original packet. Two fresh VMs each record 32 actual
+unresumed GS111 frames and four first null exceptions. No original parent
+returns. Native whole calls compare eight sleep properties for the 32 prefixes
+and all 31 selected state properties for the faults, including the declared
+App-input difference for native continuations. Windows and sanitized Linux
+pass all 36 rows and 1,625 scalar comparisons; 31 successful native continuations
+also check counter and private-bN effects without original-tail qualification.
+
+The focused cohort passes 11/11 on Windows in 43.73 seconds and Linux in
+59.89 seconds. It retains the five existing Player/World/replay cases and adds
+six new cases: normal/optimized packet readers, normal/optimized transport
+controls, the native parent comparison and client cleanup. The readers reject
+362 changed copies per mode; transport controls reject 2,859. The client fixture
+passes 219 ownership checks and executes no Minecraft frame. All 5,522 public
+inputs remain unchanged through both builds and runtime cohorts.
+
+The earlier build attempt fails on Windows secure-CRT enforcement and a wrong
+fixture App member on both hosts. The corrected build uses the secure temporary
+stream entry on MSVC and the actual App.h field. A strict GCC syntax check then
+finds bridge identifiers shadowing an imported fixture type. Their rename
+passes the corrected ten-unit strict GCC check. Complete Windows and Clang
+Linux builds pass, and pinned clang-format 18.1.3 checks all 2,183 C/header/
+fragment files. These failures change no original observations, assertions,
+sanitizer settings or deadlines.
+
+The subsequent full public cohorts pass Windows 776/776 in 349.20 seconds
+and sanitized Linux 762/762 in 994.85 seconds, with no skips. Every
+preceding public name remains and exactly six are added per host. All 5,523
+guarded public inputs stay unchanged through the complete builds and both
+full runtime cohorts. All 24 visible Windows test windows are placed on
+monitor 2. Linux storage passes in 124.18 seconds under the unchanged
+180-second limit; the earlier failed full run retains its separate scope.
+
+The [sleep comparison diagnostics](performance/reference-readers.md) retain all
+4,556 rejection identities and exact error messages while reducing measured
+Python reader-control CPU. That measurement supplies no gameplay FPS result.
+
 ## Player sleep and wake
 
 The [retained Player bodies](entity/player-sleep.md) have a separate unchanged-original

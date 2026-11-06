@@ -314,7 +314,7 @@ bool mc_client_world_tick_run(client_application *app, mc_math_classes *math,
                               mc_client_world_tick *call) {
     if (app == NULL || call == NULL || call->active || call->failed || call->refresh != NULL ||
         call->renderer != NULL || call->scheduler != NULL || call->ambience != NULL ||
-        call->effects_owner != NULL)
+        call->effects_owner != NULL || call->entities.child != MC_WORLD_ENTITY_TICK_CHILD_NONE)
         return false;
     memset(call, 0, sizeof(*call));
     call->active = true;
@@ -326,7 +326,9 @@ bool mc_client_world_tick_run(client_application *app, mc_math_classes *math,
 bool mc_client_world_tick_cleanup(mc_client_world_tick *call) {
     if (call == NULL || call->active)
         return false;
-    if (call->entities.child == MC_WORLD_ENTITY_TICK_CHILD_FALLING_SAND &&
+    if ((call->entities.child == MC_WORLD_ENTITY_TICK_CHILD_FALLING_SAND ||
+         call->entities.child == MC_WORLD_ENTITY_TICK_CHILD_MOB ||
+         call->entities.child == MC_WORLD_ENTITY_TICK_CHILD_PLAYER) &&
         !mc_world_entity_tick_error_retire(&call->entities))
         return false;
     if (call->effects_owner != NULL) {

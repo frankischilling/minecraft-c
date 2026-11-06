@@ -84,3 +84,44 @@ Raw process records and full precision timing receipts remain private. The
 figures above are selected numeric observations. This cohort measures normal
 Python reader-control CPU and wall time. It establishes no optimized-Python
 speedup, native execution speedup, whole-CI percentage or gameplay FPS gain.
+
+## Player sleep/wake comparison diagnostics
+
+The [Player sleep/wake reader](../../tests/tools/entity/test_player_sleep_wake.py)
+built failure messages during every successful comparison. Its corruption
+controls repeat long prefixes of the 76-row result. Four explicit failure
+branches now construct those messages only when a comparison fails. Every
+recursive visit, equality operator, strict type check and scalar counter stays
+in place.
+
+The measurement used three fresh, serial Linux processes before and three
+after for each mode: normal Python and `-O`, twelve processes altogether.
+Each process ran the canonical `--controls` command, admitted the complete
+original packet and passed all 4,556 rejection controls under the same
+90-second limit. Wall time spans the complete child process; CPU time is its
+user plus kernel time from serial `RUSAGE_CHILDREN` differences. Input hashing
+outside the child is excluded.
+
+| Mode | Median wall before | Median wall after | Median CPU before | Median CPU after |
+| --- | ---: | ---: | ---: | ---: |
+| Normal | 18.092993 s | 10.860059 s | 17.522261 s | 10.266599 s |
+| `-O` | 18.545970 s | 11.898417 s | 17.909595 s | 11.303462 s |
+
+All 4,556 ordered rejection IDs, exception classes and message bytes match
+exactly: 148 parser cases and 4,408 changed-copy comparisons. Sixteen focused
+checks also preserve type, key, length and scalar failures, including bool/int,
+nested values, `None` and Unicode. The complete 76-row comparison still visits
+9,784 scalars; the native replay retains those same required comparisons and
+its existing fixtures. Packet, helper and configuration hashes stayed fixed.
+Source and data assertions, the 180-second native subprocess limit and the
+240-second native CTest limit are unchanged. Windows normal and `-O` acceptance
+also passed all 4,556 controls; no Windows before/after speed claim is made.
+
+The measured driver changed from SHA256
+`ad9cf6fd65ce973763bd70a4a3c0e99744d54803271cdc5caf8257fb91855cd2` to
+`b1bdcf5ba9dc4714f00818a969dc31f8f83b89d15da12408e63f8ea6920f1ce0`.
+Only `compare()` changed. A separate bounded profile identified that function
+as the main cost; its instrumented run is excluded from these medians. Raw
+process records and full precision receipts remain private. These observations
+measure Python corruption-control processes on one host. They establish no
+native execution speedup, gameplay FPS gain or whole-CI percentage improvement.

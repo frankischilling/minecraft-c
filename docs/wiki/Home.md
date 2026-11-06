@@ -1,5 +1,18 @@
 # minecraft-c
 
+[Player tick wake parents](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-sleep-tick.md)
+now reach retained wake at the missing-Bed and daytime sites, preserving failed
+children through World/client cleanup. Two original VMs supply 36 prepared
+prefix/fault profiles; Windows and sanitized Linux match 1,625 selected scalars.
+The whole native continuation uses a declared differing App input. Original
+parent returns and loaded-night gameplay remain unqualified. Native cleanup
+controls cover refusal, consumed child views and prevention of error overwrite.
+
+The [sleep/wake reader optimization](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/reference-readers.md#player-sleepwake-comparison-diagnostics)
+preserves all 4,556 corruption cases and exact diagnostics. Three fresh Linux
+processes per mode and version measure lower normal/optimized Python CPU;
+these measurements establish no gameplay FPS or whole-CI percentage.
+
 [Player sleep and wake](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-sleep.md)
 now continue Bed activation through the original pose, bounds, timer, exit
 search and copied spawn operations. The World sleep branch calls actual wake

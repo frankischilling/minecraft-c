@@ -1,5 +1,30 @@
 # History
 
+## Player tick wake parents and ownership
+
+The actual GS53/73 parents now call retained wake with their source flags.
+World dispatch preserves actual caller output availability, and client cleanup
+keeps failed child ownership until checked retirement. A consumed child ends
+its borrowed views even when the remaining Registry hold refuses cleanup.
+
+Two unchanged-original VMs retain 32 unresumed GS111 boundaries and four first
+null failures each. Native Windows and sanitized Linux pass 36 profiles and
+1,625 scalar comparisons, with a declared differing App input for the native
+continuations. The focused cohort passes 11/11 per host. Native counter/tail
+checks do not qualify original parent returns. Loaded-night, default-hostile,
+damage/NBT and original presentation remain separate work.
+
+Complete public selections pass Windows 776/776 in 349.20 seconds and
+sanitized Linux 762/762 in 994.85 seconds, without skips. All preceding
+names remain, exactly six are added per host, and all 5,523 guarded inputs
+stay unchanged. All 24 visible Windows test windows are placed on monitor 2.
+
+Four lazy diagnostic branches preserve all 4,556 ordered corruption cases and
+exact error messages. Normal Python median process CPU falls from 17.522261
+to 10.266599 seconds; optimized Python falls from 17.909595 to 11.303462,
+using three fresh Linux processes per mode/version. These are test-reader
+measurements, with no gameplay FPS or whole-CI percentage claim.
+
 ## Player sleep, wake and local rendering
 
 The retained Player bodies now preserve original bounds and coordinate

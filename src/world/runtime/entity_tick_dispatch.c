@@ -1,4 +1,5 @@
 #include "../../entity/mob/internal.h"
+#include "../../entity/player/tick_internal.h"
 #include "entity_tick_internal.h"
 
 static const char *mob_tick_class(mc_entity_class_kind kind) {
@@ -31,9 +32,10 @@ bool wt_tick(wt_scope *s, mc_entity *p, unsigned int pc) {
     if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
         s->error.virtual_class = "gs";
         s->error.child = MC_WORLD_ENTITY_TICK_CHILD_PLAYER;
-        status = mc_player_tick(p, s->context == NULL ? NULL : &s->context->player,
-                                s->context == NULL ? NULL : s->context->player_limits,
-                                &s->error.child_error.player);
+        status =
+            mc_player_tick_with_child_output(p, s->context == NULL ? NULL : &s->context->player,
+                                             s->context == NULL ? NULL : s->context->player_limits,
+                                             s->has_error_output, &s->error.child_error.player);
     } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ITEM)) {
         s->error.virtual_class = "hl";
         s->error.child = MC_WORLD_ENTITY_TICK_CHILD_ITEM;
