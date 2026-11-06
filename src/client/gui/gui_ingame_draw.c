@@ -13,6 +13,7 @@
 #include "../render_engine/nw.h"
 #include "../render_engine/texture_lookup.h"
 #include "bitmap_font.h"
+#include "gui_ingame_chat_internal.h"
 #include "gui_ingame_internal.h"
 #include "gui_ingame_pumpkin.h"
 #include "item/stack/source_internal.h"
@@ -261,6 +262,8 @@ static bool nw_at(mc_client_gui_ingame_draw_call *c, unsigned int pc) {
     return graphical(
         c, mc_client_nw_active_use(c->graphics, site(pc), &c->nw, &c->failure.graphics), pc);
 }
+
+#include "gui_ingame_chat_draw.inc"
 
 /* Actual ub.b(IIIIII), including Java int additions before conversion and
  * binary32 texture-coordinate products. No GUI bridge, color or state reset. */
@@ -814,13 +817,8 @@ static bool body(mc_client_gui_ingame_draw_call *c) {
                 &c->failure.display),
             1853))
         return false;
-    mc_client_gui_ingame_list *list = c->state.owner->fields.e;
-    if (list == NULL)
-        return fail(c, MC_CLIENT_GUI_INGAME_DRAW_SOURCE_NULL, "actual UQ chat List.size receiver",
-                    1865, false);
-    if (list->size != 0)
-        return fail(c, MC_CLIENT_GUI_INGAME_DRAW_DEPENDENCY, "actual nonempty chat rendering", 1886,
-                    true);
+    if (!chat_lines(c))
+        return false;
     if (!gl(c, mc_client_display_source_pop(c->display, &c->failure.display), 2086) ||
         !gl(c, mc_client_display_source_alpha_test(c->display, true, &c->failure.display), 2092) ||
         !gl(c, mc_client_display_source_blend_enable(c->display, false, &c->failure.display), 2098))
@@ -836,7 +834,7 @@ mc_client_gui_ingame_draw_status mc_client_gui_ingame_draw_begin(
     mc_client_gui_ingame_draw_call **out, mc_client_gui_ingame_draw_error *error) {
     if (owner == NULL || owner->classes == NULL || graphics == NULL || out == NULL || *out != NULL)
         return admission(error, MC_CLIENT_GUI_INGAME_DRAW_ARGUMENT, "HUD native owner/output");
-    if (owner->draw_call != NULL)
+    if (owner->draw_call != NULL || owner->chat_call != NULL)
         return admission(error, MC_CLIENT_GUI_INGAME_DRAW_BUSY, "HUD retained source call");
     mc_client_gui_ingame_draw_call *c = calloc(1, sizeof(*c));
     if (c == NULL)
@@ -857,7 +855,7 @@ mc_client_gui_ingame_draw_status mc_client_gui_ingame_draw_begin(
         free(c);
         return admission(error, MC_CLIENT_GUI_INGAME_DRAW_BUSY, "HUD native owner monitor");
     }
-    if (owner->draw_call != NULL || owner->classes->retiring ||
+    if (owner->draw_call != NULL || owner->chat_call != NULL || owner->classes->retiring ||
         owner->phase == MC_CLIENT_GUI_INGAME_RETIRING ||
         owner->phase == MC_CLIENT_GUI_INGAME_CONSTRUCTING || owner->holds == SIZE_MAX) {
         (void)mtx_unlock(&owner->classes->mutex);

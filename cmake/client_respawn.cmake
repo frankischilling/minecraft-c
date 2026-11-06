@@ -1,6 +1,7 @@
 include_guard(GLOBAL)
 option(MC_ENABLE_CLIENT_DEATH_RESPAWN_TESTS "Run the local imported-resource Death/Respawn scene" OFF)
-target_sources(mc_simulation PRIVATE src/world/runtime/respawn.c)
+target_sources(mc_simulation PRIVATE
+    src/world/runtime/respawn.c src/world/runtime/bed_spawn.c)
 if(BUILD_TESTING)
     add_executable(mc_test_world_respawn tests/world/runtime/test_respawn.c)
     target_include_directories(mc_test_world_respawn PRIVATE src src/platform/time)

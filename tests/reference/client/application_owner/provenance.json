@@ -358,8 +358,8 @@
       "sha256": "1e8d7271832e8c742fbcc3c73f9d228aab4ac779c938d9570bdcbcb1413019e2"
     },
     "src/client/startup/application_classes.c": {
-      "bytes": 17117,
-      "sha256": "eaea8782f3a790fe539c0dffccab05452779a0c4002a144a4e5e923a047573f5"
+      "bytes": 17155,
+      "sha256": "2d348c0345d8cdea3433ed75fa83c858da8ed60b4c4e994bb970c310e609ebe5"
     },
     "src/client/startup/application_lifetime.c": {
       "bytes": 11701,
@@ -370,8 +370,8 @@
       "sha256": "eed995c4a51f9679e2b9bb16a3af85cc79cf75cc65dc1d63c33084bce29db67b"
     },
     "src/client/startup/application_owner_internal.h": {
-      "bytes": 5329,
-      "sha256": "5f3d4de11b1799e2ec1309879cc2efe12a8b2037274f61f295038ea1088f2f8a"
+      "bytes": 5372,
+      "sha256": "43dbe7ff2267ba165d4743e26959ed9e52e66bce861ac4a127ad4bddd1c8ccc5"
     },
     "src/client/startup/timer_hack.c": {
       "bytes": 18780,
@@ -434,8 +434,8 @@
       "sha256": "92c369c867f422806331d3a2efa27defcf7b3908c57c6f1c36e586d130476b62"
     },
     "include/mc/client/gui/gui_ingame.h": {
-      "bytes": 10634,
-      "sha256": "97e4e156ee5f8e53f998788dfc81e8f3768ec38ae5341bc699ec56f0ab53c35d"
+      "bytes": 10977,
+      "sha256": "10be2e64af2eaeaf315d2258ef0bae17d8d714361a45ecdb62f57da330ad0afd"
     },
     "include/mc/client/render_engine/render_engine.h": {
       "bytes": 9278,
@@ -810,6 +810,34 @@
             "src/client/gui/source_screen.h": {
               "bytes": 15817,
               "sha256": "61da236b79caac4aa804e60cd20443ad04d5ee180ef201a0027adf2a18195117"
+            }
+          },
+          "added": [],
+          "current_count": 116
+        }
+      }
+    },
+    {
+      "from_commit": "b379e08f018f2601055b4bd38c06e60e44f38416",
+      "role": "Current saved-Bed validation, coordinate ownership, source placement and translated HUD chat inputs. This entry binds current inputs only; earlier original and native observations, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 32526,
+        "sha256": "098c8d5716036ea7264b0ed3978a2d1c466aa46f34602202e94f9b8aac21989b"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "src/client/startup/application_classes.c": {
+              "bytes": 17117,
+              "sha256": "eaea8782f3a790fe539c0dffccab05452779a0c4002a144a4e5e923a047573f5"
+            },
+            "src/client/startup/application_owner_internal.h": {
+              "bytes": 5329,
+              "sha256": "5f3d4de11b1799e2ec1309879cc2efe12a8b2037274f61f295038ea1088f2f8a"
+            },
+            "include/mc/client/gui/gui_ingame.h": {
+              "bytes": 10634,
+              "sha256": "97e4e156ee5f8e53f998788dfc81e8f3768ec38ae5341bc699ec56f0ab53c35d"
             }
           },
           "added": [],

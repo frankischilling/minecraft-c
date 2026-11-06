@@ -914,7 +914,10 @@ static int hud_device(const char *resources, const char *assets, const char *dir
     return 0;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_GUI_INGAME_DRAW_MAIN
+#define MC_GUI_INGAME_DRAW_MAIN main
+#endif
+int MC_GUI_INGAME_DRAW_MAIN(int argc, char **argv) {
     CHECK(argc == 5 && hud_device(argv[1], argv[2], argv[3], argv[4]) == 0);
     printf("GuiIngame draw: %u checks; 26 original profiles and visible default HUD\n", checks);
     return 0;

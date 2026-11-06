@@ -3,6 +3,14 @@
 
 #include "mc/world/runtime/acquisition_error.h"
 
+/* Actual client OK.c on an explicitly captured provider. Its actual World
+ * owner remains held by the enclosing caller. Pending removal occurs even on
+ * hits; generation/population use that same provider receiver. No source-v
+ * substitution or mutable cache export is performed. */
+mc_chunk_acquire_status
+mc_world_runtime_acquire_captured_provider(mc_chunk_provider *, int32_t, int32_t, mc_chunk_state **,
+                                           mc_world_runtime_acquisition_error *);
+
 mc_chunk_acquire_status mc_world_runtime_get_detailed(mc_world_runtime *runtime, int32_t x,
                                                       int32_t z, mc_chunk_state **out,
                                                       mc_world_runtime_acquisition_error *error);

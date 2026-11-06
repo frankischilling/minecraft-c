@@ -1,11 +1,13 @@
 #include "nbt_internal.h"
 #include "player_internal.h"
 #include "terminal_inventory.h"
+#include "tick_math_internal.h"
 
 #include "../../world/runtime/runtime_internal.h"
 #include "../../world/runtime/spawn_internal.h"
 #include "../construction_internal.h"
 #include "../living/construction_internal.h"
+#include "../position_internal.h"
 #include "mc/client/input/movement_input.h"
 #include "mc/core/java/java.h"
 #include "mc/world/runtime/runtime.h"
@@ -115,20 +117,71 @@ failed:
     return error->status;
 }
 
-static void source_position_rotation(mc_entity *entity, double x, double y, double z) {
-    /* Exact inherited sn.c(DDDFF)V stores; yaw/pitch arguments are source +0. */
+mc_entity_status mc_entity_source_position_rotation(mc_entity *entity, double x, double y, double z,
+                                                    float yaw, float pitch,
+                                                    mc_entity_position_rotation_error *out) {
+    mc_entity_position_rotation_error e = {0};
+    if (entity == NULL) {
+        e = (mc_entity_position_rotation_error){.status = MC_ENTITY_STATE_ERROR,
+                                                .operation = "SN.c null receiver",
+                                                .bytecode = 5,
+                                                .source_null = true};
+        goto done;
+    }
+    if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
+        e = (mc_entity_position_rotation_error){.status = MC_ENTITY_INVALID_ARGUMENT,
+                                                .operation = "SN.c canonical Player receiver",
+                                                .native_policy = true};
+        goto done;
+    }
     entity->base.x = x;
     entity->base.aJ = x;
     entity->base.bl = x;
-    entity->base.y = y + (double)entity->base.offset;
+    e.bytecode = 24;
+    if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
+        e.status = MC_ENTITY_UNSUPPORTED_FP;
+        e.operation = "SN.c reached position floating environment";
+        e.native_policy = true;
+        goto done;
+    }
+    entity->base.y = at_add(y, at_widen(entity->base.offset));
     entity->base.aK = entity->base.y;
     entity->base.bm = entity->base.y;
     entity->base.z = z;
     entity->base.aL = z;
     entity->base.bn = z;
-    entity->base.yaw = 0.0f;
-    entity->base.aT = 0.0f;
-    mc_entity_source_position(entity, entity->base.x, entity->base.y, entity->base.z);
+    entity->base.yaw = yaw;
+    entity->base.aT = pitch;
+    e.bytecode = 77;
+    /* Actual SN.e stores the same x/y/z before width/2 and aW invocation. */
+    const double px = entity->base.x, py = entity->base.y, pz = entity->base.z;
+    entity->base.x = px;
+    entity->base.y = py;
+    entity->base.z = pz;
+    const float half_width = at_fdiv(entity->base.width, 2.0f);
+    const float height = entity->base.height;
+    mc_entity_bounds *receiver = entity->bounds; /* SN.e31, before arguments. */
+    const mc_entity_bounds bounds =
+        mc_entity_source_position_values(entity, px, py, pz, half_width, height);
+    e.position_bytecode = 86;
+    if (receiver == NULL) {
+        e.status = MC_ENTITY_STATE_ERROR;
+        e.operation = "SN.e null permanent bounds receiver";
+        e.source_null = true;
+        goto done;
+    }
+    receiver->min_x = bounds.min_x;
+    receiver->min_y = bounds.min_y;
+    receiver->min_z = bounds.min_z;
+    receiver->max_x = bounds.max_x;
+    receiver->max_y = bounds.max_y;
+    receiver->max_z = bounds.max_z;
+    e.position_bytecode = 90;
+    e.bytecode = 80;
+done:
+    if (out != NULL)
+        *out = e;
+    return e.status;
 }
 
 static mc_player_status player_construct(mc_entity *entity, mc_world_runtime *world,
@@ -183,7 +236,16 @@ static mc_player_status player_construct(mc_entity *entity, mc_world_runtime *wo
     const double x = (double)coordinate->x + 0.5;
     const double y = (double)mc_java_i32_add(coordinate->y, 1);
     const double z = (double)coordinate->z + 0.5;
-    source_position_rotation(entity, x, y, z);
+    mc_entity_position_rotation_error position = {0};
+    if (mc_entity_source_position_rotation(entity, x, y, z, 0.0f, 0.0f, &position) !=
+        MC_ENTITY_OK) {
+        mc_entity_construction_retire(entity, coordinate, sizeof(*coordinate));
+        error->entity = (mc_entity_error){.status = position.status,
+                                          .operation = position.operation,
+                                          .bytecode = (uint16_t)position.bytecode};
+        return mc_player_fail(error, MC_PLAYER_ENTITY_FAILED, position.operation, "gs", "<init>",
+                              "(Lfd;)V", 129);
+    }
     s->player_pc = 132;
     mc_entity_construction_retire(entity, coordinate, sizeof(*coordinate));
     s->living.Y = 20;

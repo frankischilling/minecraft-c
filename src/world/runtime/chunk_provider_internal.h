@@ -21,6 +21,12 @@ typedef enum mc_chunk_provider_concrete_kind {
 
 mc_chunk_provider_concrete_kind
 mc_chunk_provider_concrete_kind_of(const mc_chunk_provider *provider);
+/* Immutable native owner of the actual map-cache receiver. No source field,
+ * class use, allocation or mutable cache export occurs. Keep this owner live
+ * through any retained provider reference and every entered source call. */
+mc_world_storage_status mc_chunk_provider_acquire_owner(const mc_chunk_provider *,
+                                                        mc_world_runtime **,
+                                                        mc_world_storage_error *);
 
 /* Actual nullable source fields over the provider's fixed native reservation.
  * A zero span is an unpublished Java array, not the reserved C backing. r/s/t

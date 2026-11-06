@@ -281,7 +281,7 @@ mc_client_application_classes_release(mc_client_application_classes **owner,
         classes->world_generating,         classes->world_loading,
         classes->world_respawning,         classes->world_converting,
         classes->world_conversion_message, classes->world_building_terrain,
-        classes->world_simulating};
+        classes->world_simulating,         classes->world_bed_not_valid};
     free(classes->F);
     free(classes->E);
     free(classes->b);

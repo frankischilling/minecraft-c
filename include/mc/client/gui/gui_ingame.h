@@ -1,6 +1,7 @@
 #ifndef MC_CLIENT_GUI_GUI_INGAME_H
 #define MC_CLIENT_GUI_GUI_INGAME_H
 
+#include "mc/block/registry/registry.h"
 #include "mc/client/render/model.h"
 #include "mc/core/java/random_profile.h"
 
@@ -64,6 +65,7 @@ typedef struct mc_client_gui_ingame_error {
     mc_java_random_profile_status random;
     int native_thread_error;
     mc_client_gui_ingame_cause first_class_failure;
+    mc_registry_error registry; /* Native-only retained chat String occurrence cleanup. */
 } mc_client_gui_ingame_error;
 
 /* The ten actual uq instance fields plus inherited ub.k. */
@@ -82,8 +84,9 @@ typedef struct mc_client_gui_ingame_fields {
 
 typedef struct mc_client_gui_ingame_options {
     /* Independent native instance budget, including the owner. Zero means
-     * literal zero. Source allocation quota counts only e/new Random, not
-     * class activation or native monitor/owner setup. NULL selects1MiB/unlimited. */
+     * literal zero. Source allocation quota counts e/new Random and reached
+     * chat owners/List growth; class activation/native monitor setup are separate.
+     * NULL selects1MiB/unlimited. */
     size_t maximum_bytes, maximum_allocations;
 } mc_client_gui_ingame_options;
 
@@ -149,8 +152,8 @@ mc_client_gui_ingame_status mc_client_gui_ingame_classes_inspect(mc_client_gui_i
  * Operations require exclusive serialized use of the shared model/profile graph;
  * this namespace's native monitor also rejects contention/reentry as BUSY.
  * Inspection is passive. Views expire on owner mutation/retirement, and no source
- * method beyond construction, b()V clear_messages and the reached a()V tick
- * is implemented here. Drawing has a separate retained API in gui_ingame_draw.h. */
+ * methods beyond construction, b()V clear_messages and a()V tick are exposed
+ * through gui_ingame_chat.h and gui_ingame_draw.h retained APIs. */
 mc_client_gui_ingame_status mc_client_gui_ingame_allocate(mc_client_gui_ingame_classes *,
                                                           const mc_client_gui_ingame_options *,
                                                           mc_client_source_uq **,
@@ -176,7 +179,10 @@ mc_client_gui_ingame_status mc_client_gui_ingame_inspect(mc_client_source_uq *,
  * contention are separate native admissions. Clear increments the selected
  * JDK modCount with Java wrap, captures array/old size, stores size0 before
  * nulling occupied slots. It retains List/array identity and capacity and
- * never source-closes/frees referents. Constructor phase/diagnostics/stores,
+ * never source-closes/frees referents. Native unreachable SW/String occurrences
+ * are then collected, preserving foreign referents and retained cleanup on
+ * failure; exported views already expire on this source mutation.
+ * Constructor phase/diagnostics/stores,
  * Random/App/Font and GL are untouched. A borrowed array view must stay live
  * and exclusive; native terminal retirement, separately, frees its storage. */
 mc_client_gui_ingame_status mc_client_gui_ingame_clear_messages(mc_client_source_uq *,
@@ -184,9 +190,9 @@ mc_client_gui_ingame_status mc_client_gui_ingame_clear_messages(mc_client_source
 /* Actual uq.a()V: decrement positive j at14, increment h with Java wrap at24,
  * then inspect the current e List at34. The ordinary empty list returns70.
  * A null List faults at34 after those prior stores; a null entry faults at56.
- * Nonnull message entries stop at the unreached canonical sw owner/type
- * dependency52, preserving earlier source stores and the List. No arbitrary
- * native void pointer is dereferenced as a fabricated chat-line instance.
+ * Canonical SW entries increment b with Java wrap at61 in List order. A
+ * foreign native entry stops at the owner/type dependency52, preserving all
+ * earlier stores. Arbitrary native pointers are never read as SW instances.
  * Constructor phase/history and Random/App/Font/GL state remain unchanged. */
 mc_client_gui_ingame_status mc_client_gui_ingame_tick(mc_client_source_uq *,
                                                       mc_client_gui_ingame_error *);

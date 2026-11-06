@@ -1,30 +1,33 @@
 # Development status
 
-[Player death and respawn](client/death-respawn.md) now connect fatal hurt,
-Inventory scattering, the death screen and replacement Player creation in the
-same World. The screen uses the original labels, nonpausing behavior, gradient,
-scaled title and live score. A Windows scene on monitor 2 completes two real
-Respawn button clicks and checked cleanup after a native publication failure.
-The original hurt replay now checks 21,247 scalar values, including its retained
-empty-Inventory fatal completion. Broader drops have authored native controls;
-the new death-screen packet compares 72 original component rows. Bed respawn,
-Nether transitions, ordinary hazard encounters, unrestricted play and sustained
-FPS remain unfinished or unqualified.
+[Saved-Bed respawn](world/bed-spawn.md) now validates the current Bed, retains
+the saved-coordinate identity through callbacks and copies it into the new
+Player before exact exit placement. A missing Bed shows the actual translated
+[HUD message](client/chat.md) and takes ordinary World-spawn fallback. The live
+renderer now draws [Bed geometry](client/bed-world.md), with 192 original rows.
+Separate original packets cover coordinates, helper queries and chat behavior.
 
-Hosted checks for `359e663a` pass Windows 682/682 and both Linux compilers
-739/739, with no dropped or skipped registered tests. The interrupted local
-full runs remain incomplete and retain separate foreground and Zombie draw
-failures. An unchanged isolated Zombie pass does not resolve those failures;
-[testing details](testing.md#player-damage-armor-and-landing) retain all scopes.
-The current full native runs retain Windows 750/755 and Linux 731/735.
-Corrected fixture selections pass 16/16 on sanitized Linux and 17/18 on Windows;
-the remaining Windows respawn assertion has a separate diagnostic cohort with
-pass/fail/pass. Its failed receipt shows completed replacement and Pause while
-Remote Desktop owns foreground focus. General desktop focus remains open.
+Two Windows scenes on monitor 2 pass: two valid-Bed Respawn interactions with
+1,013 checks, and one missing-Bed interaction with 977 checks. Both save the
+new Player through the source full-save body and pass independent NBT readback
+and terminal cleanup. Original component readers also accept copies of the
+earlier C-written files. Initial chat-fixture and readback-assertion failures
+remain recorded in [testing](testing.md#saved-bed-respawn-geometry-and-hud-messages).
+Full native suites retain Windows 769/770 and Linux 746/748; the obsolete
+Bed-render assertion and Linux storage watchdog are followed by two passing
+corrected cases per host. Storage fixture construction reuses its byte map,
+with identical outputs and a 98.519% lower median in its fixed CPU workload.
+The full-run failures remain recorded separately from those follow-ups.
+Bed use/sleeping, Nether transitions, full original World restart, Linux loaded
+play and sustained FPS remain unfinished or unqualified.
 
-The preceding reporting commit `4c9a946d` also passes all hosted jobs in
-[run 42142684515](https://github.com/frankischilling/minecraft-c/actions/runs/42142684515).
-Those hosted results precede the current death/respawn changes.
+Hosted [run 42153149676](https://github.com/frankischilling/minecraft-c/actions/runs/42153149676)
+passes preceding source checkpoint `b379e08f`: Windows 687/687, GCC and Clang
+744/744, plus formatting. All prior test names remain and five are added per
+native job, with no registered skips. The earlier full local failures and
+pass/fail/pass respawn focus cohort remain separate. The instrumented focus
+failure completes replacement but opens Pause while Remote Desktop owns
+foreground focus; general desktop focus remains open.
 
 The [saved Lever circuit](world/lever.md#saved-circuit) passes one post-fix
 Windows SDK opportunity with 1,945 native checks. Four ordinary SDL taps place

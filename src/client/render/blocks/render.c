@@ -118,6 +118,12 @@ static bool render_block(mc_cv_context *c, const mc_block *block, int32_t x, int
             return false;
         mc_cv_pop(c);
         return_pc = 251;
+    } else if (type == 14) {
+        mc_cv_pc(c, 265);
+        if (!mc_cv_push(c, "q", "(Luu;III)Z") || !mc_cv_bed(c, block, x, y, z, &rendered))
+            return false;
+        mc_cv_pop(c);
+        return_pc = 268;
     } else if (type == 13) {
         mc_cv_pc(c, 62);
         if (!mc_cv_push(c, "m", "(Luu;III)Z") || !mc_cv_cactus(c, block, x, y, z, &rendered))

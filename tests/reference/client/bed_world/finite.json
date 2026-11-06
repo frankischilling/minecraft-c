@@ -1,0 +1,10 @@
+{
+  "schema": "BED_RENDER_INPUT_V1",
+  "metadata": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+  "overrides": [-1, 17],
+  "profiles": ["air", "opaque-neighbors", "force-all-faces", "retained-AO-colors", "JJ-a-zero", "JJ-c-top-two"],
+  "position": [8, 64, 8],
+  "skylight_subtraction": 3,
+  "initial_flip": true,
+  "AO_colors": "(i+1)/16.0f; i=0..11"
+}

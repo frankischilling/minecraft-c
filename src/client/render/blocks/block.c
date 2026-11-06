@@ -302,8 +302,16 @@ bool mc_cv_texture(mc_cv_context *c, const mc_block *b, int32_t x, int32_t y, in
                           "actual Chest texture adjacency child", 0, true);
     } else {
         int32_t metadata;
-        if (!mc_cv_metadata(c, x, y, z, 7, &metadata) ||
-            !registry_result(c, mc_block_render_texture_metadata(b, side, metadata, &value), 12))
+        if (!mc_cv_metadata(c, x, y, z, 7, &metadata))
+            return false;
+        if (b->kind == MC_BLOCK_BED) {
+            mc_cv_pc(c, 12);
+            if (!mc_cv_push_source(c, "ve", "a", "(II)I") ||
+                !mc_cv_bed_texture_metadata(c, b, side, metadata, &value))
+                return false;
+            mc_cv_pop(c);
+        } else if (!registry_result(c, mc_block_render_texture_metadata(b, side, metadata, &value),
+                                    12))
             return false;
     }
     mc_cv_pop(c);

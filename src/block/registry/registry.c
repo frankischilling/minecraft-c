@@ -15,6 +15,19 @@ struct mc_registry_allocation {
     mc_registry_allocation *next;
 };
 
+bool mc_registry_permanent_extent(const mc_registry_classes *classes, const void *data,
+                                  size_t *out) {
+    if (classes == NULL || data == NULL || out == NULL)
+        return false;
+    for (const mc_registry_allocation *record = classes->allocations; record != NULL;
+         record = record->next)
+        if (record->data == data) {
+            *out = record->bytes;
+            return true;
+        }
+    return false;
+}
+
 struct mc_registry_literal {
     const mc_registry_string *string;
     mc_registry_literal *next;

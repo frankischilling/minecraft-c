@@ -1,10 +1,11 @@
 # Player death and respawn
 
-The client now runs the actual Player death body, displays the genuine Beta
-death screen and handles its Respawn button on the same loaded Overworld. One
-Windows scenario completes two ordinary SDK button interactions and returns to
-healthy World rendering after each. Its fatal damage is an authored direct
-100-damage call; ordinary hazard-driven death remains outside that qualification.
+The client runs the actual Player death body, displays the genuine Beta death
+screen and handles its Respawn button on the same loaded Overworld. Windows
+scenarios now cover the ordinary spawn route and valid or missing saved Beds.
+They return to healthy World rendering through actual SDK button interactions.
+The fixtures supply fatal damage directly; ordinary hazard-driven death remains
+outside that qualification.
 
 ## Death and screen lifetime
 
@@ -59,6 +60,54 @@ unreached and null. The caller's rejected output stays unchanged. The fixture
 checks terminal cleanup of this partial graph; it does not fabricate a returned
 respawn or resume the failed source body.
 
+## Saved-Bed respawn
+
+With `force=false`, the coordinator captures the current Player's actual saved
+Bed coordinate and calls `GS.a(World,br)` at 63. The wrapper acquires its four
+corner Chunks through one captured provider, checks the actual Bed ID and calls
+the ordered exit helper. The helper reads metadata and the Bed facing table,
+then searches two ordered 3-by-3 passes using the source support and air checks.
+Overlapping candidates remain repeated visits. Native work limits report an
+unfinished call instead of converting a partial search into a successful null
+result.
+
+A valid exit still passes through the ordinary spawn repair, World cleanup,
+old-Player removal and replacement construction. At 242 the new Player stores a
+distinct copy of the original saved Bed coordinate. At 281 it moves to the
+selected exit using the original float offsets before widening to double, with
+zero yaw and pitch. The saved coordinate remains the Bed position, not the exit
+position. The same World, Entity ID, fresh Inventory/input and 289-coordinate
+terrain preparation continue through the existing respawn suffix.
+
+A null exit calls the actual LocalPlayer notification at 79 before selecting
+the fallback World spawn at 91. The [HUD chat path](chat.md) translates
+`tile.bed.notValid` through the configured resource owner and inserts a real SW
+message. A failed notification stops before fallback. A successful missing-Bed
+respawn leaves the replacement Player's saved Bed null. Forced respawn and a
+null saved coordinate skip this validation branch.
+
+Two independent Windows SDK opportunities pass on monitor 2. The valid profile
+starts from saved coordinate `(3,64,4)` and preauthored Bed blocks, completes two
+Respawn cycles and preserves that coordinate through a full World save. It
+passes 1,013 checks in 14.86 seconds. The missing profile starts with the same
+coordinate and absent Bed blocks, completes one Respawn and observes the
+imported `Your home bed was missing or obstructed` message at age 9. It passes
+977 checks in 11.00 seconds and saves no Bed coordinate on the replacement.
+The before-Bed and returned notice captures were inspected.
+
+Both cases call the real full-save body directly and independently parse the
+saved Player NBT. They check health 20, empty Inventory, the valid XYZ tags or
+their absence, and common terminal cleanup. They do not exercise an SDK save
+menu or a subsequent restart. Imported resources and all 5,408 captured source
+inputs stay unchanged.
+
+The first two SDK records remain failed because the independent reader required
+an empty Compound-list Inventory. Their native flows returned with 1,034 and
+1,049 checks. The original `SP.a` body writes the empty list with Byte element
+type 1; the reader now requires that exact tag instead of Compound type 10.
+The fresh opportunities above pass the corrected strict readback. No saved
+output or earlier failure record was repaired.
+
 ## Verification
 
 | Scenario | Result | Scope |
@@ -68,6 +117,8 @@ respawn or resume the failed source body.
 | Native World respawn leaves | 111 checks on each native host | Actual client spawn, repair, cleanup, removal and provider predicates with authored inputs. No original World runtime comparison. |
 | Original CH components | Two original VMs agree on 72 rows; Windows and sanitized Linux replay each pass 369 native checks; readers pass 32 controls in normal and optimized Python | Genuine CH/DA/KE and Session constructors with a prepared original `kq` App. Initialization, literal Buttons, keyboard and nonpause behavior; no original drawing or full App construction claim. |
 | Loaded Windows death/respawn | First opportunity: 1,049 checks in 14.83 seconds; strengthened opportunity: 943 checks in 21.11 seconds, both on monitor 2 | Two SDK Respawn cycles, fresh Players and Inventories, same World and Entity ID, health 20, fresh input, 289 terrain samples, returned frames and a separate publication refusal. Full terminal cleanup succeeds. |
+| Saved-Bed components | Both full native runs pass all 14 focused cases | Coordinate/NBT, World Bed validation, original component readers and genuine native chat. Separate headless coordinate/World-Bed and GUI constructor checks pass without SDL/GL/audio dependencies. |
+| Loaded Windows saved-Bed respawn | Valid: 1,013 checks, 14.86 seconds; missing: 977 checks, 11.00 seconds | Two valid-Bed SDK Respawns and one missing-Bed fallback, imported notice, independent direct-save NBT readback and common cleanup. |
 
 The [CH packet](../../tests/reference/client/death_screen/README.md) keeps its
 original construction limits explicit. The loaded
@@ -80,8 +131,9 @@ The strengthened opportunity also checks that the menu's borrowed display
 view ends before terminal dispatchers can consume its owner. Check totals can
 vary with the number of returned frames; both exact records remain retained.
 
-Full native builds pass on both hosts. The frozen Windows selection passes
-14/14 tests in 21.15 seconds; Linux Clang Debug with ASan/UBSan passes 13/13 in
+Before the saved-Bed extension, full native builds passed on both hosts. The
+frozen Windows selection passed 14/14 tests in 21.15 seconds; Linux Clang Debug
+with ASan/UBSan passed 13/13 in
 4.33 seconds. Subsequent full runs retain their failures: Windows 750/755 in
 519.34 seconds and Linux 731/735 in 735.36 seconds, with no skipped registered
 tests and all 5,343 source inputs unchanged. Two older fixtures still expected
@@ -90,7 +142,7 @@ inherited-fixture hash guards, including the Lever scene's prelaunch refusal.
 The [test record](../testing.md#player-death-death-screen-and-respawn) records
 their corrections and separate reruns.
 
-The corrected selection passes 16/16 on sanitized Linux and 17/18 on Windows.
+That corrected selection passed 16/16 on sanitized Linux and 17/18 on Windows.
 The later Windows death/respawn assertion fails after one complete cycle. A
 subsequent three-opportunity diagnostic cohort retains pass/fail/pass with
 unchanged source inputs. Its instrumented failure completes replacement with
@@ -112,15 +164,22 @@ ctest --test-dir build-windows --no-tests=error --output-on-failure -R '^client.
 The scenario authors its own private save. It preserves imported resource bytes
 and uses the existing checked loop, World and bootstrap cleanup.
 
+The saved-Bed cases use
+[their own driver](../../tests/tools/client/test_bed_respawn.py) and the opt-in
+`client.bed_respawn_valid` and `client.bed_respawn_missing` registrations, enabled
+with `MC_ENABLE_CLIENT_BED_RESPAWN_TESTS=ON`. Their
+preauthored NBT and Region inputs establish the Bed state before bootstrap;
+they do not obtain it through sleeping or live field repair.
+
 ## Remaining branches
 
-A nonnull saved Bed with `force=false` still stops at the reached `gs.a` child
-at 63. A Dimension that rejects respawning, including the Nether path, reaches
-the unavailable `Minecraft.m` call at 23. The centered KX ChunkProvider's
-recenter child also remains unavailable. These are explicit dependencies;
-they are not substituted with the supported Overworld path.
+A Dimension that rejects respawning, including the Nether path, reaches the
+unavailable `Minecraft.m` call at 23. The centered KX ChunkProvider's recenter
+child also remains unavailable. These remain explicit dependencies.
 
-Ordinary environmental death, extended death waiting and dropped-Item
-lifetimes, wider combat, loaded Linux respawn, original drawing/audio equality
-and sustained frame times remain unfinished or unqualified. This bounded
-scenario does not establish complete survival or respawn parity.
+Sleeping and Bed-use interaction, loaded obstruction scenarios beyond the
+finite helper cases, ordinary environmental death, extended death waiting and
+dropped-Item lifetimes, wider combat, loaded Linux respawn, a complete original
+restart, original drawing/audio equality and sustained frame times remain
+unfinished or unqualified. These bounded scenarios do not establish complete
+survival or respawn parity.

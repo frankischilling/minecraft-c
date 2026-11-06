@@ -1,12 +1,37 @@
 # Build and tests
 
+The [saved-Bed qualification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#saved-bed-respawn-geometry-and-hud-messages)
+records native/original coordinate, exit, geometry and chat comparisons on
+Windows and sanitized Linux. Valid/missing Windows scenes pass 1,013/977
+checks in 14.86/11.00 seconds on monitor 2, including direct source save,
+independent NBT readback and cleanup. Two original VMs accept copies of earlier
+C-written Player files; this does not establish a complete World restart.
+The initial chat-setup and empty-list assertion failures remain retained.
+
+The frozen full suites retain Windows 769/770 in 449.91 seconds and sanitized
+Linux 746/748 in 753.05 seconds, with all 5,412 files unchanged and no skipped
+registered test. An old Bed-render frontier assertion is corrected to check
+real geometry. The storage fixture reuses its normalization table within
+each Chunk, preserving all assertions and the 180-second watchdog. Both
+follow-up cases pass on each host; the failed full runs remain retained.
+Eight fixed-work processes show identical outputs and a 98.519% lower
+fixture-construction median. This establishes no gameplay FPS improvement.
+
+At preceding checkpoint `b379e08f`, hosted
+[run 42153149676](https://github.com/frankischilling/minecraft-c/actions/runs/42153149676)
+passes Windows 687/687 and both Linux compilers 744/744. All four checkout trees
+match the pushed tree, all prior test names remain, five are added per native
+job, and none is skipped. These public cases keep separate scope from local
+SDK foreground failures and the later saved-Bed source.
+
 The [death/respawn guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/death-respawn.md)
 records new Java-free death/scatter and World controls, a 72-row original
 death-screen component packet and bounded Windows loaded integration. The
 first loaded opportunity passes 1,049 checks in 14.83 seconds on monitor 2:
 two real Respawn clicks and one partial-publication cleanup. Captures show the
-death screen and healthy returned World. Bed/Nether routes, Linux loaded play,
-original pixels/audio, general focus reliability and FPS remain unqualified.
+death screen and healthy returned World. That scene covers World spawn;
+Nether routes, Linux loaded play, original pixels/audio, general focus
+reliability and FPS remain unqualified.
 The strengthened opportunity passes 943 checks in 21.11 seconds, adding a
 borrowed-display retirement assertion. Focused checks pass 14/14 on Windows
 and 13/13 on sanitized Linux. The separate full runs retain Windows 750/755 and

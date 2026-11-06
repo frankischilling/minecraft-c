@@ -1,4 +1,5 @@
 #include "../application_state.h"
+#include "gui_ingame_chat_internal.h"
 #include "gui_ingame_internal.h"
 #include "mc/entity/player/player.h"
 
@@ -354,7 +355,8 @@ mc_client_gui_ingame_status mc_client_gui_ingame_construct(mc_client_source_uq *
         fail(&e, MC_CLIENT_GUI_INGAME_INVALID_ARGUMENT, "GuiIngame native constructor receiver",
              NULL, 0);
     else if (lock(o->classes, &e)) {
-        if (o->draw_call != NULL || o->classes->retiring || o->phase != MC_CLIENT_GUI_INGAME_RAW)
+        if (o->draw_call != NULL || o->chat_call != NULL || o->classes->retiring ||
+            o->phase != MC_CLIENT_GUI_INGAME_RAW)
             fail(&e, MC_CLIENT_GUI_INGAME_INVALID_PHASE, "GuiIngame one-shot constructor admission",
                  NULL, 0);
         else {
@@ -375,7 +377,7 @@ mc_client_gui_ingame_status mc_client_gui_ingame_retain(mc_client_source_uq *o,
         fail(&e, MC_CLIENT_GUI_INGAME_INVALID_ARGUMENT, "GuiIngame native retain receiver", NULL,
              0);
     else if (lock(o->classes, &e)) {
-        if (o->draw_call != NULL || o->classes->retiring ||
+        if (o->draw_call != NULL || o->chat_call != NULL || o->classes->retiring ||
             o->phase == MC_CLIENT_GUI_INGAME_RETIRING ||
             o->phase == MC_CLIENT_GUI_INGAME_CONSTRUCTING)
             fail(&e, MC_CLIENT_GUI_INGAME_BUSY, "GuiIngame entered/retiring occurrence", NULL, 0);
@@ -396,8 +398,8 @@ static mc_client_gui_ingame_status release(mc_client_source_uq **slot, bool stri
     else if (*slot != NULL && lock((*slot)->classes, &e)) {
         mc_client_source_uq *o = *slot;
         mc_client_gui_ingame_classes *c = o->classes;
-        if (o->draw_call != NULL || o->phase == MC_CLIENT_GUI_INGAME_CONSTRUCTING ||
-            (strict && o->holds != 1)) {
+        if (o->draw_call != NULL || o->chat_call != NULL ||
+            o->phase == MC_CLIENT_GUI_INGAME_CONSTRUCTING || (strict && o->holds != 1)) {
             fail(&e, MC_CLIENT_GUI_INGAME_BUSY, "GuiIngame active/external occurrence", NULL, 0);
             (void)mtx_unlock(&c->mutex);
         } else if (o->holds > 1) {
@@ -406,7 +408,7 @@ static mc_client_gui_ingame_status release(mc_client_source_uq **slot, bool stri
             (void)mtx_unlock(&c->mutex);
         } else {
             o->phase = MC_CLIENT_GUI_INGAME_RETIRING;
-            if (c->holds == 1 && !final_prepare(c, &e))
+            if (!mc_gui_chat_terminal(o, &e) || (c->holds == 1 && !final_prepare(c, &e)))
                 (void)mtx_unlock(&c->mutex);
             else {
                 if (o->fields.e != NULL)
@@ -486,7 +488,7 @@ mc_client_gui_ingame_status mc_client_gui_ingame_clear_messages(mc_client_source
                                               : MC_CLIENT_GUI_INGAME_THREAD_FAILED,
                           "GuiIngame clear native class monitor", 0, true);
         } else {
-            if (o->draw_call != NULL || o->classes->retiring ||
+            if (o->draw_call != NULL || o->chat_call != NULL || o->classes->retiring ||
                 o->classes->phase == MC_CLIENT_GUI_INGAME_CLASS_INITIALIZING ||
                 o->phase == MC_CLIENT_GUI_INGAME_CONSTRUCTING ||
                 o->phase == MC_CLIENT_GUI_INGAME_RETIRING)
@@ -510,6 +512,7 @@ mc_client_gui_ingame_status mc_client_gui_ingame_clear_messages(mc_client_source
                         array[i] = NULL;
                     e.site = (mc_client_gui_ingame_site){"uq", "b", "()V", 9};
                     e.source_returned = true;
+                    (void)mc_gui_chat_collect(o, &e); /* Native unreachable-owner collection. */
                 }
             }
             (void)mtx_unlock(&o->classes->mutex);
@@ -543,7 +546,7 @@ mc_client_gui_ingame_status mc_client_gui_ingame_tick(mc_client_source_uq *o,
                      "GuiIngame tick native class monitor", 0, true);
         return publish(&e, error);
     }
-    if (o->draw_call != NULL || o->classes->retiring ||
+    if (o->draw_call != NULL || o->chat_call != NULL || o->classes->retiring ||
         o->classes->phase == MC_CLIENT_GUI_INGAME_CLASS_INITIALIZING ||
         o->phase == MC_CLIENT_GUI_INGAME_CONSTRUCTING ||
         o->phase == MC_CLIENT_GUI_INGAME_RETIRING) {
@@ -561,19 +564,26 @@ mc_client_gui_ingame_status mc_client_gui_ingame_tick(mc_client_source_uq *o,
                  (list->size != 0 && list->entries == NULL))
             tick_failure(&e, MC_CLIENT_GUI_INGAME_INVALID_PHASE,
                          "GuiIngame tick native List storage invariant", 34, true);
-        else if (list->size != 0) {
-            /* No source callback occurs between size34 and get47. This is the
-             * same current List/first element, never a diagnostic substitute. */
-            void *entry = list->entries[0];
-            if (entry == NULL)
-                tick_failure(&e, MC_CLIENT_GUI_INGAME_SOURCE_NULL_REFERENCE,
-                             "uq tick actual sw.b null receiver", 56, false);
-            else
-                tick_failure(&e, MC_CLIENT_GUI_INGAME_UNIMPLEMENTED,
-                             "uq tick canonical sw message owner/type dependency", 52, true);
-        } else {
-            e.site = (mc_client_gui_ingame_site){"uq", "a", "()V", 70};
-            e.source_returned = true;
+        else {
+            for (size_t i = 0; i < list->size; ++i) {
+                void *entry = list->entries[i];
+                if (entry == NULL) {
+                    tick_failure(&e, MC_CLIENT_GUI_INGAME_SOURCE_NULL_REFERENCE,
+                                 "uq tick actual sw.b null receiver", 56, false);
+                    break;
+                }
+                mc_gui_chat_message *message = mc_gui_chat_message_find(o, entry);
+                if (message == NULL) {
+                    tick_failure(&e, MC_CLIENT_GUI_INGAME_UNIMPLEMENTED,
+                                 "uq tick foreign native sw message owner/type", 52, true);
+                    break;
+                }
+                message->b = mc_java_i32_add(message->b, 1); /* Actual SW.b61. */
+            }
+            if (e.status == MC_CLIENT_GUI_INGAME_OK) {
+                e.site = (mc_client_gui_ingame_site){"uq", "a", "()V", 70};
+                e.source_returned = true;
+            }
         }
     }
     (void)mtx_unlock(&o->classes->mutex);

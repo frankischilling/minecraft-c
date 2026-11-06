@@ -7,6 +7,11 @@ typedef struct mc_client_respawn_call mc_client_respawn_call;
 typedef struct mc_world_respawn_error mc_world_respawn_error;
 typedef struct mc_client_display_screen_call mc_client_display_screen_call;
 typedef struct mc_world_entity_tick_error mc_world_entity_tick_error;
+typedef struct mc_world_bed_spawn_error mc_world_bed_spawn_error;
+typedef struct mc_entity_position_rotation_error mc_entity_position_rotation_error;
+typedef struct mc_client_gui_ingame_chat_error mc_client_gui_ingame_chat_error;
+
+typedef struct mc_player_error mc_player_error;
 
 typedef enum mc_client_respawn_status {
     MC_CLIENT_RESPAWN_OK,
@@ -34,6 +39,10 @@ typedef struct mc_client_respawn_error {
     const mc_movement_input_error *input;
     const mc_client_world_prepare_state *terrain;
     const mc_client_display_screen_call *display;
+    const mc_player_error *saved_spawn;
+    const mc_world_bed_spawn_error *bed;
+    const mc_entity_position_rotation_error *position;
+    const mc_client_gui_ingame_chat_error *chat;
 } mc_client_respawn_error;
 
 typedef struct mc_client_respawn_state {
@@ -41,8 +50,10 @@ typedef struct mc_client_respawn_state {
     bool force, old_player_removed, player_created, player_stored, view_stored;
     bool spawn_returned, prepared, player_inserted, input_stored, id_stored;
     bool player_finished, terrain_returned, death_screen_closed;
+    bool saved_spawn_read, bed_checked, bed_valid, bed_notified, bed_stored, bed_positioned;
     int32_t dimension, previous_id;
     uintptr_t previous_player_identity, player_identity;
+    uintptr_t saved_bed_identity, bed_exit_identity;
     const mc_client_respawn_error *failure, *cleanup;
 } mc_client_respawn_state;
 

@@ -410,8 +410,8 @@
       "sha256": "92c369c867f422806331d3a2efa27defcf7b3908c57c6f1c36e586d130476b62"
     },
     "include/mc/client/gui/gui_ingame.h": {
-      "bytes": 10634,
-      "sha256": "97e4e156ee5f8e53f998788dfc81e8f3768ec38ae5341bc699ec56f0ab53c35d"
+      "bytes": 10977,
+      "sha256": "10be2e64af2eaeaf315d2258ef0bae17d8d714361a45ecdb62f57da330ad0afd"
     },
     "include/mc/client/render_engine/render_engine.h": {
       "bytes": 9278,
@@ -478,8 +478,8 @@
       "sha256": "a19bf1b6b1389d186cdd75966d9fa41754a4c5cb479be580c3c7da8ad54fff4a"
     },
     "src/client/startup/application_owner_internal.h": {
-      "bytes": 5329,
-      "sha256": "5f3d4de11b1799e2ec1309879cc2efe12a8b2037274f61f295038ea1088f2f8a"
+      "bytes": 5372,
+      "sha256": "43dbe7ff2267ba165d4743e26959ed9e52e66bce861ac4a127ad4bddd1c8ccc5"
     },
     "include/mc/world/runtime/world_access_error.h": {
       "bytes": 1925,
@@ -810,6 +810,30 @@
             "src/client/startup/application_owner_internal.h": {
               "bytes": 5310,
               "sha256": "a46cd8575839d00527ed2cf75fdf6c9b2e67429c096dd7c509a9c0505d8433ac"
+            }
+          },
+          "added": [],
+          "current_count": 123
+        }
+      }
+    },
+    {
+      "from_commit": "b379e08f018f2601055b4bd38c06e60e44f38416",
+      "role": "Current saved-Bed validation, coordinate ownership, source placement and translated HUD chat inputs. This entry binds current inputs only; earlier original and native observations, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 32055,
+        "sha256": "7fac758ab860644331bfecb4255d0d3c7bb2144bf8d9996678da44337e2c9a61"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "include/mc/client/gui/gui_ingame.h": {
+              "bytes": 10634,
+              "sha256": "97e4e156ee5f8e53f998788dfc81e8f3768ec38ae5341bc699ec56f0ab53c35d"
+            },
+            "src/client/startup/application_owner_internal.h": {
+              "bytes": 5329,
+              "sha256": "5f3d4de11b1799e2ec1309879cc2efe12a8b2037274f61f295038ea1088f2f8a"
             }
           },
           "added": [],

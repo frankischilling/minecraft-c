@@ -33,6 +33,8 @@ struct mc_client_source_uq {
     mc_client_gui_ingame_site stores[10];
     mc_client_gui_ingame_error failure;
     struct mc_client_gui_ingame_draw_call *draw_call;
+    struct mc_client_gui_ingame_chat_call *chat_call;
+    struct mc_gui_chat_message *messages;
 };
 
 #endif

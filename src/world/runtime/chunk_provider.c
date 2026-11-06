@@ -307,6 +307,18 @@ mc_chunk_provider_concrete_kind_of(const mc_chunk_provider *provider) {
     return provider == NULL ? MC_CHUNK_PROVIDER_NULL : provider->concrete_kind;
 }
 
+mc_world_storage_status mc_chunk_provider_acquire_owner(const mc_chunk_provider *provider,
+                                                        mc_world_runtime **out,
+                                                        mc_world_storage_error *error) {
+    if (provider == NULL || out == NULL)
+        return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                      "Captured provider receiver/output");
+    if (provider->concrete_kind != MC_CHUNK_PROVIDER_MAP_CACHE || provider->world == NULL)
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Captured map-cache native owner");
+    *out = provider->world;
+    return result(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
 mc_world_storage_status mc_chunk_provider_maintenance(mc_chunk_provider *provider, bool *out,
                                                       mc_world_storage_error *error) {
     if (provider == NULL || out == NULL)

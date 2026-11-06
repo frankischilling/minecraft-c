@@ -1,12 +1,21 @@
 # minecraft-c
 
+[Saved-Bed respawn](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/bed-spawn.md)
+now validates exits, copies saved coordinates and places the replacement
+Player. Missing Beds reach the actual translated HUD message and World spawn.
+Two monitor-2 Windows scenarios pass three real Respawn clicks, source save,
+independent coordinate readback and terminal cleanup. Native Bed geometry
+matches 192 original rows; coordinates, helper queries and chat have separate
+original packets. Bed use/sleeping, full original restart, Linux loaded play
+and sustained FPS remain unfinished or unqualified.
+
 [Player death and respawn](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/death-respawn.md)
 now connect fatal hurt, Inventory scattering, the original death-screen behavior
 and replacement Player creation. A monitor-2 Windows scene completes two real
 Respawn clicks in the same World and cleanup after a partial publication
 failure. Native hurt replay checks 21,247 scalar values from its unchanged
 28-call original packet; a new packet compares 72 original screen components.
-Bed respawn, Nether transitions, ordinary hazard encounters, unrestricted
+Bed use/sleeping, Nether transitions, ordinary hazard encounters, unrestricted
 survival and sustained FPS remain unfinished or unqualified.
 
 The [Grass and Leaves comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/random-block-ticks.md)

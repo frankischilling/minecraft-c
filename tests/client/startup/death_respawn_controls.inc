@@ -1,3 +1,6 @@
+#if defined(MC_TEST_BED_RESPAWN)
+#include "bed_respawn_controls.inc"
+#else
 #include "client/gui/source_death_screen.h"
 #include "client/world/respawn.h"
 #include "entity/player/player_internal.h"
@@ -169,3 +172,4 @@ static int death_respawn_controls(fixture *f, const char *screenshot) {
          "borrowed-display-cleared=1 common-cleanup-next=1");
     return 0;
 }
+#endif

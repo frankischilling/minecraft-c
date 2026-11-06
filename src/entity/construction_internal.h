@@ -55,4 +55,21 @@ void *mc_entity_construction_allocate(mc_entity *entity, size_t bytes, mc_entity
                                       const char *operation, uint16_t bytecode);
 void mc_entity_construction_retire(mc_entity *entity, void *allocation, size_t bytes);
 
+typedef struct mc_entity_position_rotation_error {
+    mc_entity_status status;
+    const char *operation;
+    unsigned int bytecode, position_bytecode;
+    bool source_null, native_policy;
+} mc_entity_position_rotation_error;
+
+/* Actual inherited client SN.c(DDDFF)V on canonical LocalPlayer storage.
+ * Caller holds the receiver through this entered child. Preserve x/history
+ * before reached FP admission, then y+offset, z/history, both angles and the
+ * actual SN.e(DDD) same-bounds child. A null bounds failure retains all pose
+ * stores. No READY gate, World access, allocation, Random or previous-angle
+ * store is introduced. Constructor and Minecraft respawn call this same body. */
+mc_entity_status mc_entity_source_position_rotation(mc_entity *, double x, double y, double z,
+                                                    float yaw, float pitch,
+                                                    mc_entity_position_rotation_error *);
+
 #endif

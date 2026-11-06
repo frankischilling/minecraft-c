@@ -161,23 +161,27 @@ static mc_chunk_load_result load(void *owner, const mc_chunk_acquire_context *co
     return result;
 }
 
+static bool generate_game(mc_world_runtime *runtime, mc_chunk_provider *provider, int32_t x,
+                          int32_t z, mc_chunk_state **out) {
+    mc_world_generation_error error;
+    mc_world_storage_status status = mc_chunk_provider_generate_game(provider, x, z, out, &error);
+    if (status != MC_WORLD_STORAGE_OK) {
+        runtime->last_error = error.cause;
+        acquisition_cause(runtime, error.cause);
+        if (error.registry.status != MC_REGISTRY_OK)
+            runtime->last_registry_error = error.registry;
+        if (runtime->acquisition_error != NULL)
+            runtime->acquisition_error->registry = error.registry;
+    }
+    return status == MC_WORLD_STORAGE_OK;
+}
+
 static bool generate(void *owner, const mc_chunk_acquire_context *context, int32_t x, int32_t z,
                      mc_chunk_state **out) {
     (void)context;
     mc_world_runtime *runtime = owner;
     if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
-        mc_world_generation_error error;
-        mc_world_storage_status status =
-            mc_chunk_provider_generate_game(runtime->fields.v, x, z, out, &error);
-        if (status != MC_WORLD_STORAGE_OK) {
-            runtime->last_error = error.cause;
-            acquisition_cause(runtime, error.cause);
-            if (error.registry.status != MC_REGISTRY_OK)
-                runtime->last_registry_error = error.registry;
-            if (runtime->acquisition_error != NULL)
-                runtime->acquisition_error->registry = error.registry;
-        }
-        return status == MC_WORLD_STORAGE_OK;
+        return generate_game(runtime, runtime->fields.v, x, z, out);
     }
     mc_world_store_reservation *reservation = NULL;
     if (mc_world_store_reserve_chunk(runtime->options.store, runtime->options.dimension,
@@ -252,24 +256,38 @@ static bool register_entities(void *owner, const mc_chunk_acquire_context *conte
     return status == MC_WORLD_STORAGE_OK;
 }
 
+static bool populate_game(mc_world_runtime *runtime, mc_chunk_provider *provider, int32_t x,
+                          int32_t z) {
+    mc_world_overworld_population_error error;
+    const mc_world_storage_status status = mc_chunk_provider_populate_game(provider, x, z, &error);
+    if (status != MC_WORLD_STORAGE_OK) {
+        runtime->last_error = error.cause;
+        acquisition_cause(runtime, error.cause);
+        if (runtime->acquisition_error != NULL) {
+            runtime->acquisition_error->registry = error.registry;
+            runtime->acquisition_error->population =
+                mc_world_overworld_population_context_get(&error);
+        }
+    }
+    return status == MC_WORLD_STORAGE_OK;
+}
+
 static bool populate(void *owner, const mc_chunk_acquire_context *context, int32_t x, int32_t z) {
     mc_world_runtime *runtime = owner;
     if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
-        mc_world_overworld_population_error error;
-        const mc_world_storage_status status =
-            mc_chunk_provider_populate_game(runtime->fields.v, x, z, &error);
-        if (status != MC_WORLD_STORAGE_OK) {
-            runtime->last_error = error.cause;
-            acquisition_cause(runtime, error.cause);
-            if (runtime->acquisition_error != NULL) {
-                runtime->acquisition_error->registry = error.registry;
-                runtime->acquisition_error->population =
-                    mc_world_overworld_population_context_get(&error);
-            }
-        }
-        return status == MC_WORLD_STORAGE_OK;
+        return populate_game(runtime, runtime->fields.v, x, z);
     }
     return runtime->options.populate(runtime->options.provider, context, x, z);
+}
+
+static bool captured_generate(void *owner, const mc_chunk_acquire_context *context, int32_t x,
+                              int32_t z, mc_chunk_state **out) {
+    return generate_game(context->world, owner, x, z, out);
+}
+
+static bool captured_populate(void *owner, const mc_chunk_acquire_context *context, int32_t x,
+                              int32_t z) {
+    return populate_game(context->world, owner, x, z);
 }
 
 static mc_chunk_callback_result save_main(void *owner, const mc_chunk_lifecycle_context *context,
@@ -818,32 +836,32 @@ typedef enum acquisition_operation {
 #define MC_RUNTIME_ACQUISITION_NOINLINE
 #endif
 
-static MC_RUNTIME_ACQUISITION_NOINLINE mc_chunk_acquire_status
-acquire_entered(mc_world_runtime *runtime, int32_t x, int32_t z, mc_chunk_state **out,
-                acquisition_operation operation, mc_world_runtime_acquisition_error *error,
-                bool clear_success) {
+static MC_RUNTIME_ACQUISITION_NOINLINE mc_chunk_acquire_status acquire_entered(
+    mc_world_runtime *runtime, int32_t x, int32_t z, mc_chunk_state **out,
+    acquisition_operation operation, mc_world_runtime_acquisition_error *error, bool clear_success,
+    mc_chunk_provider *provider, const mc_chunk_acquire_context *context) {
     mc_world_runtime_acquisition_error frame;
     acquisition_error_init(&frame);
     mc_world_runtime_acquisition_error *previous = runtime->acquisition_error;
     mc_world_runtime_lifecycle_error *previous_lifecycle = runtime->lifecycle_error;
     runtime->acquisition_error = &frame;
     runtime->lifecycle_error = NULL;
-    mc_chunk_provider_cache_mutation_begin(runtime->fields.v);
+    mc_chunk_provider_cache_mutation_begin(provider);
     switch (operation) {
         case ACQUISITION_ACQUIRE:
-            frame.status = mc_chunk_acquire(&runtime->acquisition, x, z, out);
+            frame.status = mc_chunk_acquire(context, x, z, out);
             break;
         case ACQUISITION_GET:
-            frame.status = mc_chunk_acquire_get(&runtime->acquisition, x, z, out);
+            frame.status = mc_chunk_acquire_get(context, x, z, out);
             break;
         case ACQUISITION_POPULATE:
-            frame.status = mc_chunk_acquire_populate(&runtime->acquisition, x, z);
+            frame.status = mc_chunk_acquire_populate(context, x, z);
             break;
         case ACQUISITION_MARK_DROP:
-            frame.status = mc_chunk_acquire_mark_drop(&runtime->acquisition, x, z);
+            frame.status = mc_chunk_acquire_mark_drop(context, x, z);
             break;
     }
-    mc_chunk_provider_cache_mutation_end(runtime->fields.v);
+    mc_chunk_provider_cache_mutation_end(provider);
     runtime->acquisition_error = previous;
     runtime->lifecycle_error = previous_lifecycle;
     --runtime->active_calls;
@@ -873,10 +891,51 @@ static mc_chunk_acquire_status acquire_attempt(mc_world_runtime *runtime, int32_
         if (operation != ACQUISITION_GET ||
             !mc_chunk_provider_cache_get(runtime->fields.v, &runtime->acquisition, x, z, out,
                                          &status))
-            return acquire_entered(runtime, x, z, out, operation, error, clear_success);
+            return acquire_entered(runtime, x, z, out, operation, error, clear_success,
+                                   runtime->fields.v, &runtime->acquisition);
         --runtime->active_calls;
     }
     if (error != NULL && (clear_success || status != MC_CHUNK_ACQUIRE_OK)) {
+        acquisition_error_init(error);
+        error->status = status;
+        error->cause = cause;
+    }
+    return status;
+}
+
+mc_chunk_acquire_status
+mc_world_runtime_acquire_captured_provider(mc_chunk_provider *provider, int32_t x, int32_t z,
+                                           mc_chunk_state **out,
+                                           mc_world_runtime_acquisition_error *error) {
+    mc_world_runtime *runtime = NULL;
+    mc_world_storage_error cause = {0};
+    mc_chunk_acquire_status status = MC_CHUNK_ACQUIRE_STATE_ERROR;
+    if (mc_chunk_provider_acquire_owner(provider, &runtime, &cause) != MC_WORLD_STORAGE_OK)
+        goto refused;
+    if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME || runtime->classes == NULL ||
+        runtime->classes->side != MC_WORLD_INFO_CLIENT ||
+        runtime->acquisition.cache != &provider->cache ||
+        runtime->acquisition.pending != &provider->pending) {
+        runtime_error(&cause, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "Captured provider actual client acquisition context");
+        goto refused;
+    }
+    status = enter_acquire(runtime, &cause);
+    if (status == MC_CHUNK_ACQUIRE_OK) {
+        /* Native value-only call context: actual owning storage and all other
+         * callbacks stay shared. Only the captured provider's own virtual
+         * generation/population receiver differs from a current-World read. */
+        mc_chunk_acquire_context context = runtime->acquisition;
+        context.provider = provider;
+        if (context.generate != NULL)
+            context.generate = captured_generate;
+        if (context.populate != NULL)
+            context.populate = captured_populate;
+        return acquire_entered(runtime, x, z, out, ACQUISITION_ACQUIRE, error, true, provider,
+                               &context);
+    }
+refused:
+    if (error != NULL) {
         acquisition_error_init(error);
         error->status = status;
         error->cause = cause;

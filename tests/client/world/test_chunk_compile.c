@@ -11,6 +11,7 @@ int mc_chunk_compile_picker_fixture_main(int argc, char **argv);
 #include "client/render/blocks/internal.h"
 #include "client/render_engine/chunk_statistics.h"
 #include "client/render_engine/internal.h"
+#include "client/render_engine/nw.h"
 #include "client/world/render_global_access.h"
 #include "client/world/source_chunk_compile_internal.h"
 #include "mc/client/world/render_global_update.h"
@@ -25,12 +26,28 @@ static bool bound_dispatch_controls(picking_fixture *f) {
     CHECK(mc_client_render_blocks_active_use(f->models, NULL));
     const size_t index = (8u << 11u) | (8u << 7u) | 64u;
     const uint8_t previous_metadata = f->chunks[0]->data->metadata[index / 2u];
+    const uint8_t previous_block = f->chunks[0]->data->blocks[index];
     const int32_t ids[] = {27, 28, 66, 26};
     for (size_t i = 0; i < sizeof(ids) / sizeof(ids[0]); ++i) {
         const mc_block *block = NULL;
         CHECK(mc_registry_block_get(f->base.registry, ids[i], &block, NULL) == MC_REGISTRY_OK &&
               block != NULL);
         const mc_block_fields previous = *mc_block_fields_get(block);
+        mc_client_render_engine_classes *bed_graphics = NULL;
+        if (ids[i] == 26) {
+            /* This entered CV component owns its own genuine CPU NW batch.
+             * The later DK compile retains its separate begin/draw lifecycle. */
+            mc_client_tessellator *nw = NULL;
+            mc_client_graphics_error graphics;
+            CHECK(mc_client_render_engine_classes_create(NULL, &bed_graphics) ==
+                  MC_CLIENT_RENDER_ENGINE_OK);
+            CHECK(mc_client_nw_active_use(
+                      bed_graphics,
+                      (mc_client_graphics_site){"native-test", "bed-bounds", "()V", 0}, &nw,
+                      &graphics) &&
+                  mc_client_nw_begin_quads(nw, &graphics));
+            f->chunks[0]->data->blocks[index] = 26;
+        }
         for (int32_t metadata = 0; metadata < 16; ++metadata) {
             CHECK(mc_chunk_nibbles_set(f->chunks[0]->data->metadata, MC_CHUNK_NIBBLE_BYTES, 8, 64,
                                        8, metadata));
@@ -38,15 +55,43 @@ static bool bound_dispatch_controls(picking_fixture *f) {
             mc_client_render_blocks_construct_fields(&fields, cache, true);
             mc_cv_context c = {.fields = &fields, .cache = cache, .registry = f->base.registry};
             bool out = true;
-            CHECK(!mc_cv_render(&c, block, 8, 64, 8, &out) && out && c.failed &&
-                  c.failure.status == MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY &&
-                  c.failure.source_pc == (ids[i] == 26 ? 265u : 197u));
+            if (ids[i] == 26) {
+                c.models = f->models;
+                c.graphics = bed_graphics;
+                c.application = f->app;
+                mc_client_nw_state before, after;
+                CHECK(mc_client_nw_inspect(bed_graphics, &before) && before.fields.w);
+                out = false;
+                CHECK(mc_cv_render(&c, block, 8, 64, 8, &out) && out && !c.failed && c.returned &&
+                      c.depth == 0 && c.source_pc == 268 && !fields.e &&
+                      mc_client_nw_inspect(bed_graphics, &after) && after.fields.w &&
+                      after.fields.g != NULL && after.fields.h == before.fields.h + 30 &&
+                      after.fields.o == before.fields.o + 30 * 8);
+                for (int32_t offset = before.fields.o; offset < after.fields.o; offset += 8) {
+                    uint32_t words[5];
+                    memcpy(words, after.fields.g + offset, sizeof(words));
+                    /* Actual NW position/UV float words must all be finite. */
+                    for (size_t word = 0; word < 5; ++word)
+                        CHECK((words[word] & UINT32_C(0x7f800000)) != UINT32_C(0x7f800000));
+                }
+            } else {
+                CHECK(!mc_cv_render(&c, block, 8, 64, 8, &out) && out && c.failed &&
+                      c.failure.status == MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY &&
+                      c.failure.source_pc == (ids[i] == 26 ? 265u : 197u));
+            }
             const mc_block_fields *actual = mc_block_fields_get(block);
             CHECK(actual->bs == 0 && actual->bt == 0 && actual->bu == 0 && actual->bv == 1 &&
                   actual->bx == 1 &&
                   actual->bw == (ids[i] == 26                     ? .5625
                                  : metadata >= 2 && metadata <= 5 ? .625
                                                                   : .125));
+        }
+        if (ids[i] == 26) {
+            /* Checked native retirement consumes this CPU batch without a
+             * fabricated source draw or changes to the fixture's graphics. */
+            CHECK(mc_client_render_engine_classes_release(bed_graphics) ==
+                  MC_CLIENT_RENDER_ENGINE_OK);
+            f->chunks[0]->data->blocks[index] = previous_block;
         }
         if (ids[i] != 26) {
             CHECK(mc_block_render_bounds((mc_block *)block, .25f, .25f, .25f, .75f, .75f, .75f) ==

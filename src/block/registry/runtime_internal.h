@@ -165,6 +165,29 @@ mc_registry_status mc_registry_direction_get(mc_registry_classes *classes,
 mc_registry_status mc_registry_direction_at(const mc_registry_direction_view *array, int32_t index,
                                             int32_t *out, mc_registry_error *error);
 
+/* Actual client VE static invocation/getstatic and reached [[I/[I loads.
+ * Captures may be NULL. Typed arrays remain owned by this Registry's permanent
+ * arena across source field/row replacement. Element operations never reload
+ * a field or perform class use; NULL precedes signed index bounds. Unknown
+ * native backing is an explicit dependency, never dereferenced or adopted. */
+typedef struct mc_registry_bed_table_view {
+    mc_registry_classes *classes;
+    int32_t *const *identity;
+} mc_registry_bed_table_view;
+
+typedef struct mc_registry_bed_row_view {
+    mc_registry_classes *classes;
+    const int32_t *identity;
+} mc_registry_bed_row_view;
+
+mc_registry_status mc_registry_bed_active_use(mc_registry_classes *, mc_registry_error *);
+mc_registry_status mc_registry_bed_table_get(mc_registry_classes *, mc_registry_bed_table_view *,
+                                             mc_registry_error *);
+mc_registry_status mc_registry_bed_table_at(const mc_registry_bed_table_view *, int32_t,
+                                            mc_registry_bed_row_view *, mc_registry_error *);
+mc_registry_status mc_registry_bed_row_at(const mc_registry_bed_row_view *, int32_t, int32_t *,
+                                          mc_registry_error *);
+
 /* Actual nullable captured emission array. No reload or active use at at. */
 typedef struct mc_registry_block_s_view {
     mc_registry_classes *classes;

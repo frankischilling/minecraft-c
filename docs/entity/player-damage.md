@@ -122,7 +122,9 @@ separates those results from incomplete local suites and unresolved GUI failures
 Sleeping wake, Arrow attacker resolution and selected Living ally-alert paths
 remain unfinished. Original runtime comparisons for broader fatal inputs and
 scattered Inventories remain separate work. The supported loaded Overworld
-respawn route has its [declared scope](../client/death-respawn.md); saved-Bed,
-Nether transition and centered ChunkProvider branches remain unavailable.
+respawn route has its [declared scope](../client/death-respawn.md), including
+saved-Bed validation, exact placement and missing-Bed notification. Bed use and
+sleep/wake gameplay remain separate work. Nether transition and centered
+ChunkProvider branches remain unavailable.
 These results do not establish full combat, unrestricted survival, audio output
 equality or a frame-rate improvement.

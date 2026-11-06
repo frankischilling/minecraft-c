@@ -69,11 +69,7 @@ static bool inventory_result(mc_inventory_nbt_status status, mc_entity_nbt_error
 
 /* Native ownership nodes wrap real br values; they are not source fields or
  * an arena. Replacing a field immediately retires nodes no longer referenced
- * by any of this Player's three coordinate occurrences. */
-struct mc_player_nbt_coordinate {
-    mc_player_coordinates value;
-    struct mc_player_nbt_coordinate *next;
-};
+ * by this Player's three coordinate fields or an entered source-local pin. */
 
 static struct mc_player_nbt_coordinate *coordinate_new(mc_entity *p, mc_entity_nbt_error *e) {
     struct mc_player_nbt_coordinate *value = mc_entity_construction_allocate(
@@ -83,6 +79,8 @@ static struct mc_player_nbt_coordinate *coordinate_new(mc_entity *p, mc_entity_n
              e->construction.status == MC_ENTITY_LIMIT ? MC_ENTITY_NBT_LIMIT
                                                        : MC_ENTITY_NBT_ALLOCATION_FAILED,
              "Player NBT actual br allocation");
+    else
+        *value = (struct mc_player_nbt_coordinate){0};
     return value;
 }
 
@@ -92,7 +90,7 @@ void mc_player_nbt_coordinates_collect_held(mc_entity *p) {
     while (*link != NULL) {
         struct mc_player_nbt_coordinate *node = *link;
         const mc_player_coordinates *value = &node->value;
-        if (value == s->fields.player.v || value == s->fields.player.private_b ||
+        if (node->pins != 0 || value == s->fields.player.v || value == s->fields.player.private_b ||
             value == s->fields.player.private_bN)
             link = &node->next;
         else {
@@ -102,8 +100,8 @@ void mc_player_nbt_coordinates_collect_held(mc_entity *p) {
     }
 }
 
-static void coordinate_store(mc_entity *p, struct mc_player_nbt_coordinate *node,
-                             const mc_player_coordinates **field) {
+void mc_player_nbt_coordinate_store_held(mc_entity *p, struct mc_player_nbt_coordinate *node,
+                                         const mc_player_coordinates **field) {
     node->next = p->local_player->nbt_coordinates;
     p->local_player->nbt_coordinates = node;
     *field = &node->value;
@@ -197,7 +195,7 @@ bool mc_player_nbt_read_held(mc_entity *p, mc_registry_classes *classes, const m
         e->player_bytecode = 80;
         node->value.z = mc_math_floor_double(p->base.z);
         e->player_bytecode = 86;
-        coordinate_store(p, node, &v->v);
+        mc_player_nbt_coordinate_store_held(p, node, &v->v);
         e->player_bytecode = 93;
         return fail(e, MC_ENTITY_NBT_UNSUPPORTED_TYPE,
                     "Player NBT actual wake(true,true,false) dependency");
@@ -221,7 +219,7 @@ bool mc_player_nbt_read_held(mc_entity *p, mc_registry_classes *classes, const m
             *values[i] = tag == NULL ? 0 : tag->value.int_value;
         }
         e->player_bytecode = 149;
-        coordinate_store(p, node, &v->private_b);
+        mc_player_nbt_coordinate_store_held(p, node, &v->private_b);
     }
     e->player_bytecode = 152;
     e->local_player_bytecode = 9;

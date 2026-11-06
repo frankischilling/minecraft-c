@@ -71,7 +71,8 @@ def saved_tree(source, dimension=0):
     out = copy.deepcopy(source)
     current = level.child(out, "Level")
     blocks = level.child(current, "Blocks")
-    blocks["value"] = bytes(normalized_map()[byte] for byte in bytes.fromhex(blocks["value"])).hex()
+    block_map = normalized_map()
+    blocks["value"] = bytes(block_map[byte] for byte in bytes.fromhex(blocks["value"])).hex()
     level.child(current, "LastUpdate")["value"] = 1234 if dimension == 0 else 5678
     return out
 

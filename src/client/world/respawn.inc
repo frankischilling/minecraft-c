@@ -1,8 +1,14 @@
 /* Native ownership for the actual Minecraft.a(ZI)V source invocation. */
+#include "../../entity/construction_internal.h"
 #include "../../entity/player/player_internal.h"
 #include "../gui/display_screen.h"
+#include "../gui/gui_ingame_chat.h"
 #include "../gui/source_screen_transitions.h"
+#include "mc/entity/player/coordinates.h"
+#include "mc/world/runtime/bed_spawn.h"
 #include "mc/world/runtime/respawn.h"
+
+#include <emmintrin.h>
 
 struct mc_client_respawn_call {
     client_application *app;
@@ -21,6 +27,13 @@ struct mc_client_respawn_call {
     mc_client_world_prepare_state terrain;
     mc_client_display_screen_call *display;
     mc_world_respawn_position *position;
+    mc_player_coordinate_pin *saved_bed;
+    mc_player_coordinates *bed_exit;
+    mc_world_bed_spawn_error bed;
+    mc_player_error coordinate;
+    mc_entity_position_rotation_error placement;
+    mc_client_gui_ingame_chat_call *chat;
+    mc_client_gui_ingame_chat_error chat_error, chat_cleanup;
     mc_entity *candidate;
     mc_movement_input *new_input;
 };
@@ -113,28 +126,134 @@ static mc_client_singleplayer_controller *respawn_controller(mc_client_respawn_c
     return controller;
 }
 
-static bool respawn_text(mc_client_respawn_call *c, mc_player_string **out) {
+static bool respawn_literal(mc_client_respawn_call *c, bool invalid_bed, mc_player_string **out) {
+    const int pc = invalid_bed ? 77 : 352;
     mc_client_application_classes *classes = c->app->source_namespace;
     if (classes == NULL || mtx_lock(&classes->mutex) != thrd_success)
-        return respawn_fail(c, MC_CLIENT_RESPAWN_BUSY, "Respawn actual literal namespace", 352);
+        return respawn_fail(c, MC_CLIENT_RESPAWN_BUSY, "Respawn actual literal namespace", pc);
     mc_player_status status = MC_PLAYER_OK;
     if (classes->native_retiring || classes->phase != MC_CLIENT_APPLICATION_CLASS_READY) {
         (void)mtx_unlock(&classes->mutex);
-        return respawn_fail(c, MC_CLIENT_RESPAWN_BUSY, "Respawn retiring literal namespace", 352);
+        return respawn_fail(c, MC_CLIENT_RESPAWN_BUSY, "Respawn retiring literal namespace", pc);
     }
-    if (classes->world_respawning == NULL) {
-        static const uint16_t units[] = {'R', 'e', 's', 'p', 'a', 'w', 'n', 'i', 'n', 'g'};
-        status = mc_player_string_create(units, sizeof(units) / sizeof(units[0]),
-                                         &classes->world_respawning);
+    mc_player_string **slot =
+        invalid_bed ? &classes->world_bed_not_valid : &classes->world_respawning;
+    if (*slot == NULL) {
+        static const uint16_t respawning[] = {'R', 'e', 's', 'p', 'a', 'w', 'n', 'i', 'n', 'g'};
+        static const uint16_t invalid[] = {'t', 'i', 'l', 'e', '.', 'b', 'e', 'd', '.',
+                                           'n', 'o', 't', 'V', 'a', 'l', 'i', 'd'};
+        status = mc_player_string_create(invalid_bed ? invalid : respawning,
+                                         invalid_bed ? sizeof(invalid) / sizeof(invalid[0])
+                                                     : sizeof(respawning) / sizeof(respawning[0]),
+                                         slot);
     }
     if (status == MC_PLAYER_OK)
-        *out = classes->world_respawning;
+        *out = *slot;
     (void)mtx_unlock(&classes->mutex);
     return status == MC_PLAYER_OK ||
            respawn_fail(c,
                         status == MC_PLAYER_LIMIT ? MC_CLIENT_RESPAWN_LIMIT
                                                   : MC_CLIENT_RESPAWN_ALLOCATION,
-                        "Respawn actual String literal allocation", 352);
+                        "Respawn actual String literal allocation", pc);
+}
+
+static bool respawn_coordinate_result(mc_client_respawn_call *c, mc_player_status status, int pc) {
+    if (status == MC_PLAYER_OK)
+        return true;
+    c->failure.saved_spawn = &c->coordinate;
+    c->failure.child =
+        (mc_client_world_load_site){c->coordinate.site.class_name, c->coordinate.site.method,
+                                    c->coordinate.site.descriptor, (int)c->coordinate.site.pc};
+    c->failure.native_policy = status != MC_PLAYER_NULL_REFERENCE;
+    return respawn_fail(c,
+                        status == MC_PLAYER_LIMIT               ? MC_CLIENT_RESPAWN_LIMIT
+                        : status == MC_PLAYER_ALLOCATION_FAILED ? MC_CLIENT_RESPAWN_ALLOCATION
+                        : status == MC_PLAYER_BUSY              ? MC_CLIENT_RESPAWN_BUSY
+                        : status == MC_PLAYER_NULL_REFERENCE    ? MC_CLIENT_RESPAWN_NULL_REFERENCE
+                                                                : MC_CLIENT_RESPAWN_CHILD_FAILED,
+                        c->coordinate.operation, pc);
+}
+
+static bool respawn_bed_result(mc_client_respawn_call *c, mc_world_storage_status status) {
+    if (status == MC_WORLD_STORAGE_OK)
+        return true;
+    c->failure.bed = &c->bed;
+    c->failure.child = (mc_client_world_load_site){
+        c->bed.source_class, c->bed.source_method,
+        c->bed.source_class != NULL && strcmp(c->bed.source_class, "ve") == 0 ? "(Lfd;IIII)Lbr;"
+                                                                              : "(Lfd;Lbr;)Lbr;",
+        (int)c->bed.pc};
+    c->failure.native_policy = c->bed.native_policy;
+    return respawn_fail(c,
+                        status == MC_WORLD_STORAGE_BUSY    ? MC_CLIENT_RESPAWN_BUSY
+                        : status == MC_WORLD_STORAGE_LIMIT ? MC_CLIENT_RESPAWN_LIMIT
+                        : status == MC_WORLD_STORAGE_ALLOCATION_FAILED
+                            ? MC_CLIENT_RESPAWN_ALLOCATION
+                            : MC_CLIENT_RESPAWN_CHILD_FAILED,
+                        c->bed.operation, 63);
+}
+
+static bool respawn_invalid_bed_message(mc_client_respawn_call *c) {
+    mc_entity *receiver = c->app->h; /* Actual captured h74, before ldc77. */
+    if (receiver != NULL && mc_entity_retain(receiver) != MC_ENTITY_OK)
+        return respawn_fail(c, MC_CLIENT_RESPAWN_BUSY,
+                            "Respawn captured message receiver occurrence", 74);
+    bool returned = false;
+    mc_player_string *key = NULL;
+    if (!respawn_literal(c, true, &key))
+        goto done;
+    respawn_at(c, 79);
+    if (receiver == NULL) {
+        c->failure.native_policy = false;
+        (void)respawn_fail(c, MC_CLIENT_RESPAWN_NULL_REFERENCE,
+                           "Respawn null DC message invocation receiver", 79);
+        goto done;
+    }
+    if (!mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) ||
+        receiver->classes != c->app->entities) {
+        (void)respawn_fail(c, MC_CLIENT_RESPAWN_BUSY, "Respawn canonical DC message receiver", 79);
+        goto done;
+    }
+    client_application *actual_app = receiver->local_player->fields.minecraft; /* DC1. */
+    if (actual_app == NULL || actual_app->v == NULL) {
+        c->failure.native_policy = false;
+        c->failure.child = (mc_client_world_load_site){"dc", "b", "(Ljava/lang/String;)V",
+                                                       actual_app == NULL ? 4 : 8};
+        (void)respawn_fail(c, MC_CLIENT_RESPAWN_NULL_REFERENCE,
+                           actual_app == NULL ? "Respawn DC null App message field"
+                                              : "Respawn DC null HUD message receiver",
+                           79);
+        goto done;
+    }
+    const mc_client_gui_ingame_chat_status status = mc_client_gui_ingame_chat_translate_begin(
+        actual_app->v, actual_app->registry, key, &c->chat, &c->chat_error);
+    if (status != MC_CLIENT_GUI_INGAME_CHAT_OK) {
+        c->failure.chat = &c->chat_error;
+        const mc_client_gui_ingame_site *child =
+            c->chat_error.child.class_name == NULL ? &c->chat_error.site : &c->chat_error.child;
+        c->failure.child = (mc_client_world_load_site){child->class_name, child->method,
+                                                       child->descriptor, (int)child->pc};
+        c->failure.native_policy = c->chat_error.native_policy;
+        (void)respawn_fail(c,
+                           status == MC_CLIENT_GUI_INGAME_CHAT_LIMIT ? MC_CLIENT_RESPAWN_LIMIT
+                           : status == MC_CLIENT_GUI_INGAME_CHAT_ALLOCATION
+                               ? MC_CLIENT_RESPAWN_ALLOCATION
+                               : MC_CLIENT_RESPAWN_CHILD_FAILED,
+                           c->chat_error.operation, 79);
+        goto done;
+    }
+    c->state.bed_notified = true;
+    if (mc_client_gui_ingame_chat_retire(&c->chat, &c->chat_cleanup) !=
+        MC_CLIENT_GUI_INGAME_CHAT_OK) {
+        c->failure.chat = &c->chat_cleanup;
+        (void)respawn_fail(c, MC_CLIENT_RESPAWN_CLEANUP_FAILED,
+                           "Respawn returned invalid-Bed message native cleanup", 79);
+        goto done;
+    }
+    returned = true;
+done:
+    mc_entity_release(receiver);
+    return returned;
 }
 
 static void respawn_run(mc_client_respawn_call *c) {
@@ -175,21 +294,40 @@ static void respawn_run(mc_client_respawn_call *c) {
             return;
         }
     }
-    /* GS.Q returns its actual nullable saved bed-coordinate field. */
     if (app->h != NULL && !c->state.force) {
         mc_entity *p = respawn_player(c, 50);
         if (p == NULL)
             return;
-        if (p->local_player->fields.player.private_b != NULL) {
-            (void)respawn_fail(c, MC_CLIENT_RESPAWN_UNIMPLEMENTED,
-                               "Respawn actual saved-Bed validation child", 63);
+        if (!respawn_coordinate_result(
+                c, mc_player_saved_spawn_get(p, &c->saved_bed, &c->coordinate), 50))
             return;
+        c->state.saved_spawn_read = true;
+        const mc_player_coordinates *saved = mc_player_coordinate_pin_value(c->saved_bed);
+        c->state.saved_bed_identity = (uintptr_t)saved;
+        if (saved != NULL) {
+            w = app->active_world; /* A nullable argument to the actual static GS.a63. */
+            if (w != NULL && w != c->load->state.world) {
+                (void)respawn_fail(c, MC_CLIENT_RESPAWN_BUSY,
+                                   "Respawn Bed World outside owned Load graph", 63);
+                return;
+            }
+            respawn_at(c, 63);
+            if (!respawn_bed_result(c, mc_world_bed_spawn_validate(w, app->registry, saved, NULL,
+                                                                   &c->bed_exit, &c->bed)))
+                return;
+            c->state.bed_checked = true;
+            c->state.bed_valid = c->bed_exit != NULL;
+            c->state.bed_exit_identity = (uintptr_t)c->bed_exit;
+            if (c->bed_exit == NULL && !respawn_invalid_bed_message(c))
+                return;
         }
     }
-    w = respawn_world(c, 91);
-    if (w == NULL || !respawn_world_result(
-                         c, mc_world_runtime_respawn_spawn_new(w, &c->position, &c->world), 91))
-        return;
+    if (c->bed_exit == NULL) {
+        w = respawn_world(c, 91);
+        if (w == NULL || !respawn_world_result(
+                             c, mc_world_runtime_respawn_spawn_new(w, &c->position, &c->world), 91))
+            return;
+    }
     w = respawn_world(c, 103);
     if (w == NULL || mc_world_runtime_fields_get(w, &fields) != MC_WORLD_STORAGE_OK) {
         if (w != NULL)
@@ -301,6 +439,48 @@ static void respawn_run(mc_client_respawn_call *c) {
         return;
     }
     c->state.spawn_returned = true;
+    if (c->state.bed_valid) {
+        p = respawn_player(c, 242);
+        if (p == NULL || !respawn_coordinate_result(
+                             c,
+                             mc_player_saved_spawn_set(
+                                 p, mc_player_coordinate_pin_value(c->saved_bed), &c->coordinate),
+                             242))
+            return;
+        c->state.bed_stored = true;
+        p = app->h; /* Actual h248, before the three float operand expressions. */
+        if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
+            (void)respawn_fail(c, MC_CLIENT_RESPAWN_CHILD_FAILED,
+                               "Respawn Bed float operand environment", 254);
+            return;
+        }
+        volatile float x = (float)c->bed_exit->x;
+        volatile float placed_x = x + 0.5f;
+        volatile float y = (float)c->bed_exit->y;
+        volatile float placed_y = y + 0.1f;
+        volatile float z = (float)c->bed_exit->z;
+        volatile float placed_z = z + 0.5f;
+        respawn_at(c, 281);
+        if (p == NULL) {
+            c->failure.native_policy = false;
+            (void)respawn_fail(c, MC_CLIENT_RESPAWN_NULL_REFERENCE,
+                               "Respawn null Bed placement invocation receiver", 281);
+            return;
+        }
+        if (mc_entity_source_position_rotation(p, (double)placed_x, (double)placed_y,
+                                               (double)placed_z, 0.0f, 0.0f,
+                                               &c->placement) != MC_ENTITY_OK) {
+            c->failure.position = &c->placement;
+            c->failure.native_policy = c->placement.native_policy;
+            const bool position = c->placement.position_bytecode != 0;
+            c->failure.child = (mc_client_world_load_site){
+                "sn", position ? "e" : "c", position ? "(DDD)V" : "(DDDFF)V",
+                (int)(position ? c->placement.position_bytecode : c->placement.bytecode)};
+            (void)respawn_fail(c, MC_CLIENT_RESPAWN_CHILD_FAILED, c->placement.operation, 281);
+            return;
+        }
+        c->state.bed_positioned = true;
+    }
     controller = respawn_controller(c, 292);
     p = app->h; /* The argument is not dereferenced by the caller. */
     if (controller == NULL ||
@@ -356,7 +536,7 @@ static void respawn_run(mc_client_respawn_call *c) {
         return;
     c->state.player_finished = true;
     mc_player_string *text = NULL;
-    if (!respawn_text(c, &text))
+    if (!respawn_literal(c, false, &text))
         return;
     respawn_at(c, 354);
     const mc_client_world_prepare_status prepared =
@@ -435,6 +615,7 @@ mc_client_respawn_status mc_client_respawn_begin(client_application *app,
     *out = c;
     mc_world_respawn_error_init(&c->world);
     mc_world_entity_tick_error_init(&c->entities);
+    mc_world_bed_spawn_error_init(&c->bed);
     respawn_run(c);
     c->state.active = load->classes->active = load->state.active = false;
     *error = c->failure;
@@ -516,17 +697,24 @@ mc_client_respawn_status mc_client_respawn_retire(mc_client_respawn_call **slot,
         (c->prepare != NULL &&
          mc_client_world_prepare_retire(&c->prepare) != MC_CLIENT_WORLD_PREPARE_OK) ||
         !mc_world_respawn_error_retire(&c->world) ||
-        !mc_world_entity_tick_error_retire(&c->entities)) {
+        !mc_world_entity_tick_error_retire(&c->entities) ||
+        mc_client_gui_ingame_chat_retire(&c->chat, &c->chat_cleanup) !=
+            MC_CLIENT_GUI_INGAME_CHAT_OK ||
+        !mc_world_bed_spawn_error_retire(&c->bed)) {
         c->cleanup =
             (mc_client_respawn_error){.status = MC_CLIENT_RESPAWN_CLEANUP_FAILED,
                                       .operation = "Respawn retained child native retirement",
                                       .native_policy = true,
                                       .world = &c->world,
-                                      .entities = &c->entities};
+                                      .entities = &c->entities,
+                                      .chat = &c->chat_cleanup,
+                                      .bed = &c->bed};
         *error = c->cleanup;
         return error->status;
     }
     mc_world_respawn_position_free(c->position);
+    mc_world_bed_spawn_position_free(c->bed_exit);
+    mc_player_coordinate_pin_release(&c->saved_bed);
     (void)mc_movement_input_retire(&c->new_input, NULL);
     mc_entity_release(c->candidate);
     --c->load->respawn_calls;

@@ -1,5 +1,25 @@
 # History
 
+## Saved-Bed respawn and HUD messages
+
+The saved-Bed route now preserves coordinate identity through callbacks, uses
+the original exit search and copies/positions the replacement Player. Type-14
+Bed rendering and translated HUD chat support that route. Original packets
+cover five coordinate rows, 30 helper profiles, 192 geometry rows and 81 chat
+rows. Windows valid/missing scenes pass source save/readback and cleanup.
+
+The first loaded pair's native actions returned, but its readback fixture
+expected the wrong empty-list element type. Original `sp.a` writes Byte1;
+the strict reader now requires it. The separate chat mismatch came from a
+startup clear before replay; a fresh constructed HUD aligns the actual input.
+Production and sealed packets did not change for either fixture correction.
+
+Broader suites expose an obsolete Bed-render frontier assertion and a
+Linux storage-guard timeout. The former now checks a real begun Tessellator
+for every metadata value. The latter avoids constructing the same byte
+table per Block byte. Both follow-ups pass on Windows and sanitized Linux
+without relaxing assertions or watchdogs; full-run failures remain recorded.
+
 ## Player death and respawn
 
 The actual Player death path now scatters Inventory, preserves failed child
@@ -10,7 +30,8 @@ publication cleanup on monitor 2. Original comparisons cover the already
 retained empty-Inventory fatal completion and 72 new screen component rows;
 broader Inventory drops and loaded rendering have separate native scope.
 The [guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/death-respawn.md)
-records the Bed/Nether, ordinary-hazard, Linux loaded-play and performance gaps.
+records the remaining Bed-use/Nether, ordinary-hazard, Linux loaded-play and
+performance gaps.
 
 ## Player hurt and armor
 

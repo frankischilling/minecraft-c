@@ -63,6 +63,9 @@ def main():
     root = Path(__file__).resolve().parents[2]
     fragments = {"tests/item/use/redstone/statistics_setup.inc",
                  "tests/client/startup/death_respawn_controls.inc",
+                 "tests/client/startup/bed_respawn_controls.inc",
+                 "tests/entity/player/coordinate_methods_cases.inc",
+                 "src/client/gui/gui_ingame_chat_draw.inc",
                  "tests/block/registry/redstone_torch/texture_fixture.inc",
                  "tests/world/runtime/redstone_torch/terminal_current.inc",
                  "tests/item/use/redstone/statistics_teardown.inc",

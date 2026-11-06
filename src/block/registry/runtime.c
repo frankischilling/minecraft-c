@@ -3,6 +3,7 @@
 #include "registry_internal.h"
 #include "runtime_internal.h"
 
+#include <limits.h>
 #include <stdint.h>
 
 static mc_registry_status result(mc_registry_error *error, mc_registry_status status,
@@ -27,6 +28,84 @@ static mc_registry_status quiescent(const mc_registry_classes *classes, mc_regis
     if (classes->entered != 0)
         return result(error, MC_REGISTRY_BUSY, "registry initialization entered");
     return MC_REGISTRY_OK;
+}
+
+mc_registry_status mc_registry_bed_active_use(mc_registry_classes *classes,
+                                              mc_registry_error *error) {
+    if (classes == NULL || classes->options.side != MC_REGISTRY_CLIENT)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Bed actual client class owner");
+    if (classes->entered == UINT_MAX)
+        return result(error, MC_REGISTRY_LIMIT, "Bed initializer flow count");
+    ++classes->entered;
+    const mc_registry_status status = mc_registry_block_class_initialize(classes, MC_BLOCK_BED);
+    --classes->entered;
+    if (status != MC_REGISTRY_OK) {
+        if (error != NULL)
+            *error = classes->last_error;
+        return status;
+    }
+    return result(error, MC_REGISTRY_OK, NULL);
+}
+
+mc_registry_status mc_registry_bed_table_get(mc_registry_classes *classes,
+                                             mc_registry_bed_table_view *out,
+                                             mc_registry_error *error) {
+    if (out == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Bed table capture output");
+    const mc_registry_status status = mc_registry_bed_active_use(classes, error);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    *out = (mc_registry_bed_table_view){classes, classes->ve_a};
+    return result(error, MC_REGISTRY_OK, NULL);
+}
+
+static mc_registry_status bed_array_failure(mc_registry_classes *classes, mc_registry_error *error,
+                                            mc_registry_status status, const char *message) {
+    (void)result(&classes->last_error, status, message);
+    if (error != NULL)
+        *error = classes->last_error;
+    return status;
+}
+
+mc_registry_status mc_registry_bed_table_at(const mc_registry_bed_table_view *table, int32_t index,
+                                            mc_registry_bed_row_view *out,
+                                            mc_registry_error *error) {
+    if (table == NULL || table->classes == NULL || out == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Bed table element arguments");
+    mc_registry_classes *classes = table->classes;
+    if (table->identity == NULL)
+        return bed_array_failure(classes, error, MC_REGISTRY_NULL_REFERENCE,
+                                 "Bed captured outer array is null");
+    size_t bytes;
+    if (!mc_registry_permanent_extent(classes, table->identity, &bytes) ||
+        bytes % sizeof(*table->identity) != 0)
+        return bed_array_failure(classes, error, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
+                                 "Bed captured outer array native owner");
+    if (index < 0 || (size_t)index >= bytes / sizeof(*table->identity))
+        return bed_array_failure(classes, error, MC_REGISTRY_INDEX_OUT_OF_RANGE,
+                                 "Bed captured outer array index");
+    *out = (mc_registry_bed_row_view){classes, table->identity[index]};
+    return result(error, MC_REGISTRY_OK, NULL);
+}
+
+mc_registry_status mc_registry_bed_row_at(const mc_registry_bed_row_view *row, int32_t index,
+                                          int32_t *out, mc_registry_error *error) {
+    if (row == NULL || row->classes == NULL || out == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Bed row element arguments");
+    mc_registry_classes *classes = row->classes;
+    if (row->identity == NULL)
+        return bed_array_failure(classes, error, MC_REGISTRY_NULL_REFERENCE,
+                                 "Bed captured row array is null");
+    size_t bytes;
+    if (!mc_registry_permanent_extent(classes, row->identity, &bytes) ||
+        bytes % sizeof(int32_t) != 0)
+        return bed_array_failure(classes, error, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
+                                 "Bed captured row array native owner");
+    if (index < 0 || (size_t)index >= bytes / sizeof(int32_t))
+        return bed_array_failure(classes, error, MC_REGISTRY_INDEX_OUT_OF_RANGE,
+                                 "Bed captured row array index");
+    *out = row->identity[index];
+    return result(error, MC_REGISTRY_OK, NULL);
 }
 
 mc_registry_status mc_registry_runtime_literal_ascii(mc_registry_classes *classes, const char *text,

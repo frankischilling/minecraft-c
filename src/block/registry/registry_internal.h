@@ -291,6 +291,11 @@ struct mc_registry_classes {
     mc_registry_class_state direction_state;
     int32_t *direction_a, *direction_b, *direction_c, *direction_d;
     int32_t *direction_storage[4];
+    /* Independent client JJ horizontal render orientation class. Its source
+     * arrays remain separately nullable and dynamically replaceable. */
+    mc_registry_class_state bed_render_state;
+    int32_t *bed_render_a, *bed_render_b;
+    int32_t **bed_render_c;
     bool gk_a;
     int32_t **ve_a;
     const mc_registry_string **ys_a;
@@ -348,6 +353,9 @@ mc_registry_status mc_registry_block_texture_side(mc_registry_classes *classes,
 mc_registry_status mc_registry_fail(mc_registry_classes *classes, mc_registry_status status,
                                     const char *message, const mc_block *block);
 void *mc_registry_allocate(mc_registry_classes *classes, size_t bytes);
+/* Exact permanent allocation identity/extent; no payload read, allocation,
+ * class use or diagnostic mutation. Used only for reached typed array loads. */
+bool mc_registry_permanent_extent(const mc_registry_classes *, const void *, size_t *);
 void mc_registry_block_stage(mc_block *block, const char *client_class, const char *server_class,
                              int32_t pc);
 mc_registry_status mc_registry_literal_ascii(mc_registry_classes *classes, const char *text,

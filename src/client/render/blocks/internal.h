@@ -143,6 +143,9 @@ bool mc_source_cv_ambient_occlusion(mc_cv_context *, const mc_block *, int32_t, 
 bool mc_cv_render(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
 bool mc_cv_standard(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
 bool mc_cv_lever(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
+bool mc_cv_bed(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
+bool mc_cv_bed_texture_metadata(mc_cv_context *, const mc_block *, int32_t side, int32_t metadata,
+                                int32_t *);
 bool mc_cv_crossed_plant(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
 bool mc_cv_crossed_plant_geometry(mc_cv_context *, const mc_block *, int32_t, double, double,
                                   double);

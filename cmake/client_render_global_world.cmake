@@ -23,6 +23,7 @@ if(TARGET mc_client_render_global)
         src/client/render/blocks/cactus.c
         src/client/render/blocks/torch.c
         src/client/render/blocks/lever.c
+        src/client/render/blocks/bed.c
         src/client/render/blocks/redstone.c
         src/client/render/blocks/color.c
         src/client/render/blocks/faces.c

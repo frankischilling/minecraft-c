@@ -1,5 +1,122 @@
 # Test scope and reproduction
 
+## Saved-Bed respawn, geometry and HUD messages
+
+The client now validates a saved Bed, copies the original coordinate into the
+replacement Player and places that Player at the selected exit. A missing Bed
+reaches the actual translated HUD message before ordinary World-spawn fallback.
+The [Bed helper](world/bed-spawn.md), [coordinate ownership](entity/player-coordinates.md),
+[Bed rendering](client/bed-world.md) and [chat](client/chat.md) guides separate
+their original, native and loaded-client evidence.
+
+Two fresh original VMs per packet provide five coordinate rows, 30 Bed helper
+profiles with 272 caller-level ordered events, 192 Bed geometry rows and 81
+chat rows. Native helper replay makes 2,014 scalar comparisons and passes 1,560
+controls; Bed rendering passes 1,066 controls. The native chat fixtures pass
+158 CPU checks and 791 constructed-Font/HUD checks. The original chat App and
+Font widths are prepared inputs, while native positive drawing uses a real
+constructed Font. No original drawing or complete App construction follows
+from the chat packet.
+
+Both first 14-case selections pass 13 tests. The sole chat replay failure is an
+exact List modification-count difference: startup has already cleared its HUD
+once, while the original component begins with a fresh UQ. The fixture now
+constructs a separate UQ in the same App/Font namespace, preserves startup's
+UQ for drawing and compares all 81 rows unchanged. The corrected Windows case
+passes in 2.33 CTest seconds and Linux in 16.82 seconds with Clang 18 Debug,
+ASan/UBSan, leak checks and Xvfb/software GL. The failed selections remain
+retained; production and the original packet did not change to satisfy them.
+
+A separate fresh Linux headless build disables the client, audio and sound.
+Three coordinate/Bed cases pass in 1.38 seconds and the GUI constructor case
+passes in 0.04 seconds. Its tested GUI constructor executable has no SDL,
+OpenGL, OpenAL, ALSA, PulseAudio or FreeType dynamic dependency. This is a
+headless dependency/CPU check, not dedicated-server gameplay qualification.
+
+Two native Windows saved-World profiles pass on monitor 2. The valid Bed case
+completes two real SDK Respawn interactions, 1,013 checks and direct World save
+in 14.86 CTest seconds. The missing-Bed case completes one interaction,
+977 checks and save in 11.00 seconds, including the actual imported translation
+at age 9. All 5,408 source inputs and imported resources remain unchanged across
+the pair. Independent NBT readback finds health 20 and empty Inventory in both;
+valid SpawnX/Y/Z remain 3/64/4, while the missing-Bed save omits them. Before,
+death and returned-frame captures are retained; the visible Bed and returned
+message were inspected. These saves call the source full-save body directly;
+no SDK save-menu, reload or hazard-driven death is claimed by this pair.
+
+The first pair's native flows also returned and cleaned up, with 1,034 and
+1,049 checks. Its Python readback failed by expecting an empty Compound list.
+The original `sp.a(DataOutput)` at 35..45 writes Byte type 1 for every empty
+list. The strict assertion now requires that actual wire value; neither the
+serializer nor saved files were changed to satisfy it. Both failed reports
+remain retained. The CTest watchdog leaves a cleanup margin beyond the unchanged
+240-second native-process deadline.
+
+Two further original VMs read byte-identical copies of those first C-written
+files through actual gzip/NBT and prepared Player readers. Both accept the
+empty Byte list, recover health 20 and empty main/armor arrays, preserve the
+exact saved pose and Randoms, and return the expected saved-coordinate identity
+or null. External network/native/write/exec counters stay zero. This is
+original component readback, not a running original World restart.
+
+At preceding checkpoint `b379e08f018f2601055b4bd38c06e60e44f38416`, hosted
+[run 42153149676](https://github.com/frankischilling/minecraft-c/actions/runs/42153149676)
+passes Windows 687/687 in 377.47 CTest seconds, GCC 744/744 in 573.51 seconds
+and Clang 744/744 in 561.11 seconds. Formatting checks 2,144 files. All four
+checkout jobs use merge `c3863f23`; its tree equals the pushed source tree
+`c97bfcee`. The name audit retains every previous test, adds exactly five
+death/screen/respawn tests per native job and finds no skipped registered test.
+That hosted evidence precedes the saved-Bed code above.
+
+Bed use, sleeping/waking, Nether transitions, the centered ChunkProvider,
+Linux loaded Bed play, complete original World restart, original pixels/audio,
+extended sessions and frame-time improvements remain unfinished or unqualified.
+Earlier focus and drawing failures below retain their own scopes.
+
+### Full suites and follow-up controls
+
+The frozen full Windows Release run passes 769/770 tests in 449.91 seconds;
+Linux Clang 18 Debug with ASan/UBSan, leak checks and software GL passes
+746/748 in 753.05 seconds. Both execute every registered case without skips,
+and all 5,412 guarded files remain unchanged. All new component cases pass on
+both hosts. Windows also passes both loaded Bed profiles: valid has 899 native
+checks in 21.66 seconds, missing has 926 in 16.42 seconds. These are separate
+opportunities from the earlier 1,013/977-check pair, whose reports remain intact.
+
+Both full runs fail the older Chunk compilation fixture's assumption that
+Bed dispatch is unavailable. Its replacement preserves the Rail failures and
+all sixteen exact Bed bounds checks, supplies a genuine begun CPU Tessellator,
+and checks successful return 268, 30 appended vertices, 240 words and finite
+position/UV words for every metadata value. The corrected case passes in
+2.50 seconds on Windows and 2.70 seconds on sanitized Linux.
+
+Linux's other full-run failure is `tools.world_storage_reference`, which hits
+its unchanged 180-second watchdog. Its authored `saved_tree` helper rebuilds
+the same 256-byte normalization table for each of 32,768 Block bytes. The
+helper now constructs that immutable table once per Chunk. Every oracle
+assertion, input case, source-closure check and watchdog remains unchanged.
+The complete storage guards then pass in 19.30 seconds on Windows and 143.18
+seconds on Linux. Both corrected two-case selections pass, with all 5,412
+guarded files unchanged. They do not turn the retained full-run failures into
+successful full runs.
+
+A separate fixed-work comparison measures only that authored constructor:
+80 Chunks with X -40..39, Z 40..-39, alternating opaque Entities and dimensions
+0/-1. Eight fresh Python 3.12.3 processes run in ABBA/ABBA order on WSL2 Ubuntu,
+Intel Core i9-10900F, 20 logical CPUs. Input trees remain unchanged and all
+eight serialized output hashes agree. The baseline helper is `c65ac7c1ec7b`;
+the candidate and applied helper are `de33ed488ff6`.
+
+| Constructor | Four samples, seconds per 80 Chunks | Median seconds |
+| --- | --- | --- |
+| Rebuild per byte | 6.199298, 6.133606, 6.019501, 5.790012 | 6.076553 |
+| Reuse within each Chunk | 0.097430, 0.092530, 0.087266, 0.087469 | 0.090000 |
+
+The median is 98.519% lower for this fixture-construction workload. The two
+complete storage test timings above use different suite scheduling and do
+not establish the same percentage for CI throughput. Gameplay and FPS are
+outside this comparison.
+
 ## Player death, death screen and respawn
 
 The [implementation and reproduction guide](client/death-respawn.md) separates

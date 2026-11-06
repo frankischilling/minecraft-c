@@ -1,0 +1,158 @@
+{
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "classes": {
+    "uq": {
+      "class_bytes": 8261,
+      "class_sha256": "b4b61c370315e1ed95b42a24a01112afd7c2d44e387e48adc5e801edd4578f12",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lnet/minecraft/client/Minecraft;)V",
+          "access": 1,
+          "code_bytes": 63,
+          "code_sha256": "42792c7723979739f9772d951363a6b5b02182a0314c3e4269fb844ef3e7f3d5"
+        },
+        {
+          "name": "a",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 71,
+          "code_sha256": "de5ff02b284462abc9b8c1215e5001831eec79ca7c922abe8b785c92b510e715"
+        },
+        {
+          "name": "b",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 10,
+          "code_sha256": "9e165ca11ab6d9d9620c096ab6d2b67898c12a58ff558864d4de35fa561afd48"
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)V",
+          "access": 1,
+          "code_bytes": 133,
+          "code_sha256": "b02a9dfe73d337084ee36a747044cd9a4b4f54447cd9d59ae3f752f5ebf4f1e1"
+        },
+        {
+          "name": "c",
+          "descriptor": "(Ljava/lang/String;)V",
+          "access": 1,
+          "code_bytes": 16,
+          "code_sha256": "03047307ba633181f93e4e49d25bd76939d1d4928a382e04d2d21425246f4bfb"
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8,
+          "code_bytes": 11,
+          "code_sha256": "14fe04a2077b67599a3896f109942fa29c990aa823dff7ed886b2b6bc376912e"
+        }
+      ]
+    },
+    "sw": {
+      "class_bytes": 283,
+      "class_sha256": "d1bb3334dacb8b64498b70eb48ed03b4d755b6c0119de957f6da125f475cd5fd",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Ljava/lang/String;)V",
+          "access": 1,
+          "code_bytes": 15,
+          "code_sha256": "2f135cdeef08e2c466f5986003fcca1baff9b35278d47fa3a4b16c505cf19746"
+        }
+      ]
+    },
+    "sj": {
+      "class_bytes": 4757,
+      "class_sha256": "c1bec862504ca9b390810ac6eb4e3401032614bf24560757ffb11533ddb66ad3",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)I",
+          "access": 1,
+          "code_bytes": 74,
+          "code_sha256": "33f8dc1f3a209754dcb1a45bdf5f774aded2d93975067b21f00026413c99a761"
+        }
+      ]
+    },
+    "nh": {
+      "class_bytes": 1275,
+      "class_sha256": "31a2a0650ae239f216faf7c26b45c94b3db07964b453a40baea6ee408ed3e9a4",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 2,
+          "code_bytes": 52,
+          "code_sha256": "063934f070971f92b5fbad264debe7b8384429c46b55dd33af5acbd33a2d0582"
+        },
+        {
+          "name": "a",
+          "descriptor": "()Lnh;",
+          "access": 9,
+          "code_bytes": 4,
+          "code_sha256": "dfb9aff16602b7340870ab7fc902b22294f662e441389a5a6c3b983791acee04"
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)Ljava/lang/String;",
+          "access": 1,
+          "code_bytes": 10,
+          "code_sha256": "a35f0f71812f1f7c8e386ad91fafedaa68221c6ca287ece939dd873348e298c0"
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8,
+          "code_bytes": 11,
+          "code_sha256": "46869a8e1db20c0cff546fdff152c61a7787ebe8ad82b21bb92dd6c60ebbca7d"
+        }
+      ]
+    },
+    "fp": {
+      "class_bytes": 1121,
+      "class_sha256": "3749b3ed11fd0ab6fd46c68645a897d6132350aa87346c745c220ce42f696e77",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 10,
+          "code_bytes": 81,
+          "code_sha256": "7106e8b0a57df589199dd37aa794fa6f0365b94cbedf8fe907826252603074aa"
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8,
+          "code_bytes": 97,
+          "code_sha256": "3b6edfce2d08d2fc259c3997de42a582b7d6358501a8dd61351d4dedbb8d5a1a"
+        }
+      ]
+    },
+    "ub": {
+      "class_bytes": 1890,
+      "class_sha256": "b06f1cd573e3564c3b6405828a6654218bb9807c694f5a45acaca70f59efb670",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 10,
+          "code_sha256": "8af5237f853c13f43908ca57cd18372b01d1c7fae9a0831af22f8524e4c36e83"
+        }
+      ]
+    }
+  }
+}

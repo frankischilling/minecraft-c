@@ -251,6 +251,7 @@ if(MC_BUILD_CLIENT)
         src/client/gui/font_mapping.c
         src/client/gui/bitmap_font.c src/client/gui/bitmap_font_measure.c
         src/client/gui/bitmap_font_draw.c src/client/gui/bitmap_font_wrap.c
+        src/client/gui/gui_ingame_chat.c
         src/client/gui/loading_screen.c src/client/gui/loading_projection.c
         src/client/gui/loading_geometry.c src/client/gui/loading_draw.c
         src/client/startup/application_quad.c)
@@ -434,6 +435,7 @@ add_library(mc_registry STATIC
     src/block/registry/redstone_set.c
     src/block/registry/redstone_torch_list.c
     src/block/registry/runtime.c
+    src/block/registry/bed_render_tables.c
     src/block/registry/directions.c
     src/block/registry/horizontal_directions.c
     src/block/registry/falling.c
@@ -758,6 +760,7 @@ add_library(mc_simulation STATIC
     src/entity/mob/construction.c
     src/entity/mob/nbt.c
     src/entity/player/construction.c
+    src/entity/player/coordinates.c
     src/entity/player/terminal_inventory.c
     src/entity/player/input.c
     src/entity/player/session.c
@@ -5679,6 +5682,7 @@ include(cmake/entity_animal_death.cmake)
 include(cmake/player_attack.cmake)
 include(cmake/player_damage.cmake)
 include(cmake/client_respawn.cmake)
+include(cmake/client_bed_respawn.cmake)
 include(cmake/tests/armor.cmake)
 include(cmake/explosion_particle.cmake)
 include(cmake/tests/explosion_draw.cmake)

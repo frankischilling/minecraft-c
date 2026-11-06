@@ -1,9 +1,12 @@
 /* Exercise the real active Player body using the existing complete App/World
  * fixture. The selected case replaces only the authored test sequence. */
 #include "../../../src/client/application_state.h"
+#include "../../../src/entity/construction_internal.h"
+#include "../../../src/entity/player/nbt_internal.h"
 #include "mc/client/input/movement_input.h"
 #include "mc/entity/entity.h"
 #include "mc/entity/nbt/nbt.h"
+#include "mc/entity/player/coordinates.h"
 
 typedef struct fixture fixture;
 static bool nbt_coordinate_cases(fixture *, client_application *, mc_entity *, mc_movement_input *);
@@ -50,6 +53,8 @@ cleanup:
     mc_nbt_tree_free(tree);
     return ok;
 }
+
+#include "coordinate_methods_cases.inc"
 
 static bool nbt_coordinate_cases(fixture *f, client_application *app, mc_entity *p,
                                  mc_movement_input *input) {
@@ -119,6 +124,7 @@ static bool nbt_coordinate_cases(fixture *f, client_application *app, mc_entity 
     CHECK(mc_player_tick(p, &context, NULL, error) == MC_ENTITY_OK && fields->private_bN == NULL &&
           fields->private_b == second && second->x == 7 && second->y == 8 && second->z == 9 &&
           mc_entity_native_bytes(p) == one_node);
+    CHECK(coordinate_methods_cases(f, app, p) && coordinate_position_cases(p));
     ok = true;
 cleanup:
     app->stats_writer = original;
