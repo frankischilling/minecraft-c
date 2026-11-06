@@ -2,6 +2,11 @@
 
 ## Bed placement and daytime interaction
 
+Exact checkpoint `fd11d600` passes hosted Windows 712/712 and Clang 770/770,
+plus formatting, while GCC rejects two fixture byte-promotion expressions.
+The follow-up makes those unsigned types explicit and retains the failed
+build rather than counting unexecuted GCC tests as passes.
+
 Item355 placement, Bed neighbors/daytime activation and the genuine GS/CW
 prefix now have separate original packets with 72/85/48 profiles. The first
 World replay exposes an exact-class check that rejects concrete client

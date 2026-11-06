@@ -8558,8 +8558,8 @@
       "sha256": "f83b6bec6db89b6804279fa1b8719253b1f47efe007da573a8321fa2c28a44c7"
     },
     "tests/item/use/bed_reference.c": {
-      "bytes": 25033,
-      "sha256": "200fa3381f96d1535c8527ff1c1448e0b42bfaac426992451e1db4b94f911836"
+      "bytes": 25073,
+      "sha256": "9654bf1ab0cb475012630388af7ec88a2626e01d8de114a70aed3a8dfd7a9a0f"
     },
     "tests/reference/entity/player_sleep/capture_reference.py": {
       "bytes": 6782,
@@ -8630,8 +8630,8 @@
       "sha256": "fee23e27371d3db56a158d35dcb4fe0123872c3c960cd6e4e3b1d6a2772ebb26"
     },
     "tests/world/runtime/test_bed_interaction.c": {
-      "bytes": 39087,
-      "sha256": "6f939eff36560894416b0ce0883ddf5de211754c378c96101bec9bb8825e5d8c"
+      "bytes": 39101,
+      "sha256": "c66b0177ddb638538d3b02bfdaae8149df68591c7ca7bb56c02caae2abd5a604"
     }
   },
   "authorities": {
@@ -13220,6 +13220,30 @@
             "tests/tools/world/test_bed_interaction.py",
             "tests/world/runtime/test_bed_interaction.c"
           ],
+          "current_count": 2158
+        }
+      }
+    },
+    {
+      "from_commit": "fd11d600a94b2d56eb7273c917025da8599ac7fe",
+      "role": "Current explicit unsigned nibble extraction in two replay fixtures and GCC diagnostic evidence. This entry binds current inputs only; earlier original and native observations, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 550684,
+        "sha256": "4d845187a8bf9e3b521982817193fd3ea3bc98ce1f83083aa349d1a31f1eeb59"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/item/use/bed_reference.c": {
+              "bytes": 25033,
+              "sha256": "200fa3381f96d1535c8527ff1c1448e0b42bfaac426992451e1db4b94f911836"
+            },
+            "tests/world/runtime/test_bed_interaction.c": {
+              "bytes": 39087,
+              "sha256": "6f939eff36560894416b0ce0883ddf5de211754c378c96101bec9bb8825e5d8c"
+            }
+          },
+          "added": [],
           "current_count": 2158
         }
       }

@@ -111,6 +111,30 @@ checks and 807 constructed-Font/HUD checks; the returned authored-atlas frame
 was inspected. Item355 passes 72 direct profiles and 3,764 actual-owner checks.
 These component results do not extend the failed loaded placement opportunity.
 
+### Hosted GCC fixture diagnostics
+
+For exact checkpoint `fd11d600a94b2d56eb7273c917025da8599ac7fe`, hosted
+[run 42189248809](https://github.com/frankischilling/minecraft-c/actions/runs/42189248809)
+passes Windows 712/712 in 298.12 seconds, Clang 770/770 in 448.33 seconds
+and formatting of 2,176 files. Both completed native jobs retain every prior
+name, add thirteen and skip none. All four checkouts use merge
+`d95b7c858fdbc8f8da67b6e52d45ed6a932504d2`; its tree equals pushed tree
+`7bcc7895e34202bc73fcc4ef88f485db02638c6f`.
+
+The run remains failed: GCC rejects two replay-fixture nibble expressions
+under `-Wconversion -Werror`. Integer promotion makes the byte operand an
+`int` before the unsigned mask. No GCC runtime test executes. The local
+GCC 13.3 strict, sanitizer-enabled syntax check reproduces both diagnostics.
+Each fixture now explicitly promotes its byte to `unsigned int` before the
+shift. Byte values remain 0–255 and decoded nibbles remain 0–15; production
+code, original data and assertions are unchanged. The same strict GCC check
+then passes, as do the native Windows and Clang fixture builds. The hosted
+failure retains its exact-checkpoint scope; follow-up results are separate.
+
+Both affected replay cases then pass on each host: Windows 2/2 in 1.28
+CTest seconds and sanitized Linux 2/2 in 3.82 seconds. All 5,474 guarded
+files remain unchanged; the original 72/85-row packets are unchanged.
+
 ## Saved-Bed respawn, geometry and HUD messages
 
 The client now validates a saved Bed, copies the original coordinate into the

@@ -79,7 +79,9 @@ static void bed_cell(mc_chunk_state **chunks, int32_t x, int32_t y, int32_t z, i
     mc_chunk_state *c = chunks[(size_t)(x >> 4) * 2u + (size_t)(z >> 4)];
     size_t index = (((size_t)x & 15u) * 16u + ((size_t)z & 15u)) * 128u + (size_t)y;
     out[0] = c->data->blocks[index];
-    out[1] = (int32_t)((c->data->metadata[index >> 1] >> ((unsigned)(index & 1u) * 4u)) & 15u);
+    out[1] =
+        (int32_t)(((unsigned int)c->data->metadata[index >> 1] >> ((unsigned)(index & 1u) * 4u)) &
+                  15u);
 }
 
 static mc_world_storage_status bed_refuse(bed_observer *o, mc_world_storage_error *e) {

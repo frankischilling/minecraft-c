@@ -1,5 +1,12 @@
 # Development status
 
+Hosted [run 42189248809](https://github.com/frankischilling/minecraft-c/actions/runs/42189248809)
+at `fd11d600` passes Windows 712/712, Clang 770/770 and formatting. GCC stops
+at two fixture sign-conversion diagnostics before runtime tests. Explicit
+unsigned byte promotion fixes those expressions; the same local strict GCC
+check and both fixture builds pass. The [record](testing.md#hosted-gcc-fixture-diagnostics)
+keeps the failed hosted checkpoint separate from the follow-up.
+
 The current increment implements [Item355 placement](item/bed-use.md),
 [Bed neighbor/daytime activation](world/bed-interaction.md) and genuine
 [Player sleep rejection/CW objects](entity/player-sleep.md). Original packets

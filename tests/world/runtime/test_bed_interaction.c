@@ -61,7 +61,7 @@ static bool interaction_cells(const uint8_t *blocks, const uint8_t *nibbles) {
     if (putchar('[') == EOF)
         return false;
     for (size_t i = 0; i < MC_CHUNK_BLOCKS; ++i) {
-        const unsigned int metadata = (nibbles[i >> 1] >> ((i & 1u) * 4u)) & 15u;
+        const unsigned int metadata = ((unsigned int)nibbles[i >> 1] >> ((i & 1u) * 4u)) & 15u;
         if (blocks[i] == 0 && metadata == 0)
             continue;
         if (printf("%s[%zu,%zu,%zu,%u,%u]", first ? "" : ",", i / 2048u, i % 128u, (i / 128u) % 16u,

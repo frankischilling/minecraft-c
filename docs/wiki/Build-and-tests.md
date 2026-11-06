@@ -1,5 +1,12 @@
 # Build and tests
 
+Hosted [run 42189248809](https://github.com/frankischilling/minecraft-c/actions/runs/42189248809)
+at `fd11d600` passes Windows 712/712, Clang 770/770 and formatting. Every
+prior native test name remains and thirteen are added in each completed job.
+GCC fails before runtime on two fixture sign-conversion warnings; explicit
+unsigned byte promotion resolves the reproduced local diagnostics without
+changing production, original observations, assertions or strict flags.
+
 The broader Bed public cohort passes Windows 763/763 in 353.88 seconds.
 Sanitized Linux retains one unchanged 180-second storage-guard timeout at
 748/749 in 955.85 seconds. No registered test is skipped, all prior names
