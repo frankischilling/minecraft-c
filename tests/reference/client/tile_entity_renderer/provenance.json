@@ -1,0 +1,69 @@
+{
+  "scope": "Unchanged Beta TileEntityRenderer singleton/constructor and nullable Class lookup only; no TileEntity instances, active OW/Piston initialization, World bind, assets, graphics, native links or draws. Logical Map rows sort class names; raw iteration/bucket/hash evidence remains separately in complete stdout.",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "original_capture_sha256": "a5718564a135a1eae1f9e0f64d7155d6925a389a40593fa08cc15e4b766a72b1",
+  "fixture_sha256": "e38ab36ec2b2da0c65d4445c02ce25d6402bd23656a452119512c6ca3a7ec6f0",
+  "rows": 254,
+  "jdk": [
+    "openjdk version \"17.0.17\" 2025-10-21\nOpenJDK Runtime Environment Temurin-17.0.17+10 (build 17.0.17+10)\nOpenJDK 64-Bit Server VM Temurin-17.0.17+10 (build 17.0.17+10, mixed mode, sharing)\n",
+    "javac 17.0.17\n"
+  ],
+  "capture_input_sha256": {
+    "java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "b1.7.3.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "TileEntityRendererObservation.java": "4d6d4a4d335431a3aa3a2f00f697f54b153608be1777f9ea0e51eec24bc51ad0",
+    "capture_reference.py": "66d089f96951ebf20a3a28a9fefd893bd3e469f203ed008c45787659c6a49155",
+    "source-pins.json": "eb89380936351a17459da1cbde96d31646d9d72b02a8331186d8a954c1ae210f",
+    "README.md": "2a8aaad095ec4379c04facbb6957af93f43bb93746e96174aa2780ecfa463c15",
+    "capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "classfile.py": "a2d6bf0923890ff6bd73c32bc5bcfabf89f883c421a2c1eab4270a3cb060857d"
+  },
+  "observer_class_sha256": {
+    "TileEntityRendererObservation$1.class": "10f879aacaabbfc54a59f6648ba1e8a538047f01066083ea12f186492951308d",
+    "TileEntityRendererObservation.class": "3367f72f2d4c368b16d239de94fd28cf6bc51bc345fda036ba151fd796eb5bb6"
+  },
+  "profiles": [
+    {
+      "name": "constructor",
+      "status": "PASS",
+      "rows": 51,
+      "initialization_log_sha256": "a635566ea6ff77247e18018c0b293715724f730bccb5a4c4759b73f071fa14a1"
+    },
+    {
+      "name": "forward",
+      "status": "PASS",
+      "rows": 97,
+      "initialization_log_sha256": "c783d5f2d3a142d2d853cb618fa2bd0450277ccea55ed4b9f94ad38a4939af27"
+    },
+    {
+      "name": "reverse",
+      "status": "PASS",
+      "rows": 81,
+      "initialization_log_sha256": "82684e4bcd1a5c9588ed60e49ef4ad86a7d88495be7060bc40c215de0a4fc526"
+    },
+    {
+      "name": "nulls",
+      "status": "PASS",
+      "rows": 25,
+      "initialization_log_sha256": "a2cb4e09819920fc03ff2b586226091cffdb942f5ec04caa4db6495fdded49ef"
+    }
+  ],
+  "null_class_pc": {
+    "class": "ll",
+    "method": "a",
+    "descriptor": "(Ljava/lang/Class;)Lje;",
+    "pc": 26,
+    "authority": "pinned original bytecode, not a stack-trace BCI measurement"
+  },
+  "raw_map_order": "Preserved unsorted in private complete capture stdout/report; no native deterministic-order credit.",
+  "independent_capture_sha256": [
+    "08670763db2876e94c4bb2812cd79540e4f355bf009b697554fa384d4152c24e",
+    "a5718564a135a1eae1f9e0f64d7155d6925a389a40593fa08cc15e4b766a72b1"
+  ],
+  "reproduction": "Two independent four-process captures produced identical complete finite bytes."
+}

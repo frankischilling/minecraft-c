@@ -1,0 +1,9 @@
+{
+  "authority": "unchanged client b1.7.3.jar; whole Code pins are in source-pins.json",
+  "gb.a(Lsn;F)V": {"bytes": 178, "world": 1, "remote_field": 4, "remote_return": 10, "direction": 12, "neutral_distance_compare": 23, "positive_distance_compare": 34, "fuse_read": 39, "sound_world": 46, "sound_literal": 50, "sound_invoke": 55, "direction_set": 60, "fuse_store": 70, "powered": 83, "powered_explosion": 108, "normal_explosion": 134, "kill": 139, "attacking_store": 144, "cooling_direction": 152, "cooling_store": 162, "clamp": 174, "return": 177},
+  "gb.b(Lsn;F)V": {"bytes": 46, "world": 1, "remote_field": 4, "remote_return": 10, "fuse_read": 12, "direction_set": 20, "fuse_store": 30, "clamp": 42, "return": 45},
+  "gb.e(I)V": {"watcher": 1, "narrow": 7, "box": 8, "watcher_set": 11, "return": 14},
+  "ud.b(ILjava/lang/Object;)V": {"map_get": 8, "new_box_equals_old_value": 22, "value_store": 30, "record_dirty": 35, "watcher_dirty": 40, "return": 43},
+  "fd.a(Lsn;DDDF)Lqx;": {"bytes": 14, "boolean_overload": 10, "return": 13},
+  "scope": "No active body Random or Math call. Actual QX descendants after the selected boundary remain original-only evidence."
+}

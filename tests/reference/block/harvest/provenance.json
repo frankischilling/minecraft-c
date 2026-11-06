@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "scope": "Finite unchanged-original client Leaves/Snow-layer/Ice harvest entries and complete singleplayer controller calls in prepared genuine World/Chunk/Player/Stack graphs.",
+  "profiles": {
+    "total": 92,
+    "controller": 63,
+    "direct": 29,
+    "items": 51,
+    "events": 135
+  },
+  "files": {
+    "profiles.tsv": {
+      "bytes": 3492,
+      "sha256": "9e655d8147fc681fde13d988c7a62d0f79ad33e200a411ce9d5c187d01d3d81f"
+    },
+    "observations.tsv": {
+      "bytes": 29341,
+      "sha256": "17ebd70713eaf971c42a50f4a276ac9193596b90b63a522e8db88180f1698ac6"
+    },
+    "guards.tsv": {
+      "bytes": 135,
+      "sha256": "eaad99cadb4ee2bde306c730a04b1e5b7551d3bb3c1acdddce4224ee8a42c4e8"
+    },
+    "source-pins.json": {
+      "bytes": 186252,
+      "sha256": "5f6e68f01ca1eae0dccad4ca95154adf4c51e1dc923d0bb8be212f803fde9eac"
+    },
+    "schema.json": {
+      "bytes": 2761,
+      "sha256": "523ba763045430a7dc87ed6b6572700d2836c5f8e8523a51d2abd81c107c6949"
+    }
+  },
+  "original_capture": {
+    "fresh_vm_repeats": 2,
+    "all_selected_rows_identical": true,
+    "whole_stdout_identical": true,
+    "whole_stdout_sha256": "7a85b18a7a383e2ff6d0f587d612a4d906e5554c42f6cd220dafae13931f5ac5",
+    "all_supplied_inputs_unchanged": true,
+    "input_count": 14,
+    "runtime": "OpenJDK Temurin17.0.17+10 x64; interpreted, verified, headless,512MB heap.",
+    "flags": [
+      "-Xint",
+      "-Xverify:all",
+      "-Xmx512m",
+      "-Djava.awt.headless=true",
+      "-Djava.security.manager=allow",
+      "--add-opens=java.base/java.lang=ALL-UNNAMED",
+      "--add-opens=java.base/java.util=ALL-UNNAMED"
+    ],
+    "source_guards": {
+      "network_attempts": 0,
+      "native_link_attempts": 0
+    },
+    "actual_denial_controls": {
+      "connect": 1,
+      "listen": 1,
+      "native_link": 1
+    },
+    "timer_workers_joined": true,
+    "original_classes_rewritten_or_substituted": false,
+    "capture_record_sha256": "ff3d4c7d5801cb152eb78dd396962af8a020e5241491edc7c41e3d92dfe9d20a"
+  },
+  "helper_sha256": {
+    "BlockHarvestObservation.java": "92ff3667b679e8c7e0470799815d9d0f3415853765653c14ef3f47ea0649f821",
+    "capture_reference.py": "dfee97f1782faa509c9c249e3db46c6c0d6249b0ce604551559131a869decd2c"
+  },
+  "shared_helper_sha256": {
+    "tests/reference/client/controller/capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "tests/reference/client/controller/classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+  },
+  "limits": [
+    "Arranged original method invocations, not a full original client session, original pixels/audio, saves, server behavior or complete game parity.",
+    "Only target CHANGE and ItemINSERT listeners are recorded. Other original listener methods still execute with the declared ordinary-return observer.",
+    "Explicit World/Math seeds are authored inputs. Default Entity Random constructor entropy, clocks, identities and unselected fields are not compared.",
+    "Cold class-initialization failures and unrestricted host/JDK/VM or malformed native storage behavior are outside this corpus.",
+    "The nullable statistic, writer and Player controls describe actual reached source exceptions and prior effects; native allocation/admission/refusal controls have separate scope."
+  ]
+}

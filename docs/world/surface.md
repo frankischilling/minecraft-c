@@ -1,6 +1,6 @@
-# Normal surface replacement
+# Overworld surface replacement
 
-`mc_world` implements the normal-dimension surface pass in
+`mc_world` implements the Overworld surface pass in
 `src/world/terrain/surface.c`, with its interface in
 `include/mc/world/terrain/surface.h`. It uses the existing immutable
 [82-layer terrain state](terrain.md), explicit mutable Random, material pairs,
@@ -20,7 +20,7 @@ attributes and uses their verified default mapping on the C side.
 
 Random belongs to the caller. For a direct post-constructor call, copy
 `state.random_after_init` into a separate instance. For a normal chunk-prefix
-context, seed that instance with `mc_terrain_normal_chunk_seed(x,z)` through
+context, seed that instance with `mc_terrain_overworld_chunk_seed(x,z)` through
 `mc_java_random_seed`. The seed helper widens signed chunk coordinates to long,
 then multiplies/adds with Java wrapping. It adds no world-seed term. The pass
 never implicitly reseeds, so repeated direct calls advance the supplied instance.
@@ -39,10 +39,10 @@ and material indexing is `x*16+z`.
 
 | Function | Behavior |
 | --- | --- |
-| `mc_terrain_normal_chunk_seed` | Pure wrapped normal chunk seed; no state changes |
-| `mc_terrain_normal_surface_noise` | Fills all three original fields without Random draws or block changes |
-| `mc_terrain_normal_surface_apply` | Reads prepared fields/materials and selectively changes base blocks while advancing explicit Random |
-| `mc_terrain_normal_surface` | Validates every argument, then samples fields and applies the pass |
+| `mc_terrain_overworld_chunk_seed` | Pure wrapped normal chunk seed; no state changes |
+| `mc_terrain_overworld_surface_noise` | Fills all three original fields without Random draws or block changes |
+| `mc_terrain_overworld_surface_apply` | Reads prepared fields/materials and selectively changes base blocks while advancing explicit Random |
+| `mc_terrain_overworld_surface` | Validates every argument, then samples fields and applies the pass |
 
 Application visits columns in outer-Z/inner-X order and each column from Y=127
 to zero. It draws three doubles per column and a bounded integer for every Y,

@@ -180,6 +180,25 @@ class FixtureTests(unittest.TestCase):
             self.assertEqual(states[-3][2],states[-2][2]);self.assertEqual(states[-2][2],states[-1][2])
             self.assertEqual(initial,b"" if mode==0 else states[0][2])
 
+    def test_read_only_audit_and_timestamp_projection_preserve_all_input_fields(self):
+        pool={digest:region.unpack(value,region.MAX_FILE) for digest,value in self.fixture["blobs"].items()}
+        records=[region.strict_json(region.unpack(self.fixture["originals"]["client"][mode]))
+                 for mode in ("observed","control")]
+        files=[region.pool_evidence(record,pool) for record in records]
+        before=json.dumps(records,separators=(",",":"),sort_keys=True)
+        for record,evidence in zip(records,files): region.audit(record,evidence)
+        comparison=region.compare(records[0],files[0],records[1],files[1])
+        self.assertTrue(comparison["recorded_call_sequences_exact"])
+        self.assertEqual(json.dumps(records,separators=(",",":"),sort_keys=True),before)
+        # Equal files may use a bulk comparison, but one changed byte outside
+        # the permitted timestamp slots must still reach the full rejection.
+        changed=dict(files[1].mapping)
+        name="snapshots/final/cache/region/r.0.0.mcr"
+        image=bytearray(changed[name]);image[-1]^=1;changed[name]=bytes(image)
+        with self.assertRaisesRegex(region.Failure,"only explicit observed written timestamp slots"):
+            region.compare(records[0],files[0],records[1],region.Evidence(mapping=changed))
+        self.assertEqual(json.dumps(records,separators=(",",":"),sort_keys=True),before)
+
     def test_corpus_omissions_duplicates_sides_order_and_counts_fail(self):
         for name in ("missing","duplicate","side","profile","count","index","extra"):
             value=copy.deepcopy(self.fixture)

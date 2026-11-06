@@ -1,15 +1,15 @@
-# Normal density and base terrain
+# Overworld density and base terrain
 
 `mc_world` contains the allocation-free C17 module at
 `src/world/terrain/terrain.c`, with its interface in
-`include/mc/world/terrain/terrain.h`. It reproduces the normal-dimension density
+`include/mc/world/terrain/terrain.h`. It reproduces the Overworld density
 pass and the following base-block interpolation. It initializes no world,
 files, graphics, assets or Java. [Original evidence](../reference/density.md)
 records the actual methods and observation setup.
 
 ## State and normal shape
 
-`mc_terrain_normal_init` builds eight Perlin/octave groups from one explicit
+`mc_terrain_overworld_init` builds eight Perlin/octave groups from one explicit
 seeded Random: 16/16/8/4/4/10/16/8 layers, 82 total. Surface and later-consumer
 groups remain in constructor order even though this pass does not sample them.
 The state retains the Random continuation immediately after construction.
@@ -26,7 +26,7 @@ require subsequent generation passes.
 ## Climate and workspace
 
 The caller supplies processed 16×16 temperature and rainfall arrays, each with
-its own length. Before normal generation, sample the biome manager at separately
+its own length. Before Overworld generation, sample the biome manager at separately
 wrapped Java int origins `chunk_x*16` and `chunk_z*16`, then pass its current
 `a` and `b` arrays. Density samples climate positions 1,4,7,10,13 on each axis.
 It does not refresh climate or recover an earlier biome request after a point
@@ -36,7 +36,7 @@ Density separately wraps `chunk_x*4` and `chunk_z*4` before converting origins
 to double. Deriving those origins from an already wrapped climate origin would
 change large-coordinate results.
 
-`mc_terrain_normal_workspace` borrows five double spans. `mix`, `low` and `high`
+`mc_terrain_overworld_workspace` borrows five double spans. `mix`, `low` and `high`
 need at least 425 values each; `column_scale` and `column_bias` need at least 25.
 Every density request clears each full scratch span, including its suffix,
 then executes the original five octave requests. Column channels use the
@@ -47,9 +47,9 @@ path. [Perlin bulk behavior](noise.md) remains part of this result.
 
 | Function | Result |
 | --- | --- |
-| `mc_terrain_normal_density` | Fills the first 425 density doubles and retains a larger output suffix; scratch spans are fully cleared |
-| `mc_terrain_normal_base` | Interpolates an existing density grid and temperature grid into all 32768 base bytes, retaining a larger byte suffix |
-| `mc_terrain_normal_generate` | Composes density and base interpolation after validating every argument; keeps the density output available |
+| `mc_terrain_overworld_density` | Fills the first 425 density doubles and retains a larger output suffix; scratch spans are fully cleared |
+| `mc_terrain_overworld_base` | Interpolates an existing density grid and temperature grid into all 32768 base bytes, retaining a larger byte suffix |
+| `mc_terrain_overworld_generate` | Composes density and base interpolation after validating every argument; keeps the density output available |
 
 Density preserves the original operation order, strict branch comparisons and
 float top fade before promotion to double. Base interpolation updates values

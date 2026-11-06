@@ -46,8 +46,7 @@ typedef struct selected_record {
     mc_nbt_error nbt_error;
 } selected_record;
 
-static bool cli_equal(const cli_char *argument, const char *ascii)
-{
+static bool cli_equal(const cli_char *argument, const char *ascii) {
     size_t i = 0;
     while (ascii[i] != '\0') {
         if (argument[i] != (cli_char)(unsigned char)ascii[i]) {
@@ -58,8 +57,7 @@ static bool cli_equal(const cli_char *argument, const char *ascii)
     return argument[i] == 0;
 }
 
-static bool parse_size(const cli_char *text, size_t *value)
-{
+static bool parse_size(const cli_char *text, size_t *value) {
     if (*text == 0) {
         return false;
     }
@@ -78,8 +76,7 @@ static bool parse_size(const cli_char *text, size_t *value)
     return true;
 }
 
-static void usage(FILE *output)
-{
+static void usage(FILE *output) {
     fputs("Usage: mc_region_inspect [--all] [--max-input-bytes N]\n"
           "                         [--max-output-bytes N] [--max-allocation-bytes N]\n"
           "                         FILE [X Z]\n"
@@ -98,8 +95,7 @@ static void usage(FILE *output)
           output);
 }
 
-static int parse_options(int argc, cli_char **argv, inspect_options *options)
-{
+static int parse_options(int argc, cli_char **argv, inspect_options *options) {
     const cli_char *positionals[3] = {NULL, NULL, NULL};
     size_t positional_count = 0;
     bool options_finished = false;
@@ -157,8 +153,7 @@ static int parse_options(int argc, cli_char **argv, inspect_options *options)
     return -1;
 }
 
-static FILE *open_input(const cli_char *path)
-{
+static FILE *open_input(const cli_char *path) {
 #ifdef _WIN32
 #ifdef _MSC_VER
     FILE *input = NULL;
@@ -174,8 +169,8 @@ static FILE *open_input(const cli_char *path)
 #endif
 }
 
-static input_status read_input(const cli_char *path, size_t maximum, uint8_t **out, size_t *length)
-{
+static input_status read_input(const cli_char *path, size_t maximum, uint8_t **out,
+                               size_t *length) {
     FILE *input = open_input(path);
     if (input == NULL) {
         return INPUT_IO;
@@ -244,16 +239,14 @@ static input_status read_input(const cli_char *path, size_t maximum, uint8_t **o
     return INPUT_OK;
 }
 
-static size_t tag_child_count(const mc_nbt_tag *tag)
-{
+static size_t tag_child_count(const mc_nbt_tag *tag) {
     if (tag->type == MC_NBT_COMPOUND) {
         return tag->value.compound.length;
     }
     return tag->type == MC_NBT_LIST ? tag->value.list.length : 0;
 }
 
-static void print_summary(const mc_nbt_tag *tag, size_t depth)
-{
+static void print_summary(const mc_nbt_tag *tag, size_t depth) {
     size_t name_count =
         tag->name.length < SUMMARY_NAME_UNITS ? tag->name.length : SUMMARY_NAME_UNITS;
     size_t child_count = tag_child_count(tag);
@@ -314,8 +307,7 @@ static void print_summary(const mc_nbt_tag *tag, size_t depth)
 }
 
 static int inspect_selected(const mc_region_view *view, const inspect_options *options,
-                            selected_record *selected, int exit_code)
-{
+                            selected_record *selected, int exit_code) {
     mc_region_payload payload;
     selected->record_status = mc_region_record(view, options->x, options->z, &payload);
     if (selected->record_status == MC_REGION_MISSING) {
@@ -359,8 +351,7 @@ static int inspect_selected(const mc_region_view *view, const inspect_options *o
     return selected->nbt_consumed != selected->decoded.length ? 1 : exit_code;
 }
 
-static void print_selected(const selected_record *selected)
-{
+static void print_selected(const selected_record *selected) {
     if (!selected->compression_attempted) {
         return;
     }
@@ -393,8 +384,7 @@ static void print_selected(const selected_record *selected)
 }
 
 static void print_entry(const mc_region_view *view, int32_t x, int32_t z,
-                        const selected_record *selected)
-{
+                        const selected_record *selected) {
     const mc_region_entry *entry = mc_region_entry_at(view, x, z);
     mc_region_payload ignored;
     mc_region_status record_status = mc_region_record(view, x, z, &ignored);
@@ -410,8 +400,7 @@ static void print_entry(const mc_region_view *view, int32_t x, int32_t z,
     putchar('}');
 }
 
-static int inspect_file(const inspect_options *options)
-{
+static int inspect_file(const inspect_options *options) {
     uint8_t *input = NULL;
     size_t length = 0;
     input_status input_result = read_input(options->path, options->max_input, &input, &length);
@@ -460,8 +449,7 @@ static int inspect_file(const inspect_options *options)
     return exit_code;
 }
 
-static int cli_main(int argc, cli_char **argv)
-{
+static int cli_main(int argc, cli_char **argv) {
     inspect_options options = {0};
     int result = parse_options(argc, argv, &options);
     if (result == 2) {
@@ -477,13 +465,11 @@ static int cli_main(int argc, cli_char **argv)
 }
 
 #ifdef _WIN32
-int wmain(int argc, wchar_t **argv)
-{
+int wmain(int argc, wchar_t **argv) {
     return cli_main(argc, argv);
 }
 #else
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     return cli_main(argc, argv);
 }
 #endif

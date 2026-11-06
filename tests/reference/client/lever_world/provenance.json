@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "calls_per_vm": 32,
+  "ordinary_vms": 2,
+  "same_selected_rows": true,
+  "selected_sha256": "6dd0355f693c0b4ab5b6f15ce3e8f07c1ab84b31ce134cce64a6b32109903a42",
+  "captured_helpers_sha256": {
+    "LeverObservation.java": "c820eaa5328d87b547cf3a3a139a6426b20d5a505221f4aa6fef0a3d7d1dafd4",
+    "capture.py": "fd217ee04ffd0a2b642a8eaf1657787b297c7cfd1387539d7435a1366a7dde5b",
+    "source-pins.json": "cfd46fd58fa5add61499d272c2f33ea56bd377811e3f0bad164bd01e2e7eba37"
+  },
+  "compiled_sha256": {
+    "LeverObservation$1.class": "c53d7c1f9e151e762a21a88114ac786831d45e4d23cf0d192ef30260115c2056",
+    "LeverObservation.class": "8e35eddc6c7ce5da09438cca2801ad8b714b3924469126c58a7ab5e8c421d7cb"
+  },
+  "original_stdout_sha256": [
+    "22e562cd2e6f5b01885b4503bbf162ba2acf93beac7c29a5a8c6833c838ec66a",
+    "22e562cd2e6f5b01885b4503bbf162ba2acf93beac7c29a5a8c6833c838ec66a"
+  ],
+  "original_stderr_sha256": [
+    "a93af0b892a3f22b17b7964355be58a1f903ae6991521079d7c266bb1babf670",
+    "a93af0b892a3f22b17b7964355be58a1f903ae6991521079d7c266bb1babf670"
+  ],
+  "tool_sha256": {
+    "java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+  },
+  "scope": "Unchanged cv.b/e, xr bounds, standard flat base, pooled BT and six handle quads. Explicit raw Minecraft/settings prestate; no constructor, loaded scene or GL claim."
+}

@@ -1,0 +1,50 @@
+{
+  "schema": "GUI_INGAME_CHAT_CAPTURE_V1",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "scope": "Original UQ/SW/NH add/translate/tick/clear components; prepared original kq App and prepared original SJ widths7/space4; authored ASCII FP and lang resources. No complete App/Font construction, rendering, loaded World, respawn or gameplay qualification.",
+  "rows": 81,
+  "finite_sha256": "b2cee99b1ffe4d858c69d6c35e5bd6be2977008698993cb37b4d657f678e4d30",
+  "source_sha256": {
+    "ChatObservation.java": "bbe8029899051387976ad1e9893c124347f88f5d1b27cfa40999d361ed8e8c61",
+    "capture_reference.py": "09b08480129a5848b2b00e8f88f7aabd7aca83ab665f2fe129366b7bf733b6b5",
+    "packet.py": "525840033c37ccfc665d96667f75c13cd4f094a6fb74633742383837ecc64a5e",
+    "source-pins.json": "cea02d2e1e3c8af3a6eb944f4c495bea79c0316cfc1f6e813048b73a12e5a951",
+    "inputs/font.txt": "01dbc9a42e2c64d4ecbeb1925bebffadb1c1174a3f6695a3897853cb1135e7b7",
+    "inputs/lang/en_US.lang": "81e2f4a38f78ff0771363b345ca39a5362fb14c653eb717adceae1e08945ce2b",
+    "inputs/lang/stats_US.lang": "b75327cb179e6142057010feddf1964a635e4ac2a87b79b2b8743c82ce30ad59",
+    "../controller/capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "../controller/classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+  },
+  "helper_sha256": {
+    "ChatObservation$1.class": "454cf0719c324f676046f3b5bab71bb09a41ea9e990ce59743119d313ca2f491",
+    "ChatObservation.class": "96a3951195edb95bfd991c5ac71ed4afe9cefcb70fffd8e28c5ac16985a490d9"
+  },
+  "tools": {
+    "java": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "javac": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+  },
+  "vms": [
+    {
+      "exit": 0,
+      "timed_out": false,
+      "output_overflow": false,
+      "pipe_capture_complete": true,
+      "stdout_bytes": 3725,
+      "stdout_sha256": "ab418d52fcfbba87a3dab4e67b9f0a7655afaa387a7db5d352dee2efc1b48c74",
+      "stderr_bytes": 392,
+      "stderr_sha256": "e7505705543821754f3af02088f3a68e5c39212aa222f3312a15b2944b0c63f2"
+    },
+    {
+      "exit": 0,
+      "timed_out": false,
+      "output_overflow": false,
+      "pipe_capture_complete": true,
+      "stdout_bytes": 3725,
+      "stdout_sha256": "ab418d52fcfbba87a3dab4e67b9f0a7655afaa387a7db5d352dee2efc1b48c74",
+      "stderr_bytes": 392,
+      "stderr_sha256": "e7505705543821754f3af02088f3a68e5c39212aa222f3312a15b2944b0c63f2"
+    }
+  ],
+  "input_unchanged": true,
+  "helper_unchanged": true
+}

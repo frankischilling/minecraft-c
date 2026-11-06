@@ -1,0 +1,397 @@
+{
+  "schema": "CRAFTING_CPU_COMPARISON_V1",
+  "cases_per_side": 1047,
+  "projected_rows_per_side": 1153,
+  "reference_files": {
+    "class-code-pins.json": {
+      "bytes": 232213,
+      "sha256": "00265006339e8c3054064d4d0a9e934278eab0c33d9111047b6972b8b5129700"
+    },
+    "classfile.py": {
+      "bytes": 5469,
+      "sha256": "99b3464a37f9d5205d32a5eaf15dc298421c0f756c92355853b979873cc2246e"
+    },
+    "client-cases.tsv": {
+      "bytes": 66677,
+      "sha256": "ddb833b81c2d4e1c5eb5385fb35a9e625dc36c94a6935622a76600ca64f977bb"
+    },
+    "compare.py": {
+      "bytes": 7740,
+      "sha256": "89f4a08ed1db372219a02462d95fea1d792eb025da52e200ece37ec5afcbac79"
+    },
+    "CraftingOriginalProbe.java": {
+      "bytes": 11870,
+      "sha256": "3510374fbd4598a8a5db8a9f157dd598f3822eeb8854eed5bef4acc0e27dac09"
+    },
+    "server-cases.tsv": {
+      "bytes": 66677,
+      "sha256": "ddb833b81c2d4e1c5eb5385fb35a9e625dc36c94a6935622a76600ca64f977bb"
+    },
+    "support.py": {
+      "bytes": 5647,
+      "sha256": "eaf2ea9deb64b0afe5d334fd087f7f22a9d4976641ceceb4efc4c33081955de2"
+    }
+  },
+  "native_sources": {
+    "include/mc/inventory/container.h": {
+      "bytes": 3705,
+      "sha256": "da782572246de8a01310530578fce781a54d8f969973e22157021e88c9dce040"
+    },
+    "include/mc/inventory/crafting.h": {
+      "bytes": 3510,
+      "sha256": "31fc7004d4bdaff99e3611be9b6b7aedba7c1278e262ee15e22d989e4bf278ef"
+    },
+    "include/mc/inventory/errors.h": {
+      "bytes": 1452,
+      "sha256": "dc79d1c8c87ca683eb6c2778a276129610c76e7a6f9c84e7b9793e213e15aca6"
+    },
+    "include/mc/inventory/player.h": {
+      "bytes": 2933,
+      "sha256": "8fe473af0cdb6060856bd5fd6505b5eddcbc8f40b0ef95001b7baa73c82fe5ef"
+    },
+    "include/mc/inventory/result.h": {
+      "bytes": 2440,
+      "sha256": "3909e334b81f135ef7ea95af8cb1dd24c14e893c0e41587f7dc3d08f2200f45a"
+    },
+    "include/mc/item/recipes/matching.h": {
+      "bytes": 3074,
+      "sha256": "399db29b384edb2eeb7b4c2449a915a3b6fbf76d2c7ae1e8ce4c26089e25a2d4"
+    },
+    "src/inventory/container/container.c": {
+      "bytes": 18634,
+      "sha256": "708fd75b2fcb14b969627d7c608197473ff48f5f26c6cd7c6f09c5244332b1ce"
+    },
+    "src/inventory/crafting/errors.c": {
+      "bytes": 4321,
+      "sha256": "76079fc89d5d1ed317a34b4081043d65f0bf214812a740c900aa906621c4b93c"
+    },
+    "src/inventory/crafting/inventory.c": {
+      "bytes": 13109,
+      "sha256": "c9c882fe21d2f03cde57b9579980fb7b5483e56b3f2cdf26c8e1b374cc18db64"
+    },
+    "src/inventory/crafting/result.c": {
+      "bytes": 7516,
+      "sha256": "03c969f81a9a3d781f09fbfaa7531299ea23711335840d66bc0277e01c9e598d"
+    },
+    "src/inventory/internal.h": {
+      "bytes": 3486,
+      "sha256": "bc580622351302ae20dd381a4063409154a63a4cc4cbe56100b54b260e0a029a"
+    },
+    "src/inventory/player/constructor.c": {
+      "bytes": 10269,
+      "sha256": "03928fe7380b41b70a8e4ea0c42f8947e0f6770d009e5f20f0dbdcb45b13bc75"
+    },
+    "src/item/recipes/matching.c": {
+      "bytes": 21414,
+      "sha256": "164b4a997c30bf52871985e83838f3a8d2cdfb6596fc28830947416f1071e664"
+    },
+    "tests/inventory/crafting/test_crafting.c": {
+      "bytes": 13523,
+      "sha256": "62b7618d82e84365f7274645db51651b8aa55ffa3021a74be7fd845cedb9a3e0"
+    },
+    "tests/inventory/crafting/trace_crafting.c": {
+      "bytes": 17031,
+      "sha256": "65289732b035ab83f0f203729857deefc4af9744a928267b2d1e31eb44af2ae3"
+    },
+    "tests/item/recipes/test_matching.c": {
+      "bytes": 15404,
+      "sha256": "95c6b0f3f4cb287be0ed62986b5cd76e6306c26002862c3159f3e9689a5e7c9e"
+    }
+  },
+  "helper_class": {
+    "name": "CraftingOriginalProbe",
+    "super": "java/lang/Object",
+    "interfaces": [],
+    "major": 52,
+    "minor": 0,
+    "access": 49,
+    "class_sha256": "d923271d029ce1dafd74155bb6f410ea8d11c470ffeeba39920b64bec3511c6f",
+    "class_bytes": 13239,
+    "fields": [
+      {
+        "access": 8,
+        "name": "client",
+        "descriptor": "Z"
+      },
+      {
+        "access": 8,
+        "name": "stackClass",
+        "descriptor": "Ljava/lang/Class;"
+      },
+      {
+        "access": 8,
+        "name": "gridClass",
+        "descriptor": "Ljava/lang/Class;"
+      },
+      {
+        "access": 8,
+        "name": "resultClass",
+        "descriptor": "Ljava/lang/Class;"
+      },
+      {
+        "access": 8,
+        "name": "inventoryClass",
+        "descriptor": "Ljava/lang/Class;"
+      },
+      {
+        "access": 8,
+        "name": "baseClass",
+        "descriptor": "Ljava/lang/Class;"
+      },
+      {
+        "access": 8,
+        "name": "slotClass",
+        "descriptor": "Ljava/lang/Class;"
+      },
+      {
+        "access": 8,
+        "name": "damage",
+        "descriptor": "Ljava/lang/reflect/Method;"
+      },
+      {
+        "access": 8,
+        "name": "gridSet",
+        "descriptor": "Ljava/lang/reflect/Method;"
+      },
+      {
+        "access": 8,
+        "name": "gridGet",
+        "descriptor": "Ljava/lang/reflect/Method;"
+      },
+      {
+        "access": 8,
+        "name": "gridXY",
+        "descriptor": "Ljava/lang/reflect/Method;"
+      },
+      {
+        "access": 8,
+        "name": "gridSplit",
+        "descriptor": "Ljava/lang/reflect/Method;"
+      },
+      {
+        "access": 8,
+        "name": "managerFind",
+        "descriptor": "Ljava/lang/reflect/Method;"
+      },
+      {
+        "access": 8,
+        "name": "stackConstructor",
+        "descriptor": "Ljava/lang/reflect/Constructor;"
+      },
+      {
+        "access": 8,
+        "name": "manager",
+        "descriptor": "Ljava/lang/Object;"
+      },
+      {
+        "access": 8,
+        "name": "recipes",
+        "descriptor": "Ljava/util/List;"
+      }
+    ],
+    "methods": [
+      {
+        "access": 1,
+        "name": "<init>",
+        "descriptor": "()V",
+        "code_length": 5,
+        "code_sha256": "d6f7264189858f154b120ac2e9b76f4b4dae9ddb629e4ec627af7810207e1a24",
+        "code_attribute_sha256": "de5c6e26e5b57db170f5e5309abcc484053bc472d19034e22ecfc14fc743d16e",
+        "max_stack": 1,
+        "max_locals": 1,
+        "exception_table": []
+      },
+      {
+        "access": 8,
+        "name": "pick",
+        "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+        "code_length": 12,
+        "code_sha256": "3b544788519743e218ba188737627d256db6c5751793ba1c4cbe8762bd3606fd",
+        "code_attribute_sha256": "094e605da246ba2d42036a462ced94cbcfaa14d06ba132d1252f900ff4184cde",
+        "max_stack": 1,
+        "max_locals": 2,
+        "exception_table": []
+      },
+      {
+        "access": 8,
+        "name": "field",
+        "descriptor": "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/reflect/Field;",
+        "code_length": 13,
+        "code_sha256": "d4610be1ada9a431201cabbab30dd31dcfff369c11d8de1e0b7023a4b88efc5a",
+        "code_attribute_sha256": "1e11a5f8888348d1241a19f733193540b5d40d81cf7ec2e5ef75f7e2fe346f5b",
+        "max_stack": 2,
+        "max_locals": 3,
+        "exception_table": []
+      },
+      {
+        "access": 8,
+        "name": "value",
+        "descriptor": "(Ljava/lang/Class;Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;",
+        "code_length": 10,
+        "code_sha256": "49c6e34bd873a927b1168c104635fa4f4882b9684e553f0068a96dda4b796463",
+        "code_attribute_sha256": "95b86856af2884a8e9d4ff8f5f31ea8ce25ece865f9c425b83f393d33a1495e7",
+        "max_stack": 2,
+        "max_locals": 3,
+        "exception_table": []
+      },
+      {
+        "access": 136,
+        "name": "method",
+        "descriptor": "(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;",
+        "code_length": 14,
+        "code_sha256": "914b438fb62a6f3583d48d2ef91d95b241f1d7d9d33550ee84928687b6704694",
+        "code_attribute_sha256": "b30cc23c3e2f179abd632032f041d11078a1aa2e419dcdb61546aa17ce61f94a",
+        "max_stack": 3,
+        "max_locals": 4,
+        "exception_table": []
+      },
+      {
+        "access": 136,
+        "name": "failed",
+        "descriptor": "(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/String;",
+        "code_length": 22,
+        "code_sha256": "8b1c3d4496f3f111ea686a84dccc874e3d03ac72d0abfc901e1a56ae58501318",
+        "code_attribute_sha256": "4016817702b408f4c38a9d08d40d277182ed32897b51c2e077dd2d76c19d290a",
+        "max_stack": 3,
+        "max_locals": 4,
+        "exception_table": [
+          {
+            "start": 0,
+            "end": 9,
+            "handler": 10,
+            "catch": "java/lang/reflect/InvocationTargetException"
+          }
+        ]
+      },
+      {
+        "access": 8,
+        "name": "stack",
+        "descriptor": "(Ljava/lang/Object;)Ljava/lang/String;",
+        "code_length": 83,
+        "code_sha256": "3d354fbc23a2804e089ac8e66277f53c643ec2a448d6a9029d3e13181c48bbd1",
+        "code_attribute_sha256": "83118e745a7cd06a2720324fa6d4543f092a796d4db9a12e05b2dac321022ae7",
+        "max_stack": 4,
+        "max_locals": 1,
+        "exception_table": []
+      },
+      {
+        "access": 8,
+        "name": "newStack",
+        "descriptor": "(III)Ljava/lang/Object;",
+        "code_length": 32,
+        "code_sha256": "c2fe2278ae8e08aff32e7448abef42fd6f19af184b64521191089ed837978ef1",
+        "code_attribute_sha256": "5cc6bd5d2fd735214b44b6943f9ef6f6848373eece2296a38a37ad0101db6c41",
+        "max_stack": 5,
+        "max_locals": 3,
+        "exception_table": []
+      },
+      {
+        "access": 8,
+        "name": "fresh",
+        "descriptor": "(Ljava/lang/Object;)Z",
+        "code_length": 63,
+        "code_sha256": "d7f9131a8c97c79fc4b3046e6fcb67ee97f43aea3e3012dd15fcbb98de5e7214",
+        "code_attribute_sha256": "5990d6743d1398d83f60f4588cb4e888bf65cb09ef5f12f5c387bcbbd6147afa",
+        "max_stack": 3,
+        "max_locals": 3,
+        "exception_table": []
+      },
+      {
+        "access": 8,
+        "name": "graph",
+        "descriptor": "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V",
+        "code_length": 608,
+        "code_sha256": "1c20fcd2e256fa3ef763b02bf2b53c122c01e21e6c451b46848c07d1ec3cc07d",
+        "code_attribute_sha256": "c1f70d915378fc92826d15896497a853632eb10a96e939dc98032cb1f2a3e051",
+        "max_stack": 5,
+        "max_locals": 19,
+        "exception_table": []
+      },
+      {
+        "access": 8,
+        "name": "inventoryTrace",
+        "descriptor": "()V",
+        "code_length": 1396,
+        "code_sha256": "ebcd0d51ddd082a1aef7e67f08fd5d487603d4287a7fbb613fd0806cc7ae01f9",
+        "code_attribute_sha256": "5d505a7fca741e5b93acd53d8c2564e57d8a994f1ac1216b06029b739be8911d",
+        "max_stack": 8,
+        "max_locals": 9,
+        "exception_table": [
+          {
+            "start": 1289,
+            "end": 1354,
+            "handler": 1357,
+            "catch": "java/lang/reflect/InvocationTargetException"
+          }
+        ]
+      },
+      {
+        "access": 8,
+        "name": "writeBinding",
+        "descriptor": "()V",
+        "code_length": 461,
+        "code_sha256": "139192aa1ead06d3d006a31266b2e93a39ece3e9e33185007246b34d6ad41e1f",
+        "code_attribute_sha256": "e948d5597c1760e76cab591a9e680e222de7dceb859e0a765f046fb2ee1812e7",
+        "max_stack": 8,
+        "max_locals": 12,
+        "exception_table": [
+          {
+            "start": 178,
+            "end": 247,
+            "handler": 260,
+            "catch": "java/lang/Throwable"
+          },
+          {
+            "start": 267,
+            "end": 272,
+            "handler": 275,
+            "catch": "java/lang/Throwable"
+          }
+        ]
+      },
+      {
+        "access": 9,
+        "name": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "code_length": 1486,
+        "code_sha256": "b6059c34823158dd7e2cd690bab5c3958982c6dd570ba1abf807ec238534d888",
+        "code_attribute_sha256": "35d66d84d0e063e849f39069fceed6c14eea2c0c30a712d5ba92814c94a78601",
+        "max_stack": 7,
+        "max_locals": 28,
+        "exception_table": []
+      }
+    ]
+  },
+  "private_resources": {
+    "client": {
+      "lang/en_US.lang": {
+        "bytes": 15969,
+        "sha256": "15309f7acb72e9d08b81cf8ef0bfda31e127112cd506eea2e268a4348efeb68a"
+      },
+      "lang/stats_US.lang": {
+        "bytes": 2767,
+        "sha256": "c840448c8f187a6d0349628131359bbdf90e4c74da19800d03e3f1adaacf4b6b"
+      },
+      "achievement/map.txt": {
+        "bytes": 19041,
+        "sha256": "5114e4584c14c366372b03dca7863a3b0a36b4bdb66dba14400a46ee3924cf90"
+      }
+    },
+    "server": {
+      "lang/en_US.lang": {
+        "bytes": 15969,
+        "sha256": "15309f7acb72e9d08b81cf8ef0bfda31e127112cd506eea2e268a4348efeb68a"
+      },
+      "lang/stats_US.lang": {
+        "bytes": 2767,
+        "sha256": "c840448c8f187a6d0349628131359bbdf90e4c74da19800d03e3f1adaacf4b6b"
+      },
+      "achievement/map.txt": {
+        "bytes": 19041,
+        "sha256": "5114e4584c14c366372b03dca7863a3b0a36b4bdb66dba14400a46ee3924cf90"
+      }
+    }
+  },
+  "scope": "Actual client/server InventoryCrafting/result/InventoryPlayer constructors and implemented operations, real Player/Workbench containers and151-recipe matching/output previews. Genuine null Player/World constructor inputs remain unread. No output pickup, Player gameplay, World/map/stat effects, rendering, audio or networking equivalence.",
+  "case_origin": "Authored layouts, perturbations, quantities and alias groups generated from the already retained catalog facts; contains input state only. No original captures, resources or classfiles published."
+}

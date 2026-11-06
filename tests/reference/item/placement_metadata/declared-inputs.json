@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "setup": "Genuine original Block-before-Item class initialization; enumerate every nonnull gm.c slot in ascending ID. No replacement original classes or authored Item field stores.",
+  "entry": "gm.b(I)I virtual dispatch on each genuine registered Item; declaring owner reflected separately.",
+  "operands": [
+    -2147483648,
+    -2147483647,
+    -65536,
+    -17,
+    -16,
+    -1,
+    0,
+    1,
+    2,
+    3,
+    4,
+    7,
+    8,
+    15,
+    16,
+    17,
+    255,
+    65535,
+    2147483646,
+    2147483647
+  ],
+  "expected_registered_items": 202,
+  "expected_receiver_classes": 38,
+  "rows": "All CLASS rows, then ID-major/operand-order METADATA rows, then COMPLETE. Guard/bootstrap lines retained in raw outputs.",
+  "not_qualified": "No Item/Block placement wrapper, World, Player, count/stat/callback behavior or gameplay."
+}

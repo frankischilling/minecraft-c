@@ -17,6 +17,12 @@ from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[3]
+import sys
+sys.path.insert(0, str(ROOT / "tests/support"))
+try:
+    from attributed_project import AttributedProject
+finally:
+    sys.path.pop(0)
 DRIVER = ROOT / "scripts/reference/cache/compare_callbacks.py"
 SPEC = importlib.util.spec_from_file_location("callbacks_reference_subject", DRIVER)
 CALLBACKS = importlib.util.module_from_spec(SPEC)
@@ -34,6 +40,7 @@ class CallbackExecutionGuards(unittest.TestCase):
         directory = tempfile.TemporaryDirectory(prefix="mc-callback-execution-")
         self.addCleanup(directory.cleanup)
         self.root = Path(directory.name).resolve()
+        self.project = AttributedProject(CALLBACKS, self.root / "attributed-project", (*CALLBACKS.SOURCES, "tests/world/cache/callback_probe.c"))
 
     def prerequisites(self):
         paths = {}
@@ -85,7 +92,7 @@ class CallbackExecutionGuards(unittest.TestCase):
             for side in ("client", "server"):
                 if Path(path) == paths[side]:
                     record["sha256"] = FINISH.JAR_HASHES[side]
-            if preservation["changed_source"] and Path(path) == ROOT / "tests/reference/cache/CacheCallbacksObservation.java":
+            if preservation["changed_source"] and Path(path) == self.project.root / "tests/reference/cache/CacheCallbacksObservation.java":
                 record["sha256"] = "0" * 64
             return record
 
@@ -158,7 +165,7 @@ class CallbackExecutionGuards(unittest.TestCase):
                         snapshot.write_text("{}", encoding="utf-8")
             return self.process(command, current_code)
 
-        with patch.dict(os.environ, dict.fromkeys(FINISH.JAVA_ENVIRONMENT, "")), \
+        with self.project, patch.dict(os.environ, dict.fromkeys(FINISH.JAVA_ENVIRONMENT, "")), \
                 patch.object(CALLBACKS, "helpers", return_value=(COMMON, OLD, FINISH, NORMAL, ACQUIRE,
                              copy.deepcopy(EXECUTED if executed is None else executed))), \
                 patch.object(CALLBACKS, "load_protocol", return_value=(protocol, protocol_source)), \

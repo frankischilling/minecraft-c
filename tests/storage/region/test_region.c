@@ -16,33 +16,28 @@ static unsigned int checks;
         }                                                                                          \
     } while (0)
 
-static void put_u32(uint8_t *bytes, uint32_t value)
-{
+static void put_u32(uint8_t *bytes, uint32_t value) {
     bytes[0] = (uint8_t)(value >> 24u);
     bytes[1] = (uint8_t)(value >> 16u);
     bytes[2] = (uint8_t)(value >> 8u);
     bytes[3] = (uint8_t)value;
 }
 
-static void location(uint8_t *bytes, size_t index, uint32_t value)
-{
+static void location(uint8_t *bytes, size_t index, uint32_t value) {
     put_u32(bytes + 4u * index, value);
 }
 
-static void timestamp(uint8_t *bytes, size_t index, uint32_t value)
-{
+static void timestamp(uint8_t *bytes, size_t index, uint32_t value) {
     put_u32(bytes + MC_REGION_SECTOR_BYTES + 4u * index, value);
 }
 
-static void record(uint8_t *bytes, size_t sector, uint32_t length, uint8_t selector)
-{
+static void record(uint8_t *bytes, size_t sector, uint32_t length, uint8_t selector) {
     put_u32(bytes + sector * MC_REGION_SECTOR_BYTES, length);
     bytes[sector * MC_REGION_SECTOR_BYTES + 4u] = selector;
 }
 
 static int expect_record_failure(const mc_region_view *view, int32_t x, int32_t z,
-                                 mc_region_status expected)
-{
+                                 mc_region_status expected) {
     uint8_t sentinel = 0xa5;
     mc_region_payload output = {&sentinel, 98765, 17};
     CHECK(mc_region_record(view, x, z, &output) == expected);
@@ -52,8 +47,7 @@ static int expect_record_failure(const mc_region_view *view, int32_t x, int32_t 
 }
 
 static int expect_open_failure(const uint8_t *bytes, size_t length, const mc_region_limits *limits,
-                               mc_region_status expected)
-{
+                               mc_region_status expected) {
     mc_region_view output;
     mc_region_view saved;
     memset(&output, 0xa5, sizeof(output));
@@ -63,8 +57,7 @@ static int expect_open_failure(const uint8_t *bytes, size_t length, const mc_reg
     return 0;
 }
 
-static int test_all_metadata(void)
-{
+static int test_all_metadata(void) {
     uint8_t bytes[MC_REGION_HEADER_BYTES] = {0};
     uint8_t saved[MC_REGION_HEADER_BYTES];
     mc_region_view view;
@@ -105,8 +98,7 @@ static int test_all_metadata(void)
     return 0;
 }
 
-static int test_coordinate_bounds(void)
-{
+static int test_coordinate_bounds(void) {
     uint8_t bytes[5u * MC_REGION_SECTOR_BYTES] = {0};
     mc_region_view view;
     location(bytes, 31, UINT32_C(0x201));
@@ -139,10 +131,10 @@ static int test_coordinate_bounds(void)
     return 0;
 }
 
-static int test_extents_and_overlaps(void)
-{
+static int test_extents_and_overlaps(void) {
     uint8_t bytes[5u * MC_REGION_SECTOR_BYTES] = {0};
     mc_region_view view;
+
     static const struct {
         uint32_t location;
         uint32_t issue;
@@ -153,6 +145,7 @@ static int test_extents_and_overlaps(void)
                      {UINT32_C(0x4ff), MC_REGION_ISSUE_EXTENT_BOUNDS},
                      {UINT32_C(0x80000001), MC_REGION_ISSUE_EXTENT_BOUNDS},
                      {UINT32_MAX, MC_REGION_ISSUE_EXTENT_BOUNDS}};
+
     for (size_t i = 0; i < sizeof(malformed) / sizeof(malformed[0]); ++i) {
         memset(bytes, 0, sizeof(bytes));
         location(bytes, 0, malformed[i].location);
@@ -200,12 +193,12 @@ static int test_extents_and_overlaps(void)
     return 0;
 }
 
-static int test_record_lengths_and_selectors(void)
-{
+static int test_record_lengths_and_selectors(void) {
     uint8_t bytes[3u * MC_REGION_SECTOR_BYTES] = {0};
     uint8_t saved[sizeof(bytes)];
     mc_region_view view;
     location(bytes, 0, UINT32_C(0x201));
+
     static const struct {
         uint32_t length;
         uint32_t issue;
@@ -216,6 +209,7 @@ static int test_record_lengths_and_selectors(void)
                    {4096, MC_REGION_ISSUE_RECORD_BOUNDS},
                    {4097, MC_REGION_ISSUE_RECORD_BOUNDS},
                    {INT32_MAX, MC_REGION_ISSUE_RECORD_BOUNDS}};
+
     for (size_t i = 0; i < sizeof(lengths) / sizeof(lengths[0]); ++i) {
         record(bytes, 2, lengths[i].length, 2);
         memcpy(saved, bytes, sizeof(saved));
@@ -254,8 +248,7 @@ static int test_record_lengths_and_selectors(void)
     return 0;
 }
 
-static int test_partial_sectors_and_limits(void)
-{
+static int test_partial_sectors_and_limits(void) {
     uint8_t bytes[4u * MC_REGION_SECTOR_BYTES] = {0};
     uint8_t saved[sizeof(bytes)];
     mc_region_view view;
@@ -296,8 +289,7 @@ static int test_partial_sectors_and_limits(void)
     return 0;
 }
 
-static int test_multisector_records(void)
-{
+static int test_multisector_records(void) {
     uint8_t bytes[5u * MC_REGION_SECTOR_BYTES] = {0};
     mc_region_view view;
     location(bytes, 0, UINT32_C(0x202));
@@ -332,8 +324,7 @@ static int test_multisector_records(void)
     return 0;
 }
 
-static int test_borrowed_payload(void)
-{
+static int test_borrowed_payload(void) {
     uint8_t bytes[3u * MC_REGION_SECTOR_BYTES] = {0};
     uint8_t saved[sizeof(bytes)];
     static const uint8_t payload[] = {0, 0xff, 0x7f, 0x80, 0, 1};
@@ -353,8 +344,7 @@ static int test_borrowed_payload(void)
     return 0;
 }
 
-static int test_bounded_mutations(void)
-{
+static int test_bounded_mutations(void) {
     uint8_t original[3u * MC_REGION_SECTOR_BYTES] = {0};
     uint8_t mutated[sizeof(original)];
     uint8_t saved[sizeof(original)];
@@ -405,8 +395,7 @@ static int test_bounded_mutations(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_all_metadata() || test_coordinate_bounds() || test_extents_and_overlaps() ||
         test_record_lengths_and_selectors() || test_partial_sectors_and_limits() ||
         test_multisector_records() || test_borrowed_payload() || test_bounded_mutations())

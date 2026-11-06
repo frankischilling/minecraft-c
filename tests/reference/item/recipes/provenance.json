@@ -1,0 +1,839 @@
+{
+  "runtime": "Temurin17.0.17+10 Windows x86-64 with JDI",
+  "captures": 30,
+  "three_modes_equal_per_entry": true,
+  "inputs_unchanged": true,
+  "scope": "Ordinary Stats/Block Class.forName returned; Item/crafting/smelting are stopped at actual original null dereferences2/24/75. Every debuggee process uses requested debugger termination, not natural process completion.",
+  "console": {
+    "client-stats": {
+      "observed_hex": "31353120726563697065730d0a313620616368696576656d656e74730d0a",
+      "line_separator_hex": "0d0a"
+    },
+    "client-block": {
+      "observed_hex": "313620616368696576656d656e74730d0a31353120726563697065730d0a",
+      "line_separator_hex": "0d0a"
+    },
+    "client-item": {
+      "observed_hex": "",
+      "line_separator_hex": "0d0a"
+    },
+    "client-crafting": {
+      "observed_hex": "313620616368696576656d656e74730d0a",
+      "line_separator_hex": "0d0a"
+    },
+    "client-smelting": {
+      "observed_hex": "313620616368696576656d656e74730d0a31353120726563697065730d0a",
+      "line_separator_hex": "0d0a"
+    },
+    "server-stats": {
+      "observed_hex": "31353120726563697065730d0a313620616368696576656d656e74730d0a",
+      "line_separator_hex": "0d0a"
+    },
+    "server-block": {
+      "observed_hex": "313620616368696576656d656e74730d0a31353120726563697065730d0a",
+      "line_separator_hex": "0d0a"
+    },
+    "server-item": {
+      "observed_hex": "",
+      "line_separator_hex": "0d0a"
+    },
+    "server-crafting": {
+      "observed_hex": "313620616368696576656d656e74730d0a",
+      "line_separator_hex": "0d0a"
+    },
+    "server-smelting": {
+      "observed_hex": "313620616368696576656d656e74730d0a31353120726563697065730d0a",
+      "line_separator_hex": "0d0a"
+    }
+  },
+  "receipts": {
+    "client-stats-interpreted": {
+      "receipt": {
+        "bytes": 2488,
+        "sha256": "44ea6cdf78d6d4909aaef9e9f9d339fad61f0a1c52842d8b71a4a418e060772d"
+      },
+      "binding": {
+        "bytes": 7533,
+        "sha256": "e06a97af220ac2b5c036092c8228e7cf536a0904bb3315fdfec9faa3e977398d"
+      },
+      "mirrors_released": 3612
+    },
+    "client-stats-tier1": {
+      "receipt": {
+        "bytes": 2553,
+        "sha256": "b31ebebb26e0093bb2d9249bb3f6e542ebc21e8603bc8c5516f928c6098e95ef"
+      },
+      "binding": {
+        "bytes": 7527,
+        "sha256": "3f4a211d92aef963ac91d5c6c2736b065e7826c873563629abed610ff8de8369"
+      },
+      "mirrors_released": 3612
+    },
+    "client-stats-default": {
+      "receipt": {
+        "bytes": 2446,
+        "sha256": "49e9ac52f36b832353343c941b2392b98fd1e305f72d09b25d385d254e44b587"
+      },
+      "binding": {
+        "bytes": 7529,
+        "sha256": "d64c89f7d654395860ae186e99e8991d240ed7f4d9ab2de5462b51da5f5fd82a"
+      },
+      "mirrors_released": 3612
+    },
+    "client-block-interpreted": {
+      "receipt": {
+        "bytes": 2487,
+        "sha256": "2a876181cdb681d636f50861ed66ac71dae590c6e73ff3be56b8ed35c452d6a8"
+      },
+      "binding": {
+        "bytes": 7533,
+        "sha256": "5b258220d869bf49bae51bbb761c071e02a8d6ac6056b032db60c8d9528d4ade"
+      },
+      "mirrors_released": 3612
+    },
+    "client-block-tier1": {
+      "receipt": {
+        "bytes": 2553,
+        "sha256": "e2cca15a766e54910cf129a7f2166cdc309d9b1449774beeed3b2a596babb549"
+      },
+      "binding": {
+        "bytes": 7527,
+        "sha256": "c1c777d96cf7ce24c23749c7823af307e795bb57ec0679f8dc208b48f944f6b8"
+      },
+      "mirrors_released": 3612
+    },
+    "client-block-default": {
+      "receipt": {
+        "bytes": 2446,
+        "sha256": "87a98160564e8617d87646dcb0430e072645740045efb9748286c57a2518c2c7"
+      },
+      "binding": {
+        "bytes": 7529,
+        "sha256": "14958b6105d86c4309c4349771427e86dc000a3e8fe1306a71f350a25e21c433"
+      },
+      "mirrors_released": 3612
+    },
+    "client-item-interpreted": {
+      "receipt": {
+        "bytes": 2461,
+        "sha256": "0d37c1bb6cae1bb58c525d9942b70286d55a241729cf4fb1b8f0ca98e491ed92"
+      },
+      "binding": {
+        "bytes": 1965,
+        "sha256": "a88df7ffae5893ab75665b31c1a12deca77eff9aa5ca81ca7f0667e6e763fb58"
+      },
+      "mirrors_released": 502
+    },
+    "client-item-tier1": {
+      "receipt": {
+        "bytes": 2526,
+        "sha256": "1d48049c50bb6233933d5d815b6e1a08a7daf1882315989afa5e16313d382756"
+      },
+      "binding": {
+        "bytes": 1959,
+        "sha256": "cf653c5e88a4983ebe4978e04bb5f37ae23e00e8ddb5afcf222a239745bc7816"
+      },
+      "mirrors_released": 502
+    },
+    "client-item-default": {
+      "receipt": {
+        "bytes": 2419,
+        "sha256": "8e77b6adae599e204b49c04779b7d6e8500fe679179b2816e863fb774b60ef35"
+      },
+      "binding": {
+        "bytes": 1961,
+        "sha256": "034b51a23f02924fc7d44c6b64bd8a0d9953048d3dd50b5efdc7668e3602a902"
+      },
+      "mirrors_released": 502
+    },
+    "client-crafting-interpreted": {
+      "receipt": {
+        "bytes": 2481,
+        "sha256": "64212b5b96307811aebdd8dae87c0bd16b7a3804755367419d745a3622fd6a5f"
+      },
+      "binding": {
+        "bytes": 2522,
+        "sha256": "131c29f8af2a266f44226fedf8fbd1725c7789cda1f0c21850061afbdd088de0"
+      },
+      "mirrors_released": 1847
+    },
+    "client-crafting-tier1": {
+      "receipt": {
+        "bytes": 2545,
+        "sha256": "749212d8e15e91b3277b6e1c4eb310fbab78ab6e92e173d574fc9ae260f90811"
+      },
+      "binding": {
+        "bytes": 2516,
+        "sha256": "b529086d1cc71fef893472e12f469f3190438eb736e14a1c6a5af070aafd5351"
+      },
+      "mirrors_released": 1847
+    },
+    "client-crafting-default": {
+      "receipt": {
+        "bytes": 2438,
+        "sha256": "40b6033afb0a24945108b36218ad5091fd119eb804458b3ff432ce1b48b99662"
+      },
+      "binding": {
+        "bytes": 2518,
+        "sha256": "fe3deccdc2ba347eea52ac8b7b72519438445a7d87bc4dd6a460e7810a249371"
+      },
+      "mirrors_released": 1847
+    },
+    "client-smelting-interpreted": {
+      "receipt": {
+        "bytes": 2488,
+        "sha256": "9b497a70d6b154b23ad3668491c756aeda6319ca4c63ad3c15bb2ed574a3d70b"
+      },
+      "binding": {
+        "bytes": 8576,
+        "sha256": "3474da0b70543b0d0d59a29aa632843fc1fc8cce0fa9927eff66a7c44a2b8168"
+      },
+      "mirrors_released": 2980
+    },
+    "client-smelting-tier1": {
+      "receipt": {
+        "bytes": 2554,
+        "sha256": "0a13326d0673b18fb0733232584f2452da3fafe2d0100b6248d3ff59deee5171"
+      },
+      "binding": {
+        "bytes": 8570,
+        "sha256": "fb2138abc7771bb2758cdc615b7ee1bf4de7654c765f1a92efbc59fb03e8ac1f"
+      },
+      "mirrors_released": 2980
+    },
+    "client-smelting-default": {
+      "receipt": {
+        "bytes": 2445,
+        "sha256": "78dd40067368494471940d1f6ed2e8504e0111d9f47327afca2fbe36ea528ec2"
+      },
+      "binding": {
+        "bytes": 8572,
+        "sha256": "820553f5f9ec80c35ee2d06b4b20da8a9ff9290babfcf2467dca02c75a98e347"
+      },
+      "mirrors_released": 2980
+    },
+    "server-stats-interpreted": {
+      "receipt": {
+        "bytes": 2516,
+        "sha256": "67af2f987410d295f42eec7b8eb9d880dfbac4d9bc3f15f8baa24b6fe5252d33"
+      },
+      "binding": {
+        "bytes": 7556,
+        "sha256": "426903916cc00de1e927b7595686fdd9886bd504784a2c3d2b8a91404fb26244"
+      },
+      "mirrors_released": 3612
+    },
+    "server-stats-tier1": {
+      "receipt": {
+        "bytes": 2582,
+        "sha256": "bcdf021c57c5c08b2624a625fa75bd357c367e519fe6c869a5eb4e08bc1325e0"
+      },
+      "binding": {
+        "bytes": 7550,
+        "sha256": "c430c1cc61219bead8d3a9f5fba47db7e1a4378868d3cbc32d3ad8d7b795a467"
+      },
+      "mirrors_released": 3612
+    },
+    "server-stats-default": {
+      "receipt": {
+        "bytes": 2474,
+        "sha256": "6b6229413673c54c5237a6cab8c25dc299a326cde0fcef8d9c81c239e6ed6d4d"
+      },
+      "binding": {
+        "bytes": 7552,
+        "sha256": "6af70a46d40fb0cbf33c36bd33ae6937aff0fede3204c2537ff4ae30e3c98e03"
+      },
+      "mirrors_released": 3612
+    },
+    "server-block-interpreted": {
+      "receipt": {
+        "bytes": 2516,
+        "sha256": "9f341f4b63ab4ec4380f3964b014ce8620e2993aa8de4fb82e316790a413991b"
+      },
+      "binding": {
+        "bytes": 7556,
+        "sha256": "ad7f41c9fce193c85cc211732dfc93d12986577c9f10932120b98f2ca0a5446c"
+      },
+      "mirrors_released": 3612
+    },
+    "server-block-tier1": {
+      "receipt": {
+        "bytes": 2581,
+        "sha256": "76af58ef0e583c332f41e844eaaa22d4e36895496a861254941ab6de25cbfd91"
+      },
+      "binding": {
+        "bytes": 7550,
+        "sha256": "36696b0e0344b470cefc9f60ff5ca39f0e45983480c02027a5f1cb1c375c1604"
+      },
+      "mirrors_released": 3612
+    },
+    "server-block-default": {
+      "receipt": {
+        "bytes": 2474,
+        "sha256": "77d8b8995cf78ea5d39063c3473b3bd1a13d5771abfc02de3832128d9e68989f"
+      },
+      "binding": {
+        "bytes": 7552,
+        "sha256": "d406757f5d4ab8a166a50633bfb6e26e34260eb8e2d7696128eee98f73434b35"
+      },
+      "mirrors_released": 3612
+    },
+    "server-item-interpreted": {
+      "receipt": {
+        "bytes": 2489,
+        "sha256": "3efd4ea9dc80c445f78447c5d07d6ee663b2ae8be90abfc5ba99f4ce208940f3"
+      },
+      "binding": {
+        "bytes": 1979,
+        "sha256": "4ee1629947ad626821059a2ee4cd33d375f1785e5fe071fbc75ef74af9f19ffe"
+      },
+      "mirrors_released": 502
+    },
+    "server-item-tier1": {
+      "receipt": {
+        "bytes": 2555,
+        "sha256": "488efc389ead4c27c7609ea6d6848654739add9c78b4dfd3477cc3d1b1ef0468"
+      },
+      "binding": {
+        "bytes": 1973,
+        "sha256": "1cd7ba6f3f2cd9b8285b51e29dc10bcd809603ee7d9b9dc8ac08e3e225b82be8"
+      },
+      "mirrors_released": 502
+    },
+    "server-item-default": {
+      "receipt": {
+        "bytes": 2447,
+        "sha256": "be38d8b910944db52987b26bc3582cbc76fd6f602f5871fc1732421311f846c0"
+      },
+      "binding": {
+        "bytes": 1975,
+        "sha256": "c99174f83d69447bae731647b36905f5323f0765dc8ef701c309e2b460bba0a7"
+      },
+      "mirrors_released": 502
+    },
+    "server-crafting-interpreted": {
+      "receipt": {
+        "bytes": 2508,
+        "sha256": "9da3118cf727dd4cfd2ad0195d3a845175ae21fd4a4c4a587eebedb2766d1d77"
+      },
+      "binding": {
+        "bytes": 2548,
+        "sha256": "7c0c6336e23459e9fae7f8ef93880747d87f7cf95eb5f142f58f97b160a0095a"
+      },
+      "mirrors_released": 1847
+    },
+    "server-crafting-tier1": {
+      "receipt": {
+        "bytes": 2574,
+        "sha256": "219d704a76ce6e9da74a85edf5a45dffc80abee69e3e44ba2efaeb802973a0be"
+      },
+      "binding": {
+        "bytes": 2542,
+        "sha256": "275c8fe46bb5e982baef1377e92e0347c853419ee3126b8a86ce4433f936ad4f"
+      },
+      "mirrors_released": 1847
+    },
+    "server-crafting-default": {
+      "receipt": {
+        "bytes": 2466,
+        "sha256": "0929970a02cec52c1b5ffc55f546c3da5bf3ac6cf01c192eef5c4ee59d220f7c"
+      },
+      "binding": {
+        "bytes": 2544,
+        "sha256": "cf02daa824b062026e532f5c753d991c65838b45bd3e94f517d4e831be07eec7"
+      },
+      "mirrors_released": 1847
+    },
+    "server-smelting-interpreted": {
+      "receipt": {
+        "bytes": 2515,
+        "sha256": "17d282b6d8904f6cbff858afe81552ac093f89293fd8db7cea118eaa15d996aa"
+      },
+      "binding": {
+        "bytes": 8598,
+        "sha256": "daf6e51163cdcb2f667ab6e62600bf06d0a40d9bf5b72d94bc120f556fdc1dc3"
+      },
+      "mirrors_released": 2980
+    },
+    "server-smelting-tier1": {
+      "receipt": {
+        "bytes": 2582,
+        "sha256": "feb1c048003aff8681e96066855159f4d865a4d8365ec18a1005a6fc1cbded44"
+      },
+      "binding": {
+        "bytes": 8592,
+        "sha256": "407d52050b7758b3b91582704e4671157296aa1d16f5cac226709b3825ba080f"
+      },
+      "mirrors_released": 2980
+    },
+    "server-smelting-default": {
+      "receipt": {
+        "bytes": 2474,
+        "sha256": "183b06361c049fd71bd36b9f3454d0e2fc74d0d2ba1b9f9fab8ca0d1dc2bc513"
+      },
+      "binding": {
+        "bytes": 8594,
+        "sha256": "a0cf3eabe8b14e1a80fbede91d23a8f1e05cfbe7b8a2fab3d1548b56b2061dfb"
+      },
+      "mirrors_released": 2980
+    }
+  },
+  "inputs": {
+    "java": {
+      "bytes": 50344,
+      "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+    },
+    "javac": {
+      "bytes": 24232,
+      "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+    },
+    "modules": {
+      "bytes": 128648619,
+      "sha256": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+    },
+    "jvm": {
+      "bytes": 12681896,
+      "sha256": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+    },
+    "java_native": {
+      "bytes": 148136,
+      "sha256": "18b105254c16e1d83614ff4e32cd62ce402fbe6339bdd1b24ccc7d999fed7f5f"
+    },
+    "release": {
+      "bytes": 1667,
+      "sha256": "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+    },
+    "source_archive": {
+      "bytes": 50855389,
+      "sha256": "5d0afb30b29d1eff95502604e9415d361f0f503553f32416320c58c1f0619e1e"
+    },
+    "runner": {
+      "bytes": 10182,
+      "sha256": "f08873d98d14ee3ce1fa8c650a4f41f71c11934e0319582a21212d8adc4ab02c"
+    },
+    "helper": {
+      "bytes": 3927,
+      "sha256": "8268f7cb6b406668c42ff32dfaca750d4f5f263e62584b70e7b251dde05c9e38"
+    },
+    "controller": {
+      "bytes": 88205,
+      "sha256": "b1d1fdfdd51162fa21f71d4fc3c1915bf9c1a642760fbf8551061f462b106770"
+    },
+    "client": {
+      "bytes": 1465375,
+      "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+    },
+    "server": {
+      "bytes": 503100,
+      "sha256": "033a127e4a25a60b038f15369c89305a3d53752242a1cff11ae964954e79ba4d"
+    },
+    "runtime/bin/api-ms-win-core-console-l1-1-0.dll": {
+      "bytes": 22072,
+      "sha256": "88ace577a9c51061cb7d1a36babbbefa48212fadc838ffde98fdfff60de18386"
+    },
+    "runtime/bin/api-ms-win-core-console-l1-2-0.dll": {
+      "bytes": 22056,
+      "sha256": "c062477ad3bfdc57b0cc402179637a214dab5045c8d644592c7decca7d18aa50"
+    },
+    "runtime/bin/api-ms-win-core-datetime-l1-1-0.dll": {
+      "bytes": 22056,
+      "sha256": "1bd81dfd19204b44662510d9054852fb77c9f25c1088d647881c9b976cc16818"
+    },
+    "runtime/bin/api-ms-win-core-debug-l1-1-0.dll": {
+      "bytes": 21944,
+      "sha256": "591358eb4d1531e9563ee0813e4301c552ce364c912ce684d16576eabf195dc3"
+    },
+    "runtime/bin/api-ms-win-core-errorhandling-l1-1-0.dll": {
+      "bytes": 22096,
+      "sha256": "d56ce7b1cd76108ad6c137326ec694a14c99d48c3d7b0ace8c3ff4d9bcee3ce8"
+    },
+    "runtime/bin/api-ms-win-core-fibers-l1-1-0.dll": {
+      "bytes": 22072,
+      "sha256": "91d249d7bc0e38ef6bcb17158b1fdc6dd8888dc086615c9b8b750b87e52a5fb3"
+    },
+    "runtime/bin/api-ms-win-core-fibers-l1-1-1.dll": {
+      "bytes": 22072,
+      "sha256": "fc9d86cec621383eab636ebc87ddd3f5c19a3cb2a33d97be112c051d0b275429"
+    },
+    "runtime/bin/api-ms-win-core-file-l1-1-0.dll": {
+      "bytes": 26152,
+      "sha256": "1ca895aba4e7435563a6b43e85eba67a0f8c74aa6a6a94d0fc48fa35535e2585"
+    },
+    "runtime/bin/api-ms-win-core-file-l1-2-0.dll": {
+      "bytes": 22056,
+      "sha256": "4cadbc0c39da7c6722206fdcebd670abe5b8d261e7b041dd94f9397a89d1990d"
+    },
+    "runtime/bin/api-ms-win-core-file-l2-1-0.dll": {
+      "bytes": 21960,
+      "sha256": "93c624b366ba16c643fc8933070a26f03b073ad0cf7f80173266d67536c61989"
+    },
+    "runtime/bin/api-ms-win-core-handle-l1-1-0.dll": {
+      "bytes": 21944,
+      "sha256": "39095f59c41d76ec81bb2723d646fde4c148e7cc3402f4980d2ade95cb9c84f9"
+    },
+    "runtime/bin/api-ms-win-core-heap-l1-1-0.dll": {
+      "bytes": 22072,
+      "sha256": "8f105771b236dbcb859de271f0a6822ce1cb79c36988dd42c9e3f6f55c5f7eb9"
+    },
+    "runtime/bin/api-ms-win-core-interlocked-l1-1-0.dll": {
+      "bytes": 22072,
+      "sha256": "53b25e753ca785bf8b695d89dde5818a318890211dc992a89146f16658f0b606"
+    },
+    "runtime/bin/api-ms-win-core-kernel32-legacy-l1-1-1.dll": {
+      "bytes": 22080,
+      "sha256": "a9b13a1cd1b8c19b0c6b4afcd5bb0dd29c0e2288231ac9e6db8510094ce68ba6"
+    },
+    "runtime/bin/api-ms-win-core-libraryloader-l1-1-0.dll": {
+      "bytes": 22056,
+      "sha256": "7f39ba298b41e4963047341288cab36b6a241835ee11ba4ad70f44dacd40906c"
+    },
+    "runtime/bin/api-ms-win-core-localization-l1-2-0.dll": {
+      "bytes": 22080,
+      "sha256": "6ee44dd0d8510dc024c9f7c79b1b9fa88c987b26b6beb6653ddd11751c34e5dc"
+    },
+    "runtime/bin/api-ms-win-core-memory-l1-1-0.dll": {
+      "bytes": 22056,
+      "sha256": "0512a35316ec9180437f86696a84c5c06a7e4e82e050055a656e5bf9fca206f9"
+    },
+    "runtime/bin/api-ms-win-core-namedpipe-l1-1-0.dll": {
+      "bytes": 22096,
+      "sha256": "c05f1fffe3b5a2738ea54ce9485cca026fb9635f982626fba1e1dcc531897273"
+    },
+    "runtime/bin/api-ms-win-core-processenvironment-l1-1-0.dll": {
+      "bytes": 21968,
+      "sha256": "c4eca98c3c67b6395d5b005b00ac1eb0318b86b23aa71035a44c2b1602befba9"
+    },
+    "runtime/bin/api-ms-win-core-processthreads-l1-1-0.dll": {
+      "bytes": 22096,
+      "sha256": "5ccb89e93d67bc3288d4e84649c5346e66e15e3d7cd65d989daf3f4cb584be9a"
+    },
+    "runtime/bin/api-ms-win-core-processthreads-l1-1-1.dll": {
+      "bytes": 22072,
+      "sha256": "4ad565a8ba3ef0ea8ab87221ad11f83ee0bc844ce236607958406663b407333e"
+    },
+    "runtime/bin/api-ms-win-core-profile-l1-1-0.dll": {
+      "bytes": 22080,
+      "sha256": "7809160932f44e59b021699f5bc68799eb7293ee1fa926d6fcca3c3445302e61"
+    },
+    "runtime/bin/api-ms-win-core-rtlsupport-l1-1-0.dll": {
+      "bytes": 21960,
+      "sha256": "9dc1e91e71c7c054854bd1487cb4e6946d82c9f463430f1c4e8d1471005172b1"
+    },
+    "runtime/bin/api-ms-win-core-string-l1-1-0.dll": {
+      "bytes": 22056,
+      "sha256": "60fc31d2a0c634412f529dba76af3b9bf991352877c6dae528186d3935704cfd"
+    },
+    "runtime/bin/api-ms-win-core-synch-l1-1-0.dll": {
+      "bytes": 22056,
+      "sha256": "3a72b4f29f39a265d32ad12f0ce15dbf60129c840e10d84d427829ede45e78ad"
+    },
+    "runtime/bin/api-ms-win-core-synch-l1-2-0.dll": {
+      "bytes": 22080,
+      "sha256": "efc1e4460984a73cf47a3def033af1c8f3b1dbc1a56cd27781d3aacf3e3330cb"
+    },
+    "runtime/bin/api-ms-win-core-sysinfo-l1-1-0.dll": {
+      "bytes": 22072,
+      "sha256": "b203d862ddef1dd62bf623fc866c7f7a9c317c1c2ae30d1f52cb41f955b5698e"
+    },
+    "runtime/bin/api-ms-win-core-sysinfo-l1-2-0.dll": {
+      "bytes": 22080,
+      "sha256": "2703635d835396afd0f138d7c73751afe7e33a24f4225d08c1690b0a371932c0"
+    },
+    "runtime/bin/api-ms-win-core-timezone-l1-1-0.dll": {
+      "bytes": 22056,
+      "sha256": "33f4fddc181066fce06b2227bded813f95e94ed1f3d785e982c6b6b56c510c57"
+    },
+    "runtime/bin/api-ms-win-core-util-l1-1-0.dll": {
+      "bytes": 21944,
+      "sha256": "6eda016742a6171205a387a14b3c0b331841567740376f56768f8c151724207d"
+    },
+    "runtime/bin/api-ms-win-crt-conio-l1-1-0.dll": {
+      "bytes": 22056,
+      "sha256": "b762061b688aae679afe788904d2c9970f74a7dac98f3b42463d08f25e483d3f"
+    },
+    "runtime/bin/api-ms-win-crt-convert-l1-1-0.dll": {
+      "bytes": 26056,
+      "sha256": "ebb2ae5535a64f65daeab8235585114fc9dd2cf1a49f5852d446250b998b6ae4"
+    },
+    "runtime/bin/api-ms-win-crt-environment-l1-1-0.dll": {
+      "bytes": 22080,
+      "sha256": "17d63275d00bdd8670422b95bd264c532998e0a1b041079e54fce4b6b7a55819"
+    },
+    "runtime/bin/api-ms-win-crt-filesystem-l1-1-0.dll": {
+      "bytes": 22056,
+      "sha256": "9a9e2a65a281644e368d0f272b95ba5f6b445d1c35910d06056c5ebeb77402db"
+    },
+    "runtime/bin/api-ms-win-crt-heap-l1-1-0.dll": {
+      "bytes": 22096,
+      "sha256": "bab9ac3ec83e380ae51e4295ef3bf2c738627812d3a49d1e713661abbc8dc57a"
+    },
+    "runtime/bin/api-ms-win-crt-locale-l1-1-0.dll": {
+      "bytes": 22080,
+      "sha256": "bd14c67ea28e21d6257ad780a37122c9b5773f69e693f5db6bffaee4d839526e"
+    },
+    "runtime/bin/api-ms-win-crt-math-l1-1-0.dll": {
+      "bytes": 30248,
+      "sha256": "606d66d82db562ea7979179d06486a0f94d079941d26b80a1e2c49d29959df6f"
+    },
+    "runtime/bin/api-ms-win-crt-multibyte-l1-1-0.dll": {
+      "bytes": 30248,
+      "sha256": "95f49efbe8107786733fa7c474025cf3fee0ac632f240367b296c736d06572aa"
+    },
+    "runtime/bin/api-ms-win-crt-private-l1-1-0.dll": {
+      "bytes": 75328,
+      "sha256": "1bc82bed6143d2bf1b6b08a7809f4a5e29317d6fddd338a7da3c0223522e4bbf"
+    },
+    "runtime/bin/api-ms-win-crt-process-l1-1-0.dll": {
+      "bytes": 22096,
+      "sha256": "f6156b1020380ec4f0e48577ebedaaef5fb1ab1f337d8b4e72e6a33a7567a9cc"
+    },
+    "runtime/bin/api-ms-win-crt-runtime-l1-1-0.dll": {
+      "bytes": 26152,
+      "sha256": "c5902934d026d7e15fbe9917d474f3322846a41a25e66f4b2b1f758801879f4b"
+    },
+    "runtime/bin/api-ms-win-crt-stdio-l1-1-0.dll": {
+      "bytes": 26168,
+      "sha256": "a9c5a153d8c0286f9b41a2b1c65854ad9e6471b8755b7de87bae4470e60bcab6"
+    },
+    "runtime/bin/api-ms-win-crt-string-l1-1-0.dll": {
+      "bytes": 26176,
+      "sha256": "25b8f83a7767211b11132775a0e27a45aa4ec8ab4e6572599f9c172ae3606b40"
+    },
+    "runtime/bin/api-ms-win-crt-time-l1-1-0.dll": {
+      "bytes": 22096,
+      "sha256": "7c7f6393f06de11750adb09cc5698ae55cd9fb27b2e51e207286feb1b5b2b156"
+    },
+    "runtime/bin/api-ms-win-crt-utility-l1-1-0.dll": {
+      "bytes": 21952,
+      "sha256": "d8ba5f17b9ffcbf3aeaf3fa1da226832d2fa90f81acce0cd669464e76ce434ac"
+    },
+    "runtime/bin/attach.dll": {
+      "bytes": 29864,
+      "sha256": "a2a0498b6dc4dbc1dbf047cc38d170dfc16d37d4fb6c64f55133d8304d0022bc"
+    },
+    "runtime/bin/awt.dll": {
+      "bytes": 1492136,
+      "sha256": "3a08da4cf9614add3adcc2414a15400464372238101899db914e3c73a8e5d8b2"
+    },
+    "runtime/bin/dt_shmem.dll": {
+      "bytes": 38056,
+      "sha256": "42e631a06240a00aa0d8605895fa3ddee325c7a125ed20fe26fa060e87c5af3e"
+    },
+    "runtime/bin/dt_socket.dll": {
+      "bytes": 36520,
+      "sha256": "1a5c8a2a198c8645f892cb68dca87885ad759c3a3f1f828167dcdb3ac41d4874"
+    },
+    "runtime/bin/extnet.dll": {
+      "bytes": 24232,
+      "sha256": "521686111498f05b06d918008b836e88c050fae99408fe973c5afc1846fec43b"
+    },
+    "runtime/bin/fontmanager.dll": {
+      "bytes": 973992,
+      "sha256": "21951c96e6f44c37a413e9fafd6a57aa49674aba6193242f8bd681f0d1d89a40"
+    },
+    "runtime/bin/freetype.dll": {
+      "bytes": 546984,
+      "sha256": "f9e7df49f9b888a1ab81c85b18ee81532700d9fb032a30d616577e497feab8f9"
+    },
+    "runtime/bin/instrument.dll": {
+      "bytes": 51880,
+      "sha256": "47a92ef549e5b9bb0078e16a72b38ffd0fa9bcbc5e158ce12e73aaaa1145cebf"
+    },
+    "runtime/bin/j2gss.dll": {
+      "bytes": 50856,
+      "sha256": "cdd2505bc5684c141d0de043a67bb19218597ed52f16afa369ffeb5d68172e8b"
+    },
+    "runtime/bin/j2pcsc.dll": {
+      "bytes": 26792,
+      "sha256": "e87f123a856525179f36b4cda37f527d9b054f18569a71042046a832e3ccdb1b"
+    },
+    "runtime/bin/j2pkcs11.dll": {
+      "bytes": 80040,
+      "sha256": "371b0f3ae8a83faf17b06d4e4582dbc714f121c999bfb5651d59ff4b8e68ff8d"
+    },
+    "runtime/bin/jaas.dll": {
+      "bytes": 28840,
+      "sha256": "00182782159e642cdd4efa5f21320cb0c9820b4fabc9917e4cce5faf73ad2fbb"
+    },
+    "runtime/bin/java.dll": {
+      "bytes": 148136,
+      "sha256": "18b105254c16e1d83614ff4e32cd62ce402fbe6339bdd1b24ccc7d999fed7f5f"
+    },
+    "runtime/bin/javaaccessbridge.dll": {
+      "bytes": 308904,
+      "sha256": "22d1c2b0d3fce0e5dc1a5d3ebd62b125788a9cf4c0846f1dda271419b784a3ae"
+    },
+    "runtime/bin/javajpeg.dll": {
+      "bytes": 182952,
+      "sha256": "cffd57c27ea8df642777ad37e4a795140769b6c9dc48ad9272a286d475784889"
+    },
+    "runtime/bin/jawt.dll": {
+      "bytes": 21672,
+      "sha256": "30475691705580b4a0073f54b26fd7c7e20bb2b7694d2554cb0d40b3fde8a17a"
+    },
+    "runtime/bin/jdwp.dll": {
+      "bytes": 230056,
+      "sha256": "4ff7345a0a66091f519a7546f1a865c4cbc9cc132fba31608604e88dec1cedf2"
+    },
+    "runtime/bin/jimage.dll": {
+      "bytes": 34472,
+      "sha256": "f01c057da0222bc70a7f904c3104dedfc6f268446ee797c6dd70f9651a52265f"
+    },
+    "runtime/bin/jli.dll": {
+      "bytes": 89768,
+      "sha256": "5d6a3581649cf281a2a4db2aeff53ccb1134b45cb04fa282efa7eb9a58cf5b79"
+    },
+    "runtime/bin/jpackage.dll": {
+      "bytes": 136360,
+      "sha256": "e1a5831a159b5a7beb4e4d188b5868b6c9c712449ff6a678b1892859746f6a1c"
+    },
+    "runtime/bin/jsound.dll": {
+      "bytes": 61096,
+      "sha256": "b400272a3394ab9bebfa2df42ce02496df63c9a7a40064ebdf2650c5ddce4469"
+    },
+    "runtime/bin/jsvml.dll": {
+      "bytes": 870056,
+      "sha256": "d0971a028ff3e94ec749e5ab62abfc4d883b1c85550521ac120b622982fb8114"
+    },
+    "runtime/bin/lcms.dll": {
+      "bytes": 261288,
+      "sha256": "3f0b6392a8a93903a3b2d1aede053778ebfc81ad99ae3deeaf074abc659a5dc8"
+    },
+    "runtime/bin/le.dll": {
+      "bytes": 36008,
+      "sha256": "4304d063f3d8902096a56269395614ebfed6df11bba325e5fcb00351c6aaacd4"
+    },
+    "runtime/bin/management.dll": {
+      "bytes": 29864,
+      "sha256": "4d90ddc5f9ceefc8952b708f9a6f28c18325ed57e8ab65331d6cace79b5f0726"
+    },
+    "runtime/bin/management_agent.dll": {
+      "bytes": 25256,
+      "sha256": "eb32c1b912bf7caddc0f90893574313cc83f53319e2429d48019abf30d695be5"
+    },
+    "runtime/bin/management_ext.dll": {
+      "bytes": 36520,
+      "sha256": "43e43d079b33651a1aff67b5aa767fd37b520a0608c7a127c11c08d6a374f0c3"
+    },
+    "runtime/bin/mlib_image.dll": {
+      "bytes": 519848,
+      "sha256": "fb083ef29d4120f2bf84240a4f250f815f131c9e2a186371ed2ce9a5478c9b8a"
+    },
+    "runtime/bin/msvcp140.dll": {
+      "bytes": 575056,
+      "sha256": "a4c2229bdc2a2a630acdc095b4d86008e5c3e3bc7773174354f3da4f5beb9cde"
+    },
+    "runtime/bin/net.dll": {
+      "bytes": 98472,
+      "sha256": "aa178fbeb19980dfbb6827b3b2532cd110d585192041883032bf2dbb20e4785d"
+    },
+    "runtime/bin/nio.dll": {
+      "bytes": 80552,
+      "sha256": "1d3f193e94d404a18caa24440e61af652ec705258f5fa5a3cb90bc790e9b98ba"
+    },
+    "runtime/bin/prefs.dll": {
+      "bytes": 25768,
+      "sha256": "44102e7e881e84a1e888319ca147f444aeed5203dffd8e52b61e9c44d15c7bc7"
+    },
+    "runtime/bin/rmi.dll": {
+      "bytes": 21160,
+      "sha256": "1ccf35d5de3355126459104af0e3722a2332d3bb9dd593b5286e6b71c25ce774"
+    },
+    "runtime/bin/saproc.dll": {
+      "bytes": 39080,
+      "sha256": "6fcb6730850275571b08e18df531e7ca6fb2cb368218c3afa8ef7ed9c8211deb"
+    },
+    "runtime/bin/server/jvm.dll": {
+      "bytes": 12681896,
+      "sha256": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+    },
+    "runtime/bin/splashscreen.dll": {
+      "bytes": 218280,
+      "sha256": "b29d5fb8dfb2987feccd38a23b1d7a63b97bc32f4f320fa6fd8779754d625920"
+    },
+    "runtime/bin/sspi_bridge.dll": {
+      "bytes": 45224,
+      "sha256": "bf5fbdd58b6f6c0bb773b2afa6dcea93a71f564c27483c635fdcd9067d88c153"
+    },
+    "runtime/bin/sunmscapi.dll": {
+      "bytes": 47784,
+      "sha256": "22509cf54a6d0936631671b22d86ceb895d7960ce907099a23543bc0645a22a8"
+    },
+    "runtime/bin/ucrtbase.dll": {
+      "bytes": 1361448,
+      "sha256": "2e5fb14b7bf8540278f3614a12f0226e56a7cc9e64b81cbd976c6fcf2f71cbfb"
+    },
+    "runtime/bin/vcruntime140.dll": {
+      "bytes": 119888,
+      "sha256": "02c6aa0e6e624411a9f19b0360a7865ab15908e26024510e5c38a9c08362c35a"
+    },
+    "runtime/bin/vcruntime140_1.dll": {
+      "bytes": 49640,
+      "sha256": "7dd9aa02e271c68ca6d5f18d651d23a15d7259715af43326578f7dde27f37637"
+    },
+    "runtime/bin/verify.dll": {
+      "bytes": 54952,
+      "sha256": "ab1003530e431300e043a3a2b311201a7b6b844b28929863465f1f5f99de4db9"
+    },
+    "runtime/bin/w2k_lsa_auth.dll": {
+      "bytes": 31400,
+      "sha256": "0ee09fadcd8073e6622b3b69f0a09deaa273351c1a7f71ba439b2ab620a534df"
+    },
+    "runtime/bin/windowsaccessbridge-64.dll": {
+      "bytes": 72872,
+      "sha256": "3ad47ee124bea23b0cecbc92cf61022a73567986d6ff3ff1d893447418c1d8d6"
+    },
+    "runtime/bin/WinFallbackLookup.dll": {
+      "bytes": 28840,
+      "sha256": "bfe0df7203d03be06d1e4ac1eaf51512d8a2cb24797e245bba36325387ac66b8"
+    },
+    "runtime/bin/zip.dll": {
+      "bytes": 89256,
+      "sha256": "2cc26c530a65b8a839e40ce820565e531fefcc5a207822e09f7a073fb8676b70"
+    }
+  },
+  "schema": "RECIPE_BOOTSTRAP_OBSERVATION_V1",
+  "projection": "Actual published manager lists, complete sorted recipe order, shaped cached ID/width/height/all cells, shapeless lists, smelting HashMap bucket-next order and real Stack identity/four fields. R:n assigned by first identity encounter, output before ingredients then smelting. Unpublished manager constructor state is omitted.",
+  "fixtures": {
+    "client-stats.tsv": {
+      "bytes": 37580,
+      "sha256": "004f528a4bae8478e85521a6fb813647c72f564a33dfb5f59b24f7093612bb20"
+    },
+    "client-block.tsv": {
+      "bytes": 37580,
+      "sha256": "6dd5df64696a7956a434202d047bb312f77f1d5929d177eb7c7a245e46693ed0"
+    },
+    "client-item.tsv": {
+      "bytes": 62,
+      "sha256": "cdff7dd298fa1c4ae0d17172857aa077be8db968729ba7430f44664f13bb5a84"
+    },
+    "client-crafting.tsv": {
+      "bytes": 66,
+      "sha256": "5b951132e5c37b083c629190f5e6daa0ee8c7caa650e66a76342166b39b1ce06"
+    },
+    "client-smelting.tsv": {
+      "bytes": 37216,
+      "sha256": "c42741034c57e7db9bba76a9f7f0aa0f0990d307e86acfa4c71b8bf09e218d1c"
+    },
+    "server-stats.tsv": {
+      "bytes": 37580,
+      "sha256": "f15bbeb59b2f17a449d8f4c275486d458455f8050b53825c1f473ca2f82bafa1"
+    },
+    "server-block.tsv": {
+      "bytes": 37580,
+      "sha256": "34d7f3574e3b821c12bdae1baf31873e041807a65b0f8e7476d5d005736d0853"
+    },
+    "server-item.tsv": {
+      "bytes": 62,
+      "sha256": "3d58b1ecc88615d1c2b6d79f3bd4e60d6832cd45c043d5643e08949495c867d8"
+    },
+    "server-crafting.tsv": {
+      "bytes": 66,
+      "sha256": "dd4eaffa5c1d8a4dc38b6dc6ddadec6b6d9fc5512b03df5785f59b4042d86bce"
+    },
+    "server-smelting.tsv": {
+      "bytes": 37216,
+      "sha256": "a2ea15c36e4d9579ef98c8e314a0cf6f3f6bcdeabcdcbc0740012197fb4f0dff"
+    }
+  }
+}

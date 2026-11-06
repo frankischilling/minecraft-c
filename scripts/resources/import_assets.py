@@ -2,13 +2,14 @@
 """Import user-owned Beta 1.7.3 resources into a fresh local directory.
 
 This development tool has no network access and never extracts classes or launchers.
-It prepares files for a future native consumer; it does not provide that consumer.
+The native client reads the imported files; this tool only validates and copies them.
 """
 
 from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -232,16 +233,38 @@ def check_output(output: Path, jar: Path, resources: Path) -> None:
             raise ImportFailure("Output must be separate from the JAR and external resource inputs")
 
 
-def import_assets(jar: Path, resources: Path, output: Path) -> dict:
+def imported_sdk_icons(path: Path, output: Path) -> tuple[dict[str, bytes], dict]:
+    """Select verified import-only SDK data, never a runtime class path."""
+    path = Path(os.path.abspath(path))
+    check_ancestors(path.parent)
+    plain_path(path, directory=False)
+    if output == path or output in path.parents or path in output.parents:
+        raise ImportFailure("Output must be separate from the SDK input")
+    helper = Path(__file__).with_name("lwjgl_icons.py")
+    spec = importlib.util.spec_from_file_location("asset_import_lwjgl_icons", helper)
+    if spec is None or spec.loader is None:
+        raise ImportFailure("Missing SDK icon import module")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    try:
+        return module.read_sdk(path)
+    except module.IconImportFailure as error:
+        raise ImportFailure(str(error)) from error
+
+
+def import_assets(jar: Path, resources: Path, output: Path, *, lwjgl_jar: Path | None = None) -> dict:
     jar = Path(os.path.abspath(jar))
     resources = Path(os.path.abspath(resources))
     output = Path(os.path.abspath(output))
     check_output(output, jar, resources)
     client_hash = verify_client_jar(jar)
     external = inspect_external(resources)
+    sdk_files, sdk_provenance = ({}, None) if lwjgl_jar is None else imported_sdk_icons(lwjgl_jar, output)
+    sdk_metadata = b"" if sdk_provenance is None else (json.dumps(sdk_provenance, indent=2) + "\n").encode("utf-8")
     with zipfile.ZipFile(jar) as archive:
         jar_entries = inspect_jar(archive)
         total = sum(entry.file_size for entry in jar_entries) + sum(item[2] for item in external)
+        total += sum(len(data) for data in sdk_files.values()) + len(sdk_metadata)
         if total > MAX_TOTAL_BYTES:
             raise ImportFailure(f"Import exceeds {MAX_TOTAL_BYTES} total bytes")
         output.parent.mkdir(parents=True, exist_ok=True)
@@ -278,6 +301,17 @@ def import_assets(jar: Path, resources: Path, output: Path) -> dict:
                         source.seek(0)
                     digest = copy_bounded(source, destination, size)
                 manifest["files"].append({"path": relative, "bytes": size, "sha256": digest})
+            if sdk_provenance is not None:
+                manifest["sdk_icons"] = sdk_provenance
+                for relative, data in (*sdk_files.items(), ("sdk/provenance.json", sdk_metadata)):
+                    target = stage / safe_relative(relative)
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    with target.open("xb") as destination:
+                        written = destination.write(data)
+                        if written != len(data):
+                            raise ImportFailure("Short SDK asset write")
+                    manifest["files"].append({"path": relative, "bytes": len(data),
+                                              "sha256": hashlib.sha256(data).hexdigest()})
             (stage / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
             check_output(output, jar, resources)
             stage.rename(output)
@@ -289,15 +323,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--jar", type=Path, required=True, help="Verified local b1.7.3.jar")
     parser.add_argument("--resources", type=Path, required=True, help="Local root containing sound/, newsound/, music/, newmusic/, streaming/")
     parser.add_argument("--output", type=Path, required=True, help="Fresh local asset directory; never overwrites an existing path")
+    parser.add_argument("--lwjgl-jar", type=Path,
+                        help="Optional verified SDK2.9.0 input, used only during asset import for both real window icons")
     args = parser.parse_args(argv)
     try:
-        manifest = import_assets(args.jar, args.resources, args.output)
+        manifest = import_assets(args.jar, args.resources, args.output, lwjgl_jar=args.lwjgl_jar)
     except (ImportFailure, OSError, zipfile.BadZipFile, RuntimeError) as error:
         print(f"Asset import unavailable: {error}", file=sys.stderr)
         return 1
     print(f"Imported {len(manifest['files'])} resources into {args.output}")
     print("External audio validation is an availability floor; canonical audio parity is unverified.")
-    print("The native asset consumer is not implemented yet.")
+    print("The native client reads the imported files without a JAR, launcher, or Java installation.")
     return 0
 
 

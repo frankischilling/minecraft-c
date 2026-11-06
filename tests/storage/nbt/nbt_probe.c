@@ -12,8 +12,7 @@ static char request[PROBE_BYTES * 2u + 32u];
 static uint8_t input[PROBE_BYTES];
 static uint8_t output[PROBE_BYTES];
 
-static int hex_digit(char c)
-{
+static int hex_digit(char c) {
     if (c >= '0' && c <= '9')
         return c - '0';
     if (c >= 'a' && c <= 'f')
@@ -23,22 +22,19 @@ static int hex_digit(char c)
     return -1;
 }
 
-static void hex_bytes(const uint8_t *bytes, size_t length)
-{
+static void hex_bytes(const uint8_t *bytes, size_t length) {
     for (size_t i = 0; i < length; ++i)
         printf("%02x", (unsigned int)bytes[i]);
 }
 
-static void hex_units(mc_nbt_string text)
-{
+static void hex_units(mc_nbt_string text) {
     putchar('"');
     for (size_t i = 0; i < text.length; ++i)
         printf("%04x", (unsigned int)text.units[i]);
     putchar('"');
 }
 
-static int compare_names(const void *a, const void *b)
-{
+static int compare_names(const void *a, const void *b) {
     const mc_nbt_tag *left = *(const mc_nbt_tag *const *)a;
     const mc_nbt_tag *right = *(const mc_nbt_tag *const *)b;
     size_t common = left->name.length < right->name.length ? left->name.length : right->name.length;
@@ -51,8 +47,7 @@ static int compare_names(const void *a, const void *b)
     return left->name.length < right->name.length ? -1 : 1;
 }
 
-static void print_tree(const mc_nbt_tag *tag, int named)
-{
+static void print_tree(const mc_nbt_tag *tag, int named) {
     printf("[%u,", (unsigned int)tag->type);
     if (named && tag->type != MC_NBT_END)
         hex_units(tag->name);
@@ -130,8 +125,7 @@ static void print_tree(const mc_nbt_tag *tag, int named)
     putchar(']');
 }
 
-static void handle_request(char *line)
-{
+static void handle_request(char *line) {
     char *separator = strchr(line, '\t');
     mc_nbt_document *document = NULL;
     size_t consumed = 0;
@@ -184,8 +178,7 @@ static void handle_request(char *line)
     mc_nbt_document_free(document);
 }
 
-int main(void)
-{
+int main(void) {
     while (fgets(request, (int)sizeof(request), stdin) != NULL) {
         size_t length = strlen(request);
         if (length != 0 && request[length - 1] == '\n') {

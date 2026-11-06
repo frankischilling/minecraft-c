@@ -1,0 +1,261 @@
+{
+  "scope": "Supplied unchanged original class/Code identities only; no original observation or native parity is established.",
+  "client_jar": {
+    "bytes": 1465375,
+    "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+  },
+  "classes": {
+    "ik": {
+      "class_bytes": 2756,
+      "class_sha256": "c5e7921af2f787c0b504546977009040a8a7fb4c9416bea46520bda16ce8d3d8",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lnet/minecraft/client/Minecraft;Ljava/io/File;)V",
+          "access": 1,
+          "code_bytes": 97,
+          "code_sha256": "e09548af9ccae8b2acbbc7195446aee1ca4431b5b3b1796be97bf7239cde197c",
+          "code_attribute_sha256": "c3dfc2647447a06f7a753092da79d8e1f829b610615601d323e44b04d244a99c",
+          "max_stack": 5,
+          "max_locals": 3
+        },
+        {
+          "name": "a",
+          "descriptor": "(Li;)Z",
+          "access": 1,
+          "code_bytes": 63,
+          "code_sha256": "d42bb2764972007fb890952834dbe3740747fbcad194c6881df822b631f3d76e",
+          "code_attribute_sha256": "c685a8ba6a48faf93bc748a2a1e4cf86834f9f268ce4d6011aed3fef0036932f",
+          "max_stack": 2,
+          "max_locals": 2
+        },
+        {
+          "name": "a",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 347,
+          "code_sha256": "c09e358f0f0b5b05d10514739f1c2d443dad9caa151172a042a3c4b15458a9aa",
+          "code_attribute_sha256": "b160c5a8b79a9510e993eced94c018c6ff30ca82bec89c826440b9e724bf6cf0",
+          "max_stack": 3,
+          "max_locals": 9
+        },
+        {
+          "name": "b",
+          "descriptor": "()Ljava/util/List;",
+          "access": 1,
+          "code_bytes": 12,
+          "code_sha256": "7315fbf2533a54f31f4b5d096e31730ac5aaf1dda15a6a4d8a3c8f9124feaad6",
+          "code_attribute_sha256": "f9ecc2ba6e2abd15f9f61bca53bde0473009186d2afcbb7d7c52b6768f0c9c57",
+          "max_stack": 3,
+          "max_locals": 1
+        }
+      ]
+    },
+    "i": {
+      "class_bytes": 611,
+      "class_sha256": "747a9928beb83931a506334210d87e5089823e363a6c69e651af24454c65644c",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 5,
+          "code_sha256": "1327203d436bed803d123ab4d064aa6748eb84dffc79ae3e82ed2ad3624cf72c",
+          "code_attribute_sha256": "852a764b2154748029353adf8345dd423b784b824d6bbb8dcca2439eacd551bb",
+          "max_stack": 1,
+          "max_locals": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 1,
+          "code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d",
+          "code_attribute_sha256": "448044188eb10e954fdfe699638438041250af714822ed1c03c6becc18a39a08",
+          "max_stack": 0,
+          "max_locals": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 1,
+          "code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d",
+          "code_attribute_sha256": "56df81e935ce8537f8b6a93625c86d9a360dc62399437641b3dbf616952ccb3c",
+          "max_stack": 0,
+          "max_locals": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lnet/minecraft/client/Minecraft;)V",
+          "access": 1,
+          "code_bytes": 1,
+          "code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d",
+          "code_attribute_sha256": "9aec02683df16ad9b6ebf0d6df60ba281a6e17d2b2989b6569653b3b5f003c7c",
+          "max_stack": 0,
+          "max_locals": 2
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lnet/minecraft/client/Minecraft;)V",
+          "access": 1,
+          "code_bytes": 1,
+          "code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d",
+          "code_attribute_sha256": "79da76851ebc949d23d7bb93e05a7838950241f121a335dcafe368eca051463b",
+          "max_stack": 0,
+          "max_locals": 2
+        },
+        {
+          "name": "c",
+          "descriptor": "(Lnet/minecraft/client/Minecraft;)V",
+          "access": 1,
+          "code_bytes": 1,
+          "code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d",
+          "code_attribute_sha256": "d1cb6b320ac5e10a3b637266716ec3f1f3bff6a60cdaec811a4e26f027c02da0",
+          "max_stack": 0,
+          "max_locals": 2
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)Ljava/io/InputStream;",
+          "access": 1,
+          "code_bytes": 7,
+          "code_sha256": "fced01ab6e1b616f1ebe1ff447b0830a346c996a850595d084d4d53a8681179d",
+          "code_attribute_sha256": "ac2482c29464b0caf2cfd76370077db9ccd663b8739b9f7e83133f80fb4ad878",
+          "max_stack": 2,
+          "max_locals": 2
+        }
+      ]
+    },
+    "pa": {
+      "class_bytes": 1132,
+      "class_sha256": "d3c5762a6f0adbe780faa740c4391da3ff3e9c8d85333fe0ebee9318cfca7225",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 44,
+          "code_sha256": "66d057d10f8044069cde62b374d63e0ed91a6e127f0fc22eb96161e809012097",
+          "code_attribute_sha256": "007f2ac07754ec36efc77c0d2d17bd2212bdb0b6c40a97481ce5e09ac3b4a52f",
+          "max_stack": 3,
+          "max_locals": 2
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lnet/minecraft/client/Minecraft;)V",
+          "access": 1,
+          "code_bytes": 19,
+          "code_sha256": "7e7471f860e34e03d0a37d05ada8876295021cf80b28bba00c5ed32f7889bde2",
+          "code_attribute_sha256": "8058369dd800552ba361e36296f957f687211a9b205fd0f6e4c1447ff1bac3ea",
+          "max_stack": 2,
+          "max_locals": 2
+        },
+        {
+          "name": "c",
+          "descriptor": "(Lnet/minecraft/client/Minecraft;)V",
+          "access": 1,
+          "code_bytes": 66,
+          "code_sha256": "17fd1b03c2ef81a6ecf07ce3f2d441ea04e7bfa41972c35e526a6bb1ff605627",
+          "code_attribute_sha256": "b68d431712b613b190d133f58fa23eb58579b9d4fd35e8da752b502b831ba4fd",
+          "max_stack": 3,
+          "max_locals": 2
+        }
+      ]
+    },
+    "vp": {
+      "class_bytes": 2670,
+      "class_sha256": "7d2b963c15cf862661743a9f01bdf394709ce9979b385f9d6c147114c2ed2383",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Ljava/io/File;)V",
+          "access": 1,
+          "code_bytes": 23,
+          "code_sha256": "a300c1e558500d3bdee2c1d6e563b4afd145d7bf4c66305779d3cb9c5082034c",
+          "code_attribute_sha256": "50e933b11fb513a2b5149a33cfd25aa3794c1310676aa502fbc02f2cc9c3adf3",
+          "max_stack": 2,
+          "max_locals": 2
+        },
+        {
+          "name": "b",
+          "descriptor": "(Ljava/lang/String;)Ljava/lang/String;",
+          "access": 2,
+          "code_bytes": 23,
+          "code_sha256": "580d3c0eb44f8100f3d80992fa3199b84947d9d3bb34a0ab42876089649f67fd",
+          "code_attribute_sha256": "4d46b9d800ff8a69135a8c527d58b4bbe8e175937db5fb20c7a1783e1f12f185",
+          "max_stack": 3,
+          "max_locals": 2
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lnet/minecraft/client/Minecraft;)V",
+          "access": 1,
+          "code_bytes": 189,
+          "code_sha256": "841781f122ee04635a5590ee29bfe8c07745037b987c471892062e8691541556",
+          "code_attribute_sha256": "e7b9441aa043a2a1b371bbc31ff73dabfc1a7e55af370527db90d454aa3bbe20",
+          "max_stack": 5,
+          "max_locals": 7
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lnet/minecraft/client/Minecraft;)V",
+          "access": 1,
+          "code_bytes": 23,
+          "code_sha256": "875e896fce0776fd4c6f8d3082b370839770bfabd1c137891344a3442a9d6964",
+          "code_attribute_sha256": "81f614b49b6e191319793bff06a6b70d676bced32ab3ac76f0529529f66d5a0e",
+          "max_stack": 2,
+          "max_locals": 2
+        },
+        {
+          "name": "c",
+          "descriptor": "(Lnet/minecraft/client/Minecraft;)V",
+          "access": 1,
+          "code_bytes": 66,
+          "code_sha256": "6e604c75e21d98112c1359d83671b7079fc04cbab583a6b6431019005bbf5db6",
+          "code_attribute_sha256": "87aa58b3293a93537dcef8e9f18305e20743716822cc8eca944d5cc60ad1ea80",
+          "max_stack": 3,
+          "max_locals": 2
+        },
+        {
+          "name": "a",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 20,
+          "code_sha256": "1422f0535c211c7bac6e304e828ad2dba0093f4983a8243dec5ab55e0dfc03b2",
+          "code_attribute_sha256": "675fcc136d0d226aed11bd463bcbcecc67d29ff8bcf7c059b23761591e78e174",
+          "max_stack": 4,
+          "max_locals": 2
+        },
+        {
+          "name": "b",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 17,
+          "code_sha256": "ef00c5bcfdb7f981c777adb385ae362105bef910d58dd0cd098d9e19bf13c00b",
+          "code_attribute_sha256": "b757f0c800b77396b01d6f1cca4a7e6d8b6679300a3b98dd67f20811da834ac5",
+          "max_stack": 2,
+          "max_locals": 2
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)Ljava/io/InputStream;",
+          "access": 1,
+          "code_bytes": 37,
+          "code_sha256": "d1e6536f7865970dcdb5ef53699771de1d81fb2aafa6d7c2a4e7ca1caa2374cf",
+          "code_attribute_sha256": "d1010df4b945550378aee96b622de9702f1f341e0dbbf93a9c9f06edb313e37d",
+          "max_stack": 3,
+          "max_locals": 3
+        }
+      ]
+    }
+  }
+}

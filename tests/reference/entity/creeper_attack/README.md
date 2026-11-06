@@ -1,0 +1,11 @@
+# Creeper protected attack and unseen bodies
+
+This package invokes unchanged client `gb.a(sn,float)` and `gb.b(sn,float)` from the pinned Beta 1.7.3 archive. It uses genuine constructors, Watcher records, a real World with twenty-five authored air Chunks, and the actual empty WorldAccess List. No Random seed, profile input or constructor result is assigned. Raw constructor fields and independent entropy contexts are retained for both VMs.
+
+The twelve rows cover the remote return, quiet and active distance boundaries, first fuse sound, hysteresis, unseen cooling, nullable unused targets, actual NULL World, signed fuse overflow, and both explosion radii. Nine rows compare complete protected-body returns. The NULL World row compares the actual NPE at GB4. The two threshold rows compare state and evaluated World/self/XYZ/radius at the real original FD explosion entry, before K139 and attacking144. Original ordinary and debugged full explosion after-states remain separate and visibly differ from that native frontier. This package does not claim a native explosion implementation.
+
+Read-only JDI observes fields, method arguments, returns and original `Method.bytecodes`; it invokes no target methods. It also records the actual first-fuse World sound entry before direction/fuse stores. The empty listener list qualifies the real World sound body, without audio callback credit. Whole original class/Code pins, runtime archive origins, helper pins and before/after hashes bind every capture. No original class is rewritten or subclassed.
+
+Run `capture_reference.py --client-jar b1.7.3.jar --output NEW_DIRECTORY --java JDK17/bin/java --javac JDK17/bin/javac`. Native comparison uses the separate `tests/tools/entity/test_creeper_attack.py --executable EXE --work-dir NEW_DIRECTORY --observations observations.json`.
+
+The native fixture enters only the protected component through the real Mob admission/hold/guard runner. NULL World remains NULL through actual native cleanup; only final fixture disposal restores its independently owned World occurrence. Damage, sound callbacks, explosion completion, enclosing Mob ticks and remote network behavior are outside this component qualification.

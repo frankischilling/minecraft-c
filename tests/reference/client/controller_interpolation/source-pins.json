@@ -1,0 +1,27 @@
+{
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "classes": {
+    "os": {
+      "class_bytes": 2383,
+      "class_sha256": "d53eb2ca4c005c2dbc2fbdb752611f33615ebf403d031109b901482814238b1f",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lnet/minecraft/client/Minecraft;)V",
+          "access": 1,
+          "code_bytes": 41,
+          "code_sha256": "499f63b0fdcb43f008d22b2aca4e05d672688f65dd406feff5d7639850d81843"
+        },
+        {
+          "name": "a",
+          "descriptor": "(F)V",
+          "access": 1,
+          "code_bytes": 74,
+          "code_sha256": "b035e67cf8c2f9b47bde78e1002da5d27dc95c41e849a8abe2136159ce505507"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "scope": "STATIC ONLY",
+  "executed_original_damage_calls": 0,
+  "jar_before": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "jar_after": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "reader": {
+    "path": "tests/reference/client/resource_lookup_common/offline_classfile.py",
+    "sha256": "b57fa4ce9c5cbe53ee84e61a4ba0912998c5300eca46d7690bc6ffe3b24837de"
+  },
+  "helpers": {
+    "verify_source.py": "b71c9da181fc77789de30530a9f8eb1b5c339128b0f3cc09906341749096126d",
+    "audit.py": "61d2c20b8eebbe954b109ab6cbc8b3537db8f69ecb465f8eadfb5b88458598ae",
+    "test_packet.py": "2d9415c4fdf3ee58c8c9e6cb895c0588440d81147ab8cf93d34fde236cb658b7"
+  },
+  "outputs": {
+    "source-pins.json": "6f956d9aa9d85d510ef8ce6667cb69d0d6f31366eb2024fa83e3d79ec67a0835"
+  },
+  "observation_scope": "Offline Python ZIP/classfile reads only. No original class loading, constructor, damage invocation, GL, native runtime or build. Zero executed-original damage credit.",
+  "fatal_scope": "LS.a316 resolves GB.b override; its invokespecial GZ.b2 resolves through II to LS.b. Later Skeleton-only branch is outside the admitted prefix and no death/drop completion is credited."
+}

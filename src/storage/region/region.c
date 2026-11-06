@@ -4,14 +4,12 @@
 
 _Static_assert(CHAR_BIT == 8, "Region storage requires eight-bit bytes");
 
-mc_region_limits mc_region_default_limits(void)
-{
+mc_region_limits mc_region_default_limits(void) {
     const mc_region_limits limits = {1024u * 1024u * 1024u};
     return limits;
 }
 
-const char *mc_region_status_string(mc_region_status status)
-{
+const char *mc_region_status_string(mc_region_status status) {
     switch (status) {
         case MC_REGION_OK:
             return "ok";
@@ -33,14 +31,12 @@ const char *mc_region_status_string(mc_region_status status)
     return "unknown region status";
 }
 
-static uint32_t region_read_u32(const uint8_t *input)
-{
+static uint32_t region_read_u32(const uint8_t *input) {
     return (uint32_t)input[0] << 24u | (uint32_t)input[1] << 16u | (uint32_t)input[2] << 8u |
            input[3];
 }
 
-static void region_read_locations(mc_region_view *view)
-{
+static void region_read_locations(mc_region_view *view) {
     for (size_t i = 0; i < MC_REGION_ENTRY_COUNT; ++i) {
         mc_region_entry *entry = &view->entries[i];
         entry->location = region_read_u32(view->input + 4u * i);
@@ -66,8 +62,7 @@ static void region_read_locations(mc_region_view *view)
     }
 }
 
-static void region_check_overlaps(mc_region_view *view)
-{
+static void region_check_overlaps(mc_region_view *view) {
     /* There are at most 1024 packed ranges. Pairwise comparisons keep storage
      * fixed, even when an entry names a sector far beyond the input. Packed
      * starts have 24 bits and counts have 8, so their byte endpoints fit u64. */
@@ -91,8 +86,7 @@ static void region_check_overlaps(mc_region_view *view)
     }
 }
 
-static void region_read_records(mc_region_view *view)
-{
+static void region_read_records(mc_region_view *view) {
     for (size_t i = 0; i < MC_REGION_ENTRY_COUNT; ++i) {
         mc_region_entry *entry = &view->entries[i];
         if (entry->location == 0) {
@@ -123,8 +117,7 @@ static void region_read_records(mc_region_view *view)
 }
 
 mc_region_status mc_region_open(const uint8_t *input, size_t length,
-                                const mc_region_limits *requested_limits, mc_region_view *out)
-{
+                                const mc_region_limits *requested_limits, mc_region_view *out) {
     if (out == NULL || (input == NULL && length != 0)) {
         return MC_REGION_INVALID_ARGUMENT;
     }
@@ -147,8 +140,7 @@ mc_region_status mc_region_open(const uint8_t *input, size_t length,
     return MC_REGION_OK;
 }
 
-const mc_region_entry *mc_region_entry_at(const mc_region_view *view, int32_t x, int32_t z)
-{
+const mc_region_entry *mc_region_entry_at(const mc_region_view *view, int32_t x, int32_t z) {
     if (view == NULL || x < 0 || x >= 32 || z < 0 || z >= 32) {
         return NULL;
     }
@@ -156,8 +148,7 @@ const mc_region_entry *mc_region_entry_at(const mc_region_view *view, int32_t x,
 }
 
 mc_region_status mc_region_record(const mc_region_view *view, int32_t x, int32_t z,
-                                  mc_region_payload *out)
-{
+                                  mc_region_payload *out) {
     if (view == NULL || out == NULL) {
         return MC_REGION_INVALID_ARGUMENT;
     }

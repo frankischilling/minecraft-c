@@ -20,16 +20,14 @@ static unsigned int checks;
         }                                                                                          \
     } while (0)
 
-static void put_u32(uint8_t *bytes, uint32_t value)
-{
+static void put_u32(uint8_t *bytes, uint32_t value) {
     bytes[0] = (uint8_t)(value >> 24u);
     bytes[1] = (uint8_t)(value >> 16u);
     bytes[2] = (uint8_t)(value >> 8u);
     bytes[3] = (uint8_t)value;
 }
 
-static uint32_t get_u32(const uint8_t *bytes)
-{
+static uint32_t get_u32(const uint8_t *bytes) {
     return (uint32_t)bytes[0] << 24u | (uint32_t)bytes[1] << 16u | (uint32_t)bytes[2] << 8u |
            bytes[3];
 }
@@ -37,8 +35,7 @@ static uint32_t get_u32(const uint8_t *bytes)
 /* Fixed expected locations are supplied by each case, not selected by a second
  * allocator. Only the bytes written by that known commit are changed here. */
 static void expected_record(uint8_t *image, size_t index, size_t sector, uint32_t count,
-                            const uint8_t *payload, size_t length, uint32_t timestamp)
-{
+                            const uint8_t *payload, size_t length, uint32_t timestamp) {
     put_u32(image + 4u * index, (uint32_t)sector << 8u | count);
     put_u32(image + MC_REGION_SECTOR_BYTES + 4u * index, timestamp);
     put_u32(image + sector * MC_REGION_SECTOR_BYTES, (uint32_t)length + UINT32_C(1));
@@ -48,8 +45,7 @@ static void expected_record(uint8_t *image, size_t index, size_t sector, uint32_
     }
 }
 
-static int expect_image(const mc_region_writer *writer, const uint8_t *expected, size_t length)
-{
+static int expect_image(const mc_region_writer *writer, const uint8_t *expected, size_t length) {
     mc_region_writer_bytes bytes = mc_region_writer_get_bytes(writer);
     CHECK(bytes.data != NULL && bytes.length == length);
     CHECK(memcmp(bytes.data, expected, length) == 0);
@@ -58,8 +54,7 @@ static int expect_image(const mc_region_writer *writer, const uint8_t *expected,
 
 static int expect_write_failure(mc_region_writer *writer, int32_t x, int32_t z,
                                 const uint8_t *payload, size_t length,
-                                mc_region_writer_status expected)
-{
+                                mc_region_writer_status expected) {
     mc_region_writer_bytes before = mc_region_writer_get_bytes(writer);
     uint8_t *saved = malloc(before.length);
     CHECK(saved != NULL);
@@ -75,8 +70,7 @@ static int expect_write_failure(mc_region_writer *writer, int32_t x, int32_t z,
 
 static int expect_import_failure(const uint8_t *input, size_t length,
                                  const mc_region_writer_limits *limits, mc_region_writer *sentinel,
-                                 mc_region_writer_status expected)
-{
+                                 mc_region_writer_status expected) {
     mc_region_writer *result = sentinel;
     uint8_t *saved = NULL;
     if (input != NULL && length != 0) {
@@ -93,11 +87,11 @@ static int expect_import_failure(const uint8_t *input, size_t length,
     return 0;
 }
 
-static int test_creation_nulls_and_status(void)
-{
+static int test_creation_nulls_and_status(void) {
     mc_region_writer_limits limits = mc_region_writer_default_limits();
     CHECK(limits.max_image_bytes == 64u * 1024u * 1024u);
     CHECK(limits.max_allocation_bytes == 128u * 1024u * 1024u);
+
     static const struct {
         mc_region_writer_status status;
         const char *text;
@@ -109,6 +103,7 @@ static int test_creation_nulls_and_status(void)
         {MC_REGION_WRITER_RECORD_TOO_LARGE, "region record requires 256 or more sectors"},
         {MC_REGION_WRITER_LIMIT, "resource limit"},
         {MC_REGION_WRITER_ALLOCATION_FAILED, "allocation failed"}};
+
     for (size_t i = 0; i < sizeof(statuses) / sizeof(statuses[0]); ++i) {
         CHECK(strcmp(mc_region_writer_status_string(statuses[i].status), statuses[i].text) == 0);
     }
@@ -140,8 +135,7 @@ static int test_creation_nulls_and_status(void)
     return 0;
 }
 
-static int test_coordinates_and_empty_payload(void)
-{
+static int test_coordinates_and_empty_payload(void) {
     uint8_t expected[5u * MC_REGION_SECTOR_BYTES] = {0};
     const uint8_t payload[] = {0xde, 0xad, 0x00, 0xff};
     mc_region_writer *writer = NULL;
@@ -171,8 +165,7 @@ static int test_coordinates_and_empty_payload(void)
     return 0;
 }
 
-static int test_boundaries_and_maximum(void)
-{
+static int test_boundaries_and_maximum(void) {
     const size_t payload_length = MC_REGION_WRITER_MAX_ZLIB_BYTES;
     const size_t image_length = 257u * MC_REGION_SECTOR_BYTES;
     uint8_t *payload = malloc(payload_length + 1u);
@@ -214,8 +207,7 @@ static int test_boundaries_and_maximum(void)
     return 0;
 }
 
-static int test_rewrite_reuse_and_growth(void)
-{
+static int test_rewrite_reuse_and_growth(void) {
     const size_t expected_length = 14u * MC_REGION_SECTOR_BYTES;
     uint8_t *expected = calloc(expected_length, 1);
     uint8_t *payload = malloc(12283);
@@ -223,6 +215,7 @@ static int test_rewrite_reuse_and_growth(void)
     for (size_t i = 0; i < 12283; ++i) {
         payload[i] = (uint8_t)(0xa5u ^ i);
     }
+
     static const struct {
         int32_t x;
         size_t length;
@@ -235,6 +228,7 @@ static int test_rewrite_reuse_and_growth(void)
                       {3, 0, 4, 1, 8, 0},          {0, 1000, 2, 1, 8, 0},
                       {2, 12283, 8, 4, 12, 16384}, {4, 4091, 5, 2, 12, 0},
                       {5, 0, 7, 1, 12, 0},         {6, 4091, 12, 2, 14, 8192}};
+
     mc_region_writer *writer = NULL;
     CHECK(mc_region_writer_create(NULL, &writer) == MC_REGION_WRITER_OK);
     CHECK(mc_region_writer_consume_growth(writer) == MC_REGION_HEADER_BYTES);
@@ -298,8 +292,7 @@ static int test_rewrite_reuse_and_growth(void)
     return 0;
 }
 
-static int test_import_preservation_and_rejections(void)
-{
+static int test_import_preservation_and_rejections(void) {
     uint8_t input[9u * MC_REGION_SECTOR_BYTES];
     uint8_t saved[sizeof(input)];
     memset(input, 0xa7, sizeof(input));
@@ -371,8 +364,7 @@ static int test_import_preservation_and_rejections(void)
 /* Find the opaque owner's minimum creation budget rather than depending on its
  * private struct layout or host pointer width. Tests below check the current
  * one-byte-per-sector free-map accounting against this live baseline. */
-static int minimum_creation_budget(size_t *budget)
-{
+static int minimum_creation_budget(size_t *budget) {
     size_t lower = 0;
     size_t upper = 65536;
     while (lower < upper) {
@@ -394,8 +386,7 @@ static int minimum_creation_budget(size_t *budget)
     return 0;
 }
 
-static int test_limits_and_failure_atomicity(void)
-{
+static int test_limits_and_failure_atomicity(void) {
     uint8_t expected[3u * MC_REGION_SECTOR_BYTES] = {0};
     uint8_t payload[4091];
     memset(payload, 0x5a, sizeof(payload));
@@ -486,8 +477,7 @@ static int test_limits_and_failure_atomicity(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_creation_nulls_and_status() != 0 || test_coordinates_and_empty_payload() != 0 ||
         test_boundaries_and_maximum() != 0 || test_rewrite_reuse_and_growth() != 0 ||
         test_import_preservation_and_rejections() != 0 ||

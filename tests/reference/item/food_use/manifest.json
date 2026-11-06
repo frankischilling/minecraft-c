@@ -1,0 +1,26 @@
+{
+  "format": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "selection_policy": "wrapper.tsv/controller.tsv are declared LF projections of untouched raw stdout; private provenance selected_sha256 retains the original CRLF selection artifact identity",
+  "files_sha256": {
+    ".gitattributes": "fe52480d26940eede74a4e2c296418167b43665b2d7fa2fbd3e325b8eecd01ac",
+    "capture_reference.py": "0e7c4b6c1c3742f5084ba48f78c7146b753dab3255b4ecd9c6ad76dcc41b3b64",
+    "controller-provenance.json": "1f505dcf3a5924233ec859f5e4b5b1717cf0760dbefbe3f03b1ffe5ba72e123b",
+    "controller.stdout": "5cdc9d237be8a39ac32c61832f6e50dff5f8bf97b4ad04e4675f12a4a337918d",
+    "controller.tsv": "f01f9bcba48963fa7ccffcb20d366cbb2df1b8998fbc2672261fce7ddbe3ed40",
+    "ControllerFoodObservation.java": "a5e242943bd95adcdea030ccff476ac2e96b47ba0dad1b1a5e196fea06f38ef7",
+    "declared-inputs.json": "8d970336867ed18e283090e7c807d48c910e273083db38237509ee86e4c26ccc",
+    "failed-compile.stderr": "c46a37945a61b58f14526a983e56f2d0f4dbf275c499b2b50c032f5cf941d96a",
+    "FoodObservation.java": "20ffdeac7df81c54f69cdec14181a966d5415b7e445f72e38e4dcddf349d10d4",
+    "profiles.tsv": "655a82e05d49e8cd0901eba2970a620c5d5d761e5d99980a0f08fcb6df9b9d52",
+    "source-pins.json": "e7a9d8dfa3ddcaf22a79a538ecdcafb02d013d4cb073458da5950c4e348f66fc",
+    "wrapper-provenance.json": "5674adc5dc999270ab84fed74c9545dfe85492f0933e0f094f4cb89e9a99c1b6",
+    "wrapper.stdout": "e2eee24f41371e472b31fae88c0a855b1c6f05da0b8e03089fe3f3e25c25f929",
+    "wrapper.tsv": "fb9dd3e5bc20970fb035d349eafc0d837d4e12054ff6d1aa5da3150e11bc6f93"
+  },
+  "diagnostic_projection": {
+    "artifact": "failed-compile.stderr",
+    "policy": "Replace absolute private helper path with <helper>/FoodObservation.java and project line endings to LF. Preserve compiler diagnostic text and echoed authored line.",
+    "private_raw_sha256": "28c32d90370591748b6bfbe794af4b914fec191f99da5d3b21f3e0cd49931728"
+  }
+}

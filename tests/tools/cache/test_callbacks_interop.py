@@ -30,8 +30,11 @@ JAR_HASHES = {"client": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d
 HELPERS = ("ChunkObservation.java", "CacheCallbacksObservation.java", "CacheCallbacksController.java")
 MODULES = {"scripts/reference/caves/compare_caves.py", "scripts/reference/caves/fixtures.py",
            "scripts/reference/chunk/compare_chunk.py", "scripts/reference/chunk/compare_finish.py",
-           "scripts/reference/generation/compare_normal.py", "scripts/reference/cache/compare_acquire.py",
+           "scripts/reference/generation/compare_overworld.py", "scripts/reference/cache/compare_acquire.py",
            "scripts/reference/cache/callback_protocol.py"}
+CURRENT_GENERATION_MODULE = "scripts/reference/generation/compare_overworld.py"
+LEGACY_GENERATION_MODULE = "scripts/reference/generation/compare_normal.py"
+LEGACY_MODULES = (MODULES - {CURRENT_GENERATION_MODULE}) | {LEGACY_GENERATION_MODULE}
 LENGTHS = {"blocks": 32768, "metadata": 16384, "skylight": 16384, "block_light": 16384, "heightmap": 256}
 
 
@@ -133,6 +136,17 @@ def validate_inventory(value):
             total <= MAX_ORIGINAL, "exact complete world inventory totals")
 
 
+def recorded_modules(origin):
+    """Select captured names without rewriting their recorded fingerprints."""
+    sources, executed = origin["source_fingerprints"], origin["executed_source_modules"]
+    require(type(sources) is dict and type(executed) is dict, "recorded source/module dictionaries")
+    names = set(executed)
+    require(names == MODULES or names == LEGACY_MODULES, "one complete captured module naming family")
+    other = LEGACY_GENERATION_MODULE if names == MODULES else CURRENT_GENERATION_MODULE
+    require(other not in sources, "unmixed captured source/module naming family")
+    return names
+
+
 def validate_metadata(value):
     keys(value, ("schema", "format", "scope", "encoding", "external_effects", "projection", "provenance", "preparations", "cases"),
          "public callback fixture")
@@ -155,7 +169,8 @@ def validate_metadata(value):
     for name, count in counts.items():
         require(type(origin[name]) is int and origin[name] == count, "complete fixed original corpus counts")
     sources = origin["source_fingerprints"]
-    required = MODULES | {"scripts/reference/cache/compare_callbacks.py", "tests/world/cache/callback_probe.c", "CMakeLists.txt",
+    modules = recorded_modules(origin)
+    required = modules | {"scripts/reference/cache/compare_callbacks.py", "tests/world/cache/callback_probe.c", "CMakeLists.txt",
                           "src/world/cache/acquire.c", "src/world/cache/cache.c", "src/core/java/java.c",
                           "include/mc/world/cache/acquire.h", "include/mc/world/cache/cache.h", "include/mc/world/chunk/state.h"}
     required |= {"tests/reference/" + ("chunk/" if name == "ChunkObservation.java" else "cache/") + name for name in HELPERS}
@@ -174,7 +189,7 @@ def validate_metadata(value):
     keys(origin["helper_classes"], expected_classes, "complete captured helper class families")
     for record in origin["helper_classes"].values():
         fingerprint(record, 2 * 1024 * 1024)
-    keys(origin["executed_source_modules"], MODULES, "complete executed interpretation modules")
+    keys(origin["executed_source_modules"], modules, "complete executed interpretation modules")
     for name, record in origin["executed_source_modules"].items():
         require(json_equal(record, sources[name]), "executed source module attribution")
     keys(origin["tool_versions"], ("java", "javac", "javap"), "all attributed JDK tools")
@@ -612,6 +627,31 @@ class CallbackFixtureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.fixture, cls.decoded = load_fixture()
+
+    def test_recorded_module_name_families(self):
+        # Derived in-memory naming controls exercise admission only. They do not
+        # recapture observations or attribute old hashes to current source bytes.
+        base = self.fixture
+        for selected in (CURRENT_GENERATION_MODULE, LEGACY_GENERATION_MODULE):
+            fixture = copy.deepcopy(base)
+            origin = fixture["provenance"]
+            for table in (origin["source_fingerprints"], origin["executed_source_modules"]):
+                prior = next(name for name in (CURRENT_GENERATION_MODULE, LEGACY_GENERATION_MODULE) if name in table)
+                table[selected] = table.pop(prior)
+            validate_metadata(fixture)
+            other = LEGACY_GENERATION_MODULE if selected == CURRENT_GENERATION_MODULE else CURRENT_GENERATION_MODULE
+            for mutation in ("mixed_modules", "extra_module", "missing_module", "mixed_sources", "crossed_family", "missing_source"):
+                value = copy.deepcopy(fixture)
+                sources = value["provenance"]["source_fingerprints"]
+                modules = value["provenance"]["executed_source_modules"]
+                if mutation == "mixed_modules": modules[other] = dict(modules[selected])
+                elif mutation == "extra_module": modules["scripts/reference/generation/unrecorded.py"] = dict(modules[selected])
+                elif mutation == "missing_module": del modules[selected]
+                elif mutation == "mixed_sources": sources[other] = dict(sources[selected])
+                elif mutation == "crossed_family": modules[other] = modules.pop(selected)
+                else: del sources[selected]
+                with self.subTest(family=selected, mutation=mutation), self.assertRaises(ValueError):
+                    validate_metadata(value)
 
     def test_all_four_original_inputs_and_full_projections_are_present(self):
         self.assertEqual(len(self.decoded), 4)

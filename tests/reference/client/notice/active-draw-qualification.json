@@ -1,0 +1,282 @@
+{
+  "format": 1,
+  "date": "2026-11-01",
+  "status": "BOUNDED_WINDOWS_ACTIVE_DRAW_LINUX_COMPONENTS_AND_ORIGINAL_TEXT_EVIDENCE",
+  "source_authority": {
+    "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "selected_primary_map_sha256": "2898be4c96772afa1c59a63314799352f88a7360b79216ff7a0195f9fe9dea92",
+    "vu_draw_code_sha256": "37f2996707fe74c591a8bb48523c21366bb66684a5b4103b945821cf023e6cf4",
+    "sj_wrap_code_sha256": "6c22e1d05db97bf690f35399986c805ed391515b068a0ef6bc3e6ddaae4d193c",
+    "sj_height_code_sha256": "9057f5c438ab4412f76d34205001e424c2d345d6db4bb3ebebd0798e63b2a9ed",
+    "bb_stack_gui_code_sha256": "bcea716d9ec66df3cc2e53643c488afbc27dbbbe744b7d5a832fbbd3a8164a45"
+  },
+  "current_public_source_and_helper_sha256": {
+    "cmake/client_runtime.cmake": "a5cd1ab9cca660402e08a9198dd816d8d1ab75bccb1bf1f6afabdf2de7f27e58",
+    "CMakeLists.txt": "7821156efa6c7fe005e0b87bda1faf5cfca1719c0fe0651aa2104415c887a688",
+    "src/client/gui/achievement_notice.c": "84b4c5279d506881416aa37370661d895aabe00a3c5e12380f16eb18270c15ed",
+    "src/client/gui/achievement_notice_draw.c": "8c121dfa832bc793f5cc129804b1e6f3f03339775dee803d547bc9f03f892a9c",
+    "src/client/gui/achievement_notice_draw.h": "f6e417ca5ac1cf3a87d406f08039cd10c18ff6e5d08f79e8dcf42510f484294b",
+    "src/client/gui/achievement_notice_internal.h": "18cedcc498c59c3f64d9a652d7c5e1d4c04abb0e44fb2232ede5a2a4f0b75f4a",
+    "src/client/gui/bitmap_font.h": "c16e983f91db2907b1bf6af7215ae5a44b67cdde2b275b0c1f0232c30e99c5d7",
+    "src/client/gui/bitmap_font_draw.c": "78a0ad255f9bc463b62c864fe1a8469f721a276cc8f4701dee698a9aef04ce97",
+    "src/client/gui/bitmap_font_internal.h": "6df0ac7e4fde76fd4fc32bc67971cbee096c9d66d5b96f10e801f45e9feeacad",
+    "src/client/gui/bitmap_font_measure.c": "0cb98632273ea3bd292d719cf39371604232dd9245f8f5d6316bb4e27ca18b50",
+    "src/client/gui/bitmap_font_wrap.c": "d06662e486fabc14193d2937fed0b4e4f8b77fde3a1d173245706ac858716ae2",
+    "src/client/render/item_gui.c": "f3170851926980ded68c84ff4660aacb01dbbd6da0471aa385fe6bca4a428797",
+    "src/client/render/item_gui.h": "6adfd972679763a41aa3dd2617bff6f5bc5af0fbf0d8c545adcedb3f6c83bfc9",
+    "src/client/render/item_renderer_internal.h": "8018a6b9e9b6dce25bd651f48905b849176590e7a92ca57a9046fe041a533faf",
+    "src/client/render/model.c": "f634491c3190c46392ab4e1dc4460354ec31414c8120a6a6d08afd29490ebca1",
+    "src/client/runtime/menu_loop.c": "49f2be84c166e1bbae3c4039db39d5d6237f463331f3538234f5239db710d383",
+    "src/client/runtime/menu_loop.h": "9efd16bf072f56614923af6345db26f807b70723ccd07efab1aac265b58ffe05",
+    "tests/client/gui/test_active_notice.c": "bd68e88929182b264b46658c681e7f1cdca7f43470bfc7f566b9d09fa3f9d10f",
+    "tests/client/gui/test_active_notice_cpu.c": "8d6a5056fdb952cf7ec1b95515469c0ea62a1ef9a785b2acfb484670e353c48a",
+    "tests/tools/client/test_active_notice.py": "fa33468b805935d0e0a2ec17d84837ea86802f4d8f4c0ad7516c70501db35ebf",
+    "cmake/client_active_notice_tests.cmake": "d1632a7e875a08c1fe1ba1a80d66f38b4ff0e23621ed47238e200164264c9086"
+  },
+  "execution_source_scope": "Each retained receipt owns its executed source/product cohort. Current hashes are a documentation checkpoint, not a claim that all historical captures used current helpers.",
+  "receipt_hashes": {
+    "windows_debug_components_initial": {
+      "sha256": "0be24912c6b1c161cfc43e5ab70629cc9d8042dbb160f2bb846f4f955067f3ba",
+      "bytes": 779227
+    },
+    "windows_debug_components_initial_xml": {
+      "sha256": "2f6b969c765fbae57db5db915b407a003039947d92228cec57c77f97761d1d46",
+      "bytes": 3646
+    },
+    "windows_debug_components_later": {
+      "sha256": "50c981863e457f9e7afb79795977b667768dd7b7e85286751c783a027245053c",
+      "bytes": 779256
+    },
+    "windows_debug_components_later_xml": {
+      "sha256": "dbe2018c050f76d07a101d1af0745220a6579f87f08f1bf7cbb37324a845e7b6",
+      "bytes": 3647
+    },
+    "windows_release_six_tests": {
+      "sha256": "1e99be2edeca65c4564dc9852947cf3b2de4a6ef57bdb331b85d5f04f13dbe92",
+      "bytes": 779396
+    },
+    "windows_release_six_tests_xml": {
+      "sha256": "246a1012ca39f567ad3a586d3b12fd116b094733e6c65515691115d146f911db",
+      "bytes": 4663
+    },
+    "windows_release_tutorial": {
+      "sha256": "e49d13bca15bef22351431cfd66edfa2429109e54422dc8fe14c886b3d3745f6",
+      "bytes": 779189
+    },
+    "windows_release_tutorial_xml": {
+      "sha256": "88ba8c0029f00b475dbb50a37938e595b66756a0353ed4765b8fc3af3114f32d",
+      "bytes": 1631
+    },
+    "windows_release_tutorial_capture": {
+      "sha256": "bfcf8c13e4ef8052d4654ef10f4238489ae1656900e91a1b8c677cbdae1ee62f",
+      "bytes": 135186
+    },
+    "windows_debug_tutorial_corrected_capture": {
+      "sha256": "5d754bdac6acb77fcab978daf0e1eba711412b11449940bd3e3195a8c1ed758e",
+      "bytes": 100742
+    },
+    "windows_debug_tutorial_corrected_test": {
+      "sha256": "b844b80c9bdedae3411056f472233eaf947b3fe15f9d73599466a3116602e44c",
+      "bytes": 779331
+    },
+    "same_source_visibility": {
+      "sha256": "1735ae60fdba62668f0d6e8269b3d5918fb5ff9babe8346f04a37fcaeed3b493",
+      "bytes": 119395
+    },
+    "original_component_package_v2": {
+      "sha256": "755bdbf2ff76beea8052703288f6c0b456079634f7e3c3a489c47b8d79c6cbfe",
+      "bytes": 5680
+    },
+    "original_component_execution": {
+      "sha256": "0fc5dad8e7a1a250c188b2bb266c37cd5f4d765709f74e742fa6ab9246c1475d",
+      "bytes": 20538
+    },
+    "original_component_audits": {
+      "sha256": "9fb7c616d374d6cccf8dcb92c27a33254c793291ff2afcdae0eb779099bac7e1",
+      "bytes": 189
+    },
+    "font_comparison": {
+      "sha256": "c925bc558bdca98a21eb7f2ef433ed1e29a307f023c3476cbc507d03e00c1836",
+      "bytes": 6900
+    },
+    "font_comparison_manifest": {
+      "sha256": "f521abc7e72f01e34832371eabde5b31b0dc58f1bb9c5ef3f38378a07d03c5bf",
+      "bytes": 3632
+    },
+    "linux_private_namespace_outer": {
+      "sha256": "f4747b113c7dcc1a4ad740be600bc9f4fc839597d1d1ce9406bf3a0955cd1531",
+      "bytes": 34441
+    },
+    "linux_isolated_x11": {
+      "sha256": "292db38aa3a640edf7e5abf2625adbb92d619c1e91e8c7302a15c23f45a21f45",
+      "bytes": 464656
+    },
+    "linux_isolated_x11_inner": {
+      "sha256": "36cb356707b1ccdeea169bfa4041c8cf5b3fca82c112a47121a1a1603e995a3c",
+      "bytes": 11402
+    },
+    "linux_isolated_x11_xml": {
+      "sha256": "79aa88870d4a8842bf0c5e3d350c7d8dd604826fb0e08f09a91338129da9fea8",
+      "bytes": 3002
+    },
+    "linux_initial_failed_namespace": {
+      "sha256": "763e7397f91c421e7d63d36ff9314f24851d30b47d8127c902a370feae20e865",
+      "bytes": 30163
+    },
+    "linux_second_failed_namespace": {
+      "sha256": "8ae1e56dc4b761f45c64caebde97ea1ad763957e4eba8c53a3e89301795c2fe1",
+      "bytes": 34693
+    }
+  },
+  "windows": {
+    "debug_cpu_components_rounded": {
+      "status": "PASS",
+      "tests": 3,
+      "ctest_real_seconds": 11.27
+    },
+    "debug_later_controller": {
+      "status": "PASS",
+      "tests": 3,
+      "ctest_real_seconds": 11.47,
+      "component_checks": 320,
+      "rounded_checks": 316
+    },
+    "release_selection": {
+      "status": "PASS",
+      "tests": 6,
+      "ctest_real_seconds": 11.16,
+      "names": [
+        "client.achievement_notice",
+        "client.font_renderer",
+        "client.font_commands",
+        "client.active_notice_cpu",
+        "client.active_notice_components",
+        "client.active_notice_rounded"
+      ]
+    },
+    "release_tutorial": {
+      "status": "PASS",
+      "test_seconds": 54.16,
+      "frames": 61,
+      "book_draws": 49,
+      "reminder_refreshes": 31,
+      "focus_recoveries": 2,
+      "checks": 1125,
+      "absent_openInventory_before_bootstrap": true,
+      "awarded_statistic": false,
+      "clock_or_notice_patch": false,
+      "actor_injection": false,
+      "opaque_atlas_texels": 154,
+      "colors": 9,
+      "rgb8_allowance": 1,
+      "pixel_scope": "Native imported-asset/geometry only; no original pixel comparison"
+    },
+    "debug_corrected_tutorial": {
+      "status": "FAIL_VISIBILITY",
+      "seconds": 64.17,
+      "draws": 24,
+      "integer_y_zero_draws": 0,
+      "cleanup_guard": "PASS after the test-owned screen-hold correction"
+    },
+    "old_debug_failure": {
+      "status": "FAIL_RETAINED",
+      "seconds": 99.44,
+      "test_cleanup_delay_seconds": 35,
+      "test_owned_screen_hold_leak": "fixed"
+    },
+    "same_source_visibility": {
+      "release_integer_y_zero_draws": 1,
+      "release_exact_zero_easing_draws": 0,
+      "release_min_reminder_to_draw_ms": 263,
+      "debug_integer_y_zero_draws": 0,
+      "debug_min_reminder_to_draw_ms": 809,
+      "performance_bottleneck_proven": false
+    }
+  },
+  "original_components": {
+    "ordinary_operations": 56,
+    "debugger_operations": 56,
+    "hardened_audits": "PASS",
+    "debugger_events": 1637,
+    "code_pins": 270,
+    "scope": "Real Font and null-App Notice constructors; real clock expiry/null prefixes"
+  },
+  "retained_font_comparison": {
+    "status": "PASS",
+    "exact_height_comparisons": 48,
+    "debugger_root_operand_sets": 24,
+    "common_utf16_cases": 12,
+    "native_profiles": [
+      "components",
+      "rounded"
+    ],
+    "historical_native_fixture_sha256": "9a5af637defebfe3e2f078cfe506828f773b99118e66ec013d74850b3ffb0638",
+    "historical_native_executable_sha256": "228cc75b575952062061baa7c29d3241787e12ff37fd19f00ce4c3e4510123cc",
+    "binding": "Actual retained build/test/source/capture receipts; historical fixture reconstructed byte-exactly and current products superseded"
+  },
+  "linux": {
+    "status": "PASS_PRIVATE_FILESYSTEM_ISOLATED_X11_COMPONENTS",
+    "prior_attempts": [
+      {
+        "status": "FAIL",
+        "frontier": "64MiB namespace admission"
+      },
+      {
+        "status": "FAIL",
+        "frontier": "legitimate private options/statistics output"
+      }
+    ],
+    "prior_body_only_checks": [
+      332,
+      330
+    ],
+    "prior_body_return_and_cleanup": true,
+    "qualified_graphical_pass": true,
+    "tutorial_registration": false,
+    "names": [
+      "client.active_notice_components",
+      "client.active_notice_rounded"
+    ],
+    "tests": 2,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "component_checks": 330,
+    "rounded_checks": 332,
+    "test_seconds": [
+      15.8503,
+      14.867
+    ],
+    "summed_test_seconds_rounded": 30.72,
+    "ctest_real_seconds": 30.73,
+    "configuration": "Debug",
+    "private_display": ":99",
+    "gl_core": [
+      4,
+      5
+    ],
+    "software_gl": true,
+    "sanitizers": true,
+    "host_tree_unchanged": true,
+    "private_bind_unmounted": true,
+    "namespace_fd_closed": true,
+    "remaining_processes": [],
+    "source_products_assets_tools_unchanged": true,
+    "private_options_statistics_writes": "Legitimate outputs inside the proven disposable bind",
+    "required_isolation": "Validated private mount receipt plus successful outer host-tree audit; HOME alone is insufficient"
+  },
+  "compact_entity_nbt_error_bytes": 544,
+  "unqualified": [
+    "Font pixel parity",
+    "native per-line String identity comparison",
+    "original active VU/Book pixels",
+    "complete QQ/KH/caller through 477 parity",
+    "normal-Far playability",
+    "complete playable singleplayer",
+    "Linux fresh-player tutorial or loaded-World notice",
+    "ordinary original VU drawing"
+  ],
+  "hosted_qualification": "No hosted result for this increment yet; preceding baseline is separate",
+  "source_intentional_difference": "Account authentication only",
+  "packaging": "Derived text/hash metadata only; no private binary, asset, raw bytecode, screenshot or World payload"
+}

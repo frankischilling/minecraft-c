@@ -1,0 +1,11 @@
+{
+  "purpose": "Project-authored deterministic real-OpenAL WAVE stream refill fixture; no original game audio or expected decoded state.",
+  "file": "square-mono44k.wav",
+  "bytes": 32812,
+  "sha256": "500c0b18eaf024ec13c5861b71628551539585c4a93535edc7d8d1e4355b6244",
+  "frames": 16384,
+  "channels": 1,
+  "rate": 44100,
+  "bits": 16,
+  "recipe": "PCM signed16 little endian; sample i is +12000 for even floor(i/32), otherwise -12000; canonical 44-byte RIFF WAVE header."
+}

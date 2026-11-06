@@ -1,0 +1,7 @@
+ordinary-*.stdout -text whitespace=trailing-space,space-before-tab,cr-at-eol
+*.json text eol=lf
+*.jsonl text eol=lf
+*.py text eol=lf
+*.java text eol=lf
+*.tsv text eol=lf
+original.stdout text eol=lf

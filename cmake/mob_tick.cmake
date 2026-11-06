@@ -1,0 +1,127 @@
+include_guard(GLOBAL)
+
+target_sources(mc_simulation PRIVATE
+    src/entity/living/fields.c
+    src/entity/mob/damage.c
+    src/entity/mob/references.c
+    src/entity/mob/tick/common.c
+    src/entity/mob/tick/helpers.c
+    src/entity/mob/tick/ray.c
+    src/entity/mob/tick/behavior.c
+    src/entity/mob/tick/creeper.c
+    src/entity/mob/tick/monster_attack.c
+    src/entity/mob/tick/wolf_attack.c
+    src/entity/mob/tick/path.c
+    src/entity/mob/tick/path_follow.c
+    src/entity/mob/tick/tick.c
+    src/entity/mob/tick/living.c
+    src/entity/mob/tick/slime_squid.c
+    src/entity/mob/tick/wolf.c
+    src/entity/mob/tick/wolf_setter.c
+    src/entity/mob/tick/wrappers.c)
+
+if(BUILD_TESTING)
+    add_executable(mc_test_wolf_attack tests/entity/test_wolf_attack.c)
+    target_include_directories(mc_test_wolf_attack PRIVATE src src/core/java)
+    target_link_libraries(mc_test_wolf_attack PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_math_classes mc_build_options)
+    add_test(NAME entity.wolf_attack COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_wolf_attack.py"
+        --executable "$<TARGET_FILE:mc_test_wolf_attack>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/wolf-attack-contracts")
+    set_tests_properties(entity.wolf_attack PROPERTIES
+        LABELS "public;integration;entity;world;ownership;math" TIMEOUT 180)
+    add_test(NAME entity.wolf_attack_reference COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/wolf_attack/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_wolf_attack>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/wolf-attack-reference")
+    set_tests_properties(entity.wolf_attack_reference PROPERTIES
+        LABELS "public;integration;entity;ownership;replay" TIMEOUT 180)
+    add_test(NAME tools.wolf_attack_packet COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/wolf_attack/test_packet.py"
+        WolfPacket.test_unchanged_baseline
+        WolfPacket.test_count_identity_exception_effect_and_type_mutations
+        WolfPacket.test_random_velocity_position_and_bounds_exact_comparison
+        WolfPacket.test_capture_source_pins
+        WolfPacket.test_duplicate_keys_and_boolean_coercion)
+    set_tests_properties(tools.wolf_attack_packet PROPERTIES
+        LABELS "public;unit;tools;entity;replay" TIMEOUT 60)
+    add_executable(mc_test_skeleton_null_damage tests/entity/mob/test_skeleton_null_damage.c)
+    target_include_directories(mc_test_skeleton_null_damage PRIVATE src src/core/java)
+    target_link_libraries(mc_test_skeleton_null_damage PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_math_classes mc_build_options)
+    add_test(NAME entity.skeleton_null_damage COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_skeleton_null_damage.py"
+        --executable $<TARGET_FILE:mc_test_skeleton_null_damage>
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/skeleton-null-damage-contracts")
+    set_tests_properties(entity.skeleton_null_damage PROPERTIES
+        LABELS "public;integration;entity;world;ownership" TIMEOUT 180)
+
+    add_executable(mc_test_creeper_null_damage tests/entity/mob/test_creeper_null_damage.c)
+    target_include_directories(mc_test_creeper_null_damage PRIVATE src src/core/java)
+    target_link_libraries(mc_test_creeper_null_damage PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_math_classes mc_build_options)
+    add_test(NAME entity.creeper_null_damage COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_creeper_null_damage.py"
+        --executable "$<TARGET_FILE:mc_test_creeper_null_damage>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/creeper-null-damage-contracts")
+    set_tests_properties(entity.creeper_null_damage PROPERTIES
+        LABELS "public;integration;entity;world;ownership" TIMEOUT 180)
+    add_test(NAME tools.creeper_null_damage_packet COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/creeper_null_damage/test_packet.py")
+    set_tests_properties(tools.creeper_null_damage_packet PROPERTIES
+        LABELS "public;unit;tools;entity;replay" TIMEOUT 60)
+
+    add_executable(mc_test_zombie_null_damage tests/entity/test_zombie_null_damage.c)
+    target_include_directories(mc_test_zombie_null_damage PRIVATE src src/core/java)
+    target_link_libraries(mc_test_zombie_null_damage PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_math_classes mc_build_options)
+    add_test(NAME entity.zombie_null_damage COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_zombie_null_damage.py"
+        --executable $<TARGET_FILE:mc_test_zombie_null_damage>
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/zombie-null-damage-contracts")
+    set_tests_properties(entity.zombie_null_damage PROPERTIES
+        LABELS "public;integration;entity;ownership;replay" TIMEOUT 300)
+
+    add_executable(mc_test_wolf_interest tests/entity/test_wolf_interest.c)
+    target_include_directories(mc_test_wolf_interest PRIVATE src src/core/java)
+    target_link_libraries(mc_test_wolf_interest PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_math_classes mc_build_options)
+    add_test(NAME entity.wolf_interest COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_wolf_interest.py"
+        --executable $<TARGET_FILE:mc_test_wolf_interest>
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/wolf-interest-contracts")
+    set_tests_properties(entity.wolf_interest PROPERTIES
+        LABELS "public;integration;entity;ownership" TIMEOUT 240)
+
+    add_executable(mc_test_mob_tick tests/entity/test_mob_tick.c)
+    target_include_directories(mc_test_mob_tick PRIVATE src src/core/java)
+    target_link_libraries(mc_test_mob_tick PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_math_classes mc_build_options)
+    add_test(NAME entity.mob_tick COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_mob_tick.py"
+        --executable $<TARGET_FILE:mc_test_mob_tick>
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/entity-mob-tick-contracts")
+    set_tests_properties(entity.mob_tick PROPERTIES
+        LABELS "public;unit;entity;ownership" TIMEOUT 420)
+    add_executable(mc_test_creeper_attack tests/entity/test_creeper_attack.c)
+    target_include_directories(mc_test_creeper_attack PRIVATE src src/core/java)
+    target_link_libraries(mc_test_creeper_attack PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_math_classes mc_build_options)
+    add_test(NAME entity.creeper_attack COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_creeper_attack.py"
+        --executable $<TARGET_FILE:mc_test_creeper_attack>
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/creeper-attack-contracts")
+    set_tests_properties(entity.creeper_attack PROPERTIES
+        LABELS "public;integration;entity;ownership;replay" TIMEOUT 180)
+    add_executable(mc_test_monster_attack tests/entity/test_monster_attack.c)
+    target_include_directories(mc_test_monster_attack PRIVATE src src/core/java)
+    target_link_libraries(mc_test_monster_attack PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_math_classes mc_build_options)
+    add_test(NAME entity.monster_attack COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_monster_attack.py"
+        --executable $<TARGET_FILE:mc_test_monster_attack>
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/monster-attack-contracts")
+    set_tests_properties(entity.monster_attack PROPERTIES
+        LABELS "public;integration;entity;ownership;replay" TIMEOUT 180)
+endif()

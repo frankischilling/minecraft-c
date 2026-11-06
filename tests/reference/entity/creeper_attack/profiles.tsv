@@ -1,0 +1,13 @@
+case	scenario	unseen	remote	null_world	target_self	distance_bits	fuse	previous	direction	powered	attacking	expected_fuse	expected_direction	expected_attacking	expected_dirty	sounds	projection	pc
+0	remote_ignores_nan	0	1	0	0	7fc00000	7	3	1	0	0	7	1	0	0	0	return	10
+1	far_quiet_clamp	0	0	0	0	41000000	0	3	-1	0	0	0	-1	0	0	0	return	177
+2	first_fuse_null_target	0	0	0	0	40000000	0	3	-1	0	0	1	1	1	1	1	return	177
+3	positive_hysteresis	0	0	0	1	40c00000	4	3	1	0	0	5	1	1	0	0	return	177
+4	exact_seven_cools	0	0	0	0	40e00000	4	3	1	0	1	3	-1	1	1	0	return	177
+5	unseen_ignores_nan	1	0	0	0	7fc00000	4	3	1	0	0	3	-1	0	1	0	return	45
+6	unseen_zero_untouched	1	0	0	1	ff800000	0	3	1	0	1	0	1	1	0	0	return	45
+7	null_world_first_field	0	0	1	0	40000000	7	3	1	0	0	7	1	0	0	0	null	4
+8	exact_three_quiet	0	0	0	0	40400000	0	3	-1	0	0	0	-1	0	0	0	return	177
+9	active_signed_wrap	0	0	0	0	40000000	2147483647	3	1	0	0	-2147483648	1	1	0	0	return	177
+10	normal_threshold_prefix	0	0	0	0	40000000	29	3	1	0	0	30	1	0	0	0	explosion	134
+11	powered_threshold_prefix	0	0	0	1	40000000	29	3	1	1	0	30	1	0	0	0	explosion	108

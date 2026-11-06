@@ -1,0 +1,213 @@
+{
+  "SDK_protocol": [
+    "ordinary save selection/load",
+    "require actual declared ray and prepressed Plate1",
+    "one RMB down/up pair through SDL transport and actual SDK",
+    "observe lit76 plus future target76 E/F record with deadline no more than2 WorldTime units ahead",
+    "ordinary returned frames until due target becomes off75 metadata4 with Plate1 and Dust0",
+    "three continuing returned World/HUD/held frames",
+    "ordinary Save and Quit",
+    "ordinary reselection of same save into distinct World/Player",
+    "require off75 metadata4/Plate1/Inventory76count1 and independent disk verification",
+    "ordinary terminal retirement"
+  ],
+  "assets_root": ".local/imported-icons",
+  "bounds": {
+    "bootstrap_close_milliseconds": 35000,
+    "load_frames": 180,
+    "load_milliseconds": 180000,
+    "outer_seconds": 1200,
+    "settle_draw_frames": 64,
+    "settle_draw_milliseconds": 60000,
+    "tap_transition_frames": 64,
+    "tap_transition_milliseconds": 60000
+  },
+  "cells": [
+    {
+      "id": 1,
+      "metadata": 0,
+      "name": "standing-platform",
+      "xyz": [
+        3,
+        64,
+        0
+      ]
+    },
+    {
+      "id": 3,
+      "metadata": 0,
+      "name": "wall-column-base",
+      "xyz": [
+        3,
+        64,
+        3
+      ]
+    },
+    {
+      "id": 1,
+      "metadata": 0,
+      "name": "wall-support",
+      "xyz": [
+        3,
+        65,
+        3
+      ]
+    },
+    {
+      "id": 70,
+      "metadata": 1,
+      "name": "initial-pressed-Stone-Plate",
+      "xyz": [
+        3,
+        66,
+        3
+      ]
+    },
+    {
+      "id": 0,
+      "metadata": 0,
+      "name": "target",
+      "xyz": [
+        3,
+        65,
+        2
+      ]
+    },
+    {
+      "id": 1,
+      "metadata": 0,
+      "name": "dust-floor",
+      "xyz": [
+        4,
+        64,
+        2
+      ]
+    },
+    {
+      "id": 55,
+      "metadata": 0,
+      "name": "adjacent-Dust",
+      "xyz": [
+        4,
+        65,
+        2
+      ]
+    }
+  ],
+  "claims": [
+    "genuine native SDK/controller/World scheduler/save/reselection path only",
+    "no original JVM GUI scene, frame pixels, FPS, full-frame entropy or burnout claim"
+  ],
+  "format": 1,
+  "fresh_native_processes": 1,
+  "native_scene_stores": "NONE; only prelaunch saved NBT/Region input authoring",
+  "options": {
+    "difficulty": 2,
+    "viewDistance": 3
+  },
+  "player": {
+    "HealthShort": 5,
+    "Inventory": [
+      [
+        0,
+        76,
+        2,
+        0
+      ]
+    ],
+    "Motion": [
+      0,
+      0,
+      0
+    ],
+    "Pos": [
+      3.5,
+      66.62000000476837,
+      0.5
+    ],
+    "Rotation": [
+      0.0,
+      26.0
+    ],
+    "feet_y": 65,
+    "selected": 0
+  },
+  "profile": "powered-placement",
+  "saved_column_light_height": [
+    {
+      "HeightMap": 66,
+      "SkyLight_y64_y65": [
+        0,
+        0
+      ],
+      "SkyLight_y66_y67": [
+        15,
+        15
+      ],
+      "xz": [
+        3,
+        3
+      ]
+    },
+    {
+      "HeightMap": 65,
+      "SkyLight_y64_y65": [
+        0,
+        15
+      ],
+      "xz": [
+        4,
+        2
+      ]
+    }
+  ],
+  "source_input_sha256": {
+    "tests/client/gameplay/redstone/test_placement.c": "47813c47f9c8ea85484bac84c1ee5857e56b88cc07b665ada7ac3f7e0b214e23",
+    "tests/client/gameplay/test_torch_placement.c": "d3a73c0ecf37131ca1171a587570a691425c33388c801790bd5fd8a51c12a12c",
+    "tests/client/startup/test_world_selection_loop.c": "cf7a70d2639ac6ed37a4aff7950b6e3bc244b337247ff33b7fc0c46cacda5690",
+    "tests/tools/client/test_farming_loop.py": "5d97de151dac6e1ce79759d5a6eac552dab37792ba53bb36d2465751185f4b9e",
+    "tests/tools/client/test_torch_placement_loop.py": "875b711691f95768053bb12493fcf85c7376e79d78eafc4481a4470b437159ee",
+    "tests/tools/client/test_world_selection_loop.py": "baa5ad2013f3e44160b37faa95e457b7b33dae98d7a14b2f2ecf3a5c06f29a1f"
+  },
+  "source_ray": {
+    "derived_at_z3": "eye_y - 2.5*tan(26deg), lies within [65,66]",
+    "destination": [
+      3,
+      65,
+      2
+    ],
+    "face": 2,
+    "hit": "Stone north face",
+    "placed_attachment_metadata": 4,
+    "xyz": [
+      3,
+      65,
+      3
+    ]
+  },
+  "status": "FROZEN_PRE_CODE_INPUT_PLAN_NO_NATIVE_EXECUTION",
+  "uncontrolled_frontier": [
+    "Plate random tick may release naturally at an uncontrolled time; retain failure if it invalidates required state",
+    "returned-frame sampling may miss an intermediate lit/scheduled state; retain failure, no timing repair",
+    "no mandatory off-to-on or burnout; CPU203 separately covers those branches"
+  ],
+  "world": {
+    "chunk_bounds": [
+      -10,
+      10,
+      -10,
+      10
+    ],
+    "chunks": 441,
+    "folder": "alpha",
+    "initial_BlockLight": 0,
+    "name": "Redstone Torch world",
+    "native_DB_List_SM_Set_QY": "ordinary Registry/class construction; no repair",
+    "native_pending_E_F": "ordinary construction empty; no authored or live schedule insertion",
+    "scene_base": "unchanged Torch PRELAUNCH441 builder; after its audit edit only Chunk0,0",
+    "seed": 123,
+    "terrain_populated": true,
+    "unchanged_chunk_records": 440,
+    "version": 19132
+  }
+}

@@ -29,7 +29,7 @@
 typedef struct callback_event {
     mc_chunk_state *chunk;
     size_t slice;
-    bool tiles;
+    bool tile_entities;
 } callback_event;
 
 typedef struct slot {
@@ -61,8 +61,7 @@ static handle handles[HANDLE_LIMIT];
 static size_t handle_count, selected, output_bytes;
 static bool output_ok = true;
 
-static void emit(const char *text)
-{
+static void emit(const char *text) {
     size_t length = strlen(text);
     if (!output_ok || length > OUTPUT_LIMIT - output_bytes) {
         output_ok = false;
@@ -73,8 +72,7 @@ static void emit(const char *text)
         output_ok = false;
 }
 
-static void format(const char *pattern, ...)
-{
+static void format(const char *pattern, ...) {
     char text[1024];
     va_list arguments;
     va_start(arguments, pattern);
@@ -86,8 +84,7 @@ static void format(const char *pattern, ...)
         emit(text);
 }
 
-static void hex(const uint8_t *bytes, size_t length)
-{
+static void hex(const uint8_t *bytes, size_t length) {
     static const char digits[] = "0123456789abcdef";
     char text[257];
     for (size_t offset = 0; offset < length;) {
@@ -102,8 +99,7 @@ static void hex(const uint8_t *bytes, size_t length)
     }
 }
 
-static void json_string(const char *text)
-{
+static void json_string(const char *text) {
     if (text == NULL) {
         emit("null");
         return;
@@ -121,8 +117,7 @@ static void json_string(const char *text)
     emit("\"");
 }
 
-static bool number(const char *text, uint64_t limit, uint64_t *out)
-{
+static bool number(const char *text, uint64_t limit, uint64_t *out) {
     if (*text == '\0' || (text[0] == '0' && text[1] != '\0'))
         return false;
     uint64_t value = 0;
@@ -138,8 +133,7 @@ static bool number(const char *text, uint64_t limit, uint64_t *out)
     return true;
 }
 
-static bool integer(const char *text, int32_t *out)
-{
+static bool integer(const char *text, int32_t *out) {
     bool negative = *text == '-';
     uint64_t value;
     if (!number(text + (negative ? 1 : 0), negative ? UINT64_C(2147483648) : INT32_MAX, &value) ||
@@ -149,15 +143,13 @@ static bool integer(const char *text, int32_t *out)
     return true;
 }
 
-static int digit(unsigned char byte)
-{
+static int digit(unsigned char byte) {
     return byte >= '0' && byte <= '9'   ? byte - '0'
            : byte >= 'a' && byte <= 'f' ? byte - 'a' + 10
                                         : -1;
 }
 
-static bool decode(const char *text, size_t limit, uint8_t **out, size_t *length)
-{
+static bool decode(const char *text, size_t limit, uint8_t **out, size_t *length) {
     size_t count = strcmp(text, "-") == 0 ? 0 : strlen(text);
     if (count % 2u != 0 || count / 2u > limit)
         return false;
@@ -179,8 +171,7 @@ static bool decode(const char *text, size_t limit, uint8_t **out, size_t *length
     return true;
 }
 
-static bool long_bits(const char *text, int64_t *out)
-{
+static bool long_bits(const char *text, int64_t *out) {
     if (strlen(text) != 16)
         return false;
     uint64_t value = 0;
@@ -195,14 +186,12 @@ static bool long_bits(const char *text, int64_t *out)
 }
 
 static mc_world_storage_status failure(mc_world_storage_error *error,
-                                       mc_world_storage_status status, const char *operation)
-{
+                                       mc_world_storage_status status, const char *operation) {
     *error = (mc_world_storage_error){status, operation, 0};
     return status;
 }
 
-static size_t identity(const mc_chunk_state *chunk)
-{
+static size_t identity(const mc_chunk_state *chunk) {
     if (chunk == NULL || chunk->blank)
         return 0;
     for (size_t i = 0; i < handle_count; ++i)
@@ -216,17 +205,15 @@ static size_t identity(const mc_chunk_state *chunk)
     return ++handle_count;
 }
 
-static mc_chunk_state *find_handle(const char *text)
-{
+static mc_chunk_state *find_handle(const char *text) {
     uint64_t id;
     if (!number(text, handle_count, &id) || id == 0 || handles[id - 1u].slot != selected)
         return NULL;
     return handles[id - 1u].chunk;
 }
 
-static bool register_tiles(void *world, const mc_chunk_acquire_context *context,
-                           mc_chunk_state *chunk)
-{
+static bool register_tile_entities(void *world, const mc_chunk_acquire_context *context,
+                                   mc_chunk_state *chunk) {
     slot *owner = world;
     if (context != &owner->context || !chunk->active || owner->callback_count >= 9)
         return false;
@@ -235,8 +222,7 @@ static bool register_tiles(void *world, const mc_chunk_acquire_context *context,
 }
 
 static bool register_entities(void *world, const mc_chunk_acquire_context *context,
-                              mc_chunk_state *chunk, size_t slice)
-{
+                              mc_chunk_state *chunk, size_t slice) {
     slot *owner = world;
     if (context != &owner->context || !chunk->active || slice >= 8 || owner->callback_count >= 9)
         return false;
@@ -244,8 +230,7 @@ static bool register_entities(void *world, const mc_chunk_acquire_context *conte
     return true;
 }
 
-static bool reset_cache(slot *owner)
-{
+static bool reset_cache(slot *owner) {
     owner->callback_count = 0;
     owner->dimension_set = false;
     owner->fallback = (mc_chunk_state){.blank = true};
@@ -258,15 +243,14 @@ static bool reset_cache(slot *owner)
                                                 .world = owner,
                                                 .loader = &owner->loader,
                                                 .load = mc_world_store_load_callback,
-                                                .register_tiles = register_tiles,
+                                                .register_tile_entities = register_tile_entities,
                                                 .register_entities = register_entities};
     return mc_chunk_cache_init(&owner->cache, owner->entries, CACHE_LIMIT, owner->insertions,
                                LIST_LIMIT) &&
            mc_chunk_pending_init(&owner->pending, owner->keys, CACHE_LIMIT);
 }
 
-static void close_slot(size_t index)
-{
+static void close_slot(size_t index) {
     slot *owner = &slots[index];
     (void)reset_cache(owner);
     owner->draft = (mc_level_info){0};
@@ -278,8 +262,7 @@ static void close_slot(size_t index)
     memset(owner, 0, sizeof(*owner));
 }
 
-static const mc_nbt_tag *field(const mc_nbt_tag *parent, const char *name)
-{
+static const mc_nbt_tag *field(const mc_nbt_tag *parent, const char *name) {
     uint16_t units[16];
     size_t length = strlen(name);
     for (size_t i = 0; i < length; ++i)
@@ -287,16 +270,15 @@ static const mc_nbt_tag *field(const mc_nbt_tag *parent, const char *name)
     return mc_nbt_compound_get(parent, units, length);
 }
 
-static bool opaque(const mc_stored_chunk *owner)
-{
+static bool opaque(const mc_stored_chunk *owner) {
     const mc_nbt_tag *level = field(mc_stored_chunk_root(owner), "Level");
-    const mc_nbt_tag *entities = field(level, "Entities"), *tiles = field(level, "TileEntities");
+    const mc_nbt_tag *entities = field(level, "Entities"),
+                     *tile_entities = field(level, "TileEntities");
     return (entities != NULL && entities->value.list.length != 0) ||
-           (tiles != NULL && tiles->value.list.length != 0);
+           (tile_entities != NULL && tile_entities->value.list.length != 0);
 }
 
-static void print_info(const mc_level_info *info)
-{
+static void print_info(const mc_level_info *info) {
     if (info == NULL) {
         emit("null");
         return;
@@ -316,15 +298,13 @@ static void print_info(const mc_level_info *info)
            info->player_dimension);
 }
 
-static void array(const char *name, const uint8_t *bytes, size_t length)
-{
+static void array(const char *name, const uint8_t *bytes, size_t length) {
     format("\"%s\":{\"length\":%zu,\"values\":\"", name, length);
     hex(bytes, length);
     emit("\"}");
 }
 
-static void print_chunk(const mc_chunk_state *chunk)
-{
+static void print_chunk(const mc_chunk_state *chunk) {
     if (chunk == NULL) {
         emit("null");
         return;
@@ -355,8 +335,7 @@ static void print_chunk(const mc_chunk_state *chunk)
 
 static bool response(mc_world_regions *regions, mc_world_storage_status status,
                      const mc_world_storage_error *error, mc_chunk_state *chunk,
-                     const uint32_t *growth, int preserved, int acquisition)
-{
+                     const uint32_t *growth, int preserved, int acquisition) {
     if (status != error->status ||
         (status == MC_WORLD_STORAGE_OK
              ? error->operation != NULL || error->system_error != 0
@@ -429,9 +408,9 @@ static bool response(mc_world_regions *regions, mc_world_storage_status status,
         for (size_t i = 0; i < owner->callback_count; ++i) {
             callback_event *event = &owner->callbacks[i];
             format("%s{\"kind\":\"%s\",\"handle\":%zu,\"active\":%s,\"slice\":", i == 0 ? "" : ",",
-                   event->tiles ? "tiles" : "entities", identity(event->chunk),
+                   event->tile_entities ? "tiles" : "entities", identity(event->chunk),
                    event->chunk->active ? "true" : "false");
-            if (event->tiles)
+            if (event->tile_entities)
                 emit("null}");
             else
                 format("%zu}", event->slice);
@@ -442,8 +421,7 @@ static bool response(mc_world_regions *regions, mc_world_storage_status status,
     return output_ok && fflush(stdout) == 0 && !ferror(stdout);
 }
 
-static bool edit_info(mc_level_info *info, const char *name, const char *value)
-{
+static bool edit_info(mc_level_info *info, const char *name, const char *value) {
     if (strcmp(name, "seed") == 0)
         return long_bits(value, &info->seed);
     if (strcmp(name, "time") == 0)
@@ -463,8 +441,7 @@ static bool edit_info(mc_level_info *info, const char *name, const char *value)
     return false;
 }
 
-static bool edit_chunk(mc_chunk_state *chunk, const char *name, const char *value)
-{
+static bool edit_chunk(mc_chunk_state *chunk, const char *name, const char *value) {
     if (strcmp(name, "x") == 0)
         return integer(value, &chunk->x);
     if (strcmp(name, "z") == 0)
@@ -488,8 +465,7 @@ static bool edit_chunk(mc_chunk_state *chunk, const char *name, const char *valu
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     (void)argv;
     if (argc != 1)
         return 2;

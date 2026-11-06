@@ -1,0 +1,27 @@
+{
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "classes": {
+    "px": {
+      "class_bytes": 17104,
+      "class_sha256": "18055a199b913c956e5f816be5195fd86814927a93299b3ca1b913d6070c90fa",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "(FJ)V",
+          "access": 1,
+          "code_bytes": 1028,
+          "code_sha256": "49abc58f125a73b8104791171bf9fcd8b08953b200d36df7e43fabf1cb65b001"
+        },
+        {
+          "name": "h",
+          "descriptor": "(F)V",
+          "access": 2,
+          "code_bytes": 572,
+          "code_sha256": "b2c57638b761f556829b0e34d4e01a844f9ce20652d06648b82a9fb04cc759ae"
+        }
+      ]
+    }
+  }
+}

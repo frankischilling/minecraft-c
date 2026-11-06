@@ -1,0 +1,90 @@
+{
+  "profiles": [
+    {
+      "profile": "iron-pristine",
+      "id": 267,
+      "damage": 0,
+      "max": 250,
+      "x": 7,
+      "y": 11,
+      "count": 1
+    },
+    {
+      "profile": "iron-one",
+      "id": 267,
+      "damage": 1,
+      "max": 250,
+      "x": 7,
+      "y": 11,
+      "count": 1
+    },
+    {
+      "profile": "iron-half",
+      "id": 267,
+      "damage": 125,
+      "max": 250,
+      "x": 7,
+      "y": 11,
+      "count": 1
+    },
+    {
+      "profile": "iron-last",
+      "id": 267,
+      "damage": 249,
+      "max": 250,
+      "x": 7,
+      "y": 11,
+      "count": 1
+    },
+    {
+      "profile": "iron-maximum",
+      "id": 267,
+      "damage": 250,
+      "max": 250,
+      "x": 7,
+      "y": 11,
+      "count": 1
+    },
+    {
+      "profile": "iron-over",
+      "id": 267,
+      "damage": 251,
+      "max": 250,
+      "x": 7,
+      "y": 11,
+      "count": 1
+    },
+    {
+      "profile": "diamond-maximum",
+      "id": 276,
+      "damage": 1561,
+      "max": 1561,
+      "x": 7,
+      "y": 11,
+      "count": 1
+    },
+    {
+      "profile": "shovel-one",
+      "id": 256,
+      "damage": 1,
+      "max": 250,
+      "x": 7,
+      "y": 11,
+      "count": 1
+    },
+    {
+      "profile": "shovel-maximum",
+      "id": 256,
+      "damage": 250,
+      "max": 250,
+      "x": 7,
+      "y": 11,
+      "count": 1
+    }
+  ],
+  "preparation": "Genuine original KQ canonical App, KV settings, IK texture packs, JI RenderEngine, SJ Font with supplied JAR font/default.png and actual BB constructor. Actual IZ count1 Stacks; supplied x7,y11. No World/Player required by this direct overlay body. Font construction has already used actual singleton NW; backing/flags are read and retained without writes or clears. Item classes warmed by actual pre-call IZ.j query.",
+  "invocation": "BB.b(SJ,JI,IZ,int,int) actual original method; count1 skips Font draw. Real GL and all source NW.draw calls execute under hidden32x32 Pbuffer.",
+  "observer": "Ordinary and independent read-only JDI VMs; actual BB rectangle entries, NW draw-entry raw buffers, IZ getter return values/initial damage field and Math.round(D)J return values. No target methods invoked by observer; no target field/array writes.",
+  "entropy": "Constructors retain actual independent private/shared Random streams. No rebinding, game substitution, RAW/Unsafe allocation, source NW flag repair or source backing clear.",
+  "numeric_scope": "Nine profiles only; no malformed maximum mutation and no full-frame/pixel equality."
+}

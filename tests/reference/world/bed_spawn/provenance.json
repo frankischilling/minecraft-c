@@ -1,0 +1,87 @@
+{
+  "schema": "BED_SPAWN_CAPTURE_V1",
+  "status": "PASS",
+  "archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "finite_sha256": "587dec64e20b010852e5dbdcd7babae940c3d0182356ac39c78494fa03f0a16c",
+  "source_sha256": {
+    "BedSpawnObservation.java": "a1cb944b62116656d69d8abab2c155506f93d1d27f5ec5144753f6c907418936",
+    "BedSpawnJdi.java": "84886a25c7d6da19c5a8516ca1d1f45229f6250718c047595a1e51c2e2bb2d21",
+    "capture_reference.py": "c660460fc7a167f9a0cdaec6f7ec5303160fd2ddb382f577345cc3a9632668d8",
+    "validate.py": "1e8937afae18792b2165dda9c64841321f7ab828a44cbf43402806ad0dace3c7",
+    "profiles.json": "0ade6b4043b61b9ba61d7bf3de3f6784865ab7493d0fe368b734d02ef2827232",
+    "profiles.tsv": "37dc2e6e86487772687374d3a6f29ac003b122a79510d4a2e33d64d708afa117",
+    "source-pins.json": "54951aeb7334bdfbd1a886b40b1e34a6f41776304345e2aa0c7d7c26d5e71023",
+    "../../client/controller/capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "../../entity/player/classfile.py": "4411375a115dabb7104e82e9970aa3139bb0cc4cc0b5f169d56496e81c4bec60"
+  },
+  "tool_sha256": {
+    "java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+  },
+  "helper_sha256": {
+    "BedSpawnJdi.class": "56d01cf4645066660703c3ea4e4f282d560a76d59a226d57d6b5c75c425272b3",
+    "BedSpawnObservation$Guard.class": "ea54ef116915be153873047fcf7a6a991868afb228033ea3b97407b7f0c8972f",
+    "BedSpawnObservation.class": "eb671c22878681f95edc69cb0fe229b5938a1625e60a1124957c77c2a33f24b9"
+  },
+  "original": [
+    {
+      "exit": 0,
+      "timeout_seconds": 90,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "original-0.stdout",
+      "stderr_file": "original-0.stderr",
+      "stdout_bytes": 14680,
+      "stderr_bytes": 383,
+      "stdout_sha256": "c55b8f13dfa13706fe492514981ceeef77bc49a6de7fa14aa250e0fad4465d5e",
+      "stderr_sha256": "112a94c38e20c7723b76a8f5ef91520beea7d878248ce65afde17f8142f194cd",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    {
+      "exit": 0,
+      "timeout_seconds": 90,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "original-1.stdout",
+      "stderr_file": "original-1.stderr",
+      "stdout_bytes": 14680,
+      "stderr_bytes": 383,
+      "stdout_sha256": "c55b8f13dfa13706fe492514981ceeef77bc49a6de7fa14aa250e0fad4465d5e",
+      "stderr_sha256": "112a94c38e20c7723b76a8f5ef91520beea7d878248ce65afde17f8142f194cd",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    }
+  ],
+  "jdi": {
+    "exit": 0,
+    "timeout_seconds": 180,
+    "timed_out": false,
+    "pipe_capture_complete": true,
+    "reader_errors": {},
+    "output_overflow": false,
+    "stdout_file": "jdi-controller.stdout",
+    "stderr_file": "jdi-controller.stderr",
+    "stdout_bytes": 38,
+    "stderr_bytes": 0,
+    "stdout_sha256": "605921cbdbb29818a4d6409f638c248aa023b0f6dfd121906890365d99ae8348",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_limit": 4194304,
+    "stderr_limit": 1048576
+  },
+  "jdi_target": {
+    "queries.jsonl": "70093b7983d61dec2932972c14d0a58eaffa8016e68b74f8b349f5df20ac3287",
+    "target.stderr": "112a94c38e20c7723b76a8f5ef91520beea7d878248ce65afde17f8142f194cd",
+    "target.stdout": "c55b8f13dfa13706fe492514981ceeef77bc49a6de7fa14aa250e0fad4465d5e"
+  },
+  "profiles_per_vm": 30,
+  "query_count": 272,
+  "code_methods": 7,
+  "input_unchanged": true,
+  "helper_unchanged": true,
+  "scope": "Prepared genuine FD and normal Map-provider/Chunks; direct VE helper and GS wrapper. Read-only original JDI observes caller-level ordered queries. No loaded gameplay or Bed use/sleep/wake qualification."
+}

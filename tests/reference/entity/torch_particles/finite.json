@@ -1,0 +1,4913 @@
+{
+  "schema": 1,
+  "components": [
+    {
+      "profile": 6,
+      "name": "smoke-tick-age0",
+      "kind": "smoke_default",
+      "operation": "tick",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "previous": [
+          "bff0000000000000",
+          "c000000000000000",
+          "c008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "4050199999980000",
+          "4020ccccccc00000",
+          "4021333333400000",
+          "4050266666680000",
+          "4021333333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4021400000000000",
+          "4050104189374bc7",
+          "4021200000000000"
+        ],
+        "previous": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "velocity": [
+          "3fbeb851e0000000",
+          "bfce3a7d9ef9db23",
+          "3faeb851e0000000"
+        ],
+        "bounds": [
+          "40210cccccc00000",
+          "405009db22cf4bc7",
+          "4020ecccccc00000",
+          "4021733333400000",
+          "405016a7ef9f4bc7",
+          "4021533333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 6,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 1,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": null,
+      "packed": []
+    },
+    {
+      "profile": 7,
+      "name": "smoke-tick-age7",
+      "kind": "smoke_default",
+      "operation": "tick",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "previous": [
+          "bff0000000000000",
+          "c000000000000000",
+          "c008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "4050199999980000",
+          "4020ccccccc00000",
+          "4021333333400000",
+          "4050266666680000",
+          "4021333333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 7,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4021400000000000",
+          "4050104189374bc7",
+          "4021200000000000"
+        ],
+        "previous": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "velocity": [
+          "3fbeb851e0000000",
+          "bfce3a7d9ef9db23",
+          "3faeb851e0000000"
+        ],
+        "bounds": [
+          "40210cccccc00000",
+          "405009db22cf4bc7",
+          "4020ecccccc00000",
+          "4021733333400000",
+          "405016a7ef9f4bc7",
+          "4021533333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": -1,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 8,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": null,
+      "packed": []
+    },
+    {
+      "profile": 8,
+      "name": "smoke-tick-age8",
+      "kind": "smoke_default",
+      "operation": "tick",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "previous": [
+          "bff0000000000000",
+          "c000000000000000",
+          "c008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "4050199999980000",
+          "4020ccccccc00000",
+          "4021333333400000",
+          "4050266666680000",
+          "4021333333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 8,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4021400000000000",
+          "4050104189374bc7",
+          "4021200000000000"
+        ],
+        "previous": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "velocity": [
+          "3fbeb851e0000000",
+          "bfce3a7d9ef9db23",
+          "3faeb851e0000000"
+        ],
+        "bounds": [
+          "40210cccccc00000",
+          "405009db22cf4bc7",
+          "4020ecccccc00000",
+          "4021733333400000",
+          "405016a7ef9f4bc7",
+          "4021533333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": -2,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 9,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": true,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": null,
+      "packed": []
+    },
+    {
+      "profile": 9,
+      "name": "smoke-tick-negative-age",
+      "kind": "smoke_default",
+      "operation": "tick",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "previous": [
+          "bff0000000000000",
+          "c000000000000000",
+          "c008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "4050199999980000",
+          "4020ccccccc00000",
+          "4021333333400000",
+          "4050266666680000",
+          "4021333333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": -1,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4021400000000000",
+          "4050104189374bc7",
+          "4021200000000000"
+        ],
+        "previous": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "velocity": [
+          "3fbeb851e0000000",
+          "bfce3a7d9ef9db23",
+          "3faeb851e0000000"
+        ],
+        "bounds": [
+          "40210cccccc00000",
+          "405009db22cf4bc7",
+          "4020ecccccc00000",
+          "4021733333400000",
+          "405016a7ef9f4bc7",
+          "4021533333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": null,
+      "packed": []
+    },
+    {
+      "profile": 10,
+      "name": "smoke-tick-wrap-age",
+      "kind": "smoke_default",
+      "operation": "tick",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "previous": [
+          "bff0000000000000",
+          "c000000000000000",
+          "c008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "4050199999980000",
+          "4020ccccccc00000",
+          "4021333333400000",
+          "4050266666680000",
+          "4021333333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 2147483647,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4021400000000000",
+          "4050104189374bc7",
+          "4021200000000000"
+        ],
+        "previous": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "velocity": [
+          "3fbeb851e0000000",
+          "bfce3a7d9ef9db23",
+          "3faeb851e0000000"
+        ],
+        "bounds": [
+          "40210cccccc00000",
+          "405009db22cf4bc7",
+          "4020ecccccc00000",
+          "4021733333400000",
+          "405016a7ef9f4bc7",
+          "4021533333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": -2147483648,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": true,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": null,
+      "packed": []
+    },
+    {
+      "profile": 11,
+      "name": "smoke-tick-zero-life",
+      "kind": "smoke_default",
+      "operation": "tick",
+      "exception": "ArithmeticException",
+      "before": {
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "previous": [
+          "bff0000000000000",
+          "c000000000000000",
+          "c008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "4050199999980000",
+          "4020ccccccc00000",
+          "4021333333400000",
+          "4050266666680000",
+          "4021333333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 0,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "previous": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "4050199999980000",
+          "4020ccccccc00000",
+          "4021333333400000",
+          "4050266666680000",
+          "4021333333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 1,
+        "lifetime": 0,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": true,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": null,
+      "packed": []
+    },
+    {
+      "profile": 12,
+      "name": "smoke-tick-ground",
+      "kind": "smoke_default",
+      "operation": "tick",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "previous": [
+          "bff0000000000000",
+          "c000000000000000",
+          "c008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "4050199999980000",
+          "4020ccccccc00000",
+          "4021333333400000",
+          "4050266666680000",
+          "4021333333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": true,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4021400000000000",
+          "4050104189374bc7",
+          "4021200000000000"
+        ],
+        "previous": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "velocity": [
+          "3fb5810616a7efa0",
+          "bfce3a7d9ef9db23",
+          "3fa5810616a7efa0"
+        ],
+        "bounds": [
+          "40210cccccc00000",
+          "405009db22cf4bc7",
+          "4020ecccccc00000",
+          "4021733333400000",
+          "405016a7ef9f4bc7",
+          "4021533333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 6,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 1,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": true,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": null,
+      "packed": []
+    },
+    {
+      "profile": 13,
+      "name": "smoke-tick-vertical-stop",
+      "kind": "smoke_default",
+      "operation": "tick",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "previous": [
+          "bff0000000000000",
+          "c000000000000000",
+          "c008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bf70624dd2f1a9fc",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "4050199999980000",
+          "4020ccccccc00000",
+          "4021333333400000",
+          "4050266666680000",
+          "4021333333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4021400000000000",
+          "4050200000000000",
+          "4021200000000000"
+        ],
+        "previous": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "velocity": [
+          "3fc0e5603b333334",
+          "0000000000000000",
+          "3fb0e5603b333334"
+        ],
+        "bounds": [
+          "40210cccccc00000",
+          "4050199999980000",
+          "4020ecccccc00000",
+          "4021733333400000",
+          "4050266666680000",
+          "4021533333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 6,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 1,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": null,
+      "packed": []
+    },
+    {
+      "profile": 14,
+      "name": "flame-tick-age0",
+      "kind": "flame",
+      "operation": "tick",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "previous": [
+          "bff0000000000000",
+          "c000000000000000",
+          "c008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "4050199999980000",
+          "4020ccccccc00000",
+          "4021333333400000",
+          "4050266666680000",
+          "4021333333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4021400000000000",
+          "4050100000000000",
+          "4021200000000000"
+        ],
+        "previous": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "velocity": [
+          "3fbeb851e0000000",
+          "bfceb851e0000000",
+          "3faeb851e0000000"
+        ],
+        "bounds": [
+          "40210cccccc00000",
+          "4050099999980000",
+          "4020ecccccc00000",
+          "4021733333400000",
+          "4050166666680000",
+          "4021533333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 1,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": null,
+      "packed": []
+    },
+    {
+      "profile": 15,
+      "name": "flame-tick-zero-life",
+      "kind": "flame",
+      "operation": "tick",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "previous": [
+          "bff0000000000000",
+          "c000000000000000",
+          "c008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "4050199999980000",
+          "4020ccccccc00000",
+          "4021333333400000",
+          "4050266666680000",
+          "4021333333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 0,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4021400000000000",
+          "4050100000000000",
+          "4021200000000000"
+        ],
+        "previous": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "velocity": [
+          "3fbeb851e0000000",
+          "bfceb851e0000000",
+          "3faeb851e0000000"
+        ],
+        "bounds": [
+          "40210cccccc00000",
+          "4050099999980000",
+          "4020ecccccc00000",
+          "4021733333400000",
+          "4050166666680000",
+          "4021533333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 1,
+        "lifetime": 0,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": true,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": null,
+      "packed": []
+    },
+    {
+      "profile": 16,
+      "name": "flame-tick-wrap-age",
+      "kind": "flame",
+      "operation": "tick",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "previous": [
+          "bff0000000000000",
+          "c000000000000000",
+          "c008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "4050199999980000",
+          "4020ccccccc00000",
+          "4021333333400000",
+          "4050266666680000",
+          "4021333333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 2147483647,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4021400000000000",
+          "4050100000000000",
+          "4021200000000000"
+        ],
+        "previous": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "velocity": [
+          "3fbeb851e0000000",
+          "bfceb851e0000000",
+          "3faeb851e0000000"
+        ],
+        "bounds": [
+          "40210cccccc00000",
+          "4050099999980000",
+          "4020ecccccc00000",
+          "4021733333400000",
+          "4050166666680000",
+          "4021533333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": -2147483648,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": true,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": null,
+      "packed": []
+    },
+    {
+      "profile": 17,
+      "name": "flame-tick-ground",
+      "kind": "flame",
+      "operation": "tick",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "previous": [
+          "bff0000000000000",
+          "c000000000000000",
+          "c008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "4050199999980000",
+          "4020ccccccc00000",
+          "4021333333400000",
+          "4050266666680000",
+          "4021333333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": true,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4021400000000000",
+          "4050100000000000",
+          "4021200000000000"
+        ],
+        "previous": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "velocity": [
+          "3fb5810616a7efa0",
+          "bfceb851e0000000",
+          "3fa5810616a7efa0"
+        ],
+        "bounds": [
+          "40210cccccc00000",
+          "4050099999980000",
+          "4020ecccccc00000",
+          "4021733333400000",
+          "4050166666680000",
+          "4021533333400000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 1,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": true,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": null,
+      "packed": []
+    },
+    {
+      "profile": 18,
+      "name": "smoke-growth",
+      "kind": "smoke_default",
+      "operation": "draw",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 32,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": false,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 32,
+        "scale": "3f200000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": false,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": {
+        "vertices": 6,
+        "source_vertices": 4,
+        "words": 48,
+        "uv": true,
+        "color": true,
+        "normal": false,
+        "begun": true
+      },
+      "packed": [
+        "3fd80000",
+        "401c0000",
+        "40500000",
+        "3efff7cf",
+        "3d7fbe77",
+        "ff090603",
+        "00000000",
+        "00000000",
+        "3fd80000",
+        "40240000",
+        "40500000",
+        "3efff7cf",
+        "00000000",
+        "ff090603",
+        "00000000",
+        "00000000",
+        "3fe80000",
+        "40240000",
+        "40500000",
+        "3ee00000",
+        "00000000",
+        "ff090603",
+        "00000000",
+        "00000000",
+        "3fd80000",
+        "401c0000",
+        "40500000",
+        "3efff7cf",
+        "3d7fbe77",
+        "ff090603",
+        "00000000",
+        "00000000",
+        "3fe80000",
+        "40240000",
+        "40500000",
+        "3ee00000",
+        "00000000",
+        "ff090603",
+        "00000000",
+        "00000000",
+        "3fe80000",
+        "401c0000",
+        "40500000",
+        "3ee00000",
+        "3d7fbe77",
+        "ff090603",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ]
+    },
+    {
+      "profile": 19,
+      "name": "smoke-clamp-low",
+      "kind": "smoke_default",
+      "operation": "draw",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": -1,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": false,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": -1,
+        "lifetime": 8,
+        "scale": "00000000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": false,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": {
+        "vertices": 6,
+        "source_vertices": 4,
+        "words": 48,
+        "uv": true,
+        "color": true,
+        "normal": false,
+        "begun": true
+      },
+      "packed": [
+        "3f400000",
+        "3fc00000",
+        "40100000",
+        "3efff7cf",
+        "3d7fbe77",
+        "ff644221",
+        "00000000",
+        "00000000",
+        "3f400000",
+        "3fc00000",
+        "40100000",
+        "3efff7cf",
+        "00000000",
+        "ff644221",
+        "00000000",
+        "00000000",
+        "3f400000",
+        "3fc00000",
+        "40100000",
+        "3ee00000",
+        "00000000",
+        "ff644221",
+        "00000000",
+        "00000000",
+        "3f400000",
+        "3fc00000",
+        "40100000",
+        "3efff7cf",
+        "3d7fbe77",
+        "ff644221",
+        "00000000",
+        "00000000",
+        "3f400000",
+        "3fc00000",
+        "40100000",
+        "3ee00000",
+        "00000000",
+        "ff644221",
+        "00000000",
+        "00000000",
+        "3f400000",
+        "3fc00000",
+        "40100000",
+        "3ee00000",
+        "3d7fbe77",
+        "ff644221",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ]
+    },
+    {
+      "profile": 20,
+      "name": "smoke-clamp-high",
+      "kind": "smoke_default",
+      "operation": "draw",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 8,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": false,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 8,
+        "lifetime": 8,
+        "scale": "3fa00000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": false,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": {
+        "vertices": 6,
+        "source_vertices": 4,
+        "words": 48,
+        "uv": true,
+        "color": true,
+        "normal": false,
+        "begun": true
+      },
+      "packed": [
+        "40290000",
+        "405c0000",
+        "408a8000",
+        "3efff7cf",
+        "3d7fbe77",
+        "ffbf7f3f",
+        "00000000",
+        "00000000",
+        "402b0000",
+        "40640000",
+        "40878000",
+        "3efff7cf",
+        "00000000",
+        "ffbf7f3f",
+        "00000000",
+        "00000000",
+        "40370000",
+        "40640000",
+        "40858000",
+        "3ee00000",
+        "00000000",
+        "ffbf7f3f",
+        "00000000",
+        "00000000",
+        "40290000",
+        "405c0000",
+        "408a8000",
+        "3efff7cf",
+        "3d7fbe77",
+        "ffbf7f3f",
+        "00000000",
+        "00000000",
+        "40370000",
+        "40640000",
+        "40858000",
+        "3ee00000",
+        "00000000",
+        "ffbf7f3f",
+        "00000000",
+        "00000000",
+        "40350000",
+        "405c0000",
+        "40888000",
+        "3ee00000",
+        "3d7fbe77",
+        "ffbf7f3f",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ]
+    },
+    {
+      "profile": 21,
+      "name": "large-smoke-growth",
+      "kind": "large_smoke",
+      "operation": "draw",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 1,
+        "lifetime": 64,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "40200000",
+        "dead": false,
+        "ground": false,
+        "no_clip": false,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 1,
+        "lifetime": 64,
+        "scale": "3fc80000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "40200000",
+        "dead": false,
+        "ground": false,
+        "no_clip": false,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": {
+        "vertices": 6,
+        "source_vertices": 4,
+        "words": 48,
+        "uv": true,
+        "color": true,
+        "normal": false,
+        "begun": true
+      },
+      "packed": [
+        "3f8e8000",
+        "3ff60000",
+        "40364000",
+        "3efff7cf",
+        "3d7fbe77",
+        "ff090603",
+        "00000000",
+        "00000000",
+        "3f938000",
+        "40050000",
+        "402ec000",
+        "3efff7cf",
+        "00000000",
+        "ff090603",
+        "00000000",
+        "00000000",
+        "3fb18000",
+        "40050000",
+        "4029c000",
+        "3ee00000",
+        "00000000",
+        "ff090603",
+        "00000000",
+        "00000000",
+        "3f8e8000",
+        "3ff60000",
+        "40364000",
+        "3efff7cf",
+        "3d7fbe77",
+        "ff090603",
+        "00000000",
+        "00000000",
+        "3fb18000",
+        "40050000",
+        "4029c000",
+        "3ee00000",
+        "00000000",
+        "ff090603",
+        "00000000",
+        "00000000",
+        "3fac8000",
+        "3ff60000",
+        "40314000",
+        "3ee00000",
+        "3d7fbe77",
+        "ff090603",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ]
+    },
+    {
+      "profile": 22,
+      "name": "flame-start",
+      "kind": "flame",
+      "operation": "draw",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "3fa00000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": {
+        "vertices": 6,
+        "source_vertices": 4,
+        "words": 48,
+        "uv": true,
+        "color": true,
+        "normal": false,
+        "begun": true
+      },
+      "packed": [
+        "3f200000",
+        "3fb00000",
+        "40100000",
+        "3d7fbe77",
+        "3e7fef9e",
+        "ffbf7f3f",
+        "00000000",
+        "00000000",
+        "3f200000",
+        "3fd00000",
+        "40100000",
+        "3d7fbe77",
+        "3e400000",
+        "ffbf7f3f",
+        "00000000",
+        "00000000",
+        "3f600000",
+        "3fd00000",
+        "40100000",
+        "00000000",
+        "3e400000",
+        "ffbf7f3f",
+        "00000000",
+        "00000000",
+        "3f200000",
+        "3fb00000",
+        "40100000",
+        "3d7fbe77",
+        "3e7fef9e",
+        "ffbf7f3f",
+        "00000000",
+        "00000000",
+        "3f600000",
+        "3fd00000",
+        "40100000",
+        "00000000",
+        "3e400000",
+        "ffbf7f3f",
+        "00000000",
+        "00000000",
+        "3f600000",
+        "3fb00000",
+        "40100000",
+        "00000000",
+        "3e7fef9e",
+        "ffbf7f3f",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ]
+    },
+    {
+      "profile": 23,
+      "name": "flame-middle",
+      "kind": "flame",
+      "operation": "draw",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 4,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 4,
+        "lifetime": 8,
+        "scale": "3f86b000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": {
+        "vertices": 6,
+        "source_vertices": 4,
+        "words": 48,
+        "uv": true,
+        "color": true,
+        "normal": false,
+        "begun": true
+      },
+      "packed": [
+        "3fd43700",
+        "401ca200",
+        "40543580",
+        "3d7fbe77",
+        "3e7fef9e",
+        "ff8c5d2e",
+        "00000000",
+        "00000000",
+        "3fd79500",
+        "40235e00",
+        "404f2880",
+        "3d7fbe77",
+        "3e400000",
+        "ff8c5d2e",
+        "00000000",
+        "00000000",
+        "3febc900",
+        "40235e00",
+        "404bca80",
+        "00000000",
+        "3e400000",
+        "ff8c5d2e",
+        "00000000",
+        "00000000",
+        "3fd43700",
+        "401ca200",
+        "40543580",
+        "3d7fbe77",
+        "3e7fef9e",
+        "ff8c5d2e",
+        "00000000",
+        "00000000",
+        "3febc900",
+        "40235e00",
+        "404bca80",
+        "00000000",
+        "3e400000",
+        "ff8c5d2e",
+        "00000000",
+        "00000000",
+        "3fe86b00",
+        "401ca200",
+        "4050d780",
+        "00000000",
+        "3e7fef9e",
+        "ff8c5d2e",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ]
+    },
+    {
+      "profile": 24,
+      "name": "flame-negative-scale",
+      "kind": "flame",
+      "operation": "draw",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 16,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 16,
+        "lifetime": 8,
+        "scale": "bfb45000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": {
+        "vertices": 6,
+        "source_vertices": 4,
+        "words": 48,
+        "uv": true,
+        "color": true,
+        "normal": false,
+        "begun": true
+      },
+      "packed": [
+        "3fefc700",
+        "40248200",
+        "404a5d80",
+        "3d7fbe77",
+        "3e7fef9e",
+        "ffbf7f3f",
+        "00000000",
+        "00000000",
+        "3feb4500",
+        "401b7e00",
+        "40512080",
+        "3d7fbe77",
+        "3e400000",
+        "ffbf7f3f",
+        "00000000",
+        "00000000",
+        "3fd03900",
+        "401b7e00",
+        "4055a280",
+        "00000000",
+        "3e400000",
+        "ffbf7f3f",
+        "00000000",
+        "00000000",
+        "3fefc700",
+        "40248200",
+        "404a5d80",
+        "3d7fbe77",
+        "3e7fef9e",
+        "ffbf7f3f",
+        "00000000",
+        "00000000",
+        "3fd03900",
+        "401b7e00",
+        "4055a280",
+        "00000000",
+        "3e400000",
+        "ffbf7f3f",
+        "00000000",
+        "00000000",
+        "3fd4bb00",
+        "40248200",
+        "404edf80",
+        "00000000",
+        "3e7fef9e",
+        "ffbf7f3f",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ]
+    },
+    {
+      "profile": 25,
+      "name": "flame-negative-base",
+      "kind": "flame",
+      "operation": "draw",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 2,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "bf800000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 2,
+        "lifetime": 8,
+        "scale": "bf7b8000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "bf800000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": {
+        "vertices": 6,
+        "source_vertices": 4,
+        "words": 48,
+        "uv": true,
+        "color": true,
+        "normal": false,
+        "begun": true
+      },
+      "packed": [
+        "be1b6666",
+        "3f192666",
+        "3fa00000",
+        "3d7fbe77",
+        "3e7fef9e",
+        "ff9d6834",
+        "00000000",
+        "00000000",
+        "be1b6666",
+        "3ecdb333",
+        "3fa00000",
+        "3d7fbe77",
+        "3e400000",
+        "ff9d6834",
+        "00000000",
+        "00000000",
+        "beb24ccd",
+        "3ecdb333",
+        "3fa00000",
+        "00000000",
+        "3e400000",
+        "ff9d6834",
+        "00000000",
+        "00000000",
+        "be1b6666",
+        "3f192666",
+        "3fa00000",
+        "3d7fbe77",
+        "3e7fef9e",
+        "ff9d6834",
+        "00000000",
+        "00000000",
+        "beb24ccd",
+        "3ecdb333",
+        "3fa00000",
+        "00000000",
+        "3e400000",
+        "ff9d6834",
+        "00000000",
+        "00000000",
+        "beb24ccd",
+        "3f192666",
+        "3fa00000",
+        "00000000",
+        "3e7fef9e",
+        "ff9d6834",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ]
+    },
+    {
+      "profile": 26,
+      "name": "flame-brightness-start",
+      "kind": "flame",
+      "operation": "brightness",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": "3f800000",
+      "nw": null,
+      "packed": []
+    },
+    {
+      "profile": 27,
+      "name": "flame-brightness-middle",
+      "kind": "flame",
+      "operation": "brightness",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 4,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 4,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": "3eee6666",
+      "nw": null,
+      "packed": []
+    },
+    {
+      "profile": 28,
+      "name": "flame-brightness-late",
+      "kind": "flame",
+      "operation": "brightness",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 8,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 8,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": "3f066667",
+      "nw": null,
+      "packed": []
+    },
+    {
+      "profile": 29,
+      "name": "flame-brightness-negative",
+      "kind": "flame",
+      "operation": "brightness",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": -2,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": -2,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": "3f800000",
+      "nw": null,
+      "packed": []
+    },
+    {
+      "profile": 30,
+      "name": "flame-brightness-zero-life",
+      "kind": "flame",
+      "operation": "brightness",
+      "exception": "none",
+      "before": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 1,
+        "lifetime": 0,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 1,
+        "lifetime": 0,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": "3f800000",
+      "nw": null,
+      "packed": []
+    },
+    {
+      "profile": 31,
+      "name": "smoke_default-null-world",
+      "kind": "smoke_default",
+      "operation": "draw",
+      "exception": "NullPointerException",
+      "before": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": false,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "3fa00000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": false,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": {
+        "vertices": 0,
+        "source_vertices": 0,
+        "words": 0,
+        "uv": false,
+        "color": false,
+        "normal": false,
+        "begun": true
+      },
+      "packed": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ]
+    },
+    {
+      "profile": 32,
+      "name": "smoke_default-null-nw",
+      "kind": "smoke_default",
+      "operation": "draw_null_nw",
+      "exception": "NullPointerException",
+      "before": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": false,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 7,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "3fa00000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": false,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": {
+        "vertices": 0,
+        "source_vertices": 0,
+        "words": 0,
+        "uv": false,
+        "color": false,
+        "normal": false,
+        "begun": true
+      },
+      "packed": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ]
+    },
+    {
+      "profile": 33,
+      "name": "flame-null-world",
+      "kind": "flame",
+      "operation": "draw",
+      "exception": "NullPointerException",
+      "before": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "3f9fb000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": {
+        "vertices": 0,
+        "source_vertices": 0,
+        "words": 0,
+        "uv": false,
+        "color": false,
+        "normal": false,
+        "begun": true
+      },
+      "packed": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ]
+    },
+    {
+      "profile": 34,
+      "name": "flame-null-nw",
+      "kind": "flame",
+      "operation": "draw_null_nw",
+      "exception": "NullPointerException",
+      "before": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "3f9fb000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": {
+        "vertices": 0,
+        "source_vertices": 0,
+        "words": 0,
+        "uv": false,
+        "color": false,
+        "normal": false,
+        "begun": true
+      },
+      "packed": [
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000"
+      ]
+    },
+    {
+      "profile": 35,
+      "name": "flame-brightness-null-world",
+      "kind": "flame",
+      "operation": "brightness",
+      "exception": "NullPointerException",
+      "before": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "after": {
+        "position": [
+          "4008000000000000",
+          "4010000000000000",
+          "4014000000000000"
+        ],
+        "previous": [
+          "3ff0000000000000",
+          "4000000000000000",
+          "4008000000000000"
+        ],
+        "velocity": [
+          "3fc0000000000000",
+          "bfd0000000000000",
+          "3fb0000000000000"
+        ],
+        "bounds": [
+          "4007333333000000",
+          "400f333333000000",
+          "4013999999800000",
+          "4008cccccd000000",
+          "4010666666800000",
+          "4014666666800000"
+        ],
+        "size": [
+          "3dcccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "y_size": "00000000",
+        "texture": 48,
+        "c": "3e800000",
+        "d": "3f400000",
+        "age": 0,
+        "lifetime": 8,
+        "scale": "40600000",
+        "gravity": "3e000000",
+        "rgb": [
+          "3e800000",
+          "3f000000",
+          "3f400000"
+        ],
+        "base_scale": "3fa00000",
+        "dead": false,
+        "ground": false,
+        "no_clip": true,
+        "collision": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          true
+        ]
+      },
+      "brightness": null,
+      "nw": null,
+      "packed": []
+    }
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "classes": {
+    "uo": {
+      "class_bytes": 466,
+      "class_sha256": "7d8ab13b22db5c489683cfac8b352bb4b13efb5514644bfb775eb297e0b24fb8",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 30,
+          "code_sha256": "9536406f147dcc6ff2c288560311e9e18cf9a8484d41b2febf934c340812ad8d"
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lgs;)V",
+          "access": 1,
+          "code_bytes": 1,
+          "code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d"
+        },
+        {
+          "name": "a",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 1,
+          "code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d"
+        },
+        {
+          "name": "a",
+          "descriptor": "(IZ)V",
+          "access": 1,
+          "code_bytes": 1,
+          "code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d"
+        }
+      ]
+    },
+    "lr": {
+      "class_bytes": 937,
+      "class_sha256": "f44b040ad85fb772986124525b6b7f13a6425a12f9440dab9d7784965b1645a3",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lkv;)V",
+          "access": 1,
+          "code_bytes": 18,
+          "code_sha256": "73207ed1ba450f87564e293e136c36707ef9dacb9db1a4e6112e89077dde520d"
+        },
+        {
+          "name": "a",
+          "descriptor": "(IZ)V",
+          "access": 1,
+          "code_bytes": 110,
+          "code_sha256": "bf5ead4bf1d7a84b11b2652371ba89afc7d78dc7fafbac5592383ebc0595274f"
+        },
+        {
+          "name": "a",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 22,
+          "code_sha256": "52e4e5c68cb13913b5bd5c4e90b19acac81d6e1da24c06ca10bdd157c03b1a3c"
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lgs;)V",
+          "access": 1,
+          "code_bytes": 142,
+          "code_sha256": "1f6629e8673c82672c6843c6cfc42fe6b540b91527063af3ea4b68cb7251b6fe"
+        }
+      ]
+    },
+    "kv": {
+      "class_bytes": 8528,
+      "class_sha256": "fd62ebcc36e2f2a1428cb41b2f1f8ebd86fee9855ec1b7f7055ba307d6577102",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lnet/minecraft/client/Minecraft;Ljava/io/File;)V",
+          "access": 1,
+          "code_bytes": 379,
+          "code_sha256": "9cf3342ff467f767f01372080148d0a8697901c085036db120d1d194dd81b951"
+        },
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 356,
+          "code_sha256": "185e46501defb7cd683c793c31fc2b2cb021f0997e99d7a0a946488c39e53c03"
+        },
+        {
+          "name": "a",
+          "descriptor": "(I)Ljava/lang/String;",
+          "access": 1,
+          "code_bytes": 18,
+          "code_sha256": "aab28b0deaf7a74af6dfe8d18d7592d407abb600f08d50f86894a9b42c22d37a"
+        },
+        {
+          "name": "b",
+          "descriptor": "(I)Ljava/lang/String;",
+          "access": 1,
+          "code_bytes": 13,
+          "code_sha256": "7faa7f11361889a380e53ee23141ff147c4dc318a29265a0dcd0e11fbf92c586"
+        },
+        {
+          "name": "a",
+          "descriptor": "(II)V",
+          "access": 1,
+          "code_bytes": 15,
+          "code_sha256": "0dd24153b0c790d6f503a87d163c651bb2916621fca2069d200d8692219a82c0"
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lht;F)V",
+          "access": 1,
+          "code_bytes": 57,
+          "code_sha256": "98f6e5ba5b350e0d913c04af6f998d0479ef872d5d230fdbed1e0f310e4566bf"
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lht;I)V",
+          "access": 1,
+          "code_bytes": 261,
+          "code_sha256": "9fc2abbfffe97bb0985e7bceb8201b130f423556a7220ef3b57a3756b0f61e7f"
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lht;)F",
+          "access": 1,
+          "code_bytes": 38,
+          "code_sha256": "2abc46cbc8e4bb767d9c145df7c33c2aa7968ad087ef4bf5d2b9cb14fab99f39"
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lht;)Z",
+          "access": 1,
+          "code_bytes": 71,
+          "code_sha256": "be0e3f729a32271a0ec3faad5d78050248af8cf226457f04e39bf81745e5ec71"
+        },
+        {
+          "name": "c",
+          "descriptor": "(Lht;)Ljava/lang/String;",
+          "access": 1,
+          "code_bytes": 481,
+          "code_sha256": "c1969cc3f1b3f317b77ac0b39629887f0eaef92482664e9712b6212360d19e9e"
+        },
+        {
+          "name": "a",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 504,
+          "code_sha256": "e159c16347f1b274cc842d667dbfb1dd58fd3f9ed7fca8e4049de18b7d077d95"
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)F",
+          "access": 2,
+          "code_bytes": 27,
+          "code_sha256": "0bcc0a2a05cf5dac0db9701026e2a6fc167a742978d5c08924f5f21b36729e02"
+        },
+        {
+          "name": "b",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 495,
+          "code_sha256": "b1c6352933c4d02a5377e21a0621e3a7841fdbfdc5ee244d75ee5c1202c0a45f"
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8,
+          "code_bytes": 104,
+          "code_sha256": "bcc8aae00eb2e41ed11d3c435242e077e5970d713fed93899f6da78531abffe0"
+        }
+      ]
+    },
+    "qb": {
+      "class_bytes": 284,
+      "class_sha256": "4c1524aeb93b82f91517c5ed5a3dcce02c1b110a9d65b3db7089cfc8a37cd7aa",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Ljava/lang/String;I)V",
+          "access": 1,
+          "code_bytes": 15,
+          "code_sha256": "d43fcecd2f9cffec29823f3302400562fd30d4e480508396fc397e35e4e63500"
+        }
+      ]
+    }
+  },
+  "inputs_sha256": "312e244f4c76b0075e31dbe38784010516197aa051be96477845ded9d088215e",
+  "original_modified": false,
+  "source_methods": [
+    "uo.<init>()V",
+    "uo.a(Lgs;)V",
+    "uo.a()V",
+    "uo.a(IZ)V",
+    "lr.<init>(Lkv;)V",
+    "lr.a(IZ)V",
+    "lr.a()V",
+    "lr.a(Lgs;)V"
+  ],
+  "projection": "source public float bits/three booleans, class kind, settings nonnull, array length and ten-cell mask, source NPE result; identity assertions run independently in both observers",
+  "player_argument": "null, left unread by both actual methods"
+}

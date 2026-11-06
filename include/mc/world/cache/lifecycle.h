@@ -29,7 +29,7 @@ typedef mc_chunk_callback_result (*mc_chunk_save_callback)(
     void *loader, const mc_chunk_lifecycle_context *context, mc_chunk_state *chunk);
 typedef mc_chunk_callback_result (*mc_chunk_loader_callback)(
     void *loader, const mc_chunk_lifecycle_context *context);
-typedef mc_chunk_callback_result (*mc_chunk_detach_tiles_callback)(
+typedef mc_chunk_callback_result (*mc_chunk_detach_tile_entities_callback)(
     void *world, const mc_chunk_lifecycle_context *context, mc_chunk_state *chunk);
 typedef mc_chunk_callback_result (*mc_chunk_defer_entities_callback)(
     void *world, const mc_chunk_lifecycle_context *context, mc_chunk_state *chunk, size_t slice);
@@ -66,7 +66,7 @@ struct mc_chunk_lifecycle_context {
     mc_chunk_save_callback save_extra;
     mc_chunk_loader_callback flush;
     mc_chunk_loader_callback loader_maintenance;
-    mc_chunk_detach_tiles_callback invalidate_tiles;
+    mc_chunk_detach_tile_entities_callback invalidate_tile_entities;
     mc_chunk_defer_entities_callback defer_entities;
     mc_chunk_maintenance_callback provider_maintenance;
     const mc_chunk_references *references;
@@ -95,7 +95,7 @@ mc_chunk_lifecycle_status mc_chunk_lifecycle_save(const mc_chunk_lifecycle_conte
 
 /* Direct chunk detachment, including identities outside the cache. Requires a
  * valid context/chunk and both detach callbacks. Normal chunks set active=false
- * before invalidating tiles, then defer all eight entity slices in order, even
+ * before invalidating TileEntities, then defer all eight entity slices in order, even
  * when already inactive. Blank chunks have a virtual no-op body. References,
  * when supplied, retain the selected identity once and release it on every
  * return after a successful retain. Retain failure returns LIMIT before effects.
@@ -109,14 +109,14 @@ mc_chunk_lifecycle_status mc_chunk_lifecycle_detach(const mc_chunk_lifecycle_con
                                                     mc_chunk_state *chunk);
 
 /* Ordered pending mode only. Up to 100 iterations each select a fresh first key,
- * retain its mapped identity, detach normal active=false/tiles/eight deferred
+ * retain its mapped identity, detach normal active=false/TileEntities/eight deferred
  * slices, then main/extra, remove selected pending key, remove selected map key
  * unconditionally, and remove only the first same-identity list occurrence.
  * No eligibility or dirty reset occurs. Missing selected map value is a bounded
  * STATE_ERROR, replacing the original null dereference. Earlier effects survive.
  * Dedicated saving-off skips that loop and loader maintenance; provider still
  * runs. The returned provider Boolean is independent of pending emptiness.
- * Errors preserve *provider_result. Normal detachment never clears tile/entity
+ * Errors preserve *provider_result. Normal detachment never clears TileEntity/entity
  * collections; deferred registrations need their own lifetime accounting. */
 mc_chunk_lifecycle_status mc_chunk_lifecycle_maintain(const mc_chunk_lifecycle_context *context,
                                                       bool *provider_result);

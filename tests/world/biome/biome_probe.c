@@ -17,16 +17,14 @@ static mc_biome_classifier classifier;
 static mc_biome_double_buffer temperatures;
 static mc_biome_buffer biomes;
 
-static uint64_t bits_of(double value)
-{
+static uint64_t bits_of(double value) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary64 storage required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static int parse_signed(const char *text, int64_t minimum, int64_t maximum, int64_t *out)
-{
+static int parse_signed(const char *text, int64_t minimum, int64_t maximum, int64_t *out) {
     char *end = NULL;
     errno = 0;
     intmax_t value = strtoimax(text, &end, 10);
@@ -36,8 +34,7 @@ static int parse_signed(const char *text, int64_t minimum, int64_t maximum, int6
     return 1;
 }
 
-static int parse_bits(const char *text, size_t digits, uint64_t *out)
-{
+static int parse_bits(const char *text, size_t digits, uint64_t *out) {
     if (strlen(text) != digits)
         return 0;
     uint64_t bits = 0;
@@ -55,8 +52,7 @@ static int parse_bits(const char *text, size_t digits, uint64_t *out)
     return 1;
 }
 
-static void slots(const void *pointers[6])
-{
+static void slots(const void *pointers[6]) {
     pointers[0] = manager.a.data;
     pointers[1] = manager.b.data;
     pointers[2] = manager.c.data;
@@ -65,8 +61,7 @@ static void slots(const void *pointers[6])
     pointers[5] = biomes.data;
 }
 
-static void print_doubles(const mc_biome_double_buffer *buffer)
-{
+static void print_doubles(const mc_biome_double_buffer *buffer) {
     if (buffer->data == NULL) {
         fputs("null", stdout);
         return;
@@ -80,8 +75,7 @@ static void print_doubles(const mc_biome_double_buffer *buffer)
     fputs("]}", stdout);
 }
 
-static void print_biomes(const mc_biome_buffer *buffer)
-{
+static void print_biomes(const mc_biome_buffer *buffer) {
     if (buffer->data == NULL) {
         fputs("null", stdout);
         return;
@@ -96,8 +90,7 @@ static void print_biomes(const mc_biome_buffer *buffer)
 
 static void print_response(const uintptr_t before[6], const void *returned, int fixture,
                            int catalog, int table, mc_biome_id biome, int number_present,
-                           double number)
-{
+                           double number) {
     const void *after[6];
     slots(after);
     fputs("OK\t{\"catalog\":", stdout);
@@ -157,8 +150,7 @@ static void print_response(const uintptr_t before[6], const void *returned, int 
     puts("\"}");
 }
 
-static int replace_buffers(const int64_t lengths[6])
-{
+static int replace_buffers(const int64_t lengths[6]) {
     mc_biome_double_buffer *double_buffers[] = {&manager.a, &manager.b, &manager.c, &temperatures};
     const size_t double_slots[] = {0, 1, 2, 4};
     mc_biome_buffer *biome_buffers[] = {&manager.d, &biomes};
@@ -187,8 +179,7 @@ static int replace_buffers(const int64_t lengths[6])
     return 1;
 }
 
-static int handle_request(char *line)
-{
+static int handle_request(char *line) {
     char *fields[7];
     size_t count = 1;
     fields[0] = line;
@@ -314,8 +305,7 @@ static int handle_request(char *line)
     return 1;
 }
 
-int main(void)
-{
+int main(void) {
     if (mc_biome_memory_init(&memory, MC_BIOME_DEFAULT_ALLOCATION_BYTES) != MC_BIOME_OK ||
         mc_biome_classifier_init(&classifier) != MC_BIOME_OK)
         return 2;

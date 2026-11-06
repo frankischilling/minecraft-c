@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "scope": "Derived evidence from separate ordinary SDK-only NVIDIAprobe, no gameclasses/Sourcebody execution or fullmatrix equivalence; original rawartifacts retained privately",
+  "chronology": "Exact already-LF authored RotationProbe.java copied aftercapture; derivedmetadata/newCPUmodels postcapture",
+  "authored_source_sha256": "e91a0ff7eb6d6e80cc82a86d0486dad146e082fbf6e1d870326a894bd5057e09",
+  "receipt_sha256": "549469bf66206abcb394f73433148a330285a0ed66ef4a550e99ff771184d79b",
+  "actual_device": {
+    "event": "device",
+    "vendor": "NVIDIA Corporation",
+    "renderer": "NVIDIA GeForce RTX 3060/PCIe/SSE2",
+    "version": "4.6.0 NVIDIA 581.42",
+    "profile_mask": 0,
+    "framebuffer": {
+      "red": 8,
+      "green": 8,
+      "blue": 8,
+      "alpha": 0,
+      "depth": 24,
+      "stencil": 0,
+      "double_buffer": true
+    },
+    "error": 0
+  },
+  "actual_observation_rows": 79,
+  "input_sha256": {
+    "C:\\Users\\admin\\minecraft\\.local\\burning-billboard-reference-20261031\\rotation_probe_windows.py": "3bf00d494cd83223ee061189246e7433f915604a1efe79ccb22289f34a3a1c47",
+    "C:\\Users\\admin\\minecraft\\.local\\burning-billboard-reference-20261031\\rotation-probe-inputs\\RotationProbe.java": "e91a0ff7eb6d6e80cc82a86d0486dad146e082fbf6e1d870326a894bd5057e09",
+    "C:\\Users\\admin\\minecraft\\.local\\burning-billboard-reference-20261031\\rotation-probe-inputs\\ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "C:\\Users\\admin\\minecraft\\.local\\living-overlay-reference-20261031\\windows-normal-c-a\\natives\\lwjgl64.dll": "86a8e4555d3614e7ed5a24beda921396ceb9e41dbf2508d713a3d26b928862b7",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\server\\jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\lib\\modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+  },
+  "artifacts_sha256": {
+    "ConstructorJson.class": "1c13bbd4aa1dc7928a37d158835f81cb977a33d3699d34d45a73e9cbacdd462a",
+    "observations.ndjson": "7a6621df339b35b96d12bd64079d1f265946e91e93b729d4669f8cbd53ebc545",
+    "phase1.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "phase1.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "phase2.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "phase2.stdout": "ce3c8e8abcb981750c6ec262a86bd3a70ee6adea14a82657eef405e25522e532",
+    "RotationProbe.class": "3dfcf199534829e1b40385568729abb88759d93b1670b8aaea8fc9293254867f"
+  },
+  "common_25degree_prepared_word": {
+    "operation": "modelview identity;translate(0,-.25,-6);rotate18X;rotate-25Y",
+    "selected_index": 0,
+    "actual_NVIDIA_word": "3f6803c9",
+    "actual_primary_Mesa_word": "3f6803c9",
+    "actual_primary_Mesa_artifact_sha256": "80863af5d52c34f1c6728848fe58c4ffb961a79069c9cc5faf9749325343752b",
+    "scope": "One finite shared word supports the25degree regression; no fullmatrix/crossdriver inference",
+    "actual_primary_Mesa_artifact_path": ".local/burning-billboard-reference-20261031/capture-d/normal/driver-gl.ndjson"
+  },
+  "counterexample_67_5deg_cardinal": {
+    "operation": "identity;rotate67.5around+Y",
+    "index": 0,
+    "actual_NVIDIA_word": "3ec3ef10",
+    "old_double_cos_narrow_word": "3ec3ef15",
+    "minimal_F32radian_cosf_word": "3ec3ef15",
+    "word_distance_ULP": 5,
+    "scope": "BothCPUmodelwords exceed fourULP; no universalNVIDIAmatrix fit"
+  },
+  "CPU_model_validation": {
+    "oldNative_six_actual_fire_matrices_all16words_match_model": true,
+    "newNative_six_actual_fire_matrices_all16words_match_model": true,
+    "selected_SDK_matrices_compared": 43,
+    "strict4ULP_failure_counts": {
+      "old_double": 23,
+      "minimal_float_radians": 20
+    },
+    "diagnostic_sha256": "1e564011a9f6001601a8e7b4b2875585778a40b84cbf7ab0f59f291de1bd643e",
+    "input_sha256": {
+      "C:\\Users\\admin\\minecraft\\.local\\burning-billboard-reference-20261031\\rotation_policy_diagnostic_b.py": "dbcfb8e37db1e23574d55aab6caa6671b35390e7198a2939ec7362b66884bec1",
+      "C:\\Python314\\python.exe": "cce21c0e8710e304273e98ac4b2b0f5aceb639acbcd2343cbaa5c4e81619c45b",
+      "C:\\Users\\admin\\minecraft\\.local\\burning-billboard-reference-20261031\\rotation-probe-windows-a\\observations.ndjson": "7a6621df339b35b96d12bd64079d1f265946e91e93b729d4669f8cbd53ebc545",
+      "C:\\Users\\admin\\minecraft\\.local\\burning-billboard-reference-20261031\\rotation-probe-windows-a\\receipt.json": "549469bf66206abcb394f73433148a330285a0ed66ef4a550e99ff771184d79b",
+      "C:\\Users\\admin\\minecraft\\.local\\burning-billboard-native-entry-windows-20261031b\\burning-billboard-mp7b3m1t\\ordinary\\billboard.ndjson": "268cf6239c355e56a514acd7a29b75461d03ecec3e26b35e87a40dc2f89e0eb7",
+      "C:\\Users\\admin\\minecraft\\.local\\burning-billboard-native-float-windows-20261031c\\burning-billboard-gjc0j_7z\\ordinary\\billboard.ndjson": "1d9ae50f72144135e995e53ddf815dda27cedd454d9ff6fb36c665906d45e990",
+      "C:\\Windows\\System32\\ucrtbase.dll": "3c60056371f82e4744185b6f2fa0c69042b1e78804685944132974dd13f3b6d9"
+    },
+    "scope": "Postcapture arithmetic diagnostic, not Nativeproducer or originalgameNVIDIA trace"
+  }
+}

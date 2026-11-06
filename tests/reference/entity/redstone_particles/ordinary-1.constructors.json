@@ -1,0 +1,2296 @@
+[
+  {
+    "profile": -1,
+    "kind": "redstone_default",
+    "math_before": null,
+    "math_after": "53caec6fce65",
+    "own_after": "e823a852c9bd",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "bf7a0652dfe04bc2",
+        "3f76f48531e8bfd4",
+        "3f7709e0d87c10cd"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3da61f10",
+      "d": "401bd63b",
+      "age": 0,
+      "lifetime": 17,
+      "scale": "3fa0beea",
+      "gravity": "00000000",
+      "rgb": [
+        "3f715344",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3fa0beea",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 0,
+    "kind": "redstone_default",
+    "math_before": "53caec6fce65",
+    "math_after": "83f2da32ea89",
+    "own_after": "cf9fe6d2c4f9",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f8572119924e5ac",
+        "3f8a1b107d1ed777",
+        "3f85d6a5f8fac548"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3f991550",
+      "d": "3ee4ee0e",
+      "age": 0,
+      "lifetime": 25,
+      "scale": "3f83d9ed",
+      "gravity": "00000000",
+      "rgb": [
+        "3f100e2a",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f83d9ed",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 1,
+    "kind": "redstone_scaled",
+    "math_before": "83f2da32ea89",
+    "math_after": "f8b6a51c85ed",
+    "own_after": "507d5af1d83d",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "bf734b124744e779",
+        "3f6119424fe4bd29",
+        "bf7a720004e67820"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "403c7eea",
+      "d": "40129cb4",
+      "age": 0,
+      "lifetime": 9,
+      "scale": "3fb377e4",
+      "gravity": "00000000",
+      "rgb": [
+        "3f146fa7",
+        "3ea20840",
+        "3e313b6e"
+      ],
+      "base_scale": "3fb377e4",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 2,
+    "kind": "redstone_large",
+    "math_before": "f8b6a51c85ed",
+    "math_after": "b57ac100a491",
+    "own_after": "90eae2b7e1f1",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f54c316490e1855",
+        "bf507c9f74e942fc",
+        "bf81b6e9c4ca42fa"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3eaae0a4",
+      "d": "4034cc6c",
+      "age": 0,
+      "lifetime": 25,
+      "scale": "4053cf1e",
+      "gravity": "00000000",
+      "rgb": [
+        "3f5454cd",
+        "3edc5778",
+        "3e54046c"
+      ],
+      "base_scale": "4053cf1e",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 3,
+    "kind": "redstone_zero",
+    "math_before": "b57ac100a491",
+    "math_after": "3d32d1088a75",
+    "own_after": "5cd50d399f39",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "bf804e3a593e7e9a",
+        "bf5a66b285f5d099",
+        "bf75b16794f7ea44"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3f8776e3",
+      "d": "4004fd66",
+      "age": 0,
+      "lifetime": 0,
+      "scale": "00000000",
+      "gravity": "00000000",
+      "rgb": [
+        "3f361825",
+        "3f447ba9",
+        "00000000"
+      ],
+      "base_scale": "00000000",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 4,
+    "kind": "redstone_negative",
+    "math_before": "3d32d1088a75",
+    "math_after": "16fdec96bb99",
+    "own_after": "6f2b4c5b093d",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f4707a411ab5dfe",
+        "3f9230b136b933f5",
+        "bf886f164f09e487"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3fa55852",
+      "d": "4022962a",
+      "age": 0,
+      "lifetime": -4,
+      "scale": "bf17dbdb",
+      "gravity": "00000000",
+      "rgb": [
+        "bea24150",
+        "3e2b63e5",
+        "3f2e3013"
+      ],
+      "base_scale": "bf17dbdb",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 5,
+    "kind": "redstone_negative_zero",
+    "math_before": "16fdec96bb99",
+    "math_after": "5441df6afbfd",
+    "own_after": "75a589acc47d",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "bf7fd37a382b7c7f",
+        "bf741201cdea47e2",
+        "3f61a0fba1228be6"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "400ebd5a",
+      "d": "3fdbda85",
+      "age": 0,
+      "lifetime": 12,
+      "scale": "3f8e2a4a",
+      "gravity": "00000000",
+      "rgb": [
+        "3f36dd5c",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f8e2a4a",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 6,
+    "kind": "redstone_default",
+    "math_before": "5441df6afbfd",
+    "math_after": "e92c29064fa1",
+    "own_after": "d98df23e47dd",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f74f6d5a5728edb",
+        "3f93b08fdb5b0866",
+        "bf7ee1ea82afd055"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3f480526",
+      "d": "3f787bbb",
+      "age": 0,
+      "lifetime": 16,
+      "scale": "3f837e2c",
+      "gravity": "00000000",
+      "rgb": [
+        "3f3c1551",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f837e2c",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 7,
+    "kind": "redstone_default",
+    "math_before": "e92c29064fa1",
+    "math_after": "7b70bf4efa85",
+    "own_after": "dfe5662316d5",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f84b6cb3d69a605",
+        "3f8a0ef0bb780a78",
+        "bf75c9256f5fd570"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3fab9a12",
+      "d": "3dc68d78",
+      "age": 0,
+      "lifetime": 18,
+      "scale": "3fa5a90a",
+      "gravity": "00000000",
+      "rgb": [
+        "3f4a9cce",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3fa5a90a",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 8,
+    "kind": "redstone_default",
+    "math_before": "7b70bf4efa85",
+    "math_after": "8fb3d87480a9",
+    "own_after": "d28d027c7c49",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f731e648724d646",
+        "3f50a982661a723f",
+        "bf824d01aa5715e5"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3fc75ee6",
+      "d": "3fa87f40",
+      "age": 0,
+      "lifetime": 19,
+      "scale": "3f8dbaab",
+      "gravity": "00000000",
+      "rgb": [
+        "3f1a7a24",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f8dbaab",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 9,
+    "kind": "redstone_default",
+    "math_before": "8fb3d87480a9",
+    "math_after": "6b854013a60d",
+    "own_after": "f52699bcf8d9",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f80bf901ef5cef4",
+        "3f5ef3720e9f3a02",
+        "bf7080e0784f8e5e"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3fae51ce",
+      "d": "40223c86",
+      "age": 0,
+      "lifetime": 28,
+      "scale": "3fae7154",
+      "gravity": "00000000",
+      "rgb": [
+        "3f1c4c9a",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3fae7154",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 10,
+    "kind": "redstone_default",
+    "math_before": "6b854013a60d",
+    "math_after": "d370fb9a6eb1",
+    "own_after": "a7ee830be091",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f8975898e4664d3",
+        "3f80ca7befa64d1c",
+        "bf87a58ed85c159d"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "40371150",
+      "d": "3d86f028",
+      "age": 0,
+      "lifetime": 11,
+      "scale": "3f757ab0",
+      "gravity": "00000000",
+      "rgb": [
+        "3f6b8be5",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f757ab0",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 11,
+    "kind": "redstone_default",
+    "math_before": "d370fb9a6eb1",
+    "math_after": "01aa41ec1e95",
+    "own_after": "5aff5a9d9a21",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f60c4d6671dee55",
+        "3f2e7131e2f12277",
+        "bf7b99fc54e3cb00"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3f9ca725",
+      "d": "3f1ca50f",
+      "age": 0,
+      "lifetime": 14,
+      "scale": "3fa52ccc",
+      "gravity": "00000000",
+      "rgb": [
+        "3f516063",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3fa52ccc",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 12,
+    "kind": "redstone_default",
+    "math_before": "01aa41ec1e95",
+    "math_after": "cd7b0a4539b9",
+    "own_after": "7417f08fa1d9",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f670ea591af77ba",
+        "3f76b4b0d2d467b8",
+        "bf71e85a4a156fdd"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3de91b28",
+      "d": "3f3346f9",
+      "age": 0,
+      "lifetime": 8,
+      "scale": "3f881c4a",
+      "gravity": "00000000",
+      "rgb": [
+        "3f3480cf",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f881c4a",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 13,
+    "kind": "redstone_default",
+    "math_before": "cd7b0a4539b9",
+    "math_after": "452bb65f841d",
+    "own_after": "3c5a015ea67d",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f73088a69e3cdd3",
+        "3f851994db493062",
+        "bf7fb6f3709f9c44"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3fa9a32e",
+      "d": "3fe2cb98",
+      "age": 0,
+      "lifetime": 16,
+      "scale": "3f5fefcf",
+      "gravity": "00000000",
+      "rgb": [
+        "3f6df8b4",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f5fefcf",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 14,
+    "kind": "redstone_default",
+    "math_before": "452bb65f841d",
+    "math_after": "bec39bd601c1",
+    "own_after": "c2f2a704ec61",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "bf8c94505ad43258",
+        "3f8631b0b1248a39",
+        "3f1d0c59dd50b09f"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3fe0b7c0",
+      "d": "3d97cf38",
+      "age": 0,
+      "lifetime": 14,
+      "scale": "3faedc36",
+      "gravity": "00000000",
+      "rgb": [
+        "3f50f871",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3faedc36",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 15,
+    "kind": "redstone_default",
+    "math_before": "bec39bd601c1",
+    "math_after": "2f1470c8f6a5",
+    "own_after": "8cda646d37c1",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "bf829dd9c597142f",
+        "3f8e58effbc57e80",
+        "3f7c6ae5e9fe3156"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3f97b892",
+      "d": "3fe0bfc4",
+      "age": 0,
+      "lifetime": 8,
+      "scale": "3f925a79",
+      "gravity": "00000000",
+      "rgb": [
+        "3f4fae23",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f925a79",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 16,
+    "kind": "redstone_default",
+    "math_before": "2f1470c8f6a5",
+    "math_after": "fd37dfc1e6c9",
+    "own_after": "3d33122a8771",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "bf4deec128cfdcb4",
+        "3f967e3f2ebd0a5a",
+        "bf77cd0ef4d089e4"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3f96a53f",
+      "d": "400604e1",
+      "age": 0,
+      "lifetime": 9,
+      "scale": "3fab39bb",
+      "gravity": "00000000",
+      "rgb": [
+        "3f4f716e",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3fab39bb",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 17,
+    "kind": "redstone_default",
+    "math_before": "fd37dfc1e6c9",
+    "math_after": "623fc6d7962d",
+    "own_after": "bc681f85cd01",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f82e1f142487ab3",
+        "3f7227e8ba27cd39",
+        "bf33c606247b283e"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3fa216ef",
+      "d": "3f36380e",
+      "age": 0,
+      "lifetime": 9,
+      "scale": "3f6fb842",
+      "gravity": "00000000",
+      "rgb": [
+        "3f51b83a",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f6fb842",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 18,
+    "kind": "redstone_default",
+    "math_before": "623fc6d7962d",
+    "math_after": "0c96e61208d1",
+    "own_after": "611ad3912ed5",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "bf815347c21b4b81",
+        "3f9433eecd7a3914",
+        "3f6adc4f598aece6"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "40104214",
+      "d": "40044519",
+      "age": 0,
+      "lifetime": 23,
+      "scale": "3f976c2e",
+      "gravity": "00000000",
+      "rgb": [
+        "3f397fb5",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f976c2e",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 19,
+    "kind": "redstone_default",
+    "math_before": "0c96e61208d1",
+    "math_after": "53b1010e82b5",
+    "own_after": "cb227a1c9c35",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f74e947418696d9",
+        "3f6f87009fa9a073",
+        "3f77026fbf32ff71"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3fa487ea",
+      "d": "3e17d100",
+      "age": 0,
+      "lifetime": 12,
+      "scale": "3fb97ae6",
+      "gravity": "00000000",
+      "rgb": [
+        "3f7c4c94",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3fb97ae6",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 20,
+    "kind": "redstone_default",
+    "math_before": "53b1010e82b5",
+    "math_after": "ee6eb7e387d9",
+    "own_after": "1a1f2cbaea21",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f6d878cf9475f64",
+        "3f90d39a0d21e021",
+        "bf734b1f9faaaec7"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "40104502",
+      "d": "403aa82d",
+      "age": 0,
+      "lifetime": 19,
+      "scale": "3f91fc7c",
+      "gravity": "00000000",
+      "rgb": [
+        "3f20439c",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f91fc7c",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 21,
+    "kind": "redstone_large",
+    "math_before": "ee6eb7e387d9",
+    "math_after": "3c429b44dc3d",
+    "own_after": "f3c93ffe9c15",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "bf4175f81148d85c",
+        "3f9641eaeab6c871",
+        "bf77902373770892"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3f7b0433",
+      "d": "403c39f6",
+      "age": 0,
+      "lifetime": 30,
+      "scale": "4041b79b",
+      "gravity": "00000000",
+      "rgb": [
+        "3f404e77",
+        "3eca4c66",
+        "3e31ba3c"
+      ],
+      "base_scale": "4041b79b",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 22,
+    "kind": "redstone_default",
+    "math_before": "3c429b44dc3d",
+    "math_after": "b1f23fe783e1",
+    "own_after": "f066bcf23a21",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f70e8dba2bbeac1",
+        "3f933d6dd971b7d7",
+        "3f75949bfcab8bd5"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3fe4eba1",
+      "d": "3ea55c1c",
+      "age": 0,
+      "lifetime": 8,
+      "scale": "3f85b327",
+      "gravity": "00000000",
+      "rgb": [
+        "3efb021e",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f85b327",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 23,
+    "kind": "redstone_default",
+    "math_before": "b1f23fe783e1",
+    "math_after": "8dff5525c2c5",
+    "own_after": "b2701511d361",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f7a35b8bfeeb732",
+        "3f75de4d5d82e180",
+        "bf888748e83d8b5f"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3cffba00",
+      "d": "3ea08d6e",
+      "age": 0,
+      "lifetime": 17,
+      "scale": "3f991c0b",
+      "gravity": "00000000",
+      "rgb": [
+        "3f1a81ae",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f991c0b",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 24,
+    "kind": "redstone_default",
+    "math_before": "8dff5525c2c5",
+    "math_after": "519a02e31ce9",
+    "own_after": "a490ff098a89",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f7ecb50181ab3cc",
+        "3f922631ddc16fc6",
+        "bf68a1f3c3cb2530"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3fb29850",
+      "d": "3f9bffaf",
+      "age": 0,
+      "lifetime": 18,
+      "scale": "3f70e274",
+      "gravity": "00000000",
+      "rgb": [
+        "3eff0e58",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f70e274",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 25,
+    "kind": "redstone_default",
+    "math_before": "519a02e31ce9",
+    "math_after": "90b712b0564d",
+    "own_after": "cb884520d039",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "bf7d34ad76036808",
+        "3f885d0a25456e38",
+        "3f854ef47619d041"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3f3bacbe",
+      "d": "3faaf92a",
+      "age": 0,
+      "lifetime": 24,
+      "scale": "3f575f9b",
+      "gravity": "00000000",
+      "rgb": [
+        "3f257458",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f575f9b",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 26,
+    "kind": "redstone_default",
+    "math_before": "90b712b0564d",
+    "math_after": "f9c1a82f72f1",
+    "own_after": "ffe81578493d",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f736b8578e84ca6",
+        "3f834deef90bbb00",
+        "3f7692b56cf0c76b"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "401d8240",
+      "d": "3e111910",
+      "age": 0,
+      "lifetime": 35,
+      "scale": "3f96ddb4",
+      "gravity": "00000000",
+      "rgb": [
+        "3f3a2a40",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f96ddb4",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 27,
+    "kind": "redstone_large",
+    "math_before": "f9c1a82f72f1",
+    "math_after": "3aa18cb7b6d5",
+    "own_after": "6c897da2a665",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f6caabb190b2991",
+        "3f7f6468fc252797",
+        "3f7906817f157cb5"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "4009e9d0",
+      "d": "4002042d",
+      "age": 0,
+      "lifetime": 20,
+      "scale": "402ad359",
+      "gravity": "00000000",
+      "rgb": [
+        "3f170562",
+        "3ea7aecb",
+        "3e2bf89a"
+      ],
+      "base_scale": "402ad359",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 28,
+    "kind": "redstone_default",
+    "math_before": "3aa18cb7b6d5",
+    "math_after": "e8b45239a5f9",
+    "own_after": "33725f626b6d",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f73158f7d6b84fe",
+        "3f73a3de66e75843",
+        "3f74b9be4a3e2964"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "401cfbae",
+      "d": "3e746b3c",
+      "age": 0,
+      "lifetime": 15,
+      "scale": "3fa69018",
+      "gravity": "00000000",
+      "rgb": [
+        "3f5b4751",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3fa69018",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 29,
+    "kind": "redstone_default",
+    "math_before": "e8b45239a5f9",
+    "math_after": "5320d163045d",
+    "own_after": "d0be8cf9afe5",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "bf7b09a4744d5565",
+        "3f6fda30c20bd053",
+        "3f73784411df72be"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3e9ce106",
+      "d": "3cb34de0",
+      "age": 0,
+      "lifetime": 10,
+      "scale": "3fadf5e8",
+      "gravity": "00000000",
+      "rgb": [
+        "3f3a0c5e",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3fadf5e8",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 30,
+    "kind": "redstone_default",
+    "math_before": "5320d163045d",
+    "math_after": "35d9c702d601",
+    "own_after": "560ee1e8177d",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f7db64052c838ab",
+        "3f91100ade1aa75a",
+        "3f7f4571b27e4a01"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3f91547a",
+      "d": "3dda54b8",
+      "age": 0,
+      "lifetime": 10,
+      "scale": "3f91694d",
+      "gravity": "00000000",
+      "rgb": [
+        "3f3c4f2c",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f91694d",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 31,
+    "kind": "redstone_default",
+    "math_before": "35d9c702d601",
+    "math_after": "6ef594ad5ee5",
+    "own_after": "d6556b615195",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f7e50df0c642ebb",
+        "3f8d67dd554722b0",
+        "bf7cab59f4f4c6af"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3fdcfd02",
+      "d": "4038c5e2",
+      "age": 0,
+      "lifetime": 14,
+      "scale": "3f66ae79",
+      "gravity": "00000000",
+      "rgb": [
+        "3f4d5bbf",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f66ae79",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 32,
+    "kind": "redstone_default",
+    "math_before": "6ef594ad5ee5",
+    "math_after": "f2f668a02309",
+    "own_after": "043ee1723b8d",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "bf79221cd40f2252",
+        "3f7b2b6f4d8d565a",
+        "3f66cdd2b6d50264"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3fe8d2e3",
+      "d": "4003d5ea",
+      "age": 0,
+      "lifetime": 8,
+      "scale": "3f46051e",
+      "gravity": "00000000",
+      "rgb": [
+        "3f189207",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f46051e",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 33,
+    "kind": "redstone_default",
+    "math_before": "f2f668a02309",
+    "math_after": "5e7750e5e66d",
+    "own_after": "9fd8f1f5cddd",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f7c74877489be85",
+        "3f462926555e3021",
+        "bf6c936516153b77"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3fa412a6",
+      "d": "3f5bc942",
+      "age": 0,
+      "lifetime": 8,
+      "scale": "3f896436",
+      "gravity": "00000000",
+      "rgb": [
+        "3f67c483",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f896436",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 34,
+    "kind": "redstone_default",
+    "math_before": "5e7750e5e66d",
+    "math_after": "47affdbaad11",
+    "own_after": "9b82337e243d",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f7b69e27414e49f",
+        "3f6e1d9f591b9ac1",
+        "bf773a65ea4fa241"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "4031f7ee",
+      "d": "400cee8b",
+      "age": 0,
+      "lifetime": 12,
+      "scale": "3fb7afef",
+      "gravity": "00000000",
+      "rgb": [
+        "3f15ca4f",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3fb7afef",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  {
+    "profile": 35,
+    "kind": "redstone_default",
+    "math_before": "47affdbaad11",
+    "math_after": "37a2372fbaf5",
+    "own_after": "951eaed545bd",
+    "state": {
+      "position": [
+        "4021000000000000",
+        "4050200000000000",
+        "4021000000000000"
+      ],
+      "previous": [
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "velocity": [
+        "3f7f4ea8f0fd27b2",
+        "bf570c6c93fbd370",
+        "bf74b306335d2b25"
+      ],
+      "bounds": [
+        "4020ccccccc00000",
+        "4050199999980000",
+        "4020ccccccc00000",
+        "4021333333400000",
+        "4050266666680000",
+        "4021333333400000"
+      ],
+      "size": [
+        "3dcccccd",
+        "3e4ccccd",
+        "3e4ccccd"
+      ],
+      "y_size": "00000000",
+      "texture": 0,
+      "c": "3fe01df5",
+      "d": "40200391",
+      "age": 0,
+      "lifetime": 28,
+      "scale": "3f994581",
+      "gravity": "00000000",
+      "rgb": [
+        "3f495bae",
+        "00000000",
+        "00000000"
+      ],
+      "base_scale": "3f994581",
+      "dead": false,
+      "ground": false,
+      "no_clip": false,
+      "collision": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ]
+    }
+  }
+]

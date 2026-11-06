@@ -1,0 +1,39 @@
+{
+  "status": "PASS",
+  "calls_per_vm": 160,
+  "ordinary_vms": 2,
+  "same_selected_rows": true,
+  "selected_sha256": "d2919207b89896c79e05057e6a95e812ef0400b6c73e7e6343045f23ef1e2dde",
+  "captured_helpers_sha256": {
+    "LeverSceneObservation.java": "ee876587635b4464f3b1b10fe4bf08b2f821f40de3a546f9773aa6fecd2acbb9",
+    "capture.py": "9cd3333af873540b48909aabbd3d4a5c55484f46e3d441f35ea689fa6a2cbf56",
+    "source-pins.json": "0a908dfe39e759d76cbe0ef2b09ded6f6be63997900f551937629b358f008a0c",
+    "scene-input.bin": "8565bc42d6ed6b4fdb28b73a9c4ff2c0c8b3fb844fe0f1e84d8c4aa5df8b5131",
+    "scene-input-origin.json": "ed03140754f9067dd143347e2eb8bc90b62325a2648f1a9c8c620e09978b1855"
+  },
+  "compiled_sha256": {
+    "LeverSceneObservation$1.class": "61f4b5ac6f9c46feab008ce0678be6228211947d9020eeb36abb0935dc1a9ed5",
+    "LeverSceneObservation.class": "9e8049288e431851370bd2f35747d5e96e5a2e3177e9ca72309dbd0b23483406"
+  },
+  "original_stdout_sha256": [
+    "8e4b0a5e96e409109be67d8db8e90f4dc3bfb2041db88edd69eea7f8195ff9a3",
+    "8e4b0a5e96e409109be67d8db8e90f4dc3bfb2041db88edd69eea7f8195ff9a3"
+  ],
+  "original_stderr_sha256": [
+    "4cd17f0e79aed9f75fee46c676bbc6de2277c2bb628f388892a90835abfdb2a1",
+    "4cd17f0e79aed9f75fee46c676bbc6de2277c2bb628f388892a90835abfdb2a1"
+  ],
+  "tool_sha256": {
+    "java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+  },
+  "scope": "Unchanged cv.b/e/g, xr bounds, ordinary culling, flat and AO bases, exact scene coordinates and NW translation(0,-64,0). Explicit raw Minecraft/settings prestate; no constructor, loaded scene or GL claim.",
+  "synthetic_world_input_sha256": {
+    "level.dat": "29ced62149b83e77c34be5450db6e89eac69fcdda858b46981bbea271674086e",
+    "region/r.-1.-1.mcr": "1e85189871cc4893af98f7145f00667689c25cecbe4fbb01835708aa4e7bc067",
+    "region/r.-1.0.mcr": "c43339e5b6e8e44185bc99cd22b61c1fa5ee0be9d9c599e03ea20cff0629ccf0",
+    "region/r.0.-1.mcr": "dffe2a18142d4f0878a2ac50eef5f0494f54bd35ad592abbf2f7944456f307b2",
+    "region/r.0.0.mcr": "2bda1cb84f7562bc943a089116cfa0426a1dc8fcdc8bf01176f34c94d75580b4"
+  }
+}

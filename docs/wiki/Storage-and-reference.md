@@ -1,293 +1,352 @@
 # Storage and original references
 
-Storage provides raw NBT, gzip/zlib memory compression, metadata codecs,
-region inspection and writing, stable stored chunks, native region transport
-and world-store ownership through `mc_persistence`. The finite storage foundation
-passes exact-source native MSVC/GCC/Clang acceptance and independent audits at
-`9ad690d83592f127b9bb39d7233e8eef06fd0029`; hosted checks pass as well.
-See the [storage checkpoint](#storage-foundation-checkpoint) below for its scope.
+The [Torch World packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/torch_world/README.md)
+retains 66 actual calls through genuine saved-World, Chunk, EW/CV and NW owners.
+Twelve complete target streams agree across the private/public cohorts; two
+observer-deadline failures retain exact partial prefixes. The fresh public
+two-ordinary/one-JDI cohort records 286 EW queries, 235 static captures and 13
+live Code fingerprints. Selected data includes every active word and reached
+failure word. Each VM also checks 138,397,392 non-emitted words against its own
+prior memory. Native replay passes 132 rows and 14,640 appended words, with its
+own backing and cleanup receipts separate from original provenance.
 
-The raw NBT codec handles the original tag IDs 0..10 with named roots, lists,
-compounds, byte arrays and lossless UTF-16 string units. Decoded documents own
-retained data, including application fields the caller does not interpret.
-Duplicate compound names retain the last value; resource limits bound memory,
-bytes, tags, elements and nesting. See the
-[NBT interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/storage/nbt.md).
+The [Smoke/Flame packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/entity/torch_particles/README.md)
+records 37 constructor roots per VM with genuine independent entropy and 30
+deterministic components agreeing across three VMs. JDI observes 242 shared
+Math doubles, 250 private floats and 24 live Code pins. The default Smoke
+delegation and Flame's local-only jitter remain explicit. Original ticks set
+no-clip=true, so the cohort establishes arithmetic rather than collisions.
+Native constructor/tick comparisons pass; native draw matches 18 rows and
+25,165,440 own-inactive words with exact nested failure prefixes. The bounded
+loaded scene separately proves both recorded callback-created identities in
+an explicitly entered World draw, with full DN visitation and Timer/loop state
+unchanged. Ordinary source execution then returns five World/HUD frames and
+cleanup. Source pixels, entropy-distribution and general FPS remain outside
+these packets.
 
-Compression accepts an explicit gzip/zlib format and borrowed input bytes,
-returning an owned output buffer. It validates complete stream checksums and
-trailers. Gzip concatenates adjacent recognized members, while zlib stops after
-one stream. Nonmagic compressed tails remain unconsumed. Limits bound input,
-output, live allocation and member count. See the
-[compression interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/storage/compression.md).
+The final public suites pass 660 Windows and 653 Linux sanitizer cases, retaining
+4,548 source hashes and 532 products per host; all 1,445 runtime files match.
+The refreshed Workbench packet derives8,137 checks from its actual four
+captures, retains 1,955 selected inputs and 413 resources, and passes 57 corruption
+controls plus the public/private/history/cohort audits. Harvest captures each
+retain1,956 selected inputs and 413 resources, with unchanged stopped/closed
+save bytes. These native receipts remain separate from original provenance.
 
-The original gzip NBT wrapper can finish its root before reading a missing or
-corrupt trailer. The C module rejects malformed containers through full member
-validation; reserved flags and recognized invalid later headers are also
-documented departures from the selected modern Java readers. Valid container
-payloads compare exactly. Compressed blocks need not match across compressors.
+The [Cactus World packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/cactus_world)
+uses genuine saved Worlds, four Chunks, EW/CV constructors and the original NW
+backing. Two ordinary VMs and a read-only JDI target agree on 25 complete calls.
+Selected source records preserve 669 query entries, 444 ordered offset stores
+and five exceptions. Native replay compares outer fields and words; native
+per-query tracing and original whole-frame pixels retain separate scopes.
 
-Reference comparisons invoke untouched classes from separately supplied,
-hash-verified client/server JARs in isolated JVM processes. They record source,
-binary, runtime and input fingerprints plus raw records in ignored local
-reports. The C runtime has no JVM dependency. Missing prerequisites remain
-unavailable results. Rewritten components agreeing with each other alone do not
-establish original compatibility.
+The [inventory geometry packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/inventory_geometry)
+retains paired ordinary/read-only JDI observations of 216 actual batches in
+both immediate and GL_COMPILE modes. CPU data agrees exactly; deferred device
+state remains separate. Additive Tessellator translation has 106 original
+calls and 318 ordered store observations. Piston texture observations retain
+34,612 rows, including six individual NaN-bound scenes and real lazy Direction
+initialization. Original game classes/assets remain external private inputs.
 
-[Float lookup/floor evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/math.md)
-records the complete initialized table and raw-bit scalar calls. These pure
-numerical observations need no world or cave setup. They establish the tested
-math prerequisite separately from cave geometry and complete chunks.
+The [Block inventory packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/block_inventory/README.md)
+records 96 registered original receivers and their declaring methods across
+the complete class hierarchy. Native replay matches 13,098 behavior rows.
+The TallGrass [tint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/tall_grass_tint/README.md)
+and [harvest](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/block/tall_grass_harvest/README.md)
+packets retain two agreeing guarded original runs, with 28 and 192 selected
+native rows. Supplemental direct calls remain separate from controller coverage.
 
-Reproduction and exact bytecode anchors live in
-[NBT evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/nbt.md)
-and [compression evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/compression.md).
-The [testing guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/testing.md)
-and [development status](https://github.com/frankischilling/minecraft-c/blob/main/docs/status.md)
-record current validation scope and outstanding work.
+The [concrete harvest packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/block/harvest/README.md)
+records 92 unchanged-original calls in two matching guarded VMs: 63 complete
+controller removals and 29 supplemental direct calls. Native replay matches
+the 63 controller cases. The [Leaf inventory packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/leaf_inventory/README.md)
+adds 17 original metadata-color/shape rows, with class/Code fingerprints and
+two matching captures. These packets contain no game source, assets or binaries.
 
-[Normal density evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/density.md)
-also documents genuine original world construction for numerical observations.
-Each run owns fresh ignored directories; normal server construction can create
-a session lock and directories. Tests never open an existing personal world.
-These density/base comparisons do not establish copied-world save compatibility
-or complete generation.
+The [provider presence record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/chunk_presence_windows.json)
+retains all 1,260 CPU samples, shared-object fingerprints and all six native
+frame attempts. Invalid foreground/source-continuity intervals remain explicit;
+there is no frame-cohort aggregate. Private source paths, process/window IDs
+and resources are excluded from that projection.
 
-[Surface evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/surface.md)
-separates immutable constructor state from live Random and current material
-attributes. Genuine server constructor spawn may generate complete chunks
-before a fresh measured generator is created; the later observed pass calls
-base/surface directly. These observations do not establish complete chunks,
-caves, finishing, population, lighting or save compatibility.
+The [held Item mining packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/item/mining/README.md)
+records unchanged-original speed, harvesting, destruction and controller calls,
+with method fingerprints and captured result hashes. Original archives and
+private process artifacts remain local. The [query CPU benchmark record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/world_queries_windows.json)
+contains authored-corpus fingerprints and raw timing samples, with no original
+assets or private paths. It measures finite queries, not whole-game parity.
+The [matched frame record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/benchmarks/client_frames_windows.json)
+separately retains raw timing rows, validity and common scene settings. Failed
+intervals remain recorded and do not enter an aggregate speedup claim.
 
-[Normal cave evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/caves.md)
-separates ten genuine natural contexts from 44 protected room/path controls.
-The natural pass starts after actual base/surface generation and retains all
-generator, climate, material and Random state. Focused controls construct no
-worlds and observe full buffers, interior/shell water, lava at stored Y10,
-grass repair and ineligible bytes. Branching is inferred by unique Random
-continuation matching, with the inference recorded explicitly. Cave comparisons
-do not establish chunk finishing, population, lighting or save compatibility.
+The [open-Workbench native receipt](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/workbench_open_shutdown/native-validation.json)
+separately binds four Windows SDK processes to the runtime. Actual Frame stop
+leaves the Workbench's cursor, grid, result, Source aliases, statistics and
+Random state unchanged through native ownership transfer and declared hold
+retries. The selected save tree stays unchanged through final cleanup. This
+packet contains native observations; it does not claim executed-original
+shutdown, GC timing, original pixels or FPS equality.
 
-[Chunk evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/chunk.md)
-covers fresh voxel arrays, packed nibble access, column heights and direct sky.
-Original full finishing calls run in separately owned genuine worlds. Complete
-local arrays compare independently between C/client, C/server and client/server;
-world cache membership and ordered queued-light bounds remain separate records.
-The local C component preserves the original Y127 height exclusion, Y0 sky
-exclusion and retained sky values across repeated passes. It does not implement
-world-height queries, lighting propagation or chunk lifecycle.
+The [automatic-close packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/inventory/workbench_auto_close/README.md)
+retains seven calls per ordinary/read-only debugger process: four actual GS
+ticks, two distance predicates and one separate direct close. Fifty-five
+publication tests pass. Two native structural rows match selected original
+owner, cursor, grid, Stack-alias and publication-order fields; native enclosing
+World/Item ticks and independent coordinates keep their own scope.
 
-All five fresh/repeated local chunk cases and the complete packed-access
-observations match on MSVC/GCC/Clang in all three pairings. Public fixtures also
-match the complete original bytes in a separate expansion audit. The chunk
-evidence page records exact source, manifest fingerprints, reproduction inputs
-and observation limits. Queue and cache diagnostics remain evidence for the
-next finishing stage.
+The [native qualification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench-auto-close.md)
+records removal/distance saves with exact Inventory, all Items, terrain and
+unrelated regions, plus failure/fresh-default controls and checked shutdown.
+All 1,426 runtime files match the five passing Windows process receipts.
+Live pickup-particle ownership has separate real DN/GAME World regressions.
 
-[Light-region evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lighting.md)
-adds actual untouched merge and world-queue calls. It retains each real setup
-baseline and compares complete ordered queues with C after observed admission.
-Forty-eight cases contain 72 merge requests; each side also runs 43 world
-requests and a separate actual million-entry overflow experiment. The C module
-implements storage after admission. Full finishing has separate evidence below;
-propagation remains open.
+The [Workbench evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/workbench.md) separates original component observations from native
+gameplay. The Container packet retains 116 calls per ordinary/read-only
+debugger process; the native probe passes 39,702 checks. Its 30 corruption
+controls and the drawing packet's 46 controls preserve their separate scopes.
+Selected shared drawing prefixes do not establish complete native Workbench
+draw equality.
 
-[Full finishing evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/finishing.md)
-adds actual JDI entry/exit traces of all 1024 height queries per pass, dirty state
-and complete ordered queues. Each fixed case runs twice in the same genuine
-world and matches a separate untouched control across complete snapshots.
-Suspended marker inventories record thread roles and original-loader frames;
-they establish finite headless conditions rather than general scheduling.
-The C cache supports lookup, explicit map/list publication and a synchronous
-acquisition coordinator. Separate callback observations below cover successful
-loading and natural population. The storage foundation below adds native
-persistence operations; full persistence acceptance and light propagation remain open.
+The final Windows SDK capture, `workbench-ofs_rbpe`, passes 1,853 checks in
+22.96 seconds. It returns three Workbench frames over seven World ticks and
+three equipped-Pickaxe frames, then performs ordinary Save and Quit.
+Independent NBT decoding checks all 40 Inventory cells and all three saved
+Items at the paused save entry. The 403 saved Chunks include the placed Table;
+the original Dirt target and unrelated region bytes are checked separately.
+Cleanup completes with source inputs and imported assets unchanged.
 
-## Normal generation checkpoint
+Cold original preview calls print the null-Engine exception and then escape
+the null-Camera suffix exception. Native print continuation is still missing.
+Real Pressure Plate bounds and Log/Slab icon delegation have bounded evidence;
+[Creeper null-attacker damage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/creeper-damage.md) has 182 native checks and 23 static-packet controls,
+with no executed-original damage capture. Open-Workbench native shutdown has
+its own four-profile qualification; complete Source shutdown, GC timing,
+unrestricted crafting, original pixels, Linux SDK
+gameplay and FPS remain unqualified. The following records retain their earlier
+checkpoint scopes.
 
-[Direct normal generation evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/generation.md)
-records original stage handoffs and genuine setup qualification for seeds 23,
-24, 26 and 51. The C composition is implemented through full finishing with
-fresh unpublished chunks, a borrowed world biome manager, separate biome
-output preserving manager `d`, and all 13 current material pairs supplied
-explicitly. Its public contract unit passes 99073 checks on MSVC/GCC/Clang,
-including sanitizer checks. Four-seed original capture and lossless public C
-replay pass eight inputs, 72 complete chunks and 73728 exact height queries.
-At exact source `a08c12056a06261ed01d9f66999459f7ce9543b4`, all 41 selected
-local tests pass on native MSVC and WSL GCC/Clang without skips, with ASan/UBSan
-on Linux. All three pairings pass independently. Each build retains 1224 stage
-events, 144 complete marker inventories and eight byte-equal untouched controls.
-Independent audit verifies 47 exact-commit project sources, 57 stable attributed
-inputs, eight unchanged helper classes and all record/control/world-file hashes.
-The evidence page records all three manifest hashes and the audit fingerprint.
+[Player Inventory evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/inventory.md) now includes 73 original controller projections with independent
+source entropy audits, two returned original Inventory draws per ordinary/JDI
+process and a strict comparison of 108 active quad words. Native zero-draw prefixes
+keep their own inactive-backing audits. Two Windows SDK profiles separately
+verify live cursor-close publication, exact saved Player/Item NBT and unchanged
+unrelated region bytes. These do not establish whole-frame or unrestricted
+Inventory parity.
 
-The `reference.normal_generation` comparison observes actual direct
-generator calls in fresh worlds and requires complete byte-equal untouched
-controls. It retains complete local/world state, current materials and opacity,
-climate/scratch, all 82 layers, separate Random continuations and 1024 ordered
-height queries per call. Repeated, negative, packed-key-alias, world-border and
-finite cave-domain endpoint calls exercise one retained generator. Public
-`tools.normal_reference` and `tools.normal_interop` checks provide synthetic
-guards and lossless retained-fixture replay; see
-[build commands](Build-and-tests#normal-generation-checks). Generation remains
-separate from cache acquisition/publication, population, propagation, other
-dimensions and save compatibility.
+The client now draws eight default Mob kinds: Sheep, Pig, Cow, Chicken,
+Spider, Slime, Squid and Creeper. [Mob drawing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/mob-drawing.md) uses the actual TH/GV, concrete
+renderer/model, PS and NW owners. Four independent loaded Windows sessions
+for Spider/Slime/Squid/Creeper each return four World/HUD frames: delay,
+unticked undrawn traversal, first draw and reuse, then checked cleanup.
+The new families draw 22/5/9/6 parts and 18/2/18/8 shadow quads across their
+two drawn frames. Existing-player statistics are declared inputs; these
+controls do not qualify fresh-player tutorials or serialized Mob loading.
 
-The measured contexts use base worlds `fd`/`dj` and caches `ok`/`jb`. The actual
-`MinecraftServer` constructs `dp` with `he`; its cache lifecycle is not covered
-by the base-world generation observation. The suspended inventories
-establish finite headless conditions, not general concurrency behavior. Hosted
-[a08 checks](https://github.com/frankischilling/minecraft-c/actions/runs/39079200002)
-pass 36 public/numerical tests per compiler and formatting for 79 C/header files.
+The creature comparison passes 3,722 native checks and 366,155 selected
+original checks per host: 341 queries, 42 lists, 252 faces and twelve rejected
+corruptions. Linux ordinary/read-only JDI and the audited matching-device
+NVIDIA ordinary supplement keep separate scopes. Native global invocation
+order, dynamic Block classes, original/native pixels and whole-frame equality
+remain unpaired. Prepared matrices alone allow four float ULP or opposite-zero
+numeric equality, with raw differences retained.
 
-## Cache and region checks
+[PB particles](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particles.md) now follow the actual Slime landing through N, eight distinct PBs,
+DN tick, real World movement and layer 2 sprite drawing. Both hosts pass 1,863
+native checks across five fresh processes and 67,444 selected original checks
+over seventeen operations, including four actual null failures, 180 identity
+pairs, 45 stream-progress relations and complete 48/48/384-word batches.
+Four manifest and eight targeted comparator corruptions are rejected.
+Eleven direct native constructor receipts have 77 separate scalar checks;
+twenty original constructor intervals retain their own proofs. Constructor
+entropy and raw landing x/z remain independent. Post-array current color,
+concrete JDK buffer/List layout, boxed-Byte and flattened String identity,
+full texture-state graphs and original/native pixels retain explicit limits.
 
-[Cache acquisition evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/cache.md)
-records actual persistent client and dedicated-owner constructors with retained
-providers. Three original-only contexts retain 20 operations, five generations,
-5120 ordered queries, 252 lifecycle events, 40 inventories and three complete
-byte-equal controls. At exact source `9a50ac67997082c89dbc43cf4274fba1427c1565`,
-all 52 selected tests pass without skips on MSVC and WSL GCC/Clang with Linux
-sanitizers and independent audit. Hosted checks pass 45 tests per compiler and
-formatting for 88 C/header files.
+[Mob ticks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/mob-active-tick.md) include the actual Creeper attack/unseen bodies. Each host passes 615
+native checks and 864 selected original comparisons: nine returns, the actual
+null-World failure and two explosion-entry prefixes. The real FD/QX explosion
+remains unfinished; later death/attacking stores receive no completion credit.
+The sound fixture's empty WorldAccess List gives no audio-device coverage.
 
-[Callback boundary evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/cache-callbacks.md)
-adds four original contexts for successful loading and naturally triggered
-population: 12 calls, 394 lifecycle events, 24 inventories and four complete
-byte-equal controls. Public replay imports observed cache/world effects while C
-computes coordinator transitions. At exact source
-`28a55b52c001c4c114a11ca7df844fc1f286d328`, all 56 selected tests pass without
-skips on MSVC/GCC/Clang, with Linux sanitizers and independent audit. Hosted
-checks pass 48 tests per compiler and formatting for 89 C/header files.
-No running-server or terrain-feature parity follows.
+The new frozen creature package records 13 actual draws, six uploads, 42 lists,
+252 faces and 265 complete batches with 209 live Code bodies. The Windows
+ordinary supplement independently audits 36 inputs/four helpers/64 artifacts.
+The PB package records 17 operations and 20 constructor intervals with 117 live
+Code bodies. Its 28-input/four-helper capture is bound to a separate post-capture
+audit of 234 current outputs, without claiming capture-start output hashes.
+Creeper records 12 cases/16 live Code bodies; its 24 original output artifacts
+are separately revalidated from raw transports. Cold PB Registry initialization
+failure remains separate original-only evidence, not native cold success.
+The earlier Sheep, animal, Path and Mob packages remain immutable.
 
-[Read-only region evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/region.md)
-at exact 092301ae passes all 49 queries per original side, with byte-equal
-controls and independent source/artifact audit, on MSVC/GCC/Clang. Eight cases
-are compatible and 41 retain explicit diagnostic departures. Hosted checks pass
-42 tests per compiler and formatting for 87 C/header files. That checkpoint
-establishes finite local read inspection; later schema, global mapping and write
-work has separate evidence below.
+At `c88e648`, all 98 selected targets build on Windows MSVC Debug and Linux
+Clang18 ASan/UBSan. All 129 Windows and 122 Linux tests pass without
+failures, skips or sanitizer findings. CTest takes 457.67/460.55 seconds;
+complete test phases including following input audits take 458.08/501.85 seconds.
+The same 2,610 compiled/helper/build/reference inputs remain unchanged
+through both builds and tests and match the committed Git blobs.
+All 26 fresh original-comparison wrappers pass, thirteen per host. A separate
+current audit verifies 4,614 resolved paths, merging Windows separators
+and `/mnt/c` aliases of the same file. Formatting checks 1,757 C files.
+Six current binding tables pass with historical metadata preserved. Hosted
+results keep their exact published-commit scope in
+[hosted validation](https://github.com/frankischilling/minecraft-c/actions).
 
-## Storage foundation checkpoint
+The full local selection above was recorded at `c88e648`. A subsequent
+test-only GCC repair makes the existing cosine-count assertion's `&&` grouping
+explicit within `||`, preserving C precedence and every expected count. GCC13
+with the actual target flags rejects the original and accepts the correction.
+Rebuilt Windows and Clang18 creature comparisons each retain 3,722 native checks,
+366,155 selected original checks and twelve rejected comparator corruptions.
+Production and build configuration are unchanged; hosted results keep their
+separate commit scope in [hosted validation](https://github.com/frankischilling/minecraft-c/actions).
 
-The [storage evidence overview](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md)
-records the implemented foundation and its acceptance limits. The
-[metadata codec](https://github.com/frankischilling/minecraft-c/blob/main/docs/storage/level.md)
-interprets exact known types/defaults and builds independent NBT with an explicit
-save clock. The
-[region image writer](https://github.com/frankischilling/minecraft-c/blob/main/docs/storage/region-writer.md)
-owns allocation, retained bytes and growth in memory. The
-[world storage owner](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/storage.md)
-adds stable chunk lifetimes, native files and cache ownership, metadata fallback,
-session checks and rotation, dimension paths, accounting and the real
-acquisition load adapter.
+The [random display observer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/world/random_display/README.md)
+executes twelve World profiles and 99 direct Block profiles through all
+eleven display declarations. Ordinary and read-only debugger records match
+byte for byte; 24 live methods, 172 class identities and 171 initialized
+classes are checked. Both native hosts match all 111 state rows and 2,162
+sound/particle events exactly. Default local Random entropy is observed
+separately; seeded direct Block inputs and native-only controls retain their
+own scopes. Concrete renderer Particle construction remains unfinished.
 
-Original metadata and chunk observations support the public codec/schema
-replays. Unknown root/metadata fields, opaque Player data and entity/tile
-compounds have a separate C preservation policy. Original serializers can drop
-such fields or reconstruct objects through factories. Opaque retention and
-edit refusal do not establish player/entity simulation, subtype persistence or
-complete gameplay save behavior. Fixed array/type restrictions also remain
-explicit C malformed-input departures.
+The [World random-tick observer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/world/random_tick/README.md) executes 14 complete World calls and 18 concrete Block ticks from the unchanged JAR. Ordinary and read-only debugger runs preserve 205 class pins, 204 initialized classes, 19 live method bodies, 801 detailed samples and 77 Random returns. Both native hosts match the declared frame, array, scratch, callback and drop-position observations exactly. Cached terrain, controlled callback failures and independent constructor entropy remain explicit limits.
 
-The region-write fixture retains 34 memory-image write attempts across four
-profiles. Its allocation/growth and complete images are separate from native
-filesystem replacement. Only independently bounded original timestamp fields
-become explicit C clock inputs. Separate original global-cache observations
-retain 341 actions per run and nine filename/open mappings. Those nine global
-mappings are original-derived; C local-slot mask cases and the remaining native
-transport scenarios are constructed contracts. These checks do not establish
-original GC timing, general concurrent mutation or failed-I/O durability.
+The [particle observer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/particle_draw/README.md)
+uses genuine unchanged-original objects and read-only state inspection. Three
+fresh JVM profiles produce 124 logical rows, 30 complete exception stacks and
+40 selected outcome projections with 505 actual inputs unchanged. Raw private
+fields, constructor entropy and process output stay outside the repository.
+The public finite projection has zero native comparison credit and does not
+qualify nonempty drawing or a complete frame.
 
-At exact source `9ad690d83592f127b9bb39d7233e8eef06fd0029`, all 71 selected
-tests pass without skips on native MSVC and WSL GCC/Clang, with Linux ASan/UBSan.
-Times are 744.00, 1255.43 and 1256.05 seconds. Hosted checks pass 59
-public/numerical tests per compiler and formatting for 111 C/header files.
-Independent platform audits bind all 290 tracked files and every original
-manifest to the source checkpoint, with tools, build inputs and executable
-bytes preserved. Separate source/provenance and semantic audits pass for all
-new profiles. Copied-world tests cover original-created and C-created
-containers in both directions, explicit roots 0/-1, signed storage boundaries
-and opaque Boat/Sign transport. All 74 world-harness guards pass.
+The [original N constructor prerequisite](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-global-entities.md#app-prerequisite-and-current-world-frame-boundary)
+requires the actual App startup and CX publication. A genuine null-App N fails
+at constructor190 before returning; a constructor-only App with null S instead
+fails at193. The retained negative capture earns no N delay or composed parity
+credit. Current N composition controls are native-only.
 
-The [exact storage checkpoint](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md#exact-source-storage-checkpoint)
-records twelve new capture hashes, audit hashes, full-state/control/clock
-checks, unchanged original-only fixtures and excluded earlier attempts.
-These are finite seed23/API contexts. Entity/player and every subtype body,
-gameplay save/unload scheduling, dimension-transition sharing, running-server
-persistence, crash recovery and full game integration remain open. Earlier
-checkpoint counts above describe only their recorded sources.
+[LocalPlayer NBT and World metadata](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-nbt.md)
+use the actual Player/Inventory owners. Full detailed World saving selects only
+the first live Player occurrence; a completed saved Info.Player load clears that
+tag before ordinary publication. Failures preserve earlier stores and the tag.
+Each combined compiler product passes 490 NBT, 110 coordinate, nine diagnostic
+and 169 publication checks. Thirty-three Windows original cases match 1,302
+normal tag nodes; current Linux executables match the retained Windows captures.
+Three LastPlayed fields have separate clock brackets. The separate wake93
+prefix contains 37 records, including 33 tags; full wake, gameplay save/reload
+and broader persistence acceptance remain unfinished.
 
-## Lifecycle qualification
+The [GameSettings reference](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/game-settings.md)
+records all 40 declared fields, 15 saved keys, ten distinct KeyBindings and
+three original persistence profiles. It preserves charset differences,
+caught failures and the lossy empty texture-pack reload. The shared
+[output writer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/core/java-writer.md)
+implements counted encoding and PrintWriter policy with native stream/file
+tests. The finite Windows writer comparison and declared settings-persistence
+profiles have their own qualified scope. Options screens, broader file-failure
+behavior and complete audio/rendering effects remain unfinished.
 
-The [lifecycle evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lifecycle.md)
-adds finite seed23 client, base-server and dedicated-owner constructor/API
-schedules for incremental/forced and metadata-first saving, actual far-drop,
-100/101 unloads, detach, reload and session failure. Dedicated construction does
-not start the server tick loop. Original APIs supply expected values; C never
-does. Full arrays/headers, metadata, pending/insertion history, supported typed
-files, untouched bytes, clocks and measured input/class/process provenance are
-separate required projections.
+The [fresh World population comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/natural-population.md)
+uses genuine original constructors and the production GAME implementation for
+seed23 origin and ring profiles on both sides. Ring retains nine normal Chunks,
+populates four and ends with 6,968 ordered light regions. Both profiles compare
+complete retained arrays, cache/light ordering, numerical arrays and aliases,
+and Random continuations. Public ring replay checks full original numerical
+and cache golden records; public origin replay checks the older cache oracle.
+Both public native replays use separately declared minimal resources. The older
+MCC1 callback replay keeps its imported-effect scope.
 
-At source `46546d8322de52beb6c3a51f30e827c0260d2b30`, complete Windows v10,
-GCC v9 and Clang v9 suites each passed 92 tests without failures or skips.
-Independent source/semantic audits, storage rechecks and complete capture
-preservation also pass, with Linux ASan/UBSan and stable measured inputs. The
-[canonical ledger](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lifecycle.md#exact-source-lifecycle-checkpoint)
-retains exact result/manifest hashes, the three audit-v3 report sets and
-excluded incomplete attempts. Each platform preserves all 22 original-profile
-roots; no successful Windows v9 row is reused.
-The profile-specific 600/660-second dedicated101 allowance changes no captured
-state, graph scope or proof requirement.
+The [populated Chunk save/readback profile](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-persistence.md)
+adds two genuine cache saves and four direct loads in the same World. Complete
+typed NBT joins the actual saved Chunk arrays; fresh readbacks use each
+implementation's real block map. The second save and every read preserve all
+raw disk bytes. The [full-save profile](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-full-save.md)
+adds held-World metadata, empty named collections and exact metadata rotation.
+The separate [named MapData profile](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-named-data.md)
+compares a dirty default value through two full saves and a separate manager
+load on both sides and all three local compilers. It retains the same World
+and checks the fresh loaded value, shared name owner, colors, complete typed
+NBT and every captured file. Nonempty Players, terrain updates, trackers and
+packets, broader subtypes, source I/O failures, unrestricted ordering,
+dedicated runtime, unloading and restart remain open.
 
-The current-source Windows v9 attempt is excluded in full: 91 passed, 1
-skipped and none failed. Original chunk-data setup returned unavailable before
-measurement when its queue contained 42964 entries against the 16384 bound.
-The fresh Windows v10 suite uses unchanged source and bounds; every test, capture
-and audit passes independently. Its rows are never supplemented from Windows
-v9. See the
-[excluded Windows v9 history](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lifecycle.md#excluded-windows-v9-attempt).
+Storage layers have separate contracts and ownership:
 
-The preceding v7 source `e5dc551a901a84fcec1568fac9e0d62fc5a6ee14` remains
-excluded: Windows passed 92 tests, GCC passed 91 and failed 1, and Clang passed 90,
-failed 1 and skipped 1. Both Linux dedicated101 captures failed trace identity
-validation before C comparison; Clang's chunk-data skip occurred during unseeded
-original-constructor setup. The Windows result remains historical to that source.
+- [Raw NBT](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/storage/nbt.md) owns decoded documents, shared mutable byte-array handles and separate immutable source copies.
+  Shared decoded arrays retain their document after its caller hold is released;
+  mutation requires exclusive access.
+- [Compression](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/storage/compression.md) consumes borrowed byte spans and
+  returns owned buffers; limits and compressed-stream boundaries are explicit.
+- [SavedData](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saved-data.md) owns ID counters, the named cache and ordered values.
+  GAME managers bind the client/server base type; MapData values and save records
+  retain shared colors owners. Copied native path bindings have their own lifetime.
+- [Read-only region records](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/storage/region.md) validate borrowed spans.
+  World writes use the separate [storage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/storage.md) and
+  [saving](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saving.md) contracts.
+- [Minecart inventory and storage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/minecart-inventory.md) document
+  semantic NBT and optional per-occurrence preservation; native preservation
+  policy has its own finite tests.
 
-The v8 source `96bd35b4a0138383478a936465a9c69be99a2547` is also excluded:
-Windows passed 92 tests, while GCC and Clang each passed 91 and failed 1, with
-zero skips. Linux dedicated101 Java execution completed, then helper epoch
-validation failed before C comparison. Retained full semantic and native
-`--development` comparisons pass as diagnostics only; the failed manifests
-remain unchanged. Exact times and scope are in the
-[v8 history](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lifecycle.md#excluded-v8-attempt).
+The [binary audit](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/binaries.md) identifies the supplied
+client and server archives by hash. Original archives and imported resources
+remain local; the [resource record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/resources.md) describes
+observed inputs without claiming rendered or audible parity.
 
-The new controller retains bounded mirrors from each first serialized ID. The
-old-controller Linux marker control proved128 live objects received new IDs after
-debugger disposal. The corrected standalone regression passed both marker and
-pre-label cases on Windows JDK17 and Linux JDK21, with 128 disposed controls,
-stable anchors and capacity/duplicate-label checks. These tool checks do not
-qualify those earlier failed cohorts. The accepted Windows v10/Linux v9
-selection uses fresh complete suites and independent audits. The current helper interval
-policy permits 600000ms only for observed dedicated101 operations at both
-validator call sites. Preparation, constructors, controls and other profiles
-retain 180000ms, and events remain bracketed by their own interval. The actual
-call-site regression went red before this fix and passed 556 positive/2011
-negative checks on native Windows and Linux afterward.
+The [plant lifecycle comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/plant-lifecycle.md) matches
+59 prepared cases per side: full bounded block/metadata maps, both four-field
+Random continuations and ordered actual Item drops. Public replay uses fixtures
+derived from those original captures. Prepared World services execute unchanged
+Block hooks and selected tree bodies; original World/Chunk, WorldAccess, neighbor
+and light-propagation parity remain outside this result. Native
+[plant contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plants.md) describe their own GAME services.
 
-Keep four evidence domains separate: static original mappings, JDK-only
-collection histories, constructed C reentry/error/ownership contracts, and
-genuine original game observations. Nonempty Boat/Sign replay observes external
-feature bodies; native runtime activation refuses those records and must
-preserve copied file bytes. Native empty-runtime serialization is implemented;
-entity/player bodies, general deferred cleanup, terrain population, propagation,
-world ticking, gameplay dimension transitions, running-server persistence and
-crash recovery remain required. Explicit C retirement does not reproduce Java
-GC lifetime, and pinned modern-JDK order makes no Java6 claim.
+See [testing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md), [development status](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md),
+the [parity matrix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md) and
+[World simulation](https://github.com/frankischilling/minecraft-c/wiki/World-simulation) for current evidence and remaining work.
 
-Original binaries, assets, raw decompiled source, launcher files, credentials,
-recordings and personal worlds remain outside public source and releases. Copy
-worlds before any writable reference experiment. Project code uses MIT; zlib
-retains its own license, and neither license covers original Minecraft material.
+## Held Item reference packets
+
+The [held attack packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/entity/held_item_attack/README.md)
+contains 422 exact selected original rows and three independently audited
+health-10 Cow deaths. It records all 38 runtime Item Classes and a 202-ID method
+inventory, while preserving the earlier 32 Dirt/Wool observations and five
+unarmed rows. Each process audits its actual Cow Random, sound, Leather quantity
+and ordered publication. Raw quantities differ between processes and remain
+recorded; only the declared fixed fields compare across independent entropy.
+
+The [direct geometry packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/held_item_geometry/README.md)
+uses genuine original App, Engine, Font, Player, Stack, RA and NW constructors
+on a hidden Pbuffer. Ordinary/read-only-JDI execution supplies all 36 actual
+Sword/Bow flush buffers and 19,008 raw words. The Font-used initial buffer is
+retained; the observed inactive color/reserved slots are zero. Full-word
+comparison has this finite prior-state scope and makes no original pixel or
+whole-frame claim. The
+[reference map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/item-registry.md#held-attack-and-renderer-references)
+separates these completed prepared scenes from the older suspended initializer
+projection. Current native/SDK results and exact-commit hosted scopes are in the
+[combat contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/item/combat.md).
+
+The [durability-overlay fixture](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/item_durability_overlay/finite.json)
+and [provenance](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/item_durability_overlay/provenance.json)
+add nine profiles and eight actually entered original Code pins. The original
+completes 24 draws; native CPU prefixes complete zero and compare 576 active
+XYZ/color words. Each process independently validates its actual inactive
+backing, with all 1,152 raw words retained. Eight packet controls and a three-test
+Windows selection pass in 0.76 seconds. The frozen Windows SDK Dirt and Sword
+break scenarios separately pass their native graphical paths and post-death
+autosaves. Independent decoding matches all 40 live Inventory slots at each
+actual save entry and in the final disk image; sixteen public corruption tests
+protect this comparison in CI. The native scenarios do not expand the original
+packet's completed-draw or pixel scope.
+
+<a id="storage-foundation-checkpoint"></a>
+<a id="lifecycle-qualification"></a>
+<a id="normal-generation-checkpoint"></a>
+<a id="cache-and-region-checks"></a>
+
+The [complete former storage/reference page](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-storage-reference.md)
+preserves the historical [storage foundation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-storage-reference.md#storage-foundation-checkpoint),
+[lifecycle qualification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-storage-reference.md#lifecycle-qualification),
+[Overworld generation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-storage-reference.md#normal-generation-checkpoint)
+and [cache/region](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-storage-reference.md#cache-and-region-checks)
+checkpoints, together with their technical details and evidence limits.

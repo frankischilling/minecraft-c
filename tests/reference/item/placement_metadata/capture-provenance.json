@@ -1,0 +1,80 @@
+{
+  "status": "PASS",
+  "ordinary_fresh_vms": 2,
+  "original_game_class_replacements": 0,
+  "inputs_before": {
+    "original/client.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "libraries/org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "libraries/org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "libraries/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "libraries/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "jdk/java": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "jdk/javac": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "jdk/modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "jdk/jvm": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "tools/classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+    "inputs/registered-item-classes.tsv": "1c9a5ba5186e7cb4c2c076ae1e4d765eac7cebad88e3c4dca74beddbb446d0e6",
+    "authored/PlacementMetadataObservation.java": "755da891f2b2b71f167de4e7d4eb0049d442381c01db6f4898b444770d14609b",
+    "authored/operands.txt": "ff76c1e74128f5df5a8ffeb04e4a4d9389bae599d8ad8a2e8af984ddeb8c8b0e",
+    "authored/declared-inputs.json": "adf9d8700ecbdec83de9b06ff455fa56ea9015e62bb6902f94e8cbe30f9f962d",
+    "authored/capture_reference.py": "e67f5e834f19fc3b7e19b04715859ad2da7e1481e832efd8339973b04c78487e",
+    "authored/source-pins.json": "56a1597a6cb89a586f4ddd6341862efd902e102f428c4d6823f53dc445738746"
+  },
+  "inputs_after": {
+    "original/client.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "libraries/org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "libraries/org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "libraries/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "libraries/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "jdk/java": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "jdk/javac": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "jdk/modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "jdk/jvm": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "tools/classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+    "inputs/registered-item-classes.tsv": "1c9a5ba5186e7cb4c2c076ae1e4d765eac7cebad88e3c4dca74beddbb446d0e6",
+    "authored/PlacementMetadataObservation.java": "755da891f2b2b71f167de4e7d4eb0049d442381c01db6f4898b444770d14609b",
+    "authored/operands.txt": "ff76c1e74128f5df5a8ffeb04e4a4d9389bae599d8ad8a2e8af984ddeb8c8b0e",
+    "authored/declared-inputs.json": "adf9d8700ecbdec83de9b06ff455fa56ea9015e62bb6902f94e8cbe30f9f962d",
+    "authored/capture_reference.py": "e67f5e834f19fc3b7e19b04715859ad2da7e1481e832efd8339973b04c78487e",
+    "authored/source-pins.json": "56a1597a6cb89a586f4ddd6341862efd902e102f428c4d6823f53dc445738746"
+  },
+  "inputs_unchanged": true,
+  "helpers_before": {
+    "PlacementMetadataObservation$1.class": "80801c2d4f7c2bb6837f162d8c3112b2b385e0ad3ca8c43952cc2fc3439d9a2d",
+    "PlacementMetadataObservation.class": "c8cc8ff3d03a7c3d2b96c4257aa4669b1c3244c94ece215ce0eb734f7241bf69"
+  },
+  "helpers_after": {
+    "PlacementMetadataObservation$1.class": "80801c2d4f7c2bb6837f162d8c3112b2b385e0ad3ca8c43952cc2fc3439d9a2d",
+    "PlacementMetadataObservation.class": "c8cc8ff3d03a7c3d2b96c4257aa4669b1c3244c94ece215ce0eb734f7241bf69"
+  },
+  "helpers_unchanged": true,
+  "compile": {
+    "returncode": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_raw_private_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "runs": [
+    {
+      "returncode": 0,
+      "stdout_sha256": "fdb39f167a4e438fd9ab55331bfedcf8b593126118963753b2cfb704ebdbf114",
+      "stderr_raw_private_sha256": "1f2c849839351b972d1209cd4b97ef244a5c1b6d0444069b4c528804e10bb2b3"
+    },
+    {
+      "returncode": 0,
+      "stdout_sha256": "fdb39f167a4e438fd9ab55331bfedcf8b593126118963753b2cfb704ebdbf114",
+      "stderr_raw_private_sha256": "1f2c849839351b972d1209cd4b97ef244a5c1b6d0444069b4c528804e10bb2b3"
+    }
+  ],
+  "ordinary_vm_flags": [
+    "-Xverify:all",
+    "-Xmx256m",
+    "-Djava.awt.headless=true",
+    "-Djava.security.manager=allow"
+  ],
+  "removed_environment_names": [],
+  "raw_outputs_identical": true,
+  "original_stdout_sha256": "bdbf564d6bf72183c2aaddc69b16b6c45d0f526383cc201cba274826440644f9",
+  "projection": "Portable artifact identities replace absolute paths. ordinary-*.stdout are exact captured bytes. original.stdout selects CLASS/METADATA/COMPLETE ASCII lines and writes LF. Private raw stderr is represented by exact hashes; no stderr text is published.",
+  "private_freeze_sha256": "91eb136541a237ce03cdaf692bfd71f6f23364b20a631a76dbe3ff85fa42c7f7",
+  "private_helper_freeze_sha256": "944f3f865710b566f522eff237ccc93dc1fe3424603706b46f153ff916b3bd20"
+}

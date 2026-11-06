@@ -1,0 +1,673 @@
+{
+  "source": "unchanged verified client n.class javap -p -c -s",
+  "methods": {
+    "b(F)V": [
+      {
+        "pc": 1,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 4,
+        "operation": "Field net/minecraft/client/Minecraft.f:Lfd;"
+      },
+      {
+        "pc": 7,
+        "operation": "Field fd.t:Lxa;"
+      },
+      {
+        "pc": 10,
+        "operation": "Field xa.c:Z"
+      },
+      {
+        "pc": 18,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 21,
+        "operation": "Field net/minecraft/client/Minecraft.z:Lkv;"
+      },
+      {
+        "pc": 24,
+        "operation": "Field kv.j:Z"
+      },
+      {
+        "pc": 32,
+        "operation": "Method c:(F)V"
+      },
+      {
+        "pc": 39,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 43,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 46,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 49,
+        "operation": "Field ls.bm:D"
+      },
+      {
+        "pc": 53,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 56,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 59,
+        "operation": "Field ls.aN:D"
+      },
+      {
+        "pc": 63,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 66,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 69,
+        "operation": "Field ls.bm:D"
+      },
+      {
+        "pc": 89,
+        "operation": "Field nw.a:Lnw;"
+      },
+      {
+        "pc": 98,
+        "operation": "Field l:Lji;"
+      },
+      {
+        "pc": 103,
+        "operation": "Method ji.b:(Ljava/lang/String;)I"
+      },
+      {
+        "pc": 106,
+        "operation": "Method org/lwjgl/opengl/GL11.glBindTexture:(II)V"
+      },
+      {
+        "pc": 112,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 121,
+        "operation": "Method org/lwjgl/opengl/GL11.glBlendFunc:(II)V"
+      },
+      {
+        "pc": 125,
+        "operation": "Field k:Lfd;"
+      },
+      {
+        "pc": 129,
+        "operation": "Method fd.c:(F)Lbt;"
+      },
+      {
+        "pc": 136,
+        "operation": "Field bt.a:D"
+      },
+      {
+        "pc": 144,
+        "operation": "Field bt.b:D"
+      },
+      {
+        "pc": 152,
+        "operation": "Field bt.c:D"
+      },
+      {
+        "pc": 159,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 162,
+        "operation": "Field net/minecraft/client/Minecraft.z:Lkv;"
+      },
+      {
+        "pc": 165,
+        "operation": "Field kv.g:Z"
+      },
+      {
+        "pc": 242,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 245,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 248,
+        "operation": "Field ls.aJ:D"
+      },
+      {
+        "pc": 252,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 255,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 258,
+        "operation": "Field ls.aM:D"
+      },
+      {
+        "pc": 262,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 265,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 268,
+        "operation": "Field ls.aJ:D"
+      },
+      {
+        "pc": 277,
+        "operation": "Field x:I"
+      },
+      {
+        "pc": 291,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 294,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 297,
+        "operation": "Field ls.aL:D"
+      },
+      {
+        "pc": 301,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 304,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 307,
+        "operation": "Field ls.aO:D"
+      },
+      {
+        "pc": 311,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 314,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 317,
+        "operation": "Field ls.aL:D"
+      },
+      {
+        "pc": 333,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 344,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 374,
+        "operation": "Field k:Lfd;"
+      },
+      {
+        "pc": 377,
+        "operation": "Field fd.t:Lxa;"
+      },
+      {
+        "pc": 380,
+        "operation": "Method xa.d:()F"
+      },
+      {
+        "pc": 410,
+        "operation": "Method nw.b:()V"
+      },
+      {
+        "pc": 423,
+        "operation": "Method nw.a:(FFFF)V"
+      },
+      {
+        "pc": 497,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 539,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 581,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 623,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 646,
+        "operation": "Method nw.a:()V"
+      },
+      {
+        "pc": 653,
+        "operation": "Method org/lwjgl/opengl/GL11.glColor4f:(FFFF)V"
+      },
+      {
+        "pc": 659,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 665,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      }
+    ],
+    "c(F)V": [
+      {
+        "pc": 3,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 7,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 10,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 13,
+        "operation": "Field ls.bm:D"
+      },
+      {
+        "pc": 17,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 20,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 23,
+        "operation": "Field ls.aN:D"
+      },
+      {
+        "pc": 27,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 30,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 33,
+        "operation": "Field ls.bm:D"
+      },
+      {
+        "pc": 43,
+        "operation": "Field nw.a:Lnw;"
+      },
+      {
+        "pc": 56,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 59,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 62,
+        "operation": "Field ls.aJ:D"
+      },
+      {
+        "pc": 66,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 69,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 72,
+        "operation": "Field ls.aM:D"
+      },
+      {
+        "pc": 76,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 79,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 82,
+        "operation": "Field ls.aJ:D"
+      },
+      {
+        "pc": 91,
+        "operation": "Field x:I"
+      },
+      {
+        "pc": 109,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 112,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 115,
+        "operation": "Field ls.aL:D"
+      },
+      {
+        "pc": 119,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 122,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 125,
+        "operation": "Field ls.aO:D"
+      },
+      {
+        "pc": 129,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 132,
+        "operation": "Field net/minecraft/client/Minecraft.i:Lls;"
+      },
+      {
+        "pc": 135,
+        "operation": "Field ls.aL:D"
+      },
+      {
+        "pc": 154,
+        "operation": "Field k:Lfd;"
+      },
+      {
+        "pc": 157,
+        "operation": "Field fd.t:Lxa;"
+      },
+      {
+        "pc": 160,
+        "operation": "Method xa.d:()F"
+      },
+      {
+        "pc": 176,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 187,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 220,
+        "operation": "Field l:Lji;"
+      },
+      {
+        "pc": 225,
+        "operation": "Method ji.b:(Ljava/lang/String;)I"
+      },
+      {
+        "pc": 228,
+        "operation": "Method org/lwjgl/opengl/GL11.glBindTexture:(II)V"
+      },
+      {
+        "pc": 234,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      },
+      {
+        "pc": 243,
+        "operation": "Method org/lwjgl/opengl/GL11.glBlendFunc:(II)V"
+      },
+      {
+        "pc": 247,
+        "operation": "Field k:Lfd;"
+      },
+      {
+        "pc": 251,
+        "operation": "Method fd.c:(F)Lbt;"
+      },
+      {
+        "pc": 258,
+        "operation": "Field bt.a:D"
+      },
+      {
+        "pc": 266,
+        "operation": "Field bt.b:D"
+      },
+      {
+        "pc": 274,
+        "operation": "Field bt.c:D"
+      },
+      {
+        "pc": 281,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 284,
+        "operation": "Field net/minecraft/client/Minecraft.z:Lkv;"
+      },
+      {
+        "pc": 287,
+        "operation": "Field kv.g:Z"
+      },
+      {
+        "pc": 379,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 390,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 403,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 415,
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 439,
+        "operation": "Method org/lwjgl/opengl/GL11.glScalef:(FFF)V"
+      },
+      {
+        "pc": 460,
+        "operation": "Method org/lwjgl/opengl/GL11.glColorMask:(ZZZZ)V"
+      },
+      {
+        "pc": 467,
+        "operation": "Field t:Lnet/minecraft/client/Minecraft;"
+      },
+      {
+        "pc": 470,
+        "operation": "Field net/minecraft/client/Minecraft.z:Lkv;"
+      },
+      {
+        "pc": 473,
+        "operation": "Field kv.g:Z"
+      },
+      {
+        "pc": 479,
+        "operation": "Field px.b:I"
+      },
+      {
+        "pc": 489,
+        "operation": "Method org/lwjgl/opengl/GL11.glColorMask:(ZZZZ)V"
+      },
+      {
+        "pc": 499,
+        "operation": "Method org/lwjgl/opengl/GL11.glColorMask:(ZZZZ)V"
+      },
+      {
+        "pc": 509,
+        "operation": "Method org/lwjgl/opengl/GL11.glColorMask:(ZZZZ)V"
+      },
+      {
+        "pc": 541,
+        "operation": "Method nw.b:()V"
+      },
+      {
+        "pc": 603,
+        "operation": "Method nw.a:(FFFF)V"
+      },
+      {
+        "pc": 611,
+        "operation": "Method nw.b:(FFF)V"
+      },
+      {
+        "pc": 656,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 705,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 750,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 791,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 813,
+        "operation": "Method nw.a:(FFFF)V"
+      },
+      {
+        "pc": 820,
+        "operation": "Method nw.b:(FFF)V"
+      },
+      {
+        "pc": 869,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 922,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 971,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 1016,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 1037,
+        "operation": "Method nw.a:(FFFF)V"
+      },
+      {
+        "pc": 1051,
+        "operation": "Method nw.b:(FFF)V"
+      },
+      {
+        "pc": 1115,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 1170,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 1221,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 1271,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 1290,
+        "operation": "Method nw.b:(FFF)V"
+      },
+      {
+        "pc": 1357,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 1415,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 1469,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 1522,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 1549,
+        "operation": "Method nw.a:(FFFF)V"
+      },
+      {
+        "pc": 1563,
+        "operation": "Method nw.b:(FFF)V"
+      },
+      {
+        "pc": 1624,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 1679,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 1733,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 1783,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 1802,
+        "operation": "Method nw.b:(FFF)V"
+      },
+      {
+        "pc": 1866,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 1924,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 1981,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 2034,
+        "operation": "Method nw.a:(DDDDD)V"
+      },
+      {
+        "pc": 2044,
+        "operation": "Method nw.a:()V"
+      },
+      {
+        "pc": 2069,
+        "operation": "Method org/lwjgl/opengl/GL11.glColor4f:(FFFF)V"
+      },
+      {
+        "pc": 2075,
+        "operation": "Method org/lwjgl/opengl/GL11.glDisable:(I)V"
+      },
+      {
+        "pc": 2081,
+        "operation": "Method org/lwjgl/opengl/GL11.glEnable:(I)V"
+      }
+    ]
+  }
+}

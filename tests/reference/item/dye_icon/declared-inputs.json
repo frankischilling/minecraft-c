@@ -1,0 +1,244 @@
+{
+  "rows": [
+    {
+      "name": "normal_0",
+      "inputs": [
+        78,
+        0
+      ]
+    },
+    {
+      "name": "normal_1",
+      "inputs": [
+        78,
+        1
+      ]
+    },
+    {
+      "name": "normal_2",
+      "inputs": [
+        78,
+        2
+      ]
+    },
+    {
+      "name": "normal_3",
+      "inputs": [
+        78,
+        3
+      ]
+    },
+    {
+      "name": "normal_4",
+      "inputs": [
+        78,
+        4
+      ]
+    },
+    {
+      "name": "normal_5",
+      "inputs": [
+        78,
+        5
+      ]
+    },
+    {
+      "name": "normal_6",
+      "inputs": [
+        78,
+        6
+      ]
+    },
+    {
+      "name": "normal_7",
+      "inputs": [
+        78,
+        7
+      ]
+    },
+    {
+      "name": "normal_8",
+      "inputs": [
+        78,
+        8
+      ]
+    },
+    {
+      "name": "normal_9",
+      "inputs": [
+        78,
+        9
+      ]
+    },
+    {
+      "name": "normal_10",
+      "inputs": [
+        78,
+        10
+      ]
+    },
+    {
+      "name": "normal_11",
+      "inputs": [
+        78,
+        11
+      ]
+    },
+    {
+      "name": "normal_12",
+      "inputs": [
+        78,
+        12
+      ]
+    },
+    {
+      "name": "normal_13",
+      "inputs": [
+        78,
+        13
+      ]
+    },
+    {
+      "name": "normal_14",
+      "inputs": [
+        78,
+        14
+      ]
+    },
+    {
+      "name": "normal_15",
+      "inputs": [
+        78,
+        15
+      ]
+    },
+    {
+      "name": "signed_minus1",
+      "inputs": [
+        78,
+        -1
+      ]
+    },
+    {
+      "name": "signed_minus7",
+      "inputs": [
+        78,
+        -7
+      ]
+    },
+    {
+      "name": "signed_minus8",
+      "inputs": [
+        78,
+        -8
+      ]
+    },
+    {
+      "name": "signed_minus9",
+      "inputs": [
+        78,
+        -9
+      ]
+    },
+    {
+      "name": "signed_minus15",
+      "inputs": [
+        78,
+        -15
+      ]
+    },
+    {
+      "name": "signed_minus16",
+      "inputs": [
+        78,
+        -16
+      ]
+    },
+    {
+      "name": "signed_minus17",
+      "inputs": [
+        78,
+        -17
+      ]
+    },
+    {
+      "name": "signed_minus2147483648",
+      "inputs": [
+        78,
+        -2147483648
+      ]
+    },
+    {
+      "name": "signed_2147483647",
+      "inputs": [
+        78,
+        2147483647
+      ]
+    },
+    {
+      "name": "base_0",
+      "inputs": [
+        0,
+        15
+      ]
+    },
+    {
+      "name": "base_1",
+      "inputs": [
+        -1,
+        15
+      ]
+    },
+    {
+      "name": "base_2",
+      "inputs": [
+        2147483647,
+        15
+      ]
+    },
+    {
+      "name": "base_3",
+      "inputs": [
+        -2147483648,
+        -1
+      ]
+    },
+    {
+      "name": "base_4",
+      "inputs": [
+        2147483647,
+        2147483647
+      ]
+    },
+    {
+      "name": "base_5",
+      "inputs": [
+        -2147483648,
+        -2147483648
+      ]
+    },
+    {
+      "name": "base_6",
+      "inputs": [
+        2147483640,
+        1
+      ]
+    },
+    {
+      "name": "base_7",
+      "inputs": [
+        -2147483640,
+        -1
+      ]
+    }
+  ],
+  "setup": "Actual registered GM.c[351], all original classes unchanged. Each profile reflectively authored mutable GM.bh equivalent direct public field store; a genuine IZ351/count2/damage operand is created per profile. GM.bh restored after cohort. No World/App/frame created. Original UU initialized before GM, following existing real-World fixture order; direct GM-first attempt1 is preserved as original class-initialization failure.",
+  "entries": [
+    "KM.a(I)I",
+    "GM.b(IZ)I inherited wrapper supporting result",
+    "IZ.b()I",
+    "GM.f(I)I inherited color",
+    "GM.b()Z inherited full3d",
+    "GM.c()Z inherited rotate"
+  ]
+}

@@ -1,0 +1,272 @@
+meta	protocol	random-constructor-1
+meta	vm_name_utf8hex	4f70656e4a444b2036342d4269742053657276657220564d
+meta	vm_version_utf8hex	31372e302e3137
+meta	vm_description_utf8hex	4a61766120446562756720496e7465726661636520285265666572656e636520496d706c656d656e746174696f6e292076657273696f6e2031372e30200a4a61766120446562756720576972652050726f746f636f6c20285265666572656e636520496d706c656d656e746174696f6e292076657273696f6e2031372e300a4a564d20446562756720496e746572666163652076657273696f6e2031372e300a4a564d2076657273696f6e2031372e302e313720284f70656e4a444b2036342d4269742053657276657220564d2c20696e746572707265746564206d6f64652c2073686172696e6729
+meta	can_get_method_return_values	1
+meta	mirror_policy	strong_and_disable_collection
+meta	main_thread	o1
+meta	vm_start_loaded_types	409
+meta	holder_absent_at_vm_start	1
+method	java.lang.Math	random	()D	static	java
+field	RandomConstructorTarget	A	Ljava/util/Random;	static
+field	RandomConstructorTarget	E	Ljava/util/Random;	static
+field	RandomConstructorTarget	B	Ljava/util/Random;	static
+field	RandomConstructorTarget	lastGaussian	D	static
+field	RandomConstructorTarget	lastMath	D	static
+method	RandomConstructorTarget	before	(I)V	static	java
+method	RandomConstructorTarget	after	(I)V	static	java
+method	RandomConstructorTarget	main	([Ljava/lang/String;)V	static	java
+life	main_enter
+marker	bootstrap	before
+state	bootstrap	before	A	-	-	-	-	-
+state	bootstrap	before	E	-	-	-	-	-
+state	bootstrap	before	M	-	-	-	-	-
+state	bootstrap	before	B	-	-	-	-	-
+u	bootstrap	before	-	-
+marker	bootstrap	before_return
+field	java.util.Random	seed	Ljava/util/concurrent/atomic/AtomicLong;	instance
+field	java.util.Random	nextNextGaussian	D	instance
+field	java.util.Random	haveNextNextGaussian	Z	instance
+field	java.util.Random	seedUniquifier	Ljava/util/concurrent/atomic/AtomicLong;	static
+method	java.util.Random	<init>	()V	instance	java
+method	java.util.Random	<init>	(J)V	instance	java
+method	java.util.Random	seedUniquifier	()J	static	java
+method	java.util.Random	setSeed	(J)V	instance	java
+method	java.util.Random	nextDouble	()D	instance	java
+method	java.util.Random	next	(I)I	instance	java
+method	java.util.Random	nextGaussian	()D	instance	java
+event	bootstrap	random_clinit_enter
+event	bootstrap	random_clinit_return
+field	java.util.concurrent.atomic.AtomicLong	value	J	instance
+state	bootstrap	after	A	-	-	-	-	-
+state	bootstrap	after	E	-	-	-	-	-
+state	bootstrap	after	M	-	-	-	-	-
+state	bootstrap	after	B	-	-	-	-	-
+u	bootstrap	after	o2	001ed8b55fac9dec
+marker	bootstrap	after
+marker	bootstrap	after_return
+marker	default_a	before
+state	default_a	before	A	-	-	-	-	-
+state	default_a	before	E	-	-	-	-	-
+state	default_a	before	M	-	-	-	-	-
+state	default_a	before	B	-	-	-	-	-
+u	default_a	before	o2	001ed8b55fac9dec
+marker	default_a	before_return
+event	default_a	default_enter	001ed8b55fac9dec
+event	default_a	uniquifier_enter	001ed8b55fac9dec
+event	default_a	uniquifier_return	2fd89ddcd351e3dc	0000000000000001
+method	java.lang.System	nanoTime	()J	static	native
+event	default_a	nano_time_return	000010be0e23c774	0000000000000004
+event	default_a	delegate_enter	2fd88d62dd7224a8
+state	default_a	delegate_return	A	o3	o4	00008d67039ec2c5	0000000000000000	0
+event	default_a	delegate_return
+state	default_a	default_return	A	o3	o4	00008d67039ec2c5	0000000000000000	0
+event	default_a	default_return	2fd89ddcd351e3dc
+state	default_a	after	A	o3	o4	00008d67039ec2c5	0000000000000000	0
+state	default_a	after	E	-	-	-	-	-
+state	default_a	after	M	-	-	-	-	-
+state	default_a	after	B	-	-	-	-	-
+u	default_a	after	o2	2fd89ddcd351e3dc
+marker	default_a	after
+marker	default_a	after_return
+marker	explicit_e	before
+state	explicit_e	before	A	o3	o4	00008d67039ec2c5	0000000000000000	0
+state	explicit_e	before	E	-	-	-	-	-
+state	explicit_e	before	M	-	-	-	-	-
+state	explicit_e	before	B	-	-	-	-	-
+u	explicit_e	before	o2	2fd89ddcd351e3dc
+marker	explicit_e	before_return
+event	explicit_e	explicit_enter	0000000000000000
+state	explicit_e	explicit_return	E	o5	o6	00000005deece66d	0000000000000000	0
+event	explicit_e	explicit_return
+state	explicit_e	after	A	o3	o4	00008d67039ec2c5	0000000000000000	0
+state	explicit_e	after	E	o5	o6	00000005deece66d	0000000000000000	0
+state	explicit_e	after	M	-	-	-	-	-
+state	explicit_e	after	B	-	-	-	-	-
+u	explicit_e	after	o2	2fd89ddcd351e3dc
+marker	explicit_e	after
+marker	explicit_e	after_return
+marker	gaussian_e	before
+state	gaussian_e	before	A	o3	o4	00008d67039ec2c5	0000000000000000	0
+state	gaussian_e	before	E	o5	o6	00000005deece66d	0000000000000000	0
+state	gaussian_e	before	M	-	-	-	-	-
+state	gaussian_e	before	B	-	-	-	-	-
+u	gaussian_e	before	o2	2fd89ddcd351e3dc
+marker	gaussian_e	before_return
+event	gaussian_e	gaussian_enter
+state	gaussian_e	draw_enter	E	o5	o6	00000005deece66d	0000000000000000	0
+event	gaussian_e	next_enter	000000000000001a	00000005deece66d
+event	gaussian_e	next_return	000000000000001a	0000000002ec82d1	0000bb20b4600a74
+event	gaussian_e	next_enter	000000000000001b	0000bb20b4600a74
+event	gaussian_e	next_return	000000000000001b	0000000006a6ca89	0000d4d95138ab6f
+event	gaussian_e	draw_return	3fe764168ea6ca89
+state	gaussian_e	draw_return	E	o5	o6	0000d4d95138ab6f	0000000000000000	0
+state	gaussian_e	draw_enter	E	o5	o6	0000d4d95138ab6f	0000000000000000	0
+event	gaussian_e	next_enter	000000000000001a	0000d4d95138ab6f
+event	gaussian_e	next_return	000000000000001a	0000000000f64f2d	00003d93cb7ab84e
+event	gaussian_e	next_enter	000000000000001b	00003d93cb7ab84e
+event	gaussian_e	next_return	000000000000001b	0000000004d9cb85	00009b3970be8d41
+event	gaussian_e	draw_return	3fcec9e5b3672e14
+state	gaussian_e	draw_return	E	o5	o6	00009b3970be8d41	0000000000000000	0
+event	gaussian_e	gaussian_return	3fe9ae59d1d6f861
+state	gaussian_e	after	A	o3	o4	00008d67039ec2c5	0000000000000000	0
+state	gaussian_e	after	E	o5	o6	00009b3970be8d41	bfecd9772eb2e0c8	1
+state	gaussian_e	after	M	-	-	-	-	-
+state	gaussian_e	after	B	-	-	-	-	-
+u	gaussian_e	after	o2	2fd89ddcd351e3dc
+marker	gaussian_e	after
+marker	gaussian_e	after_return
+marker	reseed_e	before
+state	reseed_e	before	A	o3	o4	00008d67039ec2c5	0000000000000000	0
+state	reseed_e	before	E	o5	o6	00009b3970be8d41	bfecd9772eb2e0c8	1
+state	reseed_e	before	M	-	-	-	-	-
+state	reseed_e	before	B	-	-	-	-	-
+u	reseed_e	before	o2	2fd89ddcd351e3dc
+marker	reseed_e	before_return
+event	reseed_e	reseed_enter	ffffffffffffffff
+event	reseed_e	reseed_return
+state	reseed_e	after	A	o3	o4	00008d67039ec2c5	0000000000000000	0
+state	reseed_e	after	E	o5	o6	0000fffa21131992	bfecd9772eb2e0c8	0
+state	reseed_e	after	M	-	-	-	-	-
+state	reseed_e	after	B	-	-	-	-	-
+u	reseed_e	after	o2	2fd89ddcd351e3dc
+marker	reseed_e	after
+marker	reseed_e	after_return
+marker	math_first	before
+state	math_first	before	A	o3	o4	00008d67039ec2c5	0000000000000000	0
+state	math_first	before	E	o5	o6	0000fffa21131992	bfecd9772eb2e0c8	0
+state	math_first	before	M	-	-	-	-	-
+state	math_first	before	B	-	-	-	-	-
+u	math_first	before	o2	2fd89ddcd351e3dc
+marker	math_first	before_return
+event	math_first	math_enter
+field	java.lang.Math$RandomNumberGeneratorHolder	randomNumberGenerator	Ljava/util/Random;	static
+method	java.lang.Math$RandomNumberGeneratorHolder	<clinit>	()V	static	java
+event	math_first	holder_prepare
+event	math_first	holder_clinit_enter
+event	math_first	default_enter	2fd89ddcd351e3dc
+event	math_first	uniquifier_enter	2fd89ddcd351e3dc
+event	math_first	uniquifier_return	d72bcc3aedda868c	0000000000000001
+event	math_first	nano_time_return	000010be1033daf4	0000000000000004
+event	math_first	delegate_enter	d72bdc84fde95c78
+state	math_first	delegate_return	M	o7	o8	0000dc812305ba15	0000000000000000	0
+event	math_first	delegate_return
+state	math_first	default_return	M	o7	o8	0000dc812305ba15	0000000000000000	0
+event	math_first	default_return	d72bcc3aedda868c
+event	math_first	holder_clinit_return
+state	math_first	draw_enter	M	o7	o8	0000dc812305ba15	0000000000000000	0
+event	math_first	next_enter	000000000000001a	0000dc812305ba15
+event	math_first	next_return	000000000000001a	00000000032e073f	0000cb81cffb18fc
+event	math_first	next_enter	000000000000001b	0000cb81cffb18fc
+event	math_first	next_return	000000000000001b	0000000001f995b5	00003f32b6ac0b57
+event	math_first	draw_return	3fe97039f9f995b5
+state	math_first	draw_return	M	o7	o8	00003f32b6ac0b57	0000000000000000	0
+event	math_first	math_return	3fe97039f9f995b5
+state	math_first	after	A	o3	o4	00008d67039ec2c5	0000000000000000	0
+state	math_first	after	E	o5	o6	0000fffa21131992	bfecd9772eb2e0c8	0
+state	math_first	after	M	o7	o8	00003f32b6ac0b57	0000000000000000	0
+state	math_first	after	B	-	-	-	-	-
+u	math_first	after	o2	d72bcc3aedda868c
+marker	math_first	after
+marker	math_first	after_return
+marker	math_later	before
+state	math_later	before	A	o3	o4	00008d67039ec2c5	0000000000000000	0
+state	math_later	before	E	o5	o6	0000fffa21131992	bfecd9772eb2e0c8	0
+state	math_later	before	M	o7	o8	00003f32b6ac0b57	0000000000000000	0
+state	math_later	before	B	-	-	-	-	-
+u	math_later	before	o2	d72bcc3aedda868c
+marker	math_later	before_return
+event	math_later	math_enter
+state	math_later	draw_enter	M	o7	o8	00003f32b6ac0b57	0000000000000000	0
+event	math_later	next_enter	000000000000001a	00003f32b6ac0b57
+event	math_later	next_return	000000000000001a	00000000012764fe	000049d93fa4fe16
+event	math_later	next_enter	000000000000001b	000049d93fa4fe16
+event	math_later	next_return	000000000000001b	0000000002bc6d2e	0000578da5cff369
+event	math_later	draw_return	3fd2764fe578da5c
+state	math_later	draw_return	M	o7	o8	0000578da5cff369	0000000000000000	0
+event	math_later	math_return	3fd2764fe578da5c
+state	math_later	after	A	o3	o4	00008d67039ec2c5	0000000000000000	0
+state	math_later	after	E	o5	o6	0000fffa21131992	bfecd9772eb2e0c8	0
+state	math_later	after	M	o7	o8	0000578da5cff369	0000000000000000	0
+state	math_later	after	B	-	-	-	-	-
+u	math_later	after	o2	d72bcc3aedda868c
+marker	math_later	after
+marker	math_later	after_return
+marker	default_b	before
+state	default_b	before	A	o3	o4	00008d67039ec2c5	0000000000000000	0
+state	default_b	before	E	o5	o6	0000fffa21131992	bfecd9772eb2e0c8	0
+state	default_b	before	M	o7	o8	0000578da5cff369	0000000000000000	0
+state	default_b	before	B	-	-	-	-	-
+u	default_b	before	o2	d72bcc3aedda868c
+marker	default_b	before_return
+event	default_b	default_enter	d72bcc3aedda868c
+event	default_b	uniquifier_enter	d72bcc3aedda868c
+event	default_b	uniquifier_return	7e5bfab66f0d7cfc	0000000000000001
+event	default_b	nano_time_return	000010be118ddb20	0000000000000004
+event	default_b	delegate_enter	7e5bea087e80a7dc
+state	default_b	delegate_return	B	o9	o10	0000ea0da06c41b1	0000000000000000	0
+event	default_b	delegate_return
+state	default_b	default_return	B	o9	o10	0000ea0da06c41b1	0000000000000000	0
+event	default_b	default_return	7e5bfab66f0d7cfc
+state	default_b	after	A	o3	o4	00008d67039ec2c5	0000000000000000	0
+state	default_b	after	E	o5	o6	0000fffa21131992	bfecd9772eb2e0c8	0
+state	default_b	after	M	o7	o8	0000578da5cff369	0000000000000000	0
+state	default_b	after	B	o9	o10	0000ea0da06c41b1	0000000000000000	0
+u	default_b	after	o2	7e5bfab66f0d7cfc
+marker	default_b	after
+marker	default_b	after_return
+marker	math_after_b	before
+state	math_after_b	before	A	o3	o4	00008d67039ec2c5	0000000000000000	0
+state	math_after_b	before	E	o5	o6	0000fffa21131992	bfecd9772eb2e0c8	0
+state	math_after_b	before	M	o7	o8	0000578da5cff369	0000000000000000	0
+state	math_after_b	before	B	o9	o10	0000ea0da06c41b1	0000000000000000	0
+u	math_after_b	before	o2	7e5bfab66f0d7cfc
+marker	math_after_b	before_return
+event	math_after_b	math_enter
+state	math_after_b	draw_enter	M	o7	o8	0000578da5cff369	0000000000000000	0
+event	math_after_b	next_enter	000000000000001a	0000578da5cff369
+event	math_after_b	next_return	000000000000001a	0000000001f07b84	00007c1ee106f9c0
+event	math_after_b	next_enter	000000000000001b	00007c1ee106f9c0
+event	math_after_b	next_return	000000000000001b	0000000007b8a68a	0000f714d15ad6cb
+event	math_after_b	draw_return	3fdf07b84f714d14
+state	math_after_b	draw_return	M	o7	o8	0000f714d15ad6cb	0000000000000000	0
+event	math_after_b	math_return	3fdf07b84f714d14
+state	math_after_b	after	A	o3	o4	00008d67039ec2c5	0000000000000000	0
+state	math_after_b	after	E	o5	o6	0000fffa21131992	bfecd9772eb2e0c8	0
+state	math_after_b	after	M	o7	o8	0000f714d15ad6cb	0000000000000000	0
+state	math_after_b	after	B	o9	o10	0000ea0da06c41b1	0000000000000000	0
+u	math_after_b	after	o2	7e5bfab66f0d7cfc
+marker	math_after_b	after
+marker	math_after_b	after_return
+marker	done	before
+state	done	before	A	o3	o4	00008d67039ec2c5	0000000000000000	0
+state	done	before	E	o5	o6	0000fffa21131992	bfecd9772eb2e0c8	0
+state	done	before	M	o7	o8	0000f714d15ad6cb	0000000000000000	0
+state	done	before	B	o9	o10	0000ea0da06c41b1	0000000000000000	0
+u	done	before	o2	7e5bfab66f0d7cfc
+marker	done	before_return
+state	done	after	A	o3	o4	00008d67039ec2c5	0000000000000000	0
+state	done	after	E	o5	o6	0000fffa21131992	bfecd9772eb2e0c8	0
+state	done	after	M	o7	o8	0000f714d15ad6cb	0000000000000000	0
+state	done	after	B	o9	o10	0000ea0da06c41b1	0000000000000000	0
+u	done	after	o2	7e5bfab66f0d7cfc
+marker	done	after
+marker	done	after_return
+life	main_return
+life	vm_death
+life	vm_disconnect
+count	delivered	221
+count	method_entries	106
+count	method_exits	109
+count	ignored_method_events	106
+count	class_prepares	3
+count	held_pinned_mirrors	10
+count	marker_entries	20
+count	marker_exits	20
+count	default_constructors	3
+count	uniquifier_returns	3
+count	nano_time_returns	3
+count	delegate_returns	3
+count	next_double_returns	5
+count	next_returns	10
+result	complete

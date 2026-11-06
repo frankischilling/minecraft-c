@@ -1,0 +1,74 @@
+{
+  "chain_recipe": [
+    "mono32k.ogg",
+    "stereo48k.ogg"
+  ],
+  "encoder_sources": {
+    "tests/client/sound/test_vorbis_decoder.c": {
+      "bytes": 26694,
+      "sha256": "323f7ebf3f1baaa8cf94870c240bdaec49d41d69e78cbd69eb4497ba53d7b357"
+    },
+    "tests/client/sound/test_vorbis_nonzero.c": {
+      "bytes": 21190,
+      "sha256": "134ca0c1218f332ba0db045df9e04edb621de17e21ae6cbad69c605a67fc5afa"
+    }
+  },
+  "encoding_libraries": {
+    "libogg": "1.3.6",
+    "libvorbis": "1.3.7"
+  },
+  "files": {
+    "mono32k.ogg": {
+      "authored_PCM": {
+        "channels": 1,
+        "frames": 4096,
+        "recipe": "exact rational ramp/sign/amplitude/impulse recipe in encoder_source",
+        "sample_rate": 32000
+      },
+      "bytes": 5019,
+      "encoder_source": "tests/client/sound/test_vorbis_nonzero.c",
+      "generated_name": "mono32k.ogg",
+      "sha256": "e176dad1c2979c5375f03f6fd551b7726ce024e232a3d3f52316385f8355c499"
+    },
+    "mono44k-long.ogg": {
+      "authored_PCM": {
+        "channels": 1,
+        "frames": 80000,
+        "recipe": "exact rational ramp/sign/amplitude/impulse recipe in encoder_source",
+        "sample_rate": 44100
+      },
+      "bytes": 30974,
+      "encoder_source": "tests/client/sound/test_vorbis_nonzero.c",
+      "generated_name": "mono44k-long.ogg",
+      "sha256": "80a496265d94252fd8aedb29347829c3a4a0ed51bccfcdbfe88a9f906e2f41ec"
+    },
+    "stereo48k.ogg": {
+      "authored_PCM": {
+        "channels": 2,
+        "frames": 4800,
+        "recipe": "exact rational ramp/sign/amplitude/impulse recipe in encoder_source",
+        "sample_rate": 48000
+      },
+      "bytes": 6797,
+      "encoder_source": "tests/client/sound/test_vorbis_nonzero.c",
+      "generated_name": "stereo48k.ogg",
+      "sha256": "60dd3aab20ec3a8cc390946e33125c25e29b675115e246ae7030ee144e0ca55f"
+    },
+    "zero-mono32k.ogg": {
+      "authored_PCM": {
+        "channels": 1,
+        "frames": 3200,
+        "recipe": "silence",
+        "sample_rate": 32000
+      },
+      "bytes": 3351,
+      "encoder_source": "tests/client/sound/test_vorbis_decoder.c",
+      "generated_name": "mono.ogg",
+      "sha256": "ec50e92ca86ed1a3454790a3cba31d9fe22f969b58c7effb4b604f33cdf7a8c8"
+    }
+  },
+  "generation_profile": "Ubuntu x86-64 Clang18 Debug, ASan/UBSan, pinned private dependency copies",
+  "purpose": "freeze encoded bytes and page boundaries across compiler-dependent encoder floating-point differences; native encoder regressions remain separate",
+  "schema": 1,
+  "scope": "fixed project-authored encoded inputs; no original game audio or decoded expected-state data"
+}

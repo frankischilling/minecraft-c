@@ -6,6 +6,9 @@ separate acceptance requirements.
 
 ## Original bindings
 
+See [activation and detach](#activation-and-detach) for ordinary GAME
+acquisition's concrete known-empty World collection operations.
+
 Both supplied references use the hashes recorded in the
 [binary audit](binaries.md): client SHA-256
 `af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c`
@@ -23,7 +26,7 @@ Class names belong to their respective archives.
 | Remaining finishing effects | Same method | Same method | Offsets 182 through 221, world-height checks, queued sky intervals and dirty state |
 | Initialized opacity table | `uu.q:[I` | `na.q:[I` | Actual registry initialization, retained before and after measurement |
 
-The normal generators invoke these finishing methods after the cave stage.
+The Overworld generators invoke these finishing methods after the cave stage.
 Fresh normal arrays hold 32768 blocks, three packed arrays of 16384 bytes
 each, and 256 height bytes. The world/data distinction matters: the newly
 generated chunk is not yet inserted into the normal cache during finishing.
@@ -35,6 +38,28 @@ at Y127, subtracts the actual opacity without an invented minimum loss,
 stores only positive light and never writes Y0. Positions skipped by a later
 pass retain prior sky values. Blocks, metadata and block light are preserved
 by this local stage.
+
+## Concrete constructor and finalizer
+
+The same verified archives also define the concrete owner now represented by
+the [generated Chunk interface](../world/chunk-objects.md). The base constructor
+`lm.<init>(Lfd;II)V` / `hi.<init>(Ldj;II)V` publishes its fresh TileEntity Map at12,
+List[8] at21, flags n/o/q and time r at26/31/36/41, actual World d at46, final
+coordinates j/k at51/56, and zero height byte[256] at65. Eight distinct empty
+ArrayLists are constructed91 and stored94 in order. The byte-array overload
+calls that base constructor5, stores the supplied blocks10 and distinct Nibble
+owners e/f/g at23/36/49. Each Nibble creates its zero packed array8 and stores
+its final a10. The native combined-backing allocation policy is separate from
+this logical field order and from Java allocation-failure timing.
+
+Full finishing captures the actual static q at39/113 before block bytes53/125;
+element reads occur58/130. Height h80 precedes current World.t/Dimension.e97.
+Wrapped subtraction131 precedes conditional Nibble setter149. Minimum i179
+precedes neighbor helper201 and final dirty218. Its column helper calls the
+four interval helpers at37/48/59/70. Each interval reads World height6; only a
+difference reaches Sky21 or52, queue31 or62, then dirty36 or67. These are paired
+bytecode findings, without a new original runtime observation. Existing actual
+finishing captures below remain qualified for their own recorded contexts.
 
 ## Opacity input authority
 
@@ -125,6 +150,42 @@ world cache/queue observations remain diagnostic evidence for later work.
 They do not establish C world-height queries, queued-light behavior, propagation,
 complete chunk generation, other dimensions, persistence or playable operation.
 
+## Activation and detach
+
+The same pinned client/server binaries establish these paired methods:
+
+| Operation | Client | Server | Ordered bytecode |
+| --- | --- | --- | --- |
+| Preactivation | `lm.d()V` | `hi.c()V` | Return0 |
+| Activation | `lm.e()V` | `hi.d()V` | active2; d6; l10/values13; World Collection18; each current m slice41/World List42; return51 |
+| World TileEntity registration | `fd.a(Collection)V` | `dj.a(Collection)V` | L1; true selects G8/addAll12, false selects c22/addAll26; return32 |
+| World Entity registration | `fd.a(List)V` | `dj.a(List)V` | b1/addAll5; incoming size15; per-Entity hook34 only for nonempty input |
+| Detach | `lm.f()V` | `hi.e()V` | inactive2; l6/values9; iterator14/hasNext21; TileEntity invalidation40 only for nonempty input; each current slice66/World List67; return76 |
+| World Entity deferral | `fd.b(List)V` | `dj.b(List)V` | D1/addAll5; return11 |
+
+The base cache invokes generation before map95/list107 publication,
+preactivation120, activation125 and population gates128 onward. Registration
+does not precede active or cache publication. Detach does not remove objects
+from World b, clear Chunk collections or save/unpublish the Chunk itself.
+Client TileEntity invalidation is `ow.i()V`; the paired server target is `jh.h()V`.
+Their primitive h=true store is unreached for the known-empty domain.
+
+The region decoder invokes `to.a(World,Level)` / `mg.a(World,Level)`, which
+reads Level xPos3/zPos10 and calls the base Chunk constructor21 before
+assigning Blocks34, Data52, SkyLight70, BlockLight88, HeightMap99 and
+population110. The constructor creates actual d, Map and eight List identities.
+Region relocation writes xPos246/zPos254 to the outer root before decoding
+root.Level again265; this does not rewrite Level coordinates. The final
+`lm.i()` / `hi.h()` normalization uses the class-shared first-use Block map.
+The C [loaded binding](../world/chunk-activation.md) retains its existing atomic,
+fixed-array decoder and explicit frozen-map policy; it does not claim the
+source's allocation failures, missing-array handling or nonempty factories.
+
+These are paired bytecode findings. Empty collection call order is reviewed
+against that source; final empty lists alone cannot measure the number of
+calls, Java Values identities, allocation or modCount. No new executed-original
+Chunk activation or detach comparison is claimed.
+
 ## Local reproduction
 
 Build the committed C source with both local JAR paths and the full commit ID
@@ -182,3 +243,35 @@ classpath options before creating output. It records the canonical driver and
 the exact bytes loaded for shared helpers. The commit field is a caller-supplied
 label; acceptance also checks source and executable fingerprints against the
 tested checkout.
+
+## Live GAME saving
+
+Both verified archives have matching save control flow at these paired entry
+points. PCs are method bytecode offsets, separate from native ownership and
+independent-result allocation boundaries.
+
+| Frame | Client / base server | Reached order |
+| --- | --- | --- |
+| Region save | `ld.a(World,Chunk)V` / `hb.a(World,Chunk)V` | session1; output stream16; root/Level24/33; shared serializer51; NBT57; close61; Info65; actual growth89, signed widening92 and wrapped add93/set94 |
+| Shared Chunk serializer | `to.a(Chunk,World,Compound)V` / `mg.a(Chunk,World,Compound)V` | second session1; time28; arrays41/54/67/80/90; population100; q=false105; actual m length125/slice iterator136; q=true167 before Entity183; Entities208; actual l.values224; Tile271; TileEntities289 |
+| Base TileEntity | `ow.b(Compound)V` / `jh.b(Compound)V` | class-name lookup7; id54; current coordinates64/74/84 |
+| Chest | `js.b(Compound)V` / `gk.b(Compound)V` | base2; physical slots20; Slot48; actual Stack59; Items79 |
+| Spawner | `cy.b(Compound)V` / `bx.b(Compound)V` | base2; EntityId12 before Delay23 |
+| Stack | `iz.a(Compound)Compound` / `fy.a(Compound)Compound` | narrowed id8, Count19 and Damage30 |
+
+The [native GAME coordinator](../world/saving.md) implements the supported
+ItemEntity and Chest/Spawner traversals. It retains whole Entity/TileEntity and lower
+codec diagnostics and preserves reached q changes on failure. Every Entity
+occurrence invokes its actual Boolean serializer after q becomes true; false
+continues. The lower Store composes both current lists over the
+same owned header/document; it never supplies old opaque records as live state.
+
+The original Region catches Exception over4..97, prints at102 and returns105;
+its first session1 lies outside that catch. Native buffered checked replacement
+returns explicit failure and does not emulate that exception/stream behavior.
+Independent NBT trees, retained unknown fields and the existing native clock
+position also remain separate policies. Source inspection and constructed
+native saves do not establish an executed original/native whole-save replay.
+The separate [Entity GAME observations](entity-game-storage.md) add finite
+whole-Chunk original calls and exact known Item tag comparisons; their broader
+World/disk routes and native unknown-preservation policy remain distinct.

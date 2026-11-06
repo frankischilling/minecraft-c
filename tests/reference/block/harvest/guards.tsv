@@ -1,0 +1,5 @@
+GUARD	source_network_attempts	0
+GUARD	source_native_attempts	0
+GUARD	connect_denied	1
+GUARD	listen_denied	1
+GUARD	native_link_denied	1

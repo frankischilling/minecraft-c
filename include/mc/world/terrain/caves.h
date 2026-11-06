@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define MC_TERRAIN_NORMAL_CAVE_RANGE 8u
+#define MC_TERRAIN_OVERWORLD_CAVE_RANGE 8u
 #define MC_TERRAIN_CAVE_BLOCKS 32768u
 
 /* Complete normal cave pass over a borrowed chunk prefix, with fixed range 8.
@@ -23,8 +23,8 @@
  * Retains Java wrapping within this ordinary 289-neighbor scheduler domain.
  * Exact geometry requires the project's strict binary32/binary64 FP contract.
  */
-bool mc_terrain_normal_caves(const mc_math_trig *table, int64_t world_seed, int32_t chunk_x,
-                             int32_t chunk_z, mc_java_random *cave_random, uint8_t *blocks,
-                             size_t blocks_length);
+bool mc_terrain_overworld_caves(const mc_math_trig *table, int64_t world_seed, int32_t chunk_x,
+                                int32_t chunk_z, mc_java_random *cave_random, uint8_t *blocks,
+                                size_t blocks_length);
 
 #endif

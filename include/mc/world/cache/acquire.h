@@ -89,9 +89,9 @@ typedef mc_chunk_load_result (*mc_chunk_load_callback)(void *loader,
  * parity: this coordinator deliberately never publishes NULL map values. */
 typedef bool (*mc_chunk_generate_callback)(void *provider, const mc_chunk_acquire_context *context,
                                            int32_t x, int32_t z, mc_chunk_state **generated);
-typedef bool (*mc_chunk_register_tiles_callback)(void *world,
-                                                 const mc_chunk_acquire_context *context,
-                                                 mc_chunk_state *chunk);
+typedef bool (*mc_chunk_register_tile_entities_callback)(void *world,
+                                                         const mc_chunk_acquire_context *context,
+                                                         mc_chunk_state *chunk);
 typedef bool (*mc_chunk_register_entities_callback)(void *world,
                                                     const mc_chunk_acquire_context *context,
                                                     mc_chunk_state *chunk, size_t slice);
@@ -139,7 +139,7 @@ struct mc_chunk_acquire_context {
     void *provider;
     mc_chunk_load_callback load;
     mc_chunk_generate_callback generate;
-    mc_chunk_register_tiles_callback register_tiles;
+    mc_chunk_register_tile_entities_callback register_tile_entities;
     mc_chunk_register_entities_callback register_entities;
     mc_chunk_populate_callback populate;
     /* Optional lease accounting for loaded/generated/current population locals
@@ -157,7 +157,7 @@ bool mc_chunk_acquire_validate(const mc_chunk_acquire_context *context);
  * callbacks, append the same retained result, activate, then evaluate all four
  * ordered population gates against live state. There is no placeholder or
  * post-callback replacement of the retained outer result by a lookup result.
- * Normal activation sets active before tiles, then calls all eight slices in
+ * Normal activation sets active before TileEntities, then calls all eight slices in
  * order. Blank activation and dirty marking are no-ops. The first normal
  * pre-activation method is already a no-op; it adds no callback here.
  *

@@ -1,0 +1,201 @@
+{
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "classes": {
+    "fd": {
+      "class_bytes": 33396,
+      "class_sha256": "b91d4726c43ed2dad1a72fd8d925eaded8a7c365af5d9f37c3ad101b957a4100",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "b",
+          "descriptor": "(F)F",
+          "access": 1,
+          "code_bytes": 16,
+          "code_sha256": "df16b315fdfddd7a7149382844c25818cde6192836a2b14397b015b40de6e8c0"
+        },
+        {
+          "name": "e",
+          "descriptor": "(F)F",
+          "access": 1,
+          "code_bytes": 46,
+          "code_sha256": "a80c7e3ae16f9764431ef5a64f446c08c4eedfb090bc62fccc642790b5512d2c"
+        },
+        {
+          "name": "g",
+          "descriptor": "(F)F",
+          "access": 1,
+          "code_bytes": 17,
+          "code_sha256": "f118626a874991bae9a70c9f3105359591008fe5d9e4be5c670a0a2c5aa1716c"
+        }
+      ]
+    },
+    "xa": {
+      "class_bytes": 2050,
+      "class_sha256": "8b72b6ce0a7b402b5177623251a38ff305573f16f3172efa3290bb45b8fe3afa",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 40,
+          "code_sha256": "d120f06e639bfa314d860e8b1e0045bbd5e7284625dc59bd986d08f94e5b5a4a"
+        },
+        {
+          "name": "a",
+          "descriptor": "(JF)F",
+          "access": 1,
+          "code_bytes": 88,
+          "code_sha256": "47b3b195bc211d5ac367d476f664849eee112211b2b571f28602d76fd8881770"
+        },
+        {
+          "name": "a",
+          "descriptor": "(FF)[F",
+          "access": 1,
+          "code_bytes": 141,
+          "code_sha256": "9e31f30e04df5f01f67aeb2230e5a3c563a04f99660b0c23a58820310c73513e"
+        },
+        {
+          "name": "c",
+          "descriptor": "()Z",
+          "access": 1,
+          "code_bytes": 2,
+          "code_sha256": "95ef737cd8a13db65e3eb3c18e8816a5179dcbdf341309522ab00e95d5aae6d2"
+        }
+      ]
+    },
+    "rh": {
+      "class_bytes": 154,
+      "class_sha256": "b29262494d6c942c3f2484eccfeb3db6e5703c348bb999b6fb8b0667fa56cbda",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 5,
+          "code_sha256": "698b4bbff28b9283e5cfcc5e527afbe2c78f48eccafc11d5007412d00dc1b76d"
+        }
+      ]
+    },
+    "wd": {
+      "class_bytes": 1070,
+      "class_sha256": "b18bebc5ad5a3812851978fe028cb4e442b0b7c0f5ba8e17891fe6bd2c519651",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 5,
+          "code_sha256": "33916b80d60652642de7b755b56363d094875ec08724021a822a6188c255b107"
+        },
+        {
+          "name": "a",
+          "descriptor": "(JF)F",
+          "access": 1,
+          "code_bytes": 3,
+          "code_sha256": "f706f3687d4f8b6f1022630ca0de70abdaef2afe185c7fca511cf14eb7ad2236"
+        }
+      ]
+    },
+    "ay": {
+      "class_bytes": 1158,
+      "class_sha256": "07b496f27b0231b2aeca007c4574b39e7351e6d4b3c505126265aa78b9eed832",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 5,
+          "code_sha256": "6133dbc271280e9146c7f34f3c3907dbe01b8bde973144f1b7804280860a9f63"
+        },
+        {
+          "name": "a",
+          "descriptor": "(JF)F",
+          "access": 1,
+          "code_bytes": 2,
+          "code_sha256": "76790b5c8ead87f989332851cf78efea9767f8e7cdfef2fcbdd616a92d5ae24c"
+        },
+        {
+          "name": "a",
+          "descriptor": "(FF)[F",
+          "access": 1,
+          "code_bytes": 2,
+          "code_sha256": "146cb1bd5c639e50589db67598e4a3f423eb736f7911d3b8329f72e0f5cd5fac"
+        },
+        {
+          "name": "c",
+          "descriptor": "()Z",
+          "access": 1,
+          "code_bytes": 2,
+          "code_sha256": "42ca1f85243342bd41983ab86f2235408fa46ded7466d4525196f66b9dbb5f3e"
+        }
+      ]
+    },
+    "ei": {
+      "class_bytes": 3748,
+      "class_sha256": "5d01d1dda7be346c57fd00846d2425615186c3ef1c65c06aa0bd0f45aa9f7fef",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(JLjava/lang/String;)V",
+          "access": 1,
+          "code_bytes": 15,
+          "code_sha256": "f9ea3e8ac9e1b22f0de330756d6ac528271ce9b74e2fe43ddf45943811c595ed"
+        },
+        {
+          "name": "f",
+          "descriptor": "()J",
+          "access": 1,
+          "code_bytes": 5,
+          "code_sha256": "c33801854236db923ce8be0e9eb0e4ef8c8583f973d588b6a3c1499b2ae6cfaa"
+        },
+        {
+          "name": "a",
+          "descriptor": "(J)V",
+          "access": 1,
+          "code_bytes": 6,
+          "code_sha256": "779f1658cd403f836293cb082c915a60336031137b261f2ae10779503c8ed13b"
+        }
+      ]
+    },
+    "in": {
+      "class_bytes": 1099,
+      "class_sha256": "8693f3179fb0ff1df382e1d3388d23ab688ad3e26415454655da88f10b054f63",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "(F)F",
+          "access": 25,
+          "code_bytes": 13,
+          "code_sha256": "28da3291b3e2436a660d9429e209555cb2703c6e6558ba2a01bf14b64bad1383"
+        },
+        {
+          "name": "b",
+          "descriptor": "(F)F",
+          "access": 25,
+          "code_bytes": 16,
+          "code_sha256": "24c3aef70d5e7418cfb8f346326e9c7327da773d898f957d670bda807e8aa150"
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8,
+          "code_bytes": 45,
+          "code_sha256": "4ecbb4b6204847a4217dd53db5895ad401ed067ee04a4c3d1034c7570ff8d391"
+        }
+      ]
+    }
+  }
+}

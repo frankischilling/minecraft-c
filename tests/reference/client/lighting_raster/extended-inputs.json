@@ -1,0 +1,96 @@
+{
+  "width": 64,
+  "height": 64,
+  "cases": [
+    {
+      "name": "specular_nonlocal",
+      "frames": 1,
+      "native_index": 38
+    },
+    {
+      "name": "specular_local",
+      "frames": 1,
+      "native_index": 39
+    },
+    {
+      "name": "specular_shininess_zero",
+      "frames": 1,
+      "native_index": 40
+    },
+    {
+      "name": "specular_shininess_32",
+      "frames": 1,
+      "native_index": 41
+    },
+    {
+      "name": "twoside_front",
+      "frames": 1,
+      "native_index": 42
+    },
+    {
+      "name": "twoside_back",
+      "frames": 1,
+      "native_index": 43
+    },
+    {
+      "name": "oneside_back",
+      "frames": 1,
+      "native_index": 44
+    },
+    {
+      "name": "back_tracking_color",
+      "frames": 1,
+      "native_index": 45
+    },
+    {
+      "name": "single_specular_texture",
+      "frames": 1,
+      "native_index": 46
+    },
+    {
+      "name": "separate_specular_texture",
+      "frames": 1,
+      "native_index": 47
+    },
+    {
+      "name": "separate_specular_texture_fog",
+      "frames": 1,
+      "native_index": 48
+    },
+    {
+      "name": "unlit_triangle_flat",
+      "frames": 1,
+      "native_index": 49
+    },
+    {
+      "name": "unlit_triangle_smooth",
+      "frames": 1,
+      "native_index": 50
+    },
+    {
+      "name": "unlit_fan_flat",
+      "frames": 1,
+      "native_index": 51
+    },
+    {
+      "name": "unlit_fan_smooth",
+      "frames": 1,
+      "native_index": 52
+    },
+    {
+      "name": "clamped_lighting_smooth",
+      "frames": 1,
+      "native_index": 53
+    },
+    {
+      "name": "clamped_lighting_flat",
+      "frames": 1,
+      "native_index": 54
+    },
+    {
+      "name": "positional_local_specular",
+      "frames": 1,
+      "native_index": 55
+    }
+  ]
+}

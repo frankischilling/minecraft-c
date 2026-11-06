@@ -42,7 +42,10 @@ JAR_HASHES = {"client": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d
 HELPERS = ("ChunkObservation.java", "CacheAcquisitionObservation.java", "CacheAcquisitionController.java")
 MODULES = {"scripts/reference/caves/compare_caves.py", "scripts/reference/caves/fixtures.py",
            "scripts/reference/chunk/compare_chunk.py", "scripts/reference/chunk/compare_finish.py",
-           "scripts/reference/generation/compare_normal.py"}
+           "scripts/reference/generation/compare_overworld.py"}
+CURRENT_GENERATION_MODULE = "scripts/reference/generation/compare_overworld.py"
+LEGACY_GENERATION_MODULE = "scripts/reference/generation/compare_normal.py"
+LEGACY_MODULES = (MODULES - {CURRENT_GENERATION_MODULE}) | {LEGACY_GENERATION_MODULE}
 SCRATCH = {"q": 425, "r": 256, "s": 256, "t": 256, "d": 425, "e": 425, "f": 425, "g": 25, "h": 25}
 LENGTHS = {"blocks": 32768, "metadata": 16384, "skylight": 16384, "block_light": 16384, "heightmap": 256}
 
@@ -137,6 +140,17 @@ def bindings(side):
                     ("fd", "ok", "mx", "ld", "yf") if side == "client" else ("dp", "he", "ie", "hb", "pk")))
 
 
+def recorded_modules(origin):
+    """Select captured names without rewriting their recorded fingerprints."""
+    sources, executed = origin["source_fingerprints"], origin["executed_source_modules"]
+    require(type(sources) is dict and type(executed) is dict, "recorded source/module dictionaries")
+    names = set(executed)
+    require(names == MODULES or names == LEGACY_MODULES, "one complete captured module naming family")
+    other = LEGACY_GENERATION_MODULE if names == MODULES else CURRENT_GENERATION_MODULE
+    require(other not in sources, "unmixed captured source/module naming family")
+    return names
+
+
 def validate_fixture(value):
     keys(value, ("schema", "encoding", "projection", "provenance", "cases"), "acquisition fixture")
     require(type(value["schema"]) is int and value["schema"] == 1 and type(value["encoding"]) is str and
@@ -153,7 +167,8 @@ def validate_fixture(value):
                             ("height_query_pairs", 5120), ("marker_inventories", 40)):
         require(type(origin[name]) is int and origin[name] == expected, "complete original corpus counts")
     sources = origin["source_fingerprints"]
-    required = MODULES | {"scripts/reference/cache/compare_acquire.py", "tests/world/cache/acquire_probe.c",
+    modules = recorded_modules(origin)
+    required = modules | {"scripts/reference/cache/compare_acquire.py", "tests/world/cache/acquire_probe.c",
                           "src/world/cache/acquire.c", "include/mc/world/cache/acquire.h", "CMakeLists.txt"}
     required |= {"tests/reference/" + ("chunk/" if name == "ChunkObservation.java" else "cache/") + name for name in HELPERS}
     require(type(sources) is dict and required <= set(sources) and len(sources) <= 4096, "complete source attribution")
@@ -172,7 +187,7 @@ def validate_fixture(value):
         require(type(name) is str and re.fullmatch(r"[A-Za-z0-9_$]+\.class", name) and
                 any(name == owner + ".class" or name.startswith(owner + "$") for owner in owners), "known helper class family")
         fingerprint(record, 2 * 1024 * 1024)
-    keys(origin["executed_source_modules"], MODULES, "complete executed validation modules")
+    keys(origin["executed_source_modules"], modules, "complete executed validation modules")
     for name, record in origin["executed_source_modules"].items():
         require(record == sources[name], "executed module source attribution")
     rows = value["cases"]
@@ -503,6 +518,31 @@ class AcquisitionFixtureTests(unittest.TestCase):
                 "executed_source_modules": {name: record for name in MODULES}, "cases": 3, "operations": 20,
                 "generation_calls": 5, "height_query_pairs": 5120, "marker_inventories": 40,
                 "manifest_sha256": "2" * 64, "stage_events": 20}, "cases": cases}
+
+    def test_recorded_module_name_families(self):
+        # Derived in-memory naming controls exercise admission only. They do not
+        # recapture observations or attribute old hashes to current source bytes.
+        base = self.minimal_fixture()
+        for selected in (CURRENT_GENERATION_MODULE, LEGACY_GENERATION_MODULE):
+            fixture = copy.deepcopy(base)
+            origin = fixture["provenance"]
+            for table in (origin["source_fingerprints"], origin["executed_source_modules"]):
+                prior = next(name for name in (CURRENT_GENERATION_MODULE, LEGACY_GENERATION_MODULE) if name in table)
+                table[selected] = table.pop(prior)
+            validate_fixture(fixture)
+            other = LEGACY_GENERATION_MODULE if selected == CURRENT_GENERATION_MODULE else CURRENT_GENERATION_MODULE
+            for mutation in ("mixed_modules", "extra_module", "missing_module", "mixed_sources", "crossed_family", "missing_source"):
+                value = copy.deepcopy(fixture)
+                sources = value["provenance"]["source_fingerprints"]
+                modules = value["provenance"]["executed_source_modules"]
+                if mutation == "mixed_modules": modules[other] = dict(modules[selected])
+                elif mutation == "extra_module": modules["scripts/reference/generation/unrecorded.py"] = dict(modules[selected])
+                elif mutation == "missing_module": del modules[selected]
+                elif mutation == "mixed_sources": sources[other] = dict(sources[selected])
+                elif mutation == "crossed_family": modules[other] = modules.pop(selected)
+                else: del sources[selected]
+                with self.subTest(family=selected, mutation=mutation), self.assertRaises(ValueError):
+                    validate_fixture(value)
 
     def test_public_corpus_is_complete(self):
         _, rows = load_fixture(FIXTURE)

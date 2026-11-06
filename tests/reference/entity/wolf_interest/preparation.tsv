@@ -1,0 +1,19 @@
+scope	owner	member	type	value	purpose
+all	gr	constructor	invoke	WolfInterestSetup,empty	genuine established Session context
+all	hk	a	invoke	()	genuine established Player/statistics preparation
+all	fd	constructor	invoke	actual_world25_cached_chunks	real authored stone-plane Chunks; no query replacement
+all	gi	constructor	invoke	actual_gi_world	raw constructor entropy before mutable preparation
+all	dc	constructor	invoke	null_App,actual_World,actual_GR,0	real original LocalPlayer superclass/inventory/container graph
+all	fd	b	invoke	actual_Wolf_and_DC	ordinary publication through actual original World body
+all	gi	c	invoke	8.5,64.5,8.5,30,15	actual position/pose setter and genuine AABB
+all	dc	c	invoke	10.5,64.5,8.5,0,0	actual Player pose, outside Wolf collision overlap
+all	ls	V	Z	true	authored closed-component input; real LS.o341 gate skips f_348, no whole-tick credit
+all	ls	b	R	actual_DC	authored selected look target; actual Y/Z getters still run
+all	gi	d	invoke	profile_tame	real original tame setter before observed component
+all	ix	c	I	profile_selected	actual mutable selected slot input
+nonnull	iz	constructor	invoke	item_id,1,0	genuine original Stack
+nonnull	ix	a[0]	R	actual_Stack	authored inventory content; no copied Player/Item
+null_inventory	gs	c	R	NULL	declared failure input after genuine complete DC constructor
+null_main_array	ix	a	R	NULL	declared failure input after genuine complete Inventory constructor
+all	eq	b	invoke	()	declared observation pool reset before entry only
+all	bt	b	invoke	()	declared observation pool reset before entry only

@@ -1,0 +1,1282 @@
+{
+  "rj": {
+    "class_bytes": 2079,
+    "class_sha256": "67a53d7ce669738d8d56a77e986cb0abe6af78acfb00f3255a7c6eef36fb267b",
+    "major": 49,
+    "minor": 0,
+    "methods": [
+      {
+        "name": "<init>",
+        "descriptor": "()V",
+        "access": 2,
+        "code_bytes": 5,
+        "code_sha256": "9e7b0361adba602985634eafa2424b1497bf4df38802a5a8b980cc2c34bfda46"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/io/File;II)Lqj;",
+        "access": 41,
+        "code_bytes": 159,
+        "code_sha256": "feb2f41253c6133b2a44e1962bc738b6d7b172d53f386e458f807925dd4fd3f7"
+      },
+      {
+        "name": "a",
+        "descriptor": "()V",
+        "access": 41,
+        "code_bytes": 69,
+        "code_sha256": "faa052985f5e9dc8759610ea0a03ab980ebf1a5bc3994c99f2f3423d148fb6de"
+      },
+      {
+        "name": "b",
+        "descriptor": "(Ljava/io/File;II)I",
+        "access": 9,
+        "code_bytes": 12,
+        "code_sha256": "47203f7cd18d5b82310d7b6ec939c5837d19e1b0b8b26168cbac20d05deb8223"
+      },
+      {
+        "name": "c",
+        "descriptor": "(Ljava/io/File;II)Ljava/io/DataInputStream;",
+        "access": 9,
+        "code_bytes": 20,
+        "code_sha256": "88d97fd00ca57a3f869c7f8ae11234696f1a7787144146c271b309930a1dadc4"
+      },
+      {
+        "name": "d",
+        "descriptor": "(Ljava/io/File;II)Ljava/io/DataOutputStream;",
+        "access": 9,
+        "code_bytes": 20,
+        "code_sha256": "164151a47031f2647e50dacee9b00d84c58fb4139be427d886bfae4dd7792fbe"
+      },
+      {
+        "name": "<clinit>",
+        "descriptor": "()V",
+        "access": 8,
+        "code_bytes": 11,
+        "code_sha256": "67288f8b2e88f019ae92078ade99edbe370f86c2629ea9614c2c750b0cbefb18"
+      }
+    ]
+  },
+  "qj": {
+    "class_bytes": 5432,
+    "class_sha256": "6c75a123b63d555caa98e1a2619aa2483e405566de9e356585b1dc682a7da4a6",
+    "major": 49,
+    "minor": 0,
+    "methods": [
+      {
+        "name": "<init>",
+        "descriptor": "(Ljava/io/File;)V",
+        "access": 1,
+        "code_bytes": 437,
+        "code_sha256": "3e7312a60454f39ce4e9c63d2342d7041cf410bd19aa50588dd602884c57b323"
+      },
+      {
+        "name": "a",
+        "descriptor": "()I",
+        "access": 33,
+        "code_bytes": 12,
+        "code_sha256": "8943edbd824b5881dc503e66a81c2615ac06dfa240829ae58746c7a6515d0f8e"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;)V",
+        "access": 2,
+        "code_bytes": 1,
+        "code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d"
+      },
+      {
+        "name": "b",
+        "descriptor": "(Ljava/lang/String;)V",
+        "access": 2,
+        "code_bytes": 24,
+        "code_sha256": "022fd46eb7737aa1ea3a8301613204628de80c8494ab1dbd5685be45930053a3"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;IILjava/lang/String;)V",
+        "access": 2,
+        "code_bytes": 67,
+        "code_sha256": "237943382caba6b02946d5c19322f1db687c9886371497c1e6e94f8d550971bc"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;IIILjava/lang/String;)V",
+        "access": 2,
+        "code_bytes": 77,
+        "code_sha256": "8d7e2b896043cc75f2c5828309cf607d2075f79bb96596d0a92cd4040ea38dd3"
+      },
+      {
+        "name": "b",
+        "descriptor": "(Ljava/lang/String;IILjava/lang/String;)V",
+        "access": 2,
+        "code_bytes": 28,
+        "code_sha256": "ddd31fa271b9c4b3cad410ba07b93fd3df319860c8ea9029a6172ed303a37435"
+      },
+      {
+        "name": "a",
+        "descriptor": "(II)Ljava/io/DataInputStream;",
+        "access": 33,
+        "code_bytes": 304,
+        "code_sha256": "b22c278fd7633364c0873d0e25d20c38140ab8fd5a7f8ddf398627c01de6a7dd"
+      },
+      {
+        "name": "b",
+        "descriptor": "(II)Ljava/io/DataOutputStream;",
+        "access": 1,
+        "code_bytes": 36,
+        "code_sha256": "ce59ab1e950ae0149b1748101545b3938934218800ea5d2e2b6c0243c33a9319"
+      },
+      {
+        "name": "a",
+        "descriptor": "(II[BI)V",
+        "access": 36,
+        "code_bytes": 445,
+        "code_sha256": "2143d53dce4ade104faea1d774cbc4b21e8bf72a45270282ae08dc60def18e14"
+      },
+      {
+        "name": "a",
+        "descriptor": "(I[BI)V",
+        "access": 2,
+        "code_bytes": 65,
+        "code_sha256": "95a46ea116011080cfa489cd332872779a316038d9ae8824151a538b97305875"
+      },
+      {
+        "name": "d",
+        "descriptor": "(II)Z",
+        "access": 2,
+        "code_bytes": 26,
+        "code_sha256": "ee9b883c4091994a8e09eb61d81e7f8ac0c52a5226bf2b55a4fa04f63a8368b6"
+      },
+      {
+        "name": "e",
+        "descriptor": "(II)I",
+        "access": 2,
+        "code_bytes": 12,
+        "code_sha256": "769826cdca1501b6a370e1037b739bf7c5f61d252e6a3dafacb7d8f7c8d7525a"
+      },
+      {
+        "name": "c",
+        "descriptor": "(II)Z",
+        "access": 1,
+        "code_bytes": 15,
+        "code_sha256": "b01732104be2a61327e04f48ec739ac674e4c4f84b4796a39590f3ec6f1ae924"
+      },
+      {
+        "name": "a",
+        "descriptor": "(III)V",
+        "access": 2,
+        "code_bytes": 37,
+        "code_sha256": "502e34bbc79c2b492e3538e7ce91a403c8ed434db49970943c0bcde3c3a45a0b"
+      },
+      {
+        "name": "b",
+        "descriptor": "(III)V",
+        "access": 2,
+        "code_bytes": 41,
+        "code_sha256": "3de743de9199f459f5655eaea989dbe45f0e7823a4df3ed0a79e8b9f1c1ff002"
+      },
+      {
+        "name": "b",
+        "descriptor": "()V",
+        "access": 1,
+        "code_bytes": 8,
+        "code_sha256": "f1415a320bba00d35a08e84df1d583e2cd2128289196725c22ce7981e09c39fc"
+      },
+      {
+        "name": "<clinit>",
+        "descriptor": "()V",
+        "access": 8,
+        "code_bytes": 9,
+        "code_sha256": "083117f15895fb02feb7a3000e2de9b7e2ef1205a3bdefdb745c739e551cd2f2"
+      }
+    ]
+  },
+  "hz": {
+    "class_bytes": 453,
+    "class_sha256": "f70573e57ade462c6550d5e6d8a16382e5aee8d96d48b13733c0fe356e9420cd",
+    "major": 49,
+    "minor": 0,
+    "methods": [
+      {
+        "name": "<init>",
+        "descriptor": "(Lqj;II)V",
+        "access": 1,
+        "code_bytes": 23,
+        "code_sha256": "54ff70255e0ee5526104fa018b94210154d6519959a6060b7914296e89ae0bd8"
+      },
+      {
+        "name": "close",
+        "descriptor": "()V",
+        "access": 1,
+        "code_bytes": 24,
+        "code_sha256": "d84d07613d10a293b4810b5d6c0af34f6a1b2cc47c9982a1a039489633f3b42f"
+      }
+    ]
+  },
+  "as": {
+    "class_bytes": 1077,
+    "class_sha256": "c840daad77df4a1ad92367abce5b3d2035362bc2b010df1ff7b4faee3bbfb652",
+    "major": 49,
+    "minor": 0,
+    "methods": [
+      {
+        "name": "<init>",
+        "descriptor": "()V",
+        "access": 1,
+        "code_bytes": 5,
+        "code_sha256": "a9c6229f8627d4e536a6c126a138e2868ac1fa13c1edeae6ee722883cebffa65"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/io/InputStream;)Lnu;",
+        "access": 9,
+        "code_bytes": 34,
+        "code_sha256": "9ceb177ca3a5f9d75194e49ec405e6d703ca33483cd1bfeb71ce69488fd44952"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Lnu;Ljava/io/OutputStream;)V",
+        "access": 9,
+        "code_bytes": 36,
+        "code_sha256": "21555248050edd220519c7ed8eaba3a693b29096c9df2fca76f5d4593a0ac253"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/io/DataInput;)Lnu;",
+        "access": 9,
+        "code_bytes": 27,
+        "code_sha256": "58c33140343be85c6cce0a31d7200fdb78b5a3eff52f84a504177ebd080ac748"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Lnu;Ljava/io/DataOutput;)V",
+        "access": 9,
+        "code_bytes": 6,
+        "code_sha256": "a675f14a496eb80da4334b317669a35434f8e6d50296a092a0b7be9d4f949c61"
+      }
+    ]
+  },
+  "nu": {
+    "class_bytes": 4122,
+    "class_sha256": "a1a5701ec2180d01ddc604cc8c2e5aff1176b10faf83bdb64d2f1cc8c806ac4a",
+    "major": 49,
+    "minor": 0,
+    "methods": [
+      {
+        "name": "<init>",
+        "descriptor": "()V",
+        "access": 1,
+        "code_bytes": 16,
+        "code_sha256": "425b169627fb4c4110a332b3f13115a079b37386c676508ef638ba2a01b5e9ab"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/io/DataOutput;)V",
+        "access": 0,
+        "code_bytes": 50,
+        "code_sha256": "51dc50b379385e66de7c16222d7c34479416a169505043f9a33dc231ceabc373"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/io/DataInput;)V",
+        "access": 0,
+        "code_bytes": 40,
+        "code_sha256": "6a10e32522532554eec94deb31ce75027732f39734446dcdd39d3ba057db7790"
+      },
+      {
+        "name": "c",
+        "descriptor": "()Ljava/util/Collection;",
+        "access": 1,
+        "code_bytes": 10,
+        "code_sha256": "1ed3e7f9e6a3a1930bde6509a00bec89665a19d3705c0cf97497f6fdc2ee9d00"
+      },
+      {
+        "name": "a",
+        "descriptor": "()B",
+        "access": 1,
+        "code_bytes": 3,
+        "code_sha256": "64674037c774bbed05a1a2b668cdb887eb36dbc305b058015bd0ba282da730cb"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;Lij;)V",
+        "access": 1,
+        "code_bytes": 17,
+        "code_sha256": "67a50f478de7c18d6ec74a399442e08e406de37b433aa6d573ad6948138d366c"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;B)V",
+        "access": 1,
+        "code_bytes": 24,
+        "code_sha256": "c0b05fb125adef9e9422b8c7f0e8534ba4a6411251272af0ad899ff3c50a1c04"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;S)V",
+        "access": 1,
+        "code_bytes": 24,
+        "code_sha256": "744354080646590180b74cf844e0454c272edb9de99a3b007019ae89c33f9898"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;I)V",
+        "access": 1,
+        "code_bytes": 24,
+        "code_sha256": "2522f637def6e86bc22e4caebd624c92e5d2d6a1085b8933b832551597d20d3f"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;J)V",
+        "access": 1,
+        "code_bytes": 24,
+        "code_sha256": "a2d50a6458ee1d1f4ab4f3401fb898b017851062ef3c1e33279fdb375f3e275d"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;F)V",
+        "access": 1,
+        "code_bytes": 24,
+        "code_sha256": "654859531a1e86376ce99a72cf31abb1247909908304843c75e89b5db297f973"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;D)V",
+        "access": 1,
+        "code_bytes": 24,
+        "code_sha256": "47b044fa901af4e1626c3c8eeaeba017a8fe65e9c1e7e51fe076c3fba3aadf56"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;Ljava/lang/String;)V",
+        "access": 1,
+        "code_bytes": 24,
+        "code_sha256": "8278b1cafd671d9252cebd73f985ceab99525f193d899658ef233ee83bc09177"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;[B)V",
+        "access": 1,
+        "code_bytes": 24,
+        "code_sha256": "b825f4cc7191def6bfad00cfd2372d8d68e08be3a2996b86c993b6314eb2f93f"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;Lnu;)V",
+        "access": 1,
+        "code_bytes": 17,
+        "code_sha256": "2f4b6294d755e38152b4d1e82cb51f6f35298f2a5e867514fd13b2f1c8d7cb98"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;Z)V",
+        "access": 1,
+        "code_bytes": 15,
+        "code_sha256": "843dea9b882b3ff9f0644992c292cb5c54c003f0befb8f4e3345652acf4ba365"
+      },
+      {
+        "name": "b",
+        "descriptor": "(Ljava/lang/String;)Z",
+        "access": 1,
+        "code_bytes": 11,
+        "code_sha256": "5cf51ee198c68cbf63d027482387d4f53d6e567f0acd5a8ca67ab87e14f33d76"
+      },
+      {
+        "name": "c",
+        "descriptor": "(Ljava/lang/String;)B",
+        "access": 1,
+        "code_bytes": 32,
+        "code_sha256": "106b15d496b887e638b9282dab62b7bff50eadeba69f69f6e8fef1789b285b22"
+      },
+      {
+        "name": "d",
+        "descriptor": "(Ljava/lang/String;)S",
+        "access": 1,
+        "code_bytes": 32,
+        "code_sha256": "35e5378a57f051cb7526bbc11380239b8c028a1ef5384b2d9194d4641c452b54"
+      },
+      {
+        "name": "e",
+        "descriptor": "(Ljava/lang/String;)I",
+        "access": 1,
+        "code_bytes": 32,
+        "code_sha256": "c5cd3d91181ea3e7b8d99747d2ae18a419e636d41c5d89a504057ce97a497670"
+      },
+      {
+        "name": "f",
+        "descriptor": "(Ljava/lang/String;)J",
+        "access": 1,
+        "code_bytes": 32,
+        "code_sha256": "3456ab504b1ca55e583563415c787455a0a8cc5dd364d22942bc40ba583a14b3"
+      },
+      {
+        "name": "g",
+        "descriptor": "(Ljava/lang/String;)F",
+        "access": 1,
+        "code_bytes": 32,
+        "code_sha256": "2083715f5f0fe54e39f4c9e029297dde43e725c65672687e77416d17e845973d"
+      },
+      {
+        "name": "h",
+        "descriptor": "(Ljava/lang/String;)D",
+        "access": 1,
+        "code_bytes": 32,
+        "code_sha256": "cd46302230706e3fd6c455971733b27474327de8253c49cee37f15de16c67a13"
+      },
+      {
+        "name": "i",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/String;",
+        "access": 1,
+        "code_bytes": 33,
+        "code_sha256": "17087c1e8abeacb071229cf31ec4490b94be3b7c9c253185561346fe96682de8"
+      },
+      {
+        "name": "j",
+        "descriptor": "(Ljava/lang/String;)[B",
+        "access": 1,
+        "code_bytes": 34,
+        "code_sha256": "71007fab635d00085dc4d01c5eaeb9656db8e59658aaa15cba72ad35e38ec063"
+      },
+      {
+        "name": "k",
+        "descriptor": "(Ljava/lang/String;)Lnu;",
+        "access": 1,
+        "code_bytes": 35,
+        "code_sha256": "245af2d00d29370bf057f023736f3e16cb274e13c3482baf0f9e1d14a23d749c"
+      },
+      {
+        "name": "l",
+        "descriptor": "(Ljava/lang/String;)Lsp;",
+        "access": 1,
+        "code_bytes": 35,
+        "code_sha256": "86e8dde00b03c705f8247f48b4ff49ea0664e7f5b81a2f0514eaa6669487d98d"
+      },
+      {
+        "name": "m",
+        "descriptor": "(Ljava/lang/String;)Z",
+        "access": 1,
+        "code_bytes": 14,
+        "code_sha256": "29f8c17b682f5d4386fcca4d282cad954a6557b714604504a367b689861a4428"
+      },
+      {
+        "name": "toString",
+        "descriptor": "()Ljava/lang/String;",
+        "access": 1,
+        "code_bytes": 33,
+        "code_sha256": "5d4dd22a09fe8b6225bf00b79069bcabe5397fd3bd0dff2c6e990fc32a69abd3"
+      }
+    ]
+  },
+  "ij": {
+    "class_bytes": 1724,
+    "class_sha256": "9db862e2ee83e95a2db7a8495594d2c0e0bbe904d96c3f09f167f2b47b72b8d0",
+    "major": 49,
+    "minor": 0,
+    "methods": [
+      {
+        "name": "<init>",
+        "descriptor": "()V",
+        "access": 1,
+        "code_bytes": 10,
+        "code_sha256": "85a112199a349e0f59214394eeb8a4efa376ed933a617f959728e27ca4dfc19f"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/io/DataOutput;)V",
+        "access": 1024
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/io/DataInput;)V",
+        "access": 1024
+      },
+      {
+        "name": "a",
+        "descriptor": "()B",
+        "access": 1025
+      },
+      {
+        "name": "b",
+        "descriptor": "()Ljava/lang/String;",
+        "access": 1,
+        "code_bytes": 15,
+        "code_sha256": "e52b7ad61cf0e50f6c227ea453ea76e8b1b93cd9a4f1172df50736c43a9b9e69"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;)Lij;",
+        "access": 1,
+        "code_bytes": 7,
+        "code_sha256": "a057acb19fc015d4d19b8028c60a01289782d8041b428888ec35e6b58cc69fe9"
+      },
+      {
+        "name": "b",
+        "descriptor": "(Ljava/io/DataInput;)Lij;",
+        "access": 9,
+        "code_bytes": 41,
+        "code_sha256": "d6498a55494c46d85dc6a789b0dc93d7ebed5715bd039a6630cd42e6f13ef03d"
+      },
+      {
+        "name": "a",
+        "descriptor": "(Lij;Ljava/io/DataOutput;)V",
+        "access": 9,
+        "code_bytes": 34,
+        "code_sha256": "56bc3c15e8e555b62e22f1e0af3eab7e4db968be96492a3aa8a0d3cd3be468e1"
+      },
+      {
+        "name": "a",
+        "descriptor": "(B)Lij;",
+        "access": 9,
+        "code_bytes": 150,
+        "code_sha256": "8013dbe77f93ae4fd6437dc24f50e501078efc2cf7df62bfad0f9ae91fa7ecd3"
+      },
+      {
+        "name": "b",
+        "descriptor": "(B)Ljava/lang/String;",
+        "access": 9,
+        "code_bytes": 96,
+        "code_sha256": "d6703d01f805f82427a3a0c1f3e8f11267e87b32145de305560d274fc56b69d3"
+      }
+    ]
+  },
+  "java.io.RandomAccessFile": {
+    "class_bytes": 10225,
+    "class_sha256": "1001b3477d94662565aceaa0c43f5bcc2314d73288a268c12371ce58af99a2cd",
+    "major": 61,
+    "minor": 0,
+    "methods": [
+      {
+        "name": "<init>",
+        "descriptor": "(Ljava/lang/String;Ljava/lang/String;)V",
+        "access": 1,
+        "code_bytes": 22,
+        "code_sha256": "d360b5fdfdce446d0eabec61ecfad2638cf1d4f1e88479337f03bef8407ac898"
+      },
+      {
+        "name": "<init>",
+        "descriptor": "(Ljava/io/File;Ljava/lang/String;)V",
+        "access": 1,
+        "code_bytes": 8,
+        "code_sha256": "05a42edf4f0b82ba8eb930a54277fce554a1dc4f0b6146709bd5782dbda3ba51"
+      },
+      {
+        "name": "<init>",
+        "descriptor": "(Ljava/io/File;Ljava/lang/String;Z)V",
+        "access": 2,
+        "code_bytes": 262,
+        "code_sha256": "9e83bed0fc5b8190897bf3dbb441eca846485892cecc12ce75ec9d086dad61f2"
+      },
+      {
+        "name": "getFD",
+        "descriptor": "()Ljava/io/FileDescriptor;",
+        "access": 17,
+        "code_bytes": 20,
+        "code_sha256": "e41758959f478e06eb340ad1dea874ff00288d30aee579c7cbf6cd34fbfbc5e5"
+      },
+      {
+        "name": "getChannel",
+        "descriptor": "()Ljava/nio/channels/FileChannel;",
+        "access": 17,
+        "code_bytes": 84,
+        "code_sha256": "b95a02413a8fbc0e24eb5ab2e135f1f227b390debdc0737220cf21ecc55a3419"
+      },
+      {
+        "name": "open0",
+        "descriptor": "(Ljava/lang/String;I)V",
+        "access": 258
+      },
+      {
+        "name": "open",
+        "descriptor": "(Ljava/lang/String;I)V",
+        "access": 2,
+        "code_bytes": 7,
+        "code_sha256": "f5026f7a71f651420c241e80f1baf61067b1dd610b3d027b05c02111467c6033"
+      },
+      {
+        "name": "read",
+        "descriptor": "()I",
+        "access": 1,
+        "code_bytes": 5,
+        "code_sha256": "20b307a1276905d630eb2c68be7971fba77a1f30281a1ca46f0f63afefb5f093"
+      },
+      {
+        "name": "read0",
+        "descriptor": "()I",
+        "access": 258
+      },
+      {
+        "name": "readBytes",
+        "descriptor": "([BII)I",
+        "access": 258
+      },
+      {
+        "name": "read",
+        "descriptor": "([BII)I",
+        "access": 1,
+        "code_bytes": 8,
+        "code_sha256": "c6617818d5927215f83e2cee4112978ce37c23a631dbfcab9e45b2c57599c595"
+      },
+      {
+        "name": "read",
+        "descriptor": "([B)I",
+        "access": 1,
+        "code_bytes": 9,
+        "code_sha256": "c349501ffa53d3e411acf59726acf500051576cfef0d1ceca7641670d85b836d"
+      },
+      {
+        "name": "readFully",
+        "descriptor": "([B)V",
+        "access": 17,
+        "code_bytes": 9,
+        "code_sha256": "27cc46c10c5fb5669677272e8c80cc08f75a9ff747a21a9a98c3f5128ff4b9c8"
+      },
+      {
+        "name": "readFully",
+        "descriptor": "([BII)V",
+        "access": 17,
+        "code_bytes": 45,
+        "code_sha256": "2f2b4c8b8cb3e49573509091daece76d6414ed29ac49f2efbd7e236b1df4d674"
+      },
+      {
+        "name": "skipBytes",
+        "descriptor": "(I)I",
+        "access": 1,
+        "code_bytes": 47,
+        "code_sha256": "d852a169bf53696d7da126a6c9a938bbc7fed3f14567a5337632adb22ca2d1c1"
+      },
+      {
+        "name": "write",
+        "descriptor": "(I)V",
+        "access": 1,
+        "code_bytes": 6,
+        "code_sha256": "c8fa68d6f931f0fbe718420c298ca04b0b510fceff6419da54ae0f15b56301bb"
+      },
+      {
+        "name": "write0",
+        "descriptor": "(I)V",
+        "access": 258
+      },
+      {
+        "name": "writeBytes",
+        "descriptor": "([BII)V",
+        "access": 258
+      },
+      {
+        "name": "write",
+        "descriptor": "([B)V",
+        "access": 1,
+        "code_bytes": 9,
+        "code_sha256": "3b5b4055db9c15e3406a3c8b729267bad97084b30323d1b87df09a1adb89c446"
+      },
+      {
+        "name": "write",
+        "descriptor": "([BII)V",
+        "access": 1,
+        "code_bytes": 8,
+        "code_sha256": "17f8ded7427b476f195d0edae22e9de09c8901d20e45fdd5e57ccd34d8ee234b"
+      },
+      {
+        "name": "getFilePointer",
+        "descriptor": "()J",
+        "access": 257
+      },
+      {
+        "name": "seek",
+        "descriptor": "(J)V",
+        "access": 1,
+        "code_bytes": 22,
+        "code_sha256": "1fd3de70d8e642fba88f616f904a532c1d288731f8ff2810e5bcdd081b22bdbe"
+      },
+      {
+        "name": "seek0",
+        "descriptor": "(J)V",
+        "access": 258
+      },
+      {
+        "name": "length",
+        "descriptor": "()J",
+        "access": 257
+      },
+      {
+        "name": "setLength",
+        "descriptor": "(J)V",
+        "access": 257
+      },
+      {
+        "name": "close",
+        "descriptor": "()V",
+        "access": 1,
+        "code_bytes": 69,
+        "code_sha256": "3726ace65d343defc15fe37892d5653ba73d51fa09100e4063235f32f4812a9a"
+      },
+      {
+        "name": "readBoolean",
+        "descriptor": "()Z",
+        "access": 17,
+        "code_bytes": 27,
+        "code_sha256": "0495b3fcbfece6c1872a06c95eaf69306c572615bb2ac9a2c7d9fc8006a7df74"
+      },
+      {
+        "name": "readByte",
+        "descriptor": "()B",
+        "access": 17,
+        "code_bytes": 20,
+        "code_sha256": "873df83f5c7b8d51a0cf215285eadf2da72b06b1f717b0e272b83c1aa2068466"
+      },
+      {
+        "name": "readUnsignedByte",
+        "descriptor": "()I",
+        "access": 17,
+        "code_bytes": 19,
+        "code_sha256": "af82e543993c4603b11757b871163ddd17b5456bb9406cebf752173b767d8517"
+      },
+      {
+        "name": "readShort",
+        "descriptor": "()S",
+        "access": 17,
+        "code_bytes": 34,
+        "code_sha256": "50357ffd69b1d135904ed7e2ee34b87ab3a29534b40cebfa1d8ac38b86f3db77"
+      },
+      {
+        "name": "readUnsignedShort",
+        "descriptor": "()I",
+        "access": 17,
+        "code_bytes": 33,
+        "code_sha256": "ffe4e5dd5dea072d5cfb88d6dc62ddd9f345697daa78b7827fc55420d692af57"
+      },
+      {
+        "name": "readChar",
+        "descriptor": "()C",
+        "access": 17,
+        "code_bytes": 34,
+        "code_sha256": "05528617c5d532f8fbcd6002ed73962ec8ebc46b277dfeb6532783b3780b6146"
+      },
+      {
+        "name": "readInt",
+        "descriptor": "()I",
+        "access": 17,
+        "code_bytes": 60,
+        "code_sha256": "76d73727852d6379a3a46c873dd56c4a6316cd1bbc5fbbf31353fc1885f2ba41"
+      },
+      {
+        "name": "readLong",
+        "descriptor": "()J",
+        "access": 17,
+        "code_bytes": 19,
+        "code_sha256": "025805494b5217a6b27adccff4969115292496eb231c19830681906fa781c811"
+      },
+      {
+        "name": "readFloat",
+        "descriptor": "()F",
+        "access": 17,
+        "code_bytes": 8,
+        "code_sha256": "975c72577f3b1999472ba041c46df34fecc3d3931364827b73eb0f8bb4ab5a16"
+      },
+      {
+        "name": "readDouble",
+        "descriptor": "()D",
+        "access": 17,
+        "code_bytes": 8,
+        "code_sha256": "cb3d1dec2b120b4017ac20dbe184309e02d3ef8f184c96c952e16d8057a32905"
+      },
+      {
+        "name": "readLine",
+        "descriptor": "()Ljava/lang/String;",
+        "access": 17,
+        "code_bytes": 116,
+        "code_sha256": "6235d59530eddf66a997ea48e309226e1671e14bec6272281f2e6ac3c7513e4c"
+      },
+      {
+        "name": "readUTF",
+        "descriptor": "()Ljava/lang/String;",
+        "access": 17,
+        "code_bytes": 5,
+        "code_sha256": "4ea24ca28636a5d452076ba2252550e74918bc67233e6ecbdf68bd0d5a5c3987"
+      },
+      {
+        "name": "writeBoolean",
+        "descriptor": "(Z)V",
+        "access": 17,
+        "code_bytes": 14,
+        "code_sha256": "2a712d5421d8dda046f8e779c4dd4477ec6bbf1d657d09e51da4ad3c30e79b9e"
+      },
+      {
+        "name": "writeByte",
+        "descriptor": "(I)V",
+        "access": 17,
+        "code_bytes": 6,
+        "code_sha256": "faf8061583fb97619b6e1d367049d27befe285cfdfe5c055bbbd0bc1dc9397a4"
+      },
+      {
+        "name": "writeShort",
+        "descriptor": "(I)V",
+        "access": 17,
+        "code_bytes": 24,
+        "code_sha256": "1e92b5b817ed198369971120e551c3fbe51e9fcacbf9844974ff75443f4e1f2f"
+      },
+      {
+        "name": "writeChar",
+        "descriptor": "(I)V",
+        "access": 17,
+        "code_bytes": 24,
+        "code_sha256": "1e92b5b817ed198369971120e551c3fbe51e9fcacbf9844974ff75443f4e1f2f"
+      },
+      {
+        "name": "writeInt",
+        "descriptor": "(I)V",
+        "access": 17,
+        "code_bytes": 48,
+        "code_sha256": "44ee99b77caa225d5e04bb019c64d7d5bc6826b985909483b0ddb9f7089ed952"
+      },
+      {
+        "name": "writeLong",
+        "descriptor": "(J)V",
+        "access": 17,
+        "code_bytes": 104,
+        "code_sha256": "9587d03168c0ace15b75253691c112a2eba692fb38debe93440f8a0c426dcb99"
+      },
+      {
+        "name": "writeFloat",
+        "descriptor": "(F)V",
+        "access": 17,
+        "code_bytes": 9,
+        "code_sha256": "7b6848e8101e69e7ffb838064517b40b50a2d81c550c2c8db43683879085a2bb"
+      },
+      {
+        "name": "writeDouble",
+        "descriptor": "(D)V",
+        "access": 17,
+        "code_bytes": 9,
+        "code_sha256": "292b5b4c51bbbbcda2e3ea1fa939a0c896956fffe32ec18635b8f4b951ee163a"
+      },
+      {
+        "name": "writeBytes",
+        "descriptor": "(Ljava/lang/String;)V",
+        "access": 17,
+        "code_bytes": 25,
+        "code_sha256": "f5c85754fde59214ff6c5846a008a45d95f31e533dba4d163f36926829761aac"
+      },
+      {
+        "name": "writeChars",
+        "descriptor": "(Ljava/lang/String;)V",
+        "access": 17,
+        "code_bytes": 88,
+        "code_sha256": "8542ff9c47550437da6adf076232dbe4e85c5a6efb4d2f37d520a60ade82dd27"
+      },
+      {
+        "name": "writeUTF",
+        "descriptor": "(Ljava/lang/String;)V",
+        "access": 17,
+        "code_bytes": 7,
+        "code_sha256": "726b508446c2932defb8ee6a5df2f731998599119fb6faf638467fb5885592fe"
+      },
+      {
+        "name": "initIDs",
+        "descriptor": "()V",
+        "access": 266
+      },
+      {
+        "name": "<clinit>",
+        "descriptor": "()V",
+        "access": 8,
+        "code_bytes": 14,
+        "code_sha256": "9ec4e448c6b8a94af8756f4793beb727703291be22ec23acb84548f2c687b087"
+      }
+    ]
+  },
+  "java.io.DataOutputStream": {
+    "class_bytes": 4879,
+    "class_sha256": "bad858cf55f88d085ee0712aaf0bbb3341ddef47934e808db66c988806931707",
+    "major": 61,
+    "minor": 0,
+    "methods": [
+      {
+        "name": "<init>",
+        "descriptor": "(Ljava/io/OutputStream;)V",
+        "access": 1,
+        "code_bytes": 19,
+        "code_sha256": "59d31e33e440563771a0f58a23c7631b6e8ce5688fc62fee5728bc353a315947"
+      },
+      {
+        "name": "incCount",
+        "descriptor": "(I)V",
+        "access": 2,
+        "code_bytes": 20,
+        "code_sha256": "06bce7cd7fa117e0e54609345115fcc0e13a1f8241779e3979bba25947beeec5"
+      },
+      {
+        "name": "write",
+        "descriptor": "(I)V",
+        "access": 33,
+        "code_bytes": 14,
+        "code_sha256": "87a7d8e039768c33ebf237710d005861981351b73438a344486e69c003f1c719"
+      },
+      {
+        "name": "write",
+        "descriptor": "([BII)V",
+        "access": 33,
+        "code_bytes": 16,
+        "code_sha256": "4371b4f9940d1c7c8e285adcab772b56647169a83185e86adf9c80009fde5b86"
+      },
+      {
+        "name": "flush",
+        "descriptor": "()V",
+        "access": 1,
+        "code_bytes": 8,
+        "code_sha256": "0cbfbfc121928a7d9acbec03b80561dcdcdc92162a92d055f947d2eb2b48ce12"
+      },
+      {
+        "name": "writeBoolean",
+        "descriptor": "(Z)V",
+        "access": 17,
+        "code_bytes": 22,
+        "code_sha256": "24ce009a4344952d64c7eb2cec9029f07cb7eb4685e3c6800f5b420974aa69b0"
+      },
+      {
+        "name": "writeByte",
+        "descriptor": "(I)V",
+        "access": 17,
+        "code_bytes": 14,
+        "code_sha256": "87a7d8e039768c33ebf237710d005861981351b73438a344486e69c003f1c719"
+      },
+      {
+        "name": "writeShort",
+        "descriptor": "(I)V",
+        "access": 17,
+        "code_bytes": 40,
+        "code_sha256": "0733e47c6f1f53f8e93fd7bccbb2809596013b9717ff7e0bb9e77ba58e0b056b"
+      },
+      {
+        "name": "writeChar",
+        "descriptor": "(I)V",
+        "access": 17,
+        "code_bytes": 40,
+        "code_sha256": "0733e47c6f1f53f8e93fd7bccbb2809596013b9717ff7e0bb9e77ba58e0b056b"
+      },
+      {
+        "name": "writeInt",
+        "descriptor": "(I)V",
+        "access": 17,
+        "code_bytes": 62,
+        "code_sha256": "1be8843e572fadee9f5911cf91ead91f25a403c4d41ff31c9ba11119ebaa696b"
+      },
+      {
+        "name": "writeLong",
+        "descriptor": "(J)V",
+        "access": 17,
+        "code_bytes": 118,
+        "code_sha256": "d2e6d6695eeba3f06c82c3ae309798834c7b3000e84c5a44eec99f2a1834861a"
+      },
+      {
+        "name": "writeFloat",
+        "descriptor": "(F)V",
+        "access": 17,
+        "code_bytes": 9,
+        "code_sha256": "98edcdffff39f6504037b54f34d591c1778ce0e73dc9907b4594da4306f4e5aa"
+      },
+      {
+        "name": "writeDouble",
+        "descriptor": "(D)V",
+        "access": 17,
+        "code_bytes": 9,
+        "code_sha256": "e3981f94df6986787fdf5ea3c0eaba89e4533ebeb3fd5aa5ead02e61372269de"
+      },
+      {
+        "name": "writeBytes",
+        "descriptor": "(Ljava/lang/String;)V",
+        "access": 17,
+        "code_bytes": 37,
+        "code_sha256": "85016b0a387ef9209a52cd82fc436fced962ae0e252f636d83eb13bd4373c62c"
+      },
+      {
+        "name": "writeChars",
+        "descriptor": "(Ljava/lang/String;)V",
+        "access": 17,
+        "code_bytes": 69,
+        "code_sha256": "271704d3b94adabd40a6c87737277296c610afcb2bdb7b5f059fa1bffc351049"
+      },
+      {
+        "name": "writeUTF",
+        "descriptor": "(Ljava/lang/String;)V",
+        "access": 17,
+        "code_bytes": 7,
+        "code_sha256": "8bbf97b18ca62d40e4d200921e3dc61bede809ea02c5b1800f62e51cf9f83914"
+      },
+      {
+        "name": "writeUTF",
+        "descriptor": "(Ljava/lang/String;Ljava/io/DataOutput;)I",
+        "access": 8,
+        "code_bytes": 411,
+        "code_sha256": "a190d65a0f9439b20944c842b9bf50bb94ff697ccc93df977062c44695a221a0"
+      },
+      {
+        "name": "tooLongMsg",
+        "descriptor": "(Ljava/lang/String;I)Ljava/lang/String;",
+        "access": 10,
+        "code_bytes": 80,
+        "code_sha256": "d3d8b5cf613ea95d953e0f85250a5df6a3259968fc28650744b138720bd882d8"
+      },
+      {
+        "name": "size",
+        "descriptor": "()I",
+        "access": 17,
+        "code_bytes": 5,
+        "code_sha256": "e88f57acb743f9814252b0b6da76241e43852e726e8114d0947084449c5d49e9"
+      }
+    ]
+  },
+  "java.io.FilterOutputStream": {
+    "class_bytes": 1943,
+    "class_sha256": "5f97fbbf1fc77b334babacf99854463e3dcb652c067ae2b8f3906dc03cc2fca3",
+    "major": 61,
+    "minor": 0,
+    "methods": [
+      {
+        "name": "<init>",
+        "descriptor": "(Ljava/io/OutputStream;)V",
+        "access": 1,
+        "code_bytes": 21,
+        "code_sha256": "16ccc02071f08092ef6b44ebc50325453859398099d3c3ae3e1bf9caa42e1887"
+      },
+      {
+        "name": "write",
+        "descriptor": "(I)V",
+        "access": 1,
+        "code_bytes": 9,
+        "code_sha256": "03baae70b9cca60645b08192d2bc0b79b6283b5134c8e7296200240c1b937cf9"
+      },
+      {
+        "name": "write",
+        "descriptor": "([B)V",
+        "access": 1,
+        "code_bytes": 9,
+        "code_sha256": "d2d5e6ae01702de1775cf33b90edf39acee653f50a07d41e72656b8c4ece9fff"
+      },
+      {
+        "name": "write",
+        "descriptor": "([BII)V",
+        "access": 1,
+        "code_bytes": 51,
+        "code_sha256": "a356205b0b482f78067750f2f408801fb18df08b55b67996c6205b68ab29cc5e"
+      },
+      {
+        "name": "flush",
+        "descriptor": "()V",
+        "access": 1,
+        "code_bytes": 8,
+        "code_sha256": "7e8bc2cce2c5ee6402faad00f8daf180dc6836cc635ade70282543d12a1c6e9d"
+      },
+      {
+        "name": "close",
+        "descriptor": "()V",
+        "access": 1,
+        "code_bytes": 183,
+        "code_sha256": "648fc87e8247c0ec32908fd1caaa394eb219f1291902dfb8f0fa4789976cd688"
+      }
+    ]
+  },
+  "java.io.ByteArrayOutputStream": {
+    "class_bytes": 3027,
+    "class_sha256": "99f52a615eb9321f57a6843570901897b31b7fb42c6f0f98721e6ce891d88100",
+    "major": 61,
+    "minor": 0,
+    "methods": [
+      {
+        "name": "<init>",
+        "descriptor": "()V",
+        "access": 1,
+        "code_bytes": 7,
+        "code_sha256": "97217ed7dcd51f7fe0ff0e56d822e341b09d51732825c12f2e2239d9552fd609"
+      },
+      {
+        "name": "<init>",
+        "descriptor": "(I)V",
+        "access": 1,
+        "code_bytes": 43,
+        "code_sha256": "d63ec61cf42c1d9c58851ae12e589474c3875af83ace77ff5dcdcea74fae0785"
+      },
+      {
+        "name": "ensureCapacity",
+        "descriptor": "(I)V",
+        "access": 2,
+        "code_bytes": 32,
+        "code_sha256": "6a1a21c74be6d775f6e7cb1d3c514a06d96aa3df454ded03c95192753797ac64"
+      },
+      {
+        "name": "write",
+        "descriptor": "(I)V",
+        "access": 33,
+        "code_bytes": 32,
+        "code_sha256": "d99573ef62d7500616d9f5df081baa67960dd74aa84f49f0a24a81e55d857b74"
+      },
+      {
+        "name": "write",
+        "descriptor": "([BII)V",
+        "access": 33,
+        "code_bytes": 43,
+        "code_sha256": "06744aac1e188db6bf83110e803f9aa2a3baa53bf81ca2105019cbdefb27c6c6"
+      },
+      {
+        "name": "writeBytes",
+        "descriptor": "([B)V",
+        "access": 1,
+        "code_bytes": 9,
+        "code_sha256": "d8afab1bee1cde59233acaf9eacbce20c79787acd515c6c1824b425379bb4d8e"
+      },
+      {
+        "name": "writeTo",
+        "descriptor": "(Ljava/io/OutputStream;)V",
+        "access": 33,
+        "code_bytes": 14,
+        "code_sha256": "076c57828e2d741fea7078855eb7f23ce51540558e4b97e829ddc3fe40d164a6"
+      },
+      {
+        "name": "reset",
+        "descriptor": "()V",
+        "access": 33,
+        "code_bytes": 6,
+        "code_sha256": "3e351378b60adc6ad963d5699065a7b66b8c7d71f365c4d9c71b5b4b01a2c457"
+      },
+      {
+        "name": "toByteArray",
+        "descriptor": "()[B",
+        "access": 33,
+        "code_bytes": 12,
+        "code_sha256": "4c07a6d5599205dc269cd240294eda0438d43dd63ab32490b7cf020b9cbc6ddd"
+      },
+      {
+        "name": "size",
+        "descriptor": "()I",
+        "access": 33,
+        "code_bytes": 5,
+        "code_sha256": "af19463efa3d2fc2df00c427099b4c4fcd4128fce10dbf35968a60ca5ba2bc38"
+      },
+      {
+        "name": "toString",
+        "descriptor": "()Ljava/lang/String;",
+        "access": 33,
+        "code_bytes": 17,
+        "code_sha256": "d2d286fa17498ec9f2e6f29e17af904b712a6a1257274a1af2b4999d034eafe3"
+      },
+      {
+        "name": "toString",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/String;",
+        "access": 33,
+        "code_bytes": 18,
+        "code_sha256": "53f046c19a4022b901db520eb183c09379feec80e9567204d5750252b312e0b6"
+      },
+      {
+        "name": "toString",
+        "descriptor": "(Ljava/nio/charset/Charset;)Ljava/lang/String;",
+        "access": 33,
+        "code_bytes": 18,
+        "code_sha256": "03a2dc6d0c8b937a3371e7c94f75ef40ad691a826b2d1089451bea8c6d535a9e"
+      },
+      {
+        "name": "toString",
+        "descriptor": "(I)Ljava/lang/String;",
+        "access": 33,
+        "code_bytes": 18,
+        "code_sha256": "50c8a38616f5b85dcf40e8876f21d3104ed1d1f361daed24ea8c55001aeeef27"
+      },
+      {
+        "name": "close",
+        "descriptor": "()V",
+        "access": 1,
+        "code_bytes": 1,
+        "code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d"
+      }
+    ]
+  },
+  "java.util.zip.DeflaterOutputStream": {
+    "class_bytes": 3435,
+    "class_sha256": "d0bb6d0ec3d5c63239592f444970e838e75d4a183cbdaf1c69d5e308f1394941",
+    "major": 61,
+    "minor": 0,
+    "methods": [
+      {
+        "name": "<init>",
+        "descriptor": "(Ljava/io/OutputStream;Ljava/util/zip/Deflater;IZ)V",
+        "access": 1,
+        "code_bytes": 64,
+        "code_sha256": "1305e6d2e7e0e1aa06f364b12b643eb10c2d9a4f756c1a08734ab92a1606000d"
+      },
+      {
+        "name": "<init>",
+        "descriptor": "(Ljava/io/OutputStream;Ljava/util/zip/Deflater;I)V",
+        "access": 1,
+        "code_bytes": 9,
+        "code_sha256": "ec8956624f9d7cfaa5f7b8eb728ce70d1fdee52c9f79b47ad1fdf913e418daef"
+      },
+      {
+        "name": "<init>",
+        "descriptor": "(Ljava/io/OutputStream;Ljava/util/zip/Deflater;Z)V",
+        "access": 1,
+        "code_bytes": 11,
+        "code_sha256": "a318daed45b57ea7f0c47a45d1c677be3b2640aa7ef67e36f96a4869007e1c12"
+      },
+      {
+        "name": "<init>",
+        "descriptor": "(Ljava/io/OutputStream;Ljava/util/zip/Deflater;)V",
+        "access": 1,
+        "code_bytes": 11,
+        "code_sha256": "d5437b1306d99d64c395ef9c0c5678994b4a9465cb24d91d5897893c46dcfd89"
+      },
+      {
+        "name": "<init>",
+        "descriptor": "(Ljava/io/OutputStream;Z)V",
+        "access": 1,
+        "code_bytes": 30,
+        "code_sha256": "79c3a448f288e994f05d92bd51b9a20c60f877f7d7a7ec38f8cfd9c4e46a9935"
+      },
+      {
+        "name": "<init>",
+        "descriptor": "(Ljava/io/OutputStream;)V",
+        "access": 1,
+        "code_bytes": 12,
+        "code_sha256": "f78172c8057cbd33164b8388ac06bf4fc841923b19b96bdf96dab82079e96b0a"
+      },
+      {
+        "name": "write",
+        "descriptor": "(I)V",
+        "access": 1,
+        "code_bytes": 21,
+        "code_sha256": "e3f77a2f55425ff9ad66c0edae413b20bebe4fe129e6cbdfc932b0e9cd9cf628"
+      },
+      {
+        "name": "write",
+        "descriptor": "([BII)V",
+        "access": 1,
+        "code_bytes": 88,
+        "code_sha256": "df94be16e500c129cf1b998b75dd21306b717b5718c487a31d618e22ba84aaa1"
+      },
+      {
+        "name": "finish",
+        "descriptor": "()V",
+        "access": 1,
+        "code_bytes": 55,
+        "code_sha256": "14ec8fddf75c5e916a83382162a9a2feaf4503336fcf5b0462b291c4d71ff260"
+      },
+      {
+        "name": "close",
+        "descriptor": "()V",
+        "access": 1,
+        "code_bytes": 58,
+        "code_sha256": "1dbb7590b48962b86a310571452280209e801f98ad63c59e1b7a0158d5bcdf59"
+      },
+      {
+        "name": "deflate",
+        "descriptor": "()V",
+        "access": 4,
+        "code_bytes": 36,
+        "code_sha256": "093d62f41ba0112a27050d5c0cd12dc9079df5b4bda54df444e45d5ed4af2c40"
+      },
+      {
+        "name": "flush",
+        "descriptor": "()V",
+        "access": 1,
+        "code_bytes": 86,
+        "code_sha256": "3b2f1ebe075b0ab96d8876587cfbff634c363dde4772074f424bddba8c5852b6"
+      }
+    ]
+  }
+}

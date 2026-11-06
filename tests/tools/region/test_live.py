@@ -19,6 +19,12 @@ import zlib
 
 
 ROOT = Path(__file__).resolve().parents[3]
+import sys
+sys.path.insert(0, str(ROOT / "tests/support"))
+try:
+    from attributed_project import AttributedProject
+finally:
+    sys.path.pop(0)
 DRIVER = ROOT / "scripts/reference/region/compare_region.py"
 SPEC = importlib.util.spec_from_file_location("region_live_subject", DRIVER)
 REGION = importlib.util.module_from_spec(SPEC)
@@ -105,6 +111,7 @@ class RegionLiveGuards(unittest.TestCase):
         directory = tempfile.TemporaryDirectory(prefix="mc-region-live-guards-")
         self.addCleanup(directory.cleanup)
         self.root = Path(directory.name).resolve()
+        self.project = AttributedProject(REGION, self.root / "attributed-project", ('tests/reference/region/RegionObservation.java', 'tests/storage/region/region_probe.c'))
 
     def plan(self, data, x=0, z=0):
         return {"index": 0, "label": "synthetic", "coordinates": (x, z), "bytes": data}
@@ -448,6 +455,8 @@ class RegionLiveGuards(unittest.TestCase):
                 active_classes = classes
                 for name in HELPER_CLASSES:
                     (classes / (name + ".class")).write_bytes(bytes.fromhex("cafebabe0000003d") + bytes(8))
+            if current == "c" and mutate == "source":
+                self.project.change_source()
             if current == "c" and mutate == "input":
                 paths["executable"].write_bytes(b"SYNTHETIC-INPUT")
             if current == "c" and mutate == "class":
@@ -456,7 +465,7 @@ class RegionLiveGuards(unittest.TestCase):
             return COMMON.ProcessResult(list(map(str, command)), code if selected else 0, 0.0,
                                         False, stop_reason if selected else None, 0, 0, 0, 0, 0)
 
-        with patch.dict(os.environ, {key: "" for key in REGION.JAVA_ENVIRONMENT}), \
+        with self.project, patch.dict(os.environ, {key: "" for key in REGION.JAVA_ENVIRONMENT}), \
                 patch.object(REGION, "helpers", return_value=(COMMON, NBT, FIXTURES, EXECUTED if executed is None else executed)), \
                 patch.object(COMMON, "runtime_tools", return_value=tools), \
                 patch.object(COMMON, "tool_versions"), patch.object(COMMON, "file_record", side_effect=record), \
@@ -492,6 +501,17 @@ class RegionLiveGuards(unittest.TestCase):
         self.assertEqual(status, 1)
         self.assertIsNone(report)
         self.assertEqual(calls, [])
+
+
+    def test_same_length_native_source_change_remains_a_failure(self):
+        status, report, _ = self.fake_run("c", 77, mutate="source")
+        self.assertEqual((status, report["status"]), (1, "fail"))
+        self.assertTrue(self.project.native_inputs <= set(report["inputs_before"]))
+        self.assertTrue(any("input changed" in error for error in report["errors"]))
+        name = str(self.project.root / "src/guard.c")
+        before, after = report["inputs_before"][name], report["inputs_after"][name]
+        self.assertEqual(before["bytes"], after["bytes"])
+        self.assertNotEqual(before["sha256"], after["sha256"])
 
 
 if __name__ == "__main__":

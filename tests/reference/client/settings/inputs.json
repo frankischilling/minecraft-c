@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "scope": "authored-options-inputs-only",
+  "cases": [
+    {
+      "id": "missing-then-load",
+      "constructor": "file",
+      "initial": {"kind": "absent"},
+      "reload": {"kind": "default", "text": "music:0.25\nsound:0.75\nmouseSensitivity:0.125\nskin:Default\nlastServer:example.invalid\nkey_key.forward:18\n"}
+    },
+    {
+      "id": "every-saved-key",
+      "constructor": "file",
+      "initial": {"kind": "default", "text": "music:0.25\nsound:0.75\ninvertYMouse:true\nmouseSensitivity:0.125\nviewDistance:3\nguiScale:2\nbobView:false\nanaglyph3d:true\nadvancedOpengl:true\nfpsLimit:2\ndifficulty:1\nfancyGraphics:false\nao:false\nskin:AuthoredPack\nlastServer:example.invalid:25565\nkey_key.forward:32\nkey_key.left:31\nkey_key.back:30\nkey_key.right:17\nkey_key.jump:57\nkey_key.sneak:-42\nkey_key.drop:18\nkey_key.inventory:16\nkey_key.chat:33\nkey_key.fog:20\n"},
+      "reload": {"kind": "keep"}
+    },
+    {
+      "id": "duplicate-and-bad-prefix",
+      "constructor": "file",
+      "initial": {"kind": "default", "text": "music:0.1\nmusic:bad\nsound:0.2\nviewDistance:3\nviewDistance:overflow\nkey_key.forward:44\nkey_key.forward:wrong\nskin:Before\nlastServer:before.invalid\n"},
+      "reload": {"kind": "default", "text": "music:0.4\nsound:bad\ninvertYMouse:true\nmouseSensitivity:bad\nviewDistance:-1\nguiScale:2147483648\nbobView:false\nkey_key.forward:45\nkey_key.forward:bad\nskin:After\nlastServer:after.invalid\n"}
+    },
+    {
+      "id": "boolean-spellings",
+      "constructor": "file",
+      "initial": {"kind": "default", "text": "invertYMouse:true\nbobView:true\nanaglyph3d:true\nadvancedOpengl:true\nfancyGraphics:true\nao:true\n"},
+      "reload": {"kind": "default", "text": "invertYMouse:True\nbobView:FALSE\nanaglyph3d:1\nadvancedOpengl: true\nfancyGraphics:false\nao:unknown\n"}
+    },
+    {
+      "id": "float-specials",
+      "constructor": "file",
+      "initial": {"kind": "default", "text": "music:-0.0\nsound:NaN\nmouseSensitivity:Infinity\n"},
+      "reload": {"kind": "default", "text": "music:-Infinity\nsound:true\nmouseSensitivity:false\n"}
+    },
+    {
+      "id": "float-grammar",
+      "constructor": "file",
+      "initial": {"kind": "default", "text": "music:0x1.0p-149f\nsound:  1.23456794E9  \nmouseSensitivity:+0.0009999999D\n"},
+      "reload": {"kind": "default", "text": "music: true \nsound:-1e-999\nmouseSensitivity:1e999\n"}
+    },
+    {
+      "id": "integer-boundaries",
+      "constructor": "file",
+      "initial": {"kind": "default", "text": "viewDistance:-2147483648\nguiScale:+2147483647\nfpsLimit:0002\ndifficulty:-0\nkey_key.forward:-2147483648\nkey_key.left:+2147483647\nkey_key.back:00031\nkey_key.right:-0\nkey_key.jump:+57\nkey_key.sneak:-42\nkey_key.drop:0\nkey_key.inventory:18\nkey_key.chat:20\nkey_key.fog:33\n"},
+      "reload": {"kind": "default", "text": "viewDistance:2147483648\nguiScale:-2147483649\nfpsLimit: 2\ndifficulty:+\nkey_key.forward:0x11\nkey_key.left:1_0\nkey_key.back:1.0\nkey_key.right:32 \nkey_key.jump:57\n"}
+    },
+    {
+      "id": "unicode-default-encoding",
+      "constructor": "file",
+      "initial": {"kind": "default", "text": "viewDistance:\u0661\nguiScale:\uff12\nfpsLimit:\u0968\ndifficulty:\u0663\nkey_key.forward:+\u0661\u0667\nskin:Caf\u00e9-\u03a9-\ud83d\ude00\nlastServer:m\u00fcnchen.invalid\n"},
+      "reload": {"kind": "keep"}
+    },
+    {
+      "id": "unicode-raw-utf8",
+      "constructor": "file",
+      "initial": {"kind": "raw", "utf8": "viewDistance:\u0661\nguiScale:\uff12\nfpsLimit:\u0968\ndifficulty:\u0663\nkey_key.forward:+\u0661\u0667\nskin:UTF8-Caf\u00e9\n"},
+      "reload": {"kind": "keep"}
+    },
+    {
+      "id": "colon-empty-lossy-pack",
+      "constructor": "file",
+      "initial": {"kind": "default", "text": "skin:Before\nskin::extra\nlastServer:before.invalid\nlastServer:\nlastServer:host:25565:ignored\nmusic:\nsound::extra\n:\n::\n\n"},
+      "reload": {"kind": "keep"}
+    },
+    {
+      "id": "raw-line-terminators",
+      "constructor": "file",
+      "initial": {"kind": "raw", "hex": "6d757369633a302e310d0a736f756e643a302e320a6d6f75736553656e73697469766974793a302e330d736b696e3a5261770d0a6c6173745365727665723a656f662e696e76616c6964"},
+      "reload": {"kind": "raw", "utf8": "music:0.5\rsound:0.6\r\nmouseSensitivity:0.7\nskin:Reloaded"}
+    },
+    {
+      "id": "unknown-whitespace-and-keys",
+      "constructor": "file",
+      "initial": {"kind": "default", "text": "# authored input\nunknown\nunknown:value:extra\n Music:0.2\nmusic :0.3\nMUSIC:0.4\nkey_forward:99\nkey_key.unknown:99\nkey_key.forward:+17\nkey_key.forward:18\nkey_key.left:18\nlastServer: valid-space.invalid \n"},
+      "reload": {"kind": "keep"}
+    },
+    {
+      "id": "owned-options-directory",
+      "constructor": "file",
+      "initial": {"kind": "directory"},
+      "reload": {"kind": "keep"}
+    },
+    {
+      "id": "noarg-null-file",
+      "constructor": "noarg",
+      "initial": {"kind": "absent"},
+      "reload": {"kind": "keep"}
+    },
+    {
+      "id": "empty-file",
+      "constructor": "file",
+      "initial": {"kind": "raw", "hex": ""},
+      "reload": {"kind": "keep"}
+    },
+    {
+      "id": "raw-bom-and-malformed-bytes",
+      "constructor": "file",
+      "initial": {"kind": "raw", "hex": "efbbbf6d757369633a302e350a736b696e3aff0a736f756e643a302e32350a"},
+      "reload": {"kind": "keep"}
+    }
+  ]
+}

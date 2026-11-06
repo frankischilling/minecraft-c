@@ -1,0 +1,27 @@
+scope	owner	member	type	value	purpose
+all	fd	B	Z	profile_world_remote	actual declared mutable World remote input
+all	fd	q	I	1	ordinary difficulty input
+all	fd	f	I	0	ordinary saved-Chunk light subtraction input
+all	uz	constructor	invoke	new_uz_world	genuine unchanged original UZ/GZ/II/LS/SN construction
+all	sn	c	invoke	8.5,64.5,8.5,30,15	actual position/pose setter and genuine bounds
+all	ls	Y	I	profile_Y	declared health input after raw constructor observation
+all	ls	av	I	17	exposes exact reached av store/gate ordering
+all	ls	E	I	20	declared immunity-window length
+all	sn	by	I	profile_by	declared current immunity timer
+all	ls	au	I	profile_au	declared remembered prior amount
+all	ls	aa	I	3	declared pre-hit hurt timer
+all	ls	ab	I	4	declared pre-hit hurt duration
+all	ls	ac	F	42c60000	declared pre-hit direction99
+all	ls	al	F	3e800000	declared pre-hit animation amplitude.25
+all	sn	bb	Z	false	declared prior attacked flag
+all	ii	d	R	NULL	ordinary default target; no caller clear after entered body
+nonnull_distant_cow	bx	constructor	invoke	new_bx_world	actual independent unchanged Cow attacker constructor
+nonnull_distant_cow	bx	c	invoke	11.5,64.5,12.5,0,0	nonzero horizontal deltas; no coincident shared-random rejection loop
+null_world	sn	aI	R	NULL	declared null Source World field; actual helper retains separate World setup handle
+null_private_random	sn	bs	R	NULL	declared null Source own Random field after constructor; never repaired
+periodic_fire20	sn	bv	I	20	actual periodic-fire divisor branch
+periodic_fire20	sn	bC	Z	false	actual nonimmune branch
+periodic_fire20	ls	a	I	0	actual private ambient counter input; nextInt1000 still executes
+throwing_sound_observer	fd	a	invoke	actual_pm_observer	real appended WorldAccess observer, no World query overrides
+existing_target_null_hit	bx	constructor	invoke	new_bx_world	genuine constructed and published existing target
+existing_target_null_hit	ii	d	R	actual_Cow	declared actual target before NULL-source damage; GZ return26 must preserve it

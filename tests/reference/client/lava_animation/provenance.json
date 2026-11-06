@@ -1,0 +1,108 @@
+{
+  "schema": "CLIENT_LAVA_ANIMATION_REFERENCE_V1",
+  "reference_files": {
+    "README.md": {
+      "bytes": 3301,
+      "sha256": "95ce975ed86304a043e861f955556454d0fff8a2f5934bf5dfdf20763be9b71a"
+    },
+    "compare.py": {
+      "bytes": 9274,
+      "sha256": "f2fd3ac28ae527b47e38a38e3b6a695d939ab407cad6a3278fb66dc4adeb66b7"
+    },
+    "support.py": {
+      "bytes": 6446,
+      "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
+    },
+    "source-pins.json": {
+      "bytes": 78947,
+      "sha256": "ffaaf519c08fe33696a233d6d20a174ea6a7b52b062333253b458b3716be559a"
+    },
+    "LavaAnimationObservation.java": {
+      "bytes": 8017,
+      "sha256": "1461bb9744d1180fa182814608f4ccf0d7e132f7a7d35a215a538a1b94cad503"
+    },
+    "../notice/classfile.py": {
+      "bytes": 2803,
+      "sha256": "a2d6bf0923890ff6bd73c32bc5bcfabf89f883c421a2c1eab4270a3cb060857d"
+    },
+    "../statistics/support.py": {
+      "bytes": 7123,
+      "sha256": "1ac10e26456a6a8c9ba21751f49499549ec8ed322874c0d5c07be74c5fed4fa1"
+    }
+  },
+  "native_sources": {
+    "include/mc/core/java/java.h": {
+      "bytes": 3573,
+      "sha256": "87a9d709f5607cacd692dd76c767790b9029fac3fdc8d24481fed6d50a409e53"
+    },
+    "include/mc/core/java/random_profile.h": {
+      "bytes": 4172,
+      "sha256": "db0b1dd483d1c76a96ecd1fd7167b4ac23495f7002ce90ec0aaf58aa922a31d8"
+    },
+    "src/core/java/random_profile_internal.h": {
+      "bytes": 5196,
+      "sha256": "aaed566e75da8db62639f5695e8c86e2480329629074592636456ef036e82ef2"
+    },
+    "src/core/java/random_profile.c": {
+      "bytes": 14027,
+      "sha256": "40f3e82db81204a3e3e7c4e03c85ea4ec8c03bcb6893e68a19380566ee43a43e"
+    },
+    "src/core/java/java.c": {
+      "bytes": 8217,
+      "sha256": "efa5f6b0c997ed9a160184785f699ab822d2ba2dd501a1b2228d63a5360fa2db"
+    },
+    "src/platform/time/nanotime.c": {
+      "bytes": 6852,
+      "sha256": "f48ce206ff95f5b3aae5b780e916b3625cb82ee95c8150febe13c3b53df7b7a7"
+    },
+    "src/platform/time/nanotime.h": {
+      "bytes": 3933,
+      "sha256": "88db116e2f3f6044f3a6d3faac4bf87134ee833a13b5b24bda8260d653e516f7"
+    },
+    "src/block/registry/registry_internal.h": {
+      "bytes": 13838,
+      "sha256": "ade35ac909f9a1c66f0905095655971fdeede5845d466936952fd32d1ea700ae"
+    },
+    "src/block/registry/runtime.c": {
+      "bytes": 20864,
+      "sha256": "dcd072d81e5ce622d876cec42323b2efd6c4229af425beed8cfae864414c754b"
+    },
+    "src/block/registry/registration.c": {
+      "bytes": 32164,
+      "sha256": "9a7559bcef39e1c73a81ef3a9d969b18ea870390c5723e82129f77b9022a08c3"
+    },
+    "src/block/registry/constructors.c": {
+      "bytes": 35922,
+      "sha256": "6b8eff1cf00801deef14108da8c819400f4cf31f9c2ef994fd1306b2395bc703"
+    },
+    "include/mc/core/math/math.h": {
+      "bytes": 1885,
+      "sha256": "63bb56dc1425a8115b36e878d8c0cab33b9cc36ae397ccab9d5d02f12a16ec56"
+    },
+    "src/core/math/math.c": {
+      "bytes": 1203,
+      "sha256": "a28b1681f42433d221c6e0b66b2e81515b9e3d53f60abf78a63a4c9ed729c202"
+    },
+    "include/mc/client/texture_effects/lava.h": {
+      "bytes": 3958,
+      "sha256": "128ab3c15215208ec5e66987896d69ebeefec68265019f85205e3b6ab7964392"
+    },
+    "src/client/texture_effects/lava.c": {
+      "bytes": 20901,
+      "sha256": "8f645586f6deb694c4ee7c8df9e4cca72636e887073650d68f381410dc7260c1"
+    },
+    "tests/client/texture_effects/test_lava_animation.c": {
+      "bytes": 18844,
+      "sha256": "96a67176da8163f58d9be32d8bbe4dc961a57b22ea6f890f72aaaf925f63ee70"
+    },
+    "tests/tools/client/test_lava_animation.py": {
+      "bytes": 2390,
+      "sha256": "a2c6a8f3e10c3d1b52f6e61639863008eaf18f94377648fd7073649e51cd07de"
+    },
+    "tests/tools/client/test_lava_animation_driver.py": {
+      "bytes": 4154,
+      "sha256": "2d307d2806a5dfa87b3dced2236d0671af4eca3f3e345951dee72a28916b201d"
+    }
+  },
+  "scope": "Actual cg constructor and CPU animation with declared genuine shared Math holder/setSeed fixture; no App publication, GL registration or upload."
+}

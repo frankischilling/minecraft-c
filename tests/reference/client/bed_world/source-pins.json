@@ -1,0 +1,646 @@
+{
+  "schema": "FINITE_CLASS_CODE_PINS_V1",
+  "archive": {
+    "bytes": 1465375,
+    "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+  },
+  "classes": {
+    "cv": {
+      "name": "cv",
+      "super": "java/lang/Object",
+      "interfaces": [],
+      "major": 49,
+      "minor": 0,
+      "access": 33,
+      "class_sha256": "ce8f363e1f7566530ac31680eabb8c715d9ddc7c97f31cf0a62f953e069a6863",
+      "class_bytes": 48235,
+      "methods": [
+        {
+          "access": 1,
+          "name": "<init>",
+          "descriptor": "(Lxp;)V",
+          "code_length": 65,
+          "code_sha256": "d7614d86213803db27b91c7a9f24f11b088f35c5b98a9e5a6b094a1d0d1d2e55",
+          "code_attribute_sha256": "3f88c7f4c4957ebc3d57ec3e68512cb8bbafc6acdb8f887fdf5574ae423e7cf5",
+          "max_stack": 2,
+          "max_locals": 2,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "b",
+          "descriptor": "(Luu;III)Z",
+          "code_length": 324,
+          "code_sha256": "bd856e191331a4ae2297fa750221e855b58a82f6a7490f18c753d48f8e31f3d7",
+          "code_attribute_sha256": "5ba1567b43ee629dca97fd972a331968709fb86ee0e94a3e23b679b5a18f9f25",
+          "max_stack": 6,
+          "max_locals": 6,
+          "exception_table": []
+        },
+        {
+          "access": 2,
+          "name": "q",
+          "descriptor": "(Luu;III)Z",
+          "code_length": 1233,
+          "code_sha256": "74f2fcb383f345698d581c7c99b614f9db56b0a9316cdb328b2ad285a27662eb",
+          "code_attribute_sha256": "dacd93cbd658cc6cffdde0a34910c2d935d5046e5f515d55ddcb11b2c79fc824",
+          "max_stack": 14,
+          "max_locals": 64,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "c",
+          "descriptor": "(Luu;DDDI)V",
+          "code_length": 832,
+          "code_sha256": "e71020199db6264676b5106270192266a479b5177d1725ed8002622ee63abb93",
+          "code_attribute_sha256": "8d45f8e11bf9eb902b2aeac745a1ee08ff8c1d470209ef77f1168d6ad46c053a",
+          "max_stack": 11,
+          "max_locals": 38,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "d",
+          "descriptor": "(Luu;DDDI)V",
+          "code_length": 832,
+          "code_sha256": "114d8cb191aeb2cf4969e3fe5da50bd6e17a7803d2046a6ef6d28ad6092f956b",
+          "code_attribute_sha256": "dc173fc4bf7f33735c8b1066873bc4859cd6e26e41ce4217781b3f4624d26960",
+          "max_stack": 11,
+          "max_locals": 38,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "e",
+          "descriptor": "(Luu;DDDI)V",
+          "code_length": 833,
+          "code_sha256": "805f9983997c0f771aff9d5246225b911f52f950e24f496f9feaae04e46c9e17",
+          "code_attribute_sha256": "241fa36291eea5f21669b315338a1c8a23f92d14878486ff9e289598c7eb2a49",
+          "max_stack": 11,
+          "max_locals": 38,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "f",
+          "descriptor": "(Luu;DDDI)V",
+          "code_length": 833,
+          "code_sha256": "6a40d7d7aca29539f802b1ebf708ae9dbc527ca4890db2d507c85ade9dc9e741",
+          "code_attribute_sha256": "20f4bdf42cf87da154a705b18c8e6a8aafd85f7798ffecec935185feae6e60b8",
+          "max_stack": 11,
+          "max_locals": 38,
+          "exception_table": []
+        }
+      ]
+    },
+    "ve": {
+      "name": "ve",
+      "super": "uu",
+      "interfaces": [],
+      "major": 49,
+      "minor": 0,
+      "access": 33,
+      "class_sha256": "30dfa26edce697aea95da196c9e78bd69a894a3a3a20796db07ad91f44bd8263",
+      "class_bytes": 3375,
+      "methods": [
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "(II)I",
+          "code_length": 118,
+          "code_sha256": "20f32b4fb40d9f3c9080f1147c83731fa647490cdb9c7b597cca0274c3162e3c",
+          "code_attribute_sha256": "323eebece65dfbe3d0135f1752fda2d9193524150eac3558d9252fa0430ae19b",
+          "max_stack": 2,
+          "max_locals": 5,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "(Lxp;III)V",
+          "code_length": 5,
+          "code_sha256": "46b182cfe39b4bcfef59a7a6b9ed069297b1671dfab80b36aa5b1795db83ff8f",
+          "code_attribute_sha256": "8efc40c9fd1c5758a249de8e44221cf982d517d29fd7d76733970e518446cf38",
+          "max_stack": 1,
+          "max_locals": 5,
+          "exception_table": []
+        },
+        {
+          "access": 2,
+          "name": "r",
+          "descriptor": "()V",
+          "code_length": 12,
+          "code_sha256": "2d3b018f8ca6d87d30151cecf395552918e6b3940249fe742049d96495377138",
+          "code_attribute_sha256": "3a44329b49d2ac7b6f9e72a0b28c81ba3298a5e60fa0159f903e3a04ae08a4a1",
+          "max_stack": 7,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 9,
+          "name": "d",
+          "descriptor": "(I)I",
+          "code_length": 4,
+          "code_sha256": "193eae6563654ee8a08d0ecb7d003dfac09c0ea6b05bd39047e6c29600eaccfa",
+          "code_attribute_sha256": "16a9301fab822c0cf926cadf7fcfc19c047328b8a803183f50cfaacac2f47a1e",
+          "max_stack": 2,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 9,
+          "name": "e",
+          "descriptor": "(I)Z",
+          "code_length": 13,
+          "code_sha256": "3ae3a53d374463d8bac25a54d5a0b82c5ebdf7dfe132b806bd5d8bc9f206a26f",
+          "code_attribute_sha256": "34f19aaab6fe0af853625f7aa95cd0b795dc03cb149b0c32b60d1006ad472115",
+          "max_stack": 2,
+          "max_locals": 1,
+          "exception_table": []
+        }
+      ]
+    },
+    "uu": {
+      "name": "uu",
+      "super": "java/lang/Object",
+      "interfaces": [],
+      "major": 49,
+      "minor": 0,
+      "access": 33,
+      "class_sha256": "caeaf354357d66fc168c7f03bf62bb6c6a1fe459e9be6b537d4d5d1efabd0845",
+      "class_bytes": 17378,
+      "methods": [
+        {
+          "access": 1,
+          "name": "d",
+          "descriptor": "(Lxp;III)F",
+          "code_length": 19,
+          "code_sha256": "daf6f66e6fca1f37732da0c57d1aaa990a86c8c8c566b826f3ca1be19d54444c",
+          "code_attribute_sha256": "20b6a060d53535cc9444d6fdcb0678550a8822f68791759d962b25f9ad6478f0",
+          "max_stack": 6,
+          "max_locals": 5,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "b",
+          "descriptor": "(Lxp;IIII)Z",
+          "code_length": 120,
+          "code_sha256": "85b22095ef737a0a1988513a3fce7c2e464beae0c4e1ecfbddf00b237d7ab900",
+          "code_attribute_sha256": "b41abfa405602692e9ef6bec11b7ec9da6564188864dabc99ac70208cdd19a9c",
+          "max_stack": 4,
+          "max_locals": 6,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "(Lxp;IIII)I",
+          "code_length": 17,
+          "code_sha256": "751c94218487ce1cfc9b9cf87966a08f321157a42dc921f217fd6c25fa2a994b",
+          "code_attribute_sha256": "91e10b4c9b0064ed4078c6b27a33a368b84b4a9ce2c9426437585ef80fb90177",
+          "max_stack": 6,
+          "max_locals": 6,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "(II)I",
+          "code_length": 6,
+          "code_sha256": "f20c3e09b28f823cc21d11124611ce6c00ee8c6ff2401080810b345ed3650fdf",
+          "code_attribute_sha256": "ded44273980ccb0b9b9bbcdd7cece630730945dbb2f1ba07280d016bb2470043",
+          "max_stack": 2,
+          "max_locals": 3,
+          "exception_table": []
+        }
+      ]
+    },
+    "jj": {
+      "name": "jj",
+      "super": "java/lang/Object",
+      "interfaces": [],
+      "major": 49,
+      "minor": 0,
+      "access": 33,
+      "class_sha256": "05b8b6b39d8aeb61b53568921c1abdb51ddde664ee766383e0e72f1e4d9f5eec",
+      "class_bytes": 481,
+      "methods": [
+        {
+          "access": 8,
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "code_length": 176,
+          "code_sha256": "a6c666973ec9a1decfeb16dd715f0286daa71997f10835492a054d9534e6920d",
+          "code_attribute_sha256": "45589cfb1f1f512e3b08d61b1b4e1071239d82778a97b3c2510caceab2872b46",
+          "max_stack": 7,
+          "max_locals": 0,
+          "exception_table": []
+        }
+      ]
+    },
+    "nw": {
+      "name": "nw",
+      "super": "java/lang/Object",
+      "interfaces": [],
+      "major": 49,
+      "minor": 0,
+      "access": 33,
+      "class_sha256": "2facc45feb91d0fea0c5888ac6793a87ffa6e4cdf5b0cc4e418c6c162ca8bf33",
+      "class_bytes": 5557,
+      "methods": [
+        {
+          "access": 2,
+          "name": "<init>",
+          "descriptor": "(I)V",
+          "code_length": 154,
+          "code_sha256": "88e02069d2d57cf3e471ad4dca8627ffa4f23c51c0f2eef14e07fcd3f89f5b7b",
+          "code_attribute_sha256": "391aa0c4dd4e2cedcf32cb590f82029be1ded05d83122974018f01641c5215f0",
+          "max_stack": 3,
+          "max_locals": 2,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "()V",
+          "code_length": 415,
+          "code_sha256": "6b22ea3c837c5afb9713209d9dea8c5bde822ffa4e6cef179f8c5e87be1b1218",
+          "code_attribute_sha256": "885cdfc17f38852497360390a72acfaffbb0d9ea549d7f93cf6747da3cd878c2",
+          "max_stack": 5,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 2,
+          "name": "d",
+          "descriptor": "()V",
+          "code_length": 24,
+          "code_sha256": "c61d3cd8ca9dde071dbd5a95a63203ed3d9043da03b35c540b20ef2dc6e4d33c",
+          "code_attribute_sha256": "a034469f348dba20dfde3f1d0f2914ceb4acf2e27758dc9a6249eb289241c71f",
+          "max_stack": 2,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "b",
+          "descriptor": "()V",
+          "code_length": 7,
+          "code_sha256": "d7add7c81bcc22173876373c4aac713d8813d179d45410481d5e5332262981e3",
+          "code_attribute_sha256": "88947f0cd32299a7e36751b35aaa60a6c2a503333ca5964373f966c3cd77d587",
+          "max_stack": 2,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "(I)V",
+          "code_length": 52,
+          "code_sha256": "7d103dedbb14ef967f5b65795adb22640447c963342a049e707c36c1fdca8b12",
+          "code_attribute_sha256": "905a1b787d6f2df04abfb5d5d956221a86da685c2b1d84d2f14b90c9a3caa680",
+          "max_stack": 3,
+          "max_locals": 2,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "(DD)V",
+          "code_length": 16,
+          "code_sha256": "7ecb25f7d8e06f421b66373e316288e669e91550494689f4a116f824bf86de34",
+          "code_attribute_sha256": "0b077e9f8cd9b8b5db14add94e8cdf1a45b844a8fe34bd1702d1ebf3bb635d7e",
+          "max_stack": 3,
+          "max_locals": 5,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "(FFF)V",
+          "code_length": 20,
+          "code_sha256": "a83c3f6a770e213c7fbaa695454da64130ae4d84d86723e348c3b460699962b0",
+          "code_attribute_sha256": "3023a950c029b47d45716c1394fd2bfaf35bdf79baac2379a35b6a1ca38e830a",
+          "max_stack": 5,
+          "max_locals": 4,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "(FFFF)V",
+          "code_length": 26,
+          "code_sha256": "1e52ffb36ef54d6d51819f91507c32e1856107ebab6e339d088742e4c6ce85d8",
+          "code_attribute_sha256": "78c889de3253f0d7d0e68272914887436ba3941aad7a26143ce747ea7d1e13d4",
+          "max_stack": 6,
+          "max_locals": 5,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "(III)V",
+          "code_length": 11,
+          "code_sha256": "b63991fab337665f440a6f94bbce9edbf56ece75d5c71bb6ea871741795e260d",
+          "code_attribute_sha256": "29f9e5406fa1c50d5f4278b66dfbe99d683d2028957465004f776846b518d53f",
+          "max_stack": 5,
+          "max_locals": 4,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "(IIII)V",
+          "code_length": 140,
+          "code_sha256": "62e072691dadada14c6f6ee80a938f7971845bd8ac416d452be65a9dd8890661",
+          "code_attribute_sha256": "c2cd670a47098a62572f15e6841cb8214650b155ea1275f80c06656f720e1f27",
+          "max_stack": 4,
+          "max_locals": 5,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "(DDDDD)V",
+          "code_length": 17,
+          "code_sha256": "f4e2d88e0b699ee47188e063968b2bcb16d70418fb718ae9cf5cdc3fa1753191",
+          "code_attribute_sha256": "804d0e022d45869af899f717b51b15c611afd753b3bad87ba02befb1c30647d9",
+          "max_stack": 7,
+          "max_locals": 11,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "(DDD)V",
+          "code_length": 451,
+          "code_sha256": "68b649bef9b5e0d8322863f5f0306d30946b5222319e05d1666b343856ec9ed8",
+          "code_attribute_sha256": "3a67bd95ac1669a41adaee0eb0ff0d1e2f19ef87e3e784562cab8e86bda2bbdb",
+          "max_stack": 6,
+          "max_locals": 9,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "b",
+          "descriptor": "(I)V",
+          "code_length": 34,
+          "code_sha256": "62ad0fd5360e0547cb2b7e407c14b7a94fc89483bcbd2e00e950d85fe93c0703",
+          "code_attribute_sha256": "4853a045ea90960c83fd88bd36077b2fe133d433f7050db36dc494b75559d69d",
+          "max_stack": 4,
+          "max_locals": 5,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "(II)V",
+          "code_length": 37,
+          "code_sha256": "6c748412127b26bbba86a63072dfa3af7479074ae3460285b34d6890cf58be6b",
+          "code_attribute_sha256": "b79946ad06f720a25da7665c2d9d789b1b505986c1643b700a5e3b06aa2f2858",
+          "max_stack": 5,
+          "max_locals": 6,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "c",
+          "descriptor": "()V",
+          "code_length": 6,
+          "code_sha256": "ce678a8b6bd2021863bd49b512f968a3799f57d6d3b45b5174c65893ea624ce0",
+          "code_attribute_sha256": "b002523713de14b2d2713988ee129a4bb8838be4ef9997dc9b7e551e011c6f55",
+          "max_stack": 2,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "b",
+          "descriptor": "(FFF)V",
+          "code_length": 63,
+          "code_sha256": "26aa45878cdb257ad99ccafad752f22239928779580f62f344726c8c0d4b15a2",
+          "code_attribute_sha256": "6743a4a99f57d64a2f51b9ca8b941488051ce233102fe5293f4243bc9f33a342",
+          "max_stack": 4,
+          "max_locals": 7,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "b",
+          "descriptor": "(DDD)V",
+          "code_length": 17,
+          "code_sha256": "1ba599c032d6d8dffff459b25ee01aa5238ee10c88058f2abd62f5f1347370e7",
+          "code_attribute_sha256": "a1f16d99d76545cd45c33b93c796cbcf19511dba4582134982953003f13dc06e",
+          "max_stack": 3,
+          "max_locals": 7,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "c",
+          "descriptor": "(FFF)V",
+          "code_length": 34,
+          "code_sha256": "1d89a8ffc32bdf34b2e28b4f093b470679fab3cf26acdc79a00e96a3f95ec702",
+          "code_attribute_sha256": "38c5c304915032846ee6eb4f560cb3b7ecd7aa15a91dc9b91c0f33a4473f2be0",
+          "max_stack": 5,
+          "max_locals": 4,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "code_length": 21,
+          "code_sha256": "f5e5ce584dcd7ec9eb419b0baa06c98fef4666440ffaa05687812c153a20f09e",
+          "code_attribute_sha256": "dbf5a1fea75b9f923e4440e53aebe89142da39f876088db79c2f5ec4f9dd9fb6",
+          "max_stack": 3,
+          "max_locals": 0,
+          "exception_table": []
+        }
+      ]
+    },
+    "ew": {
+      "name": "ew",
+      "super": "java/lang/Object",
+      "interfaces": [
+        "xp"
+      ],
+      "major": 49,
+      "minor": 0,
+      "access": 33,
+      "class_sha256": "1209956aa198673033588aa2d7af197dd90157c3591e36638bb19839c362caff",
+      "class_bytes": 2188,
+      "methods": [
+        {
+          "access": 1,
+          "name": "<init>",
+          "descriptor": "(Lfd;IIIIII)V",
+          "code_length": 129,
+          "code_sha256": "32e3cd3d5eac579706d05bea7307b16d813f60bdb3df1077fd2d8d2061f72d60",
+          "code_attribute_sha256": "332848da49370056ca5dd453e3cca70e42b39683d41f9ad6a8783d291cb5a833",
+          "max_stack": 5,
+          "max_locals": 12,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "(III)I",
+          "code_length": 104,
+          "code_sha256": "619e314a00025902576f0c5f36a926dffe161f5beac079beac6f0511cf10a1d4",
+          "code_attribute_sha256": "97fb953ae7f05c78e5a1420a4632fc2004296ee88d1230a7b6f3694d26779a5c",
+          "max_stack": 5,
+          "max_locals": 7,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "b",
+          "descriptor": "(III)Low;",
+          "code_length": 43,
+          "code_sha256": "ea8399fc260460a1cac8f140912ef9fe7a9ee4376b5070561a4b5a55e1d31168",
+          "code_attribute_sha256": "e4729ed634d892556bb2b284d635fbf6991de7747d0dc50187b276c5e9010141",
+          "max_stack": 5,
+          "max_locals": 6,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "(IIII)F",
+          "code_length": 34,
+          "code_sha256": "1b1951374c63ff181863c413b90909e74133b8aa635d7ab9a36a8b6eeca4052f",
+          "code_attribute_sha256": "75b9be293840f5c9a029bab96bc08eadba1273f06767029c0de387c19517c490",
+          "max_stack": 4,
+          "max_locals": 6,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "c",
+          "descriptor": "(III)F",
+          "code_length": 19,
+          "code_sha256": "d31bf30c8e01342af281280480e23a851735a1173d034ed03a19ee3d785ea47a",
+          "code_attribute_sha256": "9d2c2647df4bd83868a4236a307ce9b7aa883d4c15b6e95fdc91180be8ddccea",
+          "max_stack": 5,
+          "max_locals": 4,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "d",
+          "descriptor": "(III)I",
+          "code_length": 9,
+          "code_sha256": "7f6210994f542698bba8b8303a30d3146bb9beb7061265f7c65b498ca8bc370e",
+          "code_attribute_sha256": "f501c67c4d36853c81a8825fb07ee1525141e510c0bf2282b505d62c35871b43",
+          "max_stack": 5,
+          "max_locals": 4,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "(IIIZ)I",
+          "code_length": 278,
+          "code_sha256": "cebf57f2b6bb35165dc8fb052da513484ab168a9d4b9fdd1050e54878e7e3269",
+          "code_attribute_sha256": "63dc9697b09816bbdc8d95a0696d2a26c031980494fddf97560e9ce1c62496fc",
+          "max_stack": 5,
+          "max_locals": 11,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "e",
+          "descriptor": "(III)I",
+          "code_length": 58,
+          "code_sha256": "a4904c57d3f750fe888532ed23b4e3a3033b9ee334b078d7fba0b52494f3bff3",
+          "code_attribute_sha256": "1467fdfa3c1bffec8038a7848fdb13f6a519864acc19abb4f59d62a4d63a08d1",
+          "max_stack": 5,
+          "max_locals": 6,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "f",
+          "descriptor": "(III)Lln;",
+          "code_length": 28,
+          "code_sha256": "29357683817e67a455e09e48cb23bc64cee3376fe17f851119c109d3b1f78c63",
+          "code_attribute_sha256": "02356d172d745dfa283840cdbae70f9ba5947541dc8c123abcf31cc8045adbe0",
+          "max_stack": 4,
+          "max_locals": 5,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "()Lxv;",
+          "code_length": 8,
+          "code_sha256": "4c3e6be462eb65c372a4a58dbc6f7892e39a26aa0aea9226e93ac515dddff58f",
+          "code_attribute_sha256": "a29977c2129ee4829f403cebde1f3566a7cc60f7bc139b538592b3e60e660061",
+          "max_stack": 1,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "g",
+          "descriptor": "(III)Z",
+          "code_length": 26,
+          "code_sha256": "ec85eaefef39720df132da7440b1ea77350cd15b5bebaee2dca9a07c4f57dead",
+          "code_attribute_sha256": "ccc1a00c1898e8179b57b7c174eed84052eb391af9c3d958d1cc4ddf861651a5",
+          "max_stack": 5,
+          "max_locals": 5,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "h",
+          "descriptor": "(III)Z",
+          "code_length": 45,
+          "code_sha256": "e4aead23319639b0afc7f60864e41f0e1c7bbb3e2079c30688581d7ca527f0cf",
+          "code_attribute_sha256": "2636107edf4251eeb7dff6e4fe2b6927d366a6a7de9da869ba9cfdf92a69666a",
+          "max_stack": 5,
+          "max_locals": 5,
+          "exception_table": []
+        }
+      ]
+    },
+    "fd": {
+      "name": "fd",
+      "super": "java/lang/Object",
+      "interfaces": [
+        "xp"
+      ],
+      "major": 49,
+      "minor": 0,
+      "access": 33,
+      "class_sha256": "b91d4726c43ed2dad1a72fd8d925eaded8a7c365af5d9f37c3ad101b957a4100",
+      "class_bytes": 33396,
+      "methods": []
+    },
+    "lm": {
+      "name": "lm",
+      "super": "java/lang/Object",
+      "interfaces": [],
+      "major": 49,
+      "minor": 0,
+      "access": 33,
+      "class_sha256": "ce93bdfff48935ca907ef111233cab0645dfb720ec9e9b5795fef65e9d093aa2",
+      "class_bytes": 9050,
+      "methods": []
+    },
+    "in": {
+      "name": "in",
+      "super": "java/lang/Object",
+      "interfaces": [],
+      "major": 49,
+      "minor": 0,
+      "access": 33,
+      "class_sha256": "8693f3179fb0ff1df382e1d3388d23ab688ad3e26415454655da88f10b054f63",
+      "class_bytes": 1099,
+      "methods": []
+    }
+  }
+}

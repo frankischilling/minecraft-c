@@ -1,5 +1,7 @@
 #include "mc/storage/nbt/nbt.h"
 
+#include "mc/storage/nbt/array.h"
+
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,8 +18,7 @@ static unsigned int checks;
         }                                                                                          \
     } while (0)
 
-static size_t decode_hex(const char *hex, uint8_t *bytes)
-{
+static size_t decode_hex(const char *hex, uint8_t *bytes) {
     size_t length = strlen(hex) / 2u;
     for (size_t i = 0; i < length; ++i) {
         unsigned int value = 0;
@@ -37,8 +38,7 @@ static size_t decode_hex(const char *hex, uint8_t *bytes)
     return length;
 }
 
-static int expect_write(const mc_nbt_tag *tag, const char *hex)
-{
+static int expect_write(const mc_nbt_tag *tag, const char *hex) {
     uint8_t expected[1024];
     uint8_t actual[1024];
     size_t length = decode_hex(hex, expected);
@@ -58,8 +58,7 @@ static int expect_write(const mc_nbt_tag *tag, const char *hex)
 }
 
 static int expect_read_failure(const uint8_t *bytes, size_t length, const mc_nbt_limits *limits,
-                               mc_nbt_status expected)
-{
+                               mc_nbt_status expected) {
     static const uint8_t end[] = {0};
     mc_nbt_document *existing = NULL;
     mc_nbt_document *result;
@@ -80,8 +79,7 @@ static int expect_read_failure(const uint8_t *bytes, size_t length, const mc_nbt
 }
 
 static int expect_write_failure(const mc_nbt_tag *tag, const mc_nbt_limits *limits,
-                                mc_nbt_status expected)
-{
+                                mc_nbt_status expected) {
     uint8_t output[32];
     uint8_t saved[32];
     size_t written = 98765;
@@ -103,8 +101,7 @@ static int expect_write_failure(const mc_nbt_tag *tag, const mc_nbt_limits *limi
     return 0;
 }
 
-static int test_signed_scalars(void)
-{
+static int test_signed_scalars(void) {
     static const struct {
         mc_nbt_type type;
         int64_t value;
@@ -125,6 +122,7 @@ static int test_signed_scalars(void)
         {MC_NBT_LONG, INT64_C(0x0123456789abcdef), "0400000123456789abcdef"},
         {MC_NBT_LONG, -2, "040000fffffffffffffffe"},
     };
+
     for (size_t i = 0; i < sizeof(fixtures) / sizeof(fixtures[0]); ++i) {
         uint8_t bytes[16];
         size_t length = decode_hex(fixtures[i].hex, bytes);
@@ -174,8 +172,7 @@ static int test_signed_scalars(void)
     return 0;
 }
 
-static int test_float_bits(void)
-{
+static int test_float_bits(void) {
     static const struct {
         uint32_t bits;
         const char *input;
@@ -190,6 +187,7 @@ static int test_float_bits(void)
         {UINT32_C(0x7fc12345), "0500007fc12345", "0500007fc00000"},
         {UINT32_C(0xff800001), "050000ff800001", "0500007fc00000"},
     };
+
     static const struct {
         uint64_t bits;
         const char *input;
@@ -204,6 +202,7 @@ static int test_float_bits(void)
         {UINT64_C(0x7ff123456789abcd), "0600007ff123456789abcd", "0600007ff8000000000000"},
         {UINT64_C(0xfff8000000000001), "060000fff8000000000001", "0600007ff8000000000000"},
     };
+
     for (size_t i = 0; i < sizeof(floats) / sizeof(floats[0]); ++i) {
         uint8_t bytes[16];
         mc_nbt_document *document = NULL;
@@ -231,8 +230,7 @@ static int test_float_bits(void)
     return 0;
 }
 
-static int test_text_and_names(void)
-{
+static int test_text_and_names(void) {
     static const uint16_t units[] = {0,      1,      0x7f,   0x80,   0x7ff, 0x800,
                                      0xffff, 0xd800, 0xdc00, 0xd83d, 0xde00};
     static const char string_hex[] =
@@ -272,6 +270,7 @@ static int test_text_and_names(void)
     tag.name.units = units;
     tag.name.length = sizeof(units) / sizeof(units[0]);
     CHECK(expect_write(&tag, "00") == 0);
+
     static const struct {
         const char *input;
         const char *output;
@@ -281,6 +280,7 @@ static int test_text_and_names(void)
         {"0800000002c181", "080000000141", 0x41},   {"0800000003e08080", "0800000002c080", 0},
         {"0800000003e08181", "080000000141", 0x41},
     };
+
     for (size_t i = 0; i < sizeof(accepted) / sizeof(accepted[0]); ++i) {
         document = NULL;
         length = decode_hex(accepted[i].input, bytes);
@@ -293,8 +293,7 @@ static int test_text_and_names(void)
     return 0;
 }
 
-static int test_text_boundaries(void)
-{
+static int test_text_boundaries(void) {
     const size_t max_length = 65535;
     uint16_t *units = malloc((max_length + 1u) * sizeof(*units));
     uint8_t *bytes = malloc(max_length + 8u);
@@ -355,8 +354,7 @@ static int test_text_boundaries(void)
     return 0;
 }
 
-static int test_arrays_and_lists(void)
-{
+static int test_arrays_and_lists(void) {
     static const char *const fixtures[] = {
         "07000000000000",
         "07000000000004007f80ff",
@@ -420,8 +418,7 @@ static int test_arrays_and_lists(void)
     return 0;
 }
 
-static int test_compounds_and_ownership(void)
-{
+static int test_compounds_and_ownership(void) {
     static const char input_hex[] =
         "0a000172010001780103000178123456780800066675747572650001760100000700deadbeef";
     static const uint16_t x[] = {'x'};
@@ -471,8 +468,7 @@ static int test_compounds_and_ownership(void)
     return 0;
 }
 
-static int test_root_modes_and_arguments(void)
-{
+static int test_root_modes_and_arguments(void) {
     static const uint8_t end_with_tail[] = {0, 0xff, 0xff};
     static const uint8_t byte[] = {1, 0, 0, 1};
     mc_nbt_document *document = NULL;
@@ -512,8 +508,7 @@ static int test_root_modes_and_arguments(void)
     return 0;
 }
 
-static int test_malformed_and_truncated(void)
-{
+static int test_malformed_and_truncated(void) {
     static const struct {
         const char *hex;
         mc_nbt_status status;
@@ -531,6 +526,7 @@ static int test_malformed_and_truncated(void)
         {"0800000004f0908080", MC_NBT_INVALID_UTF},
         {"0100018000", MC_NBT_INVALID_UTF},
     };
+
     for (size_t i = 0; i < sizeof(malformed) / sizeof(malformed[0]); ++i) {
         uint8_t bytes[64];
         size_t length = decode_hex(malformed[i].hex, bytes);
@@ -563,8 +559,7 @@ static int test_malformed_and_truncated(void)
     return 0;
 }
 
-static int test_limits(void)
-{
+static int test_limits(void) {
     static const uint8_t byte[] = {1, 0, 0, 42};
     static const uint8_t list[] = {9, 0, 0, 1, 0, 0, 0, 2, 11, 12};
     static const uint8_t array[] = {7, 0, 0, 0, 0, 0, 3, 1, 2, 3};
@@ -679,8 +674,7 @@ static int test_limits(void)
     return 0;
 }
 
-static int test_depth(void)
-{
+static int test_depth(void) {
     mc_nbt_tag tags[129] = {0};
     const mc_nbt_tag *links[128];
     uint8_t bytes[1024];
@@ -721,8 +715,7 @@ static int test_depth(void)
     return 0;
 }
 
-static int test_writer_validation_and_capacity(void)
-{
+static int test_writer_validation_and_capacity(void) {
     mc_nbt_tag tag = {0};
     tag.type = MC_NBT_INT;
     tag.value.int_value = 42;
@@ -797,8 +790,192 @@ static int test_writer_validation_and_capacity(void)
     return 0;
 }
 
-static int test_bounded_mutations(void)
-{
+static const uint8_t shared_array_fixture[] = {
+    10, 0, 0,   7, 0, 1, 'a', 0, 0, 0, 3,   1, 2, 3, 7, 0, 1, 'b', 0, 0, 0, 0, 7,
+    0,  1, 'c', 0, 0, 0, 0,   9, 0, 1, 'l', 7, 0, 0, 0, 1, 0, 0,   0, 1, 4, 0};
+
+static int test_shared_array_construction(void) {
+    mc_nbt_byte_array *empty = NULL, *other = NULL, *array = NULL, *candidate;
+    uint8_t source[] = {1, 2, 3};
+    CHECK(mc_nbt_byte_array_retain(NULL) == MC_NBT_INVALID_ARGUMENT);
+    CHECK(mc_nbt_byte_array_data(NULL) == NULL && mc_nbt_byte_array_length(NULL) == 0 &&
+          mc_nbt_byte_array_allocation_bytes(NULL) == 0);
+    mc_nbt_byte_array_release(NULL);
+    CHECK(mc_nbt_byte_array_create(0, NULL, SIZE_MAX, &empty) == MC_NBT_OK && empty != NULL);
+    const size_t header = mc_nbt_byte_array_allocation_bytes(empty);
+    CHECK(header != 0 && mc_nbt_byte_array_length(empty) == 0);
+    CHECK(mc_nbt_byte_array_create(0, NULL, header, &other) == MC_NBT_OK && other != NULL &&
+          other != empty && mc_nbt_byte_array_length(other) == 0);
+    candidate = empty;
+    CHECK(mc_nbt_byte_array_create(0, NULL, header - 1u, &candidate) == MC_NBT_LIMIT &&
+          candidate == empty);
+    CHECK(mc_nbt_byte_array_create(1, NULL, header, &candidate) == MC_NBT_LIMIT &&
+          candidate == empty);
+    CHECK(mc_nbt_byte_array_create((size_t)INT32_MAX + 1u, NULL, SIZE_MAX, &candidate) ==
+              MC_NBT_INVALID_LENGTH &&
+          candidate == empty);
+    CHECK(mc_nbt_byte_array_create(0, NULL, SIZE_MAX, NULL) == MC_NBT_INVALID_ARGUMENT);
+    CHECK(mc_nbt_byte_array_create(sizeof(source), source, header + sizeof(source), &array) ==
+          MC_NBT_OK);
+    CHECK(mc_nbt_byte_array_allocation_bytes(array) == header + sizeof(source) &&
+          mc_nbt_byte_array_length(array) == sizeof(source) &&
+          mc_nbt_byte_array_data(array) != source &&
+          memcmp(mc_nbt_byte_array_data(array), source, sizeof(source)) == 0);
+    source[0] = 99;
+    CHECK(mc_nbt_byte_array_data(array)[0] == 1);
+    CHECK(mc_nbt_byte_array_retain(array) == MC_NBT_OK);
+    mc_nbt_byte_array *alias = array;
+    mc_nbt_byte_array_release(array);
+    array = NULL;
+    mc_nbt_byte_array_data(alias)[1] = 8;
+    CHECK(mc_nbt_byte_array_data(alias)[0] == 1 && mc_nbt_byte_array_data(alias)[1] == 8);
+    mc_nbt_byte_array_release(alias);
+    CHECK(mc_nbt_byte_array_create(3, NULL, header + 3u, &array) == MC_NBT_OK);
+    CHECK(mc_nbt_byte_array_data(array)[0] == 0 && mc_nbt_byte_array_data(array)[1] == 0 &&
+          mc_nbt_byte_array_data(array)[2] == 0);
+    mc_nbt_byte_array_release(array);
+    mc_nbt_byte_array_release(other);
+    mc_nbt_byte_array_release(empty);
+    return 0;
+}
+
+static int test_shared_document_arrays(void) {
+    mc_nbt_document *document = NULL, *foreign = NULL;
+    mc_nbt_byte_array *array = NULL, *alias = NULL, *empty = NULL, *empty_alias = NULL;
+    mc_nbt_byte_array *other_empty = NULL, *nested = NULL, *candidate;
+    const uint8_t foreign_bytes[] = {7, 0, 0, 0, 0, 0, 3, 1, 2, 3};
+    CHECK(mc_nbt_read_compound(shared_array_fixture, sizeof(shared_array_fixture), NULL, &document,
+                               NULL, NULL) == MC_NBT_OK);
+    CHECK(mc_nbt_read(foreign_bytes, sizeof(foreign_bytes), NULL, &foreign, NULL, NULL) ==
+          MC_NBT_OK);
+    const mc_nbt_tag *root = mc_nbt_document_root(document);
+    const mc_nbt_tag *tag = root->value.compound.items[0];
+    const mc_nbt_tag *zero = root->value.compound.items[1];
+    const mc_nbt_tag *second_zero = root->value.compound.items[2];
+    const mc_nbt_tag *child = root->value.compound.items[3]->value.list.items[0];
+    CHECK(mc_nbt_document_byte_array(document, tag, &array) == MC_NBT_OK && array != NULL);
+    CHECK(mc_nbt_byte_array_data(array) == tag->value.byte_array.data &&
+          mc_nbt_byte_array_length(array) == 3);
+    CHECK(mc_nbt_document_byte_array(document, tag, &alias) == MC_NBT_OK && alias == array);
+    candidate = array;
+    const mc_nbt_tag copied = *tag;
+    CHECK(mc_nbt_document_byte_array(NULL, tag, &candidate) == MC_NBT_INVALID_ARGUMENT &&
+          candidate == array);
+    CHECK(mc_nbt_document_byte_array(document, NULL, &candidate) == MC_NBT_INVALID_ARGUMENT &&
+          candidate == array);
+    CHECK(mc_nbt_document_byte_array(document, tag, NULL) == MC_NBT_INVALID_ARGUMENT);
+    CHECK(mc_nbt_document_byte_array(document, root, &candidate) == MC_NBT_INVALID_ARGUMENT &&
+          candidate == array);
+    CHECK(mc_nbt_document_byte_array(document, &copied, &candidate) == MC_NBT_INVALID_ARGUMENT &&
+          candidate == array);
+    CHECK(mc_nbt_document_byte_array(document, mc_nbt_document_root(foreign), &candidate) ==
+              MC_NBT_INVALID_ARGUMENT &&
+          candidate == array);
+    CHECK(mc_nbt_document_byte_array(foreign, tag, &candidate) == MC_NBT_INVALID_ARGUMENT &&
+          candidate == array);
+    /* Parser payload allocations have tag alignment, but are not tag objects. */
+    CHECK(mc_nbt_document_byte_array(document,
+                                     (const mc_nbt_tag *)(const void *)tag->value.byte_array.data,
+                                     &candidate) == MC_NBT_INVALID_ARGUMENT &&
+          candidate == array);
+    CHECK(mc_nbt_document_byte_array(document, zero, &empty) == MC_NBT_OK && empty != NULL);
+    CHECK(mc_nbt_document_byte_array(document, zero, &empty_alias) == MC_NBT_OK &&
+          empty_alias == empty);
+    CHECK(mc_nbt_document_byte_array(document, second_zero, &other_empty) == MC_NBT_OK &&
+          other_empty != NULL && other_empty != empty);
+    CHECK(mc_nbt_byte_array_length(empty) == 0 && mc_nbt_byte_array_length(other_empty) == 0 &&
+          mc_nbt_byte_array_data(empty) == zero->value.byte_array.data &&
+          mc_nbt_byte_array_data(other_empty) == second_zero->value.byte_array.data);
+    CHECK(mc_nbt_document_byte_array(document, child, &nested) == MC_NBT_OK &&
+          mc_nbt_byte_array_data(nested) == child->value.byte_array.data &&
+          mc_nbt_byte_array_length(nested) == 1 && mc_nbt_byte_array_data(nested)[0] == 4);
+    mc_nbt_byte_array_data(alias)[0] = 9;
+    CHECK(tag->value.byte_array.data[0] == 9 && mc_nbt_byte_array_data(array)[0] == 9);
+    /* A writer's independent hold keeps the SAME bytes, not a captured copy. */
+    CHECK(mc_nbt_byte_array_retain(array) == MC_NBT_OK);
+    mc_nbt_byte_array *record_hold = array;
+    mc_nbt_tag record = {.type = MC_NBT_BYTE_ARRAY};
+    record.value.byte_array.data = mc_nbt_byte_array_data(record_hold);
+    record.value.byte_array.length = mc_nbt_byte_array_length(record_hold);
+    CHECK(expect_write(&record, "07000000000003090203") == 0);
+    mc_nbt_document_free(document);
+    document = NULL;
+    mc_nbt_document_free(foreign);
+    foreign = NULL;
+    mc_nbt_byte_array_release(empty);
+    mc_nbt_byte_array_release(empty_alias);
+    mc_nbt_byte_array_release(other_empty);
+    mc_nbt_byte_array_release(nested);
+    mc_nbt_byte_array_release(array);
+    mc_nbt_byte_array_release(alias);
+    array = alias = NULL;
+    mc_nbt_byte_array_data(record_hold)[2] = 7;
+    CHECK(tag->value.byte_array.data == record.value.byte_array.data &&
+          tag->value.byte_array.data[0] == 9 && tag->value.byte_array.data[2] == 7);
+    CHECK(expect_write(&record, "07000000000003090207") == 0);
+    CHECK(expect_write(root, "0a00000700016100000003090207070001620000000007000163000000000900016c0"
+                             "700000001000000010400") == 0);
+    mc_nbt_byte_array_release(record_hold);
+    return 0;
+}
+
+static int test_shared_array_document_budget(void) {
+    mc_nbt_limits limits = mc_nbt_default_limits();
+    mc_nbt_document *document = NULL;
+    mc_nbt_byte_array *sentinel = NULL, *array = NULL, *alias = NULL, *other = NULL;
+    CHECK(mc_nbt_byte_array_create(0, NULL, SIZE_MAX, &sentinel) == MC_NBT_OK);
+    const size_t header = mc_nbt_byte_array_allocation_bytes(sentinel);
+    size_t minimum = 0;
+    for (; minimum <= 8192u; ++minimum) {
+        limits.max_allocation_bytes = minimum;
+        const mc_nbt_status status = mc_nbt_read_compound(
+            shared_array_fixture, sizeof(shared_array_fixture), &limits, &document, NULL, NULL);
+        if (status == MC_NBT_OK)
+            break;
+        CHECK(status == MC_NBT_LIMIT && document == NULL);
+    }
+    CHECK(document != NULL && minimum <= 8192u);
+    const mc_nbt_tag *tag = mc_nbt_document_root(document)->value.compound.items[0];
+    mc_nbt_byte_array *candidate = sentinel;
+    CHECK(mc_nbt_document_byte_array(document, tag, &candidate) == MC_NBT_LIMIT &&
+          candidate == sentinel);
+    CHECK(tag->value.byte_array.length == 3 && tag->value.byte_array.data[0] == 1);
+    mc_nbt_document_free(document);
+    document = NULL;
+    limits.max_allocation_bytes = minimum + header;
+    CHECK(mc_nbt_read_compound(shared_array_fixture, sizeof(shared_array_fixture), &limits,
+                               &document, NULL, NULL) == MC_NBT_OK);
+    tag = mc_nbt_document_root(document)->value.compound.items[0];
+    const mc_nbt_tag *zero = mc_nbt_document_root(document)->value.compound.items[1];
+    CHECK(mc_nbt_document_byte_array(document, tag, &array) == MC_NBT_OK);
+    CHECK(mc_nbt_byte_array_allocation_bytes(array) == header);
+    CHECK(mc_nbt_document_byte_array(document, tag, &alias) == MC_NBT_OK && alias == array);
+    candidate = sentinel;
+    CHECK(mc_nbt_document_byte_array(document, zero, &candidate) == MC_NBT_LIMIT &&
+          candidate == sentinel);
+    mc_nbt_byte_array_release(array);
+    array = NULL;
+    CHECK(mc_nbt_document_byte_array(document, zero, &candidate) == MC_NBT_LIMIT &&
+          candidate == sentinel);
+    mc_nbt_byte_array_release(alias);
+    alias = NULL;
+    /* Final release unlinks the weak cache and returns its wrapper budget. */
+    CHECK(mc_nbt_document_byte_array(document, zero, &other) == MC_NBT_OK && other != NULL &&
+          mc_nbt_byte_array_length(other) == 0);
+    CHECK(mc_nbt_document_byte_array(document, tag, &candidate) == MC_NBT_LIMIT &&
+          candidate == sentinel);
+    mc_nbt_byte_array_release(other);
+    other = NULL;
+    CHECK(mc_nbt_document_byte_array(document, tag, &array) == MC_NBT_OK &&
+          mc_nbt_byte_array_data(array) == tag->value.byte_array.data);
+    mc_nbt_document_free(document);
+    CHECK(mc_nbt_byte_array_data(array)[0] == 1);
+    mc_nbt_byte_array_release(array);
+    mc_nbt_byte_array_release(sentinel);
+    return 0;
+}
+
+static int test_bounded_mutations(void) {
     static const char *const seeds[] = {
         "00",
         "0100017880",
@@ -863,12 +1040,13 @@ static int test_bounded_mutations(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_signed_scalars() || test_float_bits() || test_text_and_names() ||
         test_text_boundaries() || test_arrays_and_lists() || test_compounds_and_ownership() ||
         test_root_modes_and_arguments() || test_malformed_and_truncated() || test_limits() ||
-        test_depth() || test_writer_validation_and_capacity() || test_bounded_mutations())
+        test_depth() || test_writer_validation_and_capacity() || test_shared_array_construction() ||
+        test_shared_document_arrays() || test_shared_array_document_budget() ||
+        test_bounded_mutations())
         return 1;
     printf("NBT: %u checks passed\n", checks);
     return 0;
