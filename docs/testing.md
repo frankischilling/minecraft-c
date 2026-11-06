@@ -29,6 +29,23 @@ first Linux full attempt was interrupted after a concurrent source edit tripped
 its input guards. Both remain failed/incomplete records. Subsequent source
 bindings describe current inputs only and preserve historical captures.
 
+At `359e663ac35304572575c313b2cc094651354a95`, hosted
+[run 42135866656](https://github.com/frankischilling/minecraft-c/actions/runs/42135866656)
+passes Windows 682/682 in 348.06 CTest seconds, GCC 739/739 in 559.77 seconds
+and Clang 739/739 in 563.58 seconds. Formatting checks 2,126 files. All four
+checkout trees equal the pushed source tree. Comparison with the preceding
+hosted run finds every prior test name, exactly four new Player/armor tests
+per native job, and no skipped registered tests.
+
+The frozen local full runs remain incomplete. After the session pause, their
+handles and operating-system processes are absent; Linux output ends after
+435/528 tests and Windows after 38/749, without terminal summaries. Windows
+retains two failures: creature foreground admission and a Zombie returned-draw
+assertion. The latter has no established cause. Two later unchanged isolated
+Zombie opportunities on monitor 2 produce an earlier row-selection failure in
+8.21 seconds, then a pass in 15.17 seconds. They do not replace the original
+failure, establish its cause or qualify general input/focus reliability.
+
 ## Grass and Leaves query diagnostics
 
 The [qualification](performance/random-block-ticks.md) retains two separate

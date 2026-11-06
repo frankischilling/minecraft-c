@@ -9,6 +9,14 @@ controls cover callback movement, repeated hits and failure ordering. Complete
 Player death, broader attackers, loaded combat and unrestricted play remain
 unfinished. No new FPS improvement is claimed.
 
+Hosted checks for `359e663a` pass Windows 682/682 and both Linux compilers
+739/739, with no dropped or skipped registered tests. The interrupted local
+full runs remain incomplete and retain separate foreground and Zombie draw
+failures. An unchanged isolated Zombie pass does not resolve those failures;
+[testing details](testing.md#player-damage-armor-and-landing) retain all scopes.
+The next survival work is the actual Player death/drop body, death screen and
+respawn coordinator, including the reached Container-close lifecycle.
+
 The [saved Lever circuit](world/lever.md#saved-circuit) passes one post-fix
 Windows SDK opportunity with 1,945 native checks. Four ordinary SDL taps place
 and switch the Lever, drive adjacent Dust through 0/15/0/15 and leave it powered

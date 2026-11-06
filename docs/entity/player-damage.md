@@ -70,6 +70,11 @@ landing sound, air, callback refusal and a null World after completed hurt.
 The fall accumulator clears only after the full callback returns successfully.
 These controls do not compare original landing runtime output or loaded falls.
 
+At source checkpoint `359e663a`, the four new armor/hurt cases pass in all three
+hosted native jobs. The actual-App callsite test passes 297 checks on Windows
+and sanitized Linux. The [full test record](../testing.md#player-damage-armor-and-landing)
+separates those results from incomplete local suites and unresolved GUI failures.
+
 ## Remaining work
 
 Fatal damage reaches the Player death invocation and reports the unfinished

@@ -10,6 +10,12 @@ exercise armor ownership, burning timers and post-hit fall landing. Death,
 broader attackers and loaded combat remain unfinished. The [implementation notes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-damage.md)
 record the source order and finite qualification scopes.
 
+At `359e663a`, hosted Windows passes 682 tests and both Linux compilers pass
+739, with all prior names retained and four new tests each. The local full
+suites stopped without terminal summaries after the session pause. Their
+foreground and Zombie draw failures remain separate from the hosted success
+and later isolated Zombie pass.
+
 ## Grass and Leaves diagnostics
 
 The random Block getter now uses the existing failure-only Block and metadata

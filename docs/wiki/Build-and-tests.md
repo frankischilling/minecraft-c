@@ -6,6 +6,14 @@ keeps component comparisons, authored landing checks and the preceding Windows
 reload-cycle run separate. The reload window ran on monitor 2; no fresh manual
 pixel or FPS qualification is claimed.
 
+Hosted [run 42135866656](https://github.com/frankischilling/minecraft-c/actions/runs/42135866656)
+passes exact source checkpoint `359e663a`: Windows 682/682, GCC 739/739,
+Clang 739/739 and formatting at 2,126 files. Every preceding test remains,
+four Player/armor tests are added per native job, and none is skipped. The
+interrupted local full suites remain incomplete, with separate foreground and
+Zombie draw failures. Two later unchanged Zombie opportunities fail at row
+selection and pass; the original draw cause remains unresolved.
+
 ## Grass and Leaves query diagnostics
 
 The [qualification and reproduction guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/random-block-ticks.md)
