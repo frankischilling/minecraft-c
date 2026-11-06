@@ -1,5 +1,38 @@
 # History
 
+## Bed placement and daytime interaction
+
+Item355 placement, Bed neighbors/daytime activation and the genuine GS/CW
+prefix now have separate original packets with 72/85/48 profiles. The first
+World replay exposes an exact-class check that rejects concrete client
+Players. Corrected Class assignability passes the original World projection
+and native controls on both hosts. The driver also flushes complete JSON
+records before later genuine initializer output; neither source output nor
+comparison fields are discarded.
+
+The first visible Windows scene fails during loading while Remote Desktop
+owns focus. It supplies no Bed-action qualification. Canonical packet cleanup
+moves raw attempts private and preserves finite data, journals and historical
+input identities. A separate measured reader refactor retains all controls
+while reducing normal-reader CPU, with no FPS claim. Successful night sleep,
+wake and Nether explosions remain unfinished.
+
+The broader public run passes 763 Windows tests and retains one Linux Python
+storage-guard watchdog at 748/749. Profiling identifies repeated source-catalog
+walks; a one-file scanner change retains the full 1,502-entry catalog, host
+error behavior and all 76 guards. Registered storage follow-up passes on both
+hosts, including a 3/3 concurrent Linux cohort. The failed full run remains
+recorded separately.
+
+## Saved-Bed hosted qualification
+
+After the explicit chat-local initialization, exact source `0f706d1` passes
+hosted [run 42167936398](https://github.com/frankischilling/minecraft-c/actions/runs/42167936398):
+Windows 699/699, GCC and Clang 757/757, plus formatting. All four checkout
+trees equal the pushed source, all prior names remain and no registered case
+is skipped. Earlier failed full/focus/compiler opportunities remain recorded
+separately. New Bed Item use and daytime interaction work follows this checkpoint.
+
 ## Saved-Bed respawn and HUD messages
 
 The saved-Bed route now preserves coordinate identity through callbacks, uses

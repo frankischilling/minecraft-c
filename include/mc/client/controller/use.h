@@ -13,6 +13,17 @@ typedef struct mc_world_placement_error mc_world_placement_error;
 typedef struct mc_world_block_activation_context mc_world_block_activation_context;
 typedef struct mc_world_runtime_acquisition_error mc_world_runtime_acquisition_error;
 
+typedef struct mc_math_classes mc_math_classes;
+
+/* Actual client class dependencies and reached Player virtual children.
+ * begin copies this record and the activation callbacks; keep their supplying
+ * graph live/exclusive through retirement. Math is not retained or activated
+ * until a reached Item child needs that exact namespace. */
+typedef struct mc_singleplayer_use_context {
+    const mc_world_block_activation_context *activation;
+    mc_math_classes *math;
+} mc_singleplayer_use_context;
+
 typedef enum mc_singleplayer_use_status {
     MC_SINGLEPLAYER_USE_OK,
     MC_SINGLEPLAYER_USE_ARGUMENT,
@@ -82,6 +93,10 @@ mc_client_singleplayer_use_on_block_begin(mc_client_singleplayer_controller *, m
 mc_singleplayer_use_status mc_client_singleplayer_use_on_block_with_context_begin(
     mc_client_singleplayer_controller *, mc_entity *player, mc_world_runtime *, mc_item_stack *,
     int32_t x, int32_t y, int32_t z, int32_t face, const mc_world_block_activation_context *,
+    mc_singleplayer_use_call **, mc_singleplayer_use_error *);
+mc_singleplayer_use_status mc_client_singleplayer_use_on_block_with_sources_begin(
+    mc_client_singleplayer_controller *, mc_entity *player, mc_world_runtime *, mc_item_stack *,
+    int32_t x, int32_t y, int32_t z, int32_t face, const mc_singleplayer_use_context *,
     mc_singleplayer_use_call **, mc_singleplayer_use_error *);
 mc_singleplayer_use_status
 mc_client_singleplayer_use_in_air_begin(mc_client_singleplayer_controller *, mc_entity *player,

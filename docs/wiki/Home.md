@@ -1,5 +1,16 @@
 # minecraft-c
 
+[Bed Item use and daytime interaction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/bed-interaction.md)
+now reach actual Item355 placement, orphan-half removal/drop, the occupied
+Player scan, genuine GS/CW rejection and the client translation/HUD message
+route. Original packets cover 72 placement, 85 World and 48 sleep-prefix
+profiles. Native components pass on Windows and sanitized Linux; the first
+loaded Windows scene stops before placement because Remote Desktop holds
+foreground focus. Night sleep119 and Nether explosion256 remain frontiers.
+The [test-reader comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/reference-readers.md)
+preserves all 1,167 controls and lowers measured median reader CPU by
+66.95295% on Windows and 64.83001% on WSL, without an FPS claim.
+
 [Saved-Bed respawn](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/bed-spawn.md)
 now validates exits, copies saved coordinates and places the replacement
 Player. Missing Beds reach the actual translated HUD message and World spawn.

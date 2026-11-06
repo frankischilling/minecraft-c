@@ -24,6 +24,7 @@ struct mc_singleplayer_use_call {
     mc_item_use_error item_error, item_cleanup;
     mc_world_placement_error activation;
     mc_world_block_activation_context activation_context;
+    mc_math_classes *math;
     mc_registry_classes *registry;
     mc_world_runtime_acquisition_error *acquisition;
     mc_world_source_chunk_error *source;
@@ -279,10 +280,12 @@ static bool on_block(mc_singleplayer_use_call *c) {
     if (!stack_hold(c, 56) || !player_hold(c, 56) || !registry_hold(c, 56))
         return false;
     c->state.item_entered = true;
+    const mc_item_use_context item_context = {.math = c->math};
     if (!item_result(c,
-                     mc_item_use_on_block_begin(c->registry, c->state.stack, c->state.player,
-                                                c->state.world, c->state.x, c->state.y, c->state.z,
-                                                c->state.face, &c->item, &c->item_error),
+                     mc_item_use_on_block_with_context_begin(
+                         c->registry, c->state.stack, c->state.player, c->state.world, c->state.x,
+                         c->state.y, c->state.z, c->state.face, &item_context, &c->item,
+                         &c->item_error),
                      56))
         return false;
     c->state.result = c->item_state.result;
@@ -404,7 +407,7 @@ static mc_singleplayer_use_status admission(mc_singleplayer_use_error *out,
 static mc_singleplayer_use_status
 begin(mc_client_singleplayer_controller *controller, mc_entity *player, mc_world_runtime *world,
       mc_item_stack *stack, bool block, int32_t x, int32_t y, int32_t z, int32_t face,
-      const mc_world_block_activation_context *context, mc_singleplayer_use_call **out,
+      const mc_singleplayer_use_context *context, mc_singleplayer_use_call **out,
       mc_singleplayer_use_error *error) {
     if (controller == NULL || out == NULL || *out != NULL ||
         controller->fields.phase != MC_SINGLEPLAYER_CONTROLLER_READY)
@@ -435,8 +438,11 @@ begin(mc_client_singleplayer_controller *controller, mc_entity *player, mc_world
                                            .active = true,
                                            .error = &c->error,
                                            .cleanup = &c->cleanup};
-    if (context != NULL)
-        c->activation_context = *context;
+    if (context != NULL) {
+        if (context->activation != NULL)
+            c->activation_context = *context->activation;
+        c->math = context->math;
+    }
     *out = c;
     controller->fields.entered = true;
     c->state.returned = block ? on_block(c) : in_air(c);
@@ -457,6 +463,14 @@ mc_singleplayer_use_status mc_client_singleplayer_use_on_block_begin(
 mc_singleplayer_use_status mc_client_singleplayer_use_on_block_with_context_begin(
     mc_client_singleplayer_controller *c, mc_entity *p, mc_world_runtime *w, mc_item_stack *s,
     int32_t x, int32_t y, int32_t z, int32_t face, const mc_world_block_activation_context *context,
+    mc_singleplayer_use_call **out, mc_singleplayer_use_error *e) {
+    const mc_singleplayer_use_context sources = {.activation = context};
+    return begin(c, p, w, s, true, x, y, z, face, &sources, out, e);
+}
+
+mc_singleplayer_use_status mc_client_singleplayer_use_on_block_with_sources_begin(
+    mc_client_singleplayer_controller *c, mc_entity *p, mc_world_runtime *w, mc_item_stack *s,
+    int32_t x, int32_t y, int32_t z, int32_t face, const mc_singleplayer_use_context *context,
     mc_singleplayer_use_call **out, mc_singleplayer_use_error *e) {
     return begin(c, p, w, s, true, x, y, z, face, context, out, e);
 }

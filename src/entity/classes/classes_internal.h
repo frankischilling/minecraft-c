@@ -5,6 +5,7 @@
 #include "mc/entity/classes/classes.h"
 #include "mc/entity/hit_result.h"
 #include "mc/entity/particles/origin.h"
+#include "mc/entity/player/sleep.h"
 
 struct mc_minecart_shape_array;
 struct mc_entity_vector;
@@ -64,6 +65,9 @@ struct mc_entity_classes {
     mc_entity_class_phase hit_kind_phase;
     struct mc_entity_hit_kind_state *hit_kinds;
     mc_entity_hit_kind_error hit_kind_failure;
+    mc_entity_class_phase sleep_result_phase;
+    struct mc_player_sleep_result_class *sleep_results;
+    mc_player_sleep_result_error sleep_result_failure;
     mc_entity_type_map *types;
     mc_entity_class_literal literals[MC_ENTITY_CLASS_KIND_COUNT];
     mc_entity_class_phase registry_phase;

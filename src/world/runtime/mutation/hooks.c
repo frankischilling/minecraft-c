@@ -418,6 +418,8 @@ bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *b
         case MC_BLOCK_NOTE_BLOCK:
             return unavailable(world, block, "pt", "jr", "Block neighbor hook", error);
         case MC_BLOCK_BED:
+            if (block->classes->options.side == MC_REGISTRY_CLIENT)
+                return mc_world_mutation_bed_neighbor(world, block, x, y, z, source_id, error);
             return unavailable(world, block, "ve", "nj", "Block neighbor hook", error);
         case MC_BLOCK_PISTON_BASE:
             return unavailable(world, block, "jq", "gi", "Block neighbor hook", error);

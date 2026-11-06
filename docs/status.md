@@ -1,5 +1,35 @@
 # Development status
 
+The current increment implements [Item355 placement](item/bed-use.md),
+[Bed neighbor/daytime activation](world/bed-interaction.md) and genuine
+[Player sleep rejection/CW objects](entity/player-sleep.md). Original packets
+cover 72, 85 and 48 component profiles respectively. The first 12/13 selections
+expose a concrete-Player cast bug; corrected World replay passes on both hosts,
+including 2,569 original comparisons and 4,834 native checks. Five headless
+cases pass. The first visible Windows placement opportunity fails during
+loading while Remote Desktop holds focus, before any Bed action. The retained
+[test record](testing.md#bed-placement-and-daytime-interaction) separates those
+scopes. Successful nighttime sleep and waking remain unfinished.
+
+The [World reference reader](performance/reference-readers.md) preserves all
+1,167 corruption controls while avoiding repeated original-packet validation.
+Twelve fresh processes show 66.95295%/64.83001% lower median reader CPU on
+Windows/WSL. This supplies no gameplay FPS or whole-CI improvement claim.
+
+The broader public selection passes Windows 763/763. Linux retains one
+180-second Python storage-guard timeout at 748/749; all new Bed cases pass.
+A measured catalog change preserves every protected input and guard while
+removing repeated directory walks. Its registered storage follow-up passes on
+Windows in 10.08 seconds and Linux in 124.95 seconds, including a passing
+three-case Linux cohort. Those results remain separate from the failed full
+run in [testing](testing.md#broader-public-suite-and-storage-source-catalog).
+
+Hosted [run 42167936398](https://github.com/frankischilling/minecraft-c/actions/runs/42167936398)
+passes exact preceding checkpoint `0f706d1`: Windows 699/699, GCC and Clang
+757/757, plus formatting. All four checkout trees equal the pushed source;
+every old test name remains and no registered case is skipped. That evidence
+qualifies the saved-Bed/chat code below, before the current placement work.
+
 [Saved-Bed respawn](world/bed-spawn.md) now validates the current Bed, retains
 the saved-coordinate identity through callbacks and copies it into the new
 Player before exact exit placement. A missing Bed shows the actual translated
@@ -18,7 +48,7 @@ Bed-render assertion and Linux storage watchdog are followed by two passing
 corrected cases per host. Storage fixture construction reuses its byte map,
 with identical outputs and a 98.519% lower median in its fixed CPU workload.
 The full-run failures remain recorded separately from those follow-ups.
-Bed use/sleeping, Nether transitions, full original World restart, Linux loaded
+Successful sleep/wake, Nether transitions, full original World restart, Linux loaded
 play and sustained FPS remain unfinished or unqualified.
 
 The exact `148379ff` local selection passes 14/14 on Linux and 15/16 on

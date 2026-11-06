@@ -46,6 +46,16 @@ typedef struct mc_client_gui_ingame_chat_state {
 mc_client_gui_ingame_chat_status mc_client_gui_ingame_chat_translate_begin(
     mc_client_source_uq *, mc_registry_classes *, const mc_player_string *nullable_key,
     mc_client_gui_ingame_chat_call **out, mc_client_gui_ingame_chat_error *);
+/* Same UQ.c body with an actual Registry code literal. A nonnull key must be
+ * a member of key_owner's typed literal pool; its real namespace occurrence is
+ * held independently of the UQ/NH namespace, including on same-owner calls.
+ * No String copying or content-based owner substitution occurs. A null source
+ * key needs no key owner and still reaches NH active use before lookup-null6.
+ * Malformed/foreign nonnull keys fail natively before any String payload read. */
+mc_client_gui_ingame_chat_status mc_client_gui_ingame_chat_translate_registry_begin(
+    mc_client_source_uq *, mc_registry_classes *translation_owner, mc_registry_classes *key_owner,
+    const mc_registry_string *nullable_key, mc_client_gui_ingame_chat_call **out,
+    mc_client_gui_ingame_chat_error *);
 /* Actual UQ.a(String), including null text, width320 UTF16 splitting, recursive
  * prefix insertion, front insertion and cap50. Native work is bounded to16Mi
  * measured units and64 nested prefixes; limits preserve all reached effects. */

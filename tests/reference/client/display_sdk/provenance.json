@@ -614,8 +614,8 @@
       "sha256": "656258a3fea4374ffe08691fbdea9203c34c6ab7d1788b8845fe822c3ada0b3f"
     },
     "include/mc/world/runtime/mutations.h": {
-      "bytes": 10310,
-      "sha256": "17bb23b4a2b39684e7a1d47a6f2b60ae55c29a0ab19e31bc6ed9daec6ec14857"
+      "bytes": 10336,
+      "sha256": "6f613c132aaffe45675b36c7ff206b91dc06eb0a668a0afe58b8b3a2f08f92b8"
     },
     "include/mc/world/runtime/plants.h": {
       "bytes": 3817,
@@ -754,8 +754,8 @@
       "sha256": "367c128628c6c258560befcae39359c882af97ce9bf3abfd14b0316ff7f83a68"
     },
     "src/block/registry/runtime_internal.h": {
-      "bytes": 11452,
-      "sha256": "9b0ec9f9df76aafead017c1368e32f15c3c20def6f5d93045014d6454ab81fae"
+      "bytes": 11787,
+      "sha256": "8674982bac81ad53da87bcfcc95b5cd8c46379d473fb793669cd73d12e9bef73"
     },
     "src/client/achievements/description_registry.h": {
       "bytes": 2378,
@@ -1590,8 +1590,8 @@
       "sha256": "4b359c0853772300305bb9237cea7dd059cdd44bb5604410a467864d946bc8f5"
     },
     "src/entity/classes/classes_internal.h": {
-      "bytes": 3220,
-      "sha256": "22e9ae3c1a618c3cc785e41fa9a3b1bf3394835a6ca94583491a636715602d26"
+      "bytes": 3413,
+      "sha256": "df82a84481ba16f4e4d47d6409140a4b6a70ec11d9794e0c8481d3987649e09e"
     },
     "src/entity/construction_internal.h": {
       "bytes": 4636,
@@ -2998,12 +2998,12 @@
       "sha256": "e6a2a5c24e712a61178ec29dc2bca195e24a96d15b89608279f92f07a909813b"
     },
     "src/client/runtime/gameplay_input.c": {
-      "bytes": 36623,
-      "sha256": "a3988929fb17402c27133ddaccfcd3880acd5bdd5f165d4475c89b112e79692f"
+      "bytes": 39149,
+      "sha256": "b827429700c32236d2fcdea8a74b517f6920e369f87c057ca4479d234bf5c8e4"
     },
     "src/client/runtime/gameplay_input.h": {
-      "bytes": 4175,
-      "sha256": "889aa4536fa6fcb600434a1243d8087b10f6eb94612077180fe4110658fd5c55"
+      "bytes": 4436,
+      "sha256": "2252e1178fc7acd2113e18afbc235bddd3d64be203a8cdac83d119bac6fbfe06"
     },
     "src/client/settings/source_input.h": {
       "bytes": 2441,
@@ -3386,8 +3386,8 @@
       "sha256": "476af52bb256f13e8fe9a066459b20fafd5ffec8d84803019ee64572ee66448a"
     },
     "src/world/runtime/mutation/mutation_internal.h": {
-      "bytes": 19132,
-      "sha256": "70a0c6b2a6d8c8d6eb25da0adf5fbf527b9261b80a3a7cbbb9822ae24dbf7623"
+      "bytes": 19306,
+      "sha256": "1a7fdd98ee17ee05aec943a1c8287ff7309571eda66da720d9c826bb1d92a39d"
     },
     "src/world/runtime/world_tick.c": {
       "bytes": 53770,
@@ -6146,28 +6146,28 @@
       "sha256": "7d1b497857160ce1f26a008726b995f062b78c5714044b7657b3c22b7c4304ff"
     },
     "include/mc/client/controller/use.h": {
-      "bytes": 4714,
-      "sha256": "5cd60b136d4a9862e9a5f6b6f64699d689c03b084a6d06d042d9ccba40da4ba6"
+      "bytes": 5546,
+      "sha256": "94d8caa313f4c64901976ca2bcba1005fb96b72745d31a64075961acdfe98c94"
     },
     "include/mc/item/use/use.h": {
-      "bytes": 5688,
-      "sha256": "068ea250c4d1732c31ff6d23f433e587255e01267883e5a3a07f5782b82d3572"
+      "bytes": 6861,
+      "sha256": "db0f541bfa8fdeb66cf854c59ae767cc77a214d2a4616db8aa2031160666bb17"
     },
     "include/mc/world/runtime/placement.h": {
-      "bytes": 7375,
-      "sha256": "4a833aa4084d405ef414afcbcc9e22924844853e02911f8ecd94e092108c0e8e"
+      "bytes": 8916,
+      "sha256": "8dbc94360080064c6ca22707e551743b0f0d274e0f5b4854421ec9f0b4d08b13"
     },
     "src/client/controller/use.c": {
-      "bytes": 24246,
-      "sha256": "bf372e5a0f28cf596f3aa7ab7b1cbe84f34242c135f4b493f870314378425829"
+      "bytes": 24923,
+      "sha256": "d7a73ee151096aaaf5384997fbfac57af836c2eea81dc03a0e7064282ca365d5"
     },
     "src/item/use/use.c": {
-      "bytes": 50649,
-      "sha256": "6a38c3bd726176487b7c756f5e286f159e11b970c8c6e4474b091bbd70ceded3"
+      "bytes": 53423,
+      "sha256": "5ac33dedb473b08ed55de55a94c804d83394d927500c3cce7f621d5736a5be51"
     },
     "src/world/runtime/placement.c": {
-      "bytes": 42838,
-      "sha256": "8387b34e219133ec6a2f7095971e3e264c3f6a822366939670eb01e2e7d18943"
+      "bytes": 44137,
+      "sha256": "f06eb58d72986b57dcc5716b1c20ddfac1fe888f907fe745c3b4eef3573b78e2"
     },
     "tests/client/controller/test_use.c": {
       "bytes": 10069,
@@ -8150,8 +8150,8 @@
       "sha256": "e0170ea87f2ac80048ebaec09ed5d9019807ab31022778f79733edeba39f5736"
     },
     "scripts/development/format_code.py": {
-      "bytes": 6823,
-      "sha256": "098ee3a24bd579e15a2d41adcaefeb0f364ab6a13826169f453b7f61e31d072e"
+      "bytes": 6920,
+      "sha256": "c3ad0c830789772c35dc95e72618bfdc9a82e333a3aaae516ef540336f52d235"
     },
     "src/client/gui/gui_main_menu.c": {
       "bytes": 24743,
@@ -8330,20 +8330,20 @@
       "sha256": "827850cc8ba9d92b019b203069c85fd618b70de7f9fa706c04ad24d4d1e29326"
     },
     "src/block/registry/registry.c": {
-      "bytes": 31001,
-      "sha256": "d118a75a3a902f043a1c633258edae71625351a63171e8d3be4a0a09e965b51d"
+      "bytes": 31393,
+      "sha256": "e34a1128384433aa4c7040040f414a05ba37e899380d2597cf56518ccebab7fd"
     },
     "src/block/registry/runtime.c": {
       "bytes": 28109,
       "sha256": "98e6188ecd3306cdd744a1f108eac22887d10583156662159b0986f38b2c9a71"
     },
     "src/client/gui/gui_ingame_chat.c": {
-      "bytes": 20483,
-      "sha256": "8e49665f5c28f4eebf200e72a3af56ee3e45cb902e6e9af893d21816bd1b21d3"
+      "bytes": 22354,
+      "sha256": "af49a3458dabf46d4c7c9b6c0f9f4da8c7eccc8155b87989241c140b4e0d0eea"
     },
     "src/client/gui/gui_ingame_chat.h": {
-      "bytes": 3005,
-      "sha256": "488aced18e716b14f7d08a192f1b2a7450f65c3b594faa5aeb3dd7b2395d369f"
+      "bytes": 3787,
+      "sha256": "a7e3150f619d8c626d4de24e2d8751b95066227d71a7cdc451401d3ff0b65d50"
     },
     "src/client/gui/gui_ingame_chat_draw.inc": {
       "bytes": 6799,
@@ -8382,12 +8382,12 @@
       "sha256": "643a5aff86cfecf4d4158f28174146b534adb2c1c4e67881a40c5d96c3c15faa"
     },
     "tests/client/gui/test_gui_ingame_chat.c": {
-      "bytes": 15059,
-      "sha256": "34e8fd0c85434cb0833fa5e9ddcfebfcc74927e1121bb75606ee75670b00dc48"
+      "bytes": 19028,
+      "sha256": "0a507a6cfe08e7e92f9df83a1f5c5fe7aea27d90b5887cd09a7d45afa70570b5"
     },
     "tests/client/gui/test_gui_ingame_chat_cpu.c": {
-      "bytes": 9160,
-      "sha256": "302526f1a3b415a81fc8db9607ebe91accadca32848b17cdfaa31ec920418593"
+      "bytes": 16336,
+      "sha256": "9f51e40af5561eec5186e7e01362604b577674f20232bd0c8f367c9c8c89a5f6"
     },
     "tests/client/render/test_bed_world.c": {
       "bytes": 10584,
@@ -8484,6 +8484,154 @@
     "tests/world/runtime/test_bed_spawn.c": {
       "bytes": 22363,
       "sha256": "6edc9565fd35e7f2a985aaa8f3104e5c9226587181ea30cf4ff5cde1ecb485e6"
+    },
+    "cmake/client_bed_interaction.cmake": {
+      "bytes": 6390,
+      "sha256": "15cccffb73a26af008f603dfe8074781ceb03cc9ea93f59dfb0c3f6f592ed07e"
+    },
+    "include/mc/entity/player/sleep.h": {
+      "bytes": 4127,
+      "sha256": "06eb65965846f16d160858a7a257e580ba09cf066987960bc546c36ffac50e9e"
+    },
+    "scripts/reference/storage/compare_world_storage.py": {
+      "bytes": 100706,
+      "sha256": "3755c3c154535f1fb18435e42ef789a0521b1134a32735532253a6c895430131"
+    },
+    "src/client/entity/player_message.c": {
+      "bytes": 8183,
+      "sha256": "e2161f0db6e14aa9bd1837c5012d4582fa8ad2ac35590727895bfe236ddf62e5"
+    },
+    "src/client/entity/player_message.h": {
+      "bytes": 2475,
+      "sha256": "2c9b0fce15f44e52734290717b76ffe410f1e90b7bd17485d08dbfd5b0e27792"
+    },
+    "src/entity/classes/classes.c": {
+      "bytes": 14019,
+      "sha256": "3fab4fbbc6995fd85db93e86be5bb5f17c7499a97d6acda39c2e65dec3305556"
+    },
+    "src/entity/player/sleep.c": {
+      "bytes": 6987,
+      "sha256": "c4d01bed4d5e861ee18c18cb9389aaf8cd62f8e43887b98b7d442c9687818760"
+    },
+    "src/entity/player/sleep_internal.h": {
+      "bytes": 852,
+      "sha256": "c94967b7907395cf4035357b58d1edfe8fcd36f0ac7aa27bb217339ab0c58cba"
+    },
+    "src/entity/player/sleep_result.c": {
+      "bytes": 8019,
+      "sha256": "a61dada4bd9434e72317e67d313aef1c0136df0aa2987ecac04b787490e9a97f"
+    },
+    "src/item/use/bed.inc": {
+      "bytes": 8108,
+      "sha256": "217cd618f01c2859e976b50635c89ffe4eda3d2eae1a9f8dd6bb163bae197425"
+    },
+    "src/item/use/bed_internal.h": {
+      "bytes": 842,
+      "sha256": "2946206e5ba383bdebff3f3e25f0fc2250cc3b0172dd6e0c6cb5d920ae26a721"
+    },
+    "src/world/runtime/lighting.c": {
+      "bytes": 18782,
+      "sha256": "641bd27981029f5221a28c9cb45c2f1d1430ac6f47f4529ae45783f569c35ad7"
+    },
+    "src/world/runtime/lighting_internal.h": {
+      "bytes": 980,
+      "sha256": "66e118b47a7754e73632fc5b210733dfa8410502b3032484ffddac9e539f4bc7"
+    },
+    "src/world/runtime/mutation/bed.c": {
+      "bytes": 5911,
+      "sha256": "7aaf32108145ef910d338a8087f777290376b89c7211be71a79f4b0087350fb2"
+    },
+    "src/world/runtime/mutation/hooks.c": {
+      "bytes": 22505,
+      "sha256": "01b05d4f99e999665482afae0dc398ee7b6186a4e6837f8124d482c4aa2d398f"
+    },
+    "src/world/runtime/placement/bed.inc": {
+      "bytes": 21072,
+      "sha256": "37a1836f99b4137c6d1c88fd0c437061df26e35dd97700829dab7266c5182995"
+    },
+    "tests/client/gameplay/test_bed_placement.c": {
+      "bytes": 21561,
+      "sha256": "ceeec26535d724302fa1689762c96d7c9d81ceddafbcf3e3fbd37db79175f67c"
+    },
+    "tests/entity/player/test_sleep.c": {
+      "bytes": 23569,
+      "sha256": "f83b6bec6db89b6804279fa1b8719253b1f47efe007da573a8321fa2c28a44c7"
+    },
+    "tests/item/use/bed_reference.c": {
+      "bytes": 25033,
+      "sha256": "200fa3381f96d1535c8527ff1c1448e0b42bfaac426992451e1db4b94f911836"
+    },
+    "tests/reference/entity/player_sleep/capture_reference.py": {
+      "bytes": 6782,
+      "sha256": "f945363885a02373adf20a1bfa657aac72dd87dad1dd124cf5e89fe8dab9acb6"
+    },
+    "tests/reference/entity/player_sleep/packet.py": {
+      "bytes": 10633,
+      "sha256": "576728b6adc78289d77767594522e60e050f10e88adde92851e352fdebcdc534"
+    },
+    "tests/reference/entity/player_sleep/prepare.py": {
+      "bytes": 5589,
+      "sha256": "907c4a3ec8476197c622fcf7138127ebe73961cfa9020301153999720f76ce25"
+    },
+    "tests/reference/entity/player_sleep/test_packet.py": {
+      "bytes": 5904,
+      "sha256": "7845e0129361d75eda5388009cda219365cd853313db6a2c722db0985ef516c5"
+    },
+    "tests/reference/entity/player_sleep/validate.py": {
+      "bytes": 13517,
+      "sha256": "4751705ad1be24d11ae40632c9a27b5803dc0fccb46a542ebdca77f2850976c8"
+    },
+    "tests/reference/item/bed_use/capture.py": {
+      "bytes": 8845,
+      "sha256": "f6016e22acf0f8d64052676562c9c5747c5cdd3d5d2930e12a6de199317c7721"
+    },
+    "tests/reference/item/bed_use/packet.py": {
+      "bytes": 17433,
+      "sha256": "aa5a156cf194a4afb3f08cf4062e503b94ef7acaa99029db93cdaf9db11acc61"
+    },
+    "tests/reference/item/bed_use/prepare_inputs.py": {
+      "bytes": 4879,
+      "sha256": "9bd362b06bfd764f2d3364c30edbb945bb0b54dc29cdd6368f03f37137a3ac50"
+    },
+    "tests/reference/item/bed_use/test_packet.py": {
+      "bytes": 10324,
+      "sha256": "a932797ed782f17636dcfd70f1c606b72a340de93b34d6c59b85ed4412c583f7"
+    },
+    "tests/reference/world/bed_interaction/capture_reference.py": {
+      "bytes": 8092,
+      "sha256": "1e8780c1f2b34d2fcda2ef49c726fa22694fe39d789632b5fd872d141231f5b2"
+    },
+    "tests/reference/world/bed_interaction/run_native.py": {
+      "bytes": 9359,
+      "sha256": "bac70c2b42619463642d792c7e156625349023fa6d59b36ccfb3c3b0bf4a3717"
+    },
+    "tests/reference/world/bed_interaction/test_packet.py": {
+      "bytes": 7599,
+      "sha256": "46612d3664f5ee0a6d021197b60ea7de3c70f1266f5a427d45510f8745593138"
+    },
+    "tests/reference/world/bed_interaction/validate.py": {
+      "bytes": 23306,
+      "sha256": "d3c32d41d40135d9ed849084e35c7199bdb7cb597957eece2f9f4cc3b8d3a54e"
+    },
+    "tests/tools/client/test_bed_placement.py": {
+      "bytes": 16579,
+      "sha256": "9ef7caeb24776d2947dea500f556f37883ceb5f4323b31c570a5191719953625"
+    },
+    "tests/tools/entity/test_player_sleep.py": {
+      "bytes": 11271,
+      "sha256": "941f2331074c7f9b3ea7f35f5456e931c9d6718c95632c5bce826cb13d49b2c1"
+    },
+    "tests/tools/item/test_bed_use.py": {
+      "bytes": 8719,
+      "sha256": "596a3d78446c49a5b4df562a6c36c9905e7f692d2a638e8a02a3624ac5008580"
+    },
+    "tests/tools/world/test_bed_interaction.py": {
+      "bytes": 496,
+      "sha256": "fee23e27371d3db56a158d35dcb4fe0123872c3c960cd6e4e3b1d6a2772ebb26"
+    },
+    "tests/world/runtime/test_bed_interaction.c": {
+      "bytes": 39087,
+      "sha256": "6f939eff36560894416b0ce0883ddf5de211754c378c96101bec9bb8825e5d8c"
     }
   },
   "authorities": {
@@ -12947,6 +13095,132 @@
           },
           "added": [],
           "current_count": 2121
+        }
+      }
+    },
+    {
+      "from_commit": "0f706d1bf8543b46cf1216489c983222c84864c5",
+      "role": "Current Item355 placement, Bed neighbor/daytime activation, genuine CW and Player sleep-prefix owners, Registry-key chat and client message joins. Reference-reader and complete storage input-catalog guard performance changes. This entry binds current inputs only; earlier original and native observations, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 538534,
+        "sha256": "3b67a2d36fcb88883a4ba8b49fd789fb33d474b9168a7fd2f824a42596aeeb8d"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "include/mc/world/runtime/mutations.h": {
+              "bytes": 10310,
+              "sha256": "17bb23b4a2b39684e7a1d47a6f2b60ae55c29a0ab19e31bc6ed9daec6ec14857"
+            },
+            "src/block/registry/runtime_internal.h": {
+              "bytes": 11452,
+              "sha256": "9b0ec9f9df76aafead017c1368e32f15c3c20def6f5d93045014d6454ab81fae"
+            },
+            "src/entity/classes/classes_internal.h": {
+              "bytes": 3220,
+              "sha256": "22e9ae3c1a618c3cc785e41fa9a3b1bf3394835a6ca94583491a636715602d26"
+            },
+            "src/client/runtime/gameplay_input.c": {
+              "bytes": 36623,
+              "sha256": "a3988929fb17402c27133ddaccfcd3880acd5bdd5f165d4475c89b112e79692f"
+            },
+            "src/client/runtime/gameplay_input.h": {
+              "bytes": 4175,
+              "sha256": "889aa4536fa6fcb600434a1243d8087b10f6eb94612077180fe4110658fd5c55"
+            },
+            "src/world/runtime/mutation/mutation_internal.h": {
+              "bytes": 19132,
+              "sha256": "70a0c6b2a6d8c8d6eb25da0adf5fbf527b9261b80a3a7cbbb9822ae24dbf7623"
+            },
+            "include/mc/client/controller/use.h": {
+              "bytes": 4714,
+              "sha256": "5cd60b136d4a9862e9a5f6b6f64699d689c03b084a6d06d042d9ccba40da4ba6"
+            },
+            "include/mc/item/use/use.h": {
+              "bytes": 5688,
+              "sha256": "068ea250c4d1732c31ff6d23f433e587255e01267883e5a3a07f5782b82d3572"
+            },
+            "include/mc/world/runtime/placement.h": {
+              "bytes": 7375,
+              "sha256": "4a833aa4084d405ef414afcbcc9e22924844853e02911f8ecd94e092108c0e8e"
+            },
+            "src/client/controller/use.c": {
+              "bytes": 24246,
+              "sha256": "bf372e5a0f28cf596f3aa7ab7b1cbe84f34242c135f4b493f870314378425829"
+            },
+            "src/item/use/use.c": {
+              "bytes": 50649,
+              "sha256": "6a38c3bd726176487b7c756f5e286f159e11b970c8c6e4474b091bbd70ceded3"
+            },
+            "src/world/runtime/placement.c": {
+              "bytes": 42838,
+              "sha256": "8387b34e219133ec6a2f7095971e3e264c3f6a822366939670eb01e2e7d18943"
+            },
+            "scripts/development/format_code.py": {
+              "bytes": 6823,
+              "sha256": "098ee3a24bd579e15a2d41adcaefeb0f364ab6a13826169f453b7f61e31d072e"
+            },
+            "src/block/registry/registry.c": {
+              "bytes": 31001,
+              "sha256": "d118a75a3a902f043a1c633258edae71625351a63171e8d3be4a0a09e965b51d"
+            },
+            "src/client/gui/gui_ingame_chat.c": {
+              "bytes": 20483,
+              "sha256": "8e49665f5c28f4eebf200e72a3af56ee3e45cb902e6e9af893d21816bd1b21d3"
+            },
+            "src/client/gui/gui_ingame_chat.h": {
+              "bytes": 3005,
+              "sha256": "488aced18e716b14f7d08a192f1b2a7450f65c3b594faa5aeb3dd7b2395d369f"
+            },
+            "tests/client/gui/test_gui_ingame_chat.c": {
+              "bytes": 15059,
+              "sha256": "34e8fd0c85434cb0833fa5e9ddcfebfcc74927e1121bb75606ee75670b00dc48"
+            },
+            "tests/client/gui/test_gui_ingame_chat_cpu.c": {
+              "bytes": 9160,
+              "sha256": "302526f1a3b415a81fc8db9607ebe91accadca32848b17cdfaa31ec920418593"
+            }
+          },
+          "added": [
+            "cmake/client_bed_interaction.cmake",
+            "include/mc/entity/player/sleep.h",
+            "scripts/reference/storage/compare_world_storage.py",
+            "src/client/entity/player_message.c",
+            "src/client/entity/player_message.h",
+            "src/entity/classes/classes.c",
+            "src/entity/player/sleep.c",
+            "src/entity/player/sleep_internal.h",
+            "src/entity/player/sleep_result.c",
+            "src/item/use/bed.inc",
+            "src/item/use/bed_internal.h",
+            "src/world/runtime/lighting.c",
+            "src/world/runtime/lighting_internal.h",
+            "src/world/runtime/mutation/bed.c",
+            "src/world/runtime/mutation/hooks.c",
+            "src/world/runtime/placement/bed.inc",
+            "tests/client/gameplay/test_bed_placement.c",
+            "tests/entity/player/test_sleep.c",
+            "tests/item/use/bed_reference.c",
+            "tests/reference/entity/player_sleep/capture_reference.py",
+            "tests/reference/entity/player_sleep/packet.py",
+            "tests/reference/entity/player_sleep/prepare.py",
+            "tests/reference/entity/player_sleep/test_packet.py",
+            "tests/reference/entity/player_sleep/validate.py",
+            "tests/reference/item/bed_use/capture.py",
+            "tests/reference/item/bed_use/packet.py",
+            "tests/reference/item/bed_use/prepare_inputs.py",
+            "tests/reference/item/bed_use/test_packet.py",
+            "tests/reference/world/bed_interaction/capture_reference.py",
+            "tests/reference/world/bed_interaction/run_native.py",
+            "tests/reference/world/bed_interaction/test_packet.py",
+            "tests/reference/world/bed_interaction/validate.py",
+            "tests/tools/client/test_bed_placement.py",
+            "tests/tools/entity/test_player_sleep.py",
+            "tests/tools/item/test_bed_use.py",
+            "tests/tools/world/test_bed_interaction.py",
+            "tests/world/runtime/test_bed_interaction.c"
+          ],
+          "current_count": 2158
         }
       }
     }

@@ -2,11 +2,15 @@
 
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
+#include "../../entity/entity_internal.h"
+#include "../../entity/player/nbt_internal.h"
 #include "../../item/render/internal.h"
 #include "block_queries_internal.h"
 #include "collision/blocks_internal.h"
 #include "construction_internal.h"
+#include "entity_publication_internal.h"
 #include "mc/core/java/java.h"
+#include "mc/entity/player/sleep.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/collision/spawning.h"
 #include "mc/world/runtime/mutations.h"
@@ -18,8 +22,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <xmmintrin.h>
 
-enum { PLACEMENT_RECEIPTS = 16, PLACEMENT_SOURCES = 4, PLACEMENT_QUERIES = 3 };
+enum { PLACEMENT_RECEIPTS = 16, PLACEMENT_SOURCES = 4, PLACEMENT_QUERIES = 8 };
 
 struct mc_world_placement_work {
     mc_world_runtime *world;
@@ -31,6 +36,13 @@ struct mc_world_placement_work {
     mc_world_mutation_error *mutation;
     mc_world_collision_error *collision;
     mc_world_spawn_collision_error *entities;
+    mc_entity *bed_player;
+    mc_world_runtime *bed_player_world;
+    mc_entity_classes *bed_enum_owner;
+    mc_player_sleep_error *sleep;
+    mc_player_error *bed_occupant;
+    mc_player_sleep_result_error *sleep_result;
+    mc_world_provider_error provider;
     mc_world_source_chunk_error *sources[PLACEMENT_SOURCES];
     const mc_world_source_chunk_error *source_identities[PLACEMENT_SOURCES];
     mc_world_access_failure receipts[PLACEMENT_RECEIPTS];
@@ -400,6 +412,7 @@ static bool torch_predicate(mc_world_placement_error *e, mc_world_runtime *world
     return true;
 }
 
+#include "placement/bed.inc"
 #include "placement/lever.inc"
 
 static const char *activation_class(mc_block_kind kind) {
@@ -908,6 +921,10 @@ mc_world_storage_status mc_world_block_activate_with_context(
         const bool returned = lever_activate(e, block, world, x, y, z);
         return finish(e, returned, returned, out);
     }
+    if (block->kind == MC_BLOCK_BED) {
+        const bool returned = bed_activate(e, block, world, x, y, z, player, context);
+        return finish(e, returned, returned, out);
+    }
     if (block->kind == MC_BLOCK_CRAFTING_TABLE) {
         e->site = site("fi", "a", "(Lfd;IIILgs;)Z", 1);
         if (!hold_world(e, world))
@@ -1065,6 +1082,15 @@ bool mc_world_placement_error_retire(mc_world_placement_error *e) {
         w->box = NULL;
         e->box = NULL;
     }
+    if (w->bed_enum_owner != NULL) {
+        e->cleanup_enum_classes = mc_entity_classes_release(w->bed_enum_owner);
+        if (e->cleanup_enum_classes != MC_ENTITY_OK) {
+            e->cleanup = (mc_world_storage_error){MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                                  "Bed caller CW namespace retirement", 0};
+            return false;
+        }
+        w->bed_enum_owner = NULL;
+    }
     if (w->registry != NULL) {
         const mc_registry_status status =
             mc_registry_classes_release(w->registry, &e->cleanup_registry);
@@ -1087,6 +1113,12 @@ bool mc_world_placement_error_retire(mc_world_placement_error *e) {
     free(w->mutation);
     free(w->collision);
     free(w->entities);
+    free(w->sleep);
+    free(w->bed_occupant);
+    free(w->sleep_result);
+    mc_entity_release(w->bed_player);
+    if (w->bed_player_world != NULL)
+        mc_world_runtime_binding_release(w->bed_player_world);
     if (w->world != NULL)
         mc_world_runtime_binding_release(w->world);
     free(w);

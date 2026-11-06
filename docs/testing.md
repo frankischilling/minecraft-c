@@ -1,5 +1,116 @@
 # Test scope and reproduction
 
+## Bed placement and daytime interaction
+
+The new [Item355 body](item/bed-use.md), [World Bed paths](world/bed-interaction.md)
+and [GS/CW prefix](entity/player-sleep.md) have separate original packets:
+72 direct LP calls, 85 World profiles and 48 sleep-prefix profiles. The World
+comparison ends at an authored Player/message adapter; the real DC/App/UQ
+join has separate client controls. Night success stops before resize119 and
+Nether activation stops at explosion256 after its reached removals.
+
+The first thirteen-case selections pass 12/13 on both hosts: Windows takes
+50.56 seconds, sanitized Linux 76.78 seconds. Item355, GS/CW, packet readers
+and the expanded real Font/chat controls pass. The World failure exposes an
+actual production cast bug at VE301: an exact abstract-Player identity check
+rejects a genuine concrete DC in the occupied-head Player List. The fix uses
+the code Registry's actual Player Class assignability. Authored controls
+cover a genuine DC and a true non-Player ClassCastException after its earlier
+sleeping predicate. Both hosts rebuild the corrected World target and client.
+
+The failed replay also exposes a driver-output defect: a buffered JSON row
+overlaps subsequent genuine achievement/recipe initializer output. The driver
+now completes source getters, emits and flushes the entire row, then performs
+cleanup and begins the next source call. Original initializer output remains
+visible. Neither original rows nor comparison fields change. Corrected World
+replay passes in 1.49 Windows CTest seconds and 3.88 seconds on sanitized
+Linux: 85 profiles, 2,569 comparisons and 4,834 native checks.
+
+A fresh client-disabled, audio-disabled headless build passes all five selected
+cases in 19.46 seconds: Item355, World Bed interaction, GS/CW and both authored
+scene-input controls. Dependency inspection finds no SDL, OpenGL, OpenAL,
+ALSA, PulseAudio or FreeType library in its four inspected executables.
+This is component and dependency evidence, not dedicated-server qualification.
+
+The first visible Windows placement scene remains failed. On monitor 2 it
+stops during loading, before placement, at the native focus guard. Remote
+Desktop (`msrdc.exe`, `TscShellContainerClass`) holds foreground focus and SDL
+has no keyboard focus. Its two pure input-fixture controls pass in 0.30/0.53
+seconds; the scene fails in 6.41 seconds, leaving the three-case selection
+failed at 2/3 in 6.45 seconds. The process, saves and focus receipts are retained.
+No Bed action, loaded notice, save/readback or terminal-cleanup success is
+claimed for this opportunity. Computer Use also reports its native pipe
+unavailable. No focus forcing, Timer repair or blind retry follows this failure.
+All 5,473 public files stay unchanged across these runtime selections.
+
+Public Item and GS replay now read canonical observations and selected journals.
+Thirty raw attempt/process files, 2,389,277 bytes, were moved to a new private
+archive with exact before/after hashes. The 72 Item rows, all 1,438 selected
+events, 48 GS prefixes and 13 separately uncredited later completions remain
+unchanged. Thin provenance retains actual historical producer/helper identities
+and all 98 JDK/SDK fingerprints under logical relative names. Fixed map digests
+reject substitution of revised writer hashes for historical producers. Native
+replay needs no private capture directory. Normal and optimized Python pass
+Item's nine control groups, GS's 668 corruption controls and its 67 native-reader
+controls; ten local reproduction-output guards also pass in both modes.
+
+The [reader CPU comparison](performance/reference-readers.md) keeps all 1,167
+World corruption controls and 2,569 projection values. Twelve fresh processes
+preserve exact output and input hashes. Normal-reader median CPU is 66.95295%
+lower on Windows and 64.83001% lower on WSL. This is test-reader performance;
+no native, whole-CI or FPS gain follows from it. A strict local MSVC 14.51 Debug
+compile of all nineteen changed C units passes `/Od /RTC1 /MDd /Z7 /W4 /WX
+/fp:strict`; the complete native builds and broader suite retain separate scope.
+
+### Broader public suite and storage source catalog
+
+Both complete native builds pass. The Windows public selection passes 763/763
+in 353.88 seconds, with no skipped tests and 24 visible windows placed on
+monitor 2. Sanitized Linux completes 748/749 in 955.85 seconds, with no skips;
+the sole failure is `tools.world_storage_reference` at its unchanged
+180.01-second watchdog. All new Bed cases pass. Every preceding registered
+name remains: Windows retains 770 and adds fourteen; Linux retains 748 and
+adds thirteen. The Windows addition includes the separate local Bed scene.
+All 5,474 public files stay unchanged across the full selections. These
+results precede the catalog change below; the failed full Linux run remains
+failed.
+
+The storage case is 76 Java-free Python guards with native/JVM children mocked.
+An isolated diagnostic profile completes all 76 under the same 180-second
+limit: 148.15 wall seconds and 24.87 process CPU seconds. It records 63,437
+`stat` calls, 77,744 `lstat` calls and 16,758 `scandir` calls. Source-catalog
+collection alone takes 31.58 cumulative seconds across 22 invocations.
+The earlier byte-map constructor optimization remains in place; this profile
+identifies additional filesystem work.
+
+The catalog now scans each recursive root once and collects both C/header
+patterns during the same source walk. It retains matching directories, dotfiles,
+platform case rules, links and all 1,502 actual catalog entries. Both hosts
+also pass constructed link/hardlink, creation/removal and error controls.
+Enumeration errors delegate the affected root to the original `rglob`, retaining
+the host Python's error policy. Work-directory and alias validation, source
+copying, all 76 existing guards and the 180-second watchdog are unchanged.
+
+The final diagnostic profile completes all 76 again: 134.81 wall seconds and
+24.37 CPU seconds. `scandir` calls fall to 6,374 and source-catalog cumulative
+time to 15.61 seconds; its invocation count remains 22. These instrumented
+profiles locate work and establish no whole-suite speedup percentage. Actual
+registered acceptance of the changed catalog is recorded separately.
+
+Registered follow-up passes the storage case on Windows in 10.08 CTest
+seconds, 10.12 seconds for its one-case selection. Linux runs it beside the
+two heavy cases that accompanied the timeout: storage passes in 124.95
+seconds, Redstone Torch replay in 76.71 and loading draw in 136.83. The trio
+passes 3/3 in 136.85 seconds with the existing leak/sanitizer checks, software
+GL and three-job schedule. All 5,474 public inputs remain unchanged. This
+corrected selection is separate from the preceding failed full Linux run;
+its deadline, source closure, aliases and original 76 assertions are intact.
+
+The current Windows chat fixtures also pass all 81 original rows, 185 CPU
+checks and 807 constructed-Font/HUD checks; the returned authored-atlas frame
+was inspected. Item355 passes 72 direct profiles and 3,764 actual-owner checks.
+These component results do not extend the failed loaded placement opportunity.
+
 ## Saved-Bed respawn, geometry and HUD messages
 
 The client now validates a saved Bed, copies the original coordinate into the
@@ -145,6 +256,16 @@ After initialization, both chat cases pass on each host: Windows CPU/replay
 take 0.93/2.37 seconds, Linux with ASan/UBSan and leak checks takes 14.26/19.92
 seconds. The 158 CPU checks, 791 native Font/HUD checks and 81 unchanged original
 rows pass. All 5,412 guarded files remain unchanged across this focused pair.
+
+Hosted [run 42167936398](https://github.com/frankischilling/minecraft-c/actions/runs/42167936398)
+qualifies exact follow-up `0f706d1bf8543b46cf1216489c983222c84864c5`: Windows
+699/699 in 385.35 CTest seconds, GCC 757/757 in 565.98 seconds and Clang
+757/757 in 305.51 seconds. Formatting checks 2,162 files. Every preceding
+registered name remains, with twelve additions on Windows and thirteen on
+each Linux compiler; none is skipped. All four jobs check out merge
+`f5ca84f9928e0a0283ceaed233f14b4f35939630`, whose tree equals source tree
+`2c5ba121d4e4d5eb2a4486a2827a8acf4b631e5b`. This hosted result applies to
+that saved-Bed/chat checkpoint, before the new Item355/daytime work.
 
 ## Player death, death screen and respawn
 

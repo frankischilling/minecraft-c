@@ -229,6 +229,12 @@ static void click_stacks_release(mc_client_gameplay_input *call) {
 }
 
 static bool retire_use(mc_client_gameplay_input *call) {
+    if (mc_client_player_message_retire(&call->message_call, &call->message_cleanup) !=
+        MC_CLIENT_PLAYER_MESSAGE_OK)
+        return false;
+    call->message_state.chat = NULL;
+    call->message_state.failure = call->message_state.cleanup = NULL;
+    call->message_error.chat = call->message_cleanup.chat = NULL;
     if (mc_client_singleplayer_use_retire(&call->use_call, &call->use_cleanup) !=
         MC_SINGLEPLAYER_USE_OK)
         return false;
@@ -274,16 +280,51 @@ static mc_world_storage_status workbench(void *context, mc_entity *player, int32
     return error->status;
 }
 
+static mc_world_storage_status player_message(void *context, mc_entity *player,
+                                              mc_registry_classes *literal_owner,
+                                              const mc_registry_string *key,
+                                              mc_world_placement_error *error) {
+    mc_client_gameplay_input *call = context;
+    ++call->player_message_calls;
+    const mc_client_player_message_status status = mc_client_player_message_begin(
+        player, literal_owner, key, &call->message_call, &call->message_error);
+    if (call->message_call != NULL)
+        (void)mc_client_player_message_inspect(call->message_call, &call->message_state);
+    if (status == MC_CLIENT_PLAYER_MESSAGE_OK) {
+        ++call->player_message_returns;
+        return MC_WORLD_STORAGE_OK;
+    }
+    const mc_client_player_message_error *message = &call->message_error;
+    error->status = status == MC_CLIENT_PLAYER_MESSAGE_BUSY    ? MC_WORLD_STORAGE_BUSY
+                    : status == MC_CLIENT_PLAYER_MESSAGE_LIMIT ? MC_WORLD_STORAGE_LIMIT
+                    : status == MC_CLIENT_PLAYER_MESSAGE_ALLOCATION_FAILED
+                        ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+                        : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+    error->operation = message->operation;
+    error->native_policy = message->native_policy;
+    error->source_exception = message->source_exception;
+    error->source_error = message->source_error;
+    error->exception_class = message->exception_class;
+    if (message->site.class_name != NULL)
+        error->site =
+            (mc_world_placement_site){message->site.class_name, message->site.method,
+                                      message->site.descriptor, (unsigned int)message->site.pc};
+    return error->status;
+}
+
 static bool use(client_application *app, mc_client_gameplay_input *call, bool on_block,
                 mc_item_stack *stack, int32_t x, int32_t y, int32_t z, int32_t face) {
     const unsigned int pc = on_block ? 239u : 350u;
     if (app->controller == NULL)
         return click_fail(call, "actual click null use controller invocation", pc);
-    const mc_world_block_activation_context activation = {.context = call, .workbench = workbench};
+    const mc_world_block_activation_context activation = {
+        .context = call, .workbench = workbench, .player_message = player_message};
+    const mc_singleplayer_use_context sources = {.activation = &activation,
+                                                 .math = app->source_math_classes};
     const mc_singleplayer_use_status status =
         on_block
-            ? mc_client_singleplayer_use_on_block_with_context_begin(
-                  app->controller, app->h, app->active_world, stack, x, y, z, face, &activation,
+            ? mc_client_singleplayer_use_on_block_with_sources_begin(
+                  app->controller, app->h, app->active_world, stack, x, y, z, face, &sources,
                   &call->use_call, &call->use_error)
             : mc_client_singleplayer_use_in_air_begin(app->controller, app->h, app->active_world,
                                                       stack, &call->use_call, &call->use_error);
@@ -306,7 +347,11 @@ static bool use(client_application *app, mc_client_gameplay_input *call, bool on
     call->stack_count_stores += call->use_state.count_stored;
     call->used_statistics += call->use_state.statistic_returned;
     if (!retire_use(call))
-        return click_fail(call, call->use_cleanup.operation, pc);
+        return click_fail(call,
+                          call->message_cleanup.status != MC_CLIENT_PLAYER_MESSAGE_OK
+                              ? call->message_cleanup.operation
+                              : call->use_cleanup.operation,
+                          pc);
     return true;
 }
 

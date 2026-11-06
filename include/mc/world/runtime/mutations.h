@@ -73,6 +73,7 @@ typedef struct mc_world_mutation_error {
     unsigned int torch_added_bytecode, torch_neighbor_bytecode, torch_tick_bytecode;
     bool torch_source_null;
     bool lever_source_null;
+    bool bed_source_null;
     /* Pressure contact/tick, private update and lifecycle calls are separate
      * source frames. Bounds and nearby retain the actual reached children. */
     unsigned int pressure_contact_bytecode, pressure_tick_bytecode, pressure_bytecode;

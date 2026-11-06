@@ -1,5 +1,41 @@
 # Build and tests
 
+The broader Bed public cohort passes Windows 763/763 in 353.88 seconds.
+Sanitized Linux retains one unchanged 180-second storage-guard timeout at
+748/749 in 955.85 seconds. No registered test is skipped, all prior names
+remain and all 5,474 public inputs stay unchanged. A subsequent one-file
+catalog change preserves all 1,502 protected entries and all 76 guards;
+diagnostic profiles reduce directory enumeration while leaving workdir/alias
+validation intact. Registered storage follow-up passes in 10.08 Windows
+seconds and 124.95 Linux seconds; the Linux three-case cohort passes 3/3
+in 136.85 seconds with unchanged inputs and watchdog. These results have
+separate scope from the failed full run in the
+[test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#broader-public-suite-and-storage-source-catalog).
+
+The [Bed placement/daytime qualification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#bed-placement-and-daytime-interaction)
+keeps the initial 12/13 component failures and the corrected World replay:
+85 original profiles, 2,569 scalar comparisons and 4,834 native checks pass
+on Windows and sanitized Linux. Five fresh headless cases pass in 19.46
+seconds. The visible placement opportunity fails focus during loading before
+any Bed action; its two Python input-fixture controls pass. All 5,473 public
+files remain unchanged across that cohort. Loaded placement, notice and
+save/readback receive no credit from the failed opportunity.
+
+Canonical portable packets retain all observations, journals, historical
+producer/helper identities and 98 JDK/SDK fingerprints; raw attempt trees
+remain private. The [reader CPU cohort](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/reference-readers.md)
+uses twelve serial fresh processes and retains every one of 1,167 controls.
+Normal-reader CPU medians are 66.95295% lower on Windows and 64.83001% lower
+on WSL. Neither native execution, whole-CI time nor FPS follows from those figures.
+
+Hosted [run 42167936398](https://github.com/frankischilling/minecraft-c/actions/runs/42167936398)
+qualifies source `0f706d1`: Windows 699/699 in 385.35 seconds, GCC 757/757
+in 565.98 seconds and Clang 757/757 in 305.51 seconds; formatting checks
+2,162 files. Every preceding test name remains, with twelve Windows and
+thirteen Linux additions, and no registered skip. All four merge-checkout
+trees equal source tree `2c5ba121`. These results precede the new Item355,
+Bed activation and sleep-prefix work.
+
 The [saved-Bed qualification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#saved-bed-respawn-geometry-and-hud-messages)
 records native/original coordinate, exit, geometry and chat comparisons on
 Windows and sanitized Linux. Valid/missing Windows scenes pass 1,013/977

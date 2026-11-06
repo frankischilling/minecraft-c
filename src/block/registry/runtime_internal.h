@@ -29,6 +29,10 @@ bool mc_registry_runtime_borrow_release(mc_registry_classes *classes);
 mc_registry_status mc_registry_runtime_literal_ascii(mc_registry_classes *classes, const char *text,
                                                      const mc_registry_string **out,
                                                      mc_registry_error *error);
+/* Typed identity membership in the actual code-literal pool. Caller holds the
+ * same live namespace. No supplied String payload read, allocation, class use,
+ * diagnostic mutation or arbitrary allocation-range/type inference occurs. */
+bool mc_registry_runtime_literal_owned(const mc_registry_classes *, const mc_registry_string *);
 
 /* Nonowning actual q reference captured by an ordinary Block active use.
  * Existing final q has fixed extent256; NULL is a successful captured source

@@ -27,6 +27,8 @@ bool mc_world_mutation_torch_neighbor(mc_world_runtime *, const mc_block *, int3
                                       int32_t, int32_t, mc_world_mutation_error *);
 bool mc_world_mutation_torch_tick(mc_world_runtime *, const mc_block *, int32_t, int32_t, int32_t,
                                   mc_java_random *, mc_world_mutation_error *);
+bool mc_world_mutation_bed_neighbor(mc_world_runtime *, const mc_block *, int32_t, int32_t, int32_t,
+                                    int32_t, mc_world_mutation_error *);
 bool mc_world_mutation_fail(mc_world_runtime *world, mc_world_mutation_error *error,
                             mc_world_storage_status status, const char *operation);
 bool mc_world_mutation_registry_fail(mc_world_runtime *world, mc_world_mutation_error *error,

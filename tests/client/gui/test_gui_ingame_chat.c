@@ -1,6 +1,7 @@
 /* Genuine constructed Font/UQ/World owners; declared component text/age inputs. */
 #define MC_GUI_INGAME_DRAW_MAIN mc_chat_inherited_hud_main
 int mc_chat_inherited_hud_main(int, char **);
+#include "client/entity/player_message.h"
 #include "client/gui/gui_ingame_chat.h"
 #include "client/gui/gui_ingame_chat_internal.h"
 #include "test_gui_ingame_draw.c"
@@ -201,6 +202,62 @@ static int chat_draw(fixture *runtime, client_application *app, mc_entity *playe
     return 0;
 }
 
+static int chat_registry_message(fixture *runtime, client_application *app, mc_entity *player) {
+    mc_registry_classes *registry = app->registry, *keys = NULL;
+    const mc_registry_options options = {.side = MC_REGISTRY_CLIENT,
+                                         .random_profile = runtime->services.profile,
+                                         .materials = runtime->materials};
+    CHECK(mc_registry_classes_allocate(&options, &keys, NULL) == MC_REGISTRY_OK);
+    const mc_registry_string *missing = NULL, *translated_key = NULL;
+    CHECK(mc_registry_runtime_literal_ascii(keys, "no.key", &missing, NULL) == MC_REGISTRY_OK &&
+          mc_registry_runtime_literal_ascii(keys, "tile.bed.notValid", &translated_key, NULL) ==
+              MC_REGISTRY_OK);
+    const size_t registry_holds = registry->runtime_borrows, player_holds = player->holds;
+    CHECK(app->v->fields.e->size == 0 && keys->runtime_borrows == 0);
+    mc_client_player_message_call *call = NULL;
+    mc_client_player_message_error error;
+    mc_client_player_message_state state;
+    CHECK(mc_client_player_message_begin(player, keys, missing, &call, &error) ==
+              MC_CLIENT_PLAYER_MESSAGE_OK &&
+          error.source_returned && error.site.pc == 11 && !error.native_policy &&
+          mc_client_player_message_inspect(call, &state) && state.returned && !state.base_noop &&
+          state.receiver_identity == (uintptr_t)player && state.app_identity == (uintptr_t)app &&
+          state.uq_identity == (uintptr_t)app->v && player->holds == player_holds + 1 &&
+          app->v->fields.e->size == 1);
+    mc_gui_chat_message *message = mc_gui_chat_message_find(app->v, app->v->fields.e->entries[0]);
+    CHECK(message != NULL && message->a.registry == missing && message->a.registry_owner == keys &&
+          message->a.player == NULL && message->registry_held && keys->runtime_borrows == 2 &&
+          registry->runtime_borrows == registry_holds + 1);
+    CHECK(mc_client_player_message_retire(&call, &error) == MC_CLIENT_PLAYER_MESSAGE_OK &&
+          call == NULL && keys->runtime_borrows == 1 &&
+          registry->runtime_borrows == registry_holds && player->holds == player_holds &&
+          message->a.registry == missing);
+    CHECK(mc_registry_classes_free(keys, NULL) == MC_REGISTRY_BUSY);
+    mc_client_gui_ingame_error clear;
+    CHECK(mc_client_gui_ingame_clear_messages(app->v, &clear) == MC_CLIENT_GUI_INGAME_OK &&
+          keys->runtime_borrows == 0);
+    mc_registry_translation_view translation;
+    CHECK(mc_registry_classes_inspect_translation(registry, &translation, NULL) == MC_REGISTRY_OK);
+    const mc_registry_string *property = NULL;
+    CHECK(mc_translation_property(translation.singleton_a, translated_key->units,
+                                  translated_key->length, &property, NULL) == MC_REGISTRY_OK &&
+          property != NULL && property != translated_key);
+    CHECK(mc_client_player_message_begin(player, keys, translated_key, &call, &error) ==
+              MC_CLIENT_PLAYER_MESSAGE_OK &&
+          error.source_returned && app->v->fields.e->size == 1);
+    message = mc_gui_chat_message_find(app->v, app->v->fields.e->entries[0]);
+    CHECK(message != NULL && message->a.registry == property &&
+          message->a.registry_owner == registry && message->a.player == NULL &&
+          message->registry_held && keys->runtime_borrows == 1 &&
+          registry->runtime_borrows == registry_holds + 2);
+    CHECK(mc_client_player_message_retire(&call, &error) == MC_CLIENT_PLAYER_MESSAGE_OK &&
+          keys->runtime_borrows == 0 && registry->runtime_borrows == registry_holds + 1);
+    CHECK(mc_client_gui_ingame_clear_messages(app->v, &clear) == MC_CLIENT_GUI_INGAME_OK &&
+          registry->runtime_borrows == registry_holds &&
+          mc_registry_classes_free(keys, NULL) == MC_REGISTRY_OK);
+    return 0;
+}
+
 static int chat_device(const char *resources, const char *assets, const char *directory,
                        const char *screenshot) {
     fixture runtime;
@@ -254,6 +311,7 @@ static int chat_device(const char *resources, const char *assets, const char *di
     CHECK(mc_client_singleplayer_controller_construct(controller, app, NULL) ==
           MC_SINGLEPLAYER_CONTROLLER_OK);
     app->controller = controller;
+    CHECK(chat_registry_message(&runtime, app, world.player) == 0);
     CHECK(chat_draw(&runtime, app, world.player, math, screenshot) == 0);
     app->controller = NULL;
     CHECK(mc_client_singleplayer_controller_free(&controller, NULL) ==

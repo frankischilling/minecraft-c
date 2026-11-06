@@ -3,8 +3,120 @@ int mc_chat_startup_fixture_main(int, char **);
 #define main mc_chat_startup_fixture_main
 #include "../startup/test_application_startup.c"
 #undef main
+#include "block/registry/registry_internal.h"
+#include "block/registry/runtime_internal.h"
+#include "client/entity/player_message.h"
 #include "client/gui/gui_ingame_chat.h"
 #include "client/gui/gui_ingame_chat_internal.h"
+#include "entity/player/player_internal.h"
+
+static int chat_registry_keys(fixture *f, mc_client_source_uq *owner, client_application *app) {
+    mc_registry_classes *registry = f->services.registry, *other = NULL;
+    const mc_registry_options options = {.side = MC_REGISTRY_CLIENT,
+                                         .random_profile = f->services.profile,
+                                         .materials = f->materials,
+                                         .resources = mc_resource_files_source(f->files)};
+    CHECK(mc_registry_classes_allocate(&options, &other, NULL) == MC_REGISTRY_OK);
+    const mc_registry_string *key = NULL, *foreign = NULL;
+    CHECK(mc_registry_runtime_literal_ascii(registry, "no.key", &key, NULL) == MC_REGISTRY_OK &&
+          mc_registry_runtime_literal_ascii(other, "no.key", &foreign, NULL) == MC_REGISTRY_OK &&
+          key != foreign && mc_registry_runtime_literal_owned(registry, key) &&
+          !mc_registry_runtime_literal_owned(other, key));
+    const size_t held = registry->runtime_borrows;
+    mc_client_gui_ingame_chat_call *call = NULL;
+    mc_client_gui_ingame_chat_error error;
+    mc_client_gui_ingame_chat_state state;
+    CHECK(mc_client_gui_ingame_chat_translate_registry_begin(owner, registry, registry, key, &call,
+                                                             &error) ==
+              MC_CLIENT_GUI_INGAME_CHAT_SOURCE_NULL &&
+          error.site.pc == 8 && !error.native_policy &&
+          mc_client_gui_ingame_chat_inspect(call, &state) && state.translated &&
+          registry->runtime_borrows == held + 2);
+    CHECK(mc_client_gui_ingame_chat_retire(&call, &error) == MC_CLIENT_GUI_INGAME_CHAT_OK &&
+          registry->runtime_borrows == held);
+    CHECK(mc_client_gui_ingame_chat_translate_registry_begin(
+              owner, registry, NULL, key, &call, &error) == MC_CLIENT_GUI_INGAME_CHAT_ARGUMENT &&
+          error.native_policy && call != NULL);
+    CHECK(mc_client_gui_ingame_chat_retire(&call, &error) == MC_CLIENT_GUI_INGAME_CHAT_OK);
+    CHECK(mc_client_gui_ingame_chat_translate_registry_begin(
+              owner, registry, other, key, &call, &error) == MC_CLIENT_GUI_INGAME_CHAT_ARGUMENT &&
+          error.native_policy && call != NULL && other->runtime_borrows == 1 &&
+          registry->runtime_borrows == held);
+    CHECK(mc_client_gui_ingame_chat_retire(&call, &error) == MC_CLIENT_GUI_INGAME_CHAT_OK &&
+          other->runtime_borrows == 0);
+    /* A genuine owned allocation with exactly String's extent is not a String literal. */
+    const mc_registry_string *wrong_type = mc_registry_allocate(other, sizeof(mc_registry_string));
+    size_t extent = 0;
+    CHECK(wrong_type != NULL && mc_registry_permanent_extent(other, wrong_type, &extent) &&
+          extent == sizeof(mc_registry_string) &&
+          !mc_registry_runtime_literal_owned(other, wrong_type));
+    CHECK(mc_client_gui_ingame_chat_translate_registry_begin(owner, registry, other, wrong_type,
+                                                             &call, &error) ==
+              MC_CLIENT_GUI_INGAME_CHAT_ARGUMENT &&
+          error.native_policy && call != NULL);
+    CHECK(mc_client_gui_ingame_chat_retire(&call, &error) == MC_CLIENT_GUI_INGAME_CHAT_OK &&
+          other->runtime_borrows == 0);
+    CHECK(mc_client_gui_ingame_chat_translate_registry_begin(owner, registry, NULL, NULL, &call,
+                                                             &error) ==
+              MC_CLIENT_GUI_INGAME_CHAT_SOURCE_NULL &&
+          !error.native_policy && error.child.pc == 6 && strcmp(error.child.class_name, "nh") == 0);
+    CHECK(mc_client_gui_ingame_chat_retire(&call, &error) == MC_CLIENT_GUI_INGAME_CHAT_OK);
+
+    /* RAW concrete DC and RAW App operands exercise only reached field/null prefixes. */
+    mc_entity *player = NULL;
+    CHECK(mc_local_player_allocate(f->services.entities, &player, NULL) == MC_ENTITY_OK);
+    const size_t player_holds = player->holds;
+    mc_client_player_message_call *message = NULL;
+    mc_client_player_message_error message_error;
+    mc_client_player_message_state message_state;
+    CHECK(mc_client_player_message_begin(NULL, NULL, wrong_type, &message, &message_error) ==
+              MC_CLIENT_PLAYER_MESSAGE_SOURCE_NULL &&
+          message_error.site.pc == 0 && strcmp(message_error.site.class_name, "gs") == 0 &&
+          !message_error.native_policy);
+    CHECK(mc_client_player_message_retire(&message, &message_error) == MC_CLIENT_PLAYER_MESSAGE_OK);
+    CHECK(mc_client_player_message_begin(player, NULL, wrong_type, &message, &message_error) ==
+              MC_CLIENT_PLAYER_MESSAGE_SOURCE_NULL &&
+          message_error.site.pc == 4 && !message_error.native_policy &&
+          player->holds == player_holds + 1);
+    CHECK(mc_client_player_message_inspect(message, &message_state) &&
+          message_state.app_identity == 0 && message_state.uq_identity == 0 &&
+          message_state.chat == NULL);
+    CHECK(mc_client_player_message_retire(&message, &message_error) ==
+              MC_CLIENT_PLAYER_MESSAGE_OK &&
+          player->holds == player_holds);
+    player->local_player->fields.minecraft = app;
+    CHECK(app->v == NULL);
+    CHECK(mc_client_player_message_begin(player, NULL, wrong_type, &message, &message_error) ==
+              MC_CLIENT_PLAYER_MESSAGE_SOURCE_NULL &&
+          message_error.site.pc == 8 && !message_error.native_policy && message_error.chat == NULL);
+    CHECK(mc_client_player_message_retire(&message, &message_error) == MC_CLIENT_PLAYER_MESSAGE_OK);
+    app->v = owner;
+    app->registry = registry;
+    CHECK(mc_client_player_message_begin(player, other, foreign, &message, &message_error) ==
+              MC_CLIENT_PLAYER_MESSAGE_SOURCE_NULL &&
+          message_error.site.pc == 8 && message_error.chat != NULL &&
+          message_error.chat->site.pc == 8 && !message_error.native_policy &&
+          other->runtime_borrows == 1 &&
+          mc_client_player_message_inspect(message, &message_state) &&
+          message_state.app_identity == (uintptr_t)app &&
+          message_state.uq_identity == (uintptr_t)owner);
+    /* Failed checked cleanup preserves the wrapper, exact child, and actual Player hold. */
+    other->runtime_borrows = 0;
+    const mc_client_player_message_status refused =
+        mc_client_player_message_retire(&message, &message_error);
+    other->runtime_borrows = 1;
+    CHECK(refused == MC_CLIENT_PLAYER_MESSAGE_CLEANUP_FAILED && message != NULL &&
+          player->holds == player_holds + 1 && owner->chat_call != NULL);
+    CHECK(mc_client_player_message_retire(&message, &message_error) ==
+              MC_CLIENT_PLAYER_MESSAGE_OK &&
+          message == NULL && player->holds == player_holds && other->runtime_borrows == 0 &&
+          registry->runtime_borrows == held && owner->chat_call == NULL);
+    app->v = NULL;
+    app->registry = NULL;
+    mc_entity_release(player);
+    CHECK(mc_registry_classes_free(other, NULL) == MC_REGISTRY_OK);
+    return 0;
+}
 
 static int chat_translation_failure(const char *resources, const char *profile, int32_t expected_pc,
                                     bool missing_provider) {
@@ -130,6 +242,7 @@ static int chat_cpu(const char *resources) {
     mc_player_string_release(key); /* The retained invocation owns the same actual key now. */
     CHECK(mc_client_gui_ingame_chat_retire(&call, &error) == MC_CLIENT_GUI_INGAME_CHAT_OK &&
           call == NULL && owner->messages == NULL);
+    CHECK(chat_registry_keys(&f, owner, &app) == 0);
     CHECK(mc_client_gui_ingame_clear_messages(owner, &owner_error) == MC_CLIENT_GUI_INGAME_OK &&
           mc_client_gui_ingame_tick(owner, &owner_error) == MC_CLIENT_GUI_INGAME_OK);
     CHECK(mc_client_gui_ingame_retire(&owner, &owner_error) == MC_CLIENT_GUI_INGAME_OK &&

@@ -1,6 +1,7 @@
 #include "gui_ingame_chat.h"
 #include "../application_state.h"
 #include "block/registry/registry_internal.h"
+#include "block/registry/runtime_internal.h"
 #include "gui_ingame_chat_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
@@ -16,6 +17,9 @@ struct mc_client_gui_ingame_chat_call {
     mc_client_source_uq *owner;
     mc_registry_classes *registry;
     const mc_player_string *argument;
+    mc_registry_classes *argument_registry;
+    const mc_registry_string *registry_argument;
+    bool argument_registry_held;
     bool registry_held, active, translating;
     mc_client_gui_ingame_chat_state state;
     mc_client_gui_ingame_chat_error failure, cleanup;
@@ -168,9 +172,9 @@ static bool insert(mc_client_gui_ingame_chat_call *c, mc_gui_chat_text text) {
         return false;
     c->pending = message;
     if (text.registry != NULL) {
-        c->failure.registry.status =
-            mc_registry_classes_retain(text.registry_owner, MC_REGISTRY_CLIENT,
-                                       c->owner->classes->profile, &c->failure.registry);
+        c->failure.registry.status = mc_registry_classes_retain(
+            text.registry_owner, MC_REGISTRY_CLIENT, text.registry_owner->options.random_profile,
+            &c->failure.registry);
         if (c->failure.registry.status != MC_REGISTRY_OK)
             return fail(c, MC_CLIENT_GUI_INGAME_CHAT_CHILD_FAILED,
                         "SW native actual translated String namespace occurrence", "a", 86, true);
@@ -265,11 +269,10 @@ static bool add(mc_client_gui_ingame_chat_call *c, mc_gui_chat_text text, unsign
     }
 }
 
-static mc_client_gui_ingame_chat_status begin(mc_client_source_uq *owner,
-                                              mc_registry_classes *registry,
-                                              const mc_player_string *argument, bool translating,
-                                              mc_client_gui_ingame_chat_call **out,
-                                              mc_client_gui_ingame_chat_error *error) {
+static mc_client_gui_ingame_chat_status
+begin(mc_client_source_uq *owner, mc_registry_classes *registry, const mc_player_string *argument,
+      mc_registry_classes *key_owner, const mc_registry_string *registry_key, bool translating,
+      mc_client_gui_ingame_chat_call **out, mc_client_gui_ingame_chat_error *error) {
     mc_client_gui_ingame_chat_error admission = {0};
     admission.native_policy = true;
     if (owner == NULL || owner->classes == NULL || out == NULL || *out != NULL ||
@@ -309,6 +312,29 @@ static mc_client_gui_ingame_chat_status begin(mc_client_source_uq *owner,
     *out = c;
     (void)mtx_unlock(&owner->classes->mutex);
     mc_gui_chat_text text = {.player = argument};
+    if (registry_key != NULL) {
+        if (argument != NULL || key_owner == NULL) {
+            fail(c, MC_CLIENT_GUI_INGAME_CHAT_ARGUMENT, "chat native literal key shape", "c", 0,
+                 true);
+            goto done;
+        }
+        c->argument_registry = key_owner;
+        const mc_registry_status held = mc_registry_classes_retain(
+            key_owner, MC_REGISTRY_CLIENT, key_owner->options.random_profile, &c->failure.registry);
+        if (held != MC_REGISTRY_OK) {
+            fail(c, MC_CLIENT_GUI_INGAME_CHAT_CHILD_FAILED,
+                 "chat native literal key namespace hold", "c", 0, true);
+            goto done;
+        }
+        c->argument_registry_held = true;
+        if (!mc_registry_runtime_literal_owned(key_owner, registry_key)) {
+            fail(c, MC_CLIENT_GUI_INGAME_CHAT_ARGUMENT, "chat native literal key owner/type", "c",
+                 0, true);
+            goto done;
+        }
+        c->registry_argument = registry_key;
+        text = (mc_gui_chat_text){.registry = registry_key, .registry_owner = key_owner};
+    }
     if (argument != NULL) {
         c->failure.string = mc_player_string_retain((mc_player_string *)argument);
         if (c->failure.string != MC_PLAYER_OK) {
@@ -342,7 +368,7 @@ static mc_client_gui_ingame_chat_status begin(mc_client_source_uq *owner,
                  0, true);
             goto done;
         }
-        if (argument == NULL) {
+        if (argument == NULL && registry_key == NULL) {
             c->failure.child =
                 (mc_client_gui_ingame_site){"nh", "a", "(Ljava/lang/String;)Ljava/lang/String;", 6};
             fail(c, MC_CLIENT_GUI_INGAME_CHAT_SOURCE_NULL, "NH actual getProperty null key", "c", 6,
@@ -350,7 +376,7 @@ static mc_client_gui_ingame_chat_status begin(mc_client_source_uq *owner,
             goto done;
         }
         mc_player_string_view key;
-        if (!mc_player_string_read(argument, &key)) {
+        if (!mc_gui_chat_text_read(text, &key)) {
             fail(c, MC_CLIENT_GUI_INGAME_CHAT_ARGUMENT, "NH native key String view", "c", 6, true);
             goto done;
         }
@@ -379,14 +405,21 @@ done:
 mc_client_gui_ingame_chat_status mc_client_gui_ingame_chat_translate_begin(
     mc_client_source_uq *owner, mc_registry_classes *registry, const mc_player_string *key,
     mc_client_gui_ingame_chat_call **out, mc_client_gui_ingame_chat_error *error) {
-    return begin(owner, registry, key, true, out, error);
+    return begin(owner, registry, key, NULL, NULL, true, out, error);
+}
+
+mc_client_gui_ingame_chat_status mc_client_gui_ingame_chat_translate_registry_begin(
+    mc_client_source_uq *owner, mc_registry_classes *translation_owner,
+    mc_registry_classes *key_owner, const mc_registry_string *key,
+    mc_client_gui_ingame_chat_call **out, mc_client_gui_ingame_chat_error *error) {
+    return begin(owner, translation_owner, NULL, key_owner, key, true, out, error);
 }
 
 mc_client_gui_ingame_chat_status
 mc_client_gui_ingame_chat_add_begin(mc_client_source_uq *owner, const mc_player_string *text,
                                     mc_client_gui_ingame_chat_call **out,
                                     mc_client_gui_ingame_chat_error *error) {
-    return begin(owner, NULL, text, false, out, error);
+    return begin(owner, NULL, text, NULL, NULL, false, out, error);
 }
 
 bool mc_client_gui_ingame_chat_inspect(const mc_client_gui_ingame_chat_call *c,
@@ -439,6 +472,14 @@ mc_client_gui_ingame_chat_retire(mc_client_gui_ingame_chat_call **slot,
     if (!mc_gui_chat_collect(c->owner, &collection)) {
         c->cleanup.registry = collection.registry;
         goto busy;
+    }
+    if (c->argument_registry_held) {
+        if (mc_registry_classes_release(c->argument_registry, &c->cleanup.registry) !=
+            MC_REGISTRY_OK)
+            goto busy;
+        c->argument_registry_held = false;
+        c->argument_registry = NULL;
+        c->registry_argument = NULL;
     }
     while (c->temporaries != NULL) {
         chat_temporary *temporary = c->temporaries;

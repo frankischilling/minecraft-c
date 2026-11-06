@@ -33,6 +33,16 @@ struct mc_registry_literal {
     mc_registry_literal *next;
 };
 
+bool mc_registry_runtime_literal_owned(const mc_registry_classes *classes,
+                                       const mc_registry_string *string) {
+    if (classes == NULL || string == NULL)
+        return false;
+    for (const mc_registry_literal *node = classes->literals; node != NULL; node = node->next)
+        if (node->string == string)
+            return true;
+    return false;
+}
+
 static mc_registry_error native_error(mc_registry_status status, const char *message) {
     return (mc_registry_error){.status = status,
                                .message = message,

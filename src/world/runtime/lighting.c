@@ -199,6 +199,29 @@ static void list_clear(mc_world_runtime *runtime, mc_world_reference_list *list)
     list->count = 0;
 }
 
+mc_world_storage_status mc_world_runtime_light_list_clear(mc_world_runtime *runtime,
+                                                          mc_world_storage_error *error) {
+    if (runtime == NULL)
+        return storage_result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                              "World light clear arguments");
+    if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME ||
+        runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED)
+        return storage_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World light clear phase");
+    mc_world_storage_error cause = {0};
+    mc_world_storage_status status = mc_world_runtime_call_enter(runtime, &cause);
+    if (status == MC_WORLD_STORAGE_OK) {
+        mc_world_reference_list *list = NULL;
+        if (list_load(runtime, &list, &cause))
+            list_clear(runtime, list);
+        else
+            status = cause.status;
+        mc_world_runtime_call_leave(runtime);
+    }
+    if (error != NULL)
+        *error = cause;
+    return status;
+}
+
 void mc_world_runtime_lighting_free(mc_world_runtime *runtime) {
     if (runtime == NULL || runtime->fields.C == NULL)
         return;

@@ -1,6 +1,7 @@
 #ifndef MC_CLIENT_RUNTIME_GAMEPLAY_INPUT_H
 #define MC_CLIENT_RUNTIME_GAMEPLAY_INPUT_H
 
+#include "../entity/player_message.h"
 #include "../gui/display_screen.h"
 #include "../gui/source_screen_events.h"
 #include "../settings/source_input.h"
@@ -47,6 +48,10 @@ typedef struct mc_client_gameplay_input {
     mc_singleplayer_use_call *use_call;
     mc_singleplayer_use_state use_state;
     mc_singleplayer_use_error use_error, use_cleanup;
+    mc_client_player_message_call *message_call;
+    mc_client_player_message_state message_state;
+    mc_client_player_message_error message_error, message_cleanup;
+    size_t player_message_calls, player_message_returns;
     mc_item_stack *click_block_stack, *click_air_stack;
     mc_inventory_current_error current;
     mc_inventory_error slot;

@@ -1,6 +1,7 @@
 #include "../bounds/bounds_internal.h"
 #include "../hit_result/internal.h"
 #include "../minecart/classes_internal.h"
+#include "../player/sleep_internal.h"
 #include "../vector/vector_internal.h"
 #include "classes_internal.h"
 #include "memory_internal.h"
@@ -186,6 +187,7 @@ mc_entity_status mc_entity_classes_free(mc_entity_classes *classes) {
     mc_entity_bounds_dispose(classes);
     mc_entity_vector_dispose(classes);
     mc_entity_hit_kind_dispose(classes);
+    mc_player_sleep_result_dispose(classes);
     free(classes);
     return MC_ENTITY_OK;
 }

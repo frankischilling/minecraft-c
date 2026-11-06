@@ -16,6 +16,23 @@ add-message body at 12. The separate translation wrapper stays outside this
 path. The notice comes from the configured resource owner; the runtime supplies
 no English replacement.
 
+The [Bed activation](../world/bed-interaction.md) route now passes its actual
+Registry-owned code literal through a separate UQ translation entry. This
+entry validates membership in that Registry's literal pool and retains the
+key owner separately from the NH translation owner. Missing translations
+retain that same key String identity. The existing Player-String entry remains
+available to the respawn route.
+
+The retained [Player-message wrapper](../../src/client/entity/player_message.h)
+implements concrete DC dispatch from the supplied receiver. It captures that
+Player's App and UQ, so null App/UQ failures occur before later key validation.
+The inherited GS message body returns without translation. Typed errors keep
+the DC invocation site and actual chat child cause. Checked retirement releases
+chat before the Player occurrence; the gameplay owner retires that message
+before its enclosing controller Use call. Expanded CPU and constructed-Font
+controls exercise null owners, literal membership, separate namespaces,
+fallback identity, dispatch and retained cleanup on both native hosts.
+
 Each SW message owns its actual immutable String reference and age field.
 Translated values retain their Registry namespace; a missing property retains
 the same supplied key String. A message may also contain the source null String.
@@ -108,3 +125,9 @@ The [saved-Bed scenario](death-respawn.md#saved-bed-respawn) separately qualifie
 the imported notice in a loaded native World. Typed chat input, an open chat
 screen, scrolling, multiplayer delivery, original pixels and performance remain
 outside this evidence.
+
+The later Bed-interaction public cohort passes the same 81 original rows,
+185 expanded CPU checks and 807 constructed-Font/HUD checks on Windows.
+The returned authored-atlas frame was inspected. These added controls cover
+Registry literals and actual DC/App/UQ dispatch; they do not qualify the new
+loaded Bed scene, which stops during loading before any Bed action.

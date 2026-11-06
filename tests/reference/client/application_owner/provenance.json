@@ -394,8 +394,8 @@
       "sha256": "2dd90dc597040fa7cc4834943fdf788db29b063add11cdaf14cd77b56d8d64f8"
     },
     "src/entity/classes/classes_internal.h": {
-      "bytes": 3220,
-      "sha256": "22e9ae3c1a618c3cc785e41fa9a3b1bf3394835a6ca94583491a636715602d26"
+      "bytes": 3413,
+      "sha256": "df82a84481ba16f4e4d47d6409140a4b6a70ec11d9794e0c8481d3987649e09e"
     },
     "src/entity/entity_internal.h": {
       "bytes": 5035,
@@ -838,6 +838,26 @@
             "include/mc/client/gui/gui_ingame.h": {
               "bytes": 10634,
               "sha256": "97e4e156ee5f8e53f998788dfc81e8f3768ec38ae5341bc699ec56f0ab53c35d"
+            }
+          },
+          "added": [],
+          "current_count": 116
+        }
+      }
+    },
+    {
+      "from_commit": "0f706d1bf8543b46cf1216489c983222c84864c5",
+      "role": "Current Item355 placement, Bed neighbor/daytime activation, genuine CW and Player sleep-prefix owners, Registry-key chat and client message joins. Reference-reader and complete storage input-catalog guard performance changes. This entry binds current inputs only; earlier original and native observations, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 33804,
+        "sha256": "c359ef4f0b07cd1cbdb39373238b790698042313b68482655bb13fd7e8ed2ac3"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "src/entity/classes/classes_internal.h": {
+              "bytes": 3220,
+              "sha256": "22e9ae3c1a618c3cc785e41fa9a3b1bf3394835a6ca94583491a636715602d26"
             }
           },
           "added": [],
