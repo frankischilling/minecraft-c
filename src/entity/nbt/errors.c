@@ -244,6 +244,12 @@ const char *mc_entity_nbt_status_string(mc_entity_nbt_status status) {
             return "unsupported concrete Entity type";
         case MC_ENTITY_NBT_REGISTRY_FAILED:
             return "EntityList operation failed";
+        case MC_ENTITY_NBT_SLEEP_FAILED:
+            return "Player wake operation failed";
+        case MC_ENTITY_NBT_BUSY:
+            return "native owner busy";
+        case MC_ENTITY_NBT_CLEANUP_FAILED:
+            return "Player wake cleanup failed";
     }
     return "unknown Entity NBT status";
 }

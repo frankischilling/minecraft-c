@@ -11,7 +11,10 @@ int mc_notice_world_fixture_main(int, char **);
 #include "client/render_engine/internal.h"
 #include "mc/entity/nbt/errors.h"
 
-_Static_assert(sizeof(mc_entity_nbt_error) == 544, "existing compact Entity NBT value contract");
+_Static_assert(offsetof(mc_entity_nbt_error, sleep_work) == 544,
+               "existing compact Entity NBT payload contract");
+_Static_assert(sizeof(mc_entity_nbt_error) == 568,
+               "Entity NBT payload and independent sleep ownership cells");
 
 typedef struct notice_test {
     mc_client_source_da *external;
@@ -471,7 +474,8 @@ int main(int argc, char **argv) {
           SDL_GetWindowFromID(canvas_id) == NULL);
     free(t);
     if (result == 0)
-        printf("NOTICE_FINISH mode=%s cleanup=1 checks=%u compact-nbt-error=544 windows-absent=1\n",
+        printf("NOTICE_FINISH mode=%s cleanup=1 checks=%u compact-nbt-error=544 "
+               "owned-nbt-error=568 windows-absent=1\n",
                argv[2], checks);
     return result;
 }

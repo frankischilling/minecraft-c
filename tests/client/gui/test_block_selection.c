@@ -7,7 +7,10 @@ int mc_selection_world_fixture_main(int, char **);
 #include "client/world/entity_renderer/selection_internal.h"
 #include "mc/entity/nbt/errors.h"
 
-_Static_assert(sizeof(mc_entity_nbt_error) == 544, "compact Entity diagnostic contract");
+_Static_assert(offsetof(mc_entity_nbt_error, sleep_work) == 544,
+               "existing compact Entity NBT payload contract");
+_Static_assert(sizeof(mc_entity_nbt_error) == 568,
+               "Entity NBT payload and independent sleep ownership cells");
 
 typedef struct aim_work {
     mc_client_source_da *external;
@@ -336,7 +339,7 @@ int main(int argc, char **argv) {
         result = 1;
     if (result == 0)
         printf("BLOCK_SELECTION_FINISH profile=%s cleanup=1 windows-absent=1 checks=%u "
-               "compact-nbt-error=544\n",
+               "compact-nbt-error=544 owned-nbt-error=568\n",
                argv[2], checks);
     free(work);
     free(f);

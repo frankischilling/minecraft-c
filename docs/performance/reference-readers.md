@@ -125,3 +125,35 @@ as the main cost; its instrumented run is excluded from these medians. Raw
 process records and full precision receipts remain private. These observations
 measure Python corruption-control processes on one host. They establish no
 native execution speedup, gameplay FPS gain or whole-CI percentage improvement.
+
+## Player tick transport-control setup
+
+The [Player tick controls](../../tests/tools/entity/test_player_sleep_tick.py)
+copy only the changed row and state, and reuse serialized text for untouched
+rows. Every control still feeds its complete transport to the actual parser,
+including every reached prefix and plane digest. Independent normal and
+optimized Python proofs match all 5,847 events: all 2,559 complete parser
+payload hashes, the ordered 2,859 rejection IDs/classes/messages, and the
+projection/comparison calls. The original and authored fixtures remain unchanged;
+the parser and every function outside `controls()` have identical ASTs.
+
+Three fresh serial baseline/applied pairs per mode ran on Windows 10 Home
+10.0.19045, Python 3.14.3 (`MSC v.1944`, x86-64), and the Intel Core i9-10900F
+with ten cores and twenty logical processors. Pair order alternated. Builds
+and other heavy runtime work were terminal. All twelve children completed
+the full controls within the unchanged 90-second bound with empty stderr,
+complete pipe drains and unchanged producer, packet and Python binary hashes.
+
+| Mode | Median CPU before | Median CPU after | Reduction | Median elapsed before | Median elapsed after |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Normal | 31.343750 s | 23.234375 s | 25.87% | 31.345033 s | 23.229065 s |
+| `-O` | 31.406250 s | 23.078125 s | 26.52% | 31.414566 s | 23.076007 s |
+
+The child measures `time.process_time()` and `time.perf_counter()` around
+module import, fresh original-packet admission and the complete controls.
+These intervals exclude process startup and before/after hash guards.
+Profiling and instrumented proof runs are excluded. The measured driver
+changes from SHA256 `333312ebe6de045d9f555c1dbad781d4ff889098453fc2b1bf95a0f7ab218251`
+to `7677557f711787fbbade553807e80adfa240a211808b3db2cbf87c83701437d7`.
+This measures the existing test setup on one host. It supplies no native
+runtime, new NBT comparison, hosted-job, whole-suite or gameplay FPS speedup.

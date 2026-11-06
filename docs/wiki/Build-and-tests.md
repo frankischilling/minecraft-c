@@ -1,5 +1,25 @@
 # Build and tests
 
+The [sleeping Player reader](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-nbt.md)
+adds four public cases: normal/optimized portable packet controls, native
+ownership controls and the forty-row parent replay. Two fresh original VMs
+each record 29 parent returns and eleven first exceptions. Both native hosts
+match all forty rows, 9,909 typed scalars and 58 active source positions, with
+7,600 within-call preservation cells. Portable readers pass 93 controls per
+Python mode; optional private-sample transport controls pass 349 rejections
+and five scope checks without launching a native process.
+
+Two local Windows SDK profiles run on monitor 2. They check saved sleep,
+Pause/Save and Quit, reselection, independent awake NBT and retained
+Load/Respawn failures. Complete builds pass on Windows and sanitized Linux;
+strict GCC syntax passes twelve units and clang-format 18.1.3 checks 2,189
+files. The full selection history, stale scene-binding failures and exact
+follow-up scope are in the [testing record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#player-sleeping-nbt-continuation).
+This is finite component and prepared SDK evidence, with natural night,
+original frames, whole restart and server gameplay still unqualified.
+
+Complete public selections now pass Windows 780/780 in 577.15 seconds and sanitized Linux 766/766 in 1101.11 seconds, without skips. Every preceding public name remains and exactly four are added per host. All 5,552 guarded public inputs stay unchanged through both accepted cohorts; all 24 placed Windows game windows are on monitor 2.
+
 The [Player tick parent comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-sleep-tick.md)
 adds six public cases: normal/optimized portable readers and native transport
 controls, native parent replay and client cleanup. Focused Windows and

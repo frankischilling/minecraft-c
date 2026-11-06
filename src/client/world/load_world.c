@@ -1158,6 +1158,15 @@ static void world_cleanup_cause(mc_client_world_load_call *call) {
  * Every successful slot consumption is final; failure clears the guards via
  * cleanup_fail and preserves every remaining occurrence. */
 static mc_client_world_load_status cleanup_records(mc_client_world_load_call *call) {
+    /* The actual FD14 -> Entity311 -> DC2/GS93 child must end before any
+     * publication receipt, renderer/World detach or Player/namespace teardown.
+     * This is native retirement only; never retry load/change-world source. */
+    if (!mc_world_player_load_error_retire(&call->player_load)) {
+        call->cleanup.player_load = &call->player_load;
+        return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
+                            "actual Player NBT wake native retirement");
+    }
+    call->cleanup.player_load = NULL;
     if (call->prepare != NULL) {
         if (mc_client_world_prepare_retire(&call->prepare) != MC_CLIENT_WORLD_PREPARE_OK) {
             (void)mc_client_world_prepare_inspect(call->prepare, &call->terrain);

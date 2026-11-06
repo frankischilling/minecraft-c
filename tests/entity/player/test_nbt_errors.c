@@ -2,6 +2,7 @@
 #include "mc/entity/nbt/errors.h"
 #include "mc/entity/nbt/factory.h"
 
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -77,9 +78,17 @@ static int passive_mob_controls(void) {
                  *expanded = malloc(sizeof(*expanded));
     CHECK(error && copy && input && expected && expanded);
     mc_entity_nbt_error_init(error);
-    _Static_assert(sizeof(*error) == 544, "Entity NBT error frame must remain 544 bytes");
+    _Static_assert(offsetof(mc_entity_nbt_error, sleep_work) == 544,
+                   "Existing Entity NBT payload must remain 544 bytes");
+    _Static_assert(offsetof(mc_entity_nbt_error, sleep) == 552 &&
+                       offsetof(mc_entity_nbt_error, sleep_cleanup) == 560,
+                   "NBT wake ownership must add only three pointer cells");
+    _Static_assert(sizeof(*error) == 568, "Entity NBT error with wake ownership is 568 bytes");
     _Static_assert(sizeof(error->mob_call) == 464, "Mob call detail must remain 464 bytes");
     _Static_assert(sizeof(error->mob) <= 224, "Mob hook detail must fit the existing error frame");
+    CHECK(error->sleep_work == NULL && error->sleep == NULL && error->sleep_cleanup == NULL &&
+          mc_entity_nbt_error_retire(error) && mc_entity_nbt_error_retire(error) &&
+          !mc_entity_nbt_error_retire(NULL));
     error->factory_bytecode = 45;
     input->status = MC_MOB_REGISTRY_FAILED;
     input->operation = "authored lower operation";
@@ -304,7 +313,8 @@ int main(void) {
     mc_entity_nbt_error *error = malloc(sizeof(*error));
     CHECK(error != NULL);
     mc_entity_nbt_error_init(error);
-    CHECK(sizeof(*error) == 544 && error->late_hook == MC_ENTITY_NBT_LATE_NONE &&
+    CHECK(sizeof(*error) == 568 && error->sleep_work == NULL && error->sleep == NULL &&
+          error->sleep_cleanup == NULL && error->late_hook == MC_ENTITY_NBT_LATE_NONE &&
           error->index == SIZE_MAX && !error->minecart_read.selected &&
           !error->minecart_write.selected && !error->inventory.slot_selected &&
           error->inventory.status == MC_MINECART_INVENTORY_OK);

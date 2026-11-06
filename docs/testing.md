@@ -1,5 +1,109 @@
 # Test scope and reproduction
 
+## Player sleeping-NBT continuation
+
+The [Player NBT reader](entity/player-nbt.md) now calls the actual wake at
+GS93 and continues through fresh Spawn and DC Score reads. Its owning error
+retains an interrupted child and the independent entry Registry. The detailed
+World loader, client Load and Respawn retire that work before their graph
+dependencies. The compact common diagnostic payload remains 544 bytes;
+three independent ownership/view cells make the complete error 568 bytes.
+
+The [new original packet](../tests/reference/entity/player_sleep_nbt_parent/README.md)
+records forty cases in two fresh VMs: 29 normal parent returns and eleven
+first exceptions per VM. Each records 5,393 original calls, 13,062 events
+and 61 entered original Code bodies plus the authored worker. Both native
+hosts pass all forty rows, 9,909 typed scalars, 58 active source positions and
+7,600 native within-call preservation cells. Their actual fixture totals are
+670,991 checks on Windows and 670,904 on sanitized Linux; each completion
+footer agrees with its common fixture counter. Both native captures exit zero,
+have empty stderr, complete drains, unchanged input/resource hashes and no GUI.
+The first replay uses the frozen private packet before its exact public
+admission; public packet readers independently pass 93 controls per Python
+mode. No original archive or private capture is needed for those reader tests.
+
+An optional developer mode checks a caller-supplied native transport without
+launching a native process. Normal and optimized Python each pass 349 authored
+rejections and five positive scope controls against the first immutable Windows
+sample. Every changed payload reaches the full parser and comparator; complete
+ordered rejection reasons match between modes. The five positives check only
+within-call entropy/history preservation and consistent alias-token renaming.
+This mode supplies no new execution qualification and its private sample is
+not distributed or registered as a CI dependency:
+
+```sh
+python -B tests/tools/entity/test_player_sleep_nbt_parent.py --controls --native-sample PATH_TO_RETAINED_NATIVE_STDOUT
+```
+
+The focused six-case selection passes on MSVC Release in 0.95 seconds and
+Clang Debug with ASan/UBSan in 16.86 seconds. Both native control fixtures pass
+399,899 checks, including genuine RAW and READY Players, all four Bed
+directions, late malformed tags, NULL output/World/bounds, four detailed
+World-loader scenarios and checked cleanup refusal followed by repair. These
+controls execute no Minecraft frame and compare no original rows. All 5,529
+guarded public inputs remain unchanged through that runtime cohort.
+
+Initial compile and runtime attempts exposed stale 544-byte total-size guards
+and a driver that expected one namespace's console pair instead of the actual
+two. The corrected checks require the unchanged 544-byte common payload and
+the exact 568-byte total, and the driver requires all seven actual output
+lines. The first full builds also fail at the three GUI size guards omitted
+from the focused target selection. Those guards now require both sizes, and
+the Notice/selection readers require both corresponding receipt fields.
+Subsequent complete MSVC Release and sanitized Clang Debug builds pass with
+all 5,529 current inputs unchanged. Failed attempts remain separate; no
+original data, exception outcome, sanitizer setting or deadline changes.
+
+Two prepared Windows SDK profiles pass on monitor 2. The success profile
+passes 1,428 native checks and its complete CTest in 7.65 seconds. Actual
+Main Menu/World selection loads Sleeping=true, wakes the Player, reads Spawn
+and Score, clears Info.Player and publishes. Escape/Pause Save and Quit,
+reselection of the same folder and independent NBT decoding preserve awake
+state, timer zero, Score 7 and the saved Bed coordinate. The second epoch
+starts from that saved awake input; it does not reconstruct the temporary Bed
+coordinate again. The returned second-epoch World/HUD capture was inspected.
+
+That same profile invokes the real Respawn directly with prepared sleeping
+metadata and an explicit WorldAccess IO refusal at wake80. It proves the
+actual 303/FD14/GS93 parent chain, retained child, native/source classification,
+Load lease refusal and checked retirement after repair without callback replay.
+The independent late-Score profile passes 625 checks and CTest in 5.08 seconds:
+the completed wake/Spawn survive the actual ClassCastException at DC9, the
+Info tag stays uncleared and FD publication is unreached. It discharges the
+Registry-only work through the actual transition-owned Load's nonconsuming
+record cleanup, then proves normal terminal coordinator refusal and explicit
+legacy fixture cleanup. This is not normal recovery from a failed Source graph.
+
+The first Score-profile CTest remains failed: the native process exits zero
+after all 625 checks, but its wrapper incorrectly requires empty stderr on
+the expected FD88 failure. The revised wrapper requires exactly the two
+recognized source-failure lines and rejects unknown, missing, duplicated or
+misordered text. Normal and optimized Python each pass two positive and ten
+rejection checks using copies of that retained output. The fresh profile above
+passes; no earlier record is changed. Both SDK profiles preserve all 5,531
+guarded public inputs, source/product/resource hashes and the authored payload.
+They qualify prepared native loading/save/reselection and direct Respawn
+ownership controls. Natural night, the ordinary death button, whole restart,
+original frames and gameplay FPS remain outside this evidence.
+
+The first full public selections finish at Windows 778/780 in 504.99 seconds
+and sanitized Linux 764/766 in 1,158.03 seconds. Every expected name runs, none
+is skipped, all four new cases pass, and all 5,552 inputs remain unchanged.
+The only failures are the two older Redstone Torch/Lever GUI-control suites:
+their separate current-input declaration still pins the shared startup fixture
+before the new gated SDK hooks. The refresh changes its two current startup
+hashes and the declaration's reader pin. Frozen plans, predecessor maps,
+validator bodies and `NOT_REQUALIFIED` historical-result scope stay unchanged.
+The unchanged seven Torch and six Lever cases pass normally and under `-O`
+against a private copy of the real eighteen-file input closure; these controls
+launch no native process. The failed full cohorts remain recorded separately.
+
+## Accepted sleeping-NBT public cohorts
+
+Complete public selections now pass Windows 780/780 in 577.15 seconds and sanitized Linux 766/766 in 1101.11 seconds, without skips. Every preceding public name remains and exactly four are added per host. All 5,552 guarded public inputs stay unchanged through both accepted cohorts; all 24 placed Windows game windows are on monitor 2.
+
+The earlier full runs with stale scene-admission pins retain their failed status. The correction changes only current input admission; the original plans, historical results, native behavior, comparison fields, sanitizer settings and deadlines remain unchanged.
+
 ## Player tick sleep and wake parents
 
 The [parent join and comparison scope](entity/player-sleep-tick.md) use a new

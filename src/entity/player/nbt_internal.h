@@ -13,8 +13,17 @@ struct mc_player_nbt_coordinate {
     size_t pins;
 };
 
+/* Native held own-data prefix, deliberately without an owning wake output.
+ * This legacy preparation/checkpoint entry stops at reached93; the complete
+ * Entity reader uses the same body with its actual output availability. */
 bool mc_player_nbt_read_held(mc_entity *, mc_registry_classes *, const mc_nbt_tag *,
                              const mc_nbt_limits *, mc_entity_nbt_error *);
+bool mc_player_nbt_read_with_child_output_held(mc_entity *, mc_registry_classes *,
+                                               const mc_nbt_tag *, const mc_nbt_limits *,
+                                               bool can_transfer_children, mc_entity_nbt_error *);
+/* Move the already-owned reader entry occurrence into its stable failed wake
+ * work. Only the one reader with a nonnull sleep_work calls this once. */
+void mc_player_nbt_sleep_adopt_registry(mc_entity_nbt_error *, mc_registry_classes *);
 bool mc_player_nbt_build_fields_held(mc_entity *, const mc_nbt_limits *, mc_nbt_tree **,
                                      mc_entity_nbt_error *);
 /* Nonfailing native cleanup after an actual coordinate-pointer source store.

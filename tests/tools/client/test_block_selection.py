@@ -276,7 +276,7 @@ def verify(stdout, evidence, profile, target, first, last):
     held = fields(stdout, 'SELECTION_HELD')
     if len(finish)!=1 or finish[0]['profile']!=profile['name'] or any(finish[0].get(key)!='1' for key in ['cleanup','windows-absent']):
         raise RuntimeError('Actual checked terminal/window cleanup')
-    if finish[0]['compact-nbt-error']!='544' or len(held)!=1 or held[0]['balanced-release']!='1':
+    if finish[0]['compact-nbt-error']!='544' or finish[0].get('owned-nbt-error')!='568' or len(held)!=1 or held[0]['balanced-release']!='1':
         raise RuntimeError('Actual held pool storage survives a real next frame and releases')
     return {'samples':observed,'batch_draws':9,'actual_vertices':54,
             'cleanup_checks':int(finish[0]['checks']),

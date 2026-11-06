@@ -305,14 +305,22 @@ def controls(original):
     native_rows(encode(authored))
     refuse(lambda:native_rows(encode(authored[:-1])))
     refuse(lambda:native_rows(encode(authored)+ 'extra\n'))
+    # Only a row and its selected state change in each missing-key control.
+    # Reuse serialized immutable rows, then parse the complete actual transport
+    # afresh, including every preceding row and its full plane checks.
+    encoded=['SLEEP_TICK '+json.dumps(row,separators=(',',':'))+'\n' for row in authored]
+    def encode_changed(number,row):
+        return ''.join(encoded[:number])+\
+               'SLEEP_TICK '+json.dumps(row,separators=(',',':'))+'\n'+\
+               ''.join(encoded[number+1:])+'PASS: 1 Player sleep parent component checks\n'
     for number,row in enumerate(authored):
         for key in ROW_KEYS:
-            changed=copy.deepcopy(authored);changed[number].pop(key)
-            refuse(lambda rows=changed:native_rows(encode(rows)))
+            changed=dict(row);changed.pop(key)
+            refuse(lambda item=changed,n=number:native_rows(encode_changed(n,item)))
         for phase in ('before','after'):
             for key in STATE_KEYS:
-                changed=copy.deepcopy(authored);changed[number][phase].pop(key)
-                refuse(lambda rows=changed:native_rows(encode(rows)))
+                changed=dict(row);changed[phase]=dict(row[phase]);changed[phase].pop(key)
+                refuse(lambda item=changed,n=number:native_rows(encode_changed(n,item)))
     # Success projection must ignore explicitly unqualified after111 fields,
     # while every one of the eight covered properties remains strict.
     for row in original['rows']:

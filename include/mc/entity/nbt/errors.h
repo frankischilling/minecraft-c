@@ -25,8 +25,30 @@ typedef enum mc_entity_nbt_status {
     MC_ENTITY_NBT_NBT_FAILED,
     MC_ENTITY_NBT_UNSUPPORTED_FP,
     MC_ENTITY_NBT_UNSUPPORTED_TYPE,
-    MC_ENTITY_NBT_REGISTRY_FAILED
+    MC_ENTITY_NBT_REGISTRY_FAILED,
+    MC_ENTITY_NBT_SLEEP_FAILED,
+    MC_ENTITY_NBT_BUSY,
+    MC_ENTITY_NBT_CLEANUP_FAILED
 } mc_entity_nbt_status;
+
+typedef struct mc_entity_nbt_sleep_work mc_entity_nbt_sleep_work;
+typedef struct mc_player_sleep_error mc_player_sleep_error;
+typedef struct mc_player_sleep_cleanup mc_player_sleep_cleanup;
+
+typedef enum mc_entity_nbt_sleep_cleanup_child {
+    MC_ENTITY_NBT_SLEEP_CLEANUP_NONE,
+    MC_ENTITY_NBT_SLEEP_CLEANUP_WAKE,
+    MC_ENTITY_NBT_SLEEP_CLEANUP_REGISTRY
+} mc_entity_nbt_sleep_cleanup_child;
+
+typedef struct mc_entity_nbt_sleep_cleanup {
+    mc_entity_nbt_status status;
+    const char *operation;
+    mc_entity_nbt_sleep_cleanup_child child;
+    const mc_player_sleep_cleanup *wake;
+    mc_registry_error registry;
+    mc_world_storage_error cause;
+} mc_entity_nbt_sleep_cleanup;
 
 typedef enum mc_entity_nbt_late_hook {
     MC_ENTITY_NBT_LATE_NONE = 0,
@@ -129,9 +151,23 @@ typedef struct mc_entity_nbt_error {
 
         mc_entity_mob_call_detail mob_call;
     };
+
+    /* Independent of every late detail arm. An interrupted GS93 owns this
+     * stable native work, not an input-tree or stack diagnostic pointer. */
+    mc_entity_nbt_sleep_work *sleep_work;
+    const mc_player_sleep_error *sleep;
+    const mc_entity_nbt_sleep_cleanup *sleep_cleanup;
 } mc_entity_nbt_error;
 
-/* Passive in-place initialization; NULL is a no-op. */
+/* A nonnull sleep_work makes this result noncopyable. It transfers exactly
+ * once to its containing caller and must be checked-retired before reuse,
+ * initialization, assignment or graph retirement. Views borrow that same work.
+ * Source status/operation/caller PCs survive retirement. The typed child views
+ * end when their producer is consumed, including before a later parent Registry
+ * refusal. Cleanup retries perform no source work or input-tree reads. */
+bool mc_entity_nbt_error_retire(mc_entity_nbt_error *);
+
+/* Passive in-place initialization; NULL is a no-op. Never discard owned work. */
 void mc_entity_nbt_error_init(mc_entity_nbt_error *error);
 /* Passive concrete-detail selection. Repeated selection preserves the active
  * child; changing arms initializes that entire selected payload. Common

@@ -436,6 +436,12 @@ static const char *nbt_outcome(mc_entity_nbt_status status, const mc_entity_nbt_
 }
 
 #include "nbt_metadata_cases.h"
+#include "nbt_sleep_cases.h"
+#include "nbt_sleep_load_cases.h"
+#include "nbt_sleep_matrix_cases.h"
+
+static bool nbt_sleep_controls_only;
+static const char *nbt_sleep_matrix_profiles;
 
 static bool nbt_native_limits(client_application *app, mc_entity *p, nbt_input *a,
                               mc_entity_nbt_error *error) {
@@ -484,6 +490,10 @@ cleanup:
 }
 
 static bool nbt_cases(fixture *f, client_application *app, mc_entity *p, mc_movement_input *input) {
+    if (nbt_sleep_matrix_profiles != NULL)
+        return nbt_sleep_matrix_cases(f, app, nbt_sleep_matrix_profiles);
+    if (nbt_sleep_controls_only)
+        return nbt_sleep_cases(f, app) && nbt_sleep_load_cases(f, app);
     bool ok = false;
     (void)f;
     (void)input;
@@ -589,10 +599,26 @@ cleanup:
 }
 
 int main(int argc, char **argv) {
-    if (argc == 4 && strcmp(argv[1], "player-nbt") == 0)
+    if (argc == 5 && strcmp(argv[1], "player-nbt-sleep-matrix") == 0) {
+        nbt_sleep_matrix_profiles = argv[4];
+        argv[1] = "player-active";
+        argc = 4;
+    }
+    if (argc == 4 && strcmp(argv[1], "player-nbt-sleep-controls") == 0) {
+        nbt_sleep_controls_only = true;
+        argv[1] = "player-active";
+    } else if (argc == 4 && strcmp(argv[1], "player-nbt") == 0)
         argv[1] = "player-active";
     const int result = mc_nbt_fixture_main(argc, argv);
-    if (result == 0 && printf("Player NBT: %u checks\n", checks) < 0)
-        return 1;
+    if (result == 0) {
+        if (nbt_sleep_matrix_profiles != NULL) {
+            if (printf("PLAYER_NBT_SLEEP_MATRIX_COMPLETE 40 rows %u checks\n", checks) < 0)
+                return 1;
+        } else if (nbt_sleep_controls_only) {
+            if (printf("PLAYER_NBT_SLEEP_CONTROLS_COMPLETE %u checks\n", checks) < 0)
+                return 1;
+        } else if (printf("Player NBT: %u checks\n", checks) < 0)
+            return 1;
+    }
     return result;
 }

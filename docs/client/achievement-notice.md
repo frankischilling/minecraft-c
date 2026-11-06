@@ -132,8 +132,10 @@ checked retirement, blocks notice mutation and renderer reuse while pending,
 and retires before a later tick can reset pooled vectors. Failed draws retain
 their completed prefix. Native retirement releases owned children without
 restoring GL state, changing `g`, finishing or replaying the source call.
-The existing compact Notice and Font errors are unchanged; the Entity NBT
-value-copy error remains 544 bytes.
+The compact Notice and Font errors retain their existing layout. The Entity
+NBT common payload occupies 544 bytes; its separate sleep ownership cells make
+the complete error 568 bytes. An error with retained sleep work must be retired
+before reuse; see the [Player NBT contract](../entity/player-nbt.md).
 
 ## Active-notice qualification
 

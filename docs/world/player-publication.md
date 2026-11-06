@@ -62,9 +62,12 @@ is native cleanup, not source removal, saving or permission to resume gameplay.
 Nonnull Info.Player enters the actual inherited Entity, Living, Inventory and
 Player NBT readers. Complete load success clears Info.Player before ordinary
 publication. Malformed tags retain all preceding stores and leave Info.Player
-uncleared. Sleeping=true reaches the explicit wake dependency at Player read
-bytecode93 after its earlier Living, Inventory and Player stores; native does
-not clear the tag or continue publication after that frontier. The
+uncleared. The detailed loader executes the actual wake at Player read
+bytecode93 after its earlier Living, Inventory and Player stores, then continues
+Spawn and Score before clearing the tag and publishing. A failed wake retains
+its native child and independent entry Registry in the owning load result;
+checked error retirement must finish before graph dependencies end. The legacy
+compact attachment result preserves its earlier wake93 refusal contract. The
 [LocalPlayer NBT contract](../entity/player-nbt.md) defines the exact supported
 reads, direct writes, first-Player metadata saves and retained failure effects.
 

@@ -1,5 +1,19 @@
 # minecraft-c
 
+[Sleeping Player NBT](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-nbt.md)
+now runs the actual wake at GS93 and continues through Spawn and Score.
+Windows and sanitized Linux match forty original cases, 9,909 typed scalars
+and 58 active source positions. Failed work retains its child and independent
+Registry through checked World/Load/Respawn cleanup. Two prepared Windows
+profiles on monitor 2 exercise loading, source save/reselection, independent
+awake NBT readback and real retained failures. Natural night, whole restart
+and original drawing remain outside that evidence.
+
+The [Player tick control setup](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/reference-readers.md#player-tick-transport-control-setup)
+keeps all 2,859 rejection results and complete parser payloads. Three fresh
+serial Windows pairs per Python mode measure about 26% lower median control
+CPU. That result qualifies the test setup and supplies no gameplay FPS claim.
+
 [Player tick wake parents](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-sleep-tick.md)
 now reach retained wake at the missing-Bed and daytime sites, preserving failed
 children through World/client cleanup. Two original VMs supply 36 prepared
@@ -22,7 +36,7 @@ packet has 76 profiles; native replay passes 9,784 scalar comparisons on
 Windows and sanitized Linux. Eight authored World controls cover failures,
 cleanup and the full 361-Chunk/28,880-sample stored-air footprint. Eleven HUD
 timer inputs and four-direction Display controls have separate native scope.
-Natural elapsed sleep, default-hostile CQ/FW, damage/NBT wake parents, remote
+Natural elapsed sleep, default-hostile CQ/FW, damage wake parents, remote
 sleep-screen behavior and loaded-night acceptance remain unfinished or
 unqualified. The earlier loaded Bed opportunity remains failed during loading
 because Remote Desktop holds foreground focus.

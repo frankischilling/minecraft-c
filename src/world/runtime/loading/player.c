@@ -1,4 +1,7 @@
 #include "mc/world/runtime/loading/player.h"
+#include "../../../entity/nbt/read_internal.h"
+#include "mc/entity/player/sleep.h"
+#include "player_internal.h"
 
 #include "../../../entity/entity_internal.h"
 #include "../chunk_provider_internal.h"
@@ -47,7 +50,27 @@ static mc_world_storage_status ownership_status(mc_entity_status status) {
                                                    : MC_WORLD_STORAGE_INVALID_ARGUMENT;
 }
 
+bool mc_world_player_load_error_retire(mc_world_player_load_error *error) {
+    if (error == NULL)
+        return false;
+    error->cleanup = (mc_world_storage_error){0};
+    if (!mc_entity_nbt_error_retire(&error->nbt)) {
+        if (error->nbt.sleep_cleanup != NULL)
+            error->cleanup = error->nbt.sleep_cleanup->cause;
+        if (error->cleanup.status == MC_WORLD_STORAGE_OK)
+            error->cleanup = (mc_world_storage_error){MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                                      "World Player NBT checked retirement", 0};
+        return false;
+    }
+    return true;
+}
+
 static const char *nbt_exception(const mc_entity_nbt_error *error) {
+    if (error->sleep != NULL)
+        return !error->sleep->native_policy && error->sleep->source_exception &&
+                       !error->sleep->source_error
+                   ? error->sleep->exception_class
+                   : NULL;
     switch (error->status) {
         case MC_ENTITY_NBT_NULL_REFERENCE:
             return "java/lang/NullPointerException";
@@ -73,8 +96,12 @@ static const char *nbt_exception(const mc_entity_nbt_error *error) {
     }
 }
 
-mc_world_storage_status mc_world_runtime_load_player(mc_world_runtime *world, mc_entity *player,
-                                                     mc_world_player_load_error *error) {
+mc_world_storage_status
+mc_world_runtime_load_player_with_child_output(mc_world_runtime *world, mc_entity *player,
+                                               bool can_transfer_children,
+                                               mc_world_player_load_error *error) {
+    if (can_transfer_children && error == NULL)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     /* Registry and WorldAccess callbacks can reenter the real World. Never
      * retain this complete diagnostic workspace in every ancestor's C stack. */
     mc_world_player_load_error *frame = malloc(sizeof(*frame));
@@ -154,14 +181,31 @@ mc_world_storage_status mc_world_runtime_load_player(mc_world_runtime *world, mc
             null_receiver(frame, "World Player load Player NBT receiver");
             goto done;
         }
-        const mc_entity_nbt_status loaded = mc_entity_read_nbt_in_context(
-            player, world->classes->registry, mc_world_info_player_root(tag), NULL, &frame->nbt);
+        const mc_entity_nbt_status loaded = mc_entity_read_nbt_with_child_output(
+            player, world->classes->registry, mc_world_info_player_root(tag), NULL,
+            can_transfer_children, &frame->nbt);
         if (loaded != MC_ENTITY_NBT_OK) {
-            fail(frame,
-                 loaded == MC_ENTITY_NBT_LIMIT               ? MC_WORLD_STORAGE_LIMIT
-                 : loaded == MC_ENTITY_NBT_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
-                                                             : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                 frame->nbt.operation);
+            mc_world_storage_status status =
+                loaded == MC_ENTITY_NBT_LIMIT               ? MC_WORLD_STORAGE_LIMIT
+                : loaded == MC_ENTITY_NBT_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+                : loaded == MC_ENTITY_NBT_BUSY              ? MC_WORLD_STORAGE_BUSY
+                                                            : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+            mc_world_storage_error reached = {0};
+            if (loaded == MC_ENTITY_NBT_CLEANUP_FAILED && frame->nbt.sleep_cleanup != NULL)
+                reached = frame->nbt.sleep_cleanup->cause;
+            else if (frame->nbt.sleep != NULL)
+                reached = frame->nbt.sleep->world;
+            if (reached.status != MC_WORLD_STORAGE_OK)
+                status = reached.status;
+            fail(frame, status, frame->nbt.operation);
+            if (reached.status != MC_WORLD_STORAGE_OK)
+                frame->cause = reached;
+            if (frame->nbt.sleep != NULL && !frame->nbt.sleep->native_policy &&
+                frame->nbt.sleep->source_error) {
+                frame->source_error = true;
+                frame->native_policy = false;
+                frame->exception_class = frame->nbt.sleep->exception_class;
+            }
             const char *exception_class = nbt_exception(&frame->nbt);
             if (exception_class != NULL)
                 caught(frame, exception_class);
@@ -226,8 +270,17 @@ done:
         mc_world_runtime_call_leave(world);
     }
     const mc_world_storage_status status = frame->status;
-    if (error != NULL)
-        *error = *frame;
+    if (error != NULL) {
+        *error = *frame; /* Sole transfer; the heap scratch no longer owns NBT. */
+        frame->nbt.sleep_work = NULL;
+        frame->nbt.sleep = NULL;
+        frame->nbt.sleep_cleanup = NULL;
+    }
     free(frame);
     return status;
+}
+
+mc_world_storage_status mc_world_runtime_load_player(mc_world_runtime *world, mc_entity *player,
+                                                     mc_world_player_load_error *error) {
+    return mc_world_runtime_load_player_with_child_output(world, player, error != NULL, error);
 }

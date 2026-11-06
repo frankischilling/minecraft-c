@@ -7,7 +7,10 @@ int mc_notice_startup_fixture_main(int, char **);
 #include "client/render/item_gui.h"
 #include "mc/entity/nbt/errors.h"
 
-_Static_assert(sizeof(mc_entity_nbt_error) == 544, "existing compact Entity NBT value contract");
+_Static_assert(offsetof(mc_entity_nbt_error, sleep_work) == 544,
+               "existing compact Entity NBT payload contract");
+_Static_assert(sizeof(mc_entity_nbt_error) == 568,
+               "Entity NBT payload and independent sleep ownership cells");
 
 static int notice_cpu(const char *resources) {
     fixture f;
@@ -124,6 +127,7 @@ static int notice_cpu(const char *resources) {
 
 int main(int argc, char **argv) {
     CHECK(argc == 2 && notice_cpu(argv[1]) == 0);
-    printf("NOTICE_CPU cleanup=1 checks=%u compact-nbt-error=544 SDL-init=0\n", checks);
+    printf("NOTICE_CPU cleanup=1 checks=%u compact-nbt-error=544 owned-nbt-error=568 SDL-init=0\n",
+           checks);
     return 0;
 }

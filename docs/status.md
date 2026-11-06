@@ -1,5 +1,26 @@
 # Development status
 
+[Sleeping Player NBT](entity/player-nbt.md) now executes the actual wake at
+GS93, then continues Spawn and Score. Windows and sanitized Linux each match
+the new forty-case original packet, 9,909 typed scalars and 58 active source
+positions. Retained wake and entry-Registry work survives failed reads until
+checked cleanup succeeds through the detailed World loader, Load or Respawn.
+
+Two Windows SDK profiles pass on monitor 2. One loads a saved sleeping Player,
+saves through Pause/Save and Quit, reselects the World, independently checks
+awake NBT and exercises a direct Respawn ownership failure. The other preserves
+a completed wake/Spawn prefix at the expected malformed Score failure and
+checks retained Load cleanup. Their 1,428 and 625 native checks and scope are
+recorded in [testing](testing.md#player-sleeping-nbt-continuation). Natural
+sleep progression, original frames and a whole restart remain unqualified.
+
+The preceding exact `0412cdf7` checkpoint passes all four jobs in
+[hosted run 42235183856](https://github.com/frankischilling/minecraft-c/actions/runs/42235183856):
+Windows 725/725, GCC and Clang 783/783, and formatting of 2,183 files.
+Those jobs qualify the Player tick increment below, before the current NBT work.
+
+Complete public selections now pass Windows 780/780 in 577.15 seconds and sanitized Linux 766/766 in 1101.11 seconds, without skips. Every preceding public name remains and exactly four are added per host. All 5,552 guarded public inputs stay unchanged through both accepted cohorts; all 24 placed Windows game windows are on monitor 2.
+
 [Player tick sleep/wake parents](entity/player-sleep-tick.md) now run retained
 wake at the missing-Bed and daytime sites and preserve failed ownership through
 World/client cleanup. Windows and sanitized Linux pass the new 36-profile
@@ -7,12 +28,12 @@ original prefix comparison, 1,625 scalars and staged native cleanup controls.
 The whole native continuation has an explicit differing App input; whole
 original parent returns and loaded-night gameplay remain unqualified.
 
-Complete public selections pass Windows 776/776 in 349.20 seconds and
+The preceding Player tick public selections pass Windows 776/776 in 349.20 seconds and
 sanitized Linux 762/762 in 994.85 seconds, without skips. All preceding
 names remain, exactly six are added per host, and all 5,523 guarded inputs
 stay unchanged. All 24 visible Windows test windows are placed on monitor 2.
 
-The preceding exact `21effab7` source passes
+The earlier exact `21effab7` source passes
 [hosted run 42214978291](https://github.com/frankischilling/minecraft-c/actions/runs/42214978291):
 Windows 719/719, GCC and Clang 777/777, plus formatting of 2,180 files.
 All four checkout trees equal that pushed source. These results precede the
@@ -36,7 +57,7 @@ loading while Remote Desktop holds focus, before any Bed action. The retained
 [test record](testing.md#bed-placement-and-daytime-interaction) separates those
 scopes. Complete sleep/wake bodies and Player tick wake parents now have
 separate bounded qualification above. Natural elapsed sleep, default-hostile
-CQ/FW, damage/NBT wake parents and loaded-night acceptance remain unfinished
+CQ/FW, damage wake parents and loaded-night acceptance remain unfinished
 or unqualified.
 
 The [World reference reader](performance/reference-readers.md) preserves all

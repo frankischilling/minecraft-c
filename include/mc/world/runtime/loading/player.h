@@ -9,7 +9,7 @@ typedef struct mc_world_player_load_error {
     mc_world_storage_status status;
     const char *operation, *exception_class;
     unsigned int bytecode, catch_bytecode;
-    bool native_policy, source_exception, caught_exception;
+    bool native_policy, source_exception, source_error, caught_exception;
     bool print_stack_trace_pending, source_returned;
     bool saved_data_present, nbt_returned, info_cleared, publication_returned;
     mc_world_storage_error cause;
@@ -17,9 +17,16 @@ typedef struct mc_world_player_load_error {
     mc_entity_error entity;
     mc_entity_nbt_error nbt;
     mc_world_entity_error publication;
+    /* Separate current native retirement cause; never replaces source cause. */
+    mc_world_storage_error cleanup;
 } mc_world_player_load_error;
 
+/* Passive initialization must not discard an owning previous result. */
 void mc_world_player_load_error_init(mc_world_player_load_error *);
+/* Consume owned NBT wake/Registry children before releasing graph dependencies.
+ * False preserves the remaining owner and current cleanup cause, without source
+ * retry. Source flags/sites/operation survive; consumed nested borrows end. */
+bool mc_world_player_load_error_retire(mc_world_player_load_error *);
 
 /* Actual client fd.a(gs), once on a live client GAME World and the same
  * application LocalPlayer/Registry/profile. NULL receivers reach their source
@@ -42,7 +49,11 @@ void mc_world_player_load_error_init(mc_world_player_load_error *);
  * that capture before graph retirement. All other error fields are values or
  * static strings. Output/error views must remain disjoint from live owners.
  * Keep World, Player and graph dependencies live/exclusive through the call.
- * No error-owned native occurrence is created. NULL error is supported. */
+ * A failed GS93 child transfers its native ownership into nonnull error.nbt;
+ * that record is noncopyable until checked error retirement succeeds. NULL
+ * error keeps ordinary paths but refuses only at a reached93, after the actual
+ * earlier read stores, before a child without a lasting ownership destination.
+ * Source Error stays distinct from caught Exception and native cleanup failure. */
 mc_world_storage_status mc_world_runtime_load_player(mc_world_runtime *, mc_entity *,
                                                      mc_world_player_load_error *);
 

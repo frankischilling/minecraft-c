@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 342076,
-      "sha256": "98d35e2b927b8f47ff848e10331371e642aec3c01c5f9ad1e42c605272e60dc9"
+      "bytes": 342114,
+      "sha256": "ea9d8054224f78a31212fdd21e4e3402f88b4672041efefe8a88a60b39076561"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -190,8 +190,8 @@
       "sha256": "4dba398b9d951db52021c212c623a014418f664a035c98558a3a1961a9f1395a"
     },
     "docs/client/achievement-notice.md": {
-      "bytes": 12023,
-      "sha256": "cc7ea2c9890e033ed0421009eee5e6fa757a63548387da5d56ebf8d18692dd99"
+      "bytes": 12218,
+      "sha256": "0e3e49b9af2f48a72d8b3a3b20690d4148201903e69ef3dc7bf998e706347e2b"
     },
     "docs/client/application-owner.md": {
       "bytes": 7415,
@@ -406,8 +406,8 @@
       "sha256": "6b828609600f3a94aea5d135533d291064e178b4b364643452f2116f6c1a25c1"
     },
     "docs/entity/player-nbt.md": {
-      "bytes": 9447,
-      "sha256": "10c1a4fa9857f9b088fc072b4659cd0f6c72760df8a73eff1acf52652de5e55a"
+      "bytes": 13700,
+      "sha256": "217f8a190764f712c7ec04d0c89678b4edc927c6470d2bf4467341d79f89b7f7"
     },
     "docs/entity/player-spawn-reset.md": {
       "bytes": 3889,
@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 205706,
-      "sha256": "9bb47e9078305b5ebac92d3026261fb808382ff1d8d976e0adffb09013aa7e85"
+      "bytes": 206635,
+      "sha256": "ffb093632ee535e269dd4bcef2ce3c6023feb2d6e4c339b869fb4dd942b37bc6"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 117638,
-      "sha256": "e755235413a765feba2c5085dd4e9818a157afc9809c2396445e1a8cbf4c1a93"
+      "bytes": 119230,
+      "sha256": "9d43dbab8ed16cfd656c49d7ca9b70a267f1617df1dfe92d32ed298118300d83"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,24 +826,24 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 511908,
-      "sha256": "56146acf533d32a904fcde66f98235a1e5049f04c9cf8fe7f486fa5b68b2dc9b"
+      "bytes": 519007,
+      "sha256": "b58f8f92fb92464c1cc7bce28429ec3c01ade14ebc10cd5f4458424c2eae4fa8"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
       "sha256": "2266d5edd099003b4b3fe304ecf79cf86bbfcab026ef1480936c04a391024957"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 132145,
-      "sha256": "2ae6790c55ca70df25b8f9557032e0fa4bb9937e5cae22e1442d52670893ad47"
+      "bytes": 133816,
+      "sha256": "16300d3fafc690232e5cb0b9788401c82069b350d2ab395a8afcf670c6a7d26b"
     },
     "docs/wiki/History.md": {
-      "bytes": 70831,
-      "sha256": "134f56d3d0224edb79377a6e89e9180efa84cb3854e42292b75b186ad5065cea"
+      "bytes": 72750,
+      "sha256": "76ea670fb457fa2f59215181bc8d0fbf46a2b5844e568dcd62905dec3a0243e8"
     },
     "docs/wiki/Home.md": {
-      "bytes": 19644,
-      "sha256": "e74c4e45a743553cb40e1c678ceab6c01a2f21596c4d5a325707ee610c04491a"
+      "bytes": 20688,
+      "sha256": "a024c43c0627a4ab84f0d7f4aa310c89e146f5276bad1dca550d04f9be0e70e0"
     },
     "docs/wiki/Startup.md": {
       "bytes": 7992,
@@ -974,8 +974,8 @@
       "sha256": "2b9bbaddbd3e4ca114cdb7da7665d6c53471a63ad231a3d687187965a0c4b79e"
     },
     "docs/world/player-publication.md": {
-      "bytes": 6081,
-      "sha256": "eb48cc8d79cf0f82b70af6cc53a17d4791ffb6f40d1e29e641f131034f60b82a"
+      "bytes": 6320,
+      "sha256": "8301f5f8683d71acd0a6c6c9de1de6d955bbd3e0bb5fa4f24197cf03b2129650"
     },
     "docs/world/population/dungeon.md": {
       "bytes": 5540,
@@ -1398,16 +1398,16 @@
       "sha256": "0de4e3bccc8661d5601fe52a6498a19b1ebad30a313dfaeb19a43fed30ba4a57"
     },
     "include/mc/entity/nbt/errors.h": {
-      "bytes": 7112,
-      "sha256": "37c95cae27c4380412f1420c67e9b57a89ac13545f1676495469a6e353436025"
+      "bytes": 8725,
+      "sha256": "0eb41f52653c061f70a62380dc8f1de95ea320502e0edbc6447034dc1c53e646"
     },
     "include/mc/entity/nbt/factory.h": {
       "bytes": 3846,
       "sha256": "6dd5a33897a8c6155ffee7ff0fdf2bec6843fc90db93b63df3f26465181f6645"
     },
     "include/mc/entity/nbt/nbt.h": {
-      "bytes": 8395,
-      "sha256": "07be06282e8219845b13920df3bc4bd3d083eae7ef14fefb9ef7dce19496d84c"
+      "bytes": 8997,
+      "sha256": "353ed68be2a6ddf397a24c7bd79b5ff07bb9da257216f4c6a69496518e56e228"
     },
     "include/mc/entity/nbt/storage.h": {
       "bytes": 9605,
@@ -1738,8 +1738,8 @@
       "sha256": "62d642941475fafef9e62b461270aa63ff2333cae46f3165e11656e20972fc98"
     },
     "include/mc/world/runtime/players.h": {
-      "bytes": 2880,
-      "sha256": "fea051a7f0d2b44a335bb796b538f170553ca18e4b2536429997d1aebf984b00"
+      "bytes": 3029,
+      "sha256": "b44b5b34e5596a96a4187be406fe5c62c85ace30accbd99f6e4a8b266e6387e2"
     },
     "include/mc/world/runtime/population/context.h": {
       "bytes": 1031,
@@ -4026,16 +4026,16 @@
       "sha256": "78a778063fd2cff2d5bce5b735c58153f34449b1613d06c233b7d78ce910c0ca"
     },
     "src/entity/nbt/errors.c": {
-      "bytes": 11494,
-      "sha256": "51e22468692be0301eb95cf503c3ae67bb5f5853d83f6242304daa3a398b2298"
+      "bytes": 11751,
+      "sha256": "4c7a7ef9b27a6132a5b8e3b9cc78cc090bb15f86c0efc4da6c9a418c60002c5f"
     },
     "src/entity/nbt/factory.c": {
       "bytes": 14181,
       "sha256": "3e609f94a3d1cb21a474a17715e0bbaf5e99ca9f39ac477e2e624bdd76d2b871"
     },
     "src/entity/nbt/nbt.c": {
-      "bytes": 26688,
-      "sha256": "79c0fa835223711d2ae5f7dce1069ec65148332509f373d77d021766b84845b6"
+      "bytes": 28013,
+      "sha256": "c41c9db084964e43c9c75f6caa7bd49ab9f9b26f11bb9162dc48cd079969e06a"
     },
     "src/entity/nbt/storage.c": {
       "bytes": 15839,
@@ -4078,12 +4078,12 @@
       "sha256": "a8c1fbae6775e667a75da8adb136e247183e8f876757a2c9c265018e177f65f5"
     },
     "src/entity/player/nbt.c": {
-      "bytes": 14251,
-      "sha256": "2d0d468d7d44f9a1e2bfd2635cb418c3adf1c6ed86be150796da745d7773c6c2"
+      "bytes": 23044,
+      "sha256": "ff51d847ad5531b7a6cdb843367802cd8fa83baaffe4c1cf4b9586847626ad5b"
     },
     "src/entity/player/nbt_internal.h": {
-      "bytes": 2265,
-      "sha256": "c8f8432905734324cda1382ebc8d10618f9654040b547538d348425869d39c8a"
+      "bytes": 3006,
+      "sha256": "91033bae137865525978c88f35de7440c2633049d112c45492b3bfd267ff0078"
     },
     "src/entity/player/pickup.c": {
       "bytes": 4414,
@@ -4674,8 +4674,8 @@
       "sha256": "f9b0dadeeb5dddffc82730c07bacf794fc3c5baf02fead2113f4284c45da8939"
     },
     "src/world/runtime/entity_publication.c": {
-      "bytes": 40340,
-      "sha256": "c2fffe8888bfa8591a2d2524a3340a8968f682cd3b30dc4978a3ab0529356c96"
+      "bytes": 40435,
+      "sha256": "3c729b4e439e27de63c2eed43b618da07368fdc694cf69ebcef5a5079f9545f5"
     },
     "src/world/runtime/entity_publication_internal.h": {
       "bytes": 3048,
@@ -6070,16 +6070,16 @@
       "sha256": "7a15149dacda5bdf9c43776b09ba72d8eedc9e7448932cbe036d16a19d1093de"
     },
     "tests/entity/player/test_nbt.c": {
-      "bytes": 27379,
-      "sha256": "6ed4b4ef93ab4284d1168095583e18684e823956a0f09a8bd521a55f704d610b"
+      "bytes": 28470,
+      "sha256": "9ffd536e21c1e66b36abc4aa75f8caa4eed8e2a1717d3cd5cb2f649dfbe8203b"
     },
     "tests/entity/player/test_nbt_coordinates.c": {
       "bytes": 7303,
       "sha256": "96766dc59bf7c4668a6452f700f4eca758d218a6099c2e40ce70f0c72391a9da"
     },
     "tests/entity/player/test_nbt_errors.c": {
-      "bytes": 22617,
-      "sha256": "18e3b5ad82b939d858b8f800c6d736511fa8f18f6c2775460cf65df1ad08f660"
+      "bytes": 23322,
+      "sha256": "7c02c4fcd029c3f1cea657e3012f31fea74620050c1c9b51b1b4be9302bf0920"
     },
     "tests/entity/player/test_spawn.c": {
       "bytes": 14090,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 568741,
-      "sha256": "0cc330adc4b4e0b27c30debd613a2762f29a120dfc4b64f4fe3276da318acdad"
+      "bytes": 577483,
+      "sha256": "3e6f9e320d9a0a8a194b9b07ce40604cd3f9ebf18a9545125bfdb64d5b01184e"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 669046,
-      "sha256": "458d65db7c8cadbf02e3ab4fc7360dffca099d4ebfdbdde8473c19634cbc3c0f"
+      "bytes": 677895,
+      "sha256": "5e564c48cc2d5cea28f066a96b3fff9af05d21c962bc01343ea63c15826d2653"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 564541,
-      "sha256": "42de7c42be7926f83333b7ba726d8c7e1ff45ee68bebb4243f261be588118aff"
+      "bytes": 573283,
+      "sha256": "7dd1d40cdb2aed4aec92d9a910013276691ee20fbe1c612f6d47e8934324bc05"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9926,8 +9926,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 392426,
-      "sha256": "ded97f98b38bbcb06c339af2a721df2a55c5426443a1e299b5dd6a7adad8ed3f"
+      "bytes": 393147,
+      "sha256": "d3be65356e0efc8c07d31328f8691d2cad8e49a3e62873d4e7d94fd05393e6fb"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -10006,8 +10006,8 @@
       "sha256": "7aca6fcbd8139daeac6da779a0c3cacc49d46cb6738167287c5b0e4d68686b5e"
     },
     "src/client/world/load_world.c": {
-      "bytes": 103646,
-      "sha256": "b99ed36d4b90b22c728994b729225b1c299f3aca37216664ad1e2fc39202d8ea"
+      "bytes": 104180,
+      "sha256": "b22870053013fbfc58c1221ed37e9728db557841e1d4de4ff26f1fbbba582e70"
     },
     "src/client/world/load_world.h": {
       "bytes": 12713,
@@ -10146,8 +10146,8 @@
       "sha256": "bb2e41c53c8f757af4b4db7749f5b2661a19c3ae276a31612135b795a14901af"
     },
     "include/mc/world/runtime/loading/player.h": {
-      "bytes": 2519,
-      "sha256": "f147f230daf46d14dbcdc5fad76fc1fa29f6c6b82fce66dc9a861931d227ab34"
+      "bytes": 3357,
+      "sha256": "bb7fbeb36a9153eaefbfee9f7d6b05cace2c7d3f06d449377e21cd70eb37dbed"
     },
     "include/mc/world/runtime/world_access_error.h": {
       "bytes": 1925,
@@ -10210,8 +10210,8 @@
       "sha256": "38326eebab2bc4108ecfccd0b3a60c8ed9af11a1aea6533755da0fc5e99eb598"
     },
     "src/world/runtime/loading/player.c": {
-      "bytes": 9965,
-      "sha256": "15f5d70977b7fd7c60452d537742bd7d441bc98d15c5f9b244de15dd767079fc"
+      "bytes": 12549,
+      "sha256": "619946b5733bc9ba5dc95f880e115a07e05d6592fc4840e1501fc1458bec5396"
     },
     "tests/client/display/test_source_lists.c": {
       "bytes": 27675,
@@ -15066,16 +15066,16 @@
       "sha256": "d1632a7e875a08c1fe1ba1a80d66f38b4ff0e23621ed47238e200164264c9086"
     },
     "tests/client/gui/test_active_notice.c": {
-      "bytes": 27506,
-      "sha256": "280dcc1cb29ec9d6194be4f263ab0ba20fbdb13014766bddfa4ddd238d12bedf"
+      "bytes": 27702,
+      "sha256": "0a18a7f51fb6dca6e8a90ac3b0fe0c9506dfbe3a9346f3a5b0fab34a4ffc41ae"
     },
     "tests/client/gui/test_active_notice_cpu.c": {
-      "bytes": 8015,
-      "sha256": "8d6a5056fdb952cf7ec1b95515469c0ea62a1ef9a785b2acfb484670e353c48a"
+      "bytes": 8204,
+      "sha256": "466e68326c2f83bd037dafad6ad9e8cd756824befc08b80384979aea91456691"
     },
     "tests/tools/client/test_active_notice.py": {
-      "bytes": 23168,
-      "sha256": "fa33468b805935d0e0a2ec17d84837ea86802f4d8f4c0ad7516c70501db35ebf"
+      "bytes": 23194,
+      "sha256": "c81e3a0c5fdba268b0b5fa0d594d4fefe51caa2822d88333edb7dfba35dd1fab"
     },
     "tests/reference/client/notice/active-draw-qualification.json": {
       "bytes": 11622,
@@ -15138,12 +15138,12 @@
       "sha256": "7f059611bd3a1097588ea8aa375dff428cc34d7dba85430da2564a190e73644b"
     },
     "tests/client/gui/test_block_selection.c": {
-      "bytes": 19143,
-      "sha256": "da8724b08dcaf4924a5b2152a6ea74505053b258f54aea86e371746827401aa7"
+      "bytes": 19329,
+      "sha256": "72bcc67397e29f9a23b5cf5a4208e525f2b334c6964581cf8591f79e6dd572a4"
     },
     "tests/tools/client/test_block_selection.py": {
-      "bytes": 20535,
-      "sha256": "ad345e862b5c1e312a19a87f444beab9a485ce2c30aafb3b5c987352b31173be"
+      "bytes": 20578,
+      "sha256": "1cb3ad65ab972e396104746c8964165b38ce832c9e5b2b6a98ae19a4de92b272"
     },
     "tests/tools/world/collision/selected_getter_cases.json": {
       "bytes": 73950,
@@ -15190,8 +15190,8 @@
       "sha256": "33add4d490e0418aa381518fb8a930395c741d4db21f2b9a6059182071272093"
     },
     "docs/entity/mob-nbt.md": {
-      "bytes": 8718,
-      "sha256": "b1bad6cb75fbfda93eace25124c5372295c47d819b561fa562a1635a463ee605"
+      "bytes": 8833,
+      "sha256": "cf58555cc6a02f580894111d022906ade12c02356354958325ce180acc59beb5"
     },
     "docs/world/region-output.md": {
       "bytes": 4230,
@@ -21282,8 +21282,8 @@
       "sha256": "106bc15867725d1278049e54023f1d148cdede32db552156ce5118a17dbafb84"
     },
     "src/client/world/respawn.inc": {
-      "bytes": 33963,
-      "sha256": "231c40c1d0e54c1177d596ece759bb78ec7eafdd9ce01aef704c16a706551e6f"
+      "bytes": 34611,
+      "sha256": "9e261466fe34462be35557f3ac3bbc595b5880c918382317f6b45c6de886d93a"
     },
     "src/entity/player/death.c": {
       "bytes": 24853,
@@ -21307,7 +21307,7 @@
     },
     "tests/client/gameplay/current_scene_inputs.json": {
       "bytes": 3669,
-      "sha256": "39d007b2c1011b48cc9d76c0bacce4eca803bc545468545bba89e274c7d9daf4"
+      "sha256": "41d61b5879f2895a6b6da26269194371424b5220af209c40aa4768d34b445d2b"
     },
     "tests/client/gui/test_death_screen.c": {
       "bytes": 9609,
@@ -21359,7 +21359,7 @@
     },
     "tests/tools/client/scene_inputs.py": {
       "bytes": 3861,
-      "sha256": "707fa31a50a93b39e5782b8ac6c36655c3e614f08cd83a93aa346b52e9567a0c"
+      "sha256": "6c1d21e581b92c31cbc2d3bc49819d9347e882e98d1559fc94f50e3bfa55d7ae"
     },
     "tests/tools/client/test_death_respawn.py": {
       "bytes": 4935,
@@ -21658,8 +21658,8 @@
       "sha256": "548d810f6542a3ad5d8ff073acae9387f604bf6a426bac83c775772bc76efd57"
     },
     "docs/performance/reference-readers.md": {
-      "bytes": 7206,
-      "sha256": "f8d55cc29da0c7f2f02b49d5b0ba7ca2907dfcf36f51eeeff336a39bc29e589b"
+      "bytes": 9211,
+      "sha256": "7d26a3810616afc29fd02f24643d5a1f8bdd3223045bf6fcf46ffc14d8a8bf6d"
     },
     "docs/world/bed-interaction.md": {
       "bytes": 5514,
@@ -22086,8 +22086,124 @@
       "sha256": "7f93bdd846a6c9039795e52121a2631363476a555950d2919e63ba3b845eb8a2"
     },
     "tests/tools/entity/test_player_sleep_tick.py": {
-      "bytes": 22589,
-      "sha256": "333312ebe6de045d9f555c1dbad781d4ff889098453fc2b1bf95a0f7ab218251"
+      "bytes": 23176,
+      "sha256": "7677557f711787fbbade553807e80adfa240a211808b3db2cbf87c83701437d7"
+    },
+    "cmake/player_sleep_nbt.cmake": {
+      "bytes": 4004,
+      "sha256": "95194040aacf339c1c6be17df5eed6ce340b3ca361078939b3ea9d7d774a832e"
+    },
+    "src/entity/nbt/read_internal.h": {
+      "bytes": 795,
+      "sha256": "796a363d3be945080e39475359997bcc88aa6c31e2dc6226bf1fcc19f98466ad"
+    },
+    "src/world/runtime/loading/player_internal.h": {
+      "bytes": 572,
+      "sha256": "2cd15f90613611071d445ec7cce244a8cc8fbb2a450a3788df6eca2debf106cd"
+    },
+    "tests/client/startup/player_sleep_nbt_controls.h": {
+      "bytes": 20751,
+      "sha256": "aa43c555e00b0443c4527d6d92873e90ee901e7569dbf942438d4203ca7e179b"
+    },
+    "tests/entity/player/nbt_sleep_cases.h": {
+      "bytes": 24502,
+      "sha256": "b1090697d46e0e8f798bed7ae91575408cf6514334587e18a870ee1e4341eeaf"
+    },
+    "tests/entity/player/nbt_sleep_load_cases.h": {
+      "bytes": 11005,
+      "sha256": "265437d09c71271f86500b038de0d6461c68a9381fd030c94a71362a9ffe7991"
+    },
+    "tests/entity/player/nbt_sleep_matrix_cases.h": {
+      "bytes": 57296,
+      "sha256": "edc68db2fbaa84c74ff852984b5cd50a40df14dc30e10579306f87298aea1e93"
+    },
+    "tests/reference/entity/player_sleep_nbt_parent/.gitattributes": {
+      "bytes": 8,
+      "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    "tests/reference/entity/player_sleep_nbt_parent/PlayerNbtSleepMatrixJdi.java": {
+      "bytes": 16340,
+      "sha256": "629dc3cdef68633388aaaa97faf04011fceeb2168fa5a98296abf19bb9be80ef"
+    },
+    "tests/reference/entity/player_sleep_nbt_parent/PlayerNbtSleepMatrixObservation.java": {
+      "bytes": 16594,
+      "sha256": "96fcbcac020f7a047692ecc96beb90265b31028350d8fc0a4f2f36eed3d6a9ea"
+    },
+    "tests/reference/entity/player_sleep_nbt_parent/README.md": {
+      "bytes": 5167,
+      "sha256": "721f0072cf12338366c493b4544fc5e2f2ade1db6d40749d4cc4911283f66969"
+    },
+    "tests/reference/entity/player_sleep_nbt_parent/capture_reader.py": {
+      "bytes": 16210,
+      "sha256": "d7a8fedf49b1c347ce6435f074bd8f172d03f1138572cce18a934950438c077a"
+    },
+    "tests/reference/entity/player_sleep_nbt_parent/capture_reference.py": {
+      "bytes": 10202,
+      "sha256": "ed58ec207680696169db609332d0f8e1368f60d9864ea8c453dec098b58ab1dc"
+    },
+    "tests/reference/entity/player_sleep_nbt_parent/class-names.txt": {
+      "bytes": 101,
+      "sha256": "87fe781b7a2eaa13e3eece1a62f3181ab88edd8a87ea639a4c81f62324fc549b"
+    },
+    "tests/reference/entity/player_sleep_nbt_parent/executed-source-inputs.json": {
+      "bytes": 658992,
+      "sha256": "f622d1540218b01b3e0ad102b76b0f33336fd156614412574c1b03cd6650177b"
+    },
+    "tests/reference/entity/player_sleep_nbt_parent/export_reference.py": {
+      "bytes": 8776,
+      "sha256": "e043047935422a2c6cdd002ee8fd77136d9a40d8992bc2eb4f029c8490876811"
+    },
+    "tests/reference/entity/player_sleep_nbt_parent/finite.json": {
+      "bytes": 6675363,
+      "sha256": "455e101c9feb56b5bbe9a91a8aa04cd8444df2db3ac44130985fee98ee543637"
+    },
+    "tests/reference/entity/player_sleep_nbt_parent/helper-pins.json": {
+      "bytes": 35303,
+      "sha256": "42c31965b508c5b7d9b693f435863b3bb2c6cd31f9b1acec7138979cdb1ddc64"
+    },
+    "tests/reference/entity/player_sleep_nbt_parent/packet.py": {
+      "bytes": 11197,
+      "sha256": "d4472d59e770c5d8a1fac5dcdce4d8923c77cb39792f5230aafc63ab33a35e53"
+    },
+    "tests/reference/entity/player_sleep_nbt_parent/profiles.json": {
+      "bytes": 304592,
+      "sha256": "1f17ce23dc082dbfbd3f27ccd330f3015c20d1d00073d905cac0cc9f95d13171"
+    },
+    "tests/reference/entity/player_sleep_nbt_parent/profiles.tsv": {
+      "bytes": 2881,
+      "sha256": "69a47c2e9b83b44cf7c0e8a47fcc99e58d4b9a27f394ae382259197f85967d79"
+    },
+    "tests/reference/entity/player_sleep_nbt_parent/provenance.json": {
+      "bytes": 40107,
+      "sha256": "ffd46f90282a7d147821f64274c91e39ff2b24a0443348d00cb4a01c97138ab9"
+    },
+    "tests/reference/entity/player_sleep_nbt_parent/source-pins.json": {
+      "bytes": 443837,
+      "sha256": "2cec8ce76f536b3d2f093a14c4ab2985dc84cdc6e00dbbc31aace9a44278063b"
+    },
+    "tests/reference/entity/player_sleep_nbt_parent/test_packet.py": {
+      "bytes": 12584,
+      "sha256": "7c45fe0086523081939c13531f17b234b2a58efbbd8964c3f741bccd7ddbd7b2"
+    },
+    "tests/reference/entity/player_sleep_nbt_parent/validate.py": {
+      "bytes": 22859,
+      "sha256": "3749e5f6013da76fccc0d485775c14b14b0fc769b6a96eccedcec6053d19a0d7"
+    },
+    "tests/reference/entity/player_sleep_nbt_parent/witnesses.json": {
+      "bytes": 1638503,
+      "sha256": "209321a60a63fd65f678c7b0457d62afd7b82c2da2697f7fc4363bba48f6fe62"
+    },
+    "tests/tools/client/test_player_sleep_nbt_load.py": {
+      "bytes": 17710,
+      "sha256": "86cc50b1ae0273910b4102041ebda09c36d5064cfc80704e454083be64885f2e"
+    },
+    "tests/tools/entity/test_player_sleep_nbt_controls.py": {
+      "bytes": 4293,
+      "sha256": "bc39e30f50918d51c67ea6ae408c268750ea72eace2dab633e413e6f41abaef2"
+    },
+    "tests/tools/entity/test_player_sleep_nbt_parent.py": {
+      "bytes": 55640,
+      "sha256": "8f3ac9dec1ff470853e19a3097855ad4c182687459e896467c09d3fbb6eb5370"
     }
   },
   "self_metadata_excluded": true,
@@ -32426,6 +32542,204 @@
             "tests/tools/entity/test_player_sleep_tick.py"
           ],
           "current_count": 5522
+        }
+      }
+    },
+    {
+      "from_commit": "0412cdf76ee294a831b71e0ee3ab04271e74b70b",
+      "role": "Current Player NBT wake parent, retained child and independent Registry ownership, World loader and client Load/Respawn cleanup inputs. This entry binds current inputs only; original and native observations, historical producers, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1402850,
+        "sha256": "a3ec6814119bafef24cc2a523e45f30000ea50697a4cbecfac381b58e4e20fe2"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 342076,
+              "sha256": "98d35e2b927b8f47ff848e10331371e642aec3c01c5f9ad1e42c605272e60dc9"
+            },
+            "docs/client/achievement-notice.md": {
+              "bytes": 12023,
+              "sha256": "cc7ea2c9890e033ed0421009eee5e6fa757a63548387da5d56ebf8d18692dd99"
+            },
+            "docs/entity/player-nbt.md": {
+              "bytes": 9447,
+              "sha256": "10c1a4fa9857f9b088fc072b4659cd0f6c72760df8a73eff1acf52652de5e55a"
+            },
+            "docs/parity.md": {
+              "bytes": 205706,
+              "sha256": "9bb47e9078305b5ebac92d3026261fb808382ff1d8d976e0adffb09013aa7e85"
+            },
+            "docs/status.md": {
+              "bytes": 117638,
+              "sha256": "e755235413a765feba2c5085dd4e9818a157afc9809c2396445e1a8cbf4c1a93"
+            },
+            "docs/testing.md": {
+              "bytes": 511908,
+              "sha256": "56146acf533d32a904fcde66f98235a1e5049f04c9cf8fe7f486fa5b68b2dc9b"
+            },
+            "docs/wiki/Build-and-tests.md": {
+              "bytes": 132145,
+              "sha256": "2ae6790c55ca70df25b8f9557032e0fa4bb9937e5cae22e1442d52670893ad47"
+            },
+            "docs/wiki/History.md": {
+              "bytes": 70831,
+              "sha256": "134f56d3d0224edb79377a6e89e9180efa84cb3854e42292b75b186ad5065cea"
+            },
+            "docs/wiki/Home.md": {
+              "bytes": 19644,
+              "sha256": "e74c4e45a743553cb40e1c678ceab6c01a2f21596c4d5a325707ee610c04491a"
+            },
+            "docs/world/player-publication.md": {
+              "bytes": 6081,
+              "sha256": "eb48cc8d79cf0f82b70af6cc53a17d4791ffb6f40d1e29e641f131034f60b82a"
+            },
+            "include/mc/entity/nbt/errors.h": {
+              "bytes": 7112,
+              "sha256": "37c95cae27c4380412f1420c67e9b57a89ac13545f1676495469a6e353436025"
+            },
+            "include/mc/entity/nbt/nbt.h": {
+              "bytes": 8395,
+              "sha256": "07be06282e8219845b13920df3bc4bd3d083eae7ef14fefb9ef7dce19496d84c"
+            },
+            "include/mc/world/runtime/players.h": {
+              "bytes": 2880,
+              "sha256": "fea051a7f0d2b44a335bb796b538f170553ca18e4b2536429997d1aebf984b00"
+            },
+            "src/entity/nbt/errors.c": {
+              "bytes": 11494,
+              "sha256": "51e22468692be0301eb95cf503c3ae67bb5f5853d83f6242304daa3a398b2298"
+            },
+            "src/entity/nbt/nbt.c": {
+              "bytes": 26688,
+              "sha256": "79c0fa835223711d2ae5f7dce1069ec65148332509f373d77d021766b84845b6"
+            },
+            "src/entity/player/nbt.c": {
+              "bytes": 14251,
+              "sha256": "2d0d468d7d44f9a1e2bfd2635cb418c3adf1c6ed86be150796da745d7773c6c2"
+            },
+            "src/entity/player/nbt_internal.h": {
+              "bytes": 2265,
+              "sha256": "c8f8432905734324cda1382ebc8d10618f9654040b547538d348425869d39c8a"
+            },
+            "src/world/runtime/entity_publication.c": {
+              "bytes": 40340,
+              "sha256": "c2fffe8888bfa8591a2d2524a3340a8968f682cd3b30dc4978a3ab0529356c96"
+            },
+            "tests/entity/player/test_nbt.c": {
+              "bytes": 27379,
+              "sha256": "6ed4b4ef93ab4284d1168095583e18684e823956a0f09a8bd521a55f704d610b"
+            },
+            "tests/entity/player/test_nbt_errors.c": {
+              "bytes": 22617,
+              "sha256": "18e3b5ad82b939d858b8f800c6d736511fa8f18f6c2775460cf65df1ad08f660"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 568741,
+              "sha256": "0cc330adc4b4e0b27c30debd613a2762f29a120dfc4b64f4fe3276da318acdad"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 669046,
+              "sha256": "458d65db7c8cadbf02e3ab4fc7360dffca099d4ebfdbdde8473c19634cbc3c0f"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 564541,
+              "sha256": "42de7c42be7926f83333b7ba726d8c7e1ff45ee68bebb4243f261be588118aff"
+            },
+            "tests/client/startup/test_world_selection_loop.c": {
+              "bytes": 392426,
+              "sha256": "ded97f98b38bbcb06c339af2a721df2a55c5426443a1e299b5dd6a7adad8ed3f"
+            },
+            "src/client/world/load_world.c": {
+              "bytes": 103646,
+              "sha256": "b99ed36d4b90b22c728994b729225b1c299f3aca37216664ad1e2fc39202d8ea"
+            },
+            "include/mc/world/runtime/loading/player.h": {
+              "bytes": 2519,
+              "sha256": "f147f230daf46d14dbcdc5fad76fc1fa29f6c6b82fce66dc9a861931d227ab34"
+            },
+            "src/world/runtime/loading/player.c": {
+              "bytes": 9965,
+              "sha256": "15f5d70977b7fd7c60452d537742bd7d441bc98d15c5f9b244de15dd767079fc"
+            },
+            "tests/client/gui/test_active_notice.c": {
+              "bytes": 27506,
+              "sha256": "280dcc1cb29ec9d6194be4f263ab0ba20fbdb13014766bddfa4ddd238d12bedf"
+            },
+            "tests/client/gui/test_active_notice_cpu.c": {
+              "bytes": 8015,
+              "sha256": "8d6a5056fdb952cf7ec1b95515469c0ea62a1ef9a785b2acfb484670e353c48a"
+            },
+            "tests/tools/client/test_active_notice.py": {
+              "bytes": 23168,
+              "sha256": "fa33468b805935d0e0a2ec17d84837ea86802f4d8f4c0ad7516c70501db35ebf"
+            },
+            "tests/client/gui/test_block_selection.c": {
+              "bytes": 19143,
+              "sha256": "da8724b08dcaf4924a5b2152a6ea74505053b258f54aea86e371746827401aa7"
+            },
+            "tests/tools/client/test_block_selection.py": {
+              "bytes": 20535,
+              "sha256": "ad345e862b5c1e312a19a87f444beab9a485ce2c30aafb3b5c987352b31173be"
+            },
+            "docs/entity/mob-nbt.md": {
+              "bytes": 8718,
+              "sha256": "b1bad6cb75fbfda93eace25124c5372295c47d819b561fa562a1635a463ee605"
+            },
+            "src/client/world/respawn.inc": {
+              "bytes": 33963,
+              "sha256": "231c40c1d0e54c1177d596ece759bb78ec7eafdd9ce01aef704c16a706551e6f"
+            },
+            "tests/client/gameplay/current_scene_inputs.json": {
+              "bytes": 3669,
+              "sha256": "39d007b2c1011b48cc9d76c0bacce4eca803bc545468545bba89e274c7d9daf4"
+            },
+            "tests/tools/client/scene_inputs.py": {
+              "bytes": 3861,
+              "sha256": "707fa31a50a93b39e5782b8ac6c36655c3e614f08cd83a93aa346b52e9567a0c"
+            },
+            "docs/performance/reference-readers.md": {
+              "bytes": 7206,
+              "sha256": "f8d55cc29da0c7f2f02b49d5b0ba7ca2907dfcf36f51eeeff336a39bc29e589b"
+            },
+            "tests/tools/entity/test_player_sleep_tick.py": {
+              "bytes": 22589,
+              "sha256": "333312ebe6de045d9f555c1dbad781d4ff889098453fc2b1bf95a0f7ab218251"
+            }
+          },
+          "added": [
+            "cmake/player_sleep_nbt.cmake",
+            "src/entity/nbt/read_internal.h",
+            "src/world/runtime/loading/player_internal.h",
+            "tests/client/startup/player_sleep_nbt_controls.h",
+            "tests/entity/player/nbt_sleep_cases.h",
+            "tests/entity/player/nbt_sleep_load_cases.h",
+            "tests/entity/player/nbt_sleep_matrix_cases.h",
+            "tests/reference/entity/player_sleep_nbt_parent/.gitattributes",
+            "tests/reference/entity/player_sleep_nbt_parent/PlayerNbtSleepMatrixJdi.java",
+            "tests/reference/entity/player_sleep_nbt_parent/PlayerNbtSleepMatrixObservation.java",
+            "tests/reference/entity/player_sleep_nbt_parent/README.md",
+            "tests/reference/entity/player_sleep_nbt_parent/capture_reader.py",
+            "tests/reference/entity/player_sleep_nbt_parent/capture_reference.py",
+            "tests/reference/entity/player_sleep_nbt_parent/class-names.txt",
+            "tests/reference/entity/player_sleep_nbt_parent/executed-source-inputs.json",
+            "tests/reference/entity/player_sleep_nbt_parent/export_reference.py",
+            "tests/reference/entity/player_sleep_nbt_parent/finite.json",
+            "tests/reference/entity/player_sleep_nbt_parent/helper-pins.json",
+            "tests/reference/entity/player_sleep_nbt_parent/packet.py",
+            "tests/reference/entity/player_sleep_nbt_parent/profiles.json",
+            "tests/reference/entity/player_sleep_nbt_parent/profiles.tsv",
+            "tests/reference/entity/player_sleep_nbt_parent/provenance.json",
+            "tests/reference/entity/player_sleep_nbt_parent/source-pins.json",
+            "tests/reference/entity/player_sleep_nbt_parent/test_packet.py",
+            "tests/reference/entity/player_sleep_nbt_parent/validate.py",
+            "tests/reference/entity/player_sleep_nbt_parent/witnesses.json",
+            "tests/tools/client/test_player_sleep_nbt_load.py",
+            "tests/tools/entity/test_player_sleep_nbt_controls.py",
+            "tests/tools/entity/test_player_sleep_nbt_parent.py"
+          ],
+          "current_count": 5551
         }
       }
     }

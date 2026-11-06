@@ -693,6 +693,18 @@ mc_client_respawn_status mc_client_respawn_retire(mc_client_respawn_call **slot,
         return error->status;
     }
     c->state.retiring = true;
+    /* FD303 is another actual detailed-loader parent. Retire its owned NBT
+     * work while this same Respawn call still holds the Load lease/graph. */
+    if (!mc_world_player_load_error_retire(&c->player_load)) {
+        c->cleanup =
+            (mc_client_respawn_error){.status = MC_CLIENT_RESPAWN_CLEANUP_FAILED,
+                                      .operation = "Respawn Player NBT wake native retirement",
+                                      .native_policy = true,
+                                      .player_load = &c->player_load};
+        *error = c->cleanup;
+        return error->status;
+    }
+    c->cleanup.player_load = NULL;
     if (mc_client_display_screen_retire(&c->display) != MC_CLIENT_DISPLAY_SCREEN_OK ||
         (c->prepare != NULL &&
          mc_client_world_prepare_retire(&c->prepare) != MC_CLIENT_WORLD_PREPARE_OK) ||

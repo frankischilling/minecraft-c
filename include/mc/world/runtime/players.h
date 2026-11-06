@@ -27,8 +27,10 @@ mc_world_storage_status mc_world_runtime_update_player_sleeping(mc_world_runtime
  * Read the actual Info.Player even when NULL. A nonnull captured tag enters
  * inherited Entity NBT load; only complete success permits Info.Player clear.
  * Canonical dc uses the same-owner explicit code Registry for the actual
- * Inventory read. Sleeping=false loads can finish; Sleeping=true retains the
+ * Inventory read. This compact compatibility output remains value-only:
+ * Sleeping=false loads can finish; Sleeping=true deliberately retains the
  * genuine wake93 frontier after its preceding fields/coordinate stores.
+ * The detailed loading/player.h entry supports the owning complete wake path.
  * Never clear that tag or publish after an incomplete/failed source read.
  *
  * Actual current ok/jb map-cache provenance makes instanceof kx false. Cache

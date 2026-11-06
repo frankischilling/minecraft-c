@@ -9,12 +9,14 @@
  * or yl/pr Minecart a(NBT) hook selected by this Entity's immutable same-owner
  * canonical Class.
  * Canonical LocalPlayer executes dc.a -> gs.a -> ls.a, the actual Inventory
- * read, Player fields and Score. Sleeping=true publishes its bed coordinate
- * then stops at the genuine unimplemented wake invocation93. Earlier malformed
+ * read, Player fields and Score. Sleeping=true publishes its bed coordinate,
+ * executes actual wake(true,true,false)93, then continues the fresh Spawn tags
+ * and Score only after the returned child is checked-retired. Earlier malformed
  * tags retain their earlier failure sites. Other concrete subclasses
  * require real dispatch and fields before use.
  * No dead/name/factory decision, constructor, READY gate, source preservation,
- * World callback or Random draw is added. A balanced temporary Entity hold
+ * or fabricated World callback is added. Reached wake executes its genuine
+ * World/Bed descendants. A balanced temporary Entity hold
  * precedes source work; native hold overflow preserves the Entity unchanged.
  *
  * Read only the reached immutable input views, with ordinary exact tag checks.
@@ -55,12 +57,18 @@
  * counted player-string owner; old/new copies overlap under limits, and its
  * fixed text bound remains native policy, not Java OOM timing. No generic
  * watcher setter, Mob READY gate, server mapping or later-version schema is supplied.
- * Caller retains exclusive live owners for the call. error may be NULL. */
-/* Context-aware read uses the explicitly borrowed same-owner code Registry
- * only at reached Inventory Item lookup. NULL is valid until that operation;
- * the ordinary wrapper supplies NULL/default limits. Native context admission
- * performs no class initialization or World-derived namespace substitution.
- * max_elements bounds reached Inventory iterations without successful truncation. */
+ * Caller retains exclusive live owners for the call and any retained failure.
+ * A failed GS93 child and the independent entry Registry hold transfer into
+ * nonnull error; retire it before clearing/reusing it. NULL error remains valid
+ * on ordinary paths and stops only at a reached93, after earlier stores, before
+ * a child that could outlive its scratch. No source retry or rollback. */
+/* Context-aware read borrows the supplied same-owner GS code Registry,
+ * independently of Player.World. Reached Inventory Item lookup and GS93 wake's
+ * reached UU.T access51 require that namespace, including a non-Bed comparison.
+ * The ordinary wrapper supplies NULL/default limits, with no World fallback;
+ * NULL can refuse at those actual reached operations. Native context admission
+ * performs no class initialization or namespace substitution. max_elements
+ * bounds reached Inventory iterations without successful truncation. */
 mc_entity_nbt_status mc_entity_read_nbt_in_context(mc_entity *, mc_registry_classes *,
                                                    const mc_nbt_tag *, const mc_nbt_limits *,
                                                    mc_entity_nbt_error *);

@@ -1,3 +1,4 @@
+#include "loading/player_internal.h"
 #include "mc/entity/nbt/nbt.h"
 #include "mc/entity/player/player.h"
 #include "mc/world/runtime/entities.h"
@@ -827,7 +828,7 @@ mc_world_storage_status
 mc_world_runtime_attach_player(mc_world_runtime *world, mc_entity *player,
                                mc_world_player_attachment_error *out_error) {
     if (out_error == NULL)
-        return mc_world_runtime_load_player(world, player, NULL);
+        return mc_world_runtime_load_player_with_child_output(world, player, false, NULL);
     static const mc_world_player_attachment_error zero = {0};
     *out_error = zero;
     mc_entity_nbt_error_init(&out_error->nbt);
@@ -838,7 +839,8 @@ mc_world_runtime_attach_player(mc_world_runtime *world, mc_entity *player,
         out_error->cause = (mc_world_storage_error){out_error->status, out_error->operation, 0};
         return out_error->status;
     }
-    const mc_world_storage_status status = mc_world_runtime_load_player(world, player, detail);
+    const mc_world_storage_status status =
+        mc_world_runtime_load_player_with_child_output(world, player, false, detail);
     if (status != MC_WORLD_STORAGE_OK) {
         out_error->status = status;
         out_error->operation = detail->operation;

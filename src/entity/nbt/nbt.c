@@ -9,6 +9,7 @@
 #include "../player/nbt_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
+#include "read_internal.h"
 
 #include <float.h>
 #include <limits.h>
@@ -199,9 +200,10 @@ static bool read_item(mc_entity *entity, const mc_nbt_tag *compound, mc_entity_n
 
 static bool read_subtype(mc_entity *entity, mc_registry_classes *registry,
                          const mc_nbt_tag *compound, const mc_nbt_limits *limits,
-                         mc_entity_nbt_error *frame) {
+                         bool can_transfer_children, mc_entity_nbt_error *frame) {
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
-        return mc_player_nbt_read_held(entity, registry, compound, limits, frame);
+        return mc_player_nbt_read_with_child_output_held(entity, registry, compound, limits,
+                                                         can_transfer_children, frame);
     }
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM))
         return read_item(entity, compound, frame);
@@ -225,7 +227,8 @@ static bool read_subtype(mc_entity *entity, mc_registry_classes *registry,
 }
 
 static bool read_base(mc_entity *entity, mc_registry_classes *registry, const mc_nbt_tag *compound,
-                      const mc_nbt_limits *limits, mc_entity_nbt_error *frame) {
+                      const mc_nbt_limits *limits, bool can_transfer_children,
+                      mc_entity_nbt_error *frame) {
     const mc_nbt_tag *pos, *motion, *rotation, *tag;
     frame->base_bytecode = 3;
     if (!get(compound, pos_name, 3, "Pos", MC_NBT_LIST, &pos, frame))
@@ -314,15 +317,19 @@ static bool read_base(mc_entity *entity, mc_registry_classes *registry, const mc
     entity->base.yaw = fmodf(entity->base.yaw, 360.0f);
     entity->base.aT = fmodf(entity->base.aT, 360.0f);
     frame->base_bytecode = 311;
-    return read_subtype(entity, registry, compound, limits, frame);
+    return read_subtype(entity, registry, compound, limits, can_transfer_children, frame);
 }
 
-mc_entity_nbt_status mc_entity_read_nbt_in_context(mc_entity *entity, mc_registry_classes *registry,
-                                                   const mc_nbt_tag *compound,
-                                                   const mc_nbt_limits *limits,
-                                                   mc_entity_nbt_error *error) {
+mc_entity_nbt_status
+mc_entity_read_nbt_with_child_output(mc_entity *entity, mc_registry_classes *registry,
+                                     const mc_nbt_tag *compound, const mc_nbt_limits *limits,
+                                     bool can_transfer_children, mc_entity_nbt_error *error) {
     mc_entity_nbt_error frame;
     mc_entity_nbt_error_init(&frame);
+    if (can_transfer_children && error == NULL) {
+        fail(&frame, MC_ENTITY_NBT_INVALID_ARGUMENT, "Entity NBT retained output destination");
+        return publish(&frame, error);
+    }
     if (!enter(entity, &frame))
         return publish(&frame, error);
     bool held = false, admitted = true;
@@ -346,13 +353,32 @@ mc_entity_nbt_status mc_entity_read_nbt_in_context(mc_entity *entity, mc_registr
             }
         }
     }
-    const bool completed = admitted && read_base(entity, registry, compound, limits, &frame);
+    const bool completed =
+        admitted && read_base(entity, registry, compound, limits, can_transfer_children, &frame);
+    if (held && frame.sleep_work != NULL) {
+        mc_player_nbt_sleep_adopt_registry(&frame, registry);
+        held = false;
+    }
     if (held && !mc_registry_runtime_borrow_release(registry))
         fail(&frame, MC_ENTITY_NBT_REGISTRY_FAILED, "Player NBT code Registry hold retirement");
     mc_entity_release(entity);
-    if (completed && frame.status == MC_ENTITY_NBT_OK)
-        mc_entity_nbt_error_init(&frame);
+    if (completed && frame.status == MC_ENTITY_NBT_OK) {
+        if (!mc_entity_nbt_error_retire(&frame))
+            fail(&frame, MC_ENTITY_NBT_CLEANUP_FAILED,
+                 frame.sleep_cleanup == NULL ? "Entity NBT checked retirement"
+                                             : frame.sleep_cleanup->operation);
+        else
+            mc_entity_nbt_error_init(&frame);
+    }
     return publish(&frame, error);
+}
+
+mc_entity_nbt_status mc_entity_read_nbt_in_context(mc_entity *entity, mc_registry_classes *registry,
+                                                   const mc_nbt_tag *compound,
+                                                   const mc_nbt_limits *limits,
+                                                   mc_entity_nbt_error *error) {
+    return mc_entity_read_nbt_with_child_output(entity, registry, compound, limits, error != NULL,
+                                                error);
 }
 
 mc_entity_nbt_status mc_entity_read_nbt(mc_entity *entity, const mc_nbt_tag *compound,

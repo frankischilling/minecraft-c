@@ -1,10 +1,15 @@
 #include "nbt_internal.h"
 
+#include "../../block/registry/registry_internal.h"
+#include "../../block/registry/runtime_internal.h"
 #include "../construction_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
+#include "mc/entity/player/sleep.h"
 #include "mc/inventory/runtime/nbt.h"
+#include "mc/world/runtime/placement.h"
 
+#include <stdlib.h>
 #include <string.h>
 #include <xmmintrin.h>
 
@@ -33,6 +38,165 @@ static bool fail(mc_entity_nbt_error *e, mc_entity_nbt_status status, const char
     e->status = status;
     e->operation = operation;
     return false;
+}
+
+struct mc_entity_nbt_sleep_work {
+    mc_player_sleep_call *call;
+    mc_registry_classes *entry_registry;
+    mc_player_sleep_error error;
+    mc_player_sleep_cleanup child_cleanup;
+    mc_entity_nbt_sleep_cleanup cleanup;
+};
+
+static mc_world_storage_status nbt_sleep_registry_status(mc_registry_status status) {
+    return status == MC_REGISTRY_OK                  ? MC_WORLD_STORAGE_OK
+           : status == MC_REGISTRY_LIMIT             ? MC_WORLD_STORAGE_LIMIT
+           : status == MC_REGISTRY_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+           : status == MC_REGISTRY_BUSY              ? MC_WORLD_STORAGE_BUSY
+                                                     : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+}
+
+static mc_world_storage_status nbt_sleep_cleanup_status(const mc_player_sleep_cleanup *cleanup) {
+    if (cleanup->status == MC_PLAYER_SLEEP_BUSY)
+        return MC_WORLD_STORAGE_BUSY;
+    if (cleanup->status == MC_PLAYER_SLEEP_LIMIT)
+        return MC_WORLD_STORAGE_LIMIT;
+    if (cleanup->status == MC_PLAYER_SLEEP_ALLOCATION_FAILED)
+        return MC_WORLD_STORAGE_ALLOCATION_FAILED;
+    if (cleanup->status != MC_PLAYER_SLEEP_CLEANUP_FAILED)
+        return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+    switch (cleanup->child) {
+        case MC_PLAYER_SLEEP_CLEANUP_QUERY:
+        case MC_PLAYER_SLEEP_CLEANUP_WORLD:
+            return cleanup->world.status == MC_WORLD_STORAGE_OK ? MC_WORLD_STORAGE_UNSUPPORTED_STATE
+                                                                : cleanup->world.status;
+        case MC_PLAYER_SLEEP_CLEANUP_REGISTRY:
+            return cleanup->registry.status == MC_REGISTRY_OK
+                       ? MC_WORLD_STORAGE_UNSUPPORTED_STATE
+                       : nbt_sleep_registry_status(cleanup->registry.status);
+        case MC_PLAYER_SLEEP_CLEANUP_OCCUPANCY:
+            return cleanup->occupancy == NULL ||
+                           cleanup->occupancy->cleanup.status == MC_WORLD_STORAGE_OK
+                       ? MC_WORLD_STORAGE_UNSUPPORTED_STATE
+                       : cleanup->occupancy->cleanup.status;
+        case MC_PLAYER_SLEEP_CLEANUP_COORDINATE:
+            return cleanup->coordinate == MC_PLAYER_BUSY    ? MC_WORLD_STORAGE_BUSY
+                   : cleanup->coordinate == MC_PLAYER_LIMIT ? MC_WORLD_STORAGE_LIMIT
+                                                            : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        default:
+            return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+    }
+}
+
+static bool nbt_sleep_child_retire(mc_entity_nbt_error *e) {
+    mc_entity_nbt_sleep_work *work = e->sleep_work;
+    if (work == NULL)
+        return true;
+    work->cleanup = (mc_entity_nbt_sleep_cleanup){0};
+    e->sleep_cleanup = NULL;
+    if (mc_player_sleep_retire(&work->call, &work->child_cleanup) != MC_PLAYER_SLEEP_OK) {
+        mc_player_sleep_state state;
+        if (mc_player_sleep_inspect(work->call, &state) && state.failure != NULL)
+            work->error = *state.failure;
+        work->cleanup.status = MC_ENTITY_NBT_CLEANUP_FAILED;
+        work->cleanup.operation = work->child_cleanup.operation;
+        work->cleanup.child = MC_ENTITY_NBT_SLEEP_CLEANUP_WAKE;
+        work->cleanup.wake = &work->child_cleanup;
+        work->cleanup.cause = (mc_world_storage_error){
+            nbt_sleep_cleanup_status(&work->child_cleanup), work->cleanup.operation, 0};
+        if (work->child_cleanup.child == MC_PLAYER_SLEEP_CLEANUP_REGISTRY)
+            work->cleanup.registry = work->child_cleanup.registry;
+        e->sleep = &work->error;
+        e->sleep_cleanup = &work->cleanup;
+        return false;
+    }
+    /* End each exact producer borrow before any independent entry Registry
+     * cleanup. Keep this small owner shell through the later NBT reads; their
+     * actual failure must not be mistaken for a failed/completed wake receipt. */
+    work->error.acquisition = NULL;
+    work->error.occupancy = NULL;
+    work->error.bed = NULL;
+    work->error.world_sleep = NULL;
+    work->error.position = NULL;
+    /* A failed wake keeps its independent scalar cause in this stable work
+     * even after its producers end. A successful wake must not classify a
+     * later malformed Spawn/Score getter as that earlier child operation. */
+    e->sleep = work->error.status == MC_PLAYER_SLEEP_OK ? NULL : &work->error;
+    return true;
+}
+
+void mc_player_nbt_sleep_adopt_registry(mc_entity_nbt_error *e, mc_registry_classes *registry) {
+    /* The one entered Entity reader moves its already-owned occurrence once.
+     * This operation has no allocation, active use, callback or source read. */
+    e->sleep_work->entry_registry = registry;
+}
+
+bool mc_entity_nbt_error_retire(mc_entity_nbt_error *e) {
+    if (e == NULL)
+        return false;
+    mc_entity_nbt_sleep_work *work = e->sleep_work;
+    if (work == NULL)
+        return true;
+    if (!nbt_sleep_child_retire(e))
+        return false;
+    if (work->entry_registry != NULL) {
+        const mc_registry_status status =
+            mc_registry_classes_release(work->entry_registry, &work->cleanup.registry);
+        if (status != MC_REGISTRY_OK) {
+            work->cleanup.status = MC_ENTITY_NBT_CLEANUP_FAILED;
+            work->cleanup.operation = "Player NBT entry Registry checked retirement";
+            work->cleanup.child = MC_ENTITY_NBT_SLEEP_CLEANUP_REGISTRY;
+            work->cleanup.cause = (mc_world_storage_error){nbt_sleep_registry_status(status),
+                                                           work->cleanup.operation, 0};
+            e->sleep_cleanup = &work->cleanup;
+            return false;
+        }
+        work->entry_registry = NULL;
+    }
+    free(work);
+    e->sleep_work = NULL;
+    e->sleep = NULL;
+    e->sleep_cleanup = NULL;
+    return true;
+}
+
+static mc_entity_nbt_status nbt_sleep_failure_status(const mc_player_sleep_error *error) {
+    if (error->status == MC_PLAYER_SLEEP_LIMIT || error->world.status == MC_WORLD_STORAGE_LIMIT)
+        return MC_ENTITY_NBT_LIMIT;
+    if (error->status == MC_PLAYER_SLEEP_ALLOCATION_FAILED ||
+        error->world.status == MC_WORLD_STORAGE_ALLOCATION_FAILED)
+        return MC_ENTITY_NBT_ALLOCATION_FAILED;
+    if (error->status == MC_PLAYER_SLEEP_BUSY || error->world.status == MC_WORLD_STORAGE_BUSY)
+        return MC_ENTITY_NBT_BUSY;
+    if (error->status == MC_PLAYER_SLEEP_SOURCE_NULL && !error->native_policy)
+        return MC_ENTITY_NBT_NULL_REFERENCE;
+    return MC_ENTITY_NBT_SLEEP_FAILED;
+}
+
+static bool nbt_sleep_wake(mc_entity *p, mc_registry_classes *registry, bool can_transfer_children,
+                           mc_entity_nbt_error *e) {
+    if (!can_transfer_children)
+        return fail(e, MC_ENTITY_NBT_UNSUPPORTED_TYPE,
+                    "Player NBT actual wake(true,true,false) dependency");
+    mc_entity_nbt_sleep_work *work = calloc(1, sizeof(*work));
+    if (work == NULL)
+        return fail(e, MC_ENTITY_NBT_ALLOCATION_FAILED, "Player NBT retained wake workspace");
+    e->sleep_work = work;
+    e->sleep = &work->error;
+    const mc_player_sleep_context context = {.code_registry = registry};
+    const mc_player_sleep_status status =
+        mc_player_wake_begin(p, true, true, false, &context, &work->call, &work->error);
+    if (status != MC_PLAYER_SLEEP_OK)
+        return fail(e, nbt_sleep_failure_status(&work->error), work->error.operation);
+    mc_player_sleep_state state;
+    if (work->call == NULL || !mc_player_sleep_inspect(work->call, &state) || !state.returned)
+        return fail(e, MC_ENTITY_NBT_SLEEP_FAILED, "Player NBT actual wake returned child");
+    if (!nbt_sleep_child_retire(e))
+        return fail(e, MC_ENTITY_NBT_CLEANUP_FAILED, work->cleanup.operation);
+    /* Actual wake has returned and owns no child. The independent parent
+     * entry Registry is adopted only by the enclosing reader, after the same
+     * source body continues through its fresh Spawn and DC Score operations. */
+    return true;
 }
 
 static bool get(const mc_nbt_tag *compound, player_key key, mc_nbt_type type,
@@ -144,8 +308,9 @@ static bool living_read(mc_entity *p, const mc_nbt_tag *compound, mc_entity_nbt_
     return true;
 }
 
-bool mc_player_nbt_read_held(mc_entity *p, mc_registry_classes *classes, const mc_nbt_tag *compound,
-                             const mc_nbt_limits *limits, mc_entity_nbt_error *e) {
+static bool player_read(mc_entity *p, mc_registry_classes *classes, const mc_nbt_tag *compound,
+                        const mc_nbt_limits *limits, bool can_transfer_children,
+                        mc_entity_nbt_error *e) {
     mc_entity_nbt_select_player_detail(e);
     e->local_player_bytecode = 2;
     e->player_bytecode = 2;
@@ -197,8 +362,8 @@ bool mc_player_nbt_read_held(mc_entity *p, mc_registry_classes *classes, const m
         e->player_bytecode = 86;
         mc_player_nbt_coordinate_store_held(p, node, &v->v);
         e->player_bytecode = 93;
-        return fail(e, MC_ENTITY_NBT_UNSUPPORTED_TYPE,
-                    "Player NBT actual wake(true,true,false) dependency");
+        if (!nbt_sleep_wake(p, classes, can_transfer_children, e))
+            return false;
     }
     if (mc_nbt_compound_get(compound, spawn_x, 6) != NULL &&
         mc_nbt_compound_get(compound, spawn_y, 6) != NULL &&
@@ -228,6 +393,18 @@ bool mc_player_nbt_read_held(mc_entity *p, mc_registry_classes *classes, const m
     v->g = tag == NULL ? 0 : tag->value.int_value;
     e->local_player_bytecode = 15;
     return true;
+}
+
+bool mc_player_nbt_read_held(mc_entity *p, mc_registry_classes *classes, const mc_nbt_tag *compound,
+                             const mc_nbt_limits *limits, mc_entity_nbt_error *e) {
+    return player_read(p, classes, compound, limits, false, e);
+}
+
+bool mc_player_nbt_read_with_child_output_held(mc_entity *p, mc_registry_classes *classes,
+                                               const mc_nbt_tag *compound,
+                                               const mc_nbt_limits *limits,
+                                               bool can_transfer_children, mc_entity_nbt_error *e) {
+    return player_read(p, classes, compound, limits, can_transfer_children, e);
 }
 
 static mc_nbt_tag scalar(player_key key, mc_nbt_type type, int32_t value) {

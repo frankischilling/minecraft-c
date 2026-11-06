@@ -1,5 +1,30 @@
 # History
 
+## Sleeping Player NBT continuation
+
+The real GS93 wake now returns into fresh Spawn and DC Score reads. Failed
+wake work and the independent entry Registry survive through typed World,
+Load and Respawn errors until checked cleanup succeeds. The compact common
+payload stays 544 bytes; independent ownership/view cells make the total
+568 bytes without expanding each late-hook union arm.
+
+Two unchanged-original VMs each complete forty cases, including eleven first
+exceptions. Windows and sanitized Linux match 9,909 scalars and 58 active
+positions. Prepared Windows SDK profiles load sleeping metadata, save and
+reselect awake state, and check actual Load/Respawn failure ownership. The
+original null-bounds leaf remains explicitly source-only; replaced native
+array lifetimes and constructor entropy retain their bounded comparison scope.
+
+The existing 2,859-control Player tick setup reuses immutable row text while
+still parsing every complete payload. Twelve fresh serial Windows processes
+show 25.87%/26.52% lower normal/optimized median CPU intervals. No native,
+whole-CI or gameplay FPS speedup follows from that measurement. See the
+[method and limits](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/reference-readers.md#player-tick-transport-control-setup).
+
+Complete public selections now pass Windows 780/780 in 577.15 seconds and sanitized Linux 766/766 in 1101.11 seconds, without skips. Every preceding public name remains and exactly four are added per host. All 5,552 guarded public inputs stay unchanged through both accepted cohorts; all 24 placed Windows game windows are on monitor 2.
+
+The earlier full runs with stale scene-admission pins retain their failed status. The correction changes only current input admission; the original plans, historical results, native behavior, comparison fields, sanitizer settings and deadlines remain unchanged.
+
 ## Player tick wake parents and ownership
 
 The actual GS53/73 parents now call retained wake with their source flags.

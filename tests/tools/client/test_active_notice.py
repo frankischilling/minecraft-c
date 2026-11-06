@@ -365,7 +365,7 @@ def main():
             finish = rows(stdout, 'NOTICE_FINISH')
             if len(finish) != 1 or finish[0].get('mode') != args.mode or any(
                     finish[0].get(key) != value for key, value in
-                    {'cleanup': '1', 'compact-nbt-error': '544', 'windows-absent': '1'}.items()):
+                    {'cleanup': '1', 'compact-nbt-error': '544', 'owned-nbt-error': '568', 'windows-absent': '1'}.items()):
                 raise RuntimeError('Actual checked cleanup/compact error receipt')
             draw_rows = rows(stdout, 'NOTICE_DRAW')
             if not draw_rows or len({draw['label'] for draw in draw_rows}) != len(draw_rows):

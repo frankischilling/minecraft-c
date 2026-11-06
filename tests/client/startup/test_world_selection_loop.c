@@ -5678,6 +5678,10 @@ static int standing_loaded_controls(fixture *f, const char *screenshot,
 #include "death_respawn_controls.inc"
 #endif
 
+#ifdef MC_TEST_PLAYER_SLEEP_NBT
+#include "player_sleep_nbt_controls.h"
+#endif
+
 int main(int argc, char **argv) {
     CHECK(argc == 4 &&
           (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
@@ -5691,6 +5695,9 @@ int main(int argc, char **argv) {
            strcmp(argv[2], "reload-cycle") == 0 || strcmp(argv[2], "save-title") == 0 ||
            strcmp(argv[2], "save-title-session") == 0 || animal_profile_get(argv[2]) != NULL ||
            creature_profile_get(argv[2]) != NULL || remaining_profile_get(argv[2]) != NULL));
+#ifdef MC_TEST_PLAYER_SLEEP_NBT
+    CHECK(strcmp(argv[2], "repeat") == 0 && player_sleep_nbt_profile() != NULL);
+#endif
     const animal_profile *animal = animal_profile_get(argv[2]);
     const creature_profile *creature = creature_profile_get(argv[2]);
     const creature_profile *remaining = remaining_profile_get(argv[2]);
@@ -5875,6 +5882,12 @@ int main(int argc, char **argv) {
         CHECK(mc_client_screen_transitions_inspect(f.app->screen_transitions, &transitions) &&
               transitions.world_load != NULL &&
               mc_client_world_load_inspect(transitions.world_load, &load));
+#ifdef MC_TEST_PLAYER_SLEEP_NBT
+        if (strcmp(player_sleep_nbt_profile(), "load-failure") == 0) {
+            CHECK(player_sleep_nbt_load_failure(&f, &external, &load) == 0);
+            goto close_bootstrap;
+        }
+#endif
         if (partial_load) {
             CHECK(partial_world_terminal_controls(&f, &external, &load) == 0);
             goto close_bootstrap;
@@ -5989,7 +6002,11 @@ int main(int argc, char **argv) {
                   f.state.world_frame->terrain_fog_returned &&
                   f.state.world_frame->frustum_constructed &&
                   f.state.world_frame->frustum_recentered && f.state.world_frame->culling_returned);
-            if (save_title) {
+            if (save_title
+#ifdef MC_TEST_PLAYER_SLEEP_NBT
+                || repeat_load
+#endif
+            ) {
                 /* Actual post-camera Settings.e296 is3/Tiny. The source skips
                  * sky fog306 and sky312 unless that SAME value is below2. */
                 CHECK(f.state.world_frame->fog_distance_branch_read &&
@@ -6224,6 +6241,12 @@ int main(int argc, char **argv) {
 #ifdef MC_TEST_DEATH_RESPAWN
             if (repeat_load) {
                 CHECK(death_respawn_controls(&f, argv[3]) == 0);
+                goto loaded_draw_controls_done;
+            }
+#endif
+#ifdef MC_TEST_PLAYER_SLEEP_NBT
+            if (repeat_load) {
+                CHECK(player_sleep_nbt_success(&f, initial, argv[3]) == 0);
                 goto loaded_draw_controls_done;
             }
 #endif
