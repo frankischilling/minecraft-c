@@ -237,7 +237,7 @@ static bool add(mc_client_gui_ingame_chat_call *c, mc_gui_chat_text text, unsign
         return fail(c, MC_CLIENT_GUI_INGAME_CHAT_LIMIT, "UQ native recursive prefix bound", "a", 64,
                     true);
     for (;;) {
-        mc_player_string_view view;
+        mc_player_string_view view = {0};
         const bool null = text.player == NULL && text.registry == NULL;
         if (!null && !mc_gui_chat_text_read(text, &view))
             return fail(c, MC_CLIENT_GUI_INGAME_CHAT_ARGUMENT, "UQ native String view", "a", 8,

@@ -171,6 +171,14 @@ with `MC_ENABLE_CLIENT_BED_RESPAWN_TESTS=ON`. Their
 preauthored NBT and Region inputs establish the Bed state before bootstrap;
 they do not obtain it through sleeping or live field repair.
 
+At exact checkpoint `148379ff`, a fresh valid-Bed opportunity fails after
+successful replacement: health is 20 and the valid/stored/positioned flags
+are set, but Pause is open while Remote Desktop owns foreground focus.
+The same bounded selection passes all fourteen public components and the
+missing-Bed scene. Linux passes its fourteen components. The complete
+[receipt scope](../testing.md#committed-checkpoint-and-msvc-debug) remains
+separate from the earlier successful loaded pairs.
+
 ## Remaining branches
 
 A Dimension that rejects respawning, including the Nether path, reaches the

@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 113406,
-      "sha256": "262dd210bc262b889660385f4495c46a1975f93b6f3e9228f5746dfc108f5d61"
+      "bytes": 113905,
+      "sha256": "e907fa3ae13e7478a463a218d5a9349de8da0ddebee896dd9f673220cf0062ea"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,20 +826,20 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 492135,
-      "sha256": "728bb083283e5b6d077f94dcadc3bffcbe45069894d59acbb8188afc3f51a4d2"
+      "bytes": 494048,
+      "sha256": "34e35b7731ab0094c6310db640ad66f9a75f37834334511e140c8904d80bbc06"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
       "sha256": "2266d5edd099003b4b3fe304ecf79cf86bbfcab026ef1480936c04a391024957"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 125154,
-      "sha256": "a081f9f7491c76b88a609569e318c6d15bdb739b1b3dabd4dcc8d878e9e9d541"
+      "bytes": 125617,
+      "sha256": "633e7463d58d38bac7c47f71d8955b304cf2b1b6aba8d134187f5b4e0d0d406d"
     },
     "docs/wiki/History.md": {
-      "bytes": 65281,
-      "sha256": "0efc112d9e299fd8c7ab80d73c9adbdbbc9d5c2daa75c9846a13054cc0c61ccc"
+      "bytes": 65559,
+      "sha256": "0c96865702dfd2bb09f1e22aa78a642568fbfb9d2328526e42120c15838487b7"
     },
     "docs/wiki/Home.md": {
       "bytes": 17045,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 537630,
-      "sha256": "76101606f0ed39fa62731d9ccb56e858f753f2779d0206fc03206320da58ad7e"
+      "bytes": 538534,
+      "sha256": "3b67a2d36fcb88883a4ba8b49fd789fb33d474b9168a7fd2f824a42596aeeb8d"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 637811,
-      "sha256": "1100c7c1ea5c4ffd4a497364e299d11d6b9885385aaf10cc855519432d2e831e"
+      "bytes": 638717,
+      "sha256": "ca264b0fb8e563930ffbe7291548491e8c3d6dcd3b4a2eba726619dbc1ba7cd0"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 533430,
-      "sha256": "8c02597e8a61c4a8731e2a546257b799f2c74ff689545e897cb8cb1b05ca35e9"
+      "bytes": 534334,
+      "sha256": "9686400ef5a3dc2ee0613c0a967ecf1db6f69c7372035fa6b3d4f318d5519680"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -21246,8 +21246,8 @@
       "sha256": "146bcc43aae12dd77fbcbd9f94d4d16e1fed350da816de680824fced8e9ad6a8"
     },
     "docs/client/death-respawn.md": {
-      "bytes": 12129,
-      "sha256": "6d0900e5a6d2856f3195befe9b2bf62bf5014c3ac90bd10224accfb9040056cb"
+      "bytes": 12619,
+      "sha256": "412722566e0196359e3c5f230a16934cbc9c3f75fda027f21941ef0787378126"
     },
     "include/mc/entity/player/death.h": {
       "bytes": 1405,
@@ -21390,8 +21390,8 @@
       "sha256": "8b11493aa5881ec40da93fb2004721532b4437e2026c29872e24ad81a68cba35"
     },
     "docs/client/chat.md": {
-      "bytes": 6083,
-      "sha256": "8a085df4f3ccffdd508f07b578d39f4c6216d2bedd5ab351f8f3141609e0cd84"
+      "bytes": 6434,
+      "sha256": "75e0ec13625256cf7c13fcdec4a9254cb7c45416f375216291c333dd4c04e323"
     },
     "docs/entity/player-coordinates.md": {
       "bytes": 7320,
@@ -21418,8 +21418,8 @@
       "sha256": "827850cc8ba9d92b019b203069c85fd618b70de7f9fa706c04ad24d4d1e29326"
     },
     "src/client/gui/gui_ingame_chat.c": {
-      "bytes": 20477,
-      "sha256": "528021f762e16bdbc8f292e73848fbce634a3d7170b92a0129f618da2309b842"
+      "bytes": 20483,
+      "sha256": "8e49665f5c28f4eebf200e72a3af56ee3e45cb902e6e9af893d21816bd1b21d3"
     },
     "src/client/gui/gui_ingame_chat.h": {
       "bytes": 3005,
@@ -31247,6 +31247,62 @@
             "tests/tools/world/test_bed_spawn.py",
             "tests/world/runtime/test_bed_spawn.c"
           ],
+          "current_count": 5411
+        }
+      }
+    },
+    {
+      "from_commit": "148379ff8c101ddbf6a0be213e5871de69eaa909",
+      "role": "Current nullable chat view initialization for MSVC Debug and separately reported exact-checkpoint focus/compiler evidence. This entry binds current inputs only; earlier original and native observations, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1348295,
+        "sha256": "8af34bb85b99bceb361ddd7420488e5559e01671c462d2bba792849cc9abdf50"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/status.md": {
+              "bytes": 113406,
+              "sha256": "262dd210bc262b889660385f4495c46a1975f93b6f3e9228f5746dfc108f5d61"
+            },
+            "docs/testing.md": {
+              "bytes": 492135,
+              "sha256": "728bb083283e5b6d077f94dcadc3bffcbe45069894d59acbb8188afc3f51a4d2"
+            },
+            "docs/wiki/Build-and-tests.md": {
+              "bytes": 125154,
+              "sha256": "a081f9f7491c76b88a609569e318c6d15bdb739b1b3dabd4dcc8d878e9e9d541"
+            },
+            "docs/wiki/History.md": {
+              "bytes": 65281,
+              "sha256": "0efc112d9e299fd8c7ab80d73c9adbdbbc9d5c2daa75c9846a13054cc0c61ccc"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 537630,
+              "sha256": "76101606f0ed39fa62731d9ccb56e858f753f2779d0206fc03206320da58ad7e"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 637811,
+              "sha256": "1100c7c1ea5c4ffd4a497364e299d11d6b9885385aaf10cc855519432d2e831e"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 533430,
+              "sha256": "8c02597e8a61c4a8731e2a546257b799f2c74ff689545e897cb8cb1b05ca35e9"
+            },
+            "docs/client/death-respawn.md": {
+              "bytes": 12129,
+              "sha256": "6d0900e5a6d2856f3195befe9b2bf62bf5014c3ac90bd10224accfb9040056cb"
+            },
+            "docs/client/chat.md": {
+              "bytes": 6083,
+              "sha256": "8a085df4f3ccffdd508f07b578d39f4c6216d2bedd5ab351f8f3141609e0cd84"
+            },
+            "src/client/gui/gui_ingame_chat.c": {
+              "bytes": 20477,
+              "sha256": "528021f762e16bdbc8f292e73848fbce634a3d7170b92a0129f618da2309b842"
+            }
+          },
+          "added": [],
           "current_count": 5411
         }
       }

@@ -21,6 +21,14 @@ The full-run failures remain recorded separately from those follow-ups.
 Bed use/sleeping, Nether transitions, full original World restart, Linux loaded
 play and sustained FPS remain unfinished or unqualified.
 
+The exact `148379ff` local selection passes 14/14 on Linux and 15/16 on
+Windows. The failed valid-Bed opportunity completes replacement with health
+20, but Pause is open while Remote Desktop owns foreground focus. Hosted
+run `42166741097` also exposes an MSVC 14.44 Debug chat-local warning; the
+local is now explicitly initialized and strict diagnostics remain enabled.
+The [test record](testing.md#committed-checkpoint-and-msvc-debug) separates
+those failures from earlier passing opportunities.
+
 Hosted [run 42153149676](https://github.com/frankischilling/minecraft-c/actions/runs/42153149676)
 passes preceding source checkpoint `b379e08f`: Windows 687/687, GCC and Clang
 744/744, plus formatting. All prior test names remain and five are added per

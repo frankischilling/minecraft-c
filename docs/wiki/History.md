@@ -20,6 +20,11 @@ for every metadata value. The latter avoids constructing the same byte
 table per Block byte. Both follow-ups pass on Windows and sanitized Linux
 without relaxing assertions or watchdogs; full-run failures remain recorded.
 
+An exact-checkpoint follow-up retains a valid-Bed focus failure after
+completed replacement, with Remote Desktop owning the foreground. A
+separate hosted MSVC Debug warning is addressed by explicit native-local
+initialization; no reference row or strict diagnostic is removed.
+
 ## Player death and respawn
 
 The actual Player death path now scatters Inventory, preserves failed child

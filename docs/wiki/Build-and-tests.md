@@ -17,6 +17,14 @@ follow-up cases pass on each host; the failed full runs remain retained.
 Eight fixed-work processes show identical outputs and a 98.519% lower
 fixture-construction median. This establishes no gameplay FPS improvement.
 
+At `148379ff`, the exact local selection passes 14/14 Linux cases and
+15/16 Windows cases. The failed valid-Bed receipt completes replacement
+with health 20, while Pause is open and Remote Desktop owns foreground
+focus. Hosted run `42166741097` exposes a separate MSVC Debug local-view
+warning. Explicit native-local initialization preserves the source call
+order and strict diagnostics. The failed build and focus opportunity
+remain recorded in the test guide.
+
 At preceding checkpoint `b379e08f`, hosted
 [run 42153149676](https://github.com/frankischilling/minecraft-c/actions/runs/42153149676)
 passes Windows 687/687 and both Linux compilers 744/744. All four checkout trees

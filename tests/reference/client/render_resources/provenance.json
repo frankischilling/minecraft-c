@@ -8142,8 +8142,8 @@
       "sha256": "98e6188ecd3306cdd744a1f108eac22887d10583156662159b0986f38b2c9a71"
     },
     "src/client/gui/gui_ingame_chat.c": {
-      "bytes": 20477,
-      "sha256": "528021f762e16bdbc8f292e73848fbce634a3d7170b92a0129f618da2309b842"
+      "bytes": 20483,
+      "sha256": "8e49665f5c28f4eebf200e72a3af56ee3e45cb902e6e9af893d21816bd1b21d3"
     },
     "src/client/gui/gui_ingame_chat.h": {
       "bytes": 3005,
@@ -12749,6 +12749,26 @@
             "tests/tools/world/test_bed_spawn.py",
             "tests/world/runtime/test_bed_spawn.c"
           ],
+          "current_count": 2072
+        }
+      }
+    },
+    {
+      "from_commit": "148379ff8c101ddbf6a0be213e5871de69eaa909",
+      "role": "Current nullable chat view initialization for MSVC Debug and separately reported exact-checkpoint focus/compiler evidence. This entry binds current inputs only; earlier original and native observations, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 533430,
+        "sha256": "8c02597e8a61c4a8731e2a546257b799f2c74ff689545e897cb8cb1b05ca35e9"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "src/client/gui/gui_ingame_chat.c": {
+              "bytes": 20477,
+              "sha256": "528021f762e16bdbc8f292e73848fbce634a3d7170b92a0129f618da2309b842"
+            }
+          },
+          "added": [],
           "current_count": 2072
         }
       }

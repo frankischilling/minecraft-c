@@ -89,6 +89,12 @@ failure. Classification reads the immutable initialization cause. It initializes
 no Video or GL.
 Packet corruption controls pass in normal and optimized Python.
 
+MSVC 14.44 Debug reports C4701 for the native text view after a nullable
+width call. The view is explicitly initialized to zero; null text still
+passes null to the actual Font child, and successful nonnull reads fill
+the same view before use. The source width, substring, insertion and
+failure ordering are unchanged. Strict warnings remain enabled.
+
 Run the registered cases `client.gui_ingame_chat_cpu`,
 `client.gui_ingame_chat`, `tools.gui_ingame_chat_packet` and
 `tools.gui_ingame_chat_packet_optimized`. The

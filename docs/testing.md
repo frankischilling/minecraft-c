@@ -117,6 +117,35 @@ complete storage test timings above use different suite scheduling and do
 not establish the same percentage for CI throughput. Gameplay and FPS are
 outside this comparison.
 
+### Committed checkpoint and MSVC Debug
+
+At `148379ff8c101ddbf6a0be213e5871de69eaa909`, the bounded Linux selection
+passes 14/14 in 20.38 seconds. Windows passes all fourteen public component
+cases and the missing-Bed scene, but its full selection remains failed at
+15/16 in 24.52 seconds. The valid-Bed failure receipt has a healthy replacement
+Player, completed/returned respawn and all valid/stored/positioned flags.
+Pause is open, Remote Desktop (`msrdc.exe`, `TscShellContainerClass`) holds
+foreground focus, and SDL has no keyboard focus. All 5,412 source inputs stay
+unchanged. This failed opportunity remains separate from the preceding
+successful Bed scenes and does not establish general desktop focus reliability.
+
+Hosted [run 42166741097](https://github.com/frankischilling/minecraft-c/actions/runs/42166741097)
+passes formatting and current-source binding admission on all three native
+hosts, then fails the Windows MSVC 14.44 Debug build at chat `add` string-view
+use: C4701 is promoted to an error. A nullable text reaches a width call whose
+null result is zero; the compiler cannot use that child fact to establish the
+local view before a later long-string branch. Explicit zero initialization of
+the native local resolves that diagnostic without changing the source calls,
+fields, null handling, reference rows or strict warning flags. A local MSVC
+14.51 Debug object compile with `/Od /RTC1 /MDd /Z7 /W4 /WX /fp:strict` passes;
+the full client and chat targets rebuild on Windows and sanitized Linux.
+The failed hosted build is retained, not counted as a passing runtime test.
+
+After initialization, both chat cases pass on each host: Windows CPU/replay
+take 0.93/2.37 seconds, Linux with ASan/UBSan and leak checks takes 14.26/19.92
+seconds. The 158 CPU checks, 791 native Font/HUD checks and 81 unchanged original
+rows pass. All 5,412 guarded files remain unchanged across this focused pair.
+
 ## Player death, death screen and respawn
 
 The [implementation and reproduction guide](client/death-respawn.md) separates
