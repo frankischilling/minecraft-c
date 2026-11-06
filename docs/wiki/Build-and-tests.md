@@ -1,5 +1,24 @@
 # Build and tests
 
+The [death/respawn guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/death-respawn.md)
+records new Java-free death/scatter and World controls, a 72-row original
+death-screen component packet and bounded Windows loaded integration. The
+first loaded opportunity passes 1,049 checks in 14.83 seconds on monitor 2:
+two real Respawn clicks and one partial-publication cleanup. Captures show the
+death screen and healthy returned World. Bed/Nether routes, Linux loaded play,
+original pixels/audio, general focus reliability and FPS remain unqualified.
+The strengthened opportunity passes 943 checks in 21.11 seconds, adding a
+borrowed-display retirement assertion. Focused checks pass 14/14 on Windows
+and 13/13 on sanitized Linux. The separate full runs retain Windows 750/755 and
+Linux 731/735: older removal assertions and inherited-fixture guards fail.
+The test guide records their corrections and subsequent reruns; these failures
+remain separate from the preceding historical focus/draw failures.
+Corrected selections pass 16/16 on sanitized Linux and 17/18 on Windows,
+including a fresh 1,911-check Lever scene. The remaining respawn assertion gets
+a three-opportunity diagnostic cohort: pass/fail/pass. Its failed receipt has
+a healthy new Player and completed replacement, but Pause is open and Remote
+Desktop owns foreground focus. The whole cohort remains failed.
+
 Player damage has a Java-free 28-call original replay and separate armor,
 burning-timer and fall-landing controls. The [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#player-damage-armor-and-landing)
 keeps component comparisons, authored landing checks and the preceding Windows

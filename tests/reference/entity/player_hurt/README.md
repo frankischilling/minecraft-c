@@ -33,7 +33,7 @@ Each row retains the full typed `sn`/`ls`/`gs`/`dc` instance-field projection,
 bounds, all MouseFilter fields, Inventory arrays and Stack, Player/World/Math
 Random state including Gaussian storage, World fields/counts, statistic maps,
 alias observations and cumulative sound arguments. Native replay compares
-20,872 scalar values and passes 529 native ownership/state assertions.
+21,247 scalar values and passes 529 native ownership/state assertions.
 
 Four Player fields have independent constructor values: Entity identity
 `sn.aD` and randomized `ls.F`, `ls.G`, `ls.aj`. World `fd.I` is construction
@@ -43,15 +43,21 @@ remain in the packet, but cross-process equality is not required for them.
 No other before/after fields are omitted from the native comparison.
 
 The fatal profile records its original state inside the actual hurt sound
-callback, immediately before the reached death continuation. Original complete
-death returns true and is retained under `completion`; native stops at the
-explicit unimplemented Player death entry. Only that fatal prefix is compared.
+callback, immediately before the reached death continuation. Both original and
+native retain this checkpoint under `state` and the completed death under
+`completion`. Native comparison checks both separately, including the inherited
+Living death flag, smaller bounds, motion, final offset and death statistic.
+This fatal profile has an empty Inventory, a non-Notch username and no attacker.
 The throwing callback produces original `IllegalStateException` and native
 World IO refusal; their full reached states match, while causes stay distinct.
 
-Windows Release native replay passes all 28 rows. Full Player death, nonnull
-attackers, sleep/wake, arbitrary armor arrangements, sustained gameplay, Linux
-original capture and FPS remain outside this packet's qualification.
+Windows Release and Linux Clang ASan/UBSan native replay pass all 28 rows,
+including that completed fatal profile. Inventory scattering, the Notch Apple,
+nonnull attackers and Container closes have separate authored native controls;
+they are not original runtime comparisons. Sleep/wake, arbitrary armor
+arrangements, sustained gameplay, Linux original capture and FPS remain outside
+this packet's qualification. Normal and optimized Python readers reject 64
+authored corruptions, including altered fatal completion and independent fields.
 
 Reproduce the original capture with local supplied resources:
 

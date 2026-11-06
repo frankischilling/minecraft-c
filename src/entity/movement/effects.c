@@ -3,6 +3,7 @@
 #include "../mob/damage_internal.h"
 #include "../mob/death_internal.h"
 #include "../player/damage_internal.h"
+#include "../player/death_internal.h"
 #include "effects_internal.h"
 
 #include "../../block/registry/registry_internal.h"
@@ -467,8 +468,8 @@ static bool landing(mc_entity *entity, mc_registry_classes *classes,
     return okay;
 }
 
-static bool fall(mc_entity *entity, mc_registry_classes *classes, float distance,
-                 mc_entity_effect_error *error) {
+static bool fall(mc_entity *entity, mc_registry_classes *classes, mc_math_classes *math,
+                 float distance, mc_entity_effect_error *error) {
     const bool player = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER);
     const bool mob = mc_entity_has_mob(entity);
     if (!player && !mob)
@@ -504,7 +505,7 @@ static bool fall(mc_entity *entity, mc_registry_classes *classes, float distance
     if (amount > 0) {
         bool ordinary;
         error->living_bytecode = 22;
-        if (!damage(entity, classes, NULL, NULL, amount, &ordinary, error))
+        if (!damage(entity, classes, math, NULL, amount, &ordinary, error))
             return false;
         if (!landing(entity, classes, error))
             return false;
@@ -513,12 +514,13 @@ static bool fall(mc_entity *entity, mc_registry_classes *classes, float distance
     return true;
 }
 
-mc_entity_status mc_entity_effect_fall_in_context(mc_entity *entity, mc_registry_classes *classes,
-                                                  float distance, mc_entity_effect_error *error) {
+mc_entity_status mc_entity_effect_fall_with_math(mc_entity *entity, mc_registry_classes *classes,
+                                                 mc_math_classes *math, float distance,
+                                                 mc_entity_effect_error *error) {
     mc_entity_effect_error frame;
     mc_entity_effect_error_init(&frame);
     if (enter(entity, &frame)) {
-        (void)fall(entity, classes, distance, &frame);
+        (void)fall(entity, classes, math, distance, &frame);
         mc_entity_release(entity);
     }
     if (frame.status == MC_ENTITY_OK && !frame.living_damage.entered)
@@ -526,22 +528,28 @@ mc_entity_status mc_entity_effect_fall_in_context(mc_entity *entity, mc_registry
     return finish(&frame, error);
 }
 
+mc_entity_status mc_entity_effect_fall_in_context(mc_entity *entity, mc_registry_classes *classes,
+                                                  float distance, mc_entity_effect_error *error) {
+    return mc_entity_effect_fall_with_math(entity, classes, NULL, distance, error);
+}
+
 mc_entity_status mc_entity_effect_fall(mc_entity *entity, float distance,
                                        mc_entity_effect_error *error) {
     return mc_entity_effect_fall_in_context(entity, NULL, distance, error);
 }
 
-mc_entity_status mc_entity_effect_fall_state_in_context(mc_entity *entity,
-                                                        mc_registry_classes *classes,
-                                                        double displacement, bool grounded,
-                                                        mc_entity_effect_error *error) {
+mc_entity_status mc_entity_effect_fall_state_with_math(mc_entity *entity,
+                                                       mc_registry_classes *classes,
+                                                       mc_math_classes *math, double displacement,
+                                                       bool grounded,
+                                                       mc_entity_effect_error *error) {
     mc_entity_effect_error frame;
     mc_entity_effect_error_init(&frame);
     if (enter(entity, &frame)) {
         if (grounded) {
             if (fp(&frame, "Entity grounded fall-distance comparison", 9)) {
                 if (entity->base.bk > 0.0f) {
-                    if (fall(entity, classes, entity->base.bk, &frame))
+                    if (fall(entity, classes, math, entity->base.bk, &frame))
                         entity->base.bk = 0.0f; /* Actual store23, only after callback. */
                     else {
                         frame.source_bytecode = 18;
@@ -566,6 +574,14 @@ mc_entity_status mc_entity_effect_fall_state_in_context(mc_entity *entity,
     return finish(&frame, error);
 }
 
+mc_entity_status mc_entity_effect_fall_state_in_context(mc_entity *entity,
+                                                        mc_registry_classes *classes,
+                                                        double displacement, bool grounded,
+                                                        mc_entity_effect_error *error) {
+    return mc_entity_effect_fall_state_with_math(entity, classes, NULL, displacement, grounded,
+                                                 error);
+}
+
 mc_entity_status mc_entity_effect_fall_state(mc_entity *entity, double displacement, bool grounded,
                                              mc_entity_effect_error *error) {
     return mc_entity_effect_fall_state_in_context(entity, NULL, displacement, grounded, error);
@@ -575,7 +591,14 @@ void mc_entity_effect_attacked_entered(mc_entity *entity) {
     entity->base.bb = true; /* sn.ai/lq.af store2; inherited by Item/Falling. */
 }
 
-static bool dead(mc_entity *entity, mc_entity_effect_error *error) {
+static bool dead_in_context(mc_entity *entity, mc_registry_classes *registry, mc_math_classes *math,
+                            mc_entity_effect_error *error) {
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
+        error->source_class = "gs";
+        const bool returned = mc_player_dead_entered(entity, registry, math, error);
+        error->close_bytecode = (uint16_t)error->player_death.site.pc;
+        return returned;
+    }
     if (mc_entity_has_mob(entity) && mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SLIME)) {
         error->source_class = "uw";
         error->close_bytecode = 1;
@@ -584,17 +607,11 @@ static bool dead(mc_entity *entity, mc_entity_effect_error *error) {
         return false;
     }
     entity->base.be = true; /* sn.K/lq.J store2; no collection removal. */
-    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
-        error->source_class = "gs";
-        error->close_bytecode = 9;
-        fail(error, MC_ENTITY_STATE_ERROR,
-             entity->local_player->fields.player.d == NULL
-                 ? MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE
-                 : MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
-             "Player K actual inventory Container close", 9);
-        return false;
-    }
     return true;
+}
+
+static bool dead(mc_entity *entity, mc_entity_effect_error *error) {
+    return dead_in_context(entity, NULL, NULL, error);
 }
 
 mc_entity_status mc_entity_effect_attacked(mc_entity *entity, mc_entity_effect_error *error) {
@@ -607,14 +624,21 @@ mc_entity_status mc_entity_effect_attacked(mc_entity *entity, mc_entity_effect_e
     return finish(&frame, error);
 }
 
-mc_entity_status mc_entity_effect_dead(mc_entity *entity, mc_entity_effect_error *error) {
+mc_entity_status mc_entity_effect_dead_with_context(mc_entity *entity,
+                                                    mc_registry_classes *registry,
+                                                    mc_math_classes *math,
+                                                    mc_entity_effect_error *error) {
     mc_entity_effect_error frame;
     mc_entity_effect_error_init(&frame);
     if (enter(entity, &frame)) {
-        (void)dead(entity, &frame);
+        (void)dead_in_context(entity, registry, math, &frame);
         mc_entity_release(entity);
     }
     return finish(&frame, error);
+}
+
+mc_entity_status mc_entity_effect_dead(mc_entity *entity, mc_entity_effect_error *error) {
+    return mc_entity_effect_dead_with_context(entity, NULL, NULL, error);
 }
 
 static bool instance_of(mc_entity *source, mc_entity_classes *classes, mc_entity_class_kind kind) {
@@ -630,6 +654,7 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_clas
                    mc_entity *source, int32_t amount, bool *out, mc_entity_effect_error *error) {
     if (mc_entity_effect_has_pending(entity)) {
         (void)mc_mob_death_inspect(entity, &error->death);
+        (void)mc_player_death_inspect(entity, &error->player_death);
         fail(error, MC_ENTITY_BUSY, MC_ENTITY_EFFECT_CAUSE_OWNER,
              "Entity damage pending native death cleanup", 0);
         return false;
@@ -764,7 +789,9 @@ mc_entity_status mc_entity_effect_damage_with_math(mc_entity *entity, mc_registr
 }
 
 bool mc_entity_effect_has_pending(const mc_entity *entity) {
-    return mc_entity_has_mob(entity) && entity->mob->pending_death != NULL;
+    return (mc_entity_has_mob(entity) && entity->mob->pending_death != NULL) ||
+           (entity != NULL && entity->local_player != NULL &&
+            entity->local_player->pending_death != NULL);
 }
 
 mc_entity_status mc_entity_effect_cleanup(mc_entity *entity, mc_entity_effect_error *error) {
@@ -773,6 +800,8 @@ mc_entity_status mc_entity_effect_cleanup(mc_entity *entity, mc_entity_effect_er
     if (enter(entity, &frame)) {
         if (mc_entity_has_mob(entity))
             (void)mc_mob_death_cleanup(entity, &frame);
+        else if (entity->local_player != NULL)
+            (void)mc_player_death_cleanup(entity, &frame);
         mc_entity_release(entity);
     }
     return finish(&frame, error);
@@ -781,11 +810,15 @@ mc_entity_status mc_entity_effect_cleanup(mc_entity *entity, mc_entity_effect_er
 bool mc_entity_effect_error_retire(mc_entity_effect_error *error) {
     if (error == NULL)
         return false;
-    if (!error->death.pending)
+    if (!error->death.pending && !error->player_death.pending)
         return true;
     mc_entity_effect_error cleanup;
     mc_entity_effect_error_init(&cleanup);
-    if (mc_entity_effect_cleanup(error->death.receiver, &cleanup) != MC_ENTITY_OK) {
+    mc_entity *receiver =
+        error->player_death.pending ? error->player_death.receiver : error->death.receiver;
+    if (mc_entity_effect_cleanup(receiver, &cleanup) != MC_ENTITY_OK) {
+        error->player_death.cleanup_status = cleanup.status;
+        error->player_death.cleanup_operation = cleanup.operation;
         error->death.cleanup_status = cleanup.status;
         error->death.cleanup_operation = cleanup.operation;
         return false;
@@ -795,20 +828,31 @@ bool mc_entity_effect_error_retire(mc_entity_effect_error *error) {
     error->death.drop_error = NULL;
     error->death.cleanup_status = MC_ENTITY_OK;
     error->death.cleanup_operation = NULL;
+    error->player_death.pending = error->player_death.active = false;
+    error->player_death.receiver = NULL;
+    error->player_death.drop_error = NULL;
+    error->player_death.close_error = NULL;
+    error->player_death.cleanup_status = MC_ENTITY_OK;
+    error->player_death.cleanup_operation = NULL;
     return true;
 }
 
-mc_entity_status mc_entity_effect_death_in_context(mc_entity *entity, mc_registry_classes *classes,
-                                                   mc_entity *source,
-                                                   mc_entity_effect_error *error) {
+mc_entity_status mc_entity_effect_death_with_math(mc_entity *entity, mc_registry_classes *classes,
+                                                  mc_math_classes *math, mc_entity *source,
+                                                  mc_entity_effect_error *error) {
     mc_entity_effect_error frame;
     mc_entity_effect_error_init(&frame);
     if (enter(entity, &frame)) {
         frame.source_class = "ls";
         if (mc_entity_effect_has_pending(entity)) {
             (void)mc_mob_death_inspect(entity, &frame.death);
+            (void)mc_player_death_inspect(entity, &frame.player_death);
             fail(&frame, MC_ENTITY_BUSY, MC_ENTITY_EFFECT_CAUSE_OWNER,
                  "Entity death pending native child cleanup", 0);
+        } else if (entity->local_player != NULL) {
+            frame.source_class = "gs";
+            (void)mc_player_death_entered(entity, classes, math, source, &frame);
+            frame.source_bytecode = (uint16_t)frame.player_death.site.pc;
         } else {
             (void)mc_mob_death_entered(entity, classes, source, &frame);
             frame.source_bytecode = frame.death.death_pc;
@@ -816,6 +860,12 @@ mc_entity_status mc_entity_effect_death_in_context(mc_entity *entity, mc_registr
         mc_entity_release(entity);
     }
     return finish(&frame, error);
+}
+
+mc_entity_status mc_entity_effect_death_in_context(mc_entity *entity, mc_registry_classes *classes,
+                                                   mc_entity *source,
+                                                   mc_entity_effect_error *error) {
+    return mc_entity_effect_death_with_math(entity, classes, NULL, source, error);
 }
 
 mc_entity_status mc_entity_effect_damage_in_context(mc_entity *entity, mc_registry_classes *classes,
@@ -829,10 +879,10 @@ mc_entity_status mc_entity_effect_damage(mc_entity *entity, mc_entity *source, i
     return mc_entity_effect_damage_in_context(entity, NULL, source, amount, out, error);
 }
 
-mc_entity_status mc_entity_effect_fire_damage_in_context(mc_entity *entity,
-                                                         mc_registry_classes *classes,
-                                                         int32_t amount,
-                                                         mc_entity_effect_error *error) {
+mc_entity_status mc_entity_effect_fire_damage_with_math(mc_entity *entity,
+                                                        mc_registry_classes *classes,
+                                                        mc_math_classes *math, int32_t amount,
+                                                        mc_entity_effect_error *error) {
     mc_entity_effect_error frame;
     mc_entity_effect_error_init(&frame);
     if (enter(entity, &frame)) {
@@ -840,7 +890,7 @@ mc_entity_status mc_entity_effect_fire_damage_in_context(mc_entity *entity,
          * inherits sn/lq immunity1 and, when false, damage call10. */
         if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) || !entity->base.bC) {
             bool ordinary;
-            if (!damage(entity, classes, NULL, NULL, amount, &ordinary, &frame))
+            if (!damage(entity, classes, math, NULL, amount, &ordinary, &frame))
                 frame.fire_bytecode = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) ? 3 : 10;
         }
         mc_entity_release(entity);
@@ -848,6 +898,13 @@ mc_entity_status mc_entity_effect_fire_damage_in_context(mc_entity *entity,
     if (frame.status == MC_ENTITY_OK && !frame.living_damage.entered)
         mc_entity_effect_error_init(&frame);
     return finish(&frame, error);
+}
+
+mc_entity_status mc_entity_effect_fire_damage_in_context(mc_entity *entity,
+                                                         mc_registry_classes *classes,
+                                                         int32_t amount,
+                                                         mc_entity_effect_error *error) {
+    return mc_entity_effect_fire_damage_with_math(entity, classes, NULL, amount, error);
 }
 
 mc_entity_status mc_entity_effect_fire_damage(mc_entity *entity, int32_t amount,

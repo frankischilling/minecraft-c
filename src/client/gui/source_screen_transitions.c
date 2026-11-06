@@ -6,6 +6,7 @@
 #include "../startup/application_startup_menu.h"
 #include "../world/load_world.h"
 #include "../world/load_world_terminal_internal.h"
+#include "../world/respawn.h"
 #include "display_screen.h"
 #include "mc/client/controller/singleplayer.h"
 #include "mc/client/statistics/writer.h"
@@ -37,6 +38,10 @@ typedef struct screen_node {
     mc_world_info_name *create_folder, *create_name;
     mc_client_display_screen_call *display;
     mc_client_world_load_call *load;
+    mc_client_respawn_call *respawn;
+    mc_client_respawn_error respawn_error, respawn_cleanup;
+    mc_client_respawn_state completed_respawn;
+    bool completed_respawn_captured;
     mc_client_singleplayer_controller *controller; /* Candidate or displaced owning occurrence. */
     mc_client_singleplayer_controller **load_controller_slot; /* Actual owning slot, borrowed. */
 } screen_node;
@@ -53,6 +58,8 @@ struct mc_client_screen_transitions {
     mc_client_singleplayer_controller *controller;
     mc_client_world_load_classes *world_classes;
     mc_client_world_load_call *last_load;
+    screen_node *last_respawn_node;
+    mc_client_display_screen_call *last_display_call;
     screen_node *last_load_node;
     mc_client_world_load_call *leave_owner; /* Actual retained invocation owning world_leave. */
     mc_client_world_load_error world_leave;
@@ -241,6 +248,7 @@ static bool display(mc_client_screen_transitions *r, mc_client_source_da *target
     ++r->calls;
     const mc_client_display_screen_status status =
         mc_client_display_screen_run(r->app, r->classes, target, &n->display);
+    r->last_display_call = n->display;
     if (n->display != NULL && n->display->r_stored) {
         /* Native slot authority follows the actual new r106 publication,
          * including a failure after that store. Historical startup stores stay. */
@@ -284,7 +292,7 @@ static bool display(mc_client_screen_transitions *r, mc_client_source_da *target
         }
         return false;
     }
-    if (n->display->fallback == NULL) {
+    if (n->display->fallback == NULL && n->display->death == NULL) {
         const mc_client_display_screen_status retired =
             mc_client_display_screen_retire(&n->display);
         if (retired != MC_CLIENT_DISPLAY_SCREEN_OK) {
@@ -292,6 +300,7 @@ static bool display(mc_client_screen_transitions *r, mc_client_source_da *target
                  descriptor, pc);
             return false;
         }
+        r->last_display_call = NULL;
     }
     return true;
 }
@@ -519,6 +528,14 @@ mc_client_screen_status mc_client_screen_transitions_pause(mc_client_screen_tran
                     (mc_client_screen_site){"net/minecraft/client/Minecraft", "i", "()V", 9};
         }
     }
+    return leave(r, e);
+}
+
+mc_client_screen_status mc_client_screen_transitions_death(mc_client_screen_transitions *r,
+                                                           mc_client_screen_error *e) {
+    if (!enter(r, e))
+        return r == NULL || e == NULL ? MC_CLIENT_SCREEN_INVALID_ARGUMENT : e->status;
+    (void)display(r, NULL, "net/minecraft/client/Minecraft", "k", "()V", 177);
     return leave(r, e);
 }
 
@@ -765,6 +782,107 @@ static void pause_action(mc_client_screen_transitions *r, mc_client_source_ke *b
     (void)display(r, mc_client_screen_menu_base(n->menu), "oz", "a", "(Lke;)V", 90);
 }
 
+static mc_client_screen_status respawn_status(mc_client_respawn_status status) {
+    switch (status) {
+        case MC_CLIENT_RESPAWN_OK:
+            return MC_CLIENT_SCREEN_OK;
+        case MC_CLIENT_RESPAWN_ARGUMENT:
+            return MC_CLIENT_SCREEN_INVALID_ARGUMENT;
+        case MC_CLIENT_RESPAWN_BUSY:
+            return MC_CLIENT_SCREEN_BUSY;
+        case MC_CLIENT_RESPAWN_LIMIT:
+            return MC_CLIENT_SCREEN_LIMIT;
+        case MC_CLIENT_RESPAWN_ALLOCATION:
+            return MC_CLIENT_SCREEN_ALLOCATION_FAILED;
+        case MC_CLIENT_RESPAWN_NULL_REFERENCE:
+            return MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE;
+        case MC_CLIENT_RESPAWN_UNIMPLEMENTED:
+            return MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY;
+        default:
+            return MC_CLIENT_SCREEN_APP_FAILED;
+    }
+}
+
+static void death_action(mc_client_screen_transitions *r, mc_client_source_ke *button) {
+    /* The id-zero test has no body. The surviving CH decisions read id at8
+     * and34 independently, including after the first action changes App.r. */
+    if (button->fields.f == 1) {
+        screen_node *n = node(r);
+        if (n == NULL)
+            return;
+        mc_entity *player = r->app->h; /* Actual captured Minecraft.h19 receiver. */
+        const mc_client_respawn_status status =
+            mc_client_respawn_player_begin(player, r->last_load, &n->respawn, &n->respawn_error);
+        r->last_respawn_node = n;
+        if (status != MC_CLIENT_RESPAWN_OK) {
+            const mc_client_respawn_error *error = &n->respawn_error;
+            const mc_client_world_load_site *site =
+                error->child.class_name == NULL ? &error->site : &error->child;
+            fail(r, respawn_status(status), error->operation, site->class_name, site->method,
+                 site->descriptor, site->pc < 0 ? 0u : (unsigned int)site->pc);
+            r->failure.native_policy = error->native_policy;
+            r->failure.parent_site = (mc_client_screen_site){"ch", "a", "(Lke;)V", 22};
+            return;
+        }
+        if (!mc_client_respawn_inspect(n->respawn, &n->completed_respawn)) {
+            fail(r, MC_CLIENT_SCREEN_APP_FAILED, "ch completed respawn native receipt", "ch", "a",
+                 "(Lke;)V", 22);
+            return;
+        }
+        n->completed_respawn.failure = n->completed_respawn.cleanup = NULL;
+        n->completed_respawn_captured = true;
+        /* The actual source invocation returned. End its native Load lease
+         * before CH's independent next display call and any later Respawn. */
+        const mc_client_respawn_status retired =
+            mc_client_respawn_retire(&n->respawn, &n->respawn_cleanup);
+        if (retired != MC_CLIENT_RESPAWN_OK) {
+            const mc_client_respawn_error *error = &n->respawn_cleanup;
+            fail(r, respawn_status(retired), error->operation, "ch", "a", "(Lke;)V", 22);
+            r->failure.native_policy = true;
+            return;
+        }
+        n->respawn_error = (mc_client_respawn_error){0};
+        if (!display(r, NULL, "ch", "a", "(Lke;)V", 30))
+            return;
+    }
+    if (button->fields.f != 2)
+        return;
+    if (r->last_load == NULL) {
+        fail(r, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY, "ch actual selected World leave owner",
+             "ch", "a", "(Lke;)V", 46);
+        return;
+    }
+    mc_client_world_load_state prior = {0};
+    (void)mc_client_world_load_inspect(r->last_load, &prior);
+    ++r->leave_calls;
+    r->leave_owner = r->last_load;
+    const mc_client_world_load_status left =
+        mc_client_world_load_leave(r->last_load, &r->world_leave);
+    mc_client_world_load_state current = {0};
+    r->world_leave_retained = mc_client_world_load_inspect(r->last_load, &current) &&
+                              current.leave.calls > prior.leave.calls;
+    if (left != MC_CLIENT_WORLD_LOAD_OK) {
+        const mc_client_world_load_error *error = &r->world_leave;
+        const mc_client_world_load_site *site =
+            error->child.class_name == NULL ? &error->site : &error->child;
+        fail(r, world_status(left), error->operation, site->class_name, site->method,
+             site->descriptor, site->pc < 0 ? 0u : (unsigned int)site->pc);
+        r->failure.native_policy = error->native_policy;
+        r->failure.parent_site = (mc_client_screen_site){"ch", "a", "(Lke;)V", 46};
+        return;
+    }
+    screen_node *n = node(r); /* Actual NEW fu53 after the complete World leave. */
+    if (n == NULL)
+        return;
+    if (mc_client_screen_menu_allocate(r->classes, NULL, &n->menu, &r->failure) !=
+        MC_CLIENT_SCREEN_OK)
+        return;
+    ++r->screens;
+    if (mc_client_screen_menu_construct(n->menu, &r->failure) != MC_CLIENT_SCREEN_OK)
+        return;
+    (void)display(r, mc_client_screen_menu_base(n->menu), "ch", "a", "(Lke;)V", 60);
+}
+
 static bool indexed_text(mc_client_screen_transitions *r, mc_nbt_string prefix, bool space,
                          int32_t number, mc_world_info_name **slot) {
     char decimal[16];
@@ -922,6 +1040,8 @@ mc_client_screen_status mc_client_screen_transitions_button(mc_client_screen_tra
             fail(r, MC_CLIENT_SCREEN_APP_FAILED, "actual source stop", "fu", "a", "(Lke;)V", 110);
     } else if (screen->kind == MC_CLIENT_SCREEN_PAUSE) {
         pause_action(r, button);
+    } else if (screen->kind == MC_CLIENT_SCREEN_DEATH) {
+        death_action(r, button);
     } else if (screen->kind == MC_CLIENT_SCREEN_WORLD_SELECTION) {
         mc_client_source_rq *rq = (mc_client_source_rq *)screen;
         const int32_t id = button->fields.f;
@@ -952,19 +1072,28 @@ bool mc_client_screen_transitions_inspect(const mc_client_screen_transitions *r,
     mc_client_world_load_state load;
     if (r->world_leave_retained && mc_client_world_load_inspect(r->leave_owner, &load))
         world_leave = load.leave.failure; /* Fresh view after any child cleanup. */
-    *out = (mc_client_screen_transition_state){.active = r->active,
-                                               .retiring = r->retiring,
-                                               .slot_handed_off = r->slot_handed_off,
-                                               .screens = r->screens,
-                                               .calls = r->calls,
-                                               .initial_screen = r->initial,
-                                               .failure = &r->failure,
-                                               .world_load = r->last_load,
-                                               .world_leave = world_leave,
-                                               .leave_calls = r->leave_calls,
-                                               .terminal_prepare_selected =
-                                                   r->terminal_prepare_selected,
-                                               .terminal_prepared = r->terminal_prepared};
+    *out = (mc_client_screen_transition_state){
+        .active = r->active,
+        .retiring = r->retiring,
+        .slot_handed_off = r->slot_handed_off,
+        .screens = r->screens,
+        .calls = r->calls,
+        .initial_screen = r->initial,
+        .failure = &r->failure,
+        .display_call = r->last_display_call,
+        .world_load = r->last_load,
+        .world_leave = world_leave,
+        .leave_calls = r->leave_calls,
+        .respawn = r->last_respawn_node == NULL ? NULL : r->last_respawn_node->respawn,
+        .respawn_error = r->last_respawn_node == NULL || r->last_respawn_node->respawn == NULL
+                             ? NULL
+                             : &r->last_respawn_node->respawn_error,
+        .completed_respawn =
+            r->last_respawn_node == NULL || !r->last_respawn_node->completed_respawn_captured
+                ? NULL
+                : &r->last_respawn_node->completed_respawn,
+        .terminal_prepare_selected = r->terminal_prepare_selected,
+        .terminal_prepared = r->terminal_prepared};
     return true;
 }
 
@@ -1142,6 +1271,24 @@ done:
     return ready;
 }
 
+static bool retire_respawns(mc_client_screen_transitions *r, mc_client_screen_error *e) {
+    for (screen_node *n = r->nodes; n != NULL; n = n->next) {
+        const mc_client_respawn_status status =
+            mc_client_respawn_retire(&n->respawn, &n->respawn_cleanup);
+        if (status != MC_CLIENT_RESPAWN_OK) {
+            mc_screen_fail(
+                e, respawn_status(status), n->respawn_cleanup.operation,
+                n->respawn_cleanup.site.class_name, n->respawn_cleanup.site.method,
+                n->respawn_cleanup.site.descriptor,
+                n->respawn_cleanup.site.pc < 0 ? 0u : (unsigned int)n->respawn_cleanup.site.pc);
+            return false;
+        }
+        if (r->last_respawn_node == n)
+            r->last_respawn_node = NULL;
+    }
+    return true;
+}
+
 static mc_client_screen_status terminal_prepare(mc_client_screen_transitions *r,
                                                 const mc_client_bootstrap_terminal_scope *scope,
                                                 mc_client_screen_error *e) {
@@ -1164,6 +1311,8 @@ static mc_client_screen_status terminal_prepare(mc_client_screen_transitions *r,
     if (r->retiring && !r->terminal_prepare_selected)
         return mc_screen_fail(e, MC_CLIENT_SCREEN_BUSY, "legacy screen retirement already entered",
                               NULL, NULL, NULL, 0);
+    if (!retire_respawns(r, e))
+        return e->status;
     if (r->world_classes != NULL) {
         const mc_client_world_load_status ended =
             mc_client_world_load_classes_terminal_end(r->world_classes);
@@ -1417,6 +1566,8 @@ mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_tra
         return mc_screen_fail(e, MC_CLIENT_SCREEN_BUSY, "active native screen graph", NULL, NULL,
                               NULL, 0);
     r->retiring = true;
+    if (!retire_respawns(r, e))
+        return e->status;
     if (!inventory_terminal_prefix(r, e))
         return e->status;
     while (r->nodes != NULL) {
@@ -1439,6 +1590,8 @@ mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_tra
         }
         const bool copied_initialization = mc_screen_transition_initialization_capture(
             &r->receipts, &r->failure, n->display == NULL ? NULL : &n->display->initialization);
+        const bool last_display =
+            r->last_display_call != NULL && r->last_display_call == n->display;
         const mc_client_display_screen_status display_status =
             mc_client_display_screen_retire(&n->display);
         if (copied_initialization)
@@ -1447,6 +1600,8 @@ mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_tra
         if (display_status != MC_CLIENT_DISPLAY_SCREEN_OK)
             return mc_screen_fail(e, MC_CLIENT_SCREEN_BUSY, "retained actual display prefix", NULL,
                                   NULL, NULL, 0);
+        if (last_display)
+            r->last_display_call = NULL;
         mc_client_source_da *base = mc_client_screen_world_selection_base(n->rq);
         const mc_client_screen_status status = mc_client_screen_world_selection_retire(&n->rq, e);
         if (status != MC_CLIENT_SCREEN_OK)

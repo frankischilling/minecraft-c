@@ -50,6 +50,15 @@ mc_entity_status mc_entity_tick_base_body_in_context(mc_entity *local_player,
                                                      mc_registry_classes *code_registry,
                                                      const mc_entity_tick_limits *limits,
                                                      mc_entity_tick_error *error);
+/* The actual Math namespace reaches fatal damage/scatter and Container closes;
+ * it is borrowed exclusively and remains unused on paths that return earlier. */
+mc_entity_status mc_entity_tick_update_with_math(mc_entity *, mc_registry_classes *,
+                                                 mc_math_classes *, const mc_entity_tick_limits *,
+                                                 mc_entity_tick_error *);
+mc_entity_status mc_entity_tick_base_body_with_math(mc_entity *, mc_registry_classes *,
+                                                    mc_math_classes *,
+                                                    const mc_entity_tick_limits *,
+                                                    mc_entity_tick_error *);
 
 /* Actual sn.b(int,boolean): typed Byte read, masked Java bit operation and
  * separately reloaded watcher setter. Byte.equals controls record dirty then

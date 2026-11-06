@@ -216,10 +216,11 @@ static mc_world_storage_status detector_contact(mc_world_runtime *world, const m
     return frame->status;
 }
 
-mc_world_storage_status mc_world_runtime_entity_contact(mc_world_runtime *world,
-                                                        const mc_block *block, int32_t x, int32_t y,
-                                                        int32_t z, mc_entity *entity,
-                                                        mc_world_entity_contact_error *error) {
+mc_world_storage_status
+mc_world_runtime_entity_contact_with_context(mc_world_runtime *world, const mc_block *block,
+                                             int32_t x, int32_t y, int32_t z, mc_entity *entity,
+                                             mc_registry_classes *registry, mc_math_classes *math,
+                                             mc_world_entity_contact_error *error) {
     mc_world_entity_contact_error frame;
     mc_world_entity_contact_error_init(&frame);
     frame.block = block;
@@ -244,9 +245,11 @@ mc_world_storage_status mc_world_runtime_entity_contact(mc_world_runtime *world,
             case MC_BLOCK_CACTUS: {
                 stage(block, &frame, "or", "je", 4);
                 bool ignored;
-                status = effect_result(
-                    &frame, mc_entity_effect_damage(entity, NULL, 1, &ignored, &frame.effect),
-                    "Block cactus Entity damage");
+                status =
+                    effect_result(&frame,
+                                  mc_entity_effect_damage_with_math(entity, registry, math, NULL, 1,
+                                                                    &ignored, &frame.effect),
+                                  "Block cactus Entity damage");
                 break;
             }
             case MC_BLOCK_DETECTOR_RAIL:
@@ -274,4 +277,12 @@ mc_world_storage_status mc_world_runtime_entity_contact(mc_world_runtime *world,
     if (error != NULL)
         *error = frame;
     return status;
+}
+
+mc_world_storage_status mc_world_runtime_entity_contact(mc_world_runtime *world,
+                                                        const mc_block *block, int32_t x, int32_t y,
+                                                        int32_t z, mc_entity *entity,
+                                                        mc_world_entity_contact_error *error) {
+    return mc_world_runtime_entity_contact_with_context(world, block, x, y, z, entity, NULL, NULL,
+                                                        error);
 }

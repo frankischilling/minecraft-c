@@ -526,19 +526,19 @@ static bool ph_run(ph_context *c, FILE *inputs, FILE *output) {
                 else if (error->cause == MC_ENTITY_EFFECT_CAUSE_WORLD &&
                          error->world.status == MC_WORLD_STORAGE_IO_ERROR)
                     exception = "IO";
-                else if (profile == 21 &&
-                         error->cause == MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL &&
-                         error->living_bytecode == 316 &&
-                         error->living_damage.death_invoke_reached) {
-                    exception = "DEPENDENCY";
-                    scope = "FATAL_PREFIX";
-                } else {
+                else {
                     fprintf(stderr,
                             "Player hurt unexpected producer: profile%u status%d cause%d %s\n",
                             profile, (int)status, (int)error->cause,
                             error->operation ? error->operation : "-");
                     return false;
                 }
+            }
+            if (profile == 21) {
+                CHECK(status == MC_ENTITY_OK && result &&
+                      error->living_damage.death_invoke_reached && error->player_death.returned &&
+                      !error->player_death.pending && c->checkpoint.good);
+                scope = "FATAL_PREFIX";
             }
             fprintf(output,
                     "{\"schema\":\"PLAYER_HURT_V1\",\"case\":%u,\"profile\":%u,\"step\":%" PRId32
@@ -548,10 +548,15 @@ static bool ph_run(ph_context *c, FILE *inputs, FILE *output) {
                 fprintf(output, "%s%" PRId32, i ? "," : "", n[i]);
             fprintf(output,
                     "],\"amount\":%" PRId32 ",\"scope\":\"%s\",\"result\":%s,\"exception\":\"%s\","
-                    "\"before\":%s,\"state\":%s,\"completion\":null}\n",
+                    "\"before\":%s,\"state\":%s,\"completion\":",
                     n[9 + step], scope,
                     status == MC_ENTITY_OK ? (result ? "true" : "false") : "null", exception,
-                    before->bytes, after->bytes);
+                    before->bytes, profile == 21 ? c->checkpoint.bytes : after->bytes);
+            if (profile == 21)
+                fprintf(output, "{\"result\":true,\"exception\":\"NONE\",\"state\":%s}}\n",
+                        after->bytes);
+            else
+                fputs("null}\n", output);
             fprintf(stdout,
                     "PLAYER_HURT_NATIVE "
                     "{\"case\":%u,\"status\":%d,\"cause\":%d,\"source_pc\":%u,\"living_pc\":%u,"
@@ -560,8 +565,6 @@ static bool ph_run(ph_context *c, FILE *inputs, FILE *output) {
                     row, (int)status, (int)error->cause, (unsigned int)error->source_bytecode,
                     (unsigned int)error->living_bytecode, (unsigned int)error->player_bytecode,
                     error->armor.site.pc);
-            if (profile == 21)
-                CHECK(c->checkpoint.good && strcmp(c->checkpoint.bytes, after->bytes) == 0);
             ++row;
         }
         CHECK(ph_release_actor(c));

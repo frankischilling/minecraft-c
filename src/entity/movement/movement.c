@@ -216,7 +216,8 @@ static void position_from_bounds(mc_entity *entity) {
         _mm_div_sd(_mm_set_sd(add(entity->bounds->min_z, entity->bounds->max_z)), _mm_set_sd(2.0)));
 }
 
-static bool contacts(mc_entity *entity, mc_entity_move_error *error) {
+static bool contacts(mc_entity *entity, mc_registry_classes *classes, mc_math_classes *math,
+                     mc_entity_move_error *error) {
     const int32_t min_x = mc_math_floor_double(add(entity->bounds->min_x, 0.001));
     const int32_t min_y = mc_math_floor_double(add(entity->bounds->min_y, 0.001));
     const int32_t min_z = mc_math_floor_double(add(entity->bounds->min_z, 0.001));
@@ -280,8 +281,9 @@ static bool contacts(mc_entity *entity, mc_entity_move_error *error) {
                     return fail(error, MC_ENTITY_WORLD_FAILED, "Entity contact Block array index");
                 error->bytecode = 1868;
                 if (!world_result(error,
-                                  mc_world_runtime_entity_contact(entity->base.world, block, x, y,
-                                                                  z, entity, &error->contact),
+                                  mc_world_runtime_entity_contact_with_context(
+                                      entity->base.world, block, x, y, z, entity, classes, math,
+                                      &error->contact),
                                   "Entity Block contact"))
                     return false;
             }
@@ -446,7 +448,7 @@ static bool walking(mc_entity *entity, mc_registry_classes *classes, double dx, 
 }
 
 static bool finish_environment(mc_entity *entity, mc_registry_classes *code_registry,
-                               const mc_world_collision_list_view *list,
+                               mc_math_classes *math, const mc_world_collision_list_view *list,
                                mc_entity_move_error *error) {
     bool wet;
     error->bytecode = 1890;
@@ -478,8 +480,8 @@ static bool finish_environment(mc_entity *entity, mc_registry_classes *code_regi
         return false;
     if (burning) {
         error->bytecode = 1923;
-        if (!effect_result(error, mc_entity_effect_fire_damage_in_context(entity, code_registry, 1,
-                                                                          &error->effect)))
+        if (!effect_result(error, mc_entity_effect_fire_damage_with_math(entity, code_registry,
+                                                                         math, 1, &error->effect)))
             return false;
         if (!wet) {
             entity->base.bv = mc_java_i32_add(entity->base.bv, 1);
@@ -520,10 +522,10 @@ static bool finish_environment(mc_entity *entity, mc_registry_classes *code_regi
     return true;
 }
 
-mc_entity_status mc_entity_move_in_context(mc_entity *entity, mc_registry_classes *code_registry,
-                                           double x, double y, double z,
-                                           const mc_entity_move_limits *limits,
-                                           mc_entity_move_error *error) {
+mc_entity_status mc_entity_move_with_math(mc_entity *entity, mc_registry_classes *code_registry,
+                                          mc_math_classes *math, double x, double y, double z,
+                                          const mc_entity_move_limits *limits,
+                                          mc_entity_move_error *error) {
     mc_entity_move_error frame;
     mc_entity_move_error_init(&frame);
     frame.max_loop_work = limits == NULL ? MC_ENTITY_MOVE_DEFAULT_LOOP_WORK : limits->max_loop_work;
@@ -671,9 +673,9 @@ mc_entity_status mc_entity_move_in_context(mc_entity *entity, mc_registry_classe
             entity->base.aX = original_y != y && original_y < 0.0;
             entity->base.ba = entity->base.aY || entity->base.aZ;
             frame.bytecode = 1319;
-            if (!effect_result(&frame, mc_entity_effect_fall_state_in_context(entity, code_registry,
-                                                                              y, entity->base.aX,
-                                                                              &frame.effect)))
+            if (!effect_result(
+                    &frame, mc_entity_effect_fall_state_with_math(entity, code_registry, math, y,
+                                                                  entity->base.aX, &frame.effect)))
                 goto done;
             if (original_x != x)
                 entity->base.velocity_x = 0.0;
@@ -687,8 +689,8 @@ mc_entity_status mc_entity_move_in_context(mc_entity *entity, mc_registry_classe
             volatile double walked_z = subtract(entity->base.z, old_z);
             if (!walking(entity, code_registry, walked_x, walked_z, sneaking, &frame))
                 goto done;
-            if (!contacts(entity, &frame) ||
-                !finish_environment(entity, code_registry, &list, &frame))
+            if (!contacts(entity, code_registry, math, &frame) ||
+                !finish_environment(entity, code_registry, math, &list, &frame))
                 goto done;
             frame.bytecode = 2028;
         done:
@@ -703,6 +705,13 @@ mc_entity_status mc_entity_move_in_context(mc_entity *entity, mc_registry_classe
     if (error != NULL)
         *error = frame;
     return frame.status;
+}
+
+mc_entity_status mc_entity_move_in_context(mc_entity *entity, mc_registry_classes *code_registry,
+                                           double x, double y, double z,
+                                           const mc_entity_move_limits *limits,
+                                           mc_entity_move_error *error) {
+    return mc_entity_move_with_math(entity, code_registry, NULL, x, y, z, limits, error);
 }
 
 mc_entity_status mc_entity_move(mc_entity *entity, double x, double y, double z,

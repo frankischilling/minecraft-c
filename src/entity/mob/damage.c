@@ -7,6 +7,7 @@
 #include "../living/fields_internal.h"
 #include "../movement/effects_internal.h"
 #include "../player/damage_internal.h"
+#include "../player/death_internal.h"
 #include "../player/tick_math_internal.h"
 #include "internal.h"
 #include "mc/core/java/java.h"
@@ -464,21 +465,19 @@ static bool living_body(mc_entity *p, mc_registry_classes *registry, mc_math_cla
         e->living_damage.death_invoke_reached = true;
         if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
             child_at(e, "gs", "b", "(Lsn;)V", 2);
-            return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
-                               "Player damage actual Player death continuation");
-        }
-        if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_CREEPER)) {
+            if (!mc_player_death_entered(p, registry, math, source, e))
+                return false;
+        } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_CREEPER)) {
             /* GB.b starts with its actual inherited LS death invocation.
              * Its later Skeleton-killer record branch has not been reached. */
             child_at(e, "gb", "b", "(Lsn;)V", 2);
             return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
                                "Living damage actual Creeper death/drop body");
-        }
-        if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ZOMBIE) ||
-            mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SKELETON))
+        } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ZOMBIE) ||
+                   mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SKELETON))
             return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
                                "Living damage actual death/drop body");
-        if (!mc_mob_death_entered(p, registry, source, e))
+        else if (!mc_mob_death_entered(p, registry, source, e))
             return false;
     } else if (full_hit && !sound(p, registry, false, e))
         return false;

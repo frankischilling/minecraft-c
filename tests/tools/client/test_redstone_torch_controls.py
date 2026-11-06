@@ -43,7 +43,7 @@ class PureControls(unittest.TestCase):
     def setUpClass(cls):cls.m=G.modules()
 
     def test_frozen_plan_and_authored441_scene(self):
-        plan=G.read_plan();self.assertEqual(plan['player']['Inventory'],[[0,76,2,0]])
+        plan=G.read_current_plan();self.assertEqual(plan['player']['Inventory'],[[0,76,2,0]])
         with tempfile.TemporaryDirectory(prefix='mc-redstone-torch-scene-') as temporary:
             path=Path(temporary)
             result=G.authored_regions(self.m,path)
@@ -55,6 +55,17 @@ class PureControls(unittest.TestCase):
         rotation=[struct.unpack('>I',struct.pack('>f',x))[0] for x in plan['player']['Rotation']]
         self.assertEqual(player['Pos'][1],[6,position])
         self.assertEqual(player['Rotation'][1],[5,rotation])
+
+    def test_current_input_binding_changed_copies(self):
+        controls=G.module('redstone_torch_current_input_controls',HERE/'scene_input_controls.py')
+        controls.check_current_inputs(self,G,'redstone_torch')
+
+    def test_historical_input_guard_remains_strict(self):
+        binding=json.loads((G.ROOT/'tests/client/gameplay/current_scene_inputs.json').read_text())
+        predecessor=binding['profiles']['redstone_torch']['predecessor']['source_input_sha256']
+        changed=[name for name,pin in predecessor.items() if G.digest(G.ROOT/name)!=pin]
+        self.assertEqual(changed,['tests/client/startup/test_world_selection_loop.c'])
+        with self.assertRaises(ValueError):G.read_plan()
 
     def test_positive_synthetic_decoder_only(self):
         rows,suffix=fixture();value=G.observations(self.m,encoded(rows,suffix))

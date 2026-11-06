@@ -17,10 +17,12 @@ struct mc_player_session {
 };
 
 struct mc_player_nbt_coordinate;
+struct mc_player_death_work;
 
 typedef struct mc_local_player_state {
     mc_local_player_snapshot fields;
     struct mc_player_nbt_coordinate *nbt_coordinates;
+    struct mc_player_death_work *pending_death;
     mc_inventory_player_terminal terminal_inventory;
 } mc_local_player_state;
 

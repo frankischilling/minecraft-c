@@ -16,6 +16,7 @@
 #include "../display/staged.h"
 #include "../display/world_frame_surface.h"
 #include "../gui/source_create_world_drawing.h"
+#include "../gui/source_death_drawing.h"
 #include "../gui/source_pause_drawing.h"
 #include "../gui/source_screen_drawing.h"
 #include "../gui/source_screen_events.h"
@@ -102,6 +103,7 @@ struct mc_client_menu_loop {
     int32_t second_frames;
     mc_client_source_screen_draw_error draw;
     mc_client_pause_draw_error pause_draw;
+    mc_client_death_draw_error death_draw;
     mc_client_inventory_draw_call *inventory_draw;
     mc_client_inventory_draw_state inventory_state;
     mc_client_inventory_draw_error inventory_error, inventory_cleanup;
@@ -251,22 +253,14 @@ static bool health_tick(mc_client_menu_loop *loop) {
         return stop(loop, "native actual dc.Y field access", "net/minecraft/client/Minecraft", "k",
                     169);
     if (loop->player_snapshot.living.Y <= 0) {
-        const mc_client_display_screen_status status = mc_client_display_screen_run(
-            app, mc_client_screen_transitions_classes(loop->transitions), NULL,
-            &loop->screen_display);
-        loop->state.display_call = loop->screen_display;
-        if (status != MC_CLIENT_DISPLAY_SCREEN_OK) {
-            if (loop->screen_display == NULL)
-                return stop(loop, "actual display(NULL) native admission",
-                            "net/minecraft/client/Minecraft", "k", 177);
-            return stop(loop, loop->screen_display->operation,
-                        loop->screen_display->site.class_name, loop->screen_display->site.method,
-                        loop->screen_display->site.pc);
-        }
-        if (mc_client_display_screen_retire(&loop->screen_display) != MC_CLIENT_DISPLAY_SCREEN_OK)
-            return stop(loop, "actual display(NULL) native retirement",
-                        "net/minecraft/client/Minecraft", "k", 177);
-        loop->state.display_call = NULL;
+        const mc_client_screen_status status =
+            mc_client_screen_transitions_death(loop->transitions, &loop->screen);
+        mc_client_screen_transition_state transitions;
+        if (mc_client_screen_transitions_inspect(loop->transitions, &transitions))
+            loop->state.display_call = transitions.display_call;
+        if (status != MC_CLIENT_SCREEN_OK)
+            return stop(loop, loop->screen.operation, loop->screen.site.class_name,
+                        loop->screen.site.method, loop->screen.site.pc);
         return true;
     }
     bool sleeping;
@@ -638,6 +632,13 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
                             loop->inventory_error.screen.site.method,
                             loop->inventory_error.screen.site.pc);
             loop->state.font_measurements += loop->inventory_state.font_measurements;
+        } else if (drawn.kind == MC_CLIENT_SCREEN_DEATH) {
+            if (!mc_client_source_death_draw((mc_client_source_ch *)app->r, loop->renderer,
+                                             &projection, mouse, partial, &loop->death_draw))
+                return stop(loop, loop->death_draw.screen.operation,
+                            loop->death_draw.screen.site.class_name,
+                            loop->death_draw.screen.site.method, loop->death_draw.screen.site.pc);
+            loop->state.font_measurements += loop->death_draw.font_measurements;
         } else if (drawn.kind == MC_CLIENT_SCREEN_PAUSE) {
             if (!mc_client_source_pause_draw((mc_client_source_oz *)app->r, loop->renderer,
                                              &projection, mouse, partial, loop->math,
@@ -1036,6 +1037,10 @@ bool mc_client_menu_loop_inspect(const mc_client_menu_loop *loop, mc_client_menu
 }
 
 static bool retire_calls(mc_client_menu_loop *loop) {
+    /* Transition-owned display calls can end before a later screen refuses
+     * retirement. Do not expose that borrow through the surviving loop. */
+    if (loop->screen_display == NULL)
+        loop->state.display_call = NULL;
     if (mc_client_source_inventory_draw_retire(&loop->inventory_draw, &loop->inventory_cleanup) !=
         MC_CLIENT_SCREEN_OK)
         return false;
@@ -1105,6 +1110,7 @@ static bool retire_calls(mc_client_menu_loop *loop) {
            mc_client_source_create_world_draw_retire(&loop->create_world_draw) ==
                MC_CLIENT_SCREEN_OK &&
            mc_client_source_pause_draw_retire(&loop->pause_draw) == MC_CLIENT_SCREEN_OK &&
+           mc_client_source_death_draw_retire(&loop->death_draw) == MC_CLIENT_SCREEN_OK &&
            mc_client_source_world_selection_draw_retire(&loop->world_draw) == MC_CLIENT_SCREEN_OK;
 }
 

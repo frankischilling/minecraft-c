@@ -490,6 +490,16 @@ bool mc_gui_canvas_button(mc_gui_main_menu *menu, const mc_gui_button *value,
     return button(menu, value, mouse, error);
 }
 
+bool mc_gui_canvas_text_scaled(mc_gui_main_menu *menu, const mc_font_text *value, int32_t x,
+                               int32_t y, uint32_t color, bool centered, float scale,
+                               mc_gui_main_menu_error *error) {
+    if (menu == NULL || !menu->active || !isfinite(scale))
+        return fail(error, MC_GUI_MAIN_MENU_INVALID_ARGUMENT, "shared GUI scaled text scope");
+    mc_client_modelview model = model_base();
+    model_scale(&model, scale, scale, scale);
+    return text(menu, value, x, y, color, centered, &model, error);
+}
+
 void mc_gui_canvas_end(mc_gui_main_menu *menu) {
     if (menu == NULL)
         return;

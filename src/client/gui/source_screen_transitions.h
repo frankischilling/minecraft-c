@@ -7,15 +7,24 @@ typedef struct mc_client_screen_transitions mc_client_screen_transitions;
 typedef struct mc_client_source_rq mc_client_source_rq;
 typedef struct mc_client_world_load_call mc_client_world_load_call;
 typedef struct mc_client_world_load_error mc_client_world_load_error;
+typedef struct mc_client_respawn_call mc_client_respawn_call;
+typedef struct mc_client_respawn_error mc_client_respawn_error;
+typedef struct mc_client_respawn_state mc_client_respawn_state;
+typedef struct mc_client_display_screen_call mc_client_display_screen_call;
 
 typedef struct mc_client_screen_transition_state {
     bool active, retiring, slot_handed_off;
     size_t screens, calls;
     const mc_client_source_da *initial_screen;
     const mc_client_screen_error *failure;
+    const mc_client_display_screen_call
+        *display_call;                             /* Last retained actual display invocation. */
     const mc_client_world_load_call *world_load;   /* Actual last retained invocation, borrowed. */
     const mc_client_world_load_error *world_leave; /* Last source leave attempt, borrowed. */
     size_t leave_calls;
+    const mc_client_respawn_call *respawn; /* Last retained actual DC.p_/Minecraft.a(ZI). */
+    const mc_client_respawn_error *respawn_error;
+    const mc_client_respawn_state *completed_respawn;  /* Node-owned scalar/identity receipt. */
     bool terminal_prepare_selected, terminal_prepared; /* Native one-way prefix only. */
 } mc_client_screen_transition_state;
 
@@ -50,6 +59,11 @@ mc_client_screen_status mc_client_screen_transitions_select(mc_client_screen_tra
  * construct genuine OZ at13 and display it at16, retaining every prefix.
  * close executes inherited da.a(CI) Escape display(NULL)10 then focus17. */
 mc_client_screen_status mc_client_screen_transitions_pause(mc_client_screen_transitions *,
+                                                           mc_client_screen_error *);
+/* Actual display(NULL) at Minecraft.k177, after the caller's health branch.
+ * Its newly constructed CH and failed display prefixes stay graph-owned
+ * through subsequent frames and complete native transition retirement. */
+mc_client_screen_status mc_client_screen_transitions_death(mc_client_screen_transitions *,
                                                            mc_client_screen_error *);
 mc_client_screen_status mc_client_screen_transitions_close(mc_client_screen_transitions *,
                                                            mc_client_source_da *,

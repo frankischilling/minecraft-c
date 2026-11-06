@@ -712,6 +712,19 @@ mc_world_info_status mc_world_info_source_time_set(mc_world_info *info, int64_t 
     return MC_WORLD_INFO_OK;
 }
 
+mc_world_info_status mc_world_info_source_spawn_axis_set(mc_world_info *info, unsigned int axis,
+                                                         int32_t value) {
+    if (info == NULL || axis > 2)
+        return MC_WORLD_INFO_INVALID_ARGUMENT;
+    if (axis == 0)
+        info->fields.value.spawn_x = value;
+    else if (axis == 1)
+        info->fields.value.spawn_y = value;
+    else
+        info->fields.value.spawn_z = value;
+    return MC_WORLD_INFO_OK;
+}
+
 mc_world_info_status mc_world_info_player_get(const mc_world_info *info,
                                               mc_world_info_player **out) {
     if (info == NULL || out == NULL || info->state.side != MC_WORLD_INFO_CLIENT)

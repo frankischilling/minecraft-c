@@ -4,6 +4,7 @@
 #include "../../entity/mob/internal.h"
 #include "../../entity/mob/references_internal.h"
 #include "../../entity/particles/particle_internal.h"
+#include "../../entity/player/player_internal.h"
 #include "../../entity/player/terminal_inventory.h"
 #include "construction_internal.h"
 #include "mc/entity/particles/particle.h"
@@ -257,6 +258,9 @@ static mc_world_storage_status collect_entity(void *context, const void *slot, m
             return result(error, MC_WORLD_STORAGE_BUSY, "World terminal Mob path cleanup pending");
         if (value->mob != NULL && value->mob->pending_death != NULL)
             return result(error, MC_WORLD_STORAGE_BUSY, "World terminal Mob death cleanup pending");
+        if (value->local_player != NULL && value->local_player->pending_death != NULL)
+            return result(error, MC_WORLD_STORAGE_BUSY,
+                          "World terminal Player death cleanup pending");
         if (value->base.world != NULL && value->base.world != c->world)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal Entity bound outside admitted World");
@@ -645,6 +649,7 @@ static mc_world_storage_status scan_mob(void *context, const void *slot, mc_enti
     mob_graph_scan *scan = context;
     if (entity != NULL &&
         (entity->mount_hold != NULL || entity->passenger_hold != NULL ||
+         (entity->local_player != NULL && entity->local_player->pending_death != NULL) ||
          (entity->mob != NULL &&
           (entity->mob->tick_active || entity->mob->pending_ray != NULL ||
            entity->mob->pending_path != NULL || entity->mob->pending_death != NULL ||

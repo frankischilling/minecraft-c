@@ -64,7 +64,7 @@ class LeverControls(unittest.TestCase):
         cls.m=G.modules()
 
     def test_plan_and_exact_authored_scene(self):
-        plan=G.read_plan()
+        plan=G.read_current_plan()
         self.assertEqual(plan['profile'],'wall-circuit')
         with tempfile.TemporaryDirectory(prefix='mc-lever-scene-') as temporary:
             path=Path(temporary)
@@ -76,6 +76,17 @@ class LeverControls(unittest.TestCase):
                          for key in ('Blocks','Data','SkyLight','BlockLight','HeightMap'))
             packet=G.ROOT/'tests/reference/client/lever_scene_geometry/scene-input.bin'
             self.assertEqual(raw,packet.read_bytes())
+
+    def test_current_input_binding_changed_copies(self):
+        controls=G.module('lever_current_input_controls',HERE/'scene_input_controls.py')
+        controls.check_current_inputs(self,G,'lever')
+
+    def test_historical_input_guard_remains_strict(self):
+        binding=json.loads((G.ROOT/'tests/client/gameplay/current_scene_inputs.json').read_text())
+        predecessor=binding['profiles']['lever']['predecessor']['source_input_sha256']
+        changed=[name for name,pin in predecessor.items() if G.digest(G.ROOT/name)!=pin]
+        self.assertEqual(changed,['tests/client/startup/test_world_selection_loop.c'])
+        with self.assertRaises(ValueError):G.read_plan()
 
     def test_positive_decoder_only(self):
         states,suffix=fixture()

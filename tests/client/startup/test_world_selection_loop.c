@@ -5674,6 +5674,10 @@ static int standing_loaded_controls(fixture *f, const char *screenshot,
     return 0;
 }
 
+#ifdef MC_TEST_DEATH_RESPAWN
+#include "death_respawn_controls.inc"
+#endif
+
 int main(int argc, char **argv) {
     CHECK(argc == 4 &&
           (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
@@ -6217,6 +6221,12 @@ int main(int argc, char **argv) {
                 CHECK(creature_controls(&f, creature, argv[3]) == 0);
                 goto loaded_draw_controls_done;
             }
+#ifdef MC_TEST_DEATH_RESPAWN
+            if (repeat_load) {
+                CHECK(death_respawn_controls(&f, argv[3]) == 0);
+                goto loaded_draw_controls_done;
+            }
+#endif
             if (repeat_load) {
                 CHECK(repeat_statistics_controls(&f, false) == 0);
                 puts("WORLD_REPEAT profile=existing-inventory-player "

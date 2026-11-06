@@ -1,4 +1,4 @@
-# Player damage and armor
+# Player damage, armor and death
 
 The client LocalPlayer now enters the inherited LivingEntity hurt body after
 the Player damage statistic. A completed nonfatal hit applies armor, changes
@@ -11,6 +11,12 @@ The runtime shares the LivingEntity body with the existing Mob damage paths.
 Its health child dispatches to Player armor for LocalPlayer and to the inherited
 health subtraction for the supported Mobs. This preserves the original virtual
 call at both the fresh-hit and stronger-hit sites.
+
+Fatal LocalPlayer damage now continues through the genuine Player death body.
+The inherited LivingEntity death flag, Player state changes, Inventory drops
+and death statistic execute before the hurt call returns. The
+[death-screen and respawn path](../client/death-respawn.md) has its own component
+and loaded-client verification below; it does not establish unrestricted combat.
 
 ## Armor calculation and wear
 
@@ -34,6 +40,24 @@ slot releases only that occurrence. A later failure retains earlier durability,
 statistic and slot stores; it does not publish a completed Player health result.
 The native Inventory active guard covers the entire value or wear call.
 
+## Player death and Inventory drops
+
+[`death.c`](../../src/entity/player/death.c) implements client `gs.b(sn)V`.
+It invokes inherited LivingEntity death first, then changes size to `0.2f` by
+`0.2f`, reapplies the current position and stores upward motion. The original
+`Notch` username branch scatters an Apple before the Inventory. Player's
+inherited `ls.j()` returns zero, so it does not inherit an animal's ordinary
+death Item selection.
+
+Inventory `ix.g()` visits the main slots before armor slots. Each nonnull slot
+invokes the existing Player scatter producer and clears only after that child
+returns. Aliased slots remain separate ordered occurrences. A failure preserves
+earlier drops and cleared slots, plus the actual pending child and current slot;
+native cleanup neither rolls the action back nor repeats it. Attacker-dependent
+motion or the null-attacker zeroing branch, final offset and death statistic
+follow in source order. The reached Player removal body also performs its two
+actual Container closes, including aliases, through checked close ownership.
+
 ## Verification scope
 
 The [original observations](../../tests/reference/entity/player_hurt/README.md)
@@ -42,6 +66,24 @@ carry and break boundaries, early returns and selected failure prefixes. They
 record complete selected Player fields, Inventory/Stack state, statistics,
 Random streams, World fields, sounds and identity relations. The original
 objects and native fixture have their documented construction scopes.
+
+The unchanged 28-call packet now compares 21,247 scalar values and passes 529
+native ownership/state assertions on Windows and Linux Clang ASan/UBSan. Its
+fatal case retains the sound checkpoint and completed death separately. That
+case has an empty Inventory, a non-Notch username and no attacker. Normal and
+optimized Python readers each reject 64 authored corruptions.
+
+Separate [Player death controls](../../tests/entity/player/test_death.c) pass
+663 checks on each native host. Inventory scattering, the Notch Apple, nonnull
+attackers and Container closes have authored native coverage; they do not
+inherit the original runtime qualification of the single fatal profile.
+
+Cactus contact now carries the invoking Registry and Math through actual
+movement dispatch. Three authored zero-displacement movement calls exercise
+nonfatal hurt, repeated-hit immunity and fatal scattering against a real Chunk
+cell. The immunity boundary is an explicit fixture input. Math stays cold until
+the reached scatter needs it. This is native component coverage, not a loaded
+hazard encounter or an original cactus runtime comparison.
 
 Separate [native armor controls](../../tests/inventory/player/test_armor.c)
 exercise a four-piece weighted value, a Stack shared by two armor slots and a
@@ -77,9 +119,10 @@ separates those results from incomplete local suites and unresolved GUI failures
 
 ## Remaining work
 
-Fatal damage reaches the Player death invocation and reports the unfinished
-dependency after the reached sound. Player death, inventory scattering,
-death-screen and respawn composition are not complete. Sleeping wake, Arrow
-attacker resolution and selected Living ally-alert paths remain unfinished.
-This component does not establish full combat,
-single-player playability, audio output equality or a frame-rate improvement.
+Sleeping wake, Arrow attacker resolution and selected Living ally-alert paths
+remain unfinished. Original runtime comparisons for broader fatal inputs and
+scattered Inventories remain separate work. The supported loaded Overworld
+respawn route has its [declared scope](../client/death-respawn.md); saved-Bed,
+Nether transition and centered ChunkProvider branches remain unavailable.
+These results do not establish full combat, unrestricted survival, audio output
+equality or a frame-rate improvement.

@@ -56,4 +56,12 @@ mc_world_storage_status mc_world_runtime_entity_contact(mc_world_runtime *world,
                                                         int32_t z, mc_entity *entity,
                                                         mc_world_entity_contact_error *error);
 
+/* Same actual virtual bodies with the invoking gameplay Registry/Math
+ * namespaces. They stay borrowed/exclusive and are unused until a reached
+ * damage child needs them; no extra Block/World validation is introduced.
+ * The older entry supplies NULL namespaces and retains that native scope. */
+mc_world_storage_status mc_world_runtime_entity_contact_with_context(
+    mc_world_runtime *, const mc_block *, int32_t x, int32_t y, int32_t z, mc_entity *,
+    mc_registry_classes *, mc_math_classes *, mc_world_entity_contact_error *);
+
 #endif

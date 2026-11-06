@@ -11,6 +11,8 @@ typedef struct mc_player_travel_context {
     const mc_math_trig *trig;
     const mc_entity_move_limits *movement_limits;
     const mc_world_material_movement_limits *material_limits;
+    /* Actual loaded Math namespace, used only by reached damage/death children. */
+    mc_math_classes *math;
 } mc_player_travel_context;
 
 typedef enum mc_player_travel_cause {

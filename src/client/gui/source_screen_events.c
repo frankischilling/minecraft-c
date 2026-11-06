@@ -103,7 +103,7 @@ mc_client_screen_status mc_client_screen_button_hit(mc_client_source_ke *button,
 static bool action(mc_client_source_da *o, mc_client_source_ke *button,
                    mc_client_screen_event_report *r, mc_client_screen_event_error *e) {
     if (o->kind == MC_CLIENT_SCREEN_WORLD_SELECTION || o->kind == MC_CLIENT_SCREEN_PAUSE ||
-        o->kind == MC_CLIENT_SCREEN_CREATE_WORLD) {
+        o->kind == MC_CLIENT_SCREEN_DEATH || o->kind == MC_CLIENT_SCREEN_CREATE_WORLD) {
         r->button = button;
         r->button_id = button->fields.f;
         ++r->actions;
@@ -124,11 +124,16 @@ static bool action(mc_client_source_da *o, mc_client_source_ke *button,
             r->action = button->fields.f == 0   ? MC_CLIENT_SCREEN_ACTION_CREATE_WORLD
                         : button->fields.f == 1 ? MC_CLIENT_SCREEN_ACTION_CANCEL
                                                 : MC_CLIENT_SCREEN_ACTION_NONE;
+        if (o->kind == MC_CLIENT_SCREEN_DEATH)
+            r->action = button->fields.f == 1   ? MC_CLIENT_SCREEN_ACTION_RESPAWN
+                        : button->fields.f == 2 ? MC_CLIENT_SCREEN_ACTION_TITLE_MENU
+                                                : MC_CLIENT_SCREEN_ACTION_NONE;
         if (o->transitions != NULL)
             return transition(o, button, r, e);
         fail(e, MC_CLIENT_SCREEN_UNIMPLEMENTED_DEPENDENCY,
              "screen requires actual transition ownership",
              o->kind == MC_CLIENT_SCREEN_PAUSE          ? "oz"
+             : o->kind == MC_CLIENT_SCREEN_DEATH        ? "ch"
              : o->kind == MC_CLIENT_SCREEN_CREATE_WORLD ? "fj"
                                                         : "rq",
              "a", "(Lke;)V", 0, true);
@@ -359,6 +364,8 @@ static bool key(mc_client_source_da *o, const mc_client_sdk_key_event *event,
              "da", "g", "()V", 18, true);
         return false;
     }
+    if (o->kind == MC_CLIENT_SCREEN_DEATH)
+        return true; /* Actual CH.a(CI)V overrides Escape with literal return0. */
     if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD) {
         mc_client_source_fj *fj = (mc_client_source_fj *)o;
         create_key_context context = {r, e};

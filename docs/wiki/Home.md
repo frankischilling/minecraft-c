@@ -1,11 +1,13 @@
 # minecraft-c
 
-[Player damage and armor](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-damage.md)
-now apply the actual hurt body, weighted armor value, durability and health
-remainder. Two original VMs reproduce 28 prepared calls; native replay checks
-20,872 scalar values. Fall landing continues through the actual Block sound,
-with separate authored native controls. Complete death, loaded combat,
-unrestricted survival and FPS improvements remain unqualified.
+[Player death and respawn](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/death-respawn.md)
+now connect fatal hurt, Inventory scattering, the original death-screen behavior
+and replacement Player creation. A monitor-2 Windows scene completes two real
+Respawn clicks in the same World and cleanup after a partial publication
+failure. Native hurt replay checks 21,247 scalar values from its unchanged
+28-call original packet; a new packet compares 72 original screen components.
+Bed respawn, Nether transitions, ordinary hazard encounters, unrestricted
+survival and sustained FPS remain unfinished or unqualified.
 
 The [Grass and Leaves comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/random-block-ticks.md)
 removes unused successful query diagnostics while preserving real World queries

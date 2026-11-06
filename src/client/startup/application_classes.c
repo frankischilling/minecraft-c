@@ -277,10 +277,11 @@ mc_client_application_classes_release(mc_client_application_classes **owner,
     mc_player_string *startup_color_literals[3] = {classes->startup_color_literals[0],
                                                    classes->startup_color_literals[1],
                                                    classes->startup_color_literals[2]};
-    mc_player_string *world_literals[6] = {
-        classes->world_generating,       classes->world_loading,
-        classes->world_converting,       classes->world_conversion_message,
-        classes->world_building_terrain, classes->world_simulating};
+    mc_player_string *world_literals[] = {
+        classes->world_generating,         classes->world_loading,
+        classes->world_respawning,         classes->world_converting,
+        classes->world_conversion_message, classes->world_building_terrain,
+        classes->world_simulating};
     free(classes->F);
     free(classes->E);
     free(classes->b);
@@ -288,7 +289,7 @@ mc_client_application_classes_release(mc_client_application_classes **owner,
     free(classes);
     for (size_t index = 0; index < 3; ++index)
         mc_player_string_release(startup_color_literals[index]);
-    for (size_t index = 0; index < 6; ++index)
+    for (size_t index = 0; index < sizeof(world_literals) / sizeof(world_literals[0]); ++index)
         mc_player_string_release(world_literals[index]);
     mc_player_string_release(startup_font_resource);
     mc_player_string_release(startup_logo_resource);

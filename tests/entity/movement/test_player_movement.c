@@ -365,8 +365,18 @@ static bool player_cases(fixture *f, mc_entity *player) {
           ordinary && effect.player_bytecode == 152 &&
           effect.statistic == f->registry[0]->statistics.named[18] &&
           effect.statistic_amount == 7 && !player->base.bb);
-    CHECK(mc_entity_effect_dead(player, &effect) == MC_ENTITY_STATE_ERROR && player->base.be &&
-          effect.close_bytecode == 9);
+    const size_t dead_holds = player->holds;
+    CHECK(player->local_player->fields.player.d != NULL &&
+          player->local_player->fields.player.d == player->local_player->fields.player.e);
+    CHECK(mc_entity_effect_dead(player, &effect) == MC_ENTITY_OK && player->base.be &&
+          effect.close_bytecode == 27 && effect.player_death.closing &&
+          effect.player_death.returned && !effect.player_death.pending &&
+          !effect.player_death.active && effect.player_death.close_calls == 2 &&
+          effect.player_death.closes_returned == 2 && effect.player_death.close_error == NULL &&
+          effect.player_death.drop_error == NULL &&
+          effect.player_death.cleanup_status == MC_ENTITY_OK &&
+          !mc_entity_effect_has_pending(player) && player->holds == dead_holds &&
+          f->worlds[0]->active_calls == 0 && f->worlds[0]->local_leases == 0);
     CHECK(movement_input(player, 8.5, 8, 8.5));
     /* Real no-clip returns before World/code statics, even with null World. */
     mc_world_runtime *saved_world = player->base.world;

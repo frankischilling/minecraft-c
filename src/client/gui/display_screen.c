@@ -164,9 +164,21 @@ static mc_client_display_screen_status run(mc_client_display_screen_call *call,
                         "actual dc.Y Player field access", 76);
         call->player_health = player.living.Y;
         call->health_read = true;
-        if (call->player_health <= 0)
-            return fail(call, MC_CLIENT_DISPLAY_SCREEN_UNIMPLEMENTED,
-                        "actual ch death-screen allocation", 82);
+        if (call->player_health <= 0) {
+            if (mc_client_screen_death_allocate(classes, NULL, &call->death, &call->screen) !=
+                MC_CLIENT_SCREEN_OK) {
+                call->child = call->screen.site;
+                return fail(call, MC_CLIENT_DISPLAY_SCREEN_CHILD_FAILED,
+                            "actual ch death-screen allocation", 82);
+            }
+            if (mc_client_screen_death_construct(call->death, &call->screen) !=
+                MC_CLIENT_SCREEN_OK) {
+                call->child = call->screen.site;
+                return fail(call, MC_CLIENT_DISPLAY_SCREEN_CHILD_FAILED,
+                            "actual ch death-screen constructor", 86);
+            }
+            call->target = mc_client_screen_death_base(call->death);
+        }
     }
     if (!menu(call, call->target, 91, &is_menu))
         return call->status;
@@ -304,6 +316,16 @@ mc_client_display_screen_retire(mc_client_display_screen_call **slot) {
         mc_client_display_screen_retire(&call->focus_display);
     if (nested != MC_CLIENT_DISPLAY_SCREEN_OK)
         return nested;
+    if (call->death != NULL) {
+        mc_client_source_da *base = mc_client_screen_death_base(call->death);
+        const mc_client_screen_status status =
+            mc_client_screen_death_retire(&call->death, &call->screen);
+        if (status != MC_CLIENT_SCREEN_OK)
+            return status == MC_CLIENT_SCREEN_BUSY ? MC_CLIENT_DISPLAY_SCREEN_BUSY
+                                                   : MC_CLIENT_DISPLAY_SCREEN_CHILD_FAILED;
+        if (call->r_stored && call->app->r == base)
+            call->app->r = NULL;
+    }
     if (call->fallback != NULL) {
         mc_client_source_da *base = mc_client_screen_menu_base(call->fallback);
         const mc_client_screen_status status =

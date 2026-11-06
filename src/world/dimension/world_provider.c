@@ -341,6 +341,15 @@ mc_world_provider_status mc_world_provider_state_get(const mc_world_provider *di
     return MC_WORLD_PROVIDER_OK;
 }
 
+mc_world_provider_status mc_world_provider_can_respawn(const mc_world_provider *dimension,
+                                                       bool *out, mc_world_provider_error *error) {
+    if (dimension == NULL || out == NULL)
+        return result(error, MC_WORLD_PROVIDER_INVALID_ARGUMENT,
+                      "WorldProvider respawn receiver/output", 0);
+    *out = dimension->kind != MC_WORLD_PROVIDER_NETHER;
+    return result(error, MC_WORLD_PROVIDER_OK, NULL, 1);
+}
+
 mc_world_runtime *mc_world_provider_world(const mc_world_provider *dimension) {
     return dimension == NULL ? NULL : dimension->a;
 }

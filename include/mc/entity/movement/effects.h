@@ -4,6 +4,7 @@
 #include "mc/core/math/classes.h"
 #include "mc/entity/entity.h"
 #include "mc/entity/mob/death.h"
+#include "mc/entity/player/death.h"
 #include "mc/entity/player/statistics.h"
 #include "mc/inventory/runtime/armor.h"
 #include "mc/statistics/registry/registry.h"
@@ -104,6 +105,7 @@ typedef struct mc_entity_effect_error {
     int32_t damage_amount;
     mc_entity_living_damage_state living_damage;
     mc_mob_death_state death;
+    mc_player_death_state player_death;
     /* Complete last reached IX child cause, including any actual IZ wear and
      * broken-Item statistic. The compact GS receipt keeps preceding arithmetic.
      * This value owns no Inventory, Stack, Entity or pending work. */
@@ -137,14 +139,29 @@ mc_entity_status mc_entity_effect_fall(mc_entity *entity, float distance,
 mc_entity_status mc_entity_effect_fall_in_context(mc_entity *entity,
                                                   mc_registry_classes *code_registry,
                                                   float distance, mc_entity_effect_error *error);
+/* Explicit loaded Math namespace for the reached fatal damage/drop child.
+ * A caller providing no namespace retains the old NULL-context frontier. */
+mc_entity_status mc_entity_effect_fall_with_math(mc_entity *, mc_registry_classes *,
+                                                 mc_math_classes *, float distance,
+                                                 mc_entity_effect_error *);
+mc_entity_status mc_entity_effect_fall_state_with_math(mc_entity *, mc_registry_classes *,
+                                                       mc_math_classes *, double displacement,
+                                                       bool grounded, mc_entity_effect_error *);
 mc_entity_status mc_entity_effect_attacked(mc_entity *entity, mc_entity_effect_error *error);
 mc_entity_status mc_entity_effect_dead(mc_entity *entity, mc_entity_effect_error *error);
+/* Same actual K dispatch with the reached Container drop namespaces. Player
+ * failed death/K children remain owned by that same Player until effect cleanup. */
+mc_entity_status mc_entity_effect_dead_with_context(mc_entity *, mc_registry_classes *,
+                                                    mc_math_classes *, mc_entity_effect_error *);
 /* Actual inherited client LS.b(Entity) death body on Sheep/Pig/Cow/Chicken/Wolf.
  * This does not invoke SN.K or reset health/death time. Failed native children
  * remain owned by the same actor, independently of optional value diagnostics.
  * Keep the actor/graph live and perform checked cleanup before retirement. */
 mc_entity_status mc_entity_effect_death_in_context(mc_entity *, mc_registry_classes *,
                                                    mc_entity *source, mc_entity_effect_error *);
+mc_entity_status mc_entity_effect_death_with_math(mc_entity *, mc_registry_classes *,
+                                                  mc_math_classes *, mc_entity *source,
+                                                  mc_entity_effect_error *);
 bool mc_entity_effect_has_pending(const mc_entity *);
 mc_entity_status mc_entity_effect_cleanup(mc_entity *, mc_entity_effect_error *);
 /* Consume the borrowed pending death named by this value receipt while its
@@ -159,9 +176,10 @@ mc_entity_status mc_entity_effect_damage_in_context(mc_entity *entity,
                                                     mc_entity *source, int32_t amount, bool *out,
                                                     mc_entity_effect_error *error);
 /* Same actual dispatch with the caller's exact MathHelper namespace. Math is
- * borrowed/exclusive for this synchronous call and activated only at a reached
- * inherited LS knockback sqrt. The older context entry supplies NULL Math;
- * remote/dead/repeated branches do not inspect it. A nonnull source is retained
+ * borrowed/exclusive for this synchronous call and activated only at reached
+ * inherited LS knockback or Player death/scatter trigonometry. The older
+ * context entry supplies NULL Math; earlier returning branches leave it unread.
+ * A nonnull source is retained
  * at the first reached LS source-position read and kept through sound. Death
  * callbacks independently retain a reached source occurrence, including on a
  * stronger repeated fatal hit that skipped direction. Pending death cleanup
@@ -177,6 +195,9 @@ mc_entity_status mc_entity_effect_fire_damage_in_context(mc_entity *entity,
                                                          mc_registry_classes *code_registry,
                                                          int32_t amount,
                                                          mc_entity_effect_error *error);
+mc_entity_status mc_entity_effect_fire_damage_with_math(mc_entity *, mc_registry_classes *,
+                                                        mc_math_classes *, int32_t amount,
+                                                        mc_entity_effect_error *);
 mc_entity_status mc_entity_effect_walks(mc_entity *entity, bool *out,
                                         mc_entity_effect_error *error);
 mc_entity_status mc_entity_effect_contact_portal(mc_entity *entity, mc_entity_effect_error *error);
@@ -216,11 +237,11 @@ mc_entity_status mc_entity_effect_contact_portal(mc_entity *entity, mc_entity_ef
  * Player damage preserves av/health/sleep/type/difficulty prefixes and actual
  * jl.x statistic, then enters LS with virtual GS armor/remainder/health and
  * inherited random.hurt sound. Full/repeated/remote returns retain their real
- * order. Wake, Arrow ownership, other Living ally handling and Player death
- * remain explicit reached dependencies. A fatal Player hit preserves its
- * completed armor/health/timer/direction/sound prefix before GS death fails.
- * Player K stores be through super, then stops at its actual first Container
- * close invocation. These failures are not successful health/death substitutes.
+ * order. Wake, Arrow ownership and other Living ally handling remain explicit
+ * reached dependencies. Fatal Player damage executes actual GS/LS death,
+ * Inventory scatter, motion and death statistic. Player K stores be through
+ * super and executes both actual Container closes, including aliases. Failed
+ * child work remains owned by the same Player until checked native cleanup.
  * Context arguments borrow the same actual Registry namespace independently
  * of nullable World; they are inspected only at reached code statics. Errors
  * may borrow the reached statistic identity while its Registry stays live.

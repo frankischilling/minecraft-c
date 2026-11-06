@@ -1,14 +1,88 @@
 # Test scope and reproduction
 
+## Player death, death screen and respawn
+
+The [implementation and reproduction guide](client/death-respawn.md) separates
+original component observations, authored native ownership checks and the
+loaded Windows scene. The hurt packet keeps its original 28 calls and now
+compares 21,247 scalar values, including the retained empty-Inventory fatal
+completion. Its 529 native controls and 64 reader corruption controls remain
+separate. Death/scatter controls and World respawn controls pass on Windows and
+Linux Clang 18 with ASan/UBSan. The fresh death-screen packet retains 72 rows
+from each of two original VMs using a prepared App; it does not capture original
+whole-frame drawing.
+
+The first loaded Windows opportunity passes in 14.83 CTest seconds with 1,049
+native checks. Its game window is placed on monitor 2. Two direct fatal-body
+inputs reach the actual health tick and death screen; real SDK button events
+then create fresh Players and inventories in the same World, preserving the
+Entity ID and installing new input. A separate native WorldAccess refusal at
+Player publication checks the partial replacement and full terminal cleanup.
+The death and returned-world PNGs were inspected. This is bounded native
+integration evidence; it establishes no original pixel equality, ordinary
+hazard encounter, extended session or gameplay performance result.
+
+Initial fixture/build failures remain retained, including missing helper
+callbacks, a double release, an incorrect inherited screen-store count and a
+Windows unreachable-code diagnostic. None is counted as a passing opportunity.
+The final frozen selection passes 14/14 Windows tests in 21.15 seconds and
+13/13 Linux Clang Debug tests in 4.33 seconds with ASan/UBSan and leak detection.
+It includes 663 death/scatter checks per host, 111 World checks and 369 native
+CH checks plus all 72 original rows per host. The strengthened Windows scene
+passes 943 checks in 21.11 seconds, including invalidation of the borrowed
+display view before terminal dispatcher retirement. Frame-dependent check
+counts retain their own exact receipts.
+
+Full builds pass on both hosts. The frozen full runs finish at Windows 750/755
+in 519.34 seconds and Linux 731/735 in 735.36 seconds. Every registered test
+runs, none is skipped, and all 5,343 source inputs remain unchanged. Both runs
+fail the two older Player-removal assertions and the Lever/Redstone Torch
+inherited-fixture hash guards. Windows additionally refuses the loaded Lever
+scene at that same prelaunch guard, before starting its game window.
+
+The removal fixtures now assert both real Container closes, balanced owners,
+twenty later death particles, exact Random progression and retained failure
+prefixes. Original comparison rows stay unchanged. Both frozen scene plans,
+their input maps and historical readers remain intact. A separately pinned
+current-input declaration admits the changed common harness for fresh controls
+and SDK runs; it conveys no historical native qualification. Its guards also
+cover changed-copy corruption controls and pre/post continuity. Reruns have
+their own scope and do not replace the failed full runs.
+
+After correction, Linux passes all 16 selected tests in 3.80 seconds with
+ASan/UBSan. Windows passes 17/18 in 20.94 seconds: the two removal fixtures,
+both scene-input control suites and a fresh loaded Lever scenario pass. The
+Lever scenario completes 1,911 checks in 6.32 CTest seconds on monitor 2;
+its original scene plan stays unchanged. Normal and optimized Python also pass
+the six Lever and seven Redstone Torch pure control tests. A separate fresh
+Redstone Torch SDK run on monitor 2 also passes 1,215 checks through placement,
+natural switching off, save and reselection under the current declaration.
+
+The remaining Windows failure is a later combined second-respawn assertion,
+after its first cycle returned. A failure-only state/OS receipt was then added,
+with no runtime, input, timing or assertion changes. Three predeclared monitor-2
+opportunities retain pass/fail/pass: 1,036 checks in 14.71 seconds, failure in
+10.15 seconds, and 1,051 checks in 14.32 seconds. All 5,346 source inputs remain
+unchanged across that cohort. The failed opportunity has a completed respawn,
+fresh Player/Inventory/Input, matching World/ID and health 20, but Pause is open.
+Its actual foreground owner is `msrdc.exe` (`TscShellContainerClass`), the game
+is unfocused and SDL has no keyboard focus. That receipt qualifies this
+instrumented failure only; the earlier combined failure lacks an OS receipt.
+The whole cohort remains failed. No general focus-reliability fix is claimed.
+
+Historical broad foreground and Zombie draw failures below remain unresolved
+by the death/respawn work.
+
 ## Player damage, armor and landing
 
 The [Player damage implementation](entity/player-damage.md) shares the genuine
 LivingEntity hurt body with supported Mobs and uses the same Inventory armor
 value for damage and HUD drawing. The original packet retains 28 calls across
 22 prepared profiles, two unchanged JDK17 VMs, complete selected pre/post fields
-and independent constructor-field preservation. Native replay compares 20,872
-scalar values. Fatal damage and throwing callbacks retain their declared prefix
-and cause distinctions; complete death is not qualified.
+and independent constructor-field preservation. The preceding hurt checkpoint
+compares 20,872 scalar values through its declared fatal sound frontier. The
+death continuation above extends comparison to already retained original fatal
+completion fields; throwing callback prefixes keep their cause distinctions.
 
 Run `entity.player_hurt`, `tools.player_hurt_packet`,
 `tools.player_hurt_packet_optimized`, `inventory.armor` and

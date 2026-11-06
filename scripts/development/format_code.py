@@ -62,6 +62,7 @@ def main():
         return 77
     root = Path(__file__).resolve().parents[2]
     fragments = {"tests/item/use/redstone/statistics_setup.inc",
+                 "tests/client/startup/death_respawn_controls.inc",
                  "tests/block/registry/redstone_torch/texture_fixture.inc",
                  "tests/world/runtime/redstone_torch/terminal_current.inc",
                  "tests/item/use/redstone/statistics_teardown.inc",
@@ -94,6 +95,7 @@ def main():
                  "src/client/gui/gui_ingame_slots.inc",
                  "src/client/world/source_epoch.inc",
                  "src/client/world/source_save.inc",
+                 "src/client/world/respawn.inc",
                  "src/world/runtime/chunk_provider_owned.inc",
                  "src/world/storage/chunk_lookup.inc",
                  "tests/client/startup/test_world_reload.inc",

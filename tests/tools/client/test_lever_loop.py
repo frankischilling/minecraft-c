@@ -60,6 +60,16 @@ def read_plan():
     return value
 
 
+def read_current_plan():
+    binding = module('lever_current_inputs', HERE / 'scene_inputs.py')
+    return binding.read_current_plan(ROOT, 'lever', SCENE.relative_to(ROOT).as_posix(), PLAN_SHA)
+
+
+def current_input_receipt():
+    binding = module('lever_current_receipt', HERE / 'scene_inputs.py')
+    return binding.receipt(ROOT, 'lever', SCENE.relative_to(ROOT).as_posix(), PLAN_SHA)
+
+
 def nibble(values, at):
     return (values[at//2] >> ((at&1)*4)) & 15
 
@@ -383,7 +393,8 @@ def corruption_controls(m,stdout,evidence,receipt):
 
 def input_paths(executable):
     inputs={p for p in HERE.iterdir() if p.is_file()}
-    inputs.update((executable,ROOT/'CMakeLists.txt',SCENE))
+    inputs.update((executable,ROOT/'CMakeLists.txt',SCENE,
+                   ROOT/'tests/client/gameplay/current_scene_inputs.json'))
     inputs.update(executable.parent.glob('*.dll'))
     for folder in ('src','include','cmake','tests/client','tests/tools/client','tests/tools/world',
                    'tests/reference/client/lever_scene_geometry'):
@@ -399,7 +410,7 @@ def main():
     parser.add_argument('--artifacts',type=Path,required=True)
     args=parser.parse_args()
     require(os.name=='nt','Windows GUI fixture; no implicit platform launch')
-    plan=read_plan(); m=modules()
+    plan=read_current_plan(); m=modules()
     world,torch,nbt,mining=[m[k] for k in ('world','torch','parser','mining')]
     executable,assets=args.executable.resolve(strict=True),args.assets.resolve(strict=True)
     args.artifacts.mkdir(parents=True,exist_ok=True)
@@ -409,7 +420,7 @@ def main():
     inputs=input_paths(executable)
     before_inputs={str(p):digest(p) for p in sorted(inputs)}
     before_assets=world.snapshot(assets)
-    report={'status':'FAIL','scope':__doc__,'plan':plan,'inputs_before':before_inputs,
+    report={'status':'FAIL','scope':__doc__,'plan':plan,'current_input_binding':current_input_receipt(),'inputs_before':before_inputs,
             'assets_before':before_assets}
     (evidence/'run.json').write_text(json.dumps(report,indent=2)+'\n')
     try:

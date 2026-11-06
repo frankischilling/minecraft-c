@@ -68,11 +68,15 @@ def finite():
 
 
 def stable_fields(row):
-    for key in INDEPENDENT_PLAYER:
-        ensure(equal(row['before']['fields'][key], row['state']['fields'][key]), 'Player independent field changed: ' + key)
-    for key in INDEPENDENT_WORLD:
-        ensure(equal(row['before']['world']['fields'][key], row['state']['world']['fields'][key]),
-               'Player independent World field changed: ' + key)
+    states = [row['state']]
+    if row['completion'] is not None:
+        states.append(row['completion']['state'])
+    for state in states:
+        for key in INDEPENDENT_PLAYER:
+            ensure(equal(row['before']['fields'][key], state['fields'][key]), 'Player independent field changed: ' + key)
+        for key in INDEPENDENT_WORLD:
+            ensure(equal(row['before']['world']['fields'][key], state['world']['fields'][key]),
+                   'Player independent World field changed: ' + key)
 
 
 def compare(actual, expected):
@@ -84,8 +88,8 @@ def compare(actual, expected):
         if isinstance(a, dict):
             ensure(a.keys() == b.keys(), 'Player keys differ: ' + path)
             for key in a:
-                if (path in ('/before/fields', '/state/fields') and key in INDEPENDENT_PLAYER or
-                    path in ('/before/world/fields', '/state/world/fields') and key in INDEPENDENT_WORLD):
+                if (path in ('/before/fields', '/state/fields', '/completion/state/fields') and key in INDEPENDENT_PLAYER or
+                    path in ('/before/world/fields', '/state/world/fields', '/completion/state/world/fields') and key in INDEPENDENT_WORLD):
                     continue
                 visit(a[key], b[key], path + '/' + key)
         elif isinstance(a, list):
@@ -103,14 +107,14 @@ def compare(actual, expected):
         # observer reports IO. Both exact reached snapshots are compared.
         if b['profile'] == 18:
             ensure(a['exception'] == 'IO' and b['exception'] == 'CALLBACK', 'Player callback failure categories')
-        # Original complete death is retained separately. The native comparison
-        # is the fatal sound checkpoint before unimplemented GS death entry.
+        # Keep the original fatal sound checkpoint comparison and additionally
+        # compare the complete empty-Inventory death result/state independently.
         if b['profile'] == 21:
-            ensure(a['exception'] == 'DEPENDENCY' and a['result'] is None and a['completion'] is None and
+            ensure(a['exception'] == 'NONE' and a['result'] is True and a['completion'] is not None and
                    b['exception'] == 'NONE' and b['result'] is True and b['completion'] is not None,
                    'Player fatal prefix/completion scopes')
         for key in a:
-            if b['profile'] == 18 and key == 'exception' or b['profile'] == 21 and key in ('exception', 'result', 'completion'):
+            if b['profile'] == 18 and key == 'exception':
                 continue
             visit(a[key], b[key], '/' + key)
     return comparisons
@@ -133,7 +137,8 @@ def main():
     before = {str(p.resolve()): digest(p) for p in inputs}
     report = {'status': 'FAIL', 'input_before_sha256': before,
               'scope': '22 profiles/28 original calls; full pre/post scalar state, inventory, statistics, sounds, aliases and Random. '
-                       'Independent constructor fields are individually unchanged. Fatal sound prefix and callback failure categories remain separate.'}
+                       'Independent constructor fields are individually unchanged, including fatal completion. '
+                       'Fatal sound prefix and complete empty-Inventory death are compared separately; callback failure categories remain distinct.'}
     try:
         receipt = capture([str(executable), str(resources), str(game), str((HERE / 'profiles.tsv').resolve()), str(native)],
                           output, 'native', 120, os.environ.copy())

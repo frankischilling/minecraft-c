@@ -125,6 +125,11 @@ bool mc_gui_canvas_quad(mc_gui_main_menu *, bool background, const mc_client_ver
                         bool alpha_test, mc_gui_main_menu_error *);
 bool mc_gui_canvas_text(mc_gui_main_menu *, const mc_font_text *, int32_t x, int32_t y,
                         uint32_t color, bool centered, mc_gui_main_menu_error *);
+/* Same text kernel under one source uniform modelview scale. Width centering
+ * and shadow offsets are evaluated before the transform, as in GL11 text. */
+bool mc_gui_canvas_text_scaled(mc_gui_main_menu *, const mc_font_text *, int32_t x, int32_t y,
+                               uint32_t color, bool centered, float scale,
+                               mc_gui_main_menu_error *);
 bool mc_gui_canvas_button(mc_gui_main_menu *, const mc_gui_button *, mc_gui_mouse_position,
                           mc_gui_main_menu_error *);
 void mc_gui_canvas_end(mc_gui_main_menu *);

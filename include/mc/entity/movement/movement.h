@@ -71,5 +71,8 @@ mc_entity_status mc_entity_move_in_context(mc_entity *entity, mc_registry_classe
                                            double x, double y, double z,
                                            const mc_entity_move_limits *limits,
                                            mc_entity_move_error *error);
+mc_entity_status mc_entity_move_with_math(mc_entity *, mc_registry_classes *, mc_math_classes *,
+                                          double x, double y, double z,
+                                          const mc_entity_move_limits *, mc_entity_move_error *);
 
 #endif

@@ -2,7 +2,7 @@
 static bool epoch_admit(const mc_client_world_load_call *previous) {
     return previous != NULL && previous->classes->latest == previous &&
            previous->classes->calls != SIZE_MAX && previous->successor == NULL &&
-           !previous->state.active && !previous->state.retiring &&
+           previous->respawn_calls == 0 && !previous->state.active && !previous->state.retiring &&
            previous->state.source_returned && previous->failure.status == MC_CLIENT_WORLD_LOAD_OK &&
            previous->state.leave.source_returned && !previous->state.leave.failed &&
            previous->state.leave.i_cleared && previous->state.leave.f_cleared &&
@@ -65,7 +65,7 @@ mc_client_world_load_status mc_client_world_load_begin_after(mc_client_world_loa
 mc_client_world_load_status mc_client_world_load_terminal_records(mc_client_world_load_call *call) {
     if (call == NULL)
         return MC_CLIENT_WORLD_LOAD_ARGUMENT;
-    if (call->state.active || call->classes->active)
+    if (call->respawn_calls != 0 || call->state.active || call->classes->active)
         return MC_CLIENT_WORLD_LOAD_BUSY;
     if (call->state.retiring && !call->state.terminal_prepare_selected)
         return MC_CLIENT_WORLD_LOAD_BUSY;

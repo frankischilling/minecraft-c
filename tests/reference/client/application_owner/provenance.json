@@ -358,8 +358,8 @@
       "sha256": "1e8d7271832e8c742fbcc3c73f9d228aab4ac779c938d9570bdcbcb1413019e2"
     },
     "src/client/startup/application_classes.c": {
-      "bytes": 17030,
-      "sha256": "e80ddc0df36c0b566289c6a702207138c2884028febaa08c4743aed19437e7fb"
+      "bytes": 17117,
+      "sha256": "eaea8782f3a790fe539c0dffccab05452779a0c4002a144a4e5e923a047573f5"
     },
     "src/client/startup/application_lifetime.c": {
       "bytes": 11701,
@@ -370,8 +370,8 @@
       "sha256": "eed995c4a51f9679e2b9bb16a3af85cc79cf75cc65dc1d63c33084bce29db67b"
     },
     "src/client/startup/application_owner_internal.h": {
-      "bytes": 5310,
-      "sha256": "a46cd8575839d00527ed2cf75fdf6c9b2e67429c096dd7c509a9c0505d8433ac"
+      "bytes": 5329,
+      "sha256": "5f3d4de11b1799e2ec1309879cc2efe12a8b2037274f61f295038ea1088f2f8a"
     },
     "src/client/startup/timer_hack.c": {
       "bytes": 18780,
@@ -402,8 +402,8 @@
       "sha256": "5898f91eac2f6d83e4cafce4f0ecf7a3de4cfc0bbe66010eefa079400573dfd1"
     },
     "src/entity/player/player_internal.h": {
-      "bytes": 2059,
-      "sha256": "fe9b71eb5f008e03e4a751f64e6ecf378631aae4ee3affc13a3825fdb8fb362e"
+      "bytes": 2136,
+      "sha256": "753cafb9e47dbc8a80f5debedc4a6a8a485a69cee4b2132081f88c8585940480"
     },
     "src/entity/player/strings.c": {
       "bytes": 5409,
@@ -442,8 +442,8 @@
       "sha256": "b3f5135585c5f38e255cd37878b31807b04826b3f65510e1daf2e10321b50289"
     },
     "src/client/gui/source_screen.h": {
-      "bytes": 15817,
-      "sha256": "61da236b79caac4aa804e60cd20443ad04d5ee180ef201a0027adf2a18195117"
+      "bytes": 15845,
+      "sha256": "be02f4750bd73119735fb130c04ccf14241f1a580324efba611e2ee517a2419e"
     },
     "src/client/images/class_stream.h": {
       "bytes": 3513,
@@ -778,6 +778,38 @@
             "include/mc/entity/classes/classes.h": {
               "bytes": 6952,
               "sha256": "5795bc59a17266baff952db01970b72ca96d770c4bb77089c5b4b2ca3fe7c9af"
+            }
+          },
+          "added": [],
+          "current_count": 116
+        }
+      }
+    },
+    {
+      "from_commit": "4c9a946de344e492da84226d4b689035c1beee6e",
+      "role": "Current Player death, Inventory scattering, death-screen drawing/input, respawn World leaves and coordinator, plus authored/original comparison input declarations. This entry binds current inputs only. Earlier observations, sealed receipts and compiled products retain their separately recorded scope; no execution or original qualification is inherited by these sources.",
+      "previous_metadata": {
+        "bytes": 30992,
+        "sha256": "07b60907804c23dbbb726af352407859e7dbb3a596cb63f9272769b2395c7549"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "src/client/startup/application_classes.c": {
+              "bytes": 17030,
+              "sha256": "e80ddc0df36c0b566289c6a702207138c2884028febaa08c4743aed19437e7fb"
+            },
+            "src/client/startup/application_owner_internal.h": {
+              "bytes": 5310,
+              "sha256": "a46cd8575839d00527ed2cf75fdf6c9b2e67429c096dd7c509a9c0505d8433ac"
+            },
+            "src/entity/player/player_internal.h": {
+              "bytes": 2059,
+              "sha256": "fe9b71eb5f008e03e4a751f64e6ecf378631aae4ee3affc13a3825fdb8fb362e"
+            },
+            "src/client/gui/source_screen.h": {
+              "bytes": 15817,
+              "sha256": "61da236b79caac4aa804e60cd20443ad04d5ee180ef201a0027adf2a18195117"
             }
           },
           "added": [],

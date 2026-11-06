@@ -32,6 +32,7 @@ static mc_entity_status run(mc_entity *p, mc_registry_classes *registry, mc_math
     mc_player_action_context context = {0};
     context.travel.code_registry = registry;
     context.travel.trig = mc_math_classes_table(math);
+    context.travel.math = math;
     context.travel.movement_limits = limits == NULL ? NULL : &limits->movement;
     context.travel.material_limits = limits == NULL ? NULL : &limits->environment.material;
     mc_mob_tick_scope s = {.entity = p,

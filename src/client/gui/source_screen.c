@@ -1,4 +1,5 @@
 #include "source_create_world_internal.h"
+#include "source_death_screen_internal.h"
 #include "source_inventory_screen_internal.h"
 #include "source_pause_screen_internal.h"
 #include "source_screen_internal.h"
@@ -161,6 +162,8 @@ static bool prepare_final(mc_client_source_da *o, mc_client_screen_error *e) {
         ready = mc_screen_world_selection_cleanup_locked((mc_client_source_rq *)o, e);
     else if (o->kind == MC_CLIENT_SCREEN_PAUSE)
         ready = mc_screen_pause_cleanup_locked((mc_client_source_oz *)o, e);
+    else if (o->kind == MC_CLIENT_SCREEN_DEATH)
+        ready = mc_screen_death_cleanup_locked((mc_client_source_ch *)o, e);
     else if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD)
         ready = mc_screen_create_world_cleanup_locked((mc_client_source_fj *)o, e);
     else if ((o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_WORKBENCH))
@@ -288,6 +291,11 @@ mc_client_screen_status mc_client_screen_pauses_game(mc_client_source_da *o, boo
                         ? "id"
                         : "da",
                     "c", "()Z", 1};
+                e.source_returned = true;
+                break;
+            case MC_CLIENT_SCREEN_DEATH:
+                *out = false;
+                e.site = (mc_client_screen_site){"ch", "c", "()Z", 1};
                 e.source_returned = true;
                 break;
             default:

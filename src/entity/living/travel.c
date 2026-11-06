@@ -250,8 +250,12 @@ static bool accelerate(travel_scope *s, float strafe, float forward, float amoun
 
 static bool move(travel_scope *s, mc_player_travel_error *e) {
     mc_entity *p = s->entity;
-    const mc_entity_status status = mc_entity_move_in_context(
-        p, s->registry, p->base.velocity_x, p->base.velocity_y, p->base.velocity_z,
+    const mc_entity_status status = mc_entity_move_with_math(
+        p, s->registry,
+        s->mob != NULL       ? s->mob->math
+        : s->context == NULL ? NULL
+                             : s->context->math,
+        p->base.velocity_x, p->base.velocity_y, p->base.velocity_z,
         s->context == NULL ? NULL : s->context->movement_limits, &e->movement);
     return status == MC_ENTITY_OK || fail(e, status, MC_PLAYER_TRAVEL_MOVEMENT,
                                           "Living travel actual dc movement descendant");

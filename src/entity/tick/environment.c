@@ -136,28 +136,31 @@ static bool splash(mc_entity *entity, mc_registry_classes *classes, mc_entity_ti
     return true;
 }
 
-static bool damage(mc_entity *entity, mc_registry_classes *classes, int32_t amount,
-                   mc_entity_tick_error *e, unsigned int pc) {
+static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_classes *math,
+                   int32_t amount, mc_entity_tick_error *e, unsigned int pc) {
     bool ordinary;
-    return mc_tick_effect(
-        e, mc_entity_effect_damage_in_context(entity, classes, NULL, amount, &ordinary, &e->effect),
-        "Tick actual Entity damage virtual", pc);
+    return mc_tick_effect(e,
+                          mc_entity_effect_damage_with_math(entity, classes, math, NULL, amount,
+                                                            &ordinary, &e->effect),
+                          "Tick actual Entity damage virtual", pc);
 }
 
-static bool lava_damage(mc_entity *entity, mc_registry_classes *classes, mc_entity_tick_error *e) {
+static bool lava_damage(mc_entity *entity, mc_registry_classes *classes, mc_math_classes *math,
+                        mc_entity_tick_error *e) {
     e->source_class = "sn";
     e->source_method = "ae()V";
     e->lava_bytecode = 1;
     if (entity->base.bC)
         return true;
     e->lava_bytecode = 13;
-    if (!damage(entity, classes, 4, e, 13))
+    if (!damage(entity, classes, math, 4, e, 13))
         return false;
     entity->base.bv = 600;
     return true;
 }
 
-static bool void_damage(mc_entity *entity, mc_registry_classes *classes, mc_entity_tick_error *e) {
+static bool void_damage(mc_entity *entity, mc_registry_classes *classes, mc_math_classes *math,
+                        mc_entity_tick_error *e) {
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM)) {
         e->source_class = "sn";
         e->source_method = "ab()V";
@@ -168,10 +171,10 @@ static bool void_damage(mc_entity *entity, mc_registry_classes *classes, mc_enti
     e->source_class = "ls";
     e->source_method = "ab()V";
     e->void_bytecode = 3;
-    return damage(entity, classes, 4, e, 3);
+    return damage(entity, classes, math, 4, e, 3);
 }
 
-static bool base_body(mc_entity *entity, mc_registry_classes *classes,
+static bool base_body(mc_entity *entity, mc_registry_classes *classes, mc_math_classes *math,
                       const mc_entity_tick_limits *limits, mc_entity_tick_error *e) {
     base_at(e, 1);
     mc_entity *rider = entity->base.aH;
@@ -225,7 +228,7 @@ static bool base_body(mc_entity *entity, mc_registry_classes *classes,
         } else {
             if (entity->base.bv % 20 == 0) {
                 base_at(e, 501);
-                if (!damage(entity, classes, 1, e, 501))
+                if (!damage(entity, classes, math, 1, e, 501))
                     return false;
             }
             entity->base.bv = mc_java_i32_sub(entity->base.bv, 1);
@@ -241,7 +244,7 @@ static bool base_body(mc_entity *entity, mc_registry_classes *classes,
         return false;
     if (lava) {
         base_at(e, 523);
-        if (!lava_damage(entity, classes, e))
+        if (!lava_damage(entity, classes, math, e))
             return false;
     }
     base_at(e, 533);
@@ -249,7 +252,7 @@ static bool base_body(mc_entity *entity, mc_registry_classes *classes,
         return false;
     if (entity->base.y < -64.0) {
         base_at(e, 538);
-        if (!void_damage(entity, classes, e))
+        if (!void_damage(entity, classes, math, e))
             return false;
     }
     base_at(e, 545);
@@ -471,16 +474,16 @@ static bool ambient(mc_entity *entity, mc_registry_classes *classes, mc_entity_t
     return true;
 }
 
-bool mc_tick_living_body_entered(mc_entity *entity, mc_registry_classes *classes,
-                                 const mc_entity_tick_limits *limits, mc_entity_tick_error *e,
-                                 mc_mob_tick_scope *scope) {
+static bool living_body(mc_entity *entity, mc_registry_classes *classes, mc_math_classes *math,
+                        const mc_entity_tick_limits *limits, mc_entity_tick_error *e,
+                        mc_mob_tick_scope *scope) {
     living_at(e, 0);
     mc_living_entity_fields *fields = mc_entity_living_fields(entity);
     if (fields == NULL)
         return mc_tick_fail(e, MC_ENTITY_STATE_ERROR, "Living tick represented embedded fields", 0);
     fields->W = fields->X;
     living_at(e, 9);
-    if (!base_body(entity, classes, limits, e))
+    if (!base_body(entity, classes, math, limits, e))
         return false;
     living_at(e, 19);
     if (entity->random == NULL)
@@ -509,7 +512,7 @@ bool mc_tick_living_body_entered(mc_entity *entity, mc_registry_classes *classes
             return false;
         if (suffocating) {
             living_at(e, 66);
-            if (!damage(entity, classes, 1, e, 66))
+            if (!damage(entity, classes, math, 1, e, 66))
                 return false;
         }
     }
@@ -546,7 +549,7 @@ bool mc_tick_living_body_entered(mc_entity *entity, mc_registry_classes *classes
             if (!drowning_particles(entity, classes, e))
                 return false;
             living_at(e, 249);
-            if (!damage(entity, classes, 2, e, 249))
+            if (!damage(entity, classes, math, 2, e, 249))
                 return false;
         }
         entity->base.bv = 0;
@@ -564,8 +567,9 @@ bool mc_tick_living_body_entered(mc_entity *entity, mc_registry_classes *classes
         if (fields->ad > 20) {
             living_at(e, 355); /* Actual inherited ls.aa() literal return0. */
             living_at(e, 359);
-            if (!mc_tick_effect(e, mc_entity_effect_dead(entity, &e->effect),
-                                "Living tick actual Player K close", 359))
+            if (!mc_tick_effect(
+                    e, mc_entity_effect_dead_with_context(entity, classes, math, &e->effect),
+                    "Living tick actual Player K close", 359))
                 return false;
             if (!death_particles(entity, classes, e))
                 return false;
@@ -579,7 +583,13 @@ bool mc_tick_living_body_entered(mc_entity *entity, mc_registry_classes *classes
     return true;
 }
 
-static mc_entity_status run(mc_entity *entity, mc_registry_classes *classes,
+bool mc_tick_living_body_entered(mc_entity *entity, mc_registry_classes *classes,
+                                 const mc_entity_tick_limits *limits, mc_entity_tick_error *e,
+                                 mc_mob_tick_scope *scope) {
+    return living_body(entity, classes, scope == NULL ? NULL : scope->math, limits, e, scope);
+}
+
+static mc_entity_status run(mc_entity *entity, mc_registry_classes *classes, mc_math_classes *math,
                             const mc_entity_tick_limits *limits, bool living,
                             mc_entity_tick_error *out) {
     mc_entity_tick_error frame;
@@ -588,9 +598,9 @@ static mc_entity_status run(mc_entity *entity, mc_registry_classes *classes,
         limits == NULL ? MC_ENTITY_TICK_DEFAULT_PARTICLE_WORK : limits->max_particle_work;
     if (mc_tick_enter(entity, &frame)) {
         if (living)
-            (void)mc_tick_living_body_entered(entity, classes, limits, &frame, NULL);
+            (void)living_body(entity, classes, math, limits, &frame, NULL);
         else
-            (void)base_body(entity, classes, limits, &frame);
+            (void)base_body(entity, classes, math, limits, &frame);
         mc_entity_release(entity);
     }
     return mc_tick_finish(&frame, out);
@@ -599,14 +609,28 @@ static mc_entity_status run(mc_entity *entity, mc_registry_classes *classes,
 mc_entity_status mc_entity_tick_update_in_context(mc_entity *entity, mc_registry_classes *classes,
                                                   const mc_entity_tick_limits *limits,
                                                   mc_entity_tick_error *out) {
-    return run(entity, classes, limits, true, out);
+    return run(entity, classes, NULL, limits, true, out);
 }
 
 mc_entity_status mc_entity_tick_base_body_in_context(mc_entity *entity,
                                                      mc_registry_classes *classes,
                                                      const mc_entity_tick_limits *limits,
                                                      mc_entity_tick_error *out) {
-    return run(entity, classes, limits, false, out);
+    return run(entity, classes, NULL, limits, false, out);
+}
+
+mc_entity_status mc_entity_tick_update_with_math(mc_entity *entity, mc_registry_classes *classes,
+                                                 mc_math_classes *math,
+                                                 const mc_entity_tick_limits *limits,
+                                                 mc_entity_tick_error *out) {
+    return run(entity, classes, math, limits, true, out);
+}
+
+mc_entity_status mc_entity_tick_base_body_with_math(mc_entity *entity, mc_registry_classes *classes,
+                                                    mc_math_classes *math,
+                                                    const mc_entity_tick_limits *limits,
+                                                    mc_entity_tick_error *out) {
+    return run(entity, classes, math, limits, false, out);
 }
 
 /* Private selected hl caller already owns the real Item and its native hold.
@@ -615,12 +639,12 @@ bool mc_tick_item_base_body(mc_entity *entity, mc_registry_classes *classes,
                             const mc_entity_tick_limits *limits, mc_entity_tick_error *error) {
     error->max_particle_work =
         limits == NULL ? MC_ENTITY_TICK_DEFAULT_PARTICLE_WORK : limits->max_particle_work;
-    return base_body(entity, classes, limits, error);
+    return base_body(entity, classes, NULL, limits, error);
 }
 
 bool mc_tick_base_body_entered(mc_entity *entity, mc_registry_classes *classes,
                                const mc_entity_tick_limits *limits, mc_entity_tick_error *error) {
-    return base_body(entity, classes, limits, error);
+    return base_body(entity, classes, NULL, limits, error);
 }
 
 bool mc_entity_mob_environment_entered(mc_mob_tick_scope *scope, mc_entity_tick_error *error) {

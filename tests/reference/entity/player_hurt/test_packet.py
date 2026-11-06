@@ -17,9 +17,7 @@ def main():
     for row in actual:
         if row['profile'] == 18:
             row['exception'] = 'IO'
-        if row['profile'] == 21:
-            row.update(exception='DEPENDENCY', result=None, completion=None)
-    ensure(compare(actual, expected) == 20872, 'Player comparison cardinality')
+    ensure(compare(actual, expected) == 21247, 'Player comparison cardinality')
     controls = 0
     def reject(function):
         nonlocal controls
@@ -63,8 +61,12 @@ def main():
         ((0, 'state', 'writer', 'dirty'), False),
         ((0, 'state', 'random', 0, 0), '0000000000000000'),
         ((0, 'result'), False), ((0, 'scope'), 'EXCEPTION'),
-        ((24, 'exception'), 'CALLBACK'), ((27, 'exception'), 'NONE'),
-        ((27, 'result'), True), ((27, 'completion'), expected[27]['completion']),
+        ((24, 'exception'), 'CALLBACK'), ((27, 'exception'), 'DEPENDENCY'),
+        ((27, 'result'), False), ((27, 'completion'), None),
+        ((27, 'completion', 'state', 'fields', 'sn.aQ'), {'D': '0000000000000000'}),
+        ((27, 'completion', 'state', 'fields', 'ls.ah'), False),
+        ((27, 'completion', 'state', 'fields', 'ls.F'), {'F': '00000000'}),
+        ((27, 'completion', 'state', 'world', 'fields', 'fd.Q'), 0),
         ((0, 'completion'), expected[27]['completion']),
     ]:
         corrupt(path, value)
@@ -88,7 +90,7 @@ def main():
             selected = selected[key]
         selected[path[-1]] = value
         reject(lambda: validate_provenance(provenance, digest(HERE / 'finite.json')))
-    print('Player hurt packet: ' + str(controls) + ' corruption controls; 20872 scalar comparisons')
+    print('Player hurt packet: ' + str(controls) + ' corruption controls; 21247 scalar comparisons')
 
 
 if __name__ == '__main__':

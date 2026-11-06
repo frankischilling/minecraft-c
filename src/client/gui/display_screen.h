@@ -8,6 +8,7 @@
 #include "mc/client/gui/scaled_resolution.h"
 #include "mc/client/statistics/writer.h"
 #include "mc/entity/player/input.h"
+#include "source_death_screen.h"
 #include "source_screen_initialize.h"
 
 typedef enum mc_client_display_screen_status {
@@ -30,6 +31,7 @@ typedef struct mc_client_display_screen_call {
     client_application *app; /* Stable caller borrow through retirement. */
     mc_client_source_da *argument, *target, *old_screen; /* Stable caller-owned source operands. */
     mc_client_source_fu *fallback; /* Actual new fu57, if the null/no-World branch is reached. */
+    mc_client_source_ch *death;    /* Actual new ch82/constructor86, when live Player health <=0. */
     struct mc_client_display_screen_call *focus_display; /* Actual recursive a(NULL)29. */
     mc_client_display_screen_status status;
     const char *operation;
@@ -54,7 +56,7 @@ typedef struct mc_client_display_screen_call {
  * Screen owners, including source initialization records, retire before App.
  * Healthy null-screen focus uses the actual Player/SDK and retained recursive
  * display call. Focus release resets the actual LocalPlayer input before N24
- * and MouseHelper31; death-screen construction remains a reached dependency. */
+ * and MouseHelper31. A nonpositive Player health constructs the genuine CH. */
 mc_client_display_screen_status mc_client_display_screen_run(client_application *,
                                                              mc_client_screen_classes *,
                                                              mc_client_source_da *,

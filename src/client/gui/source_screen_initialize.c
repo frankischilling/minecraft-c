@@ -1,6 +1,7 @@
 #include "../application_access.h"
 #include "../application_state.h"
 #include "source_create_world_internal.h"
+#include "source_death_screen_internal.h"
 #include "source_inventory_screen_internal.h"
 #include "source_pause_screen_internal.h"
 #include "source_screen_initialize_internal.h"
@@ -367,6 +368,12 @@ static bool da_body(mc_client_source_da *o, mc_client_screen_initialization *r, 
         }
     } else if (o->kind == MC_CLIENT_SCREEN_PAUSE) {
         if (!mc_screen_pause_initialize_locked((mc_client_source_oz *)o, &r->failure.screen)) {
+            r->failure.entry = site(true, 45);
+            r->failure.caller = site(true, 45);
+            return false;
+        }
+    } else if (o->kind == MC_CLIENT_SCREEN_DEATH) {
+        if (!mc_screen_death_initialize_locked((mc_client_source_ch *)o, &r->failure.screen)) {
             r->failure.entry = site(true, 45);
             r->failure.caller = site(true, 45);
             return false;

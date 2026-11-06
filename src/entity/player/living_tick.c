@@ -34,9 +34,9 @@ bool mc_active_living(mc_active_scope *s, mc_player_tick_error *e) {
     mc_living_entity_fields *v = &p->local_player->fields.living;
     at(e, 1);
     e->child = MC_PLAYER_TICK_CHILD_ENVIRONMENT;
-    const mc_entity_status base = mc_entity_tick_update_in_context(
-        p, s->registry, s->limits == NULL ? NULL : &s->limits->environment,
-        &e->child_error.environment);
+    const mc_entity_status base = mc_entity_tick_update_with_math(
+        p, s->registry, s->context == NULL ? NULL : s->context->travel.math,
+        s->limits == NULL ? NULL : &s->limits->environment, &e->child_error.environment);
     if (base != MC_ENTITY_OK)
         return mc_active_fail(e, base, "Living tick actual sn.w_ -> virtual ls.U child");
     at(e, 5);

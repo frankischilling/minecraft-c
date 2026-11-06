@@ -1,21 +1,30 @@
 # Development status
 
-[Player damage and armor](entity/player-damage.md) now reach the inherited
-LivingEntity hurt body, real armor wear and health/remainder stores. Two fresh
-original VMs reproduce all 28 retained calls across 22 profiles; native replay
-checks 20,872 scalar comparisons. The same armor-value body serves the HUD.
-The client also reaches the post-hit fall landing sound, whose separate native
-controls cover callback movement, repeated hits and failure ordering. Complete
-Player death, broader attackers, loaded combat and unrestricted play remain
-unfinished. No new FPS improvement is claimed.
+[Player death and respawn](client/death-respawn.md) now connect fatal hurt,
+Inventory scattering, the death screen and replacement Player creation in the
+same World. The screen uses the original labels, nonpausing behavior, gradient,
+scaled title and live score. A Windows scene on monitor 2 completes two real
+Respawn button clicks and checked cleanup after a native publication failure.
+The original hurt replay now checks 21,247 scalar values, including its retained
+empty-Inventory fatal completion. Broader drops have authored native controls;
+the new death-screen packet compares 72 original component rows. Bed respawn,
+Nether transitions, ordinary hazard encounters, unrestricted play and sustained
+FPS remain unfinished or unqualified.
 
 Hosted checks for `359e663a` pass Windows 682/682 and both Linux compilers
 739/739, with no dropped or skipped registered tests. The interrupted local
 full runs remain incomplete and retain separate foreground and Zombie draw
 failures. An unchanged isolated Zombie pass does not resolve those failures;
 [testing details](testing.md#player-damage-armor-and-landing) retain all scopes.
-The next survival work is the actual Player death/drop body, death screen and
-respawn coordinator, including the reached Container-close lifecycle.
+The current full native runs retain Windows 750/755 and Linux 731/735.
+Corrected fixture selections pass 16/16 on sanitized Linux and 17/18 on Windows;
+the remaining Windows respawn assertion has a separate diagnostic cohort with
+pass/fail/pass. Its failed receipt shows completed replacement and Pause while
+Remote Desktop owns foreground focus. General desktop focus remains open.
+
+The preceding reporting commit `4c9a946d` also passes all hosted jobs in
+[run 42142684515](https://github.com/frankischilling/minecraft-c/actions/runs/42142684515).
+Those hosted results precede the current death/respawn changes.
 
 The [saved Lever circuit](world/lever.md#saved-circuit) passes one post-fix
 Windows SDK opportunity with 1,945 native checks. Four ordinary SDL taps place

@@ -316,10 +316,43 @@ static bool tick_cases(fixture *f, mc_entity *p) {
     CHECK(tick_reset(f, p, &observer, 24));
     p->local_player->fields.living.Y = 0;
     p->local_player->fields.living.ad = 20;
+    const size_t death_holds = p->holds;
+    mc_java_random death_expected = *p->random;
+    int32_t death_ambient;
+    CHECK(mc_java_random_next_bounded(&death_expected, 1000, &death_ambient));
+    for (size_t particle = 0; particle < 20; ++particle) {
+        for (size_t axis = 0; axis < 3; ++axis)
+            (void)mc_java_random_next_gaussian(&death_expected);
+        for (size_t axis = 0; axis < 3; ++axis)
+            (void)mc_java_random_next_float(&death_expected);
+    }
+    CHECK(mc_entity_tick_update_in_context(p, f->registry[0], NULL, &error) == MC_ENTITY_OK &&
+          p->base.be && observer.particles == 20 && observer.sounds == 0 &&
+          p->local_player->fields.living.Y == 0 && p->local_player->fields.living.ad == 21 &&
+          p->local_player->fields.living.M == .5f && p->local_player->fields.living.I == .375f &&
+          p->local_player->fields.living.af == .75f && p->local_player->fields.living.ae == 2 &&
+          p->local_player->fields.living.aa == 3 && p->base.by == 2 && p->base.aU == 25.0f &&
+          p->base.aV == -17.0f && mc_test_java_random_equal(p->random, &death_expected) &&
+          !mc_entity_effect_has_pending(p) && p->holds == death_holds &&
+          f->worlds[0]->active_calls == 0 && f->worlds[0]->local_leases == 0);
+    /* A later real particle refusal retains the completed K receipt, proving
+     * both aliased Container closes returned before the reached particle. */
+    CHECK(tick_reset(f, p, &observer, 24));
+    p->local_player->fields.living.Y = 0;
+    p->local_player->fields.living.ad = 20;
+    observer.fail_particle = 0;
     CHECK(mc_entity_tick_update_in_context(p, f->registry[0], NULL, &error) ==
-              MC_ENTITY_STATE_ERROR &&
-          error.living_bytecode == 359 && error.effect.close_bytecode == 9 && p->base.be &&
-          observer.particles == 0);
+              MC_ENTITY_WORLD_FAILED &&
+          error.living_bytecode == 489 && error.effect.close_bytecode == 27 &&
+          error.effect.player_death.closing && error.effect.player_death.returned &&
+          error.effect.player_death.close_calls == 2 &&
+          error.effect.player_death.closes_returned == 2 && !error.effect.player_death.pending &&
+          error.effect.player_death.close_error == NULL && observer.particles == 1 &&
+          observer.sounds == 0 && p->base.be && p->local_player->fields.living.ad == 21 &&
+          p->local_player->fields.living.M == -33.0f &&
+          p->local_player->fields.living.I == -32.0f && !mc_entity_effect_has_pending(p) &&
+          p->holds == death_holds && f->worlds[0]->active_calls == 0 &&
+          f->worlds[0]->local_leases == 0);
     CHECK(tick_reset(f, p, &observer, 25));
     tick_fluid(f, 8);
     p->base.private_c = false;

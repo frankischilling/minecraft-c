@@ -1,5 +1,17 @@
 # History
 
+## Player death and respawn
+
+The actual Player death path now scatters Inventory, preserves failed child
+prefixes and closes both reached Containers. The death screen and World-spawn
+respawn coordinator create a fresh Player/Input in the existing World. The
+first loaded Windows scene passes two real Respawn clicks plus partial
+publication cleanup on monitor 2. Original comparisons cover the already
+retained empty-Inventory fatal completion and 72 new screen component rows;
+broader Inventory drops and loaded rendering have separate native scope.
+The [guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/death-respawn.md)
+records the Bed/Nether, ordinary-hazard, Linux loaded-play and performance gaps.
+
 ## Player hurt and armor
 
 Nonfatal LocalPlayer damage now reaches inherited hurt resistance, virtual

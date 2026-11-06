@@ -945,7 +945,10 @@ static bool tick_cleanup(fixture *f) {
     return cleanup_fixture(f);
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_WORLD_ENTITY_TICK_MAIN
+#define MC_WORLD_ENTITY_TICK_MAIN main
+#endif
+int MC_WORLD_ENTITY_TICK_MAIN(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     mc_entity *p = NULL, *q = NULL;

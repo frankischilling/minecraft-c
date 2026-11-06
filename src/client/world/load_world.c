@@ -1,5 +1,6 @@
 #include "load_world.h"
 #include "load_world_terminal_internal.h"
+#include "respawn.h"
 
 #include "../../world/runtime/chunk_provider_internal.h"
 #include "../../world/runtime/saving/progress_internal.h"
@@ -86,6 +87,11 @@ typedef struct captured_format {
 
 struct mc_client_world_load_call {
     mc_client_world_load_classes *classes;
+    size_t respawn_calls;
+    /* Actual replaced Player occurrence retained only between h206 and input321
+     * so a failed respawn has an explicit old Input/Player ownership anchor. */
+    mc_entity *respawn_previous_player;
+    bool respawn_input_pending;
     mc_client_world_load_state state;
     mc_client_world_load_error failure, cleanup;
     change_prefix changes[2];
@@ -1581,7 +1587,8 @@ mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
         return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                          "Load terminal live class/App provenance");
     client_application *app = classes->app;
-    if (call->state.active || classes->active || (app->startup != NULL && app->startup->active))
+    if (call->respawn_calls != 0 || call->state.active || classes->active ||
+        (app->startup != NULL && app->startup->active))
         return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
                                          "Load terminal owner operation entered");
     if (!classes->retiring || classes->calls == 0 || !call->state.terminal_prepare_selected ||
@@ -1668,14 +1675,27 @@ mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
     mc_local_player_snapshot player;
     mc_movement_input_state input;
     if (mc_local_player_get_snapshot(call->state.player, &player) != MC_ENTITY_OK ||
-        player.minecraft != app || player.input != call->state.input ||
-        !mc_movement_input_read_state(call->state.input, &input) ||
+        player.minecraft != app || !mc_movement_input_read_state(call->state.input, &input) ||
         input.kind != MC_MOVEMENT_INPUT_FROM_OPTIONS || input.settings != app->settings)
         return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                          "Load terminal actual Player/Input/Settings provenance");
     size_t input_holds = 1; /* The Load's allocated Input slot. */
-    if (player.input != NULL)
-        ++input_holds; /* The SAME Player's actual dc.a owning field, counted once. */
+    if (call->respawn_input_pending) {
+        mc_local_player_snapshot previous;
+        if (player.input != NULL || call->respawn_previous_player == NULL ||
+            mc_local_player_get_snapshot(call->respawn_previous_player, &previous) !=
+                MC_ENTITY_OK ||
+            previous.minecraft != app || previous.input != call->state.input)
+            return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                             "Load terminal partial Respawn Input provenance");
+        ++input_holds; /* The explicitly retained previous Player's input field. */
+    } else {
+        if (player.input != call->state.input || call->respawn_previous_player != NULL)
+            return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                             "Load terminal current Player Input provenance");
+        if (player.input != NULL)
+            ++input_holds;
+    }
     if (input.native_holds != input_holds)
         return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
                                          "Load terminal external Input occurrence");
@@ -1694,13 +1714,14 @@ mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
     if (source_status != MC_WORLD_STORAGE_OK)
         return source_status;
 
-    const mc_world_terminal_entity_anchor fixed_entities[] = {
-        {&call->state.player}, {&call->h_occurrence}, {&app->view_occurrence}};
+    const mc_world_terminal_entity_anchor fixed_entities[] = {{&call->state.player},
+                                                              {&call->h_occurrence},
+                                                              {&app->view_occurrence},
+                                                              {&call->respawn_previous_player}};
     const mc_world_terminal_world_anchor worlds[] = {{effects_view.world_slot},
                                                      {&app->active_world}};
     const size_t world_count = call->state.superseded ? 0 : call->world_slot_owned ? 2u : 1u;
-    const size_t fixed_count =
-        call->state.superseded ? 1u : sizeof(fixed_entities) / sizeof(fixed_entities[0]);
+    const size_t fixed_count = call->state.superseded ? 1u : call->respawn_input_pending ? 4u : 3u;
     mc_world_terminal_limits bounded =
         limits == NULL ? mc_world_runtime_terminal_default_limits() : *limits;
     mc_world_terminal_entity_anchor *allocated = NULL;
@@ -1720,7 +1741,7 @@ mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
         if (allocated == NULL)
             return terminal_admission_result(error, MC_WORLD_STORAGE_ALLOCATION_FAILED,
                                              "Load terminal particle anchor scratch allocation");
-        memcpy(allocated, fixed_entities, sizeof(fixed_entities));
+        memcpy(allocated, fixed_entities, fixed_count * sizeof(*fixed_entities));
         size_t at = fixed_count;
         for (size_t layer = 0; layer < 4; ++layer)
             for (size_t i = 0; i < effects_view.lists[layer]->size; ++i)
@@ -1743,7 +1764,7 @@ mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_cal
     mc_client_world_load_call *call = *slot;
     if (call == NULL)
         return MC_CLIENT_WORLD_LOAD_OK;
-    if (call->state.active || call->classes->active)
+    if (call->respawn_calls != 0 || call->state.active || call->classes->active)
         return MC_CLIENT_WORLD_LOAD_BUSY;
     if (call != call->classes->latest)
         return MC_CLIENT_WORLD_LOAD_BUSY; /* Borrowed epoch links require LIFO consumption. */
@@ -1810,6 +1831,9 @@ mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_cal
     }
     mc_entity_release(call->state.player);
     call->state.player = NULL;
+    mc_entity_release(call->respawn_previous_player);
+    call->respawn_previous_player = NULL;
+    call->respawn_input_pending = false;
     if (call->world_slot_owned) {
         if (app->active_world != call->state.world)
             return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
@@ -1935,6 +1959,7 @@ mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_cal
     return MC_CLIENT_WORLD_LOAD_OK;
 }
 
+#include "respawn.inc"
 #include "source_epoch.inc"
 #include "source_leave.inc"
 #include "source_save.inc"

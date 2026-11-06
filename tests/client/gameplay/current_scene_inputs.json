@@ -1,0 +1,50 @@
+{
+  "format": 1,
+  "scope": "CURRENT_FIXTURE_INPUT_ADMISSION_ONLY",
+  "profiles": {
+    "redstone_torch": {
+      "predecessor": {
+        "scene": "tests/client/gameplay/redstone_torch_scene.json",
+        "sha256": "a0b568c7824d11e1297d49bcf80baa3196bb85a258cf03f112fb50e29e275d2d",
+        "source_input_sha256": {
+          "tests/client/gameplay/redstone/test_placement.c": "47813c47f9c8ea85484bac84c1ee5857e56b88cc07b665ada7ac3f7e0b214e23",
+          "tests/client/gameplay/test_torch_placement.c": "d3a73c0ecf37131ca1171a587570a691425c33388c801790bd5fd8a51c12a12c",
+          "tests/client/startup/test_world_selection_loop.c": "cf7a70d2639ac6ed37a4aff7950b6e3bc244b337247ff33b7fc0c46cacda5690",
+          "tests/tools/client/test_farming_loop.py": "5d97de151dac6e1ce79759d5a6eac552dab37792ba53bb36d2465751185f4b9e",
+          "tests/tools/client/test_torch_placement_loop.py": "875b711691f95768053bb12493fcf85c7376e79d78eafc4481a4470b437159ee",
+          "tests/tools/client/test_world_selection_loop.py": "baa5ad2013f3e44160b37faa95e457b7b33dae98d7a14b2f2ecf3a5c06f29a1f"
+        }
+      },
+      "source_input_sha256": {
+        "tests/client/gameplay/redstone/test_placement.c": "47813c47f9c8ea85484bac84c1ee5857e56b88cc07b665ada7ac3f7e0b214e23",
+        "tests/client/gameplay/test_torch_placement.c": "d3a73c0ecf37131ca1171a587570a691425c33388c801790bd5fd8a51c12a12c",
+        "tests/client/startup/test_world_selection_loop.c": "ded97f98b38bbcb06c339af2a721df2a55c5426443a1e299b5dd6a7adad8ed3f",
+        "tests/tools/client/test_farming_loop.py": "5d97de151dac6e1ce79759d5a6eac552dab37792ba53bb36d2465751185f4b9e",
+        "tests/tools/client/test_torch_placement_loop.py": "875b711691f95768053bb12493fcf85c7376e79d78eafc4481a4470b437159ee",
+        "tests/tools/client/test_world_selection_loop.py": "baa5ad2013f3e44160b37faa95e457b7b33dae98d7a14b2f2ecf3a5c06f29a1f"
+      }
+    },
+    "lever": {
+      "predecessor": {
+        "scene": "tests/client/gameplay/lever_scene.json",
+        "sha256": "eb7d6bac7804dea8a6b28240acacfe9fabc07d60978981b31394628f615753c6",
+        "source_input_sha256": {
+          "tests/client/startup/test_world_selection_loop.c": "cf7a70d2639ac6ed37a4aff7950b6e3bc244b337247ff33b7fc0c46cacda5690",
+          "tests/tools/client/test_world_selection_loop.py": "baa5ad2013f3e44160b37faa95e457b7b33dae98d7a14b2f2ecf3a5c06f29a1f",
+          "tests/tools/client/test_farming_loop.py": "5d97de151dac6e1ce79759d5a6eac552dab37792ba53bb36d2465751185f4b9e",
+          "tests/tools/client/test_torch_placement_loop.py": "875b711691f95768053bb12493fcf85c7376e79d78eafc4481a4470b437159ee",
+          "tests/tools/client/test_mining_loop.py": "96f055d9ff7085b136c61db7864b1ae6a98ce5959e761374f6b7a646a1969916",
+          "tests/tools/world/test_source_saving.py": "1fc2f69d04e2ab6e5c48f9d2ebef1d9dd7de0c50a5a7278a81735b0a63edcff9"
+        }
+      },
+      "source_input_sha256": {
+        "tests/client/startup/test_world_selection_loop.c": "ded97f98b38bbcb06c339af2a721df2a55c5426443a1e299b5dd6a7adad8ed3f",
+        "tests/tools/client/test_world_selection_loop.py": "baa5ad2013f3e44160b37faa95e457b7b33dae98d7a14b2f2ecf3a5c06f29a1f",
+        "tests/tools/client/test_farming_loop.py": "5d97de151dac6e1ce79759d5a6eac552dab37792ba53bb36d2465751185f4b9e",
+        "tests/tools/client/test_torch_placement_loop.py": "875b711691f95768053bb12493fcf85c7376e79d78eafc4481a4470b437159ee",
+        "tests/tools/client/test_mining_loop.py": "96f055d9ff7085b136c61db7864b1ae6a98ce5959e761374f6b7a646a1969916",
+        "tests/tools/world/test_source_saving.py": "1fc2f69d04e2ab6e5c48f9d2ebef1d9dd7de0c50a5a7278a81735b0a63edcff9"
+      }
+    }
+  }
+}

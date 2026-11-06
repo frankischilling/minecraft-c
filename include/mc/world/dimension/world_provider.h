@@ -147,6 +147,12 @@ mc_world_provider_status mc_world_provider_fields_get(const mc_world_provider *d
                                                       mc_world_provider_fields *out);
 mc_world_provider_status mc_world_provider_state_get(const mc_world_provider *dimension,
                                                      mc_world_provider_state *out);
+/* Actual client XA.f()Z and WD override. Overworld RH and Sky AY inherit
+ * literal true; Nether WD returns literal false. No phase/World/field query,
+ * allocation, class initialization or callback occurs in these source bodies.
+ * Every allocated concrete provider phase is valid; failure preserves out. */
+mc_world_provider_status mc_world_provider_can_respawn(const mc_world_provider *, bool *out,
+                                                       mc_world_provider_error *);
 mc_world_runtime *mc_world_provider_world(const mc_world_provider *dimension);
 size_t mc_world_provider_hold_count(const mc_world_provider *dimension);
 

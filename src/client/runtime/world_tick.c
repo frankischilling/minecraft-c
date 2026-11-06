@@ -219,6 +219,7 @@ static bool body(client_application *app, mc_math_classes *math, mc_client_world
         mc_world_entity_tick_context context = {0};
         context.player.travel.code_registry = app->registry;
         context.player.travel.trig = mc_math_classes_table(math);
+        context.player.travel.math = math;
         world_close_context close = {app, call};
         context.player.close = (mc_player_close_host){&close, player_close};
         context.math = math;

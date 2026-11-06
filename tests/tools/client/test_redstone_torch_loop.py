@@ -55,6 +55,16 @@ def read_plan():
     return value
 
 
+def read_current_plan():
+    binding = module('redstone_torch_current_inputs', HERE / 'scene_inputs.py')
+    return binding.read_current_plan(ROOT, 'redstone_torch', SCENE.relative_to(ROOT).as_posix(), PLAN_SHA)
+
+
+def current_input_receipt():
+    binding = module('redstone_torch_current_receipt', HERE / 'scene_inputs.py')
+    return binding.receipt(ROOT, 'redstone_torch', SCENE.relative_to(ROOT).as_posix(), PLAN_SHA)
+
+
 def nibble(values, at):
     return (values[at//2] >> ((at&1)*4)) & 15
 
@@ -93,11 +103,11 @@ def authored_regions(m, directory):
     require(all(actual[c][:-1]==old[c][:-1] for c in old if c!=(0,0)), 'all440 other compressed records byte-exact')
     current=actual[(0,0)][-1]
     require(actual[(0,0)][1:3]==(location,stamp),'selected Chunk slot and timestamp unchanged')
-    for cell in read_plan()['cells']:
+    for cell in read_current_plan()['cells']:
         x,y,z=cell['xyz'];index=at(x,y,z)
         require(current['Blocks'][1][index]==cell['id'] and nibble(current['Data'][1],index)==cell['metadata'], 'independent declared saved cell decode')
     require(current['BlockLight'][1]==bytes(16384),'all authored BlockLight remains zero')
-    for column in read_plan()['saved_column_light_height']:
+    for column in read_current_plan()['saved_column_light_height']:
         x,z=column['xz'];require(current['HeightMap'][1][z*16+x]==column['HeightMap'],'declared saved height')
         for key,start in (('SkyLight_y64_y65',64),('SkyLight_y66_y67',66)):
             if key in column:
@@ -238,17 +248,17 @@ def main():
     parser.add_argument('--executable',type=Path,required=True);parser.add_argument('--assets',type=Path,required=True)
     parser.add_argument('--artifacts',type=Path,required=True);args=parser.parse_args()
     require(os.name=='nt','Windows GUI fixture; no implicit platform launch')
-    plan=read_plan();m=modules();world,torch,nbt,mining=[m[k] for k in ('world','torch','parser','mining')]
+    plan=read_current_plan();m=modules();world,torch,nbt,mining=[m[k] for k in ('world','torch','parser','mining')]
     executable,assets=args.executable.resolve(strict=True),args.assets.resolve(strict=True)
     args.artifacts.mkdir(parents=True,exist_ok=True)
     evidence=Path(tempfile.mkdtemp(prefix='redstone-torch-powered-',dir=args.artifacts.resolve()))
     for name in ('snapshots','entries'):(evidence/name).mkdir()
-    inputs={p for p in HERE.iterdir() if p.is_file()};inputs.add(executable);inputs.add(ROOT/'CMakeLists.txt');inputs.add(SCENE)
+    inputs={p for p in HERE.iterdir() if p.is_file()};inputs.add(executable);inputs.add(ROOT/'CMakeLists.txt');inputs.add(SCENE);inputs.add(ROOT/'tests/client/gameplay/current_scene_inputs.json')
     inputs.update(executable.parent.glob('*.dll'))
     for folder in ('src','include','cmake','tests/client','tests/tools/client','tests/tools/world'):
         inputs.update(p for p in (ROOT/folder).rglob('*') if p.is_file() and p.suffix in ('.c','.h','.inc','.py','.cmake'))
     before_inputs={str(p):digest(p) for p in sorted(inputs)};before_assets=world.snapshot(assets)
-    report={'status':'FAIL','scope':__doc__,'plan':plan,'inputs_before':before_inputs,'assets_before':before_assets}
+    report={'status':'FAIL','scope':__doc__,'plan':plan,'current_input_binding':current_input_receipt(),'inputs_before':before_inputs,'assets_before':before_assets}
     (evidence/'run.json').write_text(json.dumps(report,indent=2)+'\n')
     try:
         with tempfile.TemporaryDirectory(prefix='rt-appdata-',dir=evidence) as temp:

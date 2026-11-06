@@ -60,7 +60,8 @@ typedef enum mc_client_screen_kind {
     MC_CLIENT_SCREEN_PAUSE,
     MC_CLIENT_SCREEN_CREATE_WORLD,
     MC_CLIENT_SCREEN_INVENTORY,
-    MC_CLIENT_SCREEN_WORKBENCH
+    MC_CLIENT_SCREEN_WORKBENCH,
+    MC_CLIENT_SCREEN_DEATH
 } mc_client_screen_kind;
 
 typedef enum mc_client_screen_class_phase {
