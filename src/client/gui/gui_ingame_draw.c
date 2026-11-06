@@ -469,72 +469,24 @@ static bool pumpkin_overlay(mc_client_gui_ingame_draw_call *c) {
     return true;
 }
 
-static bool stack_item(mc_client_gui_ingame_draw_call *c, mc_item_stack *stack,
-                       const mc_item **out) {
-    client_application *a = c->state.owner->fields.g;
-    const mc_registry_item_array *array;
-    if (mc_registry_item_c_get(a->registry, &array, &c->failure.registry) != MC_REGISTRY_OK)
-        return fail(c, MC_CLIENT_GUI_INGAME_DRAW_CHILD_FAILED, "actual Armor Item.c active use",
-                    470, true);
-    mc_item_stack_fields fields;
-    if (mc_item_stack_fields_get(stack, &fields) != MC_ITEM_STACK_OK)
-        return fail(c, MC_CLIENT_GUI_INGAME_DRAW_CHILD_FAILED, "actual Armor Stack fields", 470,
-                    true);
-    if (mc_registry_item_c_at(a->registry, array, fields.id, out, &c->failure.registry) !=
-        MC_REGISTRY_OK)
-        return fail(c, MC_CLIENT_GUI_INGAME_DRAW_CHILD_FAILED, "actual Armor Item.c element", 470,
-                    true);
-    return true;
-}
-
 static bool armor(mc_client_gui_ingame_draw_call *c, mc_inventory_player *inv) {
-    mc_inventory_player_state s;
-    if (!inventory_state(c, inv, &s, 470))
-        return false;
-    if (s.armor_slots == NULL)
-        return child_fail(c, MC_CLIENT_GUI_INGAME_DRAW_SOURCE_NULL, "actual ix.f null armor array",
-                          470, "ix", "f", "()I", 9, false);
-    int32_t defense = 0, remaining = 0, maximum = 0;
-    for (size_t i = 0; i < 4; ++i) {
-        if (!inventory_state(c, inv, &s, 470))
-            return false;
-        mc_item_stack *stack = s.armor_slots[i];
-        if (stack == NULL)
-            continue;
-        const mc_item *item;
-        if (!stack_item(c, stack, &item))
-            return false;
-        if (item == NULL || item->kind != MC_ITEM_ARMOR)
-            continue;
-        if (!stack_item(c, s.armor_slots[i], &item))
-            return false;
-        if (item == NULL)
-            return fail(c, MC_CLIENT_GUI_INGAME_DRAW_SOURCE_NULL,
-                        "actual Armor durability Item receiver", 470, false);
-        const int32_t max = item->fields.bh;
-        mc_item_stack_fields fields;
-        if (mc_item_stack_fields_get(s.armor_slots[i], &fields) != MC_ITEM_STACK_OK)
-            return fail(c, MC_CLIENT_GUI_INGAME_DRAW_CHILD_FAILED, "actual Armor damage fields",
-                        470, true);
-        remaining = mc_java_i32_add(remaining, mc_java_i32_sub(max, fields.damage));
-        maximum = mc_java_i32_add(maximum, max);
-        if (!stack_item(c, s.armor_slots[i], &item))
-            return false;
-        if (item == NULL || item->kind != MC_ITEM_ARMOR)
-            return fail(c, MC_CLIENT_GUI_INGAME_DRAW_DEPENDENCY, "actual Armor checkcast WA", 470,
-                        true);
-        defense = mc_java_i32_add(defense, item->subtype.wa.bl);
-    }
-    c->state.armor = 0;
-    if (maximum != 0) {
-        int32_t quotient;
-        if (!mc_java_i32_div(mc_java_i32_mul(mc_java_i32_sub(defense, 1), remaining), maximum,
-                             &quotient))
-            return fail(c, MC_CLIENT_GUI_INGAME_DRAW_CHILD_FAILED, "actual ix.f armor division",
-                        470, false);
-        c->state.armor = mc_java_i32_add(quotient, 1);
-    }
-    return true;
+    if (inv == NULL)
+        return fail(c, MC_CLIENT_GUI_INGAME_DRAW_SOURCE_NULL, "actual UQ null Inventory receiver",
+                    470, false);
+    const mc_inventory_armor_status status = mc_inventory_player_armor_value(
+        inv, c->state.owner->fields.g->registry, &c->state.armor, &c->failure.armor);
+    if (status == MC_INVENTORY_ARMOR_OK)
+        return true;
+    c->failure.registry = c->failure.armor.registry;
+    c->failure.stack = c->failure.armor.stack;
+    const mc_inventory_site child = c->failure.armor.site;
+    c->failure.child =
+        (mc_client_graphics_site){child.class_name, child.method, child.descriptor, child.pc};
+    return fail(c,
+                status == MC_INVENTORY_ARMOR_NULL_REFERENCE
+                    ? MC_CLIENT_GUI_INGAME_DRAW_SOURCE_NULL
+                    : MC_CLIENT_GUI_INGAME_DRAW_CHILD_FAILED,
+                c->failure.armor.operation, 470, c->failure.armor.native_policy);
 }
 
 static bool stats(mc_client_gui_ingame_draw_call *c) {

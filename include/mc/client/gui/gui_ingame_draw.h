@@ -9,6 +9,7 @@
 #include "mc/core/math/classes.h"
 #include "mc/entity/movement/material.h"
 #include "mc/inventory/player.h"
+#include "mc/inventory/runtime/armor.h"
 #include "mc/world/runtime/brightness.h"
 #include "mc/world/runtime/movement.h"
 
@@ -56,6 +57,7 @@ typedef struct mc_client_gui_ingame_draw_error {
     mc_entity_status entity;
     mc_item_stack_status stack;
     mc_inventory_error inventory;
+    mc_inventory_armor_error armor;
     const struct mc_client_item_gui_error *item;
     mc_client_gui_ingame_inventory_receipt item_inventory;
     const struct mc_client_item_overlay_context *item_overlay;

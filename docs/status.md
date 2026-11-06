@@ -1,5 +1,14 @@
 # Development status
 
+[Player damage and armor](entity/player-damage.md) now reach the inherited
+LivingEntity hurt body, real armor wear and health/remainder stores. Two fresh
+original VMs reproduce all 28 retained calls across 22 profiles; native replay
+checks 20,872 scalar comparisons. The same armor-value body serves the HUD.
+The client also reaches the post-hit fall landing sound, whose separate native
+controls cover callback movement, repeated hits and failure ordering. Complete
+Player death, broader attackers, loaded combat and unrestricted play remain
+unfinished. No new FPS improvement is claimed.
+
 The [saved Lever circuit](world/lever.md#saved-circuit) passes one post-fix
 Windows SDK opportunity with 1,945 native checks. Four ordinary SDL taps place
 and switch the Lever, drive adjacent Dust through 0/15/0/15 and leave it powered

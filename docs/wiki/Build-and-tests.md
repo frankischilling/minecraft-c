@@ -1,5 +1,11 @@
 # Build and tests
 
+Player damage has a Java-free 28-call original replay and separate armor,
+burning-timer and fall-landing controls. The [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#player-damage-armor-and-landing)
+keeps component comparisons, authored landing checks and the preceding Windows
+reload-cycle run separate. The reload window ran on monitor 2; no fresh manual
+pixel or FPS qualification is claimed.
+
 ## Grass and Leaves query diagnostics
 
 The [qualification and reproduction guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/random-block-ticks.md)

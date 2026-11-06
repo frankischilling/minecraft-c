@@ -3102,8 +3102,8 @@
       "sha256": "2ae2f49320e8be6688d0ae2098ec1e34536c25c3304458e83532be737db2cfa9"
     },
     "include/mc/entity/movement/effects.h": {
-      "bytes": 13026,
-      "sha256": "e595abf422873c2637772fb2ae686f1acbdac8e49a1d1340728dcf6c9e7da0b2"
+      "bytes": 13955,
+      "sha256": "85bb13c70bc39017bdec9af10b0d2a0af317f57db297588bcbfc1c9f18f87aab"
     },
     "include/mc/entity/movement/environment.h": {
       "bytes": 5179,
@@ -4706,16 +4706,16 @@
       "sha256": "1ab5a454799b260480eed862051f40900b62332beaee2f28b898d0a39d7f622f"
     },
     "include/mc/client/gui/gui_ingame_draw.h": {
-      "bytes": 4739,
-      "sha256": "f1c4a374e86216c2ba1c4ed21f64ed5ec29b7a9efb16aaf09fa1c5f995600842"
+      "bytes": 4815,
+      "sha256": "449a6884d82b2bd61e9ec69cdf0890c966b99bb57aeb6abf6f50145068b68bc3"
     },
     "include/mc/client/world/overlay_setup.h": {
       "bytes": 1628,
       "sha256": "4cf5059682f3138e73aacf42cda68f2de1a9fc2b55caa888e158c56e2bf21e1a"
     },
     "src/client/gui/gui_ingame_draw.c": {
-      "bytes": 48880,
-      "sha256": "26b8bc7ece3efd963f6148871302190f96a07138ae96d46f7bf8c3f1a6c588c2"
+      "bytes": 46720,
+      "sha256": "949e6173deace64154548e0b02319822d6cd44ff574c60e31759083b2af2ba9e"
     },
     "src/client/world/entity_renderer/overlay_setup.c": {
       "bytes": 4906,
@@ -5450,8 +5450,8 @@
       "sha256": "83fa124aab5972e55bb827ed95dbb5b1d239e16d18f55001b7a1024810a9768f"
     },
     "src/entity/mob/damage.c": {
-      "bytes": 26258,
-      "sha256": "1dd2dabea986576339985c72182acf9a51177193f4011fdc1f8bee7b3841ddcb"
+      "bytes": 28489,
+      "sha256": "bfbc994d07633ff342b373322acd684432d2613fa2f04961bf69790d1b00bf77"
     },
     "src/entity/mob/damage_internal.h": {
       "bytes": 1708,
@@ -8076,6 +8076,66 @@
     "tests/world/runtime/random_block_getter_controls.inc": {
       "bytes": 11535,
       "sha256": "eb477a22925eb83fe2d2a0d7662dd0a437832ad2dcf619e8dbc465081e1f80d2"
+    },
+    "cmake/player_damage.cmake": {
+      "bytes": 1586,
+      "sha256": "0151ade3dea77a879d08197dcccab47cf58b264df3dffc56ffcd8a6e33abaf16"
+    },
+    "cmake/tests/armor.cmake": {
+      "bytes": 739,
+      "sha256": "f6ee9e1725cbae75cafd8716e6d2362bda6e9ad2f63dcf2d78bc011122a1b4ba"
+    },
+    "include/mc/inventory/runtime/armor.h": {
+      "bytes": 3127,
+      "sha256": "ae15e8fb904b7fde7d0b92a22beea685aaf1a6ba0ac106c30a54c8c02662f2a2"
+    },
+    "src/entity/movement/effects.c": {
+      "bytes": 40115,
+      "sha256": "a07b87acce49f6f52d032a0951fb190d31095fee17de34b86044a8ca98fc3c4c"
+    },
+    "src/entity/player/damage.c": {
+      "bytes": 4744,
+      "sha256": "5c8144c98ea43aa8174f22299a28644de68b773fa234149c9b94cc92b0d79187"
+    },
+    "src/entity/player/damage_internal.h": {
+      "bytes": 1127,
+      "sha256": "3d7268fc5492a201d1583c97c6ab26722781043b457d3c9346804d6bbf43e527"
+    },
+    "src/inventory/runtime/armor.c": {
+      "bytes": 17026,
+      "sha256": "2dc2a0096852a8226712f25d314e2e43b862237a6939d0322f1a2b9d11a155ec"
+    },
+    "tests/client/statistics/test_player_callsites.c": {
+      "bytes": 15342,
+      "sha256": "9353dbef15a4162431d7758b90b6db6862f8a47b65a10b59c8ec3505448dc63b"
+    },
+    "tests/entity/player/test_hurt_original.c": {
+      "bytes": 22239,
+      "sha256": "1c305c258de43f97aeb1df5d68458a69a13c4d260f446da71e1e44e69a7d55cd"
+    },
+    "tests/inventory/player/test_armor.c": {
+      "bytes": 8949,
+      "sha256": "1fe01736804f08c89549309dbce789d178cda3cac6f4985dda00dc6dfc33c96e"
+    },
+    "tests/reference/entity/player_hurt/capture_reference.py": {
+      "bytes": 17701,
+      "sha256": "06243c4696b2bcef16fbffc583a38f2fff139ac2cf57df1c87a557da76795278"
+    },
+    "tests/reference/entity/player_hurt/run_native.py": {
+      "bytes": 10258,
+      "sha256": "8ca294e1864acb8728f706a4f066d25ced828b6f26eb1174c283de20fa1f170e"
+    },
+    "tests/reference/entity/player_hurt/test_packet.py": {
+      "bytes": 4587,
+      "sha256": "604ca756cdda6921fb5c5320ba685e62a08417a05fe3170d9837052499c2051a"
+    },
+    "tests/tools/client/test_player_callsites.py": {
+      "bytes": 2158,
+      "sha256": "d5c033cbb5665f39ee0b6adb2b478f48e8a8cf703d551e580cc4bcf2e57ff0c0"
+    },
+    "tests/tools/inventory/test_armor.py": {
+      "bytes": 1700,
+      "sha256": "2294472042365cece5ff33f5117e2ab74602a3e15b54c09770b429ee570acdfc"
     }
   },
   "authorities": {
@@ -12106,6 +12166,54 @@
             "tests/world/runtime/random_block_getter_controls.inc"
           ],
           "current_count": 2019
+        }
+      }
+    },
+    {
+      "from_commit": "ca9427019a5b924bb3d34b1aded90cc95fa8c386",
+      "role": "Current Player hurt, armor value/wear, fall landing continuation and native/original comparison input declarations. Earlier observations, products and every failed or passing capture retain their recorded scope; these declarations confer no native or original qualification on the current source tree.",
+      "previous_metadata": {
+        "bytes": 501343,
+        "sha256": "783ca165e69c8c80ca5e534aeaef81d123ab011cef5fb9aa92ca0c96eb7f9364"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "include/mc/entity/movement/effects.h": {
+              "bytes": 13026,
+              "sha256": "e595abf422873c2637772fb2ae686f1acbdac8e49a1d1340728dcf6c9e7da0b2"
+            },
+            "include/mc/client/gui/gui_ingame_draw.h": {
+              "bytes": 4739,
+              "sha256": "f1c4a374e86216c2ba1c4ed21f64ed5ec29b7a9efb16aaf09fa1c5f995600842"
+            },
+            "src/client/gui/gui_ingame_draw.c": {
+              "bytes": 48880,
+              "sha256": "26b8bc7ece3efd963f6148871302190f96a07138ae96d46f7bf8c3f1a6c588c2"
+            },
+            "src/entity/mob/damage.c": {
+              "bytes": 26258,
+              "sha256": "1dd2dabea986576339985c72182acf9a51177193f4011fdc1f8bee7b3841ddcb"
+            }
+          },
+          "added": [
+            "cmake/player_damage.cmake",
+            "cmake/tests/armor.cmake",
+            "include/mc/inventory/runtime/armor.h",
+            "src/entity/movement/effects.c",
+            "src/entity/player/damage.c",
+            "src/entity/player/damage_internal.h",
+            "src/inventory/runtime/armor.c",
+            "tests/client/statistics/test_player_callsites.c",
+            "tests/entity/player/test_hurt_original.c",
+            "tests/inventory/player/test_armor.c",
+            "tests/reference/entity/player_hurt/capture_reference.py",
+            "tests/reference/entity/player_hurt/run_native.py",
+            "tests/reference/entity/player_hurt/test_packet.py",
+            "tests/tools/client/test_player_callsites.py",
+            "tests/tools/inventory/test_armor.py"
+          ],
+          "current_count": 2034
         }
       }
     }

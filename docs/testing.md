@@ -1,5 +1,34 @@
 # Test scope and reproduction
 
+## Player damage, armor and landing
+
+The [Player damage implementation](entity/player-damage.md) shares the genuine
+LivingEntity hurt body with supported Mobs and uses the same Inventory armor
+value for damage and HUD drawing. The original packet retains 28 calls across
+22 prepared profiles, two unchanged JDK17 VMs, complete selected pre/post fields
+and independent constructor-field preservation. Native replay compares 20,872
+scalar values. Fatal damage and throwing callbacks retain their declared prefix
+and cause distinctions; complete death is not qualified.
+
+Run `entity.player_hurt`, `tools.player_hurt_packet`,
+`tools.player_hurt_packet_optimized`, `inventory.armor` and
+`client.player_statistic_callsites` through CTest. The separate armor controls
+cover 128 ownership/arithmetic assertions. Burning-timer and landing controls
+use genuine App/World owners with authored inputs. The landing path follows
+unchanged `ls.b(F)V` bytecode; its controls do not establish an original runtime
+landing comparison or loaded survival play.
+
+A native Windows reload-cycle scenario passes in 29.75 seconds with its game
+window placed on the second monitor. That run precedes the landing addition;
+it establishes its own world save/reselection scope. Computer Use inspection
+became unavailable after its initial window inventory, so no new screenshot
+or manual visual qualification is claimed.
+
+The initial full Windows attempt stopped with missing imported assets. The
+first Linux full attempt was interrupted after a concurrent source edit tripped
+its input guards. Both remain failed/incomplete records. Subsequent source
+bindings describe current inputs only and preserve historical captures.
+
 ## Grass and Leaves query diagnostics
 
 The [qualification](performance/random-block-ticks.md) retains two separate

@@ -1,5 +1,15 @@
 # History
 
+## Player hurt and armor
+
+Nonfatal LocalPlayer damage now reaches inherited hurt resistance, virtual
+armor, durability, health/remainder stores and World sound. The same armor
+value serves HUD drawing. Two fresh original VMs agree on all 28 retained
+calls; native replay checks 20,872 scalar values. Separate authored controls
+exercise armor ownership, burning timers and post-hit fall landing. Death,
+broader attackers and loaded combat remain unfinished. The [implementation notes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-damage.md)
+record the source order and finite qualification scopes.
+
 ## Grass and Leaves diagnostics
 
 The random Block getter now uses the existing failure-only Block and metadata

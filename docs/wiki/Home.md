@@ -1,5 +1,12 @@
 # minecraft-c
 
+[Player damage and armor](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-damage.md)
+now apply the actual hurt body, weighted armor value, durability and health
+remainder. Two original VMs reproduce 28 prepared calls; native replay checks
+20,872 scalar values. Fall landing continues through the actual Block sound,
+with separate authored native controls. Complete death, loaded combat,
+unrestricted survival and FPS improvements remain unqualified.
+
 The [Grass and Leaves comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/random-block-ticks.md)
 removes unused successful query diagnostics while preserving real World queries
 and complete failures. All 168 final CPU samples qualify; connected Leaves has

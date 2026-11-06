@@ -30,6 +30,7 @@ tests/reference/item/mining/*.json -text whitespace=trailing-space,space-before-
 tests/reference/item/mining/*.tsv -text whitespace=trailing-space,space-before-tab,cr-at-eol
 tests/reference/client/held_item_geometry/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
 tests/reference/entity/held_item_attack/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/entity/player_hurt/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
 tests/reference/entity/held_item_attack/HeldItemObservation.java -text whitespace=trailing-space,space-before-tab,cr-at-eol
 tests/reference/inventory/workbench_auto_close/entropy.py -text whitespace=trailing-space,space-before-tab,cr-at-eol,-blank-at-eof
 # Keep recorded native replay controller inputs unchanged.

@@ -5,6 +5,7 @@
 #include "mc/entity/entity.h"
 #include "mc/entity/mob/death.h"
 #include "mc/entity/player/statistics.h"
+#include "mc/inventory/runtime/armor.h"
 #include "mc/statistics/registry/registry.h"
 #include "mc/world/runtime/movement.h"
 
@@ -20,16 +21,23 @@ typedef enum mc_entity_effect_cause {
     MC_ENTITY_EFFECT_CAUSE_STATISTIC,
     MC_ENTITY_EFFECT_CAUSE_RANDOM,
     MC_ENTITY_EFFECT_CAUSE_REGISTRY,
-    MC_ENTITY_EFFECT_CAUSE_MATH
+    MC_ENTITY_EFFECT_CAUSE_MATH,
+    MC_ENTITY_EFFECT_CAUSE_INVENTORY
 } mc_entity_effect_cause;
 
 /* Value-only receipt of an actually entered canonical Living damage body.
  * No identity here owns an occurrence or may be dereferenced after its graph
  * retires. The existing Entity/Registry/World children retain the full causes.
  * Exact Source exceptions are distinguished from native limits/frontiers. */
+typedef struct mc_entity_player_health_damage_state {
+    bool entered, returned, value_returned, wear_returned, remainder_stored;
+    uint16_t pc;
+    int32_t amount, armor, factor, combined, reduced, remainder_before, remainder_after;
+} mc_entity_player_health_damage_state;
+
 typedef struct mc_entity_living_damage_state {
     bool entered, living_returned, returned, result_stored, result, full_hit;
-    bool native_policy, source_exception;
+    bool native_policy, source_exception, source_error;
     const char *exception_class;
     uint16_t wrapper_pc, living_pc, health_pc;
 
@@ -61,6 +69,7 @@ typedef struct mc_entity_living_damage_state {
     bool knockback_entered, knockback_returned;
     uint16_t knockback_pc;
     float knockback_length;
+    mc_entity_player_health_damage_state player_health;
 } mc_entity_living_damage_state;
 
 /* Passive reached-operation frames, independent of constructor diagnostics.
@@ -95,6 +104,10 @@ typedef struct mc_entity_effect_error {
     int32_t damage_amount;
     mc_entity_living_damage_state living_damage;
     mc_mob_death_state death;
+    /* Complete last reached IX child cause, including any actual IZ wear and
+     * broken-Item statistic. The compact GS receipt keeps preceding arithmetic.
+     * This value owns no Inventory, Stack, Entity or pending work. */
+    mc_inventory_armor_error armor;
 } mc_entity_effect_error;
 
 /* Full passive initialization without a returned diagnostic copy. NULL is a no-op. */
@@ -191,18 +204,21 @@ mc_entity_status mc_entity_effect_contact_portal(mc_entity *entity, mc_entity_ef
  * gates, health, direction and sound body. Client Sheep/Pig/Cow/Chicken execute
  * their actual inherited LS damage, including the nonnull-source direction
  * retry, atan2, knockback and concrete sound. Sheep's DL wrapper resolves LS
- * directly. Knockback requires the explicit Math context above. Fatal Living
- * damage stops at actual LS death invocation316 after any reached death sound.
+ * directly. Knockback requires the explicit Math context above. Unconnected
+ * concrete death overrides stop at their reached invocation after any actual
+ * death sound; implemented animal death retains its real drops and cleanup.
  * GZ nonnull-source, Wolf/Slime hurt overrides and Slime splitting remain
  * explicit dependencies. No successful health/death substitute is supplied.
  *
  * LocalPlayer fall executes gs->ls->sn in source order. A fall >=2 resolves
- * actual jl.n and computes the Java-rounded amount, then explicitly stops at
- * unfinished dc statistic/application dispatch. Smaller falls complete only
- * the genuinely reached base/Living body. Nonzero Player damage similarly
- * preserves av/health/sleep/type/difficulty prefixes, resolves jl.x, and stops
- * at that actual statistic call. Wake, Arrow ownership, other Living ally
- * handling and later Living hurt/armor/death remain explicit frontiers.
+ * actual jl.n and computes the Java-rounded amount before the real statistic
+ * and damage calls; the later landed-Block sound remains a separate frontier.
+ * Player damage preserves av/health/sleep/type/difficulty prefixes and actual
+ * jl.x statistic, then enters LS with virtual GS armor/remainder/health and
+ * inherited random.hurt sound. Full/repeated/remote returns retain their real
+ * order. Wake, Arrow ownership, other Living ally handling and Player death
+ * remain explicit reached dependencies. A fatal Player hit preserves its
+ * completed armor/health/timer/direction/sound prefix before GS death fails.
  * Player K stores be through super, then stops at its actual first Container
  * close invocation. These failures are not successful health/death substitutes.
  * Context arguments borrow the same actual Registry namespace independently

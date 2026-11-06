@@ -6,6 +6,7 @@
 #include "../../world/runtime/runtime_internal.h"
 #include "../living/fields_internal.h"
 #include "../movement/effects_internal.h"
+#include "../player/damage_internal.h"
 #include "../player/tick_math_internal.h"
 #include "internal.h"
 #include "mc/core/java/java.h"
@@ -132,7 +133,10 @@ static bool sound(mc_entity *p, mc_registry_classes *registry, bool fatal,
     const char *volume_class = "ls";
     uint16_t volume_pc = 1;
     float volume = 1.0f;
-    if (skeleton) {
+    if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
+        declaring_class = "ls";
+        text = "random.hurt";
+    } else if (skeleton) {
         declaring_class = "fr";
         text = "mob.skeletonhurt";
     } else if (zombie) {
@@ -363,6 +367,17 @@ static bool source_direction(mc_entity *p, mc_math_classes *math, mc_entity *sou
     return true;
 }
 
+static bool health_damage(mc_entity *p, mc_registry_classes *registry, int32_t amount,
+                          mc_entity_effect_error *e) {
+    if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
+        return mc_player_health_damage_entered(p, registry, amount, e);
+    child_at(e, "ls", "b", "(I)V", 7);
+    mc_living_entity_fields *v = mc_entity_living_fields(p);
+    v->Y = mc_java_i32_sub(v->Y, amount);
+    e->living_damage.health_pc = 10;
+    return true;
+}
+
 static bool living_body(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
                         mc_entity *source, int32_t amount, bool *out, bool *source_held,
                         mc_entity_effect_error *e) {
@@ -399,9 +414,8 @@ static bool living_body(mc_entity *p, mc_registry_classes *registry, mc_math_cla
             return true;
         }
         living_at(e, 67);
-        child_at(e, "ls", "b", "(I)V", 7);
-        v->Y = mc_java_i32_sub(v->Y, mc_java_i32_sub(amount, v->au));
-        e->living_damage.health_pc = 10;
+        if (!health_damage(p, registry, mc_java_i32_sub(amount, v->au), e))
+            return false;
         v->au = amount;
         full_hit = false;
     } else {
@@ -409,9 +423,8 @@ static bool living_body(mc_entity *p, mc_registry_classes *registry, mc_math_cla
         v->Z = v->Y;
         p->base.by = v->E;
         living_at(e, 103);
-        child_at(e, "ls", "b", "(I)V", 7);
-        v->Y = mc_java_i32_sub(v->Y, amount);
-        e->living_damage.health_pc = 10;
+        if (!health_damage(p, registry, amount, e))
+            return false;
         v->ab = 10;
         v->aa = 10;
     }
@@ -449,6 +462,11 @@ static bool living_body(mc_entity *p, mc_registry_classes *registry, mc_math_cla
         living_at(e, 316);
         child_at(e, "ls", "b", "(Lsn;)V", 0);
         e->living_damage.death_invoke_reached = true;
+        if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
+            child_at(e, "gs", "b", "(Lsn;)V", 2);
+            return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
+                               "Player damage actual Player death continuation");
+        }
         if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_CREEPER)) {
             /* GB.b starts with its actual inherited LS death invocation.
              * Its later Skeleton-killer record branch has not been reached. */
@@ -478,6 +496,35 @@ static bool living(mc_entity *p, mc_registry_classes *registry, mc_math_classes 
         e->living_damage.source_hold_released = true;
     }
     return returned;
+}
+
+bool mc_player_living_damage_entered(mc_entity *p, mc_registry_classes *registry,
+                                     mc_math_classes *math, mc_entity *source, int32_t amount,
+                                     bool *out, mc_entity_effect_error *e) {
+    if (e == NULL)
+        return false;
+    if (p == NULL || !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) ||
+        p->classes->source != MC_ENTITY_CLIENT || p->phase != MC_ENTITY_READY || out == NULL)
+        return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_OWNER,
+                           "Player damage entered canonical owner contract");
+    e->damage_arguments_stored = true;
+    e->damage_source_identity = (uintptr_t)source;
+    e->damage_amount = amount;
+    e->source_class = "gs";
+    e->source_bytecode = e->damage_bytecode = e->player_bytecode = 158;
+    e->living_damage.entered = true;
+    e->living_damage.wrapper_pc = 158;
+    bool answer = false;
+    if (!living(p, registry, math, source, amount, &answer, e))
+        return false;
+    e->living_damage.living_returned = true;
+    e->source_bytecode = e->player_bytecode = e->living_damage.wrapper_pc = 161;
+    child_at(e, "gs", "a", "(Lsn;I)Z", 161);
+    e->living_damage.returned = true;
+    e->living_damage.result_stored = true;
+    e->living_damage.result = answer;
+    *out = answer;
+    return true;
 }
 
 bool mc_mob_monster_null_damage_entered(mc_entity *p, mc_registry_classes *registry, int32_t amount,

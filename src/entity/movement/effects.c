@@ -2,15 +2,19 @@
 
 #include "../mob/damage_internal.h"
 #include "../mob/death_internal.h"
+#include "../player/damage_internal.h"
 #include "effects_internal.h"
 
 #include "../../block/registry/registry_internal.h"
+#include "../../block/registry/runtime_internal.h"
 #include "../../client/input/movement_input_internal.h"
+#include "../../world/runtime/collision/blocks_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../entity_internal.h"
 #include "../mob/internal.h"
 #include "../player/player_internal.h"
 #include "../player/statistics_status_internal.h"
+#include "mc/block/registry/step_sound.h"
 #include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
 
@@ -46,6 +50,7 @@ void mc_entity_effect_error_init(mc_entity_effect_error *error) {
     error->statistic_error.writer.index = SIZE_MAX;
     error->statistic_error.writer.text_offset = SIZE_MAX;
     error->math.source_pc = -1;
+    mc_inventory_armor_error_init(&error->armor);
     mc_world_movement_error_init(&error->world);
     error->registry = error->world.registry;
 }
@@ -341,6 +346,127 @@ static bool base_fall(mc_entity *entity, mc_entity_effect_error *error) {
 static bool damage(mc_entity *, mc_registry_classes *, mc_math_classes *, mc_entity *, int32_t,
                    bool *, mc_entity_effect_error *);
 
+static bool landing_failure(mc_entity_effect_error *e, mc_entity_status status,
+                            mc_entity_effect_cause cause, const char *operation, uint16_t pc) {
+    e->source_class = "ls";
+    e->living_bytecode = pc;
+    (void)fail(e, status, cause, operation, pc);
+    return false;
+}
+
+static bool landing_registry(mc_entity_effect_error *e, mc_registry_status status,
+                             const char *operation, uint16_t pc) {
+    if (status == MC_REGISTRY_OK)
+        return true;
+    return landing_failure(e,
+                           status == MC_REGISTRY_LIMIT               ? MC_ENTITY_LIMIT
+                           : status == MC_REGISTRY_ALLOCATION_FAILED ? MC_ENTITY_ALLOCATION_FAILED
+                           : status == MC_REGISTRY_BUSY              ? MC_ENTITY_BUSY
+                                                                     : MC_ENTITY_WORLD_FAILED,
+                           status == MC_REGISTRY_NULL_REFERENCE
+                               ? MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE
+                               : MC_ENTITY_EFFECT_CAUSE_REGISTRY,
+                           operation, pc);
+}
+
+static bool landing_world(mc_entity_effect_error *e, mc_world_storage_status status,
+                          const char *operation, uint16_t pc) {
+    if (status == MC_WORLD_STORAGE_OK)
+        return true;
+    return landing_failure(e,
+                           status == MC_WORLD_STORAGE_LIMIT ? MC_ENTITY_LIMIT
+                           : status == MC_WORLD_STORAGE_ALLOCATION_FAILED
+                               ? MC_ENTITY_ALLOCATION_FAILED
+                           : status == MC_WORLD_STORAGE_BUSY ? MC_ENTITY_BUSY
+                                                             : MC_ENTITY_WORLD_FAILED,
+                           MC_ENTITY_EFFECT_CAUSE_WORLD, operation, pc);
+}
+
+static bool landing(mc_entity *entity, mc_registry_classes *classes,
+                    mc_entity_effect_error *error) {
+    /* Actual World receiver27 precedes all three coordinate floors. Reached
+     * damage/sound callbacks may have changed both it and the current pose. */
+    mc_world_runtime *world = entity->base.world;
+    error->living_bytecode = 34;
+    if (!fp(error, "Living landing coordinate arithmetic", 34))
+        return false;
+    const int32_t x = mc_math_floor_double(entity->base.x);
+    const double below =
+        _mm_cvtsd_f64(_mm_sub_sd(_mm_set_sd(entity->base.y), _mm_set_sd(0.20000000298023224)));
+    const double offset =
+        _mm_cvtsd_f64(_mm_cvtss_sd(_mm_setzero_pd(), _mm_set_ss(entity->base.offset)));
+    const double y_value = _mm_cvtsd_f64(_mm_sub_sd(_mm_set_sd(below), _mm_set_sd(offset)));
+    const int32_t y = mc_math_floor_double(y_value);
+    const int32_t z = mc_math_floor_double(entity->base.z);
+    if (world == NULL)
+        return landing_failure(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE,
+                               "Living landing null captured World receiver", 61);
+    mc_world_movement_error_init(&error->world);
+    mc_world_storage_status status = mc_world_runtime_call_enter(world, &error->world.cause);
+    int32_t id = 0;
+    if (status == MC_WORLD_STORAGE_OK) {
+        status =
+            mc_world_collision_block_value_held(world, x, y, z, false, &id, &error->world.block);
+        mc_world_runtime_call_leave(world);
+    }
+    error->world.status = status;
+    if (!landing_world(error, status, "Living landing actual World block read", 61))
+        return false;
+    if (id <= 0)
+        return true;
+    if (classes == NULL || classes->entities != entity->classes)
+        return landing_failure(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_OWNER,
+                               "Living landing actual code Registry namespace", 69);
+    mc_registry_block_m_view array;
+    if (!landing_registry(error, mc_registry_block_m_get(classes, &array, &error->registry),
+                          "Living landing Block.m active use", 69))
+        return false;
+    const mc_block *block = NULL;
+    if (!landing_registry(error, mc_registry_block_m_at(&array, id, &block, &error->registry),
+                          "Living landing actual Block.m element", 73))
+        return false;
+    if (block == NULL)
+        return landing_failure(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE,
+                               "Living landing null Block.by receiver", 74);
+    const mc_block_sound *sound = block->fields.by;
+    /* The sound World80 is captured before d/b/c dispatch. Keep the actual
+     * newly built d() String alive through every WorldAccess recipient. */
+    world = entity->base.world;
+    mc_step_sound_name name = {0};
+    if (!landing_registry(
+            error, mc_registry_step_sound_name(classes, sound, false, &name, &error->registry),
+            "Living landing actual StepSound.d", 86))
+        return false;
+    float volume = 0.0f, pitch = 0.0f;
+    bool okay =
+        landing_registry(error, mc_registry_step_sound_volume(sound, &volume, &error->registry),
+                         "Living landing actual StepSound.b", 91);
+    if (okay) {
+        okay = fp(error, "Living landing sound volume arithmetic", 96);
+        if (okay) {
+            volume = _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(volume), _mm_set_ss(.5f)));
+            okay = landing_registry(error,
+                                    mc_registry_step_sound_pitch(sound, &pitch, &error->registry),
+                                    "Living landing actual StepSound.c", 99);
+        }
+    }
+    if (okay) {
+        pitch = _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(pitch), _mm_set_ss(.75f)));
+        if (world == NULL)
+            okay =
+                landing_failure(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE,
+                                "Living landing null captured sound World receiver", 105);
+        else
+            okay = landing_world(error,
+                                 mc_world_runtime_entity_sound(world, entity, name.string, volume,
+                                                               pitch, &error->world),
+                                 "Living landing actual World Entity sound", 105);
+    }
+    /* Cleanup does not replace the reached gameplay result or child failure. */
+    (void)mc_registry_step_sound_name_release(&name, NULL);
+    return okay;
+}
+
 static bool fall(mc_entity *entity, mc_registry_classes *classes, float distance,
                  mc_entity_effect_error *error) {
     const bool player = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER);
@@ -380,13 +506,10 @@ static bool fall(mc_entity *entity, mc_registry_classes *classes, float distance
         error->living_bytecode = 22;
         if (!damage(entity, classes, NULL, NULL, amount, &ordinary, error))
             return false;
-        /* This is unreachable until the genuine statistic and Living damage
-         * descendants exist. Do not claim the later landed sound as complete. */
-        fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
-             "Living fall landed Block sound continuation", 61);
-        error->living_bytecode = 61;
-        return false;
+        if (!landing(entity, classes, error))
+            return false;
     }
+    error->living_bytecode = 108;
     return true;
 }
 
@@ -609,10 +732,7 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_clas
             return false;
         if (!statistic_dispatch(entity, error, amount, 152))
             return false;
-        error->living_bytecode = 158;
-        fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
-             "Player damage actual Living hurt continuation", 158);
-        return false;
+        return mc_player_living_damage_entered(entity, classes, math, source, amount, out, error);
     }
     mc_entity_effect_attacked_entered(
         entity); /* Both actual damage bodies dispatch inherited ai/af at1. */

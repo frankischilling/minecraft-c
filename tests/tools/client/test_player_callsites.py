@@ -26,12 +26,12 @@ def main():
     result = support.run([args.executable.resolve(strict=True), resources, game], out, 'native')
     support.require(result.returncode == 0 and result.stderr == b'', 'Actual Player callsite failure')
     lines = result.stdout.splitlines()
-    support.require(lines[:2] == [b'16 achievements', b'151 recipes'] and len(lines) == 3,
+    support.require(lines[:6] == [b'16 achievements', b'151 recipes'] * 3 and len(lines) == 7,
                     'Unexpected callsite profile output')
-    checks = re.fullmatch(rb'Player statistic callsites: ([1-9][0-9]*) checks', lines[2])
+    checks = re.fullmatch(rb'Player statistic callsites: ([1-9][0-9]*) checks', lines[6])
     support.require(checks is not None, 'Missing completed callsite checks')
     report = dict(status='PASS', checks=int(checks[1]), capture=result.capture_report,
-                  scope='Native genuine App/Writer jump, movement/travel/fall completion and exact hurt/null prefixes')
+                  scope='Native genuine App/Writer jump, movement/travel/fall with landing sound, completed nonfatal Player hurt and two ordinary SN.U burning-timer calls; exact null prefixes remain distinct')
     (out / 'report.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
     print('Player statistic callsites: ' + str(report['checks']) + ' checks; report=' + str(out / 'report.json'))
 
